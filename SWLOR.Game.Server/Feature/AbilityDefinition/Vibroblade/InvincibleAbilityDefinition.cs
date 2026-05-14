@@ -17,10 +17,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
                     .Create(FeatType.Invincible1, PerkType.Invincible)
                     .Name("Invincible")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.Invincible, 1800f),
+                    .HasRecastDelay(RecastGroup.Capstone, 1800f),
                 typeof(InvincibleStatusEffect),
                 30f,
-                12);
+                25,
+                activationDelay: 1f);
 
             return builder.Build();
         }

@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
                 .Level(1)
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.PinningToss, 30f)
-                .HasImpactAction(ImpactAction)
+                .HasImpactAction(PinningToss1ImpactAction)
                 .IsWeaponAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
@@ -44,7 +44,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
                 .Level(2)
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.PinningToss, 30f)
-                .HasImpactAction(ImpactAction)
+                .HasImpactAction(PinningToss2ImpactAction)
                 .IsWeaponAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
@@ -59,27 +59,26 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
                 .Level(3)
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.PinningToss, 30f)
-                .HasImpactAction(ImpactAction)
+                .HasImpactAction(PinningToss3ImpactAction)
                 .IsWeaponAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
                 .RequirementStamina(8);
         }
 
-        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        private static void PinningToss1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            switch (level)
-            {
-                case 1:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Throwing, 8, 12, typeof(DisorientedStatusEffect), false);
-                    break;
-                case 2:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Throwing, 18, 15, typeof(DisorientedStatusEffect), false);
-                    break;
-                case 3:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Throwing, 30, 20, typeof(DisorientedStatusEffect), false);
-                    break;
-            }
+            Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Throwing, 8, 12, typeof(DisorientedStatusEffect), false);
+        }
+
+        private static void PinningToss2ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        {
+            Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Throwing, 18, 15, typeof(DisorientedStatusEffect), false);
+        }
+
+        private static void PinningToss3ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        {
+            Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Throwing, 30, 20, typeof(DisorientedStatusEffect), false);
         }
     }
 }

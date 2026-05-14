@@ -29,21 +29,25 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.ForceNullification, 45f)
                 .RequiresTarget()
-                .HasImpactAction(ImpactAction)
+                .HasImpactAction(ForceNullification1ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
                 .RequirementStamina(12);
         }
 
-        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        private static void ForceNullification1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            switch (level)
-            {
-                case 1:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Spear, 22, 8, typeof(ForceDisruptionStatusEffect), false);
-                    break;
-            }
+            Ability.ApplyCombatImpact(
+                activator,
+                target,
+                targetLocation,
+                SkillType.Spear,
+                22,
+                8,
+                null,
+                false,
+                statusEffectFactory: () => new ForceDisruptionStatusEffect(true));
         }
     }
 }

@@ -132,28 +132,28 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Tame")
 
                 .AddPerkLevel()
-                .Description("Enables you to tame & train creatures between levels 0 and 10. Also grants 'Call Beast' ability.")
+                .Description("Enables you to tame & train creatures between levels 0 and 10. Also grants 'Call Beast' ability. Taming chance increases by 1% per SOC, capped at 95%.")
                 .Price(3)
                 .GrantsFeat(FeatType.Tame)
                 .GrantsFeat(FeatType.CallBeast)
 
                 .AddPerkLevel()
-                .Description("Enables you to tame & train creatures between levels 0 and 20.")
+                .Description("Enables you to tame & train creatures between levels 0 and 20. Taming chance increases by 1% per SOC, capped at 95%.")
                 .Price(3)
                 .RequirementSkill(SkillType.BeastMastery, 10)
 
                 .AddPerkLevel()
-                .Description("Enables you to tame & train creatures between levels 0 and 30.")
+                .Description("Enables you to tame & train creatures between levels 0 and 30. Taming chance increases by 1% per SOC, capped at 95%.")
                 .Price(4)
                 .RequirementSkill(SkillType.BeastMastery, 20)
 
                 .AddPerkLevel()
-                .Description("Enables you to tame & train creatures between levels 0 and 40.")
+                .Description("Enables you to tame & train creatures between levels 0 and 40. Taming chance increases by 1% per SOC, capped at 95%.")
                 .Price(5)
                 .RequirementSkill(SkillType.BeastMastery, 30)
 
                 .AddPerkLevel()
-                .Description("Enables you to tame & train creatures between levels 0 and 50.")
+                .Description("Enables you to tame & train creatures between levels 0 and 50. Taming chance increases by 1% per SOC, capped at 95%.")
                 .Price(5)
                 .RequirementSkill(SkillType.BeastMastery, 40);
         }
@@ -165,19 +165,19 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Reward")
 
                 .AddPerkLevel()
-                .Description("Restores 50 HP to your pet. Consumes a treat item on use.")
+                .Description("Restores 50 HP plus 20% of your pet's max HP, increased by 1% per SOC. Consumes a treat item on use.")
                 .Price(1)
                 .RequirementSkill(SkillType.BeastMastery, 5)
                 .GrantsFeat(FeatType.Reward1)
 
                 .AddPerkLevel()
-                .Description("Restores 90 HP to your pet. Consumes a treat item on use.")
+                .Description("Restores 90 HP plus 20% of your pet's max HP, increased by 1% per SOC. Consumes a treat item on use.")
                 .Price(2)
                 .RequirementSkill(SkillType.BeastMastery, 25)
                 .GrantsFeat(FeatType.Reward2)
 
                 .AddPerkLevel()
-                .Description("Restores 130 HP to your pet. Consumes a treat item on use.")
+                .Description("Restores 130 HP plus 20% of your pet's max HP, increased by 1% per SOC. Consumes a treat item on use.")
                 .Price(2)
                 .RequirementSkill(SkillType.BeastMastery, 45)
                 .GrantsFeat(FeatType.Reward3);
@@ -266,13 +266,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ReviveBeast1)
 
                 .AddPerkLevel()
-                .Description("Revives your pet with (10+SOC)% HP.")
+                .Description("Revives your pet with (10 + SOC)% HP.")
                 .Price(2)
                 .RequirementSkill(SkillType.BeastMastery, 25)
                 .GrantsFeat(FeatType.ReviveBeast2)
 
                 .AddPerkLevel()
-                .Description("Revives your pet with (30+SOC*2)% HP.")
+                .Description("Revives your pet with (30 + 2*SOC)% HP.")
                 .Price(3)
                 .RequirementSkill(SkillType.BeastMastery, 40)
                 .GrantsFeat(FeatType.ReviveBeast3);

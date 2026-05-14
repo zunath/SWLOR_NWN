@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
                 .Level(1)
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.FlashToss, 45f)
-                .HasImpactAction(ImpactAction)
+                .HasImpactAction(FlashToss1ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
@@ -43,24 +43,21 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
                 .Level(2)
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.FlashToss, 45f)
-                .HasImpactAction(ImpactAction)
+                .HasImpactAction(FlashToss2ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
                 .RequirementStamina(10);
         }
 
-        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        private static void FlashToss1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            switch (level)
-            {
-                case 1:
-                    Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.Throwing, 6, 6, typeof(BlindStatusEffect), CombatImpactAreaShape.Sphere, 0.25f, 5f);
-                    break;
-                case 2:
-                    Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.Throwing, 22, 10, typeof(BlindStatusEffect), CombatImpactAreaShape.Sphere, 0.25f, 5f);
-                    break;
-            }
+            Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.Throwing, 6, 6, typeof(BlindStatusEffect), CombatImpactAreaShape.Sphere, 0.25f, 5f);
+        }
+
+        private static void FlashToss2ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        {
+            Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.Throwing, 22, 10, typeof(BlindStatusEffect), CombatImpactAreaShape.Sphere, 0.25f, 5f);
         }
     }
 }

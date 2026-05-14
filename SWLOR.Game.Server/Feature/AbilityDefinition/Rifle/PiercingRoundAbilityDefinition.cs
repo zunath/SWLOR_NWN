@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.PiercingRound, 45f)
                 .RequiresTarget()
-                .HasImpactAction(ImpactAction)
+                .HasImpactAction(PiercingRound1ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
@@ -46,7 +46,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.PiercingRound, 45f)
                 .RequiresTarget()
-                .HasImpactAction(ImpactAction)
+                .HasImpactAction(PiercingRound2ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
@@ -62,27 +62,26 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.PiercingRound, 45f)
                 .RequiresTarget()
-                .HasImpactAction(ImpactAction)
+                .HasImpactAction(PiercingRound3ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
                 .RequirementStamina(8);
         }
 
-        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        private static void PiercingRound1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            switch (level)
-            {
-                case 1:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Rifle, 14, 12, typeof(SunderStatusEffect), false);
-                    break;
-                case 2:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Rifle, 26, 12, typeof(SunderStatusEffect), false);
-                    break;
-                case 3:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Rifle, 38, 15, typeof(SunderStatusEffect), false);
-                    break;
-            }
+            Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Rifle, 14, 12, typeof(SunderStatusEffect), false, statusEffectFactory: () => new SunderStatusEffect(10));
+        }
+
+        private static void PiercingRound2ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        {
+            Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Rifle, 26, 12, typeof(SunderStatusEffect), false);
+        }
+
+        private static void PiercingRound3ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        {
+            Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Rifle, 38, 15, typeof(SunderStatusEffect), false, statusEffectFactory: () => new SunderStatusEffect(20));
         }
     }
 }

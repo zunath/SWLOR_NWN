@@ -11,6 +11,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public GuardiansWrathStatusEffect()
         {
             StatGroup.Stats[StatType.AttackDeflection] = 100;
+            StatGroup.Stats[StatType.AttackDeflectionChanceCap] = 100;
         }
 
     }

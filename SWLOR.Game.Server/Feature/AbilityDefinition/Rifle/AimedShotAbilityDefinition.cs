@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
@@ -10,6 +11,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
 {
     public class AimedShotAbilityDefinition : IAbilityListDefinition
     {
+        private const float LongRangeThreshold = 8f;
+
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
@@ -28,9 +31,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 .Name("Aimed Shot I")
                 .Level(1)
                 .HasActivationDelay(1f)
-                .HasRecastDelay(RecastGroup.AimedShot, 30f)
+                .HasRecastDelay(RecastGroup.AimedShot, activator => GetAimedShotRecastDelay(activator))
                 .RequiresTarget()
-                .HasImpactAction(ImpactAction)
+                .HasImpactAction(AimedShot1ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
@@ -44,9 +47,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 .Name("Aimed Shot II")
                 .Level(2)
                 .HasActivationDelay(1f)
-                .HasRecastDelay(RecastGroup.AimedShot, 30f)
+                .HasRecastDelay(RecastGroup.AimedShot, activator => GetAimedShotRecastDelay(activator))
                 .RequiresTarget()
-                .HasImpactAction(ImpactAction)
+                .HasImpactAction(AimedShot2ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
@@ -60,29 +63,54 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 .Name("Aimed Shot III")
                 .Level(3)
                 .HasActivationDelay(1f)
-                .HasRecastDelay(RecastGroup.AimedShot, 30f)
+                .HasRecastDelay(RecastGroup.AimedShot, activator => GetAimedShotRecastDelay(activator))
                 .RequiresTarget()
-                .HasImpactAction(ImpactAction)
+                .HasImpactAction(AimedShot3ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
                 .RequirementStamina(8);
         }
 
-        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        private static void AimedShot1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            switch (level)
-            {
-                case 1:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Rifle, 18, 0, null, false);
-                    break;
-                case 2:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Rifle, 32, 0, null, false);
-                    break;
-                case 3:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Rifle, 46, 0, null, false);
-                    break;
-            }
+            ApplyAimedShot(activator, target, targetLocation, 18, 10);
+        }
+
+        private static float GetAimedShotRecastDelay(uint activator)
+        {
+            return Math.Max(0f, 30f + Combat.GetAbilityRecastDelayFlatAdjustment(activator, PerkType.AimedShot));
+        }
+
+        private static void AimedShot2ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        {
+            ApplyAimedShot(activator, target, targetLocation, 32, 16);
+        }
+
+        private static void AimedShot3ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        {
+            ApplyAimedShot(activator, target, targetLocation, 46, 24);
+        }
+
+        private static void ApplyAimedShot(
+            uint activator,
+            uint target,
+            Location targetLocation,
+            int baseDamage,
+            int longRangeBonusDamage)
+        {
+            if (IsLongRangeShot(activator, target))
+                baseDamage += longRangeBonusDamage;
+
+            Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Rifle, baseDamage, 0, null, false);
+        }
+
+        private static bool IsLongRangeShot(uint activator, uint target)
+        {
+            return GetIsObjectValid(activator) &&
+                   GetIsObjectValid(target) &&
+                   GetArea(activator) == GetArea(target) &&
+                   GetDistanceBetween(activator, target) > LongRangeThreshold;
         }
     }
 }

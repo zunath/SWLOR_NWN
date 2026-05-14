@@ -27,21 +27,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
                 .Level(1)
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.CoveringStrike, 45f)
-                .HasImpactAction(ImpactAction)
+                .HasImpactAction(CoveringStrike1ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
                 .RequirementStamina(6);
         }
 
-        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        private static void CoveringStrike1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            switch (level)
-            {
-                case 1:
-                    Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.Vibroblade, 20, 0, null, CombatImpactAreaShape.Line, 0.25f, 8f, 2.5f);
-                    break;
-            }
+            Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.Vibroblade, 20, 0, null, CombatImpactAreaShape.Line, 0.25f, 8f, 2.5f);
         }
     }
 }

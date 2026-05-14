@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
                     .HasRecastDelay(RecastGroup.RiotBlade, 60f),
                 SkillType.Vibroblade,
                 15,
-                4);
+                3);
             ConfigureCastedTarget(
                 builder
                     .Create(FeatType.RiotBlade2, PerkType.RiotBlade)
@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
                     .HasRecastDelay(RecastGroup.RiotBlade, 60f),
                 SkillType.Vibroblade,
                 30,
-                6);
+                5);
             ConfigureCastedTarget(
                 builder
                     .Create(FeatType.RiotBlade3, PerkType.RiotBlade)

@@ -26,22 +26,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
                 .Name("Rain of Steel")
                 .Level(1)
                 .HasActivationDelay(2f)
-                .HasRecastDelay(RecastGroup.RainOfSteel, 1800f)
-                .HasImpactAction(ImpactAction)
+                .HasRecastDelay(RecastGroup.Capstone, 1800f)
+                .HasImpactAction(RainOfSteel1ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
                 .RequirementStamina(25);
         }
 
-        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        private static void RainOfSteel1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            switch (level)
-            {
-                case 1:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Throwing, 35, 60, typeof(BleedStatusEffect), true);
-                    break;
-            }
+            Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Throwing, 35, 60, typeof(BleedStatusEffect), true);
         }
     }
 }

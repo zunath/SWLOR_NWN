@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
                 .Create(FeatType.BastionStance1, PerkType.BastionStance)
                 .Name("Bastion Stance")
                 .Level(1)
-                .HasActivationDelay(0f)
+                .HasActivationDelay(2f)
                 .HasRecastDelay(RecastGroup.BastionStance, 180f)
                 .HasActivationAction((activator, target, level, targetLocation) => ToggleSelfStatus(activator, typeof(BastionStanceStatusEffect)))
                 .HasImpactAction((activator, target, level, targetLocation) => ApplySelfStatus(activator, typeof(BastionStanceStatusEffect)))

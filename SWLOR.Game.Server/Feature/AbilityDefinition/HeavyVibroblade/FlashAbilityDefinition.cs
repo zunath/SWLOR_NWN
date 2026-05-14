@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
                 .HasRecastDelay(RecastGroup.Flash, 90f)
                 .HasImpactAction((activator, target, level, targetLocation) =>
                 {
-                    Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.HeavyVibroblade, 0, 30, typeof(FlashStatusEffect), CombatImpactAreaShape.Sphere, 0.25f, 5f, centerOnActivator: true);
+                    Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.HeavyVibroblade, 0, 30, typeof(FlashStatusEffect), CombatImpactAreaShape.Sphere, 0.25f, 5f, centerOnActivator: true, statusEffectFactory: () => new FlashStatusEffect(20));
                     Enmity.ModifyEnmityOnAll(activator, 650);
                 })
                 .IsCastedAbility()

@@ -29,21 +29,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.ExposeWeakPoint, 75f)
                 .RequiresTarget()
-                .HasImpactAction(ImpactAction)
+                .HasImpactAction(ExposeWeakPoint1ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
                 .RequirementStamina(8);
         }
 
-        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        private static void ExposeWeakPoint1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            switch (level)
-            {
-                case 1:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Rifle, 20, 12, typeof(ExposeWeakPointStatusEffect), false);
-                    break;
-            }
+            Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Rifle, 20, 12, typeof(ExposeWeakPointStatusEffect), false);
         }
     }
 }

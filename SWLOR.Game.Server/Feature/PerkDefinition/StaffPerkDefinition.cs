@@ -146,6 +146,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("After dodging or deflecting an attack, your next Staff ability costs 2 less STM.")
+                .IncreasesStat(StatType.AvoidedAttackNextSkillAbilitySkillType, creature => EquipmentPredicates.HasMainHandStaff(creature) ? (int)SkillType.Staff : 0)
+                .IncreasesStat(StatType.AvoidedAttackNextSkillAbilityStaminaCostAdjustment, creature => EquipmentPredicates.HasMainHandStaff(creature) ? -2 : 0)
+                .IncreasesStat(StatType.AvoidedAttackNextSkillAbilityWindowSeconds, creature => EquipmentPredicates.HasMainHandStaff(creature) ? 8 : 0)
                 .Price(2)
                 .RequirementSkill(SkillType.Staff, 32);
         }
@@ -235,6 +238,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("If you have not used a combat ability for 6 seconds, your next Staff ability gains +15% accuracy and deals +15 DMG.")
+                .IncreasesStat(StatType.IdleSkillAbilitySkillType, creature => EquipmentPredicates.HasMainHandStaff(creature) ? (int)SkillType.Staff : 0)
+                .IncreasesStat(StatType.IdleSkillAbilityRequiredIdleSeconds, creature => EquipmentPredicates.HasMainHandStaff(creature) ? 6 : 0)
+                .IncreasesStat(StatType.IdleSkillAbilityHitChancePercentAdjustment, creature => EquipmentPredicates.HasMainHandStaff(creature) ? 15 : 0)
+                .IncreasesStat(StatType.IdleSkillAbilityDamageBonus, creature => EquipmentPredicates.HasMainHandStaff(creature) ? 15 : 0)
                 .Price(3)
                 .RequirementSkill(SkillType.Staff, 40);
         }

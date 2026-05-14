@@ -27,21 +27,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 .Level(1)
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.RippleSlash, 120f)
-                .HasImpactAction(ImpactAction)
+                .HasImpactAction(RippleSlash1ImpactAction)
                 .IsWeaponAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
                 .RequirementStamina(10);
         }
 
-        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        private static void RippleSlash1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            switch (level)
-            {
-                case 1:
-                    Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.Lightsaber, 30, 20, typeof(DisorientedStatusEffect), CombatImpactAreaShape.Sphere, 0f, 5f);
-                    break;
-            }
+            Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.Lightsaber, 30, 20, typeof(DisorientedStatusEffect), CombatImpactAreaShape.Sphere, 0f, 5f);
         }
     }
 }

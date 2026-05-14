@@ -26,23 +26,18 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                 .Name("Vital Strike")
                 .Level(1)
                 .HasActivationDelay(0f)
-                .HasRecastDelay(RecastGroup.VitalStrike, 90f)
+                .HasRecastDelay(RecastGroup.Capstone, 1800f)
                 .RequiresTarget()
-                .HasImpactAction(ImpactAction)
+                .HasImpactAction(VitalStrike1ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
                 .RequirementStamina(25);
         }
 
-        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        private static void VitalStrike1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            switch (level)
-            {
-                case 1:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Vibroknife, 55, 12, typeof(VitalStrikeStatusEffect), false);
-                    break;
-            }
+            Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Vibroknife, 55, 12, typeof(VitalStrikeStatusEffect), false);
         }
     }
 }

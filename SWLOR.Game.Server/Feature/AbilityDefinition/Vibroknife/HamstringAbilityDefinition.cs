@@ -34,7 +34,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                 18,
                 12,
                 typeof(HamstringStatusEffect),
-                5);
+                6);
             ConfigureWeapon(
                 builder
                     .Create(FeatType.Hamstring3, PerkType.Hamstring)
@@ -45,7 +45,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                 28,
                 12,
                 typeof(HamstringStatusEffect),
-                7);
+                8);
 
             return builder.Build();
         }

@@ -1,14 +1,12 @@
 using System.Collections.Generic;
-using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
 {
-    public class WhirlingGuardAbilityDefinition : IAbilityListDefinition
+    public class WhirlingGuardAbilityDefinition : WeaponActiveAbilityDefinitionBase, IAbilityListDefinition
     {
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
@@ -21,28 +19,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
 
         private static void WhirlingGuard1(AbilityBuilder builder)
         {
-            builder
-                .Create(FeatType.WhirlingGuard1, PerkType.WhirlingGuard)
-                .Name("Whirling Guard")
-                .Level(1)
-                .HasActivationDelay(0f)
-                .HasRecastDelay(RecastGroup.WhirlingGuard, 120f)
-                .RequiresTarget()
-                .HasImpactAction(ImpactAction)
-                .IsCastedAbility()
-                .IsHostileAbility()
-                .BreaksStealth()
-                .RequirementStamina(12);
-        }
-
-        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
-        {
-            switch (level)
-            {
-                case 1:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Katar, 8, 12, null, false);
-                    break;
-            }
+            ConfigureSelfStatus(
+                builder
+                    .Create(FeatType.WhirlingGuard1, PerkType.WhirlingGuard)
+                    .Name("Whirling Guard")
+                    .Level(1)
+                    .HasRecastDelay(RecastGroup.WhirlingGuard, 120f),
+                typeof(WhirlingGuardStatusEffect),
+                12f,
+                12);
         }
     }
 }

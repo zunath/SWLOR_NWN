@@ -17,10 +17,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                     .Create(FeatType.GuardianMaster1, PerkType.GuardianMaster)
                     .Name("Guardian Master")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.GuardianMaster, 1800f),
+                    .HasRecastDelay(RecastGroup.Capstone, 1800f),
                 typeof(GuardiansWrathStatusEffect),
                 30f,
-                12);
+                25,
+                activationDelay: 2f);
 
             return builder.Build();
         }

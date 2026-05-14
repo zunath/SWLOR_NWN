@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.Game.Server.Service.StatService;
@@ -16,6 +17,16 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         {
             StatGroup.Stats[StatType.AccuracyPercentAdjustment] = -15;
             StatGroup.Stats[StatType.EvasionPercentAdjustment] = -15;
+        }
+
+        protected override void Apply(uint creature, int durationTicks)
+        {
+            StatGroup.Stats[StatType.AttackPercentAdjustment] += Stat.GetStatAdjustment(
+                Source,
+                StatType.OutgoingDisorientedAttackPercentAdjustment);
+            StatGroup.Stats[StatType.EvasionPercentAdjustment] += Stat.GetStatAdjustment(
+                Source,
+                StatType.OutgoingDisorientedEvasionPercentAdjustment);
         }
 
     }

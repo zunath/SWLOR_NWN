@@ -27,21 +27,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 .Level(1)
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.GuardiansChallenge, 90f)
-                .HasImpactAction(ImpactAction)
+                .HasImpactAction(GuardiansChallenge1ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
                 .RequirementStamina(10);
         }
 
-        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        private static void GuardiansChallenge1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            switch (level)
-            {
-                case 1:
-                    Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.Lightsaber, 35, 0, null, CombatImpactAreaShape.Cone, 0.25f, 5f, 5f);
-                    break;
-            }
+            Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.Lightsaber, 35, 0, null, CombatImpactAreaShape.Cone, 0.25f, 5f, 5f);
         }
     }
 }

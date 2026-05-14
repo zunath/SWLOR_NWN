@@ -8,7 +8,7 @@ param(
     [string]$TlkPath = "SWLOR_Haks\swlor2_tlk\swlor2_tlk.tlk",
     [string]$TlkToolPath = "SWLOR_Haks\nwn_tlk.exe",
     [int]$GeneratedFeatStart = 2000,
-    [int]$GeneratedFeatEnd = 2299,
+    [int]$GeneratedFeatEnd = 2558,
     [int[]]$ExcludedGeneratedFeatIds = @(2295)
 )
 
@@ -339,7 +339,7 @@ function Get-RawTlkOpenSlots {
         [string]$TlkPath
     )
 
-    $scratchPath = Join-Path (Split-Path -Parent $PSScriptRoot) "Build\tlk_sync"
+    $scratchPath = Join-Path (Split-Path -Parent $PSScriptRoot) "obj\tlk_sync"
     New-Item -ItemType Directory -Force -Path $scratchPath | Out-Null
 
     $reviewPath = Join-Path $scratchPath "swlor2_tlk.review"

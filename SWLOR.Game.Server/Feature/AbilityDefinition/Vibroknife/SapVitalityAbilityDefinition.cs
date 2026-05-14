@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.SapVitality, 60f)
                 .RequiresTarget()
-                .HasImpactAction(ImpactAction)
+                .HasImpactAction(SapVitality1ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
@@ -45,24 +45,21 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.SapVitality, 60f)
                 .RequiresTarget()
-                .HasImpactAction(ImpactAction)
+                .HasImpactAction(SapVitality2ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
                 .RequirementStamina(8);
         }
 
-        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        private static void SapVitality1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            switch (level)
-            {
-                case 1:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Vibroknife, 20, 15, typeof(ExhaustedStatusEffect), false);
-                    break;
-                case 2:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Vibroknife, 35, 15, typeof(ExhaustedStatusEffect), false);
-                    break;
-            }
+            Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Vibroknife, 20, 15, typeof(ExhaustedStatusEffect), false);
+        }
+
+        private static void SapVitality2ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        {
+            Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Vibroknife, 35, 15, typeof(ExhaustedStatusEffect), false, statusEffectFactory: () => new ExhaustedStatusEffect(15));
         }
     }
 }

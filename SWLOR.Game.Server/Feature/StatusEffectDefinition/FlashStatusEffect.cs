@@ -7,26 +7,26 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
     public sealed class FlashStatusEffect : StatusEffectBase
     {
-        private readonly int _accuracyPenalty;
+        private readonly int _hitChancePenalty;
         public override string Name => "Flash";
         public override EffectIconType Icon => EffectIconType.Blindness;
         public override StatusEffectCategory Categories => StatusEffectCategory.Debuff;
         public override ResistanceType ResistanceType => ResistanceType.Trauma;
 
         public FlashStatusEffect()
-            : this(2)
+            : this(8)
         {
         }
 
-        public FlashStatusEffect(int accuracyPenalty)
+        public FlashStatusEffect(int hitChancePenalty)
         {
-            _accuracyPenalty = Math.Abs(accuracyPenalty);
-            StatGroup.Stats[StatType.Accuracy] = -_accuracyPenalty;
+            _hitChancePenalty = Math.Abs(hitChancePenalty);
+            StatGroup.Stats[StatType.AbilityHitChancePercentAdjustment] = -_hitChancePenalty;
         }
 
         public override IStatusEffect Clone()
         {
-            return new FlashStatusEffect(_accuracyPenalty);
+            return new FlashStatusEffect(_hitChancePenalty);
         }
     }
 }

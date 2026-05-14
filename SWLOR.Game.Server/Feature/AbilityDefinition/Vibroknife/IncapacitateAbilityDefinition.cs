@@ -21,8 +21,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                     .HasRecastDelay(RecastGroup.Incapacitate, 120f),
                 typeof(IncapacitateStatusEffect),
                 20f,
-                20,
-                true);
+                10,
+                true,
+                activationDelay: 2f);
 
             return builder.Build();
         }

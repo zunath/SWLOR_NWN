@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -29,22 +30,22 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
 
         private static void ExplosiveToss1(AbilityBuilder builder)
         {
-            ExplosiveToss(builder, FeatType.ExplosiveToss1, "Explosive Toss I", level: 1, stamina: 4);
+            ExplosiveToss(builder, FeatType.ExplosiveToss1, "Explosive Toss I", level: 1, stamina: 4, ExplosiveToss1ImpactAction);
         }
 
         private static void ExplosiveToss2(AbilityBuilder builder)
         {
-            ExplosiveToss(builder, FeatType.ExplosiveToss2, "Explosive Toss II", level: 2, stamina: 5);
+            ExplosiveToss(builder, FeatType.ExplosiveToss2, "Explosive Toss II", level: 2, stamina: 5, ExplosiveToss2ImpactAction);
         }
 
         private static void ExplosiveToss3(AbilityBuilder builder)
         {
-            ExplosiveToss(builder, FeatType.ExplosiveToss3, "Explosive Toss III", level: 3, stamina: 7);
+            ExplosiveToss(builder, FeatType.ExplosiveToss3, "Explosive Toss III", level: 3, stamina: 7, ExplosiveToss3ImpactAction);
         }
 
         private static void ExplosiveToss4(AbilityBuilder builder)
         {
-            ExplosiveToss(builder, FeatType.ExplosiveToss4, "Explosive Toss IV", level: 4, stamina: 9);
+            ExplosiveToss(builder, FeatType.ExplosiveToss4, "Explosive Toss IV", level: 4, stamina: 9, ExplosiveToss4ImpactAction);
         }
 
         private static void ExplosiveToss(
@@ -52,7 +53,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
             FeatType feat,
             string name,
             int level,
-            int stamina)
+            int stamina,
+            AbilityImpactAction impactAction)
         {
             builder
                 .Create(feat, PerkType.ExplosiveToss)
@@ -62,27 +64,35 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
                 .HasActivationDelay(0f)
                 .SkillType(Skill)
                 .IsAreaAbility()
-                .HasImpactAction(ImpactAction)
+                .HasImpactAction(impactAction)
                 .IsWeaponAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
                 .RequirementStamina(stamina);
         }
 
-        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        private static void ExplosiveToss1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            var (baseDamage, duration, statusEffect) = level switch
-            {
-                1 => (8, 0, null),
-                2 => (16, 0, null),
-                3 => (26, 0, null),
-                4 => (38, 15, typeof(ExposedStatusEffect)),
-                _ => (0, 0, null)
-            };
+            ApplyExplosiveToss(activator, target, targetLocation, 8, 0, null);
+        }
 
-            if (baseDamage <= 0)
-                return;
+        private static void ExplosiveToss2ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        {
+            ApplyExplosiveToss(activator, target, targetLocation, 16, 0, null);
+        }
 
+        private static void ExplosiveToss3ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        {
+            ApplyExplosiveToss(activator, target, targetLocation, 26, 0, null);
+        }
+
+        private static void ExplosiveToss4ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        {
+            ApplyExplosiveToss(activator, target, targetLocation, 38, 15, typeof(ExposedStatusEffect));
+        }
+
+        private static void ApplyExplosiveToss(uint activator, uint target, Location targetLocation, int baseDamage, int duration, Type statusEffect)
+        {
             Ability.ApplyTelegraphedCombatImpact(
                 activator,
                 target,
@@ -94,6 +104,25 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
                 CombatImpactAreaShape.Sphere,
                 TelegraphDelay,
                 Radius,
+                maxTargets: 3,
+                damageType: CombatDamageType.Fire);
+
+            var bleedDuration = Stat.GetStatAdjustment(activator, StatType.ExplosiveTossBleedDurationSeconds);
+            if (bleedDuration <= 0)
+                return;
+
+            Ability.ApplyTelegraphedCombatImpact(
+                activator,
+                target,
+                targetLocation,
+                Skill,
+                0,
+                bleedDuration,
+                typeof(BleedStatusEffect),
+                CombatImpactAreaShape.Sphere,
+                TelegraphDelay,
+                Radius,
+                maxTargets: 3,
                 damageType: CombatDamageType.Fire);
         }
     }

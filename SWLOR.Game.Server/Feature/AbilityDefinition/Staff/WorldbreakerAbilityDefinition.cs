@@ -26,22 +26,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
                 .Name("Worldbreaker")
                 .Level(1)
                 .HasActivationDelay(2f)
-                .HasRecastDelay(RecastGroup.Worldbreaker, 1800f)
-                .HasImpactAction(ImpactAction)
+                .HasRecastDelay(RecastGroup.Capstone, 1800f)
+                .HasImpactAction(Worldbreaker1ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
                 .RequirementStamina(25);
         }
 
-        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        private static void Worldbreaker1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            switch (level)
-            {
-                case 1:
-                    Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.Staff, 45, 4, typeof(KnockdownStatusEffect), CombatImpactAreaShape.Sphere, 0.25f, 5f, centerOnActivator: true);
-                    break;
-            }
+            Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.Staff, 45, 4, typeof(KnockdownStatusEffect), CombatImpactAreaShape.Sphere, 0.25f, 5f, centerOnActivator: true);
         }
     }
 }

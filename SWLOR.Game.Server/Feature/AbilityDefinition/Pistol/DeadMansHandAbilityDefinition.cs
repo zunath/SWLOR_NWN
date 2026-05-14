@@ -10,6 +10,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
 {
     public class DeadMansHandAbilityDefinition : IAbilityListDefinition
     {
+        private const int ShotCount = 6;
+        private const int SecondaryShotLimit = 2;
+        private const float SecondaryRadius = 5f;
+
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
@@ -26,23 +30,96 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 .Name("Dead Man's Hand")
                 .Level(1)
                 .HasActivationDelay(2f)
-                .HasRecastDelay(RecastGroup.DeadMansHand, 1800f)
+                .HasRecastDelay(RecastGroup.Capstone, 1800f)
                 .RequiresTarget()
-                .HasImpactAction(ImpactAction)
+                .HasImpactAction(DeadMansHand1ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
                 .RequirementStamina(25);
         }
 
-        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        private static void DeadMansHand1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            switch (level)
+            var shotTargets = BuildShotTargets(activator, target, targetLocation);
+
+            foreach (var shotTarget in shotTargets)
             {
-                case 1:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Pistol, 10, 0, null, true);
-                    break;
+                Ability.ApplyCombatImpact(activator, shotTarget, GetLocation(shotTarget), SkillType.Pistol, 10, 0, null, false);
             }
+        }
+
+        private static List<uint> BuildShotTargets(uint activator, uint primaryTarget, Location targetLocation)
+        {
+            var shotTargets = new List<uint>();
+            var secondaryTargets = GetSecondaryTargets(activator, primaryTarget, targetLocation);
+            var secondaryHitCounts = new Dictionary<uint, int>();
+
+            for (var shot = 0; shot < ShotCount; shot++)
+            {
+                var shotTarget = shot == 0 && CanHitTarget(activator, primaryTarget)
+                    ? primaryTarget
+                    : GetNextSecondaryTarget(activator, secondaryTargets, secondaryHitCounts);
+
+                if (!CanHitTarget(activator, shotTarget) && CanHitTarget(activator, primaryTarget))
+                {
+                    shotTarget = primaryTarget;
+                }
+
+                if (!CanHitTarget(activator, shotTarget))
+                    break;
+
+                shotTargets.Add(shotTarget);
+            }
+
+            return shotTargets;
+        }
+
+        private static List<uint> GetSecondaryTargets(uint activator, uint primaryTarget, Location targetLocation)
+        {
+            var targets = new List<uint>();
+            var searchLocation = GetIsObjectValid(primaryTarget)
+                ? GetLocation(primaryTarget)
+                : targetLocation;
+            var creature = GetFirstObjectInShape(Shape.Sphere, SecondaryRadius, searchLocation, true);
+
+            while (GetIsObjectValid(creature))
+            {
+                if (creature != primaryTarget && CanHitTarget(activator, creature))
+                {
+                    targets.Add(creature);
+                }
+
+                creature = GetNextObjectInShape(Shape.Sphere, SecondaryRadius, searchLocation, true);
+            }
+
+            return targets;
+        }
+
+        private static uint GetNextSecondaryTarget(uint activator, IEnumerable<uint> secondaryTargets, IDictionary<uint, int> secondaryHitCounts)
+        {
+            foreach (var secondaryTarget in secondaryTargets)
+            {
+                if (!CanHitTarget(activator, secondaryTarget))
+                    continue;
+
+                secondaryHitCounts.TryGetValue(secondaryTarget, out var hitCount);
+
+                if (hitCount >= SecondaryShotLimit)
+                    continue;
+
+                secondaryHitCounts[secondaryTarget] = hitCount + 1;
+                return secondaryTarget;
+            }
+
+            return OBJECT_INVALID;
+        }
+
+        private static bool CanHitTarget(uint activator, uint target)
+        {
+            return GetIsObjectValid(target) &&
+                   GetCurrentHitPoints(target) > 0 &&
+                   GetIsReactionTypeHostile(target, activator);
         }
     }
 }

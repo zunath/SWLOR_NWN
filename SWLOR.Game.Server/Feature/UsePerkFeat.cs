@@ -92,23 +92,6 @@ namespace SWLOR.Game.Server.Feature
                     QueueWeaponAbility(activator, ability, feat);
                 }
             }
-            // Concentration abilities are triggered once per tick.
-            else if (ability.ActivationType == AbilityActivationType.Concentration)
-            {
-                // Using the same concentration feat ends the effect.
-                var activeConcentrationAbility = Ability.GetActiveConcentration(activator);
-                if (activeConcentrationAbility.Feat == feat)
-                {
-                    Ability.EndConcentrationAbility(activator);
-                }
-                else
-                {
-                    if (Ability.CanUseAbility(activator, target, feat, effectivePerkLevel, targetLocation))
-                    {
-                        ActivateAbility(activator, target, feat, ability, targetLocation);
-                    }
-                }
-            }
             // All other abilities are funneled through the same process.
             else
             {
@@ -275,11 +258,6 @@ namespace SWLOR.Game.Server.Feature
                 HandleStealthBreaking(activator, ability);
                 ExecuteAbilityImpact(activator, target, feat, ability, targetLocation);
                 Recast.ApplyRecastDelay(activator, ability.RecastGroup, abilityRecastDelay, false);
-
-                if (ability.ConcentrationStatusEffect != null)
-                {
-                    Ability.StartConcentrationAbility(activator, target, feat, ability.ConcentrationStatusEffect);
-                }
 
                 // If this is an attack make the NPC react.
                 if (GetIsObjectValid(target) && target != activator)

@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                     .HasRecastDelay(RecastGroup.GuardedChannel, 120f),
                 typeof(GuardedChannelStatusEffect),
                 15f,
-                10);
+                12);
 
             return builder.Build();
         }

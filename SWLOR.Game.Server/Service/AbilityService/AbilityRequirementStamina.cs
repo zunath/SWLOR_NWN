@@ -45,7 +45,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
                 ? 0
                 : RequiredSTM;
 
-            return ApplyStaminaAdjustments(player, ability, requiredSTM);
+            return ApplyStaminaAdjustments(player, ability, requiredSTM, false);
         }
 
         private int GetRequiredStaminaForActivation(uint player, AbilityDetail ability)
@@ -55,15 +55,22 @@ namespace SWLOR.Game.Server.Service.AbilityService
                 ? 0
                 : RequiredSTM;
 
-            return ApplyStaminaAdjustments(player, ability, requiredSTM);
+            return ApplyStaminaAdjustments(player, ability, requiredSTM, true);
         }
 
-        private static int ApplyStaminaAdjustments(uint player, AbilityDetail ability, int requiredSTM)
+        private static int ApplyStaminaAdjustments(uint player, AbilityDetail ability, int requiredSTM, bool consumeNextAdjustment)
         {
             if (ability == null || requiredSTM <= 0)
                 return requiredSTM;
 
-            var adjustment = Combat.GetAbilityStaminaCostFlatAdjustment(player, ability.EffectiveLevelPerkType);
+            var abilitySkillType = Combat.GetAbilitySkillType(player, ability);
+            var adjustment = Combat.GetAbilityStaminaCostFlatAdjustment(player, ability);
+            adjustment += consumeNextAdjustment
+                ? Combat.ConsumeNextSkillAbilityStaminaCostAdjustment(player, abilitySkillType)
+                : Combat.GetNextSkillAbilityStaminaCostAdjustment(player, abilitySkillType);
+            adjustment += consumeNextAdjustment
+                ? Combat.ConsumeNextAbilityStaminaCostAdjustment(player, ability.EffectiveLevelPerkType)
+                : Combat.GetNextAbilityStaminaCostAdjustment(player, ability.EffectiveLevelPerkType);
             return Math.Max(0, requiredSTM + adjustment);
         }
     }

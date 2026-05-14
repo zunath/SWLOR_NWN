@@ -29,21 +29,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.FlankingBarrage, 120f)
                 .RequiresTarget()
-                .HasImpactAction(ImpactAction)
+                .HasImpactAction(FlankingBarrage1ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
                 .RequirementStamina(8);
         }
 
-        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        private static void FlankingBarrage1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            switch (level)
-            {
-                case 1:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Spear, 20, 8, typeof(FlankingBarrageStatusEffect), false);
-                    break;
-            }
+            Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Spear, 20, 8, typeof(FlankingBarrageStatusEffect), false);
         }
     }
 }

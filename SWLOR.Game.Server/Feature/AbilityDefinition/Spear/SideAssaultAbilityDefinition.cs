@@ -55,7 +55,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
                 .IsSingleTargetAbility()
                 .HasImpactAction((activator, target, level, targetLocation) =>
                 {
-                    var damage = IsAttackerBesideTarget(activator, target)
+                    var damage = Combat.IsAttackerBesideTarget(activator, target)
                         ? sideDamage
                         : baseDamage;
 
@@ -73,30 +73,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
                 .IsHostileAbility()
                 .BreaksStealth()
                 .RequirementStamina(stamina);
-        }
-
-        private static bool IsAttackerBesideTarget(uint attacker, uint defender)
-        {
-            if (!GetIsObjectValid(attacker) ||
-                !GetIsObjectValid(defender) ||
-                GetArea(attacker) != GetArea(defender))
-                return false;
-
-            var defenderPosition = GetPosition(defender);
-            var attackerPosition = GetPosition(attacker);
-            var deltaX = attackerPosition.X - defenderPosition.X;
-            var deltaY = attackerPosition.Y - defenderPosition.Y;
-            var distance = Math.Sqrt(deltaX * deltaX + deltaY * deltaY);
-            if (distance <= 0.001)
-                return false;
-
-            var facingRadians = GetFacing(defender) * Math.PI / 180.0;
-            var forwardX = Math.Cos(facingRadians);
-            var forwardY = Math.Sin(facingRadians);
-            var dot = Math.Clamp((forwardX * deltaX + forwardY * deltaY) / distance, -1.0, 1.0);
-            var angleDegrees = Math.Acos(dot) * 180.0 / Math.PI;
-
-            return angleDegrees >= 45.0 && angleDegrees <= 135.0;
         }
     }
 }

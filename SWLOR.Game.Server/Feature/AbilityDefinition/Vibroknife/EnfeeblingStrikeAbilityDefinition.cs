@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.EnfeeblingStrike, 45f)
                 .RequiresTarget()
-                .HasImpactAction(ImpactAction)
+                .HasImpactAction(EnfeeblingStrike1ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
@@ -46,7 +46,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.EnfeeblingStrike, 45f)
                 .RequiresTarget()
-                .HasImpactAction(ImpactAction)
+                .HasImpactAction(EnfeeblingStrike2ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
@@ -62,27 +62,26 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.EnfeeblingStrike, 45f)
                 .RequiresTarget()
-                .HasImpactAction(ImpactAction)
+                .HasImpactAction(EnfeeblingStrike3ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
                 .RequirementStamina(7);
         }
 
-        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        private static void EnfeeblingStrike1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            switch (level)
-            {
-                case 1:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Vibroknife, 12, 15, typeof(WeakenedStatusEffect), false);
-                    break;
-                case 2:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Vibroknife, 24, 15, typeof(WeakenedStatusEffect), false);
-                    break;
-                case 3:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Vibroknife, 36, 15, typeof(WeakenedStatusEffect), false);
-                    break;
-            }
+            Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Vibroknife, 12, 15, typeof(WeakenedStatusEffect), false, statusEffectFactory: () => new WeakenedStatusEffect(10));
+        }
+
+        private static void EnfeeblingStrike2ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        {
+            Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Vibroknife, 24, 15, typeof(WeakenedStatusEffect), false);
+        }
+
+        private static void EnfeeblingStrike3ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        {
+            Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Vibroknife, 36, 15, typeof(WeakenedStatusEffect), false, statusEffectFactory: () => new WeakenedStatusEffect(20));
         }
     }
 }

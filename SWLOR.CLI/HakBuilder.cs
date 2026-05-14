@@ -21,7 +21,9 @@ namespace SWLOR.CLI
         {
             // Read the config file.
             _config = GetConfig();
-            _haksToProcess = _config.HakList.ToList();
+            _haksToProcess = _config.HakList
+                .Where(hak => hak != null && !string.IsNullOrWhiteSpace(hak.Name))
+                .ToList();
             // Clean the output folder.
             CleanOutputFolder();
 
@@ -103,30 +105,30 @@ namespace SWLOR.CLI
                         }
                     }
 
-                    Parallel.ForEach(_config.HakList, hak =>
+                    foreach (var hak in _config.HakList.Where(hak => hak != null && !string.IsNullOrWhiteSpace(hak.Name)))
                     {
                         // Check whether .hak file exists
                         if (!File.Exists(_config.OutputPath + "hak/" + hak.Name + ".hak"))
                         {
                             Console.WriteLine(hak.Name + " needs to be built");
-                            return;
+                            continue;
                         }
 
                         // Skip checksum checking if disabled
                         if (!_config.EnableChecksumChecking)
                         {
                             Console.WriteLine(hak.Name + " needs to be built (checksum checking disabled)");
-                            return;
+                            continue;
                         }
 
                         var checksumFolder = ChecksumUtil.ChecksumFolder(hak.Path);
-                        _checksumDictionary.Add(hak.Name, checksumFolder);
+                        _checksumDictionary[hak.Name] = checksumFolder;
 
                         // Check whether .sha checksum file exists
                         if (!File.Exists(_config.OutputPath + "hak/" + hak.Name + ".md5"))
                         {
                             Console.WriteLine(hak.Name + " needs to be built");
-                            return;
+                            continue;
                         }
 
                         // When checksums are equal or hak folder doesn't exist -> remove hak from the list
@@ -136,10 +138,10 @@ namespace SWLOR.CLI
                             _haksToProcess.Remove(hak);
                             Console.WriteLine(hak.Name + " is up to date");
                         }
-                    });
+                    }
 
                     // Delete outdated haks and checksums
-                    Parallel.ForEach(_haksToProcess, hak =>
+                    foreach (var hak in _haksToProcess.Where(hak => hak != null && !string.IsNullOrWhiteSpace(hak.Name)))
                     {
                         var filePath = _config.OutputPath + "hak/" + hak.Name;
                         if (File.Exists(filePath + ".hak"))
@@ -167,7 +169,7 @@ namespace SWLOR.CLI
                                 Console.WriteLine($"Exception: {ex.ToMessageAndCompleteStacktrace()}");
                             }
                         }
-                    });
+                    }
                 }
                 else
                 {

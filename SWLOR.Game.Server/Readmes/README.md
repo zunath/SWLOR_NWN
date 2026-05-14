@@ -34,7 +34,7 @@ Builders documented include:
 Detailed documentation specifically for ability definitions and how they use the builder pattern. This includes:
 
 - **Directory structure** of ability definitions
-- **Three main ability types**: Casted, Weapon, and Concentration abilities
+- **Main ability types**: Casted and Weapon abilities
 - **Common patterns** and best practices
 - **Impact action examples** with real code
 - **Integration** with other game systems

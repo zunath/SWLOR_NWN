@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 })
                 .IsCastedAbility()
                 .BreaksStealth()
-                .RequirementStamina(6);
+                .RequirementStamina(5);
 
             return builder.Build();
         }

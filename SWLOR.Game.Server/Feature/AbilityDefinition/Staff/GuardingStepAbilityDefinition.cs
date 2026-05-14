@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
                     .HasRecastDelay(RecastGroup.GuardingStep, 60f),
                 typeof(GuardingStepStatusEffect),
                 8f,
-                5);
+                6);
 
             return builder.Build();
         }

@@ -147,16 +147,22 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Dual wielding katars grants a 15% chance to guard against physical attacks, reducing that hit's damage by 20% and generating extra enmity.")
+                .IncreasesStat(StatType.Guard, creature => EquipmentPredicates.HasDualWieldKatar(creature) ? 15 : 0)
                 .Price(2)
                 .RequirementSkill(SkillType.Katar, 5)
 
                 .AddPerkLevel()
                 .Description("Guard chance increases to 25% and guarded hits restore 2 STM.")
+                .IncreasesStat(StatType.Guard, creature => EquipmentPredicates.HasDualWieldKatar(creature) ? 25 : 0)
+                .IncreasesStat(StatType.GuardStaminaRestore, creature => EquipmentPredicates.HasDualWieldKatar(creature) ? 2 : 0)
                 .Price(2)
                 .RequirementSkill(SkillType.Katar, 15)
 
                 .AddPerkLevel()
                 .Description("Guard chance increases to 35% and guarded hits reduce physical damage by 30%.")
+                .IncreasesStat(StatType.Guard, creature => EquipmentPredicates.HasDualWieldKatar(creature) ? 35 : 0)
+                .IncreasesStat(StatType.GuardStaminaRestore, creature => EquipmentPredicates.HasDualWieldKatar(creature) ? 2 : 0)
+                .IncreasesStat(StatType.GuardDamageReductionPercentAdjustment, creature => EquipmentPredicates.HasDualWieldKatar(creature) ? 10 : 0)
                 .Price(4)
                 .RequirementSkill(SkillType.Katar, 28);
         }
@@ -168,6 +174,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("When reduced below 35% HP, gain +25% guard chance for 12 seconds. This can only trigger once every 3 minutes.")
+                .IncreasesStat(StatType.LowHPGuardThresholdPercent, creature => EquipmentPredicates.HasMainHandKatar(creature) ? 35 : 0)
+                .IncreasesStat(StatType.LowHPGuard, creature => EquipmentPredicates.HasMainHandKatar(creature) ? 25 : 0)
+                .IncreasesStat(StatType.LowHPGuardDurationSeconds, creature => EquipmentPredicates.HasMainHandKatar(creature) ? 12 : 0)
+                .IncreasesStat(StatType.LowHPGuardCooldownSeconds, creature => EquipmentPredicates.HasMainHandKatar(creature) ? 180 : 0)
                 .Price(4)
                 .RequirementSkill(SkillType.Katar, 48);
         }
@@ -178,7 +188,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Impenetrable Grip")
 
                 .AddPerkLevel()
-                .Description("While dual wielding katars, gain +20% Defense to Knockdown and Dazed effects. Guarded hits restore 4 STM.")
+                .Description("While dual wielding katars, gain +20% resistance to Knockdown and Dazed effects. Guarded hits restore 4 STM.")
+                .IncreasesStat(StatType.MobilityResistance, creature => EquipmentPredicates.HasDualWieldKatar(creature) ? 20 : 0)
+                .IncreasesStat(StatType.MindResistance, creature => EquipmentPredicates.HasDualWieldKatar(creature) ? 20 : 0)
+                .IncreasesStat(StatType.GuardStaminaRestore, creature => EquipmentPredicates.HasDualWieldKatar(creature) ? 4 : 0)
                 .Price(3)
                 .RequirementSkill(SkillType.Katar, 40);
         }
@@ -226,6 +239,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Poison effects you apply also reduce the target's Attack by 10%.")
+                .IncreasesStat(StatType.OutgoingPoisonAttackPercentAdjustment, creature => EquipmentPredicates.HasDualWieldKatar(creature) ? -10 : 0)
                 .Price(4)
                 .RequirementSkill(SkillType.Katar, 48);
         }
@@ -237,6 +251,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("When you guard an attack, your next katar attack within 10 seconds gains +10% critical chance and deals +10 DMG.")
+                .IncreasesStat(StatType.GuardedHitNextSkillAbilitySkillType, (int)SkillType.Katar)
+                .IncreasesStat(StatType.GuardedHitNextSkillAbilityCriticalRatePercentAdjustment, 10)
+                .IncreasesStat(StatType.GuardedHitNextSkillAbilityDamageBonus, 10)
+                .IncreasesStat(StatType.GuardedHitNextSkillAbilityWindowSeconds, 10)
                 .Price(3)
                 .RequirementSkill(SkillType.Katar, 20);
         }
@@ -248,6 +266,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("After you guard a hit, your next Guard Counter within 8 seconds costs 2 less STM and deals +8 DMG.")
+                .IncreasesStat(StatType.GuardedHitNextMatchingAbilityPerkType, (int)PerkType.GuardCounter)
+                .IncreasesStat(StatType.GuardedHitNextMatchingAbilityDamageBonus, 8)
+                .IncreasesStat(StatType.GuardedHitNextMatchingAbilityStaminaCostAdjustment, -2)
+                .IncreasesStat(StatType.GuardedHitNextMatchingAbilityWindowSeconds, 8)
                 .Price(2)
                 .RequirementSkill(SkillType.Katar, 32);
         }
@@ -271,6 +293,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("When a poisoned target dies, the nearest enemy within 5 meters becomes poisoned for 30 seconds.")
+                .IncreasesStat(StatType.PoisonedDefeatedEnemySpreadRadiusMeters, creature => EquipmentPredicates.HasMainHandKatar(creature) ? 5 : 0)
+                .IncreasesStat(StatType.PoisonedDefeatedEnemySpreadDurationSeconds, creature => EquipmentPredicates.HasMainHandKatar(creature) ? 30 : 0)
                 .Price(2)
                 .RequirementSkill(SkillType.Katar, 40);
         }

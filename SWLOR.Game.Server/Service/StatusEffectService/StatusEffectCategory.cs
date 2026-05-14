@@ -6,6 +6,7 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
         None = 0,
         Debuff = 1,
         Control = 2,
-        Bleeding = 4
+        Bleeding = 4,
+        Buff = 8
     }
 }

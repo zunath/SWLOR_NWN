@@ -10,8 +10,9 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public override EffectIconType Icon => EffectIconType.DamageReduction;
         public AdamantineGuardStatusEffect()
         {
-            StatGroup.Stats[StatType.PhysicalDefensePercentAdjustment] = 40;
-            StatGroup.Stats[StatType.ForceDefensePercentAdjustment] = 40;
+            StatGroup.Stats[StatType.Guard] = 40;
+            StatGroup.Stats[StatType.GuardDamageReductionPercentAdjustment] = 20;
+            StatGroup.Stats[StatType.GuardEnmityPercentAdjustment] = 100;
         }
 
     }

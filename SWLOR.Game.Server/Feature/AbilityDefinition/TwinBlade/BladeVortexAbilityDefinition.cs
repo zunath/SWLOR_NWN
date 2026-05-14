@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
                 .Level(1)
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.BladeVortex, 75f)
-                .HasImpactAction(ImpactAction)
+                .HasImpactAction(BladeVortex1ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
@@ -43,24 +43,21 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
                 .Level(2)
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.BladeVortex, 75f)
-                .HasImpactAction(ImpactAction)
+                .HasImpactAction(BladeVortex2ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
                 .RequirementStamina(10);
         }
 
-        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        private static void BladeVortex1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            switch (level)
-            {
-                case 1:
-                    Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.TwinBlade, 18, 0, null, CombatImpactAreaShape.Sphere, 0.25f, 5f, centerOnActivator: true);
-                    break;
-                case 2:
-                    Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.TwinBlade, 26, 12, typeof(ExposedStatusEffect), CombatImpactAreaShape.Sphere, 0.25f, 5f, centerOnActivator: true);
-                    break;
-            }
+            Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.TwinBlade, 18, 0, null, CombatImpactAreaShape.Sphere, 0.25f, 5f, centerOnActivator: true);
+        }
+
+        private static void BladeVortex2ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        {
+            Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.TwinBlade, 26, 12, typeof(ExposedStatusEffect), CombatImpactAreaShape.Sphere, 0.25f, 5f, centerOnActivator: true);
         }
     }
 }

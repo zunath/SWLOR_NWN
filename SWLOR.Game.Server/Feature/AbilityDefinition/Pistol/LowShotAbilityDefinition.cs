@@ -28,21 +28,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.LowShot, 60f)
                 .RequiresTarget()
-                .HasImpactAction(ImpactAction)
+                .HasImpactAction(LowShot1ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
                 .RequirementStamina(8);
         }
 
-        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        private static void LowShot1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            switch (level)
-            {
-                case 1:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Pistol, 20, 12, typeof(DisorientedStatusEffect), false);
-                    break;
-            }
+            Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Pistol, 20, 12, typeof(DisorientedStatusEffect), false);
         }
     }
 }

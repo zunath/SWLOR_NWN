@@ -1,5 +1,6 @@
 ﻿using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -21,10 +22,20 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         protected override void Tick(uint creature)
         {
             var damageAmount = Math.Max(1, (int)Math.Ceiling(GetMaxHitPoints(creature) * 0.04f));
+            var damageAdjustment = Stat.GetStatAdjustment(Source, StatType.OutgoingBleedingDamagePercentAdjustment);
+            if (damageAdjustment != 0)
+            {
+                damageAmount = Math.Max(1, damageAmount + (int)Math.Ceiling(damageAmount * (damageAdjustment / 100f)));
+            }
+
             var resistanceType = Resistance.IsValidResistanceType(AppliedResistanceType)
                 ? AppliedResistanceType
                 : ResistanceType;
             damageAmount = Resistance.ApplyResistanceToDamage(creature, resistanceType, damageAmount);
+            damageAmount = Combat.ApplyDamageOverTimeTakenModifiers(creature, damageAmount, CombatDamageType.Physical);
+            if (damageAmount <= 0)
+                return;
+
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damageAmount), creature);
 
             var location = GetLocation(creature);

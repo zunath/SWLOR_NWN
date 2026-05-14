@@ -4,7 +4,7 @@ param(
     [string]$Spells2daPath = "SWLOR_Haks\swlor2_2da\spells.2da",
     [string]$SpellEnumPath = "SWLOR.NWN.API\NWScript\Enum\spell.cs",
     [int]$GeneratedFeatStart = 2000,
-    [int]$GeneratedFeatEnd = 2294
+    [int]$GeneratedFeatEnd = 2558
 )
 
 Set-StrictMode -Version Latest
@@ -127,6 +127,7 @@ $spellColumnWidths = @(
 )
 
 $spellRowsByLabel = @{}
+$spellLineByRow = @{}
 $blankGeneratedSpellRows = [System.Collections.Generic.Queue[object]]::new()
 $maxSpellRow = 0
 for ($i = $spellsHeaderIndex + 1; $i -lt $spellsLines.Count; $i++) {
@@ -139,6 +140,7 @@ for ($i = $spellsHeaderIndex + 1; $i -lt $spellsLines.Count; $i++) {
     if ($rowNumber -gt $maxSpellRow) {
         $maxSpellRow = $rowNumber
     }
+    $spellLineByRow[$rowNumber] = $i
 
     if ($tokens.Count -gt 1 -and $tokens[1] -ne "****") {
         $spellRowsByLabel[$tokens[1]] = $rowNumber
@@ -174,6 +176,18 @@ for ($i = $featHeaderIndex + 1; $i -lt $featLines.Count; $i++) {
     $spellId = 0
     if ($spellRowsByLabel.ContainsKey($label)) {
         $spellId = $spellRowsByLabel[$label]
+        $spellLineIndex = $spellLineByRow[$spellId]
+        $spellTokens = Convert-ToStringList $spellsLines[$spellLineIndex]
+        Set-TokenByHeader $spellTokens $spellsHeaders "Label" $label
+        Set-TokenByHeader $spellTokens $spellsHeaders "Name" (Get-TokenByHeader $tokens $featHeaders "FEAT")
+        $featIcon = Get-TokenByHeader $tokens $featHeaders "ICON"
+        $currentIcon = Get-TokenByHeader $spellTokens $spellsHeaders "IconResRef"
+        if ($featIcon -ne "default_perk" -or $currentIcon -eq "****") {
+            Set-TokenByHeader $spellTokens $spellsHeaders "IconResRef" $featIcon
+        }
+        Set-TokenByHeader $spellTokens $spellsHeaders "SpellDesc" (Get-TokenByHeader $tokens $featHeaders "DESCRIPTION")
+        Set-TokenByHeader $spellTokens $spellsHeaders "FeatID" $rowNumber.ToString()
+        $spellsLines[$spellLineIndex] = Format-2DARow $spellTokens.ToArray() $spellColumnWidths
     }
     else {
         $reuseBlankRow = $blankGeneratedSpellRows.Count -gt 0

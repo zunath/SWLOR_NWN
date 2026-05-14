@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
                 12,
                 3,
                 typeof(DazedStatusEffect),
-                4);
+                3);
             ConfigureWeapon(
                 builder
                     .Create(FeatType.ShieldBash2, PerkType.ShieldBash)
@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
                 24,
                 6,
                 typeof(DazedStatusEffect),
-                6);
+                5);
             ConfigureWeapon(
                 builder
                     .Create(FeatType.ShieldBash3, PerkType.ShieldBash)

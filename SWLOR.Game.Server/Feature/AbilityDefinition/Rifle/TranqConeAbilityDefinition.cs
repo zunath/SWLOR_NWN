@@ -31,9 +31,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
 
             ConfigureTranqCone(
                 ability,
-                dazeDuration: 8,
+                tranquilizeDuration: 8,
                 coneLength: 8f,
                 coneWidth: 6f,
+                maxTargets: 3,
                 stamina: 8);
         }
 
@@ -47,17 +48,19 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
 
             ConfigureTranqCone(
                 ability,
-                dazeDuration: 10,
+                tranquilizeDuration: 10,
                 coneLength: 10f,
                 coneWidth: 7f,
+                maxTargets: 5,
                 stamina: 10);
         }
 
         private static void ConfigureTranqCone(
             AbilityBuilder ability,
-            int dazeDuration,
+            int tranquilizeDuration,
             float coneLength,
             float coneWidth,
+            int maxTargets,
             int stamina)
         {
             ConfigureTelegraphedArea(
@@ -65,11 +68,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 Skill,
                 CombatImpactAreaShape.Cone,
                 BaseDamage,
-                dazeDuration,
-                typeof(DazedStatusEffect),
+                tranquilizeDuration,
+                typeof(TranquilizedStatusEffect),
                 coneLength,
                 coneWidth,
-                stamina);
+                stamina,
+                maxTargets: maxTargets);
         }
     }
 }

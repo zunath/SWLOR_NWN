@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 .Level(1)
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.VersatileStrike, 45f)
-                .HasImpactAction(ImpactAction)
+                .HasImpactAction(VersatileStrike1ImpactAction)
                 .IsWeaponAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
@@ -44,7 +44,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 .Level(2)
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.VersatileStrike, 45f)
-                .HasImpactAction(ImpactAction)
+                .HasImpactAction(VersatileStrike2ImpactAction)
                 .IsWeaponAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
@@ -59,27 +59,26 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 .Level(3)
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.VersatileStrike, 45f)
-                .HasImpactAction(ImpactAction)
+                .HasImpactAction(VersatileStrike3ImpactAction)
                 .IsWeaponAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
                 .RequirementStamina(8);
         }
 
-        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        private static void VersatileStrike1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            switch (level)
-            {
-                case 1:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Lightsaber, 10, 30, typeof(SunderStatusEffect), false);
-                    break;
-                case 2:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Lightsaber, 25, 30, typeof(SunderStatusEffect), false);
-                    break;
-                case 3:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Lightsaber, 40, 30, typeof(SunderStatusEffect), false);
-                    break;
-            }
+            Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Lightsaber, 10, 30, typeof(SunderStatusEffect), false, statusEffectFactory: () => new SunderStatusEffect(10));
+        }
+
+        private static void VersatileStrike2ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        {
+            Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Lightsaber, 25, 30, typeof(SunderStatusEffect), false);
+        }
+
+        private static void VersatileStrike3ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        {
+            Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Lightsaber, 40, 30, typeof(SunderStatusEffect), false, statusEffectFactory: () => new SunderStatusEffect(20));
         }
     }
 }

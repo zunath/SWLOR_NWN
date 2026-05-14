@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
                 .HasActivationDelay(0f)
                 .RequiresTarget()
                 .HasRecastDelay(RecastGroup.RendingStrike, 60f)
-                .HasImpactAction(ImpactAction)
+                .HasImpactAction(RendingStrike1ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
@@ -45,24 +45,21 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
                 .HasActivationDelay(0f)
                 .RequiresTarget()
                 .HasRecastDelay(RecastGroup.RendingStrike, 60f)
-                .HasImpactAction(ImpactAction)
+                .HasImpactAction(RendingStrike2ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
                 .RequirementStamina(7);
         }
 
-        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        private static void RendingStrike1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            switch (level)
-            {
-                case 1:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Vibroblade, 18, 10, typeof(ExposedStatusEffect), false);
-                    break;
-                case 2:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Vibroblade, 32, 12, typeof(ExposedStatusEffect), false);
-                    break;
-            }
+            Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Vibroblade, 18, 10, typeof(ExposedStatusEffect), false);
+        }
+
+        private static void RendingStrike2ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        {
+            Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Vibroblade, 32, 12, typeof(ExposedStatusEffect), false, statusEffectFactory: () => new ExposedStatusEffect(-25));
         }
     }
 }

@@ -26,7 +26,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
                 5f,
                 0f,
                 5,
-                true);
+                true,
+                maxTargets: 3);
             ConfigureTelegraphedArea(
                 builder
                     .Create(FeatType.SpinningWhirl2, PerkType.SpinningWhirl)
@@ -40,8 +41,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
                 null,
                 5f,
                 0f,
-                6,
-                true);
+                7,
+                true,
+                maxTargets: 3);
             ConfigureTelegraphedArea(
                 builder
                     .Create(FeatType.SpinningWhirl3, PerkType.SpinningWhirl)
@@ -55,8 +57,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
                 null,
                 5f,
                 0f,
-                8,
-                true);
+                10,
+                true,
+                maxTargets: 3);
 
             return builder.Build();
         }

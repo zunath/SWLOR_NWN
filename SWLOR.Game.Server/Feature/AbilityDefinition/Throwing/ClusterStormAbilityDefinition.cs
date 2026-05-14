@@ -27,21 +27,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
                 .Level(1)
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.ClusterStorm, 120f)
-                .HasImpactAction(ImpactAction)
+                .HasImpactAction(ClusterStorm1ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
                 .RequirementStamina(12);
         }
 
-        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        private static void ClusterStorm1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            switch (level)
-            {
-                case 1:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Throwing, 12, 0, null, true);
-                    break;
-            }
+            Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Throwing, 12, 0, null, true);
         }
     }
 }

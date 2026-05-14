@@ -27,22 +27,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                 .Name("Systemic Shutdown")
                 .Level(1)
                 .HasActivationDelay(3f)
-                .HasRecastDelay(RecastGroup.SystemicShutdown, 90f)
-                .HasImpactAction(ImpactAction)
+                .HasRecastDelay(RecastGroup.Capstone, 1800f)
+                .HasImpactAction(SystemicShutdown1ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
                 .RequirementStamina(25);
         }
 
-        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        private static void SystemicShutdown1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            switch (level)
-            {
-                case 1:
-                    Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.Vibroknife, 15, 15, typeof(ToxinStatusEffect), CombatImpactAreaShape.Sphere, 0.25f, 5f, additionalStatusEffects: new[] { typeof(WeakenedStatusEffect), typeof(HamstringStatusEffect), typeof(ExhaustedStatusEffect), typeof(DisorientedStatusEffect) }, damageType: CombatDamageType.Poison);
-                    break;
-            }
+            Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.Vibroknife, 15, 15, typeof(ToxinStatusEffect), CombatImpactAreaShape.Sphere, 0.25f, 5f, additionalStatusEffects: new[] { typeof(WeakenedStatusEffect), typeof(HamstringStatusEffect), typeof(ExhaustedStatusEffect), typeof(DisorientedStatusEffect) }, damageType: CombatDamageType.Poison);
         }
     }
 }

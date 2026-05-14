@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
@@ -474,6 +475,9 @@ namespace SWLOR.Game.Server.Service
             ResistanceType resistanceOverride = ResistanceType.Invalid,
             CombatDamageType sourceDamageType = CombatDamageType.Invalid)
         {
+            durationTicks = ApplyOutgoingStatusDurationAdjustments(statusEffect, source, durationTicks, isPermanent);
+            ApplyOutgoingStatusStatAdjustments(statusEffect, source);
+
             var resistanceType = ResolveResistanceType(statusEffect, resistanceOverride, sourceDamageType);
             if (!isPermanent &&
                 durationTicks > 0 &&
@@ -564,6 +568,58 @@ namespace SWLOR.Game.Server.Service
             return true;
         }
 
+        private static int ApplyOutgoingStatusDurationAdjustments(
+            IStatusEffect statusEffect,
+            uint source,
+            int durationTicks,
+            bool isPermanent)
+        {
+            if (isPermanent || durationTicks <= 0 || !GetIsObjectValid(source))
+                return durationTicks;
+
+            var percentAdjustment = 0;
+            if ((statusEffect.Categories & StatusEffectCategory.Debuff) == StatusEffectCategory.Debuff)
+            {
+                percentAdjustment += Stat.GetStatAdjustment(source, StatType.OutgoingDebuffDurationPercentAdjustment);
+            }
+
+            if (statusEffect is ForceDisruptionStatusEffect)
+            {
+                percentAdjustment += Stat.GetStatAdjustment(source, StatType.OutgoingForceDisruptionDurationPercentAdjustment);
+            }
+
+            if (percentAdjustment != 0)
+            {
+                durationTicks = Math.Max(1, durationTicks + (int)Math.Ceiling(durationTicks * (percentAdjustment / 100f)));
+            }
+
+            if ((statusEffect.Categories & StatusEffectCategory.Bleeding) == StatusEffectCategory.Bleeding)
+            {
+                var bonusSeconds = Stat.GetStatAdjustment(source, StatType.OutgoingBleedingDurationBonusSeconds);
+                if (bonusSeconds > 0)
+                {
+                    durationTicks += Math.Max(1, (int)Math.Ceiling(bonusSeconds / Math.Max(1f, statusEffect.Frequency)));
+                }
+            }
+
+            return durationTicks;
+        }
+
+        private static void ApplyOutgoingStatusStatAdjustments(IStatusEffect statusEffect, uint source)
+        {
+            if (!GetIsObjectValid(source))
+                return;
+
+            if (statusEffect is ForceDisruptionStatusEffect)
+            {
+                var forceDefenseAdjustment = Stat.GetStatAdjustment(source, StatType.OutgoingForceDisruptionForceDefensePercentAdjustment);
+                if (forceDefenseAdjustment != 0)
+                {
+                    statusEffect.StatGroup.Stats[StatType.ForceDefensePercentAdjustment] += forceDefenseAdjustment;
+                }
+            }
+        }
+
         private static ResistanceType ResolveResistanceType(
             IStatusEffect statusEffect,
             ResistanceType resistanceOverride,
@@ -572,11 +628,11 @@ namespace SWLOR.Game.Server.Service
             if (Resistance.IsValidResistanceType(resistanceOverride))
                 return resistanceOverride;
 
-            if (sourceDamageType.TryGetElementalResistanceType(out var elementalSourceType))
-                return elementalSourceType;
-
             if (Resistance.IsValidResistanceType(statusEffect.ResistanceType))
                 return statusEffect.ResistanceType;
+
+            if (sourceDamageType.TryGetElementalResistanceType(out var elementalSourceType))
+                return elementalSourceType;
 
             if (sourceDamageType.TryGetSourceResistanceType(out var sourceResistanceType))
                 return sourceResistanceType;
@@ -864,6 +920,13 @@ namespace SWLOR.Game.Server.Service
                    _creatureEffects[creature].GetAllEffects().Any(x => x.GetType() == statusEffectClass);
         }
 
+        public static IStatusEffect GetStatusEffect(uint creature, Type statusEffectClass)
+        {
+            return _creatureEffects.ContainsKey(creature)
+                ? _creatureEffects[creature].GetAllEffects().FirstOrDefault(x => x.GetType() == statusEffectClass)
+                : null;
+        }
+
         public static bool HasStatusEffect<T>(uint creature)
             where T : IStatusEffect
         {
@@ -911,6 +974,109 @@ namespace SWLOR.Game.Server.Service
             {
                 RemoveStatusEffect(creature, effect.GetType(), effect.Source, sendsWornOffMessage);
             }
+        }
+
+        public static bool RemoveFirstCleanseableStatusEffect(
+            uint creature,
+            StatusEffectCleanseType cleanseType,
+            bool sendsWornOffMessage = true)
+        {
+            var effect = GetCreatureStatusEffects(creature)
+                .GetAllEffects()
+                .FirstOrDefault(effect => HasCleanseType(effect, cleanseType));
+
+            if (effect == null)
+                return false;
+
+            RemoveStatusEffect(creature, effect.GetType(), effect.Source, sendsWornOffMessage);
+            return true;
+        }
+
+        public static bool RemoveFirstStatusEffect(
+            uint creature,
+            IEnumerable<Type> statusEffectClasses,
+            bool sendsWornOffMessage = true)
+        {
+            var types = statusEffectClasses?
+                .Where(type => type != null)
+                .ToHashSet() ?? new HashSet<Type>();
+
+            if (types.Count <= 0)
+                return false;
+
+            var effect = GetCreatureStatusEffects(creature)
+                .GetAllEffects()
+                .FirstOrDefault(effect => types.Contains(effect.GetType()));
+
+            if (effect == null)
+                return false;
+
+            RemoveStatusEffect(creature, effect.GetType(), effect.Source, sendsWornOffMessage);
+            return true;
+        }
+
+        public static bool RemoveFirstStatusEffectByCategory(
+            uint creature,
+            StatusEffectCategory category,
+            bool sendsWornOffMessage = true)
+        {
+            var effect = GetCreatureStatusEffects(creature)
+                .GetAllEffects()
+                .FirstOrDefault(effect => (effect.Categories & category) == category);
+
+            if (effect == null)
+                return false;
+
+            RemoveStatusEffect(creature, effect.GetType(), effect.Source, sendsWornOffMessage);
+            return true;
+        }
+
+        public static bool RemoveFirstBeneficialCombatStatusEffect(
+            uint creature,
+            bool sendsWornOffMessage = true)
+        {
+            var effect = GetCreatureStatusEffects(creature)
+                .GetAllEffects()
+                .FirstOrDefault(IsBeneficialCombatStatusEffect);
+
+            if (effect == null)
+                return false;
+
+            RemoveStatusEffect(creature, effect.GetType(), effect.Source, sendsWornOffMessage);
+            return true;
+        }
+
+        public static void RemoveStatusEffectsWithStat(
+            uint creature,
+            StatType statType,
+            bool sendsWornOffMessage = true)
+        {
+            var effects = GetCreatureStatusEffects(creature)
+                .GetAllEffects()
+                .Where(effect => effect.StatGroup.Stats.TryGetValue(statType, out var value) && value != 0)
+                .ToList();
+
+            foreach (var effect in effects)
+            {
+                RemoveStatusEffect(creature, effect.GetType(), effect.Source, sendsWornOffMessage);
+            }
+        }
+
+        private static bool IsBeneficialCombatStatusEffect(IStatusEffect effect)
+        {
+            if ((effect.Categories & StatusEffectCategory.Buff) == StatusEffectCategory.Buff)
+                return true;
+
+            if (effect.PersistsOnLogout ||
+                effect.CleanseTypes != StatusEffectCleanseType.None ||
+                (effect.Categories & (StatusEffectCategory.Debuff | StatusEffectCategory.Control | StatusEffectCategory.Bleeding)) != 0)
+            {
+                return false;
+            }
+
+            return effect.StatGroup.Abilities.Any(x => x.Value > 0) ||
+                   effect.StatGroup.Resists.Any(x => x.Value > 0) ||
+                   effect.StatGroup.Stats.Any(x => x.Key.IsBeneficialAdjustment(x.Value));
         }
 
         public static bool HasCleanseType(IStatusEffect effect, StatusEffectCleanseType cleanseType)

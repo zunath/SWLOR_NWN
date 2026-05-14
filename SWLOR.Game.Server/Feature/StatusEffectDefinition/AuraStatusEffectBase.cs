@@ -2,9 +2,9 @@ using SWLOR.Game.Server.Service.StatusEffectService;
 
 namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
-    public abstract class AuraStatusEffectBase : StatusEffectBase
+    public abstract class AuraStatusEffectBase : SocialScalingStatusEffectBase
     {
-        public override StatusEffectStackType StackingType => StatusEffectStackType.StackFromMultipleSources;
+        public override StatusEffectCategory Categories => StatusEffectCategory.Buff;
         public override bool PersistsOnLogout => false;
     }
 }

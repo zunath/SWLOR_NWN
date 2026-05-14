@@ -27,21 +27,25 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 .Level(1)
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.SurgeStrike, 30f)
-                .HasImpactAction(ImpactAction)
+                .HasImpactAction(SurgeStrike1ImpactAction)
                 .IsWeaponAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
                 .RequirementStamina(12);
         }
 
-        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        private static void SurgeStrike1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            switch (level)
-            {
-                case 1:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Lightsaber, 15, 8, typeof(ForceDisruptionStatusEffect), false);
-                    break;
-            }
+            Ability.ApplyCombatImpact(
+                activator,
+                target,
+                targetLocation,
+                SkillType.Lightsaber,
+                15,
+                8,
+                null,
+                false,
+                statusEffectFactory: () => new ForceDisruptionStatusEffect(true));
         }
     }
 }

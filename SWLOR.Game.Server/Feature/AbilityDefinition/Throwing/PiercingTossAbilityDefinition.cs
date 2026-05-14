@@ -25,17 +25,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
 
         private static void PiercingToss1(AbilityBuilder builder)
         {
-            PiercingToss(builder, FeatType.PiercingToss1, "Piercing Toss I", level: 1, stamina: 4);
+            PiercingToss(builder, FeatType.PiercingToss1, "Piercing Toss I", level: 1, stamina: 4, PiercingToss1ImpactAction);
         }
 
         private static void PiercingToss2(AbilityBuilder builder)
         {
-            PiercingToss(builder, FeatType.PiercingToss2, "Piercing Toss II", level: 2, stamina: 5);
+            PiercingToss(builder, FeatType.PiercingToss2, "Piercing Toss II", level: 2, stamina: 5, PiercingToss2ImpactAction);
         }
 
         private static void PiercingToss3(AbilityBuilder builder)
         {
-            PiercingToss(builder, FeatType.PiercingToss3, "Piercing Toss III", level: 3, stamina: 7);
+            PiercingToss(builder, FeatType.PiercingToss3, "Piercing Toss III", level: 3, stamina: 7, PiercingToss3ImpactAction);
         }
 
         private static void PiercingToss(
@@ -43,7 +43,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
             FeatType feat,
             string name,
             int level,
-            int stamina)
+            int stamina,
+            AbilityImpactAction impactAction)
         {
             builder
                 .Create(feat, PerkType.PiercingToss)
@@ -53,26 +54,30 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
                 .HasActivationDelay(0f)
                 .SkillType(Skill)
                 .IsSingleTargetAbility()
-                .HasImpactAction(ImpactAction)
+                .HasImpactAction(impactAction)
                 .IsWeaponAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
                 .RequirementStamina(stamina);
         }
 
-        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        private static void PiercingToss1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            var (baseDamage, duration) = level switch
-            {
-                1 => (12, 30),
-                2 => (21, 60),
-                3 => (34, 60),
-                _ => (0, 0)
-            };
+            ApplyPiercingToss(activator, target, targetLocation, 12, 30);
+        }
 
-            if (baseDamage <= 0)
-                return;
+        private static void PiercingToss2ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        {
+            ApplyPiercingToss(activator, target, targetLocation, 21, 60);
+        }
 
+        private static void PiercingToss3ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        {
+            ApplyPiercingToss(activator, target, targetLocation, 34, 60);
+        }
+
+        private static void ApplyPiercingToss(uint activator, uint target, Location targetLocation, int baseDamage, int duration)
+        {
             Ability.ApplyCombatImpact(
                 activator,
                 target,

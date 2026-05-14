@@ -26,22 +26,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 .Name("Stasis Volley")
                 .Level(1)
                 .HasActivationDelay(2f)
-                .HasRecastDelay(RecastGroup.StasisVolley, 1800f)
-                .HasImpactAction(ImpactAction)
+                .HasRecastDelay(RecastGroup.Capstone, 1800f)
+                .HasImpactAction(StasisVolley1ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
                 .RequirementStamina(25);
         }
 
-        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        private static void StasisVolley1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            switch (level)
-            {
-                case 1:
-                    Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.Rifle, 25, 12, null, CombatImpactAreaShape.Cone, 0.25f, 5f, 5f);
-                    break;
-            }
+            Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.Rifle, 25, 12, typeof(TranquilizedStatusEffect), CombatImpactAreaShape.Cone, 0.25f, 5f, 5f);
         }
     }
 }

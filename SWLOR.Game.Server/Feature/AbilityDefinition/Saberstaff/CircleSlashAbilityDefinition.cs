@@ -26,7 +26,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                 5f,
                 0f,
                 5,
-                true);
+                true,
+                maxTargets: 3);
             ConfigureTelegraphedArea(
                 builder
                     .Create(FeatType.CircleSlash2, PerkType.CircleSlash)
@@ -40,8 +41,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                 null,
                 5f,
                 0f,
-                6,
-                true);
+                7,
+                true,
+                maxTargets: 3);
             ConfigureTelegraphedArea(
                 builder
                     .Create(FeatType.CircleSlash3, PerkType.CircleSlash)
@@ -55,8 +57,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                 null,
                 5f,
                 0f,
-                8,
-                true);
+                10,
+                true,
+                maxTargets: 3);
 
             return builder.Build();
         }

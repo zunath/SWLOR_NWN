@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.RibBreaker, 45f)
                 .RequiresTarget()
-                .HasImpactAction(ImpactAction)
+                .HasImpactAction(RibBreaker1ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
@@ -46,7 +46,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.RibBreaker, 45f)
                 .RequiresTarget()
-                .HasImpactAction(ImpactAction)
+                .HasImpactAction(RibBreaker2ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
@@ -62,27 +62,26 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.RibBreaker, 45f)
                 .RequiresTarget()
-                .HasImpactAction(ImpactAction)
+                .HasImpactAction(RibBreaker3ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
                 .RequirementStamina(10);
         }
 
-        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        private static void RibBreaker1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            switch (level)
-            {
-                case 1:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Staff, 18, 15, typeof(WeakenedStatusEffect), false);
-                    break;
-                case 2:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Staff, 30, 15, typeof(WeakenedStatusEffect), false);
-                    break;
-                case 3:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Staff, 42, 15, typeof(WeakenedStatusEffect), false);
-                    break;
-            }
+            Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Staff, 18, 15, typeof(WeakenedStatusEffect), false, statusEffectFactory: () => new WeakenedStatusEffect(10));
+        }
+
+        private static void RibBreaker2ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        {
+            Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Staff, 30, 15, typeof(WeakenedStatusEffect), false);
+        }
+
+        private static void RibBreaker3ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        {
+            Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Staff, 42, 15, typeof(WeakenedStatusEffect), false, statusEffectFactory: () => new WeakenedStatusEffect(20));
         }
     }
 }

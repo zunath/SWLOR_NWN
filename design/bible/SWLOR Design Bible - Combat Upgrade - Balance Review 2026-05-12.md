@@ -167,19 +167,21 @@ Recommended answer:
   - `Hold the Line`: max 12% max-HP temporary HP and 30% damage reduction.
   - Persistent hit/evasion/crit/mitigation auras: cap final aura values in the 4% to 6% range unless only one aura can be active total.
 
-### Rousing Shout I Undercuts First Aid's Revive Identity
+Resolved in implementation on 2026-05-13: explicit Leadership SOC scaling now interpolates from the listed base value to the listed cap across SOC 10-26, so the advertised caps are reachable within the practical player stat band. Direct combat-upgrade healing and temporary-HP scaling also uses stat 10 as baseline and stat 26 as the cap for its full +25% direct-effect bonus.
 
-`Leadership!44`, `Rousing Shout I`, grants an in-combat ally revive at Leadership 5.
+### Rousing Shout No Longer Competes With First Aid Revive
 
-Comparable revive access:
+Resolved in the workbook and implementation on 2026-05-12.
 
-- `First Aid!13`, `Resuscitation I`, arrives at First Aid 18, 4-second cast, 3-minute cooldown.
-- `First Aid!18`, `Resuscitation II`, arrives at First Aid 35.
-- Leadership revive casts are slower and have longer cooldowns, which is good, but the first revive arrives too early.
+The Rousing Shout line now targets living allies only and does not revive, resurrect, or stabilize dead players. It keeps the command-support theme by granting short-duration temporary HP, with a damage-reduction rider only when the target is already at or below 35% HP.
 
-Recommended answer:
+Final values:
 
-Change `Rousing Shout I` so it does not perform a true combat revive. It should either stabilize/prevent defeat, grant temporary HP to a conscious ally, or revive only outside combat. Let `Rousing Shout II` at Leadership 18 become the first true Leadership combat revive.
+- `Rousing Shout I`: 4% temporary HP, SOC cap 6%; low-HP damage reduction 6%, SOC cap 8%.
+- `Rousing Shout II`: 6% temporary HP, SOC cap 8%; low-HP damage reduction 10%, SOC cap 12%.
+- `Rousing Shout III`: 8% temporary HP, SOC cap 10%; low-HP damage reduction 14%, SOC cap 16%.
+
+This leaves First Aid as the single-target healing and revive owner while giving Leadership a narrower emergency buffer with no healing throughput.
 
 ### Field Recovery Needs Numeric Throughput
 

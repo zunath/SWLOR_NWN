@@ -10,8 +10,10 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public override EffectIconType Icon => EffectIconType.Invulnerable;
         public AbsoluteDefenseStatusEffect()
         {
-            StatGroup.Stats[StatType.PhysicalDefensePercentAdjustment] = 25;
-            StatGroup.Stats[StatType.ForceDefensePercentAdjustment] = 25;
+            StatGroup.Stats[StatType.PhysicalDamageTakenPercentAdjustment] = -25;
+            StatGroup.Stats[StatType.ForceDamageTakenPercentAdjustment] = -25;
+            StatGroup.Stats[StatType.MindResistance] = 100;
+            StatGroup.Stats[StatType.MobilityResistance] = 100;
         }
 
     }

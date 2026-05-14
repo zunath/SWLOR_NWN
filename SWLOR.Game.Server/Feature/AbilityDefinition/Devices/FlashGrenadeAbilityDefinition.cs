@@ -1,0 +1,112 @@
+using System;
+using System.Collections.Generic;
+using SWLOR.Game.Server.Feature.StatusEffectDefinition;
+using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.NWN.API.Engine;
+using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.Creature;
+using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+
+namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
+{
+    public sealed class FlashGrenadeAbilityDefinition : IAbilityListDefinition
+    {
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        {
+            var builder = new AbilityBuilder();
+
+            FlashGrenade1(builder);
+            FlashGrenade2(builder);
+
+            return builder.Build();
+        }
+
+        private static void FlashGrenade1(AbilityBuilder builder)
+        {
+            builder
+                .Create(FeatType.FlashGrenade1, PerkType.FlashGrenade)
+                .Name("Flash Grenade I")
+                .Level(1)
+                .HasActivationDelay(1f)
+                .HasRecastDelay(RecastGroup.FlashGrenade, 24f)
+                .SkillType(SkillType.Devices)
+                .IsAreaAbility()
+                .HasImpactAction(FlashGrenade1ImpactAction)
+                .IsCastedAbility()
+                .IsHostileAbility()
+                .BreaksStealth()
+                .RequirementStamina(2)
+                .RequirementItem("explosives");
+        }
+
+        private static void FlashGrenade2(AbilityBuilder builder)
+        {
+            builder
+                .Create(FeatType.FlashGrenade2, PerkType.FlashGrenade)
+                .Name("Flash Grenade II")
+                .Level(2)
+                .HasActivationDelay(1f)
+                .HasRecastDelay(RecastGroup.FlashGrenade, 24f)
+                .SkillType(SkillType.Devices)
+                .IsAreaAbility()
+                .HasImpactAction(FlashGrenade2ImpactAction)
+                .IsCastedAbility()
+                .IsHostileAbility()
+                .BreaksStealth()
+                .RequirementStamina(3)
+                .RequirementItem("explosives");
+        }
+
+        private static void FlashGrenade1ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        {
+            Ability.ApplyTelegraphedCombatImpact(
+                activator,
+                target,
+                targetLocation,
+                SkillType.Devices,
+                0,
+                20,
+                typeof(FlashStatusEffect),
+                CombatImpactAreaShape.Sphere,
+                0f,
+                DeviceAbilityEffects.ApplyGrenadeRadiusBonus(activator, 4f),
+                0f,
+                Array.Empty<Type>(),
+                statusEffectFactory: () => new FlashGrenade1StatusEffect(GetFlashPenalty(activator, 8)),
+                damageType: CombatDamageType.Force,
+                targetVisualEffect: VisualEffect.Vfx_Imp_Sonic,
+                areaVisualEffect: VisualEffect.Vfx_Fnf_Sound_Burst);
+        }
+
+        private static void FlashGrenade2ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        {
+            Ability.ApplyTelegraphedCombatImpact(
+                activator,
+                target,
+                targetLocation,
+                SkillType.Devices,
+                0,
+                20,
+                typeof(FlashStatusEffect),
+                CombatImpactAreaShape.Sphere,
+                0f,
+                DeviceAbilityEffects.ApplyGrenadeRadiusBonus(activator, 4f),
+                0f,
+                Array.Empty<Type>(),
+                statusEffectFactory: () => new FlashGrenade2StatusEffect(GetFlashPenalty(activator, 14)),
+                damageType: CombatDamageType.Force,
+                targetVisualEffect: VisualEffect.Vfx_Imp_Sonic,
+                areaVisualEffect: VisualEffect.Vfx_Fnf_Sound_Burst);
+        }
+
+        private static int GetFlashPenalty(uint activator, int basePenalty)
+        {
+            return DeviceAbilityEffects.ApplyGrenadeControlPotencyBonus(activator, basePenalty);
+        }
+    }
+}

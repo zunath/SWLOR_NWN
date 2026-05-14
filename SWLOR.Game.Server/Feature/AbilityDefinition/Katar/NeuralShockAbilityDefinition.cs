@@ -29,21 +29,22 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.NeuralShock, 60f)
                 .RequiresTarget()
-                .HasImpactAction(ImpactAction)
+                .HasImpactAction(NeuralShock1ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
                 .RequirementStamina(8);
         }
 
-        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        private static void NeuralShock1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            switch (level)
-            {
-                case 1:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Katar, 20, 3, typeof(DisorientedStatusEffect), false, new[] { typeof(DazedStatusEffect) }, damageType: CombatDamageType.Electrical);
-                    break;
-            }
+            var isDisoriented = StatusEffect.HasStatusEffect(target, typeof(DisorientedStatusEffect));
+            var statusEffect = isDisoriented
+                ? typeof(DazedStatusEffect)
+                : null;
+            var duration = statusEffect == null ? 0 : 3;
+
+            Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Katar, 20, duration, statusEffect, false, damageType: CombatDamageType.Electrical);
         }
     }
 }

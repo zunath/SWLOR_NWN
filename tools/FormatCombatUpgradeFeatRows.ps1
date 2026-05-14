@@ -101,7 +101,7 @@ for ($i = 3; $i -lt $lines.Count; $i++) {
         continue
     }
 
-    if ($row -ge 2000 -and $row -le 2240) {
+    if ($row -ge 2000 -and $row -le 2558) {
         if ($tokens.Count -ne $expectedTokens) {
             throw "Row $row has $($tokens.Count) tokens, expected $expectedTokens."
         }

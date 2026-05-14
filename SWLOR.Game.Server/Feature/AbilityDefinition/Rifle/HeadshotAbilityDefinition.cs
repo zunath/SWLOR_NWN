@@ -25,24 +25,32 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 .Create(FeatType.Headshot1, PerkType.Headshot)
                 .Name("Headshot")
                 .Level(1)
-                .HasActivationDelay(2f)
+                .HasActivationDelay(1.5f)
                 .HasRecastDelay(RecastGroup.Headshot, 120f)
                 .RequiresTarget()
-                .HasImpactAction(ImpactAction)
+                .HasImpactAction(Headshot1ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
                 .RequirementStamina(14);
         }
 
-        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        private static void Headshot1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            switch (level)
-            {
-                case 1:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Rifle, 60, 3, typeof(DazedStatusEffect), false);
-                    break;
-            }
+            var statusEffect = IsBelowHalfHP(target)
+                ? typeof(DazedStatusEffect)
+                : null;
+            var duration = statusEffect == null ? 0 : 3;
+
+            Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Rifle, 60, duration, statusEffect, false);
+        }
+
+        private static bool IsBelowHalfHP(uint target)
+        {
+            if (!GetIsObjectValid(target))
+                return false;
+
+            return GetCurrentHitPoints(target) < GetMaxHitPoints(target) * 0.5f;
         }
     }
 }

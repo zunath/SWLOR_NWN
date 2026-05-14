@@ -3,7 +3,7 @@ param(
     [string]$Feat2daPath = "SWLOR_Haks\swlor2_2da\feat.2da",
     [string]$Spells2daPath = "SWLOR_Haks\swlor2_2da\spells.2da",
     [int]$GeneratedFeatStart = 2000,
-    [int]$GeneratedFeatEnd = 2294
+    [int]$GeneratedFeatEnd = 2558
 )
 
 Set-StrictMode -Version Latest
@@ -164,6 +164,72 @@ function New-TargetSphereRule {
     return New-Rule -Range "M" -TargetType "0x02" -HostileSetting "1" -TargetShape "sphere" -TargetSizeX $Radius -TargetFlags "1" -HostileFeat "1"
 }
 
+function New-FriendlySelfSphereRule {
+    param([string]$Radius = "5")
+
+    return New-Rule -Range "P" -TargetType "0x01" -HostileSetting "0" -TargetSelf "1" -TargetShape "sphere" -TargetSizeX $Radius -TargetFlags "17"
+}
+
+function New-FriendlyGroundSphereRule {
+    param([string]$Radius = "5")
+
+    return New-Rule -Range "M" -TargetType "0x3E" -HostileSetting "0" -TargetShape "sphere" -TargetSizeX $Radius -TargetFlags "1"
+}
+
+function Get-AbilityTargetingByLabel {
+    param([string]$AbilityDefinitionRoot)
+
+    $targeting = @{}
+    if (!(Test-Path $AbilityDefinitionRoot)) {
+        return $targeting
+    }
+
+    $createPattern = '(?s)\.Create\(FeatType\.(?<feat>[A-Za-z0-9_]+),\s*PerkType\.[^)]+\)(?<chain>.*?);'
+    foreach ($file in Get-ChildItem $AbilityDefinitionRoot -Recurse -Filter "*AbilityDefinition.cs") {
+        $text = [System.IO.File]::ReadAllText($file.FullName)
+        foreach ($match in [regex]::Matches($text, $createPattern)) {
+            $chain = $match.Groups["chain"].Value
+            $targeting[$match.Groups["feat"].Value] = [pscustomobject]@{
+                IsHostile = $chain -match '\.IsHostileAbility\('
+                IsArea = $chain -match '\.IsAreaAbility\('
+                RequiresTarget = $chain -match '\.RequiresTarget\('
+            }
+        }
+    }
+
+    return $targeting
+}
+
+function Get-DefaultRule {
+    param(
+        [string]$Label,
+        [hashtable]$AbilityTargetingByLabel
+    )
+
+    if (!$AbilityTargetingByLabel.ContainsKey($Label)) {
+        return $hostileCreatureRule
+    }
+
+    $targeting = $AbilityTargetingByLabel[$Label]
+    if ($targeting.IsHostile) {
+        if ($targeting.IsArea) {
+            return New-GroundSphereRule
+        }
+
+        return $hostileCreatureRule
+    }
+
+    if ($targeting.IsArea) {
+        return New-FriendlySelfSphereRule
+    }
+
+    if ($targeting.RequiresTarget) {
+        return $friendlyCreatureRule
+    }
+
+    return $selfRule
+}
+
 $rulesByLabel = @{}
 
 foreach ($label in @(
@@ -178,10 +244,15 @@ foreach ($label in @(
     "BombardierStance1",
     "BreakerReversal1",
     "BrutalAssault1",
+    "ChargeOrder1",
+    "ChargeOrder2",
     "CalmingStance1",
     "Centering1",
     "Centering2",
     "CobraStance1",
+    "CoordinatedFocus1",
+    "CoordinatedFocus2",
+    "CoordinatedFocus3",
     "ConduitStance1",
     "CripplingShot1",
     "CripplingShot2",
@@ -204,6 +275,8 @@ foreach ($label in @(
     "ExplosiveToss2",
     "ExplosiveToss3",
     "ExplosiveToss4",
+    "FieldRecovery1",
+    "FieldRecovery2",
     "FerocityStance1",
     "FinalForm1",
     "FlankingStance1",
@@ -251,6 +324,8 @@ foreach ($label in @(
     "PinningToss3",
     "Purify1",
     "Rampart1",
+    "RallyingStandard1",
+    "RallyingStandard2",
     "RippleSlash1",
     "SecondWind1",
     "SentinelGuard1",
@@ -281,6 +356,8 @@ foreach ($label in @(
     "StaticPalm1",
     "StaticPalm2",
     "StaticPalm3",
+    "SteadyFormation1",
+    "SteadyFormation2",
     "StrikingCobra1",
     "StrikingCobra2",
     "StrikingCobra3",
@@ -298,7 +375,10 @@ foreach ($label in @(
     "UnmovingCenter1",
     "VersatileStrike1",
     "VersatileStrike2",
-    "VersatileStrike3"
+    "VersatileStrike3",
+    "WatchfulPresence1",
+    "WatchfulPresence2",
+    "WatchfulPresence3"
 )) {
     $rulesByLabel[$label] = $selfRule
 }
@@ -396,6 +476,71 @@ foreach ($label in @(
     $rulesByLabel[$label] = New-OriginLineRule -Length "8" -Width "2.5"
 }
 
+foreach ($label in @(
+    "Flamethrower1",
+    "Flamethrower2",
+    "Flamethrower3",
+    "CryoSprayer1",
+    "CryoSprayer2",
+    "IceBreath1",
+    "IceBreath2",
+    "IceBreath3",
+    "PoisonBreath1",
+    "PoisonBreath2",
+    "PoisonBreath3",
+    "ForcePush3"
+)) {
+    $rulesByLabel[$label] = New-OriginConeRule -Length "6" -Width "5"
+}
+
+$rulesByLabel["ForcePush2"] = New-OriginLineRule -Length "8" -Width "2.5"
+
+$rulesByLabel["KoltoMist1"] = New-FriendlySelfSphereRule -Radius "3"
+$rulesByLabel["KoltoMist2"] = New-FriendlySelfSphereRule -Radius "3"
+
+foreach ($label in @(
+    "ChargeOrder1",
+    "ChargeOrder2",
+    "CoordinatedFocus1",
+    "CoordinatedFocus2",
+    "CoordinatedFocus3",
+    "FieldRecovery1",
+    "FieldRecovery2",
+    "RallyingStandard1",
+    "RallyingStandard2",
+    "SteadyFormation1",
+    "SteadyFormation2",
+    "WatchfulPresence1",
+    "WatchfulPresence2",
+    "WatchfulPresence3"
+)) {
+    $rulesByLabel[$label] = New-FriendlySelfSphereRule -Radius "5"
+}
+
+foreach ($label in @(
+    "ForceSanctuary1",
+    "HardlightScreen1",
+    "HardlightScreen2",
+    "EmergencyBunker1"
+)) {
+    $rulesByLabel[$label] = New-FriendlyGroundSphereRule -Radius "4"
+}
+
+$rulesByLabel["BlasterBeacon1"] = New-GroundSphereRule -Radius "12"
+$rulesByLabel["BlasterBeacon2"] = New-GroundSphereRule -Radius "12"
+$rulesByLabel["BlasterBeacon3"] = New-GroundSphereRule -Radius "14"
+$rulesByLabel["ShockBeacon1"] = New-GroundSphereRule -Radius "10"
+$rulesByLabel["ShockBeacon2"] = New-GroundSphereRule -Radius "12"
+$rulesByLabel["IncendiaryField1"] = New-GroundSphereRule -Radius "5"
+$rulesByLabel["IncendiaryField2"] = New-GroundSphereRule -Radius "5"
+$rulesByLabel["IncendiaryField3"] = New-GroundSphereRule -Radius "5"
+$rulesByLabel["RemoteCharge1"] = New-GroundSphereRule -Radius "5"
+$rulesByLabel["RemoteCharge2"] = New-GroundSphereRule -Radius "5"
+$rulesByLabel["RemoteCharge3"] = New-GroundSphereRule -Radius "5"
+$rulesByLabel["KillzoneBeacon1"] = New-GroundSphereRule -Radius "12"
+
+$abilityTargetingByLabel = Get-AbilityTargetingByLabel (Resolve-RepoPath "SWLOR.Game.Server\Feature\AbilityDefinition")
+
 $featPath = Resolve-RepoPath $Feat2daPath
 $spellsPath = Resolve-RepoPath $Spells2daPath
 
@@ -456,7 +601,7 @@ for ($i = $featHeaderIndex + 1; $i -lt $featLines.Count; $i++) {
         throw "Feat row $rowNumber ($label) does not have a matching spell row."
     }
 
-    $rule = if ($rulesByLabel.ContainsKey($label)) { $rulesByLabel[$label] } else { $hostileCreatureRule }
+    $rule = if ($rulesByLabel.ContainsKey($label)) { $rulesByLabel[$label] } else { Get-DefaultRule $label $abilityTargetingByLabel }
 
     Set-TokenByHeader $featTokens $featHeaders "TARGETSELF" $rule.TargetSelf
     Set-TokenByHeader $featTokens $featHeaders "HostileFeat" $rule.HostileFeat

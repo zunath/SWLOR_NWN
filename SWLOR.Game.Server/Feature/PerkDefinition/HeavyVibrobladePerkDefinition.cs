@@ -134,6 +134,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("If you would receive a critical hit, downgrade the attack to a normal hit. The attack will do minimum damage to you.")
+                .IncreasesStat(StatType.IncomingCriticalHitDowngradeToMinimumDamage, creature => EquipmentPredicates.HasMainHandHeavyVibroblade(creature) ? 1 : 0)
                 .Price(2)
                 .RequirementSkill(SkillType.HeavyVibroblade, 40);
         }
@@ -159,6 +160,11 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("HP restoration used on you is 20% more effective. 10% chance to restore 8 STM when healed. Chance increases by 1% per MGT. (Maximum 40%)")
+                .IncreasesStat(StatType.HealingReceivedPercentAdjustment, creature => EquipmentPredicates.HasMainHandHeavyVibroblade(creature) ? 20 : 0)
+                .IncreasesStat(StatType.HealingReceivedStaminaRestoreChance, creature => EquipmentPredicates.HasMainHandHeavyVibroblade(creature) ? 10 : 0)
+                .IncreasesStat(StatType.HealingReceivedStaminaRestoreChanceScalingAbility, creature => EquipmentPredicates.HasMainHandHeavyVibroblade(creature) ? (int)AbilityType.Might + 1 : 0)
+                .IncreasesStat(StatType.HealingReceivedStaminaRestoreChanceMaximum, creature => EquipmentPredicates.HasMainHandHeavyVibroblade(creature) ? 40 : 0)
+                .IncreasesStat(StatType.HealingReceivedStaminaRestore, creature => EquipmentPredicates.HasMainHandHeavyVibroblade(creature) ? 8 : 0)
                 .Price(3)
                 .RequirementSkill(SkillType.HeavyVibroblade, 30);
         }
@@ -224,7 +230,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Flash1)
-                .Description("Enemies within the area of effect (sphere) around you receive the Flash effect which reduces their accuracy by 20% for 30 seconds. You generate significant enmity toward these enemies.")
+                .Description("Enemies within the area of effect (sphere) around you receive the Flash effect, reducing physical and Force ability hit chance by 20% for 30 seconds. You generate significant enmity toward these enemies.")
                 .Price(4)
                 .RequirementSkill(SkillType.HeavyVibroblade, 18);
         }
@@ -345,6 +351,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("When you recover HP, gain +15% Attack for 15 seconds.")
+                .IncreasesStat(StatType.HealingReceivedAttackPercentAdjustment, creature => EquipmentPredicates.HasMainHandHeavyVibroblade(creature) ? 15 : 0)
+                .IncreasesStat(StatType.HealingReceivedAttackDurationSeconds, creature => EquipmentPredicates.HasMainHandHeavyVibroblade(creature) ? 15 : 0)
                 .Price(3)
                 .RequirementSkill(SkillType.HeavyVibroblade, 30);
         }

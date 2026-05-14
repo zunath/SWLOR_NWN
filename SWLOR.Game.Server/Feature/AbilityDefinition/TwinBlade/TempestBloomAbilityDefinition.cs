@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
@@ -10,6 +12,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
 {
     public class TempestBloomAbilityDefinition : IAbilityListDefinition
     {
+        private const float ChannelDurationSeconds = 6f;
+        private const float PulseIntervalSeconds = 2f;
+        private const float Radius = 5f;
+
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
@@ -26,22 +32,33 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
                 .Name("Tempest Bloom")
                 .Level(1)
                 .HasActivationDelay(0f)
-                .HasRecastDelay(RecastGroup.TempestBloom, 1800f)
-                .HasImpactAction(ImpactAction)
+                .HasRecastDelay(RecastGroup.Capstone, 1800f)
+                .HasImpactAction(TempestBloom1ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
                 .RequirementStamina(25);
         }
 
-        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        private static void TempestBloom1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            switch (level)
-            {
-                case 1:
-                    Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.TwinBlade, 20, 3, typeof(KnockdownStatusEffect), CombatImpactAreaShape.Sphere, 0.25f, 5f, centerOnActivator: true);
-                    break;
-            }
+            CombatAreaPulses.SchedulePulses(
+                activator,
+                GetLocation(activator),
+                ChannelDurationSeconds,
+                PulseIntervalSeconds,
+                true,
+                (pulseLocation, elapsed) =>
+                {
+                    CombatAreaPulses.ApplyCombatPulse(
+                        activator,
+                        pulseLocation,
+                        SkillType.TwinBlade,
+                        20,
+                        Radius,
+                        elapsed >= ChannelDurationSeconds - 0.01f ? typeof(KnockdownStatusEffect) : null,
+                        elapsed >= ChannelDurationSeconds - 0.01f ? 3 : 0);
+                });
         }
     }
 }

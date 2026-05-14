@@ -307,6 +307,56 @@ namespace SWLOR.Game.Server.Service
             return bonus;
         }
 
+        public static int GetTargetedStatBonus(
+            uint creature,
+            PerkType targetPerkType,
+            StatType primaryPerkStatType,
+            StatType secondaryPerkStatType,
+            StatType adjustmentStatType)
+        {
+            if (targetPerkType == PerkType.Invalid)
+                return 0;
+
+            var bonus = 0;
+            foreach (var (perkType, perkDetail) in _perksWithStatBonuses)
+            {
+                var level = GetPerkLevel(creature, perkType);
+                if (level <= 0 || !perkDetail.PerkLevels.TryGetValue(level, out var perkLevel))
+                    continue;
+
+                var primaryPerkValue = 0;
+                var secondaryPerkValue = 0;
+                var adjustment = 0;
+                foreach (var statBonus in perkLevel.StatBonuses)
+                {
+                    if (statBonus.Stat == primaryPerkStatType)
+                        primaryPerkValue += statBonus.Calculate(creature);
+                    else if (statBonus.Stat == secondaryPerkStatType)
+                        secondaryPerkValue += statBonus.Calculate(creature);
+                    else if (statBonus.Stat == adjustmentStatType)
+                        adjustment += statBonus.Calculate(creature);
+                }
+
+                if (adjustment != 0 && IsTargetedPerk(targetPerkType, primaryPerkValue, secondaryPerkValue))
+                    bonus += adjustment;
+            }
+
+            return bonus;
+        }
+
+        private static bool IsTargetedPerk(PerkType targetPerkType, int primaryPerkValue, int secondaryPerkValue)
+        {
+            return targetPerkType == GetPerkTypeFromStat(primaryPerkValue) ||
+                   targetPerkType == GetPerkTypeFromStat(secondaryPerkValue);
+        }
+
+        private static PerkType GetPerkTypeFromStat(int value)
+        {
+            return value > 0 && System.Enum.IsDefined(typeof(PerkType), value)
+                ? (PerkType)value
+                : PerkType.Invalid;
+        }
+
         /// <summary>
         /// Retrieves a list of all active perks, excluding inactive ones, by group.
         /// </summary>

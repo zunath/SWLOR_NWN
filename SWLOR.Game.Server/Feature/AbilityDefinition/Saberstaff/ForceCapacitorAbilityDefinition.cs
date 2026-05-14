@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                     .HasRecastDelay(RecastGroup.ForceCapacitor, 180f),
                 typeof(ForceCapacitorStatusEffect),
                 20f,
-                5);
+                10);
 
             return builder.Build();
         }

@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.BindingCross, 60f)
                 .RequiresTarget()
-                .HasImpactAction(ImpactAction)
+                .HasImpactAction(BindingCross1ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
@@ -45,24 +45,21 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.BindingCross, 60f)
                 .RequiresTarget()
-                .HasImpactAction(ImpactAction)
+                .HasImpactAction(BindingCross2ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
                 .RequirementStamina(12);
         }
 
-        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        private static void BindingCross1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            switch (level)
-            {
-                case 1:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.TwinBlade, 10, 12, typeof(HamstringStatusEffect), false);
-                    break;
-                case 2:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.TwinBlade, 18, 20, typeof(HamstringStatusEffect), false, additionalStatusEffects: new[] { typeof(ExposedStatusEffect) });
-                    break;
-            }
+            Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.TwinBlade, 10, 12, typeof(HamstringStatusEffect), false);
+        }
+
+        private static void BindingCross2ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        {
+            Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.TwinBlade, 18, 20, typeof(HamstringStatusEffect), false, additionalStatusEffects: new[] { typeof(ExposedStatusEffect) });
         }
     }
 }

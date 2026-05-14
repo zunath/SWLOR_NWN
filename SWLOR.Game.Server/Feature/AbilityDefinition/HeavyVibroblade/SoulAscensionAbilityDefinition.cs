@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
                 .Name("Soul Ascension")
                 .Level(1)
                 .HasActivationDelay(0f)
-                .HasRecastDelay(RecastGroup.SoulAscension, 1800f)
+                .HasRecastDelay(RecastGroup.Capstone, 1800f)
                 .HasImpactAction((activator, target, level, targetLocation) =>
                 {
                     StatusEffect.ApplyStatusEffect(activator, activator, typeof(SoulAscensionStatusEffect), 20f);

@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 .Level(1)
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.FanTheHammer, 60f)
-                .HasImpactAction(ImpactAction)
+                .HasImpactAction(FanTheHammer1ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
@@ -43,24 +43,21 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 .Level(2)
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.FanTheHammer, 75f)
-                .HasImpactAction(ImpactAction)
+                .HasImpactAction(FanTheHammer2ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
                 .RequirementStamina(10);
         }
 
-        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        private static void FanTheHammer1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            switch (level)
-            {
-                case 1:
-                    Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.Pistol, 12, 0, null, CombatImpactAreaShape.Cone, 0.25f, 5f, 5f);
-                    break;
-                case 2:
-                    Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.Pistol, 20, 0, null, CombatImpactAreaShape.Cone, 0.25f, 5f, 5f);
-                    break;
-            }
+            Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.Pistol, 12, 0, null, CombatImpactAreaShape.Cone, 0.25f, 5f, 5f, maxTargets: 3);
+        }
+
+        private static void FanTheHammer2ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        {
+            Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.Pistol, 20, 0, null, CombatImpactAreaShape.Cone, 0.25f, 5f, 5f, maxTargets: 5);
         }
     }
 }

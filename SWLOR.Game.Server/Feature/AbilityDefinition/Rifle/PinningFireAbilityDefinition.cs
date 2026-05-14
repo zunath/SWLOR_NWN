@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.PinningFire, 45f)
                 .RequiresTarget()
-                .HasImpactAction(ImpactAction)
+                .HasImpactAction(PinningFire1ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
@@ -44,24 +44,21 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 .Level(2)
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.PinningFire, 60f)
-                .HasImpactAction(ImpactAction)
+                .HasImpactAction(PinningFire2ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
                 .RequirementStamina(8);
         }
 
-        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        private static void PinningFire1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            switch (level)
-            {
-                case 1:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Rifle, 10, 2, typeof(DazedStatusEffect), false);
-                    break;
-                case 2:
-                    Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.Rifle, 18, 3, typeof(KnockdownStatusEffect), CombatImpactAreaShape.Line, 0.25f, 8f, 2.5f);
-                    break;
-            }
+            Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Rifle, 10, 2, typeof(DazedStatusEffect), false);
+        }
+
+        private static void PinningFire2ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        {
+            Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.Rifle, 18, 3, typeof(KnockdownStatusEffect), CombatImpactAreaShape.Line, 0.25f, 8f, 2.5f);
         }
     }
 }

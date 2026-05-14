@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.FeintingCut, 45f)
                 .RequiresTarget()
-                .HasImpactAction(ImpactAction)
+                .HasImpactAction(FeintingCut1ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
@@ -46,7 +46,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.FeintingCut, 45f)
                 .RequiresTarget()
-                .HasImpactAction(ImpactAction)
+                .HasImpactAction(FeintingCut2ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
@@ -62,27 +62,26 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.FeintingCut, 45f)
                 .RequiresTarget()
-                .HasImpactAction(ImpactAction)
+                .HasImpactAction(FeintingCut3ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
                 .RequirementStamina(8);
         }
 
-        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        private static void FeintingCut1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            switch (level)
-            {
-                case 1:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.TwinBlade, 12, 12, typeof(WeakenedStatusEffect), false);
-                    break;
-                case 2:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.TwinBlade, 22, 12, typeof(WeakenedStatusEffect), false);
-                    break;
-                case 3:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.TwinBlade, 32, 15, typeof(WeakenedStatusEffect), false);
-                    break;
-            }
+            Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.TwinBlade, 12, 12, typeof(WeakenedStatusEffect), false, statusEffectFactory: () => new WeakenedStatusEffect(10));
+        }
+
+        private static void FeintingCut2ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        {
+            Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.TwinBlade, 22, 12, typeof(WeakenedStatusEffect), false);
+        }
+
+        private static void FeintingCut3ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        {
+            Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.TwinBlade, 32, 15, typeof(WeakenedStatusEffect), false, statusEffectFactory: () => new WeakenedStatusEffect(20));
         }
     }
 }

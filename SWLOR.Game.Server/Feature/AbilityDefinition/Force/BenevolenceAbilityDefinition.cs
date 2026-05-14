@@ -1,0 +1,132 @@
+using System;
+using System.Collections.Generic;
+using SWLOR.Game.Server.Feature.AbilityDefinition;
+using SWLOR.Game.Server.Feature.StatusEffectDefinition;
+using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.NWN.API.Engine;
+using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.Creature;
+using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+
+namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
+{
+    public sealed class BenevolenceAbilityDefinition : IAbilityListDefinition
+    {
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        {
+            var builder = new AbilityBuilder();
+
+            Benevolence1(builder);
+            Benevolence2(builder);
+            Benevolence3(builder);
+
+            return builder.Build();
+        }
+
+        private static void Benevolence1(AbilityBuilder builder)
+        {
+            builder
+                .Create(FeatType.Benevolence1, PerkType.Benevolence)
+                .Name("Benevolence I")
+                .Level(1)
+                .HasActivationDelay(1f)
+                .HasRecastDelay(RecastGroup.Benevolence, 8f)
+                .SkillType(SkillType.Force)
+                .IsSingleTargetAbility()
+                .RequiresTarget()
+                .HasCustomValidation((activator, target, _, _) =>
+                    AbilityTargeting.ValidateFriendlyTarget(activator, target))
+                .HasImpactAction(Benevolence1ImpactAction)
+                .IsCastedAbility()
+                .BreaksStealth()
+                .RequirementFP(3);
+        }
+
+        private static void Benevolence2(AbilityBuilder builder)
+        {
+            builder
+                .Create(FeatType.Benevolence2, PerkType.Benevolence)
+                .Name("Benevolence II")
+                .Level(2)
+                .HasActivationDelay(1f)
+                .HasRecastDelay(RecastGroup.Benevolence, 8f)
+                .SkillType(SkillType.Force)
+                .IsSingleTargetAbility()
+                .RequiresTarget()
+                .HasCustomValidation((activator, target, _, _) =>
+                    AbilityTargeting.ValidateFriendlyTarget(activator, target))
+                .HasImpactAction(Benevolence2ImpactAction)
+                .IsCastedAbility()
+                .BreaksStealth()
+                .RequirementFP(5);
+        }
+
+        private static void Benevolence3(AbilityBuilder builder)
+        {
+            builder
+                .Create(FeatType.Benevolence3, PerkType.Benevolence)
+                .Name("Benevolence III")
+                .Level(3)
+                .HasActivationDelay(1f)
+                .HasRecastDelay(RecastGroup.Benevolence, 8f)
+                .SkillType(SkillType.Force)
+                .IsSingleTargetAbility()
+                .RequiresTarget()
+                .HasCustomValidation((activator, target, _, _) =>
+                    AbilityTargeting.ValidateFriendlyTarget(activator, target))
+                .HasImpactAction(Benevolence3ImpactAction)
+                .IsCastedAbility()
+                .BreaksStealth()
+                .RequirementFP(7);
+        }
+
+        private static void Benevolence1ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        {
+            ApplyBenevolence(activator, target, 8);
+        }
+
+        private static void Benevolence2ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        {
+            ApplyBenevolence(activator, target, 14);
+        }
+
+        private static void Benevolence3ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        {
+            ApplyBenevolence(activator, target, 20);
+        }
+
+        private static void ApplyBenevolence(uint activator, uint target, int percent)
+        {
+            var friendly = AbilityTargeting.ResolveFriendlyTarget(activator, target);
+            var multiplier = friendly == activator ? 1f : 1.25f;
+            AbilityEffectScaling.ApplyScaledHeal(activator, friendly, percent, multiplier: multiplier);
+        }
+
+        private static void HealPercent(uint activator, uint target, SkillType skill, int percent)
+        {
+            var ability = skill switch
+            {
+                SkillType.Leadership => AbilityType.Social,
+                SkillType.Devices => AbilityType.Perception,
+                SkillType.BeastMastery => AbilityType.Might,
+                _ => AbilityType.Willpower
+            };
+            var baseAmount = PercentOf(GetMaxHitPoints(target), percent);
+            var amount = SWLOR.Game.Server.Feature.AbilityDefinition.AbilityEffectScaling.ScaleDirectEffect(baseAmount, GetAbilityScore(activator, ability));
+            amount = Stat.ApplyHealingReceivedAdjustment(target, amount);
+
+            ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), target);
+            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_M), target);
+        }
+
+        private static int PercentOf(int value, int percent)
+        {
+            return Math.Max(1, value * percent / 100);
+        }
+    }
+}

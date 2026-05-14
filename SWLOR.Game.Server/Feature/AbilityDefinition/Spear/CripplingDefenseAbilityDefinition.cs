@@ -17,12 +17,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
                     .Create(FeatType.CripplingDefense1, PerkType.CripplingDefense)
                     .Name("Crippling Defense")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.CripplingDefense, 1800f),
+                    .HasRecastDelay(RecastGroup.Capstone, 1800f),
                 typeof(CripplingDefenseStatusEffect),
                 15f,
-                35,
+                25,
                 true,
-                restoreStamina: 25);
+                restoreStamina: 25,
+                activationDelay: 3f);
 
             return builder.Build();
         }

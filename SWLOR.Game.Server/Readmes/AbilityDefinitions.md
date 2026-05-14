@@ -417,11 +417,7 @@ builder.Create(FeatType.AbilityName, PerkType.AbilityPerk)
 
 ### Status Effects
 
-Concentration abilities require corresponding status effects:
-
-```csharp
-.IsConcentrationAbility(typeof(MyStatusEffect))
-```
+Many abilities apply status effects through their impact action.
 
 ### Combat System
 

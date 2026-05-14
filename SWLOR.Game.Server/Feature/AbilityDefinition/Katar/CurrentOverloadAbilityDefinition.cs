@@ -29,21 +29,30 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.CurrentOverload, 90f)
                 .RequiresTarget()
-                .HasImpactAction(ImpactAction)
+                .HasImpactAction(CurrentOverload1ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
                 .RequirementStamina(12);
         }
 
-        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        private static void CurrentOverload1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            switch (level)
-            {
-                case 1:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Katar, 35, 3, typeof(StunnedStatusEffect), false, damageType: CombatDamageType.Electrical);
-                    break;
-            }
+            var consumedStatus = StatusEffect.HasStatusEffect(target, typeof(PoisonStatusEffect))
+                ? typeof(PoisonStatusEffect)
+                : StatusEffect.HasStatusEffect(target, typeof(DisorientedStatusEffect))
+                    ? typeof(DisorientedStatusEffect)
+                    : null;
+            var damage = consumedStatus == null ? 35 : 60;
+            var statusEffect = consumedStatus == null
+                ? null
+                : typeof(StunnedStatusEffect);
+            var duration = statusEffect == null ? 0 : 3;
+
+            if (consumedStatus != null)
+                StatusEffect.RemoveStatusEffect(target, consumedStatus, false);
+
+            Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Katar, damage, duration, statusEffect, false, damageType: CombatDamageType.Electrical);
         }
     }
 }

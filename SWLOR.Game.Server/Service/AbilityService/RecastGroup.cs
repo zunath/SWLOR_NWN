@@ -463,6 +463,262 @@ namespace SWLOR.Game.Server.Service.AbilityService
         ToxicCoating = 283,
         [RecastGroup("Centering", "Centering", true)]
         Centering = 284,
+        [RecastGroup("Adhesive Grenade", "Adhesive Gren", true)]
+        AdhesiveGrenade = 285,
+        [RecastGroup("Adrenal Stim", "Adrenal Stim", true)]
+        AdrenalStim = 286,
+        [RecastGroup("Alpha Rhythm", "Alpha Rhythm", true)]
+        AlphaRhythm = 287,
+        [RecastGroup("Anger", "Anger", true)]
+        Anger = 288,
+        [RecastGroup("Antitoxin", "Antitoxin", true)]
+        Antitoxin = 289,
+        [RecastGroup("Apex Bite", "Apex Bite", true)]
+        ApexBite = 290,
+        [RecastGroup("Assault", "Assault", true)]
+        Assault = 291,
+        [RecastGroup("Aura of Courage", "Courage Aura", true)]
+        AuraOfCourage = 292,
+        [RecastGroup("Bastion of Light", "Light Bastion", true)]
+        BastionOfLight = 293,
+        [RecastGroup("Benevolence", "Benevolence", true)]
+        Benevolence = 294,
+        [RecastGroup("Blaster Beacon", "Blaster Beacon", true)]
+        BlasterBeacon = 295,
+        [RecastGroup("Bolster Attack", "Bolster Attack", true)]
+        BolsterAttack = 296,
+        [RecastGroup("Bolster Resolve", "Bolster Res.", true)]
+        BolsterResolve = 297,
+        [RecastGroup("Break Morale", "Break Morale", true)]
+        BreakMorale = 298,
+        [RecastGroup("Circle of Harmony", "Harmony Circle", true)]
+        CircleOfHarmony = 299,
+        [RecastGroup("Clarity", "Clarity", true)]
+        Clarity = 300,
+        [RecastGroup("Claw", "Claw", true)]
+        Claw = 301,
+        [RecastGroup("Cleanse Order", "Cleanse Order", true)]
+        CleanseOrder = 302,
+        [RecastGroup("Cluster Grenade", "Cluster Gren", true)]
+        ClusterGrenade = 303,
+        [RecastGroup("Coagulant", "Coagulant", true)]
+        Coagulant = 304,
+        [RecastGroup("Collapse Will", "Collapse Will", true)]
+        CollapseWill = 305,
+        [RecastGroup("Comprehend Speech", "Comp. Speech", true)]
+        ComprehendSpeech = 306,
+        [RecastGroup("Concussion Grenade", "Concuss Gren", true)]
+        ConcussionGrenade = 307,
+        [RecastGroup("Coordinated Strike", "Coord. Strike", true)]
+        CoordinatedStrike = 308,
+        [RecastGroup("Creeping Terror", "Creep Terror", true)]
+        CreepingTerror = 309,
+        [RecastGroup("Crushing Slam", "Crushing Slam", true)]
+        CrushingSlam = 310,
+        [RecastGroup("Cryo Sprayer", "Cryo Sprayer", true)]
+        CryoSprayer = 311,
+        [RecastGroup("Dampening Field", "Damp Field", true)]
+        DampeningField = 312,
+        [RecastGroup("Decisive Command", "Decisive Cmd", true)]
+        DecisiveCommand = 313,
+        [RecastGroup("Deflector Shield", "Deflect Shield", true)]
+        DeflectorShield = 314,
+        [RecastGroup("Devouring Strike", "Devour Strike", true)]
+        DevouringStrike = 315,
+        [RecastGroup("Distracting Feint", "Distract Feint", true)]
+        DistractingFeint = 316,
+        [RecastGroup("Dominate Weak Mind", "Dom Weak Mind", true)]
+        DominateWeakMind = 317,
+        [RecastGroup("Eclipse of Resolve", "Eclipse Res.", true)]
+        EclipseOfResolve = 318,
+        [RecastGroup("Emergency Bunker", "Emerg. Bunker", true)]
+        EmergencyBunker = 319,
+        [RecastGroup("Emergency Cocktail", "Emerg Cocktail", true)]
+        EmergencyCocktail = 320,
+        [RecastGroup("Emergency Sealant", "Emerg Sealant", true)]
+        EmergencySealant = 321,
+        [RecastGroup("Emergency Triage", "Emerg Triage", true)]
+        EmergencyTriage = 322,
+        [RecastGroup("Evasive Challenge", "Evas Challenge", true)]
+        EvasiveChallenge = 323,
+        [RecastGroup("Evasive Maneuver", "Evas Maneuver", true)]
+        EvasiveManeuver = 324,
+        [RecastGroup("Execute Prey", "Execute Prey", true)]
+        ExecutePrey = 325,
+        [RecastGroup("Expose Prey", "Expose Prey", true)]
+        ExposePrey = 326,
+        [RecastGroup("Flamethrower", "Flamethrower", true)]
+        Flamethrower = 327,
+        [RecastGroup("Flash Grenade", "Flash Grenade", true)]
+        FlashGrenade = 328,
+        [RecastGroup("Focus Stim", "Focus Stim", true)]
+        FocusStim = 329,
+        [RecastGroup("Force Body", "Force Body", true)]
+        ForceBody = 330,
+        [RecastGroup("Force-Bonded Beast", "Bonded Beast", true)]
+        ForceBondedBeast = 331,
+        [RecastGroup("Force Choke", "Force Choke", true)]
+        ForceChoke = 332,
+        [RecastGroup("Force Drain", "Force Drain", true)]
+        ForceDrain = 333,
+        [RecastGroup("Force Grip", "Force Grip", true)]
+        ForceGrip = 334,
+        [RecastGroup("Force Intercept", "Force Interc.", true)]
+        ForceIntercept = 335,
+        [RecastGroup("Force Leap", "Force Leap", true)]
+        ForceLeap = 336,
+        [RecastGroup("Force Lightning", "Force Lightng", true)]
+        ForceLightning = 337,
+        [RecastGroup("Force Maelstrom", "Force Maelstr", true)]
+        ForceMaelstrom = 338,
+        [RecastGroup("Force Mend", "Force Mend", true)]
+        ForceMend = 339,
+        [RecastGroup("Force Push", "Force Push", true)]
+        ForcePush = 340,
+        [RecastGroup("Force Rage", "Force Rage", true)]
+        ForceRage = 341,
+        [RecastGroup("Force Sanctuary", "Force Sanct.", true)]
+        ForceSanctuary = 342,
+        [RecastGroup("Force Spark", "Force Spark", true)]
+        ForceSpark = 343,
+        [RecastGroup("Force Touch", "Force Touch", true)]
+        ForceTouch = 344,
+        [RecastGroup("Fracture Focus", "Fracture Focus", true)]
+        FractureFocus = 345,
+        [RecastGroup("Frag Grenade", "Frag Grenade", true)]
+        FragGrenade = 346,
+        [RecastGroup("Group Deflector", "Group Deflect", true)]
+        GroupDeflector = 347,
+        [RecastGroup("Guarded Bite", "Guarded Bite", true)]
+        GuardedBite = 348,
+        [RecastGroup("Guardian Ward", "Guardian Ward", true)]
+        GuardianWard = 349,
+        [RecastGroup("Guarding Roar", "Guarding Roar", true)]
+        GuardingRoar = 350,
+        [RecastGroup("Hardlight Screen", "Hardlight Scrn", true)]
+        HardlightScreen = 351,
+        [RecastGroup("Hasten", "Hasten", true)]
+        Hasten = 352,
+        [RecastGroup("Hold the Line", "Hold the Line", true)]
+        HoldTheLine = 353,
+        [RecastGroup("Hunger of the Dark", "Dark Hunger", true)]
+        HungerOfTheDark = 354,
+        [RecastGroup("Ice Breath", "Ice Breath", true)]
+        IceBreath = 355,
+        [RecastGroup("Incendiary Field", "Incend Field", true)]
+        IncendiaryField = 356,
+        [RecastGroup("Infusion", "Infusion", true)]
+        Infusion = 357,
+        [RecastGroup("Innervate", "Innervate", true)]
+        Innervate = 358,
+        [RecastGroup("Intercept", "Intercept", true)]
+        Intercept = 359,
+        [RecastGroup("Ion Grenade", "Ion Grenade", true)]
+        IonGrenade = 360,
+        [RecastGroup("Iron Hide", "Iron Hide", true)]
+        IronHide = 361,
+        [RecastGroup("Killzone Beacon", "Killzone Bcn", true)]
+        KillzoneBeacon = 362,
+        [RecastGroup("Kolto Mist", "Kolto Mist", true)]
+        KoltoMist = 363,
+        [RecastGroup("Last Stand of the Light", "Light's Stand", true)]
+        LastStandOfTheLight = 364,
+        [RecastGroup("Maintenance Pulse", "Maint. Pulse", true)]
+        MaintenancePulse = 365,
+        [RecastGroup("Mark Target", "Mark Target", true)]
+        MarkTarget = 366,
+        [RecastGroup("Med Kit", "Med Kit", true)]
+        MedKit = 367,
+        [RecastGroup("Mind Shroud", "Mind Shroud", true)]
+        MindShroud = 368,
+        [RecastGroup("Mind Trick", "Mind Trick", true)]
+        MindTrick = 369,
+        [RecastGroup("Nightmare Field", "Nightmare Fld", true)]
+        NightmareField = 370,
+        [RecastGroup("Overload Barrage", "Overload Barr", true)]
+        OverloadBarrage = 371,
+        [RecastGroup("Pacify", "Pacify", true)]
+        Pacify = 372,
+        [RecastGroup("Pack Recovery", "Pack Recovery", true)]
+        PackRecovery = 373,
+        [RecastGroup("Pain Suppressant", "Pain Suppress", true)]
+        PainSuppressant = 374,
+        [RecastGroup("Poison Breath", "Poison Breath", true)]
+        PoisonBreath = 375,
+        [RecastGroup("Pounce", "Pounce", true)]
+        Pounce = 376,
+        [RecastGroup("Power Cell", "Power Cell", true)]
+        PowerCell = 377,
+        [RecastGroup("Predator Rush", "Predator Rush", true)]
+        PredatorRush = 378,
+        [RecastGroup("Predator's Mark", "Predator Mark", true)]
+        PredatorsMark = 379,
+        [RecastGroup("Press the Attack", "Press Attack", true)]
+        PressTheAttack = 380,
+        [RecastGroup("Primal Overrun", "Primal Overrun", true)]
+        PrimalOverrun = 381,
+        [RecastGroup("Psychic Cry", "Psychic Cry", true)]
+        PsychicCry = 382,
+        [RecastGroup("Purifying Wave", "Purifying Wave", true)]
+        PurifyingWave = 383,
+        [RecastGroup("Rail Dart", "Rail Dart", true)]
+        RailDart = 384,
+        [RecastGroup("Rampage", "Rampage", true)]
+        Rampage = 385,
+        [RecastGroup("Rampart Hide", "Rampart Hide", true)]
+        RampartHide = 386,
+        [RecastGroup("Reflective Barrier", "Reflect Barr", true)]
+        ReflectiveBarrier = 387,
+        [RecastGroup("Remote Charge", "Remote Charge", true)]
+        RemoteCharge = 388,
+        [RecastGroup("Rending Claw", "Rending Claw", true)]
+        RendingClaw = 389,
+        [RecastGroup("Renewal", "Renewal", true)]
+        Renewal = 390,
+        [RecastGroup("Resuscitation", "Resuscitation", true)]
+        Resuscitation = 391,
+        [RecastGroup("Rousing Shout", "Rousing Shout", true)]
+        RousingShout = 392,
+        [RecastGroup("Saber Rend", "Saber Rend", true)]
+        SaberRend = 393,
+        [RecastGroup("Shielding", "Shielding", true)]
+        Shielding = 394,
+        [RecastGroup("Shock Beacon", "Shock Beacon", true)]
+        ShockBeacon = 395,
+        [RecastGroup("Sonic Burst", "Sonic Burst", true)]
+        SonicBurst = 396,
+        [RecastGroup("Soothing Guard", "Soothing Guard", true)]
+        SoothingGuard = 397,
+        [RecastGroup("Thermal Detonator", "Thermal Det.", true)]
+        ThermalDetonator = 398,
+        [RecastGroup("Treatment Kit", "Treatment Kit", true)]
+        TreatmentKit = 399,
+        [RecastGroup("Unbreakable Beast", "Unbreak Beast", true)]
+        UnbreakableBeast = 400,
+        [RecastGroup("Untouchable Instinct", "Untouch Inst.", true)]
+        UntouchableInstinct = 401,
+        [RecastGroup("Warding Howl", "Warding Howl", true)]
+        WardingHowl = 402,
+        [RecastGroup("Weaken Resolve", "Weaken Resolve", true)]
+        WeakenResolve = 403,
+        [RecastGroup("Weapon Jam", "Weapon Jam", true)]
+        WeaponJam = 404,
+        [RecastGroup("Wrist Rocket", "Wrist Rocket", true)]
+        WristRocket = 405,
+        [RecastGroup("Rallying Standard", "Rally Std", true)]
+        RallyingStandard = 406,
+        [RecastGroup("Coordinated Focus", "Coord Focus", true)]
+        CoordinatedFocus = 407,
+        [RecastGroup("Charge Order", "Charge Order", true)]
+        ChargeOrder = 408,
+        [RecastGroup("Watchful Presence", "Watchful Pres", true)]
+        WatchfulPresence = 409,
+        [RecastGroup("Steady Formation", "Steady Form", true)]
+        SteadyFormation = 410,
+        [RecastGroup("Field Recovery", "Field Recov.", true)]
+        FieldRecovery = 411,
+        [RecastGroup("Capstone Ability", "Capstone", true)]
+        Capstone = 412,
     }
 
     public class RecastGroupAttribute: Attribute

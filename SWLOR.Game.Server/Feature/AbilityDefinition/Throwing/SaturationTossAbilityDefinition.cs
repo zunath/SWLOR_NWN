@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
@@ -10,6 +11,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
 {
     public class SaturationTossAbilityDefinition : IAbilityListDefinition
     {
+        private const float FieldDurationSeconds = 12f;
+        private const float PulseIntervalSeconds = 4f;
+        private const float FieldRadius = 5f;
+
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
@@ -27,21 +32,28 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
                 .Level(1)
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.SaturationToss, 120f)
-                .HasImpactAction(ImpactAction)
+                .IsAreaAbility()
+                .HasImpactAction(SaturationToss1ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
                 .RequirementStamina(12);
         }
 
-        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        private static void SaturationToss1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            switch (level)
-            {
-                case 1:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Throwing, 10, 12, null, true);
-                    break;
-            }
+            CombatAreaPulses.SchedulePulses(
+                activator,
+                AbilityTargeting.ResolveImpactLocation(activator, target, targetLocation),
+                FieldDurationSeconds,
+                PulseIntervalSeconds,
+                false,
+                pulseLocation => CombatAreaPulses.ApplyCombatPulse(
+                    activator,
+                    pulseLocation,
+                    SkillType.Throwing,
+                    10,
+                    FieldRadius));
         }
     }
 }

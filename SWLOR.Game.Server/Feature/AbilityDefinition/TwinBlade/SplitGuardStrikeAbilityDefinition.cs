@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.SplitGuardStrike, 30f)
                 .RequiresTarget()
-                .HasImpactAction(ImpactAction)
+                .HasImpactAction(SplitGuardStrike1ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
@@ -46,7 +46,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.SplitGuardStrike, 30f)
                 .RequiresTarget()
-                .HasImpactAction(ImpactAction)
+                .HasImpactAction(SplitGuardStrike2ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
@@ -62,27 +62,26 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.SplitGuardStrike, 30f)
                 .RequiresTarget()
-                .HasImpactAction(ImpactAction)
+                .HasImpactAction(SplitGuardStrike3ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
                 .RequirementStamina(8);
         }
 
-        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        private static void SplitGuardStrike1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            switch (level)
-            {
-                case 1:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.TwinBlade, 10, 10, null, false);
-                    break;
-                case 2:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.TwinBlade, 22, 10, null, false);
-                    break;
-                case 3:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.TwinBlade, 34, 10, null, false);
-                    break;
-            }
+            Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.TwinBlade, 10, 10, null, false);
+        }
+
+        private static void SplitGuardStrike2ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        {
+            Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.TwinBlade, 22, 10, null, false);
+        }
+
+        private static void SplitGuardStrike3ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        {
+            Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.TwinBlade, 34, 10, null, false);
         }
     }
 }

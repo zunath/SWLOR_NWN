@@ -10,6 +10,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
 {
     public class GuardCounterAbilityDefinition : IAbilityListDefinition
     {
+        private const float GuardedHitWindowSeconds = 8f;
+
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
@@ -29,7 +31,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
                 .Level(1)
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.GuardCounter, 30f)
-                .HasImpactAction(ImpactAction)
+                .HasImpactAction(GuardCounter1ImpactAction)
                 .IsWeaponAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
@@ -44,7 +46,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
                 .Level(2)
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.GuardCounter, 30f)
-                .HasImpactAction(ImpactAction)
+                .HasImpactAction(GuardCounter2ImpactAction)
                 .IsWeaponAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
@@ -59,27 +61,51 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
                 .Level(3)
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.GuardCounter, 45f)
-                .HasImpactAction(ImpactAction)
+                .HasImpactAction(GuardCounter3ImpactAction)
                 .IsWeaponAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
                 .RequirementStamina(8);
         }
 
-        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        private static void GuardCounter1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            switch (level)
-            {
-                case 1:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Katar, 8, 0, null, false);
-                    break;
-                case 2:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Katar, 18, 0, null, false);
-                    break;
-                case 3:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Katar, 28, 3, typeof(DazedStatusEffect), false);
-                    break;
-            }
+            ApplyGuardCounter(activator, target, targetLocation, 8, 16, false);
+        }
+
+        private static void GuardCounter2ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        {
+            ApplyGuardCounter(activator, target, targetLocation, 18, 30, false);
+        }
+
+        private static void GuardCounter3ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        {
+            ApplyGuardCounter(activator, target, targetLocation, 28, 45, true);
+        }
+
+        private static void ApplyGuardCounter(
+            uint activator,
+            uint target,
+            Location targetLocation,
+            int baseDamage,
+            int guardedDamage,
+            bool dazesAfterGuard)
+        {
+            var hasRecentGuard = Combat.HasRecentGuardedHit(activator, GuardedHitWindowSeconds);
+            var statusEffect = hasRecentGuard && dazesAfterGuard
+                ? typeof(DazedStatusEffect)
+                : null;
+            var duration = statusEffect == null ? 0 : 3;
+
+            Ability.ApplyCombatImpact(
+                activator,
+                target,
+                targetLocation,
+                SkillType.Katar,
+                hasRecentGuard ? guardedDamage : baseDamage,
+                duration,
+                statusEffect,
+                false);
         }
     }
 }

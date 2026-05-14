@@ -73,6 +73,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Rifle abilities against Exposed or Sundered targets ignore an additional 15% Defense.")
+                .IncreasesStat(StatType.AbilityDefenseIgnoreExposedOrSunderedSkillType, creature => EquipmentPredicates.HasRifle(creature) ? (int)SkillType.Rifle : 0)
+                .IncreasesStat(StatType.AbilityDefenseIgnoreExposedOrSunderedPercentAdjustment, creature => EquipmentPredicates.HasRifle(creature) ? 15 : 0)
                 .Price(4)
                 .RequirementSkill(SkillType.Rifle, 48);
         }
@@ -85,6 +87,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.BreachRound1)
                 .Description("Deals weapon DMG + 35 and ignores 25% of the target's Defense.")
+                .IncreasesStat(StatType.AbilityDefenseIgnorePercentAdjustmentPerkType, (int)PerkType.BreachRound)
+                .IncreasesStat(StatType.AbilityDefenseIgnorePercentAdjustment, 25)
                 .Price(4)
                 .RequirementSkill(SkillType.Rifle, 35);
         }
@@ -96,6 +100,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Enemies affected by your Disoriented effects suffer an additional -10% Evasion and -10% Attack.")
+                .IncreasesStat(StatType.OutgoingDisorientedAttackPercentAdjustment, creature => EquipmentPredicates.HasRifle(creature) ? -10 : 0)
+                .IncreasesStat(StatType.OutgoingDisorientedEvasionPercentAdjustment, creature => EquipmentPredicates.HasRifle(creature) ? -10 : 0)
                 .Price(3)
                 .RequirementSkill(SkillType.Rifle, 40);
         }
@@ -162,6 +168,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("After a tranquilizer effect ends, the target's Attack is reduced by 10% for 10 seconds.")
+                .IncreasesStat(StatType.TranquilizeExpiredAttackPercentAdjustment, creature => EquipmentPredicates.HasRifle(creature) ? -10 : 0)
+                .IncreasesStat(StatType.TranquilizeExpiredAttackDurationSeconds, creature => EquipmentPredicates.HasRifle(creature) ? 10 : 0)
                 .Price(2)
                 .RequirementSkill(SkillType.Rifle, 32);
         }
@@ -233,7 +241,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PacificationField1)
-                .Description("Creates a field for 15 seconds. Enemies inside suffer -10% Attack and become Dazed for 2 seconds.")
+                .Description("Creates a field for 15 seconds. Enemies inside suffer -10% Attack and become Dazed for 2 seconds every 5 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Rifle, 45);
         }
@@ -347,11 +355,23 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Rifle combat abilities gain +5% accuracy and +5% critical chance.")
+                .IncreasesStat(StatType.AbilityHitChancePercentAdjustmentSkillType, creature => EquipmentPredicates.HasRifle(creature) ? (int)SkillType.Rifle : 0)
+                .IncreasesStat(StatType.AbilityHitChancePercentAdjustment, creature => EquipmentPredicates.HasRifle(creature) ? 5 : 0)
+                .IncreasesStat(StatType.AbilityCriticalRatePercentAdjustmentSkillType, creature => EquipmentPredicates.HasRifle(creature) ? (int)SkillType.Rifle : 0)
+                .IncreasesStat(StatType.AbilityCriticalRatePercentAdjustment, creature => EquipmentPredicates.HasRifle(creature) ? 5 : 0)
                 .Price(3)
                 .RequirementSkill(SkillType.Rifle, 5)
 
                 .AddPerkLevel()
                 .Description("Aimed Shot cooldowns are reduced by 5 seconds and gain an additional +10% accuracy.")
+                .IncreasesStat(StatType.AbilityHitChancePercentAdjustmentSkillType, creature => EquipmentPredicates.HasRifle(creature) ? (int)SkillType.Rifle : 0)
+                .IncreasesStat(StatType.AbilityHitChancePercentAdjustment, creature => EquipmentPredicates.HasRifle(creature) ? 5 : 0)
+                .IncreasesStat(StatType.AbilityCriticalRatePercentAdjustmentSkillType, creature => EquipmentPredicates.HasRifle(creature) ? (int)SkillType.Rifle : 0)
+                .IncreasesStat(StatType.AbilityCriticalRatePercentAdjustment, creature => EquipmentPredicates.HasRifle(creature) ? 5 : 0)
+                .IncreasesStat(StatType.AbilityHitChancePercentAdjustmentPerkType, creature => EquipmentPredicates.HasRifle(creature) ? (int)PerkType.AimedShot : 0)
+                .IncreasesStat(StatType.TargetedAbilityHitChancePercentAdjustment, creature => EquipmentPredicates.HasRifle(creature) ? 10 : 0)
+                .IncreasesStat(StatType.AbilityRecastDelayFlatAdjustmentPerkType, creature => EquipmentPredicates.HasRifle(creature) ? (int)PerkType.AimedShot : 0)
+                .IncreasesStat(StatType.AbilityRecastDelayFlatAdjustment, creature => EquipmentPredicates.HasRifle(creature) ? -5 : 0)
                 .Price(2)
                 .RequirementSkill(SkillType.Rifle, 32);
         }

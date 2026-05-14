@@ -88,6 +88,7 @@ If future audits compare every visible Bible tab against code, filter these area
 - Experimental branches may be used to copy working implementation mechanics, such as telegraphs, status-effect service patterns, attack-delay hooks, and data-entry examples, but only after confirming the Bible still calls for that behavior.
 - Heavy Armor activation-time penalty support must be excluded or removed before release.
 - Migration must force every player through the rebuild flow without requiring a rebuild token.
+- Combat-upgrade ability and perk scaling must be balanced around the practical player stat band. A focused character is expected to reach 26 in one ability stat, with rare 27 cases when the build uses a racial stat point. Food and other temporary item effects can push a stat a little higher for short windows, so scaling formulas must remain bounded above that normal band: either clamp at the documented cap or use an explicit soft-overcap rule. Do not tune baseline perk/ability values around temporary food-buffed stats.
 
 ## Bible-Level Scope
 

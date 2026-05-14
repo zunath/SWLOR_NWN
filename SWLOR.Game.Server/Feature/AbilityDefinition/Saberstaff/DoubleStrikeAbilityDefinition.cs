@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                 SkillType.Saberstaff,
                 12,
                 2,
-                4);
+                3);
             ConfigureMultiHit(
                 builder
                     .Create(FeatType.DoubleStrike2, PerkType.DoubleStrike)
@@ -31,7 +31,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                 SkillType.Saberstaff,
                 21,
                 2,
-                6);
+                5);
             ConfigureMultiHit(
                 builder
                     .Create(FeatType.DoubleStrike3, PerkType.DoubleStrike)
@@ -51,7 +51,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                 SkillType.Saberstaff,
                 38,
                 2,
-                10,
+                12,
                 bonusStatus: typeof(ForceErosionStatusEffect),
                 bonusDamage: 15);
 

@@ -34,7 +34,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
                 16,
                 3,
                 typeof(KnockdownStatusEffect),
-                5);
+                6);
             ConfigureWeapon(
                 builder
                     .Create(FeatType.LegSweep3, PerkType.LegSweep)
@@ -45,7 +45,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
                 26,
                 4,
                 typeof(KnockdownStatusEffect),
-                7);
+                8);
 
             return builder.Build();
         }

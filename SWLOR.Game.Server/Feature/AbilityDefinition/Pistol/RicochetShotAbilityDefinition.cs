@@ -10,6 +10,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
 {
     public class RicochetShotAbilityDefinition : IAbilityListDefinition
     {
+        private const float BounceRadius = 5f;
+        private const int MaxTargets = 3;
+
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
@@ -28,20 +31,19 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.RicochetShot, 60f)
                 .RequiresTarget()
-                .HasImpactAction(ImpactAction)
+                .HasImpactAction(RicochetShot1ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
                 .RequirementStamina(8);
         }
 
-        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        private static void RicochetShot1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            switch (level)
+            var impactLocation = AbilityTargeting.ResolveImpactLocation(activator, target, targetLocation);
+            foreach (var hostileTarget in AbilityTargeting.GetHostileTargetsNearLocation(activator, impactLocation, BounceRadius, MaxTargets, target))
             {
-                case 1:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Pistol, 12, 6, typeof(BlindStatusEffect), false);
-                    break;
+                Ability.ApplyCombatImpact(activator, hostileTarget, GetLocation(hostileTarget), SkillType.Pistol, 12, 6, typeof(BlindStatusEffect), false);
             }
         }
     }

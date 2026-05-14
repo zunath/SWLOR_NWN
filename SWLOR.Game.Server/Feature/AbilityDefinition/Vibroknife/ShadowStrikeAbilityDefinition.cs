@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.ShadowStrike, 60f)
                 .RequiresTarget()
-                .HasImpactAction(ImpactAction)
+                .HasImpactAction(ShadowStrike1ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
@@ -46,42 +46,39 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.ShadowStrike, 60f)
                 .RequiresTarget()
-                .HasImpactAction(ImpactAction)
+                .HasImpactAction(ShadowStrike2ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
                 .RequirementStamina(10);
         }
 
-        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        private static void ShadowStrike1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            switch (level)
-            {
-                case 1:
-                    Ability.ApplyCombatImpact(
-                        activator,
-                        target,
-                        targetLocation,
-                        SkillType.Vibroknife,
-                        30,
-                        8,
-                        typeof(ShadowStrikeStatusEffect),
-                        false,
-                        statusEffectFactory: () => new ShadowStrikeStatusEffect(-30));
-                    break;
-                case 2:
-                    Ability.ApplyCombatImpact(
-                        activator,
-                        target,
-                        targetLocation,
-                        SkillType.Vibroknife,
-                        48,
-                        12,
-                        typeof(ShadowStrikeStatusEffect),
-                        false,
-                        statusEffectFactory: () => new ShadowStrikeStatusEffect(-40));
-                    break;
-            }
+            Ability.ApplyCombatImpact(
+                activator,
+                target,
+                targetLocation,
+                SkillType.Vibroknife,
+                30,
+                8,
+                typeof(ShadowStrikeStatusEffect),
+                false,
+                statusEffectFactory: () => new ShadowStrikeStatusEffect(-30));
+        }
+
+        private static void ShadowStrike2ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        {
+            Ability.ApplyCombatImpact(
+                activator,
+                target,
+                targetLocation,
+                SkillType.Vibroknife,
+                48,
+                12,
+                typeof(ShadowStrikeStatusEffect),
+                false,
+                statusEffectFactory: () => new ShadowStrikeStatusEffect(-40));
         }
     }
 }

@@ -17,7 +17,7 @@ All builders use a fluent interface, allowing method chaining for clean, readabl
 
 **Location**: `Service/AbilityService/AbilityBuilder.cs`
 
-The AbilityBuilder is used to create player abilities and combat skills. It's one of the most complex builders, supporting various ability types including casted abilities, weapon abilities, and concentration abilities.
+The AbilityBuilder is used to create player abilities and combat skills. It's one of the most complex builders, supporting casted abilities and weapon-triggered abilities.
 
 #### Basic Usage
 
@@ -40,7 +40,6 @@ builder.Create(FeatType.SmokeBomb, PerkType.SmokeBomb)
 - **Level(int)** - Set the ability level
 - **IsCastedAbility()** - Mark as a casted ability with delay
 - **IsWeaponAbility()** - Mark as a weapon-triggered ability
-- **IsConcentrationAbility(Type)** - Mark as a concentration ability
 - **HasRecastDelay(RecastGroup, float)** - Set cooldown timer
 - **HasActivationDelay(float)** - Set casting time
 - **HasMaxRange(float)** - Set maximum range

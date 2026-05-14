@@ -1,15 +1,22 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
 {
     public class PacificationFieldAbilityDefinition : IAbilityListDefinition
     {
+        private const float FieldDurationSeconds = 15f;
+        private const float PulseIntervalSeconds = 5f;
+        private const float FieldRadius = 5f;
+
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
@@ -27,22 +34,36 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 .Level(1)
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.PacificationField, 180f)
-                .RequiresTarget()
-                .HasImpactAction(ImpactAction)
+                .IsAreaAbility()
+                .HasImpactAction(PacificationField1ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
                 .RequirementStamina(14);
         }
 
-        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        private static void PacificationField1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            switch (level)
-            {
-                case 1:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Rifle, 0, 15, typeof(DazedStatusEffect), false);
-                    break;
-            }
+            var location = AbilityTargeting.ResolveImpactLocation(activator, target, targetLocation);
+            ApplyEffectAtLocation(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Fnf_Howl_Mind), location);
+
+            CombatAreaPulses.SchedulePulses(
+                activator,
+                location,
+                FieldDurationSeconds,
+                PulseIntervalSeconds,
+                false,
+                pulseLocation =>
+                {
+                    ApplyEffectAtLocation(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Fnf_Howl_Mind), pulseLocation);
+
+                    foreach (var hostile in CombatAreaPulses.GetHostileCreatures(activator, pulseLocation, FieldRadius))
+                    {
+                        StatusEffect.ApplyStatusEffect(activator, hostile, typeof(PacificationFieldStatusEffect), PulseIntervalSeconds + 0.2f);
+                        StatusEffect.ApplyStatusEffect(activator, hostile, typeof(DazedStatusEffect), 2f);
+                        ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Dazed_S), hostile);
+                    }
+                });
         }
     }
 }

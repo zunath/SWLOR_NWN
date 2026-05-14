@@ -1,3 +1,5 @@
+using System;
+
 namespace SWLOR.Game.Server.Service.AbilityService
 {
     /// <summary>
@@ -17,7 +19,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
             // DMs are assumed to be able to activate.
             if (GetIsDM(player)) return string.Empty;
 
-            var requiredFP = GetAdjustedRequiredFP(player);
+            var requiredFP = GetAdjustedRequiredFP(player, ability, false);
             var fp = Stat.GetCurrentFP(player);
 
             if (fp >= requiredFP) return string.Empty;
@@ -28,12 +30,21 @@ namespace SWLOR.Game.Server.Service.AbilityService
         {
             if (GetIsDM(player)) return;
 
-            Stat.ReduceFP(player, GetAdjustedRequiredFP(player));
+            Stat.ReduceFP(player, GetAdjustedRequiredFP(player, ability, true));
         }
 
-        private int GetAdjustedRequiredFP(uint player)
+        private int GetAdjustedRequiredFP(uint player, AbilityDetail ability, bool consumeNextAdjustment)
         {
-            return Stat.GetAdjustedRequiredFP(player, RequiredFP);
+            var adjusted = Stat.GetAdjustedRequiredFP(player, RequiredFP);
+            if (ability == null || adjusted <= 0)
+                return adjusted;
+
+            var skillType = Combat.GetAbilitySkillType(player, ability);
+            adjusted += consumeNextAdjustment
+                ? Combat.ConsumeNextAbilityFPCostAdjustment(player, skillType)
+                : Combat.GetNextAbilityFPCostAdjustment(player, skillType);
+
+            return Math.Max(0, adjusted);
         }
     }
 }

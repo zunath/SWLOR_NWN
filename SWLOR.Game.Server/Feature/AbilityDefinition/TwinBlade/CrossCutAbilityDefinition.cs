@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
                 SkillType.TwinBlade,
                 8,
                 2,
-                4,
+                3,
                 8,
                 typeof(DisorientedStatusEffect));
             ConfigureMultiHit(
@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
                 SkillType.TwinBlade,
                 17,
                 2,
-                6,
+                5,
                 10,
                 typeof(DisorientedStatusEffect));
             ConfigureMultiHit(
@@ -57,7 +57,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
                 SkillType.TwinBlade,
                 34,
                 2,
-                10,
+                12,
                 12,
                 typeof(DisorientedStatusEffect),
                 typeof(HamstringStatusEffect));

@@ -17,10 +17,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
                     .Create(FeatType.FinalForm1, PerkType.FinalForm)
                     .Name("Final Form")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.FinalForm, 1800f),
+                    .HasRecastDelay(RecastGroup.Capstone, 1800f),
                 typeof(FinalFormStatusEffect),
                 20f,
-                8);
+                25,
+                activationDelay: 2f);
 
             return builder.Build();
         }

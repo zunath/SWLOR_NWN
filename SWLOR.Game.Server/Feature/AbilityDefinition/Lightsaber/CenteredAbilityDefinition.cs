@@ -25,10 +25,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 builder
                     .Create(FeatType.Centering1, PerkType.Centering)
                     .Name("Centering I")
-                    .Level(1),
+                    .Level(1)
+                    .HasRecastDelay(RecastGroup.Centering, 60f),
                 typeof(CenteringStatusEffect),
                 30f,
-                10,
+                3,
                 activator => Enmity.ModifyEnmityOnAll(activator, -250));
         }
 
@@ -42,7 +43,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                     .HasRecastDelay(RecastGroup.Centering, 60f),
                 typeof(CenteringStatusEffect),
                 30f,
-                20,
+                5,
                 activator => Enmity.ModifyEnmityOnAll(activator, -500));
         }
     }

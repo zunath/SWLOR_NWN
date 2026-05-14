@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
                     .HasRecastDelay(RecastGroup.ToxicRush, 120f),
                 typeof(ToxicRushStatusEffect),
                 20f,
-                8);
+                10);
 
             return builder.Build();
         }

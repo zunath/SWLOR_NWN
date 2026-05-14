@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.FocusedArc, 30f)
                 .RequiresTarget()
-                .HasImpactAction(ImpactAction)
+                .HasImpactAction(FocusedArc1ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
@@ -46,7 +46,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.FocusedArc, 30f)
                 .RequiresTarget()
-                .HasImpactAction(ImpactAction)
+                .HasImpactAction(FocusedArc2ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
@@ -62,27 +62,26 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.FocusedArc, 30f)
                 .RequiresTarget()
-                .HasImpactAction(ImpactAction)
+                .HasImpactAction(FocusedArc3ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
                 .RequirementStamina(8);
         }
 
-        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        private static void FocusedArc1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            switch (level)
-            {
-                case 1:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Saberstaff, 10, 12, typeof(ForceErosionStatusEffect), false);
-                    break;
-                case 2:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Saberstaff, 22, 15, typeof(ForceErosionStatusEffect), false);
-                    break;
-                case 3:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Saberstaff, 34, 18, typeof(ForceErosionStatusEffect), false);
-                    break;
-            }
+            Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Saberstaff, 10, 12, typeof(ForceErosionStatusEffect), false);
+        }
+
+        private static void FocusedArc2ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        {
+            Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Saberstaff, 22, 15, typeof(ForceErosionStatusEffect), false);
+        }
+
+        private static void FocusedArc3ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        {
+            Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Saberstaff, 34, 18, typeof(ForceErosionStatusEffect), false);
         }
     }
 }

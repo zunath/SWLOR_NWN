@@ -190,6 +190,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Your first pistol attack after entering combat gains +30% critical chance and deals +20 DMG.")
+                .IncreasesStat(StatType.OpeningAutoAttackSkillType, creature => EquipmentPredicates.HasPistol(creature) ? (int)SkillType.Pistol : 0)
+                .IncreasesStat(StatType.OpeningAutoAttackCriticalRatePercentAdjustment, creature => EquipmentPredicates.HasPistol(creature) ? 30 : 0)
+                .IncreasesStat(StatType.OpeningAutoAttackDamageBonus, creature => EquipmentPredicates.HasPistol(creature) ? 20 : 0)
+                .IncreasesStat(StatType.OpeningAutoAttackIdleSeconds, creature => EquipmentPredicates.HasPistol(creature) ? 8 : 0)
                 .Price(3)
                 .RequirementSkill(SkillType.Pistol, 38);
         }
@@ -219,6 +223,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("When attacked in melee, you have a 20% chance to restore 3 STM and gain +10% Evasion for 6 seconds.")
+                .IncreasesStat(StatType.MeleeDamageTakenStaminaRestoreChance, creature => EquipmentPredicates.HasPistol(creature) ? 20 : 0)
+                .IncreasesStat(StatType.MeleeDamageTakenStaminaRestore, creature => EquipmentPredicates.HasPistol(creature) ? 3 : 0)
+                .IncreasesStat(StatType.MeleeDamageTakenEvasionPercentAdjustment, creature => EquipmentPredicates.HasPistol(creature) ? 10 : 0)
+                .IncreasesStat(StatType.MeleeDamageTakenEvasionDurationSeconds, creature => EquipmentPredicates.HasPistol(creature) ? 6 : 0)
                 .Price(3)
                 .RequirementSkill(SkillType.Pistol, 20);
         }

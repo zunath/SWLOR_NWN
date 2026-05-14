@@ -27,21 +27,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
                 .Level(1)
                 .HasActivationDelay(2f)
                 .HasRecastDelay(RecastGroup.HamperingBarrage, 60f)
-                .HasImpactAction(ImpactAction)
+                .HasImpactAction(HamperingBarrage1ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
                 .RequirementStamina(14);
         }
 
-        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        private static void HamperingBarrage1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            switch (level)
-            {
-                case 1:
-                    Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.Spear, 30, 12, typeof(DisorientedStatusEffect), CombatImpactAreaShape.Cone, 0.25f, 5f, 5f);
-                    break;
-            }
+            Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.Spear, 30, 12, typeof(DisorientedStatusEffect), CombatImpactAreaShape.Cone, 0.25f, 5f, 5f);
         }
     }
 }

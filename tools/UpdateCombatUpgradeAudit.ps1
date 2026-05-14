@@ -205,6 +205,14 @@ function Test-AbilitySatisfiesStatusCheck {
         return $true
     }
 
+    $expectedResistanceType = $null
+    if ($StatusDefinitionContentByName.ContainsKey($StatusEffectClass)) {
+        $targetStatusDefinitionContent = $StatusDefinitionContentByName[$StatusEffectClass]
+        if ($targetStatusDefinitionContent -match "ResistanceType\s*=>\s*ResistanceType\.(\w+)") {
+            $expectedResistanceType = $Matches[1]
+        }
+    }
+
     $referencedStatusEffects = [regex]::Matches($AbilityContent, 'typeof\((\w+StatusEffect)\)') |
         ForEach-Object { $_.Groups[1].Value } |
         Select-Object -Unique
@@ -217,6 +225,24 @@ function Test-AbilitySatisfiesStatusCheck {
         $statusDefinitionContent = $StatusDefinitionContentByName[$referencedStatusEffect]
         if ($statusDefinitionContent -match $statusEffectPattern -or $statusDefinitionContent -match $immunityPattern) {
             return $true
+        }
+
+        if (![string]::IsNullOrWhiteSpace($expectedResistanceType) -and
+            $statusDefinitionContent -match "\bStatType\.$([regex]::Escape($expectedResistanceType))Resistance\b") {
+            return $true
+        }
+    }
+
+    foreach ($statusDefinitionContent in $StatusDefinitionContentByName.Values) {
+        if ($statusDefinitionContent -notmatch $statusEffectPattern) {
+            continue
+        }
+
+        if ($statusDefinitionContent -match "ResistanceType\s*=>\s*ResistanceType\.(\w+)") {
+            $resistanceType = $Matches[1]
+            if ($AbilityContent -match "\bStatType\.$([regex]::Escape($resistanceType))Resistance\b") {
+                return $true
+            }
         }
     }
 
@@ -726,7 +752,7 @@ $manifest = Import-Csv $manifestFullPath |
     Where-Object {
         $outOfScopeTabs -notcontains $_.Tab -and
         ![string]::IsNullOrWhiteSpace($_.PerkName) -and
-        @("Combat", "Stance", "Toggle", "Trait") -contains $_.Type
+        @("Aura", "Combat", "Stance", "Toggle", "Trait") -contains $_.Type
     }
 
 if (@($manifest).Count -eq 0) {
@@ -793,14 +819,18 @@ foreach ($row in $manifest) {
         Add-AuditRow -Rows $auditRows -AuditType "MissingPerkName" -BibleRow $row
     }
 
-    $isActiveType = @("Combat", "Stance", "Toggle") -contains $row.Type
+    $isActiveType = @("Aura", "Combat", "Stance", "Toggle") -contains $row.Type
     if ($isActiveType -and !$abilityBaseNameIndex.ContainsKey($rowBaseName)) {
         Add-AuditRow -Rows $auditRows -AuditType "MissingAbilityDefinition" -BibleRow $row
     }
 
     $abilityFile = Get-AbilityFileForBibleRow -AbilityFilesByName $abilityFileIndex -BibleRow $row
     $cooldownSeconds = Convert-CooldownToSeconds $row.CooldownTime
-    if ($isActiveType -and $null -ne $cooldownSeconds -and $abilityFile -and $abilityFile.Content -notmatch "HasRecastDelay") {
+    $hasDetectedRecast = $abilityFile -and (
+        $abilityFile.Content -match "HasRecastDelay" -or
+        $abilityFile.Content -match "Configure(?:Hostile|SupportStatus|Cleanse|Heal|Revive)\("
+    )
+    if ($isActiveType -and $null -ne $cooldownSeconds -and $abilityFile -and !$hasDetectedRecast) {
         Add-AuditRow -Rows $auditRows -AuditType "MissingAbilityRecast" -BibleRow $row -File $abilityFile.File -Details "Expected cooldown: $($row.CooldownTime)"
     }
 

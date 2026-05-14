@@ -1,6 +1,6 @@
 # Combat Upgrade Implementation Status
 
-Last updated: 2026-05-11
+Last updated: 2026-05-13
 
 ## Source Of Truth
 
@@ -30,7 +30,9 @@ Espionage and Farming are out of scope. The audit also excludes crafting, resear
 
 ## Current Snapshot
 
-`SWLOR.Game.Server.sln` was last recorded as building successfully on 2026-05-09. This local Bible sync did not rerun the full build.
+`SWLOR.Game.Server.sln` was last recorded as building successfully on 2026-05-13 after the stat-scaling normalization pass.
+
+Combat-upgrade stat scaling is balanced around the practical player stat band: a focused character is expected to reach 26 in one ability stat, with rare 27 cases when a racial stat point is used. Food and other temporary item effects can push a stat a little higher for short windows, but baseline perk and ability values should not be tuned around those temporary overcap states. Scaling formulas should stay bounded above the normal band by using a documented cap or explicit soft-overcap rule.
 
 The first implementation pass closed a few narrow, concrete gaps:
 
@@ -53,7 +55,7 @@ The first implementation pass closed a few narrow, concrete gaps:
 - Implemented the missing Heavy Vibroblade active ability slice: feat grants, recast groups, ability definitions, queued strikes, self/party buffs, and runtime hooks for Life Siphon, Soul Ascension, Soul Devourer recoil, Blazing Spikes reflection, Flash, Rampart, Absolute Defense, Bastion Stance, Soul Storm, Soul Sacrifice, and Essence Drain.
 - Added the remaining audited active combat ability definitions for Katar, Lightsaber, Pistol, Rifle, Saberstaff, Spear, Staff, Throwing, Twin Blade, Vibroblade, and Vibroknife.
 - Integrated the active combat perk bases for Backstab, Circle Slash, Crippling Shot, Cross Cut, Double Shot, Double Strike, Explosive Toss, Hacking Blade, Leg Sweep, Piercing Toss, Quick Draw, Riot Blade, Shield Bash, Slam, Spinning Whirl, Striking Cobra, and Tranquilizer Shot into their weapon-family perk definitions.
-- Added generated feat/spell enum and 2DA rows through `FeatType.Backstab3 = 2294` / `Spell.Backstab3 = 1311`, and updated the link script range accordingly.
+- Added generated feat/spell enum and 2DA rows through `FeatType.WatchfulPresence3 = 2558` / `Spell.WatchfulPresence3 = 1526`, and updated the link script range accordingly.
 - Wired existing active combat perk levels to their generated feat grants so the new and existing abilities can be learned from the perk trees.
 - Added status IDs/definitions for the remaining active combat stance/buff/debuff statuses, including the weapon-family stances, guard buffs, challenge/mark effects, incapacitation, and decoy effects.
 - Added first-pass runtime hooks for the new active statuses in `Stat`, `Combat`, and `StatusEffect`: attack/defense/accuracy/evasion modifiers, Invincible damage prevention, Marked for Death damage bonus, Duelist's Challenge damage exposure, haste stance handling, and several on-hit stance effects.
@@ -64,34 +66,33 @@ The first implementation pass closed a few narrow, concrete gaps:
 - Added the missing Flurry Style staff perk and wired its staff attack-delay reduction behavior.
 - Updated the audit refresh to parse the live Bible spreadsheet's pre-table metadata rows and fail loudly if no scoped manifest rows are available.
 - Added local workbook refresh support to `tools\UpdateCombatUpgradeAudit.ps1`, regenerated `CombatUpgradeBiblePerkManifest.csv` from `design\bible\SWLOR Design Bible - Combat Upgrade.xlsx`, and regenerated `CombatUpgradePerkAudit.csv` from that manifest.
+- Implemented the Leadership aura slice: Rallying Standard, Coordinated Focus, Charge Order, Watchful Presence, Steady Formation, and Field Recovery now use the existing aura toggle/range system with specific rank status effects and SOC-capped scaling.
+- Refactored Rousing Shout away from revive/stabilize language and behavior. It now only affects living allies, grants short temporary HP, and applies low-HP damage reduction without competing with First Aid's revive and healing identity.
+- Normalized combat-upgrade direct-effect scaling around the practical player stat band. Direct WIL/PER/MGT/SOC effect scaling treats 10 as the baseline and 26 as the cap, with 26 granting the full +25% direct-effect bonus. Explicit Leadership SOC caps now interpolate from the base value to the Bible-listed cap by SOC 26.
+- Brought Leadership stat-scaling implementation in line with the Bible caps for Press the Attack, Mark Target, Break Morale, Decisive Command, Rousing Shout, Bolster Resolve, Cleanse Order, Hold the Line, Triage Protocol, and Command Radius duration/range support.
+- Refreshed Dev Status and Scaling Source metadata in the local Bible workbook. Implemented rows now use `Combat Formula`, `Design Added`, `Explicit Code`, or `None`; `Design Only` remains only on Espionage rows that are still intentionally out of scope.
 
-The latest local-workbook audit currently reports:
+The latest local-workbook audit currently reports no scoped findings. `CombatUpgradePerkAudit.csv` contains only its header row after the Design-phase implementation pass for Beast Mastery, Devices, First Aid, Force, and Leadership.
 
-- 999 raw Bible perk rows in `CombatUpgradeBiblePerkManifest.csv`
-- 107 scoped Bible perk names missing from code
-- 106 active Bible rows missing ability definitions
-- 126 active Bible rows with a Bible cooldown but no detected `HasRecastDelay` in the matching ability implementation
-- 3 status effects mentioned as applied by Bible descriptions but absent from the matching ability implementation
+The scoped combat-upgrade audit is clean against the 2026-05-10 local workbook snapshot. Espionage remains intentionally excluded by the current combat-upgrade implementation scope.
 
-The scoped combat-upgrade audit is not clean against the 2026-05-10 local workbook snapshot. The largest new blockers are in the redesigned Force, Devices, and First Aid rows now present in the local workbook manifest.
-
-The combat-upgrade feat and spell icon resource checks still pass for the scoped rows audited by the script. Generated combat feat `SPELLID` links are present, but the local workbook audit now reports missing recast wiring for active ability definitions that have Bible cooldowns.
+The combat-upgrade feat and spell icon resource checks pass for the scoped rows audited by the script. Generated combat feat `SPELLID` links are present, and active ability definitions have detected recast wiring for Bible cooldowns.
 
 ## Major Remaining Gaps
 
-The telegraph service now has a combat ability integration point, and a broader set of line/cone/sphere abilities use it. Some area abilities still use generic immediate impact helpers, and shape coverage still needs to be expanded for bespoke channel, persistent field, chained, and conditional cases.
+The telegraph service now has a combat ability integration point, and a broader set of line/cone/sphere abilities use it. Some bespoke channel, persistent field, chained, and conditional cases still need playtest review beyond static audit coverage.
 
 The `StatusEffect` service is now adopted for status effects. Status definitions are discovered by class, so new effects are added by creating a definition rather than maintaining a separate enum list.
 
-Perks and abilities are functional for the earlier active weapon audit surface: active perk levels grant feats, feat/spell/icon links exist, and the prior active weapon rows had ability definitions. The current local workbook adds or changes Force, Devices, First Aid, Pistol, and Throwing rows that now appear in the audit as missing code or missing ability definitions. Several bespoke mechanics are still first-pass approximations rather than exact simulations: channel ticks, persistent fields, target-count caps, positional bonuses, guarded-hit behavior, exact enmity math, and some critical-hit/offhand-delay effects.
+Perks and abilities are functional for the earlier active weapon audit surface and for the scoped Design-phase Beast Mastery, Devices, First Aid, Force, and Leadership rows. Active perk levels grant feats, feat/spell/icon links exist, and active Bible rows have ability definitions. Several bespoke mechanics are still first-pass approximations rather than exact simulations: channel ticks, persistent fields, target-count caps, positional bonuses, guarded-hit behavior, exact enmity math, and some critical-hit/offhand-delay effects.
 
-`feat.2da` and `spells.2da` are now linked for generated combat feats. The remaining 2DA risk is target metadata quality: generated spell rows use a generic medium-range creature target template until ability-specific target shape/range data is wired from the telegraph/ability implementation.
+`feat.2da` and `spells.2da` are now linked for generated combat feats. The remaining 2DA risk is target metadata quality: generated spell rows should be reviewed after ability-specific target shape/range behavior is confirmed in play.
 
 The `experimental/combat-upgrade-status-effects` branch was checked as a reference. It contains older alternate combat work such as one-handed/two-handed ability structures and a broader recast enum. Use it as reference material only, not as a clean source to copy wholesale into this branch.
 
 ## Next Steps
 
-1. Triage the local-workbook audit blockers, starting with Force, Devices, and First Aid missing perk/ability rows, then the Pistol and Throwing ability-definition gaps.
-2. Playtest conditional/channel/persistent-field abilities such as Current Overload, Serpent's Eclipse, Tempest Bloom, Pacification Field, Gas Bomb, Disruption Field, Shield Wall, Force Capacitor, and Infinite Conduit against the live module.
-3. Refine generated spell target metadata after any remaining ability-specific target shape/range adjustments are confirmed in play.
+1. Playtest conditional/channel/persistent-field abilities such as Current Overload, Serpent's Eclipse, Tempest Bloom, Pacification Field, Gas Bomb, Disruption Field, Shield Wall, Force Capacitor, and Infinite Conduit against the live module.
+2. Decide when Espionage should enter scope; it remains Design-stage and intentionally excluded from the current audit.
+3. Refine generated spell target metadata after any ability-specific target shape/range adjustments are confirmed in play.
 4. Keep `tools\UpdateCombatUpgradeAudit.ps1`, the build, and this status file aligned when the Bible changes.

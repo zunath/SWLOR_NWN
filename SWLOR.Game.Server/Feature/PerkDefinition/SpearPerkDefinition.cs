@@ -51,6 +51,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Attacks from the side have a 5% chance to bypass 35% of your target's Evasion. This chance increases by 1% per PER. (Maximum 30%)")
+                .IncreasesStat(StatType.SideAttackEvasionIgnoreChance, creature => EquipmentPredicates.HasMainHandSpear(creature) ? 5 : 0)
+                .IncreasesStat(StatType.SideAttackEvasionIgnoreChanceScalingAbility, creature => EquipmentPredicates.HasMainHandSpear(creature) ? (int)AbilityType.Perception + 1 : 0)
+                .IncreasesStat(StatType.SideAttackEvasionIgnoreChanceMaximum, creature => EquipmentPredicates.HasMainHandSpear(creature) ? 30 : 0)
+                .IncreasesStat(StatType.SideAttackEvasionIgnorePercent, creature => EquipmentPredicates.HasMainHandSpear(creature) ? 35 : 0)
                 .Price(4)
                 .RequirementSkill(SkillType.Spear, 48);
         }
@@ -127,6 +131,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Your Force Disruption effects last 50% longer and reduce Force Defense by an additional 10%.")
+                .IncreasesStat(StatType.OutgoingForceDisruptionDurationPercentAdjustment, creature => EquipmentPredicates.HasMainHandSpear(creature) ? 50 : 0)
+                .IncreasesStat(StatType.OutgoingForceDisruptionForceDefensePercentAdjustment, creature => EquipmentPredicates.HasMainHandSpear(creature) ? -10 : 0)
                 .Price(4)
                 .RequirementSkill(SkillType.Spear, 42);
         }
@@ -152,11 +158,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("When you damage a target, they receive Force Erosion which reduces Force Defense by 10% for 12 seconds.")
+                .IncreasesStat(StatType.DamageDealtForceErosionDurationSeconds, creature => EquipmentPredicates.HasMainHandSpear(creature) ? 12 : 0)
                 .Price(2)
                 .RequirementSkill(SkillType.Spear, 5)
 
                 .AddPerkLevel()
                 .Description("The Force Erosion effect additionally reduces FP by 2 every second.")
+                .IncreasesStat(StatType.DamageDealtForceErosionDurationSeconds, creature => EquipmentPredicates.HasMainHandSpear(creature) ? 12 : 0)
+                .IncreasesStat(StatType.DamageDealtForceErosionFPLossPerTick, creature => EquipmentPredicates.HasMainHandSpear(creature) ? 2 : 0)
                 .Price(2)
                 .RequirementSkill(SkillType.Spear, 32);
         }
@@ -182,11 +191,15 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Attacks from the side deal +10% damage.")
+                .IncreasesStat(StatType.SideAttackDamagePercentAdjustment, creature => EquipmentPredicates.HasMainHandSpear(creature) ? 10 : 0)
                 .Price(3)
                 .RequirementSkill(SkillType.Spear, 5)
 
                 .AddPerkLevel()
                 .Description("Attacks from the side have +10% accuracy and +8% critical chance.")
+                .IncreasesStat(StatType.SideAttackDamagePercentAdjustment, creature => EquipmentPredicates.HasMainHandSpear(creature) ? 10 : 0)
+                .IncreasesStat(StatType.SideAttackHitChancePercentAdjustment, creature => EquipmentPredicates.HasMainHandSpear(creature) ? 10 : 0)
+                .IncreasesStat(StatType.SideAttackCriticalRatePercentAdjustment, creature => EquipmentPredicates.HasMainHandSpear(creature) ? 8 : 0)
                 .Price(2)
                 .RequirementSkill(SkillType.Spear, 32);
         }
@@ -252,11 +265,19 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Increases Force Evasion by 15%.")
+                .IncreasesStat(StatType.IncomingAbilityHitChancePercentAdjustmentSkillType, creature => EquipmentPredicates.HasMainHandSpear(creature) ? (int)SkillType.Force : 0)
+                .IncreasesStat(StatType.IncomingAbilityHitChancePercentAdjustment, creature => EquipmentPredicates.HasMainHandSpear(creature) ? -15 : 0)
                 .Price(3)
                 .RequirementSkill(SkillType.Spear, 45)
 
                 .AddPerkLevel()
                 .Description("When a Force ability is evaded, you receive the Force Warding buff which increases your Force Defense by 30% for 20 seconds and restores 15 STM. This can only trigger once every 30 seconds.")
+                .IncreasesStat(StatType.IncomingAbilityHitChancePercentAdjustmentSkillType, creature => EquipmentPredicates.HasMainHandSpear(creature) ? (int)SkillType.Force : 0)
+                .IncreasesStat(StatType.IncomingAbilityHitChancePercentAdjustment, creature => EquipmentPredicates.HasMainHandSpear(creature) ? -15 : 0)
+                .IncreasesStat(StatType.ForceAbilityEvadedForceDefensePercentAdjustment, creature => EquipmentPredicates.HasMainHandSpear(creature) ? 30 : 0)
+                .IncreasesStat(StatType.ForceAbilityEvadedDurationSeconds, creature => EquipmentPredicates.HasMainHandSpear(creature) ? 20 : 0)
+                .IncreasesStat(StatType.ForceAbilityEvadedStaminaRestore, creature => EquipmentPredicates.HasMainHandSpear(creature) ? 15 : 0)
+                .IncreasesStat(StatType.ForceAbilityEvadedCooldownSeconds, creature => EquipmentPredicates.HasMainHandSpear(creature) ? 30 : 0)
                 .Price(4)
                 .RequirementSkill(SkillType.Spear, 48);
         }
@@ -340,11 +361,15 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Attacks from the side restore 2 STM. This can only trigger once every 4 seconds.")
+                .IncreasesStat(StatType.SideAttackStaminaRestore, creature => EquipmentPredicates.HasMainHandSpear(creature) ? 2 : 0)
+                .IncreasesStat(StatType.SideAttackStaminaRestoreCooldownSeconds, creature => EquipmentPredicates.HasMainHandSpear(creature) ? 4 : 0)
                 .Price(3)
                 .RequirementSkill(SkillType.Spear, 8)
 
                 .AddPerkLevel()
                 .Description("Attacks from the side restore 6 STM. This can only trigger once every 4 seconds.")
+                .IncreasesStat(StatType.SideAttackStaminaRestore, creature => EquipmentPredicates.HasMainHandSpear(creature) ? 6 : 0)
+                .IncreasesStat(StatType.SideAttackStaminaRestoreCooldownSeconds, creature => EquipmentPredicates.HasMainHandSpear(creature) ? 4 : 0)
                 .Price(2)
                 .RequirementSkill(SkillType.Spear, 22);
         }
@@ -357,6 +382,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("After dealing damage from a side attack, your next attack's delay is 20% quicker.")
+                .IncreasesStat(StatType.SideAttackDelayReductionPercent, creature => EquipmentPredicates.HasMainHandSpear(creature) ? 20 : 0)
+                .IncreasesStat(StatType.SideAttackDelayReductionDurationSeconds, creature => EquipmentPredicates.HasMainHandSpear(creature) ? 6 : 0)
                 .Price(4)
                 .RequirementSkill(SkillType.Spear, 35);
         }

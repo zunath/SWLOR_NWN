@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
                 8,
                 8,
                 typeof(BlindStatusEffect),
-                4);
+                3);
             ConfigureWeapon(
                 builder
                     .Create(FeatType.Slam2, PerkType.Slam)
@@ -45,7 +45,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
                 32,
                 12,
                 typeof(BlindStatusEffect),
-                7);
+                8);
 
             return builder.Build();
         }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
@@ -30,7 +31,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
                 .Level(1)
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.StaticPalm, 30f)
-                .HasImpactAction(ImpactAction)
+                .HasImpactAction(StaticPalm1ImpactAction)
                 .IsWeaponAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
@@ -45,7 +46,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
                 .Level(2)
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.StaticPalm, 30f)
-                .HasImpactAction(ImpactAction)
+                .HasImpactAction(StaticPalm2ImpactAction)
                 .IsWeaponAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
@@ -60,27 +61,30 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
                 .Level(3)
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.StaticPalm, 30f)
-                .HasImpactAction(ImpactAction)
+                .HasImpactAction(StaticPalm3ImpactAction)
                 .IsWeaponAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
                 .RequirementStamina(8);
         }
 
-        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        private static void StaticPalm1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            switch (level)
-            {
-                case 1:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Katar, 8, 8, typeof(DisorientedStatusEffect), false, damageType: CombatDamageType.Electrical);
-                    break;
-                case 2:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Katar, 18, 12, typeof(DisorientedStatusEffect), false, damageType: CombatDamageType.Electrical);
-                    break;
-                case 3:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Katar, 28, 15, typeof(DisorientedStatusEffect), false, new[] { typeof(DazedStatusEffect) }, damageType: CombatDamageType.Electrical);
-                    break;
-            }
+            Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Katar, 8, 8, typeof(DisorientedStatusEffect), false, damageType: CombatDamageType.Electrical);
+        }
+
+        private static void StaticPalm2ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        {
+            Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Katar, 18, 12, typeof(DisorientedStatusEffect), false, damageType: CombatDamageType.Electrical);
+        }
+
+        private static void StaticPalm3ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        {
+            var additionalStatusEffects = StatusEffect.HasStatusEffect(target, typeof(PoisonStatusEffect))
+                ? new[] { typeof(DazedStatusEffect) }
+                : Array.Empty<Type>();
+
+            Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Katar, 28, 15, typeof(DisorientedStatusEffect), false, additionalStatusEffects, damageType: CombatDamageType.Electrical);
         }
     }
 }

@@ -21,7 +21,7 @@ Each file is tab-separated. Import into Google Sheets with separator set to Tab.
 - Espionage has two 55 SP lines and is no longer a small side utility tree.
 - Beast perks use beast-specific SP. The old shared beast General bucket is removed from the purchasable beast pool; role tools are folded into each role line so a beast only buys perks from its own role.
 - No new perk grants raw attributes such as MGT, PER, VIT, WIL, AGI, or SOC.
-- Concentration is removed from Force.
+- Sustained Force upkeep mechanics are removed.
 - Devices avoids stealth and trap gameplay. Espionage owns stealth, slicing, traps, and poison.
 - First Aid is intended to be the best direct healing, cleanse, and recovery skill. Force, Devices, and Beast perks can provide alternatives, but with lower throughput, narrower targeting, or longer cooldowns.
 

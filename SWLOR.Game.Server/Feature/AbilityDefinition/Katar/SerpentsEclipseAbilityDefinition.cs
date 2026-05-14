@@ -27,22 +27,34 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
                 .Name("Serpent's Eclipse")
                 .Level(1)
                 .HasActivationDelay(2f)
-                .HasRecastDelay(RecastGroup.SerpentsEclipse, 1800f)
-                .HasImpactAction(ImpactAction)
+                .HasRecastDelay(RecastGroup.Capstone, 1800f)
+                .HasImpactAction(SerpentsEclipse1ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
                 .RequirementStamina(25);
         }
 
-        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        private static void SerpentsEclipse1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            switch (level)
-            {
-                case 1:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Katar, 25, 12, typeof(PoisonStatusEffect), true, additionalStatusEffects: new[] { typeof(DisorientedStatusEffect) }, damageType: CombatDamageType.Poison);
-                    break;
-            }
+            Ability.ApplyCombatImpact(
+                activator,
+                target,
+                targetLocation,
+                SkillType.Katar,
+                25,
+                12,
+                typeof(PoisonStatusEffect),
+                true,
+                additionalStatusEffects: new[] { typeof(DisorientedStatusEffect) },
+                damageType: CombatDamageType.Poison,
+                baseDamageAdjustment: creature => IsPoisonedOrDisoriented(creature) ? 30 : 0);
+        }
+
+        private static bool IsPoisonedOrDisoriented(uint target)
+        {
+            return StatusEffect.HasStatusEffect(target, typeof(PoisonStatusEffect)) ||
+                   StatusEffect.HasStatusEffect(target, typeof(DisorientedStatusEffect));
         }
     }
 }

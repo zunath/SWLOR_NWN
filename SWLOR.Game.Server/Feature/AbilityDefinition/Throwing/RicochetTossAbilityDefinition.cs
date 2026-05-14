@@ -10,6 +10,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
 {
     public class RicochetTossAbilityDefinition : IAbilityListDefinition
     {
+        private const float BounceRadius = 5f;
+
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
@@ -29,7 +31,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.RicochetToss, 60f)
                 .RequiresTarget()
-                .HasImpactAction(ImpactAction)
+                .HasImpactAction(RicochetToss1ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
@@ -45,23 +47,29 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.RicochetToss, 60f)
                 .RequiresTarget()
-                .HasImpactAction(ImpactAction)
+                .HasImpactAction(RicochetToss2ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
                 .RequirementStamina(10);
         }
 
-        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        private static void RicochetToss1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            switch (level)
+            ApplyRicochetToss(activator, target, targetLocation, 15, 3);
+        }
+
+        private static void RicochetToss2ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        {
+            ApplyRicochetToss(activator, target, targetLocation, 24, 5);
+        }
+
+        private static void ApplyRicochetToss(uint activator, uint target, Location targetLocation, int baseDamage, int maxTargets)
+        {
+            var impactLocation = AbilityTargeting.ResolveImpactLocation(activator, target, targetLocation);
+            foreach (var hostileTarget in AbilityTargeting.GetHostileTargetsNearLocation(activator, impactLocation, BounceRadius, maxTargets, target))
             {
-                case 1:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Throwing, 15, 0, null, false);
-                    break;
-                case 2:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Throwing, 24, 0, null, false);
-                    break;
+                Ability.ApplyCombatImpact(activator, hostileTarget, GetLocation(hostileTarget), SkillType.Throwing, baseDamage, 0, null, false);
             }
         }
     }

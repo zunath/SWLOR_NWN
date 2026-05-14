@@ -17,12 +17,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
                     .Create(FeatType.Forcebane1, PerkType.Forcebane)
                     .Name("Forcebane")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.Forcebane, 1800f),
+                    .HasRecastDelay(RecastGroup.Capstone, 1800f),
                 typeof(ForcebaneStatusEffect),
                 8f,
-                50,
+                25,
                 false,
-                fpDrainPercent: 50);
+                fpDrainPercent: 50,
+                activationDelay: 2f);
 
             return builder.Build();
         }

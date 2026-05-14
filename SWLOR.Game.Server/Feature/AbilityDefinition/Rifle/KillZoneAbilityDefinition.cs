@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                     .HasRecastDelay(RecastGroup.KillZone, 120f),
                 typeof(KillZoneStatusEffect),
                 20f,
-                6);
+                10);
 
             return builder.Build();
         }

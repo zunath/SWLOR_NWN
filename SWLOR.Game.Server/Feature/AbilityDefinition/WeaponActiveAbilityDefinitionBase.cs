@@ -13,6 +13,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 {
     public abstract class WeaponActiveAbilityDefinitionBase
     {
+        private const float ToggleActivationDelaySeconds = 2f;
+
         protected static void ConfigureWeapon(
             AbilityBuilder ability,
             SkillType skill,
@@ -162,7 +164,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             float lengthOrRadius,
             float width,
             int stamina,
-            bool centerOnActivator = false)
+            bool centerOnActivator = false,
+            int maxTargets = 0)
         {
             ability.HasActivationDelay(0f)
                 .SkillType(skill)
@@ -181,7 +184,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                         0.4f,
                         lengthOrRadius,
                         width,
-                        centerOnActivator: centerOnActivator);
+                        centerOnActivator: centerOnActivator,
+                        maxTargets: maxTargets);
                 })
                 .IsCastedAbility()
                 .IsHostileAbility()
@@ -193,7 +197,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
         protected static void ConfigureToggle(AbilityBuilder ability, Type type)
         {
-            ability.HasActivationDelay(0f)
+            ability.HasActivationDelay(ToggleActivationDelaySeconds)
                 .HasActivationAction((activator, target, level, targetLocation) => ToggleSelfStatus(activator, type))
                 .HasImpactAction((activator, target, level, targetLocation) =>
                 {
@@ -203,14 +207,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 .BreaksStealth();
         }
 
-        protected static void ConfigureSelfStatus(AbilityBuilder ability, Type type, float duration, int stamina, Action<uint> additionalAction = null)
+        protected static void ConfigureSelfStatus(AbilityBuilder ability, Type type, float duration, int stamina, Action<uint> additionalAction = null, float activationDelay = 0f)
         {
-            ConfigureSelfStatus(ability, () => (IStatusEffect)Activator.CreateInstance(type), duration, stamina, additionalAction);
+            ConfigureSelfStatus(ability, () => (IStatusEffect)Activator.CreateInstance(type), duration, stamina, additionalAction, activationDelay);
         }
 
-        protected static void ConfigureSelfStatus(AbilityBuilder ability, Func<IStatusEffect> statusEffectFactory, float duration, int stamina, Action<uint> additionalAction = null)
+        protected static void ConfigureSelfStatus(AbilityBuilder ability, Func<IStatusEffect> statusEffectFactory, float duration, int stamina, Action<uint> additionalAction = null, float activationDelay = 0f)
         {
-            ability.HasActivationDelay(0f)
+            ability.HasActivationDelay(activationDelay)
                 .HasImpactAction((activator, target, level, targetLocation) =>
                 {
                     var statusEffect = statusEffectFactory();
@@ -258,9 +262,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             int stamina,
             bool centerOnActivator,
             int fpDrainPercent = 0,
-            int restoreStamina = 0)
+            int restoreStamina = 0,
+            float activationDelay = 0f)
         {
-            ability.HasActivationDelay(0f)
+            ability.HasActivationDelay(activationDelay)
                 .HasImpactAction((activator, target, level, targetLocation) =>
                 {
                     ApplyStatusToNearbyEnemies(activator, target, targetLocation, type, duration, centerOnActivator, fpDrainPercent);

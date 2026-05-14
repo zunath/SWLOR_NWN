@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
                 .Level(1)
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.FortressStrike, 30f)
-                .HasImpactAction(ImpactAction)
+                .HasImpactAction(FortressStrike1ImpactAction)
                 .IsWeaponAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
@@ -45,7 +45,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
                 .Level(2)
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.FortressStrike, 30f)
-                .HasImpactAction(ImpactAction)
+                .HasImpactAction(FortressStrike2ImpactAction)
                 .IsWeaponAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
@@ -60,27 +60,26 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
                 .Level(3)
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.FortressStrike, 30f)
-                .HasImpactAction(ImpactAction)
+                .HasImpactAction(FortressStrike3ImpactAction)
                 .IsWeaponAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
                 .RequirementStamina(10);
         }
 
-        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        private static void FortressStrike1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            switch (level)
-            {
-                case 1:
-                    ApplyFortressStrike(activator, target, targetLocation, 10, 10);
-                    break;
-                case 2:
-                    ApplyFortressStrike(activator, target, targetLocation, 20, 20);
-                    break;
-                case 3:
-                    ApplyFortressStrike(activator, target, targetLocation, 30, 30);
-                    break;
-            }
+            ApplyFortressStrike(activator, target, targetLocation, 10, 10);
+        }
+
+        private static void FortressStrike2ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        {
+            ApplyFortressStrike(activator, target, targetLocation, 20, 20);
+        }
+
+        private static void FortressStrike3ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        {
+            ApplyFortressStrike(activator, target, targetLocation, 30, 30);
         }
 
         private static void ApplyFortressStrike(

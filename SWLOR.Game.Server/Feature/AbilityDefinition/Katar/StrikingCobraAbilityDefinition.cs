@@ -47,7 +47,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
                 28,
                 60,
                 typeof(PoisonStatusEffect),
-                7,
+                8,
                 damageType: CombatDamageType.Poison);
 
             return builder.Build();

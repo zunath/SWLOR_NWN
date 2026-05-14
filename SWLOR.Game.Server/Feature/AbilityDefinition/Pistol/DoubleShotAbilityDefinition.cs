@@ -27,17 +27,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
 
         private static void DoubleShot1(AbilityBuilder builder)
         {
-            DoubleShot(builder, FeatType.DoubleShot1, "Double Shot I", level: 1, stamina: 5);
+            DoubleShot(builder, FeatType.DoubleShot1, "Double Shot I", level: 1, stamina: 5, DoubleShot1ImpactAction);
         }
 
         private static void DoubleShot2(AbilityBuilder builder)
         {
-            DoubleShot(builder, FeatType.DoubleShot2, "Double Shot II", level: 2, stamina: 6);
+            DoubleShot(builder, FeatType.DoubleShot2, "Double Shot II", level: 2, stamina: 6, DoubleShot2ImpactAction);
         }
 
         private static void DoubleShot3(AbilityBuilder builder)
         {
-            DoubleShot(builder, FeatType.DoubleShot3, "Double Shot III", level: 3, stamina: 8);
+            DoubleShot(builder, FeatType.DoubleShot3, "Double Shot III", level: 3, stamina: 8, DoubleShot3ImpactAction);
         }
 
         private static void DoubleShot(
@@ -45,7 +45,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
             FeatType feat,
             string name,
             int level,
-            int stamina)
+            int stamina,
+            AbilityImpactAction impactAction)
         {
             builder
                 .Create(feat, PerkType.DoubleShot)
@@ -56,28 +57,30 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 .SkillType(Skill)
                 .IsSingleTargetAbility()
                 .RequiresTarget()
-                .HasImpactAction(ImpactAction)
+                .HasImpactAction(impactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
                 .RequirementStamina(stamina);
         }
 
-        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        private static void DoubleShot1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            var damage = level switch
-            {
-                1 => 7,
-                2 => 15,
-                3 => 24,
-                _ => 0
-            };
+            ApplyDoubleShot(activator, target, targetLocation, 7);
+        }
 
-            if (damage <= 0)
-                return;
+        private static void DoubleShot2ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        {
+            ApplyDoubleShot(activator, target, targetLocation, 15);
+        }
 
-            damage += Combat.GetAbilityDamageFlatAdjustment(activator, PerkType.DoubleShot);
+        private static void DoubleShot3ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        {
+            ApplyDoubleShot(activator, target, targetLocation, 24);
+        }
 
+        private static void ApplyDoubleShot(uint activator, uint target, Location targetLocation, int damage)
+        {
             for (var hit = 0; hit < HitCount; hit++)
             {
                 Ability.ApplyCombatImpact(

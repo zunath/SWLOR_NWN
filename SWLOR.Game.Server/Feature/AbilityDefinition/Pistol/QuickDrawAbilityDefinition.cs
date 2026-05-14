@@ -29,22 +29,22 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
 
         private static void QuickDraw1(AbilityBuilder builder)
         {
-            QuickDraw(builder, FeatType.QuickDraw1, "Quick Draw I", level: 1, stamina: 3);
+            QuickDraw(builder, FeatType.QuickDraw1, "Quick Draw I", level: 1, stamina: 3, QuickDraw1ImpactAction);
         }
 
         private static void QuickDraw2(AbilityBuilder builder)
         {
-            QuickDraw(builder, FeatType.QuickDraw2, "Quick Draw II", level: 2, stamina: 5);
+            QuickDraw(builder, FeatType.QuickDraw2, "Quick Draw II", level: 2, stamina: 5, QuickDraw2ImpactAction);
         }
 
         private static void QuickDraw3(AbilityBuilder builder)
         {
-            QuickDraw(builder, FeatType.QuickDraw3, "Quick Draw III", level: 3, stamina: 8);
+            QuickDraw(builder, FeatType.QuickDraw3, "Quick Draw III", level: 3, stamina: 8, QuickDraw3ImpactAction);
         }
 
         private static void QuickDraw4(AbilityBuilder builder)
         {
-            QuickDraw(builder, FeatType.QuickDraw4, "Quick Draw IV", level: 4, stamina: 10);
+            QuickDraw(builder, FeatType.QuickDraw4, "Quick Draw IV", level: 4, stamina: 10, QuickDraw4ImpactAction);
         }
 
         private static void QuickDraw(
@@ -52,7 +52,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
             FeatType feat,
             string name,
             int level,
-            int stamina)
+            int stamina,
+            AbilityImpactAction impactAction)
         {
             builder
                 .Create(feat, PerkType.QuickDraw)
@@ -63,33 +64,39 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 .SkillType(Skill)
                 .IsSingleTargetAbility()
                 .RequiresTarget()
-                .HasImpactAction(ImpactAction)
+                .HasImpactAction(impactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
                 .RequirementStamina(stamina);
         }
 
-        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        private static void QuickDraw1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            var damage = level switch
-            {
-                1 => 12,
-                2 => 24,
-                3 => 36,
-                4 => 50,
-                _ => 0
-            };
+            ApplyQuickDraw(activator, target, targetLocation, 12, false);
+        }
 
-            if (damage <= 0)
-                return;
+        private static void QuickDraw2ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        {
+            ApplyQuickDraw(activator, target, targetLocation, 24, false);
+        }
 
-            if (level == 4 && GetCurrentHitPoints(target) <= GetMaxHitPoints(target) * LowHPThreshold)
+        private static void QuickDraw3ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        {
+            ApplyQuickDraw(activator, target, targetLocation, 36, false);
+        }
+
+        private static void QuickDraw4ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        {
+            ApplyQuickDraw(activator, target, targetLocation, 50, true);
+        }
+
+        private static void ApplyQuickDraw(uint activator, uint target, Location targetLocation, int damage, bool appliesLowHPBonus)
+        {
+            if (appliesLowHPBonus && GetCurrentHitPoints(target) <= GetMaxHitPoints(target) * LowHPThreshold)
             {
                 damage += LowHPDamageBonus;
             }
-
-            damage += Combat.GetAbilityDamageFlatAdjustment(activator, PerkType.QuickDraw);
 
             Ability.ApplyCombatImpact(
                 activator,

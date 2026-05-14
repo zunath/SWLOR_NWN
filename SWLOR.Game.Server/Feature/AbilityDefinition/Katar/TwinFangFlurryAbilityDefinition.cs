@@ -28,22 +28,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.TwinFangFlurry, 60f)
                 .RequiresTarget()
-                .HasImpactAction(ImpactAction)
+                .HasImpactAction(TwinFangFlurry1ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
                 .RequirementStamina(8);
         }
 
-        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        private static void TwinFangFlurry1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            switch (level)
-            {
-                case 1:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Katar, 10, 0, null, false);
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Katar, 10, 30, StatusEffect.HasStatusEffect(target, typeof(PoisonStatusEffect)) ? typeof(BleedStatusEffect) : null, false);
-                    break;
-            }
+            Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Katar, 10, 0, null, false);
+            Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Katar, 10, 30, StatusEffect.HasStatusEffect(target, typeof(PoisonStatusEffect)) ? typeof(BleedStatusEffect) : null, false);
         }
     }
 }

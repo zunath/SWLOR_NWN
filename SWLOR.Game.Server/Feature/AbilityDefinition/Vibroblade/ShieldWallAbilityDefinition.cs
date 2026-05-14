@@ -21,7 +21,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
                 typeof(ShieldWallStatusEffect),
                 60f,
                 10,
-                true);
+                true,
+                6f);
 
             return builder.Build();
         }

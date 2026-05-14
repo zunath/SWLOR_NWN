@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
@@ -59,32 +58,6 @@ namespace SWLOR.Game.Server.Service.AbilityService
             _activeAbility.ActivationType = AbilityActivationType.Weapon;
 
             return this;
-        }
-
-        /// <summary>
-        /// Indicates this is a concentration ability which stays active and drains resources until turned off or player runs out of required resources.
-        /// A corresponding status effect must also be defined and this will be applied when the concentration ability is activated and removed when it ends.
-        /// </summary>
-        /// <param name="concentrationStatusEffect">The status effect to use for this concentration ability.</param>
-        /// <returns>An ability builder with the configured options.</returns>
-        public AbilityBuilder IsConcentrationAbility(Type concentrationStatusEffect)
-        {
-            _activeAbility.ActivationType = AbilityActivationType.Concentration;
-            _activeAbility.ConcentrationStatusEffect = concentrationStatusEffect;
-
-            return this;
-        }
-
-        /// <summary>
-        /// Indicates this is a concentration ability which stays active and drains resources until turned off or player runs out of required resources.
-        /// A corresponding status effect must also be defined and this will be applied when the concentration ability is activated and removed when it ends.
-        /// </summary>
-        /// <typeparam name="T">The status effect to use for this concentration ability.</typeparam>
-        /// <returns>An ability builder with the configured options.</returns>
-        public AbilityBuilder IsConcentrationAbility<T>()
-            where T : IStatusEffect
-        {
-            return IsConcentrationAbility(typeof(T));
         }
 
         /// <summary>
@@ -156,7 +129,6 @@ namespace SWLOR.Game.Server.Service.AbilityService
         /// Impact actions are fired when a ability is used. The timing of when it fires depends on the activation type.
         /// "Casted" abilities fire the impact action at the end of the casting phase.
         /// "Queued" abilities fire the impact action on the next weapon hit.
-        /// "Concentration" abilities fire the impact action on each concentration cycle.
         /// </summary>
         /// <param name="action">The action to fire when an ability impacts a target.</param>
         /// <returns>An ability builder with the configured options</returns>
@@ -291,6 +263,30 @@ namespace SWLOR.Game.Server.Service.AbilityService
         }
 
         /// <summary>
+        /// Adds an item requirement to use the ability at this level.
+        /// </summary>
+        /// <param name="itemResref">The resref of the required inventory item.</param>
+        /// <param name="quantity">The number of items consumed on activation.</param>
+        /// <param name="preservePerkType">Optional perk that can preserve the consumed item.</param>
+        /// <param name="preserveChancePerLevel">Percent chance per preserve perk level to preserve the item.</param>
+        /// <returns>An ability builder with the configured options</returns>
+        public AbilityBuilder RequirementItem(
+            string itemResref,
+            int quantity = 1,
+            PerkType preservePerkType = PerkType.Invalid,
+            int preserveChancePerLevel = 0)
+        {
+            var requirement = new AbilityRequirementItem(
+                itemResref,
+                quantity,
+                preservePerkType,
+                preserveChancePerLevel);
+            _activeAbility.Requirements.Add(requirement);
+
+            return this;
+        }
+
+        /// <summary>
         /// Indicates this ability is a hostile ability and should not target friendlies.
         /// </summary>
         /// <returns>An ability builder with the configured options</returns>
@@ -343,6 +339,13 @@ namespace SWLOR.Game.Server.Service.AbilityService
         {
             _activeAbility.IsSingleTargetAbility = true;
             _activeAbility.IsAreaAbility = false;
+
+            return this;
+        }
+
+        public AbilityBuilder TriggersDarkForceConversion()
+        {
+            _activeAbility.TriggersDarkForceConversion = true;
 
             return this;
         }

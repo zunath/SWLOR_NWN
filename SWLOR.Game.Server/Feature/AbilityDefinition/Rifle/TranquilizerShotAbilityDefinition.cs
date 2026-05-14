@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 SkillType.Rifle,
                 0,
                 8,
-                typeof(DazedStatusEffect),
+                typeof(TranquilizedStatusEffect),
                 4);
             ConfigureWeapon(
                 builder
@@ -32,8 +32,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 SkillType.Rifle,
                 0,
                 14,
-                typeof(DazedStatusEffect),
-                5);
+                typeof(TranquilizedStatusEffect),
+                6);
 
             return builder.Build();
         }

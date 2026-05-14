@@ -21,8 +21,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                     .HasRecastDelay(RecastGroup.Decoy, 30f),
                 typeof(DecoyStatusEffect),
                 12f,
-                25,
-                true);
+                12,
+                true,
+                activationDelay: 1f);
 
             return builder.Build();
         }

@@ -94,7 +94,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                     var npcStats = Stat.GetNPCStats(target);
                     var social = GetAbilityScore(activator, AbilityType.Social);
                     var baseChance = 40 + (skill - npcStats.Level) * 3;
-                    var chance = Stat.ScaleEffect(baseChance, social);
+                    var chance = baseChance + social;
 
                     if (chance > 95)
                         chance = 95;

@@ -509,11 +509,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 if (GetHasFeat(feat, target)) continue;
                 CreaturePlugin.AddFeatByLevel(target, feat, 1);
 
-                // If feat isn't registered or the ability doesn't have an impact or concentration action,
+                // If feat isn't registered or the ability doesn't have an impact action,
                 // don't add the feat to the player's hot bar.
                 if (!Ability.IsFeatRegistered(feat)) continue;
                 var abilityDetail = Ability.GetAbilityDetail(feat);
-                if (abilityDetail.ImpactAction == null && abilityDetail.ConcentrationStatusEffect == null) continue;
+                if (abilityDetail.ImpactAction == null) continue;
 
                 AddFeatToHotBar(feat);
             }

@@ -49,7 +49,6 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             SetLocalFloat(creature, "REST_POSITION_Z", position.Z);
 
             Activity.SetBusy(creature, ActivityStatusType.Resting);
-            Ability.EndConcentrationAbility(creature);
 
             DelayCommand(0.5f, () => CheckMovement(creature));
             ExecuteScript(ScriptName.OnRestStarted, creature);

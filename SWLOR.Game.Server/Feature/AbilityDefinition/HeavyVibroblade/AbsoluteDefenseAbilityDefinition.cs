@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
                 .Name("Absolute Defense")
                 .Level(1)
                 .HasActivationDelay(0f)
-                .HasRecastDelay(RecastGroup.AbsoluteDefense, 1800f)
+                .HasRecastDelay(RecastGroup.Capstone, 1800f)
                 .HasImpactAction((activator, target, level, targetLocation) =>
                 {
                     ApplyStatusToNearbyParty(activator, typeof(AbsoluteDefenseStatusEffect), 15f, false);

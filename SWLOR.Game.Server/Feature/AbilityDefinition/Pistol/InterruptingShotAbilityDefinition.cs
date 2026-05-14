@@ -26,12 +26,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
 
         private static void InterruptingShot1(AbilityBuilder builder)
         {
-            InterruptingShot(builder, FeatType.InterruptingShot1, "Interrupting Shot I", level: 1, stamina: 6);
+            InterruptingShot(builder, FeatType.InterruptingShot1, "Interrupting Shot I", level: 1, stamina: 6, InterruptingShot1ImpactAction);
         }
 
         private static void InterruptingShot2(AbilityBuilder builder)
         {
-            InterruptingShot(builder, FeatType.InterruptingShot2, "Interrupting Shot II", level: 2, stamina: 8);
+            InterruptingShot(builder, FeatType.InterruptingShot2, "Interrupting Shot II", level: 2, stamina: 8, InterruptingShot2ImpactAction);
         }
 
         private static void InterruptingShot(
@@ -39,7 +39,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
             FeatType feat,
             string name,
             int level,
-            int stamina)
+            int stamina,
+            AbilityImpactAction impactAction)
         {
             builder
                 .Create(feat, PerkType.InterruptingShot)
@@ -50,25 +51,25 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 .SkillType(Skill)
                 .IsSingleTargetAbility()
                 .RequiresTarget()
-                .HasImpactAction(ImpactAction)
+                .HasImpactAction(impactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
                 .RequirementStamina(stamina);
         }
 
-        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        private static void InterruptingShot1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            var (baseDamage, duration) = level switch
-            {
-                1 => (0, 12),
-                2 => (20, 20),
-                _ => (0, 0)
-            };
+            ApplyInterruptingShot(activator, target, targetLocation, 0, 12);
+        }
 
-            if (duration <= 0)
-                return;
+        private static void InterruptingShot2ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        {
+            ApplyInterruptingShot(activator, target, targetLocation, 20, 20);
+        }
 
+        private static void ApplyInterruptingShot(uint activator, uint target, Location targetLocation, int baseDamage, int duration)
+        {
             AssignCommand(target, () => ClearAllActions());
             Ability.ApplyCombatImpact(
                 activator,

@@ -1,6 +1,7 @@
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 using System.Collections.Generic;
 
@@ -114,6 +115,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Each bleeding enemy within 10m grants you +3% Attack (max +15%).")
+                .IncreasesStat(StatType.NearbyStatusTargetAttackPercentPerTarget, creature => EquipmentPredicates.HasMainHandVibroblade(creature) ? 3 : 0)
+                .IncreasesStat(StatType.NearbyStatusTargetAttackRadiusMeters, creature => EquipmentPredicates.HasMainHandVibroblade(creature) ? 10 : 0)
+                .IncreasesStat(StatType.NearbyStatusTargetAttackPercentMaximum, creature => EquipmentPredicates.HasMainHandVibroblade(creature) ? 15 : 0)
+                .IncreasesStat(StatType.NearbyStatusTargetAttackStatusCategory, creature => EquipmentPredicates.HasMainHandVibroblade(creature) ? (int)StatusEffectCategory.Bleeding : 0)
                 .Price(3)
                 .RequirementSkill(SkillType.Vibroblade, 42);
         }
@@ -178,6 +183,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Receive Guardian's Riposte after deflecting an attack with a shield. Your next attack within 12s deals +10 DMG.")
+                .IncreasesStat(StatType.DeflectionNextSkillAbilityDamageBonus, creature => EquipmentPredicates.HasOffHandShield(creature) ? 10 : 0)
+                .IncreasesStat(StatType.DeflectionNextSkillAbilityDamageBonusWindowSeconds, creature => EquipmentPredicates.HasOffHandShield(creature) ? 12 : 0)
                 .Price(3)
                 .RequirementSkill(SkillType.Vibroblade, 30);
         }
@@ -237,19 +244,19 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Grants +15 Shield Deflection with shield equipped.")
-                .IncreasesStat(StatType.AttackDeflection, creature => EquipmentPredicates.HasOffHandShield(creature) ? 15 : 0)
+                .IncreasesStat(StatType.ShieldDeflection, creature => EquipmentPredicates.HasOffHandShield(creature) ? 15 : 0)
                 .Price(2)
                 .RequirementSkill(SkillType.Vibroblade, 10)
 
                 .AddPerkLevel()
                 .Description("Grants +25 Shield Deflection with shield equipped total.")
-                .IncreasesStat(StatType.AttackDeflection, creature => EquipmentPredicates.HasOffHandShield(creature) ? 25 : 0)
+                .IncreasesStat(StatType.ShieldDeflection, creature => EquipmentPredicates.HasOffHandShield(creature) ? 25 : 0)
                 .Price(3)
                 .RequirementSkill(SkillType.Vibroblade, 28)
 
                 .AddPerkLevel()
                 .Description("Grants +35 Shield Deflection with shield equipped total.")
-                .IncreasesStat(StatType.AttackDeflection, creature => EquipmentPredicates.HasOffHandShield(creature) ? 35 : 0)
+                .IncreasesStat(StatType.ShieldDeflection, creature => EquipmentPredicates.HasOffHandShield(creature) ? 35 : 0)
                 .Price(4)
                 .RequirementSkill(SkillType.Vibroblade, 40);
         }

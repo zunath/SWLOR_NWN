@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
                 .Level(1)
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.ConcussiveToss, 60f)
-                .HasImpactAction(ImpactAction)
+                .HasImpactAction(ConcussiveToss1ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
@@ -43,24 +43,21 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
                 .Level(2)
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.ConcussiveToss, 60f)
-                .HasImpactAction(ImpactAction)
+                .HasImpactAction(ConcussiveToss2ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
                 .RequirementStamina(8);
         }
 
-        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        private static void ConcussiveToss1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            switch (level)
-            {
-                case 1:
-                    Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.Throwing, 14, 2, typeof(DazedStatusEffect), CombatImpactAreaShape.Sphere, 0.25f, 5f);
-                    break;
-                case 2:
-                    Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.Throwing, 26, 3, typeof(DazedStatusEffect), CombatImpactAreaShape.Sphere, 0.25f, 5f);
-                    break;
-            }
+            Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.Throwing, 14, 2, typeof(DazedStatusEffect), CombatImpactAreaShape.Sphere, 0.25f, 5f);
+        }
+
+        private static void ConcussiveToss2ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        {
+            Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.Throwing, 26, 3, typeof(DazedStatusEffect), CombatImpactAreaShape.Sphere, 0.25f, 5f);
         }
     }
 }

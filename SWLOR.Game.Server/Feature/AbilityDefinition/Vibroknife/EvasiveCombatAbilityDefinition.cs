@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                     .HasRecastDelay(RecastGroup.EvasiveCombat, 300f),
                 typeof(EvasiveCombatStatusEffect),
                 30f,
-                10,
+                4,
                 activator => Enmity.ModifyEnmityOnAll(activator, -150));
             ConfigureSelfStatus(
                 builder
@@ -31,7 +31,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                     .HasRecastDelay(RecastGroup.EvasiveCombat, 300f),
                 typeof(EvasiveCombatStatusEffect),
                 30f,
-                20,
+                8,
                 activator => Enmity.ModifyEnmityOnAll(activator, -250));
 
             return builder.Build();

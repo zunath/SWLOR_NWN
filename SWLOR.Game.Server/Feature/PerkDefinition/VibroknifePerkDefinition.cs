@@ -49,6 +49,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Debuffs you apply last +30% longer.")
+                .IncreasesStat(StatType.OutgoingDebuffDurationPercentAdjustment, creature => EquipmentPredicates.HasMainHandVibroknife(creature) ? 30 : 0)
                 .Price(2)
                 .RequirementSkill(SkillType.Vibroknife, 45);
         }
@@ -60,6 +61,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("After dealing a critical hit, your next attack within 8 seconds ignores 20% of Defense.")
+                .IncreasesStat(StatType.CriticalNextSkillAbilityDefenseIgnorePercentAdjustment, creature => EquipmentPredicates.HasMainHandVibroknife(creature) ? 20 : 0)
+                .IncreasesStat(StatType.CriticalNextSkillAbilityDefenseIgnoreDurationSeconds, creature => EquipmentPredicates.HasMainHandVibroknife(creature) ? 8 : 0)
                 .Price(3)
                 .RequirementSkill(SkillType.Vibroknife, 25);
         }
@@ -177,7 +180,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.DebilitatingStance1)
-                .Description("While active, your attacks inflict Hindered which slows attack speed by 15% for 8 seconds but reduces your attack by 10%.")
+                .Description("While active, your attacks inflict Hamstring, reducing movement speed by 20% for 8 seconds, but reduces your attack by 10%.")
                 .Price(4)
                 .RequirementSkill(SkillType.Vibroknife, 30);
         }
@@ -255,19 +258,19 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Hamstring1)
-                .Description("Your next attack deals +8 DMG. Inflicts Hamstring, slowing attack speed by 20% for 12 seconds.")
+                .Description("Your next attack deals +8 DMG. Inflicts Hamstring, reducing movement speed by 20% for 12 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Vibroknife, 10)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Hamstring2)
-                .Description("Your next attack deals +18 DMG. Inflicts Hamstring, slowing attack speed by 20% for 12 seconds.")
+                .Description("Your next attack deals +18 DMG. Inflicts Hamstring, reducing movement speed by 20% for 12 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Vibroknife, 18)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Hamstring3)
-                .Description("Your next attack deals +28 DMG. Inflicts Hamstring, slowing attack speed by 20% for 12 seconds.")
+                .Description("Your next attack deals +28 DMG. Inflicts Hamstring, reducing movement speed by 20% for 12 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Vibroknife, 32);
         }
@@ -315,6 +318,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Grants +15% Critical Rate against targets not facing you.")
+                .IncreasesStat(StatType.CriticalRateAgainstTargetNotFacingAttackerPercentAdjustment, creature => EquipmentPredicates.HasMainHandVibroknife(creature) ? 15 : 0)
                 .Price(3)
                 .RequirementSkill(SkillType.Vibroknife, 22);
         }
@@ -374,7 +378,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SmokeBomb)
-                .Description("All enemies in the selected area make a Trauma resistance check; on failure they receive Smoke Bomb, reducing Accuracy by 20% for 12 seconds.")
+                .Description("All enemies in the selected area are afflicted with Smoke Bomb, reducing Accuracy by 20% for 12 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Vibroknife, 40);
         }

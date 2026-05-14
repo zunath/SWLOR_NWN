@@ -29,34 +29,29 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                 .Level(1)
                 .HasActivationDelay(2f)
                 .HasRecastDelay(RecastGroup.SmokeBomb, 30f)
-                .HasImpactAction(ImpactAction)
+                .HasImpactAction(SmokeBombImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
                 .RequirementStamina(10);
         }
 
-        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        private static void SmokeBombImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            switch (level)
-            {
-                case 1:
-                    Ability.ApplyTelegraphedCombatImpact(
-                        activator,
-                        target,
-                        targetLocation,
-                        SkillType.Vibroknife,
-                        0,
-                        12,
-                        typeof(SmokeBombStatusEffect),
-                        CombatImpactAreaShape.Sphere,
-                        0.25f,
-                        5f,
-                        statusResistanceType: ResistanceType.Trauma,
-                        targetVisualEffect: VisualEffect.Vfx_Fnf_Smoke_Puff,
-                        areaVisualEffect: VisualEffect.Vfx_Fnf_Smoke_Puff);
-                    break;
-            }
+            Ability.ApplyTelegraphedCombatImpact(
+                activator,
+                target,
+                targetLocation,
+                SkillType.Vibroknife,
+                0,
+                12,
+                typeof(SmokeBombStatusEffect),
+                CombatImpactAreaShape.Sphere,
+                0.25f,
+                5f,
+                statusResistanceType: ResistanceType.Trauma,
+                targetVisualEffect: VisualEffect.Vfx_Fnf_Smoke_Puff,
+                areaVisualEffect: VisualEffect.Vfx_Fnf_Smoke_Puff);
         }
     }
 }

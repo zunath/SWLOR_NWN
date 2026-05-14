@@ -28,8 +28,10 @@ namespace SWLOR.Game.Server.Service
         private const float DefaultPlayerMovementSpeedIncrease = 0.25f;
         private const float DefaultCompanionMovementSpeedIncrease = 0.25f;
         private const float DefaultNPCMovementSpeedIncrease = 0.30f;
-        private const int BaseLightsaberAttackDeflectionChance = 5;
-        private const int MaximumAttackDeflectionChance = 100;
+        private const int DefaultAttackDeflectionChanceCap = 50;
+        private const int MaximumDeflectionChanceCap = 100;
+        private const int MaximumShieldDeflectionChance = 75;
+        private const int MaximumGuardChance = 100;
         private const float DeflectionEvasionBoostDurationSeconds = 10f;
         private const float DeflectionEnmityBoostDurationSeconds = 12f;
         private const float DeflectionDefenseBoostDurationSeconds = 12f;
@@ -226,6 +228,9 @@ namespace SWLOR.Game.Server.Service
         /// <param name="dbPlayer">The player entity to modify. If this is not set, a call to the DB will be made. Leave null for NPCs.</param>
         public static void RestoreFP(uint creature, int amount, Player dbPlayer = null)
         {
+            if (amount <= 0) return;
+
+            amount = ApplyFPRestoreAdjustment(creature, amount);
             if (amount <= 0) return;
 
             var maxFP = GetMaxFP(creature);
@@ -994,6 +999,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             adjustment += GetHighFPAndStaminaAttackAdjustment(creature);
+            adjustment += Combat.GetNearbyStatusTargetAttackAdjustment(creature);
             return Math.Max(1, ApplyPercentAdjustment(attack, adjustment));
         }
 
@@ -1301,22 +1307,33 @@ namespace SWLOR.Game.Server.Service
             return ApplyPostEvasionStatusModifiers(creature.m_idSelf, evasion);
         }
 
-        public static int GetRangedAttackDeflectionChanceNative(CNWSCreature creature)
+        public static int GetAttackDeflectionChanceNative(CNWSCreature creature)
         {
-            var chance = Item.IsBaseItemType(
-                    creature.m_pInventory.GetItemInSlot((uint)EquipmentSlot.RightHand),
-                    Item.LightsaberBaseItemTypes)
-                ? BaseLightsaberAttackDeflectionChance
-                : 0;
+            if (!HasWeaponEquippedForAttackDeflectionNative(creature) || HasShieldEquippedNative(creature))
+                return 0;
 
-            chance += GetStatAdjustment(creature.m_idSelf, StatType.AttackDeflection);
-
-            return Math.Clamp(chance, 0, MaximumAttackDeflectionChance);
+            var chance = GetStatAdjustment(creature.m_idSelf, StatType.AttackDeflection);
+            return Math.Clamp(chance, 0, GetAttackDeflectionChanceCap(creature.m_idSelf));
         }
 
-        public static void ApplyAttackDeflectionEffectsNative(CNWSCreature creature)
+        public static int GetShieldDeflectionChanceNative(CNWSCreature creature)
+        {
+            if (!HasShieldEquippedNative(creature))
+                return 0;
+
+            var chance = GetStatAdjustment(creature.m_idSelf, StatType.ShieldDeflection);
+            return Math.Clamp(chance, 0, MaximumShieldDeflectionChance);
+        }
+
+        public static int GetGuardChance(uint creature)
+        {
+            return Math.Clamp(GetStatAdjustment(creature, StatType.Guard), 0, MaximumGuardChance);
+        }
+
+        public static void ApplyDeflectionEffectsNative(CNWSCreature creature)
         {
             var creatureId = creature.m_idSelf;
+
             var staminaRestore = GetStatAdjustment(creatureId, StatType.DeflectionStaminaRestore);
             var fpRestore = GetStatAdjustment(creatureId, StatType.DeflectionFPRestore);
             var staminaRestorePercent = GetStatAdjustment(creatureId, StatType.DeflectionStaminaRestorePercent);
@@ -1328,6 +1345,13 @@ namespace SWLOR.Game.Server.Service
             var nextAbilityDamagePerkType = GetStatAdjustment(creatureId, StatType.DeflectionNextAbilityDamageBonusPerkType);
             var nextAbilityDamageBonus = GetStatAdjustment(creatureId, StatType.DeflectionNextAbilityDamageBonus);
             var nextAbilityDamageDuration = GetStatAdjustment(creatureId, StatType.DeflectionNextAbilityDamageBonusDurationSeconds);
+            var nextSkillAbilitySkillType = GetMainHandSkillTypeNative(creature);
+            var nextSkillAbilityDamageBonus = GetStatAdjustment(creatureId, StatType.DeflectionNextSkillAbilityDamageBonus);
+            var nextSkillAbilityCriticalRate = GetStatAdjustment(creatureId, StatType.DeflectionNextSkillAbilityCriticalRatePercentAdjustment);
+            var nextSkillAbilityNoDelay = GetStatAdjustment(creatureId, StatType.DeflectionNextSkillAbilityNoDelay);
+            var nextSkillAbilityDamageWindow = GetStatAdjustment(creatureId, StatType.DeflectionNextSkillAbilityDamageBonusWindowSeconds);
+            var nextSkillAbilityCriticalWindow = GetStatAdjustment(creatureId, StatType.DeflectionNextSkillAbilityCriticalRateWindowSeconds);
+            var nextSkillAbilityNoDelayWindow = GetStatAdjustment(creatureId, StatType.DeflectionNextSkillAbilityNoDelayWindowSeconds);
 
             if (staminaRestore > 0)
             {
@@ -1392,6 +1416,52 @@ namespace SWLOR.Game.Server.Service
                 nextAbilityDamagePerkType,
                 nextAbilityDamageBonus,
                 nextAbilityDamageDuration);
+
+            Combat.GrantNextSkillAbilityBonuses(
+                creatureId,
+                nextSkillAbilitySkillType,
+                nextSkillAbilityDamageBonus,
+                nextSkillAbilityCriticalRate,
+                Math.Max(nextSkillAbilityDamageWindow, nextSkillAbilityCriticalWindow));
+
+            if (nextSkillAbilityNoDelay > 0)
+            {
+                Combat.GrantNextAbilityNoDelay(
+                    creatureId,
+                    nextSkillAbilitySkillType,
+                    nextSkillAbilityNoDelayWindow);
+            }
+        }
+
+        private static int GetAttackDeflectionChanceCap(uint creature)
+        {
+            var cap = GetStatAdjustment(creature, StatType.AttackDeflectionChanceCap);
+            if (cap <= 0)
+                cap = DefaultAttackDeflectionChanceCap;
+
+            return Math.Clamp(cap, DefaultAttackDeflectionChanceCap, MaximumDeflectionChanceCap);
+        }
+
+        private static bool HasWeaponEquippedForAttackDeflectionNative(CNWSCreature creature)
+        {
+            var rightHandItem = creature.m_pInventory.GetItemInSlot((uint)EquipmentSlot.RightHand);
+            return rightHandItem != null && !Item.IsBaseItemType(rightHandItem, Item.ShieldBaseItemTypes);
+        }
+
+        private static SkillType GetMainHandSkillTypeNative(CNWSCreature creature)
+        {
+            var rightHandItem = creature.m_pInventory.GetItemInSlot((uint)EquipmentSlot.RightHand);
+            if (rightHandItem == null)
+                return SkillType.Invalid;
+
+            return Skill.GetSkillTypeByBaseItem((BaseItem)rightHandItem.m_nBaseItem);
+        }
+
+        private static bool HasShieldEquippedNative(CNWSCreature creature)
+        {
+            return Item.IsBaseItemType(
+                creature.m_pInventory.GetItemInSlot((uint)EquipmentSlot.LeftHand),
+                Item.ShieldBaseItemTypes);
         }
 
         private static int ApplyPostAccuracyStatusModifiers(uint creature, int accuracy)
@@ -1451,6 +1521,72 @@ namespace SWLOR.Game.Server.Service
             var temporaryAdjustment = TemporaryStatModifier.GetStatAdjustment(creature, stat);
 
             return statusAdjustment + perkAdjustment + temporaryAdjustment;
+        }
+
+        public static int ApplyHealingReceivedAdjustment(uint creature, int amount)
+        {
+            if (amount <= 0)
+                return amount;
+
+            var adjustment = GetStatAdjustment(creature, StatType.HealingReceivedPercentAdjustment);
+            var adjustedAmount = Math.Max(1, ApplyPercentAdjustment(amount, adjustment));
+
+            ApplyHealingReceivedStaminaRestore(creature);
+            ApplyHealingReceivedAttackBoost(creature);
+
+            return adjustedAmount;
+        }
+
+        private static void ApplyHealingReceivedStaminaRestore(uint creature)
+        {
+            var chance = GetStatAdjustment(creature, StatType.HealingReceivedStaminaRestoreChance);
+            var stamina = GetStatAdjustment(creature, StatType.HealingReceivedStaminaRestore);
+            if (chance <= 0 || stamina <= 0)
+                return;
+
+            var maximumChance = GetStatAdjustment(creature, StatType.HealingReceivedStaminaRestoreChanceMaximum);
+            var scalingAbility = GetAbilityTypeFromStatValue(GetStatAdjustment(creature, StatType.HealingReceivedStaminaRestoreChanceScalingAbility));
+            if (maximumChance > chance && scalingAbility != AbilityType.Invalid)
+            {
+                chance = Math.Min(maximumChance, chance + Math.Max(0, GetAbilityModifier(scalingAbility, creature)));
+            }
+
+            if (Random.D100(1) <= chance)
+            {
+                RestoreStamina(creature, stamina);
+            }
+        }
+
+        private static void ApplyHealingReceivedAttackBoost(uint creature)
+        {
+            var attackPercent = GetStatAdjustment(creature, StatType.HealingReceivedAttackPercentAdjustment);
+            var duration = GetStatAdjustment(creature, StatType.HealingReceivedAttackDurationSeconds);
+            if (attackPercent == 0 || duration <= 0)
+                return;
+
+            TemporaryStatModifier.Replace(
+                creature,
+                StatType.AttackPercentAdjustment,
+                attackPercent,
+                duration,
+                StatType.HealingReceivedAttackPercentAdjustment);
+        }
+
+        private static AbilityType GetAbilityTypeFromStatValue(int value)
+        {
+            var abilityValue = value - 1;
+            return Enum.IsDefined(typeof(AbilityType), abilityValue)
+                ? (AbilityType)abilityValue
+                : AbilityType.Invalid;
+        }
+
+        private static int ApplyFPRestoreAdjustment(uint creature, int amount)
+        {
+            if (amount <= 0)
+                return amount;
+
+            var adjustment = GetStatAdjustment(creature, StatType.FPRestorePercentAdjustment);
+            return Math.Max(0, ApplyPercentAdjustment(amount, adjustment));
         }
 
         private static int ApplyPercentAdjustment(int value, int percentAdjustment)

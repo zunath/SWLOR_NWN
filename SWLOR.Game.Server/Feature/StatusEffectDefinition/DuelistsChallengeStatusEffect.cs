@@ -15,7 +15,8 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         public DuelistsChallengeStatusEffect()
         {
-            StatGroup.Stats[StatType.DamageTakenPercentAdjustment] = 20;
+            StatGroup.Stats[StatType.DamageToStatusSourcePercentAdjustment] = 20;
+            StatGroup.Stats[StatType.DamageTakenFromStatusSourcePercentAdjustment] = 20;
         }
     }
 }

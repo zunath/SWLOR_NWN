@@ -129,6 +129,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Throwing abilities against bleeding or disoriented targets have +15% critical chance.")
+                .IncreasesStat(StatType.ThrowingAbilityCriticalRateToBleedingOrDisorientedTargetPercentAdjustment, creature => EquipmentPredicates.HasThrowing(creature) ? 15 : 0)
                 .Price(4)
                 .RequirementSkill(SkillType.Throwing, 48);
         }
@@ -152,6 +153,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Bleed effects you apply deal +25% damage and last 10 seconds longer.")
+                .IncreasesStat(StatType.OutgoingBleedingDamagePercentAdjustment, creature => EquipmentPredicates.HasThrowing(creature) ? 25 : 0)
+                .IncreasesStat(StatType.OutgoingBleedingDurationBonusSeconds, creature => EquipmentPredicates.HasThrowing(creature) ? 10 : 0)
                 .Price(4)
                 .RequirementSkill(SkillType.Throwing, 42);
         }
@@ -235,6 +238,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Critical hits against your marked target restore 6 STM.")
+                .IncreasesStat(StatType.CriticalMarkedTargetStaminaRestore, creature => EquipmentPredicates.HasThrowing(creature) ? 6 : 0)
                 .Price(2)
                 .RequirementSkill(SkillType.Throwing, 32);
         }
@@ -385,11 +389,15 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Explosive Toss abilities inflict Bleed for 15 seconds.")
+                .IncreasesStat(StatType.ExplosiveTossBleedDurationSeconds, creature => EquipmentPredicates.HasThrowing(creature) ? 15 : 0)
                 .Price(3)
                 .RequirementSkill(SkillType.Throwing, 12)
 
                 .AddPerkLevel()
                 .Description("Bleed from Explosive Toss abilities lasts 30 seconds and Explosive Toss ignores 10% Defense.")
+                .IncreasesStat(StatType.ExplosiveTossBleedDurationSeconds, creature => EquipmentPredicates.HasThrowing(creature) ? 30 : 0)
+                .IncreasesStat(StatType.AbilityDefenseIgnorePercentAdjustmentPerkType, creature => EquipmentPredicates.HasThrowing(creature) ? (int)PerkType.ExplosiveToss : 0)
+                .IncreasesStat(StatType.AbilityDefenseIgnorePercentAdjustment, creature => EquipmentPredicates.HasThrowing(creature) ? 10 : 0)
                 .Price(2)
                 .RequirementSkill(SkillType.Throwing, 32);
         }
@@ -401,6 +409,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Critical hits with Explosive Toss abilities inflict Knockdown for 2 seconds.")
+                .IncreasesStat(StatType.CriticalAbilityKnockdownPerkType, creature => EquipmentPredicates.HasThrowing(creature) ? (int)PerkType.ExplosiveToss : 0)
+                .IncreasesStat(StatType.CriticalAbilityKnockdownDurationSeconds, creature => EquipmentPredicates.HasThrowing(creature) ? 2 : 0)
                 .Price(4)
                 .RequirementSkill(SkillType.Throwing, 48);
         }

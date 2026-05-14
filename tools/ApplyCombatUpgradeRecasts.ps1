@@ -61,12 +61,57 @@ function Get-DisplayBaseName {
 function Get-ShortName {
     param([string]$Name)
 
-    $shortName = $Name
-    if ($shortName.Length -gt 14) {
-        $shortName = $shortName.Substring(0, 14).TrimEnd()
+    $shortNames = @{
+        "Adhesive Grenade" = "Adhesive Gren"
+        "Aura of Courage" = "Courage Aura"
+        "Bastion of Light" = "Light Bastion"
+        "Bolster Resolve" = "Bolster Res."
+        "Circle of Harmony" = "Harmony Circle"
+        "Cluster Grenade" = "Cluster Gren"
+        "Comprehend Speech" = "Comp. Speech"
+        "Concussion Grenade" = "Concuss Gren"
+        "Coordinated Strike" = "Coord. Strike"
+        "Creeping Terror" = "Creep Terror"
+        "Dampening Field" = "Damp Field"
+        "Decisive Command" = "Decisive Cmd"
+        "Deflector Shield" = "Deflect Shield"
+        "Devouring Strike" = "Devour Strike"
+        "Distracting Feint" = "Distract Feint"
+        "Dominate Weak Mind" = "Dom Weak Mind"
+        "Eclipse of Resolve" = "Eclipse Res."
+        "Emergency Bunker" = "Emerg. Bunker"
+        "Emergency Cocktail" = "Emerg Cocktail"
+        "Emergency Sealant" = "Emerg Sealant"
+        "Emergency Triage" = "Emerg Triage"
+        "Evasive Challenge" = "Evas Challenge"
+        "Evasive Maneuver" = "Evas Maneuver"
+        "Force-Bonded Beast" = "Bonded Beast"
+        "Force Intercept" = "Force Interc."
+        "Force Lightning" = "Force Lightng"
+        "Force Maelstrom" = "Force Maelstr"
+        "Force Sanctuary" = "Force Sanct."
+        "Group Deflector" = "Group Deflect"
+        "Hardlight Screen" = "Hardlight Scrn"
+        "Hunger of the Dark" = "Dark Hunger"
+        "Incendiary Field" = "Incend Field"
+        "Killzone Beacon" = "Killzone Bcn"
+        "Last Stand of the Light" = "Light's Stand"
+        "Maintenance Pulse" = "Maint. Pulse"
+        "Nightmare Field" = "Nightmare Fld"
+        "Overload Barrage" = "Overload Barr"
+        "Pain Suppressant" = "Pain Suppress"
+        "Predator's Mark" = "Predator Mark"
+        "Press the Attack" = "Press Attack"
+        "Reflective Barrier" = "Reflect Barr"
+        "Thermal Detonator" = "Thermal Det."
+        "Unbreakable Beast" = "Unbreak Beast"
+        "Untouchable Instinct" = "Untouch Inst."
     }
 
-    return $shortName
+    if ($Name.Length -le 14) { return $Name }
+    if ($shortNames.ContainsKey($Name)) { return $shortNames[$Name] }
+
+    throw "RecastGroup '$Name' needs a meaningful short name of 14 characters or fewer. Do not auto-truncate."
 }
 
 function Get-PerkTypeForAbility {

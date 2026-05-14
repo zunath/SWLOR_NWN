@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.Game.Server.Service.TelegraphService;
 using SWLOR.NWN.API.Engine;
@@ -18,7 +19,6 @@ namespace SWLOR.Game.Server.Service
     public static class Ability
     {
         private static readonly Dictionary<FeatType, AbilityDetail> _abilities = new();
-        private static readonly Dictionary<uint, ActiveConcentrationAbility> _activeConcentrationAbilities = new();
         private static readonly Dictionary<uint, PlayerAura> _playerAuras = new();
         private static readonly Dictionary<uint, TrackedAbilityImpact> _trackedAbilityImpacts = new();
 
@@ -83,16 +83,32 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsObjectValid(activator) || ability == null)
                 return;
 
+            var abilitySkillType = Combat.GetAbilitySkillType(activator, ability);
             var nextAbilityDamageBonus = Combat.ConsumeNextAbilityDamageBonus(activator, ability.EffectiveLevelPerkType);
-            BeginAbilityImpact(activator, ability, nextAbilityDamageBonus);
+            var nextSkillAbilityBonuses = Combat.ConsumeNextSkillAbilityBonuses(activator, abilitySkillType);
+            BeginAbilityImpact(
+                activator,
+                ability,
+                nextAbilityDamageBonus + nextSkillAbilityBonuses.DamageBonus,
+                nextSkillAbilityBonuses.CriticalRatePercentAdjustment,
+                nextSkillAbilityBonuses.DefenseIgnorePercentAdjustment);
         }
 
-        private static void BeginAbilityImpact(uint activator, AbilityDetail ability, int nextAbilityDamageBonus)
+        private static void BeginAbilityImpact(
+            uint activator,
+            AbilityDetail ability,
+            int nextAbilityDamageBonus,
+            int nextAbilityCriticalRatePercentAdjustment,
+            int nextAbilityDefenseIgnorePercentAdjustment = 0)
         {
             if (!GetIsObjectValid(activator) || ability == null)
                 return;
 
-            _trackedAbilityImpacts[activator] = new TrackedAbilityImpact(ability, nextAbilityDamageBonus);
+            _trackedAbilityImpacts[activator] = new TrackedAbilityImpact(
+                ability,
+                nextAbilityDamageBonus,
+                nextAbilityCriticalRatePercentAdjustment,
+                nextAbilityDefenseIgnorePercentAdjustment);
         }
 
         public static AbilityImpactSummary EndAbilityImpact(uint activator)
@@ -205,6 +221,13 @@ namespace SWLOR.Game.Server.Service
                 return false;
             }
 
+            if (Combat.GetAbilitySkillType(activator, ability) == SkillType.Force &&
+                Stat.GetStatAdjustment(activator, StatType.ForceAbilityActivationDisabled) > 0)
+            {
+                SendMessageToPC(activator, "You cannot use Force abilities right now.");
+                return false;
+            }
+
             // Target check.
             if (ability.RequiresTarget && !GetIsObjectValid(target))
             {
@@ -263,185 +286,6 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Checks whether a creature can activate the perk feat.
-        /// </summary>
-        /// <param name="activator">The activator of the perk feat.</param>
-        /// <param name="abilityType">The type of ability to use.</param>
-        /// <returns>true if successful, false otherwise</returns>
-        public static bool CanUseConcentration(
-            uint activator,
-            FeatType abilityType)
-        {
-            var ability = GetAbilityDetail(abilityType);
-
-            // Activator is dead.
-            if (GetCurrentHitPoints(activator) <= 0)
-            {
-                SendMessageToPC(activator, "You are dead.");
-                return false;
-            }
-
-            // Not commandable
-            if (!GetCommandable(activator))
-            {
-                SendMessageToPC(activator, "You cannot take actions at this time.");
-                return false;
-            }
-
-            // Perk-specific requirement checks
-            foreach (var req in ability.Requirements)
-            {
-                var requirementError = req.CheckRequirements(activator, ability);
-                if (!string.IsNullOrWhiteSpace(requirementError))
-                {
-                    SendMessageToPC(activator, requirementError);
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
-        /// <summary>
-        /// Each tick, creatures with a concentration effect will be processed.
-        /// This will drain FP and reapply whatever effect is associated with an ability.
-        /// </summary>
-        [NWNEventHandler(ScriptName.OnSwlorHeartbeat)]
-        public static void ProcessConcentrationEffects()
-        {
-            var pairs = _activeConcentrationAbilities.ToList();
-
-            foreach (var (creature, concentrationAbility) in pairs)
-            {
-                // Creature/target is dead or invalid.
-                if (!GetIsObjectValid(creature) ||
-                    GetIsDead(creature) ||
-                    !GetIsObjectValid(concentrationAbility.Target) ||
-                    GetIsDead(concentrationAbility.Target))
-                {
-                    EndConcentrationAbility(creature);
-                    continue;
-                }
-
-                // Creature and caster are not in the same area.
-                if (GetArea(creature) != GetArea(concentrationAbility.Target))
-                {
-                    EndConcentrationAbility(creature);
-                    continue;
-                }
-
-                var ability = GetAbilityDetail(concentrationAbility.Feat);
-
-                // Move to next creature if requirements aren't met.
-                if (!CanUseConcentration(creature, concentrationAbility.Feat))
-                {
-                    EndConcentrationAbility(creature);
-                    continue;
-                }
-
-                // We don't run after activation actions until the second concentration cycle.
-                // This is because if a player activates a concentration ability 1 second before the cycle,
-                // they get charged for both the activation as well as the concentration cost.
-                // The trade off is some abilities will last longer depending on when the player uses them in the cycle.
-                // I think this is preferable to punishing the player twice though.
-                if (!GetLocalBool(creature, "CONCENTRATION_FIRST_USE"))
-                {
-                    foreach (var req in ability.Requirements)
-                    {
-                        req.AfterActivationAction(creature, ability);
-                    }
-                }
-                DeleteLocalBool(creature, "CONCENTRATION_FIRST_USE");
-            }
-        }
-
-        /// <summary>
-        /// Starts a concentration ability on a specified creature.
-        /// If there is already a concentration ability active, it will be replaced with this one.
-        /// </summary>
-        /// <param name="creature">The creature who will perform the concentration.</param>
-        /// <param name="target">The target of the concentration effect.</param>
-        /// <param name="feat">The type of ability to activate.</param>
-        /// <param name="statusEffect">The concentration status effect to apply.</param>
-        public static void StartConcentrationAbility(uint creature, uint target, FeatType feat, Type statusEffect)
-        {
-            EndConcentrationAbility(creature, false);
-
-            _activeConcentrationAbilities[creature] = new ActiveConcentrationAbility(target, feat, statusEffect);
-            StatusEffect.ApplyStatusEffect(creature, target, statusEffect, 0.0f);
-
-            Messaging.SendMessageNearbyToPlayers(creature, $"{GetName(creature)} begins concentrating...");
-            SetLocalBool(creature, "CONCENTRATION_FIRST_USE", true);
-        }
-
-        /// <summary>
-        /// Retrieves a creature's active concentration ability.
-        /// If no concentration ability is active, Feat.Invalid will be returned.
-        /// </summary>
-        /// <param name="creature">The creature to check.</param>
-        /// <returns>The active concentration feat or Feat.Invalid.</returns>
-        public static ActiveConcentrationAbility GetActiveConcentration(uint creature)
-        {
-            if (_activeConcentrationAbilities.ContainsKey(creature))
-            {
-                return _activeConcentrationAbilities[creature];
-            }
-
-            return new ActiveConcentrationAbility(OBJECT_INVALID, FeatType.Invalid, null);
-        }
-
-        /// <summary>
-        /// Ends a concentration effect on a specified creature.
-        /// If creature isn't concentrating, nothing will happen.
-        /// </summary>
-        /// <param name="creature"></param>
-        public static void EndConcentrationAbility(uint creature)
-        {
-            EndConcentrationAbility(creature, true);
-        }
-
-        private static void EndConcentrationAbility(uint creature, bool sendMessage)
-        {
-            if (_activeConcentrationAbilities.ContainsKey(creature))
-            {
-                var activeConcentrationEffect = _activeConcentrationAbilities[creature];
-                var target = GetIsObjectValid(activeConcentrationEffect.Target)
-                    ? activeConcentrationEffect.Target
-                    : creature;
-
-                StatusEffect.RemoveStatusEffect(target, activeConcentrationEffect.StatusEffect, creature);
-                _activeConcentrationAbilities.Remove(creature);
-
-                if (sendMessage)
-                    SendMessageToPC(creature, "You stop concentrating.");
-
-                DeleteLocalBool(creature, "CONCENTRATION_FIRST_USE");
-            }
-        }
-
-        [NWNEventHandler(ScriptName.OnModuleExit)]
-        public static void ClearConcentrationOnExit()
-        {
-            var player = GetExitingObject();
-            if (!GetIsPC(player) || GetIsDM(player))
-                return;
-
-            EndConcentrationAbility(player, false);
-            EndConcentrationAbilitiesTargeting(player);
-        }
-
-        private static void EndConcentrationAbilitiesTargeting(uint target)
-        {
-            foreach (var (creature, concentrationAbility) in _activeConcentrationAbilities.ToList())
-            {
-                if (concentrationAbility.Target != target)
-                    continue;
-
-                EndConcentrationAbility(creature);
-            }
-        }
-
-        /// <summary>
         /// Whenever a weapon's OnHit event is fired, add a Leadership combat point if an Aura is active.
         /// </summary>
         [NWNEventHandler(ScriptName.OnItemHit)]
@@ -479,15 +323,54 @@ namespace SWLOR.Game.Server.Service
 
         private static void ApplyAuraEffect(uint source, uint recipient, Type type)
         {
-            if (!StatusEffect.HasStatusEffect(recipient, type, source))
+            if (StatusEffect.HasStatusEffect(recipient, type, source) ||
+                HasEqualOrStrongerAuraEffect(source, recipient, type))
             {
-                StatusEffect.ApplyStatusEffect(source, recipient, type, 0f);
+                return;
             }
+
+            RemoveWeakerDuplicateAuraEffects(source, recipient, type);
+            StatusEffect.ApplyStatusEffect(source, recipient, type, 0f);
         }
 
         private static void RemoveAuraEffect(uint source, uint recipient, Type type, bool sendsWornOffMessage = false)
         {
             StatusEffect.RemoveStatusEffect(recipient, type, source, sendsWornOffMessage);
+        }
+
+        private static bool HasEqualOrStrongerAuraEffect(uint source, uint recipient, Type type)
+        {
+            var sourceSocial = GetAuraSourceSocial(source);
+            return StatusEffect.GetCreatureStatusEffects(recipient)
+                .GetAllEffects()
+                .Any(effect =>
+                    effect.GetType() == type &&
+                    effect.Source != source &&
+                    GetAuraSourceSocial(effect.Source) >= sourceSocial);
+        }
+
+        private static void RemoveWeakerDuplicateAuraEffects(uint source, uint recipient, Type type)
+        {
+            var sourceSocial = GetAuraSourceSocial(source);
+            var weakerEffects = StatusEffect.GetCreatureStatusEffects(recipient)
+                .GetAllEffects()
+                .Where(effect =>
+                    effect.GetType() == type &&
+                    effect.Source != source &&
+                    GetAuraSourceSocial(effect.Source) < sourceSocial)
+                .ToList();
+
+            foreach (var weakerEffect in weakerEffects)
+            {
+                StatusEffect.RemoveStatusEffect(recipient, type, weakerEffect.Source, false);
+            }
+        }
+
+        private static int GetAuraSourceSocial(uint source)
+        {
+            return GetIsObjectValid(source)
+                ? GetAbilityScore(source, AbilityType.Social)
+                : 0;
         }
 
         public static void ApplyAura(uint activator, Type type, bool targetsSelf, bool targetsParty, bool targetsEnemies)
@@ -561,6 +444,41 @@ namespace SWLOR.Game.Server.Service
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Fnf_Sound_Burst), activator);
         }
 
+        public static bool RemoveAura(uint activator, Type type, bool sendsWornOffMessage = false)
+        {
+            if (!_playerAuras.ContainsKey(activator))
+                return false;
+
+            var aura = _playerAuras[activator];
+            var existing = aura.Auras.FirstOrDefault(x => x.StatusEffect == type);
+            if (existing == null)
+                return false;
+
+            if (existing.TargetsSelf)
+            {
+                RemoveAuraEffect(activator, activator, type, sendsWornOffMessage);
+            }
+
+            if (existing.TargetsParty)
+            {
+                foreach (var member in aura.PartyMembersInRange)
+                {
+                    RemoveAuraEffect(activator, member, type, sendsWornOffMessage);
+                }
+            }
+
+            if (existing.TargetsEnemies)
+            {
+                foreach (var npc in aura.CreaturesInRange)
+                {
+                    RemoveAuraEffect(activator, npc, type, sendsWornOffMessage);
+                }
+            }
+
+            aura.Auras.Remove(existing);
+            return true;
+        }
+
         public static bool ToggleAura(uint activator, Type type)
         {
             if (!_playerAuras.ContainsKey(activator))
@@ -568,36 +486,10 @@ namespace SWLOR.Game.Server.Service
 
             // Aura is active and player wants to deactivate it.
             // Remove it from the list and send a notification message.
-            var aura = _playerAuras[activator];
-            var existing = aura.Auras.FirstOrDefault(x => x.StatusEffect == type);
-            if (existing != null)
+            var effectName = StatusEffect.GetStatusEffectName(type);
+            if (RemoveAura(activator, type))
             {
-                var effectName = StatusEffect.GetStatusEffectName(type);
-
                 SendMessageToPC(activator, ColorToken.Red($"Aura '{effectName}' deactivated."));
-
-                if (existing.TargetsSelf)
-                {
-                    RemoveAuraEffect(activator, activator, type);
-                }
-
-                if (existing.TargetsParty)
-                {
-                    foreach (var member in aura.PartyMembersInRange)
-                    {
-                        RemoveAuraEffect(activator, member, type);
-                    }
-                }
-
-                if (existing.TargetsEnemies)
-                {
-                    foreach (var npc in aura.CreaturesInRange)
-                    {
-                        RemoveAuraEffect(activator, npc, type);
-                    }
-                }
-
-                _playerAuras[activator].Auras.Remove(existing);
                 return false;
             }
 
@@ -734,14 +626,14 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        private static AreaOfEffect GetAuraAOE(int level)
+        private static AreaOfEffect GetAuraAOE(int commandRadiusBonusMeters)
         {
-            switch (level)
+            switch (commandRadiusBonusMeters)
             {
-                case 1:
-                    return AreaOfEffect.AuraUpgrade1;
-                case 2:
+                case >= 4:
                     return AreaOfEffect.AuraUpgrade2;
+                case >= 2:
+                    return AreaOfEffect.AuraUpgrade1;
                 default:
                     return AreaOfEffect.AuraDefault;
             }
@@ -756,7 +648,8 @@ namespace SWLOR.Game.Server.Service
 
             AssignCommand(player, () =>
             {
-                var auraAOE = GetAuraAOE(0);
+                var commandRadiusBonusMeters = Stat.GetStatAdjustment(player, StatType.LeadershipCommandRadiusBonusMeters);
+                var auraAOE = GetAuraAOE(commandRadiusBonusMeters);
                 var effect = SupernaturalEffect(EffectAreaOfEffect(auraAOE, "aura_enter", string.Empty, "aura_exit"));
                 effect = TagEffect(effect, "AURA_EFFECT");
                 ApplyEffectToObject(DurationType.Permanent, effect, player);
@@ -924,7 +817,10 @@ namespace SWLOR.Game.Server.Service
             CombatDamageType damageType = CombatDamageType.Physical,
             ResistanceType statusResistanceType = ResistanceType.Invalid,
             VisualEffect targetVisualEffect = VisualEffect.None,
-            VisualEffect areaVisualEffect = VisualEffect.None)
+            VisualEffect areaVisualEffect = VisualEffect.None,
+            Func<uint, int> damagePercentAdjustment = null,
+            Func<uint, int> baseDamageAdjustment = null,
+            IEnumerable<Func<IStatusEffect>> additionalStatusEffectFactories = null)
         {
             var totalDamage = 0;
             RecordAbilityImpactShape(activator, skillType, isArea);
@@ -960,7 +856,10 @@ namespace SWLOR.Game.Server.Service
                     statusEffectFactory,
                     damageType,
                     statusResistanceType,
-                    targetVisualEffect);
+                    targetVisualEffect,
+                    damagePercentAdjustment,
+                    baseDamageAdjustment,
+                    additionalStatusEffectFactories: additionalStatusEffectFactories);
             }
             else if (GetIsObjectValid(target))
             {
@@ -975,7 +874,10 @@ namespace SWLOR.Game.Server.Service
                     statusEffectFactory,
                     damageType,
                     statusResistanceType,
-                    targetVisualEffect);
+                    targetVisualEffect,
+                    damagePercentAdjustment,
+                    baseDamageAdjustment,
+                    additionalStatusEffectFactories: additionalStatusEffectFactories);
             }
 
             AssignCommand(activator, () => ActionPlayAnimation(Animation.DoubleStrike));
@@ -1003,7 +905,12 @@ namespace SWLOR.Game.Server.Service
             CombatDamageType damageType = CombatDamageType.Physical,
             ResistanceType statusResistanceType = ResistanceType.Invalid,
             VisualEffect targetVisualEffect = VisualEffect.None,
-            VisualEffect areaVisualEffect = VisualEffect.None)
+            VisualEffect areaVisualEffect = VisualEffect.None,
+            Func<uint, int> damagePercentAdjustment = null,
+            Func<uint, int> baseDamageAdjustment = null,
+            Action<AbilityImpactSummary> afterImpactAction = null,
+            int maxTargets = 0,
+            IEnumerable<Func<IStatusEffect>> additionalStatusEffectFactories = null)
         {
             RecordAbilityImpactShape(activator, skillType, true);
 
@@ -1026,7 +933,11 @@ namespace SWLOR.Game.Server.Service
                     damageType,
                     statusResistanceType,
                     targetVisualEffect,
-                    areaVisualEffect);
+                    areaVisualEffect,
+                    damagePercentAdjustment,
+                    baseDamageAdjustment,
+                    maxTargets,
+                    additionalStatusEffectFactories);
                 return;
             }
 
@@ -1049,10 +960,16 @@ namespace SWLOR.Game.Server.Service
                 areaVisualLocation,
                 trackedImpact?.Ability,
                 trackedImpact?.NextAbilityDamageBonus ?? 0,
+                trackedImpact?.NextAbilityCriticalRatePercentAdjustment ?? 0,
                 damageType,
                 statusResistanceType,
                 targetVisualEffect,
-                areaVisualEffect);
+                areaVisualEffect,
+                damagePercentAdjustment,
+                baseDamageAdjustment,
+                afterImpactAction,
+                maxTargets,
+                additionalStatusEffectFactories);
 
             switch (shape)
             {
@@ -1111,7 +1028,11 @@ namespace SWLOR.Game.Server.Service
             CombatDamageType damageType,
             ResistanceType statusResistanceType,
             VisualEffect targetVisualEffect,
-            VisualEffect areaVisualEffect)
+            VisualEffect areaVisualEffect,
+            Func<uint, int> damagePercentAdjustment,
+            Func<uint, int> baseDamageAdjustment,
+            int maxTargets,
+            IEnumerable<Func<IStatusEffect>> additionalStatusEffectFactories)
         {
             RecordAbilityImpactShape(activator, skillType, true);
 
@@ -1160,7 +1081,11 @@ namespace SWLOR.Game.Server.Service
                 statusEffectFactory,
                 damageType,
                 statusResistanceType,
-                targetVisualEffect);
+                targetVisualEffect,
+                damagePercentAdjustment,
+                baseDamageAdjustment,
+                maxTargets,
+                additionalStatusEffectFactories);
         }
 
         private static ApplyTelegraphEffect BuildTelegraphedCombatImpactAction(
@@ -1174,10 +1099,16 @@ namespace SWLOR.Game.Server.Service
             Location areaVisualLocation,
             AbilityDetail ability,
             int nextAbilityDamageBonus,
+            int nextAbilityCriticalRatePercentAdjustment,
             CombatDamageType damageType,
             ResistanceType statusResistanceType,
             VisualEffect targetVisualEffect,
-            VisualEffect areaVisualEffect)
+            VisualEffect areaVisualEffect,
+            Func<uint, int> damagePercentAdjustment,
+            Func<uint, int> baseDamageAdjustment,
+            Action<AbilityImpactSummary> afterImpactAction,
+            int maxTargets,
+            IEnumerable<Func<IStatusEffect>> additionalStatusEffectFactories)
         {
             return (creator, creatures) =>
             {
@@ -1188,12 +1119,20 @@ namespace SWLOR.Game.Server.Service
                     .Where(creature => GetIsObjectValid(creature) && GetIsReactionTypeHostile(creature, creator))
                     .ToList();
 
+                if (maxTargets > 0)
+                {
+                    hostileCreatures = hostileCreatures
+                        .OrderBy(creature => GetDistanceBetween(creator, creature))
+                        .Take(maxTargets)
+                        .ToList();
+                }
+
                 if (hostileCreatures.Count <= 0)
                     return;
 
                 if (ability != null)
                 {
-                    BeginAbilityImpact(creator, ability, nextAbilityDamageBonus);
+                    BeginAbilityImpact(creator, ability, nextAbilityDamageBonus, nextAbilityCriticalRatePercentAdjustment);
                     RecordAbilityImpactShape(creator, skillType, true);
                 }
 
@@ -1213,12 +1152,17 @@ namespace SWLOR.Game.Server.Service
                     statusEffectFactory,
                     damageType,
                     statusResistanceType,
-                    targetVisualEffect);
+                    targetVisualEffect,
+                    damagePercentAdjustment,
+                    baseDamageAdjustment,
+                    maxTargets,
+                    additionalStatusEffectFactories);
 
                 if (ability != null)
                 {
                     var summary = EndAbilityImpact(creator);
                     Combat.ApplyAbilityImpactEffects(creator, summary);
+                    afterImpactAction?.Invoke(summary);
                 }
             };
         }
@@ -1234,14 +1178,22 @@ namespace SWLOR.Game.Server.Service
             Func<IStatusEffect> statusEffectFactory = null,
             CombatDamageType damageType = CombatDamageType.Physical,
             ResistanceType statusResistanceType = ResistanceType.Invalid,
-            VisualEffect targetVisualEffect = VisualEffect.None)
+            VisualEffect targetVisualEffect = VisualEffect.None,
+            Func<uint, int> damagePercentAdjustment = null,
+            Func<uint, int> baseDamageAdjustment = null,
+            int maxTargets = 0,
+            IEnumerable<Func<IStatusEffect>> additionalStatusEffectFactories = null)
         {
             var totalDamage = 0;
+            var affectedCount = 0;
 
             foreach (var creature in creatures.Distinct())
             {
                 if (!GetIsObjectValid(creature) || !GetIsReactionTypeHostile(creature, activator))
                     continue;
+
+                if (maxTargets > 0 && affectedCount >= maxTargets)
+                    break;
 
                 totalDamage += ApplyHostileCombatImpact(
                     activator,
@@ -1254,7 +1206,11 @@ namespace SWLOR.Game.Server.Service
                     statusEffectFactory,
                     damageType,
                     statusResistanceType,
-                    targetVisualEffect);
+                    targetVisualEffect,
+                    damagePercentAdjustment,
+                    baseDamageAdjustment,
+                    additionalStatusEffectFactories);
+                affectedCount++;
             }
 
             return totalDamage;
@@ -1353,13 +1309,27 @@ namespace SWLOR.Game.Server.Service
             Func<IStatusEffect> statusEffectFactory,
             CombatDamageType damageType,
             ResistanceType statusResistanceType,
-            VisualEffect targetVisualEffect)
+            VisualEffect targetVisualEffect,
+            Func<uint, int> damagePercentAdjustment = null,
+            Func<uint, int> baseDamageAdjustment = null,
+            IEnumerable<Func<IStatusEffect>> additionalStatusEffectFactories = null)
         {
-            var damage = CalculateCombatImpactDamage(activator, target, skillType, baseDamage, damageType);
+            var trackedImpact = GetTrackedAbilityImpact(activator);
+            var perkType = trackedImpact?.Ability?.EffectiveLevelPerkType ?? PerkType.Invalid;
+            if (!Combat.TryResolveAbilityHit(activator, target, skillType, perkType, out _))
+            {
+                CombatPoint.AddCombatPoint(activator, target, skillType, 1);
+                return 0;
+            }
+
+            var adjustedBaseDamage = Math.Max(0, baseDamage + (baseDamageAdjustment?.Invoke(target) ?? 0));
+            var damage = CalculateCombatImpactDamage(activator, target, skillType, adjustedBaseDamage, damageType);
+            damage = ApplyDamagePercentAdjustment(target, damage, damagePercentAdjustment);
             if (damage > 0)
             {
                 ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, damageType.GetNWScriptDamageType()), target);
-                Combat.ApplyDamageDealtEffects(activator, target, damage);
+                ApplyDarkForceConversion(activator, target, damage);
+                Combat.ApplyDamageDealtEffects(activator, target, damage, skillType);
                 Enmity.ModifyEnmity(activator, target, damage + 100);
             }
 
@@ -1370,6 +1340,7 @@ namespace SWLOR.Game.Server.Service
                 duration,
                 additionalStatusEffects,
                 statusEffectFactory,
+                additionalStatusEffectFactories,
                 statusResistanceType,
                 damageType);
             if ((damage > 0 || statusApplied) && targetVisualEffect != VisualEffect.None)
@@ -1380,6 +1351,82 @@ namespace SWLOR.Game.Server.Service
             CombatPoint.AddCombatPoint(activator, target, skillType, 3);
             RecordAbilityImpactTarget(activator, target, skillType, false);
             return damage;
+        }
+
+        private static int ApplyDamagePercentAdjustment(
+            uint target,
+            int damage,
+            Func<uint, int> damagePercentAdjustment)
+        {
+            if (damage <= 0 || damagePercentAdjustment == null)
+                return damage;
+
+            var adjustment = damagePercentAdjustment(target);
+            if (adjustment == 0)
+                return damage;
+
+            return Math.Max(0, damage + (int)Math.Ceiling(damage * (adjustment / 100f)));
+        }
+
+        private static void ApplyDarkForceConversion(uint activator, uint target, int damage)
+        {
+            if (damage <= 0 || !GetIsObjectValid(activator))
+                return;
+
+            var trackedImpact = GetTrackedAbilityImpact(activator);
+            if (trackedImpact == null ||
+                trackedImpact.Ability?.TriggersDarkForceConversion != true)
+            {
+                return;
+            }
+
+            var hpRestorePercent = Stat.GetStatAdjustment(activator, StatType.DarkForceDamageHPPercentRestore);
+            if (hpRestorePercent > 0)
+            {
+                RestoreHPFromDamage(activator, damage, hpRestorePercent);
+            }
+
+            var fpRestore = Stat.GetStatAdjustment(activator, StatType.DarkForceDamageFPRestore);
+            var hpCostPercent = Stat.GetStatAdjustment(activator, StatType.DarkForceDamageHPCostPercent);
+            if (trackedImpact.DarkForceConversionApplied)
+                return;
+
+            if (fpRestore <= 0 && hpCostPercent <= 0)
+                return;
+
+            trackedImpact.DarkForceConversionApplied = true;
+
+            if (fpRestore > 0)
+                Stat.RestoreFP(activator, fpRestore);
+
+            var lowTargetThresholdPercent = Stat.GetStatAdjustment(activator, StatType.DarkForceDamageLowTargetHPThresholdPercent);
+            var lowTargetHPCostPercent = Stat.GetStatAdjustment(activator, StatType.DarkForceDamageLowTargetHPCostPercent);
+            if (lowTargetThresholdPercent > 0 &&
+                lowTargetHPCostPercent > 0 &&
+                GetIsObjectValid(target) &&
+                GetMaxHitPoints(target) > 0 &&
+                GetCurrentHitPoints(target) <= GetMaxHitPoints(target) * lowTargetThresholdPercent / 100)
+            {
+                hpCostPercent = lowTargetHPCostPercent;
+            }
+
+            if (hpCostPercent <= 0)
+                return;
+
+            var hpCost = Math.Max(1, GetMaxHitPoints(activator) * hpCostPercent / 100);
+            hpCost = Math.Min(hpCost, Math.Max(0, GetCurrentHitPoints(activator) - 1));
+            if (hpCost > 0)
+                ApplyEffectToObject(DurationType.Instant, EffectDamage(hpCost), activator);
+        }
+
+        private static void RestoreHPFromDamage(uint creature, int damage, int percent)
+        {
+            if (damage <= 0 || percent <= 0)
+                return;
+
+            var amount = Math.Max(1, damage * percent / 100);
+            amount = Stat.ApplyHealingReceivedAdjustment(creature, amount);
+            ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), creature);
         }
 
         private static int CalculateCombatImpactDamage(
@@ -1394,7 +1441,12 @@ namespace SWLOR.Game.Server.Service
 
             var trackedImpact = GetTrackedAbilityImpact(activator);
             var ability = GetCombatImpactDamageAbility(skillType);
-            var damage = baseDamage + Combat.GetAbilityDamageBonus(activator, skillType);
+            var perkType = trackedImpact?.Ability?.EffectiveLevelPerkType ?? PerkType.Invalid;
+            var idleBonuses = Combat.GetIdleSkillAbilityBonuses(activator, skillType);
+            var damage = baseDamage +
+                Combat.GetAbilityDamageBonus(activator, skillType) +
+                Combat.GetAbilityDamageFlatAdjustment(activator, perkType) +
+                idleBonuses.DamageBonus;
             if (trackedImpact != null)
             {
                 damage += trackedImpact.NextAbilityDamageBonus;
@@ -1405,12 +1457,33 @@ namespace SWLOR.Game.Server.Service
             var attackStat = GetAbilityScore(activator, ability);
             var defenseAbility = damageType.GetDefenseAbilityType();
             var defense = Stat.GetDefense(target, damageType, defenseAbility);
+            defense = Combat.ApplyStatusSourceDefenseModifiers(activator, target, defense);
             var defenderStat = GetAbilityScore(target, defenseAbility);
-            var criticalRating = Combat.CalculateAbilityCriticalRating(activator, skillType, IsTrackedAbilityArea(activator));
-            var calculatedDamage = Combat.CalculateDamage(attack, damage, attackStat, defense, defenderStat, criticalRating);
+            var defenseIgnorePercent =
+                Combat.GetAbilityDefenseIgnorePercentAdjustment(activator, perkType, skillType, target) +
+                (trackedImpact?.NextAbilityDefenseIgnorePercentAdjustment ?? 0);
+            defense = Combat.ApplyDefenseIgnore(defense, defenseIgnorePercent);
+            var criticalRating = Combat.CalculateAbilityCriticalRating(
+                activator,
+                skillType,
+                IsTrackedAbilityArea(activator),
+                trackedImpact?.NextAbilityCriticalRatePercentAdjustment ?? 0,
+                target);
+            var damageRoll = Combat.CalculateDamageWithCriticalMitigation(
+                target,
+                attack,
+                damage,
+                attackStat,
+                defense,
+                defenderStat,
+                criticalRating);
+            var calculatedDamage = damageRoll.Damage;
+            criticalRating = damageRoll.CriticalRating;
+            calculatedDamage = Combat.ApplySideAttackDamageModifier(activator, target, skillType, calculatedDamage);
             calculatedDamage = Combat.ApplyDamageDealtModifiers(activator, target, calculatedDamage, skillType, damageType, true);
             calculatedDamage = Resistance.ApplyResistanceToDamage(target, damageType, calculatedDamage);
             calculatedDamage = Combat.ApplyDamageTakenModifiers(target, calculatedDamage);
+            Combat.ApplyDamageReflectionEffects(activator, target, calculatedDamage, damageType);
 
             if (criticalRating > 0)
             {
@@ -1421,6 +1494,7 @@ namespace SWLOR.Game.Server.Service
                     criticalRating,
                     IsTrackedAbilitySingleTarget(activator),
                     skillType);
+                Combat.ApplyCriticalAbilityStatusEffects(activator, target, perkType, damageType);
             }
 
             return calculatedDamage;
@@ -1433,12 +1507,16 @@ namespace SWLOR.Game.Server.Service
             int duration,
             IEnumerable<Type> additionalStatusEffects,
             Func<IStatusEffect> statusEffectFactory,
+            IEnumerable<Func<IStatusEffect>> additionalStatusEffectFactories,
             ResistanceType statusResistanceType,
             CombatDamageType sourceDamageType)
         {
             var hasAdditionalStatusEffects = additionalStatusEffects?.Any(x => x != null) ?? false;
-            if (duration <= 0 || (statusEffect == null && statusEffectFactory == null && !hasAdditionalStatusEffects))
+            var hasAdditionalStatusEffectFactories = additionalStatusEffectFactories?.Any(x => x != null) ?? false;
+            if (duration <= 0 || (statusEffect == null && statusEffectFactory == null && !hasAdditionalStatusEffects && !hasAdditionalStatusEffectFactories))
                 return false;
+
+            duration = ApplyAbilityStatusDurationAdjustment(activator, duration);
 
             var statusApplied = false;
             if (statusEffectFactory != null)
@@ -1454,7 +1532,29 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
+            if (additionalStatusEffectFactories != null)
+            {
+                foreach (var additionalStatusEffectFactory in additionalStatusEffectFactories.Where(x => x != null))
+                {
+                    statusApplied |= ApplyCombatImpactTrackedStatusEffect(activator, target, additionalStatusEffectFactory, duration, statusResistanceType, sourceDamageType);
+                }
+            }
+
             return statusApplied;
+        }
+
+        private static int ApplyAbilityStatusDurationAdjustment(uint activator, int duration)
+        {
+            if (duration <= 0)
+                return duration;
+
+            var trackedImpact = GetTrackedAbilityImpact(activator);
+            var perkType = trackedImpact?.Ability?.EffectiveLevelPerkType ?? PerkType.Invalid;
+            var adjustment = Combat.GetAbilityStatusDurationPercentAdjustment(activator, perkType);
+            if (adjustment == 0)
+                return duration;
+
+            return Math.Max(1, duration + (int)Math.Ceiling(duration * (adjustment / 100f)));
         }
 
         private static bool ApplyCombatImpactTrackedStatusEffect(
@@ -1534,11 +1634,20 @@ namespace SWLOR.Game.Server.Service
             public AbilityDetail Ability { get; }
             public AbilityImpactSummary Summary { get; }
             public int NextAbilityDamageBonus { get; }
+            public int NextAbilityCriticalRatePercentAdjustment { get; }
+            public int NextAbilityDefenseIgnorePercentAdjustment { get; }
+            public bool DarkForceConversionApplied { get; set; }
 
-            public TrackedAbilityImpact(AbilityDetail ability, int nextAbilityDamageBonus)
+            public TrackedAbilityImpact(
+                AbilityDetail ability,
+                int nextAbilityDamageBonus,
+                int nextAbilityCriticalRatePercentAdjustment,
+                int nextAbilityDefenseIgnorePercentAdjustment)
             {
                 Ability = ability;
                 NextAbilityDamageBonus = nextAbilityDamageBonus;
+                NextAbilityCriticalRatePercentAdjustment = nextAbilityCriticalRatePercentAdjustment;
+                NextAbilityDefenseIgnorePercentAdjustment = nextAbilityDefenseIgnorePercentAdjustment;
                 Summary = new AbilityImpactSummary
                 {
                     SkillType = ability.SkillType,

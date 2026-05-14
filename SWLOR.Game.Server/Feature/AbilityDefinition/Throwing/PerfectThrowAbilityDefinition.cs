@@ -26,27 +26,22 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
                 .Name("Perfect Throw")
                 .Level(1)
                 .HasActivationDelay(1f)
-                .HasRecastDelay(RecastGroup.PerfectThrow, 1800f)
+                .HasRecastDelay(RecastGroup.Capstone, 1800f)
                 .RequiresTarget()
-                .HasImpactAction(ImpactAction)
+                .HasImpactAction(PerfectThrow1ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
                 .RequirementStamina(25);
         }
 
-        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        private static void PerfectThrow1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            switch (level)
-            {
-                case 1:
-                    var statusEffect = StatusEffect.HasStatusEffect(target, typeof(BleedStatusEffect))
-                        ? typeof(HemorrhageStatusEffect)
-                        : null;
+            var statusEffect = StatusEffect.HasStatusEffect(target, typeof(BleedStatusEffect))
+                ? typeof(HemorrhageStatusEffect)
+                : null;
 
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Throwing, 80, 15, statusEffect, false);
-                    break;
-            }
+            Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Throwing, 80, 15, statusEffect, false);
         }
     }
 }

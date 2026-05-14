@@ -18,15 +18,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
                     .Create(FeatType.UnmovingCenter1, PerkType.UnmovingCenter)
                     .Name("Unmoving Center")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.UnmovingCenter, 1800f),
+                    .HasRecastDelay(RecastGroup.Capstone, 1800f),
                 typeof(UnmovingCenterStatusEffect),
                 20f,
-                50,
+                25,
                 activator =>
                 {
                     Ability.ApplyTemporaryImmunity(activator, 20f, ImmunityType.Knockdown);
                     Ability.ApplyTemporaryImmunity(activator, 20f, ImmunityType.Dazed);
-                });
+                },
+                activationDelay: 1f);
 
             return builder.Build();
         }

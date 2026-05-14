@@ -27,7 +27,6 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public AbilityActivationType ActivationType { get; set; }
         public PerkType EffectiveLevelPerkType { get; set; }
         public Animation AnimationType { get; set; }
-        public Type ConcentrationStatusEffect { get; set; }
         public bool CanBeUsedInSpace { get; set; }
         public float MaxRange { get; set; }
         public bool IsHostileAbility { get; set; }
@@ -38,13 +37,13 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public SkillType SkillType { get; set; }
         public bool IsAreaAbility { get; set; }
         public bool IsSingleTargetAbility { get; set; }
+        public bool TriggersDarkForceConversion { get; set; }
 
         public AbilityDetail()
         {
             ActivationVisualEffect = VisualEffect.None;
             AnimationType = Animation.Invalid;
             Requirements = new List<IAbilityActivationRequirement>();
-            ConcentrationStatusEffect = null;
             MaxRange = 5.0f;
             IsHostileAbility = false;
             DisplaysActivationMessage = true;
@@ -54,6 +53,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
             SkillType = SkillType.Invalid;
             IsAreaAbility = false;
             IsSingleTargetAbility = false;
+            TriggersDarkForceConversion = false;
         }
     }
 }

@@ -8,6 +8,8 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     {
         public override string Name => "Twin Intercept";
         public override EffectIconType Icon => EffectIconType.TemporaryHitpoints;
+        public override StatusEffectCategory Categories => StatusEffectCategory.Buff;
+
         public TwinInterceptStatusEffect()
         {
             StatGroup.Stats[StatType.PhysicalDefensePercentAdjustment] = 15;

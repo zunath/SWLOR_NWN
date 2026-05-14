@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
                 .Level(1)
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.WhirlwindAssault, 120f)
-                .HasImpactAction(ImpactAction)
+                .HasImpactAction(WhirlwindAssault1ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
@@ -43,24 +43,21 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
                 .Level(2)
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.WhirlwindAssault, 120f)
-                .HasImpactAction(ImpactAction)
+                .HasImpactAction(WhirlwindAssault2ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
                 .RequirementStamina(12);
         }
 
-        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        private static void WhirlwindAssault1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            switch (level)
-            {
-                case 1:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Vibroblade, 12, 0, null, true);
-                    break;
-                case 2:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Vibroblade, 20, 0, null, true);
-                    break;
-            }
+            Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Vibroblade, 12, 0, null, true);
+        }
+
+        private static void WhirlwindAssault2ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        {
+            Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Vibroblade, 20, 0, null, true);
         }
     }
 }

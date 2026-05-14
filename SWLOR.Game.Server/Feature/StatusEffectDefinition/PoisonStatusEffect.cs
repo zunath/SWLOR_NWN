@@ -1,6 +1,7 @@
 ﻿using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
 using Random = SWLOR.Game.Server.Service.Random;
 
@@ -18,6 +19,15 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             StatusEffectCleanseType.TreatmentKit2 |
             StatusEffectCleanseType.SoothePet;
         public override float Frequency => 6f;
+
+        protected override void Apply(uint creature, int durationTicks)
+        {
+            var attackPenalty = Stat.GetStatAdjustment(Source, StatType.OutgoingPoisonAttackPercentAdjustment);
+            if (attackPenalty != 0)
+            {
+                StatGroup.Stats[StatType.AttackPercentAdjustment] += attackPenalty;
+            }
+        }
 
         protected override void Tick(uint creature)
         {

@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                     .HasRecastDelay(RecastGroup.Backstab, 60f),
                 SkillType.Vibroknife,
                 20,
-                4);
+                3);
             ConfigureCastedTarget(
                 builder
                     .Create(FeatType.Backstab2, PerkType.Backstab)
@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                     .HasRecastDelay(RecastGroup.Backstab, 60f),
                 SkillType.Vibroknife,
                 40,
-                6);
+                5);
             ConfigureCastedTarget(
                 builder
                     .Create(FeatType.Backstab3, PerkType.Backstab)

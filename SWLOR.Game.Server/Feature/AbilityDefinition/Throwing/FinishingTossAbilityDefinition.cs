@@ -10,6 +10,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
 {
     public class FinishingTossAbilityDefinition : IAbilityListDefinition
     {
+        private const float LowHPThreshold = 0.3f;
+        private const int LowHPDamageBonus = 30;
+
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
@@ -28,21 +31,27 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.FinishingToss, 90f)
                 .RequiresTarget()
-                .HasImpactAction(ImpactAction)
+                .HasImpactAction(FinishingToss1ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
                 .RequirementStamina(10);
         }
 
-        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        private static void FinishingToss1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            switch (level)
-            {
-                case 1:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Throwing, 40, 0, null, false);
-                    break;
-            }
+            var damage = 40;
+            if (IsLowHP(target))
+                damage += LowHPDamageBonus;
+
+            Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Throwing, damage, 0, null, false);
+        }
+
+        private static bool IsLowHP(uint target)
+        {
+            return GetIsObjectValid(target) &&
+                   GetMaxHitPoints(target) > 0 &&
+                   GetCurrentHitPoints(target) <= GetMaxHitPoints(target) * LowHPThreshold;
         }
     }
 }

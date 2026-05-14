@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
                 8,
                 30,
                 typeof(BleedStatusEffect),
-                4);
+                3);
             ConfigureWeapon(
                 builder
                     .Create(FeatType.HackingBlade2, PerkType.HackingBlade)
@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
                 18,
                 60,
                 typeof(BleedStatusEffect),
-                6);
+                4);
             ConfigureWeapon(
                 builder
                     .Create(FeatType.HackingBlade3, PerkType.HackingBlade)
@@ -44,7 +44,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
                 28,
                 60,
                 typeof(BleedStatusEffect),
-                8);
+                5);
 
             return builder.Build();
         }

@@ -2,6 +2,7 @@ using NWN.Native.API;
 using NWNX.NET;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
@@ -51,6 +52,7 @@ namespace SWLOR.Game.Server.Native
         private const int DefaultMissedBy = 1;
         private const int DefaultToHitMod = 1;
         private const int DefaultToHitRoll = 1;
+        private const string DeflectionAttemptedVariable = "RESOLVE_ATTACK_ROLL_DEFLECTION_ATTEMPTED";
 
         internal delegate void ResolveAttackRollHook(void* thisPtr, void* pTarget);
 
@@ -129,11 +131,14 @@ namespace SWLOR.Game.Server.Native
 
                 if (pCombatRound.m_bRoundStarted == 1)
                 {
-                    defender.m_ScriptVars.SetInt(new CExoString("RESOLVE_ATTACK_ROLL_DEFLECT_BLASTER"), 0);
+                    defender.m_ScriptVars.SetInt(new CExoString(DeflectionAttemptedVariable), 0);
                 }
 
                 var attackType = (uint)AttackType.Melee;
                 var weapon = pCombatRound.GetCurrentAttackWeapon();
+                var weaponSkillType = weapon == null
+                    ? SkillType.Invalid
+                    : SWLOR.Game.Server.Service.Skill.GetSkillTypeByBaseItem((BaseItem)weapon.m_nBaseItem);
 
                 // Check whether this is a ranged weapon.
                 if (weapon != null && pAttackData.m_bRangedAttack == 1 && attacker.GetRangeWeaponEquipped() == 1)
@@ -145,6 +150,11 @@ namespace SWLOR.Game.Server.Native
 
                 var attackerAccuracy = Stat.GetAccuracyNative(attacker, weapon);
                 var defenderEvasion = Stat.GetEvasionNative(defender);
+                defenderEvasion = Combat.ApplySideAttackEvasionIgnore(
+                    attacker.m_idSelf,
+                    defender.m_idSelf,
+                    weaponSkillType,
+                    defenderEvasion);
 
                 //---------------------------------------------------------------------------------------------
                 //---------------------------------------------------------------------------------------------
@@ -196,15 +206,18 @@ namespace SWLOR.Game.Server.Native
                 //---------------------------------------------------------------------------------------------
                 //---------------------------------------------------------------------------------------------
                 //---------------------------------------------------------------------------------------------
-                var attackRoll = Random.Next(1, 100);
-                var hitRate = Combat.CalculateHitRate(attackerAccuracy + accuracyModifiers, defenderEvasion, 0);
+                var attackRoll = Random.D100(1);
+                var hitRate = Combat.CalculateHitRate(
+                    attackerAccuracy + accuracyModifiers,
+                    defenderEvasion,
+                    Combat.GetSideAttackHitChanceAdjustment(attacker.m_idSelf, defender.m_idSelf, weaponSkillType));
                 var isHit = attackRoll <= hitRate;
 
                 Log.Write(LogGroup.Attack, $"attackerAccuracy = {attackerAccuracy}, modifiers = {accuracyModifiers}, defenderEvasion = {defenderEvasion}");
                 Log.Write(LogGroup.Attack, $"Hit Rate: {hitRate}, Roll = {attackRoll}");
 
                 // Check for deflection
-                var deflected = CheckDeflection(attackType, isHit, attacker, defender);
+                var deflected = CheckDeflection(isHit, attacker, defender);
                 if (deflected)
                     isHit = false;
 
@@ -212,8 +225,10 @@ namespace SWLOR.Game.Server.Native
                 if (isHit)
                 {
                     var criticalStat = attackerStats.GetDEXStat();
-                    var criticalRoll = Random.Next(1, 100);
+                    var criticalRoll = Random.D100(1);
                     var criticalModifier = CalculateCriticalRateModifier(attacker);
+                    criticalModifier += Combat.PrepareOpeningAutoAttack(attacker.m_idSelf, weaponSkillType);
+                    criticalModifier += Combat.GetSideAttackCriticalRateAdjustment(attacker.m_idSelf, defender.m_idSelf, weaponSkillType);
                     var criticalSkillRank = GetCriticalSkillRank(attacker, weapon);
                     var criticalRate = Combat.CalculateCriticalRate(
                         criticalStat,
@@ -230,7 +245,18 @@ namespace SWLOR.Game.Server.Native
                         pAttackData.m_bCriticalThreat = 1;
                         pAttackData.m_nThreatRoll = 1;
 
-                        if (defender.m_pStats.GetEffectImmunity((byte)ImmunityType.CriticalHit, attacker) == 1)
+                        if (Stat.GetStatAdjustment(defender.m_idSelf, StatType.IncomingCriticalHitDowngradeToMinimumDamage) > 0)
+                        {
+                            Log.Write(LogGroup.Attack, $"Critical hit downgraded by defender stats");
+                            TemporaryStatModifier.Replace(
+                                defender.m_idSelf,
+                                StatType.CurrentIncomingAttackMinimumDamage,
+                                1,
+                                6,
+                                StatType.CurrentIncomingAttackMinimumDamage);
+                            pAttackData.m_nAttackResult = AttackResultRegularHit;
+                        }
+                        else if (defender.m_pStats.GetEffectImmunity((byte)ImmunityType.CriticalHit, attacker) == 1)
                         {
                             Log.Write(LogGroup.Attack, $"Immune to critical hits");
                             // Immune!
@@ -250,10 +276,15 @@ namespace SWLOR.Game.Server.Native
                         Log.Write(LogGroup.Attack, $"Regular hit - attack result 1");
                         pAttackData.m_nAttackResult = AttackResultRegularHit;
                     }
+
+                    Combat.TrackAttackActivity(attacker.m_idSelf);
                 }
                 // Miss
                 else
                 {
+                    Combat.TrackAvoidedAttack(defender.m_idSelf);
+                    Combat.TrackAttackActivity(attacker.m_idSelf);
+
                     if (deflected)
                     {
                         Log.Write(LogGroup.Attack, $"Deflected - setting attack result to 2");
@@ -335,36 +366,50 @@ namespace SWLOR.Game.Server.Native
             return 0;
         }
 
-        private static bool CheckDeflection(uint attackType, bool isHit, CNWSCreature attacker, CNWSCreature defender)
+        private static bool CheckDeflection(bool isHit, CNWSCreature attacker, CNWSCreature defender)
         {
-            var hasDeflected = defender.m_ScriptVars.GetInt(new CExoString("RESOLVE_ATTACK_ROLL_DEFLECT_BLASTER"));
+            var hasAttemptedDeflection = defender.m_ScriptVars.GetInt(new CExoString(DeflectionAttemptedVariable));
 
-            if (attackType != (uint)AttackType.Ranged || !isHit || hasDeflected != 0)
+            if (!isHit || hasAttemptedDeflection != 0)
                 return false;
 
-            var deflectChance = Stat.GetRangedAttackDeflectionChanceNative(defender);
+            var (source, deflectChance) = GetDeflectionChance(defender);
             if (deflectChance <= 0)
                 return false;
 
-            defender.m_ScriptVars.SetInt(new CExoString("RESOLVE_ATTACK_ROLL_DEFLECT_BLASTER"), 1);
+            defender.m_ScriptVars.SetInt(new CExoString(DeflectionAttemptedVariable), 1);
 
-            var deflectRoll = Random.Next(1, 100);
+            var deflectRoll = Random.D100(1);
             var deflected = deflectRoll <= deflectChance;
             if (deflected)
             {
-                Stat.ApplyAttackDeflectionEffectsNative(defender);
+                Stat.ApplyDeflectionEffectsNative(defender);
             }
 
             var feedbackString = deflected ? "*success*" : "*failure*";
             var attackerName = ColorToken.GetNameColorNative(attacker);
             var defenderName = ColorToken.GetNameColorNative(defender);
-            feedbackString = ColorToken.Combat($"{defenderName} attempts to deflect {attackerName}'s ranged attack: {feedbackString}");
+            var deflectionName = source == DeflectionSource.Shield ? "shield deflect" : "deflect";
+            feedbackString = ColorToken.Combat($"{defenderName} attempts to {deflectionName} {attackerName}'s attack: {feedbackString}");
 
             attacker.SendFeedbackString(new CExoString(feedbackString));
             defender.SendFeedbackString(new CExoString(feedbackString));
             Log.Write(LogGroup.Attack, $"Deflect roll: {deflectRoll}, Chance: {deflectChance}, Hit: {!deflected}");
 
             return deflected;
+        }
+
+        private static (DeflectionSource Source, int Chance) GetDeflectionChance(CNWSCreature defender)
+        {
+            var shieldDeflection = Stat.GetShieldDeflectionChanceNative(defender);
+            if (shieldDeflection > 0)
+                return (DeflectionSource.Shield, shieldDeflection);
+
+            var attackDeflection = Stat.GetAttackDeflectionChanceNative(defender);
+            if (attackDeflection > 0)
+                return (DeflectionSource.Attack, attackDeflection);
+
+            return (DeflectionSource.None, 0);
         }
 
         private static int CalculateCriticalRateModifier(CNWSCreature attacker)

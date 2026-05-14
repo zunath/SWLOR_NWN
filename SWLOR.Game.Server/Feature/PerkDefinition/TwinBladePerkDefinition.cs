@@ -84,6 +84,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Gain +10 Attack Deflection while wielding a twin blade. After deflecting an attack, your next attack within 8 seconds deals +8 DMG.")
                 .IncreasesStat(StatType.AttackDeflection, creature => EquipmentPredicates.HasMainHandTwinBlade(creature) ? 10 : 0)
+                .IncreasesStat(StatType.DeflectionNextSkillAbilityDamageBonus, creature => EquipmentPredicates.HasMainHandTwinBlade(creature) ? 8 : 0)
+                .IncreasesStat(StatType.DeflectionNextSkillAbilityDamageBonusWindowSeconds, creature => EquipmentPredicates.HasMainHandTwinBlade(creature) ? 8 : 0)
                 .Price(2)
                 .RequirementSkill(SkillType.TwinBlade, 5);
         }
@@ -175,6 +177,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Every third auto-attack with a twin blade deals +15 DMG to a nearby enemy.")
+                .IncreasesStat(StatType.AutoAttackCycleDamageSkillType, creature => EquipmentPredicates.HasMainHandTwinBlade(creature) ? (int)SkillType.TwinBlade : 0)
+                .IncreasesStat(StatType.AutoAttackCycleRequiredCount, creature => EquipmentPredicates.HasMainHandTwinBlade(creature) ? 3 : 0)
+                .IncreasesStat(StatType.AutoAttackCycleDamage, creature => EquipmentPredicates.HasMainHandTwinBlade(creature) ? 15 : 0)
+                .IncreasesStat(StatType.AutoAttackCycleRadiusMeters, creature => EquipmentPredicates.HasMainHandTwinBlade(creature) ? 5 : 0)
                 .Price(2)
                 .RequirementSkill(SkillType.TwinBlade, 40);
         }

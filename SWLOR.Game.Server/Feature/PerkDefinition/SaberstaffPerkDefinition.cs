@@ -180,6 +180,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Using a Force ability causes your next saberstaff attack within 8 seconds to deal +15 DMG. Using a saberstaff ability reduces the FP cost of your next Force ability by 2.")
+                .IncreasesStat(StatType.AbilityUsedNextSkillAutoAttackDamageBonusTriggerSkillType, creature => EquipmentPredicates.HasMainHandSaberstaff(creature) ? (int)SkillType.Force : 0)
+                .IncreasesStat(StatType.AbilityUsedNextSkillAutoAttackDamageBonusSkillType, creature => EquipmentPredicates.HasMainHandSaberstaff(creature) ? (int)SkillType.Saberstaff : 0)
+                .IncreasesStat(StatType.AbilityUsedNextSkillAutoAttackDamageBonus, creature => EquipmentPredicates.HasMainHandSaberstaff(creature) ? 15 : 0)
+                .IncreasesStat(StatType.AbilityUsedNextSkillAutoAttackDamageWindowSeconds, creature => EquipmentPredicates.HasMainHandSaberstaff(creature) ? 8 : 0)
+                .IncreasesStat(StatType.AbilityUsedNextSkillFPCostAdjustmentTriggerSkillType, creature => EquipmentPredicates.HasMainHandSaberstaff(creature) ? (int)SkillType.Saberstaff : 0)
+                .IncreasesStat(StatType.AbilityUsedNextSkillFPCostAdjustmentSkillType, creature => EquipmentPredicates.HasMainHandSaberstaff(creature) ? (int)SkillType.Force : 0)
+                .IncreasesStat(StatType.AbilityUsedNextSkillFPCostAdjustment, creature => EquipmentPredicates.HasMainHandSaberstaff(creature) ? -2 : 0)
+                .IncreasesStat(StatType.AbilityUsedNextSkillFPCostAdjustmentWindowSeconds, creature => EquipmentPredicates.HasMainHandSaberstaff(creature) ? 8 : 0)
                 .Price(2)
                 .RequirementSkill(SkillType.Saberstaff, 32)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
@@ -410,6 +418,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Saberstaff combat abilities cost 2 less STM while your FP is above 50%.")
+                .IncreasesStat(StatType.HighResourceAbilityStaminaCostSkillType, creature => EquipmentPredicates.HasMainHandSaberstaff(creature) ? (int)SkillType.Saberstaff : 0)
+                .IncreasesStat(StatType.HighResourceAbilityStaminaCostThresholdPercent, creature => EquipmentPredicates.HasMainHandSaberstaff(creature) ? 50 : 0)
+                .IncreasesStat(StatType.HighResourceAbilityStaminaCostAdjustment, creature => EquipmentPredicates.HasMainHandSaberstaff(creature) ? -2 : 0)
                 .Price(2)
                 .RequirementSkill(SkillType.Saberstaff, 32)
                 .RequirementCharacterType(CharacterType.ForceSensitive);

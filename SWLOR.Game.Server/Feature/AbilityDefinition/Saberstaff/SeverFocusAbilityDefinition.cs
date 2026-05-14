@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.SeverFocus, 45f)
                 .RequiresTarget()
-                .HasImpactAction(ImpactAction)
+                .HasImpactAction(SeverFocus1ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
@@ -45,24 +45,21 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.SeverFocus, 45f)
                 .RequiresTarget()
-                .HasImpactAction(ImpactAction)
+                .HasImpactAction(SeverFocus2ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
                 .RequirementStamina(8);
         }
 
-        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        private static void SeverFocus1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            switch (level)
-            {
-                case 1:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Saberstaff, 18, 20, typeof(FracturedFocusStatusEffect), false);
-                    break;
-                case 2:
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Saberstaff, 28, 30, typeof(FracturedFocusStatusEffect), false);
-                    break;
-            }
+            Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Saberstaff, 18, 20, typeof(FracturedFocusStatusEffect), false);
+        }
+
+        private static void SeverFocus2ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        {
+            Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Saberstaff, 28, 30, typeof(FracturedFocusStatusEffect), false);
         }
     }
 }

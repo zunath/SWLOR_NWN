@@ -27,21 +27,28 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
                 .Level(1)
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.Earthshatter, 90f)
-                .HasImpactAction(ImpactAction)
+                .HasImpactAction(Earthshatter1ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
                 .RequirementStamina(12);
         }
 
-        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        private static void Earthshatter1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            switch (level)
-            {
-                case 1:
-                    Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.HeavyVibroblade, 20, 12, typeof(ForceDisruptionStatusEffect), CombatImpactAreaShape.Line, 0.25f, 8f, 2.5f);
-                    break;
-            }
+            Ability.ApplyTelegraphedCombatImpact(
+                activator,
+                target,
+                targetLocation,
+                SkillType.HeavyVibroblade,
+                20,
+                12,
+                null,
+                CombatImpactAreaShape.Line,
+                0.25f,
+                8f,
+                2.5f,
+                statusEffectFactory: () => new ForceDisruptionStatusEffect(true));
         }
     }
 }

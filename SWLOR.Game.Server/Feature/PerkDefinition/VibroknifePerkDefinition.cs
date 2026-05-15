@@ -86,7 +86,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Backstab3)
-                .Description("Deals weapon DMG + 60 from behind your target and inflicts Knockdown for 3 seconds.")
+                .Description("Deals weapon DMG + 60 from behind your target and knocks down for 3 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Vibroknife, 35);
         }

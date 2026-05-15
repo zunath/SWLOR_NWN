@@ -1682,6 +1682,21 @@ namespace SWLOR.Game.Server.Service
                 : Math.Max(0, defense + (int)Math.Ceiling(defense * (adjustment / 100f)));
         }
 
+        public static int ApplyStatusSourceAccuracyModifiers(uint attacker, uint defender, int accuracy)
+        {
+            if (accuracy <= 0)
+                return accuracy;
+
+            var adjustment = GetStatusSourceStatAdjustment(
+                attacker,
+                defender,
+                StatType.AccuracyToStatusSourcePercentAdjustment);
+
+            return adjustment == 0
+                ? accuracy
+                : Math.Max(1, accuracy + (int)Math.Ceiling(accuracy * (adjustment / 100f)));
+        }
+
         private static bool IsNearbyTargetNotTargetingAttacker(uint attacker, uint defender, float distance)
         {
             if (!GetIsObjectValid(attacker) ||
@@ -1900,7 +1915,7 @@ namespace SWLOR.Game.Server.Service
                 skillType == SkillType.Invalid)
                 return true;
 
-            var accuracy = GetAbilityAccuracy(attacker, skillType);
+            var accuracy = GetAbilityAccuracy(attacker, defender, skillType);
             var evasion = Stat.GetEvasion(defender, SkillType.Invalid);
             evasion = ApplySideAttackEvasionIgnore(attacker, defender, skillType, evasion);
 
@@ -1937,14 +1952,15 @@ namespace SWLOR.Game.Server.Service
             return isHit;
         }
 
-        private static int GetAbilityAccuracy(uint attacker, SkillType skillType)
+        private static int GetAbilityAccuracy(uint attacker, uint defender, SkillType skillType)
         {
             var weapon = GetRelevantSkillWeapon(attacker, skillType);
             var statOverride = skillType == SkillType.Force
                 ? AbilityType.Willpower
                 : AbilityType.Invalid;
 
-            return Stat.GetAccuracy(attacker, weapon, statOverride, skillType);
+            var accuracy = Stat.GetAccuracy(attacker, weapon, statOverride, skillType);
+            return ApplyStatusSourceAccuracyModifiers(attacker, defender, accuracy);
         }
 
         private static uint GetRelevantSkillWeapon(uint creature, SkillType skillType)

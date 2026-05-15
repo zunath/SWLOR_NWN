@@ -232,6 +232,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
         {
             ability.HasActivationDelay(0f)
                 .RequiresTarget()
+                .IsSingleTargetAbility()
                 .HasImpactAction((activator, target, level, targetLocation) =>
                 {
                     StatusEffect.ApplyStatusEffect(activator, target, type, duration, CombatDamageType.Physical);
@@ -275,6 +276,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                         Stat.RestoreStamina(activator, restoreStamina);
                     }
                 })
+                .IsAreaAbility()
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth();

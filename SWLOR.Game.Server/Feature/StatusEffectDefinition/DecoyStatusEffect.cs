@@ -14,7 +14,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public override ResistanceType ResistanceType => ResistanceType.Mind;
         public DecoyStatusEffect()
         {
-            StatGroup.Stats[StatType.AccuracyPercentAdjustment] = -25;
+            StatGroup.Stats[StatType.AccuracyToStatusSourcePercentAdjustment] = -25;
         }
 
     }

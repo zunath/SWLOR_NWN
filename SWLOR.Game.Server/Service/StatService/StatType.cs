@@ -2220,7 +2220,13 @@ namespace SWLOR.Game.Server.Service.StatService
         /// Percent enmity adjustment applied by a status recipient when generating enmity toward that status effect's source.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenNegative)]
-        EnmityToStatusSourcePercentAdjustment = 369
+        EnmityToStatusSourcePercentAdjustment = 369,
+
+        /// <summary>
+        /// Percent Accuracy adjustment applied by a status recipient when attacking that status effect's source.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        AccuracyToStatusSourcePercentAdjustment = 370
     }
 
     public class StatTypeAttribute : Attribute

@@ -149,6 +149,10 @@ namespace SWLOR.Game.Server.Native
                 Log.Write(LogGroup.Attack, "Selected attack type " + attackType + ", weapon " + (weapon == null ? "none" : weapon.GetFirstName().GetSimple(0)));
 
                 var attackerAccuracy = Stat.GetAccuracyNative(attacker, weapon);
+                attackerAccuracy = Combat.ApplyStatusSourceAccuracyModifiers(
+                    attacker.m_idSelf,
+                    defender.m_idSelf,
+                    attackerAccuracy);
                 var defenderEvasion = Stat.GetEvasionNative(defender);
                 defenderEvasion = Combat.ApplySideAttackEvasionIgnore(
                     attacker.m_idSelf,

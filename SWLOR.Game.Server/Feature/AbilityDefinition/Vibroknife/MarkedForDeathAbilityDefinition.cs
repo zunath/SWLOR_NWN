@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                     .Level(1)
                     .HasRecastDelay(RecastGroup.MarkedForDeath, 90f),
                 typeof(MarkedForDeathStatusEffect),
-                20f,
+                0f,
                 8);
 
             return builder.Build();

@@ -29,6 +29,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                 .Level(1)
                 .HasActivationDelay(2f)
                 .HasRecastDelay(RecastGroup.SmokeBomb, 30f)
+                .IsAreaAbility()
                 .HasImpactAction(SmokeBombImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()

@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
@@ -21,8 +20,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                     .HasRecastDelay(RecastGroup.EvasiveCombat, 300f),
                 typeof(EvasiveCombatStatusEffect),
                 30f,
-                4,
-                activator => Enmity.ModifyEnmityOnAll(activator, -150));
+                4);
             ConfigureSelfStatus(
                 builder
                     .Create(FeatType.EvasiveCombat2, PerkType.EvasiveCombat)
@@ -31,8 +29,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                     .HasRecastDelay(RecastGroup.EvasiveCombat, 300f),
                 typeof(EvasiveCombatStatusEffect),
                 30f,
-                8,
-                activator => Enmity.ModifyEnmityOnAll(activator, -250));
+                8);
 
             return builder.Build();
         }

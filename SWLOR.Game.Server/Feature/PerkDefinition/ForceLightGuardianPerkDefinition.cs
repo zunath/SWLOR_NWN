@@ -33,6 +33,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.ForceLight, PerkType.GuardianWard)
                 .Name("Guardian Ward")
+                .ForceAffinity(ForceAffinityType.Light)
 
                 .AddPerkLevel()
                 .Description("Grants a single ally temporary HP equal to 6% of the target's maximum HP plus WIL scaling for 30 seconds.")
@@ -66,6 +67,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.ForceLight, PerkType.ForcePush)
                 .Name("Force Push")
+                .ForceAffinity(ForceAffinityType.Light)
 
                 .AddPerkLevel()
                 .Description("Knock down one target for 2 seconds. slows movement for 3 seconds.")
@@ -93,6 +95,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.ForceLight, PerkType.LightGuardianDeflectivePresence)
                 .Name("Deflective Presence")
+                .ForceAffinity(ForceAffinityType.Light)
 
                 .AddPerkLevel()
                 .Description("While a one-handed lightsaber or vibroblade is equipped, Light Guardian combat powers increase attack deflection effectiveness by 8% for 10 seconds.")
@@ -109,6 +112,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.ForceLight, PerkType.ForceLeap)
                 .Name("Force Leap")
+                .ForceAffinity(ForceAffinityType.Light)
 
                 .AddPerkLevel()
                 .Description("Leap to a hostile target up to 15m away, dealing 10 force DMG plus WIL scaling and interrupting activation.")
@@ -129,6 +133,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.ForceLight, PerkType.SoothingGuard)
                 .Name("Soothing Guard")
+                .ForceAffinity(ForceAffinityType.Light)
 
                 .AddPerkLevel()
                 .Description("Removes one poison, bleed, burn, shock, or disease effect from an ally and grants 10% damage reduction for 8 seconds.")
@@ -142,6 +147,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.ForceLight, PerkType.AuraOfCourage)
                 .Name("Aura of Courage")
+                .ForceAffinity(ForceAffinityType.Light)
 
                 .AddPerkLevel()
                 .Description("Nearby party members take 5% less force damage and gain +10% resistance to fear, daze, and confusion for 30 seconds.")
@@ -155,6 +161,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.ForceLight, PerkType.ForceIntercept)
                 .Name("Force Intercept")
+                .ForceAffinity(ForceAffinityType.Light)
 
                 .AddPerkLevel()
                 .Description("Leap to an ally up to 15m away and absorb 50% of the next hit they take within 8 seconds.")
@@ -168,6 +175,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.ForceLight, PerkType.ReflectiveBarrier)
                 .Name("Reflective Barrier")
+                .ForceAffinity(ForceAffinityType.Light)
 
                 .AddPerkLevel()
                 .Description("Grants a single ally a barrier for 20 seconds. While active, 15% of force and energy damage taken, plus WIL scaling, is reflected to the attacker.")
@@ -181,6 +189,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.ForceLight, PerkType.PurifyingWave)
                 .Name("Purifying Wave")
+                .ForceAffinity(ForceAffinityType.Light)
 
                 .AddPerkLevel()
                 .Description("Removes one major negative effect from nearby allies and restores HP equal to 8% of each target's maximum HP plus WIL scaling.")
@@ -194,6 +203,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.ForceLight, PerkType.BastionOfLight)
                 .Name("Bastion of Light")
+                .ForceAffinity(ForceAffinityType.Light)
 
                 .AddPerkLevel()
                 .Description("Nearby allies gain temporary HP and take 10% less force damage for 20 seconds.")
@@ -207,6 +217,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.ForceLight, PerkType.LastStandOfTheLight)
                 .Name("Last Stand of the Light")
+                .ForceAffinity(ForceAffinityType.Light)
 
                 .AddPerkLevel()
                 .Description("For 12 seconds, damage that would drop the target below 1 HP is prevented once and the target gains temporary HP equal to 20% of maximum HP plus WIL scaling.")

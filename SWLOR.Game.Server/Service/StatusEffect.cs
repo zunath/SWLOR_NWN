@@ -476,6 +476,7 @@ namespace SWLOR.Game.Server.Service
             CombatDamageType sourceDamageType = CombatDamageType.Invalid)
         {
             durationTicks = ApplyOutgoingStatusDurationAdjustments(statusEffect, source, durationTicks, isPermanent);
+            durationTicks = Ability.ApplyActiveForceAffinityDurationAdjustment(source, durationTicks, isPermanent);
             ApplyOutgoingStatusStatAdjustments(statusEffect, source);
 
             var resistanceType = ResolveResistanceType(statusEffect, resistanceOverride, sourceDamageType);

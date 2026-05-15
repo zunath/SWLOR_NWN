@@ -1922,6 +1922,10 @@ namespace SWLOR.Game.Server.Service
             modifier += GetIncomingAbilityHitChanceAdjustment(defender, skillType);
             modifier += GetSideAttackHitChanceAdjustment(attacker, defender, skillType);
             modifier += GetIdleAbilityHitChanceAdjustment(attacker, skillType);
+            if (skillType == SkillType.Force)
+            {
+                modifier += Perk.GetForceAffinityHitChanceAdjustment(attacker, perkType);
+            }
 
             hitRate = CalculateHitRate(accuracy, evasion, modifier);
             var isHit = Random.D100(1) <= hitRate;

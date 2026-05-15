@@ -23,7 +23,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         IGuiRefreshable<PlayerStatusRefreshEvent>,
         IGuiRefreshable<StatusEffectReceivedRefreshEvent>,
         IGuiRefreshable<StatusEffectRemovedRefreshEvent>,
-        IGuiRefreshable<BeastGainXPRefreshEvent>
+        IGuiRefreshable<BeastGainXPRefreshEvent>,
+        IGuiRefreshable<PerkAcquiredRefreshEvent>,
+        IGuiRefreshable<PerkRefundedRefreshEvent>
     {
         private const int MaxPurchasedAttributeScore = 26;
         private const int RacialAttributeBonus = 1;
@@ -839,7 +841,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             AddStat("Paralysis", GetEffectStateLabel(EffectTypeScript.Paralyze), "Prevents auto attacks and other actions.");
             AddStat("Movement Speed", FormatMultiplier(Stat.GetMovementSpeedMultiplier(_target)), "Increases or decreases your movement speed.");
             AddStat("Force Evasion", FormatPercent(GetForceEvasion()), "Percent chance to completely evade a detrimental force ability.");
-            AddStat("Force Affinity", Perk.GetForceAffinity(_target).ToString(), "Affects Force ability effectiveness based on type. Negative represents Dark-side and positive represents Light-side.");
+            AddStat("Force Affinity", Perk.GetForceAffinity(_target).ToString(), "Affects Force ability effectiveness based on type. Range: -10 to 10. Negative represents Dark-side and positive represents Light-side.");
 
             StatNames = names;
             StatValues = values;
@@ -1143,6 +1145,22 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             APOrLevel = $"{dbBeast.Level} / {BeastMastery.MaxLevel}";
             APOrLevelTooltip = $"XP: {dbBeast.XP} / {BeastMastery.GetRequiredXP(dbBeast.Level, dbBeast.XPPenaltyPercent)}";
             RefreshCharacterStatsList();
+        }
+
+        public void Refresh(PerkAcquiredRefreshEvent payload)
+        {
+            if (!GetIsPC(_target))
+                return;
+
+            LoadData();
+        }
+
+        public void Refresh(PerkRefundedRefreshEvent payload)
+        {
+            if (!GetIsPC(_target))
+                return;
+
+            LoadData();
         }
 
         public void Refresh(EquipItemRefreshEvent payload)

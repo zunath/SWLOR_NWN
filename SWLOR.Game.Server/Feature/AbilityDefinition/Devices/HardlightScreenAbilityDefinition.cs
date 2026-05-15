@@ -72,7 +72,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         private static void ApplyHardlightScreen(uint activator, uint target, Location targetLocation, Type statusEffect, float duration)
         {
             var location = AbilityTargeting.ResolveImpactLocation(activator, target, targetLocation);
-            DeviceAbilityEffects.ScheduleFriendlyZoneStatus(
+            AbilityAreaEffects.ScheduleFriendlyZoneStatus(
                 activator,
                 location,
                 4f,

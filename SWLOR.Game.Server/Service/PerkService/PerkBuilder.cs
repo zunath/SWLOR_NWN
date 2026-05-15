@@ -141,6 +141,13 @@ namespace SWLOR.Game.Server.Service.PerkService
             return this;
         }
 
+        public PerkBuilder ForceAffinity(ForceAffinityType type)
+        {
+            _activePerk.ForceAffinityType = type;
+            _activePerk.StatBonuses.Add(new PerkStatBonus(StatType.ForceAffinity, (int)type));
+            return this;
+        }
+
         public PerkBuilder IncreasesStat(
             StatType stat,
             PerkStatBonusCalculation calculation)

@@ -1,15 +1,10 @@
-using System;
 using System.Collections.Generic;
-using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.Creature;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
@@ -64,7 +59,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
-                Stat.RestoreStamina(friendly, PercentOf(Stat.GetMaxStamina(friendly), 10));
+                var stamina = AbilityEffectScaling.ApplyActiveForceAffinityMagnitude(
+                    activator,
+                    PercentOf(Stat.GetMaxStamina(friendly), 10));
+                Stat.RestoreStamina(friendly, stamina);
                 StatusEffect.ApplyStatusEffect(activator, friendly, typeof(Clarity1StatusEffect), 15f);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Restoration), friendly);
             }
@@ -74,7 +72,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
-                Stat.RestoreStamina(friendly, PercentOf(Stat.GetMaxStamina(friendly), 18));
+                var stamina = AbilityEffectScaling.ApplyActiveForceAffinityMagnitude(
+                    activator,
+                    PercentOf(Stat.GetMaxStamina(friendly), 18));
+                Stat.RestoreStamina(friendly, stamina);
                 StatusEffect.ApplyStatusEffect(activator, friendly, typeof(Clarity2StatusEffect), 15f);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Restoration), friendly);
             }

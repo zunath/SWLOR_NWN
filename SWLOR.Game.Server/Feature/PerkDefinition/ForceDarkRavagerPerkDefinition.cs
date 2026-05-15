@@ -3,7 +3,6 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.PerkDefinition
@@ -31,6 +30,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.ForceDark, PerkType.ForceSpark)
                 .Name("Force Spark")
+                .ForceAffinity(ForceAffinityType.Dark)
 
                 .AddPerkLevel()
                 .Description("Deals 18 force DMG plus WIL scaling to one target and reduce evasion chance by 4% for 20 seconds.")
@@ -57,6 +57,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.ForceDark, PerkType.ForceBody)
                 .Name("Force Body")
+                .ForceAffinity(ForceAffinityType.Dark)
 
                 .AddPerkLevel()
                 .Description("For 30 seconds, your damaging Dark powers restore 1 FP, but each cast costs HP equal to 2% of your maximum HP.")
@@ -77,6 +78,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.ForceDark, PerkType.ForceLightning)
                 .Name("Force Lightning")
+                .ForceAffinity(ForceAffinityType.Dark)
 
                 .AddPerkLevel()
                 .Description("Deals 14 electrical force DMG plus WIL scaling to up to 3 targets.")
@@ -97,6 +99,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.ForceDark, PerkType.ForceDrain)
                 .Name("Force Drain")
+                .ForceAffinity(ForceAffinityType.Dark)
 
                 .AddPerkLevel()
                 .Description("Deals 16 force DMG plus WIL scaling and heals you for 35% of damage dealt.")
@@ -124,6 +127,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.ForceDark, PerkType.SaberRend)
                 .Name("Saber Rend")
+                .ForceAffinity(ForceAffinityType.Dark)
 
                 .AddPerkLevel()
                 .Description("Your next melee attack deals +12 force DMG plus WIL scaling. Requires a melee weapon.")
@@ -144,6 +148,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.ForceDark, PerkType.ForceRage)
                 .Name("Force Rage")
+                .ForceAffinity(ForceAffinityType.Dark)
 
                 .AddPerkLevel()
                 .Description("Increases outgoing weapon and force damage by 8% and critical damage by 10% for 20 seconds, but increases damage taken by 5%.")
@@ -164,6 +169,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.ForceDark, PerkType.DevouringStrike)
                 .Name("Devouring Strike")
+                .ForceAffinity(ForceAffinityType.Dark)
 
                 .AddPerkLevel()
                 .Description("Deals force DMG to one target. If the target is below 35% HP, damage is increased by 40%.")
@@ -177,6 +183,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.ForceDark, PerkType.ForceMaelstrom)
                 .Name("Force Maelstrom")
+                .ForceAffinity(ForceAffinityType.Dark)
 
                 .AddPerkLevel()
                 .Description("Deals force DMG to nearby enemies and pulls them slightly toward you.")
@@ -190,6 +197,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.ForceDark, PerkType.HungerOfTheDark)
                 .Name("Hunger of the Dark")
+                .ForceAffinity(ForceAffinityType.Dark)
 
                 .AddPerkLevel()
                 .Description("For 12 seconds, Dark damage you deal heals you for 25% of damage dealt and defeated enemies restore FP.")

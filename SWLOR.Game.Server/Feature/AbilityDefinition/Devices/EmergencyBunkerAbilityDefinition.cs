@@ -55,7 +55,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Ac_Bonus), friendly);
             }
 
-            DeviceAbilityEffects.ScheduleFriendlyZoneStatus(
+            AbilityAreaEffects.ScheduleFriendlyZoneStatus(
                 activator,
                 location,
                 4f,

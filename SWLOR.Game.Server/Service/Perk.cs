@@ -120,6 +120,11 @@ namespace SWLOR.Game.Server.Service
                         _activeCategories[perkDetail.GroupType][perkDetail.Category] = categoryDetail;
                     }
 
+                    if (perkDetail.StatBonuses.Count > 0)
+                    {
+                        _perksWithStatBonuses[perkType] = perkDetail;
+                    }
+
                     foreach (var (level, perkLevel) in perkDetail.PerkLevels)
                     {
                         // If the perk has an "unlock requirement", add it to that cache.
@@ -292,32 +297,71 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsPC(creature) || GetIsDM(creature))
                 return 0;
 
-            var playerId = GetObjectUUID(creature);
-            var dbPlayer = DB.Get<Player>(playerId);
-
-            return GetForceAffinity(dbPlayer);
+            return Math.Clamp(
+                Stat.GetStatAdjustment(creature, StatType.ForceAffinity),
+                ForceAffinityMinimum,
+                ForceAffinityMaximum);
         }
 
-        public static int GetForceAffinity(Player dbPlayer)
+        public static bool TryGetForceSideAffinity(uint creature, PerkType perkType, out int sideAffinity)
         {
-            var affinity = 0;
+            sideAffinity = 0;
 
-            foreach (var (perkType, perkLevel) in dbPlayer.Perks)
+            if (perkType == PerkType.Invalid ||
+                !_allPerks.TryGetValue(perkType, out var detail))
             {
-                if (!_allPerks.TryGetValue(perkType, out var detail))
-                    continue;
-
-                if (detail.Category == PerkCategoryType.ForceLight)
-                {
-                    affinity += perkLevel;
-                }
-                else if (detail.Category == PerkCategoryType.ForceDark)
-                {
-                    affinity -= perkLevel;
-                }
+                return false;
             }
 
-            return Math.Clamp(affinity, ForceAffinityMinimum, ForceAffinityMaximum);
+            if (detail.ForceAffinityType == null)
+                return false;
+
+            var forceAffinity = GetForceAffinity(creature);
+            switch (detail.ForceAffinityType.Value)
+            {
+                case ForceAffinityType.Light:
+                    sideAffinity = forceAffinity;
+                    return true;
+                case ForceAffinityType.Dark:
+                    sideAffinity = -forceAffinity;
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        public static float GetForceAffinityMagnitudeMultiplier(uint creature, PerkType perkType)
+        {
+            return TryGetForceSideAffinity(creature, perkType, out var sideAffinity)
+                ? Math.Clamp(1f + 0.05f * sideAffinity, 0.5f, 1.5f)
+                : 1f;
+        }
+
+        public static int GetForceAffinityHitChanceAdjustment(uint creature, PerkType perkType)
+        {
+            return TryGetForceSideAffinity(creature, perkType, out var sideAffinity)
+                ? (int)Math.Floor(sideAffinity / 2f)
+                : 0;
+        }
+
+        public static int ApplyForceAffinityMagnitude(uint creature, PerkType perkType, int amount)
+        {
+            if (amount <= 0)
+                return amount;
+
+            var multiplier = GetForceAffinityMagnitudeMultiplier(creature, perkType);
+            if (Math.Abs(multiplier - 1f) < 0.001f)
+                return amount;
+
+            return Math.Max(1, (int)Math.Round(amount * multiplier, MidpointRounding.AwayFromZero));
+        }
+
+        public static float ApplyForceAffinityMagnitude(uint creature, PerkType perkType, float amount)
+        {
+            if (amount <= 0f)
+                return amount;
+
+            return amount * GetForceAffinityMagnitudeMultiplier(creature, perkType);
         }
 
         public static int GetStatBonus(uint creature, StatType stat)
@@ -329,6 +373,14 @@ namespace SWLOR.Game.Server.Service
                 var level = GetPerkLevel(creature, perkType);
                 if (level <= 0 || !perkDetail.PerkLevels.TryGetValue(level, out var perkLevel))
                     continue;
+
+                foreach (var statBonus in perkDetail.StatBonuses)
+                {
+                    if (statBonus.Stat == stat)
+                    {
+                        bonus += statBonus.Calculate(creature);
+                    }
+                }
 
                 foreach (var statBonus in perkLevel.StatBonuses)
                 {

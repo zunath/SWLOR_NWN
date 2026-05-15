@@ -3,7 +3,6 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.PerkDefinition
@@ -32,6 +31,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.ForceDark, PerkType.CreepingTerror)
                 .Name("Creeping Terror")
+                .ForceAffinity(ForceAffinityType.Dark)
 
                 .AddPerkLevel()
                 .Description("Hobble one target for 6 seconds and applies force damage over time equal to 12 force DMG plus WIL scaling over 18 seconds.")
@@ -58,6 +58,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.ForceDark, PerkType.ForceGrip)
                 .Name("Force Grip")
+                .ForceAffinity(ForceAffinityType.Dark)
 
                 .AddPerkLevel()
                 .Description("Immobilize one target for 3 seconds and interrupt activation.")
@@ -85,6 +86,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.ForceDark, PerkType.WeakenResolve)
                 .Name("Weaken Resolve")
+                .ForceAffinity(ForceAffinityType.Dark)
 
                 .AddPerkLevel()
                 .Description("Increase force damage taken by 5% for 24 seconds.")
@@ -105,6 +107,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.ForceDark, PerkType.FractureFocus)
                 .Name("Fracture Focus")
+                .ForceAffinity(ForceAffinityType.Dark)
 
                 .AddPerkLevel()
                 .Description("Increase one target's FP and STM ability costs by 20% for 12 seconds.")
@@ -125,6 +128,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.ForceDark, PerkType.MindShroud)
                 .Name("Mind Shroud")
+                .ForceAffinity(ForceAffinityType.Dark)
 
                 .AddPerkLevel()
                 .Description("Reduces force damage taken by 5% and grants +10% resistance to confusion, daze, and fear for 30 seconds.")
@@ -145,6 +149,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.ForceDark, PerkType.NightmareField)
                 .Name("Nightmare Field")
+                .ForceAffinity(ForceAffinityType.Dark)
 
                 .AddPerkLevel()
                 .Description("Nearby enemies suffer -10 Accuracy and -10 Evasion for 18 seconds.")
@@ -158,6 +163,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.ForceDark, PerkType.ForceChoke)
                 .Name("Force Choke")
+                .ForceAffinity(ForceAffinityType.Dark)
 
                 .AddPerkLevel()
                 .Description("Daze one target for 3 seconds and apply force damage over time for 12 seconds.")
@@ -171,6 +177,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.ForceDark, PerkType.DominateWeakMind)
                 .Name("Dominate Weak Mind")
+                .ForceAffinity(ForceAffinityType.Dark)
 
                 .AddPerkLevel()
                 .Description("Confuse one non-mechanical target for 8 seconds. Bosses instead suffer -15 Accuracy.")
@@ -184,6 +191,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.ForceDark, PerkType.CollapseWill)
                 .Name("Collapse Will")
+                .ForceAffinity(ForceAffinityType.Dark)
 
                 .AddPerkLevel()
                 .Description("Apply Exposed and Force Erosion for 18 seconds.")
@@ -197,6 +205,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.ForceDark, PerkType.EclipseOfResolve)
                 .Name("Eclipse of Resolve")
+                .ForceAffinity(ForceAffinityType.Dark)
 
                 .AddPerkLevel()
                 .Description("Nearby enemies suffer -15% hit chance, -15% evasion chance, and +25% FP and STM costs for 15 seconds.")

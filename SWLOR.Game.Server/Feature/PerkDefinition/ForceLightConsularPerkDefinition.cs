@@ -3,7 +3,6 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.PerkDefinition
@@ -31,6 +30,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.ForceLight, PerkType.Benevolence)
                 .Name("Benevolence")
+                .ForceAffinity(ForceAffinityType.Light)
 
                 .AddPerkLevel()
                 .Description("Restores 8% of the target's maximum HP plus WIL scaling to a single target. Healing gains +25% when targeting someone other than yourself.")
@@ -57,6 +57,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.ForceLight, PerkType.Pacify)
                 .Name("Pacify")
+                .ForceAffinity(ForceAffinityType.Light)
 
                 .AddPerkLevel()
                 .Description("Reduce a target's outgoing weapon and force damage by 5% for 20 seconds.")
@@ -84,6 +85,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.ForceLight, PerkType.Renewal)
                 .Name("Renewal")
+                .ForceAffinity(ForceAffinityType.Light)
 
                 .AddPerkLevel()
                 .Description("Applies regeneration to a single ally, restoring 2% of maximum HP plus WIL scaling every 3 seconds for 18 seconds.")
@@ -111,6 +113,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.ForceLight, PerkType.Clarity)
                 .Name("Clarity")
+                .ForceAffinity(ForceAffinityType.Light)
 
                 .AddPerkLevel()
                 .Description("Restores 10% of maximum STM to an ally and increases physical and force ability hit chance by 4% for 15 seconds. Self-target restores FP instead.")
@@ -131,6 +134,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.ForceLight, PerkType.MindTrick)
                 .Name("Mind Trick")
+                .ForceAffinity(ForceAffinityType.Light)
 
                 .AddPerkLevel()
                 .Description("Confuse one non-mechanical target for 5 seconds.")
@@ -151,6 +155,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.ForceLight, PerkType.ComprehendSpeech)
                 .Name("Comprehend Speech")
+                .ForceAffinity(ForceAffinityType.Light)
 
                 .AddPerkLevel()
                 .Description("For 15 minutes, you count as having 15 additional ranks in all languages for understanding spoken speech.")
@@ -164,6 +169,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.ForceLight, PerkType.ForceMend)
                 .Name("Force Mend")
+                .ForceAffinity(ForceAffinityType.Light)
 
                 .AddPerkLevel()
                 .Description("Removes one major negative effect from a single ally and restores HP equal to 16% of the target's maximum HP plus WIL scaling.")
@@ -177,6 +183,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.ForceLight, PerkType.ForceSanctuary)
                 .Name("Force Sanctuary")
+                .ForceAffinity(ForceAffinityType.Light)
 
                 .AddPerkLevel()
                 .Description("Creates a 4m sanctuary for 18 seconds. Allies inside gain regeneration equal to 2% of maximum HP plus WIL scaling every 3 seconds and take 5% less force damage.")
@@ -190,6 +197,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.ForceLight, PerkType.CircleOfHarmony)
                 .Name("Circle of Harmony")
+                .ForceAffinity(ForceAffinityType.Light)
 
                 .AddPerkLevel()
                 .Description("Restores 14% of maximum HP plus WIL scaling to nearby allies, removes one standard negative effect, and grants 1 FP and 1 STM every 3 seconds for 18 seconds.")

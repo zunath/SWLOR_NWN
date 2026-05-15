@@ -133,6 +133,50 @@ namespace SWLOR.Game.Server.Service
                 : null;
         }
 
+        public static float GetActiveForceAffinityMagnitudeMultiplier(uint activator)
+        {
+            var trackedImpact = GetTrackedAbilityImpact(activator);
+            if (trackedImpact?.Ability?.SkillType != SkillType.Force)
+                return 1f;
+
+            return Perk.GetForceAffinityMagnitudeMultiplier(
+                activator,
+                trackedImpact.Ability.EffectiveLevelPerkType);
+        }
+
+        public static int ApplyActiveForceAffinityMagnitude(uint activator, int amount)
+        {
+            var trackedImpact = GetTrackedAbilityImpact(activator);
+            if (trackedImpact?.Ability?.SkillType != SkillType.Force)
+                return amount;
+
+            return Perk.ApplyForceAffinityMagnitude(
+                activator,
+                trackedImpact.Ability.EffectiveLevelPerkType,
+                amount);
+        }
+
+        public static float ApplyActiveForceAffinityMagnitude(uint activator, float amount)
+        {
+            var trackedImpact = GetTrackedAbilityImpact(activator);
+            if (trackedImpact?.Ability?.SkillType != SkillType.Force)
+                return amount;
+
+            return Perk.ApplyForceAffinityMagnitude(
+                activator,
+                trackedImpact.Ability.EffectiveLevelPerkType,
+                amount);
+        }
+
+        public static int ApplyActiveForceAffinityDurationAdjustment(uint activator, int durationTicks, bool isPermanent)
+        {
+            if (isPermanent || durationTicks <= 0)
+                return durationTicks;
+
+            var adjustedDuration = ApplyActiveForceAffinityMagnitude(activator, durationTicks);
+            return Math.Max(1, adjustedDuration);
+        }
+
         private static void RecordAbilityImpactShape(uint activator, SkillType skillType, bool isArea)
         {
             var impact = GetTrackedAbilityImpact(activator);
@@ -1486,6 +1530,10 @@ namespace SWLOR.Game.Server.Service
             var calculatedDamage = damageRoll.Damage;
             criticalRating = damageRoll.CriticalRating;
             calculatedDamage = Combat.ApplySideAttackDamageModifier(activator, target, skillType, calculatedDamage);
+            if (skillType == SkillType.Force)
+            {
+                calculatedDamage = Perk.ApplyForceAffinityMagnitude(activator, perkType, calculatedDamage);
+            }
             calculatedDamage = Combat.ApplyDamageDealtModifiers(activator, target, calculatedDamage, skillType, damageType, true);
             calculatedDamage = Resistance.ApplyResistanceToDamage(target, damageType, calculatedDamage);
             calculatedDamage = Combat.ApplyDamageTakenModifiers(target, calculatedDamage);

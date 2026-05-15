@@ -120,57 +120,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             }
         }
 
-        public static void ScheduleFriendlyZoneStatus(
-            uint activator,
-            Location location,
-            float radius,
-            float durationSeconds,
-            Type statusEffect,
-            VisualEffect visualEffect = VisualEffect.None)
-        {
-            for (var elapsed = 0f; elapsed < durationSeconds - 0.01f; elapsed += 3f)
-            {
-                var pulseDelay = elapsed;
-                DelayCommand(pulseDelay, () =>
-                {
-                    foreach (var friendly in AbilityTargeting.GetFriendlyTargetsNearLocation(activator, location, radius))
-                    {
-                        StatusEffect.ApplyStatusEffect(activator, friendly, statusEffect, 3.2f);
-                        if (visualEffect != VisualEffect.None)
-                            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(visualEffect), friendly);
-                    }
-                });
-            }
-        }
-
-        public static void ScheduleFriendlyZoneHealing(
-            uint activator,
-            Location location,
-            float radius,
-            float durationSeconds,
-            float percentPerTick,
-            Type statusEffect = null,
-            VisualEffect visualEffect = VisualEffect.None)
-        {
-            for (var elapsed = 3f; elapsed <= durationSeconds + 0.01f; elapsed += 3f)
-            {
-                var pulseDelay = elapsed;
-                DelayCommand(pulseDelay, () =>
-                {
-                    foreach (var friendly in AbilityTargeting.GetFriendlyTargetsNearLocation(activator, location, radius))
-                    {
-                        AbilityEffectScaling.ApplyScaledHeal(activator, friendly, percentPerTick);
-
-                        if (statusEffect != null)
-                            StatusEffect.ApplyStatusEffect(activator, friendly, statusEffect, 3.2f);
-
-                        if (visualEffect != VisualEffect.None)
-                            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(visualEffect), friendly);
-                    }
-                });
-            }
-        }
-
         private static uint GetNearestHostileCreature(uint activator, Location location, float radius)
         {
             if (!GetIsObjectValid(activator) ||

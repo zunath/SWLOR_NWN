@@ -14,17 +14,34 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
         public static int ScaleDirectEffect(
             int baseAmount,
             int stat,
-            float maximumBonusPercent = DirectEffectMaximumStatBonus)
+            float maximumBonusPercent = DirectEffectMaximumStatBonus,
+            uint source = OBJECT_INVALID)
         {
             if (baseAmount <= 0 || maximumBonusPercent <= 0f)
-                return baseAmount;
+                return ApplyActiveForceAffinityMagnitude(source, baseAmount);
 
             var progress = GetScalingProgress(stat);
             if (progress <= 0f)
-                return baseAmount;
+                return ApplyActiveForceAffinityMagnitude(source, baseAmount);
 
             var bonus = (int)Math.Ceiling(baseAmount * maximumBonusPercent * progress);
-            return baseAmount + bonus;
+            return ApplyActiveForceAffinityMagnitude(source, baseAmount + bonus);
+        }
+
+        public static int ApplyActiveForceAffinityMagnitude(uint source, int amount)
+        {
+            if (!GetIsObjectValid(source) || amount <= 0)
+                return amount;
+
+            return Ability.ApplyActiveForceAffinityMagnitude(source, amount);
+        }
+
+        public static float ApplyActiveForceAffinityMagnitude(uint source, float amount)
+        {
+            if (!GetIsObjectValid(source) || amount <= 0f)
+                return amount;
+
+            return Ability.ApplyActiveForceAffinityMagnitude(source, amount);
         }
 
         public static int ScaleValueBySourceSocial(uint source, int baseValue, int maximumValue)
@@ -70,7 +87,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
             var baseAmount = Math.Max(1, (int)Math.Ceiling(GetMaxHitPoints(target) * (percent / 100f) * multiplier));
             var scalingSource = GetIsObjectValid(source) ? source : target;
-            return ScaleDirectEffect(baseAmount, GetAbilityScore(scalingSource, scalingAbility));
+            var scaledAmount = ScaleDirectEffect(baseAmount, GetAbilityScore(scalingSource, scalingAbility));
+            return ApplyActiveForceAffinityMagnitude(source, scaledAmount);
         }
 
         public static void ApplyTemporaryHPPercent(

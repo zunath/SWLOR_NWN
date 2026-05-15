@@ -2208,7 +2208,13 @@ namespace SWLOR.Game.Server.Service.StatService
         /// Percent adjustment applied to incoming physical damage-over-time ticks. Positive values increase damage taken; negative values reduce it.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenNegative)]
-        PhysicalDamageOverTimeTakenPercentAdjustment = 367
+        PhysicalDamageOverTimeTakenPercentAdjustment = 367,
+
+        /// <summary>
+        /// Force alignment affinity. Negative values favor Dark-side abilities; positive values favor Light-side abilities.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        ForceAffinity = 368
     }
 
     public class StatTypeAttribute : Attribute

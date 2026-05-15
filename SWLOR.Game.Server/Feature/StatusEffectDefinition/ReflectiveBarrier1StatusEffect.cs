@@ -17,7 +17,8 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         {
             var reflection = AbilityEffectScaling.ScaleDirectEffect(
                 BaseReflectionPercent,
-                GetAbilityScore(Source, AbilityType.Willpower));
+                GetAbilityScore(Source, AbilityType.Willpower),
+                source: Source);
 
             StatGroup.Stats[StatType.ForceDamageReflectionPercentAdjustment] = reflection;
             StatGroup.Stats[StatType.ElementalDamageReflectionPercentAdjustment] = reflection;

@@ -3044,6 +3044,50 @@ namespace SWLOR.Game.Server.Service
             return ColorToken.Combat($"{attackerName} attacks {defenderName}{type} : ({chanceToHit}% chance to hit)");
         }
 
+        public static string BuildAbilityCombatLogMessage(
+            uint attacker,
+            uint defender,
+            string abilityName,
+            int attackResultType,
+            int chanceToHit)
+        {
+            var type = string.Empty;
+
+            switch (attackResultType)
+            {
+                case 1:
+                case 7:
+                    type = ": *hit*";
+                    break;
+                case 3:
+                    type = ": *critical*";
+                    break;
+                case 4:
+                    type = ": *miss*";
+                    break;
+            }
+
+            if (string.IsNullOrWhiteSpace(abilityName))
+                abilityName = "an ability";
+
+            var attackerName = GetIsPC(attacker) ? ColorToken.GetNamePCColor(attacker) : ColorToken.GetNameNPCColor(attacker);
+            var defenderName = GetIsPC(defender) ? ColorToken.GetNamePCColor(defender) : ColorToken.GetNameNPCColor(defender);
+
+            return ColorToken.Combat($"{attackerName} uses {abilityName} on {defenderName}{type} : ({chanceToHit}% chance to hit)");
+        }
+
+        public static string BuildAbilityNoTargetCombatLogMessage(
+            uint attacker,
+            string abilityName)
+        {
+            if (string.IsNullOrWhiteSpace(abilityName))
+                abilityName = "an ability";
+
+            var attackerName = GetIsPC(attacker) ? ColorToken.GetNamePCColor(attacker) : ColorToken.GetNameNPCColor(attacker);
+
+            return ColorToken.Combat($"{attackerName} uses {abilityName}, but it hits no targets.");
+        }
+
         /// <summary>
         /// Builds a combat log message based on the provided information, for native contexts.
         /// </summary>

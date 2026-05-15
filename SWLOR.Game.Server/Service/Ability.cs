@@ -23,6 +23,8 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<uint, TrackedAbilityImpact> _trackedAbilityImpacts = new();
 
         private const int MaxNumberOfAuras = 4;
+        private const int HostileAbilityBaseEnmity = 100;
+        private const int HostileAbilityMissEnmity = 1;
 
         /// <summary>
         /// When the module caches, abilities will be cached and events will be scheduled.
@@ -175,6 +177,17 @@ namespace SWLOR.Game.Server.Service
 
             var adjustedDuration = ApplyActiveForceAffinityMagnitude(activator, durationTicks);
             return Math.Max(1, adjustedDuration);
+        }
+
+        public static void ApplyHostileAbilityEnmity(uint activator, uint target, int damage = 0)
+        {
+            var amount = HostileAbilityBaseEnmity + Math.Max(0, damage);
+            Enmity.ModifyEnmity(activator, target, amount);
+        }
+
+        private static void ApplyMissedHostileAbilityEnmity(uint activator, uint target)
+        {
+            Enmity.ModifyEnmity(activator, target, HostileAbilityMissEnmity);
         }
 
         private static void RecordAbilityImpactShape(uint activator, SkillType skillType, bool isArea)
@@ -870,7 +883,8 @@ namespace SWLOR.Game.Server.Service
             VisualEffect areaVisualEffect = VisualEffect.None,
             Func<uint, int> damagePercentAdjustment = null,
             Func<uint, int> baseDamageAdjustment = null,
-            IEnumerable<Func<IStatusEffect>> additionalStatusEffectFactories = null)
+            IEnumerable<Func<IStatusEffect>> additionalStatusEffectFactories = null,
+            Animation impactAnimation = Animation.Invalid)
         {
             var totalDamage = 0;
             RecordAbilityImpactShape(activator, skillType, isArea);
@@ -930,7 +944,7 @@ namespace SWLOR.Game.Server.Service
                     additionalStatusEffectFactories: additionalStatusEffectFactories);
             }
 
-            AssignCommand(activator, () => ActionPlayAnimation(Animation.DoubleStrike));
+            PlayCombatImpactAnimation(activator, impactAnimation);
             return totalDamage;
         }
 
@@ -960,7 +974,8 @@ namespace SWLOR.Game.Server.Service
             Func<uint, int> baseDamageAdjustment = null,
             Action<AbilityImpactSummary> afterImpactAction = null,
             int maxTargets = 0,
-            IEnumerable<Func<IStatusEffect>> additionalStatusEffectFactories = null)
+            IEnumerable<Func<IStatusEffect>> additionalStatusEffectFactories = null,
+            Animation impactAnimation = Animation.Invalid)
         {
             RecordAbilityImpactShape(activator, skillType, true);
 
@@ -988,6 +1003,7 @@ namespace SWLOR.Game.Server.Service
                     baseDamageAdjustment,
                     maxTargets,
                     additionalStatusEffectFactories);
+                PlayCombatImpactAnimation(activator, impactAnimation);
                 return;
             }
 
@@ -1058,7 +1074,7 @@ namespace SWLOR.Game.Server.Service
                     throw new ArgumentOutOfRangeException(nameof(shape), shape, null);
             }
 
-            AssignCommand(activator, () => ActionPlayAnimation(Animation.DoubleStrike));
+            PlayCombatImpactAnimation(activator, impactAnimation);
         }
 
         private static void ApplyCombatImpactInShape(
@@ -1178,7 +1194,10 @@ namespace SWLOR.Game.Server.Service
                 }
 
                 if (hostileCreatures.Count <= 0)
+                {
+                    SendCombatImpactNoTargetsMessage(creator, ability);
                     return;
+                }
 
                 if (ability != null)
                 {
@@ -1236,6 +1255,7 @@ namespace SWLOR.Game.Server.Service
         {
             var totalDamage = 0;
             var affectedCount = 0;
+            var trackedAbility = GetTrackedAbilityImpact(activator)?.Ability;
 
             foreach (var creature in creatures.Distinct())
             {
@@ -1261,6 +1281,11 @@ namespace SWLOR.Game.Server.Service
                     baseDamageAdjustment,
                     additionalStatusEffectFactories);
                 affectedCount++;
+            }
+
+            if (affectedCount <= 0)
+            {
+                SendCombatImpactNoTargetsMessage(activator, trackedAbility);
             }
 
             return totalDamage;
@@ -1348,6 +1373,19 @@ namespace SWLOR.Game.Server.Service
                    Math.Abs(rotatedY) <= width * 0.5f;
         }
 
+        private static void PlayCombatImpactAnimation(uint activator, Animation impactAnimation)
+        {
+            var trackedAbility = GetTrackedAbilityImpact(activator)?.Ability;
+            var animation = impactAnimation == Animation.Invalid
+                ? trackedAbility?.ImpactAnimationType ?? Animation.Invalid
+                : impactAnimation;
+
+            if (animation == Animation.Invalid)
+                animation = Animation.DoubleStrike;
+
+            AssignCommand(activator, () => ActionPlayAnimation(animation));
+        }
+
         private static int ApplyHostileCombatImpact(
             uint activator,
             uint target,
@@ -1366,22 +1404,26 @@ namespace SWLOR.Game.Server.Service
         {
             var trackedImpact = GetTrackedAbilityImpact(activator);
             var perkType = trackedImpact?.Ability?.EffectiveLevelPerkType ?? PerkType.Invalid;
-            if (!Combat.TryResolveAbilityHit(activator, target, skillType, perkType, out _))
+            if (!Combat.TryResolveAbilityHit(activator, target, skillType, perkType, out var hitRate))
             {
+                SendCombatImpactResultMessage(activator, target, trackedImpact?.Ability, 4, hitRate);
                 CombatPoint.AddCombatPoint(activator, target, skillType, 1);
+                ApplyMissedHostileAbilityEnmity(activator, target);
                 return 0;
             }
+            SendCombatImpactResultMessage(activator, target, trackedImpact?.Ability, 1, hitRate);
 
             var adjustedBaseDamage = Math.Max(0, baseDamage + (baseDamageAdjustment?.Invoke(target) ?? 0));
             var damage = CalculateCombatImpactDamage(activator, target, skillType, adjustedBaseDamage, damageType);
             damage = ApplyDamagePercentAdjustment(target, damage, damagePercentAdjustment);
             if (damage > 0)
             {
-                ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, damageType.GetNWScriptDamageType()), target);
+                AssignCommand(activator, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, damageType.GetNWScriptDamageType()), target));
                 ApplyDarkForceConversion(activator, target, damage);
                 Combat.ApplyDamageDealtEffects(activator, target, damage, skillType);
-                Enmity.ModifyEnmity(activator, target, damage + 100);
             }
+
+            ApplyHostileAbilityEnmity(activator, target, damage);
 
             var statusApplied = ApplyCombatImpactStatusEffect(
                 activator,
@@ -1401,6 +1443,38 @@ namespace SWLOR.Game.Server.Service
             CombatPoint.AddCombatPoint(activator, target, skillType, 3);
             RecordAbilityImpactTarget(activator, target, skillType, false);
             return damage;
+        }
+
+        private static void SendCombatImpactResultMessage(
+            uint activator,
+            uint target,
+            AbilityDetail ability,
+            int attackResultType,
+            int hitRate)
+        {
+            if (!GetIsObjectValid(activator) || !GetIsObjectValid(target) || ability == null)
+                return;
+
+            var combatLogMessage = Combat.BuildAbilityCombatLogMessage(
+                activator,
+                target,
+                ability.Name,
+                attackResultType,
+                hitRate);
+            Messaging.SendMessageNearbyToPlayers(target, combatLogMessage, 60f);
+        }
+
+        private static void SendCombatImpactNoTargetsMessage(
+            uint activator,
+            AbilityDetail ability)
+        {
+            if (!GetIsObjectValid(activator) || ability == null)
+                return;
+
+            var combatLogMessage = Combat.BuildAbilityNoTargetCombatLogMessage(
+                activator,
+                ability.Name);
+            Messaging.SendMessageNearbyToPlayers(activator, combatLogMessage, 60f);
         }
 
         private static int ApplyDamagePercentAdjustment(
@@ -1466,7 +1540,7 @@ namespace SWLOR.Game.Server.Service
             var hpCost = Math.Max(1, GetMaxHitPoints(activator) * hpCostPercent / 100);
             hpCost = Math.Min(hpCost, Math.Max(0, GetCurrentHitPoints(activator) - 1));
             if (hpCost > 0)
-                ApplyEffectToObject(DurationType.Instant, EffectDamage(hpCost), activator);
+                AssignCommand(activator, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(hpCost), activator));
         }
 
         private static void RestoreHPFromDamage(uint creature, int damage, int percent)

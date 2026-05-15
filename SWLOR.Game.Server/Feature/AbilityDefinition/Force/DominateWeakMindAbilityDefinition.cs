@@ -34,6 +34,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasActivationDelay(1f)
                 .HasRecastDelay(RecastGroup.DominateWeakMind, 90f)
                 .SkillType(SkillType.Force)
+                .UsesImpactAnimation(Animation.CastOutAnimation)
                 .IsSingleTargetAbility()
                 .HasMaxRange(15f)
                 .RequiresTarget()

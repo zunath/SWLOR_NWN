@@ -34,6 +34,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasActivationDelay(1f)
                 .HasRecastDelay(RecastGroup.ForceChoke, 60f)
                 .SkillType(SkillType.Force)
+                .UsesImpactAnimation(Animation.ForceChoke)
                 .IsSingleTargetAbility()
                 .HasMaxRange(15f)
                 .RequiresTarget()

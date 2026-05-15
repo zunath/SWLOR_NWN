@@ -30,6 +30,66 @@ namespace SWLOR.Game.Server.Feature
         private const string ActiveAbilityFeatIdName = "ACTIVE_ABILITY_FEAT_ID";
         private const string ActiveAbilityEffectivePerkLevelName = "ACTIVE_ABILITY_EFFECTIVE_PERK_LEVEL";
 
+        private static uint GetResumeAttackTarget(uint activator, uint target, AbilityDetail ability)
+        {
+            if (GetCurrentAction(activator) == ActionType.AttackObject)
+            {
+                var attackTarget = GetAttackTarget(activator);
+                if (GetIsObjectValid(attackTarget))
+                    return attackTarget;
+            }
+
+            if (!GetIsPC(activator))
+            {
+                var enmityTarget = Enmity.GetHighestEnmityTarget(activator);
+                if (GetIsObjectValid(enmityTarget))
+                    return enmityTarget;
+
+                if (ability.IsHostileAbility &&
+                    GetIsObjectValid(target) &&
+                    target != activator &&
+                    GetIsEnemy(target, activator))
+                {
+                    return target;
+                }
+            }
+
+            return OBJECT_INVALID;
+        }
+
+        private static void ResumeAttack(uint activator, uint target)
+        {
+            if (!GetIsObjectValid(target))
+                return;
+
+            if (!GetIsObjectValid(activator) ||
+                GetCurrentHitPoints(activator) <= 0 ||
+                GetCurrentHitPoints(target) <= 0 ||
+                GetArea(activator) != GetArea(target))
+            {
+                return;
+            }
+
+            AssignCommand(activator, () =>
+            {
+                if (!GetIsPC(activator))
+                    ClearAllActions();
+
+                ActionAttack(target);
+            });
+        }
+
+        private static void ResumeAttackAfterDelay(uint activator, uint target, float delay)
+        {
+            if (!GetIsObjectValid(target))
+                return;
+
+            DelayCommand(delay, () =>
+            {
+                ResumeAttack(activator, target);
+            });
+        }
+
         /// <summary>
         /// Breaks stealth and invisibility effects if the ability is configured to do so.
         /// </summary>
@@ -73,8 +133,22 @@ namespace SWLOR.Game.Server.Feature
             var targetLocation = Location(targetArea, targetPosition, 0.0f);
 
             var feat = (FeatType)Convert.ToInt32(EventsPlugin.GetEventData("FEAT_ID"));
-            if (!Ability.IsFeatRegistered(feat)) return;
+            TryUseAbility(activator, target, feat, targetLocation, true);
+        }
+
+        public static bool TryUseAbility(
+            uint activator,
+            uint target,
+            FeatType feat,
+            Location targetLocation,
+            bool skipNativeEvent = false)
+        {
+            if (!Ability.IsFeatRegistered(feat))
+                return false;
+
             var ability = Ability.GetAbilityDetail(feat);
+            if (skipNativeEvent)
+                EventsPlugin.SkipEvent();
 
             // Creature cannot use the feat.
             var effectivePerkLevel =
@@ -89,7 +163,8 @@ namespace SWLOR.Game.Server.Feature
                 {
                     if(ability.DisplaysActivationMessage)
                         Messaging.SendMessageNearbyToPlayers(activator, $"{GetName(activator)} queues {ability.Name} for the next attack.");
-                    QueueWeaponAbility(activator, ability, feat);
+                    QueueWeaponAbility(activator, target, ability, feat);
+                    return true;
                 }
             }
             // All other abilities are funneled through the same process.
@@ -109,8 +184,11 @@ namespace SWLOR.Game.Server.Feature
                     }
 
                     ActivateAbility(activator, target, feat, ability, targetLocation);
+                    return true;
                 }
             }
+
+            return false;
         }
 
         /// <summary>
@@ -235,29 +313,38 @@ namespace SWLOR.Game.Server.Feature
             }
 
             // This method is called after the delay of the ability has finished.
-            void CompleteActivation(string activationId, float abilityRecastDelay)
+            void CompleteActivation(string activationId, float abilityRecastDelay, uint resumeAttackTarget)
             {
+                void CancelActivation(bool resumeAttack)
+                {
+                    DeleteLocalInt(activator, activationId);
+
+                    if (resumeAttack)
+                        ResumeAttack(activator, resumeAttackTarget);
+                }
+
                 Activity.ClearBusy(activator);
 
                 // Moved during casting or activator died. Cancel the activation.
                 if (GetLocalInt(activator, activationId) == (int)ActivationStatus.Interrupted || GetCurrentHitPoints(activator) <= 0)
                 {
-                    DeleteLocalInt(activator, activationId);
+                    CancelActivation(GetCurrentHitPoints(activator) > 0);
                     return;
                 }
 
                 if (!Ability.CanUseAbility(activator, target, feat, ability.AbilityLevel, targetLocation))
                 {
-                    DeleteLocalInt(activator, activationId);
+                    CancelActivation(true);
                     return;
                 }
 
-                DeleteLocalInt(activator, activationId);
+                CancelActivation(false);
 
                 ApplyRequirementEffects(activator, ability);
                 HandleStealthBreaking(activator, ability);
                 ExecuteAbilityImpact(activator, target, feat, ability, targetLocation);
                 Recast.ApplyRecastDelay(activator, ability.RecastGroup, abilityRecastDelay, false);
+                ResumeAttackAfterDelay(activator, resumeAttackTarget, 0.1f);
 
                 // If this is an attack make the NPC react.
                 if (GetIsObjectValid(target) && target != activator)
@@ -265,11 +352,6 @@ namespace SWLOR.Game.Server.Feature
                     Enmity.AttackHighestEnmityTarget(target);
                 }
 
-                if (!GetIsPC(activator))
-                {
-                    var combatRoundEndScript = GetEventScript(activator, EventScript.Creature_OnEndCombatRound);
-                    ExecuteScript(combatRoundEndScript, activator);
-                }
             }
 
             // Begin the main process
@@ -277,6 +359,7 @@ namespace SWLOR.Game.Server.Feature
             var activationDelay = CalculateActivationDelay();
             var recastDelay = ability.RecastDelay?.Invoke(activator) ?? 0f;
             var position = GetPosition(activator);
+            var resumeAttackTarget = GetResumeAttackTarget(activator, target, ability);
             ProcessAnimationAndVisualEffects(activationDelay);
             SetLocalInt(activator, activationId, (int)ActivationStatus.Started);
             CheckForActivationInterruption(activationId, position);
@@ -288,6 +371,7 @@ namespace SWLOR.Game.Server.Feature
             if (executeImpact != true)
             {
                 DeleteLocalInt(activator, activationId);
+                ResumeAttack(activator, resumeAttackTarget);
                 return;
             }
 
@@ -300,18 +384,7 @@ namespace SWLOR.Game.Server.Feature
             }
 
             Activity.SetBusy(activator, ActivityStatusType.AbilityActivation);
-            DelayCommand(activationDelay, () => CompleteActivation(activationId, recastDelay));
-
-            // If currently attacking a target, re-attack it after the end of the activation period.
-            // This mitigates the issue where a melee fighter's combat is disrupted for using an ability.
-            if (GetCurrentAction(activator) == ActionType.AttackObject)
-            {
-                var attackTarget = GetAttackTarget(activator);
-                DelayCommand(activationDelay + 0.1f, () =>
-                {
-                    AssignCommand(activator, () => ActionAttack(attackTarget));
-                });
-            }
+            DelayCommand(activationDelay, () => CompleteActivation(activationId, recastDelay, resumeAttackTarget));
         }
 
         /// <summary>
@@ -323,9 +396,11 @@ namespace SWLOR.Game.Server.Feature
         /// <param name="activator">The creature activating the ability.</param>
         /// <param name="ability">The ability details</param>
         /// <param name="feat">The feat being activated</param>
-        private static void QueueWeaponAbility(uint activator, AbilityDetail ability, FeatType feat)
+        private static void QueueWeaponAbility(uint activator, uint target, AbilityDetail ability, FeatType feat)
         {
             var abilityId = Guid.NewGuid().ToString();
+            var resumeAttackTarget = GetResumeAttackTarget(activator, target, ability);
+
             // Assign local variables which will be picked up on the next weapon OnHit event by this player.
             SetLocalString(activator, ActiveAbilityIdName, abilityId);
             SetLocalInt(activator, ActiveAbilityFeatIdName, (int)feat);
@@ -341,6 +416,9 @@ namespace SWLOR.Game.Server.Feature
             {
                 DequeueWeaponAbility(activator, ability.DisplaysActivationMessage);
             });
+
+            // Weapon abilities are queued for the next hit, so AI users need to resume attacking.
+            ResumeAttackAfterDelay(activator, resumeAttackTarget, 0.1f);
         }
 
         public static void DequeueWeaponAbility(uint target, bool sendMessage = true)

@@ -49,6 +49,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
 
                             var damageType = CombatDamageType.Physical;
                             StatusEffect.ApplyStatusEffect(activator, nearest, typeof(KnockdownStatusEffect), duration, damageType);
+                            Ability.ApplyHostileAbilityEnmity(activator, nearest);
                             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Com_Chunk_Stone_Small), nearest);
 
                             SendMessageToPC(nearest, "The earthquake knocks you down!");
@@ -105,7 +106,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                                 0);
                             damage = Resistance.ApplyResistanceToDamage(nearest, damageType, damage);
 
-                            ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, damageType.GetNWScriptDamageType()), nearest);
+                            var damageTarget = nearest;
+                            AssignCommand(activator, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, damageType.GetNWScriptDamageType()), damageTarget));
+                            Ability.ApplyHostileAbilityEnmity(activator, damageTarget, damage);
                         }
 
                         count++;

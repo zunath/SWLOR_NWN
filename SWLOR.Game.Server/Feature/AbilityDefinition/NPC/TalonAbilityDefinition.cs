@@ -49,7 +49,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                         0);
                     damage = Resistance.ApplyResistanceToDamage(target, damageType, damage);
 
-                    ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Piercing), target);
+                    AssignCommand(activator, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Piercing), target));
+                    Ability.ApplyHostileAbilityEnmity(activator, target, damage);
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Com_Blood_Spark_Medium), target);
                 });
         }

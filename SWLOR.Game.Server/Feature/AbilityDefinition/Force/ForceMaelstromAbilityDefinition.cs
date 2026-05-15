@@ -34,6 +34,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasActivationDelay(1.5f)
                 .HasRecastDelay(RecastGroup.ForceMaelstrom, 75f)
                 .SkillType(SkillType.Force)
+                .UsesImpactAnimation(Animation.CastOutAnimation)
                 .IsAreaAbility()
                 .HasImpactAction(ForceMaelstrom1ImpactAction)
                 .IsCastedAbility()

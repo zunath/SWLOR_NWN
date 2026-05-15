@@ -35,6 +35,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                 {
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Disease_S), target);
                     StatusEffect.ApplyStatusEffect(activator, target, typeof(PoisonStatusEffect), 120f, CombatDamageType.Poison);
+                    Ability.ApplyHostileAbilityEnmity(activator, target);
                 });
         }
     }

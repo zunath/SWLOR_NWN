@@ -327,6 +327,8 @@ foreach ($label in @(
     "RallyingStandard1",
     "RallyingStandard2",
     "RippleSlash1",
+    "SaberRend1",
+    "SaberRend2",
     "SecondWind1",
     "SentinelGuard1",
     "SentinelStance1",
@@ -391,14 +393,21 @@ foreach ($label in @(
     "CircleSlash3",
     "ConduitFlare1",
     "CripplingDefense1",
+    "CreepingTerror3",
     "Decoy1",
     "EdgeOfDarkness1",
+    "EclipseOfResolve1",
     "Flash1",
+    "FractureFocus2",
     "ForceGyre1",
+    "ForceMaelstrom1",
     "GroundQuake1",
     "GroundQuake2",
     "Incapacitate1",
     "IronElbows1",
+    "NightmareField1",
+    "Pacify2",
+    "Pacify3",
     "PunishingStrike1",
     "SaberCyclone1",
     "SpinningWhirl1",
@@ -417,6 +426,15 @@ foreach ($label in @(
 
 $rulesByLabel["TwinIntercept1"] = $friendlyCreatureRule
 $rulesByLabel["DeadManSHand1"] = New-TargetSphereRule
+
+foreach ($label in @(
+    "CreepingTerror2",
+    "ForceGrip3",
+    "ForceLightning1",
+    "ForceLightning2"
+)) {
+    $rulesByLabel[$label] = New-TargetSphereRule
+}
 
 foreach ($label in @(
     "ClusterStorm1",

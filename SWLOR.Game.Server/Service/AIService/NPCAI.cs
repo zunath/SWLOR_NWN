@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
@@ -516,10 +517,20 @@ namespace SWLOR.Game.Server.Service.AIService
             if (!GetIsObjectValid(target))
                 target = creature;
 
+            var targetLocation = GetLocation(target);
+            if (UsePerkFeat.TryUseAbility(creature, target, action.Feat, targetLocation))
+                return;
+
+            if (!GetIsObjectValid(target) || target == creature)
+                target = Enmity.GetHighestEnmityTarget(creature);
+
+            if (!GetIsObjectValid(target))
+                return;
+
             AssignCommand(creature, () =>
             {
                 ClearAllActions();
-                ActionUseFeat(action.Feat, target);
+                ActionAttack(target);
             });
         }
 

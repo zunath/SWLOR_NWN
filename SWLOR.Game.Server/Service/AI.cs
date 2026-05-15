@@ -73,12 +73,14 @@ namespace SWLOR.Game.Server.Service
             if (!IsAIEnabled(creature))
                 return;
 
+            var handled = false;
             if (!Activity.IsBusy(creature))
             {
-                ProcessTrigger(creature, AITriggerType.CombatRound);
+                handled = ProcessTrigger(creature, AITriggerType.CombatRound);
             }
 
-            Enmity.AttackHighestEnmityTarget(creature);
+            if (!handled)
+                Enmity.AttackHighestEnmityTarget(creature);
         }
 
         /// <summary>
@@ -105,8 +107,8 @@ namespace SWLOR.Game.Server.Service
             if (!IsAIEnabled(creature))
                 return;
 
-            ProcessTrigger(creature, AITriggerType.Attacked, GetLastAttacker(creature));
-            Enmity.AttackHighestEnmityTarget(creature);
+            if (!ProcessTrigger(creature, AITriggerType.Attacked, GetLastAttacker(creature)))
+                Enmity.AttackHighestEnmityTarget(creature);
         }
 
         /// <summary>
@@ -119,8 +121,8 @@ namespace SWLOR.Game.Server.Service
             if (!IsAIEnabled(creature))
                 return;
 
-            ProcessTrigger(creature, AITriggerType.Damaged, GetLastDamager(creature));
-            Enmity.AttackHighestEnmityTarget(creature);
+            if (!ProcessTrigger(creature, AITriggerType.Damaged, GetLastDamager(creature)))
+                Enmity.AttackHighestEnmityTarget(creature);
         }
 
         /// <summary>
@@ -143,8 +145,8 @@ namespace SWLOR.Game.Server.Service
             if (!IsAIEnabled(creature))
                 return;
 
-            ProcessTrigger(creature, AITriggerType.Disturbed);
-            Enmity.AttackHighestEnmityTarget(creature);
+            if (!ProcessTrigger(creature, AITriggerType.Disturbed))
+                Enmity.AttackHighestEnmityTarget(creature);
         }
 
         /// <summary>

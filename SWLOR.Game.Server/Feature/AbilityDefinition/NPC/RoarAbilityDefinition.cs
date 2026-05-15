@@ -44,6 +44,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                         if (GetIsEnemy(creature, activator))
                         {
                             StatusEffect.ApplyStatusEffect(activator, creature, typeof(RoarStatusEffect), 20f, CombatDamageType.Physical);
+                            Ability.ApplyHostileAbilityEnmity(activator, creature);
                         }
 
                         count++;

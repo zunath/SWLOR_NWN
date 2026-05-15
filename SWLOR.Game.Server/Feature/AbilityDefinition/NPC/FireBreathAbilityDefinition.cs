@@ -58,7 +58,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                             damage = Resistance.ApplyResistanceToDamage(coneTarget, damageType, damage);
 
                             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Com_Hit_Fire), coneTarget);
-                            ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Fire), coneTarget);
+                            var damageTarget = coneTarget;
+                            AssignCommand(activator, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Fire), damageTarget));
+                            Ability.ApplyHostileAbilityEnmity(activator, damageTarget, damage);
                         }
 
                         coneTarget = GetNextObjectInShape(Shape.SpellCone, 14.0f, location);
@@ -103,7 +105,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                             damage = Resistance.ApplyResistanceToDamage(coneTarget, damageType, damage);
 
                             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Com_Hit_Fire), coneTarget);
-                            ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Fire), coneTarget);
+                            var damageTarget = coneTarget;
+                            AssignCommand(activator, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Fire), damageTarget));
+                            Ability.ApplyHostileAbilityEnmity(activator, damageTarget, damage);
                         }
 
                         coneTarget = GetNextObjectInShape(Shape.SpellCone, 14.0f, location);

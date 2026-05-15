@@ -85,6 +85,19 @@ namespace SWLOR.Game.Server.Service.AbilityService
         }
 
         /// <summary>
+        /// Assigns an animation to the caster when this ability applies its combat impact.
+        /// Calling this more than once will replace the previous animation.
+        /// </summary>
+        /// <param name="animation">The animation to set.</param>
+        /// <returns>An ability builder with the configured options.</returns>
+        public AbilityBuilder UsesImpactAnimation(Animation animation)
+        {
+            _activeAbility.ImpactAnimationType = animation;
+
+            return this;
+        }
+
+        /// <summary>
         /// The ability will not display an activation message to nearby players if this is set.
         /// </summary>
         /// <returns>An ability builder with the configured options.</returns>

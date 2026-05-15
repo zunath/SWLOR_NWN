@@ -61,6 +61,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                     {
                         StatusEffect.ApplyStatusEffect(activator, hostile, typeof(PacificationFieldStatusEffect), PulseIntervalSeconds + 0.2f);
                         StatusEffect.ApplyStatusEffect(activator, hostile, typeof(DazedStatusEffect), 2f);
+                        Ability.ApplyHostileAbilityEnmity(activator, hostile);
                         ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Dazed_S), hostile);
                     }
                 });

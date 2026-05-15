@@ -34,6 +34,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasActivationDelay(1.5f)
                 .HasRecastDelay(RecastGroup.EclipseOfResolve, 180f)
                 .SkillType(SkillType.Force)
+                .UsesImpactAnimation(Animation.CastOutAnimation)
                 .IsAreaAbility()
                 .HasImpactAction(EclipseOfResolve1ImpactAction)
                 .IsCastedAbility()

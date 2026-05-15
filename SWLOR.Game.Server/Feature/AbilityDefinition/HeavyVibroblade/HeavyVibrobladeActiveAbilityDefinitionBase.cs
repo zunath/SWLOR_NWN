@@ -53,7 +53,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
                 return;
 
             amount = Math.Min(currentHp - 1, amount);
-            ApplyEffectToObject(DurationType.Instant, EffectDamage(amount), activator);
+            AssignCommand(activator, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(amount), activator));
         }
 
         protected static void ApplyStatusToNearbyParty(uint activator, Type type, float duration, bool includeSelf)

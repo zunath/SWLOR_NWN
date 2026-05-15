@@ -1,6 +1,8 @@
 param(
     [string]$Feat2daPath = "SWLOR_Haks\swlor2_2da\feat.2da",
-    [string]$IconPath = "SWLOR_Haks\swlor2_tga"
+    [string]$IconPath = "SWLOR_Haks\swlor2_tga",
+    [int]$GeneratedFeatStart = 2000,
+    [int]$GeneratedFeatEnd = 2558
 )
 
 Set-StrictMode -Version Latest
@@ -48,6 +50,23 @@ function Split-LabelWords([string]$Label) {
     return @($matches | ForEach-Object { $_.Value } | Where-Object { $_ -and $_ -ne "S" })
 }
 
+function ConvertTo-Base36([int]$Value) {
+    $digits = "0123456789abcdefghijklmnopqrstuvwxyz"
+    if ($Value -eq 0) {
+        return "0"
+    }
+
+    $remaining = $Value
+    $result = ""
+    while ($remaining -gt 0) {
+        $index = [int]($remaining % 36)
+        $result = $digits[$index] + $result
+        $remaining = [int][Math]::Floor($remaining / 36)
+    }
+
+    return $result
+}
+
 function New-CombatUpgradeResref([string]$Label, [int]$Row, [hashtable]$Seen) {
     $level = ""
     if ($Label -match "(\d+)$") {
@@ -78,14 +97,17 @@ function New-CombatUpgradeResref([string]$Label, [int]$Row, [hashtable]$Seen) {
         $body = $body.Substring(0, $maxBodyLength)
     }
 
-    $candidate = "ife_$body$level".ToLowerInvariant()
-    if ($candidate.Length -gt 16) {
-        $candidate = $candidate.Substring(0, 16)
+    $baseCandidate = "ife_$body$level".ToLowerInvariant()
+    if ($baseCandidate.Length -gt 16) {
+        $baseCandidate = $baseCandidate.Substring(0, 16)
     }
 
-    if ($Seen.ContainsKey($candidate)) {
-        $suffix = ($Row % 100).ToString("00")
-        $candidate = $candidate.Substring(0, [Math]::Min($candidate.Length, 16 - $suffix.Length)) + $suffix
+    $candidate = $baseCandidate
+    $attempt = 0
+    while ($Seen.ContainsKey($candidate)) {
+        $suffix = ConvertTo-Base36 ($Row + ($attempt * 4096))
+        $candidate = $baseCandidate.Substring(0, [Math]::Min($baseCandidate.Length, 16 - $suffix.Length)) + $suffix
+        $attempt++
     }
 
     $Seen[$candidate] = $true
@@ -116,7 +138,7 @@ for ($i = 0; $i -lt $lines.Count; $i++) {
         continue
     }
 
-    if ($row -lt 2000 -or $row -gt 2240 -or $parts[1] -eq "****") {
+    if ($row -lt $GeneratedFeatStart -or $row -gt $GeneratedFeatEnd -or $parts[1] -eq "****") {
         continue
     }
 

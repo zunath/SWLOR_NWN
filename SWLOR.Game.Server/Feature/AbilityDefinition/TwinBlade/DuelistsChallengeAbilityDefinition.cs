@@ -28,6 +28,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
                     {
                         StatusEffect.ApplyStatusEffect(target, activator, typeof(DuelistsChallengeSelfStatusEffect), 20f);
                     }
+
+                    Ability.ApplyHostileAbilityEnmity(activator, target);
                 })
                 .IsCastedAbility()
                 .IsHostileAbility()

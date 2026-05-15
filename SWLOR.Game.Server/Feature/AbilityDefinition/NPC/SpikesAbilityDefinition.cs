@@ -49,9 +49,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                         0);
                     damage = Resistance.ApplyResistanceToDamage(target, damageType, damage);
 
-                    ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Piercing), target);
+                    AssignCommand(activator, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Piercing), target));
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Wallspike), target);
                     StatusEffect.ApplyStatusEffect(activator, target, typeof(BleedStatusEffect), 45f, damageType);
+                    Ability.ApplyHostileAbilityEnmity(activator, target, damage);
                 });
         }
     }

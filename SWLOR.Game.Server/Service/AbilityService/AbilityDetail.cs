@@ -27,6 +27,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public AbilityActivationType ActivationType { get; set; }
         public PerkType EffectiveLevelPerkType { get; set; }
         public Animation AnimationType { get; set; }
+        public Animation ImpactAnimationType { get; set; }
         public bool CanBeUsedInSpace { get; set; }
         public float MaxRange { get; set; }
         public bool IsHostileAbility { get; set; }
@@ -43,6 +44,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
         {
             ActivationVisualEffect = VisualEffect.None;
             AnimationType = Animation.Invalid;
+            ImpactAnimationType = Animation.Invalid;
             Requirements = new List<IAbilityActivationRequirement>();
             MaxRange = 5.0f;
             IsHostileAbility = false;

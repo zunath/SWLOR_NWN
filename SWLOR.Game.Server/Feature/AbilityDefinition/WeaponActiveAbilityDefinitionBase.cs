@@ -235,6 +235,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 .HasImpactAction((activator, target, level, targetLocation) =>
                 {
                     StatusEffect.ApplyStatusEffect(activator, target, type, duration, CombatDamageType.Physical);
+                    Ability.ApplyHostileAbilityEnmity(activator, target);
                 })
                 .IsCastedAbility()
                 .IsHostileAbility()
@@ -342,6 +343,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 if (GetIsReactionTypeHostile(creature, activator))
                 {
                     StatusEffect.ApplyStatusEffect(activator, creature, type, duration, CombatDamageType.Physical);
+                    Ability.ApplyHostileAbilityEnmity(activator, creature);
                     if (fpDrainPercent > 0)
                     {
                         var fpDrain = Math.Max(1, (int)Math.Ceiling(Stat.GetCurrentFP(creature) * (fpDrainPercent / 100f)));
@@ -387,6 +389,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             if (GetIsObjectValid(enemy))
             {
                 StatusEffect.ApplyStatusEffect(activator, enemy, mirroredDebuff, 12f);
+                Ability.ApplyHostileAbilityEnmity(activator, enemy);
             }
         }
 

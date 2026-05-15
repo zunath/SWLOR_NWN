@@ -44,6 +44,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                             const float Duration = 90f;
 
                             StatusEffect.ApplyStatusEffect(activator, nearest, typeof(ScreechStatusEffect), Duration, CombatDamageType.Physical);
+                            Ability.ApplyHostileAbilityEnmity(activator, nearest);
                             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Pulse_Negative), nearest);
 
                             SendMessageToPC(nearest, "The screech disorients you!");

@@ -37,6 +37,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasRecastDelay(RecastGroup.ForcePush, 24f)
                 .SkillType(SkillType.Force)
                 .IsSingleTargetAbility()
+                .HasMaxRange(8f)
                 .RequiresTarget()
                 .HasImpactAction(ForcePush1ImpactAction)
                 .IsCastedAbility()

@@ -35,7 +35,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasRecastDelay(RecastGroup.ComprehendSpeech, 30f)
                 .SkillType(SkillType.Force)
                 .IsSingleTargetAbility()
-                .RequiresTarget()
                 .HasImpactAction(ComprehendSpeech1ImpactAction)
                 .IsCastedAbility()
                 .BreaksStealth()

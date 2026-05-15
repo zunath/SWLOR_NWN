@@ -35,6 +35,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasRecastDelay(RecastGroup.Renewal, 24f)
                 .SkillType(SkillType.Force)
                 .IsSingleTargetAbility()
+                .HasMaxRange(15f)
                 .RequiresTarget()
                 .HasCustomValidation((activator, target, _, _) =>
                     AbilityTargeting.ValidateFriendlyTarget(activator, target))
@@ -54,6 +55,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasRecastDelay(RecastGroup.Renewal, 24f)
                 .SkillType(SkillType.Force)
                 .IsSingleTargetAbility()
+                .HasMaxRange(15f)
                 .RequiresTarget()
                 .HasCustomValidation((activator, target, _, _) =>
                     AbilityTargeting.ValidateFriendlyTarget(activator, target))
@@ -73,6 +75,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasRecastDelay(RecastGroup.Renewal, 24f)
                 .SkillType(SkillType.Force)
                 .IsSingleTargetAbility()
+                .HasMaxRange(15f)
                 .RequiresTarget()
                 .HasCustomValidation((activator, target, _, _) =>
                     AbilityTargeting.ValidateFriendlyTarget(activator, target))

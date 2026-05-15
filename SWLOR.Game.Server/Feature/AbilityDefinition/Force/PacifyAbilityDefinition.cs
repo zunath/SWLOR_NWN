@@ -37,6 +37,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasRecastDelay(RecastGroup.Pacify, 24f)
                 .SkillType(SkillType.Force)
                 .IsSingleTargetAbility()
+                .HasMaxRange(15f)
                 .RequiresTarget()
                 .HasImpactAction(Pacify1ImpactAction)
                 .IsCastedAbility()

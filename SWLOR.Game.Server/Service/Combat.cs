@@ -3231,7 +3231,10 @@ namespace SWLOR.Game.Server.Service
             var rightHand = GetItemInSlot(InventorySlot.RightHand, attacker);
             var leftHand = GetItemInSlot(InventorySlot.LeftHand, attacker);
 
-            var delay = GetWeaponDelay(rightHand) + GetWeaponDelay(leftHand);
+            var rightHandDelay = GetWeaponDelay(rightHand);
+            var leftHandDelay = ApplyOffhandAttackDelayReduction(attacker, GetWeaponDelay(leftHand));
+
+            var delay = rightHandDelay + leftHandDelay;
             if (delay == 0)
             {
                 var creatureRight = GetItemInSlot(InventorySlot.CreatureRight, attacker);
@@ -3262,6 +3265,19 @@ namespace SWLOR.Game.Server.Service
             }
 
             return finalDelay;
+        }
+
+        private static int ApplyOffhandAttackDelayReduction(uint attacker, int offhandDelay)
+        {
+            if (offhandDelay <= 0)
+                return offhandDelay;
+
+            var reductionPercentage = CalculateOffhandAttackDelayReduction(attacker);
+            if (reductionPercentage <= 0)
+                return offhandDelay;
+
+            var reductionAmount = (int)(offhandDelay * (reductionPercentage / 100f));
+            return Math.Max(0, offhandDelay - reductionAmount);
         }
 
         /// <summary>
@@ -3301,6 +3317,16 @@ namespace SWLOR.Game.Server.Service
             var totalReduction = Stat.GetStatAdjustment(attacker, StatType.AttackDelayReductionPercent);
 
             return Math.Min(totalReduction, 50);
+        }
+
+        public static int CalculateOffhandAttackDelayReduction(uint attacker)
+        {
+            if (!GetIsObjectValid(attacker))
+                return 0;
+
+            var totalReduction = Stat.GetStatAdjustment(attacker, StatType.OffhandAttackDelayReductionPercent);
+
+            return Math.Min(Math.Max(totalReduction, 0), 50);
         }
 
         private static int GetWeaponDelay(uint item)

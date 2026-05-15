@@ -257,6 +257,41 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Reduces the creature's current enmity on every enemy table by a percentage.
+        /// </summary>
+        /// <param name="creature">The creature whose current enmity will be reduced.</param>
+        /// <param name="percent">The percent of current enmity to remove.</param>
+        public static void ReduceEnmityOnAll(uint creature, int percent)
+        {
+            if (percent <= 0)
+                return;
+
+            if (!_creatureToEnemies.ContainsKey(creature))
+                return;
+
+            foreach (var enemy in _creatureToEnemies[creature].ToArray())
+            {
+                ReduceEnmity(creature, enemy, percent);
+            }
+        }
+
+        private static void ReduceEnmity(uint creature, uint enemy, int percent)
+        {
+            if (!_enemyEnmityTables.TryGetValue(enemy, out var table) ||
+                !table.TryGetValue(creature, out var currentEnmity))
+            {
+                return;
+            }
+
+            var clampedPercent = Math.Min(percent, 100);
+            var reduction = Math.Max(1, (int)Math.Ceiling(currentEnmity * (clampedPercent / 100f)));
+            table[creature] = Math.Max(1, currentEnmity - reduction);
+
+            AttackHighestEnmityTarget(enemy);
+            ExecuteScript("enmity_changed", creature);
+        }
+
+        /// <summary>
         /// Removes a creature from all enmity tables.
         /// </summary>
         /// <param name="creature">The creature to remove.</param>

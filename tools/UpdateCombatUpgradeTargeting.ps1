@@ -523,8 +523,10 @@ $rulesByLabel["ForcePush2"] = New-OriginLineRule -Length "8" -Width "2.5"
 
 $rulesByLabel["KoltoMist1"] = New-FriendlySelfSphereRule -Radius "3"
 $rulesByLabel["KoltoMist2"] = New-FriendlySelfSphereRule -Radius "3"
+$rulesByLabel["BrutalAssault1"] = New-FriendlySelfSphereRule -Radius "5"
 $rulesByLabel["TauntingDeflection1"] = New-SelfSphereRule -Radius "5"
 $rulesByLabel["GuardianSInfluence1"] = New-FriendlySelfSphereRule -Radius "5"
+$rulesByLabel["SaberStorm1"] = New-SelfSphereRule -Radius "5"
 
 foreach ($label in @(
     "ChargeOrder1",

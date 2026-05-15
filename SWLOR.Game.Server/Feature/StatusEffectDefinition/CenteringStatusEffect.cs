@@ -15,7 +15,6 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         {
             var level = Perk.GetPerkLevel(Source, PerkType.Centering);
             StatGroup.Stats[StatType.AccuracyPercentAdjustment] = level >= 2 ? 20 : 10;
-            StatGroup.Stats[StatType.EnmityPercentAdjustment] = level >= 2 ? -50 : -25;
         }
 
     }

@@ -445,7 +445,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SecondWind1)
-                .Description("Restores STM equal to 50% of your max. Amount additionally increases at 1% per MGT, to a maximum of 75%.")
+                .Description("Restores 50% of max STM, increased by 1 percentage point per MGT to a maximum of 75%.")
                 .Price(3)
                 .RequirementSkill(SkillType.Lightsaber, 22)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
@@ -501,21 +501,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.VersatileStrike1)
-                .Description("Your next attack deals weapon DMG + 10 to your target. Inflicts Sunder which reduces physical and Force Defense by 10% for 30 seconds.")
+                .Description("Your next attack deals weapon DMG + 10 to your target. Inflicts Sunder which reduces defense and force defense by 10% for 30 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Lightsaber, 5)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.VersatileStrike2)
-                .Description("Your next attack deals weapon DMG + 25 to your target. Inflicts Sunder which reduces physical and Force Defense by 15% for 30 seconds.")
+                .Description("Your next attack deals weapon DMG + 25 to your target. Inflicts Sunder which reduces defense and force defense by 15% for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Lightsaber, 10)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.VersatileStrike3)
-                .Description("Your next attack deals weapon DMG + 40 to your target. Inflicts Sunder which reduces physical and Force Defense by 20% for 30 seconds.")
+                .Description("Your next attack deals weapon DMG + 40 to your target. Inflicts Sunder which reduces defense and force defense by 20% for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Lightsaber, 32)
                 .RequirementCharacterType(CharacterType.ForceSensitive);

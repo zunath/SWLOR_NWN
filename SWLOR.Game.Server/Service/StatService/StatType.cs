@@ -2226,7 +2226,13 @@ namespace SWLOR.Game.Server.Service.StatService
         /// Percent Accuracy adjustment applied by a status recipient when attacking that status effect's source.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        AccuracyToStatusSourcePercentAdjustment = 370
+        AccuracyToStatusSourcePercentAdjustment = 370,
+
+        /// <summary>
+        /// Percent reduction to offhand weapon delay. Total reduction is capped by combat delay logic.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        OffhandAttackDelayReductionPercent = 371
     }
 
     public class StatTypeAttribute : Attribute

@@ -385,14 +385,23 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
             var debuffType = debuff.GetType();
             var mirroredDebuff = debuff.Clone();
+            var mirroredDuration = GetRemainingDurationSeconds(debuff);
             StatusEffect.RemoveStatusEffect(activator, debuffType, false);
 
             var enemy = GetNearestHostile(activator, 5f);
             if (GetIsObjectValid(enemy))
             {
-                StatusEffect.ApplyStatusEffect(activator, enemy, mirroredDebuff, 12f);
+                StatusEffect.ApplyStatusEffect(activator, enemy, mirroredDebuff, mirroredDuration);
                 Ability.ApplyHostileAbilityEnmity(activator, enemy);
             }
+        }
+
+        private static float GetRemainingDurationSeconds(IStatusEffect statusEffect)
+        {
+            if (statusEffect.DurationTicks < 0)
+                return 0f;
+
+            return Math.Max(0.1f, statusEffect.DurationTicks * Math.Max(1f, statusEffect.Frequency));
         }
 
         protected static uint GetNearestHostile(uint activator, float radius)

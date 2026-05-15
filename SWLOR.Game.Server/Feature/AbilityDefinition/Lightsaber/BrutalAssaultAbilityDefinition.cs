@@ -17,6 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                     .Create(FeatType.BrutalAssault1, PerkType.BrutalAssault)
                     .Name("Brutal Assault")
                     .Level(1)
+                    .IsAreaAbility()
                     .HasRecastDelay(RecastGroup.BrutalAssault, 300f),
                 typeof(BrutalAssaultStatusEffect),
                 60f,

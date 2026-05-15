@@ -11,6 +11,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public FerocityStanceStatusEffect()
         {
             StatGroup.Stats[StatType.AttackPercentAdjustment] = 10;
+            StatGroup.Stats[StatType.OffhandAttackDelayReductionPercent] = 20;
             StatGroup.Stats[StatType.EvasionPercentAdjustment] = -20;
         }
 

@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 typeof(CenteringStatusEffect),
                 30f,
                 3,
-                activator => Enmity.ModifyEnmityOnAll(activator, -250));
+                activator => Enmity.ReduceEnmityOnAll(activator, 25));
         }
 
         private static void Centering2(AbilityBuilder builder)
@@ -44,7 +44,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 typeof(CenteringStatusEffect),
                 30f,
                 5,
-                activator => Enmity.ModifyEnmityOnAll(activator, -500));
+                activator => Enmity.ReduceEnmityOnAll(activator, 50));
         }
     }
 }

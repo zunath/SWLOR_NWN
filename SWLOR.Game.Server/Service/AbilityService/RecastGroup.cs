@@ -595,8 +595,8 @@ namespace SWLOR.Game.Server.Service.AbilityService
         GuardianWard = 349,
         [RecastGroup("Guarding Roar", "Guarding Roar", true)]
         GuardingRoar = 350,
-        [RecastGroup("Hardlight Screen", "Hardlight Scrn", true)]
-        HardlightScreen = 351,
+        [RecastGroup("Rayshield Screen", "Rayshield Scrn", true)]
+        RayshieldScreen = 351,
         [RecastGroup("Hasten", "Hasten", true)]
         Hasten = 352,
         [RecastGroup("Hold the Line", "Hold the Line", true)]

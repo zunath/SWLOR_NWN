@@ -91,7 +91,7 @@ function Get-ShortName {
         "Force Maelstrom" = "Force Maelstr"
         "Force Sanctuary" = "Force Sanct."
         "Group Deflector" = "Group Deflect"
-        "Hardlight Screen" = "Hardlight Scrn"
+        "Rayshield Screen" = "Rayshield Scrn"
         "Hunger of the Dark" = "Dark Hunger"
         "Incendiary Field" = "Incend Field"
         "Killzone Beacon" = "Killzone Bcn"

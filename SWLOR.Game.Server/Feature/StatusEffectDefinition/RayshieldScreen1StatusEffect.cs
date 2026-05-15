@@ -6,17 +6,17 @@ using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
-    public sealed class HardlightScreen1StatusEffect : StatusEffectBase
+    public sealed class RayshieldScreen1StatusEffect : StatusEffectBase
     {
-        public override string Name => "Hardlight Screen I";
+        public override string Name => "Rayshield Screen I";
         public override EffectIconType Icon => EffectIconType.DamageReduction;
         public override bool PersistsOnLogout => false;
         public override List<Type> MorePowerfulEffectTypes { get; } = new List<Type>
         {
-            typeof(HardlightScreen2StatusEffect),
+            typeof(RayshieldScreen2StatusEffect),
         };
 
-        public HardlightScreen1StatusEffect()
+        public RayshieldScreen1StatusEffect()
         {
             StatGroup.Stats[StatType.RangedPhysicalDamageTakenPercentAdjustment] = -10;
         }

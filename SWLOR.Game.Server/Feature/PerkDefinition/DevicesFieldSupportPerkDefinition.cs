@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             CapacitorRig();
             WeaponJam();
             PowerCell();
-            HardlightScreen();
+            RayshieldScreen();
             DampeningField();
             GroupDeflector();
             EmergencyBunker();
@@ -127,24 +127,24 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.PowerCell3);
         }
 
-        private void HardlightScreen()
+        private void RayshieldScreen()
         {
-            _builder.Create(PerkCategoryType.Devices, PerkType.HardlightScreen)
-                .Name("Hardlight Screen")
+            _builder.Create(PerkCategoryType.Devices, PerkType.RayshieldScreen)
+                .Name("Rayshield Screen")
 
                 .AddPerkLevel()
                 .Description("Places a 4m screen for 15 seconds. Allies inside take 10% less ranged physical damage.")
                 .Price(3)
                 .RequirementSkill(SkillType.Devices, 18)
                 .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(FeatType.HardlightScreen1)
+                .GrantsFeat(FeatType.RayshieldScreen1)
 
                 .AddPerkLevel()
                 .Description("Places a 4m screen for 18 seconds. Allies inside take 15% less ranged physical damage.")
                 .Price(3)
                 .RequirementSkill(SkillType.Devices, 38)
                 .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(FeatType.HardlightScreen2);
+                .GrantsFeat(FeatType.RayshieldScreen2);
         }
 
         private void DampeningField()

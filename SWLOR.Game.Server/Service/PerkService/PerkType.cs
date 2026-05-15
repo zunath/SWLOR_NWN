@@ -57,7 +57,7 @@ namespace SWLOR.Game.Server.Service.PerkService
         GuardedBite = 50,
         GuardianWard = 51,
         GuardingRoar = 52,
-        HardlightScreen = 53,
+        RayshieldScreen = 53,
         HoldTheLine = 54,
         HungerOfTheDark = 55,
         HuntersFocus = 56,

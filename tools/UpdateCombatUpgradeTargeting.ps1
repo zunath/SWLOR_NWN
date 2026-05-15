@@ -537,8 +537,8 @@ foreach ($label in @(
 
 foreach ($label in @(
     "ForceSanctuary1",
-    "HardlightScreen1",
-    "HardlightScreen2",
+    "RayshieldScreen1",
+    "RayshieldScreen2",
     "EmergencyBunker1"
 )) {
     $rulesByLabel[$label] = New-FriendlyGroundSphereRule -Radius "4"

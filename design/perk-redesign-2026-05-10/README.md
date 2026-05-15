@@ -36,9 +36,9 @@ Each file is tab-separated. Import into Google Sheets with separator set to Tab.
 - Field Engineer is now turret-centered. Combat Emitters and Shock Pylons became Blaster Turrets and Shock Turrets so the line is not dependent on enemies standing in a tiny ground zone.
 - Droidbreaker was removed as a Devices line because droid-only value is too niche. Its useful concepts were redistributed: turret targeting moved to Field Engineer and Weapon Jam moved to Field Support.
 - The fourth Devices line is now Assault Gadgets: close and mid-range personal device attacks such as flamethrowers, wrist rockets, sonic bursts, darts, and cryo sprayers.
-- Field Support no longer includes Kolto Mist, Emergency Sealant, or Medical Injector Rig. It now focuses on temporary HP, mitigation, power support, hardlight cover, and weapon jamming.
+- Field Support no longer includes Kolto Mist, Emergency Sealant, or Medical Injector Rig. It now focuses on temporary HP, mitigation, power support, rayshield cover, and weapon jamming.
 - Deflector Shield effects now grant a flat temporary HP value plus a target max-HP percentage, so low-HP characters still receive meaningful protection.
-- Hardlight Screen now uses percentage ranged physical damage reduction instead of a small Defense stat increase.
+- Rayshield Screen now uses percentage ranged physical damage reduction instead of a small Defense stat increase.
 - Trauma Medic now owns Kolto Mist, Emergency Sealant, Medical Injector Rig, and Infusion-style regeneration.
 - Combat Pharmacology Shielding was converted to percentage mitigation, and Emergency Cocktail now applies full-strength effects with a 5 minute cooldown.
 

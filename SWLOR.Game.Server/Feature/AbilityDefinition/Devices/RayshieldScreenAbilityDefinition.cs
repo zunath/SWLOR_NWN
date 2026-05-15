@@ -15,61 +15,61 @@ using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 {
-    public sealed class HardlightScreenAbilityDefinition : IAbilityListDefinition
+    public sealed class RayshieldScreenAbilityDefinition : IAbilityListDefinition
     {
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
 
-            HardlightScreen1(builder);
-            HardlightScreen2(builder);
+            RayshieldScreen1(builder);
+            RayshieldScreen2(builder);
 
             return builder.Build();
         }
 
-        private static void HardlightScreen1(AbilityBuilder builder)
+        private static void RayshieldScreen1(AbilityBuilder builder)
         {
             builder
-                .Create(FeatType.HardlightScreen1, PerkType.HardlightScreen)
-                .Name("Hardlight Screen I")
+                .Create(FeatType.RayshieldScreen1, PerkType.RayshieldScreen)
+                .Name("Rayshield Screen I")
                 .Level(1)
                 .HasActivationDelay(1.5f)
-                .HasRecastDelay(RecastGroup.HardlightScreen, 75f)
+                .HasRecastDelay(RecastGroup.RayshieldScreen, 75f)
                 .SkillType(SkillType.Devices)
                 .IsAreaAbility()
-                .HasImpactAction(HardlightScreen1ImpactAction)
+                .HasImpactAction(RayshieldScreen1ImpactAction)
                 .IsCastedAbility()
                 .BreaksStealth()
                 .RequirementStamina(5);
         }
 
-        private static void HardlightScreen2(AbilityBuilder builder)
+        private static void RayshieldScreen2(AbilityBuilder builder)
         {
             builder
-                .Create(FeatType.HardlightScreen2, PerkType.HardlightScreen)
-                .Name("Hardlight Screen II")
+                .Create(FeatType.RayshieldScreen2, PerkType.RayshieldScreen)
+                .Name("Rayshield Screen II")
                 .Level(2)
                 .HasActivationDelay(1.5f)
-                .HasRecastDelay(RecastGroup.HardlightScreen, 75f)
+                .HasRecastDelay(RecastGroup.RayshieldScreen, 75f)
                 .SkillType(SkillType.Devices)
                 .IsAreaAbility()
-                .HasImpactAction(HardlightScreen2ImpactAction)
+                .HasImpactAction(RayshieldScreen2ImpactAction)
                 .IsCastedAbility()
                 .BreaksStealth()
                 .RequirementStamina(6);
         }
 
-        private static void HardlightScreen1ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        private static void RayshieldScreen1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            ApplyHardlightScreen(activator, target, targetLocation, typeof(HardlightScreen1StatusEffect), 15f);
+            ApplyRayshieldScreen(activator, target, targetLocation, typeof(RayshieldScreen1StatusEffect), 15f);
         }
 
-        private static void HardlightScreen2ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        private static void RayshieldScreen2ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            ApplyHardlightScreen(activator, target, targetLocation, typeof(HardlightScreen2StatusEffect), 18f);
+            ApplyRayshieldScreen(activator, target, targetLocation, typeof(RayshieldScreen2StatusEffect), 18f);
         }
 
-        private static void ApplyHardlightScreen(uint activator, uint target, Location targetLocation, Type statusEffect, float duration)
+        private static void ApplyRayshieldScreen(uint activator, uint target, Location targetLocation, Type statusEffect, float duration)
         {
             var location = AbilityTargeting.ResolveImpactLocation(activator, target, targetLocation);
             AbilityAreaEffects.ScheduleFriendlyZoneStatus(

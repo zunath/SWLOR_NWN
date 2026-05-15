@@ -25,7 +25,7 @@ function Get-IconKind([string]$label) {
     if ($label -match "ForceSpark|ForceBody|ForceLightning|ForceDrain|ForceGrip|ForceChoke|ForceMaelstrom|MindShroud|Nightmare|Dominate|Collapse|Eclipse|Creeping|WeakenResolve|FractureFocus|SaberRend|ForceRage|DevouringStrike|HungerOfTheDark") { return "darkforce" }
     if ($label -match "Benevolence|Renewal|Clarity|Pacify|MindTrick|ComprehendSpeech|ForcePush|ForceLeap|ForceTouch|ForceMend|ForceSanctuary|GuardianWard|BastionOfLight|LastStandOfTheLight|CircleOfHarmony|PurifyingWave|Innervate|Infusion") { return "lightforce" }
     if ($label -match "MedKit|TreatmentKit|Kolto|Resuscitation|EmergencyTriage|EmergencySealant|Coagulant|Antitoxin|PainSuppressant|AdrenalStim|FocusStim|MaintenancePulse|EmergencyCocktail") { return "medical" }
-    if ($label -match "Grenade|Beacon|RemoteCharge|Flamethrower|WristRocket|RailDart|CryoSprayer|SonicBurst|PowerCell|Shielding|Deflector|Hardlight|Dampening|OverloadBarrage|WeaponJam") { return "tech" }
+    if ($label -match "Grenade|Beacon|RemoteCharge|Flamethrower|WristRocket|RailDart|CryoSprayer|SonicBurst|PowerCell|Shielding|Deflector|Rayshield|Dampening|OverloadBarrage|WeaponJam") { return "tech" }
     if ($label -match "Bite|Claw|Pounce|Howl|Roar|Hide|Beast|Prey|Predator|Apex|Pack|Rampage|Primal") { return "beast" }
     if ($label -match "Order|Command|Standard|Formation|Rally|WatchfulPresence|Coordinated|ChargeOrder|PressTheAttack|HoldTheLine|MarkTarget|BreakMorale|CleanseOrder|AuraOfCourage|Bolster") { return "command" }
     if ($label -match "Shield|Guard|Bastion|Rampart|Defense|Defensive|Wall|Fortress|Sentinel|Invincible|Impenetrable|Resolve|Shelter|Unmoving|Adamantine") { return "defense" }
@@ -572,7 +572,7 @@ function Draw-NamedMotif($g, [string]$label, [System.Drawing.Color]$accent, [Sys
         "^EclipseOfResolve$" { Draw-EclipseGlyph $g $accent $hot; return $true }
         "^WeakenResolve$" { Draw-CrackedShieldGlyph $g $accent $hot; return $true }
         "^FractureFocus$" { Draw-FractureFocusGlyph $g $accent $hot; return $true }
-        "^GuardianWard$|^Shielding$|^DeflectorShield$|^HardlightScreen$|^ReflectiveBarrier$|^DampeningField$" { Draw-TechShieldGlyph $g $accent $hot; return $true }
+        "^GuardianWard$|^Shielding$|^DeflectorShield$|^RayshieldScreen$|^ReflectiveBarrier$|^DampeningField$" { Draw-TechShieldGlyph $g $accent $hot; return $true }
         "^Benevolence$|^ForceMend$|^CircleOfHarmony$|^PurifyingWave$|^Infusion$|^Innervate$" { Draw-HealingGlyph $g $accent $hot; return $true }
         "^Renewal$" { Draw-RenewalGlyph $g $accent $hot; return $true }
         "^Clarity$" { Draw-ClarityGlyph $g $accent $hot; return $true }

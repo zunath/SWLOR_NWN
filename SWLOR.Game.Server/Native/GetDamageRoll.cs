@@ -132,7 +132,7 @@ namespace SWLOR.Game.Server.Native
 
                 if (totalDamage > 0 && defender.m_bPlotObject == 0)
                 {
-                    PublishDamageDealtEvent(attacker.m_idSelf, defender.m_idSelf, totalDamage, weaponSkillType);
+                    PublishDamageDealtEvent(attacker.m_idSelf, defender.m_idSelf, totalDamage, weaponSkillType, damageProfile.DamageType);
                 }
 
                 ProfilerPlugin.PopPerfScope();
@@ -447,12 +447,13 @@ namespace SWLOR.Game.Server.Native
             return damage + damage * adjustment / 100;
         }
 
-        private static void PublishDamageDealtEvent(uint attacker, uint defender, int damage, SkillType skillType)
+        private static void PublishDamageDealtEvent(uint attacker, uint defender, int damage, SkillType skillType, CombatDamageType damageType)
         {
-            Combat.ApplyDamageDealtEffects(attacker, defender, damage, skillType);
+            Combat.ApplyDamageDealtEffects(attacker, defender, damage, skillType, damageType);
 
             EventsPlugin.PushEventData("DEFENDER", ObjectToString(defender));
             EventsPlugin.PushEventData("DAMAGE", damage.ToString());
+            EventsPlugin.PushEventData("DAMAGE_TYPE", ((int)damageType).ToString());
 
             EventsPlugin.SignalEvent("SWLOR_ON_DAMAGE", attacker);
         }

@@ -28,8 +28,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.SoulStrike, 45f)
                 .HasImpactAction((activator, target, level, targetLocation) => SoulStrikeImpact(activator, target, targetLocation, 15, 25))
+                .SkillType(SkillType.HeavyVibroblade)
                 .IsWeaponAbility()
                 .IsHostileAbility()
+                .IsSingleTargetAbility()
                 .BreaksStealth()
                 .RequirementStamina(4);
         }
@@ -43,8 +45,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.SoulStrike, 45f)
                 .HasImpactAction((activator, target, level, targetLocation) => SoulStrikeImpact(activator, target, targetLocation, 30, 40))
+                .SkillType(SkillType.HeavyVibroblade)
                 .IsWeaponAbility()
                 .IsHostileAbility()
+                .IsSingleTargetAbility()
                 .BreaksStealth()
                 .RequirementStamina(10);
         }
@@ -59,11 +63,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
                 .HasRecastDelay(RecastGroup.SoulStrike, 45f)
                 .HasImpactAction((activator, target, level, targetLocation) =>
                 {
-                    var percent = Math.Min(90, 60 + Math.Max(0, GetAbilityModifier(AbilityType.Might, activator)));
+                    var percent = Math.Min(90, 60 + Math.Max(0, GetAbilityScore(activator, AbilityType.Might)));
                     SoulStrikeImpact(activator, target, targetLocation, 45, percent);
                 })
+                .SkillType(SkillType.HeavyVibroblade)
                 .IsWeaponAbility()
                 .IsHostileAbility()
+                .IsSingleTargetAbility()
                 .BreaksStealth()
                 .RequirementStamina(15);
         }

@@ -1354,8 +1354,12 @@ namespace SWLOR.Game.Server.Service
             var attacker = OBJECT_SELF;
             var defender = StringToObject(EventsPlugin.GetEventData("DEFENDER"));
             var damage = Convert.ToInt32(EventsPlugin.GetEventData("DAMAGE"));
+            var damageTypeText = EventsPlugin.GetEventData("DAMAGE_TYPE");
+            var damageType = int.TryParse(damageTypeText, out var parsedDamageType)
+                ? (CombatDamageType)parsedDamageType
+                : CombatDamageType.Physical;
 
-            NotifyDamageStatusEffects(attacker, defender, damage);
+            NotifyDamageStatusEffects(attacker, defender, damage, damageType);
 
             var effects = GetCreatureStatusEffects(attacker);
 
@@ -1365,19 +1369,19 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        private static void NotifyDamageStatusEffects(uint attacker, uint defender, int damage)
+        private static void NotifyDamageStatusEffects(uint attacker, uint defender, int damage, CombatDamageType damageType)
         {
             if (damage <= 0 || !GetIsObjectValid(attacker) || !GetIsObjectValid(defender))
                 return;
 
             foreach (var effect in GetCreatureStatusEffects(attacker).GetAllEffects())
             {
-                effect.OnDamageDealtEffect(attacker, defender, damage);
+                effect.OnDamageDealtEffect(attacker, defender, damage, damageType);
             }
 
             foreach (var effect in GetCreatureStatusEffects(defender).GetAllEffects())
             {
-                effect.OnDamageTakenEffect(defender, attacker, damage);
+                effect.OnDamageTakenEffect(defender, attacker, damage, damageType);
             }
         }
 

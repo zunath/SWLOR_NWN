@@ -27,6 +27,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
                 .HasRecastDelay(RecastGroup.SoulDevourer, 180f)
                 .HasActivationAction((activator, target, level, targetLocation) => ToggleSelfStatus(activator, typeof(SoulDevourerStatusEffect)))
                 .HasImpactAction((activator, target, level, targetLocation) => ApplySelfStatus(activator, typeof(SoulDevourerStatusEffect)))
+                .SkillType(SkillType.HeavyVibroblade)
                 .IsCastedAbility()
                 .BreaksStealth();
         }

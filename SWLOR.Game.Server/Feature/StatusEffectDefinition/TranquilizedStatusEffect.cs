@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             ApplySleep(creature, GetDurationSeconds(DurationTicks));
         }
 
-        protected override void OnDamageTaken(uint defender, uint attacker, int damage)
+        protected override void OnDamageTaken(uint defender, uint attacker, int damage, CombatDamageType damageType)
         {
             if (damage <= 0)
                 return;

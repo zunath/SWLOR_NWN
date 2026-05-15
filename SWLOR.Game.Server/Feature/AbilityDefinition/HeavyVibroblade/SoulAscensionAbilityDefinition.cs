@@ -30,6 +30,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
                 {
                     StatusEffect.ApplyStatusEffect(activator, activator, typeof(SoulAscensionStatusEffect), 20f);
                 })
+                .SkillType(SkillType.HeavyVibroblade)
                 .IsCastedAbility()
                 .BreaksStealth()
                 .RequirementStamina(25);

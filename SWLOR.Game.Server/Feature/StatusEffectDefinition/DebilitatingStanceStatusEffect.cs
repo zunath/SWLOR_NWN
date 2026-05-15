@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public override string Name => "Debilitating Stance";
         public override EffectIconType Icon => EffectIconType.MovementSpeedDecrease;
 
-        protected override void OnDamageDealt(uint attacker, uint defender, int damage)
+        protected override void OnDamageDealt(uint attacker, uint defender, int damage, CombatDamageType damageType)
         {
             StatusEffect.ApplyStatusEffect(attacker, defender, typeof(HamstringStatusEffect), 8f, CombatDamageType.Physical);
         }

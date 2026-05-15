@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             StatGroup.Stats[StatType.DamageTakenPercentAdjustment] = -50;
         }
 
-        protected override void OnDamageTaken(uint defender, uint attacker, int damage)
+        protected override void OnDamageTaken(uint defender, uint attacker, int damage, CombatDamageType damageType)
         {
             StatusEffect.RemoveStatusEffect(defender, GetType(), Source);
         }

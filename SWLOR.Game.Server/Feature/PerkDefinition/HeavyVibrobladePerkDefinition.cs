@@ -407,7 +407,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SoulDevourer1)
-                .Description("While active, gain +35% Attack and +15% critical chance,  but each attack you make deals 40% of the damage back to you. Damage reduced by 1% per MGT. (Minimum 10%)")
+                .Description("While active, gain +35% Attack and +15% critical chance, but each attack you make deals 40% of the damage back to you. Damage reduced by 1% per MGT. (Minimum 10%)")
                 .Price(4)
                 .RequirementSkill(SkillType.HeavyVibroblade, 18);
         }
@@ -509,7 +509,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .IncreasesStat(
                     StatType.CriticalHPPercentOfDamageRestore,
                     creature => EquipmentPredicates.HasMainHandHeavyVibroblade(creature)
-                        ? Math.Min(75, 40 + Math.Max(0, GetAbilityModifier(AbilityType.Might, creature)))
+                        ? Math.Min(75, 40 + Math.Max(0, GetAbilityScore(creature, AbilityType.Might)))
                         : 0)
                 .Price(3)
                 .RequirementSkill(SkillType.HeavyVibroblade, 22);

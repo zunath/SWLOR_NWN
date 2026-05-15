@@ -1,5 +1,6 @@
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
@@ -9,12 +10,13 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public override string Name => "Life Siphon";
         public override EffectIconType Icon => EffectIconType.Regenerate;
 
-        protected override void OnDamageDealt(uint attacker, uint defender, int damage)
+        protected override void OnDamageDealt(uint attacker, uint defender, int damage, CombatDamageType damageType)
         {
             if (GetCurrentHitPoints(attacker) >= GetMaxHitPoints(attacker) * 0.5f)
                 return;
 
-            ApplyEffectToObject(DurationType.Instant, EffectHeal(PercentOfDamage(damage, 15)), attacker);
+            var amount = Stat.ApplyHealingReceivedAdjustment(attacker, PercentOfDamage(damage, 15));
+            ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), attacker);
             Enmity.ModifyEnmity(attacker, defender, PercentOfDamage(damage, 20));
         }
     }

@@ -1,3 +1,5 @@
+using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -8,9 +10,10 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public override string Name => "Blood Weapon";
         public override EffectIconType Icon => EffectIconType.Regenerate;
 
-        protected override void OnDamageDealt(uint attacker, uint defender, int damage)
+        protected override void OnDamageDealt(uint attacker, uint defender, int damage, CombatDamageType damageType)
         {
-            ApplyEffectToObject(DurationType.Instant, EffectHeal(PercentOfDamage(damage, 2)), attacker);
+            var amount = Stat.ApplyHealingReceivedAdjustment(attacker, PercentOfDamage(damage, 2));
+            ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), attacker);
         }
     }
 }

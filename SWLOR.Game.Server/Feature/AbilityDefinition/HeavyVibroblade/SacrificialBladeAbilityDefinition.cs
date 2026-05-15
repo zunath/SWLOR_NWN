@@ -8,7 +8,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
 {
-    public class SacrificialBladeAbilityDefinition : IAbilityListDefinition
+    public class SacrificialBladeAbilityDefinition : HeavyVibrobladeActiveAbilityDefinitionBase, IAbilityListDefinition
     {
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
@@ -29,14 +29,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
                 .HasRecastDelay(RecastGroup.SacrificialBlade, 120f)
                 .RequiresTarget()
                 .HasImpactAction(SacrificialBlade1ImpactAction)
+                .SkillType(SkillType.HeavyVibroblade)
                 .IsCastedAbility()
                 .IsHostileAbility()
+                .IsSingleTargetAbility()
                 .BreaksStealth()
                 .RequirementStamina(6);
         }
 
         private static void SacrificialBlade1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
+            SacrificeHitPoints(activator, 8);
             Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.HeavyVibroblade, 25, 0, null, false);
         }
     }

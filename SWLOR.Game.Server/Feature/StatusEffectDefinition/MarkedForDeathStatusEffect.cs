@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public override ResistanceType ResistanceType => ResistanceType.Trauma;
         public int RemainingAttacks => _remainingAttacks;
 
-        protected override void OnDamageTaken(uint defender, uint attacker, int damage)
+        protected override void OnDamageTaken(uint defender, uint attacker, int damage, CombatDamageType damageType)
         {
             if (_isApplyingBonusDamage ||
                 _remainingAttacks <= 0 ||

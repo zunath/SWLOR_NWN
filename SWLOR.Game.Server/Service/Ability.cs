@@ -1420,7 +1420,7 @@ namespace SWLOR.Game.Server.Service
             {
                 AssignCommand(activator, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, damageType.GetNWScriptDamageType()), target));
                 ApplyDarkForceConversion(activator, target, damage);
-                Combat.ApplyDamageDealtEffects(activator, target, damage, skillType);
+                Combat.ApplyDamageDealtEffects(activator, target, damage, skillType, damageType);
             }
 
             ApplyHostileAbilityEnmity(activator, target, damage);

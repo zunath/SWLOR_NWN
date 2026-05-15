@@ -527,6 +527,7 @@ $rulesByLabel["BrutalAssault1"] = New-FriendlySelfSphereRule -Radius "5"
 $rulesByLabel["TauntingDeflection1"] = New-SelfSphereRule -Radius "5"
 $rulesByLabel["GuardianSInfluence1"] = New-FriendlySelfSphereRule -Radius "5"
 $rulesByLabel["SaberStorm1"] = New-SelfSphereRule -Radius "5"
+$rulesByLabel["SoulStorm1"] = New-FriendlySelfSphereRule -Radius "5"
 
 foreach ($label in @(
     "ChargeOrder1",

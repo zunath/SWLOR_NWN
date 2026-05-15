@@ -459,6 +459,7 @@ namespace SWLOR.Game.Server.Service
             if (damage <= 0)
                 return damage;
 
+            damage = ApplyOutgoingDamageModifier(attacker, damage);
             damage = ApplyTargetLowHPDamageModifier(attacker, defender, damage);
             damage = ApplyTargetStatusDamageModifiers(
                 attacker,
@@ -593,7 +594,12 @@ namespace SWLOR.Game.Server.Service
             Enmity.ModifyEnmity(attacker, target, cycleDamage);
         }
 
-        public static void ApplyDamageDealtEffects(uint attacker, uint defender, int damage, SkillType skillType = SkillType.Invalid)
+        public static void ApplyDamageDealtEffects(
+            uint attacker,
+            uint defender,
+            int damage,
+            SkillType skillType = SkillType.Invalid,
+            CombatDamageType damageType = CombatDamageType.Physical)
         {
             if (damage <= 0)
                 return;
@@ -607,6 +613,15 @@ namespace SWLOR.Game.Server.Service
             if (hpRestorePercent > 0)
             {
                 HealFromDamage(attacker, damage, hpRestorePercent);
+            }
+
+            if (damageType.IsPhysicalDamageType())
+            {
+                hpRestorePercent = Stat.GetStatAdjustment(attacker, StatType.PhysicalDamageDealtHPPercentRestore);
+                if (hpRestorePercent > 0)
+                {
+                    HealFromDamage(attacker, damage, hpRestorePercent);
+                }
             }
         }
 
@@ -1137,6 +1152,7 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             var amount = Math.Max(1, (int)Math.Ceiling(damage * (percent / 100f)));
+            amount = Stat.ApplyHealingReceivedAdjustment(creature, amount);
             ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), creature);
         }
 
@@ -1524,7 +1540,17 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             var amount = Math.Max(1, (int)Math.Ceiling(GetMaxHitPoints(creature) * (percent / 100f)));
+            amount = Stat.ApplyHealingReceivedAdjustment(creature, amount);
             ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), creature);
+        }
+
+        private static int ApplyOutgoingDamageModifier(uint attacker, int damage)
+        {
+            var adjustment = Stat.GetStatAdjustment(attacker, StatType.DamageDealtPercentAdjustment);
+            if (adjustment == 0)
+                return damage;
+
+            return damage + (int)Math.Ceiling(damage * (adjustment / 100f));
         }
 
         private static int ApplyTargetLowHPDamageModifier(uint attacker, uint defender, int damage)

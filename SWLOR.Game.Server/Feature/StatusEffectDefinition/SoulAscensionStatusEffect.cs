@@ -9,13 +9,10 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public override string Name => "Soul Ascension";
         public override EffectIconType Icon => EffectIconType.Regenerate;
 
-        protected override void OnDamageDealt(uint attacker, uint defender, int damage)
-        {
-            ApplyEffectToObject(DurationType.Instant, EffectHeal(PercentOfDamage(damage, 50)), attacker);
-        }
         public SoulAscensionStatusEffect()
         {
             StatGroup.Stats[StatType.AttackPercentAdjustment] = 35;
+            StatGroup.Stats[StatType.PhysicalDamageDealtHPPercentRestore] = 50;
         }
 
     }

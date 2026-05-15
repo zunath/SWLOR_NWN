@@ -26,6 +26,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
                 .HasActivationDelay(0f)
                 .HasActivationAction((activator, target, level, targetLocation) => ToggleSelfStatus(activator, typeof(LifeSiphonStatusEffect)))
                 .HasImpactAction((activator, target, level, targetLocation) => ApplySelfStatus(activator, typeof(LifeSiphonStatusEffect)))
+                .SkillType(SkillType.HeavyVibroblade)
                 .IsCastedAbility()
                 .BreaksStealth();
         }

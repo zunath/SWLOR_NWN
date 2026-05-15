@@ -33,7 +33,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
                     ApplyStatusToNearbyParty(activator, typeof(SoulStormStatusEffect), 60f, true);
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Fnf_Howl_Mind), activator);
                 })
+                .SkillType(SkillType.HeavyVibroblade)
                 .IsCastedAbility()
+                .IsAreaAbility()
                 .BreaksStealth()
                 .RequirementStamina(18);
         }

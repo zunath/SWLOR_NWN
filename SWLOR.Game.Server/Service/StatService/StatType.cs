@@ -2232,7 +2232,19 @@ namespace SWLOR.Game.Server.Service.StatService
         /// Percent reduction to offhand weapon delay. Total reduction is capped by combat delay logic.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        OffhandAttackDelayReductionPercent = 371
+        OffhandAttackDelayReductionPercent = 371,
+
+        /// <summary>
+        /// Percent adjustment applied to outgoing damage.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        DamageDealtPercentAdjustment = 372,
+
+        /// <summary>
+        /// Percent of physical damage dealt restored as HP.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        PhysicalDamageDealtHPPercentRestore = 373
     }
 
     public class StatTypeAttribute : Attribute

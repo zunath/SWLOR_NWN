@@ -30,11 +30,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
                 .HasImpactAction((activator, target, level, targetLocation) =>
                 {
                     SacrificeHitPoints(activator, 40, 10);
-                    var restorePercent = Math.Min(80, 20 + Math.Max(0, GetAbilityModifier(AbilityType.Might, activator)));
+                    var restorePercent = Math.Min(80, 20 + Math.Max(0, GetAbilityScore(activator, AbilityType.Might)));
                     var amount = (int)Math.Ceiling(Stat.GetMaxStamina(activator) * (restorePercent / 100f));
                     Stat.RestoreStamina(activator, amount);
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Restoration), activator);
                 })
+                .SkillType(SkillType.HeavyVibroblade)
                 .IsCastedAbility()
                 .BreaksStealth();
         }

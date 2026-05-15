@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -27,15 +28,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private const int MaxPurchasedAttributeScore = 26;
         private const int RacialAttributeBonus = 1;
         private const int MaxRacialAttributeScore = MaxPurchasedAttributeScore + RacialAttributeBonus;
-        private const int StatsTabId = 0;
-        private const int ResistancesTabId = 1;
-        private const int CraftingTabId = 2;
+        private const int AttributesTabId = 0;
+        private const int StatsTabId = 1;
+        private const int ResistancesTabId = 2;
+        private const int CraftingTabId = 3;
         public const string TabContentPartialElement = "character_sheet_tab_content";
+        public const string AttributesTabPartial = "CHARACTER_SHEET_ATTRIBUTES_TAB";
         public const string StatsTabPartial = "CHARACTER_SHEET_STATS_TAB";
         public const string ResistancesTabPartial = "CHARACTER_SHEET_RESISTANCES_TAB";
         public const string CraftingTabPartial = "CHARACTER_SHEET_CRAFTING_TAB";
 
         private uint _target;
+        private bool _isSynchronizingTabRows;
 
         public int SelectedTabId
         {
@@ -43,8 +47,37 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set
             {
                 Set(value);
+                RefreshTabRowSelection();
 
                 RestoreSelectedTabPartial();
+            }
+        }
+
+        public int TopTabId
+        {
+            get => Get<int>();
+            set
+            {
+                Set(value);
+
+                if (_isSynchronizingTabRows || value < 0)
+                    return;
+
+                SelectTab(value == 0 ? AttributesTabId : StatsTabId);
+            }
+        }
+
+        public int BottomTabId
+        {
+            get => Get<int>();
+            set
+            {
+                Set(value);
+
+                if (_isSynchronizingTabRows || value < 0)
+                    return;
+
+                SelectTab(value == 0 ? ResistancesTabId : CraftingTabId);
             }
         }
 
@@ -275,6 +308,24 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public GuiBindingList<string> StatNames
+        {
+            get => Get<GuiBindingList<string>>();
+            set => Set(value);
+        }
+
+        public GuiBindingList<string> StatValues
+        {
+            get => Get<GuiBindingList<string>>();
+            set => Set(value);
+        }
+
+        public GuiBindingList<string> StatTooltips
+        {
+            get => Get<GuiBindingList<string>>();
+            set => Set(value);
+        }
+
         public GuiBindingList<string> CraftNames
         {
             get => Get<GuiBindingList<string>>();
@@ -497,6 +548,39 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }, RestoreSelectedTabPartial);
         }
 
+        private void SelectTab(int tabId)
+        {
+            if (SelectedTabId == tabId)
+            {
+                RefreshTabRowSelection();
+                RestoreSelectedTabPartial();
+                return;
+            }
+
+            SelectedTabId = tabId;
+        }
+
+        private void RefreshTabRowSelection()
+        {
+            _isSynchronizingTabRows = true;
+
+            TopTabId = SelectedTabId switch
+            {
+                AttributesTabId => 0,
+                StatsTabId => 1,
+                _ => -1
+            };
+
+            BottomTabId = SelectedTabId switch
+            {
+                ResistancesTabId => 0,
+                CraftingTabId => 1,
+                _ => -1
+            };
+
+            _isSynchronizingTabRows = false;
+        }
+
         private void RestoreSelectedTabPartial()
         {
             void RefreshSelectedTabData()
@@ -504,7 +588,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 if (!GetIsObjectValid(_target))
                     return;
 
-                if (SelectedTabId == ResistancesTabId)
+                if (SelectedTabId == StatsTabId)
+                {
+                    RefreshCharacterStatsList();
+                }
+                else if (SelectedTabId == ResistancesTabId)
                 {
                     RefreshResistances();
                 }
@@ -625,6 +713,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 IsAgilityUpgradeAvailable = IsAttributeUpgradeAvailable(dbPlayer, AbilityType.Agility, isRacialBonusAvailable);
                 IsSocialUpgradeAvailable = IsAttributeUpgradeAvailable(dbPlayer, AbilityType.Social, isRacialBonusAvailable);
             }
+
+            RefreshCharacterStatsList();
         }
 
         private void RefreshEquipmentStats()
@@ -716,6 +806,160 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             RefreshResistances();
             RefreshCraftingStats();
+            RefreshCharacterStatsList();
+        }
+
+        private void RefreshCharacterStatsList()
+        {
+            var names = new GuiBindingList<string>();
+            var values = new GuiBindingList<string>();
+            var tooltips = new GuiBindingList<string>();
+
+            void AddStat(string name, string value, string tooltip)
+            {
+                names.Add(name);
+                values.Add(value);
+                tooltips.Add(tooltip);
+            }
+
+            var combatProfile = GetPrimaryCombatProfile();
+
+            AddStat("HP Regen", GetHPRegenValue().ToString(), "Amount of HP restored automatically by natural regeneration.");
+            AddStat("FP Regen", GetFPRegenValue().ToString(), "Amount of FP restored automatically by natural regeneration.");
+            AddStat("STM Regen", GetStaminaRegenValue().ToString(), "Amount of STM restored automatically by natural regeneration.");
+            AddStat("Recast Reduction", FormatPercent(Recast.GetRecastReductionPercent(_target)), "Reduces the time in between ability usage.");
+            AddStat("Shield Deflection", FormatPercent(Stat.GetShieldDeflectionChance(_target)), "Ability to deflect attacks with a shield.");
+            AddStat("Attack Deflection", FormatPercent(Stat.GetAttackDeflectionChance(_target)), "Ability to deflect attacks.");
+            AddStat("Guard", FormatPercent(Stat.GetGuardChance(_target)), "Chance to reduce damage by 20% and increase enmity gain.");
+            AddStat("Critical Rate", FormatPercent(GetCriticalRate(combatProfile.Skill)), "Increases the chance to score a critical hit. Actual chance varies by target Vitality.");
+            AddStat("Critical Damage", FormatPercent(Stat.GetStatAdjustment(_target, StatType.CriticalDamagePercentAdjustment)), "Increases the amount of damage a critical hit deals.");
+            AddStat("Enmity", FormatPercent(Stat.GetStatAdjustment(_target, StatType.EnmityPercentAdjustment)), "Increases or decreases the rate at which enmity is acquired.");
+            AddStat("Haste", FormatPercent(Combat.CalculateAttackDelayReduction(_target)), "Increases attack speed.");
+            AddStat("Slow", GetEffectStateLabel(EffectTypeScript.Slow), "Reduces attack speed.");
+            AddStat("Paralysis", GetEffectStateLabel(EffectTypeScript.Paralyze), "Prevents auto attacks and other actions.");
+            AddStat("Movement Speed", FormatMultiplier(Stat.GetMovementSpeedMultiplier(_target)), "Increases or decreases your movement speed.");
+            AddStat("Force Evasion", FormatPercent(GetForceEvasion()), "Percent chance to completely evade a detrimental force ability.");
+            AddStat("Force Affinity", Perk.GetForceAffinity(_target).ToString(), "Affects Force ability effectiveness based on type. Negative represents Dark-side and positive represents Light-side.");
+
+            StatNames = names;
+            StatValues = values;
+            StatTooltips = tooltips;
+        }
+
+        private (AbilityType DamageAbility, AbilityType AccuracyAbilityOverride, SkillType Skill, uint AccuracyWeapon) GetPrimaryCombatProfile()
+        {
+            var mainHand = GetItemInSlot(InventorySlot.RightHand, _target);
+            var mainHandType = GetBaseItemType(mainHand);
+            var skill = Skill.GetSkillTypeByBaseItem(mainHandType);
+
+            if (BeastMastery.IsPlayerBeast(_target))
+            {
+                var beastType = BeastMastery.GetBeastType(_target);
+                var beastDetails = BeastMastery.GetBeastDetail(beastType);
+                var creatureArmor = GetItemInSlot(InventorySlot.CreatureArmor, _target);
+
+                return (beastDetails.DamageStat, beastDetails.AccuracyStat, skill, creatureArmor);
+            }
+
+            return (Combat.GetWeaponDamageAbilityType(_target, mainHandType), AbilityType.Invalid, skill, mainHand);
+        }
+
+        private bool IsPlayerCharacterTarget()
+        {
+            return GetIsPC(_target) && !GetIsDM(_target);
+        }
+
+        private Player GetPlayerEntity()
+        {
+            return DB.Get<Player>(GetObjectUUID(_target));
+        }
+
+        private int GetHPRegenValue()
+        {
+            var bonus = Stat.GetStatAdjustment(_target, StatType.HPRegen);
+            if (!IsPlayerCharacterTarget())
+                return bonus;
+
+            var dbPlayer = GetPlayerEntity();
+            return dbPlayer.HPRegen + GetAbilityScore(_target, AbilityType.Vitality) + bonus;
+        }
+
+        private int GetFPRegenValue()
+        {
+            var bonus = Stat.GetStatAdjustment(_target, StatType.FPRegen);
+            if (!IsPlayerCharacterTarget())
+                return bonus;
+
+            var dbPlayer = GetPlayerEntity();
+            return 1 + dbPlayer.FPRegen + GetAbilityScore(_target, AbilityType.Willpower) / 4 + bonus;
+        }
+
+        private int GetStaminaRegenValue()
+        {
+            var bonus = Stat.GetStatAdjustment(_target, StatType.StaminaRegen);
+            if (!IsPlayerCharacterTarget())
+                return bonus;
+
+            var dbPlayer = GetPlayerEntity();
+            return 1 + dbPlayer.STMRegen + GetAbilityScore(_target, AbilityType.Might) / 4 + bonus;
+        }
+
+        private int GetCriticalRate(SkillType skillType)
+        {
+            return Combat.CalculateCriticalRate(
+                GetAbilityScore(_target, AbilityType.Perception),
+                GetAbilityScore(_target, AbilityType.Vitality),
+                GetSkillRank(skillType),
+                Stat.GetStatAdjustment(_target, StatType.CriticalRatePercentAdjustment));
+        }
+
+        private int GetSkillRank(SkillType skillType)
+        {
+            if (IsPlayerCharacterTarget())
+            {
+                if (skillType == SkillType.Invalid)
+                    return 0;
+
+                var dbPlayer = GetPlayerEntity();
+                return dbPlayer.Skills.TryGetValue(skillType, out var skill)
+                    ? skill.Rank
+                    : 0;
+            }
+
+            var npcStats = Stat.GetNPCStats(_target);
+            return npcStats.Skills.TryGetValue(skillType, out var rank)
+                ? rank
+                : npcStats.Level;
+        }
+
+        private string GetEffectStateLabel(EffectTypeScript effectType)
+        {
+            for (var effect = GetFirstEffect(_target); GetIsEffectValid(effect); effect = GetNextEffect(_target))
+            {
+                if (GetEffectType(effect) == effectType)
+                    return "Active";
+            }
+
+            return "Inactive";
+        }
+
+        private int GetForceEvasion()
+        {
+            var skillType = Stat.GetStatAdjustment(_target, StatType.IncomingAbilityHitChancePercentAdjustmentSkillType);
+            if (skillType != (int)SkillType.Force)
+                return 0;
+
+            return Math.Max(0, -Stat.GetStatAdjustment(_target, StatType.IncomingAbilityHitChancePercentAdjustment));
+        }
+
+        private static string FormatPercent(int value)
+        {
+            return $"{value}%";
+        }
+
+        private static string FormatMultiplier(float value)
+        {
+            return $"{value:0.##}x";
         }
 
         private static string GetStatusDurationLabel(int score)
@@ -734,9 +978,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             return tabId switch
             {
+                StatsTabId => StatsTabPartial,
                 ResistancesTabId => ResistancesTabPartial,
                 CraftingTabId => CraftingTabPartial,
-                _ => StatsTabPartial
+                _ => AttributesTabPartial
             };
         }
 
@@ -860,10 +1105,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsPlayerMode = initialPayload.IsPlayerMode;
             ShowSP = IsPlayerMode || BeastMastery.IsPlayerBeast(_target);
             ShowAPOrLevel = ShowSP;
-            SelectedTabId = StatsTabId;
+            SelectedTabId = AttributesTabId;
 
             LoadData();
-            WatchOnClient(model => model.SelectedTabId);
+            WatchOnClient(model => model.TopTabId);
+            WatchOnClient(model => model.BottomTabId);
         }
 
         public void Refresh(ChangePortraitRefreshEvent payload)
@@ -896,6 +1142,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             SP = $"{dbBeast.Level} / {BeastMastery.MaxLevel} ({dbBeast.UnallocatedSP})";
             APOrLevel = $"{dbBeast.Level} / {BeastMastery.MaxLevel}";
             APOrLevelTooltip = $"XP: {dbBeast.XP} / {BeastMastery.GetRequiredXP(dbBeast.Level, dbBeast.XPPenaltyPercent)}";
+            RefreshCharacterStatsList();
         }
 
         public void Refresh(EquipItemRefreshEvent payload)

@@ -13,9 +13,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         private const float RailWidth = 165f;
         private const float ActionsWidth = 136f;
         private const float StatRowHeight = 22f;
-        private const float TabStripWidth = 360f;
+        private const float TabPairWidth = 236f;
+        private const float TabRowHeight = 28f;
+        private const float TabPanelHeight = 76f;
         private const float AttributePanelWidth = 250f;
         private const float CombatPanelWidth = 250f;
+        private const float StatsPanelWidth = 460f;
         private const float ResistancePanelWidth = 430f;
         private const float CraftingPanelWidth = 430f;
 
@@ -26,6 +29,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .SetTitle("Character Sheet")
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
+                .DefinePartialView(CharacterSheetViewModel.AttributesTabPartial, AddAttributesTab)
                 .DefinePartialView(CharacterSheetViewModel.StatsTabPartial, AddStatsTab)
                 .DefinePartialView(CharacterSheetViewModel.ResistancesTabPartial, AddResistancesTab)
                 .DefinePartialView(CharacterSheetViewModel.CraftingTabPartial, AddCraftingTab)
@@ -120,17 +124,28 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     {
                         tabColumn.AddRow(tabRow =>
                         {
+                            tabRow.SetHeight(TabRowHeight);
                             tabRow.AddToggles()
+                                .AddOption("Attributes")
                                 .AddOption("Stats")
+                                .BindSelectedValue(model => model.TopTabId)
+                                .SetWidth(TabPairWidth)
+                                .SetHeight(TabRowHeight);
+                        });
+
+                        tabColumn.AddRow(tabRow =>
+                        {
+                            tabRow.SetHeight(TabRowHeight);
+                            tabRow.AddToggles()
                                 .AddOption("Resistances")
                                 .AddOption("Crafting")
-                                .BindSelectedValue(model => model.SelectedTabId)
-                                .SetWidth(TabStripWidth)
-                                .SetHeight(32f);
+                                .BindSelectedValue(model => model.BottomTabId)
+                                .SetWidth(TabPairWidth)
+                                .SetHeight(TabRowHeight);
                         });
                     });
                 })
-                    .SetHeight(48f);
+                    .SetHeight(TabPanelHeight);
             });
 
             col.AddRow(row =>
@@ -150,7 +165,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             });
         }
 
-        private static void AddStatsTab(GuiGroup<CharacterSheetViewModel> group)
+        private static void AddAttributesTab(GuiGroup<CharacterSheetViewModel> group)
         {
             group.SetShowBorder(false);
             group.SetScrollbars(NuiScrollbars.None);
@@ -190,6 +205,59 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         });
                     })
                         .SetWidth(CombatPanelWidth);
+                });
+            });
+        }
+
+        private static void AddStatsTab(GuiGroup<CharacterSheetViewModel> group)
+        {
+            group.SetShowBorder(false);
+            group.SetScrollbars(NuiScrollbars.None);
+            group.AddColumn(col =>
+            {
+                col.AddRow(tableRow =>
+                {
+                    tableRow.AddGroup(table =>
+                    {
+                        table.SetScrollbars(NuiScrollbars.None);
+                        table.AddColumn(tableCol =>
+                        {
+                            tableCol.AddRow(row =>
+                            {
+                                AddTableHeader(row, "STAT", 190f, "Character stat.");
+                                AddTableHeader(row, "VALUE", 0f, "Current value.");
+                            });
+
+                            tableCol.AddRow(row =>
+                            {
+                                row.AddList(template =>
+                                {
+                                    template.AddCell(cell =>
+                                    {
+                                        cell.SetIsVariable(false);
+                                        cell.SetWidth(190f);
+                                        cell.AddLabel()
+                                            .BindText(model => model.StatNames)
+                                            .BindTooltip(model => model.StatTooltips)
+                                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                                    });
+
+                                    template.AddCell(cell =>
+                                    {
+                                        cell.AddLabel()
+                                            .BindText(model => model.StatValues)
+                                            .BindTooltip(model => model.StatTooltips)
+                                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                                    });
+                                })
+                                    .BindRowCount(model => model.StatNames)
+                                    .SetRowHeight(24f)
+                                    .SetShowBorders(false)
+                                    .SetScrollbars(NuiScrollbars.Y);
+                            });
+                        });
+                    })
+                        .SetWidth(StatsPanelWidth);
                 });
             });
         }

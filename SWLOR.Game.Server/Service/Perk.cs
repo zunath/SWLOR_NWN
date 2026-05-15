@@ -43,6 +43,8 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<PerkType, Dictionary<int, int>> _perkLevelTiers = new();
         private static readonly Dictionary<SkillType, List<PerkType>> _perksWithSkillRequirement = new();
         private static readonly Dictionary<PerkType, PerkDetail> _perksWithStatBonuses = new();
+        private const int ForceAffinityMinimum = -10;
+        private const int ForceAffinityMaximum = 10;
 
         /// <summary>
         /// When the module loads, cache all perk and character type information.
@@ -283,6 +285,39 @@ namespace SWLOR.Game.Server.Service
         public static Dictionary<PerkType, PerkDetail> GetAllPerks()
         {
             return _allPerks.ToDictionary(x => x.Key, y => y.Value);
+        }
+
+        public static int GetForceAffinity(uint creature)
+        {
+            if (!GetIsPC(creature) || GetIsDM(creature))
+                return 0;
+
+            var playerId = GetObjectUUID(creature);
+            var dbPlayer = DB.Get<Player>(playerId);
+
+            return GetForceAffinity(dbPlayer);
+        }
+
+        public static int GetForceAffinity(Player dbPlayer)
+        {
+            var affinity = 0;
+
+            foreach (var (perkType, perkLevel) in dbPlayer.Perks)
+            {
+                if (!_allPerks.TryGetValue(perkType, out var detail))
+                    continue;
+
+                if (detail.Category == PerkCategoryType.ForceLight)
+                {
+                    affinity += perkLevel;
+                }
+                else if (detail.Category == PerkCategoryType.ForceDark)
+                {
+                    affinity -= perkLevel;
+                }
+            }
+
+            return Math.Clamp(affinity, ForceAffinityMinimum, ForceAffinityMaximum);
         }
 
         public static int GetStatBonus(uint creature, StatType stat)

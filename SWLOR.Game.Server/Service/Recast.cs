@@ -13,6 +13,7 @@ namespace SWLOR.Game.Server.Service
     {
         // Recast Group Descriptions
         private static readonly Dictionary<RecastGroup, string> _recastDescriptions = new Dictionary<RecastGroup, string>();
+        public const int MaximumReductionPercent = 50;
 
         [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public static void CacheRecastGroups()
@@ -113,12 +114,7 @@ namespace SWLOR.Game.Server.Service
 
                 if (!ignoreRecastReduction)
                 {
-                    var recastReduction = dbPlayer.AbilityRecastReduction +
-                                          Stat.GetStatAdjustment(activator, StatType.AbilityRecastReductionPercent);
-
-                    var recastPercentage = recastReduction * 0.01f;
-                    if (recastPercentage > 0.5f)
-                        recastPercentage = 0.5f;
+                    var recastPercentage = GetRecastReductionPercent(activator, dbPlayer) * 0.01f;
 
                     delaySeconds -= delaySeconds * recastPercentage;
                 }
@@ -131,6 +127,25 @@ namespace SWLOR.Game.Server.Service
                 DB.Set(dbPlayer);
             }
 
+        }
+
+        public static int GetRecastReductionPercent(uint activator)
+        {
+            if (!GetIsPC(activator) || GetIsDM(activator) || GetIsDMPossessed(activator))
+                return 0;
+
+            var playerId = GetObjectUUID(activator);
+            var dbPlayer = DB.Get<Player>(playerId);
+
+            return GetRecastReductionPercent(activator, dbPlayer);
+        }
+
+        private static int GetRecastReductionPercent(uint activator, Player dbPlayer)
+        {
+            var recastReduction = dbPlayer.AbilityRecastReduction +
+                                  Stat.GetStatAdjustment(activator, StatType.AbilityRecastReductionPercent);
+
+            return Math.Clamp(recastReduction, 0, MaximumReductionPercent);
         }
 
         public static void ReduceRecastDelay(uint activator, RecastGroup group, float reduceSeconds)

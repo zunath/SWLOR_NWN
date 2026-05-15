@@ -32,6 +32,7 @@ namespace SWLOR.Game.Server.Service
         private const int MaximumDeflectionChanceCap = 100;
         private const int MaximumShieldDeflectionChance = 75;
         private const int MaximumGuardChance = 100;
+        private const float MaximumMovementSpeedMultiplier = 1.5f;
         private const float DeflectionEvasionBoostDurationSeconds = 10f;
         private const float DeflectionEnmityBoostDurationSeconds = 12f;
         private const float DeflectionDefenseBoostDurationSeconds = 12f;
@@ -528,6 +529,16 @@ namespace SWLOR.Game.Server.Service
                 CreaturePlugin.SetMovementRate(creature, MovementRate.PC);
             }
 
+            var movementRate = GetMovementSpeedMultiplier(creature);
+            CreaturePlugin.SetMovementRateFactor(creature, movementRate);
+        }
+
+        public static float GetMovementSpeedMultiplier(uint creature)
+        {
+            if (!GetIsObjectValid(creature) || GetObjectType(creature) != ObjectType.Creature)
+                return 1.0f;
+
+            var isPlayer = GetIsPC(creature) && !GetIsDM(creature) && !GetIsDMPossessed(creature);
             var movementRate = 1.0f + GetBaseMovementSpeedIncrease(creature, isPlayer);
             movementRate += GetStatAdjustment(creature, StatType.MovementSpeedPercentAdjustment) * 0.01f;
             for (var effect = GetFirstEffect(creature); GetIsEffectValid(effect); effect = GetNextEffect(creature))
@@ -546,10 +557,7 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            if (movementRate > 1.5f)
-                movementRate = 1.5f;
-
-            CreaturePlugin.SetMovementRateFactor(creature, movementRate);
+            return Math.Min(MaximumMovementSpeedMultiplier, movementRate);
         }
 
         private static float GetBaseMovementSpeedIncrease(uint creature, bool isPlayer)
@@ -1316,12 +1324,30 @@ namespace SWLOR.Game.Server.Service
             return Math.Clamp(chance, 0, GetAttackDeflectionChanceCap(creature.m_idSelf));
         }
 
+        public static int GetAttackDeflectionChance(uint creature)
+        {
+            if (!HasWeaponEquippedForAttackDeflection(creature) || HasShieldEquipped(creature))
+                return 0;
+
+            var chance = GetStatAdjustment(creature, StatType.AttackDeflection);
+            return Math.Clamp(chance, 0, GetAttackDeflectionChanceCap(creature));
+        }
+
         public static int GetShieldDeflectionChanceNative(CNWSCreature creature)
         {
             if (!HasShieldEquippedNative(creature))
                 return 0;
 
             var chance = GetStatAdjustment(creature.m_idSelf, StatType.ShieldDeflection);
+            return Math.Clamp(chance, 0, MaximumShieldDeflectionChance);
+        }
+
+        public static int GetShieldDeflectionChance(uint creature)
+        {
+            if (!HasShieldEquipped(creature))
+                return 0;
+
+            var chance = GetStatAdjustment(creature, StatType.ShieldDeflection);
             return Math.Clamp(chance, 0, MaximumShieldDeflectionChance);
         }
 
@@ -1448,6 +1474,12 @@ namespace SWLOR.Game.Server.Service
             return rightHandItem != null && !Item.IsBaseItemType(rightHandItem, Item.ShieldBaseItemTypes);
         }
 
+        private static bool HasWeaponEquippedForAttackDeflection(uint creature)
+        {
+            var rightHandItem = GetItemInSlot(InventorySlot.RightHand, creature);
+            return GetIsObjectValid(rightHandItem) && !Item.IsBaseItemType(rightHandItem, Item.ShieldBaseItemTypes);
+        }
+
         private static SkillType GetMainHandSkillTypeNative(CNWSCreature creature)
         {
             var rightHandItem = creature.m_pInventory.GetItemInSlot((uint)EquipmentSlot.RightHand);
@@ -1462,6 +1494,12 @@ namespace SWLOR.Game.Server.Service
             return Item.IsBaseItemType(
                 creature.m_pInventory.GetItemInSlot((uint)EquipmentSlot.LeftHand),
                 Item.ShieldBaseItemTypes);
+        }
+
+        private static bool HasShieldEquipped(uint creature)
+        {
+            var leftHandItem = GetItemInSlot(InventorySlot.LeftHand, creature);
+            return Item.IsBaseItemType(leftHandItem, Item.ShieldBaseItemTypes);
         }
 
         private static int ApplyPostAccuracyStatusModifiers(uint creature, int accuracy)

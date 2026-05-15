@@ -1369,7 +1369,7 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        private static void NotifyDamageStatusEffects(uint attacker, uint defender, int damage, CombatDamageType damageType)
+        public static void NotifyDamageStatusEffects(uint attacker, uint defender, int damage, CombatDamageType damageType)
         {
             if (damage <= 0 || !GetIsObjectValid(attacker) || !GetIsObjectValid(defender))
                 return;

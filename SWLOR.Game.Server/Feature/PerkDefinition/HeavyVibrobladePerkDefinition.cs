@@ -177,7 +177,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Earthshatter1)
-                .Description("You deal weapon DMG + 20 to all enemies within the area of effect (line) from you.  Inflicts Force Disruption on each target which disables the use of force abilities for 12 seconds.")
+                .Description("You deal weapon DMG + 20 to all enemies within the area of effect (line) from you. Inflicts Force Disruption on each target which disables the use of force abilities for 12 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.HeavyVibroblade, 35);
         }

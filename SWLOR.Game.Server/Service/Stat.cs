@@ -1586,7 +1586,7 @@ namespace SWLOR.Game.Server.Service
             var scalingAbility = GetAbilityTypeFromStatValue(GetStatAdjustment(creature, StatType.HealingReceivedStaminaRestoreChanceScalingAbility));
             if (maximumChance > chance && scalingAbility != AbilityType.Invalid)
             {
-                chance = Math.Min(maximumChance, chance + Math.Max(0, GetAbilityModifier(scalingAbility, creature)));
+                chance = Math.Min(maximumChance, chance + Math.Max(0, GetAbilityScore(creature, scalingAbility)));
             }
 
             if (Random.D100(1) <= chance)

@@ -30,8 +30,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
                 {
                     var shield = Math.Max(1, (int)Math.Ceiling(GetMaxHitPoints(activator) * 0.3f));
                     ApplyEffectToObject(DurationType.Temporary, EffectTemporaryHitpoints(shield), activator, 30f);
-                    StatusEffect.ApplyStatusEffect(activator, activator, typeof(GuardiansResolveStatusEffect), 30f);
+                    StatusEffect.ApplyStatusEffect(activator, activator, new GuardiansResolveStatusEffect(shield), 30f);
                 })
+                .SkillType(SkillType.HeavyVibroblade)
                 .IsCastedAbility()
                 .BreaksStealth()
                 .RequirementStamina(10);

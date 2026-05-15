@@ -27,6 +27,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
                 .HasRecastDelay(RecastGroup.BastionStance, 180f)
                 .HasActivationAction((activator, target, level, targetLocation) => ToggleSelfStatus(activator, typeof(BastionStanceStatusEffect)))
                 .HasImpactAction((activator, target, level, targetLocation) => ApplySelfStatus(activator, typeof(BastionStanceStatusEffect)))
+                .SkillType(SkillType.HeavyVibroblade)
                 .IsCastedAbility()
                 .BreaksStealth();
         }

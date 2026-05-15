@@ -884,7 +884,8 @@ namespace SWLOR.Game.Server.Service
             Func<uint, int> damagePercentAdjustment = null,
             Func<uint, int> baseDamageAdjustment = null,
             IEnumerable<Func<IStatusEffect>> additionalStatusEffectFactories = null,
-            Animation impactAnimation = Animation.Invalid)
+            Animation impactAnimation = Animation.Invalid,
+            int enmityBonus = 0)
         {
             var totalDamage = 0;
             RecordAbilityImpactShape(activator, skillType, isArea);
@@ -923,7 +924,8 @@ namespace SWLOR.Game.Server.Service
                     targetVisualEffect,
                     damagePercentAdjustment,
                     baseDamageAdjustment,
-                    additionalStatusEffectFactories: additionalStatusEffectFactories);
+                    additionalStatusEffectFactories: additionalStatusEffectFactories,
+                    enmityBonus: enmityBonus);
             }
             else if (GetIsObjectValid(target))
             {
@@ -941,7 +943,8 @@ namespace SWLOR.Game.Server.Service
                     targetVisualEffect,
                     damagePercentAdjustment,
                     baseDamageAdjustment,
-                    additionalStatusEffectFactories: additionalStatusEffectFactories);
+                    additionalStatusEffectFactories: additionalStatusEffectFactories,
+                    enmityBonus: enmityBonus);
             }
 
             PlayCombatImpactAnimation(activator, impactAnimation);
@@ -975,7 +978,8 @@ namespace SWLOR.Game.Server.Service
             Action<AbilityImpactSummary> afterImpactAction = null,
             int maxTargets = 0,
             IEnumerable<Func<IStatusEffect>> additionalStatusEffectFactories = null,
-            Animation impactAnimation = Animation.Invalid)
+            Animation impactAnimation = Animation.Invalid,
+            int enmityBonus = 0)
         {
             RecordAbilityImpactShape(activator, skillType, true);
 
@@ -1002,7 +1006,8 @@ namespace SWLOR.Game.Server.Service
                     damagePercentAdjustment,
                     baseDamageAdjustment,
                     maxTargets,
-                    additionalStatusEffectFactories);
+                    additionalStatusEffectFactories,
+                    enmityBonus);
                 PlayCombatImpactAnimation(activator, impactAnimation);
                 return;
             }
@@ -1035,7 +1040,8 @@ namespace SWLOR.Game.Server.Service
                 baseDamageAdjustment,
                 afterImpactAction,
                 maxTargets,
-                additionalStatusEffectFactories);
+                additionalStatusEffectFactories,
+                enmityBonus);
 
             switch (shape)
             {
@@ -1098,7 +1104,8 @@ namespace SWLOR.Game.Server.Service
             Func<uint, int> damagePercentAdjustment,
             Func<uint, int> baseDamageAdjustment,
             int maxTargets,
-            IEnumerable<Func<IStatusEffect>> additionalStatusEffectFactories)
+            IEnumerable<Func<IStatusEffect>> additionalStatusEffectFactories,
+            int enmityBonus)
         {
             RecordAbilityImpactShape(activator, skillType, true);
 
@@ -1151,7 +1158,8 @@ namespace SWLOR.Game.Server.Service
                 damagePercentAdjustment,
                 baseDamageAdjustment,
                 maxTargets,
-                additionalStatusEffectFactories);
+                additionalStatusEffectFactories,
+                enmityBonus);
         }
 
         private static ApplyTelegraphEffect BuildTelegraphedCombatImpactAction(
@@ -1174,7 +1182,8 @@ namespace SWLOR.Game.Server.Service
             Func<uint, int> baseDamageAdjustment,
             Action<AbilityImpactSummary> afterImpactAction,
             int maxTargets,
-            IEnumerable<Func<IStatusEffect>> additionalStatusEffectFactories)
+            IEnumerable<Func<IStatusEffect>> additionalStatusEffectFactories,
+            int enmityBonus)
         {
             return (creator, creatures) =>
             {
@@ -1225,7 +1234,8 @@ namespace SWLOR.Game.Server.Service
                     damagePercentAdjustment,
                     baseDamageAdjustment,
                     maxTargets,
-                    additionalStatusEffectFactories);
+                    additionalStatusEffectFactories,
+                    enmityBonus);
 
                 if (ability != null)
                 {
@@ -1251,7 +1261,8 @@ namespace SWLOR.Game.Server.Service
             Func<uint, int> damagePercentAdjustment = null,
             Func<uint, int> baseDamageAdjustment = null,
             int maxTargets = 0,
-            IEnumerable<Func<IStatusEffect>> additionalStatusEffectFactories = null)
+            IEnumerable<Func<IStatusEffect>> additionalStatusEffectFactories = null,
+            int enmityBonus = 0)
         {
             var totalDamage = 0;
             var affectedCount = 0;
@@ -1279,7 +1290,8 @@ namespace SWLOR.Game.Server.Service
                     targetVisualEffect,
                     damagePercentAdjustment,
                     baseDamageAdjustment,
-                    additionalStatusEffectFactories);
+                    additionalStatusEffectFactories,
+                    enmityBonus);
                 affectedCount++;
             }
 
@@ -1400,7 +1412,8 @@ namespace SWLOR.Game.Server.Service
             VisualEffect targetVisualEffect,
             Func<uint, int> damagePercentAdjustment = null,
             Func<uint, int> baseDamageAdjustment = null,
-            IEnumerable<Func<IStatusEffect>> additionalStatusEffectFactories = null)
+            IEnumerable<Func<IStatusEffect>> additionalStatusEffectFactories = null,
+            int enmityBonus = 0)
         {
             var trackedImpact = GetTrackedAbilityImpact(activator);
             var perkType = trackedImpact?.Ability?.EffectiveLevelPerkType ?? PerkType.Invalid;
@@ -1421,9 +1434,10 @@ namespace SWLOR.Game.Server.Service
                 AssignCommand(activator, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, damageType.GetNWScriptDamageType()), target));
                 ApplyDarkForceConversion(activator, target, damage);
                 Combat.ApplyDamageDealtEffects(activator, target, damage, skillType, damageType);
+                StatusEffect.NotifyDamageStatusEffects(activator, target, damage, damageType);
             }
 
-            ApplyHostileAbilityEnmity(activator, target, damage);
+            ApplyHostileAbilityEnmity(activator, target, damage + Math.Max(0, enmityBonus));
 
             var statusApplied = ApplyCombatImpactStatusEffect(
                 activator,

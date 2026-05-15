@@ -29,7 +29,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
                 {
                     ApplyStatusToNearbyParty(activator, typeof(RampartStatusEffect), 60f, true);
                 })
+                .SkillType(SkillType.HeavyVibroblade)
                 .IsCastedAbility()
+                .IsAreaAbility()
                 .BreaksStealth()
                 .RequirementStamina(12);
         }

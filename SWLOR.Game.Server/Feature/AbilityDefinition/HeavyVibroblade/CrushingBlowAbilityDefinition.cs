@@ -30,15 +30,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
                 .HasRecastDelay(RecastGroup.CrushingBlow, 120f)
                 .RequiresTarget()
                 .HasImpactAction(CrushingBlow1ImpactAction)
+                .SkillType(SkillType.HeavyVibroblade)
                 .IsCastedAbility()
                 .IsHostileAbility()
+                .IsSingleTargetAbility()
                 .BreaksStealth()
                 .RequirementStamina(6);
         }
 
         private static void CrushingBlow1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.HeavyVibroblade, 20, 16, typeof(CrushingBlowStatusEffect), false);
+            Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.HeavyVibroblade, 20, 16, typeof(CrushingBlowStatusEffect), false, enmityBonus: 650);
         }
     }
 }

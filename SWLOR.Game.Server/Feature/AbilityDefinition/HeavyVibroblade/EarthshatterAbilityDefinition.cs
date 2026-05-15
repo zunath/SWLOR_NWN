@@ -28,8 +28,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.Earthshatter, 90f)
                 .HasImpactAction(Earthshatter1ImpactAction)
+                .SkillType(SkillType.HeavyVibroblade)
                 .IsCastedAbility()
                 .IsHostileAbility()
+                .IsAreaAbility()
                 .BreaksStealth()
                 .RequirementStamina(12);
         }

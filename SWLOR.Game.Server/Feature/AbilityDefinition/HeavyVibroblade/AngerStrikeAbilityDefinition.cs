@@ -31,8 +31,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
                     var damage = Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.HeavyVibroblade, 12, 0, null, false);
                     Enmity.ModifyEnmity(activator, target, 450 + damage);
                 })
+                .SkillType(SkillType.HeavyVibroblade)
                 .IsWeaponAbility()
                 .IsHostileAbility()
+                .IsSingleTargetAbility()
                 .BreaksStealth()
                 .RequirementStamina(4);
         }

@@ -31,8 +31,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.FortressStrike, 30f)
                 .HasImpactAction(FortressStrike1ImpactAction)
+                .SkillType(SkillType.HeavyVibroblade)
                 .IsWeaponAbility()
                 .IsHostileAbility()
+                .IsSingleTargetAbility()
                 .BreaksStealth()
                 .RequirementStamina(4);
         }
@@ -46,8 +48,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.FortressStrike, 30f)
                 .HasImpactAction(FortressStrike2ImpactAction)
+                .SkillType(SkillType.HeavyVibroblade)
                 .IsWeaponAbility()
                 .IsHostileAbility()
+                .IsSingleTargetAbility()
                 .BreaksStealth()
                 .RequirementStamina(7);
         }
@@ -61,8 +65,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.FortressStrike, 30f)
                 .HasImpactAction(FortressStrike3ImpactAction)
+                .SkillType(SkillType.HeavyVibroblade)
                 .IsWeaponAbility()
                 .IsHostileAbility()
+                .IsSingleTargetAbility()
                 .BreaksStealth()
                 .RequirementStamina(10);
         }

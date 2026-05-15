@@ -29,16 +29,24 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
                 .HasRecastDelay(RecastGroup.Capstone, 1800f)
                 .HasImpactAction((activator, target, level, targetLocation) =>
                 {
-                    ApplyStatusToNearbyParty(activator, typeof(AbsoluteDefenseStatusEffect), 15f, false);
-                    ApplyImmunityToNearbyParty(activator, ImmunityType.Knockdown, 15f, false);
-                    ApplyImmunityToNearbyParty(activator, ImmunityType.Dazed, 15f, false);
+                    foreach (var partyMember in Party.GetAllPartyMembers(activator))
+                    {
+                        if (partyMember == activator || !GetIsObjectValid(partyMember))
+                            continue;
+
+                        StatusEffect.ApplyStatusEffect(activator, partyMember, typeof(AbsoluteDefenseStatusEffect), 15f);
+                        Ability.ApplyTemporaryImmunity(partyMember, 15f, ImmunityType.Knockdown);
+                        Ability.ApplyTemporaryImmunity(partyMember, 15f, ImmunityType.Dazed);
+                    }
 
                     var healAmount = (int)Math.Ceiling(GetMaxHitPoints(activator) * 0.25f);
+                    healAmount = Stat.ApplyHealingReceivedAdjustment(activator, healAmount);
                     ApplyEffectToObject(DurationType.Instant, EffectHeal(healAmount), activator);
                     Stat.RestoreStamina(activator, (int)Math.Ceiling(Stat.GetMaxStamina(activator) * 0.25f));
                     Stat.RestoreFP(activator, (int)Math.Ceiling(Stat.GetMaxFP(activator) * 0.25f));
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Holy_Aid), activator);
                 })
+                .SkillType(SkillType.HeavyVibroblade)
                 .IsCastedAbility()
                 .BreaksStealth()
                 .RequirementStamina(25);

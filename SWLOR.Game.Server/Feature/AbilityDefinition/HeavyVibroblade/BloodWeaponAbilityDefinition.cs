@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
@@ -30,6 +31,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
                 {
                     StatusEffect.ApplyStatusEffect(activator, activator, typeof(BloodWeaponStatusEffect), 20f);
                 })
+                .SkillType(SkillType.HeavyVibroblade)
                 .IsCastedAbility()
                 .BreaksStealth()
                 .RequirementStamina(14);

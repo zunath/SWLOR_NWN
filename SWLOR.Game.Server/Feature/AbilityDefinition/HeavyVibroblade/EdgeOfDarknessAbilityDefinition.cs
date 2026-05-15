@@ -28,15 +28,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.EdgeOfDarkness, 300f)
                 .HasImpactAction(EdgeOfDarkness1ImpactAction)
+                .SkillType(SkillType.HeavyVibroblade)
                 .IsCastedAbility()
                 .IsHostileAbility()
+                .IsAreaAbility()
                 .BreaksStealth()
                 .RequirementStamina(16);
         }
 
         private static void EdgeOfDarkness1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.HeavyVibroblade, 15, 0, null, true);
+            Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.HeavyVibroblade, 15, 0, null, true, enmityBonus: 350);
         }
     }
 }

@@ -148,7 +148,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Deflection Mastery")
 
                 .AddPerkLevel()
-                .Description("When you deflect an attack, your physical and Force Defense increase by 15% for 12 seconds.")
+                .Description("When you deflect an attack, your defense and force defense increase by 15% for 12 seconds.")
                 .IncreasesStat(StatType.DeflectionDefensePercentAdjustment, creature => EquipmentPredicates.HasMainHandLightsaber(creature) ? 15 : 0)
                 .IncreasesStat(StatType.DeflectionForceDefensePercentAdjustment, creature => EquipmentPredicates.HasMainHandLightsaber(creature) ? 15 : 0)
                 .Price(3)

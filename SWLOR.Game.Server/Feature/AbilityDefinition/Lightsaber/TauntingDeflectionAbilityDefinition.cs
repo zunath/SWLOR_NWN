@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
@@ -22,9 +23,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 .HasImpactAction((activator, target, level, targetLocation) =>
                 {
                     StatusEffect.ApplyStatusEffect(activator, activator, typeof(TauntingDeflectionStatusEffect), 30f);
-                    Enmity.ModifyEnmityOnAll(activator, 850);
+                    foreach (var hostile in AbilityTargeting.GetHostileTargetsNearLocation(activator, GetLocation(activator), 5f, 0))
+                    {
+                        Enmity.ModifyEnmity(activator, hostile, 850);
+                    }
                 })
+                .IsAreaAbility()
                 .IsCastedAbility()
+                .IsHostileAbility()
                 .BreaksStealth()
                 .RequirementStamina(5);
 

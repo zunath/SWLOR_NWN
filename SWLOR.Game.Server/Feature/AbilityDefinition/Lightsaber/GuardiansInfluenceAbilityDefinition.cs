@@ -17,7 +17,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                     .Create(FeatType.GuardiansInfluence1, PerkType.GuardiansInfluence)
                     .Name("Guardian's Influence")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.GuardiansInfluence, 300f),
+                    .HasRecastDelay(RecastGroup.GuardiansInfluence, 300f)
+                    .IsAreaAbility(),
                 typeof(DeflectingAuraStatusEffect),
                 60f,
                 7,

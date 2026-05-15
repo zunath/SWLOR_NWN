@@ -28,6 +28,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.PunishingStrike, 90f)
                 .HasImpactAction(PunishingStrike1ImpactAction)
+                .IsAreaAbility()
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()

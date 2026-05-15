@@ -286,7 +286,6 @@ foreach ($label in @(
     "FortressStrike1",
     "FortressStrike2",
     "GuardianMaster1",
-    "GuardianSInfluence1",
     "GuardianSResolve1",
     "GuardedChannel1",
     "GuardedChannel2",
@@ -366,7 +365,6 @@ foreach ($label in @(
     "SurgeStrike1",
     "TacticalEscape1",
     "TacticalEscape2",
-    "TauntingDeflection1",
     "TempestStance1",
     "ToxicCoating1",
     "ToxicCoating2",
@@ -426,6 +424,15 @@ foreach ($label in @(
 
 $rulesByLabel["TwinIntercept1"] = $friendlyCreatureRule
 $rulesByLabel["DeadManSHand1"] = New-TargetSphereRule
+
+foreach ($label in @(
+    "Backstab1",
+    "Backstab2",
+    "Backstab3",
+    "MarkedForDeath1"
+)) {
+    $rulesByLabel[$label] = $hostileCreatureRule
+}
 
 foreach ($label in @(
     "CreepingTerror2",
@@ -489,7 +496,8 @@ foreach ($label in @(
     "LineBreaker1",
     "PinningFire2",
     "SweepingAdvance1",
-    "SuppressiveLine1"
+    "SuppressiveLine1",
+    "ThunderousChallenge1"
 )) {
     $rulesByLabel[$label] = New-OriginLineRule -Length "8" -Width "2.5"
 }
@@ -515,6 +523,8 @@ $rulesByLabel["ForcePush2"] = New-OriginLineRule -Length "8" -Width "2.5"
 
 $rulesByLabel["KoltoMist1"] = New-FriendlySelfSphereRule -Radius "3"
 $rulesByLabel["KoltoMist2"] = New-FriendlySelfSphereRule -Radius "3"
+$rulesByLabel["TauntingDeflection1"] = New-SelfSphereRule -Radius "5"
+$rulesByLabel["GuardianSInfluence1"] = New-FriendlySelfSphereRule -Radius "5"
 
 foreach ($label in @(
     "ChargeOrder1",

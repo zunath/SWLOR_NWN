@@ -137,24 +137,24 @@ public class VibroknifeShadowTests
 
         var feats = new[]
         {
-            (FeatType.CheapShot1, "ife_cheapshot1", true, false),
-            (FeatType.CheapShot2, "ife_cheapshot2", true, false),
-            (FeatType.Backstab1, "ife_bckstb1", true, false),
-            (FeatType.Backstab2, "ife_bckstb2", true, false),
-            (FeatType.Backstab3, "ife_bckstb3", true, false),
-            (FeatType.DeadlyPrecision1, "ife_deadprec1", false, true),
-            (FeatType.EvasiveCombat1, "ife_evascmbt1", false, true),
-            (FeatType.EvasiveCombat2, "ife_evascmbt2", false, true),
-            (FeatType.ShadowStrike1, "ife_shdwstrk1", true, false),
-            (FeatType.ShadowStrike2, "ife_shdwstrk2", true, false),
-            (FeatType.MarkedForDeath1, "ife_markdeath1", true, false),
-            (FeatType.SmokeBomb, "ife_smokbmb", true, false),
-            (FeatType.Decoy1, "ife_decoy1", true, true),
-            (FeatType.VitalStrike1, "ife_vitalstrk1", true, false)
+            (FeatType.CheapShot1, "ife_cheapshot1", true, false, "0x02"),
+            (FeatType.CheapShot2, "ife_cheapshot2", true, false, "0x02"),
+            (FeatType.Backstab1, "ife_bckstb1", true, false, "0x02"),
+            (FeatType.Backstab2, "ife_bckstb2", true, false, "0x02"),
+            (FeatType.Backstab3, "ife_bckstb3", true, false, "0x02"),
+            (FeatType.DeadlyPrecision1, "ife_deadprec1", false, true, "0x01"),
+            (FeatType.EvasiveCombat1, "ife_evascmbt1", false, true, "0x01"),
+            (FeatType.EvasiveCombat2, "ife_evascmbt2", false, true, "0x01"),
+            (FeatType.ShadowStrike1, "ife_shdwstrk1", true, false, "0x02"),
+            (FeatType.ShadowStrike2, "ife_shdwstrk2", true, false, "0x02"),
+            (FeatType.MarkedForDeath1, "ife_markdeath1", true, false, "0x02"),
+            (FeatType.SmokeBomb, "ife_smokbmb", true, false, "0x3E"),
+            (FeatType.Decoy1, "ife_decoy1", true, true, "0x01"),
+            (FeatType.VitalStrike1, "ife_vitalstrk1", true, false, "0x02")
         };
         var seenIcons = new HashSet<string>();
 
-        foreach (var (featType, expectedIcon, isHostile, targetsSelf) in feats)
+        foreach (var (featType, expectedIcon, isHostile, targetsSelf, expectedTargetType) in feats)
         {
             var featRow = featRows[(int)featType];
             var spellRow = spellRows[int.Parse(featRow["SPELLID"])];
@@ -169,7 +169,7 @@ public class VibroknifeShadowTests
             {
                 featRow["TARGETSELF"].Should().Be("****");
                 featRow["HostileFeat"].Should().Be("1");
-                spellRow["TargetType"].Should().Be("0x02");
+                spellRow["TargetType"].Should().Be(expectedTargetType);
                 spellRow["HostileSetting"].Should().Be("1");
             }
         }

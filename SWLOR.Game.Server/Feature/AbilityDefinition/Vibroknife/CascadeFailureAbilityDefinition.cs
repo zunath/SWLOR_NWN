@@ -28,6 +28,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.CascadeFailure, 90f)
                 .HasImpactAction(CascadeFailure1ImpactAction)
+                .IsAreaAbility()
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
@@ -36,7 +37,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
 
         private static void CascadeFailure1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.Vibroknife, 25, 12, null, CombatImpactAreaShape.Cone, 0.25f, 5f, 5f);
+            Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.Vibroknife, 25, 12, typeof(VulnerableStatusEffect), CombatImpactAreaShape.Cone, 0.25f, 5f, 5f);
         }
     }
 }

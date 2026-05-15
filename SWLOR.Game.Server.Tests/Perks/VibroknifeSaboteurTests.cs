@@ -1,0 +1,362 @@
+using FluentAssertions;
+using NUnit.Framework;
+using SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife;
+using SWLOR.Game.Server.Feature.PerkDefinition;
+using SWLOR.Game.Server.Feature.StatusEffectDefinition;
+using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.NWN.API.NWScript.Enum;
+
+namespace SWLOR.Game.Server.Tests.Perks;
+
+public class VibroknifeSaboteurTests
+{
+    [Test]
+    public void VibroknifeSaboteurPerkLevels_MatchCombatBible()
+    {
+        var perks = BuildVibroknifeSaboteurPerksWithout2daLookup();
+
+        AssertPerkLevel(perks[PerkType.CalculatedStrikes], "Calculated Strikes", 1, 2, 5, null,
+            "Auto-attacks have 15% chance to reduce target's Accuracy by 10% for 6s.",
+            StatType.AutoAttackTargetAccuracyPercentAdjustmentChance,
+            StatType.AutoAttackTargetAccuracyPercentAdjustment,
+            StatType.AutoAttackTargetAccuracyPercentAdjustmentDurationSeconds);
+        AssertPerkLevel(perks[PerkType.EnfeeblingStrike], "Enfeebling Strike", 1, 2, 8, FeatType.EnfeeblingStrike1,
+            "Deals weapon DMG + 12. Inflicts Weakened which reduces Attack by 10% for 15 seconds.");
+        AssertPerkLevel(perks[PerkType.Hamstring], "Hamstring", 1, 2, 10, FeatType.Hamstring1,
+            "Your next attack deals +8 DMG. Inflicts Hamstring, reducing movement speed by 20% for 12 seconds.");
+        AssertPerkLevel(perks[PerkType.ToxicCoating], "Toxic Coating", 1, 2, 12, FeatType.ToxicCoating1,
+            "Your next attack deals +10 DMG. Inflicts Toxin for 30 seconds. Toxin deals damage equal to 1% max HP per second.");
+        AssertPerkLevel(perks[PerkType.ExploitWeakness], "Exploit Weakness", 1, 3, 15, null,
+            "Deal +12% damage to enemies affected by any debuff.",
+            StatType.DamageToDebuffedTargetPercentAdjustment);
+        AssertPerkLevel(perks[PerkType.Hamstring], "Hamstring", 2, 3, 18, FeatType.Hamstring2,
+            "Your next attack deals +18 DMG. Inflicts Hamstring, reducing movement speed by 20% for 12 seconds.");
+        AssertPerkLevel(perks[PerkType.EnfeeblingStrike], "Enfeebling Strike", 2, 3, 20, FeatType.EnfeeblingStrike2,
+            "Deals weapon DMG + 24. Inflicts Weakened which reduces Attack by 15% for 15 seconds.");
+        AssertPerkLevel(perks[PerkType.SapVitality], "Sap Vitality", 1, 3, 22, FeatType.SapVitality1,
+            "Deals weapon DMG + 20. Inflicts Exhausted which reduces defense and force defense by 10% for 15 seconds.");
+        AssertPerkLevel(perks[PerkType.CripplingPrecision], "Crippling Precision", 1, 3, 25, null,
+            "Your critical hits reduce target's Evasion by 15% for 10s.",
+            StatType.CriticalTargetEvasionPercentAdjustment,
+            StatType.CriticalTargetEvasionDurationSeconds);
+        AssertPerkLevel(perks[PerkType.NerveStrike], "Nerve Strike", 1, 3, 28, FeatType.NerveStrike1,
+            "Deals weapon DMG + 22. Inflicts Disoriented which reduces Accuracy and Evasion by 15% for 12 seconds.");
+        AssertPerkLevel(perks[PerkType.DebilitatingStance], "Debilitating Stance", 1, 4, 30, FeatType.DebilitatingStance1,
+            "While active, your attacks inflict Hamstring, reducing movement speed by 20% for 8 seconds, but reduces your attack by 10%.");
+        AssertPerkLevel(perks[PerkType.Hamstring], "Hamstring", 3, 3, 32, FeatType.Hamstring3,
+            "Your next attack deals +28 DMG. Inflicts Hamstring, reducing movement speed by 20% for 12 seconds.");
+        AssertPerkLevel(perks[PerkType.EnfeeblingStrike], "Enfeebling Strike", 3, 3, 35, FeatType.EnfeeblingStrike3,
+            "Deals weapon DMG + 36. Inflicts Weakened which reduces attack by 20% for 15 seconds.");
+        AssertPerkLevel(perks[PerkType.SapVitality], "Sap Vitality", 2, 4, 38, FeatType.SapVitality2,
+            "Deals weapon DMG + 35. Inflicts Exhausted which reduces defense and force defense by 15% for 15 seconds.");
+        AssertPerkLevel(perks[PerkType.ToxicCoating], "Toxic Coating", 2, 3, 40, FeatType.ToxicCoating2,
+            "Your next attack deals +22 DMG. Inflicts Toxin for 30 seconds. Toxin deals damage equal to 1% max HP per second.");
+        AssertPerkLevel(perks[PerkType.Incapacitate], "Incapacitate", 1, 3, 42, FeatType.Incapacitate1,
+            "Enemies within the area of effect (sphere) receive the Incapacitate debuff which reduces their evasion by 20% for 20 seconds.");
+        AssertPerkLevel(perks[PerkType.AfflictionMastery], "Affliction Mastery", 1, 2, 45, null,
+            "Debuffs you apply last +30% longer.",
+            StatType.OutgoingDebuffDurationPercentAdjustment);
+        AssertPerkLevel(perks[PerkType.CascadeFailure], "Cascade Failure", 1, 3, 48, FeatType.CascadeFailure1,
+            "All enemies within the area of effect (cone) take weapon DMG + 25. Inflicts Vulnerable which reduces defense by 10% for 12 seconds.");
+        AssertPerkLevel(perks[PerkType.SystemicShutdown], "Systemic Shutdown", 1, 4, 50, FeatType.SystemicShutdown1,
+            "All enemies within the area of effect (sphere) take weapon DMG + 15 and an attempt to inflict Weakened, Hamstring, Exhausted, Disoriented, and Toxin is made.");
+    }
+
+    [Test]
+    public void VibroknifeSaboteurAbilities_MatchCombatBible()
+    {
+        var enfeeblingStrike = new EnfeeblingStrikeAbilityDefinition().BuildAbilities();
+        AssertAbility(enfeeblingStrike[FeatType.EnfeeblingStrike1], "Enfeebling Strike I", 1, RecastGroup.EnfeeblingStrike, 45f, 0f, 3, true, true, true, false, AbilityActivationType.Casted);
+        AssertAbility(enfeeblingStrike[FeatType.EnfeeblingStrike2], "Enfeebling Strike II", 2, RecastGroup.EnfeeblingStrike, 45f, 0f, 5, true, true, true, false, AbilityActivationType.Casted);
+        AssertAbility(enfeeblingStrike[FeatType.EnfeeblingStrike3], "Enfeebling Strike III", 3, RecastGroup.EnfeeblingStrike, 45f, 0f, 7, true, true, true, false, AbilityActivationType.Casted);
+
+        var hamstring = new HamstringAbilityDefinition().BuildAbilities();
+        AssertAbility(hamstring[FeatType.Hamstring1], "Hamstring I", 1, RecastGroup.Hamstring, 30f, 0f, 4, true, false, true, false, AbilityActivationType.Weapon);
+        AssertAbility(hamstring[FeatType.Hamstring2], "Hamstring II", 2, RecastGroup.Hamstring, 30f, 0f, 6, true, false, true, false, AbilityActivationType.Weapon);
+        AssertAbility(hamstring[FeatType.Hamstring3], "Hamstring III", 3, RecastGroup.Hamstring, 30f, 0f, 8, true, false, true, false, AbilityActivationType.Weapon);
+
+        var toxicCoating = new ToxicCoatingAbilityDefinition().BuildAbilities();
+        AssertAbility(toxicCoating[FeatType.ToxicCoating1], "Toxic Coating I", 1, RecastGroup.ToxicCoating, 45f, 0f, 4, true, false, true, false, AbilityActivationType.Weapon);
+        AssertAbility(toxicCoating[FeatType.ToxicCoating2], "Toxic Coating II", 2, RecastGroup.ToxicCoating, 45f, 0f, 6, true, false, true, false, AbilityActivationType.Weapon);
+
+        var sapVitality = new SapVitalityAbilityDefinition().BuildAbilities();
+        AssertAbility(sapVitality[FeatType.SapVitality1], "Sap Vitality", 1, RecastGroup.SapVitality, 60f, 0f, 5, true, true, true, false, AbilityActivationType.Casted);
+        AssertAbility(sapVitality[FeatType.SapVitality2], "Sap Vitality II", 2, RecastGroup.SapVitality, 60f, 0f, 8, true, true, true, false, AbilityActivationType.Casted);
+
+        var nerveStrike = new NerveStrikeAbilityDefinition().BuildAbilities()[FeatType.NerveStrike1];
+        AssertAbility(nerveStrike, "Nerve Strike", 1, RecastGroup.NerveStrike, 60f, 0f, 6, true, true, true, false, AbilityActivationType.Casted);
+
+        var debilitatingStance = new DebilitatingStanceAbilityDefinition().BuildAbilities()[FeatType.DebilitatingStance1];
+        AssertAbility(debilitatingStance, "Debilitating Stance", 1, RecastGroup.DebilitatingStance, 180f, 2f, null, false, false, false, false, AbilityActivationType.Casted);
+
+        var incapacitate = new IncapacitateAbilityDefinition().BuildAbilities()[FeatType.Incapacitate1];
+        AssertAbility(incapacitate, "Incapacitate", 1, RecastGroup.Incapacitate, 120f, 2f, 10, true, false, false, true, AbilityActivationType.Casted);
+
+        var cascadeFailure = new CascadeFailureAbilityDefinition().BuildAbilities()[FeatType.CascadeFailure1];
+        AssertAbility(cascadeFailure, "Cascade Failure", 1, RecastGroup.CascadeFailure, 90f, 0f, 10, true, false, false, true, AbilityActivationType.Casted);
+
+        var systemicShutdown = new SystemicShutdownAbilityDefinition().BuildAbilities()[FeatType.SystemicShutdown1];
+        AssertAbility(systemicShutdown, "Systemic Shutdown", 1, RecastGroup.Capstone, 1800f, 3f, 25, true, false, false, true, AbilityActivationType.Casted);
+    }
+
+    [Test]
+    public void VibroknifeSaboteurStatusEffects_MatchCombatBible()
+    {
+        var weakened1 = new WeakenedStatusEffect(10);
+        weakened1.StatGroup.Stats[StatType.AttackPercentAdjustment].Should().Be(-10);
+
+        var weakened2 = new WeakenedStatusEffect();
+        weakened2.StatGroup.Stats[StatType.AttackPercentAdjustment].Should().Be(-15);
+
+        var weakened3 = new WeakenedStatusEffect(20);
+        weakened3.StatGroup.Stats[StatType.AttackPercentAdjustment].Should().Be(-20);
+
+        var exhausted1 = new ExhaustedStatusEffect();
+        exhausted1.StatGroup.Stats[StatType.PhysicalDefensePercentAdjustment].Should().Be(-10);
+        exhausted1.StatGroup.Stats[StatType.ForceDefensePercentAdjustment].Should().Be(-10);
+
+        var exhausted2 = new ExhaustedStatusEffect(15);
+        exhausted2.StatGroup.Stats[StatType.PhysicalDefensePercentAdjustment].Should().Be(-15);
+        exhausted2.StatGroup.Stats[StatType.ForceDefensePercentAdjustment].Should().Be(-15);
+
+        var disoriented = new DisorientedStatusEffect();
+        disoriented.StatGroup.Stats[StatType.AccuracyPercentAdjustment].Should().Be(-15);
+        disoriented.StatGroup.Stats[StatType.EvasionPercentAdjustment].Should().Be(-15);
+
+        var debilitatingStance = new DebilitatingStanceStatusEffect();
+        debilitatingStance.StatGroup.Stats[StatType.AttackPercentAdjustment].Should().Be(-10);
+
+        var incapacitate = new IncapacitateStatusEffect();
+        incapacitate.StatGroup.Stats[StatType.EvasionPercentAdjustment].Should().Be(-20);
+
+        var toxin = new ToxinStatusEffect();
+        toxin.Frequency.Should().Be(6f);
+        toxin.ResistanceType.Should().Be(SWLOR.Game.Server.Service.CombatService.ResistanceType.Poison);
+
+        var vulnerable = new VulnerableStatusEffect();
+        vulnerable.Name.Should().Be("Vulnerable");
+        vulnerable.Categories.Should().HaveFlag(StatusEffectCategory.Debuff);
+        vulnerable.StatGroup.Stats[StatType.DefensePercentAdjustment].Should().Be(-10);
+    }
+
+    [Test]
+    public void VibroknifeSaboteurFeatAndSpellIcons_AreUniqueAndPresent()
+    {
+        var root = FindRepositoryRoot();
+        var featRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "feat.2da");
+        var spellRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "spells.2da");
+
+        var feats = new[]
+        {
+            (FeatType.CascadeFailure1, "ife_cascfail1", "0x3E", true, "cone", "1"),
+            (FeatType.DebilitatingStance1, "ife_debilstnc1", "0x01", false, "****", "****"),
+            (FeatType.EnfeeblingStrike1, "ife_enfbstrk1", "0x02", true, "****", "1"),
+            (FeatType.EnfeeblingStrike2, "ife_enfbstrk2", "0x02", true, "****", "1"),
+            (FeatType.EnfeeblingStrike3, "ife_enfbstrk3", "0x02", true, "****", "1"),
+            (FeatType.Hamstring1, "ife_hamstr1", "0x01", false, "****", "****"),
+            (FeatType.Hamstring2, "ife_hamstr2", "0x01", false, "****", "****"),
+            (FeatType.Hamstring3, "ife_hamstr3", "0x01", false, "****", "****"),
+            (FeatType.Incapacitate1, "ife_incap1", "0x01", true, "sphere", "****"),
+            (FeatType.NerveStrike1, "ife_nervstrk1", "0x02", true, "****", "1"),
+            (FeatType.SapVitality1, "ife_sapvit1", "0x02", true, "****", "1"),
+            (FeatType.SapVitality2, "ife_sapvit2", "0x02", true, "****", "1"),
+            (FeatType.SystemicShutdown1, "ife_sysshut1", "0x3E", true, "sphere", "1"),
+            (FeatType.ToxicCoating1, "ife_toxcoat1", "0x01", false, "****", "****"),
+            (FeatType.ToxicCoating2, "ife_toxcoat2", "0x01", false, "****", "****")
+        };
+        var seenIcons = new HashSet<string>();
+
+        foreach (var (featType, expectedIcon, targetType, isHostile, targetShape, hostileFeat) in feats)
+        {
+            var featRow = featRows[(int)featType];
+            var spellRow = spellRows[int.Parse(featRow["SPELLID"])];
+            var featIcon = featRow["ICON"];
+
+            featIcon.Should().Be(expectedIcon);
+            spellRow["IconResRef"].Should().Be(featIcon);
+            seenIcons.Add(featIcon).Should().BeTrue($"{featType} should have a unique icon");
+            File.Exists((root / "SWLOR_Haks" / "swlor2_tga" / $"{featIcon}.tga").FullName).Should().BeTrue();
+
+            spellRow["TargetType"].Should().Be(targetType);
+            spellRow["HostileSetting"].Should().Be(isHostile ? "1" : "0");
+            spellRow["TargetShape"].Should().Be(targetShape);
+            featRow["HostileFeat"].Should().Be(hostileFeat);
+        }
+    }
+
+    private static void AssertPerkLevel(
+        PerkDetail perk,
+        string name,
+        int level,
+        int price,
+        int skillRank,
+        FeatType? grantedFeat,
+        string description,
+        params StatType[] statTypes)
+    {
+        perk.Name.Should().Be(name);
+        perk.Category.Should().Be(PerkCategoryType.VibroknifeSaboteur);
+
+        var perkLevel = perk.PerkLevels[level];
+        perkLevel.Price.Should().Be(price);
+        perkLevel.Description.Should().Be(description);
+        AssertSkillRequirement(perkLevel, SkillType.Vibroknife, skillRank);
+
+        if (grantedFeat.HasValue)
+            perkLevel.GrantedFeats.Should().ContainSingle().Which.Should().Be(grantedFeat.Value);
+        else
+            perkLevel.GrantedFeats.Should().BeEmpty();
+
+        if (statTypes.Length > 0)
+            perkLevel.StatBonuses.Select(x => x.Stat).Should().Contain(statTypes);
+        else
+            perkLevel.StatBonuses.Should().BeEmpty();
+    }
+
+    private static void AssertAbility(
+        AbilityDetail ability,
+        string name,
+        int level,
+        RecastGroup recastGroup,
+        float recastSeconds,
+        float activationSeconds,
+        int? staminaCost,
+        bool isHostile,
+        bool requiresTarget,
+        bool isSingleTarget,
+        bool isArea,
+        AbilityActivationType activationType)
+    {
+        ability.Name.Should().Be(name);
+        ability.AbilityLevel.Should().Be(level);
+        ability.RecastGroup.Should().Be(recastGroup);
+        ability.RecastDelay(0).Should().Be(recastSeconds);
+        ability.ActivationDelay(0, 0, level).Should().Be(activationSeconds);
+        ability.ActivationType.Should().Be(activationType);
+        ability.IsHostileAbility.Should().Be(isHostile);
+        ability.RequiresTarget.Should().Be(requiresTarget);
+        ability.IsSingleTargetAbility.Should().Be(isSingleTarget);
+        ability.IsAreaAbility.Should().Be(isArea);
+        ability.BreaksStealth.Should().BeTrue();
+
+        if (staminaCost.HasValue)
+        {
+            ability.Requirements
+                .OfType<AbilityRequirementStamina>()
+                .Should()
+                .ContainSingle()
+                .Which
+                .RequiredSTM
+                .Should()
+                .Be(staminaCost.Value);
+        }
+        else
+        {
+            ability.Requirements.OfType<AbilityRequirementStamina>().Should().BeEmpty();
+        }
+    }
+
+    private static void AssertSkillRequirement(PerkLevel level, SkillType skill, int rank)
+    {
+        var requirement = level.Requirements
+            .OfType<PerkRequirementSkill>()
+            .Should()
+            .ContainSingle()
+            .Which;
+
+        requirement.Type.Should().Be(skill);
+        requirement.RequiredRank.Should().Be(rank);
+    }
+
+    private static Dictionary<PerkType, PerkDetail> BuildVibroknifeSaboteurPerksWithout2daLookup()
+    {
+        var definition = new VibroknifePerkDefinition();
+        var methodNames = new[]
+        {
+            "AfflictionMastery",
+            "CalculatedStrikes",
+            "CascadeFailure",
+            "CripplingPrecision",
+            "DebilitatingStance",
+            "EnfeeblingStrike",
+            "ExploitWeakness",
+            "Hamstring",
+            "Incapacitate",
+            "NerveStrike",
+            "SapVitality",
+            "SystemicShutdown",
+            "ToxicCoating"
+        };
+
+        foreach (var methodName in methodNames)
+        {
+            typeof(VibroknifePerkDefinition)
+                .GetMethod(methodName, System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)!
+                .Invoke(definition, null);
+        }
+
+        var builder = typeof(VibroknifePerkDefinition)
+            .GetField("_builder", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)!
+            .GetValue(definition);
+
+        return (Dictionary<PerkType, PerkDetail>)typeof(PerkBuilder)
+            .GetField("_perks", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)!
+            .GetValue(builder)!;
+    }
+
+    private static Dictionary<int, Dictionary<string, string>> Read2da(PathInfo path)
+    {
+        var lines = File.ReadAllLines(path.FullName)
+            .Where(line => !string.IsNullOrWhiteSpace(line))
+            .ToArray();
+        var header = lines[1].Split((char[])null!, StringSplitOptions.RemoveEmptyEntries);
+        var result = new Dictionary<int, Dictionary<string, string>>();
+
+        foreach (var line in lines.Skip(2))
+        {
+            var cells = line.Split((char[])null!, StringSplitOptions.RemoveEmptyEntries);
+            if (!int.TryParse(cells[0], out var row))
+                continue;
+
+            var values = new Dictionary<string, string>();
+            for (var i = 0; i < header.Length && i + 1 < cells.Length; i++)
+            {
+                values[header[i]] = cells[i + 1];
+            }
+
+            result[row] = values;
+        }
+
+        return result;
+    }
+
+    private static PathInfo FindRepositoryRoot()
+    {
+        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
+        while (directory != null)
+        {
+            var candidate = directory.FullName;
+            if (File.Exists(Path.Combine(candidate, "SWLOR.Game.Server.sln")) &&
+                File.Exists(Path.Combine(candidate, "SWLOR_Haks", "swlor2_2da", "feat.2da")))
+            {
+                return new PathInfo(candidate);
+            }
+
+            directory = directory.Parent;
+        }
+
+        throw new DirectoryNotFoundException("Could not locate the SWLOR_NWN repository root.");
+    }
+
+    private sealed record PathInfo(string FullName)
+    {
+        public static PathInfo operator /(PathInfo path, string child)
+        {
+            return new PathInfo(Path.Combine(path.FullName, child));
+        }
+    }
+}

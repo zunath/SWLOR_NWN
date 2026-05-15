@@ -28,6 +28,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.NerveStrike, 60f)
                 .RequiresTarget()
+                .IsSingleTargetAbility()
                 .HasImpactAction(NerveStrike1ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()

@@ -125,7 +125,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.CascadeFailure1)
-                .Description("All enemies within the area of effect (cone) take weapon DMG + 25. Inflicts Vulnerable which reduces Defense by 10% for 12 seconds.")
+                .Description("All enemies within the area of effect (cone) take weapon DMG + 25. Inflicts Vulnerable which reduces defense by 10% for 12 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Vibroknife, 48);
         }
@@ -342,13 +342,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SapVitality1)
-                .Description("Deals weapon DMG + 20. Inflicts Exhausted which reduces physical and Force Defense by 10% for 15 seconds.")
+                .Description("Deals weapon DMG + 20. Inflicts Exhausted which reduces defense and force defense by 10% for 15 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Vibroknife, 22)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SapVitality2)
-                .Description("Deals weapon DMG + 35. Inflicts Exhausted which reduces physical and Force Defense by 15% for 15 seconds.")
+                .Description("Deals weapon DMG + 35. Inflicts Exhausted which reduces defense and force defense by 15% for 15 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Vibroknife, 38);
         }

@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.Engine;
@@ -29,6 +28,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                 .HasActivationDelay(3f)
                 .HasRecastDelay(RecastGroup.Capstone, 1800f)
                 .HasImpactAction(SystemicShutdown1ImpactAction)
+                .IsAreaAbility()
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
@@ -37,7 +37,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
 
         private static void SystemicShutdown1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.Vibroknife, 15, 15, typeof(ToxinStatusEffect), CombatImpactAreaShape.Sphere, 0.25f, 5f, additionalStatusEffects: new[] { typeof(WeakenedStatusEffect), typeof(HamstringStatusEffect), typeof(ExhaustedStatusEffect), typeof(DisorientedStatusEffect) }, damageType: CombatDamageType.Poison);
+            Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.Vibroknife, 15, 15, typeof(ToxinStatusEffect), CombatImpactAreaShape.Sphere, 0.25f, 5f, additionalStatusEffects: new[] { typeof(WeakenedStatusEffect), typeof(HamstringStatusEffect), typeof(ExhaustedStatusEffect), typeof(DisorientedStatusEffect) });
         }
     }
 }

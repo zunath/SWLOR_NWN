@@ -2214,7 +2214,13 @@ namespace SWLOR.Game.Server.Service.StatService
         /// Force alignment affinity. Negative values favor Dark-side abilities; positive values favor Light-side abilities.
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
-        ForceAffinity = 368
+        ForceAffinity = 368,
+
+        /// <summary>
+        /// Percent enmity adjustment applied by a status recipient when generating enmity toward that status effect's source.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenNegative)]
+        EnmityToStatusSourcePercentAdjustment = 369
     }
 
     public class StatTypeAttribute : Attribute

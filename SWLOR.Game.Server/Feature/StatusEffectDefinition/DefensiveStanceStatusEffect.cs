@@ -17,6 +17,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             var defense = level >= 2 ? 20 : 15;
 
             StatGroup.Stats[StatType.AttackPercentAdjustment] = -20;
+            StatGroup.Stats[StatType.ForceAttackPercentAdjustment] = -20;
             StatGroup.Stats[StatType.PhysicalDefensePercentAdjustment] = defense;
             StatGroup.Stats[StatType.ForceDefensePercentAdjustment] = defense;
             StatGroup.Stats[StatType.EnmityPercentAdjustment] = level >= 2 ? 30 : 20;

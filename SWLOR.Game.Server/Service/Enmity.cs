@@ -184,7 +184,7 @@ namespace SWLOR.Game.Server.Service
                 _enemyEnmityTables[enemy][creature] = 0;
 
             // Percent adjustment from feats/effects.
-            var percentAdjustment = CalculateEnmityAdjustment(creature);
+            var percentAdjustment = CalculateEnmityAdjustment(creature, enemy);
             amount += (int)(amount * (percentAdjustment * 0.01f));
 
             // Modify the enemy's enmity toward this creature.
@@ -210,9 +210,31 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="creature">The creature to check</param>
         /// <returns>The enmity adjustment percentage.</returns>
-        private static int CalculateEnmityAdjustment(uint creature)
+        private static int CalculateEnmityAdjustment(uint creature, uint enemy)
         {
-            return Stat.GetStatAdjustment(creature, StatType.EnmityPercentAdjustment);
+            return Stat.GetStatAdjustment(creature, StatType.EnmityPercentAdjustment) +
+                   GetStatusSourceEnmityAdjustment(enemy, creature);
+        }
+
+        /// <summary>
+        /// Retrieves enmity adjustments from statuses on an enemy that point back to this creature.
+        /// </summary>
+        /// <param name="enemy">The enemy whose statuses are checked.</param>
+        /// <param name="source">The creature the enemy is generating enmity toward.</param>
+        /// <returns>The enmity adjustment percentage.</returns>
+        private static int GetStatusSourceEnmityAdjustment(uint enemy, uint source)
+        {
+            if (!GetIsObjectValid(enemy) || !GetIsObjectValid(source))
+                return 0;
+
+            return StatusEffect.GetCreatureStatusEffects(enemy)
+                .GetAllEffects()
+                .Where(effect => effect.Source == source)
+                .Sum(effect =>
+                {
+                    effect.StatGroup.Stats.TryGetValue(StatType.EnmityToStatusSourcePercentAdjustment, out var adjustment);
+                    return adjustment;
+                });
         }
 
         /// <summary>

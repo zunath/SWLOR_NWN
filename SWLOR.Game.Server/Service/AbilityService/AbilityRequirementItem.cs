@@ -29,7 +29,8 @@ namespace SWLOR.Game.Server.Service.AbilityService
             if (GetIsDM(player) || !GetIsPC(player))
                 return string.Empty;
 
-            if (CountItems(player) >= Quantity)
+            var item = GetItemPossessedBy(player, ItemResref);
+            if (GetIsObjectValid(item) && GetItemStackSize(item) >= Quantity)
                 return string.Empty;
 
             var itemName = Cache.GetItemNameByResref(ItemResref);
@@ -46,40 +47,9 @@ namespace SWLOR.Game.Server.Service.AbilityService
             if (ShouldPreserveItem(player))
                 return;
 
-            var remaining = Quantity;
-            var item = GetFirstItemInInventory(player);
-            while (GetIsObjectValid(item) && remaining > 0)
-            {
-                var next = GetNextItemInInventory(player);
-
-                if (GetResRef(item) != ItemResref)
-                {
-                    item = next;
-                    continue;
-                }
-
-                var stackSize = GetItemStackSize(item);
-                var consume = Math.Min(stackSize, remaining);
-                Item.ReduceItemStack(item, consume);
-                remaining -= consume;
-
-                item = next;
-            }
-        }
-
-        private int CountItems(uint player)
-        {
-            var count = 0;
-
-            for (var item = GetFirstItemInInventory(player);
-                 GetIsObjectValid(item);
-                 item = GetNextItemInInventory(player))
-            {
-                if (GetResRef(item) == ItemResref)
-                    count += GetItemStackSize(item);
-            }
-
-            return count;
+            var item = GetItemPossessedBy(player, ItemResref);
+            if (GetIsObjectValid(item))
+                Item.ReduceItemStack(item, Quantity);
         }
 
         private bool ShouldPreserveItem(uint player)

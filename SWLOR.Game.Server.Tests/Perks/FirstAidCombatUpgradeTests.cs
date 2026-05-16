@@ -1,4 +1,6 @@
 using System.Reflection;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid;
@@ -207,10 +209,11 @@ public class FirstAidCombatUpgradeTests
 
         AssertStatusStat(new PainSuppressant1StatusEffect(), StatType.DamageTakenPercentAdjustment, -10);
         AssertStatusStat(new PainSuppressant2StatusEffect(), StatType.DamageTakenPercentAdjustment, -15);
-        AssertStatusStat(new FocusStim1StatusEffect(), StatType.AccuracyPercentAdjustment, 5);
-        AssertStatusStat(new FocusStim2StatusEffect(), StatType.AccuracyPercentAdjustment, 8);
+        AssertStatusStat(new FocusStim1StatusEffect(), StatType.PhysicalAndForceAbilityHitChancePercentAdjustment, 5);
+        AssertStatusStat(new FocusStim2StatusEffect(), StatType.PhysicalAndForceAbilityHitChancePercentAdjustment, 8);
 
         new Antitoxin1StatusEffect().StatGroup.Resists[ResistanceType.Poison].Should().Be(50);
+        new DiseaseStatusEffect().ResistanceType.Should().Be(ResistanceType.Poison);
 
         var treatmentKit3 = new TreatmentKit3StatusEffect();
         treatmentKit3.StatGroup.Resists[ResistanceType.Fire].Should().Be(50);
@@ -296,6 +299,62 @@ public class FirstAidCombatUpgradeTests
             abilityRow["TargetSizeY"].Should().Be(targetSizeY);
             abilityRow["TargetFlags"].Should().Be(targetFlags);
             featRow["TARGETSELF"].Should().Be(targetSelf);
+            featRows.Values.Count(row => row["LABEL"] == featRow["LABEL"])
+                .Should()
+                .Be(1, $"{featType} should not have stale duplicate feat rows");
+        }
+    }
+
+    [Test]
+    public void FirstAidFeatAndAbilityDescriptions_MatchCombatBible()
+    {
+        var root = FindRepositoryRoot();
+        var featRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "feat.2da");
+        var abilityRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "spells.2da");
+        var tlkEntries = ReadTlkEntries(root / "SWLOR_Haks" / "swlor2_tlk" / "swlor2_tlk.tlk.json");
+        const int CustomTlkOffset = 16777216;
+        var descriptions = new[]
+        {
+            (FeatType.MedKit1, "Restores 10% of the target's maximum HP plus WIL scaling to a single target. Consumes medical supplies."),
+            (FeatType.TreatmentKit1, "Removes Bleed and Poison from a single target. Consumes medical supplies."),
+            (FeatType.EmergencySealant1, "Stops Bleed or Burn on one target and grants HP regeneration equal to 2% of the target's maximum HP plus WIL scaling every 3 seconds for 12 seconds. Consumes medical supplies."),
+            (FeatType.KoltoMist1, "Restores HP over time to nearby allies within 3m for 12 seconds. Total healing equals 7% of each target's maximum HP plus WIL scaling. Consumes medical supplies."),
+            (FeatType.Resuscitation1, "Revives an unconscious target with 1 HP. Consumes medical supplies."),
+            (FeatType.TreatmentKit2, "Removes Bleed, Poison, Toxin, Burn, Shock, and Disease from a single target. Consumes medical supplies."),
+            (FeatType.MedKit2, "Restores 20% of the target's maximum HP plus WIL scaling to a single target. Consumes medical supplies."),
+            (FeatType.Infusion1, "Grants a single target regeneration, healing 3% of maximum HP plus WIL scaling every 3 seconds for 15 seconds. Consumes medical supplies."),
+            (FeatType.KoltoMist2, "Restores HP over time to nearby allies within 3m for 12 seconds. Total healing equals 12% of each target's maximum HP plus WIL scaling. Consumes medical supplies."),
+            (FeatType.Resuscitation2, "Revives an unconscious target with 20% HP plus WIL scaling. Consumes medical supplies."),
+            (FeatType.MedKit3, "Restores 28% of the target's maximum HP plus WIL scaling to a single target. Consumes medical supplies."),
+            (FeatType.TreatmentKit3, "Removes Bleed, Poison, Toxin, Burn, Shock, and Disease from a single target and grants 50% Fire, Poison, Electrical, Ice, and Trauma resistance for 8 seconds."),
+            (FeatType.EmergencyTriage1, "Restores 18% of the target's maximum HP plus WIL scaling instantly. Healing is doubled if the target is below 35% HP. Consumes extra medical supplies."),
+            (FeatType.Infusion2, "Grants a single target regeneration, healing 5% of maximum HP plus WIL scaling every 3 seconds for 15 seconds. Consumes medical supplies."),
+            (FeatType.MedKit4, "Restores 36% of the target's maximum HP plus WIL scaling to a single target. Consumes medical supplies."),
+            (FeatType.AdrenalStim1, "Restores 10% of maximum STM and restores 1 STM every 3 seconds for 12 seconds. Consumes a stim pack."),
+            (FeatType.Shielding1, "Reduces physical and force damage taken by 5% for 3 minutes. Consumes a stim pack."),
+            (FeatType.Coagulant1, "Grants 50% Bleed resistance and 10% resistance to incoming physical damage over time effects for 2 minutes. Consumes a stim pack."),
+            (FeatType.AdrenalStim2, "Restores 18% of maximum STM and restores 1 STM every 3 seconds for 12 seconds. Consumes a stim pack."),
+            (FeatType.PainSuppressant1, "Grants temporary HP equal to 10% of the target's maximum HP plus WIL scaling and 10% damage reduction for 18 seconds. Consumes a stim pack."),
+            (FeatType.Antitoxin1, "Grants 50% Poison and Disease resistance for 2 minutes and removes one Poison or Toxin effect. Consumes a stim pack."),
+            (FeatType.Shielding2, "Reduces physical and force damage taken by 8% for 3 minutes. Consumes a stim pack."),
+            (FeatType.FocusStim1, "Increases physical and Force ability Accuracy by 5% for 2 minutes. Consumes a stim pack."),
+            (FeatType.AdrenalStim3, "Restores 25% of maximum STM and restores 1 STM every 3 seconds for 12 seconds. Consumes a stim pack."),
+            (FeatType.PainSuppressant2, "Grants temporary HP equal to 15% of the target's maximum HP plus WIL scaling and 15% damage reduction for 18 seconds. Consumes a stim pack."),
+            (FeatType.Coagulant2, "Grants Bleed immunity and 20% resistance to physical damage over time effects for 2 minutes. Consumes a stim pack."),
+            (FeatType.Shielding3, "Reduces physical and force damage taken by 11% for 3 minutes. Consumes a stim pack."),
+            (FeatType.FocusStim2, "Increases physical and Force ability Accuracy by 8% for 2 minutes. Consumes a stim pack."),
+            (FeatType.EmergencyCocktail1, "Restores 25% of maximum STM, restores 1 STM every 3 seconds, grants temporary HP equal to 15% of maximum HP plus WIL scaling, reduces damage taken by 15%, grants 50% Poison and Disease resistance, and removes one Poison or Toxin effect for 18 seconds. Consumes extra stim packs.")
+        };
+
+        foreach (var (featType, expectedDescription) in descriptions)
+        {
+            var featRow = featRows[(int)featType];
+            var featDescriptionId = int.Parse(featRow["DESCRIPTION"]) - CustomTlkOffset;
+            tlkEntries[featDescriptionId].Should().Be(expectedDescription);
+
+            var abilityRow = abilityRows[int.Parse(featRow["SPELLID"])];
+            var abilityDescriptionId = int.Parse(abilityRow["SpellDesc"]) - CustomTlkOffset;
+            tlkEntries[abilityDescriptionId].Should().Be(expectedDescription);
         }
     }
 
@@ -486,6 +545,12 @@ public class FirstAidCombatUpgradeTests
         return result;
     }
 
+    private static Dictionary<int, string> ReadTlkEntries(PathInfo path)
+    {
+        var tlk = JsonSerializer.Deserialize<TlkFile>(File.ReadAllText(path.FullName))!;
+        return tlk.Entries.ToDictionary(entry => entry.Id, entry => entry.Text);
+    }
+
     private static PathInfo FindRepositoryRoot()
     {
         var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
@@ -511,4 +576,10 @@ public class FirstAidCombatUpgradeTests
             return new PathInfo(Path.Combine(path.FullName, child));
         }
     }
+
+    private sealed record TlkFile([property: JsonPropertyName("entries")] TlkEntry[] Entries);
+
+    private sealed record TlkEntry(
+        [property: JsonPropertyName("id")] int Id,
+        [property: JsonPropertyName("text")] string Text);
 }

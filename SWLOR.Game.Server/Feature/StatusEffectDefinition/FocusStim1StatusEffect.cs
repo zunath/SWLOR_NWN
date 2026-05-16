@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         public FocusStim1StatusEffect()
         {
-            StatGroup.Stats[StatType.AccuracyPercentAdjustment] = 5;
+            StatGroup.Stats[StatType.PhysicalAndForceAbilityHitChancePercentAdjustment] = 5;
         }
     }
 }

@@ -124,7 +124,8 @@ public class HeavyVibrobladeDefenseTests
         crushingBlow.StatGroup.Stats[StatType.DefensePercentAdjustment].Should().Be(-15);
 
         var flash = new FlashStatusEffect(20);
-        flash.StatGroup.Stats[StatType.AbilityHitChancePercentAdjustment].Should().Be(-20);
+        flash.StatGroup.Stats[StatType.PhysicalAndForceAbilityHitChancePercentAdjustment].Should().Be(-20);
+        flash.StatGroup.Stats[StatType.AbilityHitChancePercentAdjustment].Should().Be(0);
 
         var fortress1 = new FortressStrikeStatusEffect(10);
         fortress1.StatGroup.Stats[StatType.PhysicalDefensePercentAdjustment].Should().Be(10);

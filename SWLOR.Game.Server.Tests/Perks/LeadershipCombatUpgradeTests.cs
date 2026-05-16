@@ -1,4 +1,6 @@
 using System.Reflection;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Leadership;
@@ -164,15 +166,21 @@ public class LeadershipCombatUpgradeTests
     [Test]
     public void LeadershipStatuses_MatchCombatBibleStats()
     {
-        AssertAppliedStat(new RallyingStandard1StatusEffect(), StatType.AbilityHitChancePercentAdjustment, 2);
-        AssertAppliedStat(new RallyingStandard2StatusEffect(), StatType.AbilityHitChancePercentAdjustment, 3);
+        AssertAppliedStat(new RallyingStandard1StatusEffect(), StatType.PhysicalAndForceAbilityHitChancePercentAdjustment, 2);
+        AssertAppliedStat(new RallyingStandard1StatusEffect(), StatType.AbilityHitChancePercentAdjustment, 0);
+        AssertAppliedStat(new RallyingStandard2StatusEffect(), StatType.PhysicalAndForceAbilityHitChancePercentAdjustment, 3);
+        AssertAppliedStat(new RallyingStandard2StatusEffect(), StatType.AbilityHitChancePercentAdjustment, 0);
         AssertAppliedStat(new PressTheAttack1StatusEffect(), StatType.DamageDealtPercentAdjustment, 4);
         AssertAppliedStat(new PressTheAttack2StatusEffect(), StatType.DamageDealtPercentAdjustment, 6);
         AssertAppliedStat(new PressTheAttack3StatusEffect(), StatType.DamageDealtPercentAdjustment, 8);
-        AssertAppliedStat(new PressTheAttack3StatusEffect(), StatType.AbilityHitChancePercentAdjustment, 3);
+        AssertAppliedStat(new PressTheAttack3StatusEffect(), StatType.PhysicalAndForceAbilityHitChancePercentAdjustment, 3);
+        AssertAppliedStat(new PressTheAttack3StatusEffect(), StatType.AbilityHitChancePercentAdjustment, 0);
         AssertAppliedStat(new DecisiveCommand1StatusEffect(), StatType.DamageDealtPercentAdjustment, 14);
-        AssertAppliedStat(new DecisiveCommand1StatusEffect(), StatType.AbilityHitChancePercentAdjustment, 8);
+        AssertAppliedStat(new DecisiveCommand1StatusEffect(), StatType.PhysicalAndForceAbilityHitChancePercentAdjustment, 8);
+        AssertAppliedStat(new DecisiveCommand1StatusEffect(), StatType.AbilityHitChancePercentAdjustment, 0);
         AssertAppliedStat(new DecisiveCommand1StatusEffect(), StatType.CriticalRatePercentAdjustment, 8);
+        AssertStatusStat(new FlashStatusEffect(8), StatType.PhysicalAndForceAbilityHitChancePercentAdjustment, -8);
+        AssertStatusStat(new FlashStatusEffect(8), StatType.AbilityHitChancePercentAdjustment, 0);
 
         AssertAppliedStat(new WatchfulPresence3StatusEffect(), StatType.PhysicalDamageTakenPercentAdjustment, -5);
         AssertAppliedStat(new WatchfulPresence3StatusEffect(), StatType.ForceDamageTakenPercentAdjustment, -5);
@@ -225,9 +233,68 @@ public class LeadershipCombatUpgradeTests
         targetIcons.Should().OnlyHaveUniqueItems();
     }
 
+    [Test]
+    public void LeadershipFeatAndAbilityDescriptions_MatchCombatBible()
+    {
+        var root = FindRepositoryRoot();
+        var featRows = Read2daRows(root / "SWLOR_Haks" / "swlor2_2da" / "feat.2da");
+        var abilityRows = Read2daRows(root / "SWLOR_Haks" / "swlor2_2da" / "spells.2da");
+        var tlkEntries = ReadTlkEntries(root / "SWLOR_Haks" / "swlor2_tlk" / "swlor2_tlk.tlk.json");
+        const int CustomTlkOffset = 16777216;
+        var descriptions = new[]
+        {
+            (FeatType.RallyingStandard1, "Nearby party members gain +2% physical and Force ability hit chance. SOC scaling can raise this to +3%."),
+            (FeatType.PressTheAttack1, "Nearby party members deal +4% damage for 10 seconds. SOC scaling can raise this to +6%."),
+            (FeatType.CoordinatedFocus1, "Nearby party members gain +2% critical hit chance. SOC scaling can raise this to +3%."),
+            (FeatType.MarkTarget1, "Marks one enemy for 12 seconds. Party members deal +4% damage to the marked target. SOC scaling can raise this to +6%."),
+            (FeatType.ChargeOrder1, "Nearby party members gain +8% movement speed and +20% Mobility resistance. SOC scaling can raise these to +10% and +25%."),
+            (FeatType.PressTheAttack2, "Nearby party members deal +6% damage for 10 seconds. SOC scaling can raise this to +8%."),
+            (FeatType.RallyingStandard2, "Nearby party members gain +3% physical and Force ability hit chance. SOC scaling can raise this to +4%."),
+            (FeatType.BreakMorale1, "Nearby enemies suffer Flash for 12 seconds, reducing physical and Force ability hit chance by 8%. SOC scaling can raise the penalty to 10%."),
+            (FeatType.CoordinatedFocus2, "Nearby party members gain +3% critical hit chance and +3% critical damage. SOC scaling can raise each bonus to +4%."),
+            (FeatType.MarkTarget2, "Marks one enemy for 12 seconds. Party members deal +6% damage to the marked target, and the target suffers -6% evasion chance. SOC scaling can raise these to +8% damage and -8% evasion."),
+            (FeatType.ChargeOrder2, "Nearby party members gain +12% movement speed and +35% Mobility resistance. SOC scaling can raise these to +15% and +45%."),
+            (FeatType.PressTheAttack3, "Nearby party members gain +8% damage and +3% physical and Force ability hit chance for 12 seconds. SOC scaling can raise these to +10% damage and +4% hit chance."),
+            (FeatType.BreakMorale2, "Nearby enemies suffer Flash, reducing physical and Force ability hit chance by 12%, and Weakened, reducing Attack by 8%, for 12 seconds. SOC scaling can raise these penalties to 14% and 10%."),
+            (FeatType.CoordinatedFocus3, "Nearby party members gain +4% critical hit chance and +5% critical damage. SOC scaling can raise each bonus to +6%."),
+            (FeatType.DecisiveCommand1, "For 20 seconds, nearby party members gain +14% damage, +8% physical and Force ability hit chance, and +8% critical hit chance. SOC scaling can raise these to +18%, +10%, and +10%."),
+            (FeatType.WatchfulPresence1, "Nearby party members take 2% less physical and Force damage. SOC scaling can raise this to 3%."),
+            (FeatType.RousingShout1, "Bolsters one living ally, granting temporary HP equal to 4% of maximum HP for 10 seconds. SOC scaling can raise this to 6%. If the target is at or below 35% HP, they also take 6% less damage, scaling up to 8%."),
+            (FeatType.SteadyFormation1, "Nearby party members gain +2% evasion chance and +20% Mind and Mobility resistance. SOC scaling can raise these to +3% and +25%."),
+            (FeatType.BolsterResolve1, "Nearby party members gain temporary HP equal to 4% of maximum HP for 12 seconds. SOC scaling can raise this to 6%."),
+            (FeatType.FieldRecovery1, "Nearby party members restore 1 STM every 6 seconds. SOC scaling can raise this to 2 STM per tick."),
+            (FeatType.RousingShout2, "Bolsters one living ally, granting temporary HP equal to 6% of maximum HP for 10 seconds. SOC scaling can raise this to 8%. If the target is at or below 35% HP, they also take 10% less damage, scaling up to 12%."),
+            (FeatType.WatchfulPresence2, "Nearby party members take 3% less physical and Force damage. SOC scaling can raise this to 4%."),
+            (FeatType.CleanseOrder1, "Removes one standard elemental or trauma ailment from nearby party members and grants temporary HP equal to 3% of maximum HP. SOC scaling can raise temporary HP to 5%."),
+            (FeatType.SteadyFormation2, "Nearby party members gain +3% evasion chance and +35% Mind and Mobility resistance. SOC scaling can raise these to +4% and +45%."),
+            (FeatType.BolsterResolve2, "Nearby party members gain temporary HP equal to 6% of maximum HP and take 8% less damage for 12 seconds. SOC scaling can raise these to 8% temporary HP and 10% damage reduction."),
+            (FeatType.FieldRecovery2, "Nearby party members restore 2 STM every 6 seconds. SOC scaling can raise this to 4 STM per tick."),
+            (FeatType.RousingShout3, "Bolsters one living ally, granting temporary HP equal to 8% of maximum HP for 12 seconds. SOC scaling can raise this to 10%. If the target is at or below 35% HP, they also take 14% less damage, scaling up to 16%."),
+            (FeatType.CleanseOrder2, "Removes one major negative status effect from any resistance group and grants 10% damage reduction for 8 seconds. SOC scaling can raise this to 12%."),
+            (FeatType.WatchfulPresence3, "Nearby party members take 5% less physical and Force damage. SOC scaling can raise this to 6%."),
+            (FeatType.HoldTheLine1, "For 20 seconds, nearby party members gain temporary HP equal to 10% of maximum HP, take 25% less damage, and become immune to Mind and Mobility effects. SOC scaling can raise these to 12% temporary HP and 30% damage reduction.")
+        };
+
+        foreach (var (featType, expectedDescription) in descriptions)
+        {
+            var featRow = featRows[(int)featType];
+            var featDescriptionId = int.Parse(featRow["DESCRIPTION"]) - CustomTlkOffset;
+            tlkEntries[featDescriptionId].Should().Be(expectedDescription);
+
+            var abilityRow = abilityRows[int.Parse(featRow["SPELLID"])];
+            var abilityDescriptionId = int.Parse(abilityRow["SpellDesc"]) - CustomTlkOffset;
+            tlkEntries[abilityDescriptionId].Should().Be(expectedDescription);
+        }
+    }
+
     private static void AssertAppliedStat(IStatusEffect statusEffect, StatType statType, int expected)
     {
         statusEffect.ApplyEffect(0, 0, -1);
+        statusEffect.StatGroup.Stats[statType].Should().Be(expected);
+    }
+
+    private static void AssertStatusStat(IStatusEffect statusEffect, StatType statType, int expected)
+    {
         statusEffect.StatGroup.Stats[statType].Should().Be(expected);
     }
 
@@ -374,6 +441,38 @@ public class LeadershipCombatUpgradeTests
         return result;
     }
 
+    private static Dictionary<int, Dictionary<string, string>> Read2daRows(PathInfo path)
+    {
+        var lines = File.ReadAllLines(path.FullName)
+            .Where(line => !string.IsNullOrWhiteSpace(line))
+            .ToArray();
+        var header = lines[1].Split((char[])null!, StringSplitOptions.RemoveEmptyEntries);
+        var result = new Dictionary<int, Dictionary<string, string>>();
+
+        foreach (var line in lines.Skip(2))
+        {
+            var cells = line.Split((char[])null!, StringSplitOptions.RemoveEmptyEntries);
+            if (!int.TryParse(cells[0], out var row))
+                continue;
+
+            var values = new Dictionary<string, string>();
+            for (var index = 0; index < header.Length && index + 1 < cells.Length; index++)
+            {
+                values[header[index]] = cells[index + 1];
+            }
+
+            result[row] = values;
+        }
+
+        return result;
+    }
+
+    private static Dictionary<int, string> ReadTlkEntries(PathInfo path)
+    {
+        var tlk = JsonSerializer.Deserialize<TlkFile>(File.ReadAllText(path.FullName))!;
+        return tlk.Entries.ToDictionary(entry => entry.Id, entry => entry.Text);
+    }
+
     private static PathInfo FindRepositoryRoot()
     {
         var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
@@ -393,6 +492,12 @@ public class LeadershipCombatUpgradeTests
     }
 
     private sealed record TwoDaIconRow(string Label, string Icon);
+
+    private sealed record TlkFile([property: JsonPropertyName("entries")] TlkEntry[] Entries);
+
+    private sealed record TlkEntry(
+        [property: JsonPropertyName("id")] int Id,
+        [property: JsonPropertyName("text")] string Text);
 
     private sealed record PathInfo(string FullName)
     {

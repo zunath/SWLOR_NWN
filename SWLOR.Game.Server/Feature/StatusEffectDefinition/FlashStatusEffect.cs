@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public FlashStatusEffect(int hitChancePenalty)
         {
             _hitChancePenalty = Math.Abs(hitChancePenalty);
-            StatGroup.Stats[StatType.AbilityHitChancePercentAdjustment] = -_hitChancePenalty;
+            StatGroup.Stats[StatType.PhysicalAndForceAbilityHitChancePercentAdjustment] = -_hitChancePenalty;
         }
 
         public override IStatusEffect Clone()

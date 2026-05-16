@@ -31,6 +31,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.FinishingToss, 90f)
                 .SkillType(SkillType.Throwing)
+                .HasMaxRange(ThrowingAbilityRange.Standard)
                 .IsSingleTargetAbility()
                 .RequiresTarget()
                 .HasImpactAction(FinishingToss1ImpactAction)

@@ -30,6 +30,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.ClusterStorm, 120f)
                 .SkillType(SkillType.Throwing)
+                .HasMaxRange(ThrowingAbilityRange.Standard)
                 .IsAreaAbility()
                 .HasImpactAction(ClusterStorm1ImpactAction)
                 .IsCastedAbility()

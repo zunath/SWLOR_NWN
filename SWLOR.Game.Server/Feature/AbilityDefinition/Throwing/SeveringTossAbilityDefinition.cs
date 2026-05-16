@@ -28,6 +28,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.SeveringToss, 60f)
                 .SkillType(SkillType.Throwing)
+                .HasMaxRange(ThrowingAbilityRange.Standard)
                 .IsSingleTargetAbility()
                 .RequiresTarget()
                 .HasImpactAction(SeveringToss1ImpactAction)

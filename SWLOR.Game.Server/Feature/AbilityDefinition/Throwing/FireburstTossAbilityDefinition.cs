@@ -29,6 +29,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.FireburstToss, 60f)
                 .SkillType(SkillType.Throwing)
+                .HasMaxRange(ThrowingAbilityRange.Standard)
                 .IsAreaAbility()
                 .HasImpactAction(FireburstToss1ImpactAction)
                 .IsCastedAbility()

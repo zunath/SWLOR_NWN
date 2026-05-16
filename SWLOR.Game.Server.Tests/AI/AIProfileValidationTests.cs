@@ -69,10 +69,10 @@ public class AIProfileValidationTests
         var feats = new[]
         {
             FeatType.Provoke1,
-            FeatType.Bite,
-            FeatType.Spikes,
-            FeatType.Talon,
-            FeatType.Venom
+            FeatType.RendingBite,
+            FeatType.CripplingTalons,
+            FeatType.ToxicSpit,
+            FeatType.PrecisionShot
         };
 
         foreach (var feat in feats)
@@ -91,12 +91,12 @@ public class AIProfileValidationTests
         var feats = new[]
         {
             FeatType.Provoke2,
-            FeatType.Earthquake,
-            FeatType.GreaterEarthquake,
-            FeatType.FireBreath,
-            FeatType.FlameBlast,
-            FeatType.Roar,
-            FeatType.Screech
+            FeatType.RupturingQuake,
+            FeatType.SeismicSlam,
+            FeatType.ScorchingBreath,
+            FeatType.ToxicCloud,
+            FeatType.DisorientingScreech,
+            FeatType.VenomSpray
         };
 
         foreach (var feat in feats)
@@ -113,7 +113,7 @@ public class AIProfileValidationTests
     public void NPCSelfBuffAbilities_DoNotRequireTargets()
     {
         Ability.CacheData();
-        var ability = Ability.GetAbilityDetail(FeatType.IronShell);
+        var ability = Ability.GetAbilityDetail(FeatType.IronCarapace);
 
         ability.IsHostileAbility.Should().BeFalse();
         ability.RequiresTarget.Should().BeFalse();

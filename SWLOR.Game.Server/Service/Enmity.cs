@@ -318,6 +318,15 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Clears every creature from an enemy's enmity table.
+        /// </summary>
+        /// <param name="enemy">The enemy whose enmity table will be cleared.</param>
+        public static void ClearEnmityTable(uint enemy)
+        {
+            ClearEnmityTables(enemy);
+        }
+
+        /// <summary>
         /// Clears an enemy's enmity tables and removes associated creatures from cache.
         /// </summary>
         /// <param name="enemy">The enemy whose tables we're clearing</param>
@@ -331,8 +340,11 @@ namespace SWLOR.Game.Server.Service
             var creatures = _enemyEnmityTables[enemy];
             foreach (var (creature, _) in creatures)
             {
-                _creatureToEnemies[creature].Remove(enemy);
-                if (_creatureToEnemies[creature].Count <= 0)
+                if (!_creatureToEnemies.TryGetValue(creature, out var enemies))
+                    continue;
+
+                enemies.Remove(enemy);
+                if (enemies.Count <= 0)
                 {
                     _creatureToEnemies.Remove(creature);
                 }

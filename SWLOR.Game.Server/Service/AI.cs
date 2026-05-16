@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service.AIService;
+using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
@@ -10,6 +11,8 @@ namespace SWLOR.Game.Server.Service
 {
     public static class AI
     {
+        private const float AggroRadius = 8.5f;
+        private const float ReturnHomeRadius = 15f;
         private static readonly Dictionary<uint, HashSet<uint>> _creatureAllies = new();
 
         [NWNEventHandler(ScriptName.OnModuleCacheAfter)]
@@ -225,7 +228,8 @@ namespace SWLOR.Game.Server.Service
                 var attackTarget = Enmity.GetHighestEnmityTarget(entering);
                 // Non-enemy entered aggro range. If they're the same faction and fighting someone, help them out!
                 if (GetFactionEqual(entering, self) &&
-                    GetIsEnemy(attackTarget, self))
+                    GetIsEnemy(attackTarget, self) &&
+                    IsInAggroRange(self, attackTarget))
                 {
                     Enmity.ModifyEnmity(attackTarget, self, 1);
                 }
@@ -351,18 +355,33 @@ namespace SWLOR.Game.Server.Service
             }
 
             var aiFlags = GetAIFlag(self);
+            var homeLocation = GetLocalLocation(self, "HOME_LOCATION");
+            var isOutsideHomeRadius = aiFlags.HasFlag(AIFlag.ReturnHome) &&
+                                      IsOutsideHomeRadius(self, homeLocation);
+            var highestEnmityTarget = Enmity.GetHighestEnmityTarget(self);
+
+            if (isOutsideHomeRadius &&
+                (GetIsInCombat(self) || GetIsObjectValid(highestEnmityTarget)))
+            {
+                Enmity.ClearEnmityTable(self);
+                NPCAI.ClearState(self);
+                AssignCommand(self, () =>
+                {
+                    ClearAllActions();
+                    ActionForceMoveToLocation(homeLocation);
+                });
+                return;
+            }
+
             if (IsInConversation(self) ||
                 GetIsInCombat(self) ||
                 GetCurrentAction(self) == ActionType.RandomWalk ||
                 GetCurrentAction(self) == ActionType.MoveToPoint ||
-                GetIsObjectValid(Enmity.GetHighestEnmityTarget(self)))
+                GetIsObjectValid(highestEnmityTarget))
                 return;
 
             // Return Home flag
-            var homeLocation = GetLocalLocation(self, "HOME_LOCATION");
-            if (aiFlags.HasFlag(AIFlag.ReturnHome) &&
-                (GetAreaFromLocation(homeLocation) != GetArea(self) ||
-                 GetDistanceBetweenLocations(GetLocation(self), homeLocation) > 15f))
+            if (isOutsideHomeRadius)
             {
                 AssignCommand(self, () => ActionForceMoveToLocation(homeLocation));
             }
@@ -469,6 +488,21 @@ namespace SWLOR.Game.Server.Service
                 allies.Add(creature);
 
             return allies;
+        }
+
+        private static bool IsOutsideHomeRadius(uint creature, Location homeLocation)
+        {
+            return GetIsObjectValid(GetAreaFromLocation(homeLocation)) &&
+                   (GetAreaFromLocation(homeLocation) != GetArea(creature) ||
+                    GetDistanceBetweenLocations(GetLocation(creature), homeLocation) > ReturnHomeRadius);
+        }
+
+        private static bool IsInAggroRange(uint creature, uint target)
+        {
+            return GetIsObjectValid(target) &&
+                   GetArea(creature) == GetArea(target) &&
+                   GetDistanceBetween(creature, target) <= AggroRadius &&
+                   LineOfSightObject(target, creature);
         }
 
         private static bool IsAIEnabled(uint creature)

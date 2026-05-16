@@ -2256,7 +2256,55 @@ namespace SWLOR.Game.Server.Service.StatService
         /// Percent damage adjustment applied to area Twin Blade abilities.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        TwinBladeAreaAbilityDamagePercentAdjustment = 375
+        TwinBladeAreaAbilityDamagePercentAdjustment = 375,
+
+        /// <summary>
+        /// SkillType value whose auto-attacks restore SkillAutoAttackFPRestore FP.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        SkillAutoAttackFPRestoreSkillType = 376,
+
+        /// <summary>
+        /// Flat FP restored by matching skill auto-attacks.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        SkillAutoAttackFPRestore = 377,
+
+        /// <summary>
+        /// SkillType value whose Stamina ability costs restore FP by percent.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        AbilityStaminaCostFPRestorePercentSkillType = 378,
+
+        /// <summary>
+        /// Percent of Stamina spent on matching abilities restored as FP.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        AbilityStaminaCostFPRestorePercent = 379,
+
+        /// <summary>
+        /// SkillType value whose FP ability costs restore Stamina by percent.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        AbilityFPCostStaminaRestorePercentSkillType = 380,
+
+        /// <summary>
+        /// Percent of FP spent on matching abilities restored as Stamina.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        AbilityFPCostStaminaRestorePercent = 381,
+
+        /// <summary>
+        /// SkillType value whose abilities receive a flat Stamina cost adjustment.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        SkillAbilityStaminaCostFlatAdjustmentSkillType = 382,
+
+        /// <summary>
+        /// Flat Stamina cost adjustment for matching skill abilities.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenNegative)]
+        SkillAbilityStaminaCostFlatAdjustment = 383
     }
 
     public class StatTypeAttribute : Attribute

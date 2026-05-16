@@ -17,6 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                     .Create(FeatType.InfiniteConduit1, PerkType.InfiniteConduit)
                     .Name("Infinite Conduit")
                     .Level(1)
+                    .SkillType(SkillType.Saberstaff)
                     .HasRecastDelay(RecastGroup.Capstone, 1800f),
                 typeof(InfiniteConduitStatusEffect),
                 20f,

@@ -17,8 +17,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                     .Create(FeatType.GuardedChannel1, PerkType.GuardedChannel)
                     .Name("Guarded Channel I")
                     .Level(1)
+                    .SkillType(SkillType.Saberstaff)
                     .HasRecastDelay(RecastGroup.GuardedChannel, 60f),
-                typeof(GuardedChannelStatusEffect),
+                () => new GuardedChannelStatusEffect(20, 20),
                 10f,
                 6);
             ConfigureSelfStatus(
@@ -26,8 +27,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                     .Create(FeatType.GuardedChannel2, PerkType.GuardedChannel)
                     .Name("Guarded Channel II")
                     .Level(2)
+                    .SkillType(SkillType.Saberstaff)
                     .HasRecastDelay(RecastGroup.GuardedChannel, 60f),
-                typeof(GuardedChannelStatusEffect),
+                () => new GuardedChannelStatusEffect(30, 30),
                 12f,
                 8);
             ConfigureSelfStatus(
@@ -35,8 +37,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                     .Create(FeatType.GuardedChannel3, PerkType.GuardedChannel)
                     .Name("Guarded Channel III")
                     .Level(3)
+                    .SkillType(SkillType.Saberstaff)
                     .HasRecastDelay(RecastGroup.GuardedChannel, 120f),
-                typeof(GuardedChannelStatusEffect),
+                () => new GuardedChannelStatusEffect(40, 35),
                 15f,
                 12);
 

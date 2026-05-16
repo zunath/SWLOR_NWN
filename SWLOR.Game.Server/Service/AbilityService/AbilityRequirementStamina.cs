@@ -36,6 +36,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
                 return;
 
             Stat.ReduceStamina(player, requiredSTM);
+            Combat.ApplyAbilityStaminaCostFPRestore(player, ability, requiredSTM);
         }
 
         private int GetRequiredStaminaForCheck(uint player, AbilityDetail ability)

@@ -11,6 +11,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public ConduitStanceStatusEffect()
         {
             StatGroup.Stats[StatType.AttackPercentAdjustment] = -15;
+            StatGroup.Stats[StatType.ForceAttackPercentAdjustment] = 15;
             StatGroup.Stats[StatType.ForceDefensePercentAdjustment] = 15;
         }
 

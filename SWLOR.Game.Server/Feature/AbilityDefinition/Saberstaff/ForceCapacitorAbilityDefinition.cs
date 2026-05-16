@@ -17,6 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                     .Create(FeatType.ForceCapacitor1, PerkType.ForceCapacitor)
                     .Name("Force Capacitor")
                     .Level(1)
+                    .SkillType(SkillType.Saberstaff)
                     .HasRecastDelay(RecastGroup.ForceCapacitor, 180f),
                 typeof(ForceCapacitorStatusEffect),
                 20f,

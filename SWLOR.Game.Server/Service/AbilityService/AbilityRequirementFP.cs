@@ -30,7 +30,12 @@ namespace SWLOR.Game.Server.Service.AbilityService
         {
             if (GetIsDM(player)) return;
 
-            Stat.ReduceFP(player, GetAdjustedRequiredFP(player, ability, true));
+            var requiredFP = GetAdjustedRequiredFP(player, ability, true);
+            if (requiredFP <= 0)
+                return;
+
+            Stat.ReduceFP(player, requiredFP);
+            Combat.ApplyAbilityFPCostStaminaRestore(player, ability, requiredFP);
         }
 
         private int GetAdjustedRequiredFP(uint player, AbilityDetail ability, bool consumeNextAdjustment)

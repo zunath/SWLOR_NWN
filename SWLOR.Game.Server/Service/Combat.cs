@@ -515,6 +515,15 @@ namespace SWLOR.Game.Server.Service
                 Stat.RestoreFP(attacker, fpRestore);
             }
 
+            var skillFpRestore = Stat.GetStatAdjustment(attacker, StatType.SkillAutoAttackFPRestore);
+            var skillFpRestoreSkillType = GetSkillTypeFromStat(Stat.GetStatAdjustment(
+                attacker,
+                StatType.SkillAutoAttackFPRestoreSkillType));
+            if (skillFpRestore > 0 && SkillTypeMatches(skillType, skillFpRestoreSkillType))
+            {
+                Stat.RestoreFP(attacker, skillFpRestore);
+            }
+
             var accuracyPenaltyChance = Stat.GetStatAdjustment(attacker, StatType.AutoAttackTargetAccuracyPercentAdjustmentChance);
             var accuracyPenalty = Stat.GetStatAdjustment(attacker, StatType.AutoAttackTargetAccuracyPercentAdjustment);
             var accuracyPenaltyDuration = Stat.GetStatAdjustment(attacker, StatType.AutoAttackTargetAccuracyPercentAdjustmentDurationSeconds);
@@ -2399,6 +2408,14 @@ namespace SWLOR.Game.Server.Service
 
             var adjustment = GetAbilityStaminaCostFlatAdjustment(creature, ability.EffectiveLevelPerkType);
             var skillType = GetAbilitySkillType(creature, ability);
+            var flatSkillType = GetSkillTypeFromStat(Stat.GetStatAdjustment(
+                creature,
+                StatType.SkillAbilityStaminaCostFlatAdjustmentSkillType));
+            if (SkillTypeMatches(skillType, flatSkillType))
+            {
+                adjustment += Stat.GetStatAdjustment(creature, StatType.SkillAbilityStaminaCostFlatAdjustment);
+            }
+
             var highResourceSkillType = GetSkillTypeFromStat(Stat.GetStatAdjustment(
                 creature,
                 StatType.HighResourceAbilityStaminaCostSkillType));
@@ -2411,6 +2428,46 @@ namespace SWLOR.Game.Server.Service
             }
 
             return adjustment;
+        }
+
+        public static void ApplyAbilityStaminaCostFPRestore(uint creature, AbilityDetail ability, int staminaCost)
+        {
+            if (staminaCost <= 0 || ability == null)
+                return;
+
+            var skillType = GetAbilitySkillType(creature, ability);
+            var restoreSkillType = GetSkillTypeFromStat(Stat.GetStatAdjustment(
+                creature,
+                StatType.AbilityStaminaCostFPRestorePercentSkillType));
+            var restorePercent = Stat.GetStatAdjustment(creature, StatType.AbilityStaminaCostFPRestorePercent);
+            if (restorePercent <= 0 || !SkillTypeMatches(skillType, restoreSkillType))
+                return;
+
+            Stat.RestoreFP(creature, CalculateResourceRestoreFromCost(staminaCost, restorePercent));
+        }
+
+        public static void ApplyAbilityFPCostStaminaRestore(uint creature, AbilityDetail ability, int fpCost)
+        {
+            if (fpCost <= 0 || ability == null)
+                return;
+
+            var skillType = GetAbilitySkillType(creature, ability);
+            var restoreSkillType = GetSkillTypeFromStat(Stat.GetStatAdjustment(
+                creature,
+                StatType.AbilityFPCostStaminaRestorePercentSkillType));
+            var restorePercent = Stat.GetStatAdjustment(creature, StatType.AbilityFPCostStaminaRestorePercent);
+            if (restorePercent <= 0 || !SkillTypeMatches(skillType, restoreSkillType))
+                return;
+
+            Stat.RestoreStamina(creature, CalculateResourceRestoreFromCost(fpCost, restorePercent));
+        }
+
+        private static int CalculateResourceRestoreFromCost(int cost, int percent)
+        {
+            if (cost <= 0 || percent <= 0)
+                return 0;
+
+            return Math.Max(1, (int)Math.Ceiling(cost * (percent / 100f)));
         }
 
         public static int GetNextAbilityFPCostAdjustment(uint creature, SkillType skillType)

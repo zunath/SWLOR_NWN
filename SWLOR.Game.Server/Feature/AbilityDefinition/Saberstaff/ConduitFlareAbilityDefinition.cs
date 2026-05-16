@@ -25,6 +25,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                 .Create(FeatType.ConduitFlare1, PerkType.ConduitFlare)
                 .Name("Conduit Flare")
                 .Level(1)
+                .SkillType(SkillType.Saberstaff)
+                .IsAreaAbility()
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.ConduitFlare, 90f)
                 .HasImpactAction(ConduitFlare1ImpactAction)

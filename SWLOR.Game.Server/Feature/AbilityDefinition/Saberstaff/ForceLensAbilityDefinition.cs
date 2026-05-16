@@ -17,6 +17,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                     .Create(FeatType.ForceLens1, PerkType.ForceLens)
                     .Name("Force Lens")
                     .Level(1)
+                    .SkillType(SkillType.Saberstaff)
+                    .IsAreaAbility()
                     .HasRecastDelay(RecastGroup.ForceLens, 120f),
                 typeof(ForceLensStatusEffect),
                 45f,

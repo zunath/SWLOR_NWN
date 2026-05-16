@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         public Pacify2StatusEffect()
         {
-            StatGroup.Stats[StatType.AttackPercentAdjustment] = -8;
+            StatGroup.Stats[StatType.DamageDealtPercentAdjustment] = -8;
         }
     }
 }

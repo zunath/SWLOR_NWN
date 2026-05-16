@@ -134,7 +134,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.ForceLight, PerkType.MindTrick)
                 .Name("Mind Trick")
-                .ForceAffinity(ForceAffinityType.Light)
 
                 .AddPerkLevel()
                 .Description("Confuse one non-mechanical target for 5 seconds.")

@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         public Clarity1StatusEffect()
         {
-            StatGroup.Stats[StatType.AccuracyPercentAdjustment] = 4;
+            StatGroup.Stats[StatType.AbilityHitChancePercentAdjustment] = 4;
         }
     }
 }

@@ -41,7 +41,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         private static void ForceSanctuary1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
             var location = AbilityTargeting.ResolveImpactLocation(activator, target, targetLocation);
-            var affinityMultiplier = Ability.GetActiveForceAffinityMagnitudeMultiplier(activator);
 
             AbilityAreaEffects.ScheduleFriendlyZoneStatus(
                 activator,
@@ -58,8 +57,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 18f,
                 2f,
                 null,
-                VisualEffect.Vfx_Imp_Healing_M,
-                affinityMultiplier);
+                VisualEffect.Vfx_Imp_Healing_M);
         }
     }
 }

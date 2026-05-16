@@ -103,7 +103,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         private static void ApplyRenewal(uint activator, uint target, string name, float totalPercent)
         {
             var friendly = AbilityTargeting.ResolveFriendlyTarget(activator, target);
-            totalPercent = AbilityEffectScaling.ApplyActiveForceAffinityMagnitude(activator, totalPercent);
             StatusEffect.ApplyStatusEffect(
                 activator,
                 friendly,

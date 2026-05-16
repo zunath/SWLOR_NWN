@@ -33,6 +33,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .IsSingleTargetAbility()
                 .HasMaxRange(15f)
                 .RequiresTarget()
+                .HasCustomValidation((activator, target, _, _) =>
+                    AbilityTargeting.ValidateFriendlyTarget(activator, target))
                 .HasImpactAction(Clarity1ImpactAction)
                 .IsCastedAbility()
                 .BreaksStealth()
@@ -51,6 +53,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .IsSingleTargetAbility()
                 .HasMaxRange(15f)
                 .RequiresTarget()
+                .HasCustomValidation((activator, target, _, _) =>
+                    AbilityTargeting.ValidateFriendlyTarget(activator, target))
                 .HasImpactAction(Clarity2ImpactAction)
                 .IsCastedAbility()
                 .BreaksStealth()
@@ -59,30 +63,37 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void Clarity1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
-            {
-                var stamina = AbilityEffectScaling.ApplyActiveForceAffinityMagnitude(
-                    activator,
-                    PercentOf(Stat.GetMaxStamina(friendly), 10));
-                Stat.RestoreStamina(friendly, stamina);
-                StatusEffect.ApplyStatusEffect(activator, friendly, typeof(Clarity1StatusEffect), 15f);
-                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Restoration), friendly);
-            }
+            ApplyClarity(activator, target, 10, typeof(Clarity1StatusEffect));
         }
 
         private static void Clarity2ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
+            ApplyClarity(activator, target, 18, typeof(Clarity2StatusEffect));
+        }
+
+        private static void ApplyClarity(uint activator, uint target, int resourcePercent, Type statusEffect)
+        {
+            foreach (var friendly in AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
-                var stamina = AbilityEffectScaling.ApplyActiveForceAffinityMagnitude(
-                    activator,
-                    PercentOf(Stat.GetMaxStamina(friendly), 18));
-                Stat.RestoreStamina(friendly, stamina);
-                StatusEffect.ApplyStatusEffect(activator, friendly, typeof(Clarity2StatusEffect), 15f);
+                if (friendly == activator)
+                {
+                    var fp = AbilityEffectScaling.ApplyActiveForceAffinityMagnitude(
+                        activator,
+                        PercentOf(Stat.GetMaxFP(friendly), resourcePercent));
+                    Stat.RestoreFP(friendly, fp);
+                }
+                else
+                {
+                    var stamina = AbilityEffectScaling.ApplyActiveForceAffinityMagnitude(
+                        activator,
+                        PercentOf(Stat.GetMaxStamina(friendly), resourcePercent));
+                    Stat.RestoreStamina(friendly, stamina);
+                }
+
+                StatusEffect.ApplyStatusEffect(activator, friendly, statusEffect, 15f);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Restoration), friendly);
             }
         }
-
 
         private static int PercentOf(int value, int percent)
         {

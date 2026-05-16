@@ -10,6 +10,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
 {
     public class SmokeRoundAbilityDefinition : IAbilityListDefinition
     {
+        private const SkillType Skill = SkillType.Pistol;
+        private const int EnmityReductionPercent = 10;
+
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
@@ -27,6 +30,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 .Level(1)
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.SmokeRound, 120f)
+                .SkillType(Skill)
+                .IsAreaAbility()
                 .HasImpactAction(SmokeRound1ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
@@ -36,7 +41,18 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
 
         private static void SmokeRound1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.Pistol, 0, 12, typeof(BlindStatusEffect), CombatImpactAreaShape.Sphere, 0.25f, 5f);
+            Ability.ApplyTelegraphedCombatImpact(
+                activator,
+                target,
+                targetLocation,
+                Skill,
+                0,
+                12,
+                typeof(BlindStatusEffect),
+                CombatImpactAreaShape.Sphere,
+                0.25f,
+                5f,
+                afterSuccessfulHit: affectedEnemy => Enmity.ReduceEnmity(activator, affectedEnemy, EnmityReductionPercent));
         }
     }
 }

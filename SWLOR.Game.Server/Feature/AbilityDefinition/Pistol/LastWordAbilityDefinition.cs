@@ -10,6 +10,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
 {
     public class LastWordAbilityDefinition : IAbilityListDefinition
     {
+        private const SkillType Skill = SkillType.Pistol;
+
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
@@ -27,6 +29,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 .Level(1)
                 .HasActivationDelay(1f)
                 .HasRecastDelay(RecastGroup.Capstone, 1800f)
+                .SkillType(Skill)
+                .IsAreaAbility()
                 .HasImpactAction(LastWord1ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
@@ -36,7 +40,19 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
 
         private static void LastWord1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.Pistol, 35, 3, typeof(DazedStatusEffect), CombatImpactAreaShape.Cone, 0.25f, 5f, 5f);
+            Ability.ApplyTelegraphedCombatImpact(
+                activator,
+                target,
+                targetLocation,
+                Skill,
+                35,
+                3,
+                typeof(DazedStatusEffect),
+                CombatImpactAreaShape.Cone,
+                0.25f,
+                5f,
+                5f,
+                beforeImpact: affectedEnemy => AssignCommand(affectedEnemy, () => ClearAllActions()));
         }
     }
 }

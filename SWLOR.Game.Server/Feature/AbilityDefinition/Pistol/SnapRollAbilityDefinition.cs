@@ -1,7 +1,10 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -27,6 +30,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 .Create(FeatType.SnapRoll1, PerkType.SnapRoll)
                 .Name("Snap Roll I")
                 .Level(1)
+                .SkillType(SkillType.Pistol)
                 .HasRecastDelay(RecastGroup.SnapRoll, RecastDelay);
 
             ConfigureSelfStatus(
@@ -34,7 +38,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 typeof(SnapRollStatusEffect),
                 duration: 6f,
                 stamina: 6,
-                activator => Enmity.ModifyEnmityOnAll(activator, -150));
+                activator => Enmity.ReduceEnmityOnAll(activator, 10));
         }
 
         private static void SnapRoll2(AbilityBuilder builder)
@@ -43,6 +47,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 .Create(FeatType.SnapRoll2, PerkType.SnapRoll)
                 .Name("Snap Roll II")
                 .Level(2)
+                .SkillType(SkillType.Pistol)
                 .HasRecastDelay(RecastGroup.SnapRoll, RecastDelay);
             Func<IStatusEffect> statusEffectFactory = () => new SnapRollStatusEffect(35);
 
@@ -51,7 +56,23 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 statusEffectFactory,
                 duration: 8f,
                 stamina: 8,
-                activator => Enmity.ModifyEnmityOnAll(activator, -250));
+                GrantSnapRoll2DamageBonus);
+        }
+
+        private static void GrantSnapRoll2DamageBonus(uint activator)
+        {
+            TemporaryStatModifier.Replace(
+                activator,
+                StatType.NextSkillAutoAttackDamageBonusSkillType,
+                (int)SkillType.Pistol,
+                8f,
+                StatType.NextSkillAutoAttackDamageBonusSkillType);
+            TemporaryStatModifier.Replace(
+                activator,
+                StatType.NextSkillAutoAttackDamageBonus,
+                10,
+                8f,
+                StatType.NextSkillAutoAttackDamageBonusSkillType);
         }
     }
 }

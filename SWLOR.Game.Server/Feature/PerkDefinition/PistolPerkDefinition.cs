@@ -357,7 +357,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.RicochetShot1)
-                .Description("A shot bounces to up to 3 enemies for weapon DMG + 12 each. Each target is Blinded for 6 seconds.")
+                .Description("A shot bounces to up to 3 enemies for weapon DMG + 12 each. Each target is inflicted with Blind for 6 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Pistol, 25);
         }
@@ -400,7 +400,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SmokeRound1)
-                .Description("Enemies in the target area are Blinded for 12 seconds. You reduce enmity against affected enemies.")
+                .Description("Enemies in the target area are inflicted with Blind for 12 seconds. You reduce enmity against affected enemies.")
                 .Price(3)
                 .RequirementSkill(SkillType.Pistol, 45);
         }

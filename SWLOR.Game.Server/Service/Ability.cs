@@ -982,7 +982,9 @@ namespace SWLOR.Game.Server.Service
             int maxTargets = 0,
             IEnumerable<Func<IStatusEffect>> additionalStatusEffectFactories = null,
             Animation impactAnimation = Animation.Invalid,
-            int enmityBonus = 0)
+            int enmityBonus = 0,
+            Action<uint> beforeImpact = null,
+            Action<uint> afterSuccessfulHit = null)
         {
             RecordAbilityImpactShape(activator, skillType, true);
 
@@ -1010,7 +1012,9 @@ namespace SWLOR.Game.Server.Service
                     baseDamageAdjustment,
                     maxTargets,
                     additionalStatusEffectFactories,
-                    enmityBonus);
+                    enmityBonus,
+                    beforeImpact,
+                    afterSuccessfulHit);
                 PlayCombatImpactAnimation(activator, impactAnimation);
                 return;
             }
@@ -1044,7 +1048,9 @@ namespace SWLOR.Game.Server.Service
                 afterImpactAction,
                 maxTargets,
                 additionalStatusEffectFactories,
-                enmityBonus);
+                enmityBonus,
+                beforeImpact,
+                afterSuccessfulHit);
 
             switch (shape)
             {
@@ -1108,7 +1114,9 @@ namespace SWLOR.Game.Server.Service
             Func<uint, int> baseDamageAdjustment,
             int maxTargets,
             IEnumerable<Func<IStatusEffect>> additionalStatusEffectFactories,
-            int enmityBonus)
+            int enmityBonus,
+            Action<uint> beforeImpact,
+            Action<uint> afterSuccessfulHit)
         {
             RecordAbilityImpactShape(activator, skillType, true);
 
@@ -1162,7 +1170,9 @@ namespace SWLOR.Game.Server.Service
                 baseDamageAdjustment,
                 maxTargets,
                 additionalStatusEffectFactories,
-                enmityBonus);
+                enmityBonus,
+                beforeImpact,
+                afterSuccessfulHit);
         }
 
         private static ApplyTelegraphEffect BuildTelegraphedCombatImpactAction(
@@ -1186,7 +1196,9 @@ namespace SWLOR.Game.Server.Service
             Action<AbilityImpactSummary> afterImpactAction,
             int maxTargets,
             IEnumerable<Func<IStatusEffect>> additionalStatusEffectFactories,
-            int enmityBonus)
+            int enmityBonus,
+            Action<uint> beforeImpact,
+            Action<uint> afterSuccessfulHit)
         {
             return (creator, creatures) =>
             {
@@ -1238,7 +1250,9 @@ namespace SWLOR.Game.Server.Service
                     baseDamageAdjustment,
                     maxTargets,
                     additionalStatusEffectFactories,
-                    enmityBonus);
+                    enmityBonus,
+                    beforeImpact,
+                    afterSuccessfulHit);
 
                 if (ability != null)
                 {
@@ -1266,6 +1280,7 @@ namespace SWLOR.Game.Server.Service
             int maxTargets = 0,
             IEnumerable<Func<IStatusEffect>> additionalStatusEffectFactories = null,
             int enmityBonus = 0,
+            Action<uint> beforeImpact = null,
             Action<uint> afterSuccessfulHit = null)
         {
             var totalDamage = 0;
@@ -1279,6 +1294,8 @@ namespace SWLOR.Game.Server.Service
 
                 if (maxTargets > 0 && affectedCount >= maxTargets)
                     break;
+
+                beforeImpact?.Invoke(creature);
 
                 totalDamage += ApplyHostileCombatImpact(
                     activator,

@@ -275,7 +275,13 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        private static void ReduceEnmity(uint creature, uint enemy, int percent)
+        /// <summary>
+        /// Reduces the creature's current enmity on a single enemy table by a percentage.
+        /// </summary>
+        /// <param name="creature">The creature whose current enmity will be reduced.</param>
+        /// <param name="enemy">The enemy whose enmity table will be adjusted.</param>
+        /// <param name="percent">The percent of current enmity to remove.</param>
+        public static void ReduceEnmity(uint creature, uint enemy, int percent)
         {
             if (!_enemyEnmityTables.TryGetValue(enemy, out var table) ||
                 !table.TryGetValue(creature, out var currentEnmity))

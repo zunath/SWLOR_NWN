@@ -30,6 +30,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 .Level(1)
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.RicochetShot, 60f)
+                .SkillType(SkillType.Pistol)
+                .IsAreaAbility()
                 .RequiresTarget()
                 .HasImpactAction(RicochetShot1ImpactAction)
                 .IsCastedAbility()

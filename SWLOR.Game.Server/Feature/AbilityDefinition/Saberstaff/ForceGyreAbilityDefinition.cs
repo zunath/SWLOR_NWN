@@ -25,6 +25,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                 .Create(FeatType.ForceGyre1, PerkType.ForceGyre)
                 .Name("Force Gyre")
                 .Level(1)
+                .SkillType(SkillType.Saberstaff)
+                .IsAreaAbility()
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.ForceGyre, 90f)
                 .HasImpactAction(ForceGyre1ImpactAction)

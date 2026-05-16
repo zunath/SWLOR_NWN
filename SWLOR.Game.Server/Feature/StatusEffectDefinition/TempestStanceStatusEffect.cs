@@ -12,7 +12,8 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         {
             StatGroup.Stats[StatType.PhysicalDefensePercentAdjustment] = -20;
             StatGroup.Stats[StatType.ForceDefensePercentAdjustment] = -20;
-            StatGroup.Stats[StatType.AttackDelayReductionPercent] = 20;
+            StatGroup.Stats[StatType.AttackDelayReductionPercent] = 15;
+            StatGroup.Stats[StatType.ForceAttackPercentAdjustment] = 10;
         }
 
     }

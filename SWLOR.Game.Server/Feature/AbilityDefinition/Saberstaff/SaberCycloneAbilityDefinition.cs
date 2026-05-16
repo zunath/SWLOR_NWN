@@ -31,6 +31,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                 .Create(FeatType.SaberCyclone1, PerkType.SaberCyclone)
                 .Name("Saber Cyclone")
                 .Level(1)
+                .SkillType(SkillType.Saberstaff)
+                .IsAreaAbility()
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.Capstone, 1800f)
                 .HasImpactAction(SaberCyclone1ImpactAction)
@@ -50,16 +52,19 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                 true,
                 pulseLocation =>
                 {
-                    var targetCount = CombatAreaPulses.CountHostileCreatures(activator, pulseLocation, Radius);
+                    var ability = Ability.GetAbilityDetail(FeatType.SaberCyclone1);
+                    Ability.BeginAbilityImpact(activator, ability);
                     CombatAreaPulses.ApplyCombatPulse(
                         activator,
                         pulseLocation,
                         SkillType.Saberstaff,
                         25,
                         Radius);
+                    var summary = Ability.EndAbilityImpact(activator);
+                    Combat.ApplyAbilityImpactEffects(activator, summary);
 
-                    if (targetCount > 0)
-                        Stat.RestoreFP(activator, targetCount * FPRestorePerTarget);
+                    if (summary.ImpactedTargetCount > 0)
+                        Stat.RestoreFP(activator, summary.ImpactedTargetCount * FPRestorePerTarget);
                 });
         }
     }

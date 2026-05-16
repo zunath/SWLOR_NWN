@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
@@ -10,6 +11,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
 {
     public class TempestReleaseAbilityDefinition : IAbilityListDefinition
     {
+        private const int BaseDamage = 20;
+        private const int ForcePointStepSize = 10;
+        private const int DamageBonusPerForcePointStep = 2;
+        private const int MaximumForcePointDamageBonus = 20;
+
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
@@ -25,6 +31,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                 .Create(FeatType.TempestRelease1, PerkType.TempestRelease)
                 .Name("Tempest Release")
                 .Level(1)
+                .SkillType(SkillType.Saberstaff)
+                .IsAreaAbility()
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.TempestRelease, 120f)
                 .HasImpactAction(TempestRelease1ImpactAction)
@@ -36,7 +44,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
 
         private static void TempestRelease1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Saberstaff, 20, 0, null, true);
+            var damage = BaseDamage + CalculateForcePointDamageBonus(Stat.GetCurrentFP(activator));
+            Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Saberstaff, damage, 0, null, true);
+        }
+
+        private static int CalculateForcePointDamageBonus(int currentFP)
+        {
+            if (currentFP <= 0)
+                return 0;
+
+            var bonus = currentFP / ForcePointStepSize * DamageBonusPerForcePointStep;
+            return Math.Min(MaximumForcePointDamageBonus, bonus);
         }
     }
 }

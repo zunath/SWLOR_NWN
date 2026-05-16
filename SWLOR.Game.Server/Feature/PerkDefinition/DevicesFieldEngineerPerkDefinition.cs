@@ -61,24 +61,27 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(2)
                 .RequirementSkill(SkillType.Devices, 5)
                 .RequirementCharacterType(CharacterType.Standard)
-                .IncreasesStat(StatType.AccuracyPercentAdjustment, 5)
-                .IncreasesStat(StatType.CriticalRatePercentAdjustment, 5)
+                .IncreasesStat(StatType.BeaconPulseAccuracyPercentAdjustment, 5)
+                .IncreasesStat(StatType.BeaconPulseCriticalRatePercentAdjustment, 5)
 
                 .AddPerkLevel()
                 .Description("Beacon pulses gain +10% Accuracy, +10% critical chance, and +5% damage.")
                 .Price(2)
                 .RequirementSkill(SkillType.Devices, 22)
                 .RequirementCharacterType(CharacterType.Standard)
-                .IncreasesStat(StatType.AccuracyPercentAdjustment, 10)
-                .IncreasesStat(StatType.CriticalRatePercentAdjustment, 10)
+                .IncreasesStat(StatType.BeaconPulseAccuracyPercentAdjustment, 10)
+                .IncreasesStat(StatType.BeaconPulseCriticalRatePercentAdjustment, 10)
+                .IncreasesStat(StatType.BeaconPulseDamagePercentAdjustment, 5)
 
                 .AddPerkLevel()
                 .Description("Beacon pulses gain +15% Accuracy, +15% critical chance, +10% damage, and +2m pulse range.")
                 .Price(4)
                 .RequirementSkill(SkillType.Devices, 45)
                 .RequirementCharacterType(CharacterType.Standard)
-                .IncreasesStat(StatType.AccuracyPercentAdjustment, 15)
-                .IncreasesStat(StatType.CriticalRatePercentAdjustment, 15);
+                .IncreasesStat(StatType.BeaconPulseAccuracyPercentAdjustment, 15)
+                .IncreasesStat(StatType.BeaconPulseCriticalRatePercentAdjustment, 15)
+                .IncreasesStat(StatType.BeaconPulseDamagePercentAdjustment, 10)
+                .IncreasesStat(StatType.BeaconPulseRangeBonusMeters, 2);
         }
 
         private void IncendiaryField()

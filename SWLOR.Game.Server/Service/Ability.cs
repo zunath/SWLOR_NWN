@@ -886,7 +886,9 @@ namespace SWLOR.Game.Server.Service
             IEnumerable<Func<IStatusEffect>> additionalStatusEffectFactories = null,
             Animation impactAnimation = Animation.Invalid,
             int enmityBonus = 0,
-            Action<uint> afterSuccessfulHit = null)
+            Action<uint> afterSuccessfulHit = null,
+            int hitChancePercentAdjustment = 0,
+            int criticalRatePercentAdjustment = 0)
         {
             var totalDamage = 0;
             RecordAbilityImpactShape(activator, skillType, isArea);
@@ -927,7 +929,9 @@ namespace SWLOR.Game.Server.Service
                     baseDamageAdjustment,
                     additionalStatusEffectFactories: additionalStatusEffectFactories,
                     enmityBonus: enmityBonus,
-                    afterSuccessfulHit: afterSuccessfulHit);
+                    afterSuccessfulHit: afterSuccessfulHit,
+                    hitChancePercentAdjustment: hitChancePercentAdjustment,
+                    criticalRatePercentAdjustment: criticalRatePercentAdjustment);
             }
             else if (GetIsObjectValid(target))
             {
@@ -947,7 +951,9 @@ namespace SWLOR.Game.Server.Service
                     baseDamageAdjustment,
                     additionalStatusEffectFactories: additionalStatusEffectFactories,
                     enmityBonus: enmityBonus,
-                    afterSuccessfulHit: afterSuccessfulHit);
+                    afterSuccessfulHit: afterSuccessfulHit,
+                    hitChancePercentAdjustment: hitChancePercentAdjustment,
+                    criticalRatePercentAdjustment: criticalRatePercentAdjustment);
             }
 
             PlayCombatImpactAnimation(activator, impactAnimation);
@@ -1281,7 +1287,9 @@ namespace SWLOR.Game.Server.Service
             IEnumerable<Func<IStatusEffect>> additionalStatusEffectFactories = null,
             int enmityBonus = 0,
             Action<uint> beforeImpact = null,
-            Action<uint> afterSuccessfulHit = null)
+            Action<uint> afterSuccessfulHit = null,
+            int hitChancePercentAdjustment = 0,
+            int criticalRatePercentAdjustment = 0)
         {
             var totalDamage = 0;
             var affectedCount = 0;
@@ -1313,7 +1321,9 @@ namespace SWLOR.Game.Server.Service
                     baseDamageAdjustment,
                     additionalStatusEffectFactories,
                     enmityBonus,
-                    afterSuccessfulHit);
+                    afterSuccessfulHit,
+                    hitChancePercentAdjustment,
+                    criticalRatePercentAdjustment);
                 affectedCount++;
             }
 
@@ -1436,11 +1446,13 @@ namespace SWLOR.Game.Server.Service
             Func<uint, int> baseDamageAdjustment = null,
             IEnumerable<Func<IStatusEffect>> additionalStatusEffectFactories = null,
             int enmityBonus = 0,
-            Action<uint> afterSuccessfulHit = null)
+            Action<uint> afterSuccessfulHit = null,
+            int hitChancePercentAdjustment = 0,
+            int criticalRatePercentAdjustment = 0)
         {
             var trackedImpact = GetTrackedAbilityImpact(activator);
             var perkType = trackedImpact?.Ability?.EffectiveLevelPerkType ?? PerkType.Invalid;
-            if (!Combat.TryResolveAbilityHit(activator, target, skillType, perkType, out var hitRate))
+            if (!Combat.TryResolveAbilityHit(activator, target, skillType, perkType, out var hitRate, hitChancePercentAdjustment))
             {
                 SendCombatImpactResultMessage(activator, target, trackedImpact?.Ability, 4, hitRate);
                 CombatPoint.AddCombatPoint(activator, target, skillType, 1);
@@ -1450,7 +1462,7 @@ namespace SWLOR.Game.Server.Service
             SendCombatImpactResultMessage(activator, target, trackedImpact?.Ability, 1, hitRate);
 
             var adjustedBaseDamage = Math.Max(0, baseDamage + (baseDamageAdjustment?.Invoke(target) ?? 0));
-            var damage = CalculateCombatImpactDamage(activator, target, skillType, adjustedBaseDamage, damageType);
+            var damage = CalculateCombatImpactDamage(activator, target, skillType, adjustedBaseDamage, damageType, criticalRatePercentAdjustment);
             damage = ApplyDamagePercentAdjustment(target, damage, damagePercentAdjustment);
             if (damage > 0)
             {
@@ -1596,7 +1608,8 @@ namespace SWLOR.Game.Server.Service
             uint target,
             SkillType skillType,
             int baseDamage,
-            CombatDamageType damageType)
+            CombatDamageType damageType,
+            int criticalRatePercentAdjustment = 0)
         {
             if (baseDamage <= 0)
                 return 0;
@@ -1629,7 +1642,7 @@ namespace SWLOR.Game.Server.Service
                 activator,
                 skillType,
                 IsTrackedAbilityArea(activator),
-                trackedImpact?.NextAbilityCriticalRatePercentAdjustment ?? 0,
+                (trackedImpact?.NextAbilityCriticalRatePercentAdjustment ?? 0) + criticalRatePercentAdjustment,
                 target);
             var damageRoll = Combat.CalculateDamageWithCriticalMitigation(
                 target,

@@ -2340,7 +2340,31 @@ namespace SWLOR.Game.Server.Service.StatService
         /// Percent adjustment applied to Stamina ability costs. Positive values increase cost; negative values reduce it.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenNegative)]
-        AbilityStaminaCostPercentAdjustment = 389
+        AbilityStaminaCostPercentAdjustment = 389,
+
+        /// <summary>
+        /// Percent accuracy adjustment applied to Field Engineer beacon pulses.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        BeaconPulseAccuracyPercentAdjustment = 390,
+
+        /// <summary>
+        /// Percent critical chance adjustment applied to Field Engineer beacon pulses.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        BeaconPulseCriticalRatePercentAdjustment = 391,
+
+        /// <summary>
+        /// Percent damage adjustment applied to Field Engineer beacon pulses.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        BeaconPulseDamagePercentAdjustment = 392,
+
+        /// <summary>
+        /// Radius bonus in meters applied to Field Engineer beacon pulse target selection.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        BeaconPulseRangeBonusMeters = 393
     }
 
     public class StatTypeAttribute : Attribute

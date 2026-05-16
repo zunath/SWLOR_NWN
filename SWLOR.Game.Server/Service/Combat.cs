@@ -2053,7 +2053,8 @@ namespace SWLOR.Game.Server.Service
             uint defender,
             SkillType skillType,
             PerkType perkType,
-            out int hitRate)
+            out int hitRate,
+            int hitChancePercentAdjustment = 0)
         {
             hitRate = 100;
             if (!GetIsObjectValid(attacker) ||
@@ -2065,7 +2066,7 @@ namespace SWLOR.Game.Server.Service
             var evasion = Stat.GetEvasion(defender, SkillType.Invalid, skillType);
             evasion = ApplySideAttackEvasionIgnore(attacker, defender, skillType, evasion);
 
-            var modifier = GetAbilityHitOrCriticalAdjustment(
+            var modifier = hitChancePercentAdjustment + GetAbilityHitOrCriticalAdjustment(
                 attacker,
                 skillType,
                 perkType,

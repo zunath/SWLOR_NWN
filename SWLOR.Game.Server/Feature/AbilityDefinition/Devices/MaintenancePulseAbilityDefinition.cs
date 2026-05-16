@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
@@ -35,7 +36,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .HasActivationDelay(1f)
                 .HasRecastDelay(RecastGroup.MaintenancePulse, 18f)
                 .SkillType(SkillType.Devices)
-                .IsAreaAbility()
+                .IsSingleTargetAbility()
+                .RequiresTarget()
+                .HasCustomValidation((activator, target, _, _) => ValidateMaintenanceTarget(activator, target))
                 .HasImpactAction(MaintenancePulse1ImpactAction)
                 .IsCastedAbility()
                 .BreaksStealth()
@@ -51,7 +54,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .HasActivationDelay(1f)
                 .HasRecastDelay(RecastGroup.MaintenancePulse, 18f)
                 .SkillType(SkillType.Devices)
-                .IsAreaAbility()
+                .IsSingleTargetAbility()
+                .RequiresTarget()
+                .HasCustomValidation((activator, target, _, _) => ValidateMaintenanceTarget(activator, target))
                 .HasImpactAction(MaintenancePulse2ImpactAction)
                 .IsCastedAbility()
                 .BreaksStealth()
@@ -60,25 +65,51 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 
         private static void MaintenancePulse1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
-            {
-                HealPercent(activator, friendly, SkillType.Devices, 12);
-                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_M), friendly);
-            }
+            ApplyMaintenancePulse(activator, target, 12, 3f, false);
         }
 
         private static void MaintenancePulse2ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
-            {
-                foreach (var statusEffect in new[] { typeof(ShockStatusEffect) })
-                {
-                    StatusEffect.RemoveStatusEffect(friendly, statusEffect, false);
-                }
+            ApplyMaintenancePulse(activator, target, 20, 5f, true);
+        }
 
-                HealPercent(activator, friendly, SkillType.Devices, 20);
-                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Remove_Condition), friendly);
+        private static string ValidateMaintenanceTarget(uint activator, uint target)
+        {
+            var validation = AbilityTargeting.ValidateFriendlyTarget(activator, target);
+            if (!string.IsNullOrWhiteSpace(validation))
+                return validation;
+
+            return IsMechanicalTarget(target)
+                ? string.Empty
+                : "Maintenance Pulse can only target friendly droids or mechanical allies.";
+        }
+
+        private static void ApplyMaintenancePulse(
+            uint activator,
+            uint target,
+            int healPercent,
+            float extensionSeconds,
+            bool removeShock)
+        {
+            if (!string.IsNullOrWhiteSpace(ValidateMaintenanceTarget(activator, target)))
+                return;
+
+            if (removeShock)
+            {
+                StatusEffect.RemoveStatusEffect(target, typeof(ShockStatusEffect), false);
+                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Remove_Condition), target);
             }
+
+            HealPercent(activator, target, SkillType.Devices, healPercent);
+            DeviceAbilityEffects.ExtendActiveFieldEngineerPulses(activator, extensionSeconds);
+        }
+
+        private static bool IsMechanicalTarget(uint target)
+        {
+            var race = GetRacialType(target);
+            return Droid.IsDroid(target) ||
+                   race == RacialType.Droid ||
+                   race == RacialType.Construct;
         }
 
 

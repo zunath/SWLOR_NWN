@@ -153,7 +153,7 @@ namespace SWLOR.Game.Server.Native
                     attacker.m_idSelf,
                     defender.m_idSelf,
                     attackerAccuracy);
-                var defenderEvasion = Stat.GetEvasionNative(defender);
+                var defenderEvasion = Stat.GetEvasionNative(defender, weaponSkillType);
                 defenderEvasion = Combat.ApplySideAttackEvasionIgnore(
                     attacker.m_idSelf,
                     defender.m_idSelf,

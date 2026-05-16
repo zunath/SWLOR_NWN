@@ -27,6 +27,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 .Name("Neutralizing Shot")
                 .Level(1)
                 .HasActivationDelay(0f)
+                .SkillType(SkillType.Rifle)
+                .IsSingleTargetAbility()
                 .HasRecastDelay(RecastGroup.NeutralizingShot, 90f)
                 .RequiresTarget()
                 .HasImpactAction(NeutralizingShot1ImpactAction)
@@ -38,8 +40,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
 
         private static void NeutralizingShot1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Rifle, 30, 12, typeof(DisorientedStatusEffect), false);
-            StatusEffect.RemoveFirstBeneficialCombatStatusEffect(target, false);
+            Ability.ApplyCombatImpact(
+                activator,
+                target,
+                targetLocation,
+                SkillType.Rifle,
+                30,
+                12,
+                typeof(DisorientedStatusEffect),
+                false,
+                afterSuccessfulHit: hitTarget => StatusEffect.RemoveFirstBeneficialCombatStatusEffect(hitTarget, false));
         }
     }
 }

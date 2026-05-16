@@ -2322,7 +2322,13 @@ namespace SWLOR.Game.Server.Service.StatService
         /// Maximum percent damage adjustment from RepeatedTargetDamagePercentPerHit stacks.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        RepeatedTargetDamagePercentMax = 386
+        RepeatedTargetDamagePercentMax = 386,
+
+        /// <summary>
+        /// Percent Evasion adjustment applied only against incoming ranged attacks.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        RangedEvasionPercentAdjustment = 387
     }
 
     public class StatTypeAttribute : Attribute

@@ -26,6 +26,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 .Name("Stasis Volley")
                 .Level(1)
                 .HasActivationDelay(2f)
+                .SkillType(SkillType.Rifle)
+                .IsAreaAbility()
                 .HasRecastDelay(RecastGroup.Capstone, 1800f)
                 .HasImpactAction(StasisVolley1ImpactAction)
                 .IsCastedAbility()

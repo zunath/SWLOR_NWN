@@ -11,7 +11,8 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public SpotterStanceStatusEffect()
         {
             StatGroup.Stats[StatType.AccuracyPercentAdjustment] = 15;
-            StatGroup.Stats[StatType.EvasionPercentAdjustment] = 15;
+            StatGroup.Stats[StatType.RangedEvasionPercentAdjustment] = 15;
+            StatGroup.Stats[StatType.AttackDelayReductionPercent] = -10;
         }
 
     }

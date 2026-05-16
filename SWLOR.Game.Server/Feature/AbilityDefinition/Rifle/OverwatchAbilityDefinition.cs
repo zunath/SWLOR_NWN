@@ -26,6 +26,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 .Name("Overwatch")
                 .Level(1)
                 .HasActivationDelay(0f)
+                .SkillType(SkillType.Rifle)
+                .IsSingleTargetAbility()
                 .HasRecastDelay(RecastGroup.Overwatch, 120f)
                 .RequiresTarget()
                 .HasImpactAction(Overwatch1ImpactAction)
@@ -37,6 +39,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
 
         private static void Overwatch1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
+            AssignCommand(target, () => ClearAllActions());
             Ability.ApplyCombatImpact(
                 activator,
                 target,

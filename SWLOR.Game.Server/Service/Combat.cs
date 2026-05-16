@@ -1696,7 +1696,7 @@ namespace SWLOR.Game.Server.Service
                 adjustment += Stat.GetStatAdjustment(attacker, StatType.DamageToControlTargetPercentAdjustment);
 
             if (skillType == SkillType.Rifle &&
-                StatusEffect.HasStatusEffect(defender, typeof(DisorientedStatusEffect), typeof(DazedStatusEffect)))
+                StatusEffect.HasStatusEffect(defender, typeof(DisorientedStatusEffect), typeof(DazedStatusEffect), typeof(TranquilizedStatusEffect)))
             {
                 adjustment += Stat.GetStatAdjustment(attacker, StatType.DamageToDisorientedDazedTargetPercentAdjustment);
             }
@@ -1832,7 +1832,7 @@ namespace SWLOR.Game.Server.Service
             return GetIsObjectValid(target) && target != attacker;
         }
 
-        private static bool IsRangedDamageSkill(SkillType skillType)
+        public static bool IsRangedDamageSkill(SkillType skillType)
         {
             return skillType == SkillType.Pistol ||
                    skillType == SkillType.Rifle ||
@@ -2041,7 +2041,7 @@ namespace SWLOR.Game.Server.Service
                 return true;
 
             var accuracy = GetAbilityAccuracy(attacker, defender, skillType);
-            var evasion = Stat.GetEvasion(defender, SkillType.Invalid);
+            var evasion = Stat.GetEvasion(defender, SkillType.Invalid, skillType);
             evasion = ApplySideAttackEvasionIgnore(attacker, defender, skillType, evasion);
 
             var modifier = GetAbilityHitOrCriticalAdjustment(

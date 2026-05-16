@@ -17,6 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                     .Create(FeatType.SpotterStance1, PerkType.SpotterStance)
                     .Name("Spotter Stance")
                     .Level(1)
+                    .SkillType(SkillType.Rifle)
                     .HasRecastDelay(RecastGroup.SpotterStance, 180f),
                 typeof(SpotterStanceStatusEffect));
 

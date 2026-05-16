@@ -1226,8 +1226,9 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="creature">The creature to retrieve from.</param>
         /// <param name="skillOverride">The skill override to use instead of Armor for the purposes of calculating evasion.</param>
+        /// <param name="incomingSkillType">The skill type of the incoming attack for conditional evasion modifiers.</param>
         /// <returns>The evasion rating of a creature.</returns>
-        public static int GetEvasion(uint creature, SkillType skillOverride)
+        public static int GetEvasion(uint creature, SkillType skillOverride, SkillType incomingSkillType = SkillType.Invalid)
         {
             var stat = GetAbilityScore(creature, AbilityType.Agility);
             int skillLevel;
@@ -1261,7 +1262,7 @@ namespace SWLOR.Game.Server.Service
             Log.Write(LogGroup.Attack, $"Effect Evasion: {evasionBonus}");
 
             var evasion = GetEvasion(skillLevel, stat, ac * 5 + evasionBonus);
-            return ApplyPostEvasionStatusModifiers(creature, evasion);
+            return ApplyPostEvasionStatusModifiers(creature, evasion, incomingSkillType);
         }
 
         /// <summary>
@@ -1269,7 +1270,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="creature">The creature to retrieve from.</param>
         /// <returns>The evasion rating of a creature.</returns>
-        public static int GetEvasionNative(CNWSCreature creature)
+        public static int GetEvasionNative(CNWSCreature creature, SkillType incomingSkillType = SkillType.Invalid)
         {
             var stat = GetStatValueNative(creature, AbilityType.Agility);
             var skillLevel = 0;
@@ -1312,7 +1313,7 @@ namespace SWLOR.Game.Server.Service
             evasionBonus += CalculateEffectEvasion(creature.m_idSelf);
 
             var evasion = GetEvasion(skillLevel, stat, ac * 5 + evasionBonus);
-            return ApplyPostEvasionStatusModifiers(creature.m_idSelf, evasion);
+            return ApplyPostEvasionStatusModifiers(creature.m_idSelf, evasion, incomingSkillType);
         }
 
         public static int GetAttackDeflectionChanceNative(CNWSCreature creature)
@@ -1508,9 +1509,14 @@ namespace SWLOR.Game.Server.Service
             return Math.Max(1, ApplyPercentAdjustment(accuracy, adjustment));
         }
 
-        private static int ApplyPostEvasionStatusModifiers(uint creature, int evasion)
+        private static int ApplyPostEvasionStatusModifiers(uint creature, int evasion, SkillType incomingSkillType)
         {
             var adjustment = GetStatAdjustment(creature, StatType.EvasionPercentAdjustment);
+            if (Combat.IsRangedDamageSkill(incomingSkillType))
+            {
+                adjustment += GetStatAdjustment(creature, StatType.RangedEvasionPercentAdjustment);
+            }
+
             return Math.Max(1, ApplyPercentAdjustment(evasion, adjustment));
         }
 

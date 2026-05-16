@@ -33,6 +33,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 .Name("Pacification Field")
                 .Level(1)
                 .HasActivationDelay(0f)
+                .SkillType(SkillType.Rifle)
                 .HasRecastDelay(RecastGroup.PacificationField, 180f)
                 .IsAreaAbility()
                 .HasImpactAction(PacificationField1ImpactAction)

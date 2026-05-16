@@ -2099,15 +2099,25 @@ namespace SWLOR.Game.Server.Service
         {
             const float BaseDuration = 20f;
             var duration = BaseDuration + abilityDuration;
-            var effectTag = $"ABILITY_TEMP_IMMUNITY_{immunity}";
+            var effectTag = GetTemporaryImmunityEffectTag(immunity);
 
             // Effect is already in place.
-            if (HasEffectByTag(target, effectTag))
+            if (HasTemporaryImmunity(target, immunity))
                 return;
 
             var effect = EffectImmunity(immunity);
             effect = TagEffect(effect, effectTag);
             ApplyEffectToObject(DurationType.Temporary, effect, target, duration);
+        }
+
+        public static bool HasTemporaryImmunity(uint target, ImmunityType immunity)
+        {
+            return HasEffectByTag(target, GetTemporaryImmunityEffectTag(immunity));
+        }
+
+        private static string GetTemporaryImmunityEffectTag(ImmunityType immunity)
+        {
+            return $"ABILITY_TEMP_IMMUNITY_{immunity}";
         }
 
         private sealed class TrackedAbilityImpact

@@ -127,6 +127,10 @@ public class RiflePacificationTests
         var overwatch = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Rifle" / "OverwatchAbilityDefinition.cs").FullName);
         overwatch.Should().Contain("afterSuccessfulHit: InterruptActivation");
         overwatch.Should().Contain("ClearAllActions");
+
+        var tranquilized = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "StatusEffectDefinition" / "TranquilizedStatusEffect.cs").FullName);
+        tranquilized.Should().Contain("Ability.HasTemporaryImmunity(creature, ImmunityType.Sleep)");
+        tranquilized.Should().Contain("IgnoreEffectImmunity(EffectSleep())");
     }
 
     [Test]

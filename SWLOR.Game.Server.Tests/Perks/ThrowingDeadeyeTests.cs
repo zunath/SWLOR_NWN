@@ -38,7 +38,7 @@ public class ThrowingDeadeyeTests
         AssertPerkLevel(perks[PerkType.PinningToss], "Pinning Toss", 2, 2, 22, FeatType.PinningToss2,
             "Your next attack deals weapon DMG + 18 and inflicts Disoriented for 15 seconds.");
         AssertPerkLevel(perks[PerkType.RicochetToss], "Ricochet Toss", 1, 3, 25, FeatType.RicochetToss1,
-            "Your thrown weapon hits the target and up to 2 additional enemies for weapon DMG + 15 each.");
+            "Your thrown weapon hits the target and up to 2 additional enemies within 5 meters for weapon DMG + 15 each.");
         AssertPerkLevel(perks[PerkType.BleedersEye], "Bleeder's Eye", 1, 4, 28, null,
             "Deal +12% Throwing damage to bleeding targets.",
             StatType.DamageToBleedingTargetPercentAdjustment);
@@ -52,7 +52,7 @@ public class ThrowingDeadeyeTests
         AssertPerkLevel(perks[PerkType.SeveringToss], "Severing Toss", 1, 3, 38, FeatType.SeveringToss1,
             "Deals weapon DMG + 32 and inflicts Hamstring for 15 seconds.");
         AssertPerkLevel(perks[PerkType.RicochetToss], "Ricochet Toss", 2, 3, 40, FeatType.RicochetToss2,
-            "Your thrown weapon hits the target and up to 4 additional enemies for weapon DMG + 24 each.");
+            "Your thrown weapon hits the target and up to 4 additional enemies within 5 meters for weapon DMG + 24 each.");
         AssertPerkLevel(perks[PerkType.DeepWound], "Deep Wound", 1, 4, 42, null,
             "Bleed effects you apply deal +25% damage and last 10 seconds longer.",
             StatType.OutgoingBleedingDamagePercentAdjustment,
@@ -141,6 +141,10 @@ public class ThrowingDeadeyeTests
         source.Should().Contain("StatType.OutgoingBleedingDamagePercentAdjustment, creature => EquipmentPredicates.HasThrowing(creature) ? 25 : 0");
         source.Should().Contain("StatType.OutgoingBleedingDurationBonusSeconds, creature => EquipmentPredicates.HasThrowing(creature) ? 10 : 0");
         source.Should().Contain("StatType.ThrowingAbilityCriticalRateToBleedingOrDisorientedTargetPercentAdjustment, creature => EquipmentPredicates.HasThrowing(creature) ? 15 : 0");
+
+        var ricochetToss = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Throwing" / "RicochetTossAbilityDefinition.cs").FullName);
+        ricochetToss.Should().Contain("private const float BounceRadius = 5f;");
+        ricochetToss.Should().Contain("AbilityTargeting.GetHostileTargetsNearLocation(activator, impactLocation, BounceRadius, maxTargets, target)");
     }
 
     [Test]
@@ -182,10 +186,20 @@ public class ThrowingDeadeyeTests
             abilityRow["Range"].Should().Be(range);
             abilityRow["TargetType"].Should().Be(targetType);
             abilityRow["HostileSetting"].Should().Be(hostileSetting);
-            abilityRow["TargetShape"].Should().Be("****");
-            abilityRow["TargetSizeX"].Should().Be("****");
+            if (featType is FeatType.RicochetToss1 or FeatType.RicochetToss2)
+            {
+                abilityRow["TargetShape"].Should().Be("sphere");
+                abilityRow["TargetSizeX"].Should().Be("5");
+                abilityRow["TargetFlags"].Should().Be("1");
+            }
+            else
+            {
+                abilityRow["TargetShape"].Should().Be("****");
+                abilityRow["TargetSizeX"].Should().Be("****");
+                abilityRow["TargetFlags"].Should().Be("****");
+            }
+
             abilityRow["TargetSizeY"].Should().Be("****");
-            abilityRow["TargetFlags"].Should().Be("****");
         }
 
         featRows[(int)FeatType.PiercingToss1]["CATEGORY"].Should().Be("10");

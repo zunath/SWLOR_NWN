@@ -14,6 +14,13 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public override StatusEffectCleanseType CleanseTypes => StatusEffectCleanseType.Purify | StatusEffectCleanseType.SoothePet;
         public override ResistanceType ResistanceType => ResistanceType.Mind;
 
+        public override string CanApply(uint creature)
+        {
+            return Ability.HasTemporaryImmunity(creature, ImmunityType.Sleep)
+                ? "Target is temporarily immune to tranquilization."
+                : string.Empty;
+        }
+
         protected override void Apply(uint creature, int durationTicks)
         {
             ApplySleep(creature, GetDurationSeconds(durationTicks));
@@ -49,7 +56,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         private void ApplySleep(uint creature, float duration)
         {
-            var effect = TagEffect(EffectSleep(), Id);
+            var effect = TagEffect(IgnoreEffectImmunity(EffectSleep()), Id);
             ApplyEffectToObject(DurationType.Temporary, effect, creature, duration);
             Ability.ApplyTemporaryImmunity(creature, duration, ImmunityType.Sleep);
         }

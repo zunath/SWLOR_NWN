@@ -347,13 +347,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.RicochetToss1)
-                .Description("Your thrown weapon hits the target and up to 2 additional enemies for weapon DMG + 15 each.")
+                .Description("Your thrown weapon hits the target and up to 2 additional enemies within 5 meters for weapon DMG + 15 each.")
                 .Price(3)
                 .RequirementSkill(SkillType.Throwing, 25)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.RicochetToss2)
-                .Description("Your thrown weapon hits the target and up to 4 additional enemies for weapon DMG + 24 each.")
+                .Description("Your thrown weapon hits the target and up to 4 additional enemies within 5 meters for weapon DMG + 24 each.")
                 .Price(3)
                 .RequirementSkill(SkillType.Throwing, 40);
         }

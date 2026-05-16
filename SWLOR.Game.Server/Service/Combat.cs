@@ -212,7 +212,15 @@ namespace SWLOR.Game.Server.Service
                 Log.Write(LogGroup.Attack, $"Critical Rating: {critical}, minDamage = {minDamage}, maxDamage = {maxDamage}");
             }
 
-            return ((int)minDamage, (int)maxDamage);
+            var roundedMinDamage = (int)minDamage;
+            var roundedMaxDamage = (int)maxDamage;
+            if (attackerDMG > 0)
+            {
+                roundedMinDamage = Math.Max(1, roundedMinDamage);
+                roundedMaxDamage = Math.Max(roundedMinDamage, roundedMaxDamage);
+            }
+
+            return (roundedMinDamage, roundedMaxDamage);
         }
 
         /// <summary>

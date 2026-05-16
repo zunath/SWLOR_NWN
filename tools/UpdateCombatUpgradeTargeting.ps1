@@ -425,6 +425,8 @@ foreach ($label in @(
 
 $rulesByLabel["TwinIntercept1"] = $friendlyCreatureRule
 $rulesByLabel["DeadManSHand1"] = New-TargetSphereRule
+$rulesByLabel["RicochetToss1"] = New-TargetSphereRule -Radius "5"
+$rulesByLabel["RicochetToss2"] = New-TargetSphereRule -Radius "5"
 
 foreach ($label in @(
     "Backstab1",

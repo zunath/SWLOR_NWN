@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
@@ -15,6 +16,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 .Create(FeatType.GunslingerFocus1, PerkType.GunslingerFocus)
                 .Name("Gunslinger Focus")
                 .Level(1)
+                .SkillType(SkillType.Pistol)
                 .HasRecastDelay(RecastGroup.GunslingerFocus, 120f);
             ConfigureSelfStatus(builder, typeof(GunslingerFocusStatusEffect), duration: 20f, stamina: 6);
 

@@ -93,7 +93,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
 
         private static void ApplyQuickDraw(uint activator, uint target, Location targetLocation, int damage, bool appliesLowHPBonus)
         {
-            if (appliesLowHPBonus && GetCurrentHitPoints(target) <= GetMaxHitPoints(target) * LowHPThreshold)
+            if (appliesLowHPBonus && GetCurrentHitPoints(target) < GetMaxHitPoints(target) * LowHPThreshold)
             {
                 damage += LowHPDamageBonus;
             }

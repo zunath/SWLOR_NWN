@@ -47,7 +47,7 @@ public class StaffCrusherTests
         AssertPerkLevel(perks[PerkType.RibBreaker], "Rib Breaker", 2, 3, 30, FeatType.RibBreaker2,
             "Deals weapon DMG + 30 and inflicts Weakened, reducing Attack by 15% for 15 seconds.");
         AssertPerkLevel(perks[PerkType.CrushingMastery], "Crushing Mastery", 2, 2, 32, null,
-            "Bonus damage with staves increases to 2x your MGT modifier and critical chance increases by an additional 10%.",
+            "Bonus damage with staves increases to 2x your MGT modifier and critical chance increases by an additional 10%. Critical staff hits still deal +10% damage and restore 2 STM once every 6 seconds.",
             StatType.CriticalDamagePercentAdjustment,
             StatType.CriticalStaminaRestore,
             StatType.CriticalStaminaRestoreSkillType,
@@ -67,7 +67,7 @@ public class StaffCrusherTests
         AssertPerkLevel(perks[PerkType.Bonecrusher], "Bonecrusher", 1, 3, 45, FeatType.Bonecrusher1,
             "Deals weapon DMG + 50. If the target is Knocked down, they become Stunned for 3 seconds.");
         AssertPerkLevel(perks[PerkType.CrushingMastery], "Crushing Mastery", 3, 4, 48, null,
-            "Staff critical hits deal +20% damage and restore 4 STM. This can only trigger once every 6 seconds.",
+            "Staff critical hits deal +20% damage and restore 4 STM once every 6 seconds. Bonus damage with staves remains 2x your MGT modifier and the additional +10% critical chance remains.",
             StatType.CriticalDamagePercentAdjustment,
             StatType.CriticalStaminaRestore,
             StatType.CriticalStaminaRestoreSkillType,
@@ -122,14 +122,17 @@ public class StaffCrusherTests
         new WeakenedStatusEffect(20).StatGroup.Stats[StatType.AttackPercentAdjustment].Should().Be(-20);
 
         new ExposedStatusEffect(-10).StatGroup.Stats[StatType.DefensePercentAdjustment].Should().Be(-10);
+
+        StatType.CriticalTargetDefensePercentAdjustment.GetCategory().Should().Be(StatTypeCategory.BeneficialWhenNegative);
+        StatType.CriticalTargetDefenseDurationSeconds.GetCategory().Should().Be(StatTypeCategory.NonBeneficial);
     }
 
     [Test]
-    public void StaffCrusherFeatAndSpellIcons_AreUniqueAndPresent()
+    public void StaffCrusherFeatAndAbilityIcons_AreUniqueAndPresent()
     {
         var root = FindRepositoryRoot();
         var featRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "feat.2da");
-        var spellRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "spells.2da");
+        var abilityRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "spells.2da");
 
         var feats = new[]
         {
@@ -151,22 +154,56 @@ public class StaffCrusherTests
         foreach (var (featType, expectedIcon, range, targetType, hostileSetting, targetShape, targetSizeX, targetSizeY, targetFlags) in feats)
         {
             var featRow = featRows[(int)featType];
-            var spellRow = spellRows[int.Parse(featRow["SPELLID"])];
+            var abilityRow = abilityRows[int.Parse(featRow["SPELLID"])];
             var featIcon = featRow["ICON"];
 
             featIcon.Should().Be(expectedIcon);
-            spellRow["IconResRef"].Should().Be(featIcon);
+            abilityRow["IconResRef"].Should().Be(featIcon);
             seenIcons.Add(featIcon).Should().BeTrue($"{featType} should have a unique icon");
             File.Exists((root / "SWLOR_Haks" / "swlor2_tga" / $"{featIcon}.tga").FullName).Should().BeTrue();
 
-            spellRow["Range"].Should().Be(range);
-            spellRow["TargetType"].Should().Be(targetType);
-            spellRow["HostileSetting"].Should().Be(hostileSetting);
-            spellRow["TargetShape"].Should().Be(targetShape);
-            spellRow["TargetSizeX"].Should().Be(targetSizeX);
-            spellRow["TargetSizeY"].Should().Be(targetSizeY);
-            spellRow["TargetFlags"].Should().Be(targetFlags);
+            abilityRow["Range"].Should().Be(range);
+            abilityRow["TargetType"].Should().Be(targetType);
+            abilityRow["HostileSetting"].Should().Be(hostileSetting);
+            abilityRow["TargetShape"].Should().Be(targetShape);
+            abilityRow["TargetSizeX"].Should().Be(targetSizeX);
+            abilityRow["TargetSizeY"].Should().Be(targetSizeY);
+            abilityRow["TargetFlags"].Should().Be(targetFlags);
         }
+    }
+
+    [Test]
+    public void StaffCrusherImplementationDetails_MatchCombatBible()
+    {
+        var root = FindRepositoryRoot();
+
+        var slam = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Staff" / "SlamAbilityDefinition.cs").FullName).Replace("\r\n", "\n");
+        slam.Should().Contain("SkillType.Staff,\n                8,\n                8,");
+        slam.Should().Contain("SkillType.Staff,\n                20,\n                10,");
+        slam.Should().Contain("SkillType.Staff,\n                32,\n                12,");
+
+        var ribBreaker = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Staff" / "RibBreakerAbilityDefinition.cs").FullName);
+        ribBreaker.Should().Contain("SkillType.Staff, 18, 15, typeof(WeakenedStatusEffect)");
+        ribBreaker.Should().Contain("new WeakenedStatusEffect(10)");
+        ribBreaker.Should().Contain("SkillType.Staff, 30, 15, typeof(WeakenedStatusEffect)");
+        ribBreaker.Should().Contain("SkillType.Staff, 42, 15, typeof(WeakenedStatusEffect)");
+        ribBreaker.Should().Contain("new WeakenedStatusEffect(20)");
+
+        var groundQuake = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Staff" / "GroundQuakeAbilityDefinition.cs").FullName);
+        groundQuake.Should().Contain("SkillType.Staff, 18, 2, typeof(KnockdownStatusEffect)");
+        groundQuake.Should().Contain("SkillType.Staff, 28, 3, typeof(KnockdownStatusEffect)");
+        groundQuake.Should().Contain("centerOnActivator: true");
+
+        var bonecrusher = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Staff" / "BonecrusherAbilityDefinition.cs").FullName);
+        bonecrusher.Should().Contain("StatusEffect.HasStatusEffect(target, typeof(KnockdownStatusEffect))");
+        bonecrusher.Should().Contain("? typeof(StunnedStatusEffect)");
+        bonecrusher.Should().Contain("var duration = statusEffect == null ? 0 : 3;");
+        bonecrusher.Should().Contain("SkillType.Staff, 50, duration, statusEffect");
+
+        var worldbreaker = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Staff" / "WorldbreakerAbilityDefinition.cs").FullName);
+        worldbreaker.Should().Contain("HasActivationDelay(2f)");
+        worldbreaker.Should().Contain("SkillType.Staff, 45, 4, typeof(KnockdownStatusEffect)");
+        worldbreaker.Should().Contain("centerOnActivator: true");
     }
 
     private static void AssertPerkLevel(
@@ -193,7 +230,7 @@ public class StaffCrusherTests
             perkLevel.GrantedFeats.Should().BeEmpty();
 
         if (statTypes.Length > 0)
-            perkLevel.StatBonuses.Select(x => x.Stat).Should().Contain(statTypes);
+            perkLevel.StatBonuses.Select(x => x.Stat).Should().HaveCount(statTypes.Length).And.Contain(statTypes);
         else
             perkLevel.StatBonuses.Should().BeEmpty();
     }

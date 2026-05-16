@@ -81,14 +81,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .ForceAffinity(ForceAffinityType.Dark)
 
                 .AddPerkLevel()
-                .Description("Deals 14 electrical force DMG plus WIL scaling to up to 3 targets.")
+                .Description("Deals 14 force DMG plus WIL scaling to up to 3 targets with an electrical visual.")
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 8)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ForceLightning1)
 
                 .AddPerkLevel()
-                .Description("Deals 24 electrical force DMG plus WIL scaling to up to 4 targets.")
+                .Description("Deals 24 force DMG plus WIL scaling to up to 4 targets with an electrical visual.")
                 .Price(4)
                 .RequirementSkill(SkillType.Force, 25)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -171,7 +171,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .ForceAffinity(ForceAffinityType.Dark)
 
                 .AddPerkLevel()
-                .Description("Deals force DMG to one target. If the target is below 35% HP, damage is increased by 40%.")
+                .Description("Deals 12 force DMG plus WIL scaling to one target. If the target is below 35% HP, damage is increased by 40%.")
                 .Price(4)
                 .RequirementSkill(SkillType.Force, 30)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -185,7 +185,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .ForceAffinity(ForceAffinityType.Dark)
 
                 .AddPerkLevel()
-                .Description("Deals force DMG to nearby enemies and pulls them slightly toward you.")
+                .Description("Deals 10 force DMG plus WIL scaling to nearby enemies and pulls them slightly toward you.")
                 .Price(4)
                 .RequirementSkill(SkillType.Force, 40)
                 .RequirementCharacterType(CharacterType.ForceSensitive)

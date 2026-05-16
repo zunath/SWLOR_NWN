@@ -63,7 +63,7 @@ public class PistolGunslingerTests
         AssertPerkLevel(perks[PerkType.GunslingerFocus], "Gunslinger Focus", 1, 3, 45, FeatType.GunslingerFocus1,
             "For 20 seconds, Quick Draw and Double Shot abilities cost 2 less STM and deal +10 DMG.");
         AssertPerkLevel(perks[PerkType.RapidShot], "Rapid Shot", 3, 4, 48, null,
-            "Reduces pistol attack delay by 30% total. Auto-attacks have a 10% chance to restore 2 STM.",
+            "Reduces pistol attack delay by 30% total. Pistol auto-attacks have a 10% chance to restore 2 STM.",
             StatType.AttackDelayReductionPercent,
             StatType.AutoAttackStaminaRestoreChance,
             StatType.AutoAttackStaminaRestore);
@@ -118,11 +118,11 @@ public class PistolGunslingerTests
     }
 
     [Test]
-    public void PistolGunslingerFeatAndSpellIcons_AreUniqueAndPresent()
+    public void PistolGunslingerFeatAndAbilityIcons_AreUniqueAndPresent()
     {
         var root = FindRepositoryRoot();
         var featRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "feat.2da");
-        var spellRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "spells.2da");
+        var abilityRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "spells.2da");
 
         var feats = new[]
         {
@@ -144,22 +144,65 @@ public class PistolGunslingerTests
         foreach (var (featType, expectedIcon, range, targetType, hostileSetting, targetShape, targetSizeX, targetSizeY, targetFlags) in feats)
         {
             var featRow = featRows[(int)featType];
-            var spellRow = spellRows[int.Parse(featRow["SPELLID"])];
+            var abilityRow = abilityRows[int.Parse(featRow["SPELLID"])];
             var featIcon = featRow["ICON"];
 
             featIcon.Should().Be(expectedIcon);
-            spellRow["IconResRef"].Should().Be(featIcon);
+            abilityRow["IconResRef"].Should().Be(featIcon);
             seenIcons.Add(featIcon).Should().BeTrue($"{featType} should have a unique icon");
             File.Exists((root / "SWLOR_Haks" / "swlor2_tga" / $"{featIcon}.tga").FullName).Should().BeTrue();
 
-            spellRow["Range"].Should().Be(range);
-            spellRow["TargetType"].Should().Be(targetType);
-            spellRow["HostileSetting"].Should().Be(hostileSetting);
-            spellRow["TargetShape"].Should().Be(targetShape);
-            spellRow["TargetSizeX"].Should().Be(targetSizeX);
-            spellRow["TargetSizeY"].Should().Be(targetSizeY);
-            spellRow["TargetFlags"].Should().Be(targetFlags);
+            abilityRow["Range"].Should().Be(range);
+            abilityRow["TargetType"].Should().Be(targetType);
+            abilityRow["HostileSetting"].Should().Be(hostileSetting);
+            abilityRow["TargetShape"].Should().Be(targetShape);
+            abilityRow["TargetSizeX"].Should().Be(targetSizeX);
+            abilityRow["TargetSizeY"].Should().Be(targetSizeY);
+            abilityRow["TargetFlags"].Should().Be(targetFlags);
         }
+    }
+
+    [Test]
+    public void PistolGunslingerImplementationDetails_MatchCombatBible()
+    {
+        var root = FindRepositoryRoot();
+
+        var quickDraw = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Pistol" / "QuickDrawAbilityDefinition.cs").FullName);
+        quickDraw.Should().Contain("private const float LowHPThreshold = 0.3f;");
+        quickDraw.Should().Contain("private const int LowHPDamageBonus = 20;");
+        quickDraw.Should().Contain("ApplyQuickDraw(activator, target, targetLocation, 12, false);");
+        quickDraw.Should().Contain("ApplyQuickDraw(activator, target, targetLocation, 24, false);");
+        quickDraw.Should().Contain("ApplyQuickDraw(activator, target, targetLocation, 36, false);");
+        quickDraw.Should().Contain("ApplyQuickDraw(activator, target, targetLocation, 50, true);");
+        quickDraw.Should().Contain("GetCurrentHitPoints(target) < GetMaxHitPoints(target) * LowHPThreshold");
+
+        var pistolPerks = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "PerkDefinition" / "PistolPerkDefinition.cs").FullName);
+        pistolPerks.Should().Contain("StatType.AutoAttackStaminaRestoreChance, creature => EquipmentPredicates.HasPistol(creature) ? 10 : 0");
+        pistolPerks.Should().Contain("StatType.AutoAttackStaminaRestore, creature => EquipmentPredicates.HasPistol(creature) ? 2 : 0");
+
+        var doubleShot = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Pistol" / "DoubleShotAbilityDefinition.cs").FullName);
+        doubleShot.Should().Contain("private const int HitCount = 2;");
+        doubleShot.Should().Contain("ApplyDoubleShot(activator, target, targetLocation, 7);");
+        doubleShot.Should().Contain("ApplyDoubleShot(activator, target, targetLocation, 15);");
+        doubleShot.Should().Contain("ApplyDoubleShot(activator, target, targetLocation, 24);");
+
+        var fanTheHammer = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Pistol" / "FanTheHammerAbilityDefinition.cs").FullName);
+        fanTheHammer.Should().Contain("SkillType.Pistol, 12, 0, null");
+        fanTheHammer.Should().Contain("maxTargets: 3");
+        fanTheHammer.Should().Contain("SkillType.Pistol, 20, 0, null");
+        fanTheHammer.Should().Contain("maxTargets: 5");
+
+        var gunslingerFocus = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "StatusEffectDefinition" / "GunslingerFocusStatusEffect.cs").FullName);
+        gunslingerFocus.Should().Contain("public const int DamageBonus = 10;");
+        gunslingerFocus.Should().Contain("public const int StaminaCostReduction = 2;");
+        gunslingerFocus.Should().Contain("StatGroup.Stats[StatType.AbilityDamageFlatAdjustment] = DamageBonus;");
+        gunslingerFocus.Should().Contain("StatGroup.Stats[StatType.AbilityStaminaCostFlatAdjustment] = -StaminaCostReduction;");
+
+        var deadMansHand = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Pistol" / "DeadMansHandAbilityDefinition.cs").FullName);
+        deadMansHand.Should().Contain("private const int ShotCount = 6;");
+        deadMansHand.Should().Contain("private const int SecondaryShotLimit = 2;");
+        deadMansHand.Should().Contain("private const float SecondaryRadius = 5f;");
+        deadMansHand.Should().Contain("SkillType.Pistol, 10, 0, null");
     }
 
     private static void AssertPerkLevel(
@@ -186,7 +229,7 @@ public class PistolGunslingerTests
             perkLevel.GrantedFeats.Should().BeEmpty();
 
         if (statTypes.Length > 0)
-            perkLevel.StatBonuses.Select(x => x.Stat).Should().Contain(statTypes);
+            perkLevel.StatBonuses.Select(x => x.Stat).Should().HaveCount(statTypes.Length).And.Contain(statTypes);
         else
             perkLevel.StatBonuses.Should().BeEmpty();
     }

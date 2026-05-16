@@ -161,11 +161,11 @@ public class SaberstaffConduitTests
     }
 
     [Test]
-    public void SaberstaffConduitFeatAndSpellIcons_AreUniqueAndPresent()
+    public void SaberstaffConduitFeatAndAbilityIcons_AreUniqueAndPresent()
     {
         var root = FindRepositoryRoot();
         var featRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "feat.2da");
-        var spellRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "spells.2da");
+        var abilityRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "spells.2da");
 
         var feats = new[]
         {
@@ -188,22 +188,42 @@ public class SaberstaffConduitTests
         foreach (var (featType, expectedIcon, range, targetType, hostileSetting, targetShape, targetSizeX, targetSizeY, targetFlags) in feats)
         {
             var featRow = featRows[(int)featType];
-            var spellRow = spellRows[int.Parse(featRow["SPELLID"])];
+            var abilityRow = abilityRows[int.Parse(featRow["SPELLID"])];
             var featIcon = featRow["ICON"];
 
             featIcon.Should().Be(expectedIcon);
-            spellRow["IconResRef"].Should().Be(featIcon);
+            abilityRow["IconResRef"].Should().Be(featIcon);
             seenIcons.Add(featIcon).Should().BeTrue($"{featType} should have a unique icon");
             File.Exists((root / "SWLOR_Haks" / "swlor2_tga" / $"{featIcon}.tga").FullName).Should().BeTrue();
 
-            spellRow["Range"].Should().Be(range);
-            spellRow["TargetType"].Should().Be(targetType);
-            spellRow["HostileSetting"].Should().Be(hostileSetting);
-            spellRow["TargetShape"].Should().Be(targetShape);
-            spellRow["TargetSizeX"].Should().Be(targetSizeX);
-            spellRow["TargetSizeY"].Should().Be(targetSizeY);
-            spellRow["TargetFlags"].Should().Be(targetFlags);
+            abilityRow["Range"].Should().Be(range);
+            abilityRow["TargetType"].Should().Be(targetType);
+            abilityRow["HostileSetting"].Should().Be(hostileSetting);
+            abilityRow["TargetShape"].Should().Be(targetShape);
+            abilityRow["TargetSizeX"].Should().Be(targetSizeX);
+            abilityRow["TargetSizeY"].Should().Be(targetSizeY);
+            abilityRow["TargetFlags"].Should().Be(targetFlags);
         }
+    }
+
+    [Test]
+    public void SaberstaffConduitImplementationDetails_MatchCombatBible()
+    {
+        var root = FindRepositoryRoot();
+
+        var forceLens = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "StatusEffectDefinition" / "ForceLensStatusEffect.cs").FullName);
+        forceLens.Should().Contain("StatGroup.Stats[StatType.ForceDefensePercentAdjustment] = 15;");
+        forceLens.Should().Contain("if (Source != creature)");
+        forceLens.Should().Contain("StatGroup.Stats[StatType.AttackDeflection] = 10;");
+
+        var forceCapacitor = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "StatusEffectDefinition" / "ForceCapacitorStatusEffect.cs").FullName);
+        forceCapacitor.Should().Contain("StatGroup.Stats[StatType.AbilityStaminaCostFPRestorePercent] = 25;");
+        forceCapacitor.Should().Contain("StatGroup.Stats[StatType.AbilityFPCostStaminaRestorePercent] = 25;");
+
+        var infiniteConduit = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "StatusEffectDefinition" / "InfiniteConduitStatusEffect.cs").FullName);
+        infiniteConduit.Should().Contain("StatGroup.Stats[StatType.SkillAutoAttackFPRestore] = 5;");
+        infiniteConduit.Should().Contain("StatGroup.Stats[StatType.SkillAbilityStaminaCostFlatAdjustment] = -3;");
+        infiniteConduit.Should().Contain("Stat.GetCurrentFP(creature) <= 0");
     }
 
     private static void AssertPerkLevel(
@@ -230,7 +250,7 @@ public class SaberstaffConduitTests
             perkLevel.GrantedFeats.Should().BeEmpty();
 
         if (statTypes.Length > 0)
-            perkLevel.StatBonuses.Select(x => x.Stat).Should().Contain(statTypes);
+            perkLevel.StatBonuses.Select(x => x.Stat).Should().HaveCount(statTypes.Length).And.Contain(statTypes);
         else
             perkLevel.StatBonuses.Should().BeEmpty();
     }

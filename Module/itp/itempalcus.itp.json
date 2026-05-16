@@ -47534,17 +47534,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Instruction Disc: Tranquilizer Shot III"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "id_tranqshot3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Instruction Disc: Treatment Kit I"
                     },
                     "RESREF": {

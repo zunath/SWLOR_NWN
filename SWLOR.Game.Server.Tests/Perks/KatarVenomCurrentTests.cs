@@ -117,11 +117,11 @@ public class KatarVenomCurrentTests
     }
 
     [Test]
-    public void KatarVenomCurrentFeatAndSpellIcons_AreUniqueAndPresent()
+    public void KatarVenomCurrentFeatAndAbilityIcons_AreUniqueAndPresent()
     {
         var root = FindRepositoryRoot();
         var featRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "feat.2da");
-        var spellRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "spells.2da");
+        var abilityRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "spells.2da");
 
         var feats = new[]
         {
@@ -144,22 +144,53 @@ public class KatarVenomCurrentTests
         foreach (var (featType, expectedIcon, range, targetType, hostileSetting, targetShape, targetSizeX, targetSizeY, targetFlags) in feats)
         {
             var featRow = featRows[(int)featType];
-            var spellRow = spellRows[int.Parse(featRow["SPELLID"])];
+            var abilityRow = abilityRows[int.Parse(featRow["SPELLID"])];
             var featIcon = featRow["ICON"];
 
             featIcon.Should().Be(expectedIcon);
-            spellRow["IconResRef"].Should().Be(featIcon);
+            abilityRow["IconResRef"].Should().Be(featIcon);
             seenIcons.Add(featIcon).Should().BeTrue($"{featType} should have a unique icon");
             File.Exists((root / "SWLOR_Haks" / "swlor2_tga" / $"{featIcon}.tga").FullName).Should().BeTrue();
 
-            spellRow["Range"].Should().Be(range);
-            spellRow["TargetType"].Should().Be(targetType);
-            spellRow["HostileSetting"].Should().Be(hostileSetting);
-            spellRow["TargetShape"].Should().Be(targetShape);
-            spellRow["TargetSizeX"].Should().Be(targetSizeX);
-            spellRow["TargetSizeY"].Should().Be(targetSizeY);
-            spellRow["TargetFlags"].Should().Be(targetFlags);
+            abilityRow["Range"].Should().Be(range);
+            abilityRow["TargetType"].Should().Be(targetType);
+            abilityRow["HostileSetting"].Should().Be(hostileSetting);
+            abilityRow["TargetShape"].Should().Be(targetShape);
+            abilityRow["TargetSizeX"].Should().Be(targetSizeX);
+            abilityRow["TargetSizeY"].Should().Be(targetSizeY);
+            abilityRow["TargetFlags"].Should().Be(targetFlags);
         }
+    }
+
+    [Test]
+    public void KatarVenomCurrentImplementationDetails_MatchCombatBible()
+    {
+        var root = FindRepositoryRoot();
+
+        var staticPalm = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Katar" / "StaticPalmAbilityDefinition.cs").FullName);
+        staticPalm.Should().Contain("var appliesDazed = StatusEffect.HasStatusEffect(target, typeof(PoisonStatusEffect));");
+        staticPalm.Should().Contain("StatusEffect.ApplyStatusEffect(activator, hitTarget, typeof(DazedStatusEffect), 3f, CombatDamageType.Electrical);");
+
+        var twinFangFlurry = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Katar" / "TwinFangFlurryAbilityDefinition.cs").FullName);
+        twinFangFlurry.Should().Contain("Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Katar, 10, 0, null, false);");
+        twinFangFlurry.Should().Contain("StatusEffect.HasStatusEffect(target, typeof(PoisonStatusEffect)) ? typeof(BleedStatusEffect) : null");
+
+        var currentOverload = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Katar" / "CurrentOverloadAbilityDefinition.cs").FullName);
+        currentOverload.Should().Contain("var damage = consumedStatus == null ? 35 : 60;");
+        currentOverload.Should().Contain("typeof(StunnedStatusEffect);");
+        currentOverload.Should().Contain("var duration = statusEffect == null ? 0 : 3;");
+        currentOverload.Should().Contain("StatusEffect.RemoveStatusEffect(hitTarget, consumedStatus, false);");
+
+        var toxicRush = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "StatusEffectDefinition" / "ToxicRushStatusEffect.cs").FullName);
+        toxicRush.Should().Contain("StatusEffect.HasStatusEffect(defender, typeof(PoisonStatusEffect))");
+        toxicRush.Should().Contain("Stat.RestoreStamina(attacker, 2);");
+        toxicRush.Should().Contain("StatGroup.Stats[StatType.AttackPercentAdjustment] = 15;");
+        toxicRush.Should().Contain("StatGroup.Stats[StatType.AttackDelayReductionPercent] = 20;");
+
+        var serpentsEclipse = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Katar" / "SerpentsEclipseAbilityDefinition.cs").FullName);
+        serpentsEclipse.Replace("\r\n", "\n").Should().Contain("SkillType.Katar,\n                25,\n                12,");
+        serpentsEclipse.Should().Contain("additionalStatusEffects: new[] { typeof(DisorientedStatusEffect) }");
+        serpentsEclipse.Should().Contain("baseDamageAdjustment: creature => IsPoisonedOrDisoriented(creature) ? 30 : 0");
     }
 
     private static void AssertPerkLevel(
@@ -186,7 +217,7 @@ public class KatarVenomCurrentTests
             perkLevel.GrantedFeats.Should().BeEmpty();
 
         if (statTypes.Length > 0)
-            perkLevel.StatBonuses.Select(x => x.Stat).Should().Contain(statTypes);
+            perkLevel.StatBonuses.Select(x => x.Stat).Should().HaveCount(statTypes.Length).And.Contain(statTypes);
         else
             perkLevel.StatBonuses.Should().BeEmpty();
     }

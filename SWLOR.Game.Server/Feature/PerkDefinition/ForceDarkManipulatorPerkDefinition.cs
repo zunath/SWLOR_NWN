@@ -40,14 +40,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.CreepingTerror1)
 
                 .AddPerkLevel()
-                .Description("Hobble up to 2 targets for 6 seconds and applies force damage over time for 18 seconds.")
+                .Description("Hobble up to 2 targets for 6 seconds and applies force damage over time equal to 12 force DMG plus WIL scaling over 18 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 18)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.CreepingTerror2)
 
                 .AddPerkLevel()
-                .Description("Hobble nearby enemies for 6 seconds and applies force damage over time for 18 seconds.")
+                .Description("Hobble nearby enemies for 6 seconds and applies force damage over time equal to 12 force DMG plus WIL scaling over 18 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Force, 42)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -165,7 +165,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .ForceAffinity(ForceAffinityType.Dark)
 
                 .AddPerkLevel()
-                .Description("Daze one target for 3 seconds and apply force damage over time for 12 seconds.")
+                .Description("Daze one target for 3 seconds and applies force damage over time equal to 12 force DMG plus WIL scaling over 12 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Force, 30)
                 .RequirementCharacterType(CharacterType.ForceSensitive)

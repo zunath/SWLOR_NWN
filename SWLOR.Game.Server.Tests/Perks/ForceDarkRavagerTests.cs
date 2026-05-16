@@ -25,7 +25,7 @@ public class ForceDarkRavagerTests
         AssertPerkLevel(perks[PerkType.ForceBody], "Force Body", 1, 2, 5, FeatType.ForceBody1,
             "For 30 seconds, your damaging Dark powers restore 1 FP, but each cast costs HP equal to 2% of your maximum HP.");
         AssertPerkLevel(perks[PerkType.ForceLightning], "Force Lightning", 1, 3, 8, FeatType.ForceLightning1,
-            "Deals 14 electrical force DMG plus WIL scaling to up to 3 targets.");
+            "Deals 14 force DMG plus WIL scaling to up to 3 targets with an electrical visual.");
         AssertPerkLevel(perks[PerkType.ForceDrain], "Force Drain", 1, 3, 12, FeatType.ForceDrain1,
             "Deals 16 force DMG plus WIL scaling and heals you for 35% of damage dealt.");
         AssertPerkLevel(perks[PerkType.SaberRend], "Saber Rend", 1, 3, 15, FeatType.SaberRend1,
@@ -35,17 +35,17 @@ public class ForceDarkRavagerTests
         AssertPerkLevel(perks[PerkType.ForceSpark], "Force Spark", 2, 2, 22, FeatType.ForceSpark2,
             "Deals 32 force DMG plus WIL scaling to one target and reduce evasion chance by 6% for 20 seconds.");
         AssertPerkLevel(perks[PerkType.ForceLightning], "Force Lightning", 2, 4, 25, FeatType.ForceLightning2,
-            "Deals 24 electrical force DMG plus WIL scaling to up to 4 targets.");
+            "Deals 24 force DMG plus WIL scaling to up to 4 targets with an electrical visual.");
         AssertPerkLevel(perks[PerkType.ForceDrain], "Force Drain", 2, 3, 28, FeatType.ForceDrain2,
             "Deals 28 force DMG plus WIL scaling and heals you for 40% of damage dealt.");
         AssertPerkLevel(perks[PerkType.DevouringStrike], "Devouring Strike", 1, 4, 30, FeatType.DevouringStrike1,
-            "Deals force DMG to one target. If the target is below 35% HP, damage is increased by 40%.");
+            "Deals 12 force DMG plus WIL scaling to one target. If the target is below 35% HP, damage is increased by 40%.");
         AssertPerkLevel(perks[PerkType.SaberRend], "Saber Rend", 2, 3, 35, FeatType.SaberRend2,
             "Your next melee attack deals +24 force DMG plus WIL scaling. Requires a melee weapon.");
         AssertPerkLevel(perks[PerkType.ForceBody], "Force Body", 2, 3, 38, FeatType.ForceBody2,
             "For 30 seconds, damaging Dark powers restore FP. Each cast costs HP, reduced when you damage a target below 50% HP.");
         AssertPerkLevel(perks[PerkType.ForceMaelstrom], "Force Maelstrom", 1, 4, 40, FeatType.ForceMaelstrom1,
-            "Deals force DMG to nearby enemies and pulls them slightly toward you.");
+            "Deals 10 force DMG plus WIL scaling to nearby enemies and pulls them slightly toward you.");
         AssertPerkLevel(perks[PerkType.ForceDrain], "Force Drain", 3, 4, 42, FeatType.ForceDrain3,
             "Deals 44 force DMG plus WIL scaling and heals you for 45% of damage dealt.");
         AssertPerkLevel(perks[PerkType.ForceRage], "Force Rage", 2, 4, 45, FeatType.ForceRage2,
@@ -115,13 +115,15 @@ public class ForceDarkRavagerTests
         forceBody2.StatGroup.Stats[StatType.DarkForceDamageLowTargetHPThresholdPercent].Should().Be(50);
 
         var forceRage1 = new ForceRage1StatusEffect();
-        forceRage1.StatGroup.Stats[StatType.DamageDealtPercentAdjustment].Should().Be(8);
+        forceRage1.StatGroup.Stats[StatType.WeaponAndForceDamageDealtPercentAdjustment].Should().Be(8);
+        forceRage1.StatGroup.Stats[StatType.DamageDealtPercentAdjustment].Should().Be(0);
         forceRage1.StatGroup.Stats[StatType.AttackPercentAdjustment].Should().Be(0);
         forceRage1.StatGroup.Stats[StatType.CriticalDamagePercentAdjustment].Should().Be(10);
         forceRage1.StatGroup.Stats[StatType.DamageTakenPercentAdjustment].Should().Be(5);
 
         var forceRage2 = new ForceRage2StatusEffect();
-        forceRage2.StatGroup.Stats[StatType.DamageDealtPercentAdjustment].Should().Be(14);
+        forceRage2.StatGroup.Stats[StatType.WeaponAndForceDamageDealtPercentAdjustment].Should().Be(14);
+        forceRage2.StatGroup.Stats[StatType.DamageDealtPercentAdjustment].Should().Be(0);
         forceRage2.StatGroup.Stats[StatType.AttackPercentAdjustment].Should().Be(0);
         forceRage2.StatGroup.Stats[StatType.CriticalDamagePercentAdjustment].Should().Be(15);
         forceRage2.StatGroup.Stats[StatType.DamageTakenPercentAdjustment].Should().Be(8);
@@ -142,11 +144,29 @@ public class ForceDarkRavagerTests
     }
 
     [Test]
-    public void ForceDarkRavagerFeatAndSpellIcons_AreUniqueAndPresent()
+    public void ForceDarkRavagerSources_IncludeBibleBehavior()
+    {
+        var root = FindRepositoryRoot();
+
+        var ability = File.ReadAllText((root / "SWLOR.Game.Server" / "Service" / "Ability.cs").FullName);
+        ability.Should().Contain("ApplyDarkForceCastConversion(activator, target)");
+        ability.Should().Contain("ApplyDarkForceDamageRestoration(activator, damage)");
+
+        var forceDamageOverTime = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "StatusEffectDefinition" / "ForceDamageOverTimeStatusEffectBase.cs").FullName);
+        forceDamageOverTime.Should().Contain("Ability.ApplyDarkForceDamageRestoration(Source, damage)");
+
+        var forceLightning = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Force" / "ForceLightningAbilityDefinition.cs").FullName);
+        forceLightning.Should().Contain("damageType: CombatDamageType.Force");
+        forceLightning.Should().NotContain("damageType: CombatDamageType.Electrical");
+        forceLightning.Should().Contain("VisualEffect.Vfx_Com_Hit_Electrical");
+    }
+
+    [Test]
+    public void ForceDarkRavagerFeatAndAbilityIcons_AreUniqueAndPresent()
     {
         var root = FindRepositoryRoot();
         var featRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "feat.2da");
-        var spellRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "spells.2da");
+        var abilityRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "spells.2da");
 
         var feats = new[]
         {
@@ -173,21 +193,21 @@ public class ForceDarkRavagerTests
         foreach (var (featType, expectedIcon, range, targetType, hostileSetting, targetShape, targetSizeX, targetSizeY, targetFlags) in feats)
         {
             var featRow = featRows[(int)featType];
-            var spellRow = spellRows[int.Parse(featRow["SPELLID"])];
+            var abilityRow = abilityRows[int.Parse(featRow["SPELLID"])];
             var featIcon = featRow["ICON"];
 
             featIcon.Should().Be(expectedIcon);
-            spellRow["IconResRef"].Should().Be(featIcon);
+            abilityRow["IconResRef"].Should().Be(featIcon);
             seenIcons.Add(featIcon).Should().BeTrue($"{featType} should have a unique icon");
             File.Exists((root / "SWLOR_Haks" / "swlor2_tga" / $"{featIcon}.tga").FullName).Should().BeTrue();
 
-            spellRow["Range"].Should().Be(range);
-            spellRow["TargetType"].Should().Be(targetType);
-            spellRow["HostileSetting"].Should().Be(hostileSetting);
-            spellRow["TargetShape"].Should().Be(targetShape);
-            spellRow["TargetSizeX"].Should().Be(targetSizeX);
-            spellRow["TargetSizeY"].Should().Be(targetSizeY);
-            spellRow["TargetFlags"].Should().Be(targetFlags);
+            abilityRow["Range"].Should().Be(range);
+            abilityRow["TargetType"].Should().Be(targetType);
+            abilityRow["HostileSetting"].Should().Be(hostileSetting);
+            abilityRow["TargetShape"].Should().Be(targetShape);
+            abilityRow["TargetSizeX"].Should().Be(targetSizeX);
+            abilityRow["TargetSizeY"].Should().Be(targetSizeY);
+            abilityRow["TargetFlags"].Should().Be(targetFlags);
         }
     }
 

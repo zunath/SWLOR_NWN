@@ -503,13 +503,13 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// Percent Defense adjustment applied to the target through Exposed after the attacker lands a critical hit.
         /// </summary>
-        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        [StatType(StatTypeCategory.BeneficialWhenNegative)]
         CriticalTargetDefensePercentAdjustment = 83,
 
         /// <summary>
         /// Duration in seconds for CriticalTargetDefensePercentAdjustment.
         /// </summary>
-        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        [StatType(StatTypeCategory.NonBeneficial)]
         CriticalTargetDefenseDurationSeconds = 84,
 
         /// <summary>
@@ -2502,7 +2502,19 @@ namespace SWLOR.Game.Server.Service.StatService
         /// Blocks incoming Mobility resistance group status effects.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        MobilityStatusImmunity = 416
+        MobilityStatusImmunity = 416,
+
+        /// <summary>
+        /// Percent hit chance adjustment applied only to physical weapon and Force abilities.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        PhysicalAndForceAbilityHitChancePercentAdjustment = 417,
+
+        /// <summary>
+        /// Percent outgoing damage adjustment applied only to weapon and Force damage.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        WeaponAndForceDamageDealtPercentAdjustment = 418
     }
 
     public class StatTypeAttribute : Attribute

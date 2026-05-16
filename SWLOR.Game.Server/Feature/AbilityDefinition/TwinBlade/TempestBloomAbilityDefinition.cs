@@ -52,6 +52,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
                 true,
                 (pulseLocation, elapsed) =>
                 {
+                    var ability = Ability.GetAbilityDetail(FeatType.TempestBloom1);
+                    Ability.BeginAbilityImpact(activator, ability);
                     CombatAreaPulses.ApplyCombatPulse(
                         activator,
                         pulseLocation,
@@ -60,6 +62,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
                         Radius,
                         elapsed >= ChannelDurationSeconds - 0.01f ? typeof(KnockdownStatusEffect) : null,
                         elapsed >= ChannelDurationSeconds - 0.01f ? 3 : 0);
+                    var summary = Ability.EndAbilityImpact(activator);
+                    Combat.ApplyAbilityImpactEffects(activator, summary);
                 });
         }
     }

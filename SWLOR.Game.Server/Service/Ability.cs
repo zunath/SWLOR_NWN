@@ -1498,6 +1498,10 @@ namespace SWLOR.Game.Server.Service
                 additionalStatusEffectFactories,
                 statusResistanceType,
                 damageType);
+            if (statusApplied)
+            {
+                ApplyDarkForceCastConversion(activator, target);
+            }
             if ((damage > 0 || statusApplied) && targetVisualEffect != VisualEffect.None)
             {
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(targetVisualEffect), target);
@@ -1568,10 +1572,29 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
+            ApplyDarkForceDamageRestoration(activator, damage);
+            ApplyDarkForceCastConversion(activator, target);
+        }
+
+        public static void ApplyDarkForceDamageRestoration(uint activator, int damage)
+        {
+            if (damage <= 0 || !GetIsObjectValid(activator))
+                return;
+
             var hpRestorePercent = Stat.GetStatAdjustment(activator, StatType.DarkForceDamageHPPercentRestore);
             if (hpRestorePercent > 0)
             {
                 RestoreHPFromDamage(activator, damage, hpRestorePercent);
+            }
+        }
+
+        private static void ApplyDarkForceCastConversion(uint activator, uint target)
+        {
+            var trackedImpact = GetTrackedAbilityImpact(activator);
+            if (trackedImpact == null ||
+                trackedImpact.Ability?.TriggersDarkForceConversion != true)
+            {
+                return;
             }
 
             var fpRestore = Stat.GetStatAdjustment(activator, StatType.DarkForceDamageFPRestore);
@@ -1668,6 +1691,7 @@ namespace SWLOR.Game.Server.Service
                 criticalRating);
             var calculatedDamage = damageRoll.Damage;
             criticalRating = damageRoll.CriticalRating;
+            calculatedDamage = Combat.ApplyCriticalDamageModifier(activator, calculatedDamage, criticalRating);
             calculatedDamage = Combat.ApplySideAttackDamageModifier(activator, target, skillType, calculatedDamage);
             calculatedDamage = Combat.ApplyTwinBladeAbilityShapeDamageModifier(
                 activator,

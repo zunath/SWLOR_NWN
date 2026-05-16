@@ -143,11 +143,11 @@ public class StaffSentinelTests
     }
 
     [Test]
-    public void StaffSentinelFeatAndSpellIcons_AreUniqueAndPresent()
+    public void StaffSentinelFeatAndAbilityIcons_AreUniqueAndPresent()
     {
         var root = FindRepositoryRoot();
         var featRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "feat.2da");
-        var spellRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "spells.2da");
+        var abilityRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "spells.2da");
 
         var feats = new[]
         {
@@ -167,22 +167,55 @@ public class StaffSentinelTests
         foreach (var (featType, expectedIcon, range, targetType, hostileSetting, targetShape, targetSizeX, targetSizeY, targetFlags) in feats)
         {
             var featRow = featRows[(int)featType];
-            var spellRow = spellRows[int.Parse(featRow["SPELLID"])];
+            var abilityRow = abilityRows[int.Parse(featRow["SPELLID"])];
             var featIcon = featRow["ICON"];
 
             featIcon.Should().Be(expectedIcon);
-            spellRow["IconResRef"].Should().Be(featIcon);
+            abilityRow["IconResRef"].Should().Be(featIcon);
             seenIcons.Add(featIcon).Should().BeTrue($"{featType} should have a unique icon");
             File.Exists((root / "SWLOR_Haks" / "swlor2_tga" / $"{featIcon}.tga").FullName).Should().BeTrue();
 
-            spellRow["Range"].Should().Be(range);
-            spellRow["TargetType"].Should().Be(targetType);
-            spellRow["HostileSetting"].Should().Be(hostileSetting);
-            spellRow["TargetShape"].Should().Be(targetShape);
-            spellRow["TargetSizeX"].Should().Be(targetSizeX);
-            spellRow["TargetSizeY"].Should().Be(targetSizeY);
-            spellRow["TargetFlags"].Should().Be(targetFlags);
+            abilityRow["Range"].Should().Be(range);
+            abilityRow["TargetType"].Should().Be(targetType);
+            abilityRow["HostileSetting"].Should().Be(hostileSetting);
+            abilityRow["TargetShape"].Should().Be(targetShape);
+            abilityRow["TargetSizeX"].Should().Be(targetSizeX);
+            abilityRow["TargetSizeY"].Should().Be(targetSizeY);
+            abilityRow["TargetFlags"].Should().Be(targetFlags);
         }
+    }
+
+    [Test]
+    public void StaffSentinelImplementationDetails_MatchCombatBible()
+    {
+        var root = FindRepositoryRoot();
+
+        var legSweep = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Staff" / "LegSweepAbilityDefinition.cs").FullName).Replace("\r\n", "\n");
+        legSweep.Should().Contain("SkillType.Staff,\n                6,\n                3,");
+        legSweep.Should().Contain("SkillType.Staff,\n                16,\n                3,");
+        legSweep.Should().Contain("SkillType.Staff,\n                26,\n                4,");
+
+        var lineBreaker = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Staff" / "LineBreakerAbilityDefinition.cs").FullName);
+        lineBreaker.Should().Contain("SkillType.Staff, 18, 12, typeof(DisorientedStatusEffect)");
+        lineBreaker.Should().Contain("CombatImpactAreaShape.Line");
+        lineBreaker.Should().Contain("8f, 2.5f");
+
+        var sentinelGuard = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Staff" / "SentinelGuardAbilityDefinition.cs").FullName);
+        sentinelGuard.Should().Contain("typeof(SentinelGuardStatusEffect)");
+        sentinelGuard.Should().Contain("12f");
+        sentinelGuard.Should().Contain("10");
+        sentinelGuard.Should().Contain("true");
+
+        var sweepingGuard = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Staff" / "SweepingGuardAbilityDefinition.cs").FullName);
+        sweepingGuard.Should().Contain("StatusEffect.ApplyStatusEffect(activator, activator, typeof(SweepingGuardStatusEffect), 10f);");
+        sweepingGuard.Should().Contain("SkillType.Staff, 18, 2, typeof(KnockdownStatusEffect)");
+        sweepingGuard.Should().Contain("centerOnActivator: true");
+
+        var unmovingCenter = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Staff" / "UnmovingCenterAbilityDefinition.cs").FullName);
+        unmovingCenter.Should().Contain("Ability.ApplyTemporaryImmunity(activator, 20f, ImmunityType.Knockdown);");
+        unmovingCenter.Should().Contain("Ability.ApplyTemporaryImmunity(activator, 20f, ImmunityType.Dazed);");
+        unmovingCenter.Should().Contain("typeof(UnmovingCenterStatusEffect)");
+        unmovingCenter.Should().Contain("20f");
     }
 
     private static void AssertPerkLevel(
@@ -209,7 +242,7 @@ public class StaffSentinelTests
             perkLevel.GrantedFeats.Should().BeEmpty();
 
         if (statTypes.Length > 0)
-            perkLevel.StatBonuses.Select(x => x.Stat).Should().Contain(statTypes);
+            perkLevel.StatBonuses.Select(x => x.Stat).Should().HaveCount(statTypes.Length).And.Contain(statTypes);
         else
             perkLevel.StatBonuses.Should().BeEmpty();
     }

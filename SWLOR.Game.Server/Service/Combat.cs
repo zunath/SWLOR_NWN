@@ -3,6 +3,8 @@ using System.Linq;
 using NWN.Native.API;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service.AbilityService;
@@ -327,6 +329,18 @@ namespace SWLOR.Game.Server.Service
             return (damage, effectiveCritical);
         }
 
+        public static int ApplyCriticalDamageModifier(uint attacker, int damage, int criticalRating)
+        {
+            if (criticalRating <= 0 || damage <= 0)
+                return damage;
+
+            var adjustment = Stat.GetStatAdjustment(attacker, StatType.CriticalDamagePercentAdjustment);
+            if (adjustment == 0)
+                return damage;
+
+            return damage + damage * adjustment / 100;
+        }
+
         public static int ApplyDamageTakenModifiers(
             uint defender,
             int damage,
@@ -514,6 +528,7 @@ namespace SWLOR.Game.Server.Service
                 return damage;
 
             damage = ApplyOutgoingDamageModifier(attacker, damage);
+            damage = ApplyWeaponAndForceDamageModifier(attacker, damage, skillType, damageType);
             damage = ApplyTargetLowHPDamageModifier(attacker, defender, damage);
             damage = ApplyTargetStatusDamageModifiers(
                 attacker,
@@ -1704,7 +1719,7 @@ namespace SWLOR.Game.Server.Service
 
             var thresholdHP = maxHP * (thresholdPercent / 100f);
             var previousHP = currentHP + damage;
-            return previousHP > thresholdHP && currentHP <= thresholdHP;
+            return previousHP >= thresholdHP && currentHP < thresholdHP;
         }
 
         private static void HealPercentOfMaxHP(uint creature, int percent)
@@ -1720,6 +1735,22 @@ namespace SWLOR.Game.Server.Service
         private static int ApplyOutgoingDamageModifier(uint attacker, int damage)
         {
             var adjustment = Stat.GetStatAdjustment(attacker, StatType.DamageDealtPercentAdjustment);
+            if (adjustment == 0)
+                return damage;
+
+            return damage + (int)Math.Ceiling(damage * (adjustment / 100f));
+        }
+
+        private static int ApplyWeaponAndForceDamageModifier(
+            uint attacker,
+            int damage,
+            SkillType skillType,
+            CombatDamageType damageType)
+        {
+            if (!IsWeaponOrForceDamage(skillType, damageType))
+                return damage;
+
+            var adjustment = Stat.GetStatAdjustment(attacker, StatType.WeaponAndForceDamageDealtPercentAdjustment);
             if (adjustment == 0)
                 return damage;
 
@@ -2082,7 +2113,17 @@ namespace SWLOR.Game.Server.Service
             ApplyAbilityUsedNextSkillFPCostAdjustment(activator, ability);
             ApplyAbilityUsedMasterAbilityHitChance(activator);
 
-            switch (summary.SkillType)
+            var skillType = summary.SkillType != SkillType.Invalid
+                ? summary.SkillType
+                : ability.IsHostileAbility
+                    ? GetAbilitySkillType(activator, ability)
+                    : SkillType.Invalid;
+            var isSingleTargetAbility = summary.IsSingleTargetAbility ||
+                summary.SkillType == SkillType.Invalid &&
+                ability.IsHostileAbility &&
+                ability.IsSingleTargetAbility;
+
+            switch (skillType)
             {
                 case SkillType.Pistol:
                     ApplyNextAutoAttackDamageBonus(
@@ -2105,7 +2146,7 @@ namespace SWLOR.Game.Server.Service
                         activator,
                         StatType.TwinBladeAbilityUsedEvasionPercentAdjustment,
                         StatType.TwinBladeAbilityUsedEvasionDurationSeconds);
-                    if (summary.IsSingleTargetAbility)
+                    if (isSingleTargetAbility)
                     {
                         ApplyAbilityUsedAttackDeflection(
                             activator,
@@ -2235,6 +2276,7 @@ namespace SWLOR.Game.Server.Service
                 StatType.AbilityHitChancePercentAdjustmentPerkType,
                 StatType.AbilityHitChancePercentAdjustmentSecondaryPerkType,
                 StatType.TargetedAbilityHitChancePercentAdjustment);
+            modifier += GetPhysicalAndForceAbilityHitChanceAdjustment(attacker, skillType);
             modifier += GetIncomingAbilityHitChanceAdjustment(defender, skillType);
             modifier += GetSideAttackHitChanceAdjustment(attacker, defender, skillType);
             modifier += GetIdleAbilityHitChanceAdjustment(attacker, skillType);
@@ -2315,6 +2357,13 @@ namespace SWLOR.Game.Server.Service
 
             return SkillTypeMatches(skillType, requiredSkillType)
                 ? Stat.GetStatAdjustment(defender, StatType.IncomingAbilityHitChancePercentAdjustment)
+                : 0;
+        }
+
+        private static int GetPhysicalAndForceAbilityHitChanceAdjustment(uint attacker, SkillType skillType)
+        {
+            return IsWeaponOrForceAbility(skillType)
+                ? Stat.GetStatAdjustment(attacker, StatType.PhysicalAndForceAbilityHitChancePercentAdjustment)
                 : 0;
         }
 
@@ -2738,7 +2787,11 @@ namespace SWLOR.Game.Server.Service
                 Stat.GetStatAdjustment(creature, StatType.AbilityDefenseIgnoreExposedOrSunderedSkillType));
             if (SkillTypeMatches(skillType, exposedOrSunderedSkillType) &&
                 GetIsObjectValid(defender) &&
-                StatusEffect.HasStatusEffect(defender, typeof(ExposedStatusEffect), typeof(SunderStatusEffect)))
+                StatusEffect.HasStatusEffect(
+                    defender,
+                    typeof(ExposedStatusEffect),
+                    typeof(ExposeWeakPointStatusEffect),
+                    typeof(SunderStatusEffect)))
             {
                 adjustment += Stat.GetStatAdjustment(creature, StatType.AbilityDefenseIgnoreExposedOrSunderedPercentAdjustment);
             }
@@ -3105,6 +3158,24 @@ namespace SWLOR.Game.Server.Service
         private static bool SkillTypeMatches(SkillType actualSkillType, SkillType requiredSkillType)
         {
             return requiredSkillType == SkillType.Invalid || actualSkillType == requiredSkillType;
+        }
+
+        private static bool IsWeaponOrForceDamage(SkillType skillType, CombatDamageType damageType)
+        {
+            return skillType == SkillType.Force ||
+                   damageType == CombatDamageType.Force ||
+                   IsWeaponSkillType(skillType);
+        }
+
+        private static bool IsWeaponOrForceAbility(SkillType skillType)
+        {
+            return skillType == SkillType.Force || IsWeaponSkillType(skillType);
+        }
+
+        private static bool IsWeaponSkillType(SkillType skillType)
+        {
+            return skillType != SkillType.Invalid &&
+                   skillType.GetAttribute<SkillType, SkillAttribute>().CombatPointCategory == CombatPointCategoryType.Weapon;
         }
 
         private static PerkType GetPerkTypeFromStat(int value)

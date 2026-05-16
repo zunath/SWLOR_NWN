@@ -161,11 +161,11 @@ public class PistolSkirmisherTests
     }
 
     [Test]
-    public void PistolSkirmisherFeatAndSpellIcons_AreUniqueAndPresent()
+    public void PistolSkirmisherFeatAndAbilityIcons_AreUniqueAndPresent()
     {
         var root = FindRepositoryRoot();
         var featRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "feat.2da");
-        var spellRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "spells.2da");
+        var abilityRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "spells.2da");
 
         var feats = new[]
         {
@@ -188,22 +188,65 @@ public class PistolSkirmisherTests
         foreach (var (featType, expectedIcon, range, targetType, hostileSetting, targetShape, targetSizeX, targetSizeY, targetFlags) in feats)
         {
             var featRow = featRows[(int)featType];
-            var spellRow = spellRows[int.Parse(featRow["SPELLID"])];
+            var abilityRow = abilityRows[int.Parse(featRow["SPELLID"])];
             var featIcon = featRow["ICON"];
 
             featIcon.Should().Be(expectedIcon);
-            spellRow["IconResRef"].Should().Be(featIcon);
+            abilityRow["IconResRef"].Should().Be(featIcon);
             seenIcons.Add(featIcon).Should().BeTrue($"{featType} should have a unique icon");
             File.Exists((root / "SWLOR_Haks" / "swlor2_tga" / $"{featIcon}.tga").FullName).Should().BeTrue();
 
-            spellRow["Range"].Should().Be(range);
-            spellRow["TargetType"].Should().Be(targetType);
-            spellRow["HostileSetting"].Should().Be(hostileSetting);
-            spellRow["TargetShape"].Should().Be(targetShape);
-            spellRow["TargetSizeX"].Should().Be(targetSizeX);
-            spellRow["TargetSizeY"].Should().Be(targetSizeY);
-            spellRow["TargetFlags"].Should().Be(targetFlags);
+            abilityRow["Range"].Should().Be(range);
+            abilityRow["TargetType"].Should().Be(targetType);
+            abilityRow["HostileSetting"].Should().Be(hostileSetting);
+            abilityRow["TargetShape"].Should().Be(targetShape);
+            abilityRow["TargetSizeX"].Should().Be(targetSizeX);
+            abilityRow["TargetSizeY"].Should().Be(targetSizeY);
+            abilityRow["TargetFlags"].Should().Be(targetFlags);
         }
+    }
+
+    [Test]
+    public void PistolSkirmisherImplementationDetails_MatchCombatBible()
+    {
+        var root = FindRepositoryRoot();
+
+        var disarmingShot = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Pistol" / "DisarmingShotAbilityDefinition.cs").FullName);
+        disarmingShot.Should().Contain("SkillType.Pistol, 8, 12, typeof(WeakenedStatusEffect)");
+        disarmingShot.Should().Contain("new WeakenedStatusEffect(10)");
+        disarmingShot.Should().Contain("SkillType.Pistol, 18, 15, typeof(WeakenedStatusEffect)");
+        disarmingShot.Should().Contain("SkillType.Pistol, 32, 15, typeof(WeakenedStatusEffect)");
+        disarmingShot.Should().Contain("new WeakenedStatusEffect(20)");
+
+        var snapRoll = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Pistol" / "SnapRollAbilityDefinition.cs").FullName).Replace("\r\n", "\n");
+        snapRoll.Should().Contain("Enmity.ReduceEnmityOnAll(activator, 10)");
+        snapRoll.Should().Contain("new SnapRollStatusEffect(35)");
+        snapRoll.Should().Contain("StatType.NextSkillAutoAttackDamageBonusSkillType");
+        snapRoll.Should().Contain("StatType.NextSkillAutoAttackDamageBonus,\n                10,\n                8f");
+
+        var interruptingShot = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Pistol" / "InterruptingShotAbilityDefinition.cs").FullName);
+        interruptingShot.Should().Contain("private const int FoggyMindActivationDelaySeconds = 2;");
+        interruptingShot.Should().Contain("ApplyInterruptingShot(activator, target, targetLocation, 0, 12);");
+        interruptingShot.Should().Contain("ApplyInterruptingShot(activator, target, targetLocation, 20, 20);");
+        interruptingShot.Should().Contain("AssignCommand(target, () => ClearAllActions());");
+
+        var ricochetShot = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Pistol" / "RicochetShotAbilityDefinition.cs").FullName);
+        ricochetShot.Should().Contain("private const float BounceRadius = 5f;");
+        ricochetShot.Should().Contain("private const int MaxTargets = 3;");
+        ricochetShot.Should().Contain("SkillType.Pistol, 12, 6, typeof(BlindStatusEffect)");
+
+        var smokeRound = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Pistol" / "SmokeRoundAbilityDefinition.cs").FullName).Replace("\r\n", "\n");
+        smokeRound.Should().Contain("private const int EnmityReductionPercent = 10;");
+        smokeRound.Should().Contain("0,\n                12,\n                typeof(BlindStatusEffect)");
+        smokeRound.Should().Contain("afterSuccessfulHit: affectedEnemy => Enmity.ReduceEnmity(activator, affectedEnemy, EnmityReductionPercent)");
+
+        var lastWord = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Pistol" / "LastWordAbilityDefinition.cs").FullName).Replace("\r\n", "\n");
+        lastWord.Should().Contain("HasActivationDelay(1f)");
+        lastWord.Should().Contain("35,\n                3,\n                typeof(DazedStatusEffect)");
+        lastWord.Should().Contain("beforeImpact: affectedEnemy => AssignCommand(affectedEnemy, () => ClearAllActions())");
+
+        var combat = File.ReadAllText((root / "SWLOR.Game.Server" / "Service" / "Combat.cs").FullName);
+        combat.Should().Contain("return previousHP >= thresholdHP && currentHP < thresholdHP;");
     }
 
     private static void AssertPerkLevel(
@@ -230,7 +273,7 @@ public class PistolSkirmisherTests
             perkLevel.GrantedFeats.Should().BeEmpty();
 
         if (statTypes.Length > 0)
-            perkLevel.StatBonuses.Select(x => x.Stat).Should().Contain(statTypes);
+            perkLevel.StatBonuses.Select(x => x.Stat).Should().HaveCount(statTypes.Length).And.Contain(statTypes);
         else
             perkLevel.StatBonuses.Should().BeEmpty();
     }

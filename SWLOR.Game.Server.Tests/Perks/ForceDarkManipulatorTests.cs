@@ -31,7 +31,7 @@ public class ForceDarkManipulatorTests
         AssertPerkLevel(perks[PerkType.MindShroud], "Mind Shroud", 1, 3, 15, FeatType.MindShroud1,
             "Reduces force damage taken by 5% and grants +10% resistance to confusion, daze, and fear for 30 seconds.");
         AssertPerkLevel(perks[PerkType.CreepingTerror], "Creeping Terror", 2, 3, 18, FeatType.CreepingTerror2,
-            "Hobble up to 2 targets for 6 seconds and applies force damage over time for 18 seconds.");
+            "Hobble up to 2 targets for 6 seconds and applies force damage over time equal to 12 force DMG plus WIL scaling over 18 seconds.");
         AssertPerkLevel(perks[PerkType.ForceGrip], "Force Grip", 2, 2, 22, FeatType.ForceGrip2,
             "Immobilize one target for 4 seconds and interrupt activation.");
         AssertPerkLevel(perks[PerkType.NightmareField], "Nightmare Field", 1, 4, 25, FeatType.NightmareField1,
@@ -39,7 +39,7 @@ public class ForceDarkManipulatorTests
         AssertPerkLevel(perks[PerkType.WeakenResolve], "Weaken Resolve", 2, 3, 28, FeatType.WeakenResolve2,
             "Increase force damage taken by 10% for 24 seconds.");
         AssertPerkLevel(perks[PerkType.ForceChoke], "Force Choke", 1, 4, 30, FeatType.ForceChoke1,
-            "Daze one target for 3 seconds and apply force damage over time for 12 seconds.");
+            "Daze one target for 3 seconds and applies force damage over time equal to 12 force DMG plus WIL scaling over 12 seconds.");
         AssertPerkLevel(perks[PerkType.MindShroud], "Mind Shroud", 2, 3, 35, FeatType.MindShroud2,
             "Reduces force damage taken by 10% and grants +15% resistance to confusion, daze, and fear for 30 seconds.");
         AssertPerkLevel(perks[PerkType.FractureFocus], "Fracture Focus", 2, 3, 38, FeatType.FractureFocus2,
@@ -47,7 +47,7 @@ public class ForceDarkManipulatorTests
         AssertPerkLevel(perks[PerkType.DominateWeakMind], "Dominate Weak Mind", 1, 4, 40, FeatType.DominateWeakMind1,
             "Confuse one non-mechanical target for 8 seconds unless it succeeds a DC 14 Will save. Resisting targets suffer -15 Accuracy instead.");
         AssertPerkLevel(perks[PerkType.CreepingTerror], "Creeping Terror", 3, 4, 42, FeatType.CreepingTerror3,
-            "Hobble nearby enemies for 6 seconds and applies force damage over time for 18 seconds.");
+            "Hobble nearby enemies for 6 seconds and applies force damage over time equal to 12 force DMG plus WIL scaling over 18 seconds.");
         AssertPerkLevel(perks[PerkType.CollapseWill], "Collapse Will", 1, 4, 45, FeatType.CollapseWill1,
             "Apply Exposed and Force Erosion for 18 seconds.");
         AssertPerkLevel(perks[PerkType.ForceGrip], "Force Grip", 3, 3, 48, FeatType.ForceGrip3,
@@ -174,14 +174,17 @@ public class ForceDarkManipulatorTests
 
         var staminaRequirement = File.ReadAllText((root / "SWLOR.Game.Server" / "Service" / "AbilityService" / "AbilityRequirementStamina.cs").FullName);
         staminaRequirement.Should().Contain("AbilityStaminaCostPercentAdjustment");
+
+        var forceDamageOverTime = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "StatusEffectDefinition" / "ForceDamageOverTimeStatusEffectBase.cs").FullName);
+        forceDamageOverTime.Should().Contain("Ability.ApplyDarkForceDamageRestoration(Source, damage)");
     }
 
     [Test]
-    public void ForceDarkManipulatorFeatAndSpellIcons_AreUniqueAndPresent()
+    public void ForceDarkManipulatorFeatAndAbilityIcons_AreUniqueAndPresent()
     {
         var root = FindRepositoryRoot();
         var featRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "feat.2da");
-        var spellRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "spells.2da");
+        var abilityRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "spells.2da");
 
         var feats = new[]
         {
@@ -208,21 +211,21 @@ public class ForceDarkManipulatorTests
         foreach (var (featType, expectedIcon, range, targetType, hostileSetting, targetShape, targetSizeX, targetSizeY, targetFlags) in feats)
         {
             var featRow = featRows[(int)featType];
-            var spellRow = spellRows[int.Parse(featRow["SPELLID"])];
+            var abilityRow = abilityRows[int.Parse(featRow["SPELLID"])];
             var featIcon = featRow["ICON"];
 
             featIcon.Should().Be(expectedIcon);
-            spellRow["IconResRef"].Should().Be(featIcon);
+            abilityRow["IconResRef"].Should().Be(featIcon);
             seenIcons.Add(featIcon).Should().BeTrue($"{featType} should have a unique icon");
             File.Exists((root / "SWLOR_Haks" / "swlor2_tga" / $"{featIcon}.tga").FullName).Should().BeTrue();
 
-            spellRow["Range"].Should().Be(range);
-            spellRow["TargetType"].Should().Be(targetType);
-            spellRow["HostileSetting"].Should().Be(hostileSetting);
-            spellRow["TargetShape"].Should().Be(targetShape);
-            spellRow["TargetSizeX"].Should().Be(targetSizeX);
-            spellRow["TargetSizeY"].Should().Be(targetSizeY);
-            spellRow["TargetFlags"].Should().Be(targetFlags);
+            abilityRow["Range"].Should().Be(range);
+            abilityRow["TargetType"].Should().Be(targetType);
+            abilityRow["HostileSetting"].Should().Be(hostileSetting);
+            abilityRow["TargetShape"].Should().Be(targetShape);
+            abilityRow["TargetSizeX"].Should().Be(targetSizeX);
+            abilityRow["TargetSizeY"].Should().Be(targetSizeY);
+            abilityRow["TargetFlags"].Should().Be(targetFlags);
         }
     }
 

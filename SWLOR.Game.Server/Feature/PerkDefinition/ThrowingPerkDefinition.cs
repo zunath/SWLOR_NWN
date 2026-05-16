@@ -310,7 +310,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PinningToss3)
-                .Description("Your next attack deals weapon DMG + 30 and inflicts Disoriented for 20 seconds and reduce Evasion by an additional 15%.")
+                .Description("Your next attack deals weapon DMG + 30, inflicts Disoriented for 20 seconds, and reduces Evasion by an additional 15%.")
                 .Price(4)
                 .RequirementSkill(SkillType.Throwing, 35);
         }

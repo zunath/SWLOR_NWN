@@ -379,7 +379,7 @@ namespace SWLOR.Game.Server.Native
             var damage = damageRoll.Damage;
             effectiveCritical = damageRoll.CriticalRating;
 
-            damage = ApplyCriticalDamageModifier(attacker.m_idSelf, damage, effectiveCritical);
+            damage = Combat.ApplyCriticalDamageModifier(attacker.m_idSelf, damage, effectiveCritical);
 
             damage = Combat.ApplyAutoAttackDamageModifiers(attacker.m_idSelf, target.m_idSelf, damage, skillType);
             damage = Combat.ApplySideAttackDamageModifier(attacker.m_idSelf, target.m_idSelf, skillType, damage);
@@ -433,18 +433,6 @@ namespace SWLOR.Game.Server.Native
                 DamageType = damageType;
                 Damage = damage;
             }
-        }
-
-        private static int ApplyCriticalDamageModifier(uint attacker, int damage, int criticalRating)
-        {
-            if (criticalRating <= 0)
-                return damage;
-
-            var adjustment = Stat.GetStatAdjustment(attacker, StatType.CriticalDamagePercentAdjustment);
-            if (adjustment == 0)
-                return damage;
-
-            return damage + damage * adjustment / 100;
         }
 
         private static void PublishDamageDealtEvent(uint attacker, uint defender, int damage, SkillType skillType, CombatDamageType damageType)

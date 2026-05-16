@@ -141,11 +141,11 @@ public class TwinBladeDuelistTests
     }
 
     [Test]
-    public void TwinBladeDuelistFeatAndSpellIcons_AreUniqueAndPresent()
+    public void TwinBladeDuelistFeatAndAbilityIcons_AreUniqueAndPresent()
     {
         var root = FindRepositoryRoot();
         var featRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "feat.2da");
-        var spellRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "spells.2da");
+        var abilityRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "spells.2da");
 
         var feats = new[]
         {
@@ -167,22 +167,47 @@ public class TwinBladeDuelistTests
         foreach (var (featType, expectedIcon, range, targetType, hostileSetting) in feats)
         {
             var featRow = featRows[(int)featType];
-            var spellRow = spellRows[int.Parse(featRow["SPELLID"])];
+            var abilityRow = abilityRows[int.Parse(featRow["SPELLID"])];
             var featIcon = featRow["ICON"];
 
             featIcon.Should().Be(expectedIcon);
-            spellRow["IconResRef"].Should().Be(featIcon);
+            abilityRow["IconResRef"].Should().Be(featIcon);
             seenIcons.Add(featIcon).Should().BeTrue($"{featType} should have a unique icon");
             File.Exists((root / "SWLOR_Haks" / "swlor2_tga" / $"{featIcon}.tga").FullName).Should().BeTrue();
 
-            spellRow["Range"].Should().Be(range);
-            spellRow["TargetType"].Should().Be(targetType);
-            spellRow["HostileSetting"].Should().Be(hostileSetting);
-            spellRow["TargetShape"].Should().Be("****");
-            spellRow["TargetSizeX"].Should().Be("****");
-            spellRow["TargetSizeY"].Should().Be("****");
-            spellRow["TargetFlags"].Should().Be("****");
+            abilityRow["Range"].Should().Be(range);
+            abilityRow["TargetType"].Should().Be(targetType);
+            abilityRow["HostileSetting"].Should().Be(hostileSetting);
+            abilityRow["TargetShape"].Should().Be("****");
+            abilityRow["TargetSizeX"].Should().Be("****");
+            abilityRow["TargetSizeY"].Should().Be("****");
+            abilityRow["TargetFlags"].Should().Be("****");
         }
+    }
+
+    [Test]
+    public void TwinBladeDuelistImplementationDetails_MatchCombatBible()
+    {
+        var root = FindRepositoryRoot();
+
+        var bindingCross = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "TwinBlade" / "BindingCrossAbilityDefinition.cs").FullName);
+        bindingCross.Should().Contain("ApplyBindingCross(activator, target, targetLocation, 10, 12, 0);");
+        bindingCross.Should().Contain("ApplyBindingCross(activator, target, targetLocation, 18, 20, 10);");
+        bindingCross.Should().Contain("typeof(ExposedStatusEffect)");
+        bindingCross.Should().Contain("exposedDuration");
+
+        var reversalCut = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "TwinBlade" / "ReversalCutAbilityDefinition.cs").FullName);
+        reversalCut.Should().Contain("private const float RecentDamageTakenWindowSeconds = 8f;");
+        reversalCut.Should().Contain("Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.TwinBlade, 40, 3, typeof(DazedStatusEffect), false);");
+
+        var challenge = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "TwinBlade" / "DuelistsChallengeAbilityDefinition.cs").FullName);
+        challenge.Should().Contain("typeof(DuelistsChallengeStatusEffect), 20f");
+        challenge.Should().Contain("typeof(DuelistsChallengeSelfStatusEffect), 20f");
+
+        var combat = File.ReadAllText((root / "SWLOR.Game.Server" / "Service" / "Combat.cs").FullName);
+        combat.Should().Contain("ability.IsHostileAbility");
+        combat.Should().Contain("GetAbilitySkillType(activator, ability)");
+        combat.Should().Contain("ability.IsSingleTargetAbility");
     }
 
     private static void AssertPerkLevel(
@@ -209,7 +234,7 @@ public class TwinBladeDuelistTests
             perkLevel.GrantedFeats.Should().BeEmpty();
 
         if (statTypes.Length > 0)
-            perkLevel.StatBonuses.Select(x => x.Stat).Should().Contain(statTypes);
+            perkLevel.StatBonuses.Select(x => x.Stat).Should().HaveCount(statTypes.Length).And.Contain(statTypes);
         else
             perkLevel.StatBonuses.Should().BeEmpty();
     }

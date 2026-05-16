@@ -39,7 +39,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
 
         private static void Overwatch1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            AssignCommand(target, () => ClearAllActions());
             Ability.ApplyCombatImpact(
                 activator,
                 target,
@@ -49,7 +48,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 12,
                 typeof(FoggyMindStatusEffect),
                 false,
-                statusEffectFactory: () => new FoggyMindStatusEffect(2));
+                statusEffectFactory: () => new FoggyMindStatusEffect(2),
+                afterSuccessfulHit: InterruptActivation);
+        }
+
+        private static void InterruptActivation(uint target)
+        {
+            AssignCommand(target, () => ClearAllActions());
         }
     }
 }

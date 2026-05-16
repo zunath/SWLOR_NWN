@@ -328,10 +328,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Pistol, 32)
 
                 .AddPerkLevel()
-                .Description("Reduces pistol attack delay by 30% total. Auto-attacks have a 10% chance to restore 2 STM.")
+                .Description("Reduces pistol attack delay by 30% total. Pistol auto-attacks have a 10% chance to restore 2 STM.")
                 .IncreasesStat(StatType.AttackDelayReductionPercent, creature => EquipmentPredicates.HasPistol(creature) ? 30 : 0)
-                .IncreasesStat(StatType.AutoAttackStaminaRestoreChance, 10)
-                .IncreasesStat(StatType.AutoAttackStaminaRestore, 2)
+                .IncreasesStat(StatType.AutoAttackStaminaRestoreChance, creature => EquipmentPredicates.HasPistol(creature) ? 10 : 0)
+                .IncreasesStat(StatType.AutoAttackStaminaRestore, creature => EquipmentPredicates.HasPistol(creature) ? 2 : 0)
                 .Price(4)
                 .RequirementSkill(SkillType.Pistol, 48);
         }

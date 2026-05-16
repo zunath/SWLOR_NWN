@@ -48,7 +48,7 @@ public class ThrowingDeadeyeTests
             "Critical hits against your marked target restore 6 STM.",
             StatType.CriticalMarkedTargetStaminaRestore);
         AssertPerkLevel(perks[PerkType.PinningToss], "Pinning Toss", 3, 4, 35, FeatType.PinningToss3,
-            "Your next attack deals weapon DMG + 30 and inflicts Disoriented for 20 seconds and reduce Evasion by an additional 15%.");
+            "Your next attack deals weapon DMG + 30, inflicts Disoriented for 20 seconds, and reduces Evasion by an additional 15%.");
         AssertPerkLevel(perks[PerkType.SeveringToss], "Severing Toss", 1, 3, 38, FeatType.SeveringToss1,
             "Deals weapon DMG + 32 and inflicts Hamstring for 15 seconds.");
         AssertPerkLevel(perks[PerkType.RicochetToss], "Ricochet Toss", 2, 3, 40, FeatType.RicochetToss2,
@@ -131,11 +131,24 @@ public class ThrowingDeadeyeTests
     }
 
     [Test]
-    public void ThrowingDeadeyeFeatAndSpellIcons_AreUniqueAndPresent()
+    public void ThrowingDeadeyeSources_IncludeBibleStatValues()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "PerkDefinition" / "ThrowingPerkDefinition.cs").FullName);
+
+        source.Should().Contain("StatType.DamageToBleedingTargetPercentAdjustment, creature => EquipmentPredicates.HasThrowing(creature) ? 12 : 0");
+        source.Should().Contain("StatType.CriticalMarkedTargetStaminaRestore, creature => EquipmentPredicates.HasThrowing(creature) ? 6 : 0");
+        source.Should().Contain("StatType.OutgoingBleedingDamagePercentAdjustment, creature => EquipmentPredicates.HasThrowing(creature) ? 25 : 0");
+        source.Should().Contain("StatType.OutgoingBleedingDurationBonusSeconds, creature => EquipmentPredicates.HasThrowing(creature) ? 10 : 0");
+        source.Should().Contain("StatType.ThrowingAbilityCriticalRateToBleedingOrDisorientedTargetPercentAdjustment, creature => EquipmentPredicates.HasThrowing(creature) ? 15 : 0");
+    }
+
+    [Test]
+    public void ThrowingDeadeyeFeatAndAbilityIcons_AreUniqueAndPresent()
     {
         var root = FindRepositoryRoot();
         var featRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "feat.2da");
-        var spellRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "spells.2da");
+        var abilityRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "spells.2da");
 
         var feats = new[]
         {
@@ -158,21 +171,21 @@ public class ThrowingDeadeyeTests
         foreach (var (featType, expectedIcon, range, targetType, hostileSetting) in feats)
         {
             var featRow = featRows[(int)featType];
-            var spellRow = spellRows[int.Parse(featRow["SPELLID"])];
+            var abilityRow = abilityRows[int.Parse(featRow["SPELLID"])];
             var featIcon = featRow["ICON"];
 
             featIcon.Should().Be(expectedIcon);
-            spellRow["IconResRef"].Should().Be(featIcon);
+            abilityRow["IconResRef"].Should().Be(featIcon);
             seenIcons.Add(featIcon).Should().BeTrue($"{featType} should have a unique icon");
             File.Exists((root / "SWLOR_Haks" / "swlor2_tga" / $"{featIcon}.tga").FullName).Should().BeTrue();
 
-            spellRow["Range"].Should().Be(range);
-            spellRow["TargetType"].Should().Be(targetType);
-            spellRow["HostileSetting"].Should().Be(hostileSetting);
-            spellRow["TargetShape"].Should().Be("****");
-            spellRow["TargetSizeX"].Should().Be("****");
-            spellRow["TargetSizeY"].Should().Be("****");
-            spellRow["TargetFlags"].Should().Be("****");
+            abilityRow["Range"].Should().Be(range);
+            abilityRow["TargetType"].Should().Be(targetType);
+            abilityRow["HostileSetting"].Should().Be(hostileSetting);
+            abilityRow["TargetShape"].Should().Be("****");
+            abilityRow["TargetSizeX"].Should().Be("****");
+            abilityRow["TargetSizeY"].Should().Be("****");
+            abilityRow["TargetFlags"].Should().Be("****");
         }
     }
 
@@ -200,7 +213,7 @@ public class ThrowingDeadeyeTests
             perkLevel.GrantedFeats.Should().BeEmpty();
 
         if (statTypes.Length > 0)
-            perkLevel.StatBonuses.Select(x => x.Stat).Should().Contain(statTypes);
+            perkLevel.StatBonuses.Select(x => x.Stat).Should().HaveCount(statTypes.Length).And.Contain(statTypes);
         else
             perkLevel.StatBonuses.Should().BeEmpty();
     }

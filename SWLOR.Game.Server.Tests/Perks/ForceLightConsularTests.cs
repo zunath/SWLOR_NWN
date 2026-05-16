@@ -101,23 +101,28 @@ public class ForceLightConsularTests
     public void ForceLightConsularStatusEffects_MatchCombatBible()
     {
         var pacify1 = new Pacify1StatusEffect();
-        pacify1.StatGroup.Stats[StatType.DamageDealtPercentAdjustment].Should().Be(-5);
+        pacify1.StatGroup.Stats[StatType.WeaponAndForceDamageDealtPercentAdjustment].Should().Be(-5);
+        pacify1.StatGroup.Stats[StatType.DamageDealtPercentAdjustment].Should().Be(0);
         pacify1.StatGroup.Stats[StatType.AttackPercentAdjustment].Should().Be(0);
 
         var pacify2 = new Pacify2StatusEffect();
-        pacify2.StatGroup.Stats[StatType.DamageDealtPercentAdjustment].Should().Be(-8);
+        pacify2.StatGroup.Stats[StatType.WeaponAndForceDamageDealtPercentAdjustment].Should().Be(-8);
+        pacify2.StatGroup.Stats[StatType.DamageDealtPercentAdjustment].Should().Be(0);
         pacify2.StatGroup.Stats[StatType.AttackPercentAdjustment].Should().Be(0);
 
         var pacify3 = new Pacify3StatusEffect();
-        pacify3.StatGroup.Stats[StatType.DamageDealtPercentAdjustment].Should().Be(-12);
+        pacify3.StatGroup.Stats[StatType.WeaponAndForceDamageDealtPercentAdjustment].Should().Be(-12);
+        pacify3.StatGroup.Stats[StatType.DamageDealtPercentAdjustment].Should().Be(0);
         pacify3.StatGroup.Stats[StatType.AttackPercentAdjustment].Should().Be(0);
 
         var clarity1 = new Clarity1StatusEffect();
-        clarity1.StatGroup.Stats[StatType.AbilityHitChancePercentAdjustment].Should().Be(4);
+        clarity1.StatGroup.Stats[StatType.PhysicalAndForceAbilityHitChancePercentAdjustment].Should().Be(4);
+        clarity1.StatGroup.Stats[StatType.AbilityHitChancePercentAdjustment].Should().Be(0);
         clarity1.StatGroup.Stats[StatType.AccuracyPercentAdjustment].Should().Be(0);
 
         var clarity2 = new Clarity2StatusEffect();
-        clarity2.StatGroup.Stats[StatType.AbilityHitChancePercentAdjustment].Should().Be(6);
+        clarity2.StatGroup.Stats[StatType.PhysicalAndForceAbilityHitChancePercentAdjustment].Should().Be(6);
+        clarity2.StatGroup.Stats[StatType.AbilityHitChancePercentAdjustment].Should().Be(0);
         clarity2.StatGroup.Stats[StatType.AccuracyPercentAdjustment].Should().Be(0);
 
         var comprehendSpeech = new ComprehendSpeech1StatusEffect();
@@ -131,11 +136,11 @@ public class ForceLightConsularTests
     }
 
     [Test]
-    public void ForceLightConsularFeatAndSpellIcons_AreUniqueAndPresent()
+    public void ForceLightConsularFeatAndAbilityIcons_AreUniqueAndPresent()
     {
         var root = FindRepositoryRoot();
         var featRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "feat.2da");
-        var spellRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "spells.2da");
+        var abilityRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "spells.2da");
 
         var feats = new[]
         {
@@ -162,21 +167,21 @@ public class ForceLightConsularTests
         foreach (var (featType, expectedIcon, range, targetType, hostileSetting, targetShape, targetSizeX, targetSizeY, targetFlags) in feats)
         {
             var featRow = featRows[(int)featType];
-            var spellRow = spellRows[int.Parse(featRow["SPELLID"])];
+            var abilityRow = abilityRows[int.Parse(featRow["SPELLID"])];
             var featIcon = featRow["ICON"];
 
             featIcon.Should().Be(expectedIcon);
-            spellRow["IconResRef"].Should().Be(featIcon);
+            abilityRow["IconResRef"].Should().Be(featIcon);
             seenIcons.Add(featIcon).Should().BeTrue($"{featType} should have a unique icon");
             File.Exists((root / "SWLOR_Haks" / "swlor2_tga" / $"{featIcon}.tga").FullName).Should().BeTrue();
 
-            spellRow["Range"].Should().Be(range);
-            spellRow["TargetType"].Should().Be(targetType);
-            spellRow["HostileSetting"].Should().Be(hostileSetting);
-            spellRow["TargetShape"].Should().Be(targetShape);
-            spellRow["TargetSizeX"].Should().Be(targetSizeX);
-            spellRow["TargetSizeY"].Should().Be(targetSizeY);
-            spellRow["TargetFlags"].Should().Be(targetFlags);
+            abilityRow["Range"].Should().Be(range);
+            abilityRow["TargetType"].Should().Be(targetType);
+            abilityRow["HostileSetting"].Should().Be(hostileSetting);
+            abilityRow["TargetShape"].Should().Be(targetShape);
+            abilityRow["TargetSizeX"].Should().Be(targetSizeX);
+            abilityRow["TargetSizeY"].Should().Be(targetSizeY);
+            abilityRow["TargetFlags"].Should().Be(targetFlags);
         }
     }
 

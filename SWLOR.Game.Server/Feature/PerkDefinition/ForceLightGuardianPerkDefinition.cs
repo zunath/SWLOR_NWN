@@ -204,7 +204,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .ForceAffinity(ForceAffinityType.Light)
 
                 .AddPerkLevel()
-                .Description("Nearby allies gain temporary HP and take 10% less force damage for 20 seconds.")
+                .Description("Nearby allies gain temporary HP equal to 10% of maximum HP plus WIL scaling and take 10% less force damage for 20 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Force, 45)
                 .RequirementCharacterType(CharacterType.ForceSensitive)

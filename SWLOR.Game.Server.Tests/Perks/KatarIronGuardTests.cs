@@ -147,11 +147,11 @@ public class KatarIronGuardTests
     }
 
     [Test]
-    public void KatarIronGuardFeatAndSpellIcons_AreUniqueAndPresent()
+    public void KatarIronGuardFeatAndAbilityIcons_AreUniqueAndPresent()
     {
         var root = FindRepositoryRoot();
         var featRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "feat.2da");
-        var spellRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "spells.2da");
+        var abilityRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "spells.2da");
 
         var feats = new[]
         {
@@ -172,22 +172,55 @@ public class KatarIronGuardTests
         foreach (var (featType, expectedIcon, range, targetType, hostileSetting, targetShape, targetSizeX, targetSizeY, targetFlags) in feats)
         {
             var featRow = featRows[(int)featType];
-            var spellRow = spellRows[int.Parse(featRow["SPELLID"])];
+            var abilityRow = abilityRows[int.Parse(featRow["SPELLID"])];
             var featIcon = featRow["ICON"];
 
             featIcon.Should().Be(expectedIcon);
-            spellRow["IconResRef"].Should().Be(featIcon);
+            abilityRow["IconResRef"].Should().Be(featIcon);
             seenIcons.Add(featIcon).Should().BeTrue($"{featType} should have a unique icon");
             File.Exists((root / "SWLOR_Haks" / "swlor2_tga" / $"{featIcon}.tga").FullName).Should().BeTrue();
 
-            spellRow["Range"].Should().Be(range);
-            spellRow["TargetType"].Should().Be(targetType);
-            spellRow["HostileSetting"].Should().Be(hostileSetting);
-            spellRow["TargetShape"].Should().Be(targetShape);
-            spellRow["TargetSizeX"].Should().Be(targetSizeX);
-            spellRow["TargetSizeY"].Should().Be(targetSizeY);
-            spellRow["TargetFlags"].Should().Be(targetFlags);
+            abilityRow["Range"].Should().Be(range);
+            abilityRow["TargetType"].Should().Be(targetType);
+            abilityRow["HostileSetting"].Should().Be(hostileSetting);
+            abilityRow["TargetShape"].Should().Be(targetShape);
+            abilityRow["TargetSizeX"].Should().Be(targetSizeX);
+            abilityRow["TargetSizeY"].Should().Be(targetSizeY);
+            abilityRow["TargetFlags"].Should().Be(targetFlags);
         }
+    }
+
+    [Test]
+    public void KatarIronGuardImplementationDetails_MatchCombatBible()
+    {
+        var root = FindRepositoryRoot();
+
+        var guardCounter = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Katar" / "GuardCounterAbilityDefinition.cs").FullName);
+        guardCounter.Should().Contain("private const float GuardedHitWindowSeconds = 8f;");
+        guardCounter.Should().Contain("ApplyGuardCounter(activator, target, targetLocation, 8, 16, false);");
+        guardCounter.Should().Contain("ApplyGuardCounter(activator, target, targetLocation, 18, 30, false);");
+        guardCounter.Should().Contain("ApplyGuardCounter(activator, target, targetLocation, 28, 45, true);");
+        guardCounter.Should().Contain("? typeof(DazedStatusEffect)");
+
+        var twinIntercept = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Katar" / "TwinInterceptAbilityDefinition.cs").FullName);
+        twinIntercept.Should().Contain(".HasMaxRange(6f)");
+        twinIntercept.Should().Contain("GetMaxHitPoints(activator) * 0.2f");
+        twinIntercept.Should().Contain("ApplyEffectToObject(DurationType.Temporary, EffectTemporaryHitpoints(shield), target, 8f);");
+        twinIntercept.Should().Contain("StatusEffect.ApplyStatusEffect(activator, target, typeof(TwinInterceptStatusEffect), 8f);");
+        twinIntercept.Should().Contain("ModifyEnmityNearAlly(activator, target, 450);");
+
+        var whirlingGuard = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "StatusEffectDefinition" / "WhirlingGuardStatusEffect.cs").FullName);
+        whirlingGuard.Should().Contain("StatGroup.Stats[StatType.Guard] = 20;");
+        whirlingGuard.Should().Contain("StatGroup.Stats[StatType.GuardRetaliationDamage] = 8;");
+
+        var breakerReversal = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Katar" / "BreakerReversalAbilityDefinition.cs").FullName);
+        breakerReversal.Should().Contain("private const float GuardedHitWindowSeconds = 8f;");
+        breakerReversal.Should().Contain("SkillType.Katar, 35, 12, typeof(ExposedStatusEffect), false");
+
+        var adamantineGuard = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "StatusEffectDefinition" / "AdamantineGuardStatusEffect.cs").FullName);
+        adamantineGuard.Should().Contain("StatGroup.Stats[StatType.Guard] = 40;");
+        adamantineGuard.Should().Contain("StatGroup.Stats[StatType.GuardDamageReductionPercentAdjustment] = 20;");
+        adamantineGuard.Should().Contain("StatGroup.Stats[StatType.GuardEnmityPercentAdjustment] = 100;");
     }
 
     private static void AssertPerkLevel(
@@ -214,7 +247,7 @@ public class KatarIronGuardTests
             perkLevel.GrantedFeats.Should().BeEmpty();
 
         if (statTypes.Length > 0)
-            perkLevel.StatBonuses.Select(x => x.Stat).Should().Contain(statTypes);
+            perkLevel.StatBonuses.Select(x => x.Stat).Should().HaveCount(statTypes.Length).And.Contain(statTypes);
         else
             perkLevel.StatBonuses.Should().BeEmpty();
     }

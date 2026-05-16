@@ -84,7 +84,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 0f,
                 Array.Empty<Type>(),
                 centerOnActivator: !GetIsObjectValid(target),
-                damageType: CombatDamageType.Electrical,
+                damageType: CombatDamageType.Force,
                 targetVisualEffect: VisualEffect.Vfx_Com_Hit_Electrical,
                 areaVisualEffect: VisualEffect.Vfx_Fnf_Electric_Explosion,
                 maxTargets: 3);
@@ -106,7 +106,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 0f,
                 Array.Empty<Type>(),
                 centerOnActivator: !GetIsObjectValid(target),
-                damageType: CombatDamageType.Electrical,
+                damageType: CombatDamageType.Force,
                 targetVisualEffect: VisualEffect.Vfx_Com_Hit_Electrical,
                 areaVisualEffect: VisualEffect.Vfx_Fnf_Electric_Explosion,
                 maxTargets: 4);

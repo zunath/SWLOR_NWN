@@ -159,11 +159,11 @@ public class TwinBladeCycloneTests
     }
 
     [Test]
-    public void TwinBladeCycloneFeatAndSpellIcons_AreUniqueAndPresent()
+    public void TwinBladeCycloneFeatAndAbilityIcons_AreUniqueAndPresent()
     {
         var root = FindRepositoryRoot();
         var featRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "feat.2da");
-        var spellRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "spells.2da");
+        var abilityRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "spells.2da");
 
         var feats = new[]
         {
@@ -186,22 +186,47 @@ public class TwinBladeCycloneTests
         foreach (var (featType, expectedIcon, range, targetType, hostileSetting, targetShape, targetSizeX, targetSizeY, targetFlags) in feats)
         {
             var featRow = featRows[(int)featType];
-            var spellRow = spellRows[int.Parse(featRow["SPELLID"])];
+            var abilityRow = abilityRows[int.Parse(featRow["SPELLID"])];
             var featIcon = featRow["ICON"];
 
             featIcon.Should().Be(expectedIcon);
-            spellRow["IconResRef"].Should().Be(featIcon);
+            abilityRow["IconResRef"].Should().Be(featIcon);
             seenIcons.Add(featIcon).Should().BeTrue($"{featType} should have a unique icon");
             File.Exists((root / "SWLOR_Haks" / "swlor2_tga" / $"{featIcon}.tga").FullName).Should().BeTrue();
 
-            spellRow["Range"].Should().Be(range);
-            spellRow["TargetType"].Should().Be(targetType);
-            spellRow["HostileSetting"].Should().Be(hostileSetting);
-            spellRow["TargetShape"].Should().Be(targetShape);
-            spellRow["TargetSizeX"].Should().Be(targetSizeX);
-            spellRow["TargetSizeY"].Should().Be(targetSizeY);
-            spellRow["TargetFlags"].Should().Be(targetFlags);
+            abilityRow["Range"].Should().Be(range);
+            abilityRow["TargetType"].Should().Be(targetType);
+            abilityRow["HostileSetting"].Should().Be(hostileSetting);
+            abilityRow["TargetShape"].Should().Be(targetShape);
+            abilityRow["TargetSizeX"].Should().Be(targetSizeX);
+            abilityRow["TargetSizeY"].Should().Be(targetSizeY);
+            abilityRow["TargetFlags"].Should().Be(targetFlags);
         }
+    }
+
+    [Test]
+    public void TwinBladeCycloneImplementationDetails_MatchCombatBible()
+    {
+        var root = FindRepositoryRoot();
+
+        var sweepingAdvance = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "TwinBlade" / "SweepingAdvanceAbilityDefinition.cs").FullName);
+        sweepingAdvance.Should().Contain("private const int MomentumTargetThreshold = 3;");
+        sweepingAdvance.Should().Contain("private const int MomentumStaminaRestore = 6;");
+        sweepingAdvance.Should().Contain("private const int MomentumHastePercent = 10;");
+        sweepingAdvance.Should().Contain("private const int MomentumDurationSeconds = 8;");
+
+        var stormRelease = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "TwinBlade" / "StormReleaseAbilityDefinition.cs").FullName);
+        stormRelease.Should().Contain("private const int DamagePerMomentumStack = 15;");
+        stormRelease.Should().Contain("DamagePerMomentumStack * momentumStacks");
+        stormRelease.Should().Contain("TemporaryStatModifier.Consume(");
+
+        var tempestBloom = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "TwinBlade" / "TempestBloomAbilityDefinition.cs").FullName);
+        tempestBloom.Should().Contain("private const float ChannelDurationSeconds = 6f;");
+        tempestBloom.Should().Contain("private const float PulseIntervalSeconds = 2f;");
+        tempestBloom.Should().Contain("Ability.BeginAbilityImpact(activator, ability);");
+        tempestBloom.Should().Contain("Combat.ApplyAbilityImpactEffects(activator, summary);");
+        tempestBloom.Should().Contain("typeof(KnockdownStatusEffect)");
+        tempestBloom.Should().Contain("? 3 : 0");
     }
 
     private static void AssertPerkLevel(
@@ -228,7 +253,7 @@ public class TwinBladeCycloneTests
             perkLevel.GrantedFeats.Should().BeEmpty();
 
         if (statTypes.Length > 0)
-            perkLevel.StatBonuses.Select(x => x.Stat).Should().Contain(statTypes);
+            perkLevel.StatBonuses.Select(x => x.Stat).Should().HaveCount(statTypes.Length).And.Contain(statTypes);
         else
             perkLevel.StatBonuses.Should().BeEmpty();
     }

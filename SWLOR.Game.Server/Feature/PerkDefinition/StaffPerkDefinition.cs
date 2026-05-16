@@ -105,7 +105,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Staff, 12)
 
                 .AddPerkLevel()
-                .Description("Bonus damage with staves increases to 2x your MGT modifier and critical chance increases by an additional 10%.")
+                .Description("Bonus damage with staves increases to 2x your MGT modifier and critical chance increases by an additional 10%. Critical staff hits still deal +10% damage and restore 2 STM once every 6 seconds.")
                 .IncreasesStat(StatType.CriticalDamagePercentAdjustment, creature => EquipmentPredicates.HasMainHandStaff(creature) ? 10 : 0)
                 .IncreasesStat(StatType.CriticalStaminaRestore, creature => EquipmentPredicates.HasMainHandStaff(creature) ? 2 : 0)
                 .IncreasesStat(StatType.CriticalStaminaRestoreSkillType, creature => EquipmentPredicates.HasMainHandStaff(creature) ? (int)SkillType.Staff : 0)
@@ -116,7 +116,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Staff, 32)
 
                 .AddPerkLevel()
-                .Description("Staff critical hits deal +20% damage and restore 4 STM. This can only trigger once every 6 seconds.")
+                .Description("Staff critical hits deal +20% damage and restore 4 STM once every 6 seconds. Bonus damage with staves remains 2x your MGT modifier and the additional +10% critical chance remains.")
                 .IncreasesStat(StatType.CriticalDamagePercentAdjustment, creature => EquipmentPredicates.HasMainHandStaff(creature) ? 20 : 0)
                 .IncreasesStat(StatType.CriticalStaminaRestore, creature => EquipmentPredicates.HasMainHandStaff(creature) ? 4 : 0)
                 .IncreasesStat(StatType.CriticalStaminaRestoreSkillType, creature => EquipmentPredicates.HasMainHandStaff(creature) ? (int)SkillType.Staff : 0)

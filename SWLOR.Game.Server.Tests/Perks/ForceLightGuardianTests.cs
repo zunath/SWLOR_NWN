@@ -51,7 +51,7 @@ public class ForceLightGuardianTests
         AssertPerkLevel(perks[PerkType.GuardianWard], "Guardian Ward", 4, 4, 42, FeatType.GuardianWard4,
             "Grants a single ally temporary HP equal to 15% of the target's maximum HP plus WIL scaling for 30 seconds.");
         AssertPerkLevel(perks[PerkType.BastionOfLight], "Bastion of Light", 1, 4, 45, FeatType.BastionOfLight1,
-            "Nearby allies gain temporary HP and take 10% less force damage for 20 seconds.");
+            "Nearby allies gain temporary HP equal to 10% of maximum HP plus WIL scaling and take 10% less force damage for 20 seconds.");
         AssertPerkLevel(perks[PerkType.ForcePush], "Force Push", 3, 3, 48, FeatType.ForcePush3,
             "Knock down up to 3 targets in a cone for 2 seconds. slows movement for 4 seconds.");
         AssertPerkLevel(perks[PerkType.LastStandOfTheLight], "Last Stand of the Light", 1, 5, 50, FeatType.LastStandOfTheLight1,
@@ -120,11 +120,11 @@ public class ForceLightGuardianTests
     }
 
     [Test]
-    public void ForceLightGuardianFeatAndSpellIcons_AreUniqueAndPresent()
+    public void ForceLightGuardianFeatAndAbilityIcons_AreUniqueAndPresent()
     {
         var root = FindRepositoryRoot();
         var featRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "feat.2da");
-        var spellRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "spells.2da");
+        var abilityRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "spells.2da");
 
         var feats = new[]
         {
@@ -150,21 +150,21 @@ public class ForceLightGuardianTests
         foreach (var (featType, expectedIcon, range, targetType, hostileSetting, targetShape, targetSizeX, targetSizeY, targetFlags) in feats)
         {
             var featRow = featRows[(int)featType];
-            var spellRow = spellRows[int.Parse(featRow["SPELLID"])];
+            var abilityRow = abilityRows[int.Parse(featRow["SPELLID"])];
             var featIcon = featRow["ICON"];
 
             featIcon.Should().Be(expectedIcon);
-            spellRow["IconResRef"].Should().Be(featIcon);
+            abilityRow["IconResRef"].Should().Be(featIcon);
             seenIcons.Add(featIcon).Should().BeTrue($"{featType} should have a unique icon");
             File.Exists((root / "SWLOR_Haks" / "swlor2_tga" / $"{featIcon}.tga").FullName).Should().BeTrue();
 
-            spellRow["Range"].Should().Be(range);
-            spellRow["TargetType"].Should().Be(targetType);
-            spellRow["HostileSetting"].Should().Be(hostileSetting);
-            spellRow["TargetShape"].Should().Be(targetShape);
-            spellRow["TargetSizeX"].Should().Be(targetSizeX);
-            spellRow["TargetSizeY"].Should().Be(targetSizeY);
-            spellRow["TargetFlags"].Should().Be(targetFlags);
+            abilityRow["Range"].Should().Be(range);
+            abilityRow["TargetType"].Should().Be(targetType);
+            abilityRow["HostileSetting"].Should().Be(hostileSetting);
+            abilityRow["TargetShape"].Should().Be(targetShape);
+            abilityRow["TargetSizeX"].Should().Be(targetSizeX);
+            abilityRow["TargetSizeY"].Should().Be(targetSizeY);
+            abilityRow["TargetFlags"].Should().Be(targetFlags);
         }
     }
 
@@ -197,7 +197,7 @@ public class ForceLightGuardianTests
             perkLevel.GrantedFeats.Should().BeEmpty();
 
         if (statTypes.Length > 0)
-            perkLevel.StatBonuses.Select(x => x.Stat).Should().Contain(statTypes);
+            perkLevel.StatBonuses.Select(x => x.Stat).Should().HaveCount(statTypes.Length).And.Contain(statTypes);
         else
             perkLevel.StatBonuses.Should().BeEmpty();
     }

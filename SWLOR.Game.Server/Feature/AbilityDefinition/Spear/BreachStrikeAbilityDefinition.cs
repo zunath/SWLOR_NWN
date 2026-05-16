@@ -30,8 +30,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
                 .HasRecastDelay(RecastGroup.BreachStrike, 45f)
                 .RequiresTarget()
                 .HasImpactAction(BreachStrike1ImpactAction)
+                .SkillType(SkillType.Spear)
                 .IsCastedAbility()
                 .IsHostileAbility()
+                .IsSingleTargetAbility()
                 .BreaksStealth()
                 .RequirementStamina(10);
         }

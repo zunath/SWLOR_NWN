@@ -80,7 +80,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.CalmingStance1)
-                .Description("While active, your STM regenerates by 3 every second. Your attack, force attack, Physical Defense, and Force Defense are reduced by 40%.")
+                .Description("While active, your STM regenerates by 3 every second. Your attack, force attack, defense, and force defense are reduced by 40%.")
                 .Price(3)
                 .RequirementSkill(SkillType.Spear, 45);
         }
@@ -212,7 +212,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.FlankingStance1)
-                .Description("While active, attacks from the side deal +20% damage and have +15% accuracy. Your physical and Force Defense are reduced by 25%.")
+                .Description("While active, attacks from the side deal +20% damage and have +15% accuracy. Your defense and force defense are reduced by 25%.")
                 .Price(3)
                 .RequirementSkill(SkillType.Spear, 12);
         }
@@ -449,7 +449,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SweepingFlank1)
-                .Description("Deal weapon DMG + 18 to all enemies within area of effect (cone). Inflicts Exposed, which reduces Defense by 15% for 30 seconds.")
+                .Description("Deal weapon DMG + 18 to all enemies within area of effect (cone). Inflicts Exposed, which reduces defense by 15% for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Spear, 25);
         }

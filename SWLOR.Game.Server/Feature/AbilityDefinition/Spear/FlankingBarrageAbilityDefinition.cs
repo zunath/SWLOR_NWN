@@ -29,9 +29,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.FlankingBarrage, 120f)
                 .RequiresTarget()
+                .HasCustomValidation(ValidateBesideTarget)
                 .HasImpactAction(FlankingBarrage1ImpactAction)
+                .SkillType(SkillType.Spear)
                 .IsCastedAbility()
                 .IsHostileAbility()
+                .IsSingleTargetAbility()
                 .BreaksStealth()
                 .RequirementStamina(8);
         }
@@ -39,6 +42,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
         private static void FlankingBarrage1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
             Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Spear, 20, 8, typeof(FlankingBarrageStatusEffect), false);
+        }
+
+        private static string ValidateBesideTarget(uint activator, uint target, int level, Location targetLocation)
+        {
+            return Combat.IsAttackerBesideTarget(activator, target)
+                ? string.Empty
+                : "You must be beside your target.";
         }
     }
 }

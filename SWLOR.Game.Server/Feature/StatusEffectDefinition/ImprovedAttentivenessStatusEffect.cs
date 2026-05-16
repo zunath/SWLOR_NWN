@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public override EffectIconType Icon => EffectIconType.AttackIncrease;
         public ImprovedAttentivenessStatusEffect()
         {
-            StatGroup.Stats[StatType.AccuracyPercentAdjustment] = 15;
+            StatGroup.Stats[StatType.AbilityHitChancePercentAdjustment] = 15;
         }
 
     }

@@ -17,6 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
                     .Create(FeatType.CripplingDefense1, PerkType.CripplingDefense)
                     .Name("Crippling Defense")
                     .Level(1)
+                    .SkillType(SkillType.Spear)
                     .HasRecastDelay(RecastGroup.Capstone, 1800f),
                 typeof(CripplingDefenseStatusEffect),
                 15f,

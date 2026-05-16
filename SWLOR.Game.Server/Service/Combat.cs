@@ -703,7 +703,7 @@ namespace SWLOR.Game.Server.Service
                 Stat.GetStatAdjustment(attacker, StatType.SideAttackEvasionIgnoreChanceScalingAbility));
             if (scalingAbility != AbilityType.Invalid)
             {
-                chance += Math.Max(0, GetAbilityModifier(scalingAbility, attacker));
+                chance += Math.Max(0, GetAbilityScore(attacker, scalingAbility));
             }
 
             var chanceMaximum = Stat.GetStatAdjustment(attacker, StatType.SideAttackEvasionIgnoreChanceMaximum);

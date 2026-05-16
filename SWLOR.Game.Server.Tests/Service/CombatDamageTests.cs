@@ -1,6 +1,9 @@
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.CombatService;
+using NativeDamageType = NWN.Native.API.DamageType;
+using NWNScriptDamageType = SWLOR.NWN.API.NWScript.Enum.DamageType;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -43,5 +46,17 @@ public class CombatDamageTests
 
         minDamage.Should().Be(0);
         maxDamage.Should().Be(0);
+    }
+
+    [Test]
+    public void ForceDamage_UsesForceCombatMetadataAndMagicEnginePayload()
+    {
+        var forceDamage = CombatDamageType.Force.GetDetails();
+
+        forceDamage.Category.Should().Be(CombatDamageCategoryType.Force);
+        forceDamage.DefenseDamageType.Should().Be(CombatDamageType.Force);
+        forceDamage.SourceResistanceType.Should().Be(ResistanceType.Disruption);
+        forceDamage.NWScriptDamageType.Should().Be(NWNScriptDamageType.Force);
+        forceDamage.NativeDamageType.Should().Be(NativeDamageType.Magical);
     }
 }

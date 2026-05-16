@@ -85,6 +85,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 Array.Empty<Type>(),
                 centerOnActivator: !GetIsObjectValid(target),
                 damageType: CombatDamageType.Force,
+                effectDamageType: DamageType.Electrical,
                 afterSuccessfulHit: hitTarget => ApplyLightningVisual(activator, hitTarget),
                 maxTargets: 3);
         }
@@ -106,6 +107,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 Array.Empty<Type>(),
                 centerOnActivator: !GetIsObjectValid(target),
                 damageType: CombatDamageType.Force,
+                effectDamageType: DamageType.Electrical,
                 afterSuccessfulHit: hitTarget => ApplyLightningVisual(activator, hitTarget),
                 maxTargets: 4);
         }

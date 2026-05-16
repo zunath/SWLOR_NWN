@@ -895,7 +895,8 @@ namespace SWLOR.Game.Server.Service
             int hitChancePercentAdjustment = 0,
             int criticalRatePercentAdjustment = 0,
             bool useNPCStatScaling = false,
-            bool awardsCombatPoints = true)
+            bool awardsCombatPoints = true,
+            DamageType? effectDamageType = null)
         {
             var totalDamage = 0;
             RecordAbilityImpactShape(activator, skillType, isArea);
@@ -940,7 +941,8 @@ namespace SWLOR.Game.Server.Service
                     hitChancePercentAdjustment: hitChancePercentAdjustment,
                     criticalRatePercentAdjustment: criticalRatePercentAdjustment,
                     useNPCStatScaling: useNPCStatScaling,
-                    awardsCombatPoints: awardsCombatPoints);
+                    awardsCombatPoints: awardsCombatPoints,
+                    effectDamageType: effectDamageType);
             }
             else if (GetIsObjectValid(target))
             {
@@ -964,7 +966,8 @@ namespace SWLOR.Game.Server.Service
                     hitChancePercentAdjustment: hitChancePercentAdjustment,
                     criticalRatePercentAdjustment: criticalRatePercentAdjustment,
                     useNPCStatScaling: useNPCStatScaling,
-                    awardsCombatPoints: awardsCombatPoints);
+                    awardsCombatPoints: awardsCombatPoints,
+                    effectDamageType: effectDamageType);
             }
 
             PlayCombatImpactAnimation(activator, impactAnimation);
@@ -1005,7 +1008,8 @@ namespace SWLOR.Game.Server.Service
             int hitChancePercentAdjustment = 0,
             int criticalRatePercentAdjustment = 0,
             bool useNPCStatScaling = false,
-            bool awardsCombatPoints = true)
+            bool awardsCombatPoints = true,
+            DamageType? effectDamageType = null)
         {
             RecordAbilityImpactShape(activator, skillType, true);
 
@@ -1039,7 +1043,8 @@ namespace SWLOR.Game.Server.Service
                     hitChancePercentAdjustment,
                     criticalRatePercentAdjustment,
                     useNPCStatScaling,
-                    awardsCombatPoints);
+                    awardsCombatPoints,
+                    effectDamageType);
                 PlayCombatImpactAnimation(activator, impactAnimation);
                 return;
             }
@@ -1079,7 +1084,8 @@ namespace SWLOR.Game.Server.Service
                 hitChancePercentAdjustment,
                 criticalRatePercentAdjustment,
                 useNPCStatScaling,
-                awardsCombatPoints);
+                awardsCombatPoints,
+                effectDamageType);
 
             switch (shape)
             {
@@ -1149,7 +1155,8 @@ namespace SWLOR.Game.Server.Service
             int hitChancePercentAdjustment,
             int criticalRatePercentAdjustment,
             bool useNPCStatScaling,
-            bool awardsCombatPoints)
+            bool awardsCombatPoints,
+            DamageType? effectDamageType)
         {
             RecordAbilityImpactShape(activator, skillType, true);
 
@@ -1209,7 +1216,8 @@ namespace SWLOR.Game.Server.Service
                 hitChancePercentAdjustment: hitChancePercentAdjustment,
                 criticalRatePercentAdjustment: criticalRatePercentAdjustment,
                 useNPCStatScaling: useNPCStatScaling,
-                awardsCombatPoints: awardsCombatPoints);
+                awardsCombatPoints: awardsCombatPoints,
+                effectDamageType: effectDamageType);
         }
 
         private static ApplyTelegraphEffect BuildTelegraphedCombatImpactAction(
@@ -1239,7 +1247,8 @@ namespace SWLOR.Game.Server.Service
             int hitChancePercentAdjustment,
             int criticalRatePercentAdjustment,
             bool useNPCStatScaling,
-            bool awardsCombatPoints)
+            bool awardsCombatPoints,
+            DamageType? effectDamageType)
         {
             return (creator, creatures) =>
             {
@@ -1297,7 +1306,8 @@ namespace SWLOR.Game.Server.Service
                     hitChancePercentAdjustment: hitChancePercentAdjustment,
                     criticalRatePercentAdjustment: criticalRatePercentAdjustment,
                     useNPCStatScaling: useNPCStatScaling,
-                    awardsCombatPoints: awardsCombatPoints);
+                    awardsCombatPoints: awardsCombatPoints,
+                    effectDamageType: effectDamageType);
 
                 if (ability != null)
                 {
@@ -1330,7 +1340,8 @@ namespace SWLOR.Game.Server.Service
             int hitChancePercentAdjustment = 0,
             int criticalRatePercentAdjustment = 0,
             bool useNPCStatScaling = false,
-            bool awardsCombatPoints = true)
+            bool awardsCombatPoints = true,
+            DamageType? effectDamageType = null)
         {
             var totalDamage = 0;
             var affectedCount = 0;
@@ -1366,7 +1377,8 @@ namespace SWLOR.Game.Server.Service
                     hitChancePercentAdjustment,
                     criticalRatePercentAdjustment,
                     useNPCStatScaling,
-                    awardsCombatPoints);
+                    awardsCombatPoints,
+                    effectDamageType);
                 affectedCount++;
             }
 
@@ -1493,7 +1505,8 @@ namespace SWLOR.Game.Server.Service
             int hitChancePercentAdjustment = 0,
             int criticalRatePercentAdjustment = 0,
             bool useNPCStatScaling = false,
-            bool awardsCombatPoints = true)
+            bool awardsCombatPoints = true,
+            DamageType? effectDamageType = null)
         {
             var trackedImpact = GetTrackedAbilityImpact(activator);
             var perkType = trackedImpact?.Ability?.EffectiveLevelPerkType ?? PerkType.Invalid;
@@ -1518,7 +1531,12 @@ namespace SWLOR.Game.Server.Service
             damage = ApplyDamagePercentAdjustment(target, damage, damagePercentAdjustment);
             if (damage > 0)
             {
-                AssignCommand(activator, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, damageType.GetNWScriptDamageType()), target));
+                AssignCommand(
+                    activator,
+                    () => ApplyEffectToObject(
+                        DurationType.Instant,
+                        EffectDamage(damage, effectDamageType ?? damageType.GetNWScriptDamageType()),
+                        target));
                 ApplyDarkForceConversion(activator, target, damage);
                 Combat.ApplyDamageDealtEffects(activator, target, damage, skillType, damageType);
                 StatusEffect.NotifyDamageStatusEffects(activator, target, damage, damageType);

@@ -157,8 +157,11 @@ public class ForceDarkRavagerTests
 
         var forceLightning = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Force" / "ForceLightningAbilityDefinition.cs").FullName);
         forceLightning.Should().Contain("damageType: CombatDamageType.Force");
+        forceLightning.Should().Contain("effectDamageType: DamageType.Electrical");
         forceLightning.Should().NotContain("damageType: CombatDamageType.Electrical");
-        forceLightning.Should().Contain("VisualEffect.Vfx_Com_Hit_Electrical");
+        forceLightning.Should().Contain("VisualEffect.Vfx_Beam_Silent_Lightning");
+        forceLightning.Should().Contain("VisualEffect.Vfx_Imp_Lightning_S");
+        forceLightning.Should().NotContain("VisualEffect.Vfx_Com_Hit_Electrical");
     }
 
     [Test]

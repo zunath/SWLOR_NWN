@@ -17,8 +17,19 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             float durationSeconds,
             Type statusEffect,
             VisualEffect visualEffect = VisualEffect.None,
-            Action<uint, float> onFirstApplication = null)
+            Action<uint, float> onFirstApplication = null,
+            VisualEffect areaMarkerVisualEffect = VisualEffect.None,
+            float areaMarkerVisualEffectScale = 1f)
         {
+            if (areaMarkerVisualEffect != VisualEffect.None)
+            {
+                ApplyEffectAtLocation(
+                    DurationType.Temporary,
+                    EffectVisualEffect(areaMarkerVisualEffect, false, Math.Max(0.1f, areaMarkerVisualEffectScale)),
+                    location,
+                    durationSeconds);
+            }
+
             var firstApplications = new HashSet<uint>();
             for (var elapsed = 0f; elapsed < durationSeconds - 0.01f; elapsed += 3f)
             {

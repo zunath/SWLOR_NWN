@@ -78,7 +78,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 4f,
                 duration,
                 statusEffect,
-                VisualEffect.Vfx_Imp_Ac_Bonus);
+                VisualEffect.Vfx_Imp_Ac_Bonus,
+                areaMarkerVisualEffect: VisualEffect.Vfx_Dur_Aura_Pulse_Cyan_Blue,
+                areaMarkerVisualEffectScale: 2f);
         }
 
     }

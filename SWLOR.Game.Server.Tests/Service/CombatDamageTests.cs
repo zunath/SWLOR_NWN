@@ -2,6 +2,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Service.SkillService;
 using NativeDamageType = NWN.Native.API.DamageType;
 using NWNScriptDamageType = SWLOR.NWN.API.NWScript.Enum.DamageType;
 
@@ -58,5 +59,60 @@ public class CombatDamageTests
         forceDamage.SourceResistanceType.Should().Be(ResistanceType.Disruption);
         forceDamage.NWScriptDamageType.Should().Be(NWNScriptDamageType.Force);
         forceDamage.NativeDamageType.Should().Be(NativeDamageType.Magical);
+    }
+
+    [Test]
+    public void PhysicalDamage_UsesPhysicalCombatMetadataAndSlashingEnginePayload()
+    {
+        var physicalDamage = CombatDamageType.Physical.GetDetails();
+
+        physicalDamage.Category.Should().Be(CombatDamageCategoryType.Physical);
+        physicalDamage.DefenseDamageType.Should().Be(CombatDamageType.Physical);
+        physicalDamage.SourceResistanceType.Should().Be(ResistanceType.Trauma);
+        physicalDamage.NWScriptDamageType.Should().Be(NWNScriptDamageType.Slashing);
+        physicalDamage.NativeDamageType.Should().Be(NativeDamageType.Slashing);
+    }
+
+    [Test]
+    public void AbilityCombatImpact_IncludesWeaponDamageAndKeepsPhysicalEffectDamagePhysical()
+    {
+        var root = FindRepositoryRoot();
+        var abilitySource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Ability.cs"));
+        var damageTypeSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "CombatService", "CombatDamageType.cs"));
+
+        abilitySource.Should().Contain("Combat.GetCombatImpactWeaponDamage(activator, skillType)");
+        abilitySource.Should().Contain("effectDamageType ?? damageType.GetNWScriptDamageType()");
+        abilitySource.Should().NotContain("GetNWScriptDamagePower");
+        abilitySource.Should().NotContain("GetCombatImpactEffectDamagePower");
+        abilitySource.Should().NotContain("private static int GetCombatImpactWeaponDamage");
+        damageTypeSource.Should().NotContain("GetNWScriptDamagePower");
+        damageTypeSource.Should().NotContain("DamagePower");
+    }
+
+    [Test]
+    public void IsWeaponSkillType_UsesSkillCombatPointMetadata()
+    {
+        Combat.IsWeaponSkillType(SkillType.Lightsaber).Should().BeTrue();
+        Combat.IsWeaponSkillType(SkillType.Rifle).Should().BeTrue();
+        Combat.IsWeaponSkillType(SkillType.Force).Should().BeFalse();
+        Combat.IsWeaponSkillType(SkillType.Devices).Should().BeFalse();
+        Combat.IsWeaponSkillType(SkillType.Invalid).Should().BeFalse();
+    }
+
+    private static DirectoryInfo FindRepositoryRoot()
+    {
+        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
+        while (directory != null)
+        {
+            if (File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln")) &&
+                Directory.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server")))
+            {
+                return directory;
+            }
+
+            directory = directory.Parent;
+        }
+
+        throw new DirectoryNotFoundException("Could not locate the SWLOR_NWN repository root.");
     }
 }

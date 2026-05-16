@@ -3219,7 +3219,37 @@ namespace SWLOR.Game.Server.Service
             return skillType == SkillType.Force || IsWeaponSkillType(skillType);
         }
 
-        private static bool IsWeaponSkillType(SkillType skillType)
+        public static int GetCombatImpactWeaponDamage(uint activator, SkillType skillType)
+        {
+            if (!IsWeaponSkillType(skillType))
+                return 0;
+
+            var weapon = GetCombatImpactWeapon(activator, skillType);
+            return GetIsObjectValid(weapon)
+                ? Item.GetDMG(weapon)
+                : 0;
+        }
+
+        private static uint GetCombatImpactWeapon(uint activator, SkillType skillType)
+        {
+            var rightHand = GetItemInSlot(InventorySlot.RightHand, activator);
+            if (IsWeaponForSkill(rightHand, skillType))
+                return rightHand;
+
+            var leftHand = GetItemInSlot(InventorySlot.LeftHand, activator);
+            if (IsWeaponForSkill(leftHand, skillType))
+                return leftHand;
+
+            return OBJECT_INVALID;
+        }
+
+        private static bool IsWeaponForSkill(uint item, SkillType skillType)
+        {
+            return GetIsObjectValid(item) &&
+                   Skill.GetSkillTypeByBaseItem((BaseItem)GetBaseItemType(item)) == skillType;
+        }
+
+        public static bool IsWeaponSkillType(SkillType skillType)
         {
             return skillType != SkillType.Invalid &&
                    skillType.GetAttribute<SkillType, SkillAttribute>().CombatPointCategory == CombatPointCategoryType.Weapon;

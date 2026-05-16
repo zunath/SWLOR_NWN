@@ -1713,6 +1713,7 @@ namespace SWLOR.Game.Server.Service
             var perkType = trackedImpact?.Ability?.EffectiveLevelPerkType ?? PerkType.Invalid;
             var idleBonuses = Combat.GetIdleSkillAbilityBonuses(activator, skillType);
             var damage = baseDamage +
+                Combat.GetCombatImpactWeaponDamage(activator, skillType) +
                 Combat.GetAbilityDamageBonus(activator, skillType) +
                 Combat.GetAbilityDamageFlatAdjustment(activator, perkType) +
                 idleBonuses.DamageBonus;
@@ -1875,6 +1876,7 @@ namespace SWLOR.Game.Server.Service
             var idleBonuses = Combat.GetIdleSkillAbilityBonuses(activator, skillType);
             var scalingRank = GetNPCAbilityScalingRank(activator, skillType, damageType);
             var damage = baseDamage +
+                Combat.GetCombatImpactWeaponDamage(activator, skillType) +
                 (int)Math.Ceiling(scalingRank * 0.15f) +
                 Combat.GetAbilityDamageFlatAdjustment(activator, perkType) +
                 idleBonuses.DamageBonus;

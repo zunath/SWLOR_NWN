@@ -176,7 +176,8 @@ namespace SWLOR.Game.Server.Service.PerkService
         StasisField = 170,
         CombatEnhancement = 171,
         Provoke = 172,
-        // IDs 173-176 are free.
+        DualWield = 173,
+        // IDs 174-176 are free.
         MuscleMemoryFabrication = 177,
         VenerationFabrication = 178,
         WasteNotFabrication = 179,

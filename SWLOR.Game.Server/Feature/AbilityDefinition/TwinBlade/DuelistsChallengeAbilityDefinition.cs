@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
                 .Create(FeatType.DuelistsChallenge1, PerkType.DuelistsChallenge)
                 .Name("Duelist's Challenge")
                 .Level(1)
+                .SkillType(SkillType.TwinBlade)
                 .HasActivationDelay(0f)
                 .RequiresTarget()
                 .HasRecastDelay(RecastGroup.DuelistsChallenge, 120f)
@@ -31,6 +32,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
 
                     Ability.ApplyHostileAbilityEnmity(activator, target);
                 })
+                .IsSingleTargetAbility()
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()

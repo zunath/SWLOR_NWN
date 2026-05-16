@@ -1618,6 +1618,12 @@ namespace SWLOR.Game.Server.Service
             var calculatedDamage = damageRoll.Damage;
             criticalRating = damageRoll.CriticalRating;
             calculatedDamage = Combat.ApplySideAttackDamageModifier(activator, target, skillType, calculatedDamage);
+            calculatedDamage = Combat.ApplyTwinBladeAbilityShapeDamageModifier(
+                activator,
+                skillType,
+                calculatedDamage,
+                IsTrackedAbilitySingleTarget(activator),
+                IsTrackedAbilityArea(activator));
             if (skillType == SkillType.Force)
             {
                 calculatedDamage = Perk.ApplyForceAffinityMagnitude(activator, perkType, calculatedDamage);

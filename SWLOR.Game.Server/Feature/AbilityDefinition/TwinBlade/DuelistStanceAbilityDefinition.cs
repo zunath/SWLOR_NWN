@@ -17,6 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
                     .Create(FeatType.DuelistStance1, PerkType.DuelistStance)
                     .Name("Duelist Stance")
                     .Level(1)
+                    .SkillType(SkillType.TwinBlade)
                     .HasRecastDelay(RecastGroup.DuelistStance, 180f),
                 typeof(DuelistStanceStatusEffect));
 

@@ -2244,7 +2244,19 @@ namespace SWLOR.Game.Server.Service.StatService
         /// Percent of physical damage dealt restored as HP.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        PhysicalDamageDealtHPPercentRestore = 373
+        PhysicalDamageDealtHPPercentRestore = 373,
+
+        /// <summary>
+        /// Percent damage adjustment applied to single-target Twin Blade abilities.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        TwinBladeSingleTargetAbilityDamagePercentAdjustment = 374,
+
+        /// <summary>
+        /// Percent damage adjustment applied to area Twin Blade abilities.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        TwinBladeAreaAbilityDamagePercentAdjustment = 375
     }
 
     public class StatTypeAttribute : Attribute

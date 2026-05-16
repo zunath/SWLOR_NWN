@@ -27,10 +27,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
                 .Create(FeatType.SplitGuardStrike1, PerkType.SplitGuardStrike)
                 .Name("Split Guard Strike I")
                 .Level(1)
+                .SkillType(SkillType.TwinBlade)
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.SplitGuardStrike, 30f)
                 .RequiresTarget()
                 .HasImpactAction(SplitGuardStrike1ImpactAction)
+                .IsSingleTargetAbility()
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
@@ -43,10 +45,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
                 .Create(FeatType.SplitGuardStrike2, PerkType.SplitGuardStrike)
                 .Name("Split Guard Strike II")
                 .Level(2)
+                .SkillType(SkillType.TwinBlade)
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.SplitGuardStrike, 30f)
                 .RequiresTarget()
                 .HasImpactAction(SplitGuardStrike2ImpactAction)
+                .IsSingleTargetAbility()
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
@@ -59,10 +63,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
                 .Create(FeatType.SplitGuardStrike3, PerkType.SplitGuardStrike)
                 .Name("Split Guard Strike III")
                 .Level(3)
+                .SkillType(SkillType.TwinBlade)
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.SplitGuardStrike, 30f)
                 .RequiresTarget()
                 .HasImpactAction(SplitGuardStrike3ImpactAction)
+                .IsSingleTargetAbility()
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
@@ -71,17 +77,41 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
 
         private static void SplitGuardStrike1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.TwinBlade, 10, 10, null, false);
+            ApplySplitGuardStrike(activator, target, targetLocation, 10, 15);
         }
 
         private static void SplitGuardStrike2ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.TwinBlade, 22, 10, null, false);
+            ApplySplitGuardStrike(activator, target, targetLocation, 22, 20);
         }
 
         private static void SplitGuardStrike3ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.TwinBlade, 34, 10, null, false);
+            ApplySplitGuardStrike(activator, target, targetLocation, 34, 25);
+        }
+
+        private static void ApplySplitGuardStrike(
+            uint activator,
+            uint target,
+            Location targetLocation,
+            int baseDamage,
+            int defensePercent)
+        {
+            Ability.ApplyCombatImpact(
+                activator,
+                target,
+                targetLocation,
+                SkillType.TwinBlade,
+                baseDamage,
+                0,
+                null,
+                false);
+
+            StatusEffect.ApplyStatusEffect(
+                activator,
+                activator,
+                new SplitGuardStrikeStatusEffect(defensePercent),
+                10f);
         }
     }
 }

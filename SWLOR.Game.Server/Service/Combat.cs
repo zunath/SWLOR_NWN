@@ -32,6 +32,7 @@ namespace SWLOR.Game.Server.Service
         private static readonly List<CombatDamageType> _allDefenseDamageTypes = new();
         private static readonly Dictionary<(uint, StatType), DateTime> _statTriggerCooldowns = new();
         private static readonly Dictionary<(uint, uint), DateTime> _recentDamageTargets = new();
+        private static readonly Dictionary<uint, DateTime> _recentDamageTaken = new();
         private static readonly Dictionary<uint, DateTime> _recentGuardedHits = new();
         private static readonly Dictionary<uint, DateTime> _lastCombatActivity = new();
         private static readonly Dictionary<uint, DateTime> _lastCombatAbilityUse = new();
@@ -970,6 +971,7 @@ namespace SWLOR.Game.Server.Service
             ApplyLowHPTemporaryHPEffect(defender, damage);
             ApplyLowHPNoSaveTemporaryHPEffect(defender, damage);
             ApplyLowHPGuardEffect(defender, damage);
+            TrackRecentDamageTaken(defender);
             ApplyRecentDamageTargetHitEffects(defender, attacker);
         }
 
@@ -1286,6 +1288,29 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             _recentDamageTargets[(attacker, defender)] = DateTime.UtcNow;
+        }
+
+        private static void TrackRecentDamageTaken(uint creature)
+        {
+            if (!GetIsObjectValid(creature))
+                return;
+
+            _recentDamageTaken[creature] = DateTime.UtcNow;
+        }
+
+        public static bool HasRecentDamageTaken(uint creature, float windowSeconds)
+        {
+            if (!GetIsObjectValid(creature) || windowSeconds <= 0f)
+                return false;
+
+            if (!_recentDamageTaken.TryGetValue(creature, out var lastDamaged))
+                return false;
+
+            var isRecent = (DateTime.UtcNow - lastDamaged).TotalSeconds <= windowSeconds;
+            if (!isRecent)
+                _recentDamageTaken.Remove(creature);
+
+            return isRecent;
         }
 
         private static void TrackCombatActivity(uint creature)
@@ -1693,6 +1718,37 @@ namespace SWLOR.Game.Server.Service
             return damage + (int)Math.Ceiling(damage * (adjustment / 100f));
         }
 
+        public static int ApplyTwinBladeAbilityShapeDamageModifier(
+            uint attacker,
+            SkillType skillType,
+            int damage,
+            bool isSingleTargetAbility,
+            bool isAreaAbility)
+        {
+            if (damage <= 0 || skillType != SkillType.TwinBlade)
+                return damage;
+
+            var adjustment = 0;
+            if (isSingleTargetAbility)
+            {
+                adjustment += Stat.GetStatAdjustment(
+                    attacker,
+                    StatType.TwinBladeSingleTargetAbilityDamagePercentAdjustment);
+            }
+
+            if (isAreaAbility)
+            {
+                adjustment += Stat.GetStatAdjustment(
+                    attacker,
+                    StatType.TwinBladeAreaAbilityDamagePercentAdjustment);
+            }
+
+            if (adjustment == 0)
+                return damage;
+
+            return Math.Max(0, damage + (int)Math.Ceiling(damage * (adjustment / 100f)));
+        }
+
         public static int ApplyStatusSourceDefenseModifiers(uint attacker, uint defender, int defense)
         {
             if (defense <= 0)
@@ -1806,6 +1862,7 @@ namespace SWLOR.Game.Server.Service
                 _recentDamageTargets.Remove(key);
             }
 
+            _recentDamageTaken.Remove(creature);
             _recentGuardedHits.Remove(creature);
             _lastCombatActivity.Remove(creature);
             _lastCombatAbilityUse.Remove(creature);

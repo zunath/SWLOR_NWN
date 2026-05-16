@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public override EffectIconType Icon => EffectIconType.DamageIncrease;
         public FinalFormStatusEffect()
         {
-            StatGroup.Stats[StatType.AttackPercentAdjustment] = 25;
+            StatGroup.Stats[StatType.TwinBladeSingleTargetAbilityDamagePercentAdjustment] = 25;
             StatGroup.Stats[StatType.AttackDeflection] = 25;
         }
 

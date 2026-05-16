@@ -10,7 +10,10 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public override EffectIconType Icon => EffectIconType.DamageIncrease;
         public DuelistStanceStatusEffect()
         {
-            StatGroup.Stats[StatType.AttackPercentAdjustment] = 15;
+            StatGroup.Stats[StatType.TwinBladeSingleTargetAbilityDamagePercentAdjustment] = 15;
+            StatGroup.Stats[StatType.TwinBladeSingleTargetAbilityAttackDeflection] = 10;
+            StatGroup.Stats[StatType.TwinBladeSingleTargetAbilityAttackDeflectionDurationSeconds] = 6;
+            StatGroup.Stats[StatType.TwinBladeAreaAbilityDamagePercentAdjustment] = -15;
         }
 
     }

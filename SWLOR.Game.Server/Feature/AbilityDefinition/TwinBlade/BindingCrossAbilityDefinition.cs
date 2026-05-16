@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.Engine;
@@ -26,10 +27,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
                 .Create(FeatType.BindingCross1, PerkType.BindingCross)
                 .Name("Binding Cross I")
                 .Level(1)
+                .SkillType(SkillType.TwinBlade)
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.BindingCross, 60f)
                 .RequiresTarget()
                 .HasImpactAction(BindingCross1ImpactAction)
+                .IsSingleTargetAbility()
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
@@ -42,10 +45,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
                 .Create(FeatType.BindingCross2, PerkType.BindingCross)
                 .Name("Binding Cross II")
                 .Level(2)
+                .SkillType(SkillType.TwinBlade)
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.BindingCross, 60f)
                 .RequiresTarget()
                 .HasImpactAction(BindingCross2ImpactAction)
+                .IsSingleTargetAbility()
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
@@ -54,12 +59,45 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
 
         private static void BindingCross1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.TwinBlade, 10, 12, typeof(HamstringStatusEffect), false);
+            ApplyBindingCross(activator, target, targetLocation, 10, 12, 0);
         }
 
         private static void BindingCross2ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.TwinBlade, 18, 20, typeof(HamstringStatusEffect), false, additionalStatusEffects: new[] { typeof(ExposedStatusEffect) });
+            ApplyBindingCross(activator, target, targetLocation, 18, 20, 10);
+        }
+
+        private static void ApplyBindingCross(
+            uint activator,
+            uint target,
+            Location targetLocation,
+            int baseDamage,
+            int hamstringDuration,
+            int exposedDuration)
+        {
+            var damage = 0;
+            for (var hit = 0; hit < 2; hit++)
+            {
+                damage += Ability.ApplyCombatImpact(
+                    activator,
+                    target,
+                    targetLocation,
+                    SkillType.TwinBlade,
+                    baseDamage,
+                    hamstringDuration,
+                    typeof(HamstringStatusEffect),
+                    false);
+            }
+
+            if (damage > 0 && exposedDuration > 0)
+            {
+                StatusEffect.ApplyStatusEffect(
+                    activator,
+                    target,
+                    typeof(ExposedStatusEffect),
+                    exposedDuration,
+                    CombatDamageType.Physical);
+            }
         }
     }
 }

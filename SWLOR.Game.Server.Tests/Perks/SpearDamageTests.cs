@@ -147,11 +147,11 @@ public class SpearDamageTests
     }
 
     [Test]
-    public void SpearDamageFeatAndSpellIcons_AreUniqueAndPresent()
+    public void SpearDamageFeatAndAbilityIcons_AreUniqueAndPresent()
     {
         var root = FindRepositoryRoot();
         var featRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "feat.2da");
-        var spellRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "spells.2da");
+        var abilityRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "spells.2da");
 
         var feats = new[]
         {
@@ -172,21 +172,43 @@ public class SpearDamageTests
         foreach (var (featType, expectedIcon, targetType, hostileSetting, targetShape, targetSizeX, targetSizeY, targetFlags) in feats)
         {
             var featRow = featRows[(int)featType];
-            var spellRow = spellRows[int.Parse(featRow["SPELLID"])];
+            var abilityRow = abilityRows[int.Parse(featRow["SPELLID"])];
             var featIcon = featRow["ICON"];
 
             featIcon.Should().Be(expectedIcon);
-            spellRow["IconResRef"].Should().Be(featIcon);
+            abilityRow["IconResRef"].Should().Be(featIcon);
             seenIcons.Add(featIcon).Should().BeTrue($"{featType} should have a unique icon");
             File.Exists((root / "SWLOR_Haks" / "swlor2_tga" / $"{featIcon}.tga").FullName).Should().BeTrue();
 
-            spellRow["TargetType"].Should().Be(targetType);
-            spellRow["HostileSetting"].Should().Be(hostileSetting);
-            spellRow["TargetShape"].Should().Be(targetShape);
-            spellRow["TargetSizeX"].Should().Be(targetSizeX);
-            spellRow["TargetSizeY"].Should().Be(targetSizeY);
-            spellRow["TargetFlags"].Should().Be(targetFlags);
+            abilityRow["TargetType"].Should().Be(targetType);
+            abilityRow["HostileSetting"].Should().Be(hostileSetting);
+            abilityRow["TargetShape"].Should().Be(targetShape);
+            abilityRow["TargetSizeX"].Should().Be(targetSizeX);
+            abilityRow["TargetSizeY"].Should().Be(targetSizeY);
+            abilityRow["TargetFlags"].Should().Be(targetFlags);
         }
+    }
+
+    [Test]
+    public void SpearDamageImplementationDetails_MatchCombatBible()
+    {
+        var root = FindRepositoryRoot();
+
+        var sideAssault = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Spear" / "SideAssaultAbilityDefinition.cs").FullName);
+        var normalizedSideAssault = sideAssault.Replace("\r\n", "\n");
+        sideAssault.Should().Contain("Combat.IsAttackerBesideTarget(activator, target)");
+        normalizedSideAssault.Should().Contain("12,\n                16,\n                6");
+        normalizedSideAssault.Should().Contain("25,\n                35,\n                12");
+        normalizedSideAssault.Should().Contain("35,\n                50,\n                18");
+
+        var improvedAttentiveness = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Spear" / "ImprovedAttentivenessAbilityDefinition.cs").FullName);
+        improvedAttentiveness.Should().Contain("if (partyMember == activator || !GetIsObjectValid(partyMember))");
+        improvedAttentiveness.Should().Contain("60f");
+
+        var cripplingDefense = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Spear" / "CripplingDefenseAbilityDefinition.cs").FullName);
+        cripplingDefense.Replace("\r\n", "\n").Should().Contain("25,\n                true,\n                restoreStamina: 25");
+        cripplingDefense.Should().Contain("restoreStamina: 25");
+        cripplingDefense.Should().Contain("activationDelay: 3f");
     }
 
     private static void AssertPerkLevel(
@@ -213,7 +235,7 @@ public class SpearDamageTests
             perkLevel.GrantedFeats.Should().BeEmpty();
 
         if (statTypes.Length > 0)
-            perkLevel.StatBonuses.Select(x => x.Stat).Should().Contain(statTypes);
+            perkLevel.StatBonuses.Select(x => x.Stat).Should().HaveCount(statTypes.Length).And.Contain(statTypes);
         else
             perkLevel.StatBonuses.Should().BeEmpty();
     }

@@ -72,6 +72,22 @@ public class VibrobladeOffenseTests
     }
 
     [Test]
+    public void VibrobladeOffenseStaticStatBonuses_MatchCombatBible()
+    {
+        var perks = BuildVibrobladeOffensePerksWithout2daLookup();
+
+        AssertStatBonus(perks[PerkType.SavageReflexes].PerkLevels[1], StatType.AutoAttackDamageBonusChance, 10);
+        AssertStatBonus(perks[PerkType.SavageReflexes].PerkLevels[1], StatType.AutoAttackDamageBonus, 8);
+
+        AssertStatBonus(perks[PerkType.Executioner].PerkLevels[1], StatType.TargetLowHPDamageThresholdPercent, 30);
+        AssertStatBonus(perks[PerkType.Executioner].PerkLevels[1], StatType.TargetLowHPDamagePercentAdjustment, 15);
+
+        AssertStatBonus(perks[PerkType.BloodFrenzy].PerkLevels[1], StatType.DefeatedEnemyStaminaRestore, 15);
+        AssertStatBonus(perks[PerkType.BloodFrenzy].PerkLevels[1], StatType.DefeatedEnemyAttackDelayReductionPercent, 10);
+        AssertStatBonus(perks[PerkType.BloodFrenzy].PerkLevels[1], StatType.DefeatedEnemyAttackDelayReductionDurationSeconds, 30);
+    }
+
+    [Test]
     public void VibrobladeOffenseAbilities_MatchCombatBible()
     {
         var hackingBlade = new HackingBladeAbilityDefinition().BuildAbilities();
@@ -85,22 +101,22 @@ public class VibrobladeOffenseTests
         AssertAbility(riotBlade[FeatType.RiotBlade3], "Riot Blade III", 3, RecastGroup.RiotBlade, 60f, 0f, 8, true, true, true, false, AbilityActivationType.Casted);
 
         var whirlwind = new WhirlwindAssaultAbilityDefinition().BuildAbilities();
-        AssertAbility(whirlwind[FeatType.WhirlwindAssault1], "Whirlwind Assault I", 1, RecastGroup.WhirlwindAssault, 120f, 0f, 10, true, false, false, false, AbilityActivationType.Casted);
-        AssertAbility(whirlwind[FeatType.WhirlwindAssault2], "Whirlwind Assault II", 2, RecastGroup.WhirlwindAssault, 120f, 0f, 12, true, false, false, false, AbilityActivationType.Casted);
+        AssertAbility(whirlwind[FeatType.WhirlwindAssault1], "Whirlwind Assault I", 1, RecastGroup.WhirlwindAssault, 120f, 0f, 10, true, false, false, true, AbilityActivationType.Casted);
+        AssertAbility(whirlwind[FeatType.WhirlwindAssault2], "Whirlwind Assault II", 2, RecastGroup.WhirlwindAssault, 120f, 0f, 12, true, false, false, true, AbilityActivationType.Casted);
 
         var berserkerStance = new BerserkerStanceAbilityDefinition().BuildAbilities();
         AssertAbility(berserkerStance[FeatType.BerserkerStance1], "Berserker Stance I", 1, RecastGroup.BerserkerStance, 180f, 2f, null, false, false, false, false, AbilityActivationType.Casted);
         AssertAbility(berserkerStance[FeatType.BerserkerStance2], "Berserker Stance II", 2, RecastGroup.BerserkerStance, 180f, 2f, null, false, false, false, false, AbilityActivationType.Casted);
 
         var rendingStrike = new RendingStrikeAbilityDefinition().BuildAbilities();
-        AssertAbility(rendingStrike[FeatType.RendingStrike1], "Rending Strike I", 1, RecastGroup.RendingStrike, 60f, 0f, 5, true, true, false, false, AbilityActivationType.Casted);
-        AssertAbility(rendingStrike[FeatType.RendingStrike2], "Rending Strike II", 2, RecastGroup.RendingStrike, 60f, 0f, 7, true, true, false, false, AbilityActivationType.Casted);
+        AssertAbility(rendingStrike[FeatType.RendingStrike1], "Rending Strike I", 1, RecastGroup.RendingStrike, 60f, 0f, 5, true, true, true, false, AbilityActivationType.Casted);
+        AssertAbility(rendingStrike[FeatType.RendingStrike2], "Rending Strike II", 2, RecastGroup.RendingStrike, 60f, 0f, 7, true, true, true, false, AbilityActivationType.Casted);
 
         var savageCleave = new SavageCleaveAbilityDefinition().BuildAbilities()[FeatType.SavageCleave1];
-        AssertAbility(savageCleave, "Savage Cleave", 1, RecastGroup.SavageCleave, 45f, 0f, 7, true, false, false, false, AbilityActivationType.Casted);
+        AssertAbility(savageCleave, "Savage Cleave", 1, RecastGroup.SavageCleave, 45f, 0f, 7, true, false, false, true, AbilityActivationType.Casted);
 
         var carve = new CarveAbilityDefinition().BuildAbilities()[FeatType.Carve1];
-        AssertAbility(carve, "Carve", 1, RecastGroup.Carve, 75f, 0f, 10, true, true, false, false, AbilityActivationType.Casted);
+        AssertAbility(carve, "Carve", 1, RecastGroup.Carve, 75f, 0f, 10, true, true, true, false, AbilityActivationType.Casted);
     }
 
     [Test]
@@ -130,7 +146,7 @@ public class VibrobladeOffenseTests
     }
 
     [Test]
-    public void VibrobladeOffenseFeatAndSpellIcons_AreUniqueAndPresent()
+    public void VibrobladeOffenseFeatAndAbilityIcons_AreUniqueAndPresent()
     {
         var root = FindRepositoryRoot();
         var featRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "feat.2da");
@@ -202,9 +218,25 @@ public class VibrobladeOffenseTests
             perkLevel.GrantedFeats.Should().BeEmpty();
 
         if (statTypes.Length > 0)
+        {
+            perkLevel.StatBonuses.Should().HaveCount(statTypes.Length);
             perkLevel.StatBonuses.Select(x => x.Stat).Should().Contain(statTypes);
+        }
         else
+        {
             perkLevel.StatBonuses.Should().BeEmpty();
+        }
+    }
+
+    private static void AssertStatBonus(PerkLevel level, StatType statType, int value)
+    {
+        level.StatBonuses
+            .Should()
+            .ContainSingle(x => x.Stat == statType)
+            .Which
+            .Calculate(0)
+            .Should()
+            .Be(value);
     }
 
     private static void AssertAbility(

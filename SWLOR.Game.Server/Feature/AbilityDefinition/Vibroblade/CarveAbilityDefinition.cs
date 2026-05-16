@@ -27,6 +27,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
                 .Level(1)
                 .HasActivationDelay(0f)
                 .RequiresTarget()
+                .IsSingleTargetAbility()
                 .HasRecastDelay(RecastGroup.Carve, 75f)
                 .HasImpactAction(Carve1ImpactAction)
                 .IsCastedAbility()

@@ -27,7 +27,7 @@ public class VibroknifeShadowTests
         AssertPerkLevel(perks[PerkType.Backstab], "Backstab", 1, 2, 10, FeatType.Backstab1,
             "Deals weapon DMG + 20 from behind your target.");
         AssertPerkLevel(perks[PerkType.DeadlyPrecision], "Deadly Precision", 1, 3, 12, FeatType.DeadlyPrecision1,
-            "While active, grants +15% critical hit chance, -20% evasion, and -15% Defense.");
+            "While active, grants +15% critical hit chance, -20% evasion, and -15% defense.");
         AssertPerkLevel(perks[PerkType.EvasiveCombat], "Evasive Combat", 1, 2, 15, FeatType.EvasiveCombat1,
             "Increases evasion by 10%, reduces enmity by 15%, and reduces attack by 15% for 30 seconds.");
         AssertPerkLevel(perks[PerkType.Backstab], "Backstab", 2, 3, 18, FeatType.Backstab2,
@@ -38,7 +38,7 @@ public class VibroknifeShadowTests
             "Grants +15% Critical Rate against targets not facing you.",
             StatType.CriticalRateAgainstTargetNotFacingAttackerPercentAdjustment);
         AssertPerkLevel(perks[PerkType.AmbushTactics], "Ambush Tactics", 1, 3, 25, null,
-            "After dealing a critical hit, your next attack within 8 seconds ignores 20% of Defense.",
+            "After dealing a critical hit, your next attack within 8 seconds ignores 20% of defense.",
             StatType.CriticalNextSkillAbilityDefenseIgnorePercentAdjustment,
             StatType.CriticalNextSkillAbilityDefenseIgnoreDurationSeconds);
         AssertPerkLevel(perks[PerkType.ShadowStrike], "Shadow Strike", 1, 3, 28, FeatType.ShadowStrike1,
@@ -60,7 +60,7 @@ public class VibroknifeShadowTests
         AssertPerkLevel(perks[PerkType.Decoy], "Decoy", 1, 3, 45, FeatType.Decoy1,
             "For 12 seconds, enemies targeting you have -25% Accuracy.");
         AssertPerkLevel(perks[PerkType.VitalStrike], "Vital Strike", 1, 4, 50, FeatType.VitalStrike1,
-            "Deals weapon DMG + 55. Inflicts Vital Strike debuff which causes all physical attacks to ignore 10% of Defense for 12 seconds.");
+            "Deals weapon DMG + 55. Inflicts Vital Strike debuff which causes all physical attacks to ignore 10% of defense for 12 seconds.");
     }
 
     [Test]
@@ -119,7 +119,12 @@ public class VibroknifeShadowTests
 
         var shadowStrike1 = new ShadowStrikeStatusEffect(-30);
         shadowStrike1.Categories.Should().HaveFlag(StatusEffectCategory.Control);
-        shadowStrike1.StatGroup.Stats[StatType.MovementSpeedPercentAdjustment].Should().Be(0);
+        shadowStrike1.ApplyEffect(0, 0, 8);
+        shadowStrike1.StatGroup.Stats[StatType.MovementSpeedPercentAdjustment].Should().Be(-30);
+
+        var shadowStrike2 = new ShadowStrikeStatusEffect(-40);
+        shadowStrike2.ApplyEffect(0, 0, 12);
+        shadowStrike2.StatGroup.Stats[StatType.MovementSpeedPercentAdjustment].Should().Be(-40);
 
         var smokeBomb = new SmokeBombStatusEffect();
         smokeBomb.StatGroup.Stats[StatType.AccuracyPercentAdjustment].Should().Be(-20);
@@ -129,7 +134,7 @@ public class VibroknifeShadowTests
     }
 
     [Test]
-    public void VibroknifeShadowFeatAndSpellIcons_AreUniqueAndPresent()
+    public void VibroknifeShadowFeatAndAbilityIcons_AreUniqueAndPresent()
     {
         var root = FindRepositoryRoot();
         var featRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "feat.2da");
@@ -199,9 +204,14 @@ public class VibroknifeShadowTests
             perkLevel.GrantedFeats.Should().BeEmpty();
 
         if (statTypes.Length > 0)
+        {
+            perkLevel.StatBonuses.Should().HaveCount(statTypes.Length);
             perkLevel.StatBonuses.Select(x => x.Stat).Should().Contain(statTypes);
+        }
         else
+        {
             perkLevel.StatBonuses.Should().BeEmpty();
+        }
     }
 
     private static void AssertAbility(

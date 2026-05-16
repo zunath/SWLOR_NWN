@@ -27,6 +27,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
                 .Level(1)
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.SavageCleave, 45f)
+                .IsAreaAbility()
                 .HasImpactAction(SavageCleave1ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()

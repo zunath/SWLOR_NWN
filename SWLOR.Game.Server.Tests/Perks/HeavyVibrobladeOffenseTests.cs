@@ -131,11 +131,11 @@ public class HeavyVibrobladeOffenseTests
     }
 
     [Test]
-    public void HeavyVibrobladeOffenseFeatAndSpellIcons_AreUniqueAndPresent()
+    public void HeavyVibrobladeOffenseFeatAndAbilityIcons_AreUniqueAndPresent()
     {
         var root = FindRepositoryRoot();
         var featRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "feat.2da");
-        var spellRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "spells.2da");
+        var abilityRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "spells.2da");
 
         var feats = new[]
         {
@@ -158,21 +158,44 @@ public class HeavyVibrobladeOffenseTests
         foreach (var (featType, expectedIcon, targetType, hostileSetting, targetShape, targetSizeX, targetSizeY, targetFlags) in feats)
         {
             var featRow = featRows[(int)featType];
-            var spellRow = spellRows[int.Parse(featRow["SPELLID"])];
+            var abilityRow = abilityRows[int.Parse(featRow["SPELLID"])];
             var featIcon = featRow["ICON"];
 
             featIcon.Should().Be(expectedIcon);
-            spellRow["IconResRef"].Should().Be(featIcon);
+            abilityRow["IconResRef"].Should().Be(featIcon);
             seenIcons.Add(featIcon).Should().BeTrue($"{featType} should have a unique icon");
             File.Exists((root / "SWLOR_Haks" / "swlor2_tga" / $"{featIcon}.tga").FullName).Should().BeTrue();
 
-            spellRow["TargetType"].Should().Be(targetType);
-            spellRow["HostileSetting"].Should().Be(hostileSetting);
-            spellRow["TargetShape"].Should().Be(targetShape);
-            spellRow["TargetSizeX"].Should().Be(targetSizeX);
-            spellRow["TargetSizeY"].Should().Be(targetSizeY);
-            spellRow["TargetFlags"].Should().Be(targetFlags);
+            abilityRow["TargetType"].Should().Be(targetType);
+            abilityRow["HostileSetting"].Should().Be(hostileSetting);
+            abilityRow["TargetShape"].Should().Be(targetShape);
+            abilityRow["TargetSizeX"].Should().Be(targetSizeX);
+            abilityRow["TargetSizeY"].Should().Be(targetSizeY);
+            abilityRow["TargetFlags"].Should().Be(targetFlags);
         }
+    }
+
+    [Test]
+    public void HeavyVibrobladeOffenseImplementationDetails_MatchCombatBible()
+    {
+        var root = FindRepositoryRoot();
+
+        var bloodlust = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "HeavyVibroblade" / "BloodlustAbilityDefinition.cs").FullName);
+        bloodlust.Should().Contain("SacrificeHitPoints(activator, 40);");
+        bloodlust.Should().NotContain("SacrificeHitPoints(activator, 40, 10)");
+        bloodlust.Should().Contain("Math.Min(80, 20 + Math.Max(0, GetAbilityScore(activator, AbilityType.Might)))");
+
+        var soulBurst = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "HeavyVibroblade" / "SoulBurstAbilityDefinition.cs").FullName);
+        soulBurst.Should().Contain("SacrificeHitPoints(activator, 40, 10);");
+
+        var soulSacrifice = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "HeavyVibroblade" / "SoulSacrificeAbilityDefinition.cs").FullName);
+        soulSacrifice.Should().Contain("SacrificeHitPoints(activator, 50, 20);");
+
+        var soulDevourer = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "StatusEffectDefinition" / "SoulDevourerStatusEffect.cs").FullName);
+        soulDevourer.Should().Contain("Math.Max(10, 40 - Math.Max(0, GetAbilityScore(attacker, AbilityType.Might)))");
+
+        var blazingSpikes = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "StatusEffectDefinition" / "BlazingSpikesStatusEffect.cs").FullName);
+        blazingSpikes.Should().Contain("Math.Min(40, 10 + Math.Max(0, GetAbilityScore(defender, AbilityType.Might)))");
     }
 
     private static void AssertPerkLevel(
@@ -199,7 +222,7 @@ public class HeavyVibrobladeOffenseTests
             perkLevel.GrantedFeats.Should().BeEmpty();
 
         if (statTypes.Length > 0)
-            perkLevel.StatBonuses.Select(x => x.Stat).Should().Contain(statTypes);
+            perkLevel.StatBonuses.Select(x => x.Stat).Should().HaveCount(statTypes.Length).And.Contain(statTypes);
         else
             perkLevel.StatBonuses.Should().BeEmpty();
     }

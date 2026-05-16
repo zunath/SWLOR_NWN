@@ -132,11 +132,11 @@ public class SpearDisablerTests
     }
 
     [Test]
-    public void SpearDisablerFeatAndSpellIcons_AreUniqueAndPresent()
+    public void SpearDisablerFeatAndAbilityIcons_AreUniqueAndPresent()
     {
         var root = FindRepositoryRoot();
         var featRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "feat.2da");
-        var spellRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "spells.2da");
+        var abilityRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "spells.2da");
 
         var feats = new[]
         {
@@ -158,21 +158,40 @@ public class SpearDisablerTests
         foreach (var (featType, expectedIcon, targetType, hostileSetting, targetShape, targetSizeX, targetSizeY, targetFlags) in feats)
         {
             var featRow = featRows[(int)featType];
-            var spellRow = spellRows[int.Parse(featRow["SPELLID"])];
+            var abilityRow = abilityRows[int.Parse(featRow["SPELLID"])];
             var featIcon = featRow["ICON"];
 
             featIcon.Should().Be(expectedIcon);
-            spellRow["IconResRef"].Should().Be(featIcon);
+            abilityRow["IconResRef"].Should().Be(featIcon);
             seenIcons.Add(featIcon).Should().BeTrue($"{featType} should have a unique icon");
             File.Exists((root / "SWLOR_Haks" / "swlor2_tga" / $"{featIcon}.tga").FullName).Should().BeTrue();
 
-            spellRow["TargetType"].Should().Be(targetType);
-            spellRow["HostileSetting"].Should().Be(hostileSetting);
-            spellRow["TargetShape"].Should().Be(targetShape);
-            spellRow["TargetSizeX"].Should().Be(targetSizeX);
-            spellRow["TargetSizeY"].Should().Be(targetSizeY);
-            spellRow["TargetFlags"].Should().Be(targetFlags);
+            abilityRow["TargetType"].Should().Be(targetType);
+            abilityRow["HostileSetting"].Should().Be(hostileSetting);
+            abilityRow["TargetShape"].Should().Be(targetShape);
+            abilityRow["TargetSizeX"].Should().Be(targetSizeX);
+            abilityRow["TargetSizeY"].Should().Be(targetSizeY);
+            abilityRow["TargetFlags"].Should().Be(targetFlags);
         }
+    }
+
+    [Test]
+    public void SpearDisablerImplementationDetails_MatchCombatBible()
+    {
+        var root = FindRepositoryRoot();
+
+        var perceptiveStance = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "StatusEffectDefinition" / "PerceptiveStanceStatusEffect.cs").FullName);
+        perceptiveStance.Should().Contain("Math.Min(30, 10 + Math.Max(0, GetAbilityScore(attacker, AbilityType.Perception)))");
+
+        var disruptionField = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Spear" / "DisruptionFieldAbilityDefinition.cs").FullName);
+        disruptionField.Should().Contain("private const float DurationSeconds = 20f;");
+        disruptionField.Should().Contain("private const float PulseIntervalSeconds = 1f;");
+        disruptionField.Should().Contain("private const int FPDrainPercent = 5;");
+
+        var forcebane = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Spear" / "ForcebaneAbilityDefinition.cs").FullName);
+        forcebane.Should().Contain("8f");
+        forcebane.Should().Contain("fpDrainPercent: 50");
+        forcebane.Should().Contain("activationDelay: 2f");
     }
 
     private static void AssertPerkLevel(
@@ -199,7 +218,7 @@ public class SpearDisablerTests
             perkLevel.GrantedFeats.Should().BeEmpty();
 
         if (statTypes.Length > 0)
-            perkLevel.StatBonuses.Select(x => x.Stat).Should().Contain(statTypes);
+            perkLevel.StatBonuses.Select(x => x.Stat).Should().HaveCount(statTypes.Length).And.Contain(statTypes);
         else
             perkLevel.StatBonuses.Should().BeEmpty();
     }

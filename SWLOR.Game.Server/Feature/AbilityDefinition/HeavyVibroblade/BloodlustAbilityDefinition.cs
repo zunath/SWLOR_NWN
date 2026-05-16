@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
                 .HasRecastDelay(RecastGroup.Bloodlust, 180f)
                 .HasImpactAction((activator, target, level, targetLocation) =>
                 {
-                    SacrificeHitPoints(activator, 40, 10);
+                    SacrificeHitPoints(activator, 40);
                     var restorePercent = Math.Min(80, 20 + Math.Max(0, GetAbilityScore(activator, AbilityType.Might)));
                     var amount = (int)Math.Ceiling(Stat.GetMaxStamina(activator) * (restorePercent / 100f));
                     Stat.RestoreStamina(activator, amount);

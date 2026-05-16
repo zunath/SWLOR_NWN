@@ -38,7 +38,19 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
 
         private static void EdgeOfDarkness1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.HeavyVibroblade, 15, 0, null, true, enmityBonus: 350);
+            Ability.ApplyTelegraphedCombatImpact(
+                activator,
+                target,
+                targetLocation,
+                SkillType.HeavyVibroblade,
+                15,
+                0,
+                null,
+                CombatImpactAreaShape.Sphere,
+                0.25f,
+                5f,
+                centerOnActivator: true,
+                enmityBonus: 350);
         }
     }
 }

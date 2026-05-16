@@ -60,7 +60,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Ambush Tactics")
 
                 .AddPerkLevel()
-                .Description("After dealing a critical hit, your next attack within 8 seconds ignores 20% of Defense.")
+                .Description("After dealing a critical hit, your next attack within 8 seconds ignores 20% of defense.")
                 .IncreasesStat(StatType.CriticalNextSkillAbilityDefenseIgnorePercentAdjustment, creature => EquipmentPredicates.HasMainHandVibroknife(creature) ? 20 : 0)
                 .IncreasesStat(StatType.CriticalNextSkillAbilityDefenseIgnoreDurationSeconds, creature => EquipmentPredicates.HasMainHandVibroknife(creature) ? 8 : 0)
                 .Price(3)
@@ -168,7 +168,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.DeadlyPrecision1)
-                .Description("While active, grants +15% critical hit chance, -20% evasion, and -15% Defense.")
+                .Description("While active, grants +15% critical hit chance, -20% evasion, and -15% defense.")
                 .Price(3)
                 .RequirementSkill(SkillType.Vibroknife, 12);
         }
@@ -420,7 +420,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.VitalStrike1)
-                .Description("Deals weapon DMG + 55. Inflicts Vital Strike debuff which causes all physical attacks to ignore 10% of Defense for 12 seconds.")
+                .Description("Deals weapon DMG + 55. Inflicts Vital Strike debuff which causes all physical attacks to ignore 10% of defense for 12 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Vibroknife, 50);
         }

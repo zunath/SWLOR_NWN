@@ -293,7 +293,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// Temporary percent Enmity adjustment paired with the deflection Evasion effect.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
         DeflectionEvasionEnmityPercentAdjustment = 48,
 
         /// <summary>

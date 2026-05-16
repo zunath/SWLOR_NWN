@@ -144,11 +144,11 @@ public class HeavyVibrobladeDefenseTests
     }
 
     [Test]
-    public void HeavyVibrobladeDefenseFeatAndSpellIcons_AreUniqueAndPresent()
+    public void HeavyVibrobladeDefenseFeatAndAbilityIcons_AreUniqueAndPresent()
     {
         var root = FindRepositoryRoot();
         var featRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "feat.2da");
-        var spellRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "spells.2da");
+        var abilityRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "spells.2da");
 
         var feats = new[]
         {
@@ -171,21 +171,37 @@ public class HeavyVibrobladeDefenseTests
         foreach (var (featType, expectedIcon, targetType, hostileSetting, targetShape, targetSizeX, targetSizeY, targetFlags) in feats)
         {
             var featRow = featRows[(int)featType];
-            var spellRow = spellRows[int.Parse(featRow["SPELLID"])];
+            var abilityRow = abilityRows[int.Parse(featRow["SPELLID"])];
             var featIcon = featRow["ICON"];
 
             featIcon.Should().Be(expectedIcon);
-            spellRow["IconResRef"].Should().Be(featIcon);
+            abilityRow["IconResRef"].Should().Be(featIcon);
             seenIcons.Add(featIcon).Should().BeTrue($"{featType} should have a unique icon");
             File.Exists((root / "SWLOR_Haks" / "swlor2_tga" / $"{featIcon}.tga").FullName).Should().BeTrue();
 
-            spellRow["TargetType"].Should().Be(targetType);
-            spellRow["HostileSetting"].Should().Be(hostileSetting);
-            spellRow["TargetShape"].Should().Be(targetShape);
-            spellRow["TargetSizeX"].Should().Be(targetSizeX);
-            spellRow["TargetSizeY"].Should().Be(targetSizeY);
-            spellRow["TargetFlags"].Should().Be(targetFlags);
+            abilityRow["TargetType"].Should().Be(targetType);
+            abilityRow["HostileSetting"].Should().Be(hostileSetting);
+            abilityRow["TargetShape"].Should().Be(targetShape);
+            abilityRow["TargetSizeX"].Should().Be(targetSizeX);
+            abilityRow["TargetSizeY"].Should().Be(targetSizeY);
+            abilityRow["TargetFlags"].Should().Be(targetFlags);
         }
+    }
+
+    [Test]
+    public void HeavyVibrobladeDefenseImplementationDetails_MatchCombatBible()
+    {
+        var root = FindRepositoryRoot();
+
+        var edgeOfDarkness = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "HeavyVibroblade" / "EdgeOfDarknessAbilityDefinition.cs").FullName);
+        edgeOfDarkness.Should().Contain("CombatImpactAreaShape.Sphere");
+        edgeOfDarkness.Should().Contain("centerOnActivator: true");
+        edgeOfDarkness.Should().Contain("enmityBonus: 350");
+
+        var absoluteDefense = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "HeavyVibroblade" / "AbsoluteDefenseAbilityDefinition.cs").FullName);
+        absoluteDefense.Should().Contain("if (partyMember == activator || !GetIsObjectValid(partyMember))");
+        absoluteDefense.Should().Contain("Ability.ApplyTemporaryImmunity(partyMember, 15f, ImmunityType.Knockdown)");
+        absoluteDefense.Should().Contain("Ability.ApplyTemporaryImmunity(partyMember, 15f, ImmunityType.Dazed)");
     }
 
     private static void AssertPerkLevel(
@@ -212,7 +228,7 @@ public class HeavyVibrobladeDefenseTests
             perkLevel.GrantedFeats.Should().BeEmpty();
 
         if (statTypes.Length > 0)
-            perkLevel.StatBonuses.Select(x => x.Stat).Should().Contain(statTypes);
+            perkLevel.StatBonuses.Select(x => x.Stat).Should().HaveCount(statTypes.Length).And.Contain(statTypes);
         else
             perkLevel.StatBonuses.Should().BeEmpty();
     }

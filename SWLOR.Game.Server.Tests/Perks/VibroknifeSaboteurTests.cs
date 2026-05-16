@@ -104,6 +104,18 @@ public class VibroknifeSaboteurTests
     }
 
     [Test]
+    public void VibroknifeSaboteurStaticStatBonuses_MatchCombatBible()
+    {
+        var perks = BuildVibroknifeSaboteurPerksWithout2daLookup();
+
+        AssertStatBonus(perks[PerkType.CalculatedStrikes].PerkLevels[1], StatType.AutoAttackTargetAccuracyPercentAdjustmentChance, 15);
+        AssertStatBonus(perks[PerkType.CalculatedStrikes].PerkLevels[1], StatType.AutoAttackTargetAccuracyPercentAdjustment, -10);
+        AssertStatBonus(perks[PerkType.CalculatedStrikes].PerkLevels[1], StatType.AutoAttackTargetAccuracyPercentAdjustmentDurationSeconds, 6);
+
+        AssertStatBonus(perks[PerkType.ExploitWeakness].PerkLevels[1], StatType.DamageToDebuffedTargetPercentAdjustment, 12);
+    }
+
+    [Test]
     public void VibroknifeSaboteurStatusEffects_MatchCombatBible()
     {
         var weakened1 = new WeakenedStatusEffect(10);
@@ -137,6 +149,10 @@ public class VibroknifeSaboteurTests
         toxin.Frequency.Should().Be(6f);
         toxin.ResistanceType.Should().Be(SWLOR.Game.Server.Service.CombatService.ResistanceType.Poison);
 
+        var hamstring = new HamstringStatusEffect();
+        hamstring.ApplyEffect(0, 0, 12);
+        hamstring.StatGroup.Stats[StatType.MovementSpeedPercentAdjustment].Should().Be(-20);
+
         var vulnerable = new VulnerableStatusEffect();
         vulnerable.Name.Should().Be("Vulnerable");
         vulnerable.Categories.Should().HaveFlag(StatusEffectCategory.Debuff);
@@ -144,7 +160,7 @@ public class VibroknifeSaboteurTests
     }
 
     [Test]
-    public void VibroknifeSaboteurFeatAndSpellIcons_AreUniqueAndPresent()
+    public void VibroknifeSaboteurFeatAndAbilityIcons_AreUniqueAndPresent()
     {
         var root = FindRepositoryRoot();
         var featRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "feat.2da");
@@ -212,9 +228,25 @@ public class VibroknifeSaboteurTests
             perkLevel.GrantedFeats.Should().BeEmpty();
 
         if (statTypes.Length > 0)
+        {
+            perkLevel.StatBonuses.Should().HaveCount(statTypes.Length);
             perkLevel.StatBonuses.Select(x => x.Stat).Should().Contain(statTypes);
+        }
         else
+        {
             perkLevel.StatBonuses.Should().BeEmpty();
+        }
+    }
+
+    private static void AssertStatBonus(PerkLevel level, StatType statType, int value)
+    {
+        level.StatBonuses
+            .Should()
+            .ContainSingle(x => x.Stat == statType)
+            .Which
+            .Calculate(0)
+            .Should()
+            .Be(value);
     }
 
     private static void AssertAbility(

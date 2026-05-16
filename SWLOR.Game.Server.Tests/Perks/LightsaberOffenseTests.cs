@@ -154,7 +154,7 @@ public class LightsaberOffenseTests
     }
 
     [Test]
-    public void LightsaberOffenseFeatAndSpellIcons_AreUniqueAndPresent()
+    public void LightsaberOffenseFeatAndAbilityIcons_AreUniqueAndPresent()
     {
         var root = FindRepositoryRoot();
         var featRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "feat.2da");
@@ -226,9 +226,14 @@ public class LightsaberOffenseTests
             perkLevel.GrantedFeats.Should().BeEmpty();
 
         if (statTypes.Length > 0)
+        {
+            perkLevel.StatBonuses.Should().HaveCount(statTypes.Length);
             perkLevel.StatBonuses.Select(x => x.Stat).Should().Contain(statTypes);
+        }
         else
+        {
             perkLevel.StatBonuses.Should().BeEmpty();
+        }
     }
 
     private static void AssertAbility(

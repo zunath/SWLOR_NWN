@@ -99,6 +99,9 @@ public class VibrobladeDefenseTests
     [Test]
     public void VibrobladeDefenseStatusEffects_MatchCombatBible()
     {
+        StatType.DeflectionEvasionPercentAdjustment.GetCategory().Should().Be(StatTypeCategory.BeneficialWhenPositive);
+        StatType.DeflectionEvasionEnmityPercentAdjustment.GetCategory().Should().Be(StatTypeCategory.BeneficialWhenPositive);
+
         var coveringStrike = new CoveringStrikeStatusEffect();
         coveringStrike.Name.Should().Be("Covering Strike");
         coveringStrike.Categories.Should().Be(StatusEffectCategory.Debuff);

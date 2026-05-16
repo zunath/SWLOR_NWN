@@ -87,8 +87,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
             var baseAmount = Math.Max(1, (int)Math.Ceiling(GetMaxHitPoints(target) * (percent / 100f) * multiplier));
             var scalingSource = GetIsObjectValid(source) ? source : target;
-            var scaledAmount = ScaleDirectEffect(baseAmount, GetAbilityScore(scalingSource, scalingAbility));
-            return ApplyActiveForceAffinityMagnitude(source, scaledAmount);
+            return ScaleDirectEffect(baseAmount, GetAbilityScore(scalingSource, scalingAbility), source: source);
         }
 
         public static void ApplyTemporaryHPPercent(

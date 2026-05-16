@@ -67,7 +67,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.ForceLight, PerkType.ForcePush)
                 .Name("Force Push")
-                .ForceAffinity(ForceAffinityType.Light)
 
                 .AddPerkLevel()
                 .Description("Knock down one target for 2 seconds. slows movement for 3 seconds.")
@@ -112,7 +111,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.ForceLight, PerkType.ForceLeap)
                 .Name("Force Leap")
-                .ForceAffinity(ForceAffinityType.Light)
 
                 .AddPerkLevel()
                 .Description("Leap to a hostile target up to 15m away, dealing 10 force DMG plus WIL scaling and interrupting activation.")

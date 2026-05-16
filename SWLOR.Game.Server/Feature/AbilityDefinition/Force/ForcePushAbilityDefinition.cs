@@ -16,6 +16,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 {
     public sealed class ForcePushAbilityDefinition : IAbilityListDefinition
     {
+        private const int KnockdownDurationSeconds = 2;
+        private const int ForcePush1HobbleDurationSeconds = 3;
+        private const int ForcePush2HobbleDurationSeconds = 3;
+        private const int ForcePush3HobbleDurationSeconds = 4;
+
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
@@ -91,12 +96,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 targetLocation,
                 SkillType.Force,
                 0,
-                2,
+                KnockdownDurationSeconds,
                 typeof(KnockdownStatusEffect),
                 false,
-                new[] { typeof(HobbleStatusEffect) },
                 damageType: CombatDamageType.Force,
-                targetVisualEffect: VisualEffect.Vfx_Imp_Pulse_Negative);
+                targetVisualEffect: VisualEffect.Vfx_Imp_Pulse_Negative,
+                afterSuccessfulHit: hitTarget => ApplyHobble(activator, hitTarget, ForcePush1HobbleDurationSeconds));
             LightGuardianPowerSupport.ApplyDeflectivePresence(activator);
         }
 
@@ -108,18 +113,18 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 targetLocation,
                 SkillType.Force,
                 0,
-                2,
+                KnockdownDurationSeconds,
                 typeof(KnockdownStatusEffect),
                 CombatImpactAreaShape.Line,
                 0f,
                 8f,
                 2.5f,
-                new[] { typeof(HobbleStatusEffect) },
                 centerOnActivator: !GetIsObjectValid(target),
                 damageType: CombatDamageType.Force,
                 targetVisualEffect: VisualEffect.Vfx_Imp_Pulse_Negative,
                 areaVisualEffect: VisualEffect.Vfx_Fnf_Howl_Mind,
-                maxTargets: 2);
+                maxTargets: 2,
+                afterSuccessfulHit: hitTarget => ApplyHobble(activator, hitTarget, ForcePush2HobbleDurationSeconds));
             LightGuardianPowerSupport.ApplyDeflectivePresence(activator);
         }
 
@@ -131,19 +136,24 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 targetLocation,
                 SkillType.Force,
                 0,
-                2,
+                KnockdownDurationSeconds,
                 typeof(KnockdownStatusEffect),
                 CombatImpactAreaShape.Cone,
                 0f,
                 6f,
                 5f,
-                new[] { typeof(HobbleStatusEffect) },
                 centerOnActivator: !GetIsObjectValid(target),
                 damageType: CombatDamageType.Force,
                 targetVisualEffect: VisualEffect.Vfx_Imp_Pulse_Negative,
                 areaVisualEffect: VisualEffect.Vfx_Fnf_Howl_Mind,
-                maxTargets: 3);
+                maxTargets: 3,
+                afterSuccessfulHit: hitTarget => ApplyHobble(activator, hitTarget, ForcePush3HobbleDurationSeconds));
             LightGuardianPowerSupport.ApplyDeflectivePresence(activator);
+        }
+
+        private static void ApplyHobble(uint activator, uint target, int durationSeconds)
+        {
+            StatusEffect.ApplyStatusEffect(activator, target, typeof(HobbleStatusEffect), durationSeconds, CombatDamageType.Force);
         }
 
     }

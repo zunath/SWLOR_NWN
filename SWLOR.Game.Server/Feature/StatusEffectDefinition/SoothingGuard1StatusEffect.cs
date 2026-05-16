@@ -16,7 +16,6 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public SoothingGuard1StatusEffect()
         {
             StatGroup.Stats[StatType.DamageTakenPercentAdjustment] = -10;
-            StatGroup.Stats[StatType.TraumaResistance] = 10;
         }
     }
 }

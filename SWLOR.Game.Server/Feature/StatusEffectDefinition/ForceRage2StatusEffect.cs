@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         public ForceRage2StatusEffect()
         {
-            StatGroup.Stats[StatType.AttackPercentAdjustment] = 14;
+            StatGroup.Stats[StatType.DamageDealtPercentAdjustment] = 14;
             StatGroup.Stats[StatType.CriticalDamagePercentAdjustment] = 15;
             StatGroup.Stats[StatType.DamageTakenPercentAdjustment] = 8;
         }

@@ -127,7 +127,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.ForceDark, PerkType.SaberRend)
                 .Name("Saber Rend")
-                .ForceAffinity(ForceAffinityType.Dark)
 
                 .AddPerkLevel()
                 .Description("Your next melee attack deals +12 force DMG plus WIL scaling. Requires a melee weapon.")

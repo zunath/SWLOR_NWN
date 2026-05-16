@@ -16,6 +16,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 {
     public sealed class ForceMaelstromAbilityDefinition : IAbilityListDefinition
     {
+        private const float PullDistance = 2f;
+        private const float MinimumDistanceAfterPull = 1.5f;
+
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
@@ -62,7 +65,29 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 centerOnActivator: true,
                 damageType: CombatDamageType.Force,
                 targetVisualEffect: VisualEffect.Vfx_Imp_Pulse_Negative,
-                areaVisualEffect: VisualEffect.Vfx_Fnf_Howl_Mind);
+                areaVisualEffect: VisualEffect.Vfx_Fnf_Howl_Mind,
+                afterSuccessfulHit: hitTarget => PullTowardActivator(activator, hitTarget));
+        }
+
+        private static void PullTowardActivator(uint activator, uint target)
+        {
+            if (!GetIsObjectValid(activator) ||
+                !GetIsObjectValid(target) ||
+                GetArea(activator) != GetArea(target))
+            {
+                return;
+            }
+
+            var targetPosition = GetPosition(target);
+            var pullVector = GetPosition(activator) - targetPosition;
+            var distance = pullVector.Length();
+            if (distance <= MinimumDistanceAfterPull)
+                return;
+
+            var pullDistance = Math.Min(PullDistance, distance - MinimumDistanceAfterPull);
+            var destination = targetPosition + pullVector / distance * pullDistance;
+            var pullLocation = Location(GetArea(target), destination, GetFacing(target));
+            AssignCommand(target, () => JumpToLocation(pullLocation));
         }
 
     }

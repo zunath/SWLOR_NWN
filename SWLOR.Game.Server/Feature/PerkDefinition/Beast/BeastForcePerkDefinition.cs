@@ -120,18 +120,24 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition.Beast
                 .Price(3)
                 .RequirementBeastLevel(15)
                 .RequirementBeastRole(BeastRoleType.Force)
+                .IncreasesStat(StatType.AutoAttackMasterFPRestoreChance, 10)
+                .IncreasesStat(StatType.AutoAttackMasterFPRestore, 1)
 
                 .AddPerkLevel()
                 .Description("The beast has a 20% chance to restore 1 FP to its master when it lands an attack.")
                 .Price(3)
                 .RequirementBeastLevel(30)
                 .RequirementBeastRole(BeastRoleType.Force)
+                .IncreasesStat(StatType.AutoAttackMasterFPRestoreChance, 20)
+                .IncreasesStat(StatType.AutoAttackMasterFPRestore, 1)
 
                 .AddPerkLevel()
                 .Description("The beast has a 30% chance to restore 1 FP to its master when it lands an attack.")
                 .Price(4)
                 .RequirementBeastLevel(48)
-                .RequirementBeastRole(BeastRoleType.Force);
+                .RequirementBeastRole(BeastRoleType.Force)
+                .IncreasesStat(StatType.AutoAttackMasterFPRestoreChance, 30)
+                .IncreasesStat(StatType.AutoAttackMasterFPRestore, 1);
         }
 
         private void PsychicCry()

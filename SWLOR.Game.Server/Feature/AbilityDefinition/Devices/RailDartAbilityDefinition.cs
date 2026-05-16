@@ -74,8 +74,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 typeof(BleedStatusEffect),
                 false,
                 Array.Empty<Type>(),
-                damageType: CombatDamageType.Fire,
-                targetVisualEffect: VisualEffect.Vfx_Com_Hit_Fire);
+                damageType: CombatDamageType.Physical,
+                targetVisualEffect: VisualEffect.Vfx_Com_Chunk_Red_Small,
+                damagePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetDamageAdjustment(activator),
+                hitChancePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetAccuracyAdjustment(activator),
+                criticalRatePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetCriticalRateAdjustment(activator));
         }
 
         private static void RailDart2ImpactAction(uint activator, uint target, int level, Location targetLocation)
@@ -90,8 +93,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 typeof(BleedStatusEffect),
                 false,
                 Array.Empty<Type>(),
-                damageType: CombatDamageType.Fire,
-                targetVisualEffect: VisualEffect.Vfx_Com_Hit_Fire);
+                damageType: CombatDamageType.Physical,
+                targetVisualEffect: VisualEffect.Vfx_Com_Chunk_Red_Small,
+                damagePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetDamageAdjustment(activator),
+                hitChancePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetAccuracyAdjustment(activator),
+                criticalRatePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetCriticalRateAdjustment(activator));
         }
 
     }

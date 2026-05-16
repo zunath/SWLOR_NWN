@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 .Name("Anger I")
                 .Level(1)
                 .HasActivationDelay(0f)
-                .HasRecastDelay(RecastGroup.Anger, 18f)
+                .HasRecastDelay(RecastGroup.Anger, activator => GetAngerRecastDelay(activator))
                 .SkillType(SkillType.BeastMastery)
                 .IsSingleTargetAbility()
                 .RequiresTarget()
@@ -51,7 +51,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 .Name("Anger II")
                 .Level(2)
                 .HasActivationDelay(0f)
-                .HasRecastDelay(RecastGroup.Anger, 18f)
+                .HasRecastDelay(RecastGroup.Anger, activator => GetAngerRecastDelay(activator))
                 .SkillType(SkillType.BeastMastery)
                 .IsSingleTargetAbility()
                 .RequiresTarget()
@@ -97,6 +97,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
         private static int PercentOf(int value, int percent)
         {
             return Math.Max(1, value * percent / 100);
+        }
+
+        private static float GetAngerRecastDelay(uint activator)
+        {
+            return Math.Max(0f, 18f + Combat.GetAbilityRecastDelayFlatAdjustment(activator, PerkType.Anger));
         }
     }
 }

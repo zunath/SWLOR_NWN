@@ -36,6 +36,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 .HasRecastDelay(RecastGroup.EvasiveChallenge, 60f)
                 .SkillType(SkillType.BeastMastery)
                 .IsSingleTargetAbility()
+                .RequiresTarget()
                 .HasImpactAction(EvasiveChallenge1ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
@@ -62,19 +63,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 
         private static void EvasiveChallenge1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            Ability.ApplyCombatImpact(
-                activator,
-                target,
-                targetLocation,
-                SkillType.BeastMastery,
-                0,
-                8,
-                typeof(EvasiveChallenge1StatusEffect),
-                false,
-                Array.Empty<Type>(),
-                damageType: CombatDamageType.Physical,
-                targetVisualEffect: VisualEffect.Vfx_Com_Chunk_Red_Small);
-
             ApplyGoad(activator, target);
 
             foreach (var friendly in new[] { activator })
@@ -88,19 +76,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
         {
             foreach (var hostile in GetHostileTargets(activator, target, targetLocation, true, 5f))
             {
-                Ability.ApplyCombatImpact(
-                    activator,
-                    hostile,
-                    GetLocation(hostile),
-                    SkillType.BeastMastery,
-                    0,
-                    8,
-                    typeof(EvasiveChallenge2StatusEffect),
-                    false,
-                    Array.Empty<Type>(),
-                    damageType: CombatDamageType.Physical,
-                    targetVisualEffect: VisualEffect.Vfx_Com_Chunk_Red_Small);
-
                 ApplyGoad(activator, hostile);
             }
 

@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         public PowerCell1StatusEffect()
         {
-            StatGroup.Stats[StatType.AccuracyPercentAdjustment] = 4;
+            StatGroup.Stats[StatType.AbilityHitChancePercentAdjustment] = 4;
         }
     }
 }

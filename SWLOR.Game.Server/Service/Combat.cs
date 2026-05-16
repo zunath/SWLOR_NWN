@@ -327,7 +327,11 @@ namespace SWLOR.Game.Server.Service
             return (damage, effectiveCritical);
         }
 
-        public static int ApplyDamageTakenModifiers(uint defender, int damage)
+        public static int ApplyDamageTakenModifiers(
+            uint defender,
+            int damage,
+            uint attacker = OBJECT_INVALID,
+            CombatDamageType damageType = CombatDamageType.Physical)
         {
             if (damage <= 0)
                 return damage;
@@ -340,9 +344,50 @@ namespace SWLOR.Game.Server.Service
                 damage += (int)Math.Ceiling(damage * (percentAdjustment / 100f));
 
             damage += Stat.GetStatAdjustment(defender, StatType.DamageTakenFlatAdjustment);
+            damage = ApplyDamageTakenRedirectToStatusSource(defender, attacker, damage, damageType);
 
             damage = Math.Max(0, damage);
             return PreventFatalDamageAndGrantTemporaryHP(defender, damage);
+        }
+
+        private static int ApplyDamageTakenRedirectToStatusSource(
+            uint defender,
+            uint attacker,
+            int damage,
+            CombatDamageType damageType)
+        {
+            if (damage <= 0)
+                return damage;
+
+            var redirectPercent = Stat.GetStatAdjustment(defender, StatType.DamageTakenRedirectToStatusSourcePercent);
+            if (redirectPercent <= 0)
+                return damage;
+
+            var redirectTarget = StatusEffect.GetStatusEffectSourceWithStat(
+                defender,
+                StatType.DamageTakenRedirectToStatusSourcePercent);
+            if (!GetIsObjectValid(redirectTarget) || GetIsDead(redirectTarget) || redirectTarget == defender)
+                return damage;
+
+            var redirectedDamage = Math.Min(
+                damage,
+                Math.Max(1, (int)Math.Ceiling(damage * (Math.Min(100, redirectPercent) / 100f))));
+
+            StatusEffect.RemoveStatusEffectsWithStat(defender, StatType.DamageTakenRedirectToStatusSourcePercent, false);
+            AssignCommand(
+                defender,
+                () => ApplyEffectToObject(
+                    DurationType.Instant,
+                    EffectDamage(redirectedDamage, damageType.GetNWScriptDamageType()),
+                    redirectTarget));
+            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Holy_Aid), redirectTarget);
+
+            if (GetIsObjectValid(attacker) && GetIsReactionTypeHostile(attacker, redirectTarget))
+            {
+                Enmity.ModifyEnmity(redirectTarget, attacker, redirectedDamage);
+            }
+
+            return damage - redirectedDamage;
         }
 
         public static void ApplyDamageReflectionEffects(
@@ -418,6 +463,10 @@ namespace SWLOR.Game.Server.Service
 
             var currentHP = GetCurrentHitPoints(defender);
             if (currentHP <= 0 || damage < currentHP)
+                return damage;
+
+            var cooldown = Stat.GetStatAdjustment(defender, StatType.FatalDamageTemporaryHPCooldownSeconds);
+            if (!TryUseStatTrigger(defender, StatType.FatalDamageTemporaryHPPercent, cooldown))
                 return damage;
 
             var scalingAbilityScore = Stat.GetStatAdjustment(defender, StatType.FatalDamageTemporaryHPScalingAbilityScore);
@@ -529,6 +578,8 @@ namespace SWLOR.Game.Server.Service
                 Stat.RestoreFP(attacker, skillFpRestore);
             }
 
+            ApplyAutoAttackMasterResourceRestore(attacker);
+
             var accuracyPenaltyChance = Stat.GetStatAdjustment(attacker, StatType.AutoAttackTargetAccuracyPercentAdjustmentChance);
             var accuracyPenalty = Stat.GetStatAdjustment(attacker, StatType.AutoAttackTargetAccuracyPercentAdjustment);
             var accuracyPenaltyDuration = Stat.GetStatAdjustment(attacker, StatType.AutoAttackTargetAccuracyPercentAdjustmentDurationSeconds);
@@ -548,6 +599,27 @@ namespace SWLOR.Game.Server.Service
             ApplyAutoAttackCycleDamage(attacker, defender, skillType);
 
             return damage;
+        }
+
+        private static void ApplyAutoAttackMasterResourceRestore(uint attacker)
+        {
+            var master = GetMaster(attacker);
+            if (!GetIsObjectValid(master))
+                return;
+
+            var staminaRestoreChance = Stat.GetStatAdjustment(attacker, StatType.AutoAttackMasterStaminaRestoreChance);
+            var staminaRestore = Stat.GetStatAdjustment(attacker, StatType.AutoAttackMasterStaminaRestore);
+            if (staminaRestoreChance > 0 && staminaRestore > 0 && Random.D100(1) <= staminaRestoreChance)
+            {
+                Stat.RestoreStamina(master, staminaRestore);
+            }
+
+            var fpRestoreChance = Stat.GetStatAdjustment(attacker, StatType.AutoAttackMasterFPRestoreChance);
+            var fpRestore = Stat.GetStatAdjustment(attacker, StatType.AutoAttackMasterFPRestore);
+            if (fpRestoreChance > 0 && fpRestore > 0 && Random.D100(1) <= fpRestoreChance)
+            {
+                Stat.RestoreFP(master, fpRestore);
+            }
         }
 
         private static int ConsumeNextSkillAutoAttackDamageBonus(uint attacker, SkillType skillType)
@@ -623,6 +695,7 @@ namespace SWLOR.Game.Server.Service
             TrackRecentDamageTarget(attacker, defender);
             ApplySideAttackDamageEffects(attacker, defender, skillType, damage);
             ApplyDamageDealtForceErosionEffect(attacker, defender);
+            ApplyBleedingTargetStaminaRestore(attacker, defender);
 
             var hpRestorePercent = Stat.GetStatAdjustment(attacker, StatType.DamageDealtHPPercentRestore);
             if (hpRestorePercent > 0)
@@ -638,6 +711,20 @@ namespace SWLOR.Game.Server.Service
                     HealFromDamage(attacker, damage, hpRestorePercent);
                 }
             }
+        }
+
+        private static void ApplyBleedingTargetStaminaRestore(uint attacker, uint defender)
+        {
+            if (!GetIsObjectValid(defender) ||
+                !StatusEffect.HasStatusEffectCategory(defender, StatusEffectCategory.Bleeding))
+                return;
+
+            var chance = Stat.GetStatAdjustment(attacker, StatType.DamageDealtBleedingTargetStaminaRestoreChance);
+            var staminaRestore = Stat.GetStatAdjustment(attacker, StatType.DamageDealtBleedingTargetStaminaRestore);
+            if (chance <= 0 || staminaRestore <= 0 || Random.D100(1) > chance)
+                return;
+
+            Stat.RestoreStamina(attacker, staminaRestore);
         }
 
         private static void ApplyDamageDealtForceErosionEffect(uint attacker, uint defender)
@@ -1408,12 +1495,29 @@ namespace SWLOR.Game.Server.Service
             var adjustment = Stat.GetStatAdjustment(creature, StatType.AvoidedAttackNextSkillAbilityStaminaCostAdjustment);
             var window = Stat.GetStatAdjustment(creature, StatType.AvoidedAttackNextSkillAbilityWindowSeconds);
             GrantNextSkillAbilityStaminaCostAdjustment(creature, skillType, adjustment, window);
+
+            var chance = Stat.GetStatAdjustment(creature, StatType.AvoidedAttackStaminaRestoreChance);
+            var staminaRestore = Stat.GetStatAdjustment(creature, StatType.AvoidedAttackStaminaRestore);
+            if (chance > 0 && staminaRestore > 0 && Random.D100(1) <= chance)
+            {
+                Stat.RestoreStamina(creature, staminaRestore);
+            }
+
+            var singleChance = Stat.GetStatAdjustment(creature, StatType.AvoidedAttackSingleStaminaRestoreChance);
+            var singleStaminaRestore = Stat.GetStatAdjustment(creature, StatType.AvoidedAttackSingleStaminaRestore);
+            if (singleChance > 0 && singleStaminaRestore > 0 && Random.D100(1) <= singleChance)
+            {
+                Stat.RestoreStamina(creature, singleStaminaRestore);
+                StatusEffect.RemoveStatusEffectsWithStat(creature, StatType.AvoidedAttackSingleStaminaRestore, false);
+            }
         }
 
         public static void ApplyMeleeDamageTakenEffects(uint defender, uint attacker)
         {
             if (!GetIsObjectValid(defender) || !GetIsObjectValid(attacker))
                 return;
+
+            ApplyMeleeDamageTakenPoisonDamage(defender, attacker);
 
             var chance = Stat.GetStatAdjustment(defender, StatType.MeleeDamageTakenStaminaRestoreChance);
             if (chance <= 0 || Random.D100(1) > chance)
@@ -1436,6 +1540,36 @@ namespace SWLOR.Game.Server.Service
                     duration,
                     StatType.MeleeDamageTakenEvasionPercentAdjustment);
             }
+        }
+
+        private static void ApplyMeleeDamageTakenPoisonDamage(uint defender, uint attacker)
+        {
+            var chance = Stat.GetStatAdjustment(defender, StatType.MeleeDamageTakenPoisonDamageChance);
+            var damage = Stat.GetStatAdjustment(defender, StatType.MeleeDamageTakenPoisonDamage);
+            if (chance <= 0 || damage <= 0 || Random.D100(1) > chance)
+                return;
+
+            var scalingAbility = GetAbilityTypeFromStatPlusOne(
+                Stat.GetStatAdjustment(defender, StatType.MeleeDamageTakenPoisonDamageScalingAbility));
+            if (scalingAbility != AbilityType.Invalid)
+            {
+                damage = AbilityEffectScaling.ScaleDirectEffect(
+                    damage,
+                    GetAbilityScore(defender, scalingAbility),
+                    source: defender);
+            }
+
+            damage = Resistance.ApplyResistanceToDamage(attacker, CombatDamageType.Poison, damage);
+            if (damage <= 0)
+                return;
+
+            AssignCommand(
+                defender,
+                () => ApplyEffectToObject(
+                    DurationType.Instant,
+                    EffectDamage(damage, CombatDamageType.Poison.GetNWScriptDamageType()),
+                    attacker));
+            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Poison_S), attacker);
         }
 
         public static int ApplyGuardedHitModifiers(uint defender, uint attacker, int damage)
@@ -1946,6 +2080,7 @@ namespace SWLOR.Game.Server.Service
             ApplyAbilityUsedRecastReduction(activator, ability);
             ApplyAbilityUsedNextSkillAutoAttackDamageBonus(activator, ability);
             ApplyAbilityUsedNextSkillFPCostAdjustment(activator, ability);
+            ApplyAbilityUsedMasterAbilityHitChance(activator);
 
             switch (summary.SkillType)
             {
@@ -1981,6 +2116,25 @@ namespace SWLOR.Game.Server.Service
             }
 
             TrackCombatAbilityUse(activator, ability);
+        }
+
+        private static void ApplyAbilityUsedMasterAbilityHitChance(uint activator)
+        {
+            var master = GetMaster(activator);
+            if (!GetIsObjectValid(master))
+                return;
+
+            var adjustment = Stat.GetStatAdjustment(activator, StatType.AbilityUsedMasterAbilityHitChancePercentAdjustment);
+            var duration = Stat.GetStatAdjustment(activator, StatType.AbilityUsedMasterAbilityHitChanceDurationSeconds);
+            if (adjustment == 0 || duration <= 0)
+                return;
+
+            TemporaryStatModifier.Replace(
+                master,
+                StatType.AbilityHitChancePercentAdjustment,
+                adjustment,
+                duration,
+                StatType.AbilityUsedMasterAbilityHitChancePercentAdjustment);
         }
 
         public static void ApplyAbilityImpactEffects(uint activator, AbilityImpactSummary summary)

@@ -141,18 +141,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition.Beast
                 .Price(3)
                 .RequirementBeastLevel(22)
                 .RequirementBeastRole(BeastRoleType.Evasion)
+                .IncreasesStat(StatType.RareItemFindChance, 5)
 
                 .AddPerkLevel()
                 .Description("The beast gains +10% rare item find chance after combat.")
                 .Price(3)
                 .RequirementBeastLevel(40)
                 .RequirementBeastRole(BeastRoleType.Evasion)
+                .IncreasesStat(StatType.RareItemFindChance, 10)
 
                 .AddPerkLevel()
                 .Description("The beast gains +15% rare item find chance after combat.")
                 .Price(3)
                 .RequirementBeastLevel(50)
-                .RequirementBeastRole(BeastRoleType.Evasion);
+                .RequirementBeastRole(BeastRoleType.Evasion)
+                .IncreasesStat(StatType.RareItemFindChance, 15);
         }
 
         private void QuickRecovery()
@@ -166,12 +169,16 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition.Beast
                 .Price(3)
                 .RequirementBeastLevel(30)
                 .RequirementBeastRole(BeastRoleType.Evasion)
+                .IncreasesStat(StatType.AvoidedAttackStaminaRestoreChance, 15)
+                .IncreasesStat(StatType.AvoidedAttackStaminaRestore, 1)
 
                 .AddPerkLevel()
                 .Description("When the beast evades an attack, it has a 25% chance to restore 1 STM.")
                 .Price(4)
                 .RequirementBeastLevel(48)
-                .RequirementBeastRole(BeastRoleType.Evasion);
+                .RequirementBeastRole(BeastRoleType.Evasion)
+                .IncreasesStat(StatType.AvoidedAttackStaminaRestoreChance, 25)
+                .IncreasesStat(StatType.AvoidedAttackStaminaRestore, 1);
         }
 
         private void UntouchableInstinct()

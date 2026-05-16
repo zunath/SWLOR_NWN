@@ -46,13 +46,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
         {
             foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, true))
             {
-                var duration = LeadershipAbilityEffects.ApplyFieldStewardDurationBonus(activator, 20f);
+                const float duration = 20f;
                 ApplyTemporaryHP(
                     friendly,
                     AbilityEffectScaling.ScaleValueBySourceSocial(activator, 10, 12),
                     duration);
                 StatusEffect.ApplyStatusEffect(activator, friendly, typeof(HoldTheLine1StatusEffect), duration);
-                LeadershipAbilityEffects.ApplyTriageProtocol(activator, friendly);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_M), friendly);
             }
         }

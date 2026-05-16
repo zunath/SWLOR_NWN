@@ -19,7 +19,8 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public EvasiveChallenge2SelfStatusEffect()
         {
             StatGroup.Stats[StatType.EvasionPercentAdjustment] = 14;
-            StatGroup.Stats[StatType.DeflectionStaminaRestore] = 1;
+            StatGroup.Stats[StatType.AvoidedAttackSingleStaminaRestoreChance] = 100;
+            StatGroup.Stats[StatType.AvoidedAttackSingleStaminaRestore] = 1;
         }
     }
 }

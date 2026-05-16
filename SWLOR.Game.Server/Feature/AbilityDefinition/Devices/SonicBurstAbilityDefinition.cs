@@ -94,9 +94,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 0f,
                 Array.Empty<Type>(),
                 centerOnActivator: !GetIsObjectValid(target),
-                damageType: CombatDamageType.Physical,
+                damageType: CombatDamageType.Sonic,
                 targetVisualEffect: VisualEffect.Vfx_Imp_Sonic,
-                areaVisualEffect: VisualEffect.Vfx_Fnf_Sound_Burst);
+                areaVisualEffect: VisualEffect.Vfx_Fnf_Sound_Burst,
+                damagePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetDamageAdjustment(activator),
+                afterSuccessfulHit: InterruptActivation,
+                hitChancePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetAccuracyAdjustment(activator),
+                criticalRatePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetCriticalRateAdjustment(activator));
         }
 
         private static void SonicBurst2ImpactAction(uint activator, uint target, int level, Location targetLocation)
@@ -108,16 +112,20 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 SkillType.Devices,
                 14,
                 12,
-                null,
+                typeof(SonicBurst2StatusEffect),
                 CombatImpactAreaShape.Sphere,
                 0f,
                 5f,
                 0f,
                 Array.Empty<Type>(),
                 centerOnActivator: !GetIsObjectValid(target),
-                damageType: CombatDamageType.Physical,
+                damageType: CombatDamageType.Sonic,
                 targetVisualEffect: VisualEffect.Vfx_Imp_Sonic,
-                areaVisualEffect: VisualEffect.Vfx_Fnf_Sound_Burst);
+                areaVisualEffect: VisualEffect.Vfx_Fnf_Sound_Burst,
+                damagePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetDamageAdjustment(activator),
+                afterSuccessfulHit: InterruptActivation,
+                hitChancePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetAccuracyAdjustment(activator),
+                criticalRatePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetCriticalRateAdjustment(activator));
         }
 
         private static void SonicBurst3ImpactAction(uint activator, uint target, int level, Location targetLocation)
@@ -129,16 +137,25 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 SkillType.Devices,
                 18,
                 12,
-                null,
+                typeof(SonicBurst3StatusEffect),
                 CombatImpactAreaShape.Sphere,
                 0f,
                 5f,
                 0f,
                 Array.Empty<Type>(),
                 centerOnActivator: !GetIsObjectValid(target),
-                damageType: CombatDamageType.Physical,
+                damageType: CombatDamageType.Sonic,
                 targetVisualEffect: VisualEffect.Vfx_Imp_Sonic,
-                areaVisualEffect: VisualEffect.Vfx_Fnf_Sound_Burst);
+                areaVisualEffect: VisualEffect.Vfx_Fnf_Sound_Burst,
+                damagePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetDamageAdjustment(activator),
+                afterSuccessfulHit: InterruptActivation,
+                hitChancePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetAccuracyAdjustment(activator),
+                criticalRatePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetCriticalRateAdjustment(activator));
+        }
+
+        private static void InterruptActivation(uint target)
+        {
+            AssignCommand(target, () => ClearAllActions());
         }
 
     }

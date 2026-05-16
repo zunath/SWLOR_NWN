@@ -14,9 +14,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         public AlphaRhythm1StatusEffect()
         {
-            StatGroup.Stats[StatType.AccuracyPercentAdjustment] = 8;
-            StatGroup.Stats[StatType.AttackPercentAdjustment] = 10;
-            StatGroup.Stats[StatType.DamageTakenPercentAdjustment] = -10;
+            StatGroup.Stats[StatType.AbilityHitChancePercentAdjustment] = 8;
         }
     }
 }

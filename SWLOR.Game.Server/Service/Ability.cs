@@ -990,7 +990,9 @@ namespace SWLOR.Game.Server.Service
             Animation impactAnimation = Animation.Invalid,
             int enmityBonus = 0,
             Action<uint> beforeImpact = null,
-            Action<uint> afterSuccessfulHit = null)
+            Action<uint> afterSuccessfulHit = null,
+            int hitChancePercentAdjustment = 0,
+            int criticalRatePercentAdjustment = 0)
         {
             RecordAbilityImpactShape(activator, skillType, true);
 
@@ -1020,7 +1022,9 @@ namespace SWLOR.Game.Server.Service
                     additionalStatusEffectFactories,
                     enmityBonus,
                     beforeImpact,
-                    afterSuccessfulHit);
+                    afterSuccessfulHit,
+                    hitChancePercentAdjustment,
+                    criticalRatePercentAdjustment);
                 PlayCombatImpactAnimation(activator, impactAnimation);
                 return;
             }
@@ -1056,7 +1060,9 @@ namespace SWLOR.Game.Server.Service
                 additionalStatusEffectFactories,
                 enmityBonus,
                 beforeImpact,
-                afterSuccessfulHit);
+                afterSuccessfulHit,
+                hitChancePercentAdjustment,
+                criticalRatePercentAdjustment);
 
             switch (shape)
             {
@@ -1122,7 +1128,9 @@ namespace SWLOR.Game.Server.Service
             IEnumerable<Func<IStatusEffect>> additionalStatusEffectFactories,
             int enmityBonus,
             Action<uint> beforeImpact,
-            Action<uint> afterSuccessfulHit)
+            Action<uint> afterSuccessfulHit,
+            int hitChancePercentAdjustment,
+            int criticalRatePercentAdjustment)
         {
             RecordAbilityImpactShape(activator, skillType, true);
 
@@ -1178,7 +1186,9 @@ namespace SWLOR.Game.Server.Service
                 additionalStatusEffectFactories,
                 enmityBonus,
                 beforeImpact,
-                afterSuccessfulHit);
+                afterSuccessfulHit,
+                hitChancePercentAdjustment: hitChancePercentAdjustment,
+                criticalRatePercentAdjustment: criticalRatePercentAdjustment);
         }
 
         private static ApplyTelegraphEffect BuildTelegraphedCombatImpactAction(
@@ -1204,7 +1214,9 @@ namespace SWLOR.Game.Server.Service
             IEnumerable<Func<IStatusEffect>> additionalStatusEffectFactories,
             int enmityBonus,
             Action<uint> beforeImpact,
-            Action<uint> afterSuccessfulHit)
+            Action<uint> afterSuccessfulHit,
+            int hitChancePercentAdjustment,
+            int criticalRatePercentAdjustment)
         {
             return (creator, creatures) =>
             {
@@ -1258,7 +1270,9 @@ namespace SWLOR.Game.Server.Service
                     additionalStatusEffectFactories,
                     enmityBonus,
                     beforeImpact,
-                    afterSuccessfulHit);
+                    afterSuccessfulHit,
+                    hitChancePercentAdjustment: hitChancePercentAdjustment,
+                    criticalRatePercentAdjustment: criticalRatePercentAdjustment);
 
                 if (ability != null)
                 {
@@ -1672,7 +1686,7 @@ namespace SWLOR.Game.Server.Service
             }
             calculatedDamage = Combat.ApplyDamageDealtModifiers(activator, target, calculatedDamage, skillType, damageType, true);
             calculatedDamage = Resistance.ApplyResistanceToDamage(target, damageType, calculatedDamage);
-            calculatedDamage = Combat.ApplyDamageTakenModifiers(target, calculatedDamage);
+            calculatedDamage = Combat.ApplyDamageTakenModifiers(target, calculatedDamage, activator, damageType);
             Combat.ApplyDamageReflectionEffects(activator, target, calculatedDamage, damageType);
 
             if (criticalRating > 0)

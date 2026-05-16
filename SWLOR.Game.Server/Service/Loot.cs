@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.LootService;
 using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Service
@@ -247,7 +248,9 @@ namespace SWLOR.Game.Server.Service
 
             var creditFinderLevel = Perk.GetPerkLevel(attacker, PerkType.CreditFinder);
             var treasureHunterLevel = Perk.GetPerkLevel(attacker, PerkType.TreasureHunter) * 10;
-            var rareBonusChance = treasureHunterLevel;
+            var rareBonusChance = Math.Max(
+                treasureHunterLevel,
+                Stat.GetStatAdjustment(attacker, StatType.RareItemFindChance));
 
             if (creditFinderLevel > currentCreditFinder)
             {

@@ -9,10 +9,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class Assault3StatusEffect : StatusEffectBase
     {
         public override string Name => "Assault III";
-        public override EffectIconType Icon => EffectIconType.MovementSpeedDecrease;
-        public override StatusEffectCategory Categories => StatusEffectCategory.Debuff;
-        public override StatusEffectCleanseType CleanseTypes => StatusEffectCleanseType.Purify | StatusEffectCleanseType.SoothePet;
-        public override ResistanceType ResistanceType => ResistanceType.Trauma;
+        public override EffectIconType Icon => EffectIconType.DamageResistance;
         public override bool PersistsOnLogout => false;
         public override List<Type> LessPowerfulEffectTypes { get; } = new List<Type>
         {
@@ -22,7 +19,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         public Assault3StatusEffect()
         {
-            StatGroup.Stats[StatType.EvasionPercentAdjustment] = -14;
+            StatGroup.Stats[StatType.EvasionPercentAdjustment] = 14;
         }
     }
 }

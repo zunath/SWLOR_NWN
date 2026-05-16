@@ -90,11 +90,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 SkillType.BeastMastery,
                 10,
                 10,
-                typeof(Assault1StatusEffect),
+                null,
                 false,
                 Array.Empty<Type>(),
                 damageType: CombatDamageType.Physical,
                 targetVisualEffect: VisualEffect.Vfx_Com_Chunk_Red_Small);
+
+            ApplySelfStatus(activator, typeof(Assault1StatusEffect));
         }
 
         private static void Assault2ImpactAction(uint activator, uint target, int level, Location targetLocation)
@@ -106,11 +108,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 SkillType.BeastMastery,
                 20,
                 10,
-                typeof(Assault2StatusEffect),
+                null,
                 false,
                 Array.Empty<Type>(),
                 damageType: CombatDamageType.Physical,
                 targetVisualEffect: VisualEffect.Vfx_Com_Chunk_Red_Small);
+
+            ApplySelfStatus(activator, typeof(Assault2StatusEffect));
         }
 
         private static void Assault3ImpactAction(uint activator, uint target, int level, Location targetLocation)
@@ -122,11 +126,19 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 SkillType.BeastMastery,
                 32,
                 10,
-                typeof(Assault3StatusEffect),
+                null,
                 false,
                 Array.Empty<Type>(),
                 damageType: CombatDamageType.Physical,
                 targetVisualEffect: VisualEffect.Vfx_Com_Chunk_Red_Small);
+
+            ApplySelfStatus(activator, typeof(Assault3StatusEffect));
+        }
+
+        private static void ApplySelfStatus(uint activator, Type statusEffect)
+        {
+            StatusEffect.ApplyStatusEffect(activator, activator, statusEffect, 10f);
+            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Ac_Bonus), activator);
         }
 
     }

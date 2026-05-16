@@ -35,7 +35,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 .HasRecastDelay(RecastGroup.PredatorRush, 75f)
                 .SkillType(SkillType.BeastMastery)
                 .IsSingleTargetAbility()
-                .RequiresTarget()
                 .HasImpactAction(PredatorRush1ImpactAction)
                 .IsCastedAbility()
                 .BreaksStealth()
@@ -44,11 +43,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 
         private static void PredatorRush1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
-            {
-                StatusEffect.ApplyStatusEffect(activator, friendly, typeof(PredatorRush1StatusEffect), 12f);
-                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Haste), friendly);
-            }
+            StatusEffect.ApplyStatusEffect(activator, activator, typeof(PredatorRush1StatusEffect), 12f);
+            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Haste), activator);
         }
 
 

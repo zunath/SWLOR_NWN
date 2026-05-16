@@ -94,7 +94,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 false,
                 Array.Empty<Type>(),
                 damageType: CombatDamageType.Fire,
-                targetVisualEffect: VisualEffect.Vfx_Com_Hit_Fire);
+                targetVisualEffect: VisualEffect.Vfx_Com_Hit_Fire,
+                damagePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetDamageAdjustment(activator),
+                hitChancePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetAccuracyAdjustment(activator),
+                criticalRatePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetCriticalRateAdjustment(activator));
         }
 
         private static void WristRocket2ImpactAction(uint activator, uint target, int level, Location targetLocation)
@@ -110,7 +113,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 false,
                 Array.Empty<Type>(),
                 damageType: CombatDamageType.Fire,
-                targetVisualEffect: VisualEffect.Vfx_Com_Hit_Fire);
+                targetVisualEffect: VisualEffect.Vfx_Com_Hit_Fire,
+                damagePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetDamageAdjustment(activator),
+                hitChancePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetAccuracyAdjustment(activator),
+                criticalRatePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetCriticalRateAdjustment(activator));
         }
 
         private static void WristRocket3ImpactAction(uint activator, uint target, int level, Location targetLocation)
@@ -126,7 +132,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 false,
                 Array.Empty<Type>(),
                 damageType: CombatDamageType.Fire,
-                targetVisualEffect: VisualEffect.Vfx_Com_Hit_Fire);
+                targetVisualEffect: VisualEffect.Vfx_Com_Hit_Fire,
+                damagePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetDamageAdjustment(activator),
+                hitChancePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetAccuracyAdjustment(activator),
+                criticalRatePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetCriticalRateAdjustment(activator));
         }
 
     }

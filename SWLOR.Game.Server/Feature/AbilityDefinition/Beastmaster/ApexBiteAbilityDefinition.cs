@@ -35,6 +35,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 .HasRecastDelay(RecastGroup.ApexBite, 120f)
                 .SkillType(SkillType.BeastMastery)
                 .IsSingleTargetAbility()
+                .RequiresTarget()
                 .HasImpactAction(ApexBite1ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
@@ -49,19 +50,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 target,
                 targetLocation,
                 SkillType.BeastMastery,
-                24,
+                45,
                 12,
                 null,
                 false,
                 Array.Empty<Type>(),
                 damageType: CombatDamageType.Physical,
-                targetVisualEffect: VisualEffect.Vfx_Com_Chunk_Red_Small);
-
-            foreach (var friendly in new[] { activator })
-            {
-                StatusEffect.ApplyStatusEffect(activator, friendly, typeof(ApexBite1SelfStatusEffect), 12f);
-                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Ac_Bonus), friendly);
-            }
+                targetVisualEffect: VisualEffect.Vfx_Com_Chunk_Red_Small,
+                criticalRatePercentAdjustment: 25);
         }
 
     }

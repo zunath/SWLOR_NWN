@@ -35,7 +35,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 .HasRecastDelay(RecastGroup.RampartHide, 90f)
                 .SkillType(SkillType.BeastMastery)
                 .IsSingleTargetAbility()
-                .RequiresTarget()
                 .HasImpactAction(RampartHide1ImpactAction)
                 .IsCastedAbility()
                 .BreaksStealth()
@@ -44,11 +43,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 
         private static void RampartHide1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
-            {
-                StatusEffect.ApplyStatusEffect(activator, friendly, typeof(RampartHide1StatusEffect), 10f);
-                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Holy_Aid), friendly);
-            }
+            StatusEffect.ApplyStatusEffect(activator, activator, typeof(RampartHide1StatusEffect), 10f);
+            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Holy_Aid), activator);
         }
 
 

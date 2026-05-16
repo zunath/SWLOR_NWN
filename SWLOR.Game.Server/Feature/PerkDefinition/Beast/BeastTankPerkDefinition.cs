@@ -101,7 +101,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition.Beast
                 .Price(4)
                 .RequirementBeastLevel(42)
                 .RequirementBeastRole(BeastRoleType.Tank)
-                .IncreasesStat(StatType.EnmityPercentAdjustment, 45);
+                .IncreasesStat(StatType.EnmityPercentAdjustment, 45)
+                .IncreasesStat(StatType.AbilityRecastDelayFlatAdjustmentPerkType, (int)PerkType.Anger)
+                .IncreasesStat(StatType.AbilityRecastDelayFlatAdjustment, -3);
         }
 
         private void GuardingRoar()
@@ -164,7 +166,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition.Beast
                 .Price(3)
                 .RequirementBeastLevel(30)
                 .RequirementBeastRole(BeastRoleType.Tank)
-                .IncreasesStat(StatType.DamageTakenPercentAdjustment, -10);
+                .IncreasesStat(StatType.DamageTakenPercentAdjustment, creature => IsMasterBelowHalfHP(creature) ? -10 : 0);
         }
 
         private void RampartHide()
@@ -191,7 +193,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition.Beast
                 .Description("Once every 3 minutes, when the beast would fall below 1 HP, it remains at 1 HP and gains temporary HP.")
                 .Price(3)
                 .RequirementBeastLevel(50)
-                .RequirementBeastRole(BeastRoleType.Tank);
+                .RequirementBeastRole(BeastRoleType.Tank)
+                .IncreasesStat(StatType.FatalDamageTemporaryHPPercent, 20)
+                .IncreasesStat(StatType.FatalDamageTemporaryHPDurationSeconds, 12)
+                .IncreasesStat(StatType.FatalDamageTemporaryHPCooldownSeconds, 180);
         }
 
         private void UnbreakableBeast()
@@ -206,6 +211,16 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition.Beast
                 .RequirementBeastLevel(50)
                 .RequirementBeastRole(BeastRoleType.Tank)
                 .GrantsFeat(FeatType.UnbreakableBeast1);
+        }
+
+        private static bool IsMasterBelowHalfHP(uint creature)
+        {
+            var master = GetMaster(creature);
+            if (!GetIsObjectValid(master))
+                return false;
+
+            var maxHP = GetMaxHitPoints(master);
+            return maxHP > 0 && GetCurrentHitPoints(master) < maxHP * 0.5f;
         }
 
     }

@@ -120,18 +120,24 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition.Beast
                 .Price(3)
                 .RequirementBeastLevel(15)
                 .RequirementBeastRole(BeastRoleType.Bruiser)
+                .IncreasesStat(StatType.AutoAttackMasterStaminaRestoreChance, 10)
+                .IncreasesStat(StatType.AutoAttackMasterStaminaRestore, 1)
 
                 .AddPerkLevel()
                 .Description("The beast has a 20% chance to restore 1 STM to its master when it lands an attack.")
                 .Price(3)
                 .RequirementBeastLevel(30)
                 .RequirementBeastRole(BeastRoleType.Bruiser)
+                .IncreasesStat(StatType.AutoAttackMasterStaminaRestoreChance, 20)
+                .IncreasesStat(StatType.AutoAttackMasterStaminaRestore, 1)
 
                 .AddPerkLevel()
                 .Description("The beast has a 30% chance to restore 1 STM to its master when it lands an attack.")
                 .Price(4)
                 .RequirementBeastLevel(48)
-                .RequirementBeastRole(BeastRoleType.Bruiser);
+                .RequirementBeastRole(BeastRoleType.Bruiser)
+                .IncreasesStat(StatType.AutoAttackMasterStaminaRestoreChance, 30)
+                .IncreasesStat(StatType.AutoAttackMasterStaminaRestore, 1);
         }
 
         private void VenomousHide()
@@ -145,12 +151,18 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition.Beast
                 .Price(3)
                 .RequirementBeastLevel(22)
                 .RequirementBeastRole(BeastRoleType.Bruiser)
+                .IncreasesStat(StatType.MeleeDamageTakenPoisonDamageChance, 10)
+                .IncreasesStat(StatType.MeleeDamageTakenPoisonDamage, 8)
+                .IncreasesStat(StatType.MeleeDamageTakenPoisonDamageScalingAbility, (int)AbilityType.Might + 1)
 
                 .AddPerkLevel()
                 .Description("Enemies that damage the beast in melee have a 20% chance to suffer poison DMG.")
                 .Price(3)
                 .RequirementBeastLevel(40)
-                .RequirementBeastRole(BeastRoleType.Bruiser);
+                .RequirementBeastRole(BeastRoleType.Bruiser)
+                .IncreasesStat(StatType.MeleeDamageTakenPoisonDamageChance, 20)
+                .IncreasesStat(StatType.MeleeDamageTakenPoisonDamage, 8)
+                .IncreasesStat(StatType.MeleeDamageTakenPoisonDamageScalingAbility, (int)AbilityType.Might + 1);
         }
 
         private void Rampage()

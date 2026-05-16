@@ -35,6 +35,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 .HasRecastDelay(RecastGroup.PredatorsMark, 45f)
                 .SkillType(SkillType.BeastMastery)
                 .IsSingleTargetAbility()
+                .RequiresTarget()
                 .HasImpactAction(PredatorsMark1ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()

@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         public Intercept1StatusEffect()
         {
-            StatGroup.Stats[StatType.DamageTakenPercentAdjustment] = -35;
+            StatGroup.Stats[StatType.DamageTakenRedirectToStatusSourcePercent] = 35;
         }
     }
 }

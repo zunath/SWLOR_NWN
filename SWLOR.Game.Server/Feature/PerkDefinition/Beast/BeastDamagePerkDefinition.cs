@@ -167,12 +167,16 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition.Beast
                 .Price(3)
                 .RequirementBeastLevel(40)
                 .RequirementBeastRole(BeastRoleType.Damage)
+                .IncreasesStat(StatType.DamageDealtBleedingTargetStaminaRestoreChance, 20)
+                .IncreasesStat(StatType.DamageDealtBleedingTargetStaminaRestore, 1)
 
                 .AddPerkLevel()
                 .Description("When the beast damages a bleeding target, it has a 30% chance to restore 1 STM.")
                 .Price(4)
                 .RequirementBeastLevel(48)
-                .RequirementBeastRole(BeastRoleType.Damage);
+                .RequirementBeastRole(BeastRoleType.Damage)
+                .IncreasesStat(StatType.DamageDealtBleedingTargetStaminaRestoreChance, 30)
+                .IncreasesStat(StatType.DamageDealtBleedingTargetStaminaRestore, 1);
         }
 
         private void PredatorRush()

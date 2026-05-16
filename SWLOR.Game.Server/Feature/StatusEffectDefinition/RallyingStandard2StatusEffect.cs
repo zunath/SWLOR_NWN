@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         protected override void Apply(uint creature, int durationTicks)
         {
-            StatGroup.Stats[StatType.AccuracyPercentAdjustment] = ScaleBySourceSocial(3, 4);
+            StatGroup.Stats[StatType.AbilityHitChancePercentAdjustment] = ScaleBySourceSocial(3, 4);
         }
     }
 }

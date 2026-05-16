@@ -2364,7 +2364,145 @@ namespace SWLOR.Game.Server.Service.StatService
         /// Radius bonus in meters applied to Field Engineer beacon pulse target selection.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        BeaconPulseRangeBonusMeters = 393
+        BeaconPulseRangeBonusMeters = 393,
+
+        /// <summary>
+        /// Percent accuracy adjustment applied only to Assault Gadget abilities.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        AssaultGadgetAccuracyPercentAdjustment = 394,
+
+        /// <summary>
+        /// Percent critical chance adjustment applied only to Assault Gadget abilities.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        AssaultGadgetCriticalRatePercentAdjustment = 395,
+
+        /// <summary>
+        /// Percent damage adjustment applied only to Assault Gadget abilities.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        AssaultGadgetDamagePercentAdjustment = 396,
+
+        /// <summary>
+        /// Cooldown in seconds for fatal damage temporary HP triggers.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        FatalDamageTemporaryHPCooldownSeconds = 397,
+
+        /// <summary>
+        /// Percent chance to restore Stamina when damaging a bleeding target.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        DamageDealtBleedingTargetStaminaRestoreChance = 398,
+
+        /// <summary>
+        /// Flat Stamina restored when damaging a bleeding target.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        DamageDealtBleedingTargetStaminaRestore = 399,
+
+        /// <summary>
+        /// Percent chance for auto-attacks to restore Stamina to the attacker's master.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        AutoAttackMasterStaminaRestoreChance = 400,
+
+        /// <summary>
+        /// Flat Stamina restored to the attacker's master by auto-attacks.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        AutoAttackMasterStaminaRestore = 401,
+
+        /// <summary>
+        /// Percent chance for auto-attacks to restore FP to the attacker's master.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        AutoAttackMasterFPRestoreChance = 402,
+
+        /// <summary>
+        /// Flat FP restored to the attacker's master by auto-attacks.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        AutoAttackMasterFPRestore = 403,
+
+        /// <summary>
+        /// Percent chance for melee attackers to suffer poison damage when damaging this creature.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        MeleeDamageTakenPoisonDamageChance = 404,
+
+        /// <summary>
+        /// Flat poison damage dealt to melee attackers.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        MeleeDamageTakenPoisonDamage = 405,
+
+        /// <summary>
+        /// AbilityType plus one used to scale MeleeDamageTakenPoisonDamage.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        MeleeDamageTakenPoisonDamageScalingAbility = 406,
+
+        /// <summary>
+        /// Percent chance to restore Stamina when avoiding an attack.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        AvoidedAttackStaminaRestoreChance = 407,
+
+        /// <summary>
+        /// Flat Stamina restored when avoiding an attack.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        AvoidedAttackStaminaRestore = 408,
+
+        /// <summary>
+        /// Percent ability hit chance adjustment granted to the activator's master when the activator uses an ability.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        AbilityUsedMasterAbilityHitChancePercentAdjustment = 409,
+
+        /// <summary>
+        /// Duration in seconds for AbilityUsedMasterAbilityHitChancePercentAdjustment.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        AbilityUsedMasterAbilityHitChanceDurationSeconds = 410,
+
+        /// <summary>
+        /// Percent chance bonus applied when marking a target for rare loot.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        RareItemFindChance = 411,
+
+        /// <summary>
+        /// Percent chance for the next avoided attack to restore Stamina and consume the granting status.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        AvoidedAttackSingleStaminaRestoreChance = 412,
+
+        /// <summary>
+        /// Flat Stamina restored by the next avoided attack before consuming the granting status.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        AvoidedAttackSingleStaminaRestore = 413,
+
+        /// <summary>
+        /// Percent of incoming damage redirected to the source of the granting status effect.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        DamageTakenRedirectToStatusSourcePercent = 414,
+
+        /// <summary>
+        /// Blocks incoming Mind resistance group status effects.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        MindStatusImmunity = 415,
+
+        /// <summary>
+        /// Blocks incoming Mobility resistance group status effects.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        MobilityStatusImmunity = 416
     }
 
     public class StatTypeAttribute : Attribute

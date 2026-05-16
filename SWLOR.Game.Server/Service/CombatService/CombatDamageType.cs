@@ -80,6 +80,16 @@ namespace SWLOR.Game.Server.Service.CombatService
         Ice = 6,
 
         [CombatDamage(
+            CombatDamageCategoryType.Elemental,
+            CombatDamageType.Physical,
+            AbilityType.Vitality,
+            ResistanceType.Invalid,
+            ResistanceType.Disruption,
+            NWNScriptDamageType.Sonic,
+            NativeDamageType.Sonic)]
+        Sonic = 7,
+
+        [CombatDamage(
             CombatDamageCategoryType.Ship,
             CombatDamageType.Invalid,
             AbilityType.Invalid,

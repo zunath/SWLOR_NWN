@@ -115,24 +115,25 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(3)
                 .RequirementSkill(SkillType.Devices, 12)
                 .RequirementCharacterType(CharacterType.Standard)
-                .IncreasesStat(StatType.AccuracyPercentAdjustment, 5)
-                .IncreasesStat(StatType.CriticalRatePercentAdjustment, 5)
+                .IncreasesStat(StatType.AssaultGadgetAccuracyPercentAdjustment, 5)
+                .IncreasesStat(StatType.AssaultGadgetCriticalRatePercentAdjustment, 5)
 
                 .AddPerkLevel()
                 .Description("Assault Gadget abilities gain +10% Accuracy and +10% critical chance.")
                 .Price(2)
                 .RequirementSkill(SkillType.Devices, 22)
                 .RequirementCharacterType(CharacterType.Standard)
-                .IncreasesStat(StatType.AccuracyPercentAdjustment, 10)
-                .IncreasesStat(StatType.CriticalRatePercentAdjustment, 10)
+                .IncreasesStat(StatType.AssaultGadgetAccuracyPercentAdjustment, 10)
+                .IncreasesStat(StatType.AssaultGadgetCriticalRatePercentAdjustment, 10)
 
                 .AddPerkLevel()
                 .Description("Assault Gadget abilities gain +15% Accuracy, +15% critical chance, and +10% damage.")
                 .Price(4)
                 .RequirementSkill(SkillType.Devices, 45)
                 .RequirementCharacterType(CharacterType.Standard)
-                .IncreasesStat(StatType.AccuracyPercentAdjustment, 15)
-                .IncreasesStat(StatType.CriticalRatePercentAdjustment, 15);
+                .IncreasesStat(StatType.AssaultGadgetAccuracyPercentAdjustment, 15)
+                .IncreasesStat(StatType.AssaultGadgetCriticalRatePercentAdjustment, 15)
+                .IncreasesStat(StatType.AssaultGadgetDamagePercentAdjustment, 10);
         }
 
         private void RailDart()

@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         public Hasten2StatusEffect()
         {
-            StatGroup.Stats[StatType.MovementSpeedPercentAdjustment] = 25;
+            StatGroup.Stats[StatType.AttackDelayReductionPercent] = 25;
         }
     }
 }

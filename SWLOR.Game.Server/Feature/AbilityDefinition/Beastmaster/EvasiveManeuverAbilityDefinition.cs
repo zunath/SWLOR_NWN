@@ -37,7 +37,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 .HasRecastDelay(RecastGroup.EvasiveManeuver, 30f)
                 .SkillType(SkillType.BeastMastery)
                 .IsSingleTargetAbility()
-                .RequiresTarget()
                 .HasImpactAction(EvasiveManeuver1ImpactAction)
                 .IsCastedAbility()
                 .BreaksStealth()
@@ -54,7 +53,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 .HasRecastDelay(RecastGroup.EvasiveManeuver, 30f)
                 .SkillType(SkillType.BeastMastery)
                 .IsSingleTargetAbility()
-                .RequiresTarget()
                 .HasImpactAction(EvasiveManeuver2ImpactAction)
                 .IsCastedAbility()
                 .BreaksStealth()
@@ -71,7 +69,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 .HasRecastDelay(RecastGroup.EvasiveManeuver, 30f)
                 .SkillType(SkillType.BeastMastery)
                 .IsSingleTargetAbility()
-                .RequiresTarget()
                 .HasImpactAction(EvasiveManeuver3ImpactAction)
                 .IsCastedAbility()
                 .BreaksStealth()
@@ -80,31 +77,24 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 
         private static void EvasiveManeuver1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
-            {
-                StatusEffect.ApplyStatusEffect(activator, friendly, typeof(EvasiveManeuver1StatusEffect), 180f);
-                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Haste), friendly);
-            }
+            ApplySelfStatus(activator, typeof(EvasiveManeuver1StatusEffect), 180f, VisualEffect.Vfx_Imp_Haste);
         }
 
         private static void EvasiveManeuver2ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
-            {
-                StatusEffect.ApplyStatusEffect(activator, friendly, typeof(EvasiveManeuver2StatusEffect), 180f);
-                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Haste), friendly);
-            }
+            ApplySelfStatus(activator, typeof(EvasiveManeuver2StatusEffect), 180f, VisualEffect.Vfx_Imp_Haste);
         }
 
         private static void EvasiveManeuver3ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
-            {
-                StatusEffect.ApplyStatusEffect(activator, friendly, typeof(EvasiveManeuver3StatusEffect), 180f);
-                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Haste), friendly);
-            }
+            ApplySelfStatus(activator, typeof(EvasiveManeuver3StatusEffect), 180f, VisualEffect.Vfx_Imp_Haste);
         }
 
+        private static void ApplySelfStatus(uint activator, Type statusEffect, float duration, VisualEffect visualEffect)
+        {
+            StatusEffect.ApplyStatusEffect(activator, activator, statusEffect, duration);
+            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(visualEffect), activator);
+        }
 
     }
 }

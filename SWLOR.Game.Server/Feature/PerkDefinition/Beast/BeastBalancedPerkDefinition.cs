@@ -121,14 +121,16 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition.Beast
                 .Price(3)
                 .RequirementBeastLevel(15)
                 .RequirementBeastRole(BeastRoleType.Balanced)
-                .IncreasesStat(StatType.AccuracyPercentAdjustment, 3)
+                .IncreasesStat(StatType.AbilityUsedMasterAbilityHitChancePercentAdjustment, 3)
+                .IncreasesStat(StatType.AbilityUsedMasterAbilityHitChanceDurationSeconds, 8)
 
                 .AddPerkLevel()
                 .Description("When the beast uses an ability, its master gains +6% physical and force ability hit chance for 8 seconds.")
                 .Price(4)
                 .RequirementBeastLevel(35)
                 .RequirementBeastRole(BeastRoleType.Balanced)
-                .IncreasesStat(StatType.AccuracyPercentAdjustment, 6);
+                .IncreasesStat(StatType.AbilityUsedMasterAbilityHitChancePercentAdjustment, 6)
+                .IncreasesStat(StatType.AbilityUsedMasterAbilityHitChanceDurationSeconds, 8);
         }
 
         private void Hasten()

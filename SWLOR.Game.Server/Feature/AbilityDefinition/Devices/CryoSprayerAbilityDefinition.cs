@@ -78,7 +78,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 centerOnActivator: !GetIsObjectValid(target),
                 damageType: CombatDamageType.Ice,
                 targetVisualEffect: VisualEffect.Vfx_Com_Hit_Frost,
-                areaVisualEffect: VisualEffect.Vfx_Fnf_Icestorm);
+                areaVisualEffect: VisualEffect.Vfx_Fnf_Icestorm,
+                damagePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetDamageAdjustment(activator),
+                hitChancePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetAccuracyAdjustment(activator),
+                criticalRatePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetCriticalRateAdjustment(activator));
         }
 
         private static void CryoSprayer2ImpactAction(uint activator, uint target, int level, Location targetLocation)
@@ -99,7 +102,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 centerOnActivator: !GetIsObjectValid(target),
                 damageType: CombatDamageType.Ice,
                 targetVisualEffect: VisualEffect.Vfx_Com_Hit_Frost,
-                areaVisualEffect: VisualEffect.Vfx_Fnf_Icestorm);
+                areaVisualEffect: VisualEffect.Vfx_Fnf_Icestorm,
+                damagePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetDamageAdjustment(activator),
+                hitChancePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetAccuracyAdjustment(activator),
+                criticalRatePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetCriticalRateAdjustment(activator));
         }
 
     }

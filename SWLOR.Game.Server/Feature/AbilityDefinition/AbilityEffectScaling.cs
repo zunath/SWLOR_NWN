@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
         public static int ApplyActiveForceAffinityMagnitude(uint source, int amount)
         {
-            if (!GetIsObjectValid(source) || amount <= 0)
+            if (source == 0 || source == OBJECT_INVALID || !GetIsObjectValid(source) || amount <= 0)
                 return amount;
 
             return Ability.ApplyActiveForceAffinityMagnitude(source, amount);
@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
         public static float ApplyActiveForceAffinityMagnitude(uint source, float amount)
         {
-            if (!GetIsObjectValid(source) || amount <= 0f)
+            if (source == 0 || source == OBJECT_INVALID || !GetIsObjectValid(source) || amount <= 0f)
                 return amount;
 
             return Ability.ApplyActiveForceAffinityMagnitude(source, amount);
@@ -49,7 +49,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             if (baseValue >= maximumValue)
                 return baseValue;
 
-            var social = GetIsObjectValid(source)
+            var social = source != 0 && source != OBJECT_INVALID && GetIsObjectValid(source)
                 ? GetAbilityScore(source, AbilityType.Social)
                 : ScalingBaselineStat;
 

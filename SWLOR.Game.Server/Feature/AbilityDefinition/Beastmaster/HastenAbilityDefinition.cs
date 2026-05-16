@@ -36,7 +36,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 .HasRecastDelay(RecastGroup.Hasten, 60f)
                 .SkillType(SkillType.BeastMastery)
                 .IsSingleTargetAbility()
-                .RequiresTarget()
                 .HasImpactAction(Hasten1ImpactAction)
                 .IsCastedAbility()
                 .BreaksStealth()
@@ -53,7 +52,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 .HasRecastDelay(RecastGroup.Hasten, 60f)
                 .SkillType(SkillType.BeastMastery)
                 .IsSingleTargetAbility()
-                .RequiresTarget()
                 .HasImpactAction(Hasten2ImpactAction)
                 .IsCastedAbility()
                 .BreaksStealth()
@@ -62,22 +60,19 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 
         private static void Hasten1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
-            {
-                StatusEffect.ApplyStatusEffect(activator, friendly, typeof(Hasten1StatusEffect), 18f);
-                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Haste), friendly);
-            }
+            ApplySelfStatus(activator, typeof(Hasten1StatusEffect), 18f, VisualEffect.Vfx_Imp_Haste);
         }
 
         private static void Hasten2ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
-            {
-                StatusEffect.ApplyStatusEffect(activator, friendly, typeof(Hasten2StatusEffect), 18f);
-                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Haste), friendly);
-            }
+            ApplySelfStatus(activator, typeof(Hasten2StatusEffect), 18f, VisualEffect.Vfx_Imp_Haste);
         }
 
+        private static void ApplySelfStatus(uint activator, Type statusEffect, float duration, VisualEffect visualEffect)
+        {
+            StatusEffect.ApplyStatusEffect(activator, activator, statusEffect, duration);
+            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(visualEffect), activator);
+        }
 
     }
 }

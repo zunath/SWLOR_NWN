@@ -43,27 +43,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 
         private static void AlphaRhythm1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            foreach (var friendly in GetBeastMasterTargets(activator))
-            {
-                StatusEffect.ApplyStatusEffect(activator, friendly, typeof(AlphaRhythm1StatusEffect), 15f);
-                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Holy_Aid), friendly);
-            }
-        }
-
-
-        private static IEnumerable<uint> GetBeastAndMasterTargets(uint activator)
-        {
-            yield return activator;
+            StatusEffect.ApplyStatusEffect(activator, activator, typeof(AlphaRhythm1BeastStatusEffect), 15f);
+            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Holy_Aid), activator);
 
             var master = GetMaster(activator);
             if (GetIsObjectValid(master))
-                yield return master;
-        }
-
-        private static IEnumerable<uint> GetBeastMasterTargets(uint activator)
-        {
-            var master = GetMaster(activator);
-            yield return GetIsObjectValid(master) ? master : activator;
+            {
+                StatusEffect.ApplyStatusEffect(activator, master, typeof(AlphaRhythm1StatusEffect), 15f);
+                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Holy_Aid), master);
+            }
         }
     }
 }

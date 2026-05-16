@@ -64,6 +64,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 
         private static void Pounce1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
+            LeapAndInterrupt(activator, target);
+
             Ability.ApplyCombatImpact(
                 activator,
                 target,
@@ -80,6 +82,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 
         private static void Pounce2ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
+            LeapAndInterrupt(activator, target);
+
             Ability.ApplyCombatImpact(
                 activator,
                 target,
@@ -92,6 +96,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 Array.Empty<Type>(),
                 damageType: CombatDamageType.Physical,
                 targetVisualEffect: VisualEffect.Vfx_Com_Chunk_Red_Small);
+        }
+
+        private static void LeapAndInterrupt(uint activator, uint target)
+        {
+            if (!GetIsObjectValid(target))
+                return;
+
+            AssignCommand(target, () => ClearAllActions());
+            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Fnf_Summon_Monster_1), activator);
+            AssignCommand(activator, () => ActionJumpToObject(target));
         }
 
     }

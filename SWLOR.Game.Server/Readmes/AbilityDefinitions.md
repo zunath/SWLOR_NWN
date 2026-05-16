@@ -59,7 +59,7 @@ public class SmokeBombAbilityDefinition : IAbilityListDefinition
 
 ### 1. Casted Abilities
 
-Casted abilities have a casting time and are typically used for Force powers and spells.
+Casted abilities have a casting time and are typically used for Force powers, combat techniques, and tech activations.
 
 **Example: Smoke Bomb**
 

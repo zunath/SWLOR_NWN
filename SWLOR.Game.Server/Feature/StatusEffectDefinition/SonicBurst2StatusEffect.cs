@@ -6,21 +6,21 @@ using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
-    public sealed class WeaponJam2StatusEffect : StatusEffectBase
+    public sealed class SonicBurst2StatusEffect : StatusEffectBase
     {
-        public override string Name => "Weapon Jam II";
+        public override string Name => "Sonic Burst II";
         public override EffectIconType Icon => EffectIconType.AttackDecrease;
         public override StatusEffectCategory Categories => StatusEffectCategory.Debuff;
         public override ResistanceType ResistanceType => ResistanceType.Disruption;
         public override bool PersistsOnLogout => false;
-        public override List<Type> LessPowerfulEffectTypes { get; } = new List<Type>
+        public override List<Type> MorePowerfulEffectTypes { get; } = new List<Type>
         {
-            typeof(WeaponJam1StatusEffect),
+            typeof(SonicBurst3StatusEffect),
         };
 
-        public WeaponJam2StatusEffect()
+        public SonicBurst2StatusEffect()
         {
-            StatGroup.Stats[StatType.AbilityHitChancePercentAdjustment] = -10;
+            StatGroup.Stats[StatType.AccuracyPercentAdjustment] = -6;
         }
     }
 }

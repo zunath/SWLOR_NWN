@@ -37,7 +37,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 .HasRecastDelay(RecastGroup.BolsterAttack, 30f)
                 .SkillType(SkillType.BeastMastery)
                 .IsSingleTargetAbility()
-                .RequiresTarget()
                 .HasImpactAction(BolsterAttack1ImpactAction)
                 .IsCastedAbility()
                 .BreaksStealth()
@@ -54,7 +53,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 .HasRecastDelay(RecastGroup.BolsterAttack, 30f)
                 .SkillType(SkillType.BeastMastery)
                 .IsSingleTargetAbility()
-                .RequiresTarget()
                 .HasImpactAction(BolsterAttack2ImpactAction)
                 .IsCastedAbility()
                 .BreaksStealth()
@@ -71,7 +69,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 .HasRecastDelay(RecastGroup.BolsterAttack, 30f)
                 .SkillType(SkillType.BeastMastery)
                 .IsSingleTargetAbility()
-                .RequiresTarget()
                 .HasImpactAction(BolsterAttack3ImpactAction)
                 .IsCastedAbility()
                 .BreaksStealth()
@@ -80,31 +77,24 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 
         private static void BolsterAttack1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
-            {
-                StatusEffect.ApplyStatusEffect(activator, friendly, typeof(BolsterAttack1StatusEffect), 180f);
-                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Holy_Aid), friendly);
-            }
+            ApplySelfStatus(activator, typeof(BolsterAttack1StatusEffect), 180f, VisualEffect.Vfx_Imp_Holy_Aid);
         }
 
         private static void BolsterAttack2ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
-            {
-                StatusEffect.ApplyStatusEffect(activator, friendly, typeof(BolsterAttack2StatusEffect), 180f);
-                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Holy_Aid), friendly);
-            }
+            ApplySelfStatus(activator, typeof(BolsterAttack2StatusEffect), 180f, VisualEffect.Vfx_Imp_Holy_Aid);
         }
 
         private static void BolsterAttack3ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
-            {
-                StatusEffect.ApplyStatusEffect(activator, friendly, typeof(BolsterAttack3StatusEffect), 180f);
-                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Holy_Aid), friendly);
-            }
+            ApplySelfStatus(activator, typeof(BolsterAttack3StatusEffect), 180f, VisualEffect.Vfx_Imp_Holy_Aid);
         }
 
+        private static void ApplySelfStatus(uint activator, Type statusEffect, float duration, VisualEffect visualEffect)
+        {
+            StatusEffect.ApplyStatusEffect(activator, activator, statusEffect, duration);
+            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(visualEffect), activator);
+        }
 
     }
 }

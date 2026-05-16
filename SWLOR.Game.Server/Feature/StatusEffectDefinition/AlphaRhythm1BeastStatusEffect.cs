@@ -6,19 +6,16 @@ using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
-    public sealed class Intercept2StatusEffect : StatusEffectBase
+    public sealed class AlphaRhythm1BeastStatusEffect : StatusEffectBase
     {
-        public override string Name => "Intercept II";
+        public override string Name => "Alpha Rhythm";
         public override EffectIconType Icon => EffectIconType.DamageReduction;
         public override bool PersistsOnLogout => false;
-        public override List<Type> LessPowerfulEffectTypes { get; } = new List<Type>
-        {
-            typeof(Intercept1StatusEffect),
-        };
 
-        public Intercept2StatusEffect()
+        public AlphaRhythm1BeastStatusEffect()
         {
-            StatGroup.Stats[StatType.DamageTakenRedirectToStatusSourcePercent] = 50;
+            StatGroup.Stats[StatType.DamageDealtPercentAdjustment] = 10;
+            StatGroup.Stats[StatType.DamageTakenPercentAdjustment] = -10;
         }
     }
 }

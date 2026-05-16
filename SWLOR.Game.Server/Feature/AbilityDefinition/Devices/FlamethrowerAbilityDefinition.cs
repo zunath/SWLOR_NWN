@@ -96,7 +96,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 centerOnActivator: !GetIsObjectValid(target),
                 damageType: CombatDamageType.Fire,
                 targetVisualEffect: VisualEffect.Vfx_Com_Hit_Fire,
-                areaVisualEffect: VisualEffect.Fnf_Fireball);
+                areaVisualEffect: VisualEffect.Fnf_Fireball,
+                damagePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetDamageAdjustment(activator),
+                hitChancePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetAccuracyAdjustment(activator),
+                criticalRatePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetCriticalRateAdjustment(activator));
         }
 
         private static void Flamethrower2ImpactAction(uint activator, uint target, int level, Location targetLocation)
@@ -117,7 +120,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 centerOnActivator: !GetIsObjectValid(target),
                 damageType: CombatDamageType.Fire,
                 targetVisualEffect: VisualEffect.Vfx_Com_Hit_Fire,
-                areaVisualEffect: VisualEffect.Fnf_Fireball);
+                areaVisualEffect: VisualEffect.Fnf_Fireball,
+                damagePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetDamageAdjustment(activator),
+                hitChancePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetAccuracyAdjustment(activator),
+                criticalRatePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetCriticalRateAdjustment(activator));
         }
 
         private static void Flamethrower3ImpactAction(uint activator, uint target, int level, Location targetLocation)
@@ -138,7 +144,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 centerOnActivator: !GetIsObjectValid(target),
                 damageType: CombatDamageType.Fire,
                 targetVisualEffect: VisualEffect.Vfx_Com_Hit_Fire,
-                areaVisualEffect: VisualEffect.Fnf_Fireball);
+                areaVisualEffect: VisualEffect.Fnf_Fireball,
+                damagePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetDamageAdjustment(activator),
+                hitChancePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetAccuracyAdjustment(activator),
+                criticalRatePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetCriticalRateAdjustment(activator));
         }
 
     }

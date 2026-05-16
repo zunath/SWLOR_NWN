@@ -90,6 +90,24 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 : baseAdjustment + bonus;
         }
 
+        public static int GetAssaultGadgetAccuracyAdjustment(uint activator)
+        {
+            return Stat.GetStatAdjustment(activator, StatType.AssaultGadgetAccuracyPercentAdjustment);
+        }
+
+        public static int GetAssaultGadgetCriticalRateAdjustment(uint activator)
+        {
+            return Stat.GetStatAdjustment(activator, StatType.AssaultGadgetCriticalRatePercentAdjustment);
+        }
+
+        public static Func<uint, int> GetAssaultGadgetDamageAdjustment(uint activator)
+        {
+            var adjustment = Stat.GetStatAdjustment(activator, StatType.AssaultGadgetDamagePercentAdjustment);
+            return adjustment == 0
+                ? null
+                : _ => adjustment;
+        }
+
         public static void ScheduleSingleHostilePulses(
             uint activator,
             Location location,

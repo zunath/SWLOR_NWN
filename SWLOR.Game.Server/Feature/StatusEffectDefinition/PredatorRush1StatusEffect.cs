@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public PredatorRush1StatusEffect()
         {
             StatGroup.Stats[StatType.AccuracyPercentAdjustment] = 8;
-            StatGroup.Stats[StatType.MovementSpeedPercentAdjustment] = 20;
+            StatGroup.Stats[StatType.AttackDelayReductionPercent] = 20;
         }
     }
 }

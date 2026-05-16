@@ -109,7 +109,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
         }
 
         /// <summary>
-        /// Assigns a visual effect to the caster of the spell. This will display while casting.
+        /// Assigns a visual effect to the activator of the ability. This will display while casting.
         /// Calling this more than once will replace the previous visual effect.
         /// </summary>
         /// <param name="vfx">The visual effect to display.</param>

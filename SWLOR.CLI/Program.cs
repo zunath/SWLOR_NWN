@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.CommandLineUtils;
 
+using System.Linq;
+
 namespace SWLOR.CLI
 {
     internal class Program
@@ -15,8 +17,9 @@ namespace SWLOR.CLI
         private static readonly DroidItemBuilder _droidItemBuilder = new();
         private static readonly DeployBuild _deployBuild = new();
         private static readonly BeastCodeBuilder _beastBuilder = new();
+        private static readonly StoreInstanceSync _storeInstanceSync = new();
 
-        static void Main(string[] args)
+        static int Main(string[] args)
         {
             var app = new CommandLineApplication();
 
@@ -89,6 +92,26 @@ namespace SWLOR.CLI
                 CommandOptionType.SingleValue
             );
 
+            var checkStoreInstancesOption = app.Option(
+                "--checkStoreInstances",
+                "Checks placed store instances against UTM/UTI blueprints without writing changes.",
+                CommandOptionType.NoValue);
+
+            var syncStoreInstancesOption = app.Option(
+                "--syncStoreInstances",
+                "Syncs placed store instances against UTM/UTI blueprints.",
+                CommandOptionType.NoValue);
+
+            var createMissingStoreBlueprintsOption = app.Option(
+                "--createMissingStoreBlueprints",
+                "Creates UTM blueprints for placed store instances that have no source UTM.",
+                CommandOptionType.NoValue);
+
+            var storeModuleRootOption = app.Option(
+                "--storeModuleRoot <PATH>",
+                "Module root containing git, uti, and utm folders. Defaults to ./Module.",
+                CommandOptionType.SingleValue);
+
             app.HelpOption("-? | -h | --help");
 
             app.OnExecute(() =>
@@ -153,10 +176,34 @@ namespace SWLOR.CLI
                     _beastBuilder.Process();
                 }
 
+                var storeModeCount = new[]
+                {
+                    checkStoreInstancesOption,
+                    syncStoreInstancesOption,
+                    createMissingStoreBlueprintsOption,
+                }.Count(option => option.HasValue());
+
+                if (storeModeCount > 1)
+                    throw new CommandParsingException(app, "Use only one store instance mode at a time.");
+
+                if (storeModeCount > 0)
+                {
+                    var moduleRoot = storeModuleRootOption.HasValue()
+                        ? storeModuleRootOption.Value()
+                        : "./Module";
+                    var hasDrift = _storeInstanceSync.Process(
+                        moduleRoot,
+                        checkStoreInstancesOption.HasValue(),
+                        createMissingStoreBlueprintsOption.HasValue());
+
+                    if (checkStoreInstancesOption.HasValue() && hasDrift)
+                        return 1;
+                }
+
                 return 0;
             });
 
-            app.Execute(args);
+            return app.Execute(args);
         }
     }
 }

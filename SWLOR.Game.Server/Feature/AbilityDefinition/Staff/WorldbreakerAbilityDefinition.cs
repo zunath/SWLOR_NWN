@@ -27,6 +27,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
                 .Level(1)
                 .HasActivationDelay(2f)
                 .HasRecastDelay(RecastGroup.Capstone, 1800f)
+                .SkillType(SkillType.Staff)
+                .IsAreaAbility()
                 .HasImpactAction(Worldbreaker1ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()

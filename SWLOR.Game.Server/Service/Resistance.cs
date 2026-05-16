@@ -87,7 +87,8 @@ namespace SWLOR.Game.Server.Service
             if (damage <= 0)
                 return 0;
 
-            if (!type.TryGetElementalResistanceType(out var resistanceType))
+            if (!type.TryGetElementalResistanceType(out var resistanceType) &&
+                !type.TryGetSourceResistanceType(out resistanceType))
                 return damage;
 
             return ApplyResistanceToDamage(creature, resistanceType, damage);
@@ -106,7 +107,8 @@ namespace SWLOR.Game.Server.Service
             if (damage <= 0)
                 return 0;
 
-            if (!type.TryGetElementalResistanceType(out var resistanceType))
+            if (!type.TryGetElementalResistanceType(out var resistanceType) &&
+                !type.TryGetSourceResistanceType(out resistanceType))
                 return damage;
 
             return ApplyResistanceToDamageNative(creature, resistanceType, damage);

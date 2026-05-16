@@ -5,17 +5,18 @@ using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
-    public sealed class ScreechStatusEffect : StatusEffectBase
+    public sealed class TerrifiedStatusEffect : StatusEffectBase
     {
-        public override string Name => "Screech";
+        public override string Name => "Terrified";
         public override EffectIconType Icon => EffectIconType.ACDecrease;
         public override StatusEffectCategory Categories => StatusEffectCategory.Debuff;
         public override StatusEffectCleanseType CleanseTypes => StatusEffectCleanseType.Purify | StatusEffectCleanseType.SoothePet;
-        public override ResistanceType ResistanceType => ResistanceType.Trauma;
+        public override ResistanceType ResistanceType => ResistanceType.Mind;
 
-        public ScreechStatusEffect()
+        public TerrifiedStatusEffect()
         {
-            StatGroup.Stats[StatType.Defense] = -10;
+            StatGroup.Stats[StatType.AttackPercentAdjustment] = -8;
+            StatGroup.Stats[StatType.DefensePercentAdjustment] = -8;
         }
     }
 }

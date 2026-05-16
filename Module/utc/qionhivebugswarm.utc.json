@@ -113,6 +113,27 @@
           "type": "word",
           "value": 289
         }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1769
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1823
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1763
+        }
       }
     ]
   },
@@ -467,23 +488,7 @@
   },
   "SpecAbilityList": {
     "type": "list",
-    "value": [
-      {
-        "__struct_id": 4,
-        "Spell": {
-          "type": "word",
-          "value": 299
-        },
-        "SpellCasterLevel": {
-          "type": "byte",
-          "value": 0
-        },
-        "SpellFlags": {
-          "type": "byte",
-          "value": 1
-        }
-      }
-    ]
+    "value": []
   },
   "StartingPackage": {
     "type": "byte",

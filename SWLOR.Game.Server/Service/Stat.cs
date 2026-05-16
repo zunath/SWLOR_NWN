@@ -1040,8 +1040,9 @@ namespace SWLOR.Game.Server.Service
         /// <param name="weapon">The weapon being used.</param>
         /// <param name="statOverride">The stat override used to calculate accuracy. This stat will be used instead of whatever stat is defined for the weapon type.</param>
         /// <param name="skillOverride">The skill override used to calculate accuracy. This skill will be used instead of whatever skill is defined for the weapon type.</param>
+        /// <param name="skillLevelOverride">Overrides the skill rank or NPC level used in the accuracy calculation.</param>
         /// <returns>The accuracy rating for a creature using a specific weapon.</returns>
-        public static int GetAccuracy(uint creature, uint weapon, AbilityType statOverride, SkillType skillOverride)
+        public static int GetAccuracy(uint creature, uint weapon, AbilityType statOverride, SkillType skillOverride, int skillLevelOverride = -1)
         {
             var accuracyBonus = 0;
 
@@ -1073,7 +1074,11 @@ namespace SWLOR.Game.Server.Service
 
 
             // Creature skill level / NPC level
-            if (GetIsPC(creature) && !GetIsDM(creature))
+            if (skillLevelOverride >= 0)
+            {
+                skillLevel = skillLevelOverride;
+            }
+            else if (GetIsPC(creature) && !GetIsDM(creature))
             {
                 var playerId = GetObjectUUID(creature);
                 var dbPlayer = DB.Get<Player>(playerId);

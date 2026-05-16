@@ -111,14 +111,28 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1745
+          "value": 289
         }
       },
       {
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 289
+          "value": 1760
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1820
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1821
         }
       }
     ]

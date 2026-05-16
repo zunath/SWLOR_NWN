@@ -266,20 +266,6 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1760
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 1766
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
           "value": 289
         }
       },
@@ -309,6 +295,27 @@
         "Feat": {
           "type": "word",
           "value": 1785
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1824
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1853
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1854
         }
       }
     ]

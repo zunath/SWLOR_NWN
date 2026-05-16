@@ -2249,7 +2249,8 @@ namespace SWLOR.Game.Server.Service
             SkillType skillType,
             PerkType perkType,
             out int hitRate,
-            int hitChancePercentAdjustment = 0)
+            int hitChancePercentAdjustment = 0,
+            int skillLevelOverride = -1)
         {
             hitRate = 100;
             if (!GetIsObjectValid(attacker) ||
@@ -2257,7 +2258,7 @@ namespace SWLOR.Game.Server.Service
                 skillType == SkillType.Invalid)
                 return true;
 
-            var accuracy = GetAbilityAccuracy(attacker, defender, skillType);
+            var accuracy = GetAbilityAccuracy(attacker, defender, skillType, skillLevelOverride);
             var evasion = Stat.GetEvasion(defender, SkillType.Invalid, skillType);
             evasion = ApplySideAttackEvasionIgnore(attacker, defender, skillType, evasion);
 
@@ -2295,14 +2296,14 @@ namespace SWLOR.Game.Server.Service
             return isHit;
         }
 
-        private static int GetAbilityAccuracy(uint attacker, uint defender, SkillType skillType)
+        private static int GetAbilityAccuracy(uint attacker, uint defender, SkillType skillType, int skillLevelOverride = -1)
         {
             var weapon = GetRelevantSkillWeapon(attacker, skillType);
             var statOverride = skillType == SkillType.Force
                 ? AbilityType.Willpower
                 : AbilityType.Invalid;
 
-            var accuracy = Stat.GetAccuracy(attacker, weapon, statOverride, skillType);
+            var accuracy = Stat.GetAccuracy(attacker, weapon, statOverride, skillType, skillLevelOverride);
             return ApplyStatusSourceAccuracyModifiers(attacker, defender, accuracy);
         }
 

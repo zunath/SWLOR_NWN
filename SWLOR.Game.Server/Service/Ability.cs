@@ -25,6 +25,8 @@ namespace SWLOR.Game.Server.Service
         private const int MaxNumberOfAuras = 4;
         private const int HostileAbilityBaseEnmity = 100;
         private const int HostileAbilityMissEnmity = 1;
+        private const int MinNPCAbilityScalingRank = 1;
+        private const int MaxNPCAbilityScalingRank = 100;
 
         /// <summary>
         /// When the module caches, abilities will be cached and events will be scheduled.
@@ -888,7 +890,8 @@ namespace SWLOR.Game.Server.Service
             int enmityBonus = 0,
             Action<uint> afterSuccessfulHit = null,
             int hitChancePercentAdjustment = 0,
-            int criticalRatePercentAdjustment = 0)
+            int criticalRatePercentAdjustment = 0,
+            bool useNPCStatScaling = false)
         {
             var totalDamage = 0;
             RecordAbilityImpactShape(activator, skillType, isArea);
@@ -931,7 +934,8 @@ namespace SWLOR.Game.Server.Service
                     enmityBonus: enmityBonus,
                     afterSuccessfulHit: afterSuccessfulHit,
                     hitChancePercentAdjustment: hitChancePercentAdjustment,
-                    criticalRatePercentAdjustment: criticalRatePercentAdjustment);
+                    criticalRatePercentAdjustment: criticalRatePercentAdjustment,
+                    useNPCStatScaling: useNPCStatScaling);
             }
             else if (GetIsObjectValid(target))
             {
@@ -953,7 +957,8 @@ namespace SWLOR.Game.Server.Service
                     enmityBonus: enmityBonus,
                     afterSuccessfulHit: afterSuccessfulHit,
                     hitChancePercentAdjustment: hitChancePercentAdjustment,
-                    criticalRatePercentAdjustment: criticalRatePercentAdjustment);
+                    criticalRatePercentAdjustment: criticalRatePercentAdjustment,
+                    useNPCStatScaling: useNPCStatScaling);
             }
 
             PlayCombatImpactAnimation(activator, impactAnimation);
@@ -992,7 +997,8 @@ namespace SWLOR.Game.Server.Service
             Action<uint> beforeImpact = null,
             Action<uint> afterSuccessfulHit = null,
             int hitChancePercentAdjustment = 0,
-            int criticalRatePercentAdjustment = 0)
+            int criticalRatePercentAdjustment = 0,
+            bool useNPCStatScaling = false)
         {
             RecordAbilityImpactShape(activator, skillType, true);
 
@@ -1024,7 +1030,8 @@ namespace SWLOR.Game.Server.Service
                     beforeImpact,
                     afterSuccessfulHit,
                     hitChancePercentAdjustment,
-                    criticalRatePercentAdjustment);
+                    criticalRatePercentAdjustment,
+                    useNPCStatScaling);
                 PlayCombatImpactAnimation(activator, impactAnimation);
                 return;
             }
@@ -1062,7 +1069,8 @@ namespace SWLOR.Game.Server.Service
                 beforeImpact,
                 afterSuccessfulHit,
                 hitChancePercentAdjustment,
-                criticalRatePercentAdjustment);
+                criticalRatePercentAdjustment,
+                useNPCStatScaling);
 
             switch (shape)
             {
@@ -1130,7 +1138,8 @@ namespace SWLOR.Game.Server.Service
             Action<uint> beforeImpact,
             Action<uint> afterSuccessfulHit,
             int hitChancePercentAdjustment,
-            int criticalRatePercentAdjustment)
+            int criticalRatePercentAdjustment,
+            bool useNPCStatScaling)
         {
             RecordAbilityImpactShape(activator, skillType, true);
 
@@ -1188,7 +1197,8 @@ namespace SWLOR.Game.Server.Service
                 beforeImpact,
                 afterSuccessfulHit,
                 hitChancePercentAdjustment: hitChancePercentAdjustment,
-                criticalRatePercentAdjustment: criticalRatePercentAdjustment);
+                criticalRatePercentAdjustment: criticalRatePercentAdjustment,
+                useNPCStatScaling: useNPCStatScaling);
         }
 
         private static ApplyTelegraphEffect BuildTelegraphedCombatImpactAction(
@@ -1216,7 +1226,8 @@ namespace SWLOR.Game.Server.Service
             Action<uint> beforeImpact,
             Action<uint> afterSuccessfulHit,
             int hitChancePercentAdjustment,
-            int criticalRatePercentAdjustment)
+            int criticalRatePercentAdjustment,
+            bool useNPCStatScaling)
         {
             return (creator, creatures) =>
             {
@@ -1272,7 +1283,8 @@ namespace SWLOR.Game.Server.Service
                     beforeImpact,
                     afterSuccessfulHit,
                     hitChancePercentAdjustment: hitChancePercentAdjustment,
-                    criticalRatePercentAdjustment: criticalRatePercentAdjustment);
+                    criticalRatePercentAdjustment: criticalRatePercentAdjustment,
+                    useNPCStatScaling: useNPCStatScaling);
 
                 if (ability != null)
                 {
@@ -1303,7 +1315,8 @@ namespace SWLOR.Game.Server.Service
             Action<uint> beforeImpact = null,
             Action<uint> afterSuccessfulHit = null,
             int hitChancePercentAdjustment = 0,
-            int criticalRatePercentAdjustment = 0)
+            int criticalRatePercentAdjustment = 0,
+            bool useNPCStatScaling = false)
         {
             var totalDamage = 0;
             var affectedCount = 0;
@@ -1337,7 +1350,8 @@ namespace SWLOR.Game.Server.Service
                     enmityBonus,
                     afterSuccessfulHit,
                     hitChancePercentAdjustment,
-                    criticalRatePercentAdjustment);
+                    criticalRatePercentAdjustment,
+                    useNPCStatScaling);
                 affectedCount++;
             }
 
@@ -1462,11 +1476,16 @@ namespace SWLOR.Game.Server.Service
             int enmityBonus = 0,
             Action<uint> afterSuccessfulHit = null,
             int hitChancePercentAdjustment = 0,
-            int criticalRatePercentAdjustment = 0)
+            int criticalRatePercentAdjustment = 0,
+            bool useNPCStatScaling = false)
         {
             var trackedImpact = GetTrackedAbilityImpact(activator);
             var perkType = trackedImpact?.Ability?.EffectiveLevelPerkType ?? PerkType.Invalid;
-            if (!Combat.TryResolveAbilityHit(activator, target, skillType, perkType, out var hitRate, hitChancePercentAdjustment))
+            var usesNPCStatScaling = ShouldUseNPCStatScaling(activator, useNPCStatScaling);
+            var skillLevelOverride = usesNPCStatScaling
+                ? GetNPCAbilityScalingRank(activator, skillType, damageType)
+                : -1;
+            if (!Combat.TryResolveAbilityHit(activator, target, skillType, perkType, out var hitRate, hitChancePercentAdjustment, skillLevelOverride))
             {
                 SendCombatImpactResultMessage(activator, target, trackedImpact?.Ability, 4, hitRate);
                 CombatPoint.AddCombatPoint(activator, target, skillType, 1);
@@ -1476,7 +1495,9 @@ namespace SWLOR.Game.Server.Service
             SendCombatImpactResultMessage(activator, target, trackedImpact?.Ability, 1, hitRate);
 
             var adjustedBaseDamage = Math.Max(0, baseDamage + (baseDamageAdjustment?.Invoke(target) ?? 0));
-            var damage = CalculateCombatImpactDamage(activator, target, skillType, adjustedBaseDamage, damageType, criticalRatePercentAdjustment);
+            var damage = usesNPCStatScaling
+                ? CalculateNPCCombatImpactDamage(activator, target, skillType, adjustedBaseDamage, damageType, criticalRatePercentAdjustment)
+                : CalculateCombatImpactDamage(activator, target, skillType, adjustedBaseDamage, damageType, criticalRatePercentAdjustment);
             damage = ApplyDamagePercentAdjustment(target, damage, damagePercentAdjustment);
             if (damage > 0)
             {
@@ -1726,6 +1747,222 @@ namespace SWLOR.Game.Server.Service
             }
 
             return calculatedDamage;
+        }
+
+        private static bool ShouldUseNPCStatScaling(uint activator, bool useNPCStatScaling)
+        {
+            return useNPCStatScaling &&
+                   GetIsObjectValid(activator) &&
+                   !GetIsPC(activator);
+        }
+
+        private static int GetNPCAbilityScalingRank(uint activator, SkillType skillType, CombatDamageType damageType)
+        {
+            var npcStats = Stat.GetNPCStats(activator);
+            if (npcStats.Skills.TryGetValue(skillType, out var skillRank) && skillRank > 0)
+            {
+                return Math.Clamp(skillRank, MinNPCAbilityScalingRank, MaxNPCAbilityScalingRank);
+            }
+
+            var ability = GetCombatImpactDamageAbility(skillType);
+            var abilityScore = ability == AbilityType.Invalid
+                ? 0
+                : GetAbilityScore(activator, ability);
+            var rankFromAbility = Math.Max(MinNPCAbilityScalingRank, abilityScore - 8);
+            var rankFromOffense = Math.Max(0, GetNPCAbilityOffenseBonus(npcStats, skillType, damageType) / 2);
+            var rankFromDefense = Math.Max(0, GetNPCAbilityRelevantDefense(npcStats, damageType) / 2);
+            var rankFromResistance = Math.Max(0, GetNPCAbilityRelevantResistance(npcStats, damageType) / 2);
+            var rank = new[]
+            {
+                rankFromAbility,
+                rankFromOffense,
+                rankFromDefense,
+                rankFromResistance
+            }.Max();
+
+            return Math.Clamp(rank, MinNPCAbilityScalingRank, MaxNPCAbilityScalingRank);
+        }
+
+        private static int GetNPCAbilityOffenseBonus(NPCStats npcStats, SkillType skillType, CombatDamageType damageType)
+        {
+            return skillType == SkillType.Force || damageType == CombatDamageType.Force
+                ? npcStats.ForceAttack
+                : npcStats.Attack;
+        }
+
+        private static int GetNPCAbilityRelevantDefense(NPCStats npcStats, CombatDamageType damageType)
+        {
+            var defenseType = damageType.GetDefenseDamageType();
+            if (npcStats.Defenses.TryGetValue(defenseType, out var defense))
+            {
+                return defense;
+            }
+
+            return npcStats.Defenses.Count > 0
+                ? npcStats.Defenses.Values.Max()
+                : 0;
+        }
+
+        private static int GetNPCAbilityRelevantResistance(NPCStats npcStats, CombatDamageType damageType)
+        {
+            if (damageType.TryGetElementalResistanceType(out var resistanceType) &&
+                npcStats.Resistances.TryGetValue(resistanceType, out var resistance))
+            {
+                return resistance;
+            }
+
+            if (damageType.TryGetSourceResistanceType(out resistanceType) &&
+                npcStats.Resistances.TryGetValue(resistanceType, out resistance))
+            {
+                return resistance;
+            }
+
+            return npcStats.Resistances.Count > 0
+                ? npcStats.Resistances.Values.Max()
+                : 0;
+        }
+
+        private static int CalculateNPCCombatImpactDamage(
+            uint activator,
+            uint target,
+            SkillType skillType,
+            int baseDamage,
+            CombatDamageType damageType,
+            int criticalRatePercentAdjustment = 0)
+        {
+            if (baseDamage <= 0)
+                return 0;
+
+            var trackedImpact = GetTrackedAbilityImpact(activator);
+            var ability = GetCombatImpactDamageAbility(skillType);
+            var perkType = trackedImpact?.Ability?.EffectiveLevelPerkType ?? PerkType.Invalid;
+            var idleBonuses = Combat.GetIdleSkillAbilityBonuses(activator, skillType);
+            var scalingRank = GetNPCAbilityScalingRank(activator, skillType, damageType);
+            var damage = baseDamage +
+                (int)Math.Ceiling(scalingRank * 0.15f) +
+                Combat.GetAbilityDamageFlatAdjustment(activator, perkType) +
+                idleBonuses.DamageBonus;
+            if (trackedImpact != null)
+            {
+                damage += trackedImpact.NextAbilityDamageBonus;
+            }
+
+            var npcStats = Stat.GetNPCStats(activator);
+            var attackStat = ability == AbilityType.Invalid
+                ? 0
+                : GetAbilityScore(activator, ability);
+            var attack = Stat.GetAttack(
+                scalingRank,
+                attackStat,
+                GetNPCAbilityOffenseBonus(npcStats, skillType, damageType) + Stat.GetStatAdjustment(activator, StatType.Attack));
+            attack = ApplyNPCAbilitySourceAttackModifiers(activator, skillType, attack);
+            attack = Combat.ApplyTargetStatusAttackModifiers(activator, target, attack, skillType);
+            var defenseAbility = damageType.GetDefenseAbilityType();
+            var defense = Stat.GetDefense(target, damageType, defenseAbility);
+            defense = Combat.ApplyStatusSourceDefenseModifiers(activator, target, defense);
+            var defenderStat = GetAbilityScore(target, defenseAbility);
+            var defenseIgnorePercent =
+                Combat.GetAbilityDefenseIgnorePercentAdjustment(activator, perkType, skillType, target) +
+                (trackedImpact?.NextAbilityDefenseIgnorePercentAdjustment ?? 0);
+            defense = Combat.ApplyDefenseIgnore(defense, defenseIgnorePercent);
+            var criticalRating = Combat.CalculateAbilityCriticalRating(
+                activator,
+                skillType,
+                IsTrackedAbilityArea(activator),
+                (trackedImpact?.NextAbilityCriticalRatePercentAdjustment ?? 0) + criticalRatePercentAdjustment,
+                target);
+            var damageRoll = Combat.CalculateDamageWithCriticalMitigation(
+                target,
+                attack,
+                damage,
+                attackStat,
+                defense,
+                defenderStat,
+                criticalRating);
+            var calculatedDamage = damageRoll.Damage;
+            criticalRating = damageRoll.CriticalRating;
+            calculatedDamage = Combat.ApplyCriticalDamageModifier(activator, calculatedDamage, criticalRating);
+            calculatedDamage = Combat.ApplySideAttackDamageModifier(activator, target, skillType, calculatedDamage);
+            calculatedDamage = Combat.ApplyTwinBladeAbilityShapeDamageModifier(
+                activator,
+                skillType,
+                calculatedDamage,
+                IsTrackedAbilitySingleTarget(activator),
+                IsTrackedAbilityArea(activator));
+            calculatedDamage = Combat.ApplyThrowingAbilityShapeDamageModifier(
+                activator,
+                skillType,
+                calculatedDamage,
+                IsTrackedAbilityArea(activator));
+            if (skillType == SkillType.Force)
+            {
+                calculatedDamage = Perk.ApplyForceAffinityMagnitude(activator, perkType, calculatedDamage);
+            }
+            calculatedDamage = Combat.ApplyDamageDealtModifiers(activator, target, calculatedDamage, skillType, damageType, true);
+            calculatedDamage = Resistance.ApplyResistanceToDamage(target, damageType, calculatedDamage);
+            calculatedDamage = Combat.ApplyDamageTakenModifiers(target, calculatedDamage, activator, damageType);
+            Combat.ApplyDamageReflectionEffects(activator, target, calculatedDamage, damageType);
+
+            if (criticalRating > 0)
+            {
+                Combat.ApplyCriticalHitEffects(
+                    activator,
+                    target,
+                    calculatedDamage,
+                    criticalRating,
+                    IsTrackedAbilitySingleTarget(activator),
+                    skillType);
+                Combat.ApplyCriticalAbilityStatusEffects(activator, target, perkType, damageType);
+            }
+
+            return calculatedDamage;
+        }
+
+        private static int ApplyNPCAbilitySourceAttackModifiers(uint activator, SkillType skillType, int attack)
+        {
+            var adjustment = Stat.GetStatAdjustment(activator, StatType.AttackPercentAdjustment);
+            if (skillType == SkillType.Force)
+            {
+                adjustment += Stat.GetStatAdjustment(activator, StatType.ForceAttackPercentAdjustment);
+            }
+
+            adjustment += GetHighFPAndStaminaAttackAdjustment(activator);
+            adjustment += Combat.GetNearbyStatusTargetAttackAdjustment(activator);
+
+            return Math.Max(1, ApplyPercentAdjustment(attack, adjustment));
+        }
+
+        private static int GetHighFPAndStaminaAttackAdjustment(uint activator)
+        {
+            var threshold = Stat.GetStatAdjustment(activator, StatType.HighFPAndStaminaAttackThresholdPercent);
+            var adjustment = Stat.GetStatAdjustment(activator, StatType.HighFPAndStaminaAttackPercentAdjustment);
+
+            if (threshold <= 0 || adjustment == 0)
+                return 0;
+
+            var currentFP = Stat.GetCurrentFP(activator);
+            var maxFP = Stat.GetMaxFP(activator);
+            var currentStamina = Stat.GetCurrentStamina(activator);
+            var maxStamina = Stat.GetMaxStamina(activator);
+
+            if (maxFP <= 0 || maxStamina <= 0)
+                return 0;
+
+            return currentFP >= maxFP * (threshold / 100f) &&
+                   currentStamina >= maxStamina * (threshold / 100f)
+                ? adjustment
+                : 0;
+        }
+
+        private static int ApplyPercentAdjustment(int value, int percentAdjustment)
+        {
+            if (percentAdjustment == 0)
+                return value;
+
+            var delta = (int)Math.Ceiling(value * (Math.Abs(percentAdjustment) / 100f));
+            return percentAdjustment > 0
+                ? value + delta
+                : value - delta;
         }
 
         private static bool ApplyCombatImpactStatusEffect(

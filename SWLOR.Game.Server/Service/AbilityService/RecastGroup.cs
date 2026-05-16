@@ -29,22 +29,46 @@ namespace SWLOR.Game.Server.Service.AbilityService
         ThunderousChallenge = 11,
         [RecastGroup("Rest", "Rest", true)]
         Rest = 16,
-        [RecastGroup("Roar", "Roar", true)]
-        Roar = 17,
+        [RecastGroup("Mauling Bite", "Maul Bite", true)]
+        MaulingBite = 17,
         [RecastGroup("Bite", "Bite", true)]
         Bite = 18,
-        [RecastGroup("Iron Shell", "Iron Shell", true)]
-        IronShell = 19,
-        [RecastGroup("Earthquake", "Earthquake", true)]
-        Earthquake = 20,
-        [RecastGroup("Fire Breath", "F. Breath", true)]
-        FireBreath = 21,
-        [RecastGroup("Spikes", "Spikes", true)]
-        Spikes = 22,
-        [RecastGroup("Venom", "Venom", true)]
-        Venom = 23,
-        [RecastGroup("Talon", "Talon", true)]
-        Talon = 24,
+        [RecastGroup("Bonecrusher Bite", "Bone Bite", true)]
+        BonecrusherBite = 19,
+        [RecastGroup("Raking Claws", "Rake Claws", true)]
+        RakingClaws = 20,
+        [RecastGroup("Pouncing Strike", "Pounce", true)]
+        PouncingStrike = 21,
+        [RecastGroup("Tail Sweep", "Tail Sweep", true)]
+        TailSweep = 22,
+        [RecastGroup("Goring Charge", "Gore Charge", true)]
+        GoringCharge = 23,
+        [RecastGroup("Barbed Volley", "Barb Volley", true)]
+        BarbedVolley = 24,
+        [RecastGroup("Rending Bite", "Rend Bite", true)]
+        RendingBite = 25,
+        [RecastGroup("Crippling Talons", "Crip Talons", true)]
+        CripplingTalons = 26,
+        [RecastGroup("Piercing Quills", "Quills", true)]
+        PiercingQuills = 27,
+        [RecastGroup("Toxic Spit", "Toxic Spit", true)]
+        ToxicSpit = 28,
+        [RecastGroup("Scorching Breath", "Scorch Breath", true)]
+        ScorchingBreath = 29,
+        [RecastGroup("Inferno Blast", "Inferno", true)]
+        InfernoBlast = 30,
+        [RecastGroup("Seismic Slam", "Seismic Slam", true)]
+        SeismicSlam = 31,
+        [RecastGroup("Rupturing Quake", "Rupt. Quake", true)]
+        RupturingQuake = 32,
+        [RecastGroup("Terrifying Bellow", "Bellow", true)]
+        TerrifyingBellow = 33,
+        [RecastGroup("Disorienting Screech", "Dis. Screech", true)]
+        DisorientingScreech = 34,
+        [RecastGroup("Iron Carapace", "Carapace", true)]
+        IronCarapace = 35,
+        [RecastGroup("Venom Spray", "Venom Spray", true)]
+        VenomSpray = 36,
         [RecastGroup("Provoke", "Provoke", true)]
         Provoke = 37,
         [RecastGroup("Provoke II", "Provoke II", true)]
@@ -65,12 +89,14 @@ namespace SWLOR.Game.Server.Service.AbilityService
         Rejuvenation = 56,
         [RecastGroup("Frenzied Shout", "Frenz. Shout", true)]
         FrenziedShout = 57,
-        [RecastGroup("Screech", "Screech", true)]
-        Screech = 58,
-        [RecastGroup("Flame Blast", "F. Blast", true)]
-        FlameBlast = 59,
-        [RecastGroup("Greater Earthquake", "G. Quake", true)]
-        GreaterEarthquake = 60,
+        [RecastGroup("Toxic Cloud", "Toxic Cloud", true)]
+        ToxicCloud = 58,
+        [RecastGroup("Frost Spit", "Frost Spit", true)]
+        FrostSpit = 59,
+        [RecastGroup("Static Burst", "Static Burst", true)]
+        StaticBurst = 60,
+        [RecastGroup("Savage Roar", "Savage Roar", true)]
+        SavageRoar = 61,
         [RecastGroup("Droid Controller", "Droid Contr.", true)]
         DroidController = 62,
         [RecastGroup("Stat Rebuild", "Stat Rebuild", false)]
@@ -89,6 +115,40 @@ namespace SWLOR.Game.Server.Service.AbilityService
         ReviveBeast = 77,
         [RecastGroup("Call Beast", "Call Beast", true)]
         CallBeast = 78,
+        [RecastGroup("Sonic Shriek", "Sonic Shriek", true)]
+        SonicShriek = 79,
+        [RecastGroup("Chitin Guard", "Chitin Guard", true)]
+        ChitinGuard = 80,
+        [RecastGroup("Precision Shot", "Precision Shot", true)]
+        PrecisionShot = 81,
+        [RecastGroup("Suppressing Shot", "Suppress Shot", true)]
+        SuppressingShot = 82,
+        [RecastGroup("Grenade Burst", "Grenade", true)]
+        GrenadeBurst = 83,
+        [RecastGroup("Serrated Slash", "Serr. Slash", true)]
+        SerratedSlash = 84,
+        [RecastGroup("Brutal Bash", "Brutal Bash", true)]
+        BrutalBash = 85,
+        [RecastGroup("Tactical Mark", "Tac. Mark", true)]
+        TacticalMark = 86,
+        [RecastGroup("Overload Shot", "Overload Shot", true)]
+        OverloadShot = 87,
+        [RecastGroup("Arc Pulse", "Arc Pulse", true)]
+        ArcPulse = 88,
+        [RecastGroup("Ion Burst", "Ion Burst", true)]
+        IonBurst = 89,
+        [RecastGroup("Target Lock", "Target Lock", true)]
+        TargetLock = 90,
+        [RecastGroup("Shrapnel Burst", "Shrapnel", true)]
+        ShrapnelBurst = 91,
+        [RecastGroup("Force Rend", "Force Rend", true)]
+        ForceRend = 92,
+        [RecastGroup("Mind Spike", "Mind Spike", true)]
+        MindSpike = 93,
+        [RecastGroup("Dark Shock", "Dark Shock", true)]
+        DarkShock = 94,
+        [RecastGroup("Dread Wave", "Dread Wave", true)]
+        DreadWave = 95,
         [RecastGroup("Carve", "Carve", true)]
         Carve = 98,
         [RecastGroup("Covering Strike", "Cover Strike", true)]

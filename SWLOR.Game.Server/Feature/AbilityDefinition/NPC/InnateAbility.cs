@@ -1,0 +1,236 @@
+using System;
+using System.Collections.Generic;
+using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+
+namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
+{
+    internal sealed class InnateAbilityProfile
+    {
+        public static readonly InnateAbilityProfile CreaturePhysical = new(SkillType.BeastMastery, SkillType.BeastMastery, true);
+        public static readonly InnateAbilityProfile Devices = new(SkillType.Devices, SkillType.Devices, false);
+        public static readonly InnateAbilityProfile Force = new(SkillType.Force, SkillType.Force, false);
+        public static readonly InnateAbilityProfile Rifle = new(SkillType.Rifle, SkillType.Rifle, false);
+        public static readonly InnateAbilityProfile Staff = new(SkillType.Staff, SkillType.Staff, false);
+        public static readonly InnateAbilityProfile Throwing = new(SkillType.Throwing, SkillType.Throwing, false);
+        public static readonly InnateAbilityProfile Vibroblade = new(SkillType.Vibroblade, SkillType.Vibroblade, false);
+
+        public SkillType PlayerSkillType { get; }
+        public SkillType NPCSkillType { get; }
+        public PerkType PlayerPerkType { get; }
+        public bool UsesEquippedNPCSkill { get; }
+
+        public InnateAbilityProfile(
+            SkillType playerSkillType,
+            SkillType npcSkillType,
+            bool usesEquippedNPCSkill,
+            PerkType playerPerkType = PerkType.Invalid)
+        {
+            PlayerSkillType = playerSkillType;
+            NPCSkillType = npcSkillType;
+            UsesEquippedNPCSkill = usesEquippedNPCSkill;
+            PlayerPerkType = playerPerkType;
+        }
+    }
+
+    internal static class InnateAbility
+    {
+        public static SkillType ResolveSkillType(uint activator, InnateAbilityProfile profile)
+        {
+            if (GetIsPC(activator))
+                return profile.PlayerSkillType;
+
+            if (!profile.UsesEquippedNPCSkill)
+                return profile.NPCSkillType;
+
+            if (HasNaturalWeapon(activator))
+                return profile.NPCSkillType;
+
+            var rightHand = GetItemInSlot(InventorySlot.RightHand, activator);
+            var rightSkill = GetItemSkillType(rightHand);
+            if (rightSkill != SkillType.Invalid)
+                return rightSkill;
+
+            var leftHand = GetItemInSlot(InventorySlot.LeftHand, activator);
+            var leftSkill = GetItemSkillType(leftHand);
+            return leftSkill != SkillType.Invalid
+                ? leftSkill
+                : profile.NPCSkillType;
+        }
+
+        public static bool ShouldUseNPCStatScaling(uint activator)
+        {
+            return GetIsObjectValid(activator) && !GetIsPC(activator);
+        }
+
+        public static void BuildSingleTarget(
+            AbilityBuilder builder,
+            FeatType feat,
+            string name,
+            InnateAbilityProfile profile,
+            RecastGroup recastGroup,
+            float activationDelay,
+            float recastDelay,
+            int stamina,
+            int baseDamage,
+            int duration,
+            Type statusEffect,
+            CombatDamageType damageType,
+            ResistanceType statusResistanceType,
+            VisualEffect targetVisualEffect = VisualEffect.None,
+            float maxRange = 0f,
+            int enmityBonus = 0)
+        {
+            var ability = builder
+                .Create(feat, profile.PlayerPerkType)
+                .Name(name)
+                .HasActivationDelay(activationDelay)
+                .HasRecastDelay(recastGroup, recastDelay)
+                .IsCastedAbility()
+                .IsSingleTargetAbility()
+                .RequiresTarget()
+                .IsHostileAbility()
+                .RequirementStamina(stamina);
+
+            if (maxRange > 0f)
+            {
+                ability.HasMaxRange(maxRange);
+            }
+
+            ability.HasImpactAction((activator, target, level, location) =>
+            {
+                Ability.ApplyCombatImpact(
+                    activator,
+                    target,
+                    location,
+                    ResolveSkillType(activator, profile),
+                    baseDamage,
+                    duration,
+                    statusEffect,
+                    false,
+                    damageType: damageType,
+                    statusResistanceType: statusResistanceType,
+                    targetVisualEffect: targetVisualEffect,
+                    enmityBonus: enmityBonus,
+                    useNPCStatScaling: ShouldUseNPCStatScaling(activator));
+            });
+        }
+
+        public static void BuildArea(
+            AbilityBuilder builder,
+            FeatType feat,
+            string name,
+            InnateAbilityProfile profile,
+            RecastGroup recastGroup,
+            float activationDelay,
+            float recastDelay,
+            int stamina,
+            int baseDamage,
+            int duration,
+            Type statusEffect,
+            CombatImpactAreaShape shape,
+            float lengthOrRadius,
+            float width,
+            CombatDamageType damageType,
+            ResistanceType statusResistanceType,
+            VisualEffect targetVisualEffect = VisualEffect.None,
+            VisualEffect areaVisualEffect = VisualEffect.None,
+            float maxRange = 0f,
+            bool centerOnActivator = false,
+            int enmityBonus = 0,
+            IEnumerable<Type> additionalStatusEffects = null)
+        {
+            var ability = builder
+                .Create(feat, profile.PlayerPerkType)
+                .Name(name)
+                .HasActivationDelay(activationDelay)
+                .HasRecastDelay(recastGroup, recastDelay)
+                .IsCastedAbility()
+                .IsAreaAbility()
+                .RequiresTarget()
+                .IsHostileAbility()
+                .RequirementStamina(stamina);
+
+            if (maxRange > 0f)
+            {
+                ability.HasMaxRange(maxRange);
+            }
+
+            ability.HasImpactAction((activator, target, level, location) =>
+            {
+                Ability.ApplyTelegraphedCombatImpact(
+                    activator,
+                    target,
+                    location,
+                    ResolveSkillType(activator, profile),
+                    baseDamage,
+                    duration,
+                    statusEffect,
+                    shape,
+                    0f,
+                    lengthOrRadius,
+                    width,
+                    additionalStatusEffects,
+                    centerOnActivator,
+                    damageType: damageType,
+                    statusResistanceType: statusResistanceType,
+                    targetVisualEffect: targetVisualEffect,
+                    areaVisualEffect: areaVisualEffect,
+                    enmityBonus: enmityBonus,
+                    useNPCStatScaling: ShouldUseNPCStatScaling(activator));
+            });
+        }
+
+        public static void BuildSelfBuff(
+            AbilityBuilder builder,
+            FeatType feat,
+            string name,
+            InnateAbilityProfile profile,
+            RecastGroup recastGroup,
+            float activationDelay,
+            float recastDelay,
+            int stamina,
+            Type statusEffect,
+            float duration,
+            VisualEffect targetVisualEffect = VisualEffect.None)
+        {
+            builder
+                .Create(feat, profile.PlayerPerkType)
+                .Name(name)
+                .HasActivationDelay(activationDelay)
+                .HasRecastDelay(recastGroup, recastDelay)
+                .IsCastedAbility()
+                .RequirementStamina(stamina)
+                .HasImpactAction((activator, target, level, location) =>
+                {
+                    StatusEffect.ApplyStatusEffect(activator, activator, statusEffect, duration);
+
+                    if (targetVisualEffect != VisualEffect.None)
+                    {
+                        ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(targetVisualEffect), activator);
+                    }
+                });
+        }
+
+        private static bool HasNaturalWeapon(uint creature)
+        {
+            return GetIsObjectValid(GetItemInSlot(InventorySlot.CreatureRight, creature)) ||
+                   GetIsObjectValid(GetItemInSlot(InventorySlot.CreatureLeft, creature)) ||
+                   GetIsObjectValid(GetItemInSlot(InventorySlot.CreatureBite, creature));
+        }
+
+        private static SkillType GetItemSkillType(uint item)
+        {
+            return GetIsObjectValid(item)
+                ? Skill.GetSkillTypeByBaseItem((BaseItem)GetBaseItemType(item))
+                : SkillType.Invalid;
+        }
+    }
+}

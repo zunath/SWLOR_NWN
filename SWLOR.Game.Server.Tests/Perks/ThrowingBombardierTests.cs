@@ -88,7 +88,7 @@ public class ThrowingBombardierTests
         AssertAbility(flashToss[FeatType.FlashToss2], "Flash Toss II", 2, RecastGroup.FlashToss, 45f, 0f, 10, true, false, false, true, AbilityActivationType.Casted);
 
         var bombardierStance = new BombardierStanceAbilityDefinition().BuildAbilities()[FeatType.BombardierStance1];
-        AssertAbility(bombardierStance, "Bombardier Stance", 1, RecastGroup.BombardierStance, 180f, 2f, null, false, false, false, false, AbilityActivationType.Casted);
+        AssertAbility(bombardierStance, "Bombardier Stance", 1, RecastGroup.BombardierStance, 180f, 2f, null, false, false, false, false, AbilityActivationType.Casted, expectedMaxRange: 5f);
 
         var concussiveToss = new ConcussiveTossAbilityDefinition().BuildAbilities();
         AssertAbility(concussiveToss[FeatType.ConcussiveToss1], "Concussive Toss I", 1, RecastGroup.ConcussiveToss, 60f, 0f, 6, true, false, false, true, AbilityActivationType.Casted);
@@ -217,11 +217,13 @@ public class ThrowingBombardierTests
         bool requiresTarget,
         bool isSingleTarget,
         bool isArea,
-        AbilityActivationType activationType)
+        AbilityActivationType activationType,
+        float expectedMaxRange = 20f)
     {
         ability.Name.Should().Be(name);
         ability.AbilityLevel.Should().Be(level);
         ability.SkillType.Should().Be(SkillType.Throwing);
+        ability.MaxRange.Should().Be(expectedMaxRange);
         ability.RecastGroup.Should().Be(recastGroup);
         ability.RecastDelay(0).Should().Be(recastSeconds);
         ability.ActivationDelay(0, 0, level).Should().Be(activationSeconds);

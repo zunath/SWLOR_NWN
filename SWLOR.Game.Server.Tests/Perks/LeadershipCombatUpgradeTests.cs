@@ -55,6 +55,7 @@ public class LeadershipCombatUpgradeTests
             "CommandPresence",
             "DecisiveCommand");
 
+        AssertPerkCategory(vanguard, PerkCategoryType.LeadershipVanguardCommand);
         AssertPerkLevel(vanguard[PerkType.RallyingStandard], "Rallying Standard", 1, 2, null, FeatType.RallyingStandard1);
         AssertPerkLevel(vanguard[PerkType.PressTheAttack], "Press the Attack", 1, 2, 5, FeatType.PressTheAttack1);
         AssertPerkLevel(vanguard[PerkType.CoordinatedFocus], "Coordinated Focus", 1, 3, 8, FeatType.CoordinatedFocus1);
@@ -90,6 +91,7 @@ public class LeadershipCombatUpgradeTests
             "TriageProtocol",
             "HoldTheLine");
 
+        AssertPerkCategory(steward, PerkCategoryType.LeadershipFieldSteward);
         AssertPerkLevel(steward[PerkType.WatchfulPresence], "Watchful Presence", 1, 2, null, FeatType.WatchfulPresence1);
         AssertPerkLevel(steward[PerkType.RousingShout], "Rousing Shout", 1, 2, 5, FeatType.RousingShout1);
         AssertPerkLevel(steward[PerkType.SteadyFormation], "Steady Formation", 1, 3, 8, FeatType.SteadyFormation1);
@@ -420,6 +422,16 @@ public class LeadershipCombatUpgradeTests
                 .Calculate(0)
                 .Should()
                 .Be(value);
+        }
+    }
+
+    private static void AssertPerkCategory(
+        Dictionary<PerkType, PerkDetail> perks,
+        PerkCategoryType category)
+    {
+        foreach (var perk in perks.Values)
+        {
+            perk.Category.Should().Be(category);
         }
     }
 

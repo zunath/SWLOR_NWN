@@ -117,7 +117,13 @@ function Get-Category {
             if ($Row.Style -like "Dark*") { return "ForceDark" }
             return "ForceUniversal"
         }
-        "Leadership" { return "Leadership" }
+        "Leadership" {
+            switch ($Row.Style) {
+                "Vanguard Command" { return "LeadershipVanguardCommand" }
+                "Field Steward" { return "LeadershipFieldSteward" }
+                default { return "Leadership" }
+            }
+        }
         default { return "Invalid" }
     }
 }

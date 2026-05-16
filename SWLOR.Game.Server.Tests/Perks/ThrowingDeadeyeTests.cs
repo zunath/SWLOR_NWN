@@ -83,7 +83,7 @@ public class ThrowingDeadeyeTests
         AssertAbility(pinningToss[FeatType.PinningToss3], "Pinning Toss III", 3, RecastGroup.PinningToss, 30f, 0f, 8, true, false, true, false, AbilityActivationType.Weapon);
 
         var deadeyeStance = new DeadeyeStanceAbilityDefinition().BuildAbilities()[FeatType.DeadeyeStance1];
-        AssertAbility(deadeyeStance, "Deadeye Stance", 1, RecastGroup.DeadeyeStance, 180f, 2f, null, false, false, false, false, AbilityActivationType.Casted);
+        AssertAbility(deadeyeStance, "Deadeye Stance", 1, RecastGroup.DeadeyeStance, 180f, 2f, null, false, false, false, false, AbilityActivationType.Casted, expectedMaxRange: 5f);
 
         var markingToss = new MarkingTossAbilityDefinition().BuildAbilities()[FeatType.MarkingToss1];
         AssertAbility(markingToss, "Marking Toss", 1, RecastGroup.MarkingToss, 60f, 0f, 6, true, true, true, false, AbilityActivationType.Casted);
@@ -187,6 +187,10 @@ public class ThrowingDeadeyeTests
             abilityRow["TargetSizeY"].Should().Be("****");
             abilityRow["TargetFlags"].Should().Be("****");
         }
+
+        featRows[(int)FeatType.PiercingToss1]["CATEGORY"].Should().Be("10");
+        featRows[(int)FeatType.PiercingToss2]["CATEGORY"].Should().Be("10");
+        featRows[(int)FeatType.PiercingToss3]["CATEGORY"].Should().Be("10");
     }
 
     private static void AssertPerkLevel(
@@ -230,11 +234,13 @@ public class ThrowingDeadeyeTests
         bool requiresTarget,
         bool isSingleTarget,
         bool isArea,
-        AbilityActivationType activationType)
+        AbilityActivationType activationType,
+        float expectedMaxRange = 20f)
     {
         ability.Name.Should().Be(name);
         ability.AbilityLevel.Should().Be(level);
         ability.SkillType.Should().Be(SkillType.Throwing);
+        ability.MaxRange.Should().Be(expectedMaxRange);
         ability.RecastGroup.Should().Be(recastGroup);
         ability.RecastDelay(0).Should().Be(recastSeconds);
         ability.ActivationDelay(0, 0, level).Should().Be(activationSeconds);

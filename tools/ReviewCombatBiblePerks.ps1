@@ -150,7 +150,13 @@ function Get-ExpectedCategory {
         "Armor" { return "ArmorGeneral" }
         "Piloting" { return "Piloting" }
         "First Aid" { return "FirstAid" }
-        "Leadership" { return "Leadership" }
+        "Leadership" {
+            switch ($Row.Style) {
+                "Vanguard Command" { return "LeadershipVanguardCommand" }
+                "Field Steward" { return "LeadershipFieldSteward" }
+                default { return "Leadership" }
+            }
+        }
         "Devices" { return "Devices" }
         "Beast Mastery" {
             switch ($Row.Style) {

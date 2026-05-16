@@ -193,6 +193,26 @@ public class FirstAidCombatUpgradeTests
     }
 
     [Test]
+    public void FirstAidSupplyRequirements_MatchMerchantStackTemplates()
+    {
+        var root = FindRepositoryRoot();
+        var medicalSupplies = ReadItemIdentity(root / "Module" / "uti" / "med_supplies_50.uti.json");
+        var stimPack = ReadItemIdentity(root / "Module" / "uti" / "stim_pack_50.uti.json");
+
+        medicalSupplies.TemplateResRef.Should().Be("med_supplies_50");
+        medicalSupplies.Tag.Should().Be("med_supplies");
+
+        stimPack.TemplateResRef.Should().Be("stim_pack_50");
+        stimPack.Tag.Should().Be("stim_pack");
+
+        var requirementSource = File.ReadAllText(
+            (root / "SWLOR.Game.Server" / "Service" / "AbilityService" / "AbilityRequirementItem.cs").FullName);
+        requirementSource.Should().Contain("GetItemPossessedBy(player, ItemResref)");
+        requirementSource.Should().NotContain("GetFirstItemInInventory(player)");
+        requirementSource.Should().NotContain("CountItems");
+    }
+
+    [Test]
     public void FirstAidStatuses_MatchCombatBible()
     {
         AssertStatusStat(new Shielding1StatusEffect(), StatType.PhysicalDamageTakenPercentAdjustment, -5);
@@ -549,6 +569,16 @@ public class FirstAidCombatUpgradeTests
     {
         var tlk = JsonSerializer.Deserialize<TlkFile>(File.ReadAllText(path.FullName))!;
         return tlk.Entries.ToDictionary(entry => entry.Id, entry => entry.Text);
+    }
+
+    private static (string TemplateResRef, string Tag) ReadItemIdentity(PathInfo path)
+    {
+        using var json = JsonDocument.Parse(File.ReadAllText(path.FullName));
+        var root = json.RootElement;
+
+        return (
+            root.GetProperty("TemplateResRef").GetProperty("value").GetString()!,
+            root.GetProperty("Tag").GetProperty("value").GetString()!);
     }
 
     private static PathInfo FindRepositoryRoot()

@@ -1615,8 +1615,27 @@ namespace SWLOR.Game.Server.Service
             ApplyGuardedHitRecovery(defender);
             ApplyGuardedHitRetaliation(attacker, defender);
             ApplyGuardedHitEnmity(attacker, defender, damage);
+            SendGuardedHitFeedback(defender, attacker, preventedDamage);
 
             return adjustedDamage;
+        }
+
+        private static void SendGuardedHitFeedback(uint defender, uint attacker, int preventedDamage)
+        {
+            var defenderName = GetIsPC(defender) ? ColorToken.GetNamePCColor(defender) : ColorToken.GetNameNPCColor(defender);
+            var attackerName = GetIsPC(attacker) ? ColorToken.GetNamePCColor(attacker) : ColorToken.GetNameNPCColor(attacker);
+            var feedback = ColorToken.Combat($"{defenderName} guards against {attackerName}'s attack, preventing {preventedDamage} damage.");
+
+            if (GetIsPC(defender))
+            {
+                SendMessageToPC(defender, feedback);
+                FloatingTextStringOnCreature(ColorToken.Combat($"Guard (-{preventedDamage})"), defender, false);
+            }
+
+            if (GetIsPC(attacker))
+            {
+                SendMessageToPC(attacker, feedback);
+            }
         }
 
         private static int GetGuardDamageReductionPercent(uint defender)

@@ -11,6 +11,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     {
         public override string Name => "Rest";
         public override EffectIconType Icon => EffectIconType.Fatigue;
+        public override float Frequency => 6f;
         public override bool PersistsOnLogout => false;
 
         [NWNEventHandler(ScriptName.OnPlayerDamaged)]

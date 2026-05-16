@@ -178,12 +178,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-        public string IdentitySubtitle
-        {
-            get => Get<string>();
-            set => Set(value);
-        }
-
         public string MainHandDMG
         {
             get => Get<string>();
@@ -1139,7 +1133,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             CharacterType = GetClassByPosition(1, _target) == ClassType.Standard ? "Standard" : "Force Sensitive";
             Race = GetStringByStrRef(Convert.ToInt32(Get2DAString("racialtypes", "Name", (int)GetRacialType(_target))), GetGender(_target));
-            IdentitySubtitle = $"{Race} - {CharacterType}";
             IsHolocomEnabled = !Space.IsPlayerInSpaceMode(_target);
 
             if (IsPlayerMode)

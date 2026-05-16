@@ -64,7 +64,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             col.AddRow(row =>
             {
                 row.AddLabel()
-                    .BindText(model => model.IdentitySubtitle)
+                    .BindText(model => model.Race)
+                    .SetHeight(20f)
+                    .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                    .BindIsVisible(model => model.IsPlayerMode);
+            });
+
+            col.AddRow(row =>
+            {
+                row.AddLabel()
+                    .BindText(model => model.CharacterType)
                     .SetHeight(20f)
                     .SetHorizontalAlign(NuiHorizontalAlign.Left)
                     .BindIsVisible(model => model.IsPlayerMode);

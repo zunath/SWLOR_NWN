@@ -257,7 +257,7 @@ public class LeadershipCombatUpgradeTests
             (FeatType.PressTheAttack3, "Nearby party members gain +14% damage and +5% physical and Force ability hit chance for 15 seconds. SOC scaling can raise these to +18% damage and +7% hit chance."),
             (FeatType.BreakMorale2, "Nearby enemies suffer Flash, reducing physical and Force ability hit chance by 15%, and Weakened, reducing Attack by 12%, for 15 seconds. SOC scaling can raise these penalties to 18% and 15%. This command applies reliably to valid nearby enemies."),
             (FeatType.CoordinatedFocus3, "Nearby party members gain +6% critical hit chance and +8% critical damage. SOC scaling can raise these to +7% and +10%."),
-            (FeatType.DecisiveCommand1, "For 20 seconds, nearby party members gain +24% damage, +10% physical and Force ability hit chance, +10% critical hit chance, and restore 1 STM every 3 seconds. SOC scaling can raise these bonuses to +30%, +12%, and +12%."),
+            (FeatType.DecisiveCommand1, "For 20 seconds, nearby party members gain +24% damage, +10% physical and Force ability hit chance, +10% critical hit chance, and restore 1 STM every 3 seconds. SOC scaling can raise the bonuses to +30%, +12%, and +12%."),
             (FeatType.WatchfulPresence1, "Nearby party members take 4% less physical and Force damage. SOC scaling can raise this to 5%."),
             (FeatType.RousingShout1, "Bolsters one living ally, granting temporary HP equal to 10% of maximum HP for 12 seconds. SOC scaling can raise this to 13%. If the target is at or below 35% HP, they also take 10% less damage, scaling up to 12%."),
             (FeatType.SteadyFormation1, "Nearby party members gain +3% evasion chance and +30 Mind and Mobility resistance. SOC scaling can raise these to +4% and +40."),
@@ -270,7 +270,7 @@ public class LeadershipCombatUpgradeTests
             (FeatType.BolsterResolve2, "Nearby party members gain temporary HP equal to 12% of maximum HP and take 12% less damage for 15 seconds. SOC scaling can raise these to 15% temporary HP and 15% damage reduction."),
             (FeatType.FieldRecovery2, "Nearby party members restore 2 STM every 4 seconds. SOC scaling can raise this to 3 STM per tick."),
             (FeatType.RousingShout3, "Bolsters one living ally, granting temporary HP equal to 20% of maximum HP for 15 seconds. SOC scaling can raise this to 25%. If the target is at or below 35% HP, they also take 20% less damage, scaling up to 25%."),
-            (FeatType.CleanseOrder2, "Removes one major negative status effect from any resistance group from nearby party members and grants 12% damage reduction for 10 seconds. SOC scaling can raise this to 15%."),
+            (FeatType.CleanseOrder2, "Removes one major negative status effect from nearby party members and grants 12% damage reduction for 10 seconds. SOC scaling can raise this to 15%."),
             (FeatType.WatchfulPresence3, "Nearby party members take 8% less physical and Force damage. SOC scaling can raise this to 10%."),
             (FeatType.HoldTheLine1, "For 20 seconds, nearby party members gain temporary HP equal to 25% of maximum HP, take 30% less damage, and become immune to Mind and Mobility effects. SOC scaling can raise these to 30% temporary HP and 35% damage reduction.")
         };

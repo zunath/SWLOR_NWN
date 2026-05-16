@@ -139,7 +139,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.CleanseOrder1)
 
                 .AddPerkLevel()
-                .Description("Removes one major negative status effect from any resistance group from nearby party members and grants 12% damage reduction for 10 seconds. SOC scaling can raise this to 15%.")
+                .Description("Removes one major negative status effect from nearby party members and grants 12% damage reduction for 10 seconds. SOC scaling can raise this to 15%.")
                 .Price(4)
                 .RequirementSkill(SkillType.Leadership, 42)
                 .GrantsFeat(FeatType.CleanseOrder2);

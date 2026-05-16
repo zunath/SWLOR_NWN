@@ -59,7 +59,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 false,
                 Array.Empty<Type>(),
                 damageType: CombatDamageType.Force,
-                targetVisualEffect: VisualEffect.Vfx_Imp_Pulse_Negative);
+                targetVisualEffect: VisualEffect.Vfx_Imp_Pulse_Negative,
+                afterSuccessfulHit: hitTarget => ApplyForceDamageOverTime(activator, hitTarget));
+        }
+
+        private static void ApplyForceDamageOverTime(uint activator, uint target)
+        {
+            StatusEffect.ApplyStatusEffect(activator, target, typeof(ForceChokeDamageStatusEffect), 12f, CombatDamageType.Force);
         }
 
     }

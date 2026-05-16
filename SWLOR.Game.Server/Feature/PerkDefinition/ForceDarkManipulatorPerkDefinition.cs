@@ -128,7 +128,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.ForceDark, PerkType.MindShroud)
                 .Name("Mind Shroud")
-                .ForceAffinity(ForceAffinityType.Dark)
 
                 .AddPerkLevel()
                 .Description("Reduces force damage taken by 5% and grants +10% resistance to confusion, daze, and fear for 30 seconds.")
@@ -180,7 +179,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .ForceAffinity(ForceAffinityType.Dark)
 
                 .AddPerkLevel()
-                .Description("Confuse one non-mechanical target for 8 seconds. Bosses instead suffer -15 Accuracy.")
+                .Description("Confuse one non-mechanical target for 8 seconds unless it succeeds a DC 14 Will save. Resisting targets suffer -15 Accuracy instead.")
                 .Price(4)
                 .RequirementSkill(SkillType.Force, 40)
                 .RequirementCharacterType(CharacterType.ForceSensitive)

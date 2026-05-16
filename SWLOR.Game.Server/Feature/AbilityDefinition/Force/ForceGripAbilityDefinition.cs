@@ -100,7 +100,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 false,
                 Array.Empty<Type>(),
                 damageType: CombatDamageType.Force,
-                targetVisualEffect: VisualEffect.Vfx_Imp_Pulse_Negative);
+                targetVisualEffect: VisualEffect.Vfx_Imp_Pulse_Negative,
+                afterSuccessfulHit: InterruptActivation);
         }
 
         private static void ForceGrip2ImpactAction(uint activator, uint target, int level, Location targetLocation)
@@ -116,7 +117,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 false,
                 Array.Empty<Type>(),
                 damageType: CombatDamageType.Force,
-                targetVisualEffect: VisualEffect.Vfx_Imp_Pulse_Negative);
+                targetVisualEffect: VisualEffect.Vfx_Imp_Pulse_Negative,
+                afterSuccessfulHit: InterruptActivation);
         }
 
         private static void ForceGrip3ImpactAction(uint activator, uint target, int level, Location targetLocation)
@@ -138,7 +140,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 damageType: CombatDamageType.Force,
                 targetVisualEffect: VisualEffect.Vfx_Imp_Pulse_Negative,
                 areaVisualEffect: VisualEffect.Vfx_Fnf_Howl_Mind,
-                maxTargets: 2);
+                maxTargets: 2,
+                afterSuccessfulHit: InterruptActivation);
+        }
+
+        private static void InterruptActivation(uint target)
+        {
+            AssignCommand(target, () => ClearAllActions());
         }
 
     }

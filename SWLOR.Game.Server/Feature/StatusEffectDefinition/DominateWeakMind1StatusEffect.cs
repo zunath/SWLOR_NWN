@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public override EffectIconType Icon => EffectIconType.AttackDecrease;
         public override StatusEffectCategory Categories => StatusEffectCategory.Debuff;
         public override StatusEffectCleanseType CleanseTypes => StatusEffectCleanseType.Purify | StatusEffectCleanseType.SoothePet;
-        public override ResistanceType ResistanceType => ResistanceType.Disruption;
+        public override ResistanceType ResistanceType => ResistanceType.Mind;
         public override bool PersistsOnLogout => false;
 
         public DominateWeakMind1StatusEffect()

@@ -22,6 +22,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public FractureFocus2StatusEffect()
         {
             StatGroup.Stats[StatType.FPCostPercentAdjustment] = 25;
+            StatGroup.Stats[StatType.AbilityStaminaCostPercentAdjustment] = 25;
         }
     }
 }

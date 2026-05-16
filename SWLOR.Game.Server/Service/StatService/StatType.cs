@@ -2334,7 +2334,13 @@ namespace SWLOR.Game.Server.Service.StatService
         /// Percent damage adjustment applied to area Throwing abilities.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        ThrowingAreaAbilityDamagePercentAdjustment = 388
+        ThrowingAreaAbilityDamagePercentAdjustment = 388,
+
+        /// <summary>
+        /// Percent adjustment applied to Stamina ability costs. Positive values increase cost; negative values reduce it.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenNegative)]
+        AbilityStaminaCostPercentAdjustment = 389
     }
 
     public class StatTypeAttribute : Attribute

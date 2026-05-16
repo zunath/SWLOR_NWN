@@ -1,5 +1,6 @@
 using System;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.StatService;
 
 namespace SWLOR.Game.Server.Service.AbilityService
 {
@@ -65,6 +66,9 @@ namespace SWLOR.Game.Server.Service.AbilityService
                 return requiredSTM;
 
             var abilitySkillType = Combat.GetAbilitySkillType(player, ability);
+            var percentAdjustment = Stat.GetStatAdjustment(player, StatType.AbilityStaminaCostPercentAdjustment);
+            requiredSTM = (int)Math.Ceiling(requiredSTM * (1 + percentAdjustment / 100f));
+
             var adjustment = Combat.GetAbilityStaminaCostFlatAdjustment(player, ability);
             adjustment += consumeNextAdjustment
                 ? Combat.ConsumeNextSkillAbilityStaminaCostAdjustment(player, abilitySkillType)

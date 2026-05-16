@@ -95,13 +95,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 target,
                 targetLocation,
                 SkillType.Force,
-                12,
+                0,
                 6,
                 typeof(HobbleStatusEffect),
                 false,
                 Array.Empty<Type>(),
                 damageType: CombatDamageType.Force,
-                targetVisualEffect: VisualEffect.Vfx_Imp_Pulse_Negative);
+                targetVisualEffect: VisualEffect.Vfx_Imp_Pulse_Negative,
+                afterSuccessfulHit: hitTarget => ApplyForceDamageOverTime(activator, hitTarget));
         }
 
         private static void CreepingTerror2ImpactAction(uint activator, uint target, int level, Location targetLocation)
@@ -123,7 +124,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 damageType: CombatDamageType.Force,
                 targetVisualEffect: VisualEffect.Vfx_Imp_Pulse_Negative,
                 areaVisualEffect: VisualEffect.Vfx_Fnf_Howl_Mind,
-                maxTargets: 2);
+                maxTargets: 2,
+                afterSuccessfulHit: hitTarget => ApplyForceDamageOverTime(activator, hitTarget));
         }
 
         private static void CreepingTerror3ImpactAction(uint activator, uint target, int level, Location targetLocation)
@@ -144,7 +146,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 centerOnActivator: true,
                 damageType: CombatDamageType.Force,
                 targetVisualEffect: VisualEffect.Vfx_Imp_Pulse_Negative,
-                areaVisualEffect: VisualEffect.Vfx_Fnf_Howl_Mind);
+                areaVisualEffect: VisualEffect.Vfx_Fnf_Howl_Mind,
+                afterSuccessfulHit: hitTarget => ApplyForceDamageOverTime(activator, hitTarget));
+        }
+
+        private static void ApplyForceDamageOverTime(uint activator, uint target)
+        {
+            StatusEffect.ApplyStatusEffect(activator, target, typeof(CreepingTerrorDamageStatusEffect), 18f, CombatDamageType.Force);
         }
 
     }

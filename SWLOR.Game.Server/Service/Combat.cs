@@ -394,6 +394,9 @@ namespace SWLOR.Game.Server.Service
             if (damageType.IsPhysicalDamageType())
                 adjustment += Stat.GetStatAdjustment(defender, StatType.PhysicalDamageOverTimeTakenPercentAdjustment);
 
+            if (damageType == CombatDamageType.Force)
+                adjustment += Stat.GetStatAdjustment(defender, StatType.ForceDamageTakenPercentAdjustment);
+
             if (adjustment <= -100)
                 return 0;
 

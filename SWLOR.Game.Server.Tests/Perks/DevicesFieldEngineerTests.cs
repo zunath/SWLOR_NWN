@@ -192,7 +192,7 @@ public class DevicesFieldEngineerTests
         params (StatType Stat, int Value)[] statBonuses)
     {
         perk.Name.Should().Be(name);
-        perk.Category.Should().Be(PerkCategoryType.Devices);
+        perk.Category.Should().Be(PerkCategoryType.DevicesFieldEngineer);
 
         var perkLevel = perk.PerkLevels[level];
         perkLevel.Price.Should().Be(price);

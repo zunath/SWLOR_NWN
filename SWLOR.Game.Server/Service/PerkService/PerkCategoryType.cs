@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.Service.PerkService
         [PerkCategory("Engineering", true)]
         Engineering = 14,
 
-        [PerkCategory("Devices", true)]
+        [PerkCategory("Devices", false)]
         Devices = 15,
 
         [PerkCategory("Beast Mastery - Training", true)]
@@ -145,6 +145,18 @@ namespace SWLOR.Game.Server.Service.PerkService
 
         [PerkCategory("Leadership - Field Steward", true)]
         LeadershipFieldSteward = 50,
+
+        [PerkCategory("Devices - Grenadier", true)]
+        DevicesGrenadier = 51,
+
+        [PerkCategory("Devices - Field Engineer", true)]
+        DevicesFieldEngineer = 52,
+
+        [PerkCategory("Devices - Field Support", true)]
+        DevicesFieldSupport = 53,
+
+        [PerkCategory("Devices - Assault Gadgets", true)]
+        DevicesAssaultGadgets = 54,
     }
 
     public class PerkCategoryAttribute : Attribute

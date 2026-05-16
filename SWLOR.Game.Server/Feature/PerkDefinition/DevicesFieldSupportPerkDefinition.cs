@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void DeflectorShield()
         {
-            _builder.Create(PerkCategoryType.Devices, PerkType.DeflectorShield)
+            _builder.Create(PerkCategoryType.DevicesFieldSupport, PerkType.DeflectorShield)
                 .Name("Deflector Shield")
 
                 .AddPerkLevel()
@@ -54,7 +54,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void CapacitorRig()
         {
-            _builder.Create(PerkCategoryType.Devices, PerkType.CapacitorRig)
+            _builder.Create(PerkCategoryType.DevicesFieldSupport, PerkType.CapacitorRig)
                 .Name("Capacitor Rig")
 
                 .AddPerkLevel()
@@ -82,7 +82,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void WeaponJam()
         {
-            _builder.Create(PerkCategoryType.Devices, PerkType.WeaponJam)
+            _builder.Create(PerkCategoryType.DevicesFieldSupport, PerkType.WeaponJam)
                 .Name("Weapon Jam")
 
                 .AddPerkLevel()
@@ -102,7 +102,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void PowerCell()
         {
-            _builder.Create(PerkCategoryType.Devices, PerkType.PowerCell)
+            _builder.Create(PerkCategoryType.DevicesFieldSupport, PerkType.PowerCell)
                 .Name("Power Cell")
 
                 .AddPerkLevel()
@@ -129,7 +129,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void RayshieldScreen()
         {
-            _builder.Create(PerkCategoryType.Devices, PerkType.RayshieldScreen)
+            _builder.Create(PerkCategoryType.DevicesFieldSupport, PerkType.RayshieldScreen)
                 .Name("Rayshield Screen")
 
                 .AddPerkLevel()
@@ -149,7 +149,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void DampeningField()
         {
-            _builder.Create(PerkCategoryType.Devices, PerkType.DampeningField)
+            _builder.Create(PerkCategoryType.DevicesFieldSupport, PerkType.DampeningField)
                 .Name("Dampening Field")
 
                 .AddPerkLevel()
@@ -169,7 +169,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void GroupDeflector()
         {
-            _builder.Create(PerkCategoryType.Devices, PerkType.GroupDeflector)
+            _builder.Create(PerkCategoryType.DevicesFieldSupport, PerkType.GroupDeflector)
                 .Name("Group Deflector")
 
                 .AddPerkLevel()
@@ -182,7 +182,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void EmergencyBunker()
         {
-            _builder.Create(PerkCategoryType.Devices, PerkType.EmergencyBunker)
+            _builder.Create(PerkCategoryType.DevicesFieldSupport, PerkType.EmergencyBunker)
                 .Name("Emergency Bunker")
 
                 .AddPerkLevel()

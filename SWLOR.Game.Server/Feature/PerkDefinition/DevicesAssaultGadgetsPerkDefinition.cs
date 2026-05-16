@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void Flamethrower()
         {
-            _builder.Create(PerkCategoryType.Devices, PerkType.Flamethrower)
+            _builder.Create(PerkCategoryType.DevicesAssaultGadgets, PerkType.Flamethrower)
                 .Name("Flamethrower")
 
                 .AddPerkLevel()
@@ -53,7 +53,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void WristRocket()
         {
-            _builder.Create(PerkCategoryType.Devices, PerkType.WristRocket)
+            _builder.Create(PerkCategoryType.DevicesAssaultGadgets, PerkType.WristRocket)
                 .Name("Wrist Rocket")
 
                 .AddPerkLevel()
@@ -80,7 +80,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void SonicBurst()
         {
-            _builder.Create(PerkCategoryType.Devices, PerkType.SonicBurst)
+            _builder.Create(PerkCategoryType.DevicesAssaultGadgets, PerkType.SonicBurst)
                 .Name("Sonic Burst")
 
                 .AddPerkLevel()
@@ -107,7 +107,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void GadgetHarness()
         {
-            _builder.Create(PerkCategoryType.Devices, PerkType.GadgetHarness)
+            _builder.Create(PerkCategoryType.DevicesAssaultGadgets, PerkType.GadgetHarness)
                 .Name("Gadget Harness")
 
                 .AddPerkLevel()
@@ -138,7 +138,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void RailDart()
         {
-            _builder.Create(PerkCategoryType.Devices, PerkType.RailDart)
+            _builder.Create(PerkCategoryType.DevicesAssaultGadgets, PerkType.RailDart)
                 .Name("Rail Dart")
 
                 .AddPerkLevel()
@@ -158,7 +158,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void CryoSprayer()
         {
-            _builder.Create(PerkCategoryType.Devices, PerkType.CryoSprayer)
+            _builder.Create(PerkCategoryType.DevicesAssaultGadgets, PerkType.CryoSprayer)
                 .Name("Cryo Sprayer")
 
                 .AddPerkLevel()
@@ -178,7 +178,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void OverloadBarrage()
         {
-            _builder.Create(PerkCategoryType.Devices, PerkType.OverloadBarrage)
+            _builder.Create(PerkCategoryType.DevicesAssaultGadgets, PerkType.OverloadBarrage)
                 .Name("Overload Barrage")
 
                 .AddPerkLevel()

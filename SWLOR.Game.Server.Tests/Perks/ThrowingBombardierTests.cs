@@ -136,6 +136,7 @@ public class ThrowingBombardierTests
         var root = FindRepositoryRoot();
         var featRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "feat.2da");
         var abilityRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "spells.2da");
+        var classFeatRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "CLS_FEAT_FIGHT.2da");
 
         var feats = new[]
         {
@@ -174,6 +175,11 @@ public class ThrowingBombardierTests
             abilityRow["TargetSizeY"].Should().Be(targetSizeY);
             abilityRow["TargetFlags"].Should().Be(targetFlags);
         }
+
+        AssertClassFeatOnMenu(classFeatRows, FeatType.ExplosiveToss1, "ExplosiveToss1");
+        AssertClassFeatOnMenu(classFeatRows, FeatType.ExplosiveToss2, "ExplosiveToss2");
+        AssertClassFeatOnMenu(classFeatRows, FeatType.ExplosiveToss3, "ExplosiveToss3");
+        AssertClassFeatOnMenu(classFeatRows, FeatType.ExplosiveToss4, "ExplosiveToss4");
     }
 
     private static void AssertPerkLevel(
@@ -274,6 +280,22 @@ public class ThrowingBombardierTests
             .Calculate(0)
             .Should()
             .Be(value);
+    }
+
+    private static void AssertClassFeatOnMenu(
+        Dictionary<int, Dictionary<string, string>> classFeatRows,
+        FeatType featType,
+        string label)
+    {
+        var row = classFeatRows.Values
+            .Should()
+            .ContainSingle(x => x["FeatIndex"] == ((int)featType).ToString())
+            .Which;
+
+        row["FeatLabel"].Should().Be(label);
+        row["List"].Should().Be("1");
+        row["GrantedOnLevel"].Should().Be("99");
+        row["OnMenu"].Should().Be("1");
     }
 
     private static Dictionary<PerkType, PerkDetail> BuildThrowingBombardierPerksWithout2daLookup()

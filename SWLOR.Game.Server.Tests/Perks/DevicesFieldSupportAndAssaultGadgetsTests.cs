@@ -333,7 +333,28 @@ public class DevicesFieldSupportAndAssaultGadgetsTests
         params (StatType Stat, int Value)[] statBonuses)
     {
         perk.Name.Should().Be(name);
-        perk.Category.Should().Be(PerkCategoryType.Devices);
+        var expectedCategory = perk.Type switch
+        {
+            PerkType.DeflectorShield or
+            PerkType.CapacitorRig or
+            PerkType.WeaponJam or
+            PerkType.PowerCell or
+            PerkType.RayshieldScreen or
+            PerkType.DampeningField or
+            PerkType.GroupDeflector or
+            PerkType.EmergencyBunker => PerkCategoryType.DevicesFieldSupport,
+
+            PerkType.Flamethrower or
+            PerkType.WristRocket or
+            PerkType.SonicBurst or
+            PerkType.GadgetHarness or
+            PerkType.RailDart or
+            PerkType.CryoSprayer or
+            PerkType.OverloadBarrage => PerkCategoryType.DevicesAssaultGadgets,
+
+            _ => throw new AssertionException($"Unexpected Devices perk type {perk.Type}.")
+        };
+        perk.Category.Should().Be(expectedCategory);
 
         var perkLevel = perk.PerkLevels[level];
         perkLevel.Price.Should().Be(price);

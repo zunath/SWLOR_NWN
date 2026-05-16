@@ -110,7 +110,15 @@ function Get-Category {
     param($Row)
     switch ($Row.Tab) {
         "Beast Mastery" { return "Beast$($Row.Style.Replace(' ', ''))" }
-        "Devices" { return "Devices" }
+        "Devices" {
+            switch ($Row.Style) {
+                "Grenadier" { return "DevicesGrenadier" }
+                "Field Engineer" { return "DevicesFieldEngineer" }
+                "Field Support" { return "DevicesFieldSupport" }
+                "Assault Gadgets" { return "DevicesAssaultGadgets" }
+                default { throw "No Devices perk category mapped for style '$($Row.Style)'." }
+            }
+        }
         "First Aid" { return "FirstAid" }
         "Force" {
             if ($Row.Style -like "Light*") { return "ForceLight" }

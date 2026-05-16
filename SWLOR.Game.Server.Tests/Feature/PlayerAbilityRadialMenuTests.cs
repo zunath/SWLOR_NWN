@@ -1,0 +1,127 @@
+using FluentAssertions;
+using NUnit.Framework;
+using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.NWN.API.NWScript.Enum;
+
+namespace SWLOR.Game.Server.Tests.Feature;
+
+public class PlayerAbilityRadialMenuTests
+{
+    [Test]
+    public void CustomPlayerAbilityFeats_AreLinkedAndAvailableOnFighterMenu()
+    {
+        var root = FindRepositoryRoot();
+        var featRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "feat.2da");
+        var spellRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "spells.2da");
+        var classFeatRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "CLS_FEAT_FIGHT.2da");
+        var playerAbilityFeats = BuildPlayerAbilityFeats()
+            .Where(feat => (int)feat >= 2000)
+            .OrderBy(feat => (int)feat)
+            .ToArray();
+
+        playerAbilityFeats.Should().NotBeEmpty();
+
+        foreach (var feat in playerAbilityFeats)
+        {
+            var featId = (int)feat;
+            featRows.Should().ContainKey(featId, $"{feat} must exist in feat.2da");
+
+            var featRow = featRows[featId];
+            var featLabel = featRow["LABEL"];
+            featRow["SPELLID"].Should().NotBe("****", $"{feat} must link to spells.2da");
+
+            var spellId = int.Parse(featRow["SPELLID"]);
+            spellRows.Should().ContainKey(spellId, $"{feat} must have a spell row");
+            spellRows[spellId]["Label"].Should().Be(featLabel, $"{feat} spell row should use the feat.2da label");
+            spellRows[spellId]["FeatID"].Should().Be(featId.ToString(), $"{feat} spell row should point back to its feat");
+
+            var classFeatRow = classFeatRows.Values
+                .Should()
+                .ContainSingle(row => row["FeatIndex"] == featId.ToString(), $"{feat} must be available to the fighter class radial menu")
+                .Which;
+
+            classFeatRow["FeatLabel"].Should().Be(featLabel);
+            classFeatRow["List"].Should().Be("1");
+            classFeatRow["GrantedOnLevel"].Should().Be("99");
+            classFeatRow["OnMenu"].Should().Be("1");
+        }
+    }
+
+    private static HashSet<FeatType> BuildPlayerAbilityFeats()
+    {
+        var definitionType = typeof(IAbilityListDefinition);
+        var feats = new HashSet<FeatType>();
+        var definitions = definitionType.Assembly
+            .GetTypes()
+            .Where(type =>
+                type.IsClass &&
+                !type.IsAbstract &&
+                definitionType.IsAssignableFrom(type) &&
+                type.Namespace != "SWLOR.Game.Server.Feature.AbilityDefinition.NPC")
+            .Select(type => (IAbilityListDefinition)Activator.CreateInstance(type)!);
+
+        foreach (var definition in definitions)
+        {
+            foreach (var feat in definition.BuildAbilities().Keys)
+            {
+                feats.Add(feat);
+            }
+        }
+
+        return feats;
+    }
+
+    private static Dictionary<int, Dictionary<string, string>> Read2da(PathInfo path)
+    {
+        var lines = File.ReadAllLines(path.FullName)
+            .Where(line => !string.IsNullOrWhiteSpace(line))
+            .ToArray();
+        var header = lines
+            .First(line => line.TrimStart().Length > 0 && !char.IsDigit(line.TrimStart()[0]) && !line.StartsWith("2DA"))
+            .Split((char[])null!, StringSplitOptions.RemoveEmptyEntries);
+        var result = new Dictionary<int, Dictionary<string, string>>();
+
+        foreach (var line in lines)
+        {
+            var cells = line.Split((char[])null!, StringSplitOptions.RemoveEmptyEntries);
+            if (!int.TryParse(cells[0], out var row))
+                continue;
+
+            var values = new Dictionary<string, string>();
+            for (var index = 0; index < header.Length && index + 1 < cells.Length; index++)
+            {
+                values[header[index]] = cells[index + 1];
+            }
+
+            result[row] = values;
+        }
+
+        return result;
+    }
+
+    private static PathInfo FindRepositoryRoot()
+    {
+        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
+        while (directory != null)
+        {
+            var candidate = directory.FullName;
+            if (File.Exists(Path.Combine(candidate, "SWLOR.Game.Server.sln")) &&
+                File.Exists(Path.Combine(candidate, "SWLOR_Haks", "swlor2_2da", "feat.2da")))
+            {
+                return new PathInfo(candidate);
+            }
+
+            directory = directory.Parent;
+        }
+
+        throw new DirectoryNotFoundException("Could not locate the SWLOR_NWN repository root.");
+    }
+
+    private sealed record PathInfo(string FullName)
+    {
+        public static PathInfo operator /(PathInfo path, string child)
+        {
+            return new PathInfo(Path.Combine(path.FullName, child));
+        }
+    }
+}

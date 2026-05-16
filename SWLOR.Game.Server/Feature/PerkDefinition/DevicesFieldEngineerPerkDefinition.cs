@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void BlasterBeacon()
         {
-            _builder.Create(PerkCategoryType.Devices, PerkType.BlasterBeacon)
+            _builder.Create(PerkCategoryType.DevicesFieldEngineer, PerkType.BlasterBeacon)
                 .Name("Blaster Beacon")
 
                 .AddPerkLevel()
@@ -53,7 +53,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void BeaconTargeting()
         {
-            _builder.Create(PerkCategoryType.Devices, PerkType.BeaconTargeting)
+            _builder.Create(PerkCategoryType.DevicesFieldEngineer, PerkType.BeaconTargeting)
                 .Name("Beacon Targeting")
 
                 .AddPerkLevel()
@@ -86,7 +86,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void IncendiaryField()
         {
-            _builder.Create(PerkCategoryType.Devices, PerkType.IncendiaryField)
+            _builder.Create(PerkCategoryType.DevicesFieldEngineer, PerkType.IncendiaryField)
                 .Name("Incendiary Field")
 
                 .AddPerkLevel()
@@ -113,7 +113,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void RemoteCharge()
         {
-            _builder.Create(PerkCategoryType.Devices, PerkType.RemoteCharge)
+            _builder.Create(PerkCategoryType.DevicesFieldEngineer, PerkType.RemoteCharge)
                 .Name("Remote Charge")
 
                 .AddPerkLevel()
@@ -140,7 +140,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void MaintenancePulse()
         {
-            _builder.Create(PerkCategoryType.Devices, PerkType.MaintenancePulse)
+            _builder.Create(PerkCategoryType.DevicesFieldEngineer, PerkType.MaintenancePulse)
                 .Name("Maintenance Pulse")
 
                 .AddPerkLevel()
@@ -160,7 +160,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void ShockBeacon()
         {
-            _builder.Create(PerkCategoryType.Devices, PerkType.ShockBeacon)
+            _builder.Create(PerkCategoryType.DevicesFieldEngineer, PerkType.ShockBeacon)
                 .Name("Shock Beacon")
 
                 .AddPerkLevel()
@@ -180,7 +180,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void KillzoneBeacon()
         {
-            _builder.Create(PerkCategoryType.Devices, PerkType.KillzoneBeacon)
+            _builder.Create(PerkCategoryType.DevicesFieldEngineer, PerkType.KillzoneBeacon)
                 .Name("Killzone Beacon")
 
                 .AddPerkLevel()

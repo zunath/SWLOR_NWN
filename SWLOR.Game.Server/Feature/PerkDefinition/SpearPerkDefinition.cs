@@ -157,7 +157,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Erosion Strike")
 
                 .AddPerkLevel()
-                .Description("When you damage a target, they receive Force Erosion which reduces Force Defense by 10% for 12 seconds.")
+                .Description("When you damage your target, they receive Force Erosion which reduces Force Defense by 10% for 12 seconds.")
                 .IncreasesStat(StatType.DamageDealtForceErosionDurationSeconds, creature => EquipmentPredicates.HasMainHandSpear(creature) ? 12 : 0)
                 .Price(2)
                 .RequirementSkill(SkillType.Spear, 5)

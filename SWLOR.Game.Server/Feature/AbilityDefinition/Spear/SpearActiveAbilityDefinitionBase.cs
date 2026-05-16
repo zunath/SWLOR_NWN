@@ -24,6 +24,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
             Func<IStatusEffect> statusEffectFactory = null)
         {
             ability.HasActivationDelay(0f)
+                .SkillType(skill)
                 .HasCustomValidation((activator, target, level, targetLocation) =>
                 {
                     var attackTarget = GetInterruptionStrikeTarget(activator);
@@ -52,6 +53,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
                 })
                 .IsCastedAbility()
                 .IsHostileAbility()
+                .IsSingleTargetAbility()
                 .BreaksStealth();
 
             if (stamina > 0)

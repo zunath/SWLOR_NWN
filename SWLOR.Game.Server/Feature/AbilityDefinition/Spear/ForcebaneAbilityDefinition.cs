@@ -17,6 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
                     .Create(FeatType.Forcebane1, PerkType.Forcebane)
                     .Name("Forcebane")
                     .Level(1)
+                    .SkillType(SkillType.Spear)
                     .HasRecastDelay(RecastGroup.Capstone, 1800f),
                 typeof(ForcebaneStatusEffect),
                 8f,

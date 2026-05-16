@@ -30,8 +30,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
                 .HasRecastDelay(RecastGroup.ForceNullification, 45f)
                 .RequiresTarget()
                 .HasImpactAction(ForceNullification1ImpactAction)
+                .SkillType(SkillType.Spear)
                 .IsCastedAbility()
                 .IsHostileAbility()
+                .IsSingleTargetAbility()
                 .BreaksStealth()
                 .RequirementStamina(12);
         }

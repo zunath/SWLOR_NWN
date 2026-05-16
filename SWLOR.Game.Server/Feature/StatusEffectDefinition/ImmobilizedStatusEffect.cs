@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -20,6 +21,14 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         protected override void Reapply(uint creature)
         {
             ApplyImmobilize(creature, GetDurationSeconds(DurationTicks));
+        }
+
+        protected override void Remove(uint creature)
+        {
+            if (GetIsObjectValid(creature) && !GetIsDead(creature))
+            {
+                Enmity.AttackHighestEnmityTarget(creature);
+            }
         }
 
         private void ApplyImmobilize(uint creature, float duration)

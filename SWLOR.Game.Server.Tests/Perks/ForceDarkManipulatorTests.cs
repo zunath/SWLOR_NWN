@@ -165,6 +165,9 @@ public class ForceDarkManipulatorTests
         forceGrip.Should().Contain("afterSuccessfulHit: InterruptActivation");
         forceGrip.Should().Contain("ClearAllActions");
 
+        var immobilized = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "StatusEffectDefinition" / "ImmobilizedStatusEffect.cs").FullName);
+        immobilized.Should().Contain("Enmity.AttackHighestEnmityTarget(creature)");
+
         var dominateWeakMind = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Force" / "DominateWeakMindAbilityDefinition.cs").FullName);
         dominateWeakMind.Should().Contain("HasCustomValidation");
         dominateWeakMind.Should().Contain("WillSave");

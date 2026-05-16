@@ -89,8 +89,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
         {
             foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
-                HealPercent(activator, friendly, SkillType.BeastMastery, 6);
-                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_M), friendly);
+                HealPercent(friendly, 6);
             }
         }
 
@@ -98,8 +97,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
         {
             foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
-                HealPercent(activator, friendly, SkillType.BeastMastery, 10);
-                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_M), friendly);
+                HealPercent(friendly, 10);
             }
         }
 
@@ -107,23 +105,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
         {
             foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
-                HealPercent(activator, friendly, SkillType.BeastMastery, 14);
-                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_M), friendly);
+                HealPercent(friendly, 14);
             }
         }
 
 
-        private static void HealPercent(uint activator, uint target, SkillType skill, int percent)
+        private static void HealPercent(uint target, int percent)
         {
-            var ability = skill switch
-            {
-                SkillType.Leadership => AbilityType.Social,
-                SkillType.Devices => AbilityType.Perception,
-                SkillType.BeastMastery => AbilityType.Might,
-                _ => AbilityType.Willpower
-            };
-            var baseAmount = PercentOf(GetMaxHitPoints(target), percent);
-            var amount = SWLOR.Game.Server.Feature.AbilityDefinition.AbilityEffectScaling.ScaleDirectEffect(baseAmount, GetAbilityScore(activator, ability));
+            var amount = PercentOf(GetMaxHitPoints(target), percent);
             amount = Stat.ApplyHealingReceivedAdjustment(target, amount);
 
             ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), target);

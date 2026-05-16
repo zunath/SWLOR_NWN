@@ -81,12 +81,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 
         private static void RemoteCharge1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            DetonateRemoteCharge(activator, target, targetLocation, 3, null);
+            DetonateRemoteCharge(activator, target, targetLocation, 10, null);
         }
 
         private static void RemoteCharge2ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            DetonateRemoteCharge(activator, target, targetLocation, 3, typeof(KnockdownStatusEffect));
+            DetonateRemoteCharge(activator, target, targetLocation, 14, typeof(KnockdownStatusEffect));
         }
 
         private static void RemoteCharge3ImpactAction(uint activator, uint target, int level, Location targetLocation)

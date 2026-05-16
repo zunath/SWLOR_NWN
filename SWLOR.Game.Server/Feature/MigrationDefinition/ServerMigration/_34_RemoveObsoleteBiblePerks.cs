@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
@@ -6,6 +8,7 @@ using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.MigrationService;
 using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.SpaceService;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
 {
@@ -155,10 +158,11 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
         {
             var (playersMigrated, playerSpRefunded) = MigratePlayers();
             var (beastsMigrated, beastSpRefunded) = MigrateBeasts();
+            var (storedItemRecordsMigrated, storedItemsRemoved) = MigrateStoredObsoleteItems();
 
             Log.Write(
                 LogGroup.Migration,
-                $"Removed obsolete Bible perks from {playersMigrated} players and {beastsMigrated} beasts. Refunded {playerSpRefunded} player SP and {beastSpRefunded} beast SP.");
+                $"Removed obsolete Bible perks from {playersMigrated} players and {beastsMigrated} beasts. Refunded {playerSpRefunded} player SP and {beastSpRefunded} beast SP. Removed {storedItemsRemoved} obsolete instruction disc items across {storedItemRecordsMigrated} stored records.");
         }
 
         private static (int EntityCount, int SpRefunded) MigratePlayers()
@@ -298,6 +302,242 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
             }
 
             return changed;
+        }
+
+        private static (int EntityCount, int ItemsRemoved) MigrateStoredObsoleteItems()
+        {
+            var migratedRecords = 0;
+            var removedItems = 0;
+
+            removedItems += MigrateInventoryItems(ref migratedRecords);
+            removedItems += MigrateMarketItems(ref migratedRecords);
+            removedItems += MigrateWorldPropertyCategories(ref migratedRecords);
+            removedItems += MigrateSerializedField<WorldProperty>(x => x.SerializedItem, (x, value) => x.SerializedItem = value, ref migratedRecords);
+            removedItems += MigrateSerializedField<ResearchJob>(x => x.SerializedItem, (x, value) => x.SerializedItem = value, ref migratedRecords);
+            removedItems += MigrateSerializedField<PlayerOutfit>(x => x.Data, (x, value) => x.Data = value, ref migratedRecords);
+            removedItems += MigrateSerializedField<DMCreature>(x => x.Data, (x, value) => x.Data = value, ref migratedRecords);
+            removedItems += MigratePlayerShips(ref migratedRecords);
+
+            return (migratedRecords, removedItems);
+        }
+
+        private static int MigrateInventoryItems(ref int migratedRecords)
+        {
+            var removedItems = 0;
+
+            foreach (var item in SearchAll<InventoryItem>())
+            {
+                var metadataRootObsolete = IsObsoleteItemRecord(item.Resref, item.Tag);
+                var serializedChanged = ObsoleteItemMigration.RemoveObsoleteItemsFromSerializedObject(
+                    item.Data,
+                    out var migratedData,
+                    out var removedRoot,
+                    out var serializedRemovedItems);
+
+                if (metadataRootObsolete || removedRoot)
+                {
+                    DB.Delete<InventoryItem>(item.Id);
+                    removedItems += CountRemovedItemStack(item.Quantity, serializedRemovedItems);
+                    migratedRecords++;
+                    continue;
+                }
+
+                if (!serializedChanged)
+                    continue;
+
+                item.Data = migratedData;
+                DB.Set(item);
+                removedItems += serializedRemovedItems;
+                migratedRecords++;
+            }
+
+            return removedItems;
+        }
+
+        private static int MigrateMarketItems(ref int migratedRecords)
+        {
+            var removedItems = 0;
+
+            foreach (var item in SearchAll<MarketItem>())
+            {
+                var metadataRootObsolete = IsObsoleteItemRecord(item.Resref, item.Tag);
+                var serializedChanged = ObsoleteItemMigration.RemoveObsoleteItemsFromSerializedObject(
+                    item.Data,
+                    out var migratedData,
+                    out var removedRoot,
+                    out var serializedRemovedItems);
+
+                if (metadataRootObsolete || removedRoot)
+                {
+                    DB.Delete<MarketItem>(item.Id);
+                    removedItems += CountRemovedItemStack(item.Quantity, serializedRemovedItems);
+                    migratedRecords++;
+                    continue;
+                }
+
+                if (!serializedChanged)
+                    continue;
+
+                item.Data = migratedData;
+                DB.Set(item);
+                removedItems += serializedRemovedItems;
+                migratedRecords++;
+            }
+
+            return removedItems;
+        }
+
+        private static int MigrateWorldPropertyCategories(ref int migratedRecords)
+        {
+            var removedItems = 0;
+
+            foreach (var category in SearchAll<WorldPropertyCategory>())
+            {
+                if (category.Items == null || category.Items.Count <= 0)
+                    continue;
+
+                var changed = false;
+
+                foreach (var itemId in category.Items.Keys.ToList())
+                {
+                    var item = category.Items[itemId];
+                    var metadataRootObsolete = IsObsoleteItemRecord(item.Resref, item.Tag);
+                    var serializedChanged = ObsoleteItemMigration.RemoveObsoleteItemsFromSerializedObject(
+                        item.Data,
+                        out var migratedData,
+                        out var removedRoot,
+                        out var serializedRemovedItems);
+
+                    if (metadataRootObsolete || removedRoot)
+                    {
+                        category.Items.Remove(itemId);
+                        removedItems += CountRemovedItemStack(item.Quantity, serializedRemovedItems);
+                        changed = true;
+                        continue;
+                    }
+
+                    if (!serializedChanged)
+                        continue;
+
+                    item.Data = migratedData;
+                    removedItems += serializedRemovedItems;
+                    changed = true;
+                }
+
+                if (!changed)
+                    continue;
+
+                DB.Set(category);
+                migratedRecords++;
+            }
+
+            return removedItems;
+        }
+
+        private static int MigrateSerializedField<T>(
+            Func<T, string> getSerializedObject,
+            Action<T, string> setSerializedObject,
+            ref int migratedRecords)
+            where T : EntityBase
+        {
+            var removedItems = 0;
+
+            foreach (var entity in SearchAll<T>())
+            {
+                var changed = ObsoleteItemMigration.RemoveObsoleteItemsFromSerializedObject(
+                    getSerializedObject(entity),
+                    out var migratedData,
+                    out var removedRoot,
+                    out var serializedRemovedItems);
+
+                if (!changed)
+                    continue;
+
+                setSerializedObject(entity, removedRoot ? string.Empty : migratedData);
+                DB.Set(entity);
+                removedItems += serializedRemovedItems;
+                migratedRecords++;
+            }
+
+            return removedItems;
+        }
+
+        private static int MigratePlayerShips(ref int migratedRecords)
+        {
+            var removedItems = 0;
+
+            foreach (var ship in SearchAll<PlayerShip>())
+            {
+                var changed = ObsoleteItemMigration.RemoveObsoleteItemsFromSerializedObject(
+                    ship.SerializedItem,
+                    out var migratedData,
+                    out var removedRoot,
+                    out var serializedRemovedItems);
+
+                if (changed)
+                {
+                    ship.SerializedItem = removedRoot ? string.Empty : migratedData;
+                    removedItems += serializedRemovedItems;
+                }
+
+                changed |= MigrateShipModules(ship.Status?.HighPowerModules, ref removedItems);
+                changed |= MigrateShipModules(ship.Status?.LowPowerModules, ref removedItems);
+                changed |= MigrateShipModules(ship.Status?.ConfigurationModules, ref removedItems);
+
+                if (!changed)
+                    continue;
+
+                DB.Set(ship);
+                migratedRecords++;
+            }
+
+            return removedItems;
+        }
+
+        private static bool MigrateShipModules(Dictionary<int, ShipStatus.ShipStatusModule> modules, ref int removedItems)
+        {
+            if (modules == null || modules.Count <= 0)
+                return false;
+
+            var changed = false;
+            foreach (var module in modules.Values)
+            {
+                var moduleChanged = ObsoleteItemMigration.RemoveObsoleteItemsFromSerializedObject(
+                    module.SerializedItem,
+                    out var migratedData,
+                    out var removedRoot,
+                    out var serializedRemovedItems);
+
+                if (!moduleChanged)
+                    continue;
+
+                module.SerializedItem = removedRoot ? string.Empty : migratedData;
+                removedItems += serializedRemovedItems;
+                changed = true;
+            }
+
+            return changed;
+        }
+
+        private static bool IsObsoleteItemRecord(string resref, string tag)
+        {
+            return ObsoleteItemMigration.IsObsoleteResRef(resref) ||
+                   ObsoleteItemMigration.IsObsoleteResRef(tag);
+        }
+
+        private static int CountRemovedItemStack(int quantity, int serializedRemovedItems)
+        {
+            return serializedRemovedItems > 0
+                ? Math.Max(serializedRemovedItems, quantity)
+                : Math.Max(1, quantity);
+        }
+
+        private static List<T> SearchAll<T>()
+            where T : EntityBase
+        {
+            var query = new DBQuery<T>();
+            var count = (int)DB.SearchCount(query);
+            return DB.Search(query.AddPaging(count, 0)).ToList();
         }
     }
 }

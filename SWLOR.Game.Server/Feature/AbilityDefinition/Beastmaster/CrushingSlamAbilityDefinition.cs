@@ -93,7 +93,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 5f,
                 0f,
                 Array.Empty<Type>(),
-                centerOnActivator: !GetIsObjectValid(target),
+                centerOnActivator: true,
                 damageType: CombatDamageType.Physical,
                 targetVisualEffect: VisualEffect.Vfx_Imp_Dust_Explosion,
                 areaVisualEffect: VisualEffect.Vfx_Fnf_Screen_Shake);
@@ -114,7 +114,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 5f,
                 0f,
                 Array.Empty<Type>(),
-                centerOnActivator: !GetIsObjectValid(target),
+                centerOnActivator: true,
                 damageType: CombatDamageType.Physical,
                 targetVisualEffect: VisualEffect.Vfx_Imp_Dust_Explosion,
                 areaVisualEffect: VisualEffect.Vfx_Fnf_Screen_Shake);
@@ -135,7 +135,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 5f,
                 0f,
                 Array.Empty<Type>(),
-                centerOnActivator: !GetIsObjectValid(target),
+                centerOnActivator: true,
                 damageType: CombatDamageType.Physical,
                 targetVisualEffect: VisualEffect.Vfx_Imp_Dust_Explosion,
                 areaVisualEffect: VisualEffect.Vfx_Fnf_Screen_Shake);

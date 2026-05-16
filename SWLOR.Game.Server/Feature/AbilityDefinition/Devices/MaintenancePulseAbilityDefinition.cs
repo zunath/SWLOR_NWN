@@ -100,7 +100,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Remove_Condition), target);
             }
 
-            HealPercent(activator, target, SkillType.Devices, healPercent);
+            HealPercent(target, healPercent);
             DeviceAbilityEffects.ExtendActiveFieldEngineerPulses(activator, extensionSeconds);
         }
 
@@ -113,17 +113,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         }
 
 
-        private static void HealPercent(uint activator, uint target, SkillType skill, int percent)
+        private static void HealPercent(uint target, int percent)
         {
-            var ability = skill switch
-            {
-                SkillType.Leadership => AbilityType.Social,
-                SkillType.Devices => AbilityType.Perception,
-                SkillType.BeastMastery => AbilityType.Might,
-                _ => AbilityType.Willpower
-            };
-            var baseAmount = PercentOf(GetMaxHitPoints(target), percent);
-            var amount = SWLOR.Game.Server.Feature.AbilityDefinition.AbilityEffectScaling.ScaleDirectEffect(baseAmount, GetAbilityScore(activator, ability));
+            var amount = PercentOf(GetMaxHitPoints(target), percent);
             amount = Stat.ApplyHealingReceivedAdjustment(target, amount);
 
             ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), target);

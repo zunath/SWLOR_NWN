@@ -57,6 +57,7 @@ public class BeastmasterCombatUpgradeTests
         new AlphaRhythm1BeastStatusEffect().StatGroup.Stats[StatType.DamageDealtPercentAdjustment].Should().Be(10);
         new Assault1StatusEffect().StatGroup.Stats[StatType.EvasionPercentAdjustment].Should().Be(6);
         new Assault3StatusEffect().StatGroup.Stats[StatType.EvasionPercentAdjustment].Should().Be(14);
+        new DistractingFeint1StatusEffect().StatGroup.Stats[StatType.PhysicalAndForceAbilityHitChancePercentAdjustment].Should().Be(-6);
         new EvasiveChallenge1SelfStatusEffect().StatGroup.Stats[StatType.AvoidedAttackSingleStaminaRestore].Should().Be(1);
         new Intercept2StatusEffect().StatGroup.Stats[StatType.DamageTakenRedirectToStatusSourcePercent].Should().Be(50);
     }
@@ -98,9 +99,22 @@ public class BeastmasterCombatUpgradeTests
         iceBreath.Should().Contain("typeof(HamstringStatusEffect)");
         iceBreath.Should().Contain("typeof(ImmobilizedStatusEffect)");
 
+        var innervate = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Beastmaster" / "InnervateAbilityDefinition.cs").FullName);
+        innervate.Should().NotContain("ScaleDirectEffect");
+
+        var crushingSlam = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Beastmaster" / "CrushingSlamAbilityDefinition.cs").FullName);
+        crushingSlam.Should().Contain("centerOnActivator: true");
+
+        var rampage = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Beastmaster" / "RampageAbilityDefinition.cs").FullName);
+        rampage.Should().Contain("centerOnActivator: true");
+
+        var evasiveChallenge = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Beastmaster" / "EvasiveChallengeAbilityDefinition.cs").FullName);
+        evasiveChallenge.Should().Contain("RemoveStatusEffectsWithNegativeStat");
+
         var combat = File.ReadAllText((root / "SWLOR.Game.Server" / "Service" / "Combat.cs").FullName);
         combat.Should().Contain("ApplyAbilityUsedMasterAbilityHitChance");
         combat.Should().Contain("ApplyDamageTakenRedirectToStatusSource");
+        combat.Should().Contain("InventorySlot.CreatureRight");
     }
 
     private static void AssertStaminaAbility(

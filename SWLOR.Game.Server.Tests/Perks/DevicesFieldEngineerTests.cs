@@ -115,8 +115,12 @@ public class DevicesFieldEngineerTests
         maintenance.Should().Contain("ApplyMaintenancePulse(activator, target, 12, 3f, false)");
         maintenance.Should().Contain("ApplyMaintenancePulse(activator, target, 20, 5f, true)");
         maintenance.Should().Contain("DeviceAbilityEffects.ExtendActiveFieldEngineerPulses(activator, extensionSeconds)");
+        maintenance.Should().NotContain("ScaleDirectEffect");
 
         var remoteCharge = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Devices" / "RemoteChargeAbilityDefinition.cs").FullName);
+        remoteCharge.Should().Contain("DetonateRemoteCharge(activator, target, targetLocation, 10, null)");
+        remoteCharge.Should().Contain("DetonateRemoteCharge(activator, target, targetLocation, 14, typeof(KnockdownStatusEffect))");
+        remoteCharge.Should().Contain("DetonateRemoteCharge(activator, target, targetLocation, 20, typeof(KnockdownStatusEffect))");
         remoteCharge.Should().Contain("CombatImpactAreaShape.Sphere");
         remoteCharge.Should().Contain("3f");
         remoteCharge.Should().Contain("CombatDamageType.Fire");

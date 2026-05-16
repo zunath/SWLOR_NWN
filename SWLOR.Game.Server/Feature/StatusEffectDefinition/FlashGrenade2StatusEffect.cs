@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public FlashGrenade2StatusEffect(int hitChancePenaltyPercent)
         {
             _hitChancePenaltyPercent = Math.Abs(hitChancePenaltyPercent);
-            StatGroup.Stats[StatType.AbilityHitChancePercentAdjustment] = -_hitChancePenaltyPercent;
+            StatGroup.Stats[StatType.PhysicalAndForceAbilityHitChancePercentAdjustment] = -_hitChancePenaltyPercent;
         }
 
         public override IStatusEffect Clone()

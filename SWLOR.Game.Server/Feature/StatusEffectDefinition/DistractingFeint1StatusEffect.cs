@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         public DistractingFeint1StatusEffect()
         {
-            StatGroup.Stats[StatType.AbilityHitChancePercentAdjustment] = -6;
+            StatGroup.Stats[StatType.PhysicalAndForceAbilityHitChancePercentAdjustment] = -6;
         }
     }
 }

@@ -96,8 +96,8 @@ public class DevicesGrenadierTests
     [Test]
     public void DevicesGrenadierStatusEffects_MatchCombatBible()
     {
-        new FlashGrenade1StatusEffect().StatGroup.Stats[StatType.AbilityHitChancePercentAdjustment].Should().Be(-8);
-        new FlashGrenade2StatusEffect().StatGroup.Stats[StatType.AbilityHitChancePercentAdjustment].Should().Be(-14);
+        new FlashGrenade1StatusEffect().StatGroup.Stats[StatType.PhysicalAndForceAbilityHitChancePercentAdjustment].Should().Be(-8);
+        new FlashGrenade2StatusEffect().StatGroup.Stats[StatType.PhysicalAndForceAbilityHitChancePercentAdjustment].Should().Be(-14);
 
         var adhesiveSlow = new AdhesiveGrenadeSlowStatusEffect();
         adhesiveSlow.StatGroup.Stats[StatType.MovementSpeedPercentAdjustment].Should().Be(-50);
@@ -166,19 +166,19 @@ public class DevicesGrenadierTests
 
         var feats = new[]
         {
-            (FeatType.FragGrenade1, "ife_frggrnd1", "M", "0x3E", "1", "sphere", "5", "****", "1"),
-            (FeatType.ConcussionGrenade1, "ife_cncssngrnd1", "M", "0x3E", "1", "sphere", "5", "****", "1"),
-            (FeatType.FlashGrenade1, "ife_flashgrnd1", "M", "0x3E", "1", "sphere", "5", "****", "1"),
-            (FeatType.FragGrenade2, "ife_frggrnd2", "M", "0x3E", "1", "sphere", "5", "****", "1"),
-            (FeatType.IonGrenade1, "ife_ngrnd1", "M", "0x3E", "1", "sphere", "5", "****", "1"),
-            (FeatType.AdhesiveGrenade1, "ife_dhsvgrnd1", "M", "0x3E", "1", "sphere", "5", "****", "1"),
-            (FeatType.ConcussionGrenade2, "ife_cncssngrnd2", "M", "0x3E", "1", "sphere", "5", "****", "1"),
-            (FeatType.ClusterGrenade1, "ife_clstrgrnd1", "M", "0x3E", "1", "sphere", "5", "****", "1"),
-            (FeatType.FlashGrenade2, "ife_flashgrnd2", "M", "0x3E", "1", "sphere", "5", "****", "1"),
-            (FeatType.IonGrenade2, "ife_ngrnd2", "M", "0x3E", "1", "sphere", "5", "****", "1"),
-            (FeatType.FragGrenade3, "ife_frggrnd3", "M", "0x3E", "1", "sphere", "5", "****", "1"),
-            (FeatType.AdhesiveGrenade2, "ife_dhsvgrnd2", "M", "0x3E", "1", "sphere", "5", "****", "1"),
-            (FeatType.ConcussionGrenade3, "ife_cncssngrnd3", "M", "0x3E", "1", "sphere", "5", "****", "1"),
+            (FeatType.FragGrenade1, "ife_frggrnd1", "M", "0x3E", "1", "sphere", "3", "****", "1"),
+            (FeatType.ConcussionGrenade1, "ife_cncssngrnd1", "M", "0x3E", "1", "sphere", "3", "****", "1"),
+            (FeatType.FlashGrenade1, "ife_flashgrnd1", "M", "0x3E", "1", "sphere", "4", "****", "1"),
+            (FeatType.FragGrenade2, "ife_frggrnd2", "M", "0x3E", "1", "sphere", "3", "****", "1"),
+            (FeatType.IonGrenade1, "ife_ngrnd1", "M", "0x3E", "1", "sphere", "3", "****", "1"),
+            (FeatType.AdhesiveGrenade1, "ife_dhsvgrnd1", "M", "0x3E", "1", "sphere", "4", "****", "1"),
+            (FeatType.ConcussionGrenade2, "ife_cncssngrnd2", "M", "0x3E", "1", "sphere", "3", "****", "1"),
+            (FeatType.ClusterGrenade1, "ife_clstrgrnd1", "M", "0x3E", "1", "sphere", "2", "****", "1"),
+            (FeatType.FlashGrenade2, "ife_flashgrnd2", "M", "0x3E", "1", "sphere", "4", "****", "1"),
+            (FeatType.IonGrenade2, "ife_ngrnd2", "M", "0x3E", "1", "sphere", "3", "****", "1"),
+            (FeatType.FragGrenade3, "ife_frggrnd3", "M", "0x3E", "1", "sphere", "3", "****", "1"),
+            (FeatType.AdhesiveGrenade2, "ife_dhsvgrnd2", "M", "0x3E", "1", "sphere", "4", "****", "1"),
+            (FeatType.ConcussionGrenade3, "ife_cncssngrnd3", "M", "0x3E", "1", "sphere", "3", "****", "1"),
             (FeatType.ThermalDetonator1, "ife_thrmldtntr1", "M", "0x3E", "1", "sphere", "5", "****", "1")
         };
         var seenIcons = new HashSet<string>();

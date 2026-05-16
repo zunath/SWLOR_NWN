@@ -1082,6 +1082,22 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
+        public static void RemoveStatusEffectsWithNegativeStat(
+            uint creature,
+            StatType statType,
+            bool sendsWornOffMessage = true)
+        {
+            var effects = GetCreatureStatusEffects(creature)
+                .GetAllEffects()
+                .Where(effect => effect.StatGroup.Stats.TryGetValue(statType, out var value) && value < 0)
+                .ToList();
+
+            foreach (var effect in effects)
+            {
+                RemoveStatusEffect(creature, effect.GetType(), effect.Source, sendsWornOffMessage);
+            }
+        }
+
         public static uint GetStatusEffectSourceWithStat(uint creature, StatType statType)
         {
             var effect = GetCreatureStatusEffects(creature)

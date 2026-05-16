@@ -2316,7 +2316,25 @@ namespace SWLOR.Game.Server.Service
                 return rightHand;
 
             var leftHand = GetItemInSlot(InventorySlot.LeftHand, creature);
-            return GetIsObjectValid(leftHand) ? leftHand : rightHand;
+            if (GetIsObjectValid(leftHand))
+                return leftHand;
+
+            return skillType == SkillType.BeastMastery
+                ? GetCreatureNaturalWeapon(creature)
+                : rightHand;
+        }
+
+        private static uint GetCreatureNaturalWeapon(uint creature)
+        {
+            var creatureRight = GetItemInSlot(InventorySlot.CreatureRight, creature);
+            if (GetIsObjectValid(creatureRight))
+                return creatureRight;
+
+            var creatureLeft = GetItemInSlot(InventorySlot.CreatureLeft, creature);
+            if (GetIsObjectValid(creatureLeft))
+                return creatureLeft;
+
+            return GetItemInSlot(InventorySlot.CreatureBite, creature);
         }
 
         private static int GetAbilityHitOrCriticalAdjustment(

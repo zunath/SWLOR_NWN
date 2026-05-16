@@ -793,12 +793,26 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 })
                 .Action((user, target, location, args) =>
                 {
+                    var initiatorName = GetName(user);
+                    var accountName = GetPCPlayerName(user);
+                    var cdKey = GetPCPublicCDKey(user);
+                    var restartUtc = DateTime.UtcNow;
+
+                    Log.Write(
+                        LogGroup.Server,
+                        $"Manual restart audit: InitiatorName={initiatorName}, AccountName={accountName}, CdKey={cdKey}, RestartUtc={restartUtc:O}, Reason=Manual /restartserver command");
+
+                    var notificationMessage = $"Manual restart initiated by {initiatorName} ({accountName}) [{cdKey}] at {restartUtc:yyyy-MM-dd HH:mm:ss} UTC.";
+                    ServerTasks.SendServerLifecycleNotificationForShutdown(notificationMessage);
+
                     uint player = GetFirstPC();
                     while (player != OBJECT_INVALID)
                     {
+                        ExportSingleCharacter(player);
                         BootPC(player, "The server is restarting.");
                         player = GetNextPC();
                     }
+
                     AdministrationPlugin.ShutdownServer();
                 });
         }

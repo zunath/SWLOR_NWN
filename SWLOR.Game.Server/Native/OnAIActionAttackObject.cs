@@ -489,10 +489,6 @@ namespace SWLOR.Game.Server.Native
                                                 // Set the delay timestamp after the attack resolves
                                                 // This ensures the first attack is instant, subsequent attacks respect delay
                                                 _creatureAttackDelays[pCreature.m_idSelf] = DateTime.UtcNow;
-
-                                                // After resolving attack, ensure the combat round continues
-                                                // This should trigger the next attack action to be generated
-                                                pCreature.m_pcCombatRound.RecomputeRound();
                                             }
                                         }
                                     }
@@ -563,6 +559,11 @@ namespace SWLOR.Game.Server.Native
                             pPendingAction.Dispose();
                             pPendingAction = null;
                         }
+                    }
+                    else if (bTargetActive)
+                    {
+                        // Build the next combat action only after the current attack has finished its damage phase.
+                        pCreature.m_pcCombatRound.RecomputeRound();
                     }
 
                     if (bTargetActive == false)

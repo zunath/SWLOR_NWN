@@ -85,8 +85,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 Array.Empty<Type>(),
                 centerOnActivator: !GetIsObjectValid(target),
                 damageType: CombatDamageType.Force,
-                targetVisualEffect: VisualEffect.Vfx_Com_Hit_Electrical,
-                areaVisualEffect: VisualEffect.Vfx_Fnf_Electric_Explosion,
+                afterSuccessfulHit: hitTarget => ApplyLightningVisual(activator, hitTarget),
                 maxTargets: 3);
         }
 
@@ -107,9 +106,20 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 Array.Empty<Type>(),
                 centerOnActivator: !GetIsObjectValid(target),
                 damageType: CombatDamageType.Force,
-                targetVisualEffect: VisualEffect.Vfx_Com_Hit_Electrical,
-                areaVisualEffect: VisualEffect.Vfx_Fnf_Electric_Explosion,
+                afterSuccessfulHit: hitTarget => ApplyLightningVisual(activator, hitTarget),
                 maxTargets: 4);
+        }
+
+        private static void ApplyLightningVisual(uint activator, uint target)
+        {
+            var lightningBeam = EffectBeam(VisualEffect.Vfx_Beam_Silent_Lightning, activator, BodyNode.Hand, true);
+            var lightningBurst = EffectVisualEffect(VisualEffect.Vfx_Imp_Lightning_S);
+
+            AssignCommand(activator, () =>
+            {
+                ApplyEffectToObject(DurationType.Temporary, lightningBeam, target, 2.5f);
+                ApplyEffectToObject(DurationType.Instant, lightningBurst, target);
+            });
         }
 
     }

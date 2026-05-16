@@ -29,6 +29,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
                 .Level(1)
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.PinningToss, 30f)
+                .SkillType(SkillType.Throwing)
+                .IsSingleTargetAbility()
                 .HasImpactAction(PinningToss1ImpactAction)
                 .IsWeaponAbility()
                 .IsHostileAbility()
@@ -44,6 +46,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
                 .Level(2)
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.PinningToss, 30f)
+                .SkillType(SkillType.Throwing)
+                .IsSingleTargetAbility()
                 .HasImpactAction(PinningToss2ImpactAction)
                 .IsWeaponAbility()
                 .IsHostileAbility()
@@ -59,6 +63,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
                 .Level(3)
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.PinningToss, 30f)
+                .SkillType(SkillType.Throwing)
+                .IsSingleTargetAbility()
                 .HasImpactAction(PinningToss3ImpactAction)
                 .IsWeaponAbility()
                 .IsHostileAbility()
@@ -78,7 +84,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
 
         private static void PinningToss3ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Throwing, 30, 20, typeof(DisorientedStatusEffect), false);
+            Ability.ApplyCombatImpact(
+                activator,
+                target,
+                targetLocation,
+                SkillType.Throwing,
+                30,
+                20,
+                typeof(DisorientedStatusEffect),
+                false,
+                statusEffectFactory: () => new DisorientedStatusEffect(15));
         }
     }
 }

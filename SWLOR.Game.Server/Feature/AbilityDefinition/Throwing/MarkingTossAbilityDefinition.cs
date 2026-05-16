@@ -28,6 +28,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
                 .Level(1)
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.MarkingToss, 60f)
+                .SkillType(SkillType.Throwing)
+                .IsSingleTargetAbility()
                 .RequiresTarget()
                 .HasImpactAction(MarkingToss1ImpactAction)
                 .IsCastedAbility()

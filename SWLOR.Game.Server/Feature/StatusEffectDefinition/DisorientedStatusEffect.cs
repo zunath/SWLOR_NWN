@@ -8,15 +8,23 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
     public sealed class DisorientedStatusEffect : StatusEffectBase
     {
+        private readonly int _additionalEvasionPenaltyPercent;
+
         public override string Name => "Disoriented";
         public override EffectIconType Icon => EffectIconType.Confused;
         public override StatusEffectCategory Categories => StatusEffectCategory.Debuff | StatusEffectCategory.Control;
         public override StatusEffectCleanseType CleanseTypes => StatusEffectCleanseType.Purify | StatusEffectCleanseType.SoothePet;
         public override ResistanceType ResistanceType => ResistanceType.Mind;
         public DisorientedStatusEffect()
+            : this(0)
         {
+        }
+
+        public DisorientedStatusEffect(int additionalEvasionPenaltyPercent)
+        {
+            _additionalEvasionPenaltyPercent = Math.Max(0, additionalEvasionPenaltyPercent);
             StatGroup.Stats[StatType.AccuracyPercentAdjustment] = -15;
-            StatGroup.Stats[StatType.EvasionPercentAdjustment] = -15;
+            StatGroup.Stats[StatType.EvasionPercentAdjustment] = -15 - _additionalEvasionPenaltyPercent;
         }
 
         protected override void Apply(uint creature, int durationTicks)
@@ -29,5 +37,9 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 StatType.OutgoingDisorientedEvasionPercentAdjustment);
         }
 
+        public override IStatusEffect Clone()
+        {
+            return new DisorientedStatusEffect(_additionalEvasionPenaltyPercent);
+        }
     }
 }

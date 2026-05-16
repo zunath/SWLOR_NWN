@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -27,6 +28,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
                 .Level(1)
                 .HasActivationDelay(1f)
                 .HasRecastDelay(RecastGroup.Capstone, 1800f)
+                .SkillType(SkillType.Throwing)
+                .IsSingleTargetAbility()
                 .RequiresTarget()
                 .HasImpactAction(PerfectThrow1ImpactAction)
                 .IsCastedAbility()
@@ -37,7 +40,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
 
         private static void PerfectThrow1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            var statusEffect = StatusEffect.HasStatusEffect(target, typeof(BleedStatusEffect))
+            var statusEffect = StatusEffect.HasStatusEffectCategory(target, StatusEffectCategory.Bleeding)
                 ? typeof(HemorrhageStatusEffect)
                 : null;
 

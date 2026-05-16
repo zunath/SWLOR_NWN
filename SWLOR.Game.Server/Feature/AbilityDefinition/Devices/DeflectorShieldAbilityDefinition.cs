@@ -120,7 +120,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             amount = DeviceAbilityEffects.ApplyCapacitorRigBonus(activator, amount);
             var duration = DeviceAbilityEffects.ApplyCapacitorRigDurationBonus(activator, durationSeconds);
 
-            TemporaryHitPointEffects.ApplyFlat(target, amount, duration);
+            TemporaryHitPointEffects.ApplyFlatWithBarrierVisual(target, amount, duration);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Ac_Bonus), target);
         }
     }

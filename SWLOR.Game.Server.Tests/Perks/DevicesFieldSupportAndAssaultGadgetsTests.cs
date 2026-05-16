@@ -221,6 +221,7 @@ public class DevicesFieldSupportAndAssaultGadgetsTests
         deflector.Should().Contain("ApplyShieldTemporaryHP(activator, friendly, 35, 6, 45f)");
         deflector.Should().Contain("ApplyShieldTemporaryHP(activator, friendly, 65, 9, 45f)");
         deflector.Should().Contain("ApplyShieldTemporaryHP(activator, friendly, 100, 12, 45f)");
+        deflector.Should().Contain("TemporaryHitPointEffects.ApplyFlatWithBarrierVisual(target, amount, duration)");
         deflector.Should().Contain("DeviceAbilityEffects.ApplyCapacitorRigBonus");
         deflector.Should().NotContain("HealPercent");
         deflector.Should().NotContain("EffectHeal");
@@ -238,6 +239,10 @@ public class DevicesFieldSupportAndAssaultGadgetsTests
         areaEffects.Should().Contain("Action<uint, float> onFirstApplication = null");
         areaEffects.Should().Contain("firstApplications.Add(friendly)");
         areaEffects.Should().Contain("durationSeconds - pulseDelay");
+
+        var temporaryHitPointEffects = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "TemporaryHitPointEffects.cs").FullName);
+        temporaryHitPointEffects.Should().Contain("Vfx_Dur_Aura_Pulse_Cyan_Blue");
+        temporaryHitPointEffects.Should().Contain("RemoveEffectByTag(target, BarrierVisualEffectTag)");
 
         var deviceEffects = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "DeviceAbilityEffects.cs").FullName);
         deviceEffects.Should().Contain("AssaultGadgetAccuracyPercentAdjustment");

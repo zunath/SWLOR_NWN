@@ -21937,7 +21937,7 @@
                     "LocalizedName": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Bomber Configuration I"
+                        "0": "Basic Bomber Configuration"
                       }
                     },
                     "ModelPart1": {
@@ -22252,7 +22252,7 @@
                     "LocalizedName": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Basic Industrial Configuration"
+                        "0": "Basic Logistics Configuration"
                       }
                     },
                     "ModelPart1": {

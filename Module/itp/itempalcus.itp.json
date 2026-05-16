@@ -1,4 +1,4 @@
-ï»¿{
+{
   "__data_type": "ITP ",
   "MAIN": {
     "type": "list",
@@ -5761,7 +5761,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Rev\ufffdtement de dro\ufffdde \ufffdboueur"
+                      "value": "Revêtement de droïde éboueur"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -18865,116 +18865,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Armor Enhancement - Resistance - Electrical I"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "aen_def_elec1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Armor Enhancement - Resistance - Electrical II"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "aen_def_elec2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Armor Enhancement - Resistance - Electrical III"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "aen_def_elec3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Armor Enhancement - Resistance - Electrical IV"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "aen_def_elec4"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Armor Enhancement - Resistance - Electrical V"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "aen_def_elec5"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Armor Enhancement - Resistance - Fire I"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "aen_def_fir1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Armor Enhancement - Resistance - Fire II"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "aen_def_fir2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Armor Enhancement - Resistance - Fire III"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "aen_def_fir3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Armor Enhancement - Resistance - Fire IV"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "aen_def_fir4"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Armor Enhancement - Resistance - Fire V"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "aen_def_fir5"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Armor Enhancement - Defense - Force I"
                     },
                     "RESREF": {
@@ -19030,61 +18920,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Armor Enhancement - Resistance - Ice I"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "aen_def_ice1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Armor Enhancement - Resistance - Ice II"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "aen_def_ice2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Armor Enhancement - Resistance - Ice III"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "aen_def_ice3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Armor Enhancement - Resistance - Ice IV"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "aen_def_ice4"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Armor Enhancement - Resistance - Ice V"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "aen_def_ice5"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Armor Enhancement - Defense - Physical I"
                     },
                     "RESREF": {
@@ -19134,281 +18969,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "aen_def_phy5"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Armor Enhancement - Resistance - Poison I"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "aen_def_psn1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Armor Enhancement - Resistance - Poison II"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "aen_def_psn2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Armor Enhancement - Resistance - Poison III"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "aen_def_psn3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Armor Enhancement - Resistance - Poison IV"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "aen_def_psn4"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Armor Enhancement - Resistance - Poison V"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "aen_def_psn5"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Armor Enhancement - Resistance - Mind I"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "aen_res_mnd1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Armor Enhancement - Resistance - Mind II"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "aen_res_mnd2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Armor Enhancement - Resistance - Mind III"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "aen_res_mnd3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Armor Enhancement - Resistance - Mind IV"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "aen_res_mnd4"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Armor Enhancement - Resistance - Mind V"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "aen_res_mnd5"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Armor Enhancement - Resistance - Mobility I"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "aen_res_mob1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Armor Enhancement - Resistance - Mobility II"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "aen_res_mob2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Armor Enhancement - Resistance - Mobility III"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "aen_res_mob3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Armor Enhancement - Resistance - Mobility IV"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "aen_res_mob4"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Armor Enhancement - Resistance - Mobility V"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "aen_res_mob5"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Armor Enhancement - Resistance - Trauma I"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "aen_res_tra1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Armor Enhancement - Resistance - Trauma II"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "aen_res_tra2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Armor Enhancement - Resistance - Trauma III"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "aen_res_tra3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Armor Enhancement - Resistance - Trauma IV"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "aen_res_tra4"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Armor Enhancement - Resistance - Trauma V"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "aen_res_tra5"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Armor Enhancement - Resistance - Disruption I"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "aen_res_dis1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Armor Enhancement - Resistance - Disruption II"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "aen_res_dis2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Armor Enhancement - Resistance - Disruption III"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "aen_res_dis3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Armor Enhancement - Resistance - Disruption IV"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "aen_res_dis4"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Armor Enhancement - Resistance - Disruption V"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "aen_res_dis5"
                     }
                   },
                   {
@@ -19684,6 +19244,446 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "aen_recast5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Resistance - Disruption I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_res_dis1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Resistance - Disruption II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_res_dis2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Resistance - Disruption III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_res_dis3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Resistance - Disruption IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_res_dis4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Resistance - Disruption V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_res_dis5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Resistance - Electrical I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_def_elec1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Resistance - Electrical II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_def_elec2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Resistance - Electrical III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_def_elec3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Resistance - Electrical IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_def_elec4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Resistance - Electrical V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_def_elec5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Resistance - Fire I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_def_fir1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Resistance - Fire II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_def_fir2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Resistance - Fire III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_def_fir3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Resistance - Fire IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_def_fir4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Resistance - Fire V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_def_fir5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Resistance - Ice I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_def_ice1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Resistance - Ice II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_def_ice2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Resistance - Ice III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_def_ice3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Resistance - Ice IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_def_ice4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Resistance - Ice V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_def_ice5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Resistance - Mind I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_res_mnd1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Resistance - Mind II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_res_mnd2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Resistance - Mind III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_res_mnd3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Resistance - Mind IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_res_mnd4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Resistance - Mind V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_res_mnd5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Resistance - Mobility I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_res_mob1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Resistance - Mobility II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_res_mob2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Resistance - Mobility III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_res_mob3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Resistance - Mobility IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_res_mob4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Resistance - Mobility V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_res_mob5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Resistance - Poison I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_def_psn1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Resistance - Poison II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_def_psn2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Resistance - Poison III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_def_psn3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Resistance - Poison IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_def_psn4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Resistance - Poison V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_def_psn5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Resistance - Trauma I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_res_tra1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Resistance - Trauma II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_res_tra2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Resistance - Trauma III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_res_tra3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Resistance - Trauma IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_res_tra4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Resistance - Trauma V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_res_tra5"
                     }
                   },
                   {
@@ -21824,6 +21824,446 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Cooking Enhancement - Resistance - Disruption I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cen_res_dis1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooking Enhancement - Resistance - Disruption II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cen_res_dis2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooking Enhancement - Resistance - Disruption III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cen_res_dis3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooking Enhancement - Resistance - Disruption IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cen_res_dis4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooking Enhancement - Resistance - Disruption V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cen_res_dis5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooking Enhancement - Resistance - Electrical I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cen_res_elec1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooking Enhancement - Resistance - Electrical II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cen_res_elec2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooking Enhancement - Resistance - Electrical III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cen_res_elec3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooking Enhancement - Resistance - Electrical IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cen_res_elec4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooking Enhancement - Resistance - Electrical V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cen_res_elec5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooking Enhancement - Resistance - Fire I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cen_res_fir1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooking Enhancement - Resistance - Fire II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cen_res_fir2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooking Enhancement - Resistance - Fire III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cen_res_fir3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooking Enhancement - Resistance - Fire IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cen_res_fir4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooking Enhancement - Resistance - Fire V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cen_res_fir5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooking Enhancement - Resistance - Ice I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cen_res_ice1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooking Enhancement - Resistance - Ice II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cen_res_ice2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooking Enhancement - Resistance - Ice III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cen_res_ice3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooking Enhancement - Resistance - Ice IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cen_res_ice4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooking Enhancement - Resistance - Ice V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cen_res_ice5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooking Enhancement - Resistance - Mind I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cen_res_mnd1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooking Enhancement - Resistance - Mind II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cen_res_mnd2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooking Enhancement - Resistance - Mind III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cen_res_mnd3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooking Enhancement - Resistance - Mind IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cen_res_mnd4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooking Enhancement - Resistance - Mind V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cen_res_mnd5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooking Enhancement - Resistance - Mobility I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cen_res_mob1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooking Enhancement - Resistance - Mobility II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cen_res_mob2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooking Enhancement - Resistance - Mobility III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cen_res_mob3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooking Enhancement - Resistance - Mobility IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cen_res_mob4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooking Enhancement - Resistance - Mobility V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cen_res_mob5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooking Enhancement - Resistance - Poison I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cen_res_psn1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooking Enhancement - Resistance - Poison II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cen_res_psn2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooking Enhancement - Resistance - Poison III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cen_res_psn3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooking Enhancement - Resistance - Poison IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cen_res_psn4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooking Enhancement - Resistance - Poison V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cen_res_psn5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooking Enhancement - Resistance - Trauma I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cen_res_tra1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooking Enhancement - Resistance - Trauma II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cen_res_tra2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooking Enhancement - Resistance - Trauma III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cen_res_tra3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooking Enhancement - Resistance - Trauma IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cen_res_tra4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooking Enhancement - Resistance - Trauma V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cen_res_tra5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Cooking Enhancement - Rest Regen I"
                     },
                     "RESREF": {
@@ -22038,446 +22478,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "cen_xp5"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Cooking Enhancement - Resistance - Fire I"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "cen_res_fir1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Cooking Enhancement - Resistance - Poison I"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "cen_res_psn1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Cooking Enhancement - Resistance - Electrical I"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "cen_res_elec1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Cooking Enhancement - Resistance - Ice I"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "cen_res_ice1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Cooking Enhancement - Resistance - Mind I"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "cen_res_mnd1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Cooking Enhancement - Resistance - Mobility I"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "cen_res_mob1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Cooking Enhancement - Resistance - Trauma I"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "cen_res_tra1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Cooking Enhancement - Resistance - Disruption I"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "cen_res_dis1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Cooking Enhancement - Resistance - Fire II"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "cen_res_fir2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Cooking Enhancement - Resistance - Poison II"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "cen_res_psn2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Cooking Enhancement - Resistance - Electrical II"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "cen_res_elec2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Cooking Enhancement - Resistance - Ice II"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "cen_res_ice2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Cooking Enhancement - Resistance - Mind II"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "cen_res_mnd2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Cooking Enhancement - Resistance - Mobility II"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "cen_res_mob2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Cooking Enhancement - Resistance - Trauma II"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "cen_res_tra2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Cooking Enhancement - Resistance - Disruption II"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "cen_res_dis2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Cooking Enhancement - Resistance - Fire III"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "cen_res_fir3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Cooking Enhancement - Resistance - Poison III"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "cen_res_psn3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Cooking Enhancement - Resistance - Electrical III"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "cen_res_elec3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Cooking Enhancement - Resistance - Ice III"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "cen_res_ice3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Cooking Enhancement - Resistance - Mind III"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "cen_res_mnd3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Cooking Enhancement - Resistance - Mobility III"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "cen_res_mob3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Cooking Enhancement - Resistance - Trauma III"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "cen_res_tra3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Cooking Enhancement - Resistance - Disruption III"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "cen_res_dis3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Cooking Enhancement - Resistance - Fire IV"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "cen_res_fir4"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Cooking Enhancement - Resistance - Poison IV"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "cen_res_psn4"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Cooking Enhancement - Resistance - Electrical IV"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "cen_res_elec4"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Cooking Enhancement - Resistance - Ice IV"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "cen_res_ice4"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Cooking Enhancement - Resistance - Mind IV"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "cen_res_mnd4"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Cooking Enhancement - Resistance - Mobility IV"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "cen_res_mob4"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Cooking Enhancement - Resistance - Trauma IV"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "cen_res_tra4"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Cooking Enhancement - Resistance - Disruption IV"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "cen_res_dis4"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Cooking Enhancement - Resistance - Fire V"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "cen_res_fir5"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Cooking Enhancement - Resistance - Poison V"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "cen_res_psn5"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Cooking Enhancement - Resistance - Electrical V"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "cen_res_elec5"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Cooking Enhancement - Resistance - Ice V"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "cen_res_ice5"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Cooking Enhancement - Resistance - Mind V"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "cen_res_mnd5"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Cooking Enhancement - Resistance - Mobility V"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "cen_res_mob5"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Cooking Enhancement - Resistance - Trauma V"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "cen_res_tra5"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Cooking Enhancement - Resistance - Disruption V"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "cen_res_dis5"
                     }
                   },
                   {
@@ -25426,6 +25426,182 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "d_chassis3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Enhancement - Resistance - Disruption I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "de_res_dis1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Enhancement - Resistance - Disruption II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "de_res_dis2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Enhancement - Resistance - Electrical I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "de_res_elec1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Enhancement - Resistance - Electrical II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "de_res_elec2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Enhancement - Resistance - Fire I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "de_res_fir1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Enhancement - Resistance - Fire II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "de_res_fir2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Enhancement - Resistance - Ice I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "de_res_ice1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Enhancement - Resistance - Ice II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "de_res_ice2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Enhancement - Resistance - Mind I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "de_res_mnd1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Enhancement - Resistance - Mind II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "de_res_mnd2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Enhancement - Resistance - Mobility I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "de_res_mob1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Enhancement - Resistance - Mobility II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "de_res_mob2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Enhancement - Resistance - Poison I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "de_res_psn1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Enhancement - Resistance - Poison II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "de_res_psn2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Enhancement - Resistance - Trauma I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "de_res_tra1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Droid Enhancement - Resistance - Trauma II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "de_res_tra2"
                     }
                   },
                   {
@@ -28704,6 +28880,28 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "d_hm_cpu5_w"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Heavy Vibroblade Boost I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "de_hvblade_b1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Heavy Vibroblade Boost II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "de_hvblade_b2"
                     }
                   },
                   {
@@ -32054,6 +32252,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Katar Boost I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "de_katar_b1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Katar Boost II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "de_katar_b2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Kath Hound Blood"
                     },
                     "RESREF": {
@@ -32725,6 +32945,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Lightsaber Boost I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "de_lsab_b1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Lightsaber Boost II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "de_lsab_b2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Little Worm"
                     },
                     "RESREF": {
@@ -33137,50 +33379,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "manip_arm3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Katar Boost I"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "de_katar_b1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Staff Boost I"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "de_staff_b1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Katar Boost II"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "de_katar_b2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Staff Boost II"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "de_staff_b2"
                     }
                   },
                   {
@@ -33935,72 +34133,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Vibroblade Boost I"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "de_vblade_b1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Vibroknife Boost I"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "de_vknife_b1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Lightsaber Boost I"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "de_lsab_b1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Vibroblade Boost II"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "de_vblade_b2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Vibroknife Boost II"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "de_vknife_b2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Lightsaber Boost II"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "de_lsab_b2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Oprlang"
                     },
                     "RESREF": {
@@ -34298,6 +34430,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Pistol Boost I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "de_pistol_b1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Pistol Boost II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "de_pistol_b2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Plain Eggs"
                     },
                     "RESREF": {
@@ -34512,6 +34666,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "steel_rods_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Projectile Weapon Core"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "r_weapon_core"
                     }
                   },
                   {
@@ -34787,83 +34952,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "rakaz_shellfish"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Pistol Boost I"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "de_pistol_b1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Rifle Boost I"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "de_rifle_b1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Throwing Boost I"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "de_throw_b1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Pistol Boost II"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "de_pistol_b2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Rifle Boost II"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "de_rifle_b2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Throwing Boost II"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "de_throw_b2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Projectile Weapon Core"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "r_weapon_core"
                     }
                   },
                   {
@@ -35717,6 +35805,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Rifle Boost I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "de_rifle_b1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Rifle Boost II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "de_rifle_b2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Rising Flour"
                     },
                     "RESREF": {
@@ -35865,6 +35975,28 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "ls_hilt"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Saberstaff Boost I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "de_sabst_b1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Saberstaff Boost II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "de_sabst_b2"
                     }
                   },
                   {
@@ -36388,6 +36520,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Spear Boost I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "de_spear_b1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Spear Boost II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "de_spear_b2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Spices"
                     },
                     "RESREF": {
@@ -36437,6 +36591,28 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "spider_thread"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Staff Boost I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "de_staff_b1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Staff Boost II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "de_staff_b2"
                     }
                   },
                   {
@@ -37499,6 +37675,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Throwing Boost I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "de_throw_b1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Throwing Boost II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "de_throw_b2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Thune Blood"
                     },
                     "RESREF": {
@@ -37840,28 +38038,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Heavy Vibroblade Boost I"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "de_hvblade_b1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Spear Boost I"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "de_spear_b1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Twin Blade Boost I"
                     },
                     "RESREF": {
@@ -37873,55 +38049,11 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Saberstaff Boost I"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "de_sabst_b1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Heavy Vibroblade Boost II"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "de_hvblade_b2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Spear Boost II"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "de_spear_b2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Twin Blade Boost II"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "de_tblade_b2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Saberstaff Boost II"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "de_sabst_b2"
                     }
                   },
                   {
@@ -38054,6 +38186,50 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "de_verve2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Vibroblade Boost I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "de_vblade_b1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Vibroblade Boost II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "de_vblade_b2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Vibroknife Boost I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "de_vknife_b1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Vibroknife Boost II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "de_vknife_b2"
                     }
                   },
                   {
@@ -44938,6 +45114,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Blueprint: Heavy Vibroblade Boost I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_dhvblade1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Heavy Vibroblade Boost II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_dhvblade2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Blueprint: Immortal Belt"
                     },
                     "RESREF": {
@@ -45026,11 +45224,55 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Blueprint: Katar Boost I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_dkatar1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Katar Boost II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_dkatar2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Blueprint: Laser Cannon Battery"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "recipe_modlasbat"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Lightsaber Boost I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_dlsab1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Lightsaber Boost II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_dlsab2"
                     }
                   },
                   {
@@ -45141,50 +45383,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "recipe_mgtunic"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Blueprint: Katar Boost I"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "recipe_dkatar1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Blueprint: Staff Boost I"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "recipe_dstaff1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Blueprint: Katar Boost II"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "recipe_dkatar2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Blueprint: Staff Boost II"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "recipe_dstaff2"
                     }
                   },
                   {
@@ -45312,110 +45510,11 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Blueprint: Vibroblade Boost I"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "recipe_dvblade1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Blueprint: Vibroknife Boost I"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "recipe_dvknife1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Blueprint: Lightsaber Boost I"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "recipe_dlsab1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Blueprint: Vibroblade Boost II"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "recipe_dvblade2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Blueprint: Vibroknife Boost II"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "recipe_dvknife2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Blueprint: Lightsaber Boost II"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "recipe_dlsab2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Blueprint: Quad Laser Cannon"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "recipe_modquadlz"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Blueprint: Pistol Boost I"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "recipe_dpistol1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Blueprint: Rifle Boost I"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "recipe_drifle1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Blueprint: Throwing Boost I"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "recipe_dthrow1"
                     }
                   },
                   {
@@ -45433,22 +45532,11 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Blueprint: Rifle Boost II"
+                      "value": "Blueprint: Quad Laser Cannon"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "recipe_drifle2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Blueprint: Throwing Boost II"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "recipe_dthrow2"
+                      "value": "recipe_modquadlz"
                     }
                   },
                   {
@@ -45482,6 +45570,50 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "recipe_modrepfld"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Rifle Boost I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_drifle1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Rifle Boost II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_drifle2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Saberstaff Boost I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_dsabst1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Saberstaff Boost II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_dsabst2"
                     }
                   },
                   {
@@ -45664,6 +45796,50 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Blueprint: Spear Boost I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_dspear1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Spear Boost II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_dspear2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Staff Boost I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_dstaff1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Staff Boost II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_dstaff2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Blueprint: Storm Cannon"
                     },
                     "RESREF": {
@@ -45719,6 +45895,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Blueprint: Throwing Boost I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_dthrow1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Throwing Boost II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_dthrow2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Blueprint: Training Sabers"
                     },
                     "RESREF": {
@@ -45752,28 +45950,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Blueprint: Heavy Vibroblade Boost I"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "recipe_dhvblade1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Blueprint: Spear Boost I"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "recipe_dspear1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Blueprint: Twin Blade Boost I"
                     },
                     "RESREF": {
@@ -45785,55 +45961,11 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Blueprint: Saberstaff Boost I"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "recipe_dsabst1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Blueprint: Heavy Vibroblade Boost II"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "recipe_dhvblade2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Blueprint: Spear Boost II"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "recipe_dspear2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Blueprint: Twin Blade Boost II"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "recipe_dtblade2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Blueprint: Saberstaff Boost II"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "recipe_dsabst2"
                     }
                   },
                   {
@@ -45856,6 +45988,50 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "recipe_verve2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Vibroblade Boost I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_dvblade1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Vibroblade Boost II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_dvblade2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Vibroknife Boost I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_dvknife1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Vibroknife Boost II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_dvknife2"
                     }
                   },
                   {
@@ -58250,4 +58426,3 @@
     ]
   }
 }
-

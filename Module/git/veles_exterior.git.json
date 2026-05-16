@@ -886587,7 +886587,7 @@
                     },
                     "Plot": {
                       "type": "byte",
-                      "value": 0
+                      "value": 1
                     },
                     "PropertiesList": {
                       "type": "list",
@@ -886712,7 +886712,7 @@
                     },
                     "Plot": {
                       "type": "byte",
-                      "value": 0
+                      "value": 1
                     },
                     "PropertiesList": {
                       "type": "list",
@@ -886962,7 +886962,7 @@
                     },
                     "Plot": {
                       "type": "byte",
-                      "value": 0
+                      "value": 1
                     },
                     "PropertiesList": {
                       "type": "list",
@@ -887085,7 +887085,7 @@
                     },
                     "Plot": {
                       "type": "byte",
-                      "value": 0
+                      "value": 1
                     },
                     "PropertiesList": {
                       "type": "list",
@@ -887210,7 +887210,7 @@
                     },
                     "Plot": {
                       "type": "byte",
-                      "value": 0
+                      "value": 1
                     },
                     "PropertiesList": {
                       "type": "list",
@@ -887335,7 +887335,7 @@
                     },
                     "Plot": {
                       "type": "byte",
-                      "value": 0
+                      "value": 1
                     },
                     "PropertiesList": {
                       "type": "list",
@@ -887458,7 +887458,7 @@
                     },
                     "Plot": {
                       "type": "byte",
-                      "value": 0
+                      "value": 1
                     },
                     "PropertiesList": {
                       "type": "list",
@@ -887583,7 +887583,7 @@
                     },
                     "Plot": {
                       "type": "byte",
-                      "value": 0
+                      "value": 1
                     },
                     "PropertiesList": {
                       "type": "list",
@@ -887708,7 +887708,7 @@
                     },
                     "Plot": {
                       "type": "byte",
-                      "value": 0
+                      "value": 1
                     },
                     "PropertiesList": {
                       "type": "list",
@@ -887833,7 +887833,7 @@
                     },
                     "Plot": {
                       "type": "byte",
-                      "value": 0
+                      "value": 1
                     },
                     "PropertiesList": {
                       "type": "list",
@@ -887958,7 +887958,7 @@
                     },
                     "Plot": {
                       "type": "byte",
-                      "value": 0
+                      "value": 1
                     },
                     "PropertiesList": {
                       "type": "list",
@@ -888083,7 +888083,7 @@
                     },
                     "Plot": {
                       "type": "byte",
-                      "value": 0
+                      "value": 1
                     },
                     "PropertiesList": {
                       "type": "list",
@@ -888208,7 +888208,7 @@
                     },
                     "Plot": {
                       "type": "byte",
-                      "value": 0
+                      "value": 1
                     },
                     "PropertiesList": {
                       "type": "list",
@@ -888333,7 +888333,7 @@
                     },
                     "Plot": {
                       "type": "byte",
-                      "value": 0
+                      "value": 1
                     },
                     "PropertiesList": {
                       "type": "list",
@@ -888458,7 +888458,7 @@
                     },
                     "Plot": {
                       "type": "byte",
-                      "value": 0
+                      "value": 1
                     },
                     "PropertiesList": {
                       "type": "list",
@@ -888704,7 +888704,7 @@
                     },
                     "Plot": {
                       "type": "byte",
-                      "value": 0
+                      "value": 1
                     },
                     "PropertiesList": {
                       "type": "list",
@@ -888950,7 +888950,7 @@
                     },
                     "Plot": {
                       "type": "byte",
-                      "value": 0
+                      "value": 1
                     },
                     "PropertiesList": {
                       "type": "list",
@@ -889075,7 +889075,7 @@
                     },
                     "Plot": {
                       "type": "byte",
-                      "value": 0
+                      "value": 1
                     },
                     "PropertiesList": {
                       "type": "list",
@@ -897046,119 +897046,7 @@
               "__struct_id": 0
             },
             {
-              "__struct_id": 4,
-              "ItemList": {
-                "type": "list",
-                "value": [
-                  {
-                    "__struct_id": 0,
-                    "AddCost": {
-                      "type": "dword",
-                      "value": 0
-                    },
-                    "BaseItem": {
-                      "type": "int",
-                      "value": 211
-                    },
-                    "Charges": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "Cost": {
-                      "type": "dword",
-                      "value": 1
-                    },
-                    "Cursed": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "DescIdentified": {
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": "Experience the vibrant fusion of tradition and innovation with Czerka Soda. Our artisanal drink combines timeless flavors with a secret spice blend, creating a bold and refreshing taste that's perfect for any occasion.\n\nEco-Chic Packaging Czerka Soda comes in stylish, sustainable bottles, making it the smart choice for the eco-conscious consumer.\n\nVersatile & Vibrant Ideal for mixology or as a standalone refreshment, Czerka Soda  is your go-to for celebrations or everyday enjoyment.\n\nBe Part of the Czerka Culture Embrace the movement that blends heritage with contemporary flair. Make a statement with every sip of Czerka Soda."
-                      }
-                    },
-                    "Description": {
-                      "type": "cexolocstring",
-                      "value": {}
-                    },
-                    "Identified": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "Infinite": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "LocalizedName": {
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": "Czerka Soda"
-                      }
-                    },
-                    "ModelPart1": {
-                      "type": "byte",
-                      "value": 4
-                    },
-                    "Plot": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertiesList": {
-                      "type": "list",
-                      "value": []
-                    },
-                    "Repos_PosX": {
-                      "type": "word",
-                      "value": 0
-                    },
-                    "Repos_Posy": {
-                      "type": "word",
-                      "value": 0
-                    },
-                    "StackSize": {
-                      "type": "word",
-                      "value": 1
-                    },
-                    "Stolen": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "Tag": {
-                      "type": "cexostring",
-                      "value": "CzerkaSoda"
-                    },
-                    "TemplateResRef": {
-                      "type": "resref",
-                      "value": "czerkasoda"
-                    },
-                    "xModelPart1": {
-                      "type": "word",
-                      "value": 4
-                    },
-                    "XOrientation": {
-                      "type": "float",
-                      "value": 8.908087968876006e-039
-                    },
-                    "XPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    },
-                    "YOrientation": {
-                      "type": "float",
-                      "value": 1.0
-                    },
-                    "YPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    },
-                    "ZPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    }
-                  }
-                ]
-              }
+              "__struct_id": 4
             },
             {
               "__struct_id": 2
@@ -897420,7 +897308,7 @@
               "__struct_id": 97869,
               "BaseItem": {
                 "type": "int",
-                "value": 401
+                "value": 24
               }
             },
             {
@@ -897434,7 +897322,7 @@
               "__struct_id": 97869,
               "BaseItem": {
                 "type": "int",
-                "value": 24
+                "value": 401
               }
             },
             {

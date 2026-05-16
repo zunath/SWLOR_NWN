@@ -55086,6 +55086,10 @@
                       "type": "byte",
                       "value": 1
                     },
+                    "Infinite": {
+                      "type": "byte",
+                      "value": 1
+                    },
                     "LocalizedName": {
                       "id": 13362,
                       "type": "cexolocstring",
@@ -55219,6 +55223,10 @@
                       "value": {}
                     },
                     "Identified": {
+                      "type": "byte",
+                      "value": 1
+                    },
+                    "Infinite": {
                       "type": "byte",
                       "value": 1
                     },
@@ -55360,6 +55368,10 @@
                       "type": "byte",
                       "value": 1
                     },
+                    "Infinite": {
+                      "type": "byte",
+                      "value": 1
+                    },
                     "LocalizedName": {
                       "id": 13362,
                       "type": "cexolocstring",
@@ -55495,6 +55507,10 @@
                       }
                     },
                     "Identified": {
+                      "type": "byte",
+                      "value": 1
+                    },
+                    "Infinite": {
                       "type": "byte",
                       "value": 1
                     },

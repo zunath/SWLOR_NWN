@@ -154764,6 +154764,10 @@
                       "type": "byte",
                       "value": 1
                     },
+                    "Infinite": {
+                      "type": "byte",
+                      "value": 1
+                    },
                     "Leather1Color": {
                       "type": "byte",
                       "value": 23
@@ -155344,6 +155348,10 @@
                       "type": "byte",
                       "value": 1
                     },
+                    "Infinite": {
+                      "type": "byte",
+                      "value": 1
+                    },
                     "Leather1Color": {
                       "type": "byte",
                       "value": 102
@@ -155534,6 +155542,10 @@
                       "value": {}
                     },
                     "Identified": {
+                      "type": "byte",
+                      "value": 1
+                    },
+                    "Infinite": {
                       "type": "byte",
                       "value": 1
                     },

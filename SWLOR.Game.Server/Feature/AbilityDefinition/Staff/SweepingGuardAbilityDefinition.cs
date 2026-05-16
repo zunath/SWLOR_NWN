@@ -28,14 +28,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.SweepingGuard, 90f)
                 .HasImpactAction(SweepingGuard1ImpactAction)
+                .SkillType(SkillType.Staff)
                 .IsCastedAbility()
                 .IsHostileAbility()
+                .IsAreaAbility()
                 .BreaksStealth()
                 .RequirementStamina(10);
         }
 
         private static void SweepingGuard1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
+            StatusEffect.ApplyStatusEffect(activator, activator, typeof(SweepingGuardStatusEffect), 10f);
             Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.Staff, 18, 2, typeof(KnockdownStatusEffect), CombatImpactAreaShape.Sphere, 0.25f, 5f, centerOnActivator: true);
         }
     }

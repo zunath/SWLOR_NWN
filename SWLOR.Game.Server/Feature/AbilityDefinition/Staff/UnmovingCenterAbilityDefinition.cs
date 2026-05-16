@@ -18,6 +18,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
                     .Create(FeatType.UnmovingCenter1, PerkType.UnmovingCenter)
                     .Name("Unmoving Center")
                     .Level(1)
+                    .SkillType(SkillType.Staff)
                     .HasRecastDelay(RecastGroup.Capstone, 1800f),
                 typeof(UnmovingCenterStatusEffect),
                 20f,

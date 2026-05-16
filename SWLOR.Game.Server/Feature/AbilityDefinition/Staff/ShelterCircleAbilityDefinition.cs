@@ -17,6 +17,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
                     .Create(FeatType.ShelterCircle1, PerkType.ShelterCircle)
                     .Name("Shelter Circle")
                     .Level(1)
+                    .SkillType(SkillType.Staff)
+                    .IsAreaAbility()
                     .HasRecastDelay(RecastGroup.ShelterCircle, 180f),
                 typeof(ShelterCircleStatusEffect),
                 15f,

@@ -17,6 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
                     .Create(FeatType.SentinelStance1, PerkType.SentinelStance)
                     .Name("Sentinel Stance")
                     .Level(1)
+                    .SkillType(SkillType.Staff)
                     .HasRecastDelay(RecastGroup.SentinelStance, 180f),
                 typeof(SentinelStanceStatusEffect));
 

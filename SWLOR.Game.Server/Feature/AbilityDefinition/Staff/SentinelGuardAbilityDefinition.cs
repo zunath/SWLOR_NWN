@@ -17,6 +17,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
                     .Create(FeatType.SentinelGuard1, PerkType.SentinelGuard)
                     .Name("Sentinel Guard")
                     .Level(1)
+                    .SkillType(SkillType.Staff)
+                    .IsAreaAbility()
                     .HasRecastDelay(RecastGroup.SentinelGuard, 120f),
                 typeof(SentinelGuardStatusEffect),
                 12f,

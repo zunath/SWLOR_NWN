@@ -17,6 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
                     .Create(FeatType.GuardingStep1, PerkType.GuardingStep)
                     .Name("Guarding Step")
                     .Level(1)
+                    .SkillType(SkillType.Staff)
                     .HasRecastDelay(RecastGroup.GuardingStep, 60f),
                 typeof(GuardingStepStatusEffect),
                 8f,

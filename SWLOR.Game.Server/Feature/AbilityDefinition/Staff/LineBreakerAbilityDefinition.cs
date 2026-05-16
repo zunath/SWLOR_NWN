@@ -28,8 +28,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.LineBreaker, 60f)
                 .HasImpactAction(LineBreaker1ImpactAction)
+                .SkillType(SkillType.Staff)
                 .IsCastedAbility()
                 .IsHostileAbility()
+                .IsAreaAbility()
                 .BreaksStealth()
                 .RequirementStamina(8);
         }

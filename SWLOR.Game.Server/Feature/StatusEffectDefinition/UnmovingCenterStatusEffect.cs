@@ -10,8 +10,6 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public override EffectIconType Icon => EffectIconType.DamageReduction;
         public UnmovingCenterStatusEffect()
         {
-            StatGroup.Stats[StatType.PhysicalDefensePercentAdjustment] = 25;
-            StatGroup.Stats[StatType.ForceDefensePercentAdjustment] = 25;
             StatGroup.Stats[StatType.AttackDeflection] = 50;
             StatGroup.Stats[StatType.EnmityPercentAdjustment] = 30;
         }

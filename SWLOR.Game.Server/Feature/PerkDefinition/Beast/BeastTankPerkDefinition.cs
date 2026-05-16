@@ -190,7 +190,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition.Beast
                 .GroupType(PerkGroupType.Beast)
 
                 .AddPerkLevel()
-                .Description("Once every 3 minutes, when the beast would fall below 1 HP, it remains at 1 HP and gains temporary HP.")
+                .Description("Once every 3 minutes, when the beast would take fatal damage, prevent that damage and grant temporary HP equal to 20% of its maximum HP for 12 seconds.")
                 .Price(3)
                 .RequirementBeastLevel(50)
                 .RequirementBeastRole(BeastRoleType.Tank)

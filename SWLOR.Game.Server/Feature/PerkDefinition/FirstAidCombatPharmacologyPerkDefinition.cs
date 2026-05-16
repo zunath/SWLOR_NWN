@@ -37,13 +37,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.AdrenalStim1)
 
                 .AddPerkLevel()
-                .Description("Restores 18% of maximum STM and grants STM regeneration for 12 seconds. Consumes a stim pack.")
+                .Description("Restores 18% of maximum STM and restores 1 STM every 3 seconds for 12 seconds. Consumes a stim pack.")
                 .Price(3)
                 .RequirementSkill(SkillType.FirstAid, 12)
                 .GrantsFeat(FeatType.AdrenalStim2)
 
                 .AddPerkLevel()
-                .Description("Restores 25% of maximum STM and grants STM regeneration for 12 seconds. Consumes a stim pack.")
+                .Description("Restores 25% of maximum STM and restores 1 STM every 3 seconds for 12 seconds. Consumes a stim pack.")
                 .Price(4)
                 .RequirementSkill(SkillType.FirstAid, 30)
                 .GrantsFeat(FeatType.AdrenalStim3);
@@ -97,13 +97,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Pain Suppressant")
 
                 .AddPerkLevel()
-                .Description("Grants temporary HP and 10% damage reduction for 18 seconds. Consumes a stim pack.")
+                .Description("Grants temporary HP equal to 10% of the target's maximum HP plus WIL scaling and 10% damage reduction for 18 seconds. Consumes a stim pack.")
                 .Price(3)
                 .RequirementSkill(SkillType.FirstAid, 15)
                 .GrantsFeat(FeatType.PainSuppressant1)
 
                 .AddPerkLevel()
-                .Description("Grants temporary HP and 15% damage reduction for 18 seconds. Consumes a stim pack.")
+                .Description("Grants temporary HP equal to 15% of the target's maximum HP plus WIL scaling and 15% damage reduction for 18 seconds. Consumes a stim pack.")
                 .Price(3)
                 .RequirementSkill(SkillType.FirstAid, 35)
                 .GrantsFeat(FeatType.PainSuppressant2);
@@ -115,7 +115,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Antitoxin")
 
                 .AddPerkLevel()
-                .Description("Grants 50% Poison and Disease resistance for 2 minutes and removes one Poison effect. Consumes a stim pack.")
+                .Description("Grants 50% Poison and Disease resistance for 2 minutes and removes one Poison or Toxin effect. Consumes a stim pack.")
                 .Price(3)
                 .RequirementSkill(SkillType.FirstAid, 18)
                 .GrantsFeat(FeatType.Antitoxin1);
@@ -169,7 +169,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Emergency Cocktail")
 
                 .AddPerkLevel()
-                .Description("Applies full-strength Adrenal Stim, Pain Suppressant, and Antitoxin effects for 18 seconds. Consumes extra stim packs.")
+                .Description("Restores 25% of maximum STM, restores 1 STM every 3 seconds, grants temporary HP equal to 15% of maximum HP plus WIL scaling, reduces damage taken by 15%, grants 50% Poison and Disease resistance, and removes one Poison or Toxin effect for 18 seconds. Consumes extra stim packs.")
                 .Price(5)
                 .RequirementSkill(SkillType.FirstAid, 50)
                 .GrantsFeat(FeatType.EmergencyCocktail1);

@@ -95,7 +95,7 @@ public class DevicesFieldSupportAndAssaultGadgetsTests
         AssertPerkLevel(perks[PerkType.WristRocket], "Wrist Rocket", 1, 2, 5, FeatType.WristRocket1,
             "Deals fire DMG plus PER scaling to one target.");
         AssertPerkLevel(perks[PerkType.SonicBurst], "Sonic Burst", 1, 3, 8, FeatType.SonicBurst1,
-            "Deals sonic DMG to nearby hostile targets and interrupt activation.");
+            "Deals 10 sonic DMG to nearby hostile targets and interrupts activation.");
         AssertPerkLevel(perks[PerkType.GadgetHarness], "Gadget Harness", 1, 3, 12, null,
             "Assault Gadget abilities gain +5% Accuracy and +5% critical chance.",
             (StatType.AssaultGadgetAccuracyPercentAdjustment, 5),
@@ -111,7 +111,7 @@ public class DevicesFieldSupportAndAssaultGadgetsTests
         AssertPerkLevel(perks[PerkType.WristRocket], "Wrist Rocket", 2, 4, 25, FeatType.WristRocket2,
             "Deals increased fire DMG plus PER scaling to one target and knock down for 2 seconds.");
         AssertPerkLevel(perks[PerkType.SonicBurst], "Sonic Burst", 2, 3, 28, FeatType.SonicBurst2,
-            "Deals sonic DMG to nearby hostile targets and interrupt activation and reduce Accuracy.");
+            "Deals 14 sonic DMG to nearby hostile targets, interrupts activation, and reduces Accuracy by 6% for 12 seconds.");
         AssertPerkLevel(perks[PerkType.CryoSprayer], "Cryo Sprayer", 1, 4, 30, FeatType.CryoSprayer1,
             "Deals ice DMG plus PER scaling to hostile targets in a cone and slows movement for 5 seconds.");
         AssertPerkLevel(perks[PerkType.Flamethrower], "Flamethrower", 3, 3, 35, FeatType.Flamethrower3,
@@ -121,7 +121,7 @@ public class DevicesFieldSupportAndAssaultGadgetsTests
         AssertPerkLevel(perks[PerkType.WristRocket], "Wrist Rocket", 3, 4, 40, FeatType.WristRocket3,
             "Deals high fire DMG plus PER scaling to one target and knock down for 3 seconds.");
         AssertPerkLevel(perks[PerkType.SonicBurst], "Sonic Burst", 3, 4, 42, FeatType.SonicBurst3,
-            "Deals sonic DMG to nearby hostile targets and interrupt activation and reduce Accuracy.");
+            "Deals 18 sonic DMG to nearby hostile targets, interrupts activation, and reduces Accuracy by 10% for 12 seconds.");
         AssertPerkLevel(perks[PerkType.GadgetHarness], "Gadget Harness", 3, 4, 45, null,
             "Assault Gadget abilities gain +15% Accuracy, +15% critical chance, and +10% damage.",
             (StatType.AssaultGadgetAccuracyPercentAdjustment, 15),
@@ -130,7 +130,7 @@ public class DevicesFieldSupportAndAssaultGadgetsTests
         AssertPerkLevel(perks[PerkType.CryoSprayer], "Cryo Sprayer", 2, 3, 48, FeatType.CryoSprayer2,
             "Deals high ice DMG plus PER scaling to hostile targets in a cone and immobilize for 2 seconds.");
         AssertPerkLevel(perks[PerkType.OverloadBarrage], "Overload Barrage", 1, 5, 50, FeatType.OverloadBarrage1,
-            "Unleashes a flamethrower burst, wrist rocket, and sonic burst against hostile targets near your primary target.");
+            "Unleashes three attacks at your primary target's location: 18 fire DMG in a 5m burst plus Burn for 12 seconds, 20 fire DMG to the primary target plus 3-second knockdown, and 18 sonic DMG in a 5m burst that interrupts activation and reduces Accuracy by 10% for 12 seconds.");
     }
 
     [Test]

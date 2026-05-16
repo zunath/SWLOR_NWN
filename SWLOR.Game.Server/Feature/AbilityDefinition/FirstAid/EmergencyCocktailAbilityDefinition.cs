@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
@@ -33,6 +34,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .SkillType(SkillType.FirstAid)
                 .IsSingleTargetAbility()
                 .RequiresTarget()
+                .HasCustomValidation((activator, target, _, _) =>
+                    AbilityTargeting.ValidateFriendlyTarget(activator, target))
                 .HasImpactAction(EmergencyCocktail1ImpactAction)
                 .IsCastedAbility()
                 .BreaksStealth()
@@ -47,6 +50,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             {
                 Stat.RestoreStamina(friendly, PercentOf(Stat.GetMaxStamina(friendly), 25));
                 StatusEffect.ApplyStatusEffect(activator, friendly, new AdrenalStimStatusEffect(1), duration);
+                AbilityEffectScaling.ApplyTemporaryHPPercent(activator, friendly, 15, duration);
                 StatusEffect.ApplyStatusEffect(activator, friendly, typeof(PainSuppressant2StatusEffect), duration);
                 StatusEffect.RemoveFirstStatusEffect(friendly, new[] { typeof(PoisonStatusEffect), typeof(ToxinStatusEffect) }, false);
                 StatusEffect.ApplyStatusEffect(activator, friendly, typeof(Antitoxin1StatusEffect), duration);

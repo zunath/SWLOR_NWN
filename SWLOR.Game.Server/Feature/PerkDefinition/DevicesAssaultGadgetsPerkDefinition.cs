@@ -84,21 +84,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Sonic Burst")
 
                 .AddPerkLevel()
-                .Description("Deals sonic DMG to nearby hostile targets and interrupt activation.")
+                .Description("Deals 10 sonic DMG to nearby hostile targets and interrupts activation.")
                 .Price(3)
                 .RequirementSkill(SkillType.Devices, 8)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.SonicBurst1)
 
                 .AddPerkLevel()
-                .Description("Deals sonic DMG to nearby hostile targets and interrupt activation and reduce Accuracy.")
+                .Description("Deals 14 sonic DMG to nearby hostile targets, interrupts activation, and reduces Accuracy by 6% for 12 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Devices, 28)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.SonicBurst2)
 
                 .AddPerkLevel()
-                .Description("Deals sonic DMG to nearby hostile targets and interrupt activation and reduce Accuracy.")
+                .Description("Deals 18 sonic DMG to nearby hostile targets, interrupts activation, and reduces Accuracy by 10% for 12 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Devices, 42)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -182,7 +182,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Overload Barrage")
 
                 .AddPerkLevel()
-                .Description("Unleashes a flamethrower burst, wrist rocket, and sonic burst against hostile targets near your primary target.")
+                .Description("Unleashes three attacks at your primary target's location: 18 fire DMG in a 5m burst plus Burn for 12 seconds, 20 fire DMG to the primary target plus 3-second knockdown, and 18 sonic DMG in a 5m burst that interrupts activation and reduces Accuracy by 10% for 12 seconds.")
                 .Price(5)
                 .RequirementSkill(SkillType.Devices, 50)
                 .RequirementCharacterType(CharacterType.Standard)

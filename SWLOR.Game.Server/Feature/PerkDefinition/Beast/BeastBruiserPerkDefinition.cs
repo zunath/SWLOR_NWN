@@ -156,7 +156,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition.Beast
                 .IncreasesStat(StatType.MeleeDamageTakenPoisonDamageScalingAbility, (int)AbilityType.Might + 1)
 
                 .AddPerkLevel()
-                .Description("Enemies that damage the beast in melee have a 20% chance to suffer poison DMG.")
+                .Description("Enemies that damage the beast in melee have a 20% chance to suffer 8 poison DMG plus MGT scaling.")
                 .Price(3)
                 .RequirementBeastLevel(40)
                 .RequirementBeastRole(BeastRoleType.Bruiser)
@@ -193,7 +193,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition.Beast
                 .GroupType(PerkGroupType.Beast)
 
                 .AddPerkLevel()
-                .Description("The beast deals heavy physical DMG to nearby hostile enemies and deals 12% more damage for 15 seconds.")
+                .Description("The beast deals 42 physical DMG to nearby hostile enemies and deals 12% more damage for 15 seconds.")
                 .Price(5)
                 .RequirementBeastLevel(50)
                 .RequirementBeastRole(BeastRoleType.Bruiser)

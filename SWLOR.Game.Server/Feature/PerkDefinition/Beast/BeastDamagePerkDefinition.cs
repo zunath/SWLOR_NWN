@@ -214,7 +214,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition.Beast
                 .GroupType(PerkGroupType.Beast)
 
                 .AddPerkLevel()
-                .Description("The beast's next attack deals heavy physical DMG and gains +25% critical chance.")
+                .Description("The beast's next attack deals +45 physical DMG and gains +25% critical chance.")
                 .Price(5)
                 .RequirementBeastLevel(50)
                 .RequirementBeastRole(BeastRoleType.Damage)

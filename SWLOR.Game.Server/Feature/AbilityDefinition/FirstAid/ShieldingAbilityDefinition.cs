@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
@@ -38,6 +39,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .SkillType(SkillType.FirstAid)
                 .IsSingleTargetAbility()
                 .RequiresTarget()
+                .HasCustomValidation((activator, target, _, _) =>
+                    AbilityTargeting.ValidateFriendlyTarget(activator, target))
                 .HasImpactAction(Shielding1ImpactAction)
                 .IsCastedAbility()
                 .BreaksStealth()
@@ -56,6 +59,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .SkillType(SkillType.FirstAid)
                 .IsSingleTargetAbility()
                 .RequiresTarget()
+                .HasCustomValidation((activator, target, _, _) =>
+                    AbilityTargeting.ValidateFriendlyTarget(activator, target))
                 .HasImpactAction(Shielding2ImpactAction)
                 .IsCastedAbility()
                 .BreaksStealth()
@@ -74,6 +79,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .SkillType(SkillType.FirstAid)
                 .IsSingleTargetAbility()
                 .RequiresTarget()
+                .HasCustomValidation((activator, target, _, _) =>
+                    AbilityTargeting.ValidateFriendlyTarget(activator, target))
                 .HasImpactAction(Shielding3ImpactAction)
                 .IsCastedAbility()
                 .BreaksStealth()

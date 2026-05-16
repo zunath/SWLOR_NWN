@@ -92,9 +92,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             foreach (var friendly in AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
                 foreach (var statusEffect in new[] { typeof(PoisonStatusEffect), typeof(BleedStatusEffect) })
-                {
                     StatusEffect.RemoveStatusEffect(friendly, statusEffect, false);
-                }
 
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Remove_Condition), friendly);
             }
@@ -104,11 +102,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             foreach (var friendly in AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
-                foreach (var statusEffect in new[] { typeof(PoisonStatusEffect), typeof(BleedStatusEffect), typeof(BurnStatusEffect), typeof(ShockStatusEffect), typeof(DiseaseStatusEffect) })
-                {
-                    StatusEffect.RemoveStatusEffect(friendly, statusEffect, false);
-                }
-
+                StatusEffect.RemoveCleanseableStatusEffects(friendly, StatusEffectCleanseType.TreatmentKit2, false);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Remove_Condition), friendly);
             }
         }
@@ -117,11 +111,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             foreach (var friendly in AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
-                foreach (var statusEffect in new[] { typeof(PoisonStatusEffect), typeof(BleedStatusEffect), typeof(BurnStatusEffect), typeof(ShockStatusEffect), typeof(DiseaseStatusEffect) })
-                {
-                    StatusEffect.RemoveStatusEffect(friendly, statusEffect, false);
-                }
-
+                StatusEffect.RemoveCleanseableStatusEffects(friendly, StatusEffectCleanseType.TreatmentKit2, false);
                 StatusEffect.ApplyStatusEffect(activator, friendly, typeof(TreatmentKit3StatusEffect), 8f);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Remove_Condition), friendly);
             }

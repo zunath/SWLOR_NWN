@@ -67,13 +67,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.TreatmentKit1)
 
                 .AddPerkLevel()
-                .Description("Removes Bleed, Poison, Burn, Shock, and Disease from a single target. Consumes medical supplies.")
+                .Description("Removes Bleed, Poison, Toxin, Burn, Shock, and Disease from a single target. Consumes medical supplies.")
                 .Price(2)
                 .RequirementSkill(SkillType.FirstAid, 22)
                 .GrantsFeat(FeatType.TreatmentKit2)
 
                 .AddPerkLevel()
-                .Description("Removes all standard physical and elemental ailments from a single target and grants 8 seconds of ailment resistance.")
+                .Description("Removes Bleed, Poison, Toxin, Burn, Shock, and Disease from a single target and grants 50% Fire, Poison, Electrical, Ice, and Trauma resistance for 8 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.FirstAid, 42)
                 .GrantsFeat(FeatType.TreatmentKit3);

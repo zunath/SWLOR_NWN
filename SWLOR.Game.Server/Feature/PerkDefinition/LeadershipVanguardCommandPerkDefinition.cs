@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void RallyingStandard()
         {
-            _builder.Create(PerkCategoryType.Leadership, PerkType.RallyingStandard)
+            _builder.Create(PerkCategoryType.LeadershipVanguardCommand, PerkType.RallyingStandard)
                 .Name("Rallying Standard")
 
                 .AddPerkLevel()
@@ -45,7 +45,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void PressTheAttack()
         {
-            _builder.Create(PerkCategoryType.Leadership, PerkType.PressTheAttack)
+            _builder.Create(PerkCategoryType.LeadershipVanguardCommand, PerkType.PressTheAttack)
                 .Name("Press the Attack")
 
                 .AddPerkLevel()
@@ -69,7 +69,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void CoordinatedFocus()
         {
-            _builder.Create(PerkCategoryType.Leadership, PerkType.CoordinatedFocus)
+            _builder.Create(PerkCategoryType.LeadershipVanguardCommand, PerkType.CoordinatedFocus)
                 .Name("Coordinated Focus")
 
                 .AddPerkLevel()
@@ -93,7 +93,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void MarkTarget()
         {
-            _builder.Create(PerkCategoryType.Leadership, PerkType.MarkTarget)
+            _builder.Create(PerkCategoryType.LeadershipVanguardCommand, PerkType.MarkTarget)
                 .Name("Mark Target")
 
                 .AddPerkLevel()
@@ -111,7 +111,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void ChargeOrder()
         {
-            _builder.Create(PerkCategoryType.Leadership, PerkType.ChargeOrder)
+            _builder.Create(PerkCategoryType.LeadershipVanguardCommand, PerkType.ChargeOrder)
                 .Name("Charge Order")
 
                 .AddPerkLevel()
@@ -129,7 +129,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void BreakMorale()
         {
-            _builder.Create(PerkCategoryType.Leadership, PerkType.BreakMorale)
+            _builder.Create(PerkCategoryType.LeadershipVanguardCommand, PerkType.BreakMorale)
                 .Name("Break Morale")
 
                 .AddPerkLevel()
@@ -147,7 +147,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void CommandPresence()
         {
-            _builder.Create(PerkCategoryType.Leadership, PerkType.CommandRadius)
+            _builder.Create(PerkCategoryType.LeadershipVanguardCommand, PerkType.CommandRadius)
                 .Name("Command Presence")
 
                 .AddPerkLevel()
@@ -169,7 +169,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void DecisiveCommand()
         {
-            _builder.Create(PerkCategoryType.Leadership, PerkType.DecisiveCommand)
+            _builder.Create(PerkCategoryType.LeadershipVanguardCommand, PerkType.DecisiveCommand)
                 .Name("Decisive Command")
 
                 .AddPerkLevel()

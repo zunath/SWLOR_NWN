@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void WatchfulPresence()
         {
-            _builder.Create(PerkCategoryType.Leadership, PerkType.WatchfulPresence)
+            _builder.Create(PerkCategoryType.LeadershipFieldSteward, PerkType.WatchfulPresence)
                 .Name("Watchful Presence")
 
                 .AddPerkLevel()
@@ -51,7 +51,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void RousingShout()
         {
-            _builder.Create(PerkCategoryType.Leadership, PerkType.RousingShout)
+            _builder.Create(PerkCategoryType.LeadershipFieldSteward, PerkType.RousingShout)
                 .Name("Rousing Shout")
 
                 .AddPerkLevel()
@@ -75,7 +75,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void SteadyFormation()
         {
-            _builder.Create(PerkCategoryType.Leadership, PerkType.SteadyFormation)
+            _builder.Create(PerkCategoryType.LeadershipFieldSteward, PerkType.SteadyFormation)
                 .Name("Steady Formation")
 
                 .AddPerkLevel()
@@ -93,7 +93,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void BolsterResolve()
         {
-            _builder.Create(PerkCategoryType.Leadership, PerkType.BolsterResolve)
+            _builder.Create(PerkCategoryType.LeadershipFieldSteward, PerkType.BolsterResolve)
                 .Name("Bolster Resolve")
 
                 .AddPerkLevel()
@@ -111,7 +111,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void FieldRecovery()
         {
-            _builder.Create(PerkCategoryType.Leadership, PerkType.FieldRecovery)
+            _builder.Create(PerkCategoryType.LeadershipFieldSteward, PerkType.FieldRecovery)
                 .Name("Field Recovery")
 
                 .AddPerkLevel()
@@ -129,7 +129,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void CleanseOrder()
         {
-            _builder.Create(PerkCategoryType.Leadership, PerkType.CleanseOrder)
+            _builder.Create(PerkCategoryType.LeadershipFieldSteward, PerkType.CleanseOrder)
                 .Name("Cleanse Order")
 
                 .AddPerkLevel()
@@ -147,7 +147,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void TriageProtocol()
         {
-            _builder.Create(PerkCategoryType.Leadership, PerkType.TriageProtocol)
+            _builder.Create(PerkCategoryType.LeadershipFieldSteward, PerkType.TriageProtocol)
                 .Name("Triage Protocol")
 
                 .AddPerkLevel()
@@ -166,7 +166,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void HoldTheLine()
         {
-            _builder.Create(PerkCategoryType.Leadership, PerkType.HoldTheLine)
+            _builder.Create(PerkCategoryType.LeadershipFieldSteward, PerkType.HoldTheLine)
                 .Name("Hold the Line")
 
                 .AddPerkLevel()

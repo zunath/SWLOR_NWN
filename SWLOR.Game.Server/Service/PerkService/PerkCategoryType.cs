@@ -139,6 +139,12 @@ namespace SWLOR.Game.Server.Service.PerkService
 
         [PerkCategory("Throwing - Deadeye", true)]
         ThrowingDeadeye = 48,
+
+        [PerkCategory("Leadership - Vanguard Command", true)]
+        LeadershipVanguardCommand = 49,
+
+        [PerkCategory("Leadership - Field Steward", true)]
+        LeadershipFieldSteward = 50,
     }
 
     public class PerkCategoryAttribute : Attribute

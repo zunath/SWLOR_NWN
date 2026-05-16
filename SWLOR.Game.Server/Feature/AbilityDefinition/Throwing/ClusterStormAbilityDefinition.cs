@@ -10,6 +10,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
 {
     public class ClusterStormAbilityDefinition : IAbilityListDefinition
     {
+        private const int ExplosiveCount = 3;
+
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
@@ -27,6 +29,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
                 .Level(1)
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.ClusterStorm, 120f)
+                .SkillType(SkillType.Throwing)
+                .IsAreaAbility()
                 .HasImpactAction(ClusterStorm1ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
@@ -36,7 +40,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
 
         private static void ClusterStorm1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Throwing, 12, 0, null, true);
+            for (var index = 0; index < ExplosiveCount; index++)
+            {
+                Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Throwing, 12, 0, null, true);
+            }
         }
     }
 }

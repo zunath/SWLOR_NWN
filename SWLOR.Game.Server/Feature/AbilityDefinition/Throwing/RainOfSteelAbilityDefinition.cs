@@ -10,6 +10,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
 {
     public class RainOfSteelAbilityDefinition : IAbilityListDefinition
     {
+        private const float Radius = 8f;
+
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
@@ -27,6 +29,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
                 .Level(1)
                 .HasActivationDelay(2f)
                 .HasRecastDelay(RecastGroup.Capstone, 1800f)
+                .SkillType(SkillType.Throwing)
+                .IsAreaAbility()
                 .HasImpactAction(RainOfSteel1ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
@@ -36,7 +40,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
 
         private static void RainOfSteel1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Throwing, 35, 60, typeof(BleedStatusEffect), true);
+            Ability.ApplyTelegraphedCombatImpact(
+                activator,
+                target,
+                targetLocation,
+                SkillType.Throwing,
+                35,
+                60,
+                typeof(BleedStatusEffect),
+                CombatImpactAreaShape.Sphere,
+                0f,
+                Radius);
         }
     }
 }

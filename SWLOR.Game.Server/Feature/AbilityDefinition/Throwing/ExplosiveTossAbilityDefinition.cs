@@ -93,6 +93,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
 
         private static void ApplyExplosiveToss(uint activator, uint target, Location targetLocation, int baseDamage, int duration, Type statusEffect)
         {
+            var bleedDuration = Stat.GetStatAdjustment(activator, StatType.ExplosiveTossBleedDurationSeconds);
             Ability.ApplyTelegraphedCombatImpact(
                 activator,
                 target,
@@ -105,25 +106,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
                 TelegraphDelay,
                 Radius,
                 maxTargets: 3,
-                damageType: CombatDamageType.Fire);
+                damageType: CombatDamageType.Fire,
+                afterSuccessfulHit: hitTarget => ApplyBleedIfUnlocked(activator, hitTarget, bleedDuration));
+        }
 
-            var bleedDuration = Stat.GetStatAdjustment(activator, StatType.ExplosiveTossBleedDurationSeconds);
+        private static void ApplyBleedIfUnlocked(uint activator, uint target, int bleedDuration)
+        {
             if (bleedDuration <= 0)
                 return;
 
-            Ability.ApplyTelegraphedCombatImpact(
-                activator,
-                target,
-                targetLocation,
-                Skill,
-                0,
-                bleedDuration,
-                typeof(BleedStatusEffect),
-                CombatImpactAreaShape.Sphere,
-                TelegraphDelay,
-                Radius,
-                maxTargets: 3,
-                damageType: CombatDamageType.Fire);
+            StatusEffect.ApplyStatusEffect(activator, target, typeof(BleedStatusEffect), bleedDuration, CombatDamageType.Fire);
         }
     }
 }

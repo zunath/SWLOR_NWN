@@ -2328,7 +2328,13 @@ namespace SWLOR.Game.Server.Service.StatService
         /// Percent Evasion adjustment applied only against incoming ranged attacks.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        RangedEvasionPercentAdjustment = 387
+        RangedEvasionPercentAdjustment = 387,
+
+        /// <summary>
+        /// Percent damage adjustment applied to area Throwing abilities.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        ThrowingAreaAbilityDamagePercentAdjustment = 388
     }
 
     public class StatTypeAttribute : Attribute

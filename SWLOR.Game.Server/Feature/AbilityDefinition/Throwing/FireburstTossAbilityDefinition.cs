@@ -28,6 +28,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
                 .Level(1)
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.FireburstToss, 60f)
+                .SkillType(SkillType.Throwing)
+                .IsAreaAbility()
                 .HasImpactAction(FireburstToss1ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()

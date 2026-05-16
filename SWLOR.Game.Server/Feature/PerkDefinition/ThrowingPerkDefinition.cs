@@ -322,7 +322,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.RainOfSteel1)
-                .Description("All enemies in a large area of effect (sphere) take weapon DMG + 35 and suffer Bleed for 60 seconds.")
+                .Description("All enemies in a large area of effect (sphere) take weapon DMG + 35 and suffer Bleed for 60 seconds. Bonus damage applies fully.")
                 .Price(4)
                 .RequirementSkill(SkillType.Throwing, 50);
         }

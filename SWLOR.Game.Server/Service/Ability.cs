@@ -1648,6 +1648,11 @@ namespace SWLOR.Game.Server.Service
                 calculatedDamage,
                 IsTrackedAbilitySingleTarget(activator),
                 IsTrackedAbilityArea(activator));
+            calculatedDamage = Combat.ApplyThrowingAbilityShapeDamageModifier(
+                activator,
+                skillType,
+                calculatedDamage,
+                IsTrackedAbilityArea(activator));
             if (skillType == SkillType.Force)
             {
                 calculatedDamage = Perk.ApplyForceAffinityMagnitude(activator, perkType, calculatedDamage);

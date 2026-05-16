@@ -1760,6 +1760,24 @@ namespace SWLOR.Game.Server.Service
             return Math.Max(0, damage + (int)Math.Ceiling(damage * (adjustment / 100f)));
         }
 
+        public static int ApplyThrowingAbilityShapeDamageModifier(
+            uint attacker,
+            SkillType skillType,
+            int damage,
+            bool isAreaAbility)
+        {
+            if (damage <= 0 || skillType != SkillType.Throwing || !isAreaAbility)
+                return damage;
+
+            var adjustment = Stat.GetStatAdjustment(
+                attacker,
+                StatType.ThrowingAreaAbilityDamagePercentAdjustment);
+            if (adjustment == 0)
+                return damage;
+
+            return Math.Max(0, damage + (int)Math.Ceiling(damage * (adjustment / 100f)));
+        }
+
         private static int ApplyRepeatedTargetDamageModifier(
             uint attacker,
             uint defender,

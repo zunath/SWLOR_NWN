@@ -32,6 +32,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
                 .Level(1)
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.SaturationToss, 120f)
+                .SkillType(SkillType.Throwing)
                 .IsAreaAbility()
                 .HasImpactAction(SaturationToss1ImpactAction)
                 .IsCastedAbility()
@@ -48,12 +49,19 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
                 FieldDurationSeconds,
                 PulseIntervalSeconds,
                 false,
-                pulseLocation => CombatAreaPulses.ApplyCombatPulse(
-                    activator,
-                    pulseLocation,
-                    SkillType.Throwing,
-                    10,
-                    FieldRadius));
+                pulseLocation =>
+                {
+                    var ability = Ability.GetAbilityDetail(FeatType.SaturationToss1);
+                    Ability.BeginAbilityImpact(activator, ability);
+                    CombatAreaPulses.ApplyCombatPulse(
+                        activator,
+                        pulseLocation,
+                        SkillType.Throwing,
+                        10,
+                        FieldRadius);
+                    var summary = Ability.EndAbilityImpact(activator);
+                    Combat.ApplyAbilityImpactEffects(activator, summary);
+                });
         }
     }
 }

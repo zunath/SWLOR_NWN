@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
@@ -16,6 +17,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 {
     public sealed class ClusterGrenadeAbilityDefinition : IAbilityListDefinition
     {
+        private const int GrenadeCount = 3;
+        private const float TargetSearchRadius = 5f;
+        private const float SmallBlastRadius = 2f;
+
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
@@ -44,6 +49,25 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 
         private static void ClusterGrenade1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
+            var location = GetImpactLocation(activator, target, targetLocation);
+            var grenadeTargets = GetClusterGrenadeTargets(activator, location)
+                .Take(GrenadeCount)
+                .ToList();
+
+            if (grenadeTargets.Count <= 0)
+            {
+                ApplyClusterBlast(activator, OBJECT_INVALID, location);
+                return;
+            }
+
+            foreach (var grenadeTarget in grenadeTargets)
+            {
+                ApplyClusterBlast(activator, grenadeTarget, GetLocation(grenadeTarget));
+            }
+        }
+
+        private static void ApplyClusterBlast(uint activator, uint target, Location targetLocation)
+        {
             Ability.ApplyTelegraphedCombatImpact(
                 activator,
                 target,
@@ -54,13 +78,37 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 null,
                 CombatImpactAreaShape.Sphere,
                 0f,
-                DeviceAbilityEffects.ApplyGrenadeRadiusBonus(activator, 5f),
+                DeviceAbilityEffects.ApplyGrenadeRadiusBonus(activator, SmallBlastRadius),
                 0f,
                 Array.Empty<Type>(),
-                centerOnActivator: true,
                 damageType: CombatDamageType.Fire,
                 targetVisualEffect: VisualEffect.Vfx_Com_Hit_Fire,
                 areaVisualEffect: VisualEffect.Fnf_Fireball);
+        }
+
+        private static IEnumerable<uint> GetClusterGrenadeTargets(uint activator, Location location)
+        {
+            var nth = 1;
+            var creature = GetNearestCreatureToLocation(CreatureType.IsAlive, true, location, nth);
+            while (GetIsObjectValid(creature) &&
+                   GetDistanceBetweenLocations(location, GetLocation(creature)) <= TargetSearchRadius)
+            {
+                if (creature != activator && GetIsReactionTypeHostile(creature, activator))
+                    yield return creature;
+
+                nth++;
+                creature = GetNearestCreatureToLocation(CreatureType.IsAlive, true, location, nth);
+            }
+        }
+
+        private static Location GetImpactLocation(uint activator, uint target, Location targetLocation)
+        {
+            if (GetIsObjectValid(target))
+                return GetLocation(target);
+
+            return GetIsObjectValid(GetAreaFromLocation(targetLocation))
+                ? targetLocation
+                : GetLocation(activator);
         }
 
     }

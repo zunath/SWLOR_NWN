@@ -16,6 +16,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 {
     public sealed class AdhesiveGrenadeAbilityDefinition : IAbilityListDefinition
     {
+        private const int AdhesiveSlowPenaltyPercent = 50;
+
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
@@ -62,26 +64,30 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 
         private static void AdhesiveGrenade1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            Ability.ApplyTelegraphedCombatImpact(
+            ApplyAdhesiveGrenade(
                 activator,
                 target,
                 targetLocation,
-                SkillType.Devices,
-                0,
                 6,
-                typeof(ImmobilizedStatusEffect),
-                CombatImpactAreaShape.Sphere,
-                0f,
-                DeviceAbilityEffects.ApplyGrenadeRadiusBonus(activator, 5f),
-                0f,
-                Array.Empty<Type>(),
-                centerOnActivator: !GetIsObjectValid(target),
-                damageType: CombatDamageType.Physical,
-                targetVisualEffect: VisualEffect.Vfx_Com_Chunk_Red_Small,
-                areaVisualEffect: VisualEffect.None);
+                3);
         }
 
         private static void AdhesiveGrenade2ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        {
+            ApplyAdhesiveGrenade(
+                activator,
+                target,
+                targetLocation,
+                8,
+                4);
+        }
+
+        private static void ApplyAdhesiveGrenade(
+            uint activator,
+            uint target,
+            Location targetLocation,
+            int slowDuration,
+            int immobilizeDuration)
         {
             Ability.ApplyTelegraphedCombatImpact(
                 activator,
@@ -89,17 +95,25 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 targetLocation,
                 SkillType.Devices,
                 0,
-                8,
-                typeof(ImmobilizedStatusEffect),
+                slowDuration,
+                null,
                 CombatImpactAreaShape.Sphere,
                 0f,
-                DeviceAbilityEffects.ApplyGrenadeRadiusBonus(activator, 5f),
+                DeviceAbilityEffects.ApplyGrenadeRadiusBonus(activator, 4f),
                 0f,
                 Array.Empty<Type>(),
                 centerOnActivator: !GetIsObjectValid(target),
+                statusEffectFactory: () => new AdhesiveGrenadeSlowStatusEffect(
+                    DeviceAbilityEffects.ApplyGrenadeControlPotencyBonus(activator, AdhesiveSlowPenaltyPercent)),
                 damageType: CombatDamageType.Physical,
                 targetVisualEffect: VisualEffect.Vfx_Com_Chunk_Red_Small,
-                areaVisualEffect: VisualEffect.None);
+                areaVisualEffect: VisualEffect.None,
+                afterSuccessfulHit: hitTarget => StatusEffect.ApplyStatusEffect(
+                    activator,
+                    hitTarget,
+                    typeof(ImmobilizedStatusEffect),
+                    immobilizeDuration,
+                    CombatDamageType.Physical));
         }
 
     }

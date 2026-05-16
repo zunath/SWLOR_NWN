@@ -96,7 +96,7 @@ namespace SWLOR.Game.Server.Native
                 }
 
                 // Extract weapon damage properties and get ability stats
-                var damageProfile = ExtractWeaponDamageProfile(weapon);
+                var damageProfile = ExtractAttackDamageProfile(attacker, weapon);
                 var attackerStatType = GetWeaponDamageAbilityType(attacker.m_idSelf, weapon);
                 var weaponDeltaCap = GetWeaponDeltaCap(weapon);
                 var weaponSkillType = weapon == null
@@ -202,28 +202,56 @@ namespace SWLOR.Game.Server.Native
             attackData.AddDamage((ushort)damageType.GetNativeDamageType(), damage);
         }
 
-        private static WeaponDamageProfile ExtractWeaponDamageProfile(CNWSItem weapon)
+        private static WeaponDamageProfile ExtractAttackDamageProfile(CNWSCreature attacker, CNWSItem currentWeapon)
+        {
+            var rightHand = attacker.m_pInventory.GetItemInSlot((uint)EquipmentSlot.RightHand);
+            var leftHand = attacker.m_pInventory.GetItemInSlot((uint)EquipmentSlot.LeftHand);
+
+            if (HasDelayProperty(rightHand) && HasDelayProperty(leftHand))
+            {
+                return ExtractWeaponDamageProfile(rightHand, leftHand);
+            }
+
+            return ExtractWeaponDamageProfile(currentWeapon);
+        }
+
+        private static WeaponDamageProfile ExtractWeaponDamageProfile(params CNWSItem[] weapons)
         {
             var damageByType = new Dictionary<CombatDamageType, int>();
             var foundDMG = false;
 
-            if (weapon == null) return new WeaponDamageProfile(CombatDamageType.Physical, DefaultPhysicalDamage);
-
-            for (var index = 0; index < weapon.m_lstPassiveProperties.Count; index++)
+            foreach (var weapon in weapons)
             {
-                var ip = weapon.GetPassiveProperty(index);
-                if (ip?.m_nPropertyName != (ushort)ItemPropertyType.DMG) continue;
+                if (weapon == null)
+                    continue;
 
-                var damageTypeId = ip.m_nSubType;
-                if (damageTypeId > MaxValidDamageType || damageTypeId < MinValidDamageType)
-                    damageTypeId = MinValidDamageType;
+                var foundWeaponDMG = false;
+                for (var index = 0; index < weapon.m_lstPassiveProperties.Count; index++)
+                {
+                    var ip = weapon.GetPassiveProperty(index);
+                    if (ip?.m_nPropertyName != (ushort)ItemPropertyType.DMG) continue;
 
-                var damageType = (CombatDamageType)damageTypeId;
-                if (!damageByType.ContainsKey(damageType))
-                    damageByType[damageType] = 0;
+                    var damageTypeId = ip.m_nSubType;
+                    if (damageTypeId > MaxValidDamageType || damageTypeId < MinValidDamageType)
+                        damageTypeId = MinValidDamageType;
 
-                damageByType[damageType] += ip.m_nCostTableValue;
-                foundDMG = true;
+                    var damageType = (CombatDamageType)damageTypeId;
+                    if (!damageByType.ContainsKey(damageType))
+                        damageByType[damageType] = 0;
+
+                    damageByType[damageType] += ip.m_nCostTableValue;
+                    foundWeaponDMG = true;
+                    foundDMG = true;
+                }
+
+                if (!foundWeaponDMG && IsWeapon(weapon))
+                {
+                    if (!damageByType.ContainsKey(CombatDamageType.Physical))
+                        damageByType[CombatDamageType.Physical] = 0;
+
+                    damageByType[CombatDamageType.Physical] += DefaultPhysicalDamage;
+                    foundDMG = true;
+                }
             }
 
             if (!foundDMG)
@@ -238,6 +266,36 @@ namespace SWLOR.Game.Server.Native
             }
 
             return new WeaponDamageProfile(ResolveAttackDamageType(damageByType), damage);
+        }
+
+        private static bool HasDelayProperty(CNWSItem weapon)
+        {
+            if (!IsWeapon(weapon))
+                return false;
+
+            for (var index = 0; index < weapon.m_lstPassiveProperties.Count; index++)
+            {
+                var ip = weapon.GetPassiveProperty(index);
+                if (ip?.m_nPropertyName == (ushort)ItemPropertyType.Delay)
+                    return true;
+            }
+
+            return false;
+        }
+
+        private static bool IsWeapon(CNWSItem item)
+        {
+            if (item == null)
+                return false;
+
+            var baseItem = (BaseItem)item.m_nBaseItem;
+            foreach (var weaponType in Item.WeaponBaseItemTypes)
+            {
+                if (weaponType == baseItem)
+                    return true;
+            }
+
+            return false;
         }
 
         private static CombatDamageType ResolveAttackDamageType(Dictionary<CombatDamageType, int> damageByType)

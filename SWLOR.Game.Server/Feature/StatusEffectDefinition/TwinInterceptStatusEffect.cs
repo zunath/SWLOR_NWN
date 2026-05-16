@@ -13,7 +13,6 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public TwinInterceptStatusEffect()
         {
             StatGroup.Stats[StatType.PhysicalDefensePercentAdjustment] = 15;
-            StatGroup.Stats[StatType.ForceDefensePercentAdjustment] = 15;
         }
 
     }

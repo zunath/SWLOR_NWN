@@ -18,6 +18,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
                     .Create(FeatType.AdamantineGuard1, PerkType.AdamantineGuard)
                     .Name("Adamantine Guard")
                     .Level(1)
+                    .SkillType(SkillType.Katar)
                     .HasRecastDelay(RecastGroup.Capstone, 1800f),
                 typeof(AdamantineGuardStatusEffect),
                 20f,

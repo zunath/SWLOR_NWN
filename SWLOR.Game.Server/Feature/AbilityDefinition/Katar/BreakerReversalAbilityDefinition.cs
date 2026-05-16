@@ -31,6 +31,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
                 .HasRecastDelay(RecastGroup.BreakerReversal, 60f)
                 .HasCustomValidation((activator, _, _, _) => ValidateGuardedHit(activator))
                 .HasImpactAction(BreakerReversal1ImpactAction)
+                .SkillType(SkillType.Katar)
+                .IsSingleTargetAbility()
                 .IsWeaponAbility()
                 .IsHostileAbility()
                 .BreaksStealth()

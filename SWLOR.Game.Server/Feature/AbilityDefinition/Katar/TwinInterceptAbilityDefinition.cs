@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
@@ -19,6 +20,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
                 .Level(1)
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.TwinIntercept, 120f)
+                .SkillType(SkillType.Katar)
+                .IsSingleTargetAbility()
                 .RequiresTarget()
                 .HasMaxRange(6f)
                 .HasCustomValidation((activator, target, _, _) =>

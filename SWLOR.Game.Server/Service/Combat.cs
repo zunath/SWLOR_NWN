@@ -1481,7 +1481,7 @@ namespace SWLOR.Game.Server.Service
             if (retaliationDamage <= 0)
                 return;
 
-            ApplyEffectToObject(DurationType.Instant, EffectDamage(retaliationDamage), attacker);
+            AssignCommand(defender, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(retaliationDamage), attacker));
         }
 
         private static void ApplyGuardedHitEnmity(uint attacker, uint defender, int damage)

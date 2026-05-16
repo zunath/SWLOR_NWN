@@ -28,6 +28,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.CoveringClaws, 45f)
                 .HasImpactAction(CoveringClaws1ImpactAction)
+                .SkillType(SkillType.Katar)
+                .IsAreaAbility()
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
@@ -36,7 +38,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
 
         private static void CoveringClaws1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.Katar, 20, 12, null, CombatImpactAreaShape.Cone, 0.25f, 5f, 5f);
+            Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.Katar, 20, 12, typeof(CoveringClawsStatusEffect), CombatImpactAreaShape.Cone, 0.25f, 5f, 5f);
         }
     }
 }

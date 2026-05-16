@@ -28,6 +28,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.IronElbows, 60f)
                 .HasImpactAction(IronElbows1ImpactAction)
+                .SkillType(SkillType.Katar)
+                .IsAreaAbility()
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
@@ -36,7 +38,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
 
         private static void IronElbows1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Katar, 15, 0, null, true);
+            Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Katar, 15, 0, null, true, enmityBonus: 350);
         }
     }
 }

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
@@ -24,6 +25,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
                     .Create(FeatType.WhirlingGuard1, PerkType.WhirlingGuard)
                     .Name("Whirling Guard")
                     .Level(1)
+                    .SkillType(SkillType.Katar)
                     .HasRecastDelay(RecastGroup.WhirlingGuard, 120f),
                 typeof(WhirlingGuardStatusEffect),
                 12f,

@@ -27,6 +27,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 .Level(1)
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.SuppressiveLine, 60f)
+                .SkillType(SkillType.Rifle)
+                .IsAreaAbility()
                 .HasImpactAction(SuppressiveLine1ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()

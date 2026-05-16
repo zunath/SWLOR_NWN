@@ -2304,7 +2304,25 @@ namespace SWLOR.Game.Server.Service.StatService
         /// Flat Stamina cost adjustment for matching skill abilities.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenNegative)]
-        SkillAbilityStaminaCostFlatAdjustment = 383
+        SkillAbilityStaminaCostFlatAdjustment = 383,
+
+        /// <summary>
+        /// SkillType value whose repeated damage against the same target receives RepeatedTargetDamagePercentPerHit.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        RepeatedTargetDamageSkillType = 384,
+
+        /// <summary>
+        /// Percent damage adjustment gained for each repeated hit against the same target.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        RepeatedTargetDamagePercentPerHit = 385,
+
+        /// <summary>
+        /// Maximum percent damage adjustment from RepeatedTargetDamagePercentPerHit stacks.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        RepeatedTargetDamagePercentMax = 386
     }
 
     public class StatTypeAttribute : Attribute

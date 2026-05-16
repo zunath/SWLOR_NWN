@@ -17,6 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                     .Create(FeatType.KillZone1, PerkType.KillZone)
                     .Name("Kill Zone")
                     .Level(1)
+                    .SkillType(SkillType.Rifle)
                     .HasRecastDelay(RecastGroup.KillZone, 120f),
                 typeof(KillZoneStatusEffect),
                 20f,

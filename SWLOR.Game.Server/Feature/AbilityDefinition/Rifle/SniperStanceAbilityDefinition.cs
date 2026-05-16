@@ -17,6 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                     .Create(FeatType.SniperStance1, PerkType.SniperStance)
                     .Name("Sniper Stance")
                     .Level(1)
+                    .SkillType(SkillType.Rifle)
                     .HasRecastDelay(RecastGroup.SniperStance, 180f),
                 typeof(SniperStanceStatusEffect));
 

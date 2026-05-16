@@ -27,6 +27,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 .Level(1)
                 .HasActivationDelay(1.5f)
                 .HasRecastDelay(RecastGroup.Headshot, 120f)
+                .SkillType(SkillType.Rifle)
+                .IsSingleTargetAbility()
                 .RequiresTarget()
                 .HasImpactAction(Headshot1ImpactAction)
                 .IsCastedAbility()

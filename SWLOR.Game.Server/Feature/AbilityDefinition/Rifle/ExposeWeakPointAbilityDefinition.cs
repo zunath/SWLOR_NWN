@@ -28,6 +28,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 .Level(1)
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.ExposeWeakPoint, 75f)
+                .SkillType(SkillType.Rifle)
+                .IsSingleTargetAbility()
                 .RequiresTarget()
                 .HasImpactAction(ExposeWeakPoint1ImpactAction)
                 .IsCastedAbility()

@@ -37,6 +37,7 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<uint, DateTime> _lastCombatActivity = new();
         private static readonly Dictionary<uint, DateTime> _lastCombatAbilityUse = new();
         private static readonly Dictionary<uint, int> _autoAttackCycleCounts = new();
+        private static readonly Dictionary<uint, RepeatedTargetDamageState> _repeatedTargetDamageStates = new();
         private static bool _damageTypesCached;
 
         /// <summary>
@@ -470,6 +471,7 @@ namespace SWLOR.Game.Server.Service
                 damageType,
                 isAbilityDamage,
                 canApplyRandomFlatBonuses);
+            damage = ApplyRepeatedTargetDamageModifier(attacker, defender, skillType, damage);
 
             return Math.Max(0, damage);
         }
@@ -1758,6 +1760,36 @@ namespace SWLOR.Game.Server.Service
             return Math.Max(0, damage + (int)Math.Ceiling(damage * (adjustment / 100f)));
         }
 
+        private static int ApplyRepeatedTargetDamageModifier(
+            uint attacker,
+            uint defender,
+            SkillType skillType,
+            int damage)
+        {
+            if (damage <= 0 || !GetIsObjectValid(attacker) || !GetIsObjectValid(defender) || attacker == defender)
+                return damage;
+
+            var requiredSkillType = GetSkillTypeFromStat(Stat.GetStatAdjustment(attacker, StatType.RepeatedTargetDamageSkillType));
+            var percentPerHit = Stat.GetStatAdjustment(attacker, StatType.RepeatedTargetDamagePercentPerHit);
+            var maxPercent = Stat.GetStatAdjustment(attacker, StatType.RepeatedTargetDamagePercentMax);
+            if (!SkillTypeMatches(skillType, requiredSkillType) || percentPerHit <= 0 || maxPercent <= 0)
+            {
+                _repeatedTargetDamageStates.Remove(attacker);
+                return damage;
+            }
+
+            if (!_repeatedTargetDamageStates.TryGetValue(attacker, out var state) || state.Target != defender)
+            {
+                state = new RepeatedTargetDamageState(defender);
+            }
+
+            state.Stacks = Math.Min(state.Stacks + 1, Math.Max(1, (int)Math.Ceiling(maxPercent / (float)percentPerHit)));
+            _repeatedTargetDamageStates[attacker] = state;
+
+            var adjustment = Math.Min(maxPercent, state.Stacks * percentPerHit);
+            return damage + (int)Math.Ceiling(damage * (adjustment / 100f));
+        }
+
         public static int ApplyStatusSourceDefenseModifiers(uint attacker, uint defender, int defense)
         {
             if (defense <= 0)
@@ -1876,6 +1908,7 @@ namespace SWLOR.Game.Server.Service
             _lastCombatActivity.Remove(creature);
             _lastCombatAbilityUse.Remove(creature);
             _autoAttackCycleCounts.Remove(creature);
+            _repeatedTargetDamageStates.Remove(creature);
             TemporaryStatModifier.Clear(creature);
         }
 
@@ -3487,5 +3520,15 @@ namespace SWLOR.Game.Server.Service
             return delay;
         }
 
+        private sealed class RepeatedTargetDamageState
+        {
+            public uint Target { get; }
+            public int Stacks { get; set; }
+
+            public RepeatedTargetDamageState(uint target)
+            {
+                Target = target;
+            }
+        }
     }
 }

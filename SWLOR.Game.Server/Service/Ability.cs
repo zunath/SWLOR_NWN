@@ -380,6 +380,9 @@ namespace SWLOR.Game.Server.Service
             var social = GetAbilityScore(activator, AbilityType.Social);
             var count = 1 + (social - 10) / 5;
 
+            if (count < 1)
+                count = 1;
+
             if (count > MaxNumberOfAuras)
                 count = MaxNumberOfAuras;
 
@@ -891,7 +894,8 @@ namespace SWLOR.Game.Server.Service
             Action<uint> afterSuccessfulHit = null,
             int hitChancePercentAdjustment = 0,
             int criticalRatePercentAdjustment = 0,
-            bool useNPCStatScaling = false)
+            bool useNPCStatScaling = false,
+            bool awardsCombatPoints = true)
         {
             var totalDamage = 0;
             RecordAbilityImpactShape(activator, skillType, isArea);
@@ -935,7 +939,8 @@ namespace SWLOR.Game.Server.Service
                     afterSuccessfulHit: afterSuccessfulHit,
                     hitChancePercentAdjustment: hitChancePercentAdjustment,
                     criticalRatePercentAdjustment: criticalRatePercentAdjustment,
-                    useNPCStatScaling: useNPCStatScaling);
+                    useNPCStatScaling: useNPCStatScaling,
+                    awardsCombatPoints: awardsCombatPoints);
             }
             else if (GetIsObjectValid(target))
             {
@@ -958,7 +963,8 @@ namespace SWLOR.Game.Server.Service
                     afterSuccessfulHit: afterSuccessfulHit,
                     hitChancePercentAdjustment: hitChancePercentAdjustment,
                     criticalRatePercentAdjustment: criticalRatePercentAdjustment,
-                    useNPCStatScaling: useNPCStatScaling);
+                    useNPCStatScaling: useNPCStatScaling,
+                    awardsCombatPoints: awardsCombatPoints);
             }
 
             PlayCombatImpactAnimation(activator, impactAnimation);
@@ -998,7 +1004,8 @@ namespace SWLOR.Game.Server.Service
             Action<uint> afterSuccessfulHit = null,
             int hitChancePercentAdjustment = 0,
             int criticalRatePercentAdjustment = 0,
-            bool useNPCStatScaling = false)
+            bool useNPCStatScaling = false,
+            bool awardsCombatPoints = true)
         {
             RecordAbilityImpactShape(activator, skillType, true);
 
@@ -1031,7 +1038,8 @@ namespace SWLOR.Game.Server.Service
                     afterSuccessfulHit,
                     hitChancePercentAdjustment,
                     criticalRatePercentAdjustment,
-                    useNPCStatScaling);
+                    useNPCStatScaling,
+                    awardsCombatPoints);
                 PlayCombatImpactAnimation(activator, impactAnimation);
                 return;
             }
@@ -1070,7 +1078,8 @@ namespace SWLOR.Game.Server.Service
                 afterSuccessfulHit,
                 hitChancePercentAdjustment,
                 criticalRatePercentAdjustment,
-                useNPCStatScaling);
+                useNPCStatScaling,
+                awardsCombatPoints);
 
             switch (shape)
             {
@@ -1139,7 +1148,8 @@ namespace SWLOR.Game.Server.Service
             Action<uint> afterSuccessfulHit,
             int hitChancePercentAdjustment,
             int criticalRatePercentAdjustment,
-            bool useNPCStatScaling)
+            bool useNPCStatScaling,
+            bool awardsCombatPoints)
         {
             RecordAbilityImpactShape(activator, skillType, true);
 
@@ -1198,7 +1208,8 @@ namespace SWLOR.Game.Server.Service
                 afterSuccessfulHit,
                 hitChancePercentAdjustment: hitChancePercentAdjustment,
                 criticalRatePercentAdjustment: criticalRatePercentAdjustment,
-                useNPCStatScaling: useNPCStatScaling);
+                useNPCStatScaling: useNPCStatScaling,
+                awardsCombatPoints: awardsCombatPoints);
         }
 
         private static ApplyTelegraphEffect BuildTelegraphedCombatImpactAction(
@@ -1227,7 +1238,8 @@ namespace SWLOR.Game.Server.Service
             Action<uint> afterSuccessfulHit,
             int hitChancePercentAdjustment,
             int criticalRatePercentAdjustment,
-            bool useNPCStatScaling)
+            bool useNPCStatScaling,
+            bool awardsCombatPoints)
         {
             return (creator, creatures) =>
             {
@@ -1284,7 +1296,8 @@ namespace SWLOR.Game.Server.Service
                     afterSuccessfulHit,
                     hitChancePercentAdjustment: hitChancePercentAdjustment,
                     criticalRatePercentAdjustment: criticalRatePercentAdjustment,
-                    useNPCStatScaling: useNPCStatScaling);
+                    useNPCStatScaling: useNPCStatScaling,
+                    awardsCombatPoints: awardsCombatPoints);
 
                 if (ability != null)
                 {
@@ -1316,7 +1329,8 @@ namespace SWLOR.Game.Server.Service
             Action<uint> afterSuccessfulHit = null,
             int hitChancePercentAdjustment = 0,
             int criticalRatePercentAdjustment = 0,
-            bool useNPCStatScaling = false)
+            bool useNPCStatScaling = false,
+            bool awardsCombatPoints = true)
         {
             var totalDamage = 0;
             var affectedCount = 0;
@@ -1351,7 +1365,8 @@ namespace SWLOR.Game.Server.Service
                     afterSuccessfulHit,
                     hitChancePercentAdjustment,
                     criticalRatePercentAdjustment,
-                    useNPCStatScaling);
+                    useNPCStatScaling,
+                    awardsCombatPoints);
                 affectedCount++;
             }
 
@@ -1477,7 +1492,8 @@ namespace SWLOR.Game.Server.Service
             Action<uint> afterSuccessfulHit = null,
             int hitChancePercentAdjustment = 0,
             int criticalRatePercentAdjustment = 0,
-            bool useNPCStatScaling = false)
+            bool useNPCStatScaling = false,
+            bool awardsCombatPoints = true)
         {
             var trackedImpact = GetTrackedAbilityImpact(activator);
             var perkType = trackedImpact?.Ability?.EffectiveLevelPerkType ?? PerkType.Invalid;
@@ -1488,7 +1504,8 @@ namespace SWLOR.Game.Server.Service
             if (!Combat.TryResolveAbilityHit(activator, target, skillType, perkType, out var hitRate, hitChancePercentAdjustment, skillLevelOverride))
             {
                 SendCombatImpactResultMessage(activator, target, trackedImpact?.Ability, 4, hitRate);
-                CombatPoint.AddCombatPoint(activator, target, skillType, 1);
+                if (awardsCombatPoints)
+                    CombatPoint.AddCombatPoint(activator, target, skillType, 1);
                 ApplyMissedHostileAbilityEnmity(activator, target);
                 return 0;
             }
@@ -1529,7 +1546,8 @@ namespace SWLOR.Game.Server.Service
             }
 
             afterSuccessfulHit?.Invoke(target);
-            CombatPoint.AddCombatPoint(activator, target, skillType, 3);
+            if (awardsCombatPoints)
+                CombatPoint.AddCombatPoint(activator, target, skillType, 3);
             RecordAbilityImpactTarget(activator, target, skillType, false);
             return damage;
         }

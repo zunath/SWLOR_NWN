@@ -55,12 +55,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
 
         private static void FieldRecovery1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            LeadershipAbilityEffects.ToggleFieldStewardAura(activator, typeof(FieldRecovery1StatusEffect));
+            if (LeadershipAbilityEffects.ToggleFieldStewardAura(activator, typeof(FieldRecovery1StatusEffect))) CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Leadership);
         }
 
         private static void FieldRecovery2ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            LeadershipAbilityEffects.ToggleFieldStewardAura(activator, typeof(FieldRecovery2StatusEffect));
+            if (LeadershipAbilityEffects.ToggleFieldStewardAura(activator, typeof(FieldRecovery2StatusEffect))) CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Leadership);
         }
     }
 }

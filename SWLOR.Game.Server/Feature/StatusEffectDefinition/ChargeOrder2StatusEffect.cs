@@ -15,8 +15,8 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         protected override void Apply(uint creature, int durationTicks)
         {
-            StatGroup.Stats[StatType.MovementSpeedPercentAdjustment] = ScaleBySourceSocial(12, 15);
-            StatGroup.Stats[StatType.MobilityResistance] = ScaleBySourceSocial(35, 45);
+            StatGroup.Stats[StatType.MovementSpeedPercentAdjustment] = ScaleBySourceSocial(15, 18);
+            StatGroup.Stats[StatType.MobilityResistance] = ScaleBySourceSocial(50, 65);
         }
     }
 }

@@ -10,26 +10,40 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
     {
         private const float BaseCommandRadius = 5f;
 
-        private static readonly Type[] VanguardCommandAuraTypes =
+        private static readonly Type[][] LeadershipAuraFamilies =
         {
-            typeof(RallyingStandard1StatusEffect),
-            typeof(RallyingStandard2StatusEffect),
-            typeof(CoordinatedFocus1StatusEffect),
-            typeof(CoordinatedFocus2StatusEffect),
-            typeof(CoordinatedFocus3StatusEffect),
-            typeof(ChargeOrder1StatusEffect),
-            typeof(ChargeOrder2StatusEffect),
-        };
-
-        private static readonly Type[] FieldStewardAuraTypes =
-        {
-            typeof(WatchfulPresence1StatusEffect),
-            typeof(WatchfulPresence2StatusEffect),
-            typeof(WatchfulPresence3StatusEffect),
-            typeof(SteadyFormation1StatusEffect),
-            typeof(SteadyFormation2StatusEffect),
-            typeof(FieldRecovery1StatusEffect),
-            typeof(FieldRecovery2StatusEffect),
+            new[]
+            {
+                typeof(RallyingStandard1StatusEffect),
+                typeof(RallyingStandard2StatusEffect),
+            },
+            new[]
+            {
+                typeof(CoordinatedFocus1StatusEffect),
+                typeof(CoordinatedFocus2StatusEffect),
+                typeof(CoordinatedFocus3StatusEffect),
+            },
+            new[]
+            {
+                typeof(ChargeOrder1StatusEffect),
+                typeof(ChargeOrder2StatusEffect),
+            },
+            new[]
+            {
+                typeof(WatchfulPresence1StatusEffect),
+                typeof(WatchfulPresence2StatusEffect),
+                typeof(WatchfulPresence3StatusEffect),
+            },
+            new[]
+            {
+                typeof(SteadyFormation1StatusEffect),
+                typeof(SteadyFormation2StatusEffect),
+            },
+            new[]
+            {
+                typeof(FieldRecovery1StatusEffect),
+                typeof(FieldRecovery2StatusEffect),
+            },
         };
 
         public static float GetLeadershipCommandRadius(uint activator)
@@ -37,20 +51,20 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             return BaseCommandRadius + Stat.GetStatAdjustment(activator, StatType.LeadershipCommandRadiusBonusMeters);
         }
 
-        public static void ToggleVanguardCommandAura(uint activator, Type statusEffectType)
+        public static bool ToggleVanguardCommandAura(uint activator, Type statusEffectType)
         {
-            ToggleLeadershipAura(activator, statusEffectType, VanguardCommandAuraTypes);
+            return ToggleLeadershipAura(activator, statusEffectType);
         }
 
-        public static void ToggleFieldStewardAura(uint activator, Type statusEffectType)
+        public static bool ToggleFieldStewardAura(uint activator, Type statusEffectType)
         {
-            ToggleLeadershipAura(activator, statusEffectType, FieldStewardAuraTypes);
+            return ToggleLeadershipAura(activator, statusEffectType);
         }
 
-        public static float ApplyVanguardCommandDurationBonus(uint activator, float durationSeconds)
+        public static float ApplyLeadershipCommandDurationBonus(uint activator, float durationSeconds)
         {
-            var baseBonus = Stat.GetStatAdjustment(activator, StatType.VanguardCommandDurationBonusBaseSeconds);
-            var maximumBonus = Stat.GetStatAdjustment(activator, StatType.VanguardCommandDurationBonusMaximumSeconds);
+            var baseBonus = Stat.GetStatAdjustment(activator, StatType.LeadershipCommandDurationBonusBaseSeconds);
+            var maximumBonus = Stat.GetStatAdjustment(activator, StatType.LeadershipCommandDurationBonusMaximumSeconds);
             if (maximumBonus <= 0)
                 return durationSeconds;
 
@@ -66,7 +80,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             return durationSeconds + Stat.GetStatAdjustment(activator, StatType.FieldStewardDurationBonusSeconds);
         }
 
-        public static void ApplyTriageProtocol(uint activator, uint target)
+        public static float ApplyFieldStewardCommandDurationBonus(uint activator, float durationSeconds)
+        {
+            durationSeconds = ApplyLeadershipCommandDurationBonus(activator, durationSeconds);
+            return ApplyFieldStewardDurationBonus(activator, durationSeconds);
+        }
+
+        public static void ApplyTriageProtocol(uint activator, uint target, float durationSeconds)
         {
             var level = Stat.GetStatAdjustment(activator, StatType.FieldStewardTriageProtocolLevel);
             if (level <= 0)
@@ -75,23 +95,37 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             var statusEffect = level >= 2
                 ? typeof(TriageProtocol2StatusEffect)
                 : typeof(TriageProtocol1StatusEffect);
-            var duration = level >= 2 ? 10f : 8f;
 
-            StatusEffect.ApplyStatusEffect(activator, target, statusEffect, duration);
+            StatusEffect.ApplyStatusEffect(activator, target, statusEffect, durationSeconds);
         }
 
-        private static void ToggleLeadershipAura(uint activator, Type statusEffectType, Type[] auraTypes)
+        private static bool ToggleLeadershipAura(uint activator, Type statusEffectType)
         {
             if (!Ability.ToggleAura(activator, statusEffectType))
-                return;
+                return false;
 
-            foreach (var auraType in auraTypes)
+            foreach (var auraType in GetAuraFamily(statusEffectType))
             {
                 if (auraType != statusEffectType)
                     Ability.RemoveAura(activator, auraType);
             }
 
             Ability.ApplyAura(activator, statusEffectType, true, true, false);
+            return true;
+        }
+
+        private static Type[] GetAuraFamily(Type statusEffectType)
+        {
+            foreach (var family in LeadershipAuraFamilies)
+            {
+                foreach (var auraType in family)
+                {
+                    if (auraType == statusEffectType)
+                        return family;
+                }
+            }
+
+            return Array.Empty<Type>();
         }
     }
 }

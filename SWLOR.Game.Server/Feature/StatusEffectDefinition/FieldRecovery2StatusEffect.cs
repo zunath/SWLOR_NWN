@@ -8,7 +8,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     {
         public override string Name => "Field Recovery II";
         public override EffectIconType Icon => EffectIconType.Regenerate;
-        public override float Frequency => 6f;
+        public override float Frequency => 4f;
         public override List<Type> LessPowerfulEffectTypes { get; } = new()
         {
             typeof(FieldRecovery1StatusEffect),
@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         protected override void Tick(uint creature)
         {
-            Stat.RestoreStamina(creature, ScaleBySourceSocial(2, 4));
+            Stat.RestoreStamina(creature, ScaleBySourceSocial(2, 3));
         }
     }
 }

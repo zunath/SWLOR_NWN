@@ -52,10 +52,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
                 .HasActivationDelay(1f)
                 .HasRecastDelay(RecastGroup.CleanseOrder, 90f)
                 .SkillType(SkillType.Leadership)
-                .IsSingleTargetAbility()
-                .RequiresTarget()
-                .HasCustomValidation((activator, target, _, _) =>
-                    AbilityTargeting.ValidateFriendlyTarget(activator, target))
+                .IsAreaAbility()
                 .HasImpactAction(CleanseOrder2ImpactAction)
                 .IsCastedAbility()
                 .BreaksStealth()
@@ -64,29 +61,41 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
 
         private static void CleanseOrder1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, true))
+            var radius = LeadershipAbilityEffects.GetLeadershipCommandRadius(activator);
+            var duration = LeadershipAbilityEffects.ApplyFieldStewardCommandDurationBonus(activator, 10f);
+            var affectedCount = 0;
+
+            foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, true, radius))
             {
                 StatusEffect.RemoveFirstCleanseableStatusEffect(friendly, StatusEffectCleanseType.TreatmentKit2, false);
-                var duration = LeadershipAbilityEffects.ApplyFieldStewardDurationBonus(activator, 8f);
                 ApplyTemporaryHP(
                     friendly,
-                    AbilityEffectScaling.ScaleValueBySourceSocial(activator, 3, 5),
+                    AbilityEffectScaling.ScaleValueBySourceSocial(activator, 6, 8),
                     duration);
-                LeadershipAbilityEffects.ApplyTriageProtocol(activator, friendly);
+                LeadershipAbilityEffects.ApplyTriageProtocol(activator, friendly, duration);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Remove_Condition), friendly);
+                affectedCount++;
             }
+
+            if (affectedCount > 0) CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Leadership, 2);
         }
 
         private static void CleanseOrder2ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            foreach (var friendly in AbilityTargeting.GetFriendlyTargets(activator, target, false))
+            var radius = LeadershipAbilityEffects.GetLeadershipCommandRadius(activator);
+            var duration = LeadershipAbilityEffects.ApplyFieldStewardCommandDurationBonus(activator, 10f);
+            var affectedCount = 0;
+
+            foreach (var friendly in AbilityTargeting.GetFriendlyTargets(activator, target, true, radius))
             {
                 StatusEffect.RemoveFirstCleanseableStatusEffect(friendly, StatusEffectCleanseType.Purify, false);
-                var duration = LeadershipAbilityEffects.ApplyFieldStewardDurationBonus(activator, 8f);
                 StatusEffect.ApplyStatusEffect(activator, friendly, typeof(CleanseOrder2StatusEffect), duration);
-                LeadershipAbilityEffects.ApplyTriageProtocol(activator, friendly);
+                LeadershipAbilityEffects.ApplyTriageProtocol(activator, friendly, duration);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Remove_Condition), friendly);
+                affectedCount++;
             }
+
+            if (affectedCount > 0) CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Leadership, 2);
         }
 
         private static void ApplyTemporaryHP(uint target, int percent, float durationSeconds)

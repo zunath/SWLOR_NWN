@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         protected override void Apply(uint creature, int durationTicks)
         {
-            StatGroup.Stats[StatType.HealingReceivedPercentAdjustment] = ScaleBySourceSocial(5, 7);
+            StatGroup.Stats[StatType.HealingReceivedPercentAdjustment] = ScaleBySourceSocial(8, 10);
         }
     }
 }

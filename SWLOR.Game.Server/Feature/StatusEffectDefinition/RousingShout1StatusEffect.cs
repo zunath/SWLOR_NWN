@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         protected override void Apply(uint creature, int durationTicks)
         {
-            StatGroup.Stats[StatType.DamageTakenPercentAdjustment] = -ScaleBySourceSocial(6, 8);
+            StatGroup.Stats[StatType.DamageTakenPercentAdjustment] = -ScaleBySourceSocial(10, 12);
         }
     }
 }

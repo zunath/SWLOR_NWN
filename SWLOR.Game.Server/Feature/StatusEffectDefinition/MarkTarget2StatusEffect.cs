@@ -21,8 +21,8 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         protected override void Apply(uint creature, int durationTicks)
         {
-            StatGroup.Stats[StatType.DamageTakenFromStatusSourcePartyPercentAdjustment] = ScaleBySourceSocial(6, 8);
-            StatGroup.Stats[StatType.EvasionPercentAdjustment] = -ScaleBySourceSocial(6, 8);
+            StatGroup.Stats[StatType.DamageTakenFromStatusSourcePartyPercentAdjustment] = ScaleBySourceSocial(12, 15);
+            StatGroup.Stats[StatType.EvasionPercentAdjustment] = -ScaleBySourceSocial(10, 12);
         }
     }
 }

@@ -65,7 +65,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
 
         private static void MarkTarget1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            var duration = (int)Math.Ceiling(LeadershipAbilityEffects.ApplyVanguardCommandDurationBonus(activator, 12f));
+            const int Duration = 15;
 
             Ability.ApplyCombatImpact(
                 activator,
@@ -73,17 +73,19 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
                 targetLocation,
                 SkillType.Leadership,
                 0,
-                duration,
+                Duration,
                 typeof(MarkTarget1StatusEffect),
                 false,
                 Array.Empty<Type>(),
                 damageType: CombatDamageType.Physical,
-                targetVisualEffect: VisualEffect.Vfx_Com_Chunk_Red_Small);
+                targetVisualEffect: VisualEffect.Vfx_Com_Chunk_Red_Small,
+                awardsCombatPoints: false);
+            CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Leadership, 2);
         }
 
         private static void MarkTarget2ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            var duration = (int)Math.Ceiling(LeadershipAbilityEffects.ApplyVanguardCommandDurationBonus(activator, 12f));
+            const int Duration = 15;
 
             Ability.ApplyCombatImpact(
                 activator,
@@ -91,12 +93,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
                 targetLocation,
                 SkillType.Leadership,
                 0,
-                duration,
+                Duration,
                 typeof(MarkTarget2StatusEffect),
                 false,
                 Array.Empty<Type>(),
                 damageType: CombatDamageType.Physical,
-                targetVisualEffect: VisualEffect.Vfx_Com_Chunk_Red_Small);
+                targetVisualEffect: VisualEffect.Vfx_Com_Chunk_Red_Small,
+                awardsCombatPoints: false);
+            CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Leadership, 2);
         }
 
     }

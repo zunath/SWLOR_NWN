@@ -8,7 +8,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     {
         public override string Name => "Field Recovery I";
         public override EffectIconType Icon => EffectIconType.Regenerate;
-        public override float Frequency => 6f;
+        public override float Frequency => 4f;
         public override List<Type> MorePowerfulEffectTypes { get; } = new()
         {
             typeof(FieldRecovery2StatusEffect),

@@ -144,11 +144,11 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         private void AuraOfCourage()
         {
             _builder.Create(PerkCategoryType.ForceLight, PerkType.AuraOfCourage)
-                .Name("Aura of Courage")
+                .Name("Courageous Resolve")
                 .ForceAffinity(ForceAffinityType.Light)
 
                 .AddPerkLevel()
-                .Description("Nearby party members take 5% less force damage and gain +10% resistance to fear, daze, and confusion for 30 seconds.")
+                .Description("Nearby party members take 5% less Force damage and gain +10% resistance to fear, daze, and confusion for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 28)
                 .RequirementCharacterType(CharacterType.ForceSensitive)

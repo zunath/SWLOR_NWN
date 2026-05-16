@@ -83,17 +83,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
 
         private static void RousingShout1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            ApplyRousingShout(activator, target, 4, 6, typeof(RousingShout1StatusEffect), 10f);
+            ApplyRousingShout(activator, target, 10, 13, typeof(RousingShout1StatusEffect), 12f);
         }
 
         private static void RousingShout2ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            ApplyRousingShout(activator, target, 6, 8, typeof(RousingShout2StatusEffect), 10f);
+            ApplyRousingShout(activator, target, 15, 19, typeof(RousingShout2StatusEffect), 12f);
         }
 
         private static void RousingShout3ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            ApplyRousingShout(activator, target, 8, 10, typeof(RousingShout3StatusEffect), 12f);
+            ApplyRousingShout(activator, target, 20, 25, typeof(RousingShout3StatusEffect), 15f);
         }
 
         private static void ApplyRousingShout(
@@ -107,7 +107,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
             if (!CanRousingShoutAffectTarget(activator, target))
                 return;
 
-            durationSeconds = LeadershipAbilityEffects.ApplyFieldStewardDurationBonus(activator, durationSeconds);
+            durationSeconds = LeadershipAbilityEffects.ApplyFieldStewardCommandDurationBonus(activator, durationSeconds);
             ApplyTemporaryHP(
                 target,
                 AbilityEffectScaling.ScaleValueBySourceSocial(activator, temporaryHPPercent, temporaryHPCap),
@@ -118,8 +118,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
                 StatusEffect.ApplyStatusEffect(activator, target, lowHPStatusEffect, durationSeconds);
             }
 
-            LeadershipAbilityEffects.ApplyTriageProtocol(activator, target);
+            LeadershipAbilityEffects.ApplyTriageProtocol(activator, target, durationSeconds);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Good_Help), target);
+            CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Leadership, 2);
         }
 
         private static bool CanRousingShoutAffectTarget(uint activator, uint target)

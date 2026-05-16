@@ -61,31 +61,43 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
 
         private static void BolsterResolve1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, true))
+            var radius = LeadershipAbilityEffects.GetLeadershipCommandRadius(activator);
+            var duration = LeadershipAbilityEffects.ApplyFieldStewardCommandDurationBonus(activator, 12f);
+            var affectedCount = 0;
+
+            foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, true, radius))
             {
-                var duration = LeadershipAbilityEffects.ApplyFieldStewardDurationBonus(activator, 12f);
                 ApplyTemporaryHP(
                     friendly,
-                    AbilityEffectScaling.ScaleValueBySourceSocial(activator, 4, 6),
+                    AbilityEffectScaling.ScaleValueBySourceSocial(activator, 8, 10),
                     duration);
-                LeadershipAbilityEffects.ApplyTriageProtocol(activator, friendly);
+                LeadershipAbilityEffects.ApplyTriageProtocol(activator, friendly, duration);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_M), friendly);
+                affectedCount++;
             }
+
+            if (affectedCount > 0) CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Leadership, 2);
         }
 
         private static void BolsterResolve2ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, true))
+            var radius = LeadershipAbilityEffects.GetLeadershipCommandRadius(activator);
+            var duration = LeadershipAbilityEffects.ApplyFieldStewardCommandDurationBonus(activator, 15f);
+            var affectedCount = 0;
+
+            foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, true, radius))
             {
-                var duration = LeadershipAbilityEffects.ApplyFieldStewardDurationBonus(activator, 12f);
                 ApplyTemporaryHP(
                     friendly,
-                    AbilityEffectScaling.ScaleValueBySourceSocial(activator, 6, 8),
+                    AbilityEffectScaling.ScaleValueBySourceSocial(activator, 12, 15),
                     duration);
                 StatusEffect.ApplyStatusEffect(activator, friendly, typeof(BolsterResolve2StatusEffect), duration);
-                LeadershipAbilityEffects.ApplyTriageProtocol(activator, friendly);
+                LeadershipAbilityEffects.ApplyTriageProtocol(activator, friendly, duration);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_M), friendly);
+                affectedCount++;
             }
+
+            if (affectedCount > 0) CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Leadership, 2);
         }
 
         private static void ApplyTemporaryHP(uint target, int percent, float durationSeconds)

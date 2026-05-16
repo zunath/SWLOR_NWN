@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         protected override void Apply(uint creature, int durationTicks)
         {
-            var reduction = -ScaleBySourceSocial(2, 3);
+            var reduction = -ScaleBySourceSocial(4, 5);
             StatGroup.Stats[StatType.PhysicalDamageTakenPercentAdjustment] = reduction;
             StatGroup.Stats[StatType.ForceDamageTakenPercentAdjustment] = reduction;
         }

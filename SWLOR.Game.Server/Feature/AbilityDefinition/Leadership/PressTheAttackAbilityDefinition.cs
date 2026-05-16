@@ -79,37 +79,49 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
         private static void PressTheAttack1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
             var radius = LeadershipAbilityEffects.GetLeadershipCommandRadius(activator);
-            var duration = LeadershipAbilityEffects.ApplyVanguardCommandDurationBonus(activator, 10f);
+            var duration = LeadershipAbilityEffects.ApplyLeadershipCommandDurationBonus(activator, 12f);
+            var affectedCount = 0;
 
             foreach (var friendly in AbilityTargeting.GetFriendlyTargets(activator, target, true, radius))
             {
                 StatusEffect.ApplyStatusEffect(activator, friendly, typeof(PressTheAttack1StatusEffect), duration);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Holy_Aid), friendly);
+                affectedCount++;
             }
+
+            if (affectedCount > 0) CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Leadership, 2);
         }
 
         private static void PressTheAttack2ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
             var radius = LeadershipAbilityEffects.GetLeadershipCommandRadius(activator);
-            var duration = LeadershipAbilityEffects.ApplyVanguardCommandDurationBonus(activator, 10f);
+            var duration = LeadershipAbilityEffects.ApplyLeadershipCommandDurationBonus(activator, 12f);
+            var affectedCount = 0;
 
             foreach (var friendly in AbilityTargeting.GetFriendlyTargets(activator, target, true, radius))
             {
                 StatusEffect.ApplyStatusEffect(activator, friendly, typeof(PressTheAttack2StatusEffect), duration);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Holy_Aid), friendly);
+                affectedCount++;
             }
+
+            if (affectedCount > 0) CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Leadership, 2);
         }
 
         private static void PressTheAttack3ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
             var radius = LeadershipAbilityEffects.GetLeadershipCommandRadius(activator);
-            var duration = LeadershipAbilityEffects.ApplyVanguardCommandDurationBonus(activator, 12f);
+            var duration = LeadershipAbilityEffects.ApplyLeadershipCommandDurationBonus(activator, 15f);
+            var affectedCount = 0;
 
             foreach (var friendly in AbilityTargeting.GetFriendlyTargets(activator, target, true, radius))
             {
                 StatusEffect.ApplyStatusEffect(activator, friendly, typeof(PressTheAttack3StatusEffect), duration);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Holy_Aid), friendly);
+                affectedCount++;
             }
+
+            if (affectedCount > 0) CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Leadership, 2);
         }
 
 

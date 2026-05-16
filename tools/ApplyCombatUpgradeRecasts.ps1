@@ -63,7 +63,7 @@ function Get-ShortName {
 
     $shortNames = @{
         "Adhesive Grenade" = "Adhesive Gren"
-        "Aura of Courage" = "Courage Aura"
+        "Courageous Resolve" = "Courage Res."
         "Bastion of Light" = "Light Bastion"
         "Bolster Resolve" = "Bolster Res."
         "Circle of Harmony" = "Harmony Circle"

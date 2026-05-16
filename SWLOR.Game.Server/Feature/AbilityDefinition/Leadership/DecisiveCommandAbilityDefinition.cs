@@ -45,13 +45,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
         private static void DecisiveCommand1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
             var radius = LeadershipAbilityEffects.GetLeadershipCommandRadius(activator);
-            var duration = LeadershipAbilityEffects.ApplyVanguardCommandDurationBonus(activator, 20f);
+            const float Duration = 20f;
+            var affectedCount = 0;
 
             foreach (var friendly in AbilityTargeting.GetFriendlyTargets(activator, target, true, radius))
             {
-                StatusEffect.ApplyStatusEffect(activator, friendly, typeof(DecisiveCommand1StatusEffect), duration);
+                StatusEffect.ApplyStatusEffect(activator, friendly, typeof(DecisiveCommand1StatusEffect), Duration);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Holy_Aid), friendly);
+                affectedCount++;
             }
+
+            if (affectedCount > 0) CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Leadership, 3);
         }
 
 

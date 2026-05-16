@@ -537,7 +537,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
         ApexBite = 290,
         [RecastGroup("Assault", "Assault", true)]
         Assault = 291,
-        [RecastGroup("Aura of Courage", "Courage Aura", true)]
+        [RecastGroup("Courageous Resolve", "Courage Res.", true)]
         AuraOfCourage = 292,
         [RecastGroup("Bastion of Light", "Light Bastion", true)]
         BastionOfLight = 293,

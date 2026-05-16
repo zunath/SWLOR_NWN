@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder
                 .Create(FeatType.AuraOfCourage1, PerkType.AuraOfCourage)
-                .Name("Aura of Courage")
+                .Name("Courageous Resolve")
                 .Level(1)
                 .HasActivationDelay(1f)
                 .HasRecastDelay(RecastGroup.AuraOfCourage, 60f)

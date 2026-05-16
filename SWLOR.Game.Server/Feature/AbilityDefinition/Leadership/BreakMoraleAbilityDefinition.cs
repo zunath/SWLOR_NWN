@@ -63,56 +63,57 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
 
         private static void BreakMorale1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            var radius = LeadershipAbilityEffects.GetLeadershipCommandRadius(activator);
-            var duration = (int)Math.Ceiling(LeadershipAbilityEffects.ApplyVanguardCommandDurationBonus(activator, 12f));
-
-            Ability.ApplyTelegraphedCombatImpact(
-                activator,
-                target,
-                targetLocation,
-                SkillType.Leadership,
-                0,
-                duration,
-                typeof(FlashStatusEffect),
-                CombatImpactAreaShape.Sphere,
-                0f,
-                radius,
-                0f,
-                Array.Empty<Type>(),
-                centerOnActivator: true,
-                statusEffectFactory: () => new FlashStatusEffect(ScaleSocialPenalty(activator, 8, 10)),
-                damageType: CombatDamageType.Force,
-                targetVisualEffect: VisualEffect.Vfx_Imp_Sonic,
-                areaVisualEffect: VisualEffect.Vfx_Fnf_Sound_Burst);
+            ApplyBreakMorale(activator, 10, 12, 0, 0);
         }
 
         private static void BreakMorale2ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            var radius = LeadershipAbilityEffects.GetLeadershipCommandRadius(activator);
-            var duration = (int)Math.Ceiling(LeadershipAbilityEffects.ApplyVanguardCommandDurationBonus(activator, 12f));
+            ApplyBreakMorale(activator, 15, 18, 12, 15);
+        }
 
-            Ability.ApplyTelegraphedCombatImpact(
-                activator,
-                target,
-                targetLocation,
-                SkillType.Leadership,
-                0,
-                duration,
-                typeof(WeakenedStatusEffect),
-                CombatImpactAreaShape.Sphere,
-                0f,
-                radius,
-                0f,
-                Array.Empty<Type>(),
-                centerOnActivator: true,
-                statusEffectFactory: () => new FlashStatusEffect(ScaleSocialPenalty(activator, 12, 14)),
-                damageType: CombatDamageType.Force,
-                targetVisualEffect: VisualEffect.Vfx_Imp_Sonic,
-                areaVisualEffect: VisualEffect.Vfx_Fnf_Sound_Burst,
-                additionalStatusEffectFactories: new Func<IStatusEffect>[]
+        private static void ApplyBreakMorale(
+            uint activator,
+            int flashBasePenalty,
+            int flashMaximumPenalty,
+            int weakenedBasePenalty,
+            int weakenedMaximumPenalty)
+        {
+            var radius = LeadershipAbilityEffects.GetLeadershipCommandRadius(activator);
+            var location = GetLocation(activator);
+            const float Duration = 15f;
+            var affectedCount = 0;
+
+            foreach (var hostile in AbilityTargeting.GetHostileTargetsNearLocation(activator, location, radius, 0))
+            {
+                var applied = StatusEffect.ApplyStatusEffect(
+                    activator,
+                    hostile,
+                    new FlashStatusEffect(ScaleSocialPenalty(activator, flashBasePenalty, flashMaximumPenalty)),
+                    Duration,
+                    CombatDamageType.Force);
+
+                if (weakenedBasePenalty > 0)
                 {
-                    () => new WeakenedStatusEffect(ScaleSocialPenalty(activator, 8, 10)),
-                });
+                    applied |= StatusEffect.ApplyStatusEffect(
+                        activator,
+                        hostile,
+                        new WeakenedStatusEffect(ScaleSocialPenalty(activator, weakenedBasePenalty, weakenedMaximumPenalty)),
+                        Duration,
+                        CombatDamageType.Force);
+                }
+
+                if (!applied)
+                    continue;
+
+                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Sonic), hostile);
+                affectedCount++;
+            }
+
+            if (affectedCount <= 0)
+                return;
+
+            ApplyEffectAtLocation(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Fnf_Sound_Burst), location);
+            CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Leadership, 2);
         }
 
         private static int ScaleSocialPenalty(uint activator, int baseValue, int maximumValue)

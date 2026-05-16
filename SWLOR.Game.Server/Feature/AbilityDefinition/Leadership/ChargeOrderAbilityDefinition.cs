@@ -55,12 +55,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
 
         private static void ChargeOrder1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            LeadershipAbilityEffects.ToggleVanguardCommandAura(activator, typeof(ChargeOrder1StatusEffect));
+            if (LeadershipAbilityEffects.ToggleVanguardCommandAura(activator, typeof(ChargeOrder1StatusEffect))) CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Leadership);
         }
 
         private static void ChargeOrder2ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            LeadershipAbilityEffects.ToggleVanguardCommandAura(activator, typeof(ChargeOrder2StatusEffect));
+            if (LeadershipAbilityEffects.ToggleVanguardCommandAura(activator, typeof(ChargeOrder2StatusEffect))) CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Leadership);
         }
     }
 }

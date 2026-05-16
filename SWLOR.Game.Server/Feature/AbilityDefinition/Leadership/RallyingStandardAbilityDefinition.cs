@@ -55,12 +55,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
 
         private static void RallyingStandard1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            LeadershipAbilityEffects.ToggleVanguardCommandAura(activator, typeof(RallyingStandard1StatusEffect));
+            if (LeadershipAbilityEffects.ToggleVanguardCommandAura(activator, typeof(RallyingStandard1StatusEffect))) CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Leadership);
         }
 
         private static void RallyingStandard2ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            LeadershipAbilityEffects.ToggleVanguardCommandAura(activator, typeof(RallyingStandard2StatusEffect));
+            if (LeadershipAbilityEffects.ToggleVanguardCommandAura(activator, typeof(RallyingStandard2StatusEffect))) CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Leadership);
         }
     }
 }

@@ -27,7 +27,7 @@ function Get-IconKind([string]$label) {
     if ($label -match "MedKit|TreatmentKit|Kolto|Resuscitation|EmergencyTriage|EmergencySealant|Coagulant|Antitoxin|PainSuppressant|AdrenalStim|FocusStim|MaintenancePulse|EmergencyCocktail") { return "medical" }
     if ($label -match "Grenade|Beacon|RemoteCharge|Flamethrower|WristRocket|RailDart|CryoSprayer|SonicBurst|PowerCell|Shielding|Deflector|Rayshield|Dampening|OverloadBarrage|WeaponJam") { return "tech" }
     if ($label -match "Bite|Claw|Pounce|Howl|Roar|Hide|Beast|Prey|Predator|Apex|Pack|Rampage|Primal") { return "beast" }
-    if ($label -match "Order|Command|Standard|Formation|Rally|WatchfulPresence|Coordinated|ChargeOrder|PressTheAttack|HoldTheLine|MarkTarget|BreakMorale|CleanseOrder|AuraOfCourage|Bolster") { return "command" }
+    if ($label -match "Order|Command|Standard|Formation|Rally|WatchfulPresence|Coordinated|ChargeOrder|PressTheAttack|HoldTheLine|MarkTarget|BreakMorale|CleanseOrder|CourageousResolve|Bolster") { return "command" }
     if ($label -match "Shield|Guard|Bastion|Rampart|Defense|Defensive|Wall|Fortress|Sentinel|Invincible|Impenetrable|Resolve|Shelter|Unmoving|Adamantine") { return "defense" }
     if ($label -match "Shot|Round|Volley|Fire|Hammer|Gun|Sniper|Deadeye|Overwatch|KillZone|Barrage|Burst|LowShot|OneShot|Headshot|Suppressive|Pacification") { return "ranged" }
     if ($label -match "Toss|Throw|Ricochet|Cluster|Bombardier|Fireburst|Concussive|Smoke|Tranq|Saturation|Pinning") { return "throwing" }
@@ -593,7 +593,7 @@ function Draw-NamedMotif($g, [string]$label, [System.Drawing.Color]$accent, [Sys
         "Claw|RendingClaw" { Draw-BeastClawGlyph $g $accent $hot; return $true }
         "Howl|Roar" { Draw-RoarGlyph $g $accent $hot; return $true }
         "Hide|IronHide|RampartHide" { Draw-HideGlyph $g $accent $hot; return $true }
-        "Standard|Rally|RousingShout|AuraOfCourage|BreakMorale|CleanseOrder|Bolster" { Draw-RallyGlyph $g $accent $hot; return $true }
+        "Standard|Rally|RousingShout|CourageousResolve|BreakMorale|CleanseOrder|Bolster" { Draw-RallyGlyph $g $accent $hot; return $true }
         "MarkTarget|PredatorsMark|ExposePrey|ExecutePrey" { Draw-TargetGlyph $g $accent $hot; return $true }
         "Command|Order|Formation|Coordinated|PressTheAttack|HoldTheLine|WatchfulPresence|FieldRecovery|PackRecovery" { Draw-CommandArrowGlyph $g $accent $hot; return $true }
     }

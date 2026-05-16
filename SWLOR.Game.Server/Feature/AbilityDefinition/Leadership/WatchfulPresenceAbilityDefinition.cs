@@ -71,17 +71,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
 
         private static void WatchfulPresence1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            LeadershipAbilityEffects.ToggleFieldStewardAura(activator, typeof(WatchfulPresence1StatusEffect));
+            if (LeadershipAbilityEffects.ToggleFieldStewardAura(activator, typeof(WatchfulPresence1StatusEffect))) CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Leadership);
         }
 
         private static void WatchfulPresence2ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            LeadershipAbilityEffects.ToggleFieldStewardAura(activator, typeof(WatchfulPresence2StatusEffect));
+            if (LeadershipAbilityEffects.ToggleFieldStewardAura(activator, typeof(WatchfulPresence2StatusEffect))) CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Leadership);
         }
 
         private static void WatchfulPresence3ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            LeadershipAbilityEffects.ToggleFieldStewardAura(activator, typeof(WatchfulPresence3StatusEffect));
+            if (LeadershipAbilityEffects.ToggleFieldStewardAura(activator, typeof(WatchfulPresence3StatusEffect))) CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Leadership);
         }
     }
 }

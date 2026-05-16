@@ -71,17 +71,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
 
         private static void CoordinatedFocus1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            LeadershipAbilityEffects.ToggleVanguardCommandAura(activator, typeof(CoordinatedFocus1StatusEffect));
+            if (LeadershipAbilityEffects.ToggleVanguardCommandAura(activator, typeof(CoordinatedFocus1StatusEffect))) CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Leadership);
         }
 
         private static void CoordinatedFocus2ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            LeadershipAbilityEffects.ToggleVanguardCommandAura(activator, typeof(CoordinatedFocus2StatusEffect));
+            if (LeadershipAbilityEffects.ToggleVanguardCommandAura(activator, typeof(CoordinatedFocus2StatusEffect))) CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Leadership);
         }
 
         private static void CoordinatedFocus3ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            LeadershipAbilityEffects.ToggleVanguardCommandAura(activator, typeof(CoordinatedFocus3StatusEffect));
+            if (LeadershipAbilityEffects.ToggleVanguardCommandAura(activator, typeof(CoordinatedFocus3StatusEffect))) CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Leadership);
         }
     }
 }

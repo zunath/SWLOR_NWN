@@ -38,8 +38,8 @@ public class ForceLightGuardianTests
             "Knock down up to 2 targets in a line for 2 seconds. slows movement for 3 seconds.");
         AssertPerkLevel(perks[PerkType.GuardianWard], "Guardian Ward", 3, 4, 25, FeatType.GuardianWard3,
             "Grants a single ally temporary HP equal to 12% of the target's maximum HP plus WIL scaling for 30 seconds.");
-        AssertPerkLevel(perks[PerkType.AuraOfCourage], "Aura of Courage", 1, 3, 28, FeatType.AuraOfCourage1,
-            "Nearby party members take 5% less force damage and gain +10% resistance to fear, daze, and confusion for 30 seconds.");
+        AssertPerkLevel(perks[PerkType.AuraOfCourage], "Courageous Resolve", 1, 3, 28, FeatType.AuraOfCourage1,
+            "Nearby party members take 5% less Force damage and gain +10% resistance to fear, daze, and confusion for 30 seconds.");
         AssertPerkLevel(perks[PerkType.ForceIntercept], "Force Intercept", 1, 4, 30, FeatType.ForceIntercept1,
             "Leap to an ally up to 15m away and absorb 50% of the next hit they take within 8 seconds.");
         AssertPerkLevel(perks[PerkType.ForceLeap], "Force Leap", 2, 3, 35, FeatType.ForceLeap2,
@@ -83,7 +83,7 @@ public class ForceLightGuardianTests
         AssertAbility(soothingGuard, "Soothing Guard I", 1, RecastGroup.SoothingGuard, 36f, 1f, 4, false, true, true, false, AbilityActivationType.Casted, 15f);
 
         var auraOfCourage = new AuraOfCourageAbilityDefinition().BuildAbilities()[FeatType.AuraOfCourage1];
-        AssertAbility(auraOfCourage, "Aura of Courage", 1, RecastGroup.AuraOfCourage, 60f, 1f, 5, false, false, false, true, AbilityActivationType.Casted, 5f);
+        AssertAbility(auraOfCourage, "Courageous Resolve", 1, RecastGroup.AuraOfCourage, 60f, 1f, 5, false, false, false, true, AbilityActivationType.Casted, 5f);
 
         var forceIntercept = new ForceInterceptAbilityDefinition().BuildAbilities()[FeatType.ForceIntercept1];
         AssertAbility(forceIntercept, "Force Intercept", 1, RecastGroup.ForceIntercept, 45f, 0f, 5, false, true, true, false, AbilityActivationType.Casted, 15f);

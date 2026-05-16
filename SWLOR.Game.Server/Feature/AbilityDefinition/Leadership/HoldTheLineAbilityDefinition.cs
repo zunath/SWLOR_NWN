@@ -44,16 +44,22 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
 
         private static void HoldTheLine1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, true))
+            var radius = LeadershipAbilityEffects.GetLeadershipCommandRadius(activator);
+            var affectedCount = 0;
+
+            foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, true, radius))
             {
                 const float duration = 20f;
                 ApplyTemporaryHP(
                     friendly,
-                    AbilityEffectScaling.ScaleValueBySourceSocial(activator, 10, 12),
+                    AbilityEffectScaling.ScaleValueBySourceSocial(activator, 25, 30),
                     duration);
                 StatusEffect.ApplyStatusEffect(activator, friendly, typeof(HoldTheLine1StatusEffect), duration);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_M), friendly);
+                affectedCount++;
             }
+
+            if (affectedCount > 0) CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Leadership, 3);
         }
 
         private static void ApplyTemporaryHP(uint target, int percent, float durationSeconds)

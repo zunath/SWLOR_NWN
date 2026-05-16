@@ -1173,16 +1173,16 @@ namespace SWLOR.Game.Server.Service.StatService
         LeadershipCommandRadiusBonusMeters = 194,
 
         /// <summary>
-        /// Base seconds added to Vanguard Command shout durations before Social scaling.
+        /// Base seconds added to non-capstone Leadership command buff durations before Social scaling.
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
-        VanguardCommandDurationBonusBaseSeconds = 195,
+        LeadershipCommandDurationBonusBaseSeconds = 195,
 
         /// <summary>
-        /// Maximum seconds added to Vanguard Command shout durations after Social scaling.
+        /// Maximum seconds added to non-capstone Leadership command buff durations after Social scaling.
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
-        VanguardCommandDurationBonusMaximumSeconds = 196,
+        LeadershipCommandDurationBonusMaximumSeconds = 196,
 
         /// <summary>
         /// Triage Protocol tier applied by Field Steward shouts.

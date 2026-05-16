@@ -19,9 +19,8 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         protected override void Apply(uint creature, int durationTicks)
         {
-            var bonus = ScaleBySourceSocial(3, 4);
-            StatGroup.Stats[StatType.CriticalRatePercentAdjustment] = bonus;
-            StatGroup.Stats[StatType.CriticalDamagePercentAdjustment] = bonus;
+            StatGroup.Stats[StatType.CriticalRatePercentAdjustment] = ScaleBySourceSocial(4, 5);
+            StatGroup.Stats[StatType.CriticalDamagePercentAdjustment] = ScaleBySourceSocial(5, 7);
         }
     }
 }

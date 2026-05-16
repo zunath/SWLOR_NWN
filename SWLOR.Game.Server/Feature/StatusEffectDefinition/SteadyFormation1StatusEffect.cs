@@ -15,9 +15,9 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         protected override void Apply(uint creature, int durationTicks)
         {
-            StatGroup.Stats[StatType.EvasionPercentAdjustment] = ScaleBySourceSocial(2, 3);
-            StatGroup.Stats[StatType.MindResistance] = ScaleBySourceSocial(20, 25);
-            StatGroup.Stats[StatType.MobilityResistance] = ScaleBySourceSocial(20, 25);
+            StatGroup.Stats[StatType.EvasionPercentAdjustment] = ScaleBySourceSocial(3, 4);
+            StatGroup.Stats[StatType.MindResistance] = ScaleBySourceSocial(30, 40);
+            StatGroup.Stats[StatType.MobilityResistance] = ScaleBySourceSocial(30, 40);
         }
     }
 }

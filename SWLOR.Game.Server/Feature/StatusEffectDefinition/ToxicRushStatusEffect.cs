@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public ToxicRushStatusEffect()
         {
             StatGroup.Stats[StatType.AttackPercentAdjustment] = 15;
-            StatGroup.Stats[StatType.AttackDelayReductionPercent] = 30;
+            StatGroup.Stats[StatType.AttackDelayReductionPercent] = 20;
         }
 
     }

@@ -30,6 +30,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
                 .HasRecastDelay(RecastGroup.NeuralShock, 60f)
                 .RequiresTarget()
                 .HasImpactAction(NeuralShock1ImpactAction)
+                .SkillType(SkillType.Katar)
+                .IsSingleTargetAbility()
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()

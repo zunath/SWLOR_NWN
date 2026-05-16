@@ -29,6 +29,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
                 .HasRecastDelay(RecastGroup.TwinFangFlurry, 60f)
                 .RequiresTarget()
                 .HasImpactAction(TwinFangFlurry1ImpactAction)
+                .SkillType(SkillType.Katar)
+                .IsSingleTargetAbility()
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()

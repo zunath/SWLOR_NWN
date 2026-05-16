@@ -17,6 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
                     .Create(FeatType.CobraStance1, PerkType.CobraStance)
                     .Name("Cobra Stance")
                     .Level(1)
+                    .SkillType(SkillType.Katar)
                     .HasRecastDelay(RecastGroup.CobraStance, 180f),
                 typeof(CobraStanceStatusEffect));
 

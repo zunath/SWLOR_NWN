@@ -17,6 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
                     .Create(FeatType.ToxicRush1, PerkType.ToxicRush)
                     .Name("Toxic Rush")
                     .Level(1)
+                    .SkillType(SkillType.Katar)
                     .HasRecastDelay(RecastGroup.ToxicRush, 120f),
                 typeof(ToxicRushStatusEffect),
                 20f,

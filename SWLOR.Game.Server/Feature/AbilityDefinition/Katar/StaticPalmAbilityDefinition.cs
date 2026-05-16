@@ -32,6 +32,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.StaticPalm, 30f)
                 .HasImpactAction(StaticPalm1ImpactAction)
+                .SkillType(SkillType.Katar)
+                .IsSingleTargetAbility()
                 .IsWeaponAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
@@ -47,6 +49,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.StaticPalm, 30f)
                 .HasImpactAction(StaticPalm2ImpactAction)
+                .SkillType(SkillType.Katar)
+                .IsSingleTargetAbility()
                 .IsWeaponAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
@@ -62,6 +66,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.StaticPalm, 30f)
                 .HasImpactAction(StaticPalm3ImpactAction)
+                .SkillType(SkillType.Katar)
+                .IsSingleTargetAbility()
                 .IsWeaponAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
@@ -80,11 +86,23 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
 
         private static void StaticPalm3ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            var additionalStatusEffects = StatusEffect.HasStatusEffect(target, typeof(PoisonStatusEffect))
-                ? new[] { typeof(DazedStatusEffect) }
-                : Array.Empty<Type>();
+            var appliesDazed = StatusEffect.HasStatusEffect(target, typeof(PoisonStatusEffect));
 
-            Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Katar, 28, 15, typeof(DisorientedStatusEffect), false, additionalStatusEffects, damageType: CombatDamageType.Electrical);
+            Ability.ApplyCombatImpact(
+                activator,
+                target,
+                targetLocation,
+                SkillType.Katar,
+                28,
+                15,
+                typeof(DisorientedStatusEffect),
+                false,
+                damageType: CombatDamageType.Electrical,
+                afterSuccessfulHit: hitTarget =>
+                {
+                    if (appliesDazed)
+                        StatusEffect.ApplyStatusEffect(activator, hitTarget, typeof(DazedStatusEffect), 3f, CombatDamageType.Electrical);
+                });
         }
     }
 }

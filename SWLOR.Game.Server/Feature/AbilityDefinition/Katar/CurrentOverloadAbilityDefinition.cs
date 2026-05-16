@@ -30,6 +30,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
                 .HasRecastDelay(RecastGroup.CurrentOverload, 90f)
                 .RequiresTarget()
                 .HasImpactAction(CurrentOverload1ImpactAction)
+                .SkillType(SkillType.Katar)
+                .IsSingleTargetAbility()
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
@@ -49,10 +51,21 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
                 : typeof(StunnedStatusEffect);
             var duration = statusEffect == null ? 0 : 3;
 
-            if (consumedStatus != null)
-                StatusEffect.RemoveStatusEffect(target, consumedStatus, false);
-
-            Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Katar, damage, duration, statusEffect, false, damageType: CombatDamageType.Electrical);
+            Ability.ApplyCombatImpact(
+                activator,
+                target,
+                targetLocation,
+                SkillType.Katar,
+                damage,
+                duration,
+                statusEffect,
+                false,
+                damageType: CombatDamageType.Electrical,
+                afterSuccessfulHit: hitTarget =>
+                {
+                    if (consumedStatus != null)
+                        StatusEffect.RemoveStatusEffect(hitTarget, consumedStatus, false);
+                });
         }
     }
 }

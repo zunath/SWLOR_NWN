@@ -29,6 +29,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.VenomSplash, 60f)
                 .HasImpactAction(VenomSplash1ImpactAction)
+                .SkillType(SkillType.Katar)
+                .IsAreaAbility()
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()

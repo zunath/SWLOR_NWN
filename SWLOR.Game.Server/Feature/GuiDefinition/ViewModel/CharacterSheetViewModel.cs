@@ -208,6 +208,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public string AttackDelay
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string AttackDelayTooltip
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
         public int Attack
         {
             get => Get<int>();
@@ -755,6 +767,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var mainHand = GetItemInSlot(InventorySlot.RightHand, _target);
             var offHand = GetItemInSlot(InventorySlot.LeftHand, _target);
             var mainHandType = GetBaseItemType(mainHand);
+            var attackDelayInfo = GetAttackDelayInfo();
+            AttackDelay = attackDelayInfo.Value;
+            AttackDelayTooltip = attackDelayInfo.Tooltip;
 
             if (GetIsObjectValid(mainHand))
             {
@@ -809,6 +824,20 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             RefreshResistances();
             RefreshCraftingStats();
             RefreshCharacterStatsList();
+        }
+
+        private (string Value, string Tooltip) GetAttackDelayInfo()
+        {
+            var weaponDelayMilliseconds = Combat.CalculateAttackDelay(_target);
+            var totalDelayMilliseconds = weaponDelayMilliseconds + Combat.BaseAttackDelayMilliseconds;
+            var weaponDelaySeconds = weaponDelayMilliseconds / 1000f;
+            var baseDelaySeconds = Combat.BaseAttackDelayMilliseconds / 1000f;
+            var totalDelaySeconds = totalDelayMilliseconds / 1000f;
+
+            return (
+                $"{totalDelaySeconds:0.##}s",
+                $"Est. Delay: {totalDelaySeconds:0.##}s ({weaponDelaySeconds:0.##}s weapon + {baseDelaySeconds:0.##}s animation)"
+            );
         }
 
         private void RefreshCharacterStatsList()

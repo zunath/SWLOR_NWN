@@ -43,7 +43,6 @@ namespace SWLOR.Game.Server.Native
         private const int WEAPON_ATTACK_TYPE_OFFHAND = 2;
 
         private static readonly Dictionary<uint, DateTime> _creatureAttackDelays = new();
-        private const int BaseAttackDelay = 1750;
 
         internal delegate int AIActionAttackObjectHook(void* pCreature, void* pNode);
 
@@ -386,7 +385,7 @@ namespace SWLOR.Game.Server.Native
                     !bTargetDead)
                 {
                     var calculatedDelay = Combat.CalculateAttackDelay(pCreature.m_idSelf);
-                    var delay = calculatedDelay + BaseAttackDelay;
+                    var delay = calculatedDelay + Combat.BaseAttackDelayMilliseconds;
                     var timeSinceLastAttack = (DateTime.UtcNow - _creatureAttackDelays[pCreature.m_idSelf]).TotalMilliseconds;
 
                     if (timeSinceLastAttack < delay)

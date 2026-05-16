@@ -29,6 +29,7 @@ namespace SWLOR.Game.Server.Service
         private const int MaximumGuardDamageReductionPercent = 40;
 
         public const int StandardCriticalRating = 2;
+        public const int BaseAttackDelayMilliseconds = 1750;
 
         private static readonly List<CombatDamageType> _allValidDamageTypes = new();
         private static readonly List<CombatDamageType> _allDefenseDamageTypes = new();

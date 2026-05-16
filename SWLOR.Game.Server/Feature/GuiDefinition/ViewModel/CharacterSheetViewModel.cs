@@ -833,6 +833,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             AddStat("Shield Deflection", FormatPercent(Stat.GetShieldDeflectionChance(_target)), "Ability to deflect attacks with a shield.");
             AddStat("Attack Deflection", FormatPercent(Stat.GetAttackDeflectionChance(_target)), "Ability to deflect attacks.");
             AddStat("Guard", FormatPercent(Stat.GetGuardChance(_target)), "Chance to reduce damage by 20% and increase enmity gain.");
+            AddStat("Phys. Taken", FormatPercent(GetDamageTakenPercent(CombatDamageType.Physical)), "Incoming physical damage modifier after damage-taken effects. Lower is better.");
+            AddStat("Force Taken", FormatPercent(GetDamageTakenPercent(CombatDamageType.Force)), "Incoming Force damage modifier after damage-taken effects. Lower is better.");
             AddStat("Critical Rate", FormatPercent(GetCriticalRate(combatProfile.Skill)), "Increases the chance to score a critical hit. Actual chance varies by target Vitality.");
             AddStat("Critical Damage", FormatPercent(Stat.GetStatAdjustment(_target, StatType.CriticalDamagePercentAdjustment)), "Increases the amount of damage a critical hit deals.");
             AddStat("Enmity", FormatPercent(Stat.GetStatAdjustment(_target, StatType.EnmityPercentAdjustment)), "Increases or decreases the rate at which enmity is acquired.");
@@ -952,6 +954,32 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return 0;
 
             return Math.Max(0, -Stat.GetStatAdjustment(_target, StatType.IncomingAbilityHitChancePercentAdjustment));
+        }
+
+        private int GetDamageTakenPercent(CombatDamageType damageType)
+        {
+            var typeAdjustment = damageType switch
+            {
+                CombatDamageType.Physical => Stat.GetStatAdjustment(_target, StatType.PhysicalDamageTakenPercentAdjustment),
+                CombatDamageType.Force => Stat.GetStatAdjustment(_target, StatType.ForceDamageTakenPercentAdjustment),
+                _ => 0
+            };
+
+            var percent = ApplyDamageTakenPercentAdjustment(100, typeAdjustment);
+            return ApplyDamageTakenPercentAdjustment(
+                percent,
+                Stat.GetStatAdjustment(_target, StatType.DamageTakenPercentAdjustment));
+        }
+
+        private static int ApplyDamageTakenPercentAdjustment(int percent, int adjustment)
+        {
+            if (percent <= 0 || adjustment <= -100)
+                return 0;
+
+            if (adjustment == 0)
+                return percent;
+
+            return Math.Max(0, percent + (int)Math.Ceiling(percent * (adjustment / 100f)));
         }
 
         private static string FormatPercent(int value)

@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 {
     public sealed class FlamethrowerAbilityDefinition : IAbilityListDefinition
     {
-        private const VisualEffect FlamethrowerAreaVisualEffect = VisualEffect.Vfx_Flamethrower;
+        private const VisualEffect FlamethrowerVisualEffect = VisualEffect.Vfx_Flamethrower;
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
@@ -82,6 +82,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 
         private static void Flamethrower1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
+            PlayFlamethrowerVisualEffect(activator);
+
             Ability.ApplyTelegraphedCombatImpact(
                 activator,
                 target,
@@ -98,14 +100,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 centerOnActivator: !GetIsObjectValid(target),
                 damageType: CombatDamageType.Fire,
                 targetVisualEffect: VisualEffect.Vfx_Com_Hit_Fire,
-                areaVisualEffect: FlamethrowerAreaVisualEffect,
+                areaVisualEffect: VisualEffect.None,
                 damagePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetDamageAdjustment(activator),
                 hitChancePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetAccuracyAdjustment(activator),
-                criticalRatePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetCriticalRateAdjustment(activator));
+                criticalRatePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetCriticalRateAdjustment(activator),
+                playImpactAnimation: false);
         }
 
         private static void Flamethrower2ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
+            PlayFlamethrowerVisualEffect(activator);
+
             Ability.ApplyTelegraphedCombatImpact(
                 activator,
                 target,
@@ -122,14 +127,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 centerOnActivator: !GetIsObjectValid(target),
                 damageType: CombatDamageType.Fire,
                 targetVisualEffect: VisualEffect.Vfx_Com_Hit_Fire,
-                areaVisualEffect: FlamethrowerAreaVisualEffect,
+                areaVisualEffect: VisualEffect.None,
                 damagePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetDamageAdjustment(activator),
                 hitChancePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetAccuracyAdjustment(activator),
-                criticalRatePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetCriticalRateAdjustment(activator));
+                criticalRatePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetCriticalRateAdjustment(activator),
+                playImpactAnimation: false);
         }
 
         private static void Flamethrower3ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
+            PlayFlamethrowerVisualEffect(activator);
+
             Ability.ApplyTelegraphedCombatImpact(
                 activator,
                 target,
@@ -146,10 +154,20 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 centerOnActivator: !GetIsObjectValid(target),
                 damageType: CombatDamageType.Fire,
                 targetVisualEffect: VisualEffect.Vfx_Com_Hit_Fire,
-                areaVisualEffect: FlamethrowerAreaVisualEffect,
+                areaVisualEffect: VisualEffect.None,
                 damagePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetDamageAdjustment(activator),
                 hitChancePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetAccuracyAdjustment(activator),
-                criticalRatePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetCriticalRateAdjustment(activator));
+                criticalRatePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetCriticalRateAdjustment(activator),
+                playImpactAnimation: false);
+        }
+
+        private static void PlayFlamethrowerVisualEffect(uint activator)
+        {
+            AssignCommand(activator, () =>
+            {
+                ActionPlayAnimation(Animation.CastOutAnimation, 1f, 2.1f);
+                ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(FlamethrowerVisualEffect), activator, 2f);
+            });
         }
 
     }

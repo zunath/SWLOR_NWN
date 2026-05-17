@@ -36,6 +36,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .HasActivationDelay(1f)
                 .HasRecastDelay(RecastGroup.DampeningField, 60f)
                 .SkillType(SkillType.Devices)
+                .HasMaxRange(DeviceAbilityRange.Standard)
                 .IsSingleTargetAbility()
                 .RequiresTarget()
                 .HasCustomValidation((activator, target, _, _) =>
@@ -55,6 +56,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .HasActivationDelay(1f)
                 .HasRecastDelay(RecastGroup.DampeningField, 60f)
                 .SkillType(SkillType.Devices)
+                .HasMaxRange(DeviceAbilityRange.Standard)
                 .IsSingleTargetAbility()
                 .RequiresTarget()
                 .HasCustomValidation((activator, target, _, _) =>

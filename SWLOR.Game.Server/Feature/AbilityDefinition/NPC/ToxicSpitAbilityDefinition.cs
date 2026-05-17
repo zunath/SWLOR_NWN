@@ -24,6 +24,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                 .RequirementStamina(3)
                 .HasRecastDelay(RecastGroup.ToxicSpit, 18f)
                 .IsSingleTargetAbility()
+                .HasMaxRange(8f)
                 .RequiresTarget()
                 .IsHostileAbility()
                 .HasImpactAction((activator, target, level, location) =>

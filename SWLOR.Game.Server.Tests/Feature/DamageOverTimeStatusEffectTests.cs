@@ -22,6 +22,24 @@ public class DamageOverTimeStatusEffectTests
         burnSource.Should().Contain("AssignCommand(source, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(amount, DamageType.Fire), creature))");
     }
 
+    [Test]
+    public void PoisonStatusEffect_FloorsTickDamageAndAttributesPoisonDamageToSource()
+    {
+        var root = FindRepositoryRoot();
+        var poisonSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "StatusEffectDefinition",
+            "PoisonStatusEffect.cs"));
+
+        poisonSource.Should().Contain("var source = GetIsObjectValid(Source) ? Source : creature;");
+        poisonSource.Should().Contain("Math.Max(1, Random.Next(3, 7) + agility * level)");
+        poisonSource.Should().Contain("Combat.ApplyDamageOverTimeTakenModifiers(creature, amount, CombatDamageType.Poison)");
+        poisonSource.Should().Contain("Combat.ApplyDamageTakenModifiers(creature, amount, source, CombatDamageType.Poison)");
+        poisonSource.Should().Contain("AssignCommand(source, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(amount, DamageType.Acid), creature))");
+    }
+
     private static DirectoryInfo FindRepositoryRoot()
     {
         var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);

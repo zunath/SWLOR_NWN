@@ -31,17 +31,24 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         protected override void Tick(uint creature)
         {
+            var source = GetIsObjectValid(Source) ? Source : creature;
             var level = 1;
-            var agility = GetAbilityModifier(AbilityType.Agility, Source);
-            var amount = Random.Next(3, 7) + agility * level;
+            var agility = GetAbilityModifier(AbilityType.Agility, source);
+            var amount = Math.Max(1, Random.Next(3, 7) + agility * level);
             amount = Resistance.ApplyResistanceToDamage(creature, ResistanceType, amount);
-            ApplyEffectToObject(DurationType.Instant, EffectDamage(amount, DamageType.Acid), creature);
-            StatusEffect.ApplyStatusEffect(Source, creature, typeof(PoisonDefensePenaltyStatusEffect), 6f);
+            amount = Combat.ApplyDamageOverTimeTakenModifiers(creature, amount, CombatDamageType.Poison);
+            amount = Combat.ApplyDamageTakenModifiers(creature, amount, source, CombatDamageType.Poison);
+            if (amount <= 0)
+                return;
+
+            AssignCommand(source, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(amount, DamageType.Acid), creature));
+            StatusEffect.ApplyStatusEffect(source, creature, typeof(PoisonDefensePenaltyStatusEffect), 6f);
         }
 
         protected override void Remove(uint creature)
         {
-            StatusEffect.RemoveStatusEffect(creature, typeof(PoisonDefensePenaltyStatusEffect), Source, false);
+            var source = GetIsObjectValid(Source) ? Source : creature;
+            StatusEffect.RemoveStatusEffect(creature, typeof(PoisonDefensePenaltyStatusEffect), source, false);
         }
     }
 }

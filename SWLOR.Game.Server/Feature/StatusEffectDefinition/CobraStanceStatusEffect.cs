@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class CobraStanceStatusEffect : StatusEffectBase
     {
         public override string Name => "Cobra Stance";
-        public override EffectIconType Icon => EffectIconType.Poison;
+        public override EffectIconType Icon => EffectIconType.AttackIncrease;
 
         protected override void OnDamageDealt(uint attacker, uint defender, int damage, CombatDamageType damageType)
         {

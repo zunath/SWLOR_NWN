@@ -27,6 +27,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 .Level(1)
                 .HasActivationDelay(2f)
                 .SkillType(SkillType.Rifle)
+                .UsesImpactAnimation(Animation.PointPistol)
                 .IsAreaAbility()
                 .HasRecastDelay(RecastGroup.Capstone, 1800f)
                 .HasImpactAction(StasisVolley1ImpactAction)

@@ -32,6 +32,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 .HasActivationDelay(2f)
                 .HasRecastDelay(RecastGroup.Capstone, 1800f)
                 .SkillType(SkillType.Pistol)
+                .UsesImpactAnimation(Animation.PointPistol)
                 .HasMaxRange(PistolAbilityRange.Standard)
                 .RequiresTarget()
                 .IsAreaAbility()

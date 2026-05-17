@@ -34,6 +34,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 .Level(1)
                 .HasActivationDelay(0f)
                 .SkillType(SkillType.Rifle)
+                .UsesImpactAnimation(Animation.PointPistol)
                 .HasRecastDelay(RecastGroup.PacificationField, 180f)
                 .IsAreaAbility()
                 .HasImpactAction(PacificationField1ImpactAction)

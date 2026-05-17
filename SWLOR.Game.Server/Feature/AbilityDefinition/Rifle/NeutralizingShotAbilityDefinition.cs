@@ -28,6 +28,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 .Level(1)
                 .HasActivationDelay(0f)
                 .SkillType(SkillType.Rifle)
+                .UsesImpactAnimation(Animation.PointPistol)
                 .HasMaxRange(RifleAbilityRange.Standard)
                 .IsSingleTargetAbility()
                 .HasRecastDelay(RecastGroup.NeutralizingShot, 90f)

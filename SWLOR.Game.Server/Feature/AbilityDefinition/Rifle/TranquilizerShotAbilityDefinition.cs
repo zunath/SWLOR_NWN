@@ -17,6 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                     .Create(FeatType.TranquilizerShot1, PerkType.TranquilizerShot)
                     .Name("Tranquilizer Shot I")
                     .Level(1)
+                    .UsesImpactAnimation(Animation.PointPistol)
                     .HasRecastDelay(RecastGroup.TranquilizerShot, 60f),
                 SkillType.Rifle,
                 0,
@@ -28,6 +29,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                     .Create(FeatType.TranquilizerShot2, PerkType.TranquilizerShot)
                     .Name("Tranquilizer Shot II")
                     .Level(2)
+                    .UsesImpactAnimation(Animation.PointPistol)
                     .HasRecastDelay(RecastGroup.TranquilizerShot, 60f),
                 SkillType.Rifle,
                 0,

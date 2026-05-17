@@ -17,6 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                     .Create(FeatType.CripplingShot1, PerkType.CripplingShot)
                     .Name("Crippling Shot I")
                     .Level(1)
+                    .UsesImpactAnimation(Animation.PointPistol)
                     .HasRecastDelay(RecastGroup.CripplingShot, 30f),
                 SkillType.Rifle,
                 12,
@@ -28,6 +29,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                     .Create(FeatType.CripplingShot2, PerkType.CripplingShot)
                     .Name("Crippling Shot II")
                     .Level(2)
+                    .UsesImpactAnimation(Animation.PointPistol)
                     .HasRecastDelay(RecastGroup.CripplingShot, 30f),
                 SkillType.Rifle,
                 22,
@@ -39,6 +41,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                     .Create(FeatType.CripplingShot3, PerkType.CripplingShot)
                     .Name("Crippling Shot III")
                     .Level(3)
+                    .UsesImpactAnimation(Animation.PointPistol)
                     .HasRecastDelay(RecastGroup.CripplingShot, 30f),
                 SkillType.Rifle,
                 34,

@@ -27,6 +27,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 .Create(FeatType.TranqCone1, PerkType.TranqCone)
                 .Name("Tranq Cone I")
                 .Level(1)
+                .UsesImpactAnimation(Animation.PointPistol)
                 .HasRecastDelay(RecastGroup.TranqCone, 120f);
 
             ConfigureTranqCone(
@@ -44,6 +45,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 .Create(FeatType.TranqCone2, PerkType.TranqCone)
                 .Name("Tranq Cone II")
                 .Level(2)
+                .UsesImpactAnimation(Animation.PointPistol)
                 .HasRecastDelay(RecastGroup.TranqCone, 120f);
 
             ConfigureTranqCone(

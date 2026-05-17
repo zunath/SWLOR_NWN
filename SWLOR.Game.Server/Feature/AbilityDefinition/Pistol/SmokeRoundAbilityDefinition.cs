@@ -31,6 +31,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.SmokeRound, 120f)
                 .SkillType(Skill)
+                .UsesImpactAnimation(Animation.PointPistol)
                 .IsAreaAbility()
                 .HasImpactAction(SmokeRound1ImpactAction)
                 .IsCastedAbility()

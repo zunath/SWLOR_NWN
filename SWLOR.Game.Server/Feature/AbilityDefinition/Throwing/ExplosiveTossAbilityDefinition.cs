@@ -63,6 +63,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
                 .HasRecastDelay(RecastGroup.ExplosiveToss, 45f)
                 .HasActivationDelay(0f)
                 .SkillType(Skill)
+                .UsesImpactAnimation(Animation.ThrowGrenade)
                 .HasMaxRange(ThrowingAbilityRange.Standard)
                 .IsAreaAbility()
                 .HasImpactAction(impactAction)

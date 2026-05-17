@@ -28,6 +28,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.PointBlankBurst, 90f)
                 .SkillType(SkillType.Pistol)
+                .UsesImpactAnimation(Animation.PointPistol)
                 .IsAreaAbility()
                 .HasImpactAction(PointBlankBurst1ImpactAction)
                 .IsCastedAbility()

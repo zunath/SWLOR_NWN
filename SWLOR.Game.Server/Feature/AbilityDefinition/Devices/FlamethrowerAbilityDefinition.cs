@@ -16,6 +16,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 {
     public sealed class FlamethrowerAbilityDefinition : IAbilityListDefinition
     {
+        private const VisualEffect FlamethrowerAreaVisualEffect = VisualEffect.Vfx_Flamethrower;
+
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
@@ -96,7 +98,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 centerOnActivator: !GetIsObjectValid(target),
                 damageType: CombatDamageType.Fire,
                 targetVisualEffect: VisualEffect.Vfx_Com_Hit_Fire,
-                areaVisualEffect: VisualEffect.Fnf_Fireball,
+                areaVisualEffect: FlamethrowerAreaVisualEffect,
                 damagePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetDamageAdjustment(activator),
                 hitChancePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetAccuracyAdjustment(activator),
                 criticalRatePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetCriticalRateAdjustment(activator));
@@ -120,7 +122,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 centerOnActivator: !GetIsObjectValid(target),
                 damageType: CombatDamageType.Fire,
                 targetVisualEffect: VisualEffect.Vfx_Com_Hit_Fire,
-                areaVisualEffect: VisualEffect.Fnf_Fireball,
+                areaVisualEffect: FlamethrowerAreaVisualEffect,
                 damagePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetDamageAdjustment(activator),
                 hitChancePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetAccuracyAdjustment(activator),
                 criticalRatePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetCriticalRateAdjustment(activator));
@@ -144,7 +146,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 centerOnActivator: !GetIsObjectValid(target),
                 damageType: CombatDamageType.Fire,
                 targetVisualEffect: VisualEffect.Vfx_Com_Hit_Fire,
-                areaVisualEffect: VisualEffect.Fnf_Fireball,
+                areaVisualEffect: FlamethrowerAreaVisualEffect,
                 damagePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetDamageAdjustment(activator),
                 hitChancePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetAccuracyAdjustment(activator),
                 criticalRatePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetCriticalRateAdjustment(activator));

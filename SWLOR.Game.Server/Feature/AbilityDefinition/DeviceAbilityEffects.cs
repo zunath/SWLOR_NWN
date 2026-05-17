@@ -16,6 +16,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
     public static class DeviceAbilityEffects
     {
         private const float FieldEngineerPulseIntervalSeconds = 3f;
+        private const float FieldEngineerVisualRefreshPaddingSeconds = 0.2f;
+        private const float FieldEngineerVisualMinimumDurationSeconds = 0.1f;
 
         private static readonly Dictionary<uint, List<FieldEngineerPulseEmitter>> _activeFieldEngineerPulseEmitters = new();
 
@@ -33,6 +35,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 CombatDamageType damageType,
                 VisualEffect targetVisualEffect,
                 VisualEffect areaVisualEffect,
+                VisualEffect markerVisualEffect,
+                float markerVisualEffectScale,
                 bool isAreaPulse)
             {
                 Activator = activator;
@@ -46,6 +50,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 DamageType = damageType;
                 TargetVisualEffect = targetVisualEffect;
                 AreaVisualEffect = areaVisualEffect;
+                MarkerVisualEffect = markerVisualEffect;
+                MarkerVisualEffectScale = markerVisualEffectScale;
                 IsAreaPulse = isAreaPulse;
             }
 
@@ -60,6 +66,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             public CombatDamageType DamageType { get; }
             public VisualEffect TargetVisualEffect { get; }
             public VisualEffect AreaVisualEffect { get; }
+            public VisualEffect MarkerVisualEffect { get; }
+            public float MarkerVisualEffectScale { get; }
             public bool IsAreaPulse { get; }
         }
 
@@ -119,7 +127,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             float durationSeconds,
             CombatDamageType damageType,
             VisualEffect targetVisualEffect,
-            VisualEffect areaVisualEffect = VisualEffect.None)
+            VisualEffect areaVisualEffect = VisualEffect.None,
+            VisualEffect markerVisualEffect = VisualEffect.None,
+            float markerVisualEffectScale = 1f)
         {
             TrackFieldEngineerPulseEmitter(new FieldEngineerPulseEmitter(
                 activator,
@@ -133,6 +143,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 damageType,
                 targetVisualEffect,
                 areaVisualEffect,
+                markerVisualEffect,
+                markerVisualEffectScale,
                 false));
         }
 
@@ -147,7 +159,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             float durationSeconds,
             CombatDamageType damageType,
             VisualEffect targetVisualEffect,
-            VisualEffect areaVisualEffect = VisualEffect.None)
+            VisualEffect areaVisualEffect = VisualEffect.None,
+            VisualEffect markerVisualEffect = VisualEffect.None,
+            float markerVisualEffectScale = 1f)
         {
             TrackFieldEngineerPulseEmitter(new FieldEngineerPulseEmitter(
                 activator,
@@ -161,6 +175,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 damageType,
                 targetVisualEffect,
                 areaVisualEffect,
+                markerVisualEffect,
+                markerVisualEffectScale,
                 true));
         }
 
@@ -197,6 +213,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             }
 
             emitters.Add(emitter);
+            ApplyFieldEngineerPulseEmitterVisual(emitter);
             ScheduleNextFieldEngineerPulse(emitter);
         }
 
@@ -219,6 +236,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                     RemoveFieldEngineerPulseEmitter(emitter);
                     return;
                 }
+
+                ApplyFieldEngineerPulseEmitterVisual(emitter);
 
                 if (emitter.IsAreaPulse)
                     ApplyAreaHostilePulse(emitter);
@@ -261,7 +280,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 targetVisualEffect: emitter.TargetVisualEffect,
                 damagePercentAdjustment: damagePercentAdjustment,
                 hitChancePercentAdjustment: Stat.GetStatAdjustment(emitter.Activator, StatType.BeaconPulseAccuracyPercentAdjustment),
-                criticalRatePercentAdjustment: Stat.GetStatAdjustment(emitter.Activator, StatType.BeaconPulseCriticalRatePercentAdjustment));
+                criticalRatePercentAdjustment: Stat.GetStatAdjustment(emitter.Activator, StatType.BeaconPulseCriticalRatePercentAdjustment),
+                playImpactAnimation: false);
         }
 
         private static void ApplyAreaHostilePulse(FieldEngineerPulseEmitter emitter)
@@ -281,7 +301,28 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 Array.Empty<Type>(),
                 damageType: emitter.DamageType,
                 targetVisualEffect: emitter.TargetVisualEffect,
-                areaVisualEffect: emitter.AreaVisualEffect);
+                areaVisualEffect: emitter.AreaVisualEffect,
+                playImpactAnimation: false);
+        }
+
+        private static void ApplyFieldEngineerPulseEmitterVisual(FieldEngineerPulseEmitter emitter)
+        {
+            if (emitter.MarkerVisualEffect == VisualEffect.None ||
+                !GetIsObjectValid(GetAreaFromLocation(emitter.Location)))
+            {
+                return;
+            }
+
+            var refreshDuration = Math.Min(
+                                      Math.Max(emitter.RemainingSeconds, FieldEngineerVisualMinimumDurationSeconds),
+                                      FieldEngineerPulseIntervalSeconds) +
+                                  FieldEngineerVisualRefreshPaddingSeconds;
+            var markerVisualEffectScale = Math.Max(FieldEngineerVisualMinimumDurationSeconds, emitter.MarkerVisualEffectScale);
+            ApplyEffectAtLocation(
+                DurationType.Temporary,
+                EffectVisualEffect(emitter.MarkerVisualEffect, false, markerVisualEffectScale),
+                emitter.Location,
+                refreshDuration);
         }
 
         private static bool IsFieldEngineerEmitterTracked(FieldEngineerPulseEmitter emitter)

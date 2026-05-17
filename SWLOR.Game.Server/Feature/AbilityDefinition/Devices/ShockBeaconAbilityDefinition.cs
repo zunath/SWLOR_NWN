@@ -74,7 +74,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 15f,
                 CombatDamageType.Electrical,
                 VisualEffect.Vfx_Com_Hit_Electrical,
-                VisualEffect.Vfx_Fnf_Electric_Explosion);
+                VisualEffect.Vfx_Fnf_Electric_Explosion,
+                markerVisualEffect: VisualEffect.Vfx_Dur_Aura_Pulse_Cyan_Blue);
         }
 
         private static void ShockBeacon2ImpactAction(uint activator, uint target, int level, Location targetLocation)
@@ -90,7 +91,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 18f,
                 CombatDamageType.Electrical,
                 VisualEffect.Vfx_Com_Hit_Electrical,
-                VisualEffect.Vfx_Fnf_Electric_Explosion);
+                VisualEffect.Vfx_Fnf_Electric_Explosion,
+                markerVisualEffect: VisualEffect.Vfx_Dur_Aura_Pulse_Cyan_Blue);
         }
 
     }

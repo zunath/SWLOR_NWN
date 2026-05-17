@@ -57,7 +57,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 12f,
                 18f,
                 CombatDamageType.Physical,
-                VisualEffect.Vfx_Com_Chunk_Red_Small);
+                VisualEffect.Vfx_Com_Chunk_Red_Small,
+                markerVisualEffect: VisualEffect.Vfx_Dur_Aura_Pulse_Red_Blue);
 
             DeviceAbilityEffects.ScheduleSingleHostilePulses(
                 activator,

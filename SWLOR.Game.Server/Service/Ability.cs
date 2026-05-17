@@ -896,7 +896,8 @@ namespace SWLOR.Game.Server.Service
             int criticalRatePercentAdjustment = 0,
             bool useNPCStatScaling = false,
             bool awardsCombatPoints = true,
-            DamageType? effectDamageType = null)
+            DamageType? effectDamageType = null,
+            bool playImpactAnimation = true)
         {
             var totalDamage = 0;
             RecordAbilityImpactShape(activator, skillType, isArea);
@@ -970,7 +971,9 @@ namespace SWLOR.Game.Server.Service
                     effectDamageType: effectDamageType);
             }
 
-            PlayCombatImpactAnimation(activator, impactAnimation);
+            if (playImpactAnimation)
+                PlayCombatImpactAnimation(activator, impactAnimation);
+
             return totalDamage;
         }
 
@@ -1009,7 +1012,8 @@ namespace SWLOR.Game.Server.Service
             int criticalRatePercentAdjustment = 0,
             bool useNPCStatScaling = false,
             bool awardsCombatPoints = true,
-            DamageType? effectDamageType = null)
+            DamageType? effectDamageType = null,
+            bool playImpactAnimation = true)
         {
             RecordAbilityImpactShape(activator, skillType, true);
 
@@ -1045,7 +1049,9 @@ namespace SWLOR.Game.Server.Service
                     useNPCStatScaling,
                     awardsCombatPoints,
                     effectDamageType);
-                PlayCombatImpactAnimation(activator, impactAnimation);
+                if (playImpactAnimation)
+                    PlayCombatImpactAnimation(activator, impactAnimation);
+
                 return;
             }
 
@@ -1124,7 +1130,8 @@ namespace SWLOR.Game.Server.Service
                     throw new ArgumentOutOfRangeException(nameof(shape), shape, null);
             }
 
-            PlayCombatImpactAnimation(activator, impactAnimation);
+            if (playImpactAnimation)
+                PlayCombatImpactAnimation(activator, impactAnimation);
         }
 
         private static void ApplyCombatImpactInShape(

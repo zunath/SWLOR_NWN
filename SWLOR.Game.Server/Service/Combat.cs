@@ -31,6 +31,9 @@ namespace SWLOR.Game.Server.Service
 
         public const int StandardCriticalRating = 2;
         public const int BaseAttackDelayMilliseconds = 1750;
+        private const int AttackDelayUnitsPerSecond = 60;
+        private const int MillisecondsPerSecond = 1000;
+        private const int BaseAttackDelayUnits = BaseAttackDelayMilliseconds * AttackDelayUnitsPerSecond / MillisecondsPerSecond;
 
         private static readonly List<CombatDamageType> _allValidDamageTypes = new();
         private static readonly List<CombatDamageType> _allDefenseDamageTypes = new();
@@ -3774,7 +3777,7 @@ namespace SWLOR.Game.Server.Service
             var rightHandDelay = GetWeaponDelay(rightHand);
             var leftHandDelay = ApplyOffhandAttackDelayReduction(attacker, GetWeaponDelay(leftHand));
 
-            var delay = rightHandDelay + leftHandDelay;
+            var delay = CalculateEquippedWeaponDelayUnits(rightHandDelay, leftHandDelay);
             if (delay == 0)
             {
                 var creatureRight = GetItemInSlot(InventorySlot.CreatureRight, attacker);
@@ -3794,17 +3797,34 @@ namespace SWLOR.Game.Server.Service
                     .Min();
             }
 
-            // Convert delay units to milliseconds: 60 delay units = 1 second.
-            var finalDelay = (int)(delay / 60f * 1000);
+            var finalDelay = ConvertAttackDelayUnitsToMilliseconds(delay);
             var reductionPercentage = CalculateAttackDelayReduction(attacker);
 
-            if (reductionPercentage > 0)
-            {
-                var reductionAmount = (int)(finalDelay * (reductionPercentage / 100f));
-                finalDelay -= reductionAmount;
-            }
+            return ApplyAttackDelayReduction(finalDelay, reductionPercentage);
+        }
 
-            return finalDelay;
+        /// <summary>
+        /// Calculates raw attack delay milliseconds from weapon delay units.
+        /// </summary>
+        /// <param name="rightHandDelayUnits">Main-hand delay in custom delay units.</param>
+        /// <param name="leftHandDelayUnits">Offhand delay in custom delay units.</param>
+        /// <param name="attackDelayReductionPercent">Overall attack delay reduction percentage.</param>
+        /// <param name="offhandAttackDelayReductionPercent">Offhand attack delay reduction percentage.</param>
+        /// <returns>Raw attack delay in milliseconds before engine default delay adjustment.</returns>
+        public static int CalculateAttackDelayMilliseconds(
+            int rightHandDelayUnits,
+            int leftHandDelayUnits,
+            int attackDelayReductionPercent,
+            int offhandAttackDelayReductionPercent)
+        {
+            attackDelayReductionPercent = Math.Min(attackDelayReductionPercent, 50);
+            offhandAttackDelayReductionPercent = Math.Min(Math.Max(offhandAttackDelayReductionPercent, 0), 50);
+            leftHandDelayUnits = ApplyPercentReduction(leftHandDelayUnits, offhandAttackDelayReductionPercent);
+
+            var delayUnits = CalculateEquippedWeaponDelayUnits(rightHandDelayUnits, leftHandDelayUnits);
+            var delayMilliseconds = ConvertAttackDelayUnitsToMilliseconds(delayUnits);
+
+            return ApplyAttackDelayReduction(delayMilliseconds, attackDelayReductionPercent);
         }
 
         /// <summary>
@@ -3825,11 +3845,43 @@ namespace SWLOR.Game.Server.Service
                 return offhandDelay;
 
             var reductionPercentage = CalculateOffhandAttackDelayReduction(attacker);
-            if (reductionPercentage <= 0)
-                return offhandDelay;
+            return ApplyPercentReduction(offhandDelay, reductionPercentage);
+        }
 
-            var reductionAmount = (int)(offhandDelay * (reductionPercentage / 100f));
-            return Math.Max(0, offhandDelay - reductionAmount);
+        private static int CalculateEquippedWeaponDelayUnits(int rightHandDelay, int leftHandDelay)
+        {
+            rightHandDelay = Math.Max(0, rightHandDelay);
+            leftHandDelay = Math.Max(0, leftHandDelay);
+
+            var hasRightHandDelay = rightHandDelay > 0;
+            var hasLeftHandDelay = leftHandDelay > 0;
+            if (!hasRightHandDelay || !hasLeftHandDelay)
+                return rightHandDelay + leftHandDelay;
+
+            // Each equipped weapon delay includes the engine's default attack cadence.
+            // The custom delay gate only needs to pay that baseline once for the pair.
+            return BaseAttackDelayUnits +
+                   Math.Max(0, rightHandDelay - BaseAttackDelayUnits) +
+                   Math.Max(0, leftHandDelay - BaseAttackDelayUnits);
+        }
+
+        private static int ConvertAttackDelayUnitsToMilliseconds(int delayUnits)
+        {
+            return (int)(delayUnits / (float)AttackDelayUnitsPerSecond * MillisecondsPerSecond);
+        }
+
+        private static int ApplyAttackDelayReduction(int delayMilliseconds, int reductionPercentage)
+        {
+            return ApplyPercentReduction(delayMilliseconds, reductionPercentage);
+        }
+
+        private static int ApplyPercentReduction(int value, int reductionPercentage)
+        {
+            if (value <= 0 || reductionPercentage <= 0)
+                return value;
+
+            var reductionAmount = (int)(value * (reductionPercentage / 100f));
+            return Math.Max(0, value - reductionAmount);
         }
 
         /// <summary>

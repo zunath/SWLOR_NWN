@@ -53,7 +53,7 @@ public class ForceDarkManipulatorTests
         AssertPerkLevel(perks[PerkType.ForceGrip], "Force Grip", 3, 3, 48, FeatType.ForceGrip3,
             "Immobilize up to 2 targets for 4 seconds and interrupt activation.");
         AssertPerkLevel(perks[PerkType.EclipseOfResolve], "Eclipse of Resolve", 1, 5, 50, FeatType.EclipseOfResolve1,
-            "Nearby enemies suffer -15% hit chance, -15% evasion chance, and +25% FP and STM costs for 15 seconds.");
+            "Nearby enemies suffer -20% hit chance, -20% evasion chance, and +35% FP and STM costs for 20 seconds.");
 
         AssertUniversalForcePower(perks[PerkType.MindShroud]);
     }
@@ -88,6 +88,7 @@ public class ForceDarkManipulatorTests
 
         var forceChoke = new ForceChokeAbilityDefinition().BuildAbilities()[FeatType.ForceChoke1];
         AssertAbility(forceChoke, "Force Choke", 1, RecastGroup.ForceChoke, 60f, 1f, 7, true, true, true, false, AbilityActivationType.Casted, 15f, true);
+        forceChoke.ImpactAnimationType.Should().Be(Animation.CastOutAnimation);
 
         var dominateWeakMind = new DominateWeakMindAbilityDefinition().BuildAbilities()[FeatType.DominateWeakMind1];
         AssertAbility(dominateWeakMind, "Dominate Weak Mind", 1, RecastGroup.DominateWeakMind, 90f, 1f, 8, true, true, true, false, AbilityActivationType.Casted, 15f, false);
@@ -96,7 +97,7 @@ public class ForceDarkManipulatorTests
         AssertAbility(collapseWill, "Collapse Will", 1, RecastGroup.CollapseWill, 75f, 1f, 9, true, true, true, false, AbilityActivationType.Casted, 15f, false);
 
         var eclipse = new EclipseOfResolveAbilityDefinition().BuildAbilities()[FeatType.EclipseOfResolve1];
-        AssertAbility(eclipse, "Eclipse of Resolve", 1, RecastGroup.EclipseOfResolve, 180f, 1.5f, 11, true, false, false, true, AbilityActivationType.Casted, 5f, false);
+        AssertAbility(eclipse, "Eclipse of Resolve", 1, RecastGroup.Capstone, 300f, 1.5f, 11, true, false, false, true, AbilityActivationType.Casted, 5f, false);
     }
 
     [Test]
@@ -130,11 +131,11 @@ public class ForceDarkManipulatorTests
         dominateWeakMindFallback.ResistanceType.Should().Be(SWLOR.Game.Server.Service.CombatService.ResistanceType.Mind);
 
         var eclipse = new EclipseOfResolve1StatusEffect();
-        eclipse.StatGroup.Stats[StatType.AbilityHitChancePercentAdjustment].Should().Be(-15);
+        eclipse.StatGroup.Stats[StatType.AbilityHitChancePercentAdjustment].Should().Be(-20);
         eclipse.StatGroup.Stats[StatType.AccuracyPercentAdjustment].Should().Be(0);
-        eclipse.StatGroup.Stats[StatType.EvasionPercentAdjustment].Should().Be(-15);
-        eclipse.StatGroup.Stats[StatType.FPCostPercentAdjustment].Should().Be(25);
-        eclipse.StatGroup.Stats[StatType.AbilityStaminaCostPercentAdjustment].Should().Be(25);
+        eclipse.StatGroup.Stats[StatType.EvasionPercentAdjustment].Should().Be(-20);
+        eclipse.StatGroup.Stats[StatType.FPCostPercentAdjustment].Should().Be(35);
+        eclipse.StatGroup.Stats[StatType.AbilityStaminaCostPercentAdjustment].Should().Be(35);
 
         var creepingTerrorDot = new CreepingTerrorDamageStatusEffect();
         creepingTerrorDot.Name.Should().Be("Creeping Terror");
@@ -160,6 +161,8 @@ public class ForceDarkManipulatorTests
         var forceChoke = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Force" / "ForceChokeAbilityDefinition.cs").FullName);
         forceChoke.Should().Contain("typeof(ForceChokeDamageStatusEffect)");
         forceChoke.Should().Contain("12f");
+        forceChoke.Should().Contain("AssignCommand(target, () => ActionPlayAnimation(Animation.ForceChoke))");
+        forceChoke.Should().NotContain(".UsesImpactAnimation(Animation.ForceChoke)");
 
         var forceGrip = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Force" / "ForceGripAbilityDefinition.cs").FullName);
         forceGrip.Should().Contain("afterSuccessfulHit: InterruptActivation");

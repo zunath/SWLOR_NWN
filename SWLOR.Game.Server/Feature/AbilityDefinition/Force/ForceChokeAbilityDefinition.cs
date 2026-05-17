@@ -34,7 +34,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasActivationDelay(1f)
                 .HasRecastDelay(RecastGroup.ForceChoke, 60f)
                 .SkillType(SkillType.Force)
-                .UsesImpactAnimation(Animation.ForceChoke)
+                .UsesImpactAnimation(Animation.CastOutAnimation)
                 .IsSingleTargetAbility()
                 .HasMaxRange(15f)
                 .RequiresTarget()
@@ -60,7 +60,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 Array.Empty<Type>(),
                 damageType: CombatDamageType.Force,
                 targetVisualEffect: VisualEffect.Vfx_Imp_Pulse_Negative,
-                afterSuccessfulHit: hitTarget => ApplyForceDamageOverTime(activator, hitTarget));
+                afterSuccessfulHit: hitTarget => ApplyForceChokeEffects(activator, hitTarget));
+        }
+
+        private static void ApplyForceChokeEffects(uint activator, uint target)
+        {
+            AssignCommand(target, () => ActionPlayAnimation(Animation.ForceChoke));
+            ApplyForceDamageOverTime(activator, target);
         }
 
         private static void ApplyForceDamageOverTime(uint activator, uint target)

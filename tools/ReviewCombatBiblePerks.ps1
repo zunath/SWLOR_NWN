@@ -147,7 +147,7 @@ function Get-ExpectedCategory {
     param([object]$Row)
 
     switch ($Row.Tab) {
-        "Armor" { return "ArmorGeneral" }
+        "Armor" { return "General" }
         "Piloting" { return "Piloting" }
         "First Aid" {
             switch ($Row.Style) {

@@ -15,7 +15,7 @@ public class ArmorDualWieldTests
         var perk = BuildDualWieldPerkWithout2daLookup();
 
         perk.Name.Should().Be("Dual Wield");
-        perk.Category.Should().Be(PerkCategoryType.ArmorGeneral);
+        perk.Category.Should().Be(PerkCategoryType.General);
 
         AssertDualWieldLevel(
             perk.PerkLevels[1],

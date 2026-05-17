@@ -8,8 +8,8 @@ namespace SWLOR.Game.Server.Service.PerkService
         [PerkCategory("Force - Universal", true)]
         ForceUniversal = 1,
 
-        [PerkCategory("Armor - General", true)]
-        ArmorGeneral = 2,
+        [PerkCategory("General", true)]
+        General = 2,
 
         [PerkCategory("Piloting", true)]
         Piloting = 5,

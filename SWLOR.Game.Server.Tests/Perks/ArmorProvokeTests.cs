@@ -12,12 +12,25 @@ namespace SWLOR.Game.Server.Tests.Perks;
 public class ArmorProvokeTests
 {
     [Test]
+    public void GeneralCategory_UsesGeneralSectionLabel()
+    {
+        var attribute = typeof(PerkCategoryType)
+            .GetField(nameof(PerkCategoryType.General))!
+            .GetCustomAttributes(typeof(PerkCategoryAttribute), false)
+            .Cast<PerkCategoryAttribute>()
+            .Single();
+
+        attribute.Name.Should().Be("General");
+        attribute.IsActive.Should().BeTrue();
+    }
+
+    [Test]
     public void ProvokePerkLevels_MatchCombatBible()
     {
         var perk = BuildProvokePerkWithout2daLookup();
 
         perk.Name.Should().Be("Provoke");
-        perk.Category.Should().Be(PerkCategoryType.ArmorGeneral);
+        perk.Category.Should().Be(PerkCategoryType.General);
 
         var provoke1 = perk.PerkLevels[1];
         provoke1.Price.Should().Be(2);

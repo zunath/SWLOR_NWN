@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void Provoke()
         {
-            _builder.Create(PerkCategoryType.ArmorGeneral, PerkType.Provoke)
+            _builder.Create(PerkCategoryType.General, PerkType.Provoke)
                 .Name("Provoke")
 
                 .AddPerkLevel()
@@ -40,7 +40,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void DualWield()
         {
-            _builder.Create(PerkCategoryType.ArmorGeneral, PerkType.DualWield)
+            _builder.Create(PerkCategoryType.General, PerkType.DualWield)
                 .Name("Dual Wield")
 
                 .AddPerkLevel()

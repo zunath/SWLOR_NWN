@@ -78,7 +78,7 @@ public class RiflePacificationTests
         AssertAbility(cripplingShot[FeatType.CripplingShot3], "Crippling Shot III", 3, RecastGroup.CripplingShot, 30f, 0f, 8, true, false, true, false, AbilityActivationType.Weapon);
 
         var pinningFire = new PinningFireAbilityDefinition().BuildAbilities();
-        AssertAbility(pinningFire[FeatType.PinningFire1], "Pinning Fire I", 1, RecastGroup.PinningFire, 45f, 0f, 5, true, true, true, false, AbilityActivationType.Casted);
+        AssertAbility(pinningFire[FeatType.PinningFire1], "Pinning Fire I", 1, RecastGroup.PinningFire, 45f, 0f, 5, true, true, true, false, AbilityActivationType.Casted, 18f);
         AssertAbility(pinningFire[FeatType.PinningFire2], "Pinning Fire II", 2, RecastGroup.PinningFire, 60f, 0f, 8, true, false, false, true, AbilityActivationType.Casted);
 
         var spotterStance = new SpotterStanceAbilityDefinition().BuildAbilities()[FeatType.SpotterStance1];
@@ -89,10 +89,10 @@ public class RiflePacificationTests
         AssertAbility(tranqCone[FeatType.TranqCone2], "Tranq Cone II", 2, RecastGroup.TranqCone, 120f, 0f, 10, true, false, false, true, AbilityActivationType.Casted);
 
         var overwatch = new OverwatchAbilityDefinition().BuildAbilities()[FeatType.Overwatch1];
-        AssertAbility(overwatch, "Overwatch", 1, RecastGroup.Overwatch, 120f, 0f, 10, true, true, true, false, AbilityActivationType.Casted);
+        AssertAbility(overwatch, "Overwatch", 1, RecastGroup.Overwatch, 120f, 0f, 10, true, true, true, false, AbilityActivationType.Casted, 18f);
 
         var neutralizingShot = new NeutralizingShotAbilityDefinition().BuildAbilities()[FeatType.NeutralizingShot1];
-        AssertAbility(neutralizingShot, "Neutralizing Shot", 1, RecastGroup.NeutralizingShot, 90f, 0f, 10, true, true, true, false, AbilityActivationType.Casted);
+        AssertAbility(neutralizingShot, "Neutralizing Shot", 1, RecastGroup.NeutralizingShot, 90f, 0f, 10, true, true, true, false, AbilityActivationType.Casted, 18f);
 
         var pacificationField = new PacificationFieldAbilityDefinition().BuildAbilities()[FeatType.PacificationField1];
         AssertAbility(pacificationField, "Pacification Field", 1, RecastGroup.PacificationField, 180f, 0f, 14, true, false, false, true, AbilityActivationType.Casted);
@@ -221,11 +221,13 @@ public class RiflePacificationTests
         bool requiresTarget,
         bool isSingleTarget,
         bool isArea,
-        AbilityActivationType activationType)
+        AbilityActivationType activationType,
+        float expectedMaxRange = 5f)
     {
         ability.Name.Should().Be(name);
         ability.AbilityLevel.Should().Be(level);
         ability.SkillType.Should().Be(SkillType.Rifle);
+        ability.MaxRange.Should().Be(expectedMaxRange);
         ability.RecastGroup.Should().Be(recastGroup);
         ability.RecastDelay(0).Should().Be(recastSeconds);
         ability.ActivationDelay(0, 0, level).Should().Be(activationSeconds);

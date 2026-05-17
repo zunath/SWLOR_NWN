@@ -86,14 +86,14 @@ public class RifleMarksmanTests
     public void RifleMarksmanAbilities_MatchCombatBible()
     {
         var aimedShot = new AimedShotAbilityDefinition().BuildAbilities();
-        AssertAbility(aimedShot[FeatType.AimedShot1], "Aimed Shot I", 1, RecastGroup.AimedShot, 30f, 1f, 4, true, true, true, false, AbilityActivationType.Casted);
-        AssertAbility(aimedShot[FeatType.AimedShot2], "Aimed Shot II", 2, RecastGroup.AimedShot, 30f, 1f, 6, true, true, true, false, AbilityActivationType.Casted);
-        AssertAbility(aimedShot[FeatType.AimedShot3], "Aimed Shot III", 3, RecastGroup.AimedShot, 30f, 1f, 8, true, true, true, false, AbilityActivationType.Casted);
+        AssertAbility(aimedShot[FeatType.AimedShot1], "Aimed Shot I", 1, RecastGroup.AimedShot, 30f, 1f, 4, true, true, true, false, AbilityActivationType.Casted, 18f);
+        AssertAbility(aimedShot[FeatType.AimedShot2], "Aimed Shot II", 2, RecastGroup.AimedShot, 30f, 1f, 6, true, true, true, false, AbilityActivationType.Casted, 18f);
+        AssertAbility(aimedShot[FeatType.AimedShot3], "Aimed Shot III", 3, RecastGroup.AimedShot, 30f, 1f, 8, true, true, true, false, AbilityActivationType.Casted, 18f);
 
         var piercingRound = new PiercingRoundAbilityDefinition().BuildAbilities();
-        AssertAbility(piercingRound[FeatType.PiercingRound1], "Piercing Round I", 1, RecastGroup.PiercingRound, 45f, 0f, 5, true, true, true, false, AbilityActivationType.Casted);
-        AssertAbility(piercingRound[FeatType.PiercingRound2], "Piercing Round II", 2, RecastGroup.PiercingRound, 45f, 0f, 7, true, true, true, false, AbilityActivationType.Casted);
-        AssertAbility(piercingRound[FeatType.PiercingRound3], "Piercing Round III", 3, RecastGroup.PiercingRound, 45f, 0f, 8, true, true, true, false, AbilityActivationType.Casted);
+        AssertAbility(piercingRound[FeatType.PiercingRound1], "Piercing Round I", 1, RecastGroup.PiercingRound, 45f, 0f, 5, true, true, true, false, AbilityActivationType.Casted, 18f);
+        AssertAbility(piercingRound[FeatType.PiercingRound2], "Piercing Round II", 2, RecastGroup.PiercingRound, 45f, 0f, 7, true, true, true, false, AbilityActivationType.Casted, 18f);
+        AssertAbility(piercingRound[FeatType.PiercingRound3], "Piercing Round III", 3, RecastGroup.PiercingRound, 45f, 0f, 8, true, true, true, false, AbilityActivationType.Casted, 18f);
 
         var sniperStance = new SniperStanceAbilityDefinition().BuildAbilities()[FeatType.SniperStance1];
         AssertAbility(sniperStance, "Sniper Stance", 1, RecastGroup.SniperStance, 180f, 2f, null, false, false, false, false, AbilityActivationType.Casted);
@@ -102,19 +102,19 @@ public class RifleMarksmanTests
         AssertAbility(suppressiveLine, "Suppressive Line", 1, RecastGroup.SuppressiveLine, 60f, 0f, 8, true, false, false, true, AbilityActivationType.Casted);
 
         var exposeWeakPoint = new ExposeWeakPointAbilityDefinition().BuildAbilities()[FeatType.ExposeWeakPoint1];
-        AssertAbility(exposeWeakPoint, "Expose Weak Point", 1, RecastGroup.ExposeWeakPoint, 75f, 0f, 8, true, true, true, false, AbilityActivationType.Casted);
+        AssertAbility(exposeWeakPoint, "Expose Weak Point", 1, RecastGroup.ExposeWeakPoint, 75f, 0f, 8, true, true, true, false, AbilityActivationType.Casted, 18f);
 
         var breachRound = new BreachRoundAbilityDefinition().BuildAbilities()[FeatType.BreachRound1];
-        AssertAbility(breachRound, "Breach Round", 1, RecastGroup.BreachRound, 90f, 0f, 10, true, true, true, false, AbilityActivationType.Casted);
+        AssertAbility(breachRound, "Breach Round", 1, RecastGroup.BreachRound, 90f, 0f, 10, true, true, true, false, AbilityActivationType.Casted, 18f);
 
         var headshot = new HeadshotAbilityDefinition().BuildAbilities()[FeatType.Headshot1];
-        AssertAbility(headshot, "Headshot", 1, RecastGroup.Headshot, 120f, 1.5f, 14, true, true, true, false, AbilityActivationType.Casted);
+        AssertAbility(headshot, "Headshot", 1, RecastGroup.Headshot, 120f, 1.5f, 14, true, true, true, false, AbilityActivationType.Casted, 18f);
 
         var killZone = new KillZoneAbilityDefinition().BuildAbilities()[FeatType.KillZone1];
         AssertAbility(killZone, "Kill Zone", 1, RecastGroup.KillZone, 120f, 0f, 10, false, false, false, false, AbilityActivationType.Casted);
 
         var oneShot = new OneShotAbilityDefinition().BuildAbilities()[FeatType.OneShot1];
-        AssertAbility(oneShot, "One Shot", 1, RecastGroup.Capstone, 1800f, 2f, 25, true, true, true, false, AbilityActivationType.Casted);
+        AssertAbility(oneShot, "One Shot", 1, RecastGroup.Capstone, 1800f, 2f, 25, true, true, true, false, AbilityActivationType.Casted, 18f);
     }
 
     [Test]
@@ -241,11 +241,13 @@ public class RifleMarksmanTests
         bool requiresTarget,
         bool isSingleTarget,
         bool isArea,
-        AbilityActivationType activationType)
+        AbilityActivationType activationType,
+        float expectedMaxRange = 5f)
     {
         ability.Name.Should().Be(name);
         ability.AbilityLevel.Should().Be(level);
         ability.SkillType.Should().Be(SkillType.Rifle);
+        ability.MaxRange.Should().Be(expectedMaxRange);
         ability.RecastGroup.Should().Be(recastGroup);
         ability.RecastDelay(0).Should().Be(recastSeconds);
         ability.ActivationDelay(0, 0, level).Should().Be(activationSeconds);

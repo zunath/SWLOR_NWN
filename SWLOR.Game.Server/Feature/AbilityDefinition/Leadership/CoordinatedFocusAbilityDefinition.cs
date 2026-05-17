@@ -5,7 +5,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -17,71 +17,37 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
         {
             var builder = new AbilityBuilder();
 
-            CoordinatedFocus1(builder);
-            CoordinatedFocus2(builder);
-            CoordinatedFocus3(builder);
+            CoordinatedFocus(builder);
 
             return builder.Build();
         }
 
-        private static void CoordinatedFocus1(AbilityBuilder builder)
+        private static void CoordinatedFocus(AbilityBuilder builder)
         {
             builder
                 .Create(FeatType.CoordinatedFocus1, PerkType.CoordinatedFocus)
-                .Name("Coordinated Focus I")
+                .Name("Coordinated Focus")
                 .Level(1)
                 .HasActivationDelay(2f)
                 .HasRecastDelay(RecastGroup.CoordinatedFocus, 60f)
                 .SkillType(SkillType.Leadership)
                 .IsAreaAbility()
-                .HasImpactAction(CoordinatedFocus1ImpactAction)
+                .HasImpactAction(CoordinatedFocusImpactAction)
                 .IsCastedAbility()
                 .BreaksStealth();
         }
 
-        private static void CoordinatedFocus2(AbilityBuilder builder)
+        private static void CoordinatedFocusImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            builder
-                .Create(FeatType.CoordinatedFocus2, PerkType.CoordinatedFocus)
-                .Name("Coordinated Focus II")
-                .Level(2)
-                .HasActivationDelay(2f)
-                .HasRecastDelay(RecastGroup.CoordinatedFocus, 60f)
-                .SkillType(SkillType.Leadership)
-                .IsAreaAbility()
-                .HasImpactAction(CoordinatedFocus2ImpactAction)
-                .IsCastedAbility()
-                .BreaksStealth();
-        }
-
-        private static void CoordinatedFocus3(AbilityBuilder builder)
-        {
-            builder
-                .Create(FeatType.CoordinatedFocus3, PerkType.CoordinatedFocus)
-                .Name("Coordinated Focus III")
-                .Level(3)
-                .HasActivationDelay(2f)
-                .HasRecastDelay(RecastGroup.CoordinatedFocus, 60f)
-                .SkillType(SkillType.Leadership)
-                .IsAreaAbility()
-                .HasImpactAction(CoordinatedFocus3ImpactAction)
-                .IsCastedAbility()
-                .BreaksStealth();
-        }
-
-        private static void CoordinatedFocus1ImpactAction(uint activator, uint target, int level, Location targetLocation)
-        {
-            if (LeadershipAbilityEffects.ToggleVanguardCommandAura(activator, typeof(CoordinatedFocus1StatusEffect))) CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Leadership);
-        }
-
-        private static void CoordinatedFocus2ImpactAction(uint activator, uint target, int level, Location targetLocation)
-        {
-            if (LeadershipAbilityEffects.ToggleVanguardCommandAura(activator, typeof(CoordinatedFocus2StatusEffect))) CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Leadership);
-        }
-
-        private static void CoordinatedFocus3ImpactAction(uint activator, uint target, int level, Location targetLocation)
-        {
-            if (LeadershipAbilityEffects.ToggleVanguardCommandAura(activator, typeof(CoordinatedFocus3StatusEffect))) CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Leadership);
+            if (LeadershipAbilityEffects.ToggleVanguardCommandAura(
+                    activator,
+                    StatType.CoordinatedFocusAuraLevel,
+                    typeof(CoordinatedFocus1StatusEffect),
+                    typeof(CoordinatedFocus2StatusEffect),
+                    typeof(CoordinatedFocus3StatusEffect)))
+            {
+                CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Leadership);
+            }
         }
     }
 }

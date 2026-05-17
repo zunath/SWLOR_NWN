@@ -5,7 +5,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -17,50 +17,36 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
         {
             var builder = new AbilityBuilder();
 
-            FieldRecovery1(builder);
-            FieldRecovery2(builder);
+            FieldRecovery(builder);
 
             return builder.Build();
         }
 
-        private static void FieldRecovery1(AbilityBuilder builder)
+        private static void FieldRecovery(AbilityBuilder builder)
         {
             builder
                 .Create(FeatType.FieldRecovery1, PerkType.FieldRecovery)
-                .Name("Field Recovery I")
+                .Name("Field Recovery")
                 .Level(1)
                 .HasActivationDelay(2f)
                 .HasRecastDelay(RecastGroup.FieldRecovery, 60f)
                 .SkillType(SkillType.Leadership)
                 .IsAreaAbility()
-                .HasImpactAction(FieldRecovery1ImpactAction)
+                .HasImpactAction(FieldRecoveryImpactAction)
                 .IsCastedAbility()
                 .BreaksStealth();
         }
 
-        private static void FieldRecovery2(AbilityBuilder builder)
+        private static void FieldRecoveryImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            builder
-                .Create(FeatType.FieldRecovery2, PerkType.FieldRecovery)
-                .Name("Field Recovery II")
-                .Level(2)
-                .HasActivationDelay(2f)
-                .HasRecastDelay(RecastGroup.FieldRecovery, 60f)
-                .SkillType(SkillType.Leadership)
-                .IsAreaAbility()
-                .HasImpactAction(FieldRecovery2ImpactAction)
-                .IsCastedAbility()
-                .BreaksStealth();
-        }
-
-        private static void FieldRecovery1ImpactAction(uint activator, uint target, int level, Location targetLocation)
-        {
-            if (LeadershipAbilityEffects.ToggleFieldStewardAura(activator, typeof(FieldRecovery1StatusEffect))) CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Leadership);
-        }
-
-        private static void FieldRecovery2ImpactAction(uint activator, uint target, int level, Location targetLocation)
-        {
-            if (LeadershipAbilityEffects.ToggleFieldStewardAura(activator, typeof(FieldRecovery2StatusEffect))) CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Leadership);
+            if (LeadershipAbilityEffects.ToggleFieldStewardAura(
+                    activator,
+                    StatType.FieldRecoveryAuraLevel,
+                    typeof(FieldRecovery1StatusEffect),
+                    typeof(FieldRecovery2StatusEffect)))
+            {
+                CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Leadership);
+            }
         }
     }
 }

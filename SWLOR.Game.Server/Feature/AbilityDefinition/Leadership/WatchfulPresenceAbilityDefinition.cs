@@ -5,7 +5,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -17,71 +17,37 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
         {
             var builder = new AbilityBuilder();
 
-            WatchfulPresence1(builder);
-            WatchfulPresence2(builder);
-            WatchfulPresence3(builder);
+            WatchfulPresence(builder);
 
             return builder.Build();
         }
 
-        private static void WatchfulPresence1(AbilityBuilder builder)
+        private static void WatchfulPresence(AbilityBuilder builder)
         {
             builder
                 .Create(FeatType.WatchfulPresence1, PerkType.WatchfulPresence)
-                .Name("Watchful Presence I")
+                .Name("Watchful Presence")
                 .Level(1)
                 .HasActivationDelay(2f)
                 .HasRecastDelay(RecastGroup.WatchfulPresence, 60f)
                 .SkillType(SkillType.Leadership)
                 .IsAreaAbility()
-                .HasImpactAction(WatchfulPresence1ImpactAction)
+                .HasImpactAction(WatchfulPresenceImpactAction)
                 .IsCastedAbility()
                 .BreaksStealth();
         }
 
-        private static void WatchfulPresence2(AbilityBuilder builder)
+        private static void WatchfulPresenceImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            builder
-                .Create(FeatType.WatchfulPresence2, PerkType.WatchfulPresence)
-                .Name("Watchful Presence II")
-                .Level(2)
-                .HasActivationDelay(2f)
-                .HasRecastDelay(RecastGroup.WatchfulPresence, 60f)
-                .SkillType(SkillType.Leadership)
-                .IsAreaAbility()
-                .HasImpactAction(WatchfulPresence2ImpactAction)
-                .IsCastedAbility()
-                .BreaksStealth();
-        }
-
-        private static void WatchfulPresence3(AbilityBuilder builder)
-        {
-            builder
-                .Create(FeatType.WatchfulPresence3, PerkType.WatchfulPresence)
-                .Name("Watchful Presence III")
-                .Level(3)
-                .HasActivationDelay(2f)
-                .HasRecastDelay(RecastGroup.WatchfulPresence, 60f)
-                .SkillType(SkillType.Leadership)
-                .IsAreaAbility()
-                .HasImpactAction(WatchfulPresence3ImpactAction)
-                .IsCastedAbility()
-                .BreaksStealth();
-        }
-
-        private static void WatchfulPresence1ImpactAction(uint activator, uint target, int level, Location targetLocation)
-        {
-            if (LeadershipAbilityEffects.ToggleFieldStewardAura(activator, typeof(WatchfulPresence1StatusEffect))) CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Leadership);
-        }
-
-        private static void WatchfulPresence2ImpactAction(uint activator, uint target, int level, Location targetLocation)
-        {
-            if (LeadershipAbilityEffects.ToggleFieldStewardAura(activator, typeof(WatchfulPresence2StatusEffect))) CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Leadership);
-        }
-
-        private static void WatchfulPresence3ImpactAction(uint activator, uint target, int level, Location targetLocation)
-        {
-            if (LeadershipAbilityEffects.ToggleFieldStewardAura(activator, typeof(WatchfulPresence3StatusEffect))) CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Leadership);
+            if (LeadershipAbilityEffects.ToggleFieldStewardAura(
+                    activator,
+                    StatType.WatchfulPresenceAuraLevel,
+                    typeof(WatchfulPresence1StatusEffect),
+                    typeof(WatchfulPresence2StatusEffect),
+                    typeof(WatchfulPresence3StatusEffect)))
+            {
+                CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Leadership);
+            }
         }
     }
 }

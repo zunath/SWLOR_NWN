@@ -5,7 +5,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -17,50 +17,36 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
         {
             var builder = new AbilityBuilder();
 
-            RallyingStandard1(builder);
-            RallyingStandard2(builder);
+            RallyingStandard(builder);
 
             return builder.Build();
         }
 
-        private static void RallyingStandard1(AbilityBuilder builder)
+        private static void RallyingStandard(AbilityBuilder builder)
         {
             builder
                 .Create(FeatType.RallyingStandard1, PerkType.RallyingStandard)
-                .Name("Rallying Standard I")
+                .Name("Rallying Standard")
                 .Level(1)
                 .HasActivationDelay(2f)
                 .HasRecastDelay(RecastGroup.RallyingStandard, 60f)
                 .SkillType(SkillType.Leadership)
                 .IsAreaAbility()
-                .HasImpactAction(RallyingStandard1ImpactAction)
+                .HasImpactAction(RallyingStandardImpactAction)
                 .IsCastedAbility()
                 .BreaksStealth();
         }
 
-        private static void RallyingStandard2(AbilityBuilder builder)
+        private static void RallyingStandardImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            builder
-                .Create(FeatType.RallyingStandard2, PerkType.RallyingStandard)
-                .Name("Rallying Standard II")
-                .Level(2)
-                .HasActivationDelay(2f)
-                .HasRecastDelay(RecastGroup.RallyingStandard, 60f)
-                .SkillType(SkillType.Leadership)
-                .IsAreaAbility()
-                .HasImpactAction(RallyingStandard2ImpactAction)
-                .IsCastedAbility()
-                .BreaksStealth();
-        }
-
-        private static void RallyingStandard1ImpactAction(uint activator, uint target, int level, Location targetLocation)
-        {
-            if (LeadershipAbilityEffects.ToggleVanguardCommandAura(activator, typeof(RallyingStandard1StatusEffect))) CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Leadership);
-        }
-
-        private static void RallyingStandard2ImpactAction(uint activator, uint target, int level, Location targetLocation)
-        {
-            if (LeadershipAbilityEffects.ToggleVanguardCommandAura(activator, typeof(RallyingStandard2StatusEffect))) CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Leadership);
+            if (LeadershipAbilityEffects.ToggleVanguardCommandAura(
+                    activator,
+                    StatType.RallyingStandardAuraLevel,
+                    typeof(RallyingStandard1StatusEffect),
+                    typeof(RallyingStandard2StatusEffect)))
+            {
+                CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Leadership);
+            }
         }
     }
 }

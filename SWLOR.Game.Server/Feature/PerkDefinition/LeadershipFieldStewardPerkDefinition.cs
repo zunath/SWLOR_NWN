@@ -34,19 +34,20 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Nearby party members take 4% less physical and Force damage. SOC scaling can raise this to 5%.")
                 .Price(2)
+                .IncreasesStat(StatType.WatchfulPresenceAuraLevel, 1)
                 .GrantsFeat(FeatType.WatchfulPresence1)
 
                 .AddPerkLevel()
                 .Description("Nearby party members take 6% less physical and Force damage. SOC scaling can raise this to 7%.")
                 .Price(3)
                 .RequirementSkill(SkillType.Leadership, 22)
-                .GrantsFeat(FeatType.WatchfulPresence2)
+                .IncreasesStat(StatType.WatchfulPresenceAuraLevel, 2)
 
                 .AddPerkLevel()
                 .Description("Nearby party members take 8% less physical and Force damage. SOC scaling can raise this to 10%.")
                 .Price(4)
                 .RequirementSkill(SkillType.Leadership, 45)
-                .GrantsFeat(FeatType.WatchfulPresence3);
+                .IncreasesStat(StatType.WatchfulPresenceAuraLevel, 3);
         }
 
         private void RousingShout()
@@ -82,13 +83,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Nearby party members gain +3% evasion chance and +30 Mind and Mobility resistance. SOC scaling can raise these to +4% and +40.")
                 .Price(3)
                 .RequirementSkill(SkillType.Leadership, 8)
+                .IncreasesStat(StatType.SteadyFormationAuraLevel, 1)
                 .GrantsFeat(FeatType.SteadyFormation1)
 
                 .AddPerkLevel()
                 .Description("Nearby party members gain +5% evasion chance and +50 Mind and Mobility resistance. SOC scaling can raise these to +6% and +65.")
                 .Price(4)
                 .RequirementSkill(SkillType.Leadership, 28)
-                .GrantsFeat(FeatType.SteadyFormation2);
+                .IncreasesStat(StatType.SteadyFormationAuraLevel, 2);
         }
 
         private void BolsterResolve()
@@ -118,13 +120,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Nearby party members restore 1 STM every 4 seconds. SOC scaling can raise this to 2 STM per tick.")
                 .Price(2)
                 .RequirementSkill(SkillType.Leadership, 15)
+                .IncreasesStat(StatType.FieldRecoveryAuraLevel, 1)
                 .GrantsFeat(FeatType.FieldRecovery1)
 
                 .AddPerkLevel()
                 .Description("Nearby party members restore 2 STM every 4 seconds. SOC scaling can raise this to 3 STM per tick.")
                 .Price(3)
                 .RequirementSkill(SkillType.Leadership, 38)
-                .GrantsFeat(FeatType.FieldRecovery2);
+                .IncreasesStat(StatType.FieldRecoveryAuraLevel, 2);
         }
 
         private void CleanseOrder()

@@ -5,7 +5,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -17,50 +17,36 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
         {
             var builder = new AbilityBuilder();
 
-            ChargeOrder1(builder);
-            ChargeOrder2(builder);
+            ChargeOrder(builder);
 
             return builder.Build();
         }
 
-        private static void ChargeOrder1(AbilityBuilder builder)
+        private static void ChargeOrder(AbilityBuilder builder)
         {
             builder
                 .Create(FeatType.ChargeOrder1, PerkType.ChargeOrder)
-                .Name("Charge Order I")
+                .Name("Charge Order")
                 .Level(1)
                 .HasActivationDelay(2f)
                 .HasRecastDelay(RecastGroup.ChargeOrder, 60f)
                 .SkillType(SkillType.Leadership)
                 .IsAreaAbility()
-                .HasImpactAction(ChargeOrder1ImpactAction)
+                .HasImpactAction(ChargeOrderImpactAction)
                 .IsCastedAbility()
                 .BreaksStealth();
         }
 
-        private static void ChargeOrder2(AbilityBuilder builder)
+        private static void ChargeOrderImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            builder
-                .Create(FeatType.ChargeOrder2, PerkType.ChargeOrder)
-                .Name("Charge Order II")
-                .Level(2)
-                .HasActivationDelay(2f)
-                .HasRecastDelay(RecastGroup.ChargeOrder, 60f)
-                .SkillType(SkillType.Leadership)
-                .IsAreaAbility()
-                .HasImpactAction(ChargeOrder2ImpactAction)
-                .IsCastedAbility()
-                .BreaksStealth();
-        }
-
-        private static void ChargeOrder1ImpactAction(uint activator, uint target, int level, Location targetLocation)
-        {
-            if (LeadershipAbilityEffects.ToggleVanguardCommandAura(activator, typeof(ChargeOrder1StatusEffect))) CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Leadership);
-        }
-
-        private static void ChargeOrder2ImpactAction(uint activator, uint target, int level, Location targetLocation)
-        {
-            if (LeadershipAbilityEffects.ToggleVanguardCommandAura(activator, typeof(ChargeOrder2StatusEffect))) CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Leadership);
+            if (LeadershipAbilityEffects.ToggleVanguardCommandAura(
+                    activator,
+                    StatType.ChargeOrderAuraLevel,
+                    typeof(ChargeOrder1StatusEffect),
+                    typeof(ChargeOrder2StatusEffect)))
+            {
+                CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Leadership);
+            }
         }
     }
 }

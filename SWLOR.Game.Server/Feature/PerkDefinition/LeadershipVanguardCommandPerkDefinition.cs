@@ -34,13 +34,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Nearby party members gain +3% physical and Force ability hit chance. SOC scaling can raise this to +4%.")
                 .Price(2)
+                .IncreasesStat(StatType.RallyingStandardAuraLevel, 1)
                 .GrantsFeat(FeatType.RallyingStandard1)
 
                 .AddPerkLevel()
                 .Description("Nearby party members gain +5% physical and Force ability hit chance. SOC scaling can raise this to +6%.")
                 .Price(3)
                 .RequirementSkill(SkillType.Leadership, 22)
-                .GrantsFeat(FeatType.RallyingStandard2);
+                .IncreasesStat(StatType.RallyingStandardAuraLevel, 2);
         }
 
         private void PressTheAttack()
@@ -76,19 +77,20 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Nearby party members gain +3% critical hit chance. SOC scaling can raise this to +4%.")
                 .Price(3)
                 .RequirementSkill(SkillType.Leadership, 8)
+                .IncreasesStat(StatType.CoordinatedFocusAuraLevel, 1)
                 .GrantsFeat(FeatType.CoordinatedFocus1)
 
                 .AddPerkLevel()
                 .Description("Nearby party members gain +4% critical hit chance and +5% critical damage. SOC scaling can raise these to +5% and +7%.")
                 .Price(4)
                 .RequirementSkill(SkillType.Leadership, 28)
-                .GrantsFeat(FeatType.CoordinatedFocus2)
+                .IncreasesStat(StatType.CoordinatedFocusAuraLevel, 2)
 
                 .AddPerkLevel()
                 .Description("Nearby party members gain +6% critical hit chance and +8% critical damage. SOC scaling can raise these to +7% and +10%.")
                 .Price(4)
                 .RequirementSkill(SkillType.Leadership, 45)
-                .GrantsFeat(FeatType.CoordinatedFocus3);
+                .IncreasesStat(StatType.CoordinatedFocusAuraLevel, 3);
         }
 
         private void MarkTarget()
@@ -118,13 +120,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Nearby party members gain +10% movement speed and +30 Mobility resistance. SOC scaling can raise these to +12% and +40.")
                 .Price(2)
                 .RequirementSkill(SkillType.Leadership, 15)
+                .IncreasesStat(StatType.ChargeOrderAuraLevel, 1)
                 .GrantsFeat(FeatType.ChargeOrder1)
 
                 .AddPerkLevel()
                 .Description("Nearby party members gain +15% movement speed and +50 Mobility resistance. SOC scaling can raise these to +18% and +65.")
                 .Price(3)
                 .RequirementSkill(SkillType.Leadership, 38)
-                .GrantsFeat(FeatType.ChargeOrder2);
+                .IncreasesStat(StatType.ChargeOrderAuraLevel, 2);
         }
 
         private void BreakMorale()

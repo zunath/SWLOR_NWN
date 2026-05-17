@@ -56,24 +56,31 @@ public class LeadershipCombatUpgradeTests
             "DecisiveCommand");
 
         AssertPerkCategory(vanguard, PerkCategoryType.LeadershipVanguardCommand);
-        AssertPerkLevel(vanguard[PerkType.RallyingStandard], "Rallying Standard", 1, 2, null, FeatType.RallyingStandard1);
+        AssertPerkLevel(vanguard[PerkType.RallyingStandard], "Rallying Standard", 1, 2, null, FeatType.RallyingStandard1,
+            (StatType.RallyingStandardAuraLevel, 1));
         AssertPerkLevel(vanguard[PerkType.PressTheAttack], "Press the Attack", 1, 2, 5, FeatType.PressTheAttack1);
-        AssertPerkLevel(vanguard[PerkType.CoordinatedFocus], "Coordinated Focus", 1, 3, 8, FeatType.CoordinatedFocus1);
+        AssertPerkLevel(vanguard[PerkType.CoordinatedFocus], "Coordinated Focus", 1, 3, 8, FeatType.CoordinatedFocus1,
+            (StatType.CoordinatedFocusAuraLevel, 1));
         AssertPerkLevel(vanguard[PerkType.MarkTarget], "Mark Target", 1, 3, 12, FeatType.MarkTarget1);
-        AssertPerkLevel(vanguard[PerkType.ChargeOrder], "Charge Order", 1, 2, 15, FeatType.ChargeOrder1);
+        AssertPerkLevel(vanguard[PerkType.ChargeOrder], "Charge Order", 1, 2, 15, FeatType.ChargeOrder1,
+            (StatType.ChargeOrderAuraLevel, 1));
         AssertPerkLevel(vanguard[PerkType.PressTheAttack], "Press the Attack", 2, 3, 18, FeatType.PressTheAttack2);
-        AssertPerkLevel(vanguard[PerkType.RallyingStandard], "Rallying Standard", 2, 3, 22, FeatType.RallyingStandard2);
+        AssertPerkLevel(vanguard[PerkType.RallyingStandard], "Rallying Standard", 2, 3, 22, null,
+            (StatType.RallyingStandardAuraLevel, 2));
         AssertPerkLevel(vanguard[PerkType.BreakMorale], "Break Morale", 1, 3, 25, FeatType.BreakMorale1);
-        AssertPerkLevel(vanguard[PerkType.CoordinatedFocus], "Coordinated Focus", 2, 4, 28, FeatType.CoordinatedFocus2);
+        AssertPerkLevel(vanguard[PerkType.CoordinatedFocus], "Coordinated Focus", 2, 4, 28, null,
+            (StatType.CoordinatedFocusAuraLevel, 2));
         AssertPerkLevel(vanguard[PerkType.CommandRadius], "Command Presence", 1, 3, 30, null,
             (StatType.LeadershipCommandRadiusBonusMeters, 2),
             (StatType.LeadershipCommandDurationBonusBaseSeconds, 2),
             (StatType.LeadershipCommandDurationBonusMaximumSeconds, 3));
         AssertPerkLevel(vanguard[PerkType.MarkTarget], "Mark Target", 2, 4, 35, FeatType.MarkTarget2);
-        AssertPerkLevel(vanguard[PerkType.ChargeOrder], "Charge Order", 2, 3, 38, FeatType.ChargeOrder2);
+        AssertPerkLevel(vanguard[PerkType.ChargeOrder], "Charge Order", 2, 3, 38, null,
+            (StatType.ChargeOrderAuraLevel, 2));
         AssertPerkLevel(vanguard[PerkType.PressTheAttack], "Press the Attack", 3, 4, 40, FeatType.PressTheAttack3);
         AssertPerkLevel(vanguard[PerkType.BreakMorale], "Break Morale", 2, 4, 42, FeatType.BreakMorale2);
-        AssertPerkLevel(vanguard[PerkType.CoordinatedFocus], "Coordinated Focus", 3, 4, 45, FeatType.CoordinatedFocus3);
+        AssertPerkLevel(vanguard[PerkType.CoordinatedFocus], "Coordinated Focus", 3, 4, 45, null,
+            (StatType.CoordinatedFocusAuraLevel, 3));
         AssertPerkLevel(vanguard[PerkType.CommandRadius], "Command Presence", 2, 3, 48, null,
             (StatType.LeadershipCommandRadiusBonusMeters, 4),
             (StatType.LeadershipCommandDurationBonusBaseSeconds, 4),
@@ -92,22 +99,29 @@ public class LeadershipCombatUpgradeTests
             "HoldTheLine");
 
         AssertPerkCategory(steward, PerkCategoryType.LeadershipFieldSteward);
-        AssertPerkLevel(steward[PerkType.WatchfulPresence], "Watchful Presence", 1, 2, null, FeatType.WatchfulPresence1);
+        AssertPerkLevel(steward[PerkType.WatchfulPresence], "Watchful Presence", 1, 2, null, FeatType.WatchfulPresence1,
+            (StatType.WatchfulPresenceAuraLevel, 1));
         AssertPerkLevel(steward[PerkType.RousingShout], "Rousing Shout", 1, 2, 5, FeatType.RousingShout1);
-        AssertPerkLevel(steward[PerkType.SteadyFormation], "Steady Formation", 1, 3, 8, FeatType.SteadyFormation1);
+        AssertPerkLevel(steward[PerkType.SteadyFormation], "Steady Formation", 1, 3, 8, FeatType.SteadyFormation1,
+            (StatType.SteadyFormationAuraLevel, 1));
         AssertPerkLevel(steward[PerkType.BolsterResolve], "Bolster Resolve", 1, 3, 12, FeatType.BolsterResolve1);
-        AssertPerkLevel(steward[PerkType.FieldRecovery], "Field Recovery", 1, 2, 15, FeatType.FieldRecovery1);
+        AssertPerkLevel(steward[PerkType.FieldRecovery], "Field Recovery", 1, 2, 15, FeatType.FieldRecovery1,
+            (StatType.FieldRecoveryAuraLevel, 1));
         AssertPerkLevel(steward[PerkType.RousingShout], "Rousing Shout", 2, 3, 18, FeatType.RousingShout2);
-        AssertPerkLevel(steward[PerkType.WatchfulPresence], "Watchful Presence", 2, 3, 22, FeatType.WatchfulPresence2);
+        AssertPerkLevel(steward[PerkType.WatchfulPresence], "Watchful Presence", 2, 3, 22, null,
+            (StatType.WatchfulPresenceAuraLevel, 2));
         AssertPerkLevel(steward[PerkType.CleanseOrder], "Cleanse Order", 1, 3, 25, FeatType.CleanseOrder1);
-        AssertPerkLevel(steward[PerkType.SteadyFormation], "Steady Formation", 2, 4, 28, FeatType.SteadyFormation2);
+        AssertPerkLevel(steward[PerkType.SteadyFormation], "Steady Formation", 2, 4, 28, null,
+            (StatType.SteadyFormationAuraLevel, 2));
         AssertPerkLevel(steward[PerkType.TriageProtocol], "Triage Protocol", 1, 3, 30, null,
             (StatType.FieldStewardTriageProtocolLevel, 1));
         AssertPerkLevel(steward[PerkType.BolsterResolve], "Bolster Resolve", 2, 4, 35, FeatType.BolsterResolve2);
-        AssertPerkLevel(steward[PerkType.FieldRecovery], "Field Recovery", 2, 3, 38, FeatType.FieldRecovery2);
+        AssertPerkLevel(steward[PerkType.FieldRecovery], "Field Recovery", 2, 3, 38, null,
+            (StatType.FieldRecoveryAuraLevel, 2));
         AssertPerkLevel(steward[PerkType.RousingShout], "Rousing Shout", 3, 4, 40, FeatType.RousingShout3);
         AssertPerkLevel(steward[PerkType.CleanseOrder], "Cleanse Order", 2, 4, 42, FeatType.CleanseOrder2);
-        AssertPerkLevel(steward[PerkType.WatchfulPresence], "Watchful Presence", 3, 4, 45, FeatType.WatchfulPresence3);
+        AssertPerkLevel(steward[PerkType.WatchfulPresence], "Watchful Presence", 3, 4, 45, null,
+            (StatType.WatchfulPresenceAuraLevel, 3));
         AssertPerkLevel(steward[PerkType.TriageProtocol], "Triage Protocol", 2, 3, 48, null,
             (StatType.FieldStewardTriageProtocolLevel, 2),
             (StatType.FieldStewardDurationBonusSeconds, 3));
@@ -149,20 +163,12 @@ public class LeadershipCombatUpgradeTests
         var hold = new HoldTheLineAbilityDefinition().BuildAbilities()[FeatType.HoldTheLine1];
         AssertAbility(hold, "Hold the Line", 1, RecastGroup.Capstone, 1800f, 1f, 15, false, true, false, false);
 
-        AssertAura(new RallyingStandardAbilityDefinition().BuildAbilities()[FeatType.RallyingStandard1], "Rallying Standard I", 1, RecastGroup.RallyingStandard);
-        AssertAura(new RallyingStandardAbilityDefinition().BuildAbilities()[FeatType.RallyingStandard2], "Rallying Standard II", 2, RecastGroup.RallyingStandard);
-        AssertAura(new CoordinatedFocusAbilityDefinition().BuildAbilities()[FeatType.CoordinatedFocus1], "Coordinated Focus I", 1, RecastGroup.CoordinatedFocus);
-        AssertAura(new CoordinatedFocusAbilityDefinition().BuildAbilities()[FeatType.CoordinatedFocus2], "Coordinated Focus II", 2, RecastGroup.CoordinatedFocus);
-        AssertAura(new CoordinatedFocusAbilityDefinition().BuildAbilities()[FeatType.CoordinatedFocus3], "Coordinated Focus III", 3, RecastGroup.CoordinatedFocus);
-        AssertAura(new ChargeOrderAbilityDefinition().BuildAbilities()[FeatType.ChargeOrder1], "Charge Order I", 1, RecastGroup.ChargeOrder);
-        AssertAura(new ChargeOrderAbilityDefinition().BuildAbilities()[FeatType.ChargeOrder2], "Charge Order II", 2, RecastGroup.ChargeOrder);
-        AssertAura(new WatchfulPresenceAbilityDefinition().BuildAbilities()[FeatType.WatchfulPresence1], "Watchful Presence I", 1, RecastGroup.WatchfulPresence);
-        AssertAura(new WatchfulPresenceAbilityDefinition().BuildAbilities()[FeatType.WatchfulPresence2], "Watchful Presence II", 2, RecastGroup.WatchfulPresence);
-        AssertAura(new WatchfulPresenceAbilityDefinition().BuildAbilities()[FeatType.WatchfulPresence3], "Watchful Presence III", 3, RecastGroup.WatchfulPresence);
-        AssertAura(new SteadyFormationAbilityDefinition().BuildAbilities()[FeatType.SteadyFormation1], "Steady Formation I", 1, RecastGroup.SteadyFormation);
-        AssertAura(new SteadyFormationAbilityDefinition().BuildAbilities()[FeatType.SteadyFormation2], "Steady Formation II", 2, RecastGroup.SteadyFormation);
-        AssertAura(new FieldRecoveryAbilityDefinition().BuildAbilities()[FeatType.FieldRecovery1], "Field Recovery I", 1, RecastGroup.FieldRecovery);
-        AssertAura(new FieldRecoveryAbilityDefinition().BuildAbilities()[FeatType.FieldRecovery2], "Field Recovery II", 2, RecastGroup.FieldRecovery);
+        AssertSingleAura(new RallyingStandardAbilityDefinition().BuildAbilities(), FeatType.RallyingStandard1, "Rallying Standard", RecastGroup.RallyingStandard);
+        AssertSingleAura(new CoordinatedFocusAbilityDefinition().BuildAbilities(), FeatType.CoordinatedFocus1, "Coordinated Focus", RecastGroup.CoordinatedFocus);
+        AssertSingleAura(new ChargeOrderAbilityDefinition().BuildAbilities(), FeatType.ChargeOrder1, "Charge Order", RecastGroup.ChargeOrder);
+        AssertSingleAura(new WatchfulPresenceAbilityDefinition().BuildAbilities(), FeatType.WatchfulPresence1, "Watchful Presence", RecastGroup.WatchfulPresence);
+        AssertSingleAura(new SteadyFormationAbilityDefinition().BuildAbilities(), FeatType.SteadyFormation1, "Steady Formation", RecastGroup.SteadyFormation);
+        AssertSingleAura(new FieldRecoveryAbilityDefinition().BuildAbilities(), FeatType.FieldRecovery1, "Field Recovery", RecastGroup.FieldRecovery);
     }
 
     [Test]
@@ -245,11 +251,11 @@ public class LeadershipCombatUpgradeTests
         const int CustomTlkOffset = 16777216;
         var descriptions = new[]
         {
-            (FeatType.RallyingStandard1, "Nearby party members gain +3% physical and Force ability hit chance. SOC scaling can raise this to +4%."),
+            (FeatType.RallyingStandard1, "Nearby party members gain physical and Force ability hit chance based on your Rallying Standard rank. SOC scaling can raise the current rank's bonus."),
             (FeatType.PressTheAttack1, "Nearby party members deal +8% damage for 12 seconds. SOC scaling can raise this to +10%."),
-            (FeatType.CoordinatedFocus1, "Nearby party members gain +3% critical hit chance. SOC scaling can raise this to +4%."),
+            (FeatType.CoordinatedFocus1, "Nearby party members gain critical hit chance, and higher ranks add critical damage, based on your Coordinated Focus rank. SOC scaling can raise the current rank's bonuses."),
             (FeatType.MarkTarget1, "Marks one enemy for 15 seconds. Party members deal +8% damage to the marked target. SOC scaling can raise this to +10%. The mark requires a successful attack-roll check."),
-            (FeatType.ChargeOrder1, "Nearby party members gain +10% movement speed and +30 Mobility resistance. SOC scaling can raise these to +12% and +40."),
+            (FeatType.ChargeOrder1, "Nearby party members gain movement speed and Mobility resistance based on your Charge Order rank. SOC scaling can raise the current rank's bonuses."),
             (FeatType.PressTheAttack2, "Nearby party members deal +11% damage for 12 seconds. SOC scaling can raise this to +14%."),
             (FeatType.RallyingStandard2, "Nearby party members gain +5% physical and Force ability hit chance. SOC scaling can raise this to +6%."),
             (FeatType.BreakMorale1, "Nearby enemies suffer Flash for 15 seconds, reducing physical and Force ability hit chance by 10%. SOC scaling can raise the penalty to 12%. This command applies reliably to valid nearby enemies."),
@@ -260,11 +266,11 @@ public class LeadershipCombatUpgradeTests
             (FeatType.BreakMorale2, "Nearby enemies suffer Flash, reducing physical and Force ability hit chance by 15%, and Weakened, reducing Attack by 12%, for 15 seconds. SOC scaling can raise these penalties to 18% and 15%. This command applies reliably to valid nearby enemies."),
             (FeatType.CoordinatedFocus3, "Nearby party members gain +6% critical hit chance and +8% critical damage. SOC scaling can raise these to +7% and +10%."),
             (FeatType.DecisiveCommand1, "For 20 seconds, nearby party members gain +24% damage, +10% physical and Force ability hit chance, +10% critical hit chance, and restore 1 STM every 3 seconds. SOC scaling can raise the bonuses to +30%, +12%, and +12%."),
-            (FeatType.WatchfulPresence1, "Nearby party members take 4% less physical and Force damage. SOC scaling can raise this to 5%."),
+            (FeatType.WatchfulPresence1, "Nearby party members take less physical and Force damage based on your Watchful Presence rank. SOC scaling can raise the current rank's reduction."),
             (FeatType.RousingShout1, "Bolsters one living ally, granting temporary HP equal to 10% of maximum HP for 12 seconds. SOC scaling can raise this to 13%. If the target is at or below 35% HP, they also take 10% less damage, scaling up to 12%."),
-            (FeatType.SteadyFormation1, "Nearby party members gain +3% evasion chance and +30 Mind and Mobility resistance. SOC scaling can raise these to +4% and +40."),
+            (FeatType.SteadyFormation1, "Nearby party members gain evasion chance plus Mind and Mobility resistance based on your Steady Formation rank. SOC scaling can raise the current rank's bonuses."),
             (FeatType.BolsterResolve1, "Nearby party members gain temporary HP equal to 8% of maximum HP for 12 seconds. SOC scaling can raise this to 10%."),
-            (FeatType.FieldRecovery1, "Nearby party members restore 1 STM every 4 seconds. SOC scaling can raise this to 2 STM per tick."),
+            (FeatType.FieldRecovery1, "Nearby party members restore STM every 4 seconds based on your Field Recovery rank. SOC scaling can raise the current rank's recovery."),
             (FeatType.RousingShout2, "Bolsters one living ally, granting temporary HP equal to 15% of maximum HP for 12 seconds. SOC scaling can raise this to 19%. If the target is at or below 35% HP, they also take 15% less damage, scaling up to 18%."),
             (FeatType.WatchfulPresence2, "Nearby party members take 6% less physical and Force damage. SOC scaling can raise this to 7%."),
             (FeatType.CleanseOrder1, "Removes one standard elemental or trauma ailment from nearby party members and grants temporary HP equal to 6% of maximum HP for 10 seconds. SOC scaling can raise temporary HP to 8%."),
@@ -323,6 +329,16 @@ public class LeadershipCombatUpgradeTests
     private static void AssertStatusStat(IStatusEffect statusEffect, StatType statType, int expected)
     {
         statusEffect.StatGroup.Stats[statType].Should().Be(expected);
+    }
+
+    private static void AssertSingleAura(
+        Dictionary<FeatType, AbilityDetail> abilities,
+        FeatType featType,
+        string name,
+        RecastGroup recastGroup)
+    {
+        abilities.Keys.Should().Equal(featType);
+        AssertAura(abilities[featType], name, 1, recastGroup);
     }
 
     private static void AssertAura(

@@ -2514,7 +2514,43 @@ namespace SWLOR.Game.Server.Service.StatService
         /// Percent outgoing damage adjustment applied only to weapon and Force damage.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        WeaponAndForceDamageDealtPercentAdjustment = 418
+        WeaponAndForceDamageDealtPercentAdjustment = 418,
+
+        /// <summary>
+        /// Current rank of the Rallying Standard Leadership aura.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        RallyingStandardAuraLevel = 419,
+
+        /// <summary>
+        /// Current rank of the Coordinated Focus Leadership aura.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        CoordinatedFocusAuraLevel = 420,
+
+        /// <summary>
+        /// Current rank of the Charge Order Leadership aura.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        ChargeOrderAuraLevel = 421,
+
+        /// <summary>
+        /// Current rank of the Watchful Presence Leadership aura.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        WatchfulPresenceAuraLevel = 422,
+
+        /// <summary>
+        /// Current rank of the Steady Formation Leadership aura.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        SteadyFormationAuraLevel = 423,
+
+        /// <summary>
+        /// Current rank of the Field Recovery Leadership aura.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        FieldRecoveryAuraLevel = 424
     }
 
     public class StatTypeAttribute : Attribute

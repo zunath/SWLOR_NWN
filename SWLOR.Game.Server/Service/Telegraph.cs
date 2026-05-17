@@ -14,6 +14,7 @@ namespace SWLOR.Game.Server.Service
         private const int TelegraphSizeScale = 10;
         private const int MaxPackedTelegraphSize = 255;
         private const int MaxPackedTelegraphRotation = 1023;
+        private const float LineShaderRotationOffset = (float)(Math.PI * 0.5);
         private const float TwoPi = (float)(Math.PI * 2.0);
 
         private static readonly Dictionary<uint, Dictionary<string, ActiveTelegraph>> _telegraphsByArea = new();
@@ -299,7 +300,7 @@ namespace SWLOR.Game.Server.Service
         {
             var sizeX = Math.Clamp((int)Math.Round(size.X * TelegraphSizeScale), 0, MaxPackedTelegraphSize);
             var sizeY = Math.Clamp((int)Math.Round(size.Y * TelegraphSizeScale), 0, MaxPackedTelegraphSize);
-            var normalizedRotation = NormalizeRotation(rotation);
+            var normalizedRotation = NormalizeRotation(GetShaderRotation(shapeType, rotation));
             var packedRotation = Math.Clamp((int)Math.Round(normalizedRotation / TwoPi * MaxPackedTelegraphRotation), 0, MaxPackedTelegraphRotation);
 
             return ((int)shapeType & 0x7) |
@@ -307,6 +308,13 @@ namespace SWLOR.Game.Server.Service
                    (sizeX << 5) |
                    (sizeY << 13) |
                    (packedRotation << 21);
+        }
+
+        private static float GetShaderRotation(TelegraphType shapeType, float rotation)
+        {
+            return shapeType == TelegraphType.Line
+                ? rotation + LineShaderRotationOffset
+                : rotation;
         }
 
         private static float NormalizeRotation(float rotation)

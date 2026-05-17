@@ -179,6 +179,12 @@ public class SaberstaffTempestTests
             abilityRow["TargetSizeX"].Should().Be(targetSizeX);
             abilityRow["TargetSizeY"].Should().Be(targetSizeY);
             abilityRow["TargetFlags"].Should().Be(targetFlags);
+
+            if (featType is FeatType.DoubleStrike1 or FeatType.DoubleStrike2 or FeatType.DoubleStrike3 or FeatType.DoubleStrike4)
+            {
+                featRow["TARGETSELF"].Should().Be("****");
+                featRow["HostileFeat"].Should().Be("1");
+            }
         }
     }
 

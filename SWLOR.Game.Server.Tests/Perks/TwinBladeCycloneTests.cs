@@ -201,6 +201,12 @@ public class TwinBladeCycloneTests
             abilityRow["TargetSizeX"].Should().Be(targetSizeX);
             abilityRow["TargetSizeY"].Should().Be(targetSizeY);
             abilityRow["TargetFlags"].Should().Be(targetFlags);
+
+            if (featType is FeatType.CrossCut1 or FeatType.CrossCut2 or FeatType.CrossCut3 or FeatType.CrossCut4)
+            {
+                featRow["TARGETSELF"].Should().Be("****");
+                featRow["HostileFeat"].Should().Be("1");
+            }
         }
     }
 

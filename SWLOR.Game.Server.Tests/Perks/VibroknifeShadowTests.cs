@@ -1,3 +1,5 @@
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife;
@@ -180,6 +182,30 @@ public class VibroknifeShadowTests
         }
     }
 
+    [Test]
+    public void SmokeBombFeatAndSpellTlkEntries_DisplayExpectedText()
+    {
+        var root = FindRepositoryRoot();
+        var featRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "feat.2da");
+        var spellRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "spells.2da");
+        var tlkEntries = ReadTlkEntries(root / "SWLOR_Haks" / "swlor2_tlk" / "swlor2_tlk.tlk.json");
+        const int CustomTlkOffset = 16777216;
+        const string ExpectedName = "Smoke Bomb";
+        const string ExpectedDescription =
+            "All enemies in the selected area are afflicted with Smoke Bomb, reducing Accuracy by 20% for 12 seconds.";
+
+        var featRow = featRows[(int)FeatType.SmokeBomb];
+        var spellRow = spellRows[int.Parse(featRow["SPELLID"])];
+        var nameId = int.Parse(featRow["FEAT"]) - CustomTlkOffset;
+        var featDescriptionId = int.Parse(featRow["DESCRIPTION"]) - CustomTlkOffset;
+        var spellDescriptionId = int.Parse(spellRow["SpellDesc"]) - CustomTlkOffset;
+
+        spellRow["Name"].Should().Be(featRow["FEAT"]);
+        tlkEntries[nameId].Should().Be(ExpectedName);
+        tlkEntries[featDescriptionId].Should().Be(ExpectedDescription);
+        tlkEntries[spellDescriptionId].Should().Be(ExpectedDescription);
+    }
+
     private static void AssertPerkLevel(
         PerkDetail perk,
         string name,
@@ -333,6 +359,12 @@ public class VibroknifeShadowTests
         return result;
     }
 
+    private static Dictionary<int, string> ReadTlkEntries(PathInfo path)
+    {
+        var tlk = JsonSerializer.Deserialize<TlkFile>(File.ReadAllText(path.FullName))!;
+        return tlk.Entries.ToDictionary(entry => entry.Id, entry => entry.Text);
+    }
+
     private static PathInfo FindRepositoryRoot()
     {
         var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
@@ -358,4 +390,10 @@ public class VibroknifeShadowTests
             return new PathInfo(Path.Combine(path.FullName, child));
         }
     }
+
+    private sealed record TlkFile([property: JsonPropertyName("entries")] TlkEntry[] Entries);
+
+    private sealed record TlkEntry(
+        [property: JsonPropertyName("id")] int Id,
+        [property: JsonPropertyName("text")] string Text);
 }

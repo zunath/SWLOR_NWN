@@ -202,6 +202,9 @@ public class KatarIronGuardTests
         guardCounter.Should().Contain("ApplyGuardCounter(activator, target, targetLocation, 28, 45, true);");
         guardCounter.Should().Contain("? typeof(DazedStatusEffect)");
 
+        var ironElbows = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Katar" / "IronElbowsAbilityDefinition.cs").FullName);
+        ironElbows.Should().Contain("Ability.ApplyCombatImpact(activator, activator, GetLocation(activator), SkillType.Katar, 15, 0, null, true, enmityBonus: 350);");
+
         var twinIntercept = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Katar" / "TwinInterceptAbilityDefinition.cs").FullName);
         twinIntercept.Should().Contain(".HasMaxRange(6f)");
         twinIntercept.Should().Contain("GetMaxHitPoints(activator) * 0.2f");

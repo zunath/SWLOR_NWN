@@ -2550,7 +2550,19 @@ namespace SWLOR.Game.Server.Service.StatService
         /// Current rank of the Field Recovery Leadership aura.
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
-        FieldRecoveryAuraLevel = 424
+        FieldRecoveryAuraLevel = 424,
+
+        /// <summary>
+        /// HP threshold percent below which damage dealt restores HP.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        LowHPDamageDealtHPRestoreThresholdPercent = 425,
+
+        /// <summary>
+        /// Percent of damage dealt restored as HP while below LowHPDamageDealtHPRestoreThresholdPercent.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        LowHPDamageDealtHPPercentRestore = 426
     }
 
     public class StatTypeAttribute : Attribute

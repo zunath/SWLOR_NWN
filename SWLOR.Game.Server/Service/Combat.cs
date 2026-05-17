@@ -735,6 +735,22 @@ namespace SWLOR.Game.Server.Service
                     HealFromDamage(attacker, damage, hpRestorePercent);
                 }
             }
+
+            ApplyLowHPDamageDealtHPRestore(attacker, damage);
+        }
+
+        private static void ApplyLowHPDamageDealtHPRestore(uint attacker, int damage)
+        {
+            var threshold = Stat.GetStatAdjustment(attacker, StatType.LowHPDamageDealtHPRestoreThresholdPercent);
+            var hpRestorePercent = Stat.GetStatAdjustment(attacker, StatType.LowHPDamageDealtHPPercentRestore);
+            if (threshold <= 0 || hpRestorePercent <= 0)
+                return;
+
+            var maxHP = GetMaxHitPoints(attacker);
+            if (maxHP <= 0 || GetCurrentHitPoints(attacker) >= maxHP * (threshold / 100f))
+                return;
+
+            HealFromDamage(attacker, damage, hpRestorePercent);
         }
 
         private static void ApplyBleedingTargetStaminaRestore(uint attacker, uint defender)

@@ -203,6 +203,11 @@ public class HeavyVibrobladeDefenseTests
         absoluteDefense.Should().Contain("if (partyMember == activator || !GetIsObjectValid(partyMember))");
         absoluteDefense.Should().Contain("Ability.ApplyTemporaryImmunity(partyMember, 15f, ImmunityType.Knockdown)");
         absoluteDefense.Should().Contain("Ability.ApplyTemporaryImmunity(partyMember, 15f, ImmunityType.Dazed)");
+
+        var perkDefinition = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "PerkDefinition" / "HeavyVibrobladePerkDefinition.cs").FullName)
+            .ReplaceLineEndings("\n");
+        perkDefinition.Should().Contain("StatType.AttackDeflection,\n                    creature => Math.Min(20, 5 + Math.Max(0, GetAbilityScore(creature, AbilityType.Might)) / 2)");
+        perkDefinition.Should().Contain("StatType.DeflectionStaminaRestorePercent,\n                    10)");
     }
 
     private static void AssertPerkLevel(

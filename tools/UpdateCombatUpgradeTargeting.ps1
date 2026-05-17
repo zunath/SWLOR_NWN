@@ -314,7 +314,6 @@ foreach ($label in @(
     "LegSweep1",
     "LegSweep2",
     "LegSweep3",
-    "LifeSiphon1",
     "PerceptiveStance1",
     "PiercingToss1",
     "PiercingToss2",

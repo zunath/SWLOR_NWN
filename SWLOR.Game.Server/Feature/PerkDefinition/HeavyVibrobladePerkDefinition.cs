@@ -311,8 +311,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Life Siphon")
 
                 .AddPerkLevel()
-                .GrantsFeat(FeatType.LifeSiphon1)
-                .Description("When below 50% HP, your attacks heal you for 15% of damage dealt and generate +20% enmity.")
+                .Description("When below 50% HP, your attacks heal you for 15% of damage dealt.")
+                .IncreasesStat(StatType.LowHPDamageDealtHPRestoreThresholdPercent, creature => EquipmentPredicates.HasMainHandHeavyVibroblade(creature) ? 50 : 0)
+                .IncreasesStat(StatType.LowHPDamageDealtHPPercentRestore, creature => EquipmentPredicates.HasMainHandHeavyVibroblade(creature) ? 15 : 0)
                 .Price(3)
                 .RequirementSkill(SkillType.HeavyVibroblade, 20);
         }
@@ -488,12 +489,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Grants +5% Attack Deflection. When attacks are deflected, you restore 10% of maximum STM. Deflection increases by 0.5% per MGT. (Maximum: 20%)")
                 .IncreasesStat(
                     StatType.AttackDeflection,
-                    creature => EquipmentPredicates.HasMainHandHeavyVibroblade(creature)
-                        ? Math.Min(20, 5 + Math.Max(0, GetAbilityScore(creature, AbilityType.Might)) / 2)
-                        : 0)
+                    creature => Math.Min(20, 5 + Math.Max(0, GetAbilityScore(creature, AbilityType.Might)) / 2))
                 .IncreasesStat(
                     StatType.DeflectionStaminaRestorePercent,
-                    creature => EquipmentPredicates.HasMainHandHeavyVibroblade(creature) ? 10 : 0)
+                    10)
                 .Price(3)
                 .RequirementSkill(SkillType.HeavyVibroblade, 22);
         }

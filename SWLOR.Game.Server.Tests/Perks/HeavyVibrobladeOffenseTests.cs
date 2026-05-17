@@ -30,8 +30,10 @@ public class HeavyVibrobladeOffenseTests
             "Deal weapon DMG + 25 to a single target. Costs 8% max HP.");
         AssertPerkLevel(perks[PerkType.SoulDevourer], "Soul Devourer", 1, 4, 18, FeatType.SoulDevourer1,
             "While active, gain +35% Attack and +15% critical chance, but each attack you make deals 40% of the damage back to you. Damage reduced by 1% per MGT. (Minimum 10%)");
-        AssertPerkLevel(perks[PerkType.LifeSiphon], "Life Siphon", 1, 3, 20, FeatType.LifeSiphon1,
-            "When below 50% HP, your attacks heal you for 15% of damage dealt and generate +20% enmity.");
+        AssertPerkLevel(perks[PerkType.LifeSiphon], "Life Siphon", 1, 3, 20, null,
+            "When below 50% HP, your attacks heal you for 15% of damage dealt.",
+            StatType.LowHPDamageDealtHPRestoreThresholdPercent,
+            StatType.LowHPDamageDealtHPPercentRestore);
         AssertPerkLevel(perks[PerkType.VampiricFury], "Vampiric Fury", 1, 3, 22, null,
             "Critical hits restore HP equal to 40% of damage dealt. Amount healed increases by 1% per MGT. (Maximum 75%)",
             StatType.CriticalHPPercentOfDamageRestore);
@@ -84,9 +86,6 @@ public class HeavyVibrobladeOffenseTests
 
         var soulDevourer = new SoulDevourerAbilityDefinition().BuildAbilities()[FeatType.SoulDevourer1];
         AssertAbility(soulDevourer, "Soul Devourer", 1, RecastGroup.SoulDevourer, 180f, 2f, null, false, false, false, false, AbilityActivationType.Casted);
-
-        var lifeSiphon = new LifeSiphonAbilityDefinition().BuildAbilities()[FeatType.LifeSiphon1];
-        AssertAbility(lifeSiphon, "Life Siphon", 1, null, null, 0f, null, false, false, false, false, AbilityActivationType.Casted);
 
         var soulBurst = new SoulBurstAbilityDefinition().BuildAbilities()[FeatType.SoulBurst1];
         AssertAbility(soulBurst, "Soul Burst", 1, RecastGroup.SoulBurst, 180f, 0f, 12, true, false, false, true, AbilityActivationType.Casted);
@@ -143,7 +142,6 @@ public class HeavyVibrobladeOffenseTests
             (FeatType.EssenceHunter1, "ife_esshunt1", "0x01", "0", "****", "****", "****", "****"),
             (FeatType.SacrificialBlade1, "ife_sacblade1", "0x02", "1", "****", "****", "****", "****"),
             (FeatType.SoulDevourer1, "ife_souldev1", "0x01", "0", "****", "****", "****", "****"),
-            (FeatType.LifeSiphon1, "ife_lifesiph1", "0x01", "0", "****", "****", "****", "****"),
             (FeatType.SoulBurst1, "ife_soulburst1", "0x3E", "1", "cone", "5", "5", "17"),
             (FeatType.SoulStrike2, "ife_soulstrk2", "0x01", "0", "****", "****", "****", "****"),
             (FeatType.SoulSacrifice1, "ife_soulsac1", "0x01", "0", "****", "****", "****", "****"),

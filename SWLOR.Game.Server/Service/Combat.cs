@@ -27,6 +27,7 @@ namespace SWLOR.Game.Server.Service
         private const float DamageStatDeltaMultiplier = 0.35f;
         private const int BaseGuardDamageReductionPercent = 20;
         private const int MaximumGuardDamageReductionPercent = 40;
+        private const int MaximumNormalDamageReductionPercent = 95;
 
         public const int StandardCriticalRating = 2;
         public const int BaseAttackDelayMilliseconds = 1750;
@@ -359,17 +360,21 @@ namespace SWLOR.Game.Server.Service
             if (damage <= 0)
                 return damage;
 
-            var percentAdjustment = Stat.GetStatAdjustment(defender, StatType.DamageTakenPercentAdjustment);
-            if (percentAdjustment <= -100)
+            if (HasDamageImmunity(defender, damageType))
                 return 0;
 
+            var percentAdjustment = Stat.GetStatAdjustment(defender, StatType.DamageTakenPercentAdjustment);
+
             if (percentAdjustment != 0)
-                damage += (int)Math.Ceiling(damage * (percentAdjustment / 100f));
+                damage = ApplyPercentDamageAdjustment(damage, percentAdjustment);
 
             damage += Stat.GetStatAdjustment(defender, StatType.DamageTakenFlatAdjustment);
+            damage = Math.Max(1, damage);
             damage = ApplyDamageTakenRedirectToStatusSource(defender, attacker, damage, damageType);
 
-            damage = Math.Max(0, damage);
+            if (damage <= 0)
+                return 0;
+
             return PreventFatalDamageAndGrantTemporaryHP(defender, damage);
         }
 
@@ -536,6 +541,9 @@ namespace SWLOR.Game.Server.Service
             if (damage <= 0)
                 return damage;
 
+            if (HasDamageImmunity(defender, damageType))
+                return 0;
+
             damage = ApplyOutgoingDamageModifier(attacker, damage);
             damage = ApplyWeaponAndForceDamageModifier(attacker, damage, skillType, damageType);
             damage = ApplyTargetLowHPDamageModifier(attacker, defender, damage);
@@ -549,7 +557,7 @@ namespace SWLOR.Game.Server.Service
                 canApplyRandomFlatBonuses);
             damage = ApplyRepeatedTargetDamageModifier(attacker, defender, skillType, damage);
 
-            return Math.Max(0, damage);
+            return Math.Max(1, damage);
         }
 
         public static int ApplyAutoAttackDamageModifiers(uint attacker, uint defender, int damage, SkillType skillType = SkillType.Invalid)
@@ -1783,7 +1791,7 @@ namespace SWLOR.Game.Server.Service
             if (adjustment == 0)
                 return damage;
 
-            return damage + (int)Math.Ceiling(damage * (adjustment / 100f));
+            return ApplyPercentDamageAdjustment(damage, adjustment);
         }
 
         private static int ApplyWeaponAndForceDamageModifier(
@@ -1799,7 +1807,7 @@ namespace SWLOR.Game.Server.Service
             if (adjustment == 0)
                 return damage;
 
-            return damage + (int)Math.Ceiling(damage * (adjustment / 100f));
+            return ApplyPercentDamageAdjustment(damage, adjustment);
         }
 
         private static int ApplyTargetLowHPDamageModifier(uint attacker, uint defender, int damage)
@@ -1814,7 +1822,7 @@ namespace SWLOR.Game.Server.Service
             if (maxHP <= 0 || GetCurrentHitPoints(defender) > maxHP * (threshold / 100f))
                 return damage;
 
-            return damage + (int)Math.Ceiling(damage * (adjustment / 100f));
+            return ApplyPercentDamageAdjustment(damage, adjustment);
         }
 
         public static int GetNearbyStatusTargetAttackAdjustment(uint creature)
@@ -1939,7 +1947,7 @@ namespace SWLOR.Game.Server.Service
             if (adjustment == 0)
                 return damage;
 
-            return damage + (int)Math.Ceiling(damage * (adjustment / 100f));
+            return ApplyPercentDamageAdjustment(damage, adjustment);
         }
 
         public static int ApplyTwinBladeAbilityShapeDamageModifier(
@@ -1970,7 +1978,7 @@ namespace SWLOR.Game.Server.Service
             if (adjustment == 0)
                 return damage;
 
-            return Math.Max(0, damage + (int)Math.Ceiling(damage * (adjustment / 100f)));
+            return ApplyPercentDamageAdjustment(damage, adjustment);
         }
 
         public static int ApplyThrowingAbilityShapeDamageModifier(
@@ -1988,7 +1996,25 @@ namespace SWLOR.Game.Server.Service
             if (adjustment == 0)
                 return damage;
 
-            return Math.Max(0, damage + (int)Math.Ceiling(damage * (adjustment / 100f)));
+            return ApplyPercentDamageAdjustment(damage, adjustment);
+        }
+
+        private static int ApplyPercentDamageAdjustment(int damage, int adjustment)
+        {
+            if (damage <= 0 || adjustment == 0)
+                return damage;
+
+            adjustment = Math.Max(adjustment, -MaximumNormalDamageReductionPercent);
+            return Math.Max(1, damage + (int)Math.Ceiling(damage * (adjustment / 100f)));
+        }
+
+        public static bool HasDamageImmunity(uint defender, CombatDamageType damageType)
+        {
+            if (!GetIsObjectValid(defender))
+                return false;
+
+            return damageType.IsPhysicalDamageType() &&
+                   Stat.GetStatAdjustment(defender, StatType.PhysicalDamageImmunity) > 0;
         }
 
         private static int ApplyRepeatedTargetDamageModifier(

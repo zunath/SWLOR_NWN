@@ -2562,7 +2562,13 @@ namespace SWLOR.Game.Server.Service.StatService
         /// Percent of damage dealt restored as HP while below LowHPDamageDealtHPRestoreThresholdPercent.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        LowHPDamageDealtHPPercentRestore = 426
+        LowHPDamageDealtHPPercentRestore = 426,
+
+        /// <summary>
+        /// Treats incoming physical damage as fully immune. Normal percent mitigation should use PhysicalDamageTakenPercentAdjustment.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        PhysicalDamageImmunity = 427
     }
 
     public class StatTypeAttribute : Attribute

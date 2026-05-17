@@ -119,7 +119,7 @@ public class VibrobladeDefenseTests
         shieldWallSelf.StatGroup.Stats[StatType.EnmityPercentAdjustment].Should().Be(25);
 
         var invincible = new InvincibleStatusEffect();
-        invincible.StatGroup.Stats[StatType.PhysicalDamageTakenPercentAdjustment].Should().Be(-100);
+        invincible.StatGroup.Stats[StatType.PhysicalDamageImmunity].Should().Be(1);
     }
 
     [Test]

@@ -103,6 +103,20 @@ public class CombatDamageTests
     }
 
     [Test]
+    public void NormalDamageMitigation_IsCappedSeparatelyFromExplicitImmunity()
+    {
+        var root = FindRepositoryRoot();
+        var combatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
+        var invincibleSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "StatusEffectDefinition", "InvincibleStatusEffect.cs"));
+
+        combatSource.Should().Contain("MaximumNormalDamageReductionPercent = 95");
+        combatSource.Should().Contain("Math.Max(adjustment, -MaximumNormalDamageReductionPercent)");
+        combatSource.Should().Contain("HasDamageImmunity(defender, damageType)");
+        invincibleSource.Should().Contain("StatType.PhysicalDamageImmunity");
+        invincibleSource.Should().NotContain("PhysicalDamageTakenPercentAdjustment] = -100");
+    }
+
+    [Test]
     public void IsWeaponSkillType_UsesSkillCombatPointMetadata()
     {
         Combat.IsWeaponSkillType(SkillType.Lightsaber).Should().BeTrue();

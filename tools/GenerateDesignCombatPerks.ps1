@@ -119,7 +119,13 @@ function Get-Category {
                 default { throw "No Devices perk category mapped for style '$($Row.Style)'." }
             }
         }
-        "First Aid" { return "FirstAid" }
+        "First Aid" {
+            switch ($Row.Style) {
+                "Trauma Medic" { return "FirstAidTraumaMedic" }
+                "Combat Pharmacology" { return "FirstAidCombatPharmacology" }
+                default { throw "No First Aid perk category mapped for style '$($Row.Style)'." }
+            }
+        }
         "Force" {
             if ($Row.Style -like "Light*") { return "ForceLight" }
             if ($Row.Style -like "Dark*") { return "ForceDark" }

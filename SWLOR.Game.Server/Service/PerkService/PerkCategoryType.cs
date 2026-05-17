@@ -14,7 +14,7 @@ namespace SWLOR.Game.Server.Service.PerkService
         [PerkCategory("Piloting", true)]
         Piloting = 5,
 
-        [PerkCategory("First Aid", true)]
+        [PerkCategory("First Aid", false)]
         FirstAid = 6,
 
         [PerkCategory("Smithery", true)]
@@ -157,6 +157,12 @@ namespace SWLOR.Game.Server.Service.PerkService
 
         [PerkCategory("Devices - Assault Gadgets", true)]
         DevicesAssaultGadgets = 54,
+
+        [PerkCategory("First Aid - Trauma Medic", true)]
+        FirstAidTraumaMedic = 55,
+
+        [PerkCategory("First Aid - Combat Pharmacology", true)]
+        FirstAidCombatPharmacology = 56,
     }
 
     public class PerkCategoryAttribute : Attribute

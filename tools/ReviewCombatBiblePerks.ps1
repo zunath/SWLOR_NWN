@@ -149,7 +149,13 @@ function Get-ExpectedCategory {
     switch ($Row.Tab) {
         "Armor" { return "ArmorGeneral" }
         "Piloting" { return "Piloting" }
-        "First Aid" { return "FirstAid" }
+        "First Aid" {
+            switch ($Row.Style) {
+                "Trauma Medic" { return "FirstAidTraumaMedic" }
+                "Combat Pharmacology" { return "FirstAidCombatPharmacology" }
+                default { throw "No First Aid perk category mapped for style '$($Row.Style)'." }
+            }
+        }
         "Leadership" {
             switch ($Row.Style) {
                 "Vanguard Command" { return "LeadershipVanguardCommand" }

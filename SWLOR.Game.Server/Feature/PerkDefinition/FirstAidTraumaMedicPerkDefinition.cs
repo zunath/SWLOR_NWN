@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void MedKit()
         {
-            _builder.Create(PerkCategoryType.FirstAid, PerkType.MedKit)
+            _builder.Create(PerkCategoryType.FirstAidTraumaMedic, PerkType.MedKit)
                 .Name("Med Kit")
 
                 .AddPerkLevel()
@@ -57,7 +57,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void TreatmentKit()
         {
-            _builder.Create(PerkCategoryType.FirstAid, PerkType.TreatmentKit)
+            _builder.Create(PerkCategoryType.FirstAidTraumaMedic, PerkType.TreatmentKit)
                 .Name("Treatment Kit")
 
                 .AddPerkLevel()
@@ -81,7 +81,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void MedicalInjectorRig()
         {
-            _builder.Create(PerkCategoryType.FirstAid, PerkType.MedicalInjectorRig)
+            _builder.Create(PerkCategoryType.FirstAidTraumaMedic, PerkType.MedicalInjectorRig)
                 .Name("Medical Injector Rig")
 
                 .AddPerkLevel()
@@ -99,7 +99,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void EmergencySealant()
         {
-            _builder.Create(PerkCategoryType.FirstAid, PerkType.EmergencySealant)
+            _builder.Create(PerkCategoryType.FirstAidTraumaMedic, PerkType.EmergencySealant)
                 .Name("Emergency Sealant")
 
                 .AddPerkLevel()
@@ -111,7 +111,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void KoltoMist()
         {
-            _builder.Create(PerkCategoryType.FirstAid, PerkType.KoltoMist)
+            _builder.Create(PerkCategoryType.FirstAidTraumaMedic, PerkType.KoltoMist)
                 .Name("Kolto Mist")
 
                 .AddPerkLevel()
@@ -129,7 +129,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void Resuscitation()
         {
-            _builder.Create(PerkCategoryType.FirstAid, PerkType.Resuscitation)
+            _builder.Create(PerkCategoryType.FirstAidTraumaMedic, PerkType.Resuscitation)
                 .Name("Resuscitation")
 
                 .AddPerkLevel()
@@ -147,7 +147,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void Infusion()
         {
-            _builder.Create(PerkCategoryType.FirstAid, PerkType.Infusion)
+            _builder.Create(PerkCategoryType.FirstAidTraumaMedic, PerkType.Infusion)
                 .Name("Infusion")
 
                 .AddPerkLevel()
@@ -165,7 +165,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void EmergencyTriage()
         {
-            _builder.Create(PerkCategoryType.FirstAid, PerkType.EmergencyTriage)
+            _builder.Create(PerkCategoryType.FirstAidTraumaMedic, PerkType.EmergencyTriage)
                 .Name("Emergency Triage")
 
                 .AddPerkLevel()

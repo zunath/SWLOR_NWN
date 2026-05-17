@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void AdrenalStim()
         {
-            _builder.Create(PerkCategoryType.FirstAid, PerkType.AdrenalStim)
+            _builder.Create(PerkCategoryType.FirstAidCombatPharmacology, PerkType.AdrenalStim)
                 .Name("Adrenal Stim")
 
                 .AddPerkLevel()
@@ -51,7 +51,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void Shielding()
         {
-            _builder.Create(PerkCategoryType.FirstAid, PerkType.Shielding)
+            _builder.Create(PerkCategoryType.FirstAidCombatPharmacology, PerkType.Shielding)
                 .Name("Shielding")
 
                 .AddPerkLevel()
@@ -75,7 +75,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void Coagulant()
         {
-            _builder.Create(PerkCategoryType.FirstAid, PerkType.Coagulant)
+            _builder.Create(PerkCategoryType.FirstAidCombatPharmacology, PerkType.Coagulant)
                 .Name("Coagulant")
 
                 .AddPerkLevel()
@@ -93,7 +93,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void PainSuppressant()
         {
-            _builder.Create(PerkCategoryType.FirstAid, PerkType.PainSuppressant)
+            _builder.Create(PerkCategoryType.FirstAidCombatPharmacology, PerkType.PainSuppressant)
                 .Name("Pain Suppressant")
 
                 .AddPerkLevel()
@@ -111,7 +111,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void Antitoxin()
         {
-            _builder.Create(PerkCategoryType.FirstAid, PerkType.Antitoxin)
+            _builder.Create(PerkCategoryType.FirstAidCombatPharmacology, PerkType.Antitoxin)
                 .Name("Antitoxin")
 
                 .AddPerkLevel()
@@ -123,7 +123,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void FieldPharmacist()
         {
-            _builder.Create(PerkCategoryType.FirstAid, PerkType.FieldPharmacist)
+            _builder.Create(PerkCategoryType.FirstAidCombatPharmacology, PerkType.FieldPharmacist)
                 .Name("Field Pharmacist")
 
                 .AddPerkLevel()
@@ -147,7 +147,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void FocusStim()
         {
-            _builder.Create(PerkCategoryType.FirstAid, PerkType.FocusStim)
+            _builder.Create(PerkCategoryType.FirstAidCombatPharmacology, PerkType.FocusStim)
                 .Name("Focus Stim")
 
                 .AddPerkLevel()
@@ -165,7 +165,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void EmergencyCocktail()
         {
-            _builder.Create(PerkCategoryType.FirstAid, PerkType.EmergencyCocktail)
+            _builder.Create(PerkCategoryType.FirstAidCombatPharmacology, PerkType.EmergencyCocktail)
                 .Name("Emergency Cocktail")
 
                 .AddPerkLevel()

@@ -50,6 +50,7 @@ public class FirstAidCombatUpgradeTests
             "MedKit", "TreatmentKit", "MedicalInjectorRig", "EmergencySealant",
             "KoltoMist", "Resuscitation", "Infusion", "EmergencyTriage");
 
+        AssertPerkCategory(perks, PerkCategoryType.FirstAidTraumaMedic);
         AssertPerkLevel(perks[PerkType.MedKit], "Med Kit", 1, 2, null, FeatType.MedKit1,
             "Restores 10% of the target's maximum HP plus WIL scaling to a single target. Consumes medical supplies.");
         AssertPerkLevel(perks[PerkType.TreatmentKit], "Treatment Kit", 1, 2, 5, FeatType.TreatmentKit1,
@@ -96,6 +97,7 @@ public class FirstAidCombatUpgradeTests
             "AdrenalStim", "Shielding", "Coagulant", "PainSuppressant",
             "Antitoxin", "FieldPharmacist", "FocusStim", "EmergencyCocktail");
 
+        AssertPerkCategory(perks, PerkCategoryType.FirstAidCombatPharmacology);
         AssertPerkLevel(perks[PerkType.AdrenalStim], "Adrenal Stim", 1, 2, null, FeatType.AdrenalStim1,
             "Restores 10% of maximum STM and restores 1 STM every 3 seconds for 12 seconds. Consumes a stim pack.");
         AssertPerkLevel(perks[PerkType.Shielding], "Shielding", 1, 2, 5, FeatType.Shielding1,
@@ -389,7 +391,6 @@ public class FirstAidCombatUpgradeTests
         params (StatType Stat, int Value)[] statBonuses)
     {
         perk.Name.Should().Be(name);
-        perk.Category.Should().Be(PerkCategoryType.FirstAid);
 
         var perkLevel = perk.PerkLevels[level];
         perkLevel.Price.Should().Be(price);
@@ -491,6 +492,13 @@ public class FirstAidCombatUpgradeTests
         {
             ability.Requirements.OfType<AbilityRequirementItem>().Should().BeEmpty();
         }
+    }
+
+    private static void AssertPerkCategory(
+        Dictionary<PerkType, PerkDetail> perks,
+        PerkCategoryType category)
+    {
+        perks.Values.Should().OnlyContain(perk => perk.Category == category);
     }
 
     private static void AssertSkillRequirement(PerkLevel level, SkillType skill, int rank)

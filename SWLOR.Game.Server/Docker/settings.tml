@@ -56,7 +56,7 @@
 [ruleset]
 	always-roll-max-hitpoints-on-levelup = false
 	difficulty = 2
-	enforce-legal-characters = true
+	enforce-legal-characters = false
 	hide-hitpoints-gained-on-levelup = false
 	item-level-restrictions = false
 	max-character-level = 40

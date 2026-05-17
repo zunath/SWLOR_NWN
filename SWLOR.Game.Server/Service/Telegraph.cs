@@ -1,10 +1,10 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service.TelegraphService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.Creature;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -102,7 +102,8 @@ namespace SWLOR.Game.Server.Service
                 return false;
 
             var telegraph = _allTelegraphs[telegraphId];
-            return IsInTelegraph(creature, telegraph.Data);
+            return GetArea(creature) == telegraph.Area &&
+                   IsInTelegraph(creature, telegraph.Data);
         }
 
         private static string RunTelegraphEffect(uint telegrapher, TelegraphData data)
@@ -172,22 +173,23 @@ namespace SWLOR.Game.Server.Service
             var action = data.Action;
             if (action != null)
             {
-                var location = Location(area, data.Position, data.Rotation);
                 var maxDistance = CalculateMaxCreatureDistance(data.Shape, data.Size);
                 var creatureList = new List<uint>();
-
-                var nth = 1;
-                var nearest = GetNearestCreatureToLocation(CreatureType.IsAlive, true, location, nth);
-                while (GetIsObjectValid(nearest) &&
-                       GetDistanceBetweenLocations(location, GetLocation(nearest)) <= maxDistance)
-                {
-                    if (IsInTelegraph(nearest, data))
+                var candidates = GetAliveCreaturesInArea(area)
+                    .Select(creature => new
                     {
-                        creatureList.Add(nearest);
-                    }
+                        Creature = creature,
+                        Position = GetPosition(creature)
+                    })
+                    .Where(candidate => GetHorizontalDistance(candidate.Position, data.Position) <= maxDistance)
+                    .OrderBy(candidate => GetHorizontalDistance(candidate.Position, data.Position));
 
-                    nth++;
-                    nearest = GetNearestCreatureToLocation(CreatureType.IsAlive, true, location, nth);
+                foreach (var candidate in candidates)
+                {
+                    if (IsPositionInTelegraph(candidate.Position, data))
+                    {
+                        creatureList.Add(candidate.Creature);
+                    }
                 }
 
                 action(data.Creator, creatureList);
@@ -205,7 +207,8 @@ namespace SWLOR.Game.Server.Service
                 case TelegraphType.Cone:
                     return size.X; // Cone length
                 case TelegraphType.Line:
-                    return size.X; // Line length
+                    var halfWidth = size.Y * 0.5f;
+                    return (float)Math.Sqrt(size.X * size.X + halfWidth * halfWidth);
                 default:
                     throw new ArgumentOutOfRangeException(nameof(shape), shape, null);
             }
@@ -213,42 +216,39 @@ namespace SWLOR.Game.Server.Service
 
         private static bool IsInTelegraph(uint creature, TelegraphData data)
         {
+            return IsPositionInTelegraph(GetPosition(creature), data);
+        }
+
+        private static bool IsPositionInTelegraph(Vector3 position, TelegraphData data)
+        {
             switch (data.Shape)
             {
                 case TelegraphType.Sphere:
-                    return IsCreatureInSphere(creature, data);
+                    return IsPositionInSphere(position, data);
                 case TelegraphType.Cone:
-                    return IsCreatureInCone(creature, data);
+                    return IsPositionInCone(position, data);
                 case TelegraphType.Line:
-                    return IsCreatureInLine(creature, data);
+                    return IsPositionInLine(position, data);
                 default:
                     return false;
             }
         }
 
-        private static bool IsCreatureInSphere(uint creature, TelegraphData data)
+        private static bool IsPositionInSphere(Vector3 position, TelegraphData data)
         {
-            var position = GetPosition(creature);
             var radius = data.Size.X;
-            var dx = position.X - data.Position.X;
-            var dy = position.Y - data.Position.Y;
-            var dz = position.Z - data.Position.Z;
-            var distance = (float)Math.Sqrt(dx * dx + dy * dy + dz * dz);
+            var distance = GetHorizontalDistance(position, data.Position);
             return distance <= radius;
         }
 
-        private static bool IsCreatureInCone(uint creature, TelegraphData data)
+        private static bool IsPositionInCone(Vector3 position, TelegraphData data)
         {
-            var position = GetPosition(creature);
-
             var directionX = (float)Math.Cos(data.Rotation);
             var directionY = (float)Math.Sin(data.Rotation);
-            var directionZ = 0f;
 
             var toPointX = position.X - data.Position.X;
             var toPointY = position.Y - data.Position.Y;
-            var toPointZ = position.Z - data.Position.Z;
-            var distance = (float)Math.Sqrt(toPointX * toPointX + toPointY * toPointY + toPointZ * toPointZ);
+            var distance = GetHorizontalDistance(position, data.Position);
             if (distance <= 0.01f)
                 return true;
 
@@ -256,16 +256,15 @@ namespace SWLOR.Game.Server.Service
             var halfAngle = (float)Math.Atan(data.Size.Y * 0.5f / data.Size.X);
 
             // Angle between the direction and the point
-            var dotProduct = toPointX * directionX + toPointY * directionY + toPointZ * directionZ;
+            var dotProduct = toPointX * directionX + toPointY * directionY;
             var cosAngle = Math.Clamp(dotProduct / distance, -1f, 1f);
             var angleBetween = (float)Math.Acos(cosAngle);
 
             return distance <= data.Size.X && angleBetween <= halfAngle;
         }
 
-        private static bool IsCreatureInLine(uint creature, TelegraphData data)
+        private static bool IsPositionInLine(Vector3 position, TelegraphData data)
         {
-            var position = GetPosition(creature);
             var toPoint = position - data.Position;
 
             // Compute rotated position relative to the telegraph's orientation
@@ -279,6 +278,28 @@ namespace SWLOR.Game.Server.Service
 
             return distAlongLine >= 0f && distAlongLine <= data.Size.X // Within length
                    && distFromCenter <= data.Size.Y * 0.5f; // Within width
+        }
+
+        private static float GetHorizontalDistance(Vector3 position, Vector3 origin)
+        {
+            var x = position.X - origin.X;
+            var y = position.Y - origin.Y;
+
+            return (float)Math.Sqrt(x * x + y * y);
+        }
+
+        private static IEnumerable<uint> GetAliveCreaturesInArea(uint area)
+        {
+            if (!GetIsObjectValid(area))
+                yield break;
+
+            for (var creature = GetFirstObjectInArea(area, ObjectType.Creature);
+                 GetIsObjectValid(creature);
+                 creature = GetNextObjectInArea(area, ObjectType.Creature))
+            {
+                if (!GetIsDead(creature) && GetCurrentHitPoints(creature) > 0)
+                    yield return creature;
+            }
         }
 
         private static float DegreesToRadians(float degrees)

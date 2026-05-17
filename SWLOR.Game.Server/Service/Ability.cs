@@ -1171,26 +1171,25 @@ namespace SWLOR.Game.Server.Service
             var origin = shape == CombatImpactAreaShape.Sphere
                 ? Location(GetArea(activator), GetAreaImpactPosition(activator, target, targetLocation, centerOnActivator), 0f)
                 : GetLocation(activator);
-            var maxDistance = shape == CombatImpactAreaShape.Sphere
-                ? lengthOrRadius
-                : Math.Max(lengthOrRadius, width);
+            var maxDistance = GetCombatImpactShapeSearchRadius(shape, lengthOrRadius, width);
 
-            var nth = 1;
-            var creature = GetNearestCreatureToLocation(CreatureType.IsAlive, true, origin, nth);
             var rotation = GetImpactRotationRadians(activator, target, targetLocation);
             var originPosition = GetPositionFromLocation(origin);
-
-            while (GetIsObjectValid(creature) &&
-                   GetDistanceBetweenLocations(origin, GetLocation(creature)) <= maxDistance)
-            {
-                var creaturePosition = GetPosition(creature);
-                if (IsPositionInCombatImpactShape(creaturePosition, originPosition, rotation, shape, lengthOrRadius, width))
+            var candidates = GetAliveCreaturesInArea(GetAreaFromLocation(origin))
+                .Select(creature => new
                 {
-                    creatures.Add(creature);
-                }
+                    Creature = creature,
+                    Position = GetPosition(creature)
+                })
+                .Where(candidate => GetHorizontalDistance(candidate.Position, originPosition) <= maxDistance)
+                .OrderBy(candidate => GetHorizontalDistance(candidate.Position, originPosition));
 
-                nth++;
-                creature = GetNearestCreatureToLocation(CreatureType.IsAlive, true, origin, nth);
+            foreach (var candidate in candidates)
+            {
+                if (IsPositionInCombatImpactShape(candidate.Position, originPosition, rotation, shape, lengthOrRadius, width))
+                {
+                    creatures.Add(candidate.Creature);
+                }
             }
 
             if (creatures.Any(creature => GetIsObjectValid(creature) && GetIsReactionTypeHostile(creature, activator)))
@@ -1268,8 +1267,9 @@ namespace SWLOR.Game.Server.Service
 
                 if (maxTargets > 0)
                 {
+                    var impactPosition = GetPositionFromLocation(areaVisualLocation);
                     hostileCreatures = hostileCreatures
-                        .OrderBy(creature => GetDistanceBetween(creator, creature))
+                        .OrderBy(creature => GetHorizontalDistance(GetPosition(creature), impactPosition))
                         .Take(maxTargets)
                         .ToList();
                 }
@@ -1443,7 +1443,7 @@ namespace SWLOR.Game.Server.Service
             switch (shape)
             {
                 case CombatImpactAreaShape.Sphere:
-                    return NumericsVector3.Distance(position, origin) <= lengthOrRadius;
+                    return GetHorizontalDistance(position, origin) <= lengthOrRadius;
                 case CombatImpactAreaShape.Cone:
                     return IsPositionInCone(position, origin, rotation, lengthOrRadius, width > 0f ? width : lengthOrRadius);
                 case CombatImpactAreaShape.Line:
@@ -1456,7 +1456,7 @@ namespace SWLOR.Game.Server.Service
         private static bool IsPositionInCone(NumericsVector3 position, NumericsVector3 origin, float rotation, float length, float width)
         {
             var toPoint = position - origin;
-            var distance = toPoint.Length();
+            var distance = GetHorizontalDistance(position, origin);
             if (distance <= 0.01f)
                 return true;
 
@@ -1466,6 +1466,44 @@ namespace SWLOR.Game.Server.Service
             var halfAngle = (float)Math.Atan(width * 0.5f / length);
 
             return distance <= length && angleBetween <= halfAngle;
+        }
+
+        private static float GetCombatImpactShapeSearchRadius(CombatImpactAreaShape shape, float lengthOrRadius, float width)
+        {
+            switch (shape)
+            {
+                case CombatImpactAreaShape.Sphere:
+                case CombatImpactAreaShape.Cone:
+                    return lengthOrRadius;
+                case CombatImpactAreaShape.Line:
+                    var effectiveWidth = width > 0f ? width : 2.0f;
+                    var halfWidth = effectiveWidth * 0.5f;
+                    return (float)Math.Sqrt(lengthOrRadius * lengthOrRadius + halfWidth * halfWidth);
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(shape), shape, null);
+            }
+        }
+
+        private static float GetHorizontalDistance(NumericsVector3 position, NumericsVector3 origin)
+        {
+            var x = position.X - origin.X;
+            var y = position.Y - origin.Y;
+
+            return (float)Math.Sqrt(x * x + y * y);
+        }
+
+        private static IEnumerable<uint> GetAliveCreaturesInArea(uint area)
+        {
+            if (!GetIsObjectValid(area))
+                yield break;
+
+            for (var creature = GetFirstObjectInArea(area, ObjectType.Creature);
+                 GetIsObjectValid(creature);
+                 creature = GetNextObjectInArea(area, ObjectType.Creature))
+            {
+                if (!GetIsDead(creature) && GetCurrentHitPoints(creature) > 0)
+                    yield return creature;
+            }
         }
 
         private static bool IsPositionInLine(NumericsVector3 position, NumericsVector3 origin, float rotation, float length, float width)

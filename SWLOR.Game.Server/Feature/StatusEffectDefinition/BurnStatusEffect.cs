@@ -37,9 +37,15 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         protected override void Tick(uint creature)
         {
             var might = GetAbilityModifier(AbilityType.Might, Source);
-            var amount = Random.Next(2, 4) + might * 2 * _level;
+            var amount = System.Math.Max(1, Random.Next(2, 4) + might * 2 * _level);
             amount = Resistance.ApplyResistanceToDamage(creature, ResistanceType, amount);
-            ApplyEffectToObject(DurationType.Instant, EffectDamage(amount, DamageType.Fire), creature);
+            amount = Combat.ApplyDamageOverTimeTakenModifiers(creature, amount, CombatDamageType.Fire);
+            amount = Combat.ApplyDamageTakenModifiers(creature, amount, Source, CombatDamageType.Fire);
+            if (amount <= 0)
+                return;
+
+            var source = GetIsObjectValid(Source) ? Source : creature;
+            AssignCommand(source, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(amount, DamageType.Fire), creature));
         }
     }
 }

@@ -117,6 +117,14 @@ public class ForceLightGuardianTests
 
         var bastion = new BastionOfLight1StatusEffect();
         bastion.StatGroup.Stats[StatType.ForceDamageTakenPercentAdjustment].Should().Be(-10);
+
+        var root = FindRepositoryRoot();
+        var knockdown = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "StatusEffectDefinition" / "KnockdownStatusEffect.cs").FullName);
+        knockdown.Should().Contain("StatusEffect.HasStatusEffect(creature, GetType())");
+        knockdown.Should().Contain("Ability.HasTemporaryImmunity(creature, ImmunityType.Knockdown)");
+        knockdown.Should().Contain("ApplyEffectToObject(DurationType.Temporary, effect, creature, duration);");
+        knockdown.Should().Contain("protected override void Remove(uint creature)");
+        knockdown.Should().Contain("Ability.ApplyTemporaryImmunity(creature, 0f, ImmunityType.Knockdown);");
     }
 
     [Test]

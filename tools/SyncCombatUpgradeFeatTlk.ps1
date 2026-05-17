@@ -9,7 +9,7 @@ param(
     [string]$TlkToolPath = "SWLOR_Haks\nwn_tlk.exe",
     [int]$GeneratedFeatStart = 2000,
     [int]$GeneratedFeatEnd = 2558,
-    [int[]]$ExcludedGeneratedFeatIds = @(2295)
+    [int[]]$ExcludedGeneratedFeatIds = @()
 )
 
 Set-StrictMode -Version Latest
@@ -231,10 +231,17 @@ function Get-ManifestFeatInfo {
             continue
         }
 
-        $label = Convert-PerkNameToFeatLabel $row.PerkName
-        $map[$label.ToLowerInvariant()] = [pscustomobject]@{
+        $info = [pscustomobject]@{
             Name = $row.PerkName
             Description = $row.Description
+        }
+
+        $label = Convert-PerkNameToFeatLabel $row.PerkName
+        $map[$label.ToLowerInvariant()] = $info
+
+        if ($row.PerkName.Trim() -notmatch "\s+(I|II|III|IV|V)$") {
+            $unrankedLabel = [regex]::Replace($row.PerkName.Trim(), "[^A-Za-z0-9]", "")
+            $map[$unrankedLabel.ToLowerInvariant()] = $info
         }
     }
 

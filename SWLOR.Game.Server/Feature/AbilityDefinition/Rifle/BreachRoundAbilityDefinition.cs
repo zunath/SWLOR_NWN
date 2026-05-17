@@ -28,6 +28,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.BreachRound, 90f)
                 .SkillType(SkillType.Rifle)
+                .HasMaxRange(RifleAbilityRange.Standard)
                 .IsSingleTargetAbility()
                 .RequiresTarget()
                 .HasImpactAction(BreachRound1ImpactAction)

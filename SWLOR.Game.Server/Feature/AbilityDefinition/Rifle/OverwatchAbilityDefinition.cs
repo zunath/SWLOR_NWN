@@ -27,6 +27,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 .Level(1)
                 .HasActivationDelay(0f)
                 .SkillType(SkillType.Rifle)
+                .HasMaxRange(RifleAbilityRange.Standard)
                 .IsSingleTargetAbility()
                 .HasRecastDelay(RecastGroup.Overwatch, 120f)
                 .RequiresTarget()

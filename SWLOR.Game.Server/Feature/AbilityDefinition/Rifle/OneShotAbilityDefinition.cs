@@ -34,6 +34,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 .HasActivationDelay(2f)
                 .HasRecastDelay(RecastGroup.Capstone, 1800f)
                 .SkillType(SkillType.Rifle)
+                .HasMaxRange(RifleAbilityRange.Standard)
                 .IsSingleTargetAbility()
                 .RequiresTarget()
                 .HasImpactAction(OneShot1ImpactAction)

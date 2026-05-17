@@ -615,12 +615,6 @@ namespace SWLOR.Game.Server.Service.StatService
         LowHPTemporaryHPCooldownSeconds = 101,
 
         /// <summary>
-        /// Legacy stat retained for migration compatibility. No gameplay reads this value.
-        /// </summary>
-        [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        DeprecatedLowHPTemporaryHPTrigger = 102,
-
-        /// <summary>
         /// Flat Stamina restored on critical hits against poisoned targets.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
@@ -919,12 +913,6 @@ namespace SWLOR.Game.Server.Service.StatService
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
         TwinBladeSingleTargetAbilityStaminaRestoreCooldownSeconds = 152,
-
-        /// <summary>
-        /// Legacy cooldown stat for twin blade area ability Stamina restoration. Prefer TwinBladeAreaAbilityCooldownStaminaRestoreCooldownSeconds for current combat hooks.
-        /// </summary>
-        [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        TwinBladeAreaAbilityStaminaRestoreCooldownSeconds = 153,
 
         /// <summary>
         /// Temporary flat attack deflection chance applied after a twin blade single-target ability is used.

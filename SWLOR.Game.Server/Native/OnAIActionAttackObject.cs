@@ -385,7 +385,7 @@ namespace SWLOR.Game.Server.Native
                     !bTargetDead)
                 {
                     var calculatedDelay = Combat.CalculateAttackDelay(pCreature.m_idSelf);
-                    var delay = calculatedDelay + Combat.BaseAttackDelayMilliseconds;
+                    var delay = Combat.CalculateEffectiveAttackDelay(calculatedDelay);
                     var timeSinceLastAttack = (DateTime.UtcNow - _creatureAttackDelays[pCreature.m_idSelf]).TotalMilliseconds;
 
                     if (timeSinceLastAttack < delay)

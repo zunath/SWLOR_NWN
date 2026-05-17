@@ -3781,6 +3781,18 @@ namespace SWLOR.Game.Server.Service
             return finalDelay;
         }
 
+        /// <summary>
+        /// Calculates the attack delay used by the attack loop after accounting for the engine's default delay.
+        /// </summary>
+        /// <param name="attackerDelayMilliseconds">The attacker's calculated delay in milliseconds.</param>
+        /// <returns>The adjusted delay in milliseconds.</returns>
+        public static int CalculateEffectiveAttackDelay(int attackerDelayMilliseconds)
+        {
+            return attackerDelayMilliseconds > BaseAttackDelayMilliseconds
+                ? attackerDelayMilliseconds - BaseAttackDelayMilliseconds
+                : BaseAttackDelayMilliseconds;
+        }
+
         private static int ApplyOffhandAttackDelayReduction(uint attacker, int offhandDelay)
         {
             if (offhandDelay <= 0)

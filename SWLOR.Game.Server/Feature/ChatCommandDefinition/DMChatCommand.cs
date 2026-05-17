@@ -678,8 +678,10 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     var targetName = GetName(target);
                     var playerId = GetObjectUUID(target);
                     var dbPlayer = DB.Get<Player>(playerId);
+                    dbPlayer.RecastTimes ??= new();
                     dbPlayer.RecastTimes.Clear();
                     DB.Set(dbPlayer);
+                    AbilityCooldownVisual.ClearAllRecastDelays(target);
 
                     SendMessageToPC(user, $"You have reset all of {targetName}'s cooldowns.");
                     SendMessageToPC(target, "A DM has reset all of your cooldowns.");

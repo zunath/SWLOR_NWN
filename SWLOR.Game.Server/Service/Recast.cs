@@ -64,6 +64,12 @@ namespace SWLOR.Game.Server.Service
             {
                 var playerId = GetObjectUUID(creature);
                 var dbPlayer = DB.Get<Player>(playerId);
+                if (dbPlayer.RecastTimes == null)
+                {
+                    dbPlayer.RecastTimes = new Dictionary<RecastGroup, DateTime>();
+                    DB.Set(dbPlayer);
+                    return (false, string.Empty);
+                }
 
                 if (!dbPlayer.RecastTimes.ContainsKey(recastGroup)) return (false, string.Empty);
 
@@ -99,10 +105,12 @@ namespace SWLOR.Game.Server.Service
         {
             if (!GetIsObjectValid(activator) || group == RecastGroup.Invalid || delaySeconds <= 0.0f) return;
 
+            var now = DateTime.UtcNow;
+
             // NPCs and DM-possessed NPCs
             if (!GetIsPC(activator) || GetIsDMPossessed(activator))
             {
-                var recastDate = DateTime.UtcNow.AddSeconds(delaySeconds);
+                var recastDate = now.AddSeconds(delaySeconds);
                 var recastDateString = recastDate.ToString("yyyy-MM-dd HH:mm:ss");
                 SetLocalString(activator, $"ABILITY_RECAST_ID_{(int)group}", recastDateString);
             }
@@ -111,6 +119,7 @@ namespace SWLOR.Game.Server.Service
             {
                 var playerId = GetObjectUUID(activator);
                 var dbPlayer = DB.Get<Player>(playerId);
+                dbPlayer.RecastTimes ??= new Dictionary<RecastGroup, DateTime>();
 
                 if (!ignoreRecastReduction)
                 {
@@ -121,10 +130,11 @@ namespace SWLOR.Game.Server.Service
 
 
 
-                var recastDate = DateTime.UtcNow.AddSeconds(delaySeconds);
+                var recastDate = now.AddSeconds(delaySeconds);
                 dbPlayer.RecastTimes[group] = recastDate;
 
                 DB.Set(dbPlayer);
+                AbilityCooldownVisual.ApplyRecastDelay(activator, group, now, recastDate);
             }
 
         }
@@ -183,6 +193,12 @@ namespace SWLOR.Game.Server.Service
             {
                 var playerId = GetObjectUUID(activator);
                 var dbPlayer = DB.Get<Player>(playerId);
+                if (dbPlayer.RecastTimes == null)
+                {
+                    dbPlayer.RecastTimes = new Dictionary<RecastGroup, DateTime>();
+                    DB.Set(dbPlayer);
+                    return;
+                }
 
                 if (!dbPlayer.RecastTimes.TryGetValue(group, out var unlockDate))
                     return;
@@ -191,6 +207,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     dbPlayer.RecastTimes.Remove(group);
                     DB.Set(dbPlayer);
+                    AbilityCooldownVisual.ClearRecastDelay(activator, group);
                     return;
                 }
 
@@ -198,10 +215,12 @@ namespace SWLOR.Game.Server.Service
                 if (reducedDate <= now)
                 {
                     dbPlayer.RecastTimes.Remove(group);
+                    AbilityCooldownVisual.ClearRecastDelay(activator, group);
                 }
                 else
                 {
                     dbPlayer.RecastTimes[group] = reducedDate;
+                    AbilityCooldownVisual.RefreshRecastDelay(activator, group, reducedDate);
                 }
 
                 DB.Set(dbPlayer);

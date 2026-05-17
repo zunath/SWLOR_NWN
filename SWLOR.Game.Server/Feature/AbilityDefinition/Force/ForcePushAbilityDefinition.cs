@@ -41,7 +41,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.ForcePush, 24f)
                 .SkillType(SkillType.Force)
-                .UsesImpactAnimation(Animation.Push)
+                .UsesAnimation(Animation.LoopingConjure1)
+                .DisplaysVisualEffectWhenActivating()
                 .IsSingleTargetAbility()
                 .HasMaxRange(8f)
                 .RequiresTarget()
@@ -61,7 +62,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.ForcePush, 24f)
                 .SkillType(SkillType.Force)
-                .UsesImpactAnimation(Animation.Push)
+                .UsesAnimation(Animation.LoopingConjure1)
+                .DisplaysVisualEffectWhenActivating()
                 .IsAreaAbility()
                 .HasImpactAction(ForcePush2ImpactAction)
                 .IsCastedAbility()
@@ -79,7 +81,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.ForcePush, 24f)
                 .SkillType(SkillType.Force)
-                .UsesImpactAnimation(Animation.Push)
+                .UsesAnimation(Animation.LoopingConjure1)
+                .DisplaysVisualEffectWhenActivating()
                 .IsAreaAbility()
                 .HasImpactAction(ForcePush3ImpactAction)
                 .IsCastedAbility()
@@ -101,7 +104,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 false,
                 damageType: CombatDamageType.Force,
                 targetVisualEffect: VisualEffect.Vfx_Imp_Pulse_Negative,
-                afterSuccessfulHit: hitTarget => ApplyHobble(activator, hitTarget, ForcePush1HobbleDurationSeconds));
+                afterSuccessfulHit: hitTarget => ApplyHobble(activator, hitTarget, ForcePush1HobbleDurationSeconds),
+                playImpactAnimation: false);
             LightGuardianPowerSupport.ApplyDeflectivePresence(activator);
         }
 
@@ -124,7 +128,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 targetVisualEffect: VisualEffect.Vfx_Imp_Pulse_Negative,
                 areaVisualEffect: VisualEffect.Vfx_Fnf_Howl_Mind,
                 maxTargets: 2,
-                afterSuccessfulHit: hitTarget => ApplyHobble(activator, hitTarget, ForcePush2HobbleDurationSeconds));
+                afterSuccessfulHit: hitTarget => ApplyHobble(activator, hitTarget, ForcePush2HobbleDurationSeconds),
+                playImpactAnimation: false);
             LightGuardianPowerSupport.ApplyDeflectivePresence(activator);
         }
 
@@ -147,7 +152,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 targetVisualEffect: VisualEffect.Vfx_Imp_Pulse_Negative,
                 areaVisualEffect: VisualEffect.Vfx_Fnf_Howl_Mind,
                 maxTargets: 3,
-                afterSuccessfulHit: hitTarget => ApplyHobble(activator, hitTarget, ForcePush3HobbleDurationSeconds));
+                afterSuccessfulHit: hitTarget => ApplyHobble(activator, hitTarget, ForcePush3HobbleDurationSeconds),
+                playImpactAnimation: false);
             LightGuardianPowerSupport.ApplyDeflectivePresence(activator);
         }
 

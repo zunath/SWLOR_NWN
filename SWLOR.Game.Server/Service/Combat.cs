@@ -907,6 +907,7 @@ namespace SWLOR.Game.Server.Service
             ApplyCriticalNextAbilityDamageBonus(attacker, skillType);
             ApplyCriticalNextSkillAbilityDefenseIgnore(attacker, skillType);
             ApplyCriticalNextAbilityNoDelay(attacker, skillType);
+            ApplyCriticalNextAutoAttackNoDelay(attacker, skillType);
             ApplyCriticalSideAttackStaminaRestore(attacker, defender);
 
             var poisonedTargetStaminaRestore = Stat.GetStatAdjustment(attacker, StatType.CriticalPoisonedTargetStaminaRestore);
@@ -1035,6 +1036,24 @@ namespace SWLOR.Game.Server.Service
             if (TryUseStatTrigger(attacker, StatType.CriticalNextAbilityNoDelaySkillType, cooldown))
             {
                 GrantNextAbilityNoDelay(attacker, noDelaySkillType, duration);
+            }
+        }
+
+        private static void ApplyCriticalNextAutoAttackNoDelay(uint attacker, SkillType skillType)
+        {
+            var triggerSkillType = GetSkillTypeFromStat(Stat.GetStatAdjustment(attacker, StatType.CriticalNextAutoAttackNoDelayTriggerSkillType));
+            if (!SkillTypeMatches(skillType, triggerSkillType))
+                return;
+
+            var noDelaySkillType = GetSkillTypeFromStat(Stat.GetStatAdjustment(attacker, StatType.CriticalNextAutoAttackNoDelaySkillType));
+            var duration = Stat.GetStatAdjustment(attacker, StatType.CriticalNextAutoAttackNoDelayDurationSeconds);
+            var cooldown = Stat.GetStatAdjustment(attacker, StatType.CriticalNextAutoAttackNoDelayCooldownSeconds);
+            if (noDelaySkillType == SkillType.Invalid || duration <= 0)
+                return;
+
+            if (TryUseStatTrigger(attacker, StatType.CriticalNextAutoAttackNoDelaySkillType, cooldown))
+            {
+                GrantNextAutoAttackNoDelay(attacker, noDelaySkillType, duration);
             }
         }
 
@@ -2539,6 +2558,45 @@ namespace SWLOR.Game.Server.Service
             return true;
         }
 
+        public static bool HasNextAutoAttackNoDelay(uint creature, SkillType skillType)
+        {
+            if (skillType == SkillType.Invalid)
+                return false;
+
+            var storedSkillType = GetSkillTypeFromStat(TemporaryStatModifier.GetStatAdjustment(
+                creature,
+                StatType.NextAutoAttackNoDelaySkillType,
+                StatType.NextAutoAttackNoDelaySkillType));
+
+            return storedSkillType == skillType;
+        }
+
+        public static bool ConsumeNextAutoAttackNoDelay(uint creature, SkillType skillType)
+        {
+            if (!HasNextAutoAttackNoDelay(creature, skillType))
+                return false;
+
+            TemporaryStatModifier.Consume(
+                creature,
+                StatType.NextAutoAttackNoDelaySkillType,
+                StatType.NextAutoAttackNoDelaySkillType);
+
+            return true;
+        }
+
+        public static void GrantNextAutoAttackNoDelay(uint creature, SkillType skillType, int durationSeconds)
+        {
+            if (!GetIsObjectValid(creature) || skillType == SkillType.Invalid || durationSeconds <= 0)
+                return;
+
+            TemporaryStatModifier.Replace(
+                creature,
+                StatType.NextAutoAttackNoDelaySkillType,
+                (int)skillType,
+                durationSeconds,
+                StatType.NextAutoAttackNoDelaySkillType);
+        }
+
         public static void GrantNextAbilityNoDelay(uint creature, int skillTypeValue, int durationSeconds)
         {
             var skillType = GetSkillTypeFromStat(skillTypeValue);
@@ -2566,7 +2624,7 @@ namespace SWLOR.Game.Server.Service
             return GetEquippedWeaponSkillType(creature);
         }
 
-        private static SkillType GetEquippedWeaponSkillType(uint creature)
+        public static SkillType GetEquippedWeaponSkillType(uint creature)
         {
             if (!GetIsObjectValid(creature))
                 return SkillType.Invalid;
@@ -3834,6 +3892,20 @@ namespace SWLOR.Game.Server.Service
         /// <returns>The adjusted delay in milliseconds.</returns>
         public static int CalculateEffectiveAttackDelay(int attackerDelayMilliseconds)
         {
+            return CalculateEffectiveAttackDelay(attackerDelayMilliseconds, false);
+        }
+
+        /// <summary>
+        /// Calculates the attack delay used by the attack loop after accounting for the engine's default delay.
+        /// </summary>
+        /// <param name="attackerDelayMilliseconds">The attacker's calculated delay in milliseconds.</param>
+        /// <param name="useDefaultMinimumDelay">If true, ignore extra weapon delay and use the default engine minimum.</param>
+        /// <returns>The adjusted delay in milliseconds.</returns>
+        public static int CalculateEffectiveAttackDelay(int attackerDelayMilliseconds, bool useDefaultMinimumDelay)
+        {
+            if (useDefaultMinimumDelay)
+                return BaseAttackDelayMilliseconds;
+
             return attackerDelayMilliseconds > BaseAttackDelayMilliseconds
                 ? attackerDelayMilliseconds - BaseAttackDelayMilliseconds
                 : BaseAttackDelayMilliseconds;

@@ -539,7 +539,8 @@ function Get-MappedCellValue {
 function Import-BibleWorkbookManifestRows {
     param(
         [string]$Path,
-        [string[]]$SheetTabs
+        [string[]]$SheetTabs,
+        [hashtable]$SheetTabAliases = @{}
     )
 
     Add-Type -AssemblyName System.IO.Compression.FileSystem
@@ -582,11 +583,16 @@ function Import-BibleWorkbookManifestRows {
 
         $manifestRows = [System.Collections.Generic.List[object]]::new()
         foreach ($tab in $SheetTabs) {
-            if (!$sheetPathsByName.ContainsKey($tab)) {
+            $workbookTab = $tab
+            if (!$sheetPathsByName.ContainsKey($workbookTab) -and $SheetTabAliases.ContainsKey($tab)) {
+                $workbookTab = $SheetTabAliases[$tab]
+            }
+
+            if (!$sheetPathsByName.ContainsKey($workbookTab)) {
                 throw "Workbook sheet '$tab' was not found."
             }
 
-            [xml]$worksheetXml = Read-ZipEntryText -Zip $zip -EntryPath $sheetPathsByName[$tab]
+            [xml]$worksheetXml = Read-ZipEntryText -Zip $zip -EntryPath $sheetPathsByName[$workbookTab]
             $worksheetNamespace = [System.Xml.XmlNamespaceManager]::new($worksheetXml.NameTable)
             $worksheetNamespace.AddNamespace("d", "http://schemas.openxmlformats.org/spreadsheetml/2006/main")
 
@@ -679,6 +685,9 @@ $sheetTabs = @(
     "Force", "Devices", "Beast Mastery", "Piloting", "Leadership", "First Aid",
     "Espionage", "Smithery", "Engineering", "Fabrication", "Research", "Agriculture", "Gathering"
 )
+$localWorkbookSheetTabAliases = @{
+    Armor = "General"
+}
 
 if ($RefreshBible) {
     $manifestRows = New-Object System.Collections.Generic.List[object]
@@ -730,7 +739,7 @@ if ($RefreshBible) {
 }
 
 if ($RefreshLocalBible) {
-    $manifestRows = Import-BibleWorkbookManifestRows -Path $workbookFullPath -SheetTabs $sheetTabs
+    $manifestRows = Import-BibleWorkbookManifestRows -Path $workbookFullPath -SheetTabs $sheetTabs -SheetTabAliases $localWorkbookSheetTabAliases
     if ($manifestRows.Count -eq 0) {
         throw "No local Bible workbook perk rows were parsed. The workbook export format may have changed."
     }

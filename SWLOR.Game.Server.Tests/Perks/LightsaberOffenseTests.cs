@@ -45,10 +45,10 @@ public class LightsaberOffenseTests
         AssertPerkLevel(perks[PerkType.VersatileStrike], "Versatile Strike", 3, 3, 32, FeatType.VersatileStrike3,
             "Your next attack deals weapon DMG + 40 to your target. Inflicts Sunder which reduces defense and force defense by 20% for 30 seconds.");
         AssertPerkLevel(perks[PerkType.BladeBlitz], "Blade Blitz", 1, 3, 35, null,
-            "After dealing a critical hit, your next attack has no delay.",
-            StatType.CriticalNextAbilityNoDelayTriggerSkillType,
-            StatType.CriticalNextAbilityNoDelaySkillType,
-            StatType.CriticalNextAbilityNoDelayDurationSeconds);
+            "After dealing a critical hit, your next auto-attack uses the default minimum delay.",
+            StatType.CriticalNextAutoAttackNoDelayTriggerSkillType,
+            StatType.CriticalNextAutoAttackNoDelaySkillType,
+            StatType.CriticalNextAutoAttackNoDelayDurationSeconds);
         AssertPerkLevel(perks[PerkType.ArcStrike], "Arc Strike", 1, 3, 38, FeatType.ArcStrike1,
             "You deal weapon DMG + 20 to all enemies in the area of effect (cone) in front of you.");
         AssertPerkLevel(perks[PerkType.SurgeStrike], "Surge Strike", 1, 4, 40, FeatType.SurgeStrike1,

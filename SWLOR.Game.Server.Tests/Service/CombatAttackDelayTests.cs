@@ -60,4 +60,14 @@ public class CombatAttackDelayTests
             effectiveDelay.Should().Be(Combat.BaseAttackDelayMilliseconds);
         }
     }
+
+    [Test]
+    public void CalculateEffectiveAttackDelay_UsesDefaultMinimumWhenNoDelayAttackIsQueued()
+    {
+        var attackerDelay = Combat.BaseAttackDelayMilliseconds + 2000;
+
+        var effectiveDelay = Combat.CalculateEffectiveAttackDelay(attackerDelay, true);
+
+        effectiveDelay.Should().Be(Combat.BaseAttackDelayMilliseconds);
+    }
 }

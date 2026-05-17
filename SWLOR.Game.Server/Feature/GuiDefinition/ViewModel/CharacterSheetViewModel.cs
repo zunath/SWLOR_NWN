@@ -823,11 +823,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private (string Value, string Tooltip) GetAttackDelayInfo()
         {
             var attackerDelayMilliseconds = Combat.CalculateAttackDelay(_target);
-            var effectiveDelayMilliseconds = Combat.CalculateEffectiveAttackDelay(attackerDelayMilliseconds);
+            var attackSkillType = Combat.GetEquippedWeaponSkillType(_target);
+            var useDefaultMinimumDelay = Combat.HasNextAutoAttackNoDelay(_target, attackSkillType);
+            var effectiveDelayMilliseconds = Combat.CalculateEffectiveAttackDelay(attackerDelayMilliseconds, useDefaultMinimumDelay);
             var attackerDelaySeconds = attackerDelayMilliseconds / 1000f;
             var baseDelaySeconds = Combat.BaseAttackDelayMilliseconds / 1000f;
             var effectiveDelaySeconds = effectiveDelayMilliseconds / 1000f;
-            var tooltip = attackerDelayMilliseconds > Combat.BaseAttackDelayMilliseconds
+            var tooltip = useDefaultMinimumDelay
+                ? $"Est. Delay: {effectiveDelaySeconds:0.##}s (next attack uses {baseDelaySeconds:0.##}s default minimum)"
+                : attackerDelayMilliseconds > Combat.BaseAttackDelayMilliseconds
                 ? $"Est. Delay: {effectiveDelaySeconds:0.##}s ({attackerDelaySeconds:0.##}s attacker - {baseDelaySeconds:0.##}s default)"
                 : $"Est. Delay: {effectiveDelaySeconds:0.##}s ({baseDelaySeconds:0.##}s default minimum)";
 

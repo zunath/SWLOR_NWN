@@ -2556,7 +2556,37 @@ namespace SWLOR.Game.Server.Service.StatService
         /// Treats incoming physical damage as fully immune. Normal percent mitigation should use PhysicalDamageTakenPercentAdjustment.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        PhysicalDamageImmunity = 427
+        PhysicalDamageImmunity = 427,
+
+        /// <summary>
+        /// Internal temporary SkillType value that causes the next matching auto-attack to use the default minimum delay, then is consumed.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        NextAutoAttackNoDelaySkillType = 428,
+
+        /// <summary>
+        /// SkillType id required before a critical hit grants minimum delay to the next auto-attack.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        CriticalNextAutoAttackNoDelayTriggerSkillType = 429,
+
+        /// <summary>
+        /// SkillType id whose next auto-attack receives the default minimum delay after the critical-hit trigger.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        CriticalNextAutoAttackNoDelaySkillType = 430,
+
+        /// <summary>
+        /// Duration in seconds for CriticalNextAutoAttackNoDelaySkillType.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        CriticalNextAutoAttackNoDelayDurationSeconds = 431,
+
+        /// <summary>
+        /// Cooldown in seconds for the critical-hit auto-attack minimum-delay trigger.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        CriticalNextAutoAttackNoDelayCooldownSeconds = 432
     }
 
     public class StatTypeAttribute : Attribute

@@ -68,10 +68,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Blade Blitz")
 
                 .AddPerkLevel()
-                .Description("After dealing a critical hit, your next attack has no delay.")
-                .IncreasesStat(StatType.CriticalNextAbilityNoDelayTriggerSkillType, creature => EquipmentPredicates.HasMainHandLightsaber(creature) ? (int)SkillType.Lightsaber : 0)
-                .IncreasesStat(StatType.CriticalNextAbilityNoDelaySkillType, creature => EquipmentPredicates.HasMainHandLightsaber(creature) ? (int)SkillType.Lightsaber : 0)
-                .IncreasesStat(StatType.CriticalNextAbilityNoDelayDurationSeconds, creature => EquipmentPredicates.HasMainHandLightsaber(creature) ? 15 : 0)
+                .Description("After dealing a critical hit, your next auto-attack uses the default minimum delay.")
+                .IncreasesStat(StatType.CriticalNextAutoAttackNoDelayTriggerSkillType, creature => EquipmentPredicates.HasMainHandLightsaber(creature) ? (int)SkillType.Lightsaber : 0)
+                .IncreasesStat(StatType.CriticalNextAutoAttackNoDelaySkillType, creature => EquipmentPredicates.HasMainHandLightsaber(creature) ? (int)SkillType.Lightsaber : 0)
+                .IncreasesStat(StatType.CriticalNextAutoAttackNoDelayDurationSeconds, creature => EquipmentPredicates.HasMainHandLightsaber(creature) ? 15 : 0)
                 .Price(3)
                 .RequirementSkill(SkillType.Lightsaber, 35)
                 .RequirementCharacterType(CharacterType.ForceSensitive);

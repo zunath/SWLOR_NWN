@@ -378,6 +378,9 @@ namespace SWLOR.Game.Server.Native
                     }
                 }
 
+                var attackSkillType = Combat.GetEquippedWeaponSkillType(pCreature.m_idSelf);
+                var useDefaultMinimumDelay = Combat.HasNextAutoAttackNoDelay(pCreature.m_idSelf, attackSkillType);
+
                 // Check attack delay before starting or processing combat
                 // First attack is always instant, subsequent attacks respect delay
                 // Skip delay check if target is dead
@@ -385,7 +388,7 @@ namespace SWLOR.Game.Server.Native
                     !bTargetDead)
                 {
                     var calculatedDelay = Combat.CalculateAttackDelay(pCreature.m_idSelf);
-                    var delay = Combat.CalculateEffectiveAttackDelay(calculatedDelay);
+                    var delay = Combat.CalculateEffectiveAttackDelay(calculatedDelay, useDefaultMinimumDelay);
                     var timeSinceLastAttack = (DateTime.UtcNow - _creatureAttackDelays[pCreature.m_idSelf]).TotalMilliseconds;
 
                     if (timeSinceLastAttack < delay)
@@ -483,6 +486,11 @@ namespace SWLOR.Game.Server.Native
                                             }
                                             else
                                             {
+                                                if (useDefaultMinimumDelay)
+                                                {
+                                                    Combat.ConsumeNextAutoAttackNoDelay(pCreature.m_idSelf, attackSkillType);
+                                                }
+
                                                 pCreature.ResolveAttack(oidTarget, nAttacks, nTimeAnimation);
                                                 bTargetActive = true;
 

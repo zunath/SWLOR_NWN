@@ -194,6 +194,9 @@ public class HeavyVibrobladeOffenseTests
 
         var blazingSpikes = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "StatusEffectDefinition" / "BlazingSpikesStatusEffect.cs").FullName);
         blazingSpikes.Should().Contain("Math.Min(40, 10 + Math.Max(0, GetAbilityScore(defender, AbilityType.Might)))");
+        blazingSpikes.Should().Contain("Math.Floor(damage * (percent / 100f))");
+        blazingSpikes.Should().Contain("if (reflectedDamage <= 0)");
+        blazingSpikes.Should().NotContain("PercentOfDamage(damage, percent)");
     }
 
     private static void AssertPerkLevel(

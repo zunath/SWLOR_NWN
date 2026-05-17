@@ -1612,12 +1612,13 @@ namespace SWLOR.Game.Server.Service
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Poison_S), attacker);
         }
 
-        public static int ApplyGuardedHitModifiers(uint defender, uint attacker, int damage)
+        public static int ApplyGuardedHitModifiers(uint defender, uint attacker, int damage, CombatDamageType damageType)
         {
             if (!GetIsObjectValid(defender) ||
                 !GetIsObjectValid(attacker) ||
                 defender == attacker ||
-                damage <= 0)
+                damage <= 0 ||
+                !damageType.IsPhysicalDamageType())
                 return damage;
 
             var guardChance = Stat.GetGuardChance(defender);

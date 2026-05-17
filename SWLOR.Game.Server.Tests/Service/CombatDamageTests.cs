@@ -90,6 +90,19 @@ public class CombatDamageTests
     }
 
     [Test]
+    public void GuardedHitModifiers_OnlyRunForPhysicalDamageFromDamageRoll()
+    {
+        var root = FindRepositoryRoot();
+        var combatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
+        var damageRollSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Native", "GetDamageRoll.cs"));
+
+        combatSource.Should().Contain("ApplyGuardedHitModifiers(uint defender, uint attacker, int damage, CombatDamageType damageType)");
+        combatSource.Should().Contain("!damageType.IsPhysicalDamageType()");
+        damageRollSource.Should().Contain("Combat.ApplyGuardedHitModifiers(target.m_idSelf, attacker.m_idSelf, damage, damageType);");
+        damageRollSource.Should().NotContain("Combat.ApplyGuardedHitModifiers(target.m_idSelf, attacker.m_idSelf, damage);");
+    }
+
+    [Test]
     public void IsWeaponSkillType_UsesSkillCombatPointMetadata()
     {
         Combat.IsWeaponSkillType(SkillType.Lightsaber).Should().BeTrue();

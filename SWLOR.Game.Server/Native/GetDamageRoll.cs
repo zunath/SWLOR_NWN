@@ -472,7 +472,7 @@ namespace SWLOR.Game.Server.Native
                 damage = target.DoDamageReduction(attacker, damage, damagePower, 0, 1, bRangedAttack);
             }
 
-            damage = Combat.ApplyGuardedHitModifiers(target.m_idSelf, attacker.m_idSelf, damage);
+            damage = Combat.ApplyGuardedHitModifiers(target.m_idSelf, attacker.m_idSelf, damage, damageType);
             if (damage > 0 && attackType == (uint)AttackType.Melee)
             {
                 Combat.ApplyMeleeDamageTakenEffects(target.m_idSelf, attacker.m_idSelf);

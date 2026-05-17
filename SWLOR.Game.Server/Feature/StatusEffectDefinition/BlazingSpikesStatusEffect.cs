@@ -16,8 +16,11 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 return;
 
             var percent = Math.Min(40, 10 + Math.Max(0, GetAbilityScore(defender, AbilityType.Might)));
-            var reflectedDamage = PercentOfDamage(damage, percent);
+            var reflectedDamage = (int)Math.Floor(damage * (percent / 100f));
             reflectedDamage = Resistance.ApplyResistanceToDamage(attacker, CombatDamageType.Fire, reflectedDamage);
+            if (reflectedDamage <= 0)
+                return;
+
             AssignCommand(defender, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(reflectedDamage, DamageType.Fire), attacker));
         }
     }

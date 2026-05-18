@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         private readonly int _movementSpeedPenaltyPercent;
 
         public override string Name => "Adhesive Grenade";
-        public override EffectIconType Icon => EffectIconType.MovementSpeedDecrease;
+        public override EffectIconType Icon => EffectIconType.AdhesiveGrenadeSlowStatusEffect;
         public override StatusEffectCategory Categories => StatusEffectCategory.Debuff | StatusEffectCategory.Control;
         public override StatusEffectCleanseType CleanseTypes => StatusEffectCleanseType.Purify | StatusEffectCleanseType.SoothePet;
         public override ResistanceType ResistanceType => ResistanceType.Mobility;

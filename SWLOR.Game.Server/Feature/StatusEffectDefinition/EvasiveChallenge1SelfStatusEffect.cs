@@ -9,12 +9,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class EvasiveChallenge1SelfStatusEffect : StatusEffectBase
     {
         public override string Name => "Evasive Challenge I";
-        public override EffectIconType Icon => EffectIconType.DamageResistance;
-        public override bool PersistsOnLogout => false;
-        public override List<Type> MorePowerfulEffectTypes { get; } = new List<Type>
-        {
-            typeof(EvasiveChallenge2SelfStatusEffect),
-        };
+        public override EffectIconType Icon => EffectIconType.EvasiveChallenge1SelfStatusEffect;
 
         public EvasiveChallenge1SelfStatusEffect()
         {

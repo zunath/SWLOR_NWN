@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         private readonly int _defensePenaltyPercent;
 
         public override string Name => "Exhausted";
-        public override EffectIconType Icon => EffectIconType.Fatigue;
+        public override EffectIconType Icon => EffectIconType.ExhaustedStatusEffect;
         public override StatusEffectCategory Categories => StatusEffectCategory.Debuff;
         public override StatusEffectCleanseType CleanseTypes => StatusEffectCleanseType.Purify | StatusEffectCleanseType.SoothePet;
         public override ResistanceType ResistanceType => ResistanceType.Trauma;

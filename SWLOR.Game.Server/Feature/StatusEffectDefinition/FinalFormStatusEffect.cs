@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class FinalFormStatusEffect : StatusEffectBase
     {
         public override string Name => "Final Form";
-        public override EffectIconType Icon => EffectIconType.DamageIncrease;
+        public override EffectIconType Icon => EffectIconType.FinalFormStatusEffect;
         public FinalFormStatusEffect()
         {
             StatGroup.Stats[StatType.TwinBladeSingleTargetAbilityDamagePercentAdjustment] = 25;

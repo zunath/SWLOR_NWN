@@ -8,7 +8,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class KnockdownStatusEffect : StatusEffectBase
     {
         public override string Name => "Knockdown";
-        public override EffectIconType Icon => EffectIconType.Fatigue;
+        public override EffectIconType Icon => EffectIconType.KnockdownStatusEffect;
         public override StatusEffectCategory Categories => StatusEffectCategory.Debuff | StatusEffectCategory.Control;
         public override StatusEffectCleanseType CleanseTypes => StatusEffectCleanseType.Purify | StatusEffectCleanseType.SoothePet;
         public override ResistanceType ResistanceType => ResistanceType.Mobility;

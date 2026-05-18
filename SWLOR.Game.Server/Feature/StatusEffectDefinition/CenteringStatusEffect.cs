@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class CenteringStatusEffect : StatusEffectBase
     {
         public override string Name => "Centering";
-        public override EffectIconType Icon => EffectIconType.AttackIncrease;
+        public override EffectIconType Icon => EffectIconType.CenteringStatusEffect;
 
         protected override void Apply(uint creature, int durationTicks)
         {

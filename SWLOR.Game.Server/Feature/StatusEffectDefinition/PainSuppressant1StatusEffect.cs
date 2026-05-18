@@ -9,12 +9,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class PainSuppressant1StatusEffect : StatusEffectBase
     {
         public override string Name => "Pain Suppressant I";
-        public override EffectIconType Icon => EffectIconType.DamageReduction;
-        public override bool PersistsOnLogout => false;
-        public override List<Type> MorePowerfulEffectTypes { get; } = new List<Type>
-        {
-            typeof(PainSuppressant2StatusEffect),
-        };
+        public override EffectIconType Icon => EffectIconType.PainSuppressant1StatusEffect;
 
         public PainSuppressant1StatusEffect()
         {

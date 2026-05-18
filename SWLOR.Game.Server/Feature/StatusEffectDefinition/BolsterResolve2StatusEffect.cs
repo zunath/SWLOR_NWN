@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class BolsterResolve2StatusEffect : SocialScalingStatusEffectBase
     {
         public override string Name => "Bolster Resolve II";
-        public override EffectIconType Icon => EffectIconType.DamageReduction;
+        public override EffectIconType Icon => EffectIconType.BolsterResolve2StatusEffect;
         public override bool PersistsOnLogout => false;
 
         protected override void Apply(uint creature, int durationTicks)

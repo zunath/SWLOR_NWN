@@ -9,13 +9,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class GuardedBite1SelfStatusEffect : StatusEffectBase
     {
         public override string Name => "Guarded Bite I";
-        public override EffectIconType Icon => EffectIconType.DamageReduction;
-        public override bool PersistsOnLogout => false;
-        public override List<Type> MorePowerfulEffectTypes { get; } = new List<Type>
-        {
-            typeof(GuardedBite2SelfStatusEffect),
-            typeof(GuardedBite3SelfStatusEffect),
-        };
+        public override EffectIconType Icon => EffectIconType.GuardedBite1SelfStatusEffect;
 
         public GuardedBite1SelfStatusEffect()
         {

@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class SentinelStanceStatusEffect : StatusEffectBase
     {
         public override string Name => "Sentinel Stance";
-        public override EffectIconType Icon => EffectIconType.ACIncrease;
+        public override EffectIconType Icon => EffectIconType.SentinelStanceStatusEffect;
         public SentinelStanceStatusEffect()
         {
             StatGroup.Stats[StatType.AttackPercentAdjustment] = -15;

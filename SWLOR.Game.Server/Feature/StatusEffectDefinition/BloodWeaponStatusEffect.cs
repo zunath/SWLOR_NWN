@@ -8,7 +8,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class BloodWeaponStatusEffect : StatusEffectBase
     {
         public override string Name => "Blood Weapon";
-        public override EffectIconType Icon => EffectIconType.Regenerate;
+        public override EffectIconType Icon => EffectIconType.BloodWeaponStatusEffect;
 
         protected override void OnDamageDealt(uint attacker, uint defender, int damage, CombatDamageType damageType)
         {

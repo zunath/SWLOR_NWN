@@ -1,0 +1,182 @@
+# Gameplay Icon Standards
+
+Gameplay icons must communicate what an effect does before the player reads a tooltip. These standards apply to ability, feat, spell, status-effect, and other gameplay-facing icons. Environment textures, portraits, item appearance textures, and non-gameplay art are outside this standard.
+
+## Semantic Color
+
+Icons use semantic color on the frame, glow, optional rank badge, or other outer accent. The center artwork may retain discipline flavor, such as Force, Devices, Beastmaster, weapon, medical, command, or elemental identity.
+
+Do not move semantic color randomly into the center artwork. The same role must appear in the same frame/accent location across generated and hand-authored icons.
+
+Final production imports must stamp the semantic frame color deterministically at 32x32. Do not rely on generated source art to preserve the exact category hue.
+
+Approved semantic categories:
+
+| Category | Color | Hex | Usage |
+| --- | --- | --- | --- |
+| Beneficial | Green | `#54F67A` | Healing, cleansing, protection, restoration, ally buffs |
+| Harmful | Red | `#F05454` | Damage, enemy debuffs, vulnerabilities, damage-over-time |
+| Self | Cyan-blue | `#4FC3FF` | Self-only stances, toggles, personal buffs, personal movement |
+| Control | Violet | `#B56CFF` | Stun, daze, immobilize, fear, silence, disorient, forced movement |
+| Deployable | Amber | `#FFB84D` | Beacons, traps, fields, ground effects, persistent placed objects |
+| Utility | White-steel | `#DDE6F0` | Detection, language, travel, noncombat, neutral actions |
+
+When an ability does several things, color it by the primary player-facing intent. Damage with a small debuff rider is Harmful. Enemy control with a damage rider is Control. A placed object or persistent ground effect is Deployable unless its identity is overwhelmingly heal, control, or damage.
+
+Status effects use the same semantic frame location, but their color assignment is stricter:
+
+- Beneficial status effects must use the Beneficial green frame/accent.
+- Detrimental status effects must use the Harmful red frame/accent.
+- Neutral or system status effects may use Utility only when they are neither beneficial nor detrimental.
+- A paired self buff and enemy debuff may share a motif, but they must differ by both semantic color and a visible shape/sigil.
+
+## Uniqueness
+
+Gameplay icons must be globally unique across abilities, status effects, feats, spells, and other gameplay uses. A player should not see the same visible icon and need context to know whether it means an ability, a status effect, an item action, or another gameplay effect.
+
+The only exception is a generated cooldown icon. Cooldown variants inherit the source icon and add only the standardized cooldown overlay because they represent cooldown state rather than gameplay meaning.
+
+Color alone is not enough to make two icons unique. Related icons need a secondary difference such as a shield/check for beneficial effects, crack/downward mark for detrimental effects, stance ring for self effects, bind/lock mark for control, or beacon plate for deployables.
+
+Two unrelated icons must not share the same base symbol with only a rank badge, filename, tooltip, or semantic color separating them. For example, a healing effect and an ailment-resistance effect both being beneficial is not enough reason for both to use the same medical cross; one should use a healing symbol while the other uses a resistance, shield, antidote, or ailment-specific symbol.
+
+## Rank Display
+
+Only multi-rank icon families show a rank badge. If an ability, status effect, feat, spell, or perk line exists only at level 1, the icon must not display a `1`. If the same icon family has more than one level, every ranked member of that family, including rank 1, must show its numeric rank in the bottom-right corner.
+
+NWN presents these icons at 32x32, so any displayed number must be readable at that final in-game size.
+
+Required treatment:
+
+- Use `1`, `2`, `3`, and higher numeric ranks as needed.
+- Do not display a number for single-level rank-1 icons.
+- Place the number in the bottom-right corner.
+- Put the number on a dark, high-contrast badge that is fully inside the frame.
+- Size the badge for 32x32 readability; it should be large and simple enough that a final 32x32 icon still shows the number clearly.
+- The numeric glyph must be fully contained inside the badge and must not spill past the badge edges.
+- Use a warm light yellow/gold numeric glyph on the dark badge for stronger contrast at 32x32.
+- Generate the icon artwork without any rank number, then stamp the numeric badge during final import at the actual 32x32 output size.
+- Do not rely on filename, tooltip, color intensity, or small pips as the only rank signal.
+
+Rank families should share base art so players recognize the ability or effect line. Higher ranks may add subtle escalation such as a brighter glow, stronger contrast, or extra sparks, but the numeric badge is the required rank marker.
+
+## Framing
+
+Icon artwork must stay inside the icon frame. Main symbols, glows, arcs, projectiles, waves, shadows, badges, and highlights must not extend beyond or visually overlap the outer border. If an effect needs motion or area-of-effect language, show it with contained shapes inside the frame rather than drawing off-frame.
+
+Final exported icons must not include contact-sheet gutters, stray outer margins, or extra black bands from source-sheet layout. Crop and square-pad each source tile to the actual icon frame before resizing to 32x32.
+
+Production gameplay TGA files must use bottom-left TGA origin (`image descriptor` bit 5 clear, descriptor `8` for 32-bit alpha TGAs). NUI rendering honors TGA origin metadata, while the classic NWN hotbar and feat icon paths render these gameplay resources upright when they match the legacy bottom-left icon layout. ImageMagick previews can make this look inverted unless the export flips the pixel rows while writing the bottom-left origin metadata.
+
+## Artwork Quality
+
+Gameplay icons must be polished, readable, and intentionally illustrated. Do not use primitive placeholder geometry such as plain rectangles, single-line weapons, generic blobs, or flat symbols that only vaguely suggest the ability.
+
+The central image must clearly represent the gameplay concept at the final 32x32 in-game icon size. A blaster icon should have a recognizable body, grip, barrel, muzzle, and highlight details. A food icon should clearly read as a specific food item, such as a drumstick, not an abstract oval or disconnected parts. A control icon should communicate the actual control effect, such as flash blindness, sonic disruption, fear, restraint, or accuracy disruption.
+
+The target visual style is a polished illustrated game icon, not a flat UI pictogram. Maintain the approved background, frame, semantic color, and rank badge treatment, but render the central subject with the level of finish seen in high-quality fantasy/RPG ability icons: layered forms, painterly highlights, shaded edges, faceted or glowing interiors where appropriate, and a few contained supporting accents such as sparks, shards, particles, or arcs.
+
+Required treatment:
+
+- Use recognizable silhouettes with enough shape detail to identify the subject.
+- Add internal detail such as highlights, shadows, vents, handles, edges, cracks, sparks, waves, stitching, fangs, or other domain-appropriate cues.
+- Use layered lighting and shading so the subject feels illustrated rather than cut from flat primitive shapes.
+- Supporting accents are allowed when they reinforce the subject, but they must stay secondary to the main icon and remain inside the frame.
+- Keep detail readable at 32x32; do not add noise or tiny marks that become stray pixels.
+- Any visible human, humanoid, creature, or beast appendage must be anatomically correct. Hands must not have extra, missing, fused, or malformed fingers; feet, claws, wings, tails, and similar appendages must also be coherent and intentional.
+- Prefer armored plates, closed gauntlets, silhouettes, paws, claws, or symbolic emblems when exposed fingers or other small appendages are not required for the gameplay concept.
+- Prefer a simpler well-drawn subject over a complex but muddy one.
+- Reject generated or hand-authored icons that look like placeholders, rough blocking, or debug art.
+
+## Generation Approach
+
+New and regenerated gameplay icon artwork must use GPT Image 2 through Codex image generation for the polished central subject. Do not require a separate OpenAI API account, `OPENAI_API_KEY`, or the local API/CLI fallback for ordinary icon production.
+
+Do not use locally drawn primitive/vector stand-ins as final gameplay icon art.
+
+The standard pipeline is:
+
+- Generate the central subject with GPT Image 2 through Codex image generation.
+- Prompt for a polished fantasy/RPG ability-icon illustration with clear 32x32 readability, no text, no watermark, no generated numbers, and no generated rank badge.
+- Composite the generated subject into the approved SWLOR background, frame, semantic color, and conditional rank-badge treatment.
+- Keep the semantic frame color, background, border, and numeric rank badge controlled by the project icon tools so every icon remains consistent.
+- Stamp semantic frame color after resizing to the final 32x32 icon size. Do not trust image generation or source-image downscaling to preserve the approved category color.
+- Stamp rank badges after resizing to the final 32x32 icon size only for families with multiple levels. Do not trust image generation or source-image downscaling to preserve readable numeric text.
+- Export production TGA files at 32x32. Source generation may happen at a larger size, but acceptance is based on the final 32x32 TGA.
+- Export production TGA files with bottom-left origin. When using ImageMagick, add a final `-flip -orient BottomLeft` so the visible icon remains upright in NWN's classic gameplay icon paths.
+- Review generated source sheets and final enlarged 32x32 previews for malformed anatomy before importing to production. Regenerate or edit any icon with incorrect fingers, claws, limbs, wings, tails, or other appendages.
+- Review samples before bulk-regenerating production icon files.
+
+Do not silently use a different image model. If Codex image generation cannot use GPT Image 2, stop and resolve that issue before producing final icon artwork.
+
+## Source Of Truth
+
+Every gameplay icon must have an explicit semantic category. Generators may suggest a category for first-time migration work, but the checked-in manifest is the source of truth after generation.
+
+The gameplay icon manifest is:
+
+`SWLOR.Game.Server/Readmes/GameplayIconManifest.csv`
+
+Required fields:
+
+- `Type`: `Ability` or `StatusEffect`.
+- `Key`: stable identifier, such as a feat label or status-effect class name.
+- `DisplayName`: player-facing name when available.
+- `SemanticCategory`: one of the approved semantic categories.
+- `Rank`: numeric level when the gameplay entry has an explicit level; otherwise blank. A `Rank` value does not automatically mean a badge is displayed.
+- `IconResRef`: icon resource reference without extension.
+- `SourcePath`: file or data source that owns the icon.
+
+Generated status-effect labels in `effecticons.2da` must use compact PascalCase without underscores, such as `AilmentResistance3`. Icon file resrefs should be short, meaningful abbreviations that stay within NWN's 16-character resource limit.
+
+## Enforcement
+
+Icon tools and audits must fail when a gameplay icon violates these standards:
+
+- Missing semantic category.
+- Unknown semantic category.
+- Final icon missing the deterministic semantic color frame.
+- Missing icon resource.
+- Duplicate gameplay icon resref.
+- Duplicate generated icon pixels for two different gameplay meanings.
+- Duplicate status-effect icon enum.
+- Generated `effecticons.2da` label with underscores or non-identifier characters.
+- Final regenerated icon artwork produced without GPT Image 2.
+- Icon artwork extending outside the frame or overlapping the outer border.
+- Final TGA using top-left origin, which makes classic NWN gameplay icon paths display the icon upside down.
+- Primitive, placeholder-quality, or unclear central artwork.
+- Incorrect anatomy, including extra or missing fingers, malformed hands, incoherent claws, or broken creature/humanoid appendages.
+- Multi-rank icon without a numeric badge readable in the final 32x32 TGA.
+- Single-level rank-1 icon with an unnecessary numeric badge.
+- Generated cooldown icon name longer than NWN's 16-character resource limit.
+- Recast group or resource generators silently truncating player-facing labels or icon names.
+
+After adding or changing an ability icon referenced by `SWLOR_Haks/swlor2_2da/feat.2da` or `SWLOR_Haks/swlor2_2da/spells.2da`, run:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File tools/GenerateCooldownIcons.ps1 -Force
+```
+
+After changing generated combat-upgrade ability or status-effect icons, run:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File tools/UpdateGameplayIconStandards.ps1 -RefreshManifest -GenerateIcons -UpdateStatusEffectCode
+```
+
+After changing rank-badge rules without regenerating source artwork, run:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File tools/ApplyIconRankBadgeRules.ps1
+```
+
+If any generated TGAs were written with top-left origin, normalize them before building haks:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File tools/NormalizeGameplayTgaOrigin.ps1
+```
+
+Use audit mode to verify checked-in data without regenerating art:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File tools/UpdateGameplayIconStandards.ps1 -AuditOnly
+```

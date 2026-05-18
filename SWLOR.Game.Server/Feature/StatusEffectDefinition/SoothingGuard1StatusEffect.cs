@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class SoothingGuard1StatusEffect : StatusEffectBase
     {
         public override string Name => "Soothing Guard I";
-        public override EffectIconType Icon => EffectIconType.DamageReduction;
+        public override EffectIconType Icon => EffectIconType.SoothingGuard1StatusEffect;
         public override StatusEffectCategory Categories => StatusEffectCategory.Buff;
         public override bool PersistsOnLogout => false;
 

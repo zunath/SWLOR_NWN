@@ -8,7 +8,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class IronCarapaceStatusEffect : StatusEffectBase
     {
         public override string Name => "Iron Carapace";
-        public override EffectIconType Icon => EffectIconType.ElementalShield;
+        public override EffectIconType Icon => EffectIconType.IronCarapaceStatusEffect;
 
         public IronCarapaceStatusEffect()
         {

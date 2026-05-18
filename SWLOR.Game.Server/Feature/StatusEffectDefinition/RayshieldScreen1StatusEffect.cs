@@ -9,12 +9,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class RayshieldScreen1StatusEffect : StatusEffectBase
     {
         public override string Name => "Rayshield Screen I";
-        public override EffectIconType Icon => EffectIconType.DamageReduction;
-        public override bool PersistsOnLogout => false;
-        public override List<Type> MorePowerfulEffectTypes { get; } = new List<Type>
-        {
-            typeof(RayshieldScreen2StatusEffect),
-        };
+        public override EffectIconType Icon => EffectIconType.RayshieldScreen1StatusEffect;
 
         public RayshieldScreen1StatusEffect()
         {

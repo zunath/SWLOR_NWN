@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         private int _remainingShield;
 
         public override string Name => "Guardian's Resolve";
-        public override EffectIconType Icon => EffectIconType.TemporaryHitpoints;
+        public override EffectIconType Icon => EffectIconType.GuardiansResolveStatusEffect;
 
         public GuardiansResolveStatusEffect()
         {

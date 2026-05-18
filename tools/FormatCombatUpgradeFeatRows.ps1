@@ -33,11 +33,25 @@ function New-BlankFeatRow([int]$Row, [int]$ExpectedTokens) {
 $featPath = Resolve-Path $Feat2daPath
 $lines = [System.Collections.Generic.List[string]]::new()
 $lines.AddRange([System.IO.File]::ReadAllLines($featPath))
-$expectedTokens = (($lines[2].Trim() -split "\s+").Count + 1)
+$headerIndex = -1
+for ($i = 0; $i -lt $lines.Count; $i++) {
+    $tokens = @($lines[$i].Trim() -split "\s+")
+    if ($tokens.Count -gt 1 -and $tokens[0] -eq "LABEL" -and $tokens[1] -eq "FEAT") {
+        $headerIndex = $i
+        break
+    }
+}
+
+if ($headerIndex -lt 0) {
+    throw "Could not find feat.2da header row."
+}
+
+$dataStartIndex = $headerIndex + 1
+$expectedTokens = (($lines[$headerIndex].Trim() -split "\s+").Count + 1)
 $formatted = 0
 
 $existingRows = @{}
-for ($i = 3; $i -lt $lines.Count; $i++) {
+for ($i = $dataStartIndex; $i -lt $lines.Count; $i++) {
     $tokens = @($lines[$i].Trim() -split "\s+")
     $row = 0
     if ($tokens.Count -gt 0 -and [int]::TryParse($tokens[0], [ref]$row)) {
@@ -47,7 +61,7 @@ for ($i = 3; $i -lt $lines.Count; $i++) {
 
 if (-not $existingRows.ContainsKey(1997)) {
     $insertIndex = 0
-    for ($i = 3; $i -lt $lines.Count; $i++) {
+    for ($i = $dataStartIndex; $i -lt $lines.Count; $i++) {
         $tokens = @($lines[$i].Trim() -split "\s+")
         $row = 0
         if ($tokens.Count -gt 0 -and [int]::TryParse($tokens[0], [ref]$row) -and $row -eq 2000) {
@@ -66,7 +80,7 @@ if (-not $existingRows.ContainsKey(1997)) {
     $formatted += 3
 }
 
-for ($i = 3; $i -lt $lines.Count; $i++) {
+for ($i = $dataStartIndex; $i -lt $lines.Count; $i++) {
     $line = $lines[$i]
     if ($line.Trim().Length -eq 0) {
         continue

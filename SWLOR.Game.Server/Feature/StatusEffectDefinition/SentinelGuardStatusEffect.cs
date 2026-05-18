@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class SentinelGuardStatusEffect : StatusEffectBase
     {
         public override string Name => "Sentinel Guard";
-        public override EffectIconType Icon => EffectIconType.ACIncrease;
+        public override EffectIconType Icon => EffectIconType.SentinelGuardStatusEffect;
         public SentinelGuardStatusEffect()
         {
             StatGroup.Stats[StatType.AttackDeflection] = 10;

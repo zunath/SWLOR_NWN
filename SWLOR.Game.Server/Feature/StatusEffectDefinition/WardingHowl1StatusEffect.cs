@@ -9,13 +9,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class WardingHowl1StatusEffect : StatusEffectBase
     {
         public override string Name => "Warding Howl I";
-        public override EffectIconType Icon => EffectIconType.DamageReduction;
-        public override bool PersistsOnLogout => false;
-        public override List<Type> MorePowerfulEffectTypes { get; } = new List<Type>
-        {
-            typeof(WardingHowl2StatusEffect),
-            typeof(WardingHowl3StatusEffect),
-        };
+        public override EffectIconType Icon => EffectIconType.WardingHowl1StatusEffect;
 
         public WardingHowl1StatusEffect()
         {

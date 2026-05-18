@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class TwinGuardStanceStatusEffect : StatusEffectBase
     {
         public override string Name => "Twin Guard Stance";
-        public override EffectIconType Icon => EffectIconType.DamageReduction;
+        public override EffectIconType Icon => EffectIconType.TwinGuardStanceStatusEffect;
         public TwinGuardStanceStatusEffect()
         {
             StatGroup.Stats[StatType.AttackPercentAdjustment] = -15;

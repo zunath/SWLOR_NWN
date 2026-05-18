@@ -7,12 +7,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class CoordinatedFocus3StatusEffect : AuraStatusEffectBase
     {
         public override string Name => "Coordinated Focus III";
-        public override EffectIconType Icon => EffectIconType.DamageIncrease;
-        public override List<Type> LessPowerfulEffectTypes { get; } = new()
-        {
-            typeof(CoordinatedFocus1StatusEffect),
-            typeof(CoordinatedFocus2StatusEffect),
-        };
+        public override EffectIconType Icon => EffectIconType.CoordinatedFocus3StatusEffect;
 
         protected override void Apply(uint creature, int durationTicks)
         {

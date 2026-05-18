@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class SoulAscensionStatusEffect : StatusEffectBase
     {
         public override string Name => "Soul Ascension";
-        public override EffectIconType Icon => EffectIconType.Regenerate;
+        public override EffectIconType Icon => EffectIconType.SoulAscensionStatusEffect;
 
         public SoulAscensionStatusEffect()
         {

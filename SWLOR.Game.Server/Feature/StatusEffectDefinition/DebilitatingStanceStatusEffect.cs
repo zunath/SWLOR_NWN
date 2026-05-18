@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class DebilitatingStanceStatusEffect : StatusEffectBase
     {
         public override string Name => "Debilitating Stance";
-        public override EffectIconType Icon => EffectIconType.MovementSpeedDecrease;
+        public override EffectIconType Icon => EffectIconType.DebilitatingStanceStatusEffect;
 
         protected override void OnDamageDealt(uint attacker, uint defender, int damage, CombatDamageType damageType)
         {

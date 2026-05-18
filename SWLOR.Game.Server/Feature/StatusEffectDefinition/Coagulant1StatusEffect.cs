@@ -9,12 +9,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class Coagulant1StatusEffect : StatusEffectBase
     {
         public override string Name => "Coagulant I";
-        public override EffectIconType Icon => EffectIconType.SpellResistanceIncrease;
-        public override bool PersistsOnLogout => false;
-        public override List<Type> MorePowerfulEffectTypes { get; } = new List<Type>
-        {
-            typeof(Coagulant2StatusEffect),
-        };
+        public override EffectIconType Icon => EffectIconType.Coagulant1StatusEffect;
 
         public Coagulant1StatusEffect()
         {

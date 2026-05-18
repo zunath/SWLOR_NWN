@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class BombardierStanceStatusEffect : StatusEffectBase
     {
         public override string Name => "Bombardier Stance";
-        public override EffectIconType Icon => EffectIconType.DamageIncrease;
+        public override EffectIconType Icon => EffectIconType.BombardierStanceStatusEffect;
         public BombardierStanceStatusEffect()
         {
             StatGroup.Stats[StatType.PhysicalDefensePercentAdjustment] = -15;

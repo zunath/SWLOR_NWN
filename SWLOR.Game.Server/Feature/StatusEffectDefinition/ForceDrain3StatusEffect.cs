@@ -9,13 +9,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class ForceDrain3StatusEffect : StatusEffectBase
     {
         public override string Name => "Force Drain III";
-        public override EffectIconType Icon => EffectIconType.DamageDecrease;
-        public override bool PersistsOnLogout => false;
-        public override List<Type> LessPowerfulEffectTypes { get; } = new List<Type>
-        {
-            typeof(ForceDrain1StatusEffect),
-            typeof(ForceDrain2StatusEffect),
-        };
+        public override EffectIconType Icon => EffectIconType.ForceDrain3StatusEffect;
 
         public ForceDrain3StatusEffect()
         {

@@ -8,7 +8,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class KillZoneStatusEffect : StatusEffectBase
     {
         public override string Name => "Kill Zone";
-        public override EffectIconType Icon => EffectIconType.DamageIncrease;
+        public override EffectIconType Icon => EffectIconType.KillZoneStatusEffect;
         public KillZoneStatusEffect()
         {
             StatGroup.Stats[StatType.RepeatedTargetDamageSkillType] = (int)SkillType.Rifle;

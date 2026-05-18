@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class CoveringStrikeStatusEffect : StatusEffectBase
     {
         public override string Name => "Covering Strike";
-        public override EffectIconType Icon => EffectIconType.Taunted;
+        public override EffectIconType Icon => EffectIconType.CoveringStrikeStatusEffect;
         public override StatusEffectCategory Categories => StatusEffectCategory.Debuff;
         public override StatusEffectCleanseType CleanseTypes => StatusEffectCleanseType.Purify | StatusEffectCleanseType.SoothePet;
         public override StatusEffectStackType StackingType => StatusEffectStackType.StackFromMultipleSources;

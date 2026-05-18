@@ -9,14 +9,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class SonicBurst2StatusEffect : StatusEffectBase
     {
         public override string Name => "Sonic Burst II";
-        public override EffectIconType Icon => EffectIconType.AttackDecrease;
-        public override StatusEffectCategory Categories => StatusEffectCategory.Debuff;
-        public override ResistanceType ResistanceType => ResistanceType.Disruption;
-        public override bool PersistsOnLogout => false;
-        public override List<Type> MorePowerfulEffectTypes { get; } = new List<Type>
-        {
-            typeof(SonicBurst3StatusEffect),
-        };
+        public override EffectIconType Icon => EffectIconType.SonicBurst2StatusEffect;
 
         public SonicBurst2StatusEffect()
         {

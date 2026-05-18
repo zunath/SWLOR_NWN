@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class TempestStanceStatusEffect : StatusEffectBase
     {
         public override string Name => "Tempest Stance";
-        public override EffectIconType Icon => EffectIconType.Haste;
+        public override EffectIconType Icon => EffectIconType.TempestStanceStatusEffect;
         public TempestStanceStatusEffect()
         {
             StatGroup.Stats[StatType.PhysicalDefensePercentAdjustment] = -20;

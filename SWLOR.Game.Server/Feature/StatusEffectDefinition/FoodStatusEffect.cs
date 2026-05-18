@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     {
         public FoodEffectData Food { get; }
         public override string Name => "Food";
-        public override EffectIconType Icon => EffectIconType.Food;
+        public override EffectIconType Icon => EffectIconType.FoodStatusEffect;
 
         public FoodStatusEffect()
             : this(new FoodEffectData())

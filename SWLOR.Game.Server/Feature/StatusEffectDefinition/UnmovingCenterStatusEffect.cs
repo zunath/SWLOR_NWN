@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class UnmovingCenterStatusEffect : StatusEffectBase
     {
         public override string Name => "Unmoving Center";
-        public override EffectIconType Icon => EffectIconType.DamageReduction;
+        public override EffectIconType Icon => EffectIconType.UnmovingCenterStatusEffect;
         public UnmovingCenterStatusEffect()
         {
             StatGroup.Stats[StatType.AttackDeflection] = 50;

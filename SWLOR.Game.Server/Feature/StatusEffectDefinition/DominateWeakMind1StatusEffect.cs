@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class DominateWeakMind1StatusEffect : StatusEffectBase
     {
         public override string Name => "Dominate Weak Mind";
-        public override EffectIconType Icon => EffectIconType.AttackDecrease;
+        public override EffectIconType Icon => EffectIconType.DominateWeakMind1StatusEffect;
         public override StatusEffectCategory Categories => StatusEffectCategory.Debuff;
         public override StatusEffectCleanseType CleanseTypes => StatusEffectCleanseType.Purify | StatusEffectCleanseType.SoothePet;
         public override ResistanceType ResistanceType => ResistanceType.Mind;

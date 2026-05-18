@@ -9,12 +9,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class RousingShout2StatusEffect : SocialScalingStatusEffectBase
     {
         public override string Name => "Rousing Shout II";
-        public override EffectIconType Icon => EffectIconType.DamageReduction;
-        public override bool PersistsOnLogout => false;
-        public override List<Type> MorePowerfulEffectTypes { get; } = new List<Type>
-        {
-            typeof(RousingShout3StatusEffect),
-        };
+        public override EffectIconType Icon => EffectIconType.RousingShout2StatusEffect;
         public override List<Type> LessPowerfulEffectTypes { get; } = new List<Type>
         {
             typeof(RousingShout1StatusEffect),

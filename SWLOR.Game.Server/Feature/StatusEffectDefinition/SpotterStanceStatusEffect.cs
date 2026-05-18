@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class SpotterStanceStatusEffect : StatusEffectBase
     {
         public override string Name => "Spotter Stance";
-        public override EffectIconType Icon => EffectIconType.AttackIncrease;
+        public override EffectIconType Icon => EffectIconType.SpotterStanceStatusEffect;
         public SpotterStanceStatusEffect()
         {
             StatGroup.Stats[StatType.AccuracyPercentAdjustment] = 15;

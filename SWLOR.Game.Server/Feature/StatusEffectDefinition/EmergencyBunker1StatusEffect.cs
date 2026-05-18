@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class EmergencyBunker1StatusEffect : StatusEffectBase
     {
         public override string Name => "Emergency Bunker";
-        public override EffectIconType Icon => EffectIconType.DamageReduction;
+        public override EffectIconType Icon => EffectIconType.EmergencyBunker1StatusEffect;
         public override bool PersistsOnLogout => false;
 
         public EmergencyBunker1StatusEffect()

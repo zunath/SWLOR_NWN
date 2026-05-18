@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class TwinInterceptStatusEffect : StatusEffectBase
     {
         public override string Name => "Twin Intercept";
-        public override EffectIconType Icon => EffectIconType.TemporaryHitpoints;
+        public override EffectIconType Icon => EffectIconType.TwinInterceptStatusEffect;
         public override StatusEffectCategory Categories => StatusEffectCategory.Buff;
 
         public TwinInterceptStatusEffect()

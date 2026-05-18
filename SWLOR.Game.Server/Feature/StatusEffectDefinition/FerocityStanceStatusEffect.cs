@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class FerocityStanceStatusEffect : StatusEffectBase
     {
         public override string Name => "Ferocity Stance";
-        public override EffectIconType Icon => EffectIconType.DamageIncrease;
+        public override EffectIconType Icon => EffectIconType.FerocityStanceStatusEffect;
         public FerocityStanceStatusEffect()
         {
             StatGroup.Stats[StatType.AttackPercentAdjustment] = 10;

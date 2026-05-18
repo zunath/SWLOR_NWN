@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class UnbreakableBeast1StatusEffect : StatusEffectBase
     {
         public override string Name => "Unbreakable Beast";
-        public override EffectIconType Icon => EffectIconType.DamageReduction;
+        public override EffectIconType Icon => EffectIconType.UnbreakableBeast1StatusEffect;
         public override bool PersistsOnLogout => false;
 
         public UnbreakableBeast1StatusEffect()

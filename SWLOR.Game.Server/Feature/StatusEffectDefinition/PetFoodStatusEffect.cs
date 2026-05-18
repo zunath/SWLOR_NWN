@@ -8,7 +8,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     {
         private readonly int _xpBonusPercent;
         public override string Name => "Pet Food";
-        public override EffectIconType Icon => EffectIconType.Food;
+        public override EffectIconType Icon => EffectIconType.PetFoodStatusEffect;
 
         public PetFoodStatusEffect()
             : this(0)

@@ -1,4 +1,4 @@
-﻿using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class BleedStatusEffect : StatusEffectBase
     {
         public override string Name => "Bleed";
-        public override EffectIconType Icon => EffectIconType.Wounding;
+        public override EffectIconType Icon => EffectIconType.BleedStatusEffect;
         public override StatusEffectCategory Categories => StatusEffectCategory.Debuff | StatusEffectCategory.Bleeding;
         public override ResistanceType ResistanceType => ResistanceType.Trauma;
         public override StatusEffectCleanseType CleanseTypes =>

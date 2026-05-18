@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class DeflectingAuraStatusEffect : StatusEffectBase
     {
         public override string Name => "Deflecting Aura";
-        public override EffectIconType Icon => EffectIconType.ACIncrease;
+        public override EffectIconType Icon => EffectIconType.DeflectingAuraStatusEffect;
         public DeflectingAuraStatusEffect()
         {
             StatGroup.Stats[StatType.AttackDeflection] = 15;

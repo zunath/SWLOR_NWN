@@ -8,7 +8,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class SmokeBombStatusEffect : StatusEffectBase
     {
         public override string Name => "Smoke Bomb";
-        public override EffectIconType Icon => EffectIconType.AttackDecrease;
+        public override EffectIconType Icon => EffectIconType.SmokeBombStatusEffect;
         public override StatusEffectCategory Categories => StatusEffectCategory.Debuff;
         public override StatusEffectCleanseType CleanseTypes => StatusEffectCleanseType.Purify | StatusEffectCleanseType.SoothePet;
         public override ResistanceType ResistanceType => ResistanceType.Trauma;

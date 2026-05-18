@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class BastionOfLight1StatusEffect : StatusEffectBase
     {
         public override string Name => "Bastion of Light";
-        public override EffectIconType Icon => EffectIconType.DamageReduction;
+        public override EffectIconType Icon => EffectIconType.BastionOfLight1StatusEffect;
         public override bool PersistsOnLogout => false;
 
         public BastionOfLight1StatusEffect()

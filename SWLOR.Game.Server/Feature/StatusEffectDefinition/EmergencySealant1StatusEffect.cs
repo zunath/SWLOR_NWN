@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class EmergencySealant1StatusEffect : StatusEffectBase
     {
         public override string Name => "Emergency Sealant I";
-        public override EffectIconType Icon => EffectIconType.SpellResistanceIncrease;
+        public override EffectIconType Icon => EffectIconType.EmergencySealant1StatusEffect;
         public override bool PersistsOnLogout => false;
 
         public EmergencySealant1StatusEffect()

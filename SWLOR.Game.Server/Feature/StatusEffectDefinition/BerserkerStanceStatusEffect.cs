@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class BerserkerStanceStatusEffect : StatusEffectBase
     {
         public override string Name => "Berserker Stance";
-        public override EffectIconType Icon => EffectIconType.Haste;
+        public override EffectIconType Icon => EffectIconType.BerserkerStanceStatusEffect;
 
         protected override void Apply(uint creature, int durationTicks)
         {

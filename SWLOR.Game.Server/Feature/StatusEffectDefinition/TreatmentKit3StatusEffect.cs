@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class TreatmentKit3StatusEffect : StatusEffectBase
     {
         public override string Name => "Ailment Resistance";
-        public override EffectIconType Icon => EffectIconType.SpellResistanceIncrease;
+        public override EffectIconType Icon => EffectIconType.TreatmentKit3StatusEffect;
         public override StatusEffectCategory Categories => StatusEffectCategory.Buff;
         public override bool PersistsOnLogout => false;
 

@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class BlindStatusEffect : StatusEffectBase
     {
         public override string Name => "Blind";
-        public override EffectIconType Icon => EffectIconType.Blindness;
+        public override EffectIconType Icon => EffectIconType.BlindStatusEffect;
         public override StatusEffectCategory Categories => StatusEffectCategory.Debuff | StatusEffectCategory.Control;
         public override StatusEffectCleanseType CleanseTypes => StatusEffectCleanseType.Purify | StatusEffectCleanseType.SoothePet;
         public override ResistanceType ResistanceType => ResistanceType.Trauma;

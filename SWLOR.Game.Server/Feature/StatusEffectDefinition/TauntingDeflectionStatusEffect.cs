@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class TauntingDeflectionStatusEffect : StatusEffectBase
     {
         public override string Name => "Taunting Deflection";
-        public override EffectIconType Icon => EffectIconType.Taunted;
+        public override EffectIconType Icon => EffectIconType.TauntingDeflectionStatusEffect;
         public TauntingDeflectionStatusEffect()
         {
             StatGroup.Stats[StatType.AttackDeflection] = 10;

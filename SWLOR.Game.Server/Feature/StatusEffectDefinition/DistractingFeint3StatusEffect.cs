@@ -9,15 +9,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class DistractingFeint3StatusEffect : StatusEffectBase
     {
         public override string Name => "Distracting Feint III";
-        public override EffectIconType Icon => EffectIconType.AttackDecrease;
-        public override StatusEffectCategory Categories => StatusEffectCategory.Debuff;
-        public override ResistanceType ResistanceType => ResistanceType.Trauma;
-        public override bool PersistsOnLogout => false;
-        public override List<Type> LessPowerfulEffectTypes { get; } = new List<Type>
-        {
-            typeof(DistractingFeint1StatusEffect),
-            typeof(DistractingFeint2StatusEffect),
-        };
+        public override EffectIconType Icon => EffectIconType.DistractingFeint3StatusEffect;
 
         public DistractingFeint3StatusEffect()
         {

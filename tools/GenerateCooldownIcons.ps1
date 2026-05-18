@@ -4,7 +4,7 @@ param(
     [string]$MagickPath = "magick",
     [int]$GeneratedFeatStart = 2000,
     [int]$GeneratedFeatEnd = 2558,
-    [int]$IconSize = 64,
+    [int]$IconSize = 32,
     [switch]$Force
 )
 
@@ -154,7 +154,9 @@ function New-CooldownOverlay {
         $arguments += @("-draw", $drawCommand)
     }
 
-    $arguments += @("-depth", "8", $OutputPath)
+    $arguments += @(
+        "-depth", "8",
+        $OutputPath)
     Invoke-Magick $arguments
 }
 
@@ -191,6 +193,8 @@ foreach ($icon in $icons) {
             "-fill", "black",
             "-colorize", "40%",
             "-depth", "8",
+            "-flip",
+            "-orient", "BottomLeft",
             $baseFile
         )
         $generated++
@@ -210,6 +214,8 @@ foreach ($icon in $icons) {
             "-compose", "over",
             "-composite",
             "-depth", "8",
+            "-flip",
+            "-orient", "BottomLeft",
             $stageFile
         )
         $generated++

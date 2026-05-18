@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class RampartHide1StatusEffect : StatusEffectBase
     {
         public override string Name => "Rampart Hide";
-        public override EffectIconType Icon => EffectIconType.DamageReduction;
+        public override EffectIconType Icon => EffectIconType.RampartHide1StatusEffect;
         public override bool PersistsOnLogout => false;
 
         public RampartHide1StatusEffect()

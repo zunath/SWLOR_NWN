@@ -9,12 +9,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class DampeningField2StatusEffect : StatusEffectBase
     {
         public override string Name => "Dampening Field II";
-        public override EffectIconType Icon => EffectIconType.DamageReduction;
-        public override bool PersistsOnLogout => false;
-        public override List<Type> LessPowerfulEffectTypes { get; } = new List<Type>
-        {
-            typeof(DampeningField1StatusEffect),
-        };
+        public override EffectIconType Icon => EffectIconType.DampeningField2StatusEffect;
 
         public DampeningField2StatusEffect()
         {

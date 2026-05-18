@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class HoldTheLine1StatusEffect : SocialScalingStatusEffectBase
     {
         public override string Name => "Hold the Line";
-        public override EffectIconType Icon => EffectIconType.DamageReduction;
+        public override EffectIconType Icon => EffectIconType.HoldTheLine1StatusEffect;
         public override bool PersistsOnLogout => false;
 
         protected override void Apply(uint creature, int durationTicks)

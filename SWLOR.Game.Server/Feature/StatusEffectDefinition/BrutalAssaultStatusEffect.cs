@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class BrutalAssaultStatusEffect : StatusEffectBase
     {
         public override string Name => "Brutal Assault";
-        public override EffectIconType Icon => EffectIconType.DamageIncrease;
+        public override EffectIconType Icon => EffectIconType.BrutalAssaultStatusEffect;
 
         public BrutalAssaultStatusEffect()
         {

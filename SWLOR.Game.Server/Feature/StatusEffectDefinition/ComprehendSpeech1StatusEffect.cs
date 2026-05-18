@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class ComprehendSpeech1StatusEffect : StatusEffectBase
     {
         public override string Name => "Comprehend Speech";
-        public override EffectIconType Icon => EffectIconType.AttackIncrease;
+        public override EffectIconType Icon => EffectIconType.ComprehendSpeech1StatusEffect;
         public override bool PersistsOnLogout => false;
 
         public ComprehendSpeech1StatusEffect()

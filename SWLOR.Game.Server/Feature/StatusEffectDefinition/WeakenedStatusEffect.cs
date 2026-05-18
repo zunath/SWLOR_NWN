@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         private readonly int _attackPenaltyPercent;
 
         public override string Name => "Weakened";
-        public override EffectIconType Icon => EffectIconType.AttackDecrease;
+        public override EffectIconType Icon => EffectIconType.WeakenedStatusEffect;
         public override StatusEffectCategory Categories => StatusEffectCategory.Debuff;
         public override StatusEffectCleanseType CleanseTypes => StatusEffectCleanseType.Purify | StatusEffectCleanseType.SoothePet;
         public override ResistanceType ResistanceType => ResistanceType.Trauma;

@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class AuraOfCourage1StatusEffect : StatusEffectBase
     {
         public override string Name => "Courageous Resolve";
-        public override EffectIconType Icon => EffectIconType.DamageReduction;
+        public override EffectIconType Icon => EffectIconType.AuraOfCourage1StatusEffect;
         public override bool PersistsOnLogout => false;
 
         public AuraOfCourage1StatusEffect()

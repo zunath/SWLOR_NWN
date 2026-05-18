@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class ShieldWallStatusEffect : StatusEffectBase
     {
         public override string Name => "Shield Wall";
-        public override EffectIconType Icon => EffectIconType.DamageReduction;
+        public override EffectIconType Icon => EffectIconType.ShieldWallStatusEffect;
         public ShieldWallStatusEffect()
         {
             StatGroup.Stats[StatType.PhysicalDefensePercentAdjustment] = 15;

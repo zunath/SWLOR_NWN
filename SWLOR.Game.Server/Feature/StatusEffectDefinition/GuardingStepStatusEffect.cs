@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class GuardingStepStatusEffect : StatusEffectBase
     {
         public override string Name => "Guarding Step";
-        public override EffectIconType Icon => EffectIconType.ACIncrease;
+        public override EffectIconType Icon => EffectIconType.GuardingStepStatusEffect;
         public GuardingStepStatusEffect()
         {
             StatGroup.Stats[StatType.PhysicalDefensePercentAdjustment] = 20;

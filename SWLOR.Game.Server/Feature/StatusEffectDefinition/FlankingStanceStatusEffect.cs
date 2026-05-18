@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class FlankingStanceStatusEffect : StatusEffectBase
     {
         public override string Name => "Flanking Stance";
-        public override EffectIconType Icon => EffectIconType.AttackIncrease;
+        public override EffectIconType Icon => EffectIconType.FlankingStanceStatusEffect;
         public FlankingStanceStatusEffect()
         {
             StatGroup.Stats[StatType.PhysicalDefensePercentAdjustment] = -25;

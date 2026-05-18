@@ -40,6 +40,14 @@ Detailed documentation specifically for ability definitions and how they use the
 - **Integration** with other game systems
 - **Testing guidelines** for new abilities
 
+### [IconStandards.md](IconStandards.md)
+Standards for gameplay icon color, uniqueness, rank display, and audit/generation expectations. This includes:
+
+- **Semantic color categories** for abilities and status effects
+- **Global uniqueness rules** for gameplay icons
+- **Conditional numeric rank badge requirements**
+- **Generator and audit enforcement expectations**
+
 ### [Services.md](Services.md)
 Comprehensive documentation of the Service layer, which handles the core business logic and game mechanics. This includes:
 

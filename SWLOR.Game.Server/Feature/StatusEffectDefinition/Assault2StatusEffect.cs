@@ -9,16 +9,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class Assault2StatusEffect : StatusEffectBase
     {
         public override string Name => "Assault II";
-        public override EffectIconType Icon => EffectIconType.DamageResistance;
-        public override bool PersistsOnLogout => false;
-        public override List<Type> MorePowerfulEffectTypes { get; } = new List<Type>
-        {
-            typeof(Assault3StatusEffect),
-        };
-        public override List<Type> LessPowerfulEffectTypes { get; } = new List<Type>
-        {
-            typeof(Assault1StatusEffect),
-        };
+        public override EffectIconType Icon => EffectIconType.Assault2StatusEffect;
 
         public Assault2StatusEffect()
         {

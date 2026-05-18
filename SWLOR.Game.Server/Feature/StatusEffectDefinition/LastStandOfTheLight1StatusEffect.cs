@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         private const int TemporaryHPDurationSeconds = 12;
 
         public override string Name => "Last Stand of the Light";
-        public override EffectIconType Icon => EffectIconType.TemporaryHitpoints;
+        public override EffectIconType Icon => EffectIconType.LastStandOfTheLight1StatusEffect;
         public override bool PersistsOnLogout => false;
 
         protected override void Apply(uint creature, int durationTicks)

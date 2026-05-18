@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class AbsoluteDefenseStatusEffect : StatusEffectBase
     {
         public override string Name => "Absolute Defense";
-        public override EffectIconType Icon => EffectIconType.Invulnerable;
+        public override EffectIconType Icon => EffectIconType.AbsoluteDefenseStatusEffect;
         public AbsoluteDefenseStatusEffect()
         {
             StatGroup.Stats[StatType.PhysicalDamageTakenPercentAdjustment] = -25;

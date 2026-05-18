@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class ImpenetrableGuardStatusEffect : StatusEffectBase
     {
         public override string Name => "Impenetrable Guard";
-        public override EffectIconType Icon => EffectIconType.DamageReduction;
+        public override EffectIconType Icon => EffectIconType.ImpenetrableGuardStatusEffect;
         public ImpenetrableGuardStatusEffect()
         {
             StatGroup.Stats[StatType.AttackPercentAdjustment] = -20;

@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class Antitoxin1StatusEffect : StatusEffectBase
     {
         public override string Name => "Antitoxin I";
-        public override EffectIconType Icon => EffectIconType.SpellResistanceIncrease;
+        public override EffectIconType Icon => EffectIconType.Antitoxin1StatusEffect;
         public override StatusEffectCategory Categories => StatusEffectCategory.Buff;
         public override bool PersistsOnLogout => false;
 

@@ -143,7 +143,7 @@ public class ForceLightGuardianTests
             (FeatType.SoothingGuard1, "ife_sthnggrd1", "M", "0x03", "0", "****", "****", "****", "****"),
             (FeatType.ForcePush2, "ife_forcepsh2", "M", "0x3E", "1", "rectangle", "2.5", "8", "17"),
             (FeatType.GuardianWard3, "ife_guardwrd3", "M", "0x03", "0", "****", "****", "****", "****"),
-            (FeatType.AuraOfCourage1, "ife_rcrg1", "P", "0x01", "0", "sphere", "5", "****", "17"),
+            (FeatType.AuraOfCourage1, "ife_crgsres1", "P", "0x01", "0", "sphere", "5", "****", "17"),
             (FeatType.ForceIntercept1, "ife_forceintc1", "M", "0x03", "0", "****", "****", "****", "****"),
             (FeatType.ForceLeap2, "ife_forcelp2", "M", "0x02", "1", "****", "****", "****", "****"),
             (FeatType.ReflectiveBarrier1, "ife_rflctvbrrr1", "M", "0x03", "0", "****", "****", "****", "****"),

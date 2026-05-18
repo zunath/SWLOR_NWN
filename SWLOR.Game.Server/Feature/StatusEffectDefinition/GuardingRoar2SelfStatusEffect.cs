@@ -9,16 +9,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class GuardingRoar2SelfStatusEffect : StatusEffectBase
     {
         public override string Name => "Guarding Roar II";
-        public override EffectIconType Icon => EffectIconType.DamageReduction;
-        public override bool PersistsOnLogout => false;
-        public override List<Type> MorePowerfulEffectTypes { get; } = new List<Type>
-        {
-            typeof(GuardingRoar3SelfStatusEffect),
-        };
-        public override List<Type> LessPowerfulEffectTypes { get; } = new List<Type>
-        {
-            typeof(GuardingRoar1SelfStatusEffect),
-        };
+        public override EffectIconType Icon => EffectIconType.GuardingRoar2SelfStatusEffect;
 
         public GuardingRoar2SelfStatusEffect()
         {

@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class AdamantineGuardStatusEffect : StatusEffectBase
     {
         public override string Name => "Adamantine Guard";
-        public override EffectIconType Icon => EffectIconType.DamageReduction;
+        public override EffectIconType Icon => EffectIconType.AdamantineGuardStatusEffect;
         public AdamantineGuardStatusEffect()
         {
             StatGroup.Stats[StatType.Guard] = 40;

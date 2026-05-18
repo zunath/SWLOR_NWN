@@ -9,13 +9,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class PowerCell1StatusEffect : StatusEffectBase
     {
         public override string Name => "Power Cell I";
-        public override EffectIconType Icon => EffectIconType.AttackIncrease;
-        public override bool PersistsOnLogout => false;
-        public override List<Type> MorePowerfulEffectTypes { get; } = new List<Type>
-        {
-            typeof(PowerCell2StatusEffect),
-            typeof(PowerCell3StatusEffect),
-        };
+        public override EffectIconType Icon => EffectIconType.PowerCell1StatusEffect;
 
         public PowerCell1StatusEffect()
         {

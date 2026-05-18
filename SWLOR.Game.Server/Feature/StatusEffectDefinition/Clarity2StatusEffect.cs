@@ -9,12 +9,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class Clarity2StatusEffect : StatusEffectBase
     {
         public override string Name => "Clarity II";
-        public override EffectIconType Icon => EffectIconType.AttackIncrease;
-        public override bool PersistsOnLogout => false;
-        public override List<Type> LessPowerfulEffectTypes { get; } = new List<Type>
-        {
-            typeof(Clarity1StatusEffect),
-        };
+        public override EffectIconType Icon => EffectIconType.Clarity2StatusEffect;
 
         public Clarity2StatusEffect()
         {

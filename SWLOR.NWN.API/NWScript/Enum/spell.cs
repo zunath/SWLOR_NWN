@@ -1474,5 +1474,6 @@ namespace SWLOR.NWN.API.NWScript.Enum
         SteadyFormation2 = 1524,
         FieldRecovery2 = 1525,
         WatchfulPresence3 = 1526,
+        CourageousResolve1 = 1364,
     }
 }

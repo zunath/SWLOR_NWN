@@ -7,12 +7,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class FieldRecovery1StatusEffect : AuraStatusEffectBase
     {
         public override string Name => "Field Recovery I";
-        public override EffectIconType Icon => EffectIconType.Regenerate;
-        public override float Frequency => 4f;
-        public override List<Type> MorePowerfulEffectTypes { get; } = new()
-        {
-            typeof(FieldRecovery2StatusEffect),
-        };
+        public override EffectIconType Icon => EffectIconType.FieldRecovery1StatusEffect;
 
         protected override void Tick(uint creature)
         {

@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class RestStatusEffect : StatusEffectBase
     {
         public override string Name => "Rest";
-        public override EffectIconType Icon => EffectIconType.Fatigue;
+        public override EffectIconType Icon => EffectIconType.RestStatusEffect;
         public override float Frequency => 6f;
         public override bool PersistsOnLogout => false;
 

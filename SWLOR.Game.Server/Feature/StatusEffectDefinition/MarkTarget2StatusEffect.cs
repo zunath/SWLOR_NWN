@@ -9,15 +9,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class MarkTarget2StatusEffect : SocialScalingStatusEffectBase
     {
         public override string Name => "Mark Target II";
-        public override EffectIconType Icon => EffectIconType.DamageIncrease;
-        public override StatusEffectCategory Categories => StatusEffectCategory.Debuff;
-        public override StatusEffectCleanseType CleanseTypes => StatusEffectCleanseType.Purify | StatusEffectCleanseType.SoothePet;
-        public override ResistanceType ResistanceType => ResistanceType.Trauma;
-        public override bool PersistsOnLogout => false;
-        public override List<Type> LessPowerfulEffectTypes { get; } = new List<Type>
-        {
-            typeof(MarkTarget1StatusEffect),
-        };
+        public override EffectIconType Icon => EffectIconType.MarkTarget2StatusEffect;
 
         protected override void Apply(uint creature, int durationTicks)
         {

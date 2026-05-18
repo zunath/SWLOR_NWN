@@ -1,9 +1,12 @@
 param(
     [string]$Feat2daPath = "SWLOR_Haks\swlor2_2da\feat.2da",
     [string]$IconOutputPath = "SWLOR_Haks\swlor2_tga",
-    [int]$IconSize = 64,
+    [string]$IconManifestPath = "SWLOR.Game.Server\Readmes\GameplayIconManifest.csv",
+    [int]$IconSize = 32,
     [int]$GeneratedFeatStart = 2000,
-    [int]$GeneratedFeatEnd = 2558
+    [int]$GeneratedFeatEnd = 2558,
+    [string]$SampleOutputPath = "",
+    [string[]]$SampleIconResRefs = @()
 )
 
 Set-StrictMode -Version Latest
@@ -18,6 +21,132 @@ function Get-StableHash([string]$value) {
     }
 
     return [int]$hash
+}
+
+function Get-ManifestKey([string]$type, [string]$key) {
+    return "$($type.ToLowerInvariant())|$($key.ToLowerInvariant())"
+}
+
+function Import-IconManifest([string]$path) {
+    $result = @{}
+    if (!(Test-Path -LiteralPath $path)) {
+        return $result
+    }
+
+    foreach ($row in Import-Csv -Path $path) {
+        if ([string]::IsNullOrWhiteSpace($row.Type) -or [string]::IsNullOrWhiteSpace($row.Key)) {
+            continue
+        }
+
+        $result[(Get-ManifestKey $row.Type $row.Key)] = $row
+    }
+
+    return $result
+}
+
+function Get-OptionalProperty([object]$row, [string]$name) {
+    $property = $row.PSObject.Properties[$name]
+    if ($property) {
+        return [string]$property.Value
+    }
+
+    return ""
+}
+
+function Get-RankFamilyKey([object]$row) {
+    $key = Get-OptionalProperty $row "Key"
+    if ([string]::IsNullOrWhiteSpace($key)) {
+        $key = Get-OptionalProperty $row "DisplayName"
+    }
+
+    if ([string]::IsNullOrWhiteSpace($key)) {
+        $key = Get-OptionalProperty $row "IconResRef"
+    }
+
+    $key = $key -replace "StatusEffect$", ""
+    $rank = (Get-OptionalProperty $row "Rank").Trim()
+
+    if (![string]::IsNullOrWhiteSpace($rank)) {
+        $escapedRank = [regex]::Escape($rank)
+        if ($key -match "^(.*)$escapedRank$") {
+            $key = $Matches[1]
+        }
+        elseif ($key -match "^(.*?)$escapedRank([A-Z][A-Za-z]*)$") {
+            $key = "$($Matches[1])$($Matches[2])"
+        }
+    }
+
+    return $key.ToLowerInvariant()
+}
+
+function Get-RankBadgeMap([object[]]$rows) {
+    $rankValuesByFamily = @{}
+    foreach ($row in $rows) {
+        $rank = (Get-OptionalProperty $row "Rank").Trim()
+        if ([string]::IsNullOrWhiteSpace($rank)) {
+            continue
+        }
+
+        $rankValue = 0
+        if (![int]::TryParse($rank, [ref]$rankValue) -or $rankValue -lt 1) {
+            continue
+        }
+
+        $family = Get-RankFamilyKey $row
+        if (!$rankValuesByFamily.ContainsKey($family)) {
+            $rankValuesByFamily[$family] = @{}
+        }
+
+        $rankValuesByFamily[$family][$rankValue] = $true
+    }
+
+    $badgeMap = @{}
+    foreach ($row in $rows) {
+        $resref = (Get-OptionalProperty $row "IconResRef").Trim().ToLowerInvariant()
+        if ([string]::IsNullOrWhiteSpace($resref)) {
+            continue
+        }
+
+        $rank = (Get-OptionalProperty $row "Rank").Trim()
+        $badgeMap[$resref] = ""
+        if ([string]::IsNullOrWhiteSpace($rank)) {
+            continue
+        }
+
+        $family = Get-RankFamilyKey $row
+        if ($rankValuesByFamily.ContainsKey($family) -and $rankValuesByFamily[$family].Count -gt 1) {
+            $badgeMap[$resref] = $rank
+        }
+    }
+
+    return $badgeMap
+}
+
+function Get-SemanticCategory([string]$label) {
+    $key = Get-ManifestKey "Ability" $label
+    if ($script:IconManifest.ContainsKey($key)) {
+        $category = $script:IconManifest[$key].SemanticCategory
+        if ([string]::IsNullOrWhiteSpace($category)) {
+            throw "Ability icon '$label' is missing a SemanticCategory in $IconManifestPath."
+        }
+
+        return $category
+    }
+
+    throw "Ability icon '$label' is missing from $IconManifestPath. Run tools\UpdateGameplayIconStandards.ps1 -RefreshManifest first."
+}
+
+function Get-SemanticColor([string]$category) {
+    switch ($category) {
+        "Beneficial" { return [System.Drawing.Color]::FromArgb(255, 84, 246, 122) }
+        "Harmful" { return [System.Drawing.Color]::FromArgb(255, 240, 84, 84) }
+        "Self" { return [System.Drawing.Color]::FromArgb(255, 79, 195, 255) }
+        "Control" { return [System.Drawing.Color]::FromArgb(255, 181, 108, 255) }
+        "Deployable" { return [System.Drawing.Color]::FromArgb(255, 255, 184, 77) }
+        "Utility" { return [System.Drawing.Color]::FromArgb(255, 221, 230, 240) }
+    }
+
+    throw "Unknown icon semantic category '$category'."
 }
 
 function Get-IconKind([string]$label) {
@@ -73,6 +202,119 @@ function Get-KindPalette([string]$kind, [int]$hash) {
     )
 }
 
+function New-RoundedRectanglePath([float]$x, [float]$y, [float]$width, [float]$height, [float]$radius) {
+    $path = New-Object System.Drawing.Drawing2D.GraphicsPath
+    $diameter = $radius * 2
+    $path.AddArc($x, $y, $diameter, $diameter, 180, 90)
+    $path.AddArc($x + $width - $diameter, $y, $diameter, $diameter, 270, 90)
+    $path.AddArc($x + $width - $diameter, $y + $height - $diameter, $diameter, $diameter, 0, 90)
+    $path.AddArc($x, $y + $height - $diameter, $diameter, $diameter, 90, 90)
+    $path.CloseFigure()
+    return $path
+}
+
+function Get-DarkIconColor([System.Drawing.Color]$color, [double]$scale, [int]$floorBlue = 8) {
+    return [System.Drawing.Color]::FromArgb(
+        255,
+        [int][Math]::Max(3, [Math]::Min(90, $color.R * $scale)),
+        [int][Math]::Max(3, [Math]::Min(90, $color.G * $scale)),
+        [int][Math]::Max($floorBlue, [Math]::Min(100, $color.B * $scale))
+    )
+}
+
+function Draw-IconBackdrop($g, [System.Drawing.Color]$semantic, [System.Drawing.Color]$accent, [System.Drawing.Color]$hot, [int]$hash) {
+    $outer = New-RoundedRectanglePath 6 6 116 116 17
+    $inner = New-RoundedRectanglePath 13 13 102 102 13
+    $gradientAngle = 55 + (($hash % 25) - 12)
+    $centerX = 64 + (($hash % 11) - 5)
+    $centerY = 64 + (([Math]::Floor($hash / 11) % 11) - 5)
+
+    $shadow = New-RoundedRectanglePath 8 10 112 112 16
+    $g.FillPath((New-Object System.Drawing.SolidBrush([System.Drawing.Color]::FromArgb(205, 0, 0, 0))), $shadow)
+    $shadow.Dispose()
+
+    $bgBrush = New-Object System.Drawing.Drawing2D.LinearGradientBrush(
+        [System.Drawing.Rectangle]::new(0, 0, 128, 128),
+        (Get-DarkIconColor $semantic 0.38),
+        (Get-DarkIconColor $semantic 0.08),
+        $gradientAngle
+    )
+    $g.FillPath($bgBrush, $outer)
+    $bgBrush.Dispose()
+
+    $glow = New-Object System.Drawing.Drawing2D.PathGradientBrush($inner)
+    $glow.CenterColor = [System.Drawing.Color]::FromArgb(120, $semantic)
+    $glow.CenterPoint = [System.Drawing.PointF]::new($centerX, $centerY)
+    $glow.SurroundColors = @([System.Drawing.Color]::FromArgb(0, $semantic))
+    $g.FillPath($glow, $inner)
+    $glow.Dispose()
+
+    $g.DrawPath((New-Object System.Drawing.Pen([System.Drawing.Color]::FromArgb(245, $semantic), 5)), $outer)
+    $g.DrawPath((New-Object System.Drawing.Pen([System.Drawing.Color]::FromArgb(110, $semantic), 2)), $inner)
+    $g.DrawPath((New-Object System.Drawing.Pen([System.Drawing.Color]::FromArgb(170, 0, 0, 0), 3)), (New-RoundedRectanglePath 10 10 108 108 15))
+    $outer.Dispose()
+    $inner.Dispose()
+}
+
+function Invoke-InContentBounds($g, [scriptblock]$drawAction) {
+    $state = $g.Save()
+    $clip = New-RoundedRectanglePath 18 18 92 92 10
+    $g.SetClip($clip)
+    & $drawAction
+    $g.Restore($state)
+    $clip.Dispose()
+}
+
+function Draw-IllustrativeAccents($g, [System.Drawing.Color]$accent, [System.Drawing.Color]$hot, [int]$hash) {
+    $shadow = New-Object System.Drawing.Pen([System.Drawing.Color]::FromArgb(80, 0, 0, 0), 5)
+    $ringHot = New-Object System.Drawing.Pen([System.Drawing.Color]::FromArgb(150, $hot), 3)
+    $ringAccent = New-Object System.Drawing.Pen([System.Drawing.Color]::FromArgb(95, $accent), 2)
+    $sparkPen = New-Object System.Drawing.Pen([System.Drawing.Color]::FromArgb(170, 255, 255, 255), 1)
+    $sparkHot = New-Object System.Drawing.SolidBrush([System.Drawing.Color]::FromArgb(185, $hot))
+    $sparkAccent = New-Object System.Drawing.SolidBrush([System.Drawing.Color]::FromArgb(155, $accent))
+
+    $start = $hash % 360
+    $g.DrawArc($shadow, 25, 26, 78, 72, $start + 8, 128)
+    $g.DrawArc($ringHot, 24, 24, 80, 74, $start, 132)
+    $g.DrawArc($ringAccent, 27, 29, 74, 64, ($start + 184) % 360, 72)
+
+    for ($i = 0; $i -lt 5; $i++) {
+        $angle = (($hash + ($i * 73)) % 360) * [Math]::PI / 180
+        $radius = 34 + (($hash -shr ($i * 2)) -band 7)
+        $cx = 64 + [Math]::Cos($angle) * $radius
+        $cy = 64 + [Math]::Sin($angle) * ($radius * 0.78)
+        $length = 7 + (($hash -shr ($i + 3)) -band 5)
+        $width = 3 + ($i % 2)
+        $dx = [Math]::Cos($angle)
+        $dy = [Math]::Sin($angle)
+        $px = -$dy
+        $py = $dx
+        $points = @(
+            [System.Drawing.Point]::new([int]($cx + $dx * $length), [int]($cy + $dy * $length)),
+            [System.Drawing.Point]::new([int]($cx + $px * $width), [int]($cy + $py * $width)),
+            [System.Drawing.Point]::new([int]($cx - $dx * ($length * 0.6)), [int]($cy - $dy * ($length * 0.6))),
+            [System.Drawing.Point]::new([int]($cx - $px * $width), [int]($cy - $py * $width))
+        )
+        $sparkBrush = if ($i % 2 -eq 0) { $sparkHot } else { $sparkAccent }
+        $g.FillPolygon($sparkBrush, $points)
+        $g.DrawPolygon($sparkPen, $points)
+    }
+
+    foreach ($dot in @(0, 1, 2)) {
+        $angle = (($hash + 41 + ($dot * 97)) % 360) * [Math]::PI / 180
+        $x = [int](64 + [Math]::Cos($angle) * (28 + ($dot * 7)))
+        $y = [int](64 + [Math]::Sin($angle) * (23 + ($dot * 5)))
+        $g.FillEllipse($sparkHot, $x, $y, 3 + ($dot % 2), 3 + ($dot % 2))
+    }
+
+    $shadow.Dispose()
+    $ringHot.Dispose()
+    $ringAccent.Dispose()
+    $sparkPen.Dispose()
+    $sparkHot.Dispose()
+    $sparkAccent.Dispose()
+}
+
 function Draw-Starfield($g, [int]$hash, [System.Drawing.Pen]$pen) {
     for ($i = 0; $i -lt 10; $i++) {
         $x = 14 + (($hash + $i * 37) % 100)
@@ -91,11 +333,44 @@ function Draw-Sword($g, [System.Drawing.Color]$accent, [System.Drawing.Color]$ho
 }
 
 function Draw-Blaster($g, [System.Drawing.Color]$accent, [System.Drawing.Color]$hot) {
-    $body = New-Object System.Drawing.SolidBrush($accent)
-    $glow = New-Object System.Drawing.Pen($hot, 6)
-    $g.FillRectangle($body, 30, 54, 62, 14)
-    $g.FillRectangle($body, 62, 66, 13, 23)
-    $g.DrawLine($glow, 90, 60, 111, 50)
+    $body = New-Object System.Drawing.SolidBrush([System.Drawing.Color]::FromArgb(235, $accent))
+    $dark = New-Object System.Drawing.SolidBrush([System.Drawing.Color]::FromArgb(235, 8, 14, 20))
+    $shadow = New-Object System.Drawing.SolidBrush([System.Drawing.Color]::FromArgb(145, 0, 0, 0))
+    $outline = New-Object System.Drawing.Pen($hot, 4)
+    $highlight = New-Object System.Drawing.Pen([System.Drawing.Color]::FromArgb(220, 235, 252, 255), 3)
+
+    $grip = @(
+        [System.Drawing.Point]::new(57, 65), [System.Drawing.Point]::new(76, 65),
+        [System.Drawing.Point]::new(68, 93), [System.Drawing.Point]::new(53, 93)
+    )
+    $bodyShape = @(
+        [System.Drawing.Point]::new(24, 52), [System.Drawing.Point]::new(73, 52),
+        [System.Drawing.Point]::new(82, 45), [System.Drawing.Point]::new(100, 45),
+        [System.Drawing.Point]::new(105, 52), [System.Drawing.Point]::new(97, 62),
+        [System.Drawing.Point]::new(76, 66), [System.Drawing.Point]::new(24, 66)
+    )
+    $shadowBody = @($bodyShape | ForEach-Object { [System.Drawing.Point]::new($_.X + 3, $_.Y + 4) })
+    $shadowGrip = @($grip | ForEach-Object { [System.Drawing.Point]::new($_.X + 3, $_.Y + 4) })
+
+    $g.FillPolygon($shadow, $shadowBody)
+    $g.FillPolygon($shadow, $shadowGrip)
+    $g.FillPolygon($body, $bodyShape)
+    $g.DrawPolygon($outline, $bodyShape)
+    $g.FillPolygon($body, $grip)
+    $g.DrawPolygon($outline, $grip)
+
+    $g.FillRectangle($dark, 34, 56, 21, 5)
+    $g.DrawLine($highlight, 31, 55, 73, 55)
+    $g.DrawLine($highlight, 84, 49, 99, 47)
+    $g.DrawArc((New-Object System.Drawing.Pen($hot, 3)), 45, 60, 24, 22, 195, 145)
+    $g.FillEllipse((New-Object System.Drawing.SolidBrush([System.Drawing.Color]::FromArgb(240, 255, 255, 255))), 101, 49, 7, 5)
+    $g.DrawLine((New-Object System.Drawing.Pen([System.Drawing.Color]::FromArgb(190, $hot), 3)), 104, 50, 111, 46)
+
+    $body.Dispose()
+    $dark.Dispose()
+    $shadow.Dispose()
+    $outline.Dispose()
+    $highlight.Dispose()
 }
 
 function Draw-Shield($g, [System.Drawing.Color]$accent, [System.Drawing.Color]$hot) {
@@ -474,23 +749,65 @@ function Draw-RocketGlyph($g, [System.Drawing.Color]$accent, [System.Drawing.Col
         [System.Drawing.Point]::new(58, 90), [System.Drawing.Point]::new(38, 94),
         [System.Drawing.Point]::new(42, 74)
     )
-    $g.FillPolygon((New-Object System.Drawing.SolidBrush($accent)), $body)
+    $shadow = @($body | ForEach-Object { [System.Drawing.Point]::new($_.X + 3, $_.Y + 4) })
+    $g.FillPolygon((New-Object System.Drawing.SolidBrush([System.Drawing.Color]::FromArgb(140, 0, 0, 0))), $shadow)
+    $g.FillPolygon((New-Object System.Drawing.SolidBrush([System.Drawing.Color]::FromArgb(235, $accent))), $body)
     $g.DrawPolygon((New-Object System.Drawing.Pen($hot, 5)), $body)
-    $g.DrawLine((New-Object System.Drawing.Pen($hot, 6)), 37, 91, 23, 106)
+    $g.DrawLine((New-Object System.Drawing.Pen([System.Drawing.Color]::FromArgb(220, 255, 255, 255), 3)), 82, 35, 53, 78)
+    $g.FillEllipse((New-Object System.Drawing.SolidBrush([System.Drawing.Color]::FromArgb(225, 255, 240, 155))), 75, 42, 10, 10)
+    $leftFin = @([System.Drawing.Point]::new(44, 76), [System.Drawing.Point]::new(26, 83), [System.Drawing.Point]::new(39, 91))
+    $rightFin = @([System.Drawing.Point]::new(55, 89), [System.Drawing.Point]::new(48, 108), [System.Drawing.Point]::new(67, 94))
+    $g.FillPolygon((New-Object System.Drawing.SolidBrush($hot)), $leftFin)
+    $g.FillPolygon((New-Object System.Drawing.SolidBrush($hot)), $rightFin)
+    $flame = @([System.Drawing.Point]::new(37, 94), [System.Drawing.Point]::new(18, 109), [System.Drawing.Point]::new(31, 88))
+    $g.FillPolygon((New-Object System.Drawing.SolidBrush([System.Drawing.Color]::FromArgb(235, 255, 197, 61))), $flame)
 }
 
 function Draw-DartGlyph($g, [System.Drawing.Color]$accent, [System.Drawing.Color]$hot) {
-    $g.DrawLine((New-Object System.Drawing.Pen($hot, 8)), 25, 84, 101, 43)
-    $head = @([System.Drawing.Point]::new(102, 43), [System.Drawing.Point]::new(82, 38), [System.Drawing.Point]::new(92, 59))
-    $g.FillPolygon((New-Object System.Drawing.SolidBrush($accent)), $head)
-    $g.DrawLine((New-Object System.Drawing.Pen($accent, 5)), 34, 78, 23, 61)
+    $shaft = New-Object System.Drawing.Pen($hot, 7)
+    $core = New-Object System.Drawing.Pen([System.Drawing.Color]::FromArgb(220, 255, 255, 255), 2)
+    $g.DrawLine((New-Object System.Drawing.Pen([System.Drawing.Color]::FromArgb(145, 0, 0, 0), 9)), 28, 88, 101, 44)
+    $g.DrawLine($shaft, 27, 84, 98, 43)
+    $g.DrawLine($core, 34, 80, 90, 47)
+    $head = @([System.Drawing.Point]::new(104, 40), [System.Drawing.Point]::new(80, 38), [System.Drawing.Point]::new(92, 60))
+    $g.FillPolygon((New-Object System.Drawing.SolidBrush([System.Drawing.Color]::FromArgb(235, $accent))), $head)
+    $g.DrawPolygon((New-Object System.Drawing.Pen($hot, 3)), $head)
+    $rear = @([System.Drawing.Point]::new(34, 78), [System.Drawing.Point]::new(21, 58), [System.Drawing.Point]::new(45, 72))
+    $g.FillPolygon((New-Object System.Drawing.SolidBrush($accent)), $rear)
+    $g.DrawPolygon((New-Object System.Drawing.Pen($hot, 2)), $rear)
+    $shaft.Dispose()
+    $core.Dispose()
 }
 
 function Draw-SonicGlyph($g, [System.Drawing.Color]$accent, [System.Drawing.Color]$hot) {
     $g.FillPie((New-Object System.Drawing.SolidBrush($accent)), 33, 49, 41, 31, 90, 180)
-    foreach ($size in @(34, 54, 74)) {
+    foreach ($size in @(30, 46, 62)) {
         $g.DrawArc((New-Object System.Drawing.Pen($hot, 4)), 48, 64 - ($size / 2), $size, $size, 300, 120)
     }
+}
+
+function Draw-FlashGlyph($g, [System.Drawing.Color]$accent, [System.Drawing.Color]$hot) {
+    $eye = @(
+        [System.Drawing.Point]::new(28, 64), [System.Drawing.Point]::new(48, 45),
+        [System.Drawing.Point]::new(80, 45), [System.Drawing.Point]::new(100, 64),
+        [System.Drawing.Point]::new(80, 83), [System.Drawing.Point]::new(48, 83)
+    )
+    $g.FillPolygon((New-Object System.Drawing.SolidBrush([System.Drawing.Color]::FromArgb(190, $accent))), $eye)
+    $g.DrawPolygon((New-Object System.Drawing.Pen($hot, 5)), $eye)
+    $g.FillEllipse((New-Object System.Drawing.SolidBrush([System.Drawing.Color]::FromArgb(235, 5, 7, 10))), 54, 54, 20, 20)
+
+    $burst = @(
+        [System.Drawing.Point]::new(64, 25), [System.Drawing.Point]::new(70, 50),
+        [System.Drawing.Point]::new(94, 38), [System.Drawing.Point]::new(78, 61),
+        [System.Drawing.Point]::new(102, 68), [System.Drawing.Point]::new(75, 72),
+        [System.Drawing.Point]::new(84, 101), [System.Drawing.Point]::new(64, 78),
+        [System.Drawing.Point]::new(44, 101), [System.Drawing.Point]::new(53, 72),
+        [System.Drawing.Point]::new(26, 68), [System.Drawing.Point]::new(50, 61),
+        [System.Drawing.Point]::new(34, 38), [System.Drawing.Point]::new(58, 50)
+    )
+    $g.FillPolygon((New-Object System.Drawing.SolidBrush([System.Drawing.Color]::FromArgb(230, 255, 235, 98))), $burst)
+    $g.DrawPolygon((New-Object System.Drawing.Pen([System.Drawing.Color]::FromArgb(235, 255, 255, 255), 3)), $burst)
+    $g.DrawLine((New-Object System.Drawing.Pen([System.Drawing.Color]::FromArgb(225, 255, 255, 255), 4)), 35, 91, 93, 37)
 }
 
 function Draw-BeastClawGlyph($g, [System.Drawing.Color]$accent, [System.Drawing.Color]$hot) {
@@ -576,6 +893,7 @@ function Draw-NamedMotif($g, [string]$label, [System.Drawing.Color]$accent, [Sys
         "^Benevolence$|^ForceMend$|^CircleOfHarmony$|^PurifyingWave$|^Infusion$|^Innervate$" { Draw-HealingGlyph $g $accent $hot; return $true }
         "^Renewal$" { Draw-RenewalGlyph $g $accent $hot; return $true }
         "^Clarity$" { Draw-ClarityGlyph $g $accent $hot; return $true }
+        "^Flash$" { Draw-FlashGlyph $g $accent $hot; return $true }
         "^Pacify$|^ForceTouch$" { Draw-PacifyGlyph $g $accent $hot; return $true }
         "^MindTrick$|^PsychicCry$" { Draw-MindTrickGlyph $g $accent $hot; return $true }
         "^ComprehendSpeech$" { Draw-SpeechGlyph $g $accent $hot; return $true }
@@ -609,29 +927,44 @@ function Draw-LevelPips($g, [int]$level, [System.Drawing.Color]$hot) {
     }
 }
 
-function Draw-UniqueMark($g, [int]$row, [System.Drawing.Color]$hot) {
-    $brush = New-Object System.Drawing.SolidBrush([System.Drawing.Color]::FromArgb(210, $hot))
-    for ($i = 0; $i -lt 12; $i++) {
-        if (($row -band (1 -shl $i)) -eq 0) {
-            continue
-        }
+function Draw-RankBadge($g, [int]$level, [System.Drawing.Color]$semantic) {
+    if ($level -lt 1) { return }
 
-        $x = 103 + (($i % 4) * 4)
-        $y = 102 + ([Math]::Floor($i / 4) * 4)
-        $g.FillRectangle($brush, $x, $y, 2, 2)
-    }
+    $rankLabel = [string]$level
+
+    $badgeRect = [System.Drawing.RectangleF]::new(86, 84, 29, 29)
+    $badgePath = New-RoundedRectanglePath $badgeRect.X $badgeRect.Y $badgeRect.Width $badgeRect.Height 5
+    $badgeBrush = New-Object System.Drawing.SolidBrush([System.Drawing.Color]::FromArgb(238, 4, 5, 8))
+    $badgePen = New-Object System.Drawing.Pen($semantic, 3)
+    $g.FillPath($badgeBrush, $badgePath)
+    $g.DrawPath($badgePen, $badgePath)
+
+    $fontSize = if ($rankLabel.Length -le 1) { 22 } elseif ($rankLabel.Length -le 2) { 19 } elseif ($rankLabel.Length -le 3) { 15 } else { 13 }
+    $font = New-Object System.Drawing.Font("Arial", $fontSize, [System.Drawing.FontStyle]::Bold, [System.Drawing.GraphicsUnit]::Pixel)
+    $format = New-Object System.Drawing.StringFormat
+    $format.Alignment = [System.Drawing.StringAlignment]::Center
+    $format.LineAlignment = [System.Drawing.StringAlignment]::Center
+
+    $shadowBrush = New-Object System.Drawing.SolidBrush([System.Drawing.Color]::FromArgb(245, 0, 0, 0))
+    $textBrush = New-Object System.Drawing.SolidBrush([System.Drawing.Color]::FromArgb(255, 255, 255, 245))
+    $shadowRect = [System.Drawing.RectangleF]::new($badgeRect.X + 1, $badgeRect.Y + 2, $badgeRect.Width, $badgeRect.Height)
+    $g.DrawString($rankLabel, $font, $shadowBrush, $shadowRect, $format)
+    $g.DrawString($rankLabel, $font, $textBrush, $badgeRect, $format)
+
+    $font.Dispose()
+    $format.Dispose()
+    $shadowBrush.Dispose()
+    $textBrush.Dispose()
+    $badgeBrush.Dispose()
+    $badgePen.Dispose()
+    $badgePath.Dispose()
 }
 
 function Draw-VariantSigil($g, [int]$hash, [int]$row, [System.Drawing.Color]$hot) {
-    $pen = New-Object System.Drawing.Pen([System.Drawing.Color]::FromArgb(150, $hot), 3)
-    $brush = New-Object System.Drawing.SolidBrush([System.Drawing.Color]::FromArgb(175, $hot))
-    for ($i = 0; $i -lt 4; $i++) {
-        $angle = (($hash + $row + ($i * 83)) % 360) * [Math]::PI / 180
-        $radius = 43 + (($hash + ($i * 7)) % 8)
-        $x = [int](64 + [Math]::Cos($angle) * $radius)
-        $y = [int](64 + [Math]::Sin($angle) * $radius)
-        $g.FillEllipse($brush, $x - 4, $y - 4, 8, 8)
-        $g.DrawLine($pen, 64, 64, $x, $y)
+    $pen = New-Object System.Drawing.Pen([System.Drawing.Color]::FromArgb(80, $hot), 2)
+    for ($i = 0; $i -lt 5; $i++) {
+        $start = ($hash + $row + ($i * 67)) % 360
+        $g.DrawArc($pen, 20 + ($i * 2), 20 + ($i * 2), 88 - ($i * 4), 88 - ($i * 4), $start, 22)
     }
 }
 
@@ -662,6 +995,8 @@ function Write-Tga([System.Drawing.Bitmap]$bitmap, [string]$path) {
 function New-CombatIcon([string]$label, [int]$row, [string]$outPath, [int]$size = 64) {
     $hash = Get-StableHash "$label#$row"
     $kind = Get-IconKind $label
+    $semanticCategory = Get-SemanticCategory $label
+    $semantic = Get-SemanticColor $semanticCategory
     $palette = Get-KindPalette $kind $hash
     $dark = $palette[0]
     $accent = $palette[1]
@@ -669,49 +1004,52 @@ function New-CombatIcon([string]$label, [int]$row, [string]$outPath, [int]$size 
     $level = 0
     if ($label -match "(\d+)$") { $level = [int]$Matches[1] }
 
-    $large = New-Object System.Drawing.Bitmap 128, 128
+    $large = New-Object System.Drawing.Bitmap 256, 256
     $g = [System.Drawing.Graphics]::FromImage($large)
     $g.SmoothingMode = [System.Drawing.Drawing2D.SmoothingMode]::AntiAlias
+    $g.TextRenderingHint = [System.Drawing.Text.TextRenderingHint]::AntiAliasGridFit
+    $g.ScaleTransform(2, 2)
     $g.Clear([System.Drawing.Color]::Transparent)
 
-    $bgBrush = New-Object System.Drawing.Drawing2D.LinearGradientBrush(
-        [System.Drawing.Rectangle]::new(0, 0, 128, 128),
-        [System.Drawing.Color]::FromArgb(255, [Math]::Min(255, $dark.R + 18), [Math]::Min(255, $dark.G + 18), [Math]::Min(255, $dark.B + 18)),
-        [System.Drawing.Color]::FromArgb(255, 5, 7, 10),
-        45
-    )
-    $g.FillRectangle($bgBrush, 0, 0, 128, 128)
+    Draw-IconBackdrop $g $semantic $accent $hot $hash
 
-    Draw-Starfield $g $hash (New-Object System.Drawing.Pen([System.Drawing.Color]::FromArgb(80, $hot), 1))
-    $g.FillEllipse((New-Object System.Drawing.SolidBrush([System.Drawing.Color]::FromArgb(32, $hot))), 16, 16, 96, 96)
-    $g.DrawEllipse((New-Object System.Drawing.Pen([System.Drawing.Color]::FromArgb(210, $hot), 4)), 7, 7, 114, 114)
-    $g.DrawEllipse((New-Object System.Drawing.Pen([System.Drawing.Color]::FromArgb(120, 0, 0, 0), 5)), 12, 12, 104, 104)
-
-    Draw-VariantSigil $g $hash $row $hot
-    $usedNamedMotif = Draw-NamedMotif $g $label $accent $hot
-    if (-not $usedNamedMotif) {
-        switch ($kind) {
-            "defense"  { Draw-Shield $g $accent $hot }
-            "ranged"   { Draw-Blaster $g $accent $hot }
-            "throwing" { Draw-Boomerang $g $accent $hot }
-            "energy"   { Draw-Orb $g $accent $hot }
-            "darkforce" { Draw-Orb $g $accent $hot }
-            "lightforce" { Draw-Orb $g $accent $hot }
-            "medical"  { Draw-KitGlyph $g $accent $hot }
-            "tech"     { Draw-TechShieldGlyph $g $accent $hot }
-            "beast"    { Draw-BeastClawGlyph $g $accent $hot }
-            "command"  { Draw-RallyGlyph $g $accent $hot }
-            "toxin"    { Draw-Toxin $g $accent $hot }
-            "martial"  { Draw-Fist $g $accent $hot }
-            "mobility" { Draw-Mobility $g $accent $hot }
-            "stance"   { Draw-Stance $g $accent $hot }
-            "support"  { Draw-Orb $g $accent $hot }
-            default    { Draw-Sword $g $accent $hot }
+    Invoke-InContentBounds $g {
+        Draw-IllustrativeAccents $g $accent $hot $hash
+        $usedNamedMotif = Draw-NamedMotif $g $label $accent $hot
+        if (-not $usedNamedMotif) {
+            switch ($kind) {
+                "defense"  { Draw-Shield $g $accent $hot }
+                "ranged"   { Draw-Blaster $g $accent $hot }
+                "throwing" { Draw-Boomerang $g $accent $hot }
+                "energy"   { Draw-Orb $g $accent $hot }
+                "darkforce" { Draw-Orb $g $accent $hot }
+                "lightforce" { Draw-Orb $g $accent $hot }
+                "medical"  { Draw-KitGlyph $g $accent $hot }
+                "tech"     { Draw-TechShieldGlyph $g $accent $hot }
+                "beast"    { Draw-BeastClawGlyph $g $accent $hot }
+                "command"  { Draw-RallyGlyph $g $accent $hot }
+                "toxin"    { Draw-Toxin $g $accent $hot }
+                "martial"  { Draw-Fist $g $accent $hot }
+                "mobility" { Draw-Mobility $g $accent $hot }
+                "stance"   { Draw-Stance $g $accent $hot }
+                "support"  { Draw-Orb $g $accent $hot }
+                default    { Draw-Sword $g $accent $hot }
+            }
         }
     }
 
-    Draw-LevelPips $g $level $hot
-    Draw-UniqueMark $g $row $hot
+    $badgeRank = ""
+    $manifestKey = Get-ManifestKey "Ability" $label
+    if ($script:IconManifest.ContainsKey($manifestKey)) {
+        $iconResRef = $script:IconManifest[$manifestKey].IconResRef.ToLowerInvariant()
+        if ($script:RankBadgeByResRef.ContainsKey($iconResRef)) {
+            $badgeRank = $script:RankBadgeByResRef[$iconResRef]
+        }
+    }
+
+    if (![string]::IsNullOrWhiteSpace($badgeRank)) {
+        Draw-RankBadge $g ([int]$badgeRank) $semantic
+    }
 
     $small = New-Object System.Drawing.Bitmap $size, $size
     $sg = [System.Drawing.Graphics]::FromImage($small)
@@ -728,9 +1066,48 @@ function New-CombatIcon([string]$label, [int]$row, [string]$outPath, [int]$size 
 
 $featPath = Resolve-Path $Feat2daPath
 $iconPath = Resolve-Path $IconOutputPath
+$manifestPath = Resolve-Path $IconManifestPath
+$script:IconManifestRows = @(Import-Csv -Path $manifestPath)
+$script:IconManifest = Import-IconManifest $manifestPath
+$script:RankBadgeByResRef = Get-RankBadgeMap $script:IconManifestRows
 $lines = [System.Collections.Generic.List[string]]::new()
 $lines.AddRange([System.IO.File]::ReadAllLines($featPath))
 $generated = 0
+
+if (![string]::IsNullOrWhiteSpace($SampleOutputPath)) {
+    $resolvedOutput = if ([System.IO.Path]::IsPathRooted($SampleOutputPath)) { $SampleOutputPath } else { Join-Path (Get-Location).Path $SampleOutputPath }
+    if (!(Test-Path -LiteralPath $resolvedOutput)) {
+        New-Item -ItemType Directory -Path $resolvedOutput -Force | Out-Null
+    }
+
+    $requested = @{}
+    foreach ($resrefValue in $SampleIconResRefs) {
+        foreach ($resref in ([string]$resrefValue -split "[,;]")) {
+            $trimmed = $resref.Trim()
+            if (![string]::IsNullOrWhiteSpace($trimmed)) {
+                $requested[$trimmed.ToLowerInvariant()] = $true
+            }
+        }
+    }
+
+    for ($i = 0; $i -lt $lines.Count; $i++) {
+        $line = $lines[$i]
+        if ($line.Trim().Length -eq 0) { continue }
+        $parts = $line -split "\s+"
+        if ($parts.Count -lt 5) { continue }
+        $row = 0
+        if (-not [int]::TryParse($parts[0], [ref]$row)) { continue }
+        if ($row -lt $GeneratedFeatStart -or $row -gt $GeneratedFeatEnd) { continue }
+        if ($parts[1] -eq "****" -or $parts[4] -eq "****") { continue }
+        if ($requested.Count -gt 0 -and !$requested.ContainsKey($parts[4].ToLowerInvariant())) { continue }
+
+        New-CombatIcon $parts[1] $row (Join-Path $resolvedOutput "$($parts[4]).tga") $IconSize
+        $generated++
+    }
+
+    Write-Host "Generated $generated Combat Upgrade feat icon samples in $resolvedOutput."
+    return
+}
 
 for ($i = 0; $i -lt $lines.Count; $i++) {
     $line = $lines[$i]

@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         private readonly int _defensePercent;
 
         public override string Name => "Split Guard Strike";
-        public override EffectIconType Icon => EffectIconType.ACIncrease;
+        public override EffectIconType Icon => EffectIconType.SplitGuardStrikeStatusEffect;
 
         public SplitGuardStrikeStatusEffect()
             : this(15)

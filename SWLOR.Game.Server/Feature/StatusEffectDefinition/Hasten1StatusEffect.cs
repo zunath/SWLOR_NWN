@@ -9,12 +9,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class Hasten1StatusEffect : StatusEffectBase
     {
         public override string Name => "Hasten I";
-        public override EffectIconType Icon => EffectIconType.AttackIncrease;
-        public override bool PersistsOnLogout => false;
-        public override List<Type> MorePowerfulEffectTypes { get; } = new List<Type>
-        {
-            typeof(Hasten2StatusEffect),
-        };
+        public override EffectIconType Icon => EffectIconType.Hasten1StatusEffect;
 
         public Hasten1StatusEffect()
         {

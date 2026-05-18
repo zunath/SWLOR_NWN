@@ -1,4 +1,4 @@
-﻿using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -8,7 +8,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class ToxinStatusEffect : StatusEffectBase
     {
         public override string Name => "Toxin";
-        public override EffectIconType Icon => EffectIconType.Poison;
+        public override EffectIconType Icon => EffectIconType.ToxinStatusEffect;
         public override StatusEffectCategory Categories => StatusEffectCategory.Debuff;
         public override ResistanceType ResistanceType => ResistanceType.Poison;
         public override StatusEffectCleanseType CleanseTypes =>

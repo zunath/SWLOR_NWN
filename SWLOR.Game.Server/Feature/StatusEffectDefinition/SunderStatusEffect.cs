@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         private readonly int _defensePenaltyPercent;
 
         public override string Name => "Sunder";
-        public override EffectIconType Icon => EffectIconType.ACDecrease;
+        public override EffectIconType Icon => EffectIconType.SunderStatusEffect;
         public override StatusEffectCategory Categories => StatusEffectCategory.Debuff;
         public override StatusEffectCleanseType CleanseTypes => StatusEffectCleanseType.Purify | StatusEffectCleanseType.SoothePet;
         public override ResistanceType ResistanceType => ResistanceType.Trauma;

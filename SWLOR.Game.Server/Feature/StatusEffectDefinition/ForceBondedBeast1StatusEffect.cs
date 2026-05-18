@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class ForceBondedBeast1StatusEffect : StatusEffectBase
     {
         public override string Name => "Force-Bonded Beast";
-        public override EffectIconType Icon => EffectIconType.DamageReduction;
+        public override EffectIconType Icon => EffectIconType.ForceBondedBeast1StatusEffect;
         public override float Frequency => 3f;
         public override bool PersistsOnLogout => false;
 

@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class SweepingGuardStatusEffect : StatusEffectBase
     {
         public override string Name => "Sweeping Guard";
-        public override EffectIconType Icon => EffectIconType.ACIncrease;
+        public override EffectIconType Icon => EffectIconType.SweepingGuardStatusEffect;
 
         public SweepingGuardStatusEffect()
         {

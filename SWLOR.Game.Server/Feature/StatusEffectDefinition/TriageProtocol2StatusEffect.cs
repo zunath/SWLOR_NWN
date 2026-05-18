@@ -7,12 +7,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class TriageProtocol2StatusEffect : SocialScalingStatusEffectBase
     {
         public override string Name => "Triage Protocol II";
-        public override EffectIconType Icon => EffectIconType.Regenerate;
-        public override bool PersistsOnLogout => false;
-        public override List<Type> LessPowerfulEffectTypes { get; } = new()
-        {
-            typeof(TriageProtocol1StatusEffect),
-        };
+        public override EffectIconType Icon => EffectIconType.TriageProtocol2StatusEffect;
 
         protected override void Apply(uint creature, int durationTicks)
         {

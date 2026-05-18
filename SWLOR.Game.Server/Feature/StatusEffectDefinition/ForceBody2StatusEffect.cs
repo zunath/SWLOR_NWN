@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class ForceBody2StatusEffect : StatusEffectBase
     {
         public override string Name => "Force Body II";
-        public override EffectIconType Icon => EffectIconType.Regenerate;
+        public override EffectIconType Icon => EffectIconType.ForceBody2StatusEffect;
         public override StatusEffectCategory Categories => StatusEffectCategory.Buff;
         public override bool PersistsOnLogout => false;
 

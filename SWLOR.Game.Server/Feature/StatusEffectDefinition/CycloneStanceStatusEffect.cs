@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class CycloneStanceStatusEffect : StatusEffectBase
     {
         public override string Name => "Cyclone Stance";
-        public override EffectIconType Icon => EffectIconType.Haste;
+        public override EffectIconType Icon => EffectIconType.CycloneStanceStatusEffect;
         public CycloneStanceStatusEffect()
         {
             StatGroup.Stats[StatType.AttackPercentAdjustment] = 10;

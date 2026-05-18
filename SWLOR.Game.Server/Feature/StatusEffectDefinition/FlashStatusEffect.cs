@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     {
         private readonly int _hitChancePenalty;
         public override string Name => "Flash";
-        public override EffectIconType Icon => EffectIconType.Blindness;
+        public override EffectIconType Icon => EffectIconType.FlashStatusEffect;
         public override StatusEffectCategory Categories => StatusEffectCategory.Debuff;
         public override ResistanceType ResistanceType => ResistanceType.Trauma;
 

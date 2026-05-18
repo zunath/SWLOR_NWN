@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class EvasiveCombatStatusEffect : StatusEffectBase
     {
         public override string Name => "Evasive Combat";
-        public override EffectIconType Icon => EffectIconType.ACIncrease;
+        public override EffectIconType Icon => EffectIconType.EvasiveCombatStatusEffect;
 
         protected override void Apply(uint creature, int durationTicks)
         {

@@ -7,11 +7,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class SteadyFormation1StatusEffect : AuraStatusEffectBase
     {
         public override string Name => "Steady Formation I";
-        public override EffectIconType Icon => EffectIconType.ACIncrease;
-        public override List<Type> MorePowerfulEffectTypes { get; } = new()
-        {
-            typeof(SteadyFormation2StatusEffect),
-        };
+        public override EffectIconType Icon => EffectIconType.SteadyFormation1StatusEffect;
 
         protected override void Apply(uint creature, int durationTicks)
         {

@@ -9,12 +9,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class ForceRage1StatusEffect : StatusEffectBase
     {
         public override string Name => "Force Rage I";
-        public override EffectIconType Icon => EffectIconType.DamageReduction;
-        public override bool PersistsOnLogout => false;
-        public override List<Type> MorePowerfulEffectTypes { get; } = new List<Type>
-        {
-            typeof(ForceRage2StatusEffect),
-        };
+        public override EffectIconType Icon => EffectIconType.ForceRage1StatusEffect;
 
         public ForceRage1StatusEffect()
         {

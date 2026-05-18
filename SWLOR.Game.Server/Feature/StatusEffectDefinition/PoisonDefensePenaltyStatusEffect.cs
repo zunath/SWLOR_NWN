@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class PoisonDefensePenaltyStatusEffect : StaticStatStatusEffectBase
     {
         public override string Name => "Poison";
-        public override EffectIconType Icon => EffectIconType.Invalid;
+        public override EffectIconType Icon => EffectIconType.PoisonDefensePenaltyStatusEffect;
         public override bool SendsApplicationMessage => false;
         public override bool SendsWornOffMessage => false;
         public override bool PersistsOnLogout => false;

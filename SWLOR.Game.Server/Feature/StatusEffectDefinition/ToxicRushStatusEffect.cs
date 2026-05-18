@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class ToxicRushStatusEffect : StatusEffectBase
     {
         public override string Name => "Toxic Rush";
-        public override EffectIconType Icon => EffectIconType.Haste;
+        public override EffectIconType Icon => EffectIconType.ToxicRushStatusEffect;
 
         protected override void OnDamageDealt(uint attacker, uint defender, int damage, CombatDamageType damageType)
         {

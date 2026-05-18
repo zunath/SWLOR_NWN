@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         private readonly bool _appliesMedicalHealingBonus;
 
         public override string Name => _name;
-        public override EffectIconType Icon => EffectIconType.Regenerate;
+        public override EffectIconType Icon => EffectIconType.RegenerativeHealingStatusEffect;
         public override StatusEffectCategory Categories => StatusEffectCategory.Buff;
         public override float Frequency => 3f;
         public override bool PersistsOnLogout => false;

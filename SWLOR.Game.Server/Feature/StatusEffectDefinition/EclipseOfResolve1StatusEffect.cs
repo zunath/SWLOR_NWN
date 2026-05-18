@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class EclipseOfResolve1StatusEffect : StatusEffectBase
     {
         public override string Name => "Eclipse of Resolve";
-        public override EffectIconType Icon => EffectIconType.MovementSpeedDecrease;
+        public override EffectIconType Icon => EffectIconType.EclipseOfResolve1StatusEffect;
         public override StatusEffectCategory Categories => StatusEffectCategory.Debuff;
         public override StatusEffectCleanseType CleanseTypes => StatusEffectCleanseType.Purify | StatusEffectCleanseType.SoothePet;
         public override ResistanceType ResistanceType => ResistanceType.Disruption;

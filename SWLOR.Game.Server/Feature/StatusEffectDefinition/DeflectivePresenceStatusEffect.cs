@@ -6,6 +6,6 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class DeflectivePresenceStatusEffect : StatusEffectBase
     {
         public override string Name => "Deflective Presence";
-        public override EffectIconType Icon => EffectIconType.ACIncrease;
+        public override EffectIconType Icon => EffectIconType.DeflectivePresenceStatusEffect;
     }
 }

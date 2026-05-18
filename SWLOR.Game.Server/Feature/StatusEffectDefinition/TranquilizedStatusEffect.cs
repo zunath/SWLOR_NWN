@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class TranquilizedStatusEffect : StatusEffectBase
     {
         public override string Name => "Tranquilized";
-        public override EffectIconType Icon => EffectIconType.Sleep;
+        public override EffectIconType Icon => EffectIconType.TranquilizedStatusEffect;
         public override StatusEffectCategory Categories => StatusEffectCategory.Debuff | StatusEffectCategory.Control;
         public override StatusEffectCleanseType CleanseTypes => StatusEffectCleanseType.Purify | StatusEffectCleanseType.SoothePet;
         public override ResistanceType ResistanceType => ResistanceType.Mind;

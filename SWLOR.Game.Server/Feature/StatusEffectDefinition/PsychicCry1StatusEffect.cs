@@ -9,16 +9,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class PsychicCry1StatusEffect : StatusEffectBase
     {
         public override string Name => "Psychic Cry I";
-        public override EffectIconType Icon => EffectIconType.AttackDecrease;
-        public override StatusEffectCategory Categories => StatusEffectCategory.Debuff;
-        public override StatusEffectCleanseType CleanseTypes => StatusEffectCleanseType.Purify | StatusEffectCleanseType.SoothePet;
-        public override ResistanceType ResistanceType => ResistanceType.Trauma;
-        public override bool PersistsOnLogout => false;
-        public override List<Type> MorePowerfulEffectTypes { get; } = new List<Type>
-        {
-            typeof(PsychicCry2StatusEffect),
-            typeof(PsychicCry3StatusEffect),
-        };
+        public override EffectIconType Icon => EffectIconType.PsychicCry1StatusEffect;
 
         public PsychicCry1StatusEffect()
         {

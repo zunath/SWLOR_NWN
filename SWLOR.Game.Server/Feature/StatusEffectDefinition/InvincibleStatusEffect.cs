@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class InvincibleStatusEffect : StatusEffectBase
     {
         public override string Name => "Invincible";
-        public override EffectIconType Icon => EffectIconType.Invulnerable;
+        public override EffectIconType Icon => EffectIconType.InvincibleStatusEffect;
 
         public InvincibleStatusEffect()
         {

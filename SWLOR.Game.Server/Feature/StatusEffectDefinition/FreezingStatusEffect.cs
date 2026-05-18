@@ -1,4 +1,4 @@
-﻿using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     {
         private readonly int _level;
         public override string Name => "Freezing";
-        public override EffectIconType Icon => EffectIconType.DamageImmunityColdDecrease;
+        public override EffectIconType Icon => EffectIconType.FreezingStatusEffect;
         public override StatusEffectCategory Categories => StatusEffectCategory.Debuff;
         public override ResistanceType ResistanceType => ResistanceType.Ice;
         public override float Frequency => 6f;

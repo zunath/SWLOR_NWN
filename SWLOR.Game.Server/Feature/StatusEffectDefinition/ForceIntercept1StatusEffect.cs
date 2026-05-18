@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class ForceIntercept1StatusEffect : StatusEffectBase
     {
         public override string Name => "Force Intercept";
-        public override EffectIconType Icon => EffectIconType.DamageReduction;
+        public override EffectIconType Icon => EffectIconType.ForceIntercept1StatusEffect;
         public override bool PersistsOnLogout => false;
 
         public ForceIntercept1StatusEffect()

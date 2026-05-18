@@ -8,7 +8,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class BreachStatusEffect : StatusEffectBase
     {
         public override string Name => "Breach";
-        public override EffectIconType Icon => EffectIconType.ACDecrease;
+        public override EffectIconType Icon => EffectIconType.BreachStatusEffect;
         public override StatusEffectCategory Categories => StatusEffectCategory.Debuff;
         public override StatusEffectCleanseType CleanseTypes => StatusEffectCleanseType.Purify | StatusEffectCleanseType.SoothePet;
         public override ResistanceType ResistanceType => ResistanceType.Trauma;

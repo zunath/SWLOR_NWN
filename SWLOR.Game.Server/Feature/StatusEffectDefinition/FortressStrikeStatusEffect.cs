@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         private readonly int _physicalDefensePercent;
 
         public override string Name => "Fortress Strike";
-        public override EffectIconType Icon => EffectIconType.DamageReduction;
+        public override EffectIconType Icon => EffectIconType.FortressStrikeStatusEffect;
 
         public FortressStrikeStatusEffect()
             : this(10)

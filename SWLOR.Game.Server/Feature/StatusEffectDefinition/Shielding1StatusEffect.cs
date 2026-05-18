@@ -9,13 +9,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class Shielding1StatusEffect : StatusEffectBase
     {
         public override string Name => "Shielding I";
-        public override EffectIconType Icon => EffectIconType.DamageReduction;
-        public override bool PersistsOnLogout => false;
-        public override List<Type> MorePowerfulEffectTypes { get; } = new List<Type>
-        {
-            typeof(Shielding2StatusEffect),
-            typeof(Shielding3StatusEffect),
-        };
+        public override EffectIconType Icon => EffectIconType.Shielding1StatusEffect;
 
         public Shielding1StatusEffect()
         {

@@ -8,7 +8,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class HemorrhageStatusEffect : StatusEffectBase
     {
         public override string Name => "Hemorrhage";
-        public override EffectIconType Icon => EffectIconType.Wounding;
+        public override EffectIconType Icon => EffectIconType.HemorrhageStatusEffect;
         public override StatusEffectCategory Categories => StatusEffectCategory.Debuff | StatusEffectCategory.Bleeding;
         public override StatusEffectCleanseType CleanseTypes => StatusEffectCleanseType.Purify | StatusEffectCleanseType.SoothePet;
         public override ResistanceType ResistanceType => ResistanceType.Trauma;

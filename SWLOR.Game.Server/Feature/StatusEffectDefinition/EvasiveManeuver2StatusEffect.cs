@@ -9,16 +9,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class EvasiveManeuver2StatusEffect : StatusEffectBase
     {
         public override string Name => "Evasive Maneuver II";
-        public override EffectIconType Icon => EffectIconType.DamageResistance;
-        public override bool PersistsOnLogout => false;
-        public override List<Type> MorePowerfulEffectTypes { get; } = new List<Type>
-        {
-            typeof(EvasiveManeuver3StatusEffect),
-        };
-        public override List<Type> LessPowerfulEffectTypes { get; } = new List<Type>
-        {
-            typeof(EvasiveManeuver1StatusEffect),
-        };
+        public override EffectIconType Icon => EffectIconType.EvasiveManeuver2StatusEffect;
 
         public EvasiveManeuver2StatusEffect()
         {

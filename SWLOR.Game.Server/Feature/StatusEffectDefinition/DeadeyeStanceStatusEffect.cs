@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class DeadeyeStanceStatusEffect : StatusEffectBase
     {
         public override string Name => "Deadeye Stance";
-        public override EffectIconType Icon => EffectIconType.AttackIncrease;
+        public override EffectIconType Icon => EffectIconType.DeadeyeStanceStatusEffect;
         public DeadeyeStanceStatusEffect()
         {
             StatGroup.Stats[StatType.AccuracyPercentAdjustment] = 15;

@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class GuardiansWrathStatusEffect : StatusEffectBase
     {
         public override string Name => "Guardian's Wrath";
-        public override EffectIconType Icon => EffectIconType.DamageIncrease;
+        public override EffectIconType Icon => EffectIconType.GuardiansWrathStatusEffect;
         public GuardiansWrathStatusEffect()
         {
             StatGroup.Stats[StatType.AttackDeflection] = 100;

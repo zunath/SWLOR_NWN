@@ -1,4 +1,4 @@
-﻿using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.StatService;
@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class PoisonStatusEffect : StatusEffectBase
     {
         public override string Name => "Poison";
-        public override EffectIconType Icon => EffectIconType.Poison;
+        public override EffectIconType Icon => EffectIconType.PoisonStatusEffect;
         public override StatusEffectCategory Categories => StatusEffectCategory.Debuff;
         public override ResistanceType ResistanceType => ResistanceType.Poison;
         public override StatusEffectCleanseType CleanseTypes =>

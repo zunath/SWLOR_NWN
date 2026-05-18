@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class SniperStanceStatusEffect : StatusEffectBase
     {
         public override string Name => "Sniper Stance";
-        public override EffectIconType Icon => EffectIconType.AttackIncrease;
+        public override EffectIconType Icon => EffectIconType.SniperStanceStatusEffect;
         public SniperStanceStatusEffect()
         {
             StatGroup.Stats[StatType.AttackPercentAdjustment] = 20;

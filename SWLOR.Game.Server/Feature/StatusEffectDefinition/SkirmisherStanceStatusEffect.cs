@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class SkirmisherStanceStatusEffect : StatusEffectBase
     {
         public override string Name => "Skirmisher Stance";
-        public override EffectIconType Icon => EffectIconType.ACIncrease;
+        public override EffectIconType Icon => EffectIconType.SkirmisherStanceStatusEffect;
         public SkirmisherStanceStatusEffect()
         {
             StatGroup.Stats[StatType.AttackPercentAdjustment] = -10;

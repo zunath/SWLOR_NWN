@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         private readonly int _tickCount;
 
         public override string Name => "Kolto Mist";
-        public override EffectIconType Icon => EffectIconType.Regenerate;
+        public override EffectIconType Icon => EffectIconType.KoltoMistHealingStatusEffect;
         public override StatusEffectCategory Categories => StatusEffectCategory.Buff;
         public override float Frequency => 3f;
         public override bool PersistsOnLogout => false;

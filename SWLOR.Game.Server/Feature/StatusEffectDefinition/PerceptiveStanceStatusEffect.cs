@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class PerceptiveStanceStatusEffect : StatusEffectBase
     {
         public override string Name => "Perceptive Stance";
-        public override EffectIconType Icon => EffectIconType.DamageIncrease;
+        public override EffectIconType Icon => EffectIconType.PerceptiveStanceStatusEffect;
 
         public PerceptiveStanceStatusEffect()
         {

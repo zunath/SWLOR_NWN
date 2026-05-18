@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class SnapRollStatusEffect : StatusEffectBase
     {
         public override string Name => "Snap Roll";
-        public override EffectIconType Icon => EffectIconType.ACIncrease;
+        public override EffectIconType Icon => EffectIconType.SnapRollStatusEffect;
         public SnapRollStatusEffect()
             : this(25)
         {

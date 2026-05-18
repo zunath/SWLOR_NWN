@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class PredatorRush1StatusEffect : StatusEffectBase
     {
         public override string Name => "Predator Rush";
-        public override EffectIconType Icon => EffectIconType.AttackIncrease;
+        public override EffectIconType Icon => EffectIconType.PredatorRush1StatusEffect;
         public override bool PersistsOnLogout => false;
 
         public PredatorRush1StatusEffect()

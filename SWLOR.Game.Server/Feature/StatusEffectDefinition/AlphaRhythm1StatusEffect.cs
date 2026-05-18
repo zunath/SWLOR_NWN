@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class AlphaRhythm1StatusEffect : StatusEffectBase
     {
         public override string Name => "Alpha Rhythm";
-        public override EffectIconType Icon => EffectIconType.DamageReduction;
+        public override EffectIconType Icon => EffectIconType.AlphaRhythm1StatusEffect;
         public override bool PersistsOnLogout => false;
 
         public AlphaRhythm1StatusEffect()

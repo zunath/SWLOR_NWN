@@ -9,15 +9,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class EvasiveChallenge2StatusEffect : StatusEffectBase
     {
         public override string Name => "Evasive Challenge II";
-        public override EffectIconType Icon => EffectIconType.MovementSpeedDecrease;
-        public override StatusEffectCategory Categories => StatusEffectCategory.Debuff;
-        public override StatusEffectCleanseType CleanseTypes => StatusEffectCleanseType.Purify | StatusEffectCleanseType.SoothePet;
-        public override ResistanceType ResistanceType => ResistanceType.Trauma;
-        public override bool PersistsOnLogout => false;
-        public override List<Type> LessPowerfulEffectTypes { get; } = new List<Type>
-        {
-            typeof(EvasiveChallenge1StatusEffect),
-        };
+        public override EffectIconType Icon => EffectIconType.EvasiveChallenge2StatusEffect;
 
         public EvasiveChallenge2StatusEffect()
         {

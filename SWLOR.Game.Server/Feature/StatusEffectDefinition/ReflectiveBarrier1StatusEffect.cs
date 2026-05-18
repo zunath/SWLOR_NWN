@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         private const int BaseReflectionPercent = 15;
 
         public override string Name => "Reflective Barrier";
-        public override EffectIconType Icon => EffectIconType.ElementalShield;
+        public override EffectIconType Icon => EffectIconType.ReflectiveBarrier1StatusEffect;
         public override bool PersistsOnLogout => false;
 
         protected override void Apply(uint creature, int durationTicks)

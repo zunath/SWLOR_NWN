@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public const int StaminaCostReduction = 2;
 
         public override string Name => "Gunslinger Focus";
-        public override EffectIconType Icon => EffectIconType.AttackIncrease;
+        public override EffectIconType Icon => EffectIconType.GunslingerFocusStatusEffect;
 
         public GunslingerFocusStatusEffect()
         {

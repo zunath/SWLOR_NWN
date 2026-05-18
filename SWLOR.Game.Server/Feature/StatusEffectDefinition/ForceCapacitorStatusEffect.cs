@@ -8,7 +8,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class ForceCapacitorStatusEffect : StatusEffectBase
     {
         public override string Name => "Force Capacitor";
-        public override EffectIconType Icon => EffectIconType.Haste;
+        public override EffectIconType Icon => EffectIconType.ForceCapacitorStatusEffect;
 
         public ForceCapacitorStatusEffect()
         {

@@ -11,15 +11,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         private readonly int _hitChancePenaltyPercent;
 
         public override string Name => "Flash Grenade I";
-        public override EffectIconType Icon => EffectIconType.AttackDecrease;
-        public override StatusEffectCategory Categories => StatusEffectCategory.Debuff;
-        public override StatusEffectCleanseType CleanseTypes => StatusEffectCleanseType.Purify | StatusEffectCleanseType.SoothePet;
-        public override ResistanceType ResistanceType => ResistanceType.Disruption;
-        public override bool PersistsOnLogout => false;
-        public override List<Type> MorePowerfulEffectTypes { get; } = new List<Type>
-        {
-            typeof(FlashGrenade2StatusEffect),
-        };
+        public override EffectIconType Icon => EffectIconType.FlashGrenade1StatusEffect;
 
         public FlashGrenade1StatusEffect()
             : this(8)

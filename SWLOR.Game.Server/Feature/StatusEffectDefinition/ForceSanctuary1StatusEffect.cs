@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class ForceSanctuary1StatusEffect : StatusEffectBase
     {
         public override string Name => "Force Sanctuary";
-        public override EffectIconType Icon => EffectIconType.DamageReduction;
+        public override EffectIconType Icon => EffectIconType.ForceSanctuary1StatusEffect;
         public override bool PersistsOnLogout => false;
 
         public ForceSanctuary1StatusEffect()

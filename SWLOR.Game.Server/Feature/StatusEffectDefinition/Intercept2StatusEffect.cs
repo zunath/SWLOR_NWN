@@ -9,12 +9,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class Intercept2StatusEffect : StatusEffectBase
     {
         public override string Name => "Intercept II";
-        public override EffectIconType Icon => EffectIconType.DamageReduction;
-        public override bool PersistsOnLogout => false;
-        public override List<Type> LessPowerfulEffectTypes { get; } = new List<Type>
-        {
-            typeof(Intercept1StatusEffect),
-        };
+        public override EffectIconType Icon => EffectIconType.Intercept2StatusEffect;
 
         public Intercept2StatusEffect()
         {

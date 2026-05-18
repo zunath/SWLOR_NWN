@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class ForceLensStatusEffect : StatusEffectBase
     {
         public override string Name => "Force Lens";
-        public override EffectIconType Icon => EffectIconType.DamageReduction;
+        public override EffectIconType Icon => EffectIconType.ForceLensStatusEffect;
         public ForceLensStatusEffect()
         {
             StatGroup.Stats[StatType.ForceDefensePercentAdjustment] = 15;

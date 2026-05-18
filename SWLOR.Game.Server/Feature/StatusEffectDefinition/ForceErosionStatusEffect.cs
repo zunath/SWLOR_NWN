@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         private readonly int _fpLossPerTick;
 
         public override string Name => "Force Erosion";
-        public override EffectIconType Icon => EffectIconType.DamageImmunityMagicDecrease;
+        public override EffectIconType Icon => EffectIconType.ForceErosionStatusEffect;
         public override StatusEffectCategory Categories => StatusEffectCategory.Debuff;
         public override StatusEffectCleanseType CleanseTypes => StatusEffectCleanseType.Purify | StatusEffectCleanseType.SoothePet;
         public override ResistanceType ResistanceType => ResistanceType.Disruption;

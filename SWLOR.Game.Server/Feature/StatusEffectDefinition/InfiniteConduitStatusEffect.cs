@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class InfiniteConduitStatusEffect : StatusEffectBase
     {
         public override string Name => "Infinite Conduit";
-        public override EffectIconType Icon => EffectIconType.Haste;
+        public override EffectIconType Icon => EffectIconType.InfiniteConduitStatusEffect;
 
         public InfiniteConduitStatusEffect()
         {

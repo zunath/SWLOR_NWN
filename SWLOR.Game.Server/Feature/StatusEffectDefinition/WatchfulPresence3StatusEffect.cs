@@ -7,12 +7,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class WatchfulPresence3StatusEffect : AuraStatusEffectBase
     {
         public override string Name => "Watchful Presence III";
-        public override EffectIconType Icon => EffectIconType.DamageReduction;
-        public override List<Type> LessPowerfulEffectTypes { get; } = new()
-        {
-            typeof(WatchfulPresence1StatusEffect),
-            typeof(WatchfulPresence2StatusEffect),
-        };
+        public override EffectIconType Icon => EffectIconType.WatchfulPresence3StatusEffect;
 
         protected override void Apply(uint creature, int durationTicks)
         {

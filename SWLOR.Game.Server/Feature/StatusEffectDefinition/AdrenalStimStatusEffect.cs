@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         private readonly int _staminaPerTick;
 
         public override string Name => "Adrenal Stim";
-        public override EffectIconType Icon => EffectIconType.Regenerate;
+        public override EffectIconType Icon => EffectIconType.AdrenalStimStatusEffect;
         public override StatusEffectCategory Categories => StatusEffectCategory.Buff;
         public override float Frequency => 3f;
         public override bool PersistsOnLogout => false;

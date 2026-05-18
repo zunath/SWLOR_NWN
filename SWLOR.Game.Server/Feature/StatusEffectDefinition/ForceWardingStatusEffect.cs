@@ -6,7 +6,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class ForceWardingStatusEffect : StatusEffectBase
     {
         public override string Name => "Force Warding";
-        public override EffectIconType Icon => EffectIconType.SpellResistanceIncrease;
+        public override EffectIconType Icon => EffectIconType.ForceWardingStatusEffect;
         public override StatusEffectCleanseType CleanseTypes => StatusEffectCleanseType.Purify | StatusEffectCleanseType.SoothePet;
     }
 }

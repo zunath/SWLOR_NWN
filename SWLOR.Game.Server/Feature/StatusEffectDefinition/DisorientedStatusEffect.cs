@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         private readonly int _additionalEvasionPenaltyPercent;
 
         public override string Name => "Disoriented";
-        public override EffectIconType Icon => EffectIconType.Confused;
+        public override EffectIconType Icon => EffectIconType.DisorientedStatusEffect;
         public override StatusEffectCategory Categories => StatusEffectCategory.Debuff | StatusEffectCategory.Control;
         public override StatusEffectCleanseType CleanseTypes => StatusEffectCleanseType.Purify | StatusEffectCleanseType.SoothePet;
         public override ResistanceType ResistanceType => ResistanceType.Mind;

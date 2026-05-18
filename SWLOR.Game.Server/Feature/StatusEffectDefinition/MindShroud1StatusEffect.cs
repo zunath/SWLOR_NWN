@@ -9,12 +9,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class MindShroud1StatusEffect : StatusEffectBase
     {
         public override string Name => "Mind Shroud I";
-        public override EffectIconType Icon => EffectIconType.DamageReduction;
-        public override bool PersistsOnLogout => false;
-        public override List<Type> MorePowerfulEffectTypes { get; } = new List<Type>
-        {
-            typeof(MindShroud2StatusEffect),
-        };
+        public override EffectIconType Icon => EffectIconType.MindShroud1StatusEffect;
 
         public MindShroud1StatusEffect()
         {

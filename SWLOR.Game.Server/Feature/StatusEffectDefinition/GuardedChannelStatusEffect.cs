@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         private readonly int _forceDefensePercent;
 
         public override string Name => "Guarded Channel";
-        public override EffectIconType Icon => EffectIconType.DamageReduction;
+        public override EffectIconType Icon => EffectIconType.GuardedChannelStatusEffect;
         public GuardedChannelStatusEffect()
             : this(20, 20)
         {

@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class HungerOfTheDark1StatusEffect : StatusEffectBase
     {
         public override string Name => "Hunger of the Dark";
-        public override EffectIconType Icon => EffectIconType.Regenerate;
+        public override EffectIconType Icon => EffectIconType.HungerOfTheDark1StatusEffect;
         public override bool PersistsOnLogout => false;
 
         public HungerOfTheDark1StatusEffect()

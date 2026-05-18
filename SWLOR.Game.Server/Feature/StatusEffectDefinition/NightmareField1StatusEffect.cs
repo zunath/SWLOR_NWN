@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class NightmareField1StatusEffect : StatusEffectBase
     {
         public override string Name => "Nightmare Field";
-        public override EffectIconType Icon => EffectIconType.AttackDecrease;
+        public override EffectIconType Icon => EffectIconType.NightmareField1StatusEffect;
         public override StatusEffectCategory Categories => StatusEffectCategory.Debuff;
         public override StatusEffectCleanseType CleanseTypes => StatusEffectCleanseType.Purify | StatusEffectCleanseType.SoothePet;
         public override ResistanceType ResistanceType => ResistanceType.Disruption;

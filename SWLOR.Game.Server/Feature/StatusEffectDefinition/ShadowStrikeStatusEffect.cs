@@ -8,7 +8,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         private readonly int _movementSpeedPercentAdjustment;
 
         public override string Name => "Shadow Strike";
-        public override EffectIconType Icon => EffectIconType.MovementSpeedDecrease;
+        public override EffectIconType Icon => EffectIconType.ShadowStrikeStatusEffect;
         public override StatusEffectCategory Categories => StatusEffectCategory.Debuff | StatusEffectCategory.Control;
         public override StatusEffectCleanseType CleanseTypes => StatusEffectCleanseType.Purify | StatusEffectCleanseType.SoothePet;
         protected override int MovementSpeedPercentAdjustment => _movementSpeedPercentAdjustment;

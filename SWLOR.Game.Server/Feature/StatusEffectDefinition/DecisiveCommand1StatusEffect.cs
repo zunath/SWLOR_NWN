@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class DecisiveCommand1StatusEffect : SocialScalingStatusEffectBase
     {
         public override string Name => "Decisive Command";
-        public override EffectIconType Icon => EffectIconType.DamageIncrease;
+        public override EffectIconType Icon => EffectIconType.DecisiveCommand1StatusEffect;
         public override bool PersistsOnLogout => false;
         public override float Frequency => 3f;
 

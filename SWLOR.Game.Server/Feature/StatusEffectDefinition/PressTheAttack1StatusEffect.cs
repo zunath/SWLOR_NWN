@@ -9,13 +9,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class PressTheAttack1StatusEffect : SocialScalingStatusEffectBase
     {
         public override string Name => "Press the Attack I";
-        public override EffectIconType Icon => EffectIconType.DamageIncrease;
-        public override bool PersistsOnLogout => false;
-        public override List<Type> MorePowerfulEffectTypes { get; } = new List<Type>
-        {
-            typeof(PressTheAttack2StatusEffect),
-            typeof(PressTheAttack3StatusEffect),
-        };
+        public override EffectIconType Icon => EffectIconType.PressTheAttack1StatusEffect;
 
         protected override void Apply(uint creature, int durationTicks)
         {

@@ -9,12 +9,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class FocusStim1StatusEffect : StatusEffectBase
     {
         public override string Name => "Focus Stim I";
-        public override EffectIconType Icon => EffectIconType.AttackIncrease;
-        public override bool PersistsOnLogout => false;
-        public override List<Type> MorePowerfulEffectTypes { get; } = new List<Type>
-        {
-            typeof(FocusStim2StatusEffect),
-        };
+        public override EffectIconType Icon => EffectIconType.FocusStim1StatusEffect;
 
         public FocusStim1StatusEffect()
         {

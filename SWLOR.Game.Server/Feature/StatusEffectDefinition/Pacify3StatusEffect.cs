@@ -9,16 +9,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class Pacify3StatusEffect : StatusEffectBase
     {
         public override string Name => "Pacify III";
-        public override EffectIconType Icon => EffectIconType.DamageDecrease;
-        public override StatusEffectCategory Categories => StatusEffectCategory.Debuff;
-        public override StatusEffectCleanseType CleanseTypes => StatusEffectCleanseType.Purify | StatusEffectCleanseType.SoothePet;
-        public override ResistanceType ResistanceType => ResistanceType.Disruption;
-        public override bool PersistsOnLogout => false;
-        public override List<Type> LessPowerfulEffectTypes { get; } = new List<Type>
-        {
-            typeof(Pacify1StatusEffect),
-            typeof(Pacify2StatusEffect),
-        };
+        public override EffectIconType Icon => EffectIconType.Pacify3StatusEffect;
 
         public Pacify3StatusEffect()
         {

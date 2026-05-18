@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class CrusherStanceStatusEffect : StatusEffectBase
     {
         public override string Name => "Crusher Stance";
-        public override EffectIconType Icon => EffectIconType.AttackIncrease;
+        public override EffectIconType Icon => EffectIconType.CrusherStanceStatusEffect;
         public CrusherStanceStatusEffect()
         {
             StatGroup.Stats[StatType.AttackPercentAdjustment] = 20;

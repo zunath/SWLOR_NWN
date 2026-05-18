@@ -9,13 +9,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class BolsterAttack3StatusEffect : StatusEffectBase
     {
         public override string Name => "Bolster Attack III";
-        public override EffectIconType Icon => EffectIconType.DamageIncrease;
-        public override bool PersistsOnLogout => false;
-        public override List<Type> LessPowerfulEffectTypes { get; } = new List<Type>
-        {
-            typeof(BolsterAttack1StatusEffect),
-            typeof(BolsterAttack2StatusEffect),
-        };
+        public override EffectIconType Icon => EffectIconType.BolsterAttack3StatusEffect;
 
         public BolsterAttack3StatusEffect()
         {

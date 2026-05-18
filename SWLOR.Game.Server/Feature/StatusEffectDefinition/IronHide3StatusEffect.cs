@@ -9,13 +9,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class IronHide3StatusEffect : StatusEffectBase
     {
         public override string Name => "Iron Hide III";
-        public override EffectIconType Icon => EffectIconType.DamageReduction;
-        public override bool PersistsOnLogout => false;
-        public override List<Type> LessPowerfulEffectTypes { get; } = new List<Type>
-        {
-            typeof(IronHide1StatusEffect),
-            typeof(IronHide2StatusEffect),
-        };
+        public override EffectIconType Icon => EffectIconType.IronHide3StatusEffect;
 
         public IronHide3StatusEffect()
         {

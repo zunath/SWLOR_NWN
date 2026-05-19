@@ -15,6 +15,9 @@ namespace SWLOR.Game.Server.Service
         // Creature -> EnemyList mapping
         private static readonly Dictionary<uint, List<uint>> _creatureToEnemies = new();
 
+        // Enemy -> Creature -> proximity enmity contribution mapping
+        private static readonly Dictionary<uint, Dictionary<uint, int>> _proximityEnmityAmounts = new();
+
         /// <summary>
         /// When an enemy is damaged, increase enmity toward that creature by the amount of damage dealt.
         /// </summary>
@@ -298,6 +301,34 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Modifies enmity from aggro proximity and tracks the resulting contribution separately.
+        /// </summary>
+        /// <param name="creature">The creature whose enmity will be increased.</param>
+        /// <param name="enemy">The enemy who will have raised enmity toward creature.</param>
+        /// <param name="amount">The proximity enmity amount to apply.</param>
+        public static void ModifyProximityEnmity(uint creature, uint enemy, int amount)
+        {
+            if (amount == 0)
+                return;
+
+            var previousAmount = GetRawEnmityAmount(creature, enemy);
+            ModifyEnmity(creature, enemy, amount);
+            var currentAmount = GetRawEnmityAmount(creature, enemy);
+            var appliedAmount = currentAmount - previousAmount;
+            if (appliedAmount <= 0)
+                return;
+
+            if (!_proximityEnmityAmounts.TryGetValue(enemy, out var table))
+            {
+                table = new Dictionary<uint, int>();
+                _proximityEnmityAmounts[enemy] = table;
+            }
+
+            table.TryGetValue(creature, out var existingAmount);
+            table[creature] = existingAmount + appliedAmount;
+        }
+
+        /// <summary>
         /// Removes a creature from all enmity tables.
         /// </summary>
         /// <param name="creature">The creature to remove.</param>
@@ -307,14 +338,46 @@ namespace SWLOR.Game.Server.Service
             if (!_creatureToEnemies.ContainsKey(creature)) return;
 
             // Retrieve all of the creatures who have this creature on their enmity table.
-            var enemies = _creatureToEnemies[creature];
+            var enemies = _creatureToEnemies[creature].ToArray();
             foreach (var enemy in enemies)
             {
-                _enemyEnmityTables[enemy].Remove(creature);
+                RemoveEnmityTableEntry(creature, enemy);
+                RemoveProximityEnmityTracking(creature, enemy);
+            }
+        }
+
+        /// <summary>
+        /// Removes the tracked proximity enmity contribution from a specific enemy's table.
+        /// </summary>
+        /// <param name="creature">The creature to remove proximity enmity for.</param>
+        /// <param name="enemy">The enemy whose enmity table should be updated.</param>
+        /// <returns>true if proximity enmity was removed.</returns>
+        public static bool RemoveProximityEnmity(uint creature, uint enemy)
+        {
+            if (!_proximityEnmityAmounts.TryGetValue(enemy, out var proximityTable) ||
+                !proximityTable.TryGetValue(creature, out var proximityAmount))
+            {
+                return false;
             }
 
-            // Remove this creature from the targetToCreatures cache.
-            _creatureToEnemies.Remove(creature);
+            if (!_enemyEnmityTables.TryGetValue(enemy, out var table) ||
+                !table.TryGetValue(creature, out var amount))
+            {
+                RemoveProximityEnmityTracking(creature, enemy);
+                return false;
+            }
+
+            if (amount <= proximityAmount)
+            {
+                RemoveEnmityTableEntry(creature, enemy);
+            }
+            else
+            {
+                table[creature] = amount - proximityAmount;
+            }
+
+            RemoveProximityEnmityTracking(creature, enemy);
+            return true;
         }
 
         /// <summary>
@@ -333,7 +396,11 @@ namespace SWLOR.Game.Server.Service
         private static void ClearEnmityTables(uint enemy)
         {
             // Enemy isn't registered as having an enmity table.
-            if (!_enemyEnmityTables.ContainsKey(enemy)) return;
+            if (!_enemyEnmityTables.ContainsKey(enemy))
+            {
+                _proximityEnmityAmounts.Remove(enemy);
+                return;
+            }
 
             // For every creature on this enemy's enmity table,
             // remove the enemy from that creature's list.
@@ -351,6 +418,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             _enemyEnmityTables.Remove(enemy);
+            _proximityEnmityAmounts.Remove(enemy);
         }
 
         /// <summary>
@@ -434,6 +502,47 @@ namespace SWLOR.Game.Server.Service
             }
 
             return result;
+        }
+
+        private static int GetRawEnmityAmount(uint creature, uint enemy)
+        {
+            return _enemyEnmityTables.TryGetValue(enemy, out var table) &&
+                   table.TryGetValue(creature, out var amount)
+                ? amount
+                : 0;
+        }
+
+        private static void RemoveEnmityTableEntry(uint creature, uint enemy)
+        {
+            if (_enemyEnmityTables.TryGetValue(enemy, out var table))
+            {
+                table.Remove(creature);
+                if (table.Count <= 0)
+                {
+                    _enemyEnmityTables.Remove(enemy);
+                }
+            }
+
+            if (!_creatureToEnemies.TryGetValue(creature, out var enemies))
+                return;
+
+            enemies.Remove(enemy);
+            if (enemies.Count <= 0)
+            {
+                _creatureToEnemies.Remove(creature);
+            }
+        }
+
+        private static void RemoveProximityEnmityTracking(uint creature, uint enemy)
+        {
+            if (!_proximityEnmityAmounts.TryGetValue(enemy, out var table))
+                return;
+
+            table.Remove(creature);
+            if (table.Count <= 0)
+            {
+                _proximityEnmityAmounts.Remove(enemy);
+            }
         }
     }
 }

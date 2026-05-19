@@ -156,7 +156,7 @@ namespace SWLOR.Game.Server.Service.AIService
             RefreshActionCache(creature, profile, state);
             var context = new AIContext(creature, trigger, eventTarget, profile, state, allies);
 
-            if (GetIsObjectValid(context.CurrentEnemyTarget) && state.CombatStartedTime == default)
+            if (GetIsObjectValid(context.CurrentEnmityTarget) && state.CombatStartedTime == default)
                 state.CombatStartedTime = DateTime.UtcNow;
 
             UpdateActivePhase(context);
@@ -593,7 +593,7 @@ namespace SWLOR.Game.Server.Service.AIService
         {
             if (!context.Profile.IsBoss ||
                 context.State.BossTimerScheduled ||
-                !GetIsObjectValid(context.CurrentEnemyTarget))
+                !GetIsObjectValid(context.CurrentEnmityTarget))
             {
                 return;
             }

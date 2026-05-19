@@ -7,8 +7,8 @@ namespace SWLOR.Game.Server.Service.AIService
 {
     public sealed class AIContext
     {
-        private uint _currentEnemyTarget;
-        private bool _currentEnemyTargetLoaded;
+        private uint _currentEnmityTarget;
+        private bool _currentEnmityTargetLoaded;
         private int? _selfHealthPercent;
 
         public uint Self { get; }
@@ -36,30 +36,17 @@ namespace SWLOR.Game.Server.Service.AIService
             EvaluatedTarget = OBJECT_INVALID;
         }
 
-        public uint CurrentEnemyTarget
+        public uint CurrentEnmityTarget
         {
             get
             {
-                if (_currentEnemyTargetLoaded)
-                    return _currentEnemyTarget;
+                if (_currentEnmityTargetLoaded)
+                    return _currentEnmityTarget;
 
-                _currentEnemyTargetLoaded = true;
-                _currentEnemyTarget = Enmity.GetHighestEnmityTarget(Self);
+                _currentEnmityTargetLoaded = true;
+                _currentEnmityTarget = Enmity.GetHighestEnmityTarget(Self);
 
-                if (!GetIsObjectValid(_currentEnemyTarget))
-                    _currentEnemyTarget = GetAttackTarget(Self);
-
-                if (!GetIsObjectValid(_currentEnemyTarget))
-                    _currentEnemyTarget = GetAttemptedAttackTarget();
-
-                if (!GetIsObjectValid(_currentEnemyTarget) &&
-                    GetIsObjectValid(EventTarget) &&
-                    GetIsEnemy(EventTarget, Self))
-                {
-                    _currentEnemyTarget = EventTarget;
-                }
-
-                return _currentEnemyTarget;
+                return _currentEnmityTarget;
             }
         }
 

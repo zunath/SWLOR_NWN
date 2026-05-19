@@ -59,16 +59,19 @@ namespace SWLOR.Game.Server.Feature
 
         private static void ResumeAttack(uint activator, uint target)
         {
-            if (!GetIsObjectValid(target))
-                return;
-
             if (!GetIsObjectValid(activator) ||
-                GetCurrentHitPoints(activator) <= 0 ||
-                GetCurrentHitPoints(target) <= 0 ||
-                GetArea(activator) != GetArea(target))
+                GetCurrentHitPoints(activator) <= 0)
             {
                 return;
             }
+
+            if (!GetIsPC(activator) && !GetIsPC(GetMaster(activator)))
+                target = Enmity.GetHighestEnmityTarget(activator);
+
+            if (!GetIsObjectValid(target) ||
+                GetCurrentHitPoints(target) <= 0 ||
+                GetArea(activator) != GetArea(target))
+                return;
 
             AssignCommand(activator, () =>
             {
@@ -326,9 +329,10 @@ namespace SWLOR.Game.Server.Feature
                 Activity.ClearBusy(activator);
 
                 // Moved during casting or activator died. Cancel the activation.
-                if (GetLocalInt(activator, activationId) == (int)ActivationStatus.Interrupted || GetCurrentHitPoints(activator) <= 0)
+                var activatorIsAlive = GetCurrentHitPoints(activator) > 0;
+                if (GetLocalInt(activator, activationId) == (int)ActivationStatus.Interrupted || !activatorIsAlive)
                 {
-                    CancelActivation(GetCurrentHitPoints(activator) > 0);
+                    CancelActivation(activatorIsAlive);
                     return;
                 }
 

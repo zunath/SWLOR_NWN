@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Service.AIService
 
         public static AITargetSelector HighestEnmity()
         {
-            return context => context.CurrentEnemyTarget;
+            return context => context.CurrentEnmityTarget;
         }
 
         public static AITargetSelector Master()
@@ -42,8 +42,8 @@ namespace SWLOR.Game.Server.Service.AIService
         {
             return context =>
             {
-                var target = context.CurrentEnemyTarget;
-                if (!GetIsObjectValid(target))
+                var target = context.CurrentEnmityTarget;
+                if (target == OBJECT_INVALID || !GetIsObjectValid(target))
                     return OBJECT_INVALID;
 
                 context.SetEvaluatedTarget(target);

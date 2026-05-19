@@ -13,6 +13,7 @@ namespace SWLOR.Game.Server.Service
     {
         private const float AggroRadius = 8.5f;
         private const float ReturnHomeRadius = 15f;
+        private const int ProximityEnmityAmount = 1;
         private static readonly Dictionary<uint, HashSet<uint>> _creatureAllies = new();
 
         [NWNEventHandler(ScriptName.OnModuleCacheAfter)]
@@ -231,13 +232,13 @@ namespace SWLOR.Game.Server.Service
                     GetIsEnemy(attackTarget, self) &&
                     IsInAggroRange(self, attackTarget))
                 {
-                    Enmity.ModifyEnmity(attackTarget, self, 1);
+                    Enmity.ModifyProximityEnmity(attackTarget, self, ProximityEnmityAmount);
                 }
 
                 return;
             }
 
-            Enmity.ModifyEnmity(entering, self, 1);
+            Enmity.ModifyProximityEnmity(entering, self, ProximityEnmityAmount);
             ProcessTrigger(self, AITriggerType.Aggro, entering);
 
             // All allies within 5m should also aggro the player if they're not already in combat.
@@ -249,7 +250,7 @@ namespace SWLOR.Game.Server.Service
                     if (!GetIsEnemy(entering, ally)) continue;
                     if (GetDistanceBetween(self, ally) > 5f) continue;
 
-                    Enmity.ModifyEnmity(entering, ally, 1);
+                    Enmity.ModifyProximityEnmity(entering, ally, ProximityEnmityAmount);
                 }
             }
 
@@ -261,6 +262,23 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnCreatureAggroExit)]
         public static void CreatureAggroExit()
         {
+            var exiting = GetExitingObject();
+            var self = GetAreaOfEffectCreator(OBJECT_SELF);
+            if (!IsAIEnabled(self) || !GetIsObjectValid(exiting))
+                return;
+
+            RemoveProximityEnmity(exiting, self);
+
+            if (!_creatureAllies.TryGetValue(self, out var allies))
+                return;
+
+            foreach (var ally in allies)
+            {
+                if (!IsAIEnabled(ally) || IsInAggroRange(ally, exiting))
+                    continue;
+
+                RemoveProximityEnmity(exiting, ally);
+            }
         }
 
         public static bool ProcessTrigger(
@@ -503,6 +521,22 @@ namespace SWLOR.Game.Server.Service
                    GetArea(creature) == GetArea(target) &&
                    GetDistanceBetween(creature, target) <= AggroRadius &&
                    LineOfSightObject(target, creature);
+        }
+
+        private static void RemoveProximityEnmity(uint target, uint enemy)
+        {
+            if (!Enmity.RemoveProximityEnmity(target, enemy))
+                return;
+
+            var nextTarget = Enmity.GetHighestEnmityTarget(enemy);
+            if (GetIsObjectValid(nextTarget))
+            {
+                Enmity.AttackHighestEnmityTarget(enemy);
+                return;
+            }
+
+            NPCAI.ClearState(enemy);
+            AssignCommand(enemy, () => ClearAllActions());
         }
 
         private static bool IsAIEnabled(uint creature)

@@ -1,6 +1,7 @@
 using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.AIService;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -13,6 +14,20 @@ public class AIModelTests
     private enum TestPhase
     {
         Opening
+    }
+
+    [SetUp]
+    public void SetUp()
+    {
+        EnemyEnmityTables().Clear();
+        CreatureToEnemies().Clear();
+    }
+
+    [TearDown]
+    public void TearDown()
+    {
+        EnemyEnmityTables().Clear();
+        CreatureToEnemies().Clear();
     }
 
     [Test]
@@ -168,6 +183,57 @@ public class AIModelTests
     }
 
     [Test]
+    public void AITarget_HighestEnmity_IgnoresEventTargetWithoutEnmity()
+    {
+        var context = new AIContext(
+            100,
+            AITriggerType.Damaged,
+            200,
+            new AIProfile(),
+            new AIState(),
+            Array.Empty<uint>());
+
+        AITarget.HighestEnmity()(context).Should().Be(OBJECT_INVALID);
+    }
+
+    [Test]
+    public void AITarget_HostileCluster_IgnoresEventTargetWithoutEnmity()
+    {
+        var context = new AIContext(
+            100,
+            AITriggerType.Damaged,
+            200,
+            new AIProfile(),
+            new AIState(),
+            Array.Empty<uint>());
+
+        AITarget.HostileCluster(5f, 2)(context).Should().Be(OBJECT_INVALID);
+    }
+
+    [Test]
+    public void AITarget_HighestEnmity_UsesEnmityTable()
+    {
+        const uint enemy = 100;
+        const uint target = 200;
+
+        EnemyEnmityTables()[enemy] = new Dictionary<uint, int>
+        {
+            [target] = 1
+        };
+        CreatureToEnemies()[target] = new List<uint> { enemy };
+
+        var context = new AIContext(
+            enemy,
+            AITriggerType.Damaged,
+            300,
+            new AIProfile(),
+            new AIState(),
+            Array.Empty<uint>());
+
+        AITarget.HighestEnmity()(context).Should().Be(target);
+    }
+
+    [Test]
     public void AITarget_InferDefaultPrefersHostileMetadataOverFeat2DAFallback()
     {
         AITarget.InferDefault(FeatType.Bite, new AbilityDetail
@@ -208,5 +274,22 @@ public class AIModelTests
             .SetValue(context, selfHealthPercent);
 
         return context;
+    }
+
+    private static Dictionary<uint, Dictionary<uint, int>> EnemyEnmityTables()
+    {
+        return GetEnmityField<Dictionary<uint, Dictionary<uint, int>>>("_enemyEnmityTables");
+    }
+
+    private static Dictionary<uint, List<uint>> CreatureToEnemies()
+    {
+        return GetEnmityField<Dictionary<uint, List<uint>>>("_creatureToEnemies");
+    }
+
+    private static T GetEnmityField<T>(string name)
+    {
+        return (T)typeof(Enmity)
+            .GetField(name, BindingFlags.Static | BindingFlags.NonPublic)!
+            .GetValue(null)!;
     }
 }

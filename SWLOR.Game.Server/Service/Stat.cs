@@ -1,5 +1,8 @@
+using System.Collections.Generic;
+using System.Linq;
 using NWN.Native.API;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.SkillService;
@@ -32,10 +35,60 @@ namespace SWLOR.Game.Server.Service
         private const int MaximumDeflectionChanceCap = 100;
         private const int MaximumShieldDeflectionChance = 75;
         private const int MaximumGuardChance = 100;
+        private const float MinimumMovementSpeedMultiplier = 0f;
         private const float MaximumMovementSpeedMultiplier = 1.5f;
         private const float DeflectionEvasionBoostDurationSeconds = 10f;
         private const float DeflectionEnmityBoostDurationSeconds = 12f;
         private const float DeflectionDefenseBoostDurationSeconds = 12f;
+        private static readonly Dictionary<StatType, StatTypeAttribute> _statTypeAttributes = new();
+
+        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
+        public static void CacheData()
+        {
+            CacheStatTypeAttributes();
+        }
+
+        public static StatTypeCategory GetStatTypeCategory(StatType statType)
+        {
+            EnsureStatTypeAttributesCached();
+
+            return _statTypeAttributes.TryGetValue(statType, out var attribute)
+                ? attribute.Category
+                : StatTypeCategory.NonBeneficial;
+        }
+
+        public static bool IsBeneficialStatAdjustment(StatType statType, int value)
+        {
+            if (value == 0)
+                return false;
+
+            return GetStatTypeCategory(statType) switch
+            {
+                StatTypeCategory.BeneficialWhenPositive => value > 0,
+                StatTypeCategory.BeneficialWhenNegative => value < 0,
+                _ => false
+            };
+        }
+
+        private static void CacheStatTypeAttributes()
+        {
+            _statTypeAttributes.Clear();
+
+            foreach (var statType in Enum.GetValues(typeof(StatType)).Cast<StatType>())
+            {
+                _statTypeAttributes[statType] = statType.GetAttribute<StatType, StatTypeAttribute>();
+            }
+
+            Console.WriteLine($"Loaded {_statTypeAttributes.Count} stat type metadata entries.");
+        }
+
+        private static void EnsureStatTypeAttributesCached()
+        {
+            if (_statTypeAttributes.Count <= 0)
+            {
+                CacheStatTypeAttributes();
+            }
+        }
 
         public static int ScaleEffect(
             int baseAmount,
@@ -538,6 +591,9 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsObjectValid(creature) || GetObjectType(creature) != ObjectType.Creature)
                 return 1.0f;
 
+            if (GetStatAdjustment(creature, StatType.MovementSpeedDisabled) > 0)
+                return MinimumMovementSpeedMultiplier;
+
             var isPlayer = GetIsPC(creature) && !GetIsDM(creature) && !GetIsDMPossessed(creature);
             var movementRate = 1.0f + GetBaseMovementSpeedIncrease(creature, isPlayer);
             movementRate += GetStatAdjustment(creature, StatType.MovementSpeedPercentAdjustment) * 0.01f;
@@ -557,7 +613,7 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            return Math.Min(MaximumMovementSpeedMultiplier, movementRate);
+            return Math.Clamp(movementRate, MinimumMovementSpeedMultiplier, MaximumMovementSpeedMultiplier);
         }
 
         private static float GetBaseMovementSpeedIncrease(uint creature, bool isPlayer)

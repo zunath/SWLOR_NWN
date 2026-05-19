@@ -1,5 +1,6 @@
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -13,14 +14,9 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public override StatusEffectCleanseType CleanseTypes => StatusEffectCleanseType.Purify | StatusEffectCleanseType.SoothePet;
         public override ResistanceType ResistanceType => ResistanceType.Mobility;
 
-        protected override void Apply(uint creature, int durationTicks)
+        public ImmobilizedStatusEffect()
         {
-            ApplyImmobilize(creature, GetDurationSeconds(durationTicks));
-        }
-
-        protected override void Reapply(uint creature)
-        {
-            ApplyImmobilize(creature, GetDurationSeconds(DurationTicks));
+            StatGroup.Stats[StatType.MovementSpeedDisabled] = 1;
         }
 
         protected override void Remove(uint creature)
@@ -29,12 +25,6 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             {
                 Enmity.AttackHighestEnmityTarget(creature);
             }
-        }
-
-        private void ApplyImmobilize(uint creature, float duration)
-        {
-            var effect = TagEffect(EffectCutsceneImmobilize(), Id);
-            ApplyEffectToObject(DurationType.Temporary, effect, creature, duration);
         }
     }
 }

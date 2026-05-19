@@ -4,6 +4,7 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Staff;
 using SWLOR.Game.Server.Feature.PerkDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
@@ -123,8 +124,8 @@ public class StaffCrusherTests
 
         new ExposedStatusEffect(-10).StatGroup.Stats[StatType.DefensePercentAdjustment].Should().Be(-10);
 
-        StatType.CriticalTargetDefensePercentAdjustment.GetCategory().Should().Be(StatTypeCategory.BeneficialWhenNegative);
-        StatType.CriticalTargetDefenseDurationSeconds.GetCategory().Should().Be(StatTypeCategory.NonBeneficial);
+        Stat.GetStatTypeCategory(StatType.CriticalTargetDefensePercentAdjustment).Should().Be(StatTypeCategory.BeneficialWhenNegative);
+        Stat.GetStatTypeCategory(StatType.CriticalTargetDefenseDurationSeconds).Should().Be(StatTypeCategory.NonBeneficial);
     }
 
     [Test]

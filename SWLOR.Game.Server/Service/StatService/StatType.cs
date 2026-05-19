@@ -2586,7 +2586,13 @@ namespace SWLOR.Game.Server.Service.StatService
         /// Cooldown in seconds for the critical-hit auto-attack minimum-delay trigger.
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
-        CriticalNextAutoAttackNoDelayCooldownSeconds = 432
+        CriticalNextAutoAttackNoDelayCooldownSeconds = 432,
+
+        /// <summary>
+        /// If greater than zero, creature movement speed is reduced to zero.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        MovementSpeedDisabled = 433
     }
 
     public class StatTypeAttribute : Attribute

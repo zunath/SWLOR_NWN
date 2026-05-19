@@ -3,6 +3,7 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade;
 using SWLOR.Game.Server.Feature.PerkDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
@@ -99,8 +100,8 @@ public class VibrobladeDefenseTests
     [Test]
     public void VibrobladeDefenseStatusEffects_MatchCombatBible()
     {
-        StatType.DeflectionEvasionPercentAdjustment.GetCategory().Should().Be(StatTypeCategory.BeneficialWhenPositive);
-        StatType.DeflectionEvasionEnmityPercentAdjustment.GetCategory().Should().Be(StatTypeCategory.BeneficialWhenPositive);
+        Stat.GetStatTypeCategory(StatType.DeflectionEvasionPercentAdjustment).Should().Be(StatTypeCategory.BeneficialWhenPositive);
+        Stat.GetStatTypeCategory(StatType.DeflectionEvasionEnmityPercentAdjustment).Should().Be(StatTypeCategory.BeneficialWhenPositive);
 
         var coveringStrike = new CoveringStrikeStatusEffect();
         coveringStrike.Name.Should().Be("Covering Strike");

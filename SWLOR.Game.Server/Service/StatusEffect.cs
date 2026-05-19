@@ -557,7 +557,7 @@ namespace SWLOR.Game.Server.Service
             creatureEffects = EnsureCreatureStatusEffectTracker(creature);
             creatureEffects.Add(statusEffect);
 
-            if (statusEffect.StatGroup.Stats[StatType.MovementSpeedPercentAdjustment] != 0)
+            if (HasStatAdjustment(statusEffect))
             {
                 Stat.ApplyCreatureMovementRate(creature);
             }
@@ -678,7 +678,7 @@ namespace SWLOR.Game.Server.Service
                 statusEffect.ReapplyEffect(creature);
                 ApplyTrackedNWNEffect(creature, statusEffect, statusEffect.DurationTicks, statusEffect.DurationTicks < 0);
 
-                if (statusEffect.StatGroup.Stats[StatType.MovementSpeedPercentAdjustment] != 0)
+                if (HasStatAdjustment(statusEffect))
                 {
                     shouldReapplyMovementRate = true;
                 }
@@ -1126,7 +1126,7 @@ namespace SWLOR.Game.Server.Service
 
             return effect.StatGroup.Abilities.Any(x => x.Value > 0) ||
                    effect.StatGroup.Resists.Any(x => x.Value > 0) ||
-                   effect.StatGroup.Stats.Any(x => x.Key.IsBeneficialAdjustment(x.Value));
+                   effect.StatGroup.Stats.Any(x => Stat.IsBeneficialStatAdjustment(x.Key, x.Value));
         }
 
         public static bool HasCleanseType(IStatusEffect effect, StatusEffectCleanseType cleanseType)
@@ -1301,10 +1301,15 @@ namespace SWLOR.Game.Server.Service
             statusEffect.RemoveEffect(creature);
             creatureEffects.Remove(statusEffect);
 
-            if (statusEffect.StatGroup.Stats[StatType.MovementSpeedPercentAdjustment] != 0)
+            if (HasStatAdjustment(statusEffect))
             {
                 DelayCommand(0.1f, () => Stat.ApplyCreatureMovementRate(creature));
             }
+        }
+
+        private static bool HasStatAdjustment(IStatusEffect statusEffect)
+        {
+            return statusEffect.StatGroup.Stats.Any(stat => stat.Value != 0);
         }
 
         private static void RemoveNativeStatusEffect(uint creature, string statusEffectId)

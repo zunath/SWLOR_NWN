@@ -400,7 +400,12 @@ for ($i = 0; $i -lt $batchTargets.Count; $i++) {
 
     Invoke-Magick @(
         $sourceForTga,
-        "-alpha", "on",
+        "-background", "black",
+        "-alpha", "remove",
+        "-alpha", "set",
+        "-channel", "A",
+        "-evaluate", "set", "100%",
+        "+channel",
         "-depth", "8",
         "-flip",
         "-orient", "BottomLeft",

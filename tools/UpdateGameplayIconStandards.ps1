@@ -911,7 +911,7 @@ function Write-Tga([System.Drawing.Bitmap]$bitmap, [string]$path) {
             $bytes[$offset++] = $c.B
             $bytes[$offset++] = $c.G
             $bytes[$offset++] = $c.R
-            $bytes[$offset++] = $c.A
+            $bytes[$offset++] = 255
         }
     }
     [System.IO.File]::WriteAllBytes($path, $bytes)
@@ -927,7 +927,7 @@ function New-StatusIcon([pscustomobject]$entry, [string]$outputPath) {
     $g.SmoothingMode = [System.Drawing.Drawing2D.SmoothingMode]::AntiAlias
     $g.TextRenderingHint = [System.Drawing.Text.TextRenderingHint]::AntiAliasGridFit
     $g.ScaleTransform(2, 2)
-    $g.Clear([System.Drawing.Color]::Transparent)
+    $g.Clear([System.Drawing.Color]::FromArgb(255, 0, 0, 0))
 
     Draw-IconBackdrop $g $semantic $motif $hash
 
@@ -1193,6 +1193,19 @@ function Add-TgaValidationErrors([System.Collections.Generic.List[string]]$error
 
     if (($bytes[17] -band 32) -ne 0) {
         $errors.Add("$label TGA '$path' uses top-left origin; NWN gameplay icons must use bottom-left origin.") | Out-Null
+    }
+
+    if ($bytes[16] -eq 32) {
+        $offset = 18
+        for ($i = 0; $i -lt ($width * $height); $i++) {
+            $alpha = $bytes[$offset + 3]
+            if ($alpha -ne 255) {
+                $errors.Add("$label TGA '$path' contains non-opaque alpha at pixel $i; gameplay icons must be fully opaque.") | Out-Null
+                break
+            }
+
+            $offset += 4
+        }
     }
 }
 

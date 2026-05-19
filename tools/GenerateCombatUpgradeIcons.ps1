@@ -986,7 +986,7 @@ function Write-Tga([System.Drawing.Bitmap]$bitmap, [string]$path) {
             $bytes[$offset++] = $c.B
             $bytes[$offset++] = $c.G
             $bytes[$offset++] = $c.R
-            $bytes[$offset++] = $c.A
+            $bytes[$offset++] = 255
         }
     }
     [System.IO.File]::WriteAllBytes($path, $bytes)
@@ -1009,7 +1009,7 @@ function New-CombatIcon([string]$label, [int]$row, [string]$outPath, [int]$size 
     $g.SmoothingMode = [System.Drawing.Drawing2D.SmoothingMode]::AntiAlias
     $g.TextRenderingHint = [System.Drawing.Text.TextRenderingHint]::AntiAliasGridFit
     $g.ScaleTransform(2, 2)
-    $g.Clear([System.Drawing.Color]::Transparent)
+    $g.Clear([System.Drawing.Color]::FromArgb(255, 0, 0, 0))
 
     Draw-IconBackdrop $g $semantic $accent $hot $hash
 

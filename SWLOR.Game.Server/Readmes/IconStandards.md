@@ -68,6 +68,8 @@ Final exported icons must not include contact-sheet gutters, stray outer margins
 
 Production gameplay TGA files must use bottom-left TGA origin (`image descriptor` bit 5 clear, descriptor `8` for 32-bit alpha TGAs). NUI rendering honors TGA origin metadata, while the classic NWN hotbar and feat icon paths render these gameplay resources upright when they match the legacy bottom-left icon layout. ImageMagick previews can make this look inverted unless the export flips the pixel rows while writing the bottom-left origin metadata.
 
+Production gameplay TGA files must be fully opaque. Do not leave transparent or partially transparent edge pixels in feat, spell, ability, or status-effect icons.
+
 ## Artwork Quality
 
 Gameplay icons must be polished, readable, and intentionally illustrated. Do not use primitive placeholder geometry such as plain rectangles, single-line weapons, generic blobs, or flat symbols that only vaguely suggest the ability.
@@ -144,6 +146,7 @@ Icon tools and audits must fail when a gameplay icon violates these standards:
 - Final regenerated icon artwork produced without GPT Image 2.
 - Icon artwork extending outside the frame or overlapping the outer border.
 - Final TGA using top-left origin, which makes classic NWN gameplay icon paths display the icon upside down.
+- Final TGA with transparent or partially transparent pixels.
 - Primitive, placeholder-quality, or unclear central artwork.
 - Incorrect anatomy, including extra or missing fingers, malformed hands, incoherent claws, or broken creature/humanoid appendages.
 - Multi-rank icon without a numeric badge readable in the final 32x32 TGA.

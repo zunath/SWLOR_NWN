@@ -297,6 +297,10 @@ $rankBadgeByResRef = Get-RankBadgeMap $rows
 
 $updated = 0
 foreach ($row in $rows) {
+    if ((Get-OptionalProperty $row "Type").Trim() -eq "StatusEffect") {
+        continue
+    }
+
     $rank = (Get-OptionalProperty $row "Rank").Trim()
     if ([string]::IsNullOrWhiteSpace($rank)) {
         continue
@@ -325,7 +329,12 @@ foreach ($row in $rows) {
 
     Invoke-Magick @(
         $patchedPng,
-        "-alpha", "on",
+        "-background", "black",
+        "-alpha", "remove",
+        "-alpha", "set",
+        "-channel", "A",
+        "-evaluate", "set", "100%",
+        "+channel",
         "-depth", "8",
         "-flip",
         "-orient", "BottomLeft",

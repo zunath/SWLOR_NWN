@@ -15,7 +15,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             Touch();
             Abilities();
             StarshipBlueprints();
-            EngineeringEquipment();
             EnhancementBlueprints();
             DroidEquipmentBlueprints();
             DroidAssembly();
@@ -151,46 +150,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Engineering, 40)
                 .GrantsFeat(FeatType.StarshipBlueprints5);
         }
-
-
-
-        private void EngineeringEquipment()
-        {
-            _builder.Create(PerkCategoryType.Engineering, PerkType.EngineeringEquipment)
-                .Name("Engineering Equipment")
-
-                .AddPerkLevel()
-                .Description("Grants the ability to equip tier 1 Engineering equipment.")
-                .Price(2)
-                .RequirementSkill(SkillType.Engineering, 5)
-                .GrantsFeat(FeatType.EngineeringEquipment1)
-
-                .AddPerkLevel()
-                .Description("Grants the ability to equip tier 2 Engineering equipment.")
-                .Price(3)
-                .RequirementSkill(SkillType.Engineering, 15)
-                .GrantsFeat(FeatType.EngineeringEquipment2)
-
-                .AddPerkLevel()
-                .Description("Grants the ability to equip tier 3 Engineering equipment.")
-                .Price(4)
-                .RequirementSkill(SkillType.Engineering, 25)
-                .GrantsFeat(FeatType.EngineeringEquipment3)
-
-                .AddPerkLevel()
-                .Description("Grants the ability to equip tier 4 Engineering equipment.")
-                .Price(4)
-                .RequirementSkill(SkillType.Engineering, 35)
-                .GrantsFeat(FeatType.EngineeringEquipment4)
-
-                .AddPerkLevel()
-                .Description("Grants the ability to equip tier 5 Engineering equipment.")
-                .Price(5)
-                .RequirementSkill(SkillType.Engineering, 45)
-                .GrantsFeat(FeatType.EngineeringEquipment5);
-        }
-
-
 
         private void EnhancementBlueprints()
         {

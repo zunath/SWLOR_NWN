@@ -15,8 +15,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             Touch();
             Abilities();
             CookingRecipes();
-            AgricultureEquipment();
-            FishingRods();
 
             return _builder.Build();
         }
@@ -150,73 +148,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.CookingRecipes5);
         }
 
-
-        private void AgricultureEquipment()
-        {
-            _builder.Create(PerkCategoryType.Agriculture, PerkType.AgricultureEquipment)
-                .Name("Agriculture Equipment")
-
-                .AddPerkLevel()
-                .Description("Grants the ability to equip tier 1 Agriculture equipment.")
-                .Price(2)
-                .RequirementSkill(SkillType.Agriculture, 5)
-                .GrantsFeat(FeatType.AgricultureEquipment1)
-
-                .AddPerkLevel()
-                .Description("Grants the ability to equip tier 2 Agriculture equipment.")
-                .Price(3)
-                .RequirementSkill(SkillType.Agriculture, 15)
-                .GrantsFeat(FeatType.AgricultureEquipment2)
-
-                .AddPerkLevel()
-                .Description("Grants the ability to equip tier 3 Agriculture equipment.")
-                .Price(4)
-                .RequirementSkill(SkillType.Agriculture, 25)
-                .GrantsFeat(FeatType.AgricultureEquipment3)
-
-                .AddPerkLevel()
-                .Description("Grants the ability to equip tier 4 Agriculture equipment.")
-                .Price(4)
-                .RequirementSkill(SkillType.Agriculture, 35)
-                .GrantsFeat(FeatType.AgricultureEquipment4)
-
-                .AddPerkLevel()
-                .Description("Grants the ability to equip tier 5 Agriculture equipment.")
-                .Price(5)
-                .RequirementSkill(SkillType.Agriculture, 45)
-                .GrantsFeat(FeatType.AgricultureEquipment5);
-        }
-
-
-        private void FishingRods()
-        {
-            _builder.Create(PerkCategoryType.Agriculture, PerkType.FishingRods)
-                .Name("Fishing Rods")
-
-                .AddPerkLevel()
-                .Description("Grants the ability to equip tier 1 Fishing Rods.")
-                .Price(1)
-
-                .AddPerkLevel()
-                .Description("Grants the ability to equip tier 2 Fishing Rods.")
-                .Price(1)
-                .RequirementSkill(SkillType.Agriculture, 10)
-
-                .AddPerkLevel()
-                .Description("Grants the ability to equip tier 3 Fishing Rods.")
-                .Price(1)
-                .RequirementSkill(SkillType.Agriculture, 20)
-
-                .AddPerkLevel()
-                .Description("Grants the ability to equip tier 4 Fishing Rods.")
-                .Price(1)
-                .RequirementSkill(SkillType.Agriculture, 30)
-
-                .AddPerkLevel()
-                .Description("Grants the ability to equip tier 5 Fishing Rods.")
-                .Price(2)
-                .RequirementSkill(SkillType.Agriculture, 40);
-        }
     }
 }
 

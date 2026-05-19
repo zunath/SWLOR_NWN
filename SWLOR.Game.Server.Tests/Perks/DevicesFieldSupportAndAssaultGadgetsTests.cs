@@ -181,6 +181,9 @@ public class DevicesFieldSupportAndAssaultGadgetsTests
         AssertAbility(sonicBurst[FeatType.SonicBurst1], "Sonic Burst I", 1, RecastGroup.SonicBurst, 30f, 1f, 4, true, true, false, false);
         AssertAbility(sonicBurst[FeatType.SonicBurst2], "Sonic Burst II", 2, RecastGroup.SonicBurst, 30f, 1f, 5, true, true, false, false);
         AssertAbility(sonicBurst[FeatType.SonicBurst3], "Sonic Burst III", 3, RecastGroup.SonicBurst, 30f, 1f, 6, true, true, false, false);
+        sonicBurst[FeatType.SonicBurst1].ImpactAnimationType.Should().Be(Animation.CastOutAnimation);
+        sonicBurst[FeatType.SonicBurst2].ImpactAnimationType.Should().Be(Animation.CastOutAnimation);
+        sonicBurst[FeatType.SonicBurst3].ImpactAnimationType.Should().Be(Animation.CastOutAnimation);
 
         var railDart = new RailDartAbilityDefinition().BuildAbilities();
         AssertAbility(railDart[FeatType.RailDart1], "Rail Dart I", 1, RecastGroup.RailDart, 18f, 1f, 3, true, false, true, true);
@@ -210,8 +213,10 @@ public class DevicesFieldSupportAndAssaultGadgetsTests
         new DampeningField2StatusEffect().StatGroup.Stats[StatType.ForceDamageTakenPercentAdjustment].Should().Be(-15);
         new EmergencyBunker1StatusEffect().StatGroup.Stats[StatType.RangedPhysicalDamageTakenPercentAdjustment].Should().Be(-20);
 
-        new SonicBurst2StatusEffect().StatGroup.Stats[StatType.AccuracyPercentAdjustment].Should().Be(-6);
-        new SonicBurst3StatusEffect().StatGroup.Stats[StatType.AccuracyPercentAdjustment].Should().Be(-10);
+        new SonicBurst2StatusEffect().StatGroup.Stats[StatType.AbilityHitChancePercentAdjustment].Should().Be(-6);
+        new SonicBurst2StatusEffect().StatGroup.Stats[StatType.AccuracyPercentAdjustment].Should().Be(0);
+        new SonicBurst3StatusEffect().StatGroup.Stats[StatType.AbilityHitChancePercentAdjustment].Should().Be(-10);
+        new SonicBurst3StatusEffect().StatGroup.Stats[StatType.AccuracyPercentAdjustment].Should().Be(0);
 
         CombatDamageType.Sonic.GetDetails().NWScriptDamageType.Should().Be(DamageType.Sonic);
     }

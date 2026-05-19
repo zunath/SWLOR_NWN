@@ -367,7 +367,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Forces a creature to attack the highest enmity target.
         /// If creature does not have enmity, nothing will happen.
-        /// If new target is the same as existing, nothing will happen.
+        /// If the creature is already actively attacking that target, nothing will happen.
         /// </summary>
         public static void AttackHighestEnmityTarget(uint creature)
         {
@@ -380,14 +380,33 @@ namespace SWLOR.Game.Server.Service
             // Same target - no need to switch.
             var attackTarget = GetAttackTarget(creature);
 
-            if (attackTarget == target)
+            if (!ShouldIssueAttackCommand(
+                    attackTarget,
+                    target,
+                    GetCurrentAction(creature),
+                    Activity.IsBusy(creature)))
+            {
                 return;
+            }
 
             AssignCommand(creature, () =>
             {
                 ClearAllActions();
                 ActionAttack(target);
             });
+        }
+
+        private static bool ShouldIssueAttackCommand(
+            uint attackTarget,
+            uint desiredTarget,
+            ActionType currentAction,
+            bool isBusy)
+        {
+            if (isBusy)
+                return false;
+
+            return attackTarget != desiredTarget ||
+                   currentAction != ActionType.AttackObject;
         }
 
         /// <summary>

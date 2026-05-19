@@ -170,9 +170,12 @@ public class DevicesFieldSupportAndAssaultGadgetsTests
         AssertAbility(flamethrower[FeatType.Flamethrower3], "Flamethrower III", 3, RecastGroup.Flamethrower, 12f, 1f, 5, true, true, false, false);
 
         var wristRocket = new WristRocketAbilityDefinition().BuildAbilities();
-        AssertAbility(wristRocket[FeatType.WristRocket1], "Wrist Rocket I", 1, RecastGroup.WristRocket, 18f, 1f, 2, true, false, true, true);
-        AssertAbility(wristRocket[FeatType.WristRocket2], "Wrist Rocket II", 2, RecastGroup.WristRocket, 18f, 1f, 4, true, false, true, true);
-        AssertAbility(wristRocket[FeatType.WristRocket3], "Wrist Rocket III", 3, RecastGroup.WristRocket, 18f, 1f, 5, true, false, true, true);
+        AssertAbility(wristRocket[FeatType.WristRocket1], "Wrist Rocket I", 1, RecastGroup.WristRocket, 18f, 0.5f, 2, true, false, true, true);
+        AssertAbility(wristRocket[FeatType.WristRocket2], "Wrist Rocket II", 2, RecastGroup.WristRocket, 18f, 0.5f, 4, true, false, true, true);
+        AssertAbility(wristRocket[FeatType.WristRocket3], "Wrist Rocket III", 3, RecastGroup.WristRocket, 18f, 0.5f, 5, true, false, true, true);
+        wristRocket[FeatType.WristRocket1].ImpactAnimationType.Should().Be(Animation.CastOutAnimation);
+        wristRocket[FeatType.WristRocket2].ImpactAnimationType.Should().Be(Animation.CastOutAnimation);
+        wristRocket[FeatType.WristRocket3].ImpactAnimationType.Should().Be(Animation.CastOutAnimation);
 
         var sonicBurst = new SonicBurstAbilityDefinition().BuildAbilities();
         AssertAbility(sonicBurst[FeatType.SonicBurst1], "Sonic Burst I", 1, RecastGroup.SonicBurst, 30f, 1f, 4, true, true, false, false);

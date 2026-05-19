@@ -19,7 +19,7 @@ Each recipe includes:
 - **Recipe Name**: Descriptive name of the recipe
 - **Category**: Recipe category (e.g., Smithery, Engineering)
 - **Level**: Required skill level
-- **Perk Level**: Required perk level
+- **Generation Tier**: Output grouping tier
 - **Quantity**: Amount produced per craft
 - **Enhancement Slots**: Number of enhancement slots available
 
@@ -45,7 +45,7 @@ The tool expects a TSV file with the following columns:
 - Column 2: Category enum name
 - Column 3: Recipe enum name
 - Column 4: Recipe category
-- Column 5: Perk level
+- Column 5: Generation tier
 - Column 6: Recipe name
 - Column 7: Level requirement
 - Column 8: Quantity produced
@@ -66,11 +66,9 @@ The tool expects a TSV file with the following columns:
 Uses `./Templates/RecipeTemplate.txt` as the base template with placeholders:
 - `%%RECIPESKILL%%` → Crafting skill requirement
 - `%%RECIPENAME%%` → Recipe name
-- `%%CATEGORYENUMNAME%%` → Category enum name
 - `%%RECIPEENUMNAME%%` → Recipe enum name
 - `%%RESREF%%` → Resource reference
 - `%%LEVEL%%` → Level requirement
-- `%%PERKLEVEL%%` → Perk level requirement
 - `%%RECIPECATEGORY%%` → Recipe category
 - `%%QUANTITY%%` → Quantity produced
 
@@ -85,7 +83,7 @@ Uses `./Templates/RecipeTemplate.txt` as the base template with placeholders:
 ```
 
 ### Tier Organization
-Recipes are organized by perk level (tier) with separate functions:
+Recipes are organized by generation tier with separate functions:
 ```csharp
 private void Tier1() { /* Tier 1 recipes */ }
 private void Tier2() { /* Tier 2 recipes */ }

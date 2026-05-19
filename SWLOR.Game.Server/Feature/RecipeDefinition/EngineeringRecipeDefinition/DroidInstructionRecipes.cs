@@ -1,5 +1,4 @@
 using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using System.Collections.Generic;
 
@@ -27,7 +26,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("id_fraggren1")
                 .Level(10)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .Component("jade", 1)
                 .Component("elec_ruined", 2)
                 .Component("quadrenium", 1);
@@ -38,7 +36,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("id_concgren1")
                 .Level(10)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .Component("jade", 1)
                 .Component("elec_ruined", 2)
                 .Component("quadrenium", 1);
@@ -49,7 +46,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("id_iongren1")
                 .Level(10)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .Component("jade", 1)
                 .Component("elec_ruined", 2)
                 .Component("quadrenium", 1);
@@ -60,7 +56,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("id_flamethrow1")
                 .Level(10)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .Component("jade", 1)
                 .Component("elec_ruined", 2)
                 .Component("quadrenium", 1);
@@ -71,7 +66,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("id_provoke1")
                 .Level(10)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .Component("jade", 1)
                 .Component("elec_ruined", 2)
                 .Component("quadrenium", 1);
@@ -82,7 +76,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("id_medkit1")
                 .Level(10)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .Component("jade", 1)
                 .Component("elec_ruined", 2)
                 .Component("quadrenium", 1);
@@ -93,7 +86,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("id_treatkit1")
                 .Level(10)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .Component("jade", 1)
                 .Component("elec_ruined", 2)
                 .Component("quadrenium", 1);
@@ -104,7 +96,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("id_shielding1")
                 .Level(10)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .Component("jade", 1)
                 .Component("elec_ruined", 2)
                 .Component("quadrenium", 1);
@@ -117,7 +108,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("id_fraggren2")
                 .Level(20)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .Component("agate", 1)
                 .Component("elec_flawed", 2)
                 .Component("vintrium", 1);
@@ -128,7 +118,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("id_wristrck1")
                 .Level(20)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .Component("agate", 1)
                 .Component("elec_flawed", 2)
                 .Component("vintrium", 1);
@@ -139,7 +128,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("id_provoke2")
                 .Level(20)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .Component("agate", 1)
                 .Component("elec_flawed", 2)
                 .Component("vintrium", 1);
@@ -150,7 +138,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("id_medkit2")
                 .Level(20)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .Component("agate", 1)
                 .Component("elec_flawed", 2)
                 .Component("vintrium", 1);
@@ -161,7 +148,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("id_resusc1")
                 .Level(20)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .Component("agate", 1)
                 .Component("elec_flawed", 2)
                 .Component("vintrium", 1);
@@ -172,7 +158,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("id_treatkit2")
                 .Level(20)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .Component("agate", 1)
                 .Component("elec_flawed", 2)
                 .Component("vintrium", 1);
@@ -183,7 +168,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("id_shielding2")
                 .Level(20)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .Component("agate", 1)
                 .Component("elec_flawed", 2)
                 .Component("vintrium", 1);
@@ -196,7 +180,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("id_iongren2")
                 .Level(30)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .Component("citrine", 1)
                 .Component("elec_good", 2)
                 .Component("ionite", 1);
@@ -207,7 +190,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("id_adhgren1")
                 .Level(30)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .Component("citrine", 1)
                 .Component("elec_good", 2)
                 .Component("ionite", 1);
@@ -218,7 +200,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("id_flamethrow2")
                 .Level(30)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .Component("citrine", 1)
                 .Component("elec_good", 2)
                 .Component("ionite", 1);
@@ -229,7 +210,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("id_wristrck2")
                 .Level(30)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .Component("citrine", 1)
                 .Component("elec_good", 2)
                 .Component("ionite", 1);
@@ -240,7 +220,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("id_medkit3")
                 .Level(30)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .Component("citrine", 1)
                 .Component("elec_good", 2)
                 .Component("ionite", 1);
@@ -251,7 +230,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("id_infusion1")
                 .Level(30)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .Component("citrine", 1)
                 .Component("elec_good", 2)
                 .Component("ionite", 1);
@@ -264,7 +242,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("id_fraggren3")
                 .Level(40)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .Component("ruby", 1)
                 .Component("elec_imperfect", 2)
                 .Component("katrium", 1);
@@ -275,7 +252,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("id_concgren2")
                 .Level(40)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .Component("ruby", 1)
                 .Component("elec_imperfect", 2)
                 .Component("katrium", 1);
@@ -286,7 +262,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("id_adhgren2")
                 .Level(40)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .Component("ruby", 1)
                 .Component("elec_imperfect", 2)
                 .Component("katrium", 1);
@@ -297,7 +272,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("id_medkit4")
                 .Level(40)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .Component("ruby", 1)
                 .Component("elec_imperfect", 2)
                 .Component("katrium", 1);
@@ -308,7 +282,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("id_resusc2")
                 .Level(40)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .Component("ruby", 1)
                 .Component("elec_imperfect", 2)
                 .Component("katrium", 1);
@@ -319,7 +292,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("id_shielding3")
                 .Level(40)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .Component("ruby", 1)
                 .Component("elec_imperfect", 2)
                 .Component("katrium", 1);
@@ -332,7 +304,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("id_concgren3")
                 .Level(50)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .Component("emerald", 1)
                 .Component("elec_high", 2)
                 .Component("zinsiam", 1);
@@ -343,7 +314,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("id_flamethrow3")
                 .Level(50)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .Component("emerald", 1)
                 .Component("elec_high", 2)
                 .Component("zinsiam", 1);
@@ -354,7 +324,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("id_wristrck3")
                 .Level(50)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .Component("emerald", 1)
                 .Component("elec_high", 2)
                 .Component("zinsiam", 1);
@@ -365,7 +334,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("id_infusion2")
                 .Level(50)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .Component("emerald", 1)
                 .Component("elec_high", 2)
                 .Component("zinsiam", 1);

@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 
 namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
@@ -27,7 +26,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("pf_blubbfish_1")
                 .Level(1)
                 .Quantity(2)
-                .RequirementPerk(PerkType.CookingRecipes, 1)
                 .Component("moat_carp", 2)
                 .Component("distilled_water", 1);
 
@@ -37,7 +35,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("pf_coarsefish_1")
                 .Level(2)
                 .Quantity(2)
-                .RequirementPerk(PerkType.CookingRecipes, 1)
                 .Component("lamp_marimo", 2)
                 .Component("distilled_water", 1);
 
@@ -47,7 +44,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("pf_cookedfish_1")
                 .Level(3)
                 .Quantity(2)
-                .RequirementPerk(PerkType.CookingRecipes, 1)
                 .Component("moat_carp", 2)
                 .Component("distilled_water", 1);
 
@@ -57,7 +53,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("pf_cookedmeat_1")
                 .Level(4)
                 .Quantity(3)
-                .RequirementPerk(PerkType.CookingRecipes, 1)
                 .Component("warocas_meat", 2)
                 .Component("distilled_water", 1);
 
@@ -67,7 +62,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("pf_dryfruit_1")
                 .Level(5)
                 .Quantity(3)
-                .RequirementPerk(PerkType.CookingRecipes, 1)
                 .Component("herb_v", 2)
                 .Component("distilled_water", 1);
 
@@ -77,7 +71,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("pf_fattyfish_1")
                 .Level(6)
                 .Quantity(2)
-                .RequirementPerk(PerkType.CookingRecipes, 1)
                 .Component("phan_newt", 2)
                 .Component("distilled_water", 1);
 
@@ -87,7 +80,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("pf_fattymeat_1")
                 .Level(7)
                 .Quantity(2)
-                .RequirementPerk(PerkType.CookingRecipes, 1)
                 .Component("hamsi", 2)
                 .Component("distilled_water", 1);
 
@@ -97,7 +89,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("pf_juicyfruit_1")
                 .Level(8)
                 .Quantity(3)
-                .RequirementPerk(PerkType.CookingRecipes, 1)
                 .Component("v_orange", 2)
                 .Component("distilled_water", 1);
 
@@ -107,7 +98,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("pf_sourfruit_1")
                 .Level(9)
                 .Quantity(3)
-                .RequirementPerk(PerkType.CookingRecipes, 1)
                 .Component("v_lemon", 2)
                 .Component("distilled_water", 1);
 
@@ -117,7 +107,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("pf_stringymeat_1")
                 .Level(10)
                 .Quantity(3)
-                .RequirementPerk(PerkType.CookingRecipes, 1)
                 .Component("mynock_meat", 2)
                 .Component("distilled_water", 1);
 
@@ -127,7 +116,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("pf_sweetfood_1")
                 .Level(5)
                 .Quantity(3)
-                .RequirementPerk(PerkType.CookingRecipes, 1)
                 .Component("v_apple", 2)
                 .Component("distilled_water", 1);
 
@@ -137,7 +125,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("pf_tendermeat_1")
                 .Level(8)
                 .Quantity(3)
-                .RequirementPerk(PerkType.CookingRecipes, 1)
                 .Component("kath_meat_1", 2)
                 .Component("distilled_water", 1);
 
@@ -151,7 +138,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("pf_blubbfish_2")
                 .Level(11)
                 .Quantity(2)
-                .RequirementPerk(PerkType.CookingRecipes, 2)
                 .Component("sen_sardine", 2)
                 .Component("distilled_water", 1);
 
@@ -161,7 +147,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("pf_coarsefish_2")
                 .Level(12)
                 .Quantity(2)
-                .RequirementPerk(PerkType.CookingRecipes, 2)
                 .Component("rakaz_shellfish", 2)
                 .Component("distilled_water", 1);
 
@@ -171,7 +156,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("pf_cookedfish_2")
                 .Level(13)
                 .Quantity(2)
-                .RequirementPerk(PerkType.CookingRecipes, 2)
                 .Component("bast_sweeper", 2)
                 .Component("distilled_water", 1);
 
@@ -181,7 +165,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("pf_cookedmeat_2")
                 .Level(14)
                 .Quantity(3)
-                .RequirementPerk(PerkType.CookingRecipes, 2)
                 .Component("raivor_meat", 2)
                 .Component("distilled_water", 1);
 
@@ -191,7 +174,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("pf_dryfruit_2")
                 .Level(15)
                 .Quantity(3)
-                .RequirementPerk(PerkType.CookingRecipes, 2)
                 .Component("v_peas", 2)
                 .Component("distilled_water", 1);
 
@@ -201,7 +183,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("pf_fattyfish_2")
                 .Level(16)
                 .Quantity(2)
-                .RequirementPerk(PerkType.CookingRecipes, 2)
                 .Component("greedie", 2)
                 .Component("distilled_water", 1);
 
@@ -211,7 +192,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("pf_fattymeat_2")
                 .Level(17)
                 .Quantity(2)
-                .RequirementPerk(PerkType.CookingRecipes, 2)
                 .Component("muddy_siredon", 2)
                 .Component("distilled_water", 1);
 
@@ -221,7 +201,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("pf_juicyfruit_2")
                 .Level(18)
                 .Quantity(3)
-                .RequirementPerk(PerkType.CookingRecipes, 2)
                 .Component("v_apple", 2)
                 .Component("distilled_water", 1);
 
@@ -231,7 +210,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("pf_sourfruit_2")
                 .Level(19)
                 .Quantity(3)
-                .RequirementPerk(PerkType.CookingRecipes, 2)
                 .Component("v_peas", 2)
                 .Component("distilled_water", 1);
 
@@ -241,7 +219,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("pf_stringymeat_2")
                 .Level(20)
                 .Quantity(3)
-                .RequirementPerk(PerkType.CookingRecipes, 2)
                 .Component("cairnmog_meat", 2)
                 .Component("distilled_water", 1);
 
@@ -251,7 +228,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("pf_sweetfood_2")
                 .Level(15)
                 .Quantity(3)
-                .RequirementPerk(PerkType.CookingRecipes, 2)
                 .Component("herb_m", 2)
                 .Component("distilled_water", 1);
 
@@ -261,7 +237,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("pf_tendermeat_2")
                 .Level(18)
                 .Quantity(3)
-                .RequirementPerk(PerkType.CookingRecipes, 2)
                 .Component("klorslug_meat", 2)
                 .Component("distilled_water", 1);
 
@@ -275,7 +250,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("pf_blubbfish_3")
                 .Level(21)
                 .Quantity(2)
-                .RequirementPerk(PerkType.CookingRecipes, 3)
                 .Component("quus", 2)
                 .Component("distilled_water", 1);
 
@@ -285,7 +259,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("pf_coarsefish_3")
                 .Level(22)
                 .Quantity(2)
-                .RequirementPerk(PerkType.CookingRecipes, 3)
                 .Component("forest_carp", 2)
                 .Component("distilled_water", 1);
 
@@ -295,7 +268,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("pf_cookedfish_3")
                 .Level(23)
                 .Quantity(2)
-                .RequirementPerk(PerkType.CookingRecipes, 3)
                 .Component("cheval_salmon", 2)
                 .Component("distilled_water", 1);
 
@@ -305,7 +277,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("pf_cookedmeat_3")
                 .Level(24)
                 .Quantity(3)
-                .RequirementPerk(PerkType.CookingRecipes, 3)
                 .Component("aradile_meat", 2)
                 .Component("distilled_water", 1);
 
@@ -315,7 +286,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("pf_dryfruit_3")
                 .Level(25)
                 .Quantity(3)
-                .RequirementPerk(PerkType.CookingRecipes, 3)
                 .Component("h_acorn", 2)
                 .Component("distilled_water", 1);
 
@@ -325,7 +295,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("pf_fattyfish_3")
                 .Level(26)
                 .Quantity(2)
-                .RequirementPerk(PerkType.CookingRecipes, 3)
                 .Component("yorchete", 2)
                 .Component("distilled_water", 1);
 
@@ -335,7 +304,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("pf_fattymeat_3")
                 .Level(27)
                 .Quantity(2)
-                .RequirementPerk(PerkType.CookingRecipes, 3)
                 .Component("moorish_idol", 2)
                 .Component("distilled_water", 1);
 
@@ -345,7 +313,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("pf_juicyfruit_3")
                 .Level(28)
                 .Quantity(3)
-                .RequirementPerk(PerkType.CookingRecipes, 3)
                 .Component("s_pineapple", 2)
                 .Component("distilled_water", 1);
 
@@ -355,7 +322,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("pf_sourfruit_3")
                 .Level(29)
                 .Quantity(3)
-                .RequirementPerk(PerkType.CookingRecipes, 3)
                 .Component("nash_blood", 2)
                 .Component("distilled_water", 1);
 
@@ -365,7 +331,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("pf_stringymeat_3")
                 .Level(30)
                 .Quantity(3)
-                .RequirementPerk(PerkType.CookingRecipes, 3)
                 .Component("tiger_meat", 2)
                 .Component("distilled_water", 1);
 
@@ -375,7 +340,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("pf_sweetfood_3")
                 .Level(25)
                 .Quantity(3)
-                .RequirementPerk(PerkType.CookingRecipes, 3)
                 .Component("ginger", 2)
                 .Component("distilled_water", 1);
 
@@ -385,7 +349,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("pf_tendermeat_3")
                 .Level(28)
                 .Quantity(3)
-                .RequirementPerk(PerkType.CookingRecipes, 3)
                 .Component("byysk_meat", 2)
                 .Component("distilled_water", 1);
 
@@ -399,7 +362,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("pf_blubbfish_4")
                 .Level(31)
                 .Quantity(2)
-                .RequirementPerk(PerkType.CookingRecipes, 4)
                 .Component("nebimonite", 2)
                 .Component("distilled_water", 1);
 
@@ -409,7 +371,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("pf_coarsefish_4")
                 .Level(32)
                 .Quantity(2)
-                .RequirementPerk(PerkType.CookingRecipes, 4)
                 .Component("tricolored_carp", 2)
                 .Component("distilled_water", 1);
 
@@ -419,7 +380,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("pf_cookedfish_4")
                 .Level(33)
                 .Quantity(2)
-                .RequirementPerk(PerkType.CookingRecipes, 4)
                 .Component("blindfish", 2)
                 .Component("distilled_water", 1);
 
@@ -429,7 +389,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("pf_cookedmeat_4")
                 .Level(34)
                 .Quantity(3)
-                .RequirementPerk(PerkType.CookingRecipes, 4)
                 .Component("wompratmeat", 2)
                 .Component("distilled_water", 1);
 
@@ -439,7 +398,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("pf_dryfruit_4")
                 .Level(35)
                 .Quantity(3)
-                .RequirementPerk(PerkType.CookingRecipes, 4)
                 .Component("herb_c", 2)
                 .Component("distilled_water", 1);
 
@@ -449,7 +407,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("pf_fattyfish_4")
                 .Level(36)
                 .Quantity(2)
-                .RequirementPerk(PerkType.CookingRecipes, 4)
                 .Component("bonefish", 2)
                 .Component("distilled_water", 1);
 
@@ -459,7 +416,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("pf_fattymeat_4")
                 .Level(37)
                 .Quantity(2)
-                .RequirementPerk(PerkType.CookingRecipes, 4)
                 .Component("yayinbaligi", 2)
                 .Component("distilled_water", 1);
 
@@ -469,7 +425,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("pf_juicyfruit_4")
                 .Level(38)
                 .Quantity(3)
-                .RequirementPerk(PerkType.CookingRecipes, 4)
                 .Component("tomato", 2)
                 .Component("distilled_water", 1);
 
@@ -479,7 +434,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("pf_sourfruit_4")
                 .Level(39)
                 .Quantity(3)
-                .RequirementPerk(PerkType.CookingRecipes, 4)
                 .Component("plant_butter", 2)
                 .Component("distilled_water", 1);
 
@@ -489,7 +443,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("pf_stringymeat_4")
                 .Level(40)
                 .Quantity(3)
-                .RequirementPerk(PerkType.CookingRecipes, 4)
                 .Component("sanddemon_meat", 2)
                 .Component("distilled_water", 1);
 
@@ -499,7 +452,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("pf_sweetfood_4")
                 .Level(35)
                 .Quantity(3)
-                .RequirementPerk(PerkType.CookingRecipes, 4)
                 .Component("herb_t", 2)
                 .Component("distilled_water", 1);
 
@@ -509,7 +461,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("pf_tendermeat_4")
                 .Level(38)
                 .Quantity(3)
-                .RequirementPerk(PerkType.CookingRecipes, 4)
                 .Component("giant_catfish", 2)
                 .Component("distilled_water", 1);
 
@@ -523,7 +474,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("pf_blubbfish_5")
                 .Level(41)
                 .Quantity(2)
-                .RequirementPerk(PerkType.CookingRecipes, 5)
                 .Component("dark_bass", 2)
                 .Component("distilled_water", 1);
 
@@ -533,7 +483,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("pf_coarsefish_5")
                 .Level(42)
                 .Quantity(2)
-                .RequirementPerk(PerkType.CookingRecipes, 5)
                 .Component("crystal_bass", 2)
                 .Component("distilled_water", 1);
 
@@ -543,7 +492,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("pf_cookedfish_5")
                 .Level(43)
                 .Quantity(2)
-                .RequirementPerk(PerkType.CookingRecipes, 5)
                 .Component("ogre_eel", 2)
                 .Component("distilled_water", 1);
 
@@ -553,7 +501,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("pf_cookedmeat_5")
                 .Level(44)
                 .Quantity(3)
-                .RequirementPerk(PerkType.CookingRecipes, 5)
                 .Component("wild_meat", 2)
                 .Component("distilled_water", 1);
 
@@ -563,7 +510,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("pf_dryfruit_5")
                 .Level(45)
                 .Quantity(3)
-                .RequirementPerk(PerkType.CookingRecipes, 5)
                 .Component("turnip", 2)
                 .Component("distilled_water", 1);
 
@@ -573,7 +519,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("pf_fattyfish_5")
                 .Level(46)
                 .Quantity(2)
-                .RequirementPerk(PerkType.CookingRecipes, 5)
                 .Component("nosteau_herring", 2)
                 .Component("distilled_water", 1);
 
@@ -583,7 +528,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("pf_fattymeat_5")
                 .Level(47)
                 .Quantity(2)
-                .RequirementPerk(PerkType.CookingRecipes, 5)
                 .Component("lakerda", 2)
                 .Component("distilled_water", 1);
 
@@ -593,7 +537,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("pf_juicyfruit_5")
                 .Level(48)
                 .Quantity(3)
-                .RequirementPerk(PerkType.CookingRecipes, 5)
                 .Component("turnip", 2)
                 .Component("distilled_water", 1);
 
@@ -603,7 +546,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("pf_sourfruit_5")
                 .Level(49)
                 .Quantity(3)
-                .RequirementPerk(PerkType.CookingRecipes, 5)
                 .Component("dried_bonito", 2)
                 .Component("distilled_water", 1);
 
@@ -613,7 +555,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("pf_stringymeat_5")
                 .Level(50)
                 .Quantity(3)
-                .RequirementPerk(PerkType.CookingRecipes, 5)
                 .Component("wild_innards", 2)
                 .Component("distilled_water", 1);
 
@@ -623,7 +564,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("pf_sweetfood_5")
                 .Level(45)
                 .Quantity(3)
-                .RequirementPerk(PerkType.CookingRecipes, 5)
                 .Component("herb_x", 2)
                 .Component("distilled_water", 1);
 
@@ -633,7 +573,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Resref("pf_tendermeat_5")
                 .Level(48)
                 .Quantity(3)
-                .RequirementPerk(PerkType.CookingRecipes, 5)
                 .Component("shining_trout", 2)
                 .Component("distilled_water", 1);
 

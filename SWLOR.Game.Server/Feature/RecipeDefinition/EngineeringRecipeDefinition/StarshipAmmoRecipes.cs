@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 
 namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
@@ -27,7 +26,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("ship_missile")
                 .Level(5)
                 .Quantity(5)
-                .RequirementPerk(PerkType.StarshipBlueprints, 1)
                 .Component("ref_tilarium", 1)
                 .Component("elec_ruined", 1);
 
@@ -37,7 +35,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("ship_fuelcapsule")
                 .Level(8)
                 .Quantity(1)
-                .RequirementPerk(PerkType.StarshipBlueprints, 1)
                 .Component("ref_tilarium", 3)
                 .Component("elec_ruined", 1);
         }
@@ -50,7 +47,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("ship_missile")
                 .Level(15)
                 .Quantity(15)
-                .RequirementPerk(PerkType.StarshipBlueprints, 2)
                 .Component("ref_currian", 5)
                 .Component("elec_flawed", 1);
         }
@@ -63,7 +59,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("ship_missile")
                 .Level(25)
                 .Quantity(25)
-                .RequirementPerk(PerkType.StarshipBlueprints, 3)
                 .Component("ref_idailia", 7)
                 .Component("elec_good", 2);
 
@@ -73,7 +68,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("ship_fuelcapsule")
                 .Level(28)
                 .Quantity(3)
-                .RequirementPerk(PerkType.StarshipBlueprints, 1)
                 .Component("ref_idailia", 3)
                 .Component("elec_good", 1);
         }
@@ -86,7 +80,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("ship_missile")
                 .Level(25)
                 .Quantity(35)
-                .RequirementPerk(PerkType.StarshipBlueprints, 4)
                 .Component("ref_barinium", 9)
                 .Component("elec_imperfect", 2);
         }
@@ -99,7 +92,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("ship_missile")
                 .Level(45)
                 .Quantity(45)
-                .RequirementPerk(PerkType.StarshipBlueprints, 5)
                 .Component("ref_gostian", 11)
                 .Component("elec_high", 3);
 
@@ -109,7 +101,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("proton_bomb")
                 .Level(45)
                 .Quantity(5)
-                .RequirementPerk(PerkType.StarshipBlueprints, 5)
                 .Component("ref_gostian", 3)
                 .Component("elec_high", 2)
                 .Component("ref_arda", 1);
@@ -120,7 +111,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("ship_fuelcapsule")
                 .Level(48)
                 .Quantity(5)
-                .RequirementPerk(PerkType.StarshipBlueprints, 5)
                 .Component("ref_gostian", 3)
                 .Component("elec_high", 1);
 
@@ -131,7 +121,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(52)
                 .Quantity(10)
                 .RequirementUnlocked()
-                .RequirementPerk(PerkType.StarshipBlueprints, 5)
                 .Component("elec_high", 3)
                 .Component("ref_arda", 3)
                 .Component("ref_gostian", 5);

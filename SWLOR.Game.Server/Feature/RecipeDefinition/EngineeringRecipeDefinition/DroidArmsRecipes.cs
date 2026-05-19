@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 
 namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
@@ -28,7 +27,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_ar_mpv1")
                 .Level(5)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .Component("manip_arm1", 2)
                 .Component("discharge_unit1", 1);
 
@@ -38,7 +36,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_ar_mpw1")
                 .Level(8)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .Component("manip_arm1", 2)
                 .Component("discharge_unit1", 1);
 
@@ -48,7 +45,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_ar_mpa1")
                 .Level(9)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .Component("manip_arm1", 2)
                 .Component("discharge_unit1", 1);
 
@@ -58,7 +54,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_ar_mps1")
                 .Level(10)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .Component("manip_arm1", 2)
                 .Component("discharge_unit1", 1);
 
@@ -68,7 +63,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_ar_mvw1")
                 .Level(7)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .Component("manip_arm1", 2)
                 .Component("discharge_unit1", 1);
 
@@ -78,7 +72,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_ar_mva1")
                 .Level(6)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .Component("manip_arm1", 2)
                 .Component("discharge_unit1", 1);
 
@@ -88,7 +81,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_ar_mvs1")
                 .Level(9)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .Component("manip_arm1", 2)
                 .Component("discharge_unit1", 1);
 
@@ -98,7 +90,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_ar_mwa1")
                 .Level(5)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .Component("manip_arm1", 2)
                 .Component("discharge_unit1", 1);
 
@@ -108,7 +99,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_ar_mws1")
                 .Level(8)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .Component("manip_arm1", 2)
                 .Component("discharge_unit1", 1);
 
@@ -118,7 +108,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_ar_mas1")
                 .Level(10)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .Component("manip_arm1", 2)
                 .Component("discharge_unit1", 1);
 
@@ -128,7 +117,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_ar_pvw1")
                 .Level(7)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .Component("manip_arm1", 2)
                 .Component("discharge_unit1", 1);
 
@@ -138,7 +126,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_ar_pva1")
                 .Level(6)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .Component("manip_arm1", 2)
                 .Component("discharge_unit1", 1);
 
@@ -148,7 +135,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_ar_pvs1")
                 .Level(9)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .Component("manip_arm1", 2)
                 .Component("discharge_unit1", 1);
 
@@ -158,7 +144,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_ar_vwa1")
                 .Level(5)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .Component("manip_arm1", 2)
                 .Component("discharge_unit1", 1);
 
@@ -168,7 +153,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_ar_vws1")
                 .Level(8)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .Component("manip_arm1", 2)
                 .Component("discharge_unit1", 1);
 
@@ -178,7 +162,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_ar_vas1")
                 .Level(10)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .Component("manip_arm1", 2)
                 .Component("discharge_unit1", 1);
 
@@ -188,7 +171,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_ar_was1")
                 .Level(7)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .Component("manip_arm1", 2)
                 .Component("discharge_unit1", 1);
 
@@ -203,7 +185,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_ar_mpv2")
                 .Level(15)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .Component("manip_arm2", 2)
                 .Component("discharge_unit2", 1);
 
@@ -213,7 +194,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_ar_mpw2")
                 .Level(18)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .Component("manip_arm2", 2)
                 .Component("discharge_unit2", 1);
 
@@ -223,7 +203,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_ar_mpa2")
                 .Level(19)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .Component("manip_arm2", 2)
                 .Component("discharge_unit2", 1);
 
@@ -233,7 +212,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_ar_mps2")
                 .Level(20)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .Component("manip_arm2", 2)
                 .Component("discharge_unit2", 1);
 
@@ -243,7 +221,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_ar_mvw2")
                 .Level(17)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .Component("manip_arm2", 2)
                 .Component("discharge_unit2", 1);
 
@@ -253,7 +230,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_ar_mva2")
                 .Level(16)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .Component("manip_arm2", 2)
                 .Component("discharge_unit2", 1);
 
@@ -263,7 +239,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_ar_mvs2")
                 .Level(19)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .Component("manip_arm2", 2)
                 .Component("discharge_unit2", 1);
 
@@ -273,7 +248,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_ar_mwa2")
                 .Level(15)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .Component("manip_arm2", 2)
                 .Component("discharge_unit2", 1);
 
@@ -283,7 +257,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_ar_mws2")
                 .Level(18)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .Component("manip_arm2", 2)
                 .Component("discharge_unit2", 1);
 
@@ -293,7 +266,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_ar_mas2")
                 .Level(20)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .Component("manip_arm2", 2)
                 .Component("discharge_unit2", 1);
 
@@ -303,7 +275,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_ar_pvw2")
                 .Level(17)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .Component("manip_arm2", 2)
                 .Component("discharge_unit2", 1);
 
@@ -313,7 +284,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_ar_pva2")
                 .Level(16)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .Component("manip_arm2", 2)
                 .Component("discharge_unit2", 1);
 
@@ -323,7 +293,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_ar_pvs2")
                 .Level(19)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .Component("manip_arm2", 2)
                 .Component("discharge_unit2", 1);
 
@@ -333,7 +302,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_ar_vwa2")
                 .Level(15)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .Component("manip_arm2", 2)
                 .Component("discharge_unit2", 1);
 
@@ -343,7 +311,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_ar_vws2")
                 .Level(18)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .Component("manip_arm2", 2)
                 .Component("discharge_unit2", 1);
 
@@ -353,7 +320,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_ar_vas2")
                 .Level(20)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .Component("manip_arm2", 2)
                 .Component("discharge_unit2", 1);
 
@@ -363,7 +329,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_ar_was2")
                 .Level(17)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .Component("manip_arm2", 2)
                 .Component("discharge_unit2", 1);
 
@@ -377,7 +342,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_ar_mpv3")
                 .Level(25)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm3", 2)
                 .Component("discharge_unit3", 1);
@@ -388,7 +352,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_ar_mpw3")
                 .Level(28)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm3", 2)
                 .Component("discharge_unit3", 1);
@@ -399,7 +362,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_ar_mpa3")
                 .Level(29)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm3", 2)
                 .Component("discharge_unit3", 1);
@@ -410,7 +372,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_ar_mps3")
                 .Level(30)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm3", 2)
                 .Component("discharge_unit3", 1);
@@ -421,7 +382,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_ar_mvw3")
                 .Level(27)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm3", 2)
                 .Component("discharge_unit3", 1);
@@ -432,7 +392,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_ar_mva3")
                 .Level(26)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm3", 2)
                 .Component("discharge_unit3", 1);
@@ -443,7 +402,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_ar_mvs3")
                 .Level(29)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm3", 2)
                 .Component("discharge_unit3", 1);
@@ -454,7 +412,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_ar_mwa3")
                 .Level(25)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm3", 2)
                 .Component("discharge_unit3", 1);
@@ -465,7 +422,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_ar_mws3")
                 .Level(28)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm3", 2)
                 .Component("discharge_unit3", 1);
@@ -476,7 +432,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_ar_mas3")
                 .Level(30)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm3", 2)
                 .Component("discharge_unit3", 1);
@@ -487,7 +442,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_ar_pvw3")
                 .Level(27)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm3", 2)
                 .Component("discharge_unit3", 1);
@@ -498,7 +452,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_ar_pva3")
                 .Level(26)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm3", 2)
                 .Component("discharge_unit3", 1);
@@ -509,7 +462,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_ar_pvs3")
                 .Level(29)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm3", 2)
                 .Component("discharge_unit3", 1);
@@ -520,7 +472,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_ar_vwa3")
                 .Level(25)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm3", 2)
                 .Component("discharge_unit3", 1);
@@ -531,7 +482,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_ar_vws3")
                 .Level(28)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm3", 2)
                 .Component("discharge_unit3", 1);
@@ -542,7 +492,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_ar_vas3")
                 .Level(30)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm3", 2)
                 .Component("discharge_unit3", 1);
@@ -553,7 +502,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_ar_was3")
                 .Level(27)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm3", 2)
                 .Component("discharge_unit3", 1);
@@ -568,7 +516,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_ar_mpv4")
                 .Level(35)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm4", 2)
                 .Component("discharge_unit4", 1);
@@ -579,7 +526,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_ar_mpw4")
                 .Level(38)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm4", 2)
                 .Component("discharge_unit4", 1);
@@ -590,7 +536,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_ar_mpa4")
                 .Level(39)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm4", 2)
                 .Component("discharge_unit4", 1);
@@ -601,7 +546,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_ar_mps4")
                 .Level(40)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm4", 2)
                 .Component("discharge_unit4", 1);
@@ -612,7 +556,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_ar_mvw4")
                 .Level(37)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm4", 2)
                 .Component("discharge_unit4", 1);
@@ -623,7 +566,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_ar_mva4")
                 .Level(36)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm4", 2)
                 .Component("discharge_unit4", 1);
@@ -634,7 +576,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_ar_mvs4")
                 .Level(39)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm4", 2)
                 .Component("discharge_unit4", 1);
@@ -645,7 +586,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_ar_mwa4")
                 .Level(35)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm4", 2)
                 .Component("discharge_unit4", 1);
@@ -656,7 +596,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_ar_mws4")
                 .Level(38)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm4", 2)
                 .Component("discharge_unit4", 1);
@@ -667,7 +606,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_ar_mas4")
                 .Level(40)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm4", 2)
                 .Component("discharge_unit4", 1);
@@ -678,7 +616,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_ar_pvw4")
                 .Level(37)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm4", 2)
                 .Component("discharge_unit4", 1);
@@ -689,7 +626,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_ar_pva4")
                 .Level(36)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm4", 2)
                 .Component("discharge_unit4", 1);
@@ -700,7 +636,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_ar_pvs4")
                 .Level(39)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm4", 2)
                 .Component("discharge_unit4", 1);
@@ -711,7 +646,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_ar_vwa4")
                 .Level(35)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm4", 2)
                 .Component("discharge_unit4", 1);
@@ -722,7 +656,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_ar_vws4")
                 .Level(38)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm4", 2)
                 .Component("discharge_unit4", 1);
@@ -733,7 +666,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_ar_vas4")
                 .Level(40)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm4", 2)
                 .Component("discharge_unit4", 1);
@@ -744,7 +676,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_ar_was4")
                 .Level(37)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm4", 2)
                 .Component("discharge_unit4", 1);
@@ -759,7 +690,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_ar_mpv5")
                 .Level(45)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm5", 2)
                 .Component("discharge_unit5", 1);
@@ -770,7 +700,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_ar_mpw5")
                 .Level(48)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm5", 2)
                 .Component("discharge_unit5", 1);
@@ -781,7 +710,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_ar_mpa5")
                 .Level(49)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm5", 2)
                 .Component("discharge_unit5", 1);
@@ -792,7 +720,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_ar_mps5")
                 .Level(50)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm5", 2)
                 .Component("discharge_unit5", 1);
@@ -803,7 +730,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_ar_mvw5")
                 .Level(47)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm5", 2)
                 .Component("discharge_unit5", 1);
@@ -814,7 +740,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_ar_mva5")
                 .Level(46)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm5", 2)
                 .Component("discharge_unit5", 1);
@@ -825,7 +750,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_ar_mvs5")
                 .Level(49)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm5", 2)
                 .Component("discharge_unit5", 1);
@@ -836,7 +760,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_ar_mwa5")
                 .Level(45)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm5", 2)
                 .Component("discharge_unit5", 1);
@@ -847,7 +770,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_ar_mws5")
                 .Level(48)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm5", 2)
                 .Component("discharge_unit5", 1);
@@ -858,7 +780,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_ar_mas5")
                 .Level(50)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm5", 2)
                 .Component("discharge_unit5", 1);
@@ -869,7 +790,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_ar_pvw5")
                 .Level(47)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm5", 2)
                 .Component("discharge_unit5", 1);
@@ -880,7 +800,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_ar_pva5")
                 .Level(46)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm5", 2)
                 .Component("discharge_unit5", 1);
@@ -891,7 +810,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_ar_pvs5")
                 .Level(49)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm5", 2)
                 .Component("discharge_unit5", 1);
@@ -902,7 +820,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_ar_vwa5")
                 .Level(45)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm5", 2)
                 .Component("discharge_unit5", 1);
@@ -913,7 +830,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_ar_vws5")
                 .Level(48)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm5", 2)
                 .Component("discharge_unit5", 1);
@@ -924,7 +840,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_ar_vas5")
                 .Level(50)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm5", 2)
                 .Component("discharge_unit5", 1);
@@ -935,7 +850,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_ar_was5")
                 .Level(47)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Droid, 1)
                 .Component("manip_arm5", 2)
                 .Component("discharge_unit5", 1);

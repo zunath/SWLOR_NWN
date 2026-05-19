@@ -9,7 +9,6 @@ using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.LogService;
-using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
@@ -36,19 +35,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private bool _hasBlueprint;
         private static readonly BlueprintBonuses _blueprintBonuses = new();
 
-        private PerkType _rapidSynthesisPerk;
-        private PerkType _carefulSynthesisPerk;
-
-        private PerkType _basicTouchPerk;
-        private PerkType _standardTouchPerk;
-        private PerkType _preciseTouchPerk;
-
-        private PerkType _mastersMendPerk;
-        private PerkType _steadyHandPerk;
-        private PerkType _muscleMemoryPerk;
-
-        private PerkType _venerationPerk;
-        private PerkType _wasteNotPerk;
+        private const int RapidSynthesisRequiredSkillRank = 10;
+        private const int CarefulSynthesisRequiredSkillRank = 30;
+        private const int BasicTouchRequiredSkillRank = 5;
+        private const int StandardTouchRequiredSkillRank = 15;
+        private const int PreciseTouchRequiredSkillRank = 35;
+        private const int MastersMendRequiredSkillRank = 10;
+        private const int SteadyHandRequiredSkillRank = 20;
+        private const int MuscleMemoryRequiredSkillRank = 40;
+        private const int VenerationRequiredSkillRank = 25;
+        private const int WasteNotRequiredSkillRank = 8;
 
         public bool IsClosable
         {
@@ -428,77 +424,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsVenerationEnabled = false;
             IsWasteNotEnabled = false;
 
-            LoadRequiredPerks();
             LoadCraftingState();
             RefreshRecipeStats();
-        }
-
-        private void LoadRequiredPerks()
-        {
-            var detail = Craft.GetRecipe(_recipe);
-            switch (detail.Skill)
-            {
-                case SkillType.Smithery:
-                    _rapidSynthesisPerk = PerkType.RapidSynthesisSmithery;
-                    _carefulSynthesisPerk = PerkType.CarefulSynthesisSmithery;
-
-                    _basicTouchPerk = PerkType.BasicTouchSmithery;
-                    _standardTouchPerk = PerkType.StandardTouchSmithery;
-                    _preciseTouchPerk = PerkType.PreciseTouchSmithery;
-
-                    _mastersMendPerk = PerkType.MastersMendSmithery;
-                    _steadyHandPerk = PerkType.SteadyHandSmithery;
-                    _muscleMemoryPerk = PerkType.MuscleMemorySmithery;
-
-                    _venerationPerk = PerkType.VenerationSmithery;
-                    _wasteNotPerk = PerkType.WasteNotSmithery;
-                    break;
-                case SkillType.Fabrication:
-                    _rapidSynthesisPerk = PerkType.RapidSynthesisFabrication;
-                    _carefulSynthesisPerk = PerkType.CarefulSynthesisFabrication;
-
-                    _basicTouchPerk = PerkType.BasicTouchFabrication;
-                    _standardTouchPerk = PerkType.StandardTouchFabrication;
-                    _preciseTouchPerk = PerkType.PreciseTouchFabrication;
-
-                    _mastersMendPerk = PerkType.MastersMendFabrication;
-                    _steadyHandPerk = PerkType.SteadyHandFabrication;
-                    _muscleMemoryPerk = PerkType.MuscleMemoryFabrication;
-
-                    _venerationPerk = PerkType.VenerationFabrication;
-                    _wasteNotPerk = PerkType.WasteNotFabrication;
-                    break;
-                case SkillType.Agriculture:
-                    _rapidSynthesisPerk = PerkType.RapidSynthesisCooking;
-                    _carefulSynthesisPerk = PerkType.CarefulSynthesisCooking;
-
-                    _basicTouchPerk = PerkType.BasicTouchCooking;
-                    _standardTouchPerk = PerkType.StandardTouchCooking;
-                    _preciseTouchPerk = PerkType.PreciseTouchCooking;
-
-                    _mastersMendPerk = PerkType.MastersMendCooking;
-                    _steadyHandPerk = PerkType.SteadyHandCooking;
-                    _muscleMemoryPerk = PerkType.MuscleMemoryCooking;
-
-                    _venerationPerk = PerkType.VenerationCooking;
-                    _wasteNotPerk = PerkType.WasteNotCooking;
-                    break;
-                case SkillType.Engineering:
-                    _rapidSynthesisPerk = PerkType.RapidSynthesisEngineering;
-                    _carefulSynthesisPerk = PerkType.CarefulSynthesisEngineering;
-
-                    _basicTouchPerk = PerkType.BasicTouchEngineering;
-                    _standardTouchPerk = PerkType.StandardTouchEngineering;
-                    _preciseTouchPerk = PerkType.PreciseTouchEngineering;
-
-                    _mastersMendPerk = PerkType.MastersMendEngineering;
-                    _steadyHandPerk = PerkType.SteadyHandEngineering;
-                    _muscleMemoryPerk = PerkType.MuscleMemoryEngineering;
-
-                    _venerationPerk = PerkType.VenerationEngineering;
-                    _wasteNotPerk = PerkType.WasteNotEngineering;
-                    break;
-            }
         }
 
         private void LoadCraftingState()
@@ -517,7 +444,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             _maxCP = (int)(cp + skill * 0.75f);
             // Veneration passive: +31 max CP (empirically tuned to match pre-attribute-removal crafting).
-            if (Perk.GetPerkLevel(Player, _venerationPerk) > 0)
+            if (skill >= VenerationRequiredSkillRank)
                 _maxCP += 31;
             _cp = _maxCP;
 
@@ -1187,6 +1114,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             YourSkill = $"Your Skill: {Skill.GetSkillDetails(detail.Skill).Name} {dbPlayer.Skills[detail.Skill].Rank}";
         }
 
+        private int GetRecipeSkillRank()
+        {
+            var playerId = GetObjectUUID(Player);
+            var dbPlayer = DB.Get<Player>(playerId);
+            var detail = Craft.GetRecipe(_recipe);
+
+            return dbPlayer.Skills[detail.Skill].Rank;
+        }
+
         private void ApplyImmobility()
         {
             ApplyEffectToObject(DurationType.Permanent, EffectCutsceneImmobilize(), Player);
@@ -1281,19 +1217,20 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsInSetupMode = false;
             IsClosable = false;
 
-            IsRapidSynthesisEnabled = Perk.GetPerkLevel(Player, _rapidSynthesisPerk) > 0;
-            IsCarefulSynthesisEnabled = Perk.GetPerkLevel(Player, _carefulSynthesisPerk) > 0;
+            var skillRank = GetRecipeSkillRank();
+            IsRapidSynthesisEnabled = skillRank >= RapidSynthesisRequiredSkillRank;
+            IsCarefulSynthesisEnabled = skillRank >= CarefulSynthesisRequiredSkillRank;
 
-            IsBasicTouchEnabled = Perk.GetPerkLevel(Player, _basicTouchPerk) > 0;
-            IsStandardTouchEnabled = Perk.GetPerkLevel(Player, _standardTouchPerk) > 0;
-            IsPreciseTouchEnabled = Perk.GetPerkLevel(Player, _preciseTouchPerk) > 0;
+            IsBasicTouchEnabled = skillRank >= BasicTouchRequiredSkillRank;
+            IsStandardTouchEnabled = skillRank >= StandardTouchRequiredSkillRank;
+            IsPreciseTouchEnabled = skillRank >= PreciseTouchRequiredSkillRank;
 
-            IsMastersMendEnabled = Perk.GetPerkLevel(Player, _mastersMendPerk) > 0;
-            IsSteadyHandEnabled = Perk.GetPerkLevel(Player, _steadyHandPerk) > 0;
-            IsMuscleMemoryEnabled = Perk.GetPerkLevel(Player, _muscleMemoryPerk) > 0;
+            IsMastersMendEnabled = skillRank >= MastersMendRequiredSkillRank;
+            IsSteadyHandEnabled = skillRank >= SteadyHandRequiredSkillRank;
+            IsMuscleMemoryEnabled = skillRank >= MuscleMemoryRequiredSkillRank;
 
-            IsVenerationEnabled = Perk.GetPerkLevel(Player, _venerationPerk) > 0;
-            IsWasteNotEnabled = Perk.GetPerkLevel(Player, _wasteNotPerk) > 0;
+            IsVenerationEnabled = skillRank >= VenerationRequiredSkillRank;
+            IsWasteNotEnabled = skillRank >= WasteNotRequiredSkillRank;
 
             ApplyImmobility();
         }
@@ -1342,6 +1279,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickManualCraft() => () =>
         {
+            if (!Craft.CanPlayerCraftRecipe(Player, _recipe))
+            {
+                StatusText = "Recipe requirements not met!";
+                StatusColor = GuiColor.Red;
+                return;
+            }
+
             if (ProcessBlueprintRequirements() && ProcessComponents())
             {
                 SwitchToCraftMode();
@@ -1357,7 +1301,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var delta = dbPlayer.Skills[recipe.Skill].Rank - recipe.Level;
             var recipeDiff = 1 + 0.05f * delta;
             // Steady Hand passive: +21 progress (primary 30 + secondary 26 equivalent).
-            var steadyHandBonus = Perk.GetPerkLevel(Player, _steadyHandPerk) > 0 ? 21 : 0;
+            var steadyHandBonus = dbPlayer.Skills[recipe.Skill].Rank >= SteadyHandRequiredSkillRank ? 21 : 0;
             var progress = (int)((baseProgress + steadyHandBonus + craftsmanship * 0.65f) * recipeDiff);
 
             return progress;
@@ -1375,7 +1319,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 : 1;
 
             // Muscle Memory passive: +115 quality (primary 30 + secondary 26 equivalent).
-            var muscleMemoryBonus = Perk.GetPerkLevel(Player, _muscleMemoryPerk) > 0 ? 115 : 0;
+            var muscleMemoryBonus = dbPlayer.Skills[recipe.Skill].Rank >= MuscleMemoryRequiredSkillRank ? 115 : 0;
             var quality = (int)((baseQuality + muscleMemoryBonus + control * 0.75f) * recipeDiff);
             return quality;
         }

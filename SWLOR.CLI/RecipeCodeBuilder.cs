@@ -32,14 +32,13 @@ namespace SWLOR.CLI
                 var skill = data[0].Trim();
                 var requiresRecipe = data[1].Trim();
                 var recipeName = data[6].Trim();
-                var categoryEnumName = data[2].Trim().Replace("-", "").Replace(" ", "");
                 var recipeEnumName = data[3].Trim();
                 var recipeCategory = data[4].Trim();
                 var enhancementCategory = data[10].Trim();
                 var resref = data[9].Trim();
                 var level = data[7].Trim();
                 var quantity = data[8].Trim();
-                var perkLevel = data[5].Trim();
+                var tier = data[5].Trim();
                 var enhancementSlots = data[11].Trim();
                 var component1Resref = data[12].Trim();
                 var component1Quantity = data[13].Trim();
@@ -61,11 +60,9 @@ namespace SWLOR.CLI
                 var recipeCode = recipeTemplate
                     .Replace("%%RECIPESKILL%%", skill)
                     .Replace("%%RECIPENAME%%", recipeName)
-                    .Replace("%%CATEGORYENUMNAME%%", categoryEnumName)
                     .Replace("%%RECIPEENUMNAME%%", recipeEnumName)
                     .Replace("%%RESREF%%", resref)
                     .Replace("%%LEVEL%%", level)
-                    .Replace("%%PERKLEVEL%%", perkLevel)
                     .Replace("%%RECIPECATEGORY%%", recipeCategory)
                     .Replace("%%QUANTITY%%", quantity);
 
@@ -144,11 +141,11 @@ namespace SWLOR.CLI
                 recipeCode += Environment.NewLine;
                 recipeCode += Environment.NewLine;
 
-                var tier = Convert.ToInt32(perkLevel);
-                if (!recipes.ContainsKey(tier))
-                    recipes[tier] = new List<string>();
+                var tierNumber = Convert.ToInt32(tier);
+                if (!recipes.ContainsKey(tierNumber))
+                    recipes[tierNumber] = new List<string>();
 
-                recipes[tier].Add(recipeCode);
+                recipes[tierNumber].Add(recipeCode);
             }
 
             var output = string.Empty;

@@ -5,6 +5,7 @@ param(
     [string]$EffectIcons2daPath = "SWLOR_Haks\swlor2_2da\effecticons.2da",
     [string]$EffectIconTypePath = "SWLOR.NWN.API\NWScript\Enum\EffectIconType.cs",
     [string]$StatusEffectPath = "SWLOR.Game.Server\Feature\StatusEffectDefinition",
+    [string]$TlkJsonPath = "SWLOR_Haks\swlor2_tlk\swlor2_tlk.tlk.json",
     [int]$GeneratedFeatStart = 2000,
     [int]$GeneratedFeatEnd = 2558,
     [int]$StatusEffectIconStart = 141,
@@ -25,6 +26,7 @@ Add-Type -AssemblyName System.Drawing
 $ApprovedCategories = @("Beneficial", "Harmful", "Self", "Control", "Deployable", "Utility")
 $GeneratedEnumStartMarker = "        // Custom status effect icons"
 $GeneratedEnumEndMarker = "        // End custom status effect icons"
+$CustomTlkOffset = 16777216
 $IconStopWords = @("a", "an", "and", "of", "the", "status", "effect")
 $RomanNumerals = @{
     I = 1; II = 2; III = 3; IV = 4; V = 5
@@ -998,6 +1000,46 @@ function Write-Manifest([object[]]$rows, [string]$path) {
     $rows | Export-Csv -Path $path -NoTypeInformation
 }
 
+function Get-CustomTlkTextToStrRef([string]$path) {
+    if (!(Test-Path -LiteralPath $path)) {
+        throw "Could not find TLK JSON '$path'."
+    }
+
+    $tlk = Get-Content -Path $path -Raw | ConvertFrom-Json
+    $map = @{}
+    foreach ($entry in $tlk.entries) {
+        if ([string]::IsNullOrWhiteSpace($entry.text)) {
+            continue
+        }
+
+        if (!$map.ContainsKey($entry.text)) {
+            $map[$entry.text] = ($CustomTlkOffset + [int]$entry.id).ToString()
+        }
+    }
+
+    return $map
+}
+
+function Get-StatusEffectStrRefsByKey([object[]]$statusRows, [hashtable]$tlkTextToStrRef) {
+    $map = @{}
+    $errors = [System.Collections.Generic.List[string]]::new()
+
+    foreach ($entry in $statusRows) {
+        if (!$tlkTextToStrRef.ContainsKey($entry.DisplayName)) {
+            $errors.Add("StatusEffect '$($entry.Key)' display name '$($entry.DisplayName)' is missing from the custom TLK.") | Out-Null
+            continue
+        }
+
+        $map[$entry.Key] = $tlkTextToStrRef[$entry.DisplayName]
+    }
+
+    if ($errors.Count -gt 0) {
+        throw "Status effect TLK audit failed:`n$($errors -join "`n")"
+    }
+
+    return $map
+}
+
 function Update-EffectIconTypeEnum([object[]]$statusRows, [string]$path) {
     $text = Get-Content -Path $path -Raw
     $blockLines = [System.Collections.Generic.List[string]]::new()
@@ -1022,7 +1064,7 @@ function Update-EffectIconTypeEnum([object[]]$statusRows, [string]$path) {
     Set-Content -Path $path -Value $text -NoNewline
 }
 
-function Update-EffectIcons2da([object[]]$statusRows, [string]$path) {
+function Update-EffectIcons2da([object[]]$statusRows, [string]$path, [hashtable]$statusEffectStrRefsByKey) {
     $baseLines = @()
     foreach ($line in Get-Content -Path $path) {
         $trimmed = $line.Trim()
@@ -1038,7 +1080,11 @@ function Update-EffectIcons2da([object[]]$statusRows, [string]$path) {
     $row = $StatusEffectIconStart
     foreach ($entry in $statusRows) {
         $label = Get-EffectIconLabel $entry
-        $baseLines += ("{0,-5} {1,-45} {2,-18} {3}" -f $row, $label, $entry.IconResRef, 0)
+        if (!$statusEffectStrRefsByKey.ContainsKey($entry.Key)) {
+            throw "No TLK string ref found for status effect '$($entry.Key)'."
+        }
+
+        $baseLines += ("{0,-5} {1,-45} {2,-18} {3}" -f $row, $label, $entry.IconResRef, $statusEffectStrRefsByKey[$entry.Key])
         $row++
     }
 
@@ -1150,7 +1196,7 @@ function Add-TgaValidationErrors([System.Collections.Generic.List[string]]$error
     }
 }
 
-function Test-GameplayIconStandards([object[]]$rows) {
+function Test-GameplayIconStandards([object[]]$rows, [hashtable]$statusEffectStrRefsByKey) {
     $errors = [System.Collections.Generic.List[string]]::new()
     $iconDirectory = Resolve-RepoPath $IconPath
     $enumText = Get-Content -Path (Resolve-RepoPath $EffectIconTypePath) -Raw
@@ -1162,11 +1208,23 @@ function Test-GameplayIconStandards([object[]]$rows) {
             if ($row -ge $StatusEffectIconStart) {
                 $label = $Matches[2]
                 $resRef = $Matches[3]
+                $strRef = $Matches[4]
                 if ($label -notmatch "^[A-Za-z][A-Za-z0-9]*$") {
                     $errors.Add("effecticons.2da row $row label '$label' must be compact PascalCase without underscores.") | Out-Null
                 }
 
-                $effectIconRowsByResRef[$resRef.ToLowerInvariant()] = $label
+                $strRefNumber = 0
+                if (![int]::TryParse($strRef, [ref]$strRefNumber)) {
+                    $errors.Add("effecticons.2da row $row label '$label' has non-numeric StrRef '$strRef'.") | Out-Null
+                }
+                elseif ($strRefNumber -lt $CustomTlkOffset) {
+                    $errors.Add("effecticons.2da row $row label '$label' must use a custom TLK StrRef, found '$strRef'.") | Out-Null
+                }
+
+                $effectIconRowsByResRef[$resRef.ToLowerInvariant()] = [pscustomobject]@{
+                    Label = $label
+                    StrRef = $strRef
+                }
             }
         }
     }
@@ -1224,9 +1282,20 @@ function Test-GameplayIconStandards([object[]]$rows) {
             }
             else {
                 $expectedLabel = Get-EffectIconLabel $entry
-                $actualLabel = $effectIconRowsByResRef[$iconResRefKey]
+                $actualRow = $effectIconRowsByResRef[$iconResRefKey]
+                $actualLabel = $actualRow.Label
                 if ($actualLabel -ne $expectedLabel) {
                     $errors.Add("StatusEffect '$($entry.Key)' effecticons.2da label '$actualLabel' should be '$expectedLabel'.") | Out-Null
+                }
+
+                if (!$statusEffectStrRefsByKey.ContainsKey($entry.Key)) {
+                    $errors.Add("StatusEffect '$($entry.Key)' has no resolved custom TLK StrRef.") | Out-Null
+                }
+                else {
+                    $expectedStrRef = $statusEffectStrRefsByKey[$entry.Key]
+                    if ($actualRow.StrRef -ne $expectedStrRef) {
+                        $errors.Add("StatusEffect '$($entry.Key)' effecticons.2da StrRef '$($actualRow.StrRef)' should be '$expectedStrRef'.") | Out-Null
+                    }
                 }
             }
         }
@@ -1277,9 +1346,12 @@ if (![string]::IsNullOrWhiteSpace($SampleOutputPath)) {
     return
 }
 
+$tlkTextToStrRef = Get-CustomTlkTextToStrRef (Resolve-RepoPath $TlkJsonPath)
+$statusEffectStrRefsByKey = Get-StatusEffectStrRefsByKey $statusRows $tlkTextToStrRef
+
 if ($UpdateStatusEffectCode) {
     Update-EffectIconTypeEnum $statusRows (Resolve-RepoPath $EffectIconTypePath)
-    Update-EffectIcons2da $statusRows (Resolve-RepoPath $EffectIcons2daPath)
+    Update-EffectIcons2da $statusRows (Resolve-RepoPath $EffectIcons2daPath) $statusEffectStrRefsByKey
     Update-StatusEffectCode $statusRows
     Write-Host "Updated EffectIconType, effecticons.2da, and $($statusRows.Count) status effect icon properties."
 }
@@ -1336,4 +1408,8 @@ else {
     $rows = @(Import-Csv -Path $manifestResolved)
 }
 
-Test-GameplayIconStandards $rows
+$statusRows = @($rows | Where-Object { $_.Type -eq "StatusEffect" } | Sort-Object Key)
+$tlkTextToStrRef = Get-CustomTlkTextToStrRef (Resolve-RepoPath $TlkJsonPath)
+$statusEffectStrRefsByKey = Get-StatusEffectStrRefsByKey $statusRows $tlkTextToStrRef
+
+Test-GameplayIconStandards $rows $statusEffectStrRefsByKey

@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 
 namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
@@ -25,7 +24,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(52)
                 .Quantity(1)
                 .RequirementUnlocked()
-                .RequirementPerk(PerkType.StarshipBlueprints, 5)
                 .Component("capc_struc", 10)
                 .Component("capc_shgen", 2);
 
@@ -36,7 +34,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(52)
                 .Quantity(1)
                 .RequirementUnlocked()
-                .RequirementPerk(PerkType.StarshipBlueprints, 5)
                 .Component("zinsiam", 5)
                 .Component("ref_arkoxit", 10)
                 .Component("ref_arda", 5)
@@ -50,7 +47,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(52)
                 .Quantity(1)
                 .RequirementUnlocked()
-                .RequirementPerk(PerkType.StarshipBlueprints, 5)
                 .Component("elec_high", 5)
                 .Component("ref_gostian", 5)
                 .Component("zinsiam", 2);
@@ -62,7 +58,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(52)
                 .Quantity(1)
                 .RequirementUnlocked()
-                .RequirementPerk(PerkType.StarshipBlueprints, 5)
                 .Component("capc_rebay", 1)
                 .Component("capc_react", 2)
                 .Component("capc_power", 20);
@@ -74,7 +69,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(52)
                 .Quantity(1)
                 .RequirementUnlocked()
-                .RequirementPerk(PerkType.StarshipBlueprints, 5)
                 .Component("ref_jasioclase", 75)
                 .Component("ref_gostian", 75)
                 .Component("elec_high", 80)
@@ -87,7 +81,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(52)
                 .Quantity(1)
                 .RequirementUnlocked()
-                .RequirementPerk(PerkType.StarshipBlueprints, 5)
                 .Component("ref_gostian", 80)
                 .Component("ref_jasioclase", 80)
                 .Component("zinsiam", 20)
@@ -100,7 +93,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(52)
                 .Quantity(1)
                 .RequirementUnlocked()
-                .RequirementPerk(PerkType.StarshipBlueprints, 5)
                 .Component("capc_thrust", 10);
 
             // Capital Class Thrusters
@@ -110,7 +102,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(52)
                 .Quantity(1)
                 .RequirementUnlocked()
-                .RequirementPerk(PerkType.StarshipBlueprints, 5)
                 .Component("elec_high", 25)
                 .Component("ref_gostian", 50)
                 .Component("zinsiam", 5);
@@ -122,7 +113,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(52)
                 .Quantity(1)
                 .RequirementUnlocked()
-                .RequirementPerk(PerkType.StarshipBlueprints, 5)
                 .Component("ref_arda", 1)
                 .Component("elec_high", 25);
 
@@ -133,7 +123,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(52)
                 .Quantity(1)
                 .RequirementUnlocked()
-                .RequirementPerk(PerkType.StarshipBlueprints, 5)
                 .Component("ref_arda", 3)
                 .Component("thor_crys", 1);
 
@@ -144,7 +133,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Level(52)
                 .Quantity(1)
                 .RequirementUnlocked()
-                .RequirementPerk(PerkType.StarshipBlueprints, 5)
                 .Component("zinsiam", 5)
                 .Component("elec_high", 50)
                 .Component("ref_gostian", 50)

@@ -1,14 +1,17 @@
 [CmdletBinding()]
 param(
     [string]$ManifestPath = "SWLOR.Game.Server\Readmes\CombatUpgradeBiblePerkManifest.csv",
+    [string]$GameplayIconManifestPath = "SWLOR.Game.Server\Readmes\GameplayIconManifest.csv",
     [string]$PerkDefinitionPath = "SWLOR.Game.Server\Feature\PerkDefinition",
     [string]$Feat2daPath = "SWLOR_Haks\swlor2_2da\feat.2da",
     [string]$Spells2daPath = "SWLOR_Haks\swlor2_2da\spells.2da",
+    [string]$EffectIcons2daPath = "SWLOR_Haks\swlor2_2da\effecticons.2da",
     [string]$TlkJsonPath = "SWLOR_Haks\swlor2_tlk\swlor2_tlk.tlk.json",
     [string]$TlkPath = "SWLOR_Haks\swlor2_tlk\swlor2_tlk.tlk",
     [string]$TlkToolPath = "SWLOR_Haks\nwn_tlk.exe",
     [int]$GeneratedFeatStart = 2000,
     [int]$GeneratedFeatEnd = 2558,
+    [int]$StatusEffectIconStart = 141,
     [int[]]$ExcludedGeneratedFeatIds = @()
 )
 
@@ -277,6 +280,37 @@ function Get-GeneratedFeatLabels {
     return $labels
 }
 
+function Get-GameplayIconStatusEffectInfo {
+    param([string]$Path)
+
+    if (!(Test-Path -LiteralPath $Path)) {
+        throw "Could not find gameplay icon manifest '$Path'."
+    }
+
+    $map = @{}
+    foreach ($row in (Import-Csv -Path $Path | Where-Object { $_.Type -eq "StatusEffect" })) {
+        if ([string]::IsNullOrWhiteSpace($row.IconResRef)) {
+            throw "Gameplay icon manifest row '$($row.Key)' is missing IconResRef."
+        }
+        if ([string]::IsNullOrWhiteSpace($row.DisplayName)) {
+            throw "Gameplay icon manifest row '$($row.Key)' is missing DisplayName."
+        }
+
+        $key = $row.IconResRef.ToLowerInvariant()
+        if ($map.ContainsKey($key)) {
+            throw "Duplicate status effect IconResRef '$($row.IconResRef)' in gameplay icon manifest."
+        }
+
+        $map[$key] = [pscustomobject]@{
+            Key = $row.Key
+            DisplayName = $row.DisplayName
+            IconResRef = $row.IconResRef
+        }
+    }
+
+    return $map
+}
+
 function Add-TlkEntry {
     param(
         [hashtable]$TextToId,
@@ -459,15 +493,70 @@ function Update-TlkJsonEntries {
     [System.IO.File]::WriteAllText($Path, $raw, $utf8NoBom)
 }
 
+function Format-EffectIconRow {
+    param(
+        [int]$RowNumber,
+        [string]$Label,
+        [string]$IconResRef,
+        [string]$StrRef
+    )
+
+    return ("{0,-5} {1,-45} {2,-18} {3}" -f $RowNumber, $Label, $IconResRef, $StrRef).TrimEnd()
+}
+
+function Update-EffectIconStrRefs {
+    param(
+        [string]$Path,
+        [hashtable]$StatusEffectStrRefsByIconResRef,
+        [int]$Start
+    )
+
+    $lines = [System.Collections.Generic.List[string]]::new()
+    $lines.AddRange([System.IO.File]::ReadAllLines($Path))
+    $updatedRows = 0
+
+    for ($i = 0; $i -lt $lines.Count; $i++) {
+        $tokens = Convert-ToStringList $lines[$i]
+        $rowNumber = Get-RowNumber $tokens
+        if ($null -eq $rowNumber -or $rowNumber -lt $Start) {
+            continue
+        }
+
+        if ($tokens.Count -lt 4) {
+            throw "effecticons.2da row $rowNumber does not have Label, Icon, and StrRef columns."
+        }
+
+        $iconResRef = $tokens[2]
+        $key = $iconResRef.ToLowerInvariant()
+        if (!$StatusEffectStrRefsByIconResRef.ContainsKey($key)) {
+            throw "No status-effect TLK string ref found for effect icon row $rowNumber icon '$iconResRef'."
+        }
+
+        $strRef = $StatusEffectStrRefsByIconResRef[$key]
+        if ($tokens[3] -ne $strRef) {
+            $tokens[3] = $strRef
+            $updatedRows++
+        }
+
+        $lines[$i] = Format-EffectIconRow $rowNumber $tokens[1] $tokens[2] $tokens[3]
+    }
+
+    [System.IO.File]::WriteAllLines($Path, $lines)
+    return $updatedRows
+}
+
 $manifestPath = Resolve-RepoPath $ManifestPath
+$gameplayIconManifestPath = Resolve-RepoPath $GameplayIconManifestPath
 $perkDefinitionPath = Resolve-RepoPath $PerkDefinitionPath
 $feat2daPath = Resolve-RepoPath $Feat2daPath
 $spells2daPath = Resolve-RepoPath $Spells2daPath
+$effectIcons2daPath = Resolve-RepoPath $EffectIcons2daPath
 $tlkJsonPath = Resolve-RepoPath $TlkJsonPath
 $tlkPath = Resolve-RepoPath $TlkPath
 $tlkToolPath = Resolve-RepoPath $TlkToolPath
 
 $manifestInfo = Get-ManifestFeatInfo $manifestPath
+$statusEffectInfo = Get-GameplayIconStatusEffectInfo $gameplayIconManifestPath
 $perkInfo = Get-PerkDefinitionFeatInfo $perkDefinitionPath
 $generatedLabels = Get-GeneratedFeatLabels $feat2daPath $GeneratedFeatStart $GeneratedFeatEnd $ExcludedGeneratedFeatIds
 $rawTlkInfo = Get-RawTlkOpenSlots $tlkToolPath $tlkPath
@@ -568,6 +657,21 @@ foreach ($entry in ($featInfo.GetEnumerator() | Sort-Object Name)) {
     }
 }
 
+$statusEffectStrRefsByIconResRef = @{}
+foreach ($entry in ($statusEffectInfo.GetEnumerator() | Sort-Object { $_.Value.DisplayName }, { $_.Value.Key })) {
+    $nameId = Add-TlkEntry `
+        $textToId `
+        $usedIds `
+        $openSlots `
+        $existingBlankEntries `
+        $newEntries `
+        $filledBlankEntries `
+        $nextId `
+        $entry.Value.DisplayName
+
+    $statusEffectStrRefsByIconResRef[$entry.Key] = ($CustomTlkOffset + $nameId).ToString()
+}
+
 $intuitivePilotingDescriptionId = Add-TlkEntry `
     $textToId `
     $usedIds `
@@ -654,6 +758,8 @@ for ($i = $spellsHeaderIndex + 1; $i -lt $spellsLines.Count; $i++) {
 
 [System.IO.File]::WriteAllLines($spells2daPath, $spellsLines)
 
+$updatedEffectIconRows = Update-EffectIconStrRefs $effectIcons2daPath $statusEffectStrRefsByIconResRef $StatusEffectIconStart
+
 $rawMissingEntryCount = @($newEntries | Where-Object { [int]$_.id -lt $rawTlkInfo.StringCount }).Count
 $appendedEntryCount = @($newEntries | Where-Object { [int]$_.id -ge $rawTlkInfo.StringCount }).Count
 
@@ -666,6 +772,7 @@ Invoke-TlkTool $tlkToolPath @(
 
 Write-Host "Updated $updatedFeatRows feat rows."
 Write-Host "Updated $updatedSpellRows spell rows."
+Write-Host "Updated $updatedEffectIconRows effect icon rows."
 Write-Host "Raw TLK string count before sync: $($rawTlkInfo.StringCount)."
 Write-Host "Raw open TLK slots available before sync: $($rawTlkInfo.OpenIds.Count)."
 Write-Host "Filled $($filledBlankEntries.Count) existing blank TLK entries."

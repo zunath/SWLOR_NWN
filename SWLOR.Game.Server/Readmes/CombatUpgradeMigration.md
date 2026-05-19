@@ -21,6 +21,7 @@ This note tracks player migration work for `feature/combat-upgrade`. Keep it cur
 - Do not grant or require rebuild tokens for this forced rebuild path.
 - Refund SP for removed attack-count/mastery perks so players are not stranded with deleted perk investments.
 - Remove deleted perks from persisted `Player.Perks` data.
+- Do not add new one-off migrations solely for removed perks, blueprints, skills, or similar character-build data that is already covered by the planned full rebuild.
 - Keep existing player migration versions intact. If more player-specific data cleanup is needed, add the next numbered player migration instead of editing old shipped migrations.
 
 ## Forced Rebuild Flow

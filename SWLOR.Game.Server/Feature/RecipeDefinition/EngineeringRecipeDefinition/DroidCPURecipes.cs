@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 
 namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
@@ -28,7 +27,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_bl_cpu1_m")
                 .Level(5)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .Component("c_unit1", 1)
                 .Component("l_unit1", 1)
                 .Component("ca_unit1", 1);
@@ -39,7 +37,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_bl_cpu1_p")
                 .Level(6)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .Component("c_unit1", 1)
                 .Component("l_unit1", 1)
                 .Component("ca_unit1", 1);
@@ -50,7 +47,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_bl_cpu1_v")
                 .Level(7)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .Component("c_unit1", 1)
                 .Component("l_unit1", 1)
                 .Component("ca_unit1", 1);
@@ -61,7 +57,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_bl_cpu1_w")
                 .Level(8)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .Component("c_unit1", 1)
                 .Component("l_unit1", 1)
                 .Component("ca_unit1", 1);
@@ -72,7 +67,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_bl_cpu1_a")
                 .Level(9)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .Component("c_unit1", 1)
                 .Component("l_unit1", 1)
                 .Component("ca_unit1", 1);
@@ -83,7 +77,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_bl_cpu1_s")
                 .Level(10)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .Component("c_unit1", 1)
                 .Component("l_unit1", 1)
                 .Component("ca_unit1", 1);
@@ -94,7 +87,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_lm_cpu1_m")
                 .Level(10)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .Component("c_unit1", 1)
                 .Component("l_unit1", 1)
                 .Component("ca_unit1", 1);
@@ -105,7 +97,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_lm_cpu1_p")
                 .Level(9)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .Component("c_unit1", 1)
                 .Component("l_unit1", 1)
                 .Component("ca_unit1", 1);
@@ -116,7 +107,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_lm_cpu1_v")
                 .Level(8)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .Component("c_unit1", 1)
                 .Component("l_unit1", 1)
                 .Component("ca_unit1", 1);
@@ -127,7 +117,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_lm_cpu1_w")
                 .Level(7)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .Component("c_unit1", 1)
                 .Component("l_unit1", 1)
                 .Component("ca_unit1", 1);
@@ -138,7 +127,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_lm_cpu1_a")
                 .Level(6)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .Component("c_unit1", 1)
                 .Component("l_unit1", 1)
                 .Component("ca_unit1", 1);
@@ -149,7 +137,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_lm_cpu1_s")
                 .Level(5)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .Component("c_unit1", 1)
                 .Component("l_unit1", 1)
                 .Component("ca_unit1", 1);
@@ -160,7 +147,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_rn_cpu1_m")
                 .Level(7)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .Component("c_unit1", 1)
                 .Component("l_unit1", 1)
                 .Component("ca_unit1", 1);
@@ -171,7 +157,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_rn_cpu1_p")
                 .Level(6)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .Component("c_unit1", 1)
                 .Component("l_unit1", 1)
                 .Component("ca_unit1", 1);
@@ -182,7 +167,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_rn_cpu1_v")
                 .Level(5)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .Component("c_unit1", 1)
                 .Component("l_unit1", 1)
                 .Component("ca_unit1", 1);
@@ -193,7 +177,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_rn_cpu1_w")
                 .Level(9)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .Component("c_unit1", 1)
                 .Component("l_unit1", 1)
                 .Component("ca_unit1", 1);
@@ -204,7 +187,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_rn_cpu1_a")
                 .Level(10)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .Component("c_unit1", 1)
                 .Component("l_unit1", 1)
                 .Component("ca_unit1", 1);
@@ -215,7 +197,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_rn_cpu1_s")
                 .Level(8)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .Component("c_unit1", 1)
                 .Component("l_unit1", 1)
                 .Component("ca_unit1", 1);
@@ -226,7 +207,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_hm_cpu1_m")
                 .Level(8)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .Component("c_unit1", 1)
                 .Component("l_unit1", 1)
                 .Component("ca_unit1", 1);
@@ -237,7 +217,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_hm_cpu1_p")
                 .Level(7)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .Component("c_unit1", 1)
                 .Component("l_unit1", 1)
                 .Component("ca_unit1", 1);
@@ -248,7 +227,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_hm_cpu1_v")
                 .Level(9)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .Component("c_unit1", 1)
                 .Component("l_unit1", 1)
                 .Component("ca_unit1", 1);
@@ -259,7 +237,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_hm_cpu1_w")
                 .Level(5)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .Component("c_unit1", 1)
                 .Component("l_unit1", 1)
                 .Component("ca_unit1", 1);
@@ -270,7 +247,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_hm_cpu1_a")
                 .Level(6)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .Component("c_unit1", 1)
                 .Component("l_unit1", 1)
                 .Component("ca_unit1", 1);
@@ -281,7 +257,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_hm_cpu1_s")
                 .Level(10)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .Component("c_unit1", 1)
                 .Component("l_unit1", 1)
                 .Component("ca_unit1", 1);
@@ -292,7 +267,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_as_cpu1_m")
                 .Level(9)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .Component("c_unit1", 1)
                 .Component("l_unit1", 1)
                 .Component("ca_unit1", 1);
@@ -303,7 +277,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_as_cpu1_p")
                 .Level(10)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .Component("c_unit1", 1)
                 .Component("l_unit1", 1)
                 .Component("ca_unit1", 1);
@@ -314,7 +287,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_as_cpu1_v")
                 .Level(7)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .Component("c_unit1", 1)
                 .Component("l_unit1", 1)
                 .Component("ca_unit1", 1);
@@ -325,7 +297,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_as_cpu1_w")
                 .Level(8)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .Component("c_unit1", 1)
                 .Component("l_unit1", 1)
                 .Component("ca_unit1", 1);
@@ -336,7 +307,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_as_cpu1_a")
                 .Level(6)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .Component("c_unit1", 1)
                 .Component("l_unit1", 1)
                 .Component("ca_unit1", 1);
@@ -347,7 +317,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_as_cpu1_s")
                 .Level(5)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .Component("c_unit1", 1)
                 .Component("l_unit1", 1)
                 .Component("ca_unit1", 1);
@@ -358,7 +327,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_jg_cpu1_m")
                 .Level(8)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .Component("c_unit1", 1)
                 .Component("l_unit1", 1)
                 .Component("ca_unit1", 1);
@@ -369,7 +337,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_jg_cpu1_p")
                 .Level(7)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .Component("c_unit1", 1)
                 .Component("l_unit1", 1)
                 .Component("ca_unit1", 1);
@@ -380,7 +347,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_jg_cpu1_v")
                 .Level(10)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .Component("c_unit1", 1)
                 .Component("l_unit1", 1)
                 .Component("ca_unit1", 1);
@@ -391,7 +357,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_jg_cpu1_w")
                 .Level(5)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .Component("c_unit1", 1)
                 .Component("l_unit1", 1)
                 .Component("ca_unit1", 1);
@@ -402,7 +367,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_jg_cpu1_a")
                 .Level(6)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .Component("c_unit1", 1)
                 .Component("l_unit1", 1)
                 .Component("ca_unit1", 1);
@@ -413,7 +377,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_jg_cpu1_s")
                 .Level(9)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 1)
                 .Component("c_unit1", 1)
                 .Component("l_unit1", 1)
                 .Component("ca_unit1", 1);
@@ -428,7 +391,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_bl_cpu2_m")
                 .Level(15)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .Component("c_unit2", 1)
                 .Component("l_unit2", 1)
                 .Component("ca_unit2", 1);
@@ -439,7 +401,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_bl_cpu2_p")
                 .Level(16)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .Component("c_unit2", 1)
                 .Component("l_unit2", 1)
                 .Component("ca_unit2", 1);
@@ -450,7 +411,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_bl_cpu2_v")
                 .Level(17)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .Component("c_unit2", 1)
                 .Component("l_unit2", 1)
                 .Component("ca_unit2", 1);
@@ -461,7 +421,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_bl_cpu2_w")
                 .Level(18)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .Component("c_unit2", 1)
                 .Component("l_unit2", 1)
                 .Component("ca_unit2", 1);
@@ -472,7 +431,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_bl_cpu2_a")
                 .Level(19)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .Component("c_unit2", 1)
                 .Component("l_unit2", 1)
                 .Component("ca_unit2", 1);
@@ -483,7 +441,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_bl_cpu2_s")
                 .Level(20)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .Component("c_unit2", 1)
                 .Component("l_unit2", 1)
                 .Component("ca_unit2", 1);
@@ -494,7 +451,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_lm_cpu2_m")
                 .Level(20)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .Component("c_unit2", 1)
                 .Component("l_unit2", 1)
                 .Component("ca_unit2", 1);
@@ -505,7 +461,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_lm_cpu2_p")
                 .Level(19)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .Component("c_unit2", 1)
                 .Component("l_unit2", 1)
                 .Component("ca_unit2", 1);
@@ -516,7 +471,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_lm_cpu2_v")
                 .Level(18)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .Component("c_unit2", 1)
                 .Component("l_unit2", 1)
                 .Component("ca_unit2", 1);
@@ -527,7 +481,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_lm_cpu2_w")
                 .Level(17)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .Component("c_unit2", 1)
                 .Component("l_unit2", 1)
                 .Component("ca_unit2", 1);
@@ -538,7 +491,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_lm_cpu2_a")
                 .Level(16)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .Component("c_unit2", 1)
                 .Component("l_unit2", 1)
                 .Component("ca_unit2", 1);
@@ -549,7 +501,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_lm_cpu2_s")
                 .Level(15)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .Component("c_unit2", 1)
                 .Component("l_unit2", 1)
                 .Component("ca_unit2", 1);
@@ -560,7 +511,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_rn_cpu2_m")
                 .Level(17)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .Component("c_unit2", 1)
                 .Component("l_unit2", 1)
                 .Component("ca_unit2", 1);
@@ -571,7 +521,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_rn_cpu2_p")
                 .Level(16)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .Component("c_unit2", 1)
                 .Component("l_unit2", 1)
                 .Component("ca_unit2", 1);
@@ -582,7 +531,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_rn_cpu2_v")
                 .Level(15)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .Component("c_unit2", 1)
                 .Component("l_unit2", 1)
                 .Component("ca_unit2", 1);
@@ -593,7 +541,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_rn_cpu2_w")
                 .Level(19)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .Component("c_unit2", 1)
                 .Component("l_unit2", 1)
                 .Component("ca_unit2", 1);
@@ -604,7 +551,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_rn_cpu2_a")
                 .Level(20)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .Component("c_unit2", 1)
                 .Component("l_unit2", 1)
                 .Component("ca_unit2", 1);
@@ -615,7 +561,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_rn_cpu2_s")
                 .Level(18)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .Component("c_unit2", 1)
                 .Component("l_unit2", 1)
                 .Component("ca_unit2", 1);
@@ -626,7 +571,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_hm_cpu2_m")
                 .Level(18)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .Component("c_unit2", 1)
                 .Component("l_unit2", 1)
                 .Component("ca_unit2", 1);
@@ -637,7 +581,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_hm_cpu2_p")
                 .Level(17)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .Component("c_unit2", 1)
                 .Component("l_unit2", 1)
                 .Component("ca_unit2", 1);
@@ -648,7 +591,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_hm_cpu2_v")
                 .Level(19)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .Component("c_unit2", 1)
                 .Component("l_unit2", 1)
                 .Component("ca_unit2", 1);
@@ -659,7 +601,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_hm_cpu2_w")
                 .Level(15)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .Component("c_unit2", 1)
                 .Component("l_unit2", 1)
                 .Component("ca_unit2", 1);
@@ -670,7 +611,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_hm_cpu2_a")
                 .Level(16)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .Component("c_unit2", 1)
                 .Component("l_unit2", 1)
                 .Component("ca_unit2", 1);
@@ -681,7 +621,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_hm_cpu2_s")
                 .Level(20)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .Component("c_unit2", 1)
                 .Component("l_unit2", 1)
                 .Component("ca_unit2", 1);
@@ -692,7 +631,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_as_cpu2_m")
                 .Level(19)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .Component("c_unit2", 1)
                 .Component("l_unit2", 1)
                 .Component("ca_unit2", 1);
@@ -703,7 +641,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_as_cpu2_p")
                 .Level(20)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .Component("c_unit2", 1)
                 .Component("l_unit2", 1)
                 .Component("ca_unit2", 1);
@@ -714,7 +651,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_as_cpu2_v")
                 .Level(17)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .Component("c_unit2", 1)
                 .Component("l_unit2", 1)
                 .Component("ca_unit2", 1);
@@ -725,7 +661,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_as_cpu2_w")
                 .Level(18)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .Component("c_unit2", 1)
                 .Component("l_unit2", 1)
                 .Component("ca_unit2", 1);
@@ -736,7 +671,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_as_cpu2_a")
                 .Level(16)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .Component("c_unit2", 1)
                 .Component("l_unit2", 1)
                 .Component("ca_unit2", 1);
@@ -747,7 +681,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_as_cpu2_s")
                 .Level(15)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .Component("c_unit2", 1)
                 .Component("l_unit2", 1)
                 .Component("ca_unit2", 1);
@@ -758,7 +691,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_jg_cpu2_m")
                 .Level(18)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .Component("c_unit2", 1)
                 .Component("l_unit2", 1)
                 .Component("ca_unit2", 1);
@@ -769,7 +701,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_jg_cpu2_p")
                 .Level(17)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .Component("c_unit2", 1)
                 .Component("l_unit2", 1)
                 .Component("ca_unit2", 1);
@@ -780,7 +711,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_jg_cpu2_v")
                 .Level(20)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .Component("c_unit2", 1)
                 .Component("l_unit2", 1)
                 .Component("ca_unit2", 1);
@@ -791,7 +721,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_jg_cpu2_w")
                 .Level(15)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .Component("c_unit2", 1)
                 .Component("l_unit2", 1)
                 .Component("ca_unit2", 1);
@@ -802,7 +731,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_jg_cpu2_a")
                 .Level(16)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .Component("c_unit2", 1)
                 .Component("l_unit2", 1)
                 .Component("ca_unit2", 1);
@@ -813,7 +741,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_jg_cpu2_s")
                 .Level(19)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)
                 .Component("c_unit2", 1)
                 .Component("l_unit2", 1)
                 .Component("ca_unit2", 1);
@@ -828,7 +755,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_bl_cpu3_m")
                 .Level(25)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .Component("c_unit3", 1)
                 .Component("l_unit3", 1)
                 .Component("ca_unit3", 1);
@@ -839,7 +765,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_bl_cpu3_p")
                 .Level(26)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .Component("c_unit3", 1)
                 .Component("l_unit3", 1)
                 .Component("ca_unit3", 1);
@@ -850,7 +775,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_bl_cpu3_v")
                 .Level(27)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .Component("c_unit3", 1)
                 .Component("l_unit3", 1)
                 .Component("ca_unit3", 1);
@@ -861,7 +785,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_bl_cpu3_w")
                 .Level(28)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .Component("c_unit3", 1)
                 .Component("l_unit3", 1)
                 .Component("ca_unit3", 1);
@@ -872,7 +795,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_bl_cpu3_a")
                 .Level(29)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .Component("c_unit3", 1)
                 .Component("l_unit3", 1)
                 .Component("ca_unit3", 1);
@@ -883,7 +805,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_bl_cpu3_s")
                 .Level(30)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .Component("c_unit3", 1)
                 .Component("l_unit3", 1)
                 .Component("ca_unit3", 1);
@@ -894,7 +815,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_lm_cpu3_m")
                 .Level(30)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .Component("c_unit3", 1)
                 .Component("l_unit3", 1)
                 .Component("ca_unit3", 1);
@@ -905,7 +825,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_lm_cpu3_p")
                 .Level(29)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .Component("c_unit3", 1)
                 .Component("l_unit3", 1)
                 .Component("ca_unit3", 1);
@@ -916,7 +835,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_lm_cpu3_v")
                 .Level(28)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .Component("c_unit3", 1)
                 .Component("l_unit3", 1)
                 .Component("ca_unit3", 1);
@@ -927,7 +845,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_lm_cpu3_w")
                 .Level(27)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .Component("c_unit3", 1)
                 .Component("l_unit3", 1)
                 .Component("ca_unit3", 1);
@@ -938,7 +855,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_lm_cpu3_a")
                 .Level(26)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .Component("c_unit3", 1)
                 .Component("l_unit3", 1)
                 .Component("ca_unit3", 1);
@@ -949,7 +865,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_lm_cpu3_s")
                 .Level(25)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .Component("c_unit3", 1)
                 .Component("l_unit3", 1)
                 .Component("ca_unit3", 1);
@@ -960,7 +875,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_rn_cpu3_m")
                 .Level(27)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .Component("c_unit3", 1)
                 .Component("l_unit3", 1)
                 .Component("ca_unit3", 1);
@@ -971,7 +885,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_rn_cpu3_p")
                 .Level(26)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .Component("c_unit3", 1)
                 .Component("l_unit3", 1)
                 .Component("ca_unit3", 1);
@@ -982,7 +895,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_rn_cpu3_v")
                 .Level(25)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .Component("c_unit3", 1)
                 .Component("l_unit3", 1)
                 .Component("ca_unit3", 1);
@@ -993,7 +905,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_rn_cpu3_w")
                 .Level(29)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .Component("c_unit3", 1)
                 .Component("l_unit3", 1)
                 .Component("ca_unit3", 1);
@@ -1004,7 +915,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_rn_cpu3_a")
                 .Level(30)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .Component("c_unit3", 1)
                 .Component("l_unit3", 1)
                 .Component("ca_unit3", 1);
@@ -1015,7 +925,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_rn_cpu3_s")
                 .Level(28)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .Component("c_unit3", 1)
                 .Component("l_unit3", 1)
                 .Component("ca_unit3", 1);
@@ -1026,7 +935,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_hm_cpu3_m")
                 .Level(28)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .Component("c_unit3", 1)
                 .Component("l_unit3", 1)
                 .Component("ca_unit3", 1);
@@ -1037,7 +945,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_hm_cpu3_p")
                 .Level(27)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .Component("c_unit3", 1)
                 .Component("l_unit3", 1)
                 .Component("ca_unit3", 1);
@@ -1048,7 +955,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_hm_cpu3_v")
                 .Level(29)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .Component("c_unit3", 1)
                 .Component("l_unit3", 1)
                 .Component("ca_unit3", 1);
@@ -1059,7 +965,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_hm_cpu3_w")
                 .Level(25)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .Component("c_unit3", 1)
                 .Component("l_unit3", 1)
                 .Component("ca_unit3", 1);
@@ -1070,7 +975,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_hm_cpu3_a")
                 .Level(26)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .Component("c_unit3", 1)
                 .Component("l_unit3", 1)
                 .Component("ca_unit3", 1);
@@ -1081,7 +985,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_hm_cpu3_s")
                 .Level(30)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .Component("c_unit3", 1)
                 .Component("l_unit3", 1)
                 .Component("ca_unit3", 1);
@@ -1092,7 +995,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_as_cpu3_m")
                 .Level(29)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .Component("c_unit3", 1)
                 .Component("l_unit3", 1)
                 .Component("ca_unit3", 1);
@@ -1103,7 +1005,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_as_cpu3_p")
                 .Level(30)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .Component("c_unit3", 1)
                 .Component("l_unit3", 1)
                 .Component("ca_unit3", 1);
@@ -1114,7 +1015,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_as_cpu3_v")
                 .Level(27)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .Component("c_unit3", 1)
                 .Component("l_unit3", 1)
                 .Component("ca_unit3", 1);
@@ -1125,7 +1025,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_as_cpu3_w")
                 .Level(28)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .Component("c_unit3", 1)
                 .Component("l_unit3", 1)
                 .Component("ca_unit3", 1);
@@ -1136,7 +1035,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_as_cpu3_a")
                 .Level(26)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .Component("c_unit3", 1)
                 .Component("l_unit3", 1)
                 .Component("ca_unit3", 1);
@@ -1147,7 +1045,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_as_cpu3_s")
                 .Level(25)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .Component("c_unit3", 1)
                 .Component("l_unit3", 1)
                 .Component("ca_unit3", 1);
@@ -1158,7 +1055,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_jg_cpu3_m")
                 .Level(28)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .Component("c_unit3", 1)
                 .Component("l_unit3", 1)
                 .Component("ca_unit3", 1);
@@ -1169,7 +1065,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_jg_cpu3_p")
                 .Level(27)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .Component("c_unit3", 1)
                 .Component("l_unit3", 1)
                 .Component("ca_unit3", 1);
@@ -1180,7 +1075,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_jg_cpu3_v")
                 .Level(30)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .Component("c_unit3", 1)
                 .Component("l_unit3", 1)
                 .Component("ca_unit3", 1);
@@ -1191,7 +1085,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_jg_cpu3_w")
                 .Level(25)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .Component("c_unit3", 1)
                 .Component("l_unit3", 1)
                 .Component("ca_unit3", 1);
@@ -1202,7 +1095,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_jg_cpu3_a")
                 .Level(26)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .Component("c_unit3", 1)
                 .Component("l_unit3", 1)
                 .Component("ca_unit3", 1);
@@ -1213,7 +1105,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_jg_cpu3_s")
                 .Level(29)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 3)
                 .Component("c_unit3", 1)
                 .Component("l_unit3", 1)
                 .Component("ca_unit3", 1);
@@ -1228,7 +1119,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_bl_cpu4_m")
                 .Level(35)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .Component("c_unit4", 1)
                 .Component("l_unit4", 1)
                 .Component("ca_unit4", 1);
@@ -1239,7 +1129,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_bl_cpu4_p")
                 .Level(36)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .Component("c_unit4", 1)
                 .Component("l_unit4", 1)
                 .Component("ca_unit4", 1);
@@ -1250,7 +1139,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_bl_cpu4_v")
                 .Level(37)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .Component("c_unit4", 1)
                 .Component("l_unit4", 1)
                 .Component("ca_unit4", 1);
@@ -1261,7 +1149,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_bl_cpu4_w")
                 .Level(38)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .Component("c_unit4", 1)
                 .Component("l_unit4", 1)
                 .Component("ca_unit4", 1);
@@ -1272,7 +1159,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_bl_cpu4_a")
                 .Level(39)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .Component("c_unit4", 1)
                 .Component("l_unit4", 1)
                 .Component("ca_unit4", 1);
@@ -1283,7 +1169,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_bl_cpu4_s")
                 .Level(40)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .Component("c_unit4", 1)
                 .Component("l_unit4", 1)
                 .Component("ca_unit4", 1);
@@ -1294,7 +1179,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_lm_cpu4_m")
                 .Level(40)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .Component("c_unit4", 1)
                 .Component("l_unit4", 1)
                 .Component("ca_unit4", 1);
@@ -1305,7 +1189,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_lm_cpu4_p")
                 .Level(39)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .Component("c_unit4", 1)
                 .Component("l_unit4", 1)
                 .Component("ca_unit4", 1);
@@ -1316,7 +1199,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_lm_cpu4_v")
                 .Level(38)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .Component("c_unit4", 1)
                 .Component("l_unit4", 1)
                 .Component("ca_unit4", 1);
@@ -1327,7 +1209,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_lm_cpu4_w")
                 .Level(37)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .Component("c_unit4", 1)
                 .Component("l_unit4", 1)
                 .Component("ca_unit4", 1);
@@ -1338,7 +1219,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_lm_cpu4_a")
                 .Level(36)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .Component("c_unit4", 1)
                 .Component("l_unit4", 1)
                 .Component("ca_unit4", 1);
@@ -1349,7 +1229,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_lm_cpu4_s")
                 .Level(35)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .Component("c_unit4", 1)
                 .Component("l_unit4", 1)
                 .Component("ca_unit4", 1);
@@ -1360,7 +1239,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_rn_cpu4_m")
                 .Level(37)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .Component("c_unit4", 1)
                 .Component("l_unit4", 1)
                 .Component("ca_unit4", 1);
@@ -1371,7 +1249,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_rn_cpu4_p")
                 .Level(36)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .Component("c_unit4", 1)
                 .Component("l_unit4", 1)
                 .Component("ca_unit4", 1);
@@ -1382,7 +1259,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_rn_cpu4_v")
                 .Level(35)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .Component("c_unit4", 1)
                 .Component("l_unit4", 1)
                 .Component("ca_unit4", 1);
@@ -1393,7 +1269,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_rn_cpu4_w")
                 .Level(39)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .Component("c_unit4", 1)
                 .Component("l_unit4", 1)
                 .Component("ca_unit4", 1);
@@ -1404,7 +1279,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_rn_cpu4_a")
                 .Level(40)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .Component("c_unit4", 1)
                 .Component("l_unit4", 1)
                 .Component("ca_unit4", 1);
@@ -1415,7 +1289,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_rn_cpu4_s")
                 .Level(38)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .Component("c_unit4", 1)
                 .Component("l_unit4", 1)
                 .Component("ca_unit4", 1);
@@ -1426,7 +1299,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_hm_cpu4_m")
                 .Level(38)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .Component("c_unit4", 1)
                 .Component("l_unit4", 1)
                 .Component("ca_unit4", 1);
@@ -1437,7 +1309,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_hm_cpu4_p")
                 .Level(37)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .Component("c_unit4", 1)
                 .Component("l_unit4", 1)
                 .Component("ca_unit4", 1);
@@ -1448,7 +1319,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_hm_cpu4_v")
                 .Level(39)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .Component("c_unit4", 1)
                 .Component("l_unit4", 1)
                 .Component("ca_unit4", 1);
@@ -1459,7 +1329,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_hm_cpu4_w")
                 .Level(35)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .Component("c_unit4", 1)
                 .Component("l_unit4", 1)
                 .Component("ca_unit4", 1);
@@ -1470,7 +1339,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_hm_cpu4_a")
                 .Level(36)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .Component("c_unit4", 1)
                 .Component("l_unit4", 1)
                 .Component("ca_unit4", 1);
@@ -1481,7 +1349,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_hm_cpu4_s")
                 .Level(40)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .Component("c_unit4", 1)
                 .Component("l_unit4", 1)
                 .Component("ca_unit4", 1);
@@ -1492,7 +1359,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_as_cpu4_m")
                 .Level(39)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .Component("c_unit4", 1)
                 .Component("l_unit4", 1)
                 .Component("ca_unit4", 1);
@@ -1503,7 +1369,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_as_cpu4_p")
                 .Level(40)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .Component("c_unit4", 1)
                 .Component("l_unit4", 1)
                 .Component("ca_unit4", 1);
@@ -1514,7 +1379,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_as_cpu4_v")
                 .Level(37)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .Component("c_unit4", 1)
                 .Component("l_unit4", 1)
                 .Component("ca_unit4", 1);
@@ -1525,7 +1389,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_as_cpu4_w")
                 .Level(38)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .Component("c_unit4", 1)
                 .Component("l_unit4", 1)
                 .Component("ca_unit4", 1);
@@ -1536,7 +1399,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_as_cpu4_a")
                 .Level(36)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .Component("c_unit4", 1)
                 .Component("l_unit4", 1)
                 .Component("ca_unit4", 1);
@@ -1547,7 +1409,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_as_cpu4_s")
                 .Level(35)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .Component("c_unit4", 1)
                 .Component("l_unit4", 1)
                 .Component("ca_unit4", 1);
@@ -1558,7 +1419,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_jg_cpu4_m")
                 .Level(38)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .Component("c_unit4", 1)
                 .Component("l_unit4", 1)
                 .Component("ca_unit4", 1);
@@ -1569,7 +1429,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_jg_cpu4_p")
                 .Level(37)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .Component("c_unit4", 1)
                 .Component("l_unit4", 1)
                 .Component("ca_unit4", 1);
@@ -1580,7 +1439,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_jg_cpu4_v")
                 .Level(40)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .Component("c_unit4", 1)
                 .Component("l_unit4", 1)
                 .Component("ca_unit4", 1);
@@ -1591,7 +1449,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_jg_cpu4_w")
                 .Level(35)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .Component("c_unit4", 1)
                 .Component("l_unit4", 1)
                 .Component("ca_unit4", 1);
@@ -1602,7 +1459,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_jg_cpu4_a")
                 .Level(36)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .Component("c_unit4", 1)
                 .Component("l_unit4", 1)
                 .Component("ca_unit4", 1);
@@ -1613,7 +1469,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_jg_cpu4_s")
                 .Level(39)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 4)
                 .Component("c_unit4", 1)
                 .Component("l_unit4", 1)
                 .Component("ca_unit4", 1);
@@ -1628,7 +1483,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_bl_cpu5_m")
                 .Level(45)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .Component("c_unit5", 1)
                 .Component("l_unit5", 1)
                 .Component("ca_unit5", 1);
@@ -1639,7 +1493,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_bl_cpu5_p")
                 .Level(46)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .Component("c_unit5", 1)
                 .Component("l_unit5", 1)
                 .Component("ca_unit5", 1);
@@ -1650,7 +1503,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_bl_cpu5_v")
                 .Level(47)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .Component("c_unit5", 1)
                 .Component("l_unit5", 1)
                 .Component("ca_unit5", 1);
@@ -1661,7 +1513,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_bl_cpu5_w")
                 .Level(48)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .Component("c_unit5", 1)
                 .Component("l_unit5", 1)
                 .Component("ca_unit5", 1);
@@ -1672,7 +1523,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_bl_cpu5_a")
                 .Level(49)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .Component("c_unit5", 1)
                 .Component("l_unit5", 1)
                 .Component("ca_unit5", 1);
@@ -1683,7 +1533,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_bl_cpu5_s")
                 .Level(50)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .Component("c_unit5", 1)
                 .Component("l_unit5", 1)
                 .Component("ca_unit5", 1);
@@ -1694,7 +1543,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_lm_cpu5_m")
                 .Level(50)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .Component("c_unit5", 1)
                 .Component("l_unit5", 1)
                 .Component("ca_unit5", 1);
@@ -1705,7 +1553,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_lm_cpu5_p")
                 .Level(49)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .Component("c_unit5", 1)
                 .Component("l_unit5", 1)
                 .Component("ca_unit5", 1);
@@ -1716,7 +1563,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_lm_cpu5_v")
                 .Level(48)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .Component("c_unit5", 1)
                 .Component("l_unit5", 1)
                 .Component("ca_unit5", 1);
@@ -1727,7 +1573,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_lm_cpu5_w")
                 .Level(47)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .Component("c_unit5", 1)
                 .Component("l_unit5", 1)
                 .Component("ca_unit5", 1);
@@ -1738,7 +1583,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_lm_cpu5_a")
                 .Level(46)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .Component("c_unit5", 1)
                 .Component("l_unit5", 1)
                 .Component("ca_unit5", 1);
@@ -1749,7 +1593,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_lm_cpu5_s")
                 .Level(45)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .Component("c_unit5", 1)
                 .Component("l_unit5", 1)
                 .Component("ca_unit5", 1);
@@ -1760,7 +1603,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_rn_cpu5_m")
                 .Level(47)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .Component("c_unit5", 1)
                 .Component("l_unit5", 1)
                 .Component("ca_unit5", 1);
@@ -1771,7 +1613,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_rn_cpu5_p")
                 .Level(46)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .Component("c_unit5", 1)
                 .Component("l_unit5", 1)
                 .Component("ca_unit5", 1);
@@ -1782,7 +1623,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_rn_cpu5_v")
                 .Level(45)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .Component("c_unit5", 1)
                 .Component("l_unit5", 1)
                 .Component("ca_unit5", 1);
@@ -1793,7 +1633,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_rn_cpu5_w")
                 .Level(49)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .Component("c_unit5", 1)
                 .Component("l_unit5", 1)
                 .Component("ca_unit5", 1);
@@ -1804,7 +1643,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_rn_cpu5_a")
                 .Level(50)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .Component("c_unit5", 1)
                 .Component("l_unit5", 1)
                 .Component("ca_unit5", 1);
@@ -1815,7 +1653,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_rn_cpu5_s")
                 .Level(48)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .Component("c_unit5", 1)
                 .Component("l_unit5", 1)
                 .Component("ca_unit5", 1);
@@ -1826,7 +1663,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_hm_cpu5_m")
                 .Level(48)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .Component("c_unit5", 1)
                 .Component("l_unit5", 1)
                 .Component("ca_unit5", 1);
@@ -1837,7 +1673,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_hm_cpu5_p")
                 .Level(47)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .Component("c_unit5", 1)
                 .Component("l_unit5", 1)
                 .Component("ca_unit5", 1);
@@ -1848,7 +1683,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_hm_cpu5_v")
                 .Level(49)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .Component("c_unit5", 1)
                 .Component("l_unit5", 1)
                 .Component("ca_unit5", 1);
@@ -1859,7 +1693,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_hm_cpu5_w")
                 .Level(45)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .Component("c_unit5", 1)
                 .Component("l_unit5", 1)
                 .Component("ca_unit5", 1);
@@ -1870,7 +1703,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_hm_cpu5_a")
                 .Level(46)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .Component("c_unit5", 1)
                 .Component("l_unit5", 1)
                 .Component("ca_unit5", 1);
@@ -1881,7 +1713,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_hm_cpu5_s")
                 .Level(50)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .Component("c_unit5", 1)
                 .Component("l_unit5", 1)
                 .Component("ca_unit5", 1);
@@ -1892,7 +1723,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_as_cpu5_m")
                 .Level(49)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .Component("c_unit5", 1)
                 .Component("l_unit5", 1)
                 .Component("ca_unit5", 1);
@@ -1903,7 +1733,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_as_cpu5_p")
                 .Level(50)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .Component("c_unit5", 1)
                 .Component("l_unit5", 1)
                 .Component("ca_unit5", 1);
@@ -1914,7 +1743,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_as_cpu5_v")
                 .Level(47)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .Component("c_unit5", 1)
                 .Component("l_unit5", 1)
                 .Component("ca_unit5", 1);
@@ -1925,7 +1753,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_as_cpu5_w")
                 .Level(48)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .Component("c_unit5", 1)
                 .Component("l_unit5", 1)
                 .Component("ca_unit5", 1);
@@ -1936,7 +1763,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_as_cpu5_a")
                 .Level(46)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .Component("c_unit5", 1)
                 .Component("l_unit5", 1)
                 .Component("ca_unit5", 1);
@@ -1947,7 +1773,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_as_cpu5_s")
                 .Level(45)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .Component("c_unit5", 1)
                 .Component("l_unit5", 1)
                 .Component("ca_unit5", 1);
@@ -1958,7 +1783,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_jg_cpu5_m")
                 .Level(48)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .Component("c_unit5", 1)
                 .Component("l_unit5", 1)
                 .Component("ca_unit5", 1);
@@ -1969,7 +1793,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_jg_cpu5_p")
                 .Level(47)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .Component("c_unit5", 1)
                 .Component("l_unit5", 1)
                 .Component("ca_unit5", 1);
@@ -1980,7 +1803,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_jg_cpu5_v")
                 .Level(50)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .Component("c_unit5", 1)
                 .Component("l_unit5", 1)
                 .Component("ca_unit5", 1);
@@ -1991,7 +1813,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_jg_cpu5_w")
                 .Level(45)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .Component("c_unit5", 1)
                 .Component("l_unit5", 1)
                 .Component("ca_unit5", 1);
@@ -2002,7 +1823,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_jg_cpu5_a")
                 .Level(46)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .Component("c_unit5", 1)
                 .Component("l_unit5", 1)
                 .Component("ca_unit5", 1);
@@ -2013,7 +1833,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("d_jg_cpu5_s")
                 .Level(49)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .Component("c_unit5", 1)
                 .Component("l_unit5", 1)
                 .Component("ca_unit5", 1);

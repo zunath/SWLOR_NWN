@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 
 namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
@@ -24,7 +23,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("wpn_sub_token")
                 .Level(52)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .ResearchCostModifier(0.2f)
                 .Component("chiro_shard", 5);
@@ -35,7 +33,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("arm_sub_token")
                 .Level(52)
                 .Quantity(1)
-                .RequirementPerk(PerkType.DroidEquipmentBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .ResearchCostModifier(0.2f)
                 .Component("chiro_shard", 5);

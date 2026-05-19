@@ -14,6 +14,10 @@
 
 - After editing `design/bible/SWLOR Design Bible - Combat Upgrade.xlsx`, run `powershell -ExecutionPolicy Bypass -File tools/UpdateCombatUpgradeAudit.ps1 -RefreshLocalBible` to refresh `SWLOR.Game.Server/Readmes/CombatUpgradeBiblePerkManifest.csv` and `SWLOR.Game.Server/Readmes/CombatUpgradePerkAudit.csv` from the local workbook.
 
+## Full Rebuild Changes
+
+- For rebuild-era changes covered by a planned full character rebuild, do not add one-off player migrations solely to remove or refund deleted perks, blueprints, skills, or similar character-build data. Rely on the full rebuild path unless the change affects persistent data that survives rebuild or server/world state outside character builds.
+
 ## TLK Entries
 
 - New custom TLK strings must use a pre-existing empty TLK slot or gap before appending new IDs at the end of `SWLOR_Haks/swlor2_tlk/swlor2_tlk.tlk.json`.

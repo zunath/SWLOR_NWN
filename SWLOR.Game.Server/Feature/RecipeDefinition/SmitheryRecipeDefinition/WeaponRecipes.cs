@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 
 namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
@@ -35,7 +34,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("b_knife")
                 .Level(1)
                 .Quantity(1)
-                .RequirementPerk(PerkType.WeaponBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
                 .Component("ref_veldite", 1)
                 .Component("wood", 1);
@@ -46,7 +44,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("tit_knife")
                 .Level(11)
                 .Quantity(1)
-                .RequirementPerk(PerkType.WeaponBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_scordspar", 1)
                 .Component("fine_wood", 1);
@@ -57,7 +54,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("sith_knife")
                 .Level(17)
                 .Quantity(1)
-                .RequirementPerk(PerkType.WeaponBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
                 .Component("ref_scordspar", 4)
                 .Component("fine_wood", 2);
@@ -68,7 +64,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("del_knife")
                 .Level(21)
                 .Quantity(1)
-                .RequirementPerk(PerkType.WeaponBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_plagionite", 1)
                 .Component("ancient_wood", 1);
@@ -79,7 +74,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("proto_knife")
                 .Level(31)
                 .Quantity(1)
-                .RequirementPerk(PerkType.WeaponBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_keromber", 1)
                 .Component("aracia_wood", 1);
@@ -90,7 +84,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("oph_knife")
                 .Level(41)
                 .Quantity(1)
-                .RequirementPerk(PerkType.WeaponBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_jasioclase", 1)
                 .Component("hyphae_wood", 1);
@@ -101,7 +94,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("chi_knife")
                 .Level(52)
                 .Quantity(1)
-                .RequirementPerk(PerkType.WeaponBlueprints, 5)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .ResearchCostModifier(0.2f)
@@ -123,7 +115,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("b_longsword")
                 .Level(4)
                 .Quantity(1)
-                .RequirementPerk(PerkType.WeaponBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
                 .Component("ref_veldite", 3)
                 .Component("wood", 2);
@@ -134,7 +125,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("tit_longsword")
                 .Level(14)
                 .Quantity(1)
-                .RequirementPerk(PerkType.WeaponBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_scordspar", 3)
                 .Component("fine_wood", 2);
@@ -145,7 +135,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("sith_longsword")
                 .Level(18)
                 .Quantity(1)
-                .RequirementPerk(PerkType.WeaponBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
                 .Component("ref_scordspar", 5)
                 .Component("fine_wood", 3);
@@ -156,7 +145,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("del_longsword")
                 .Level(24)
                 .Quantity(1)
-                .RequirementPerk(PerkType.WeaponBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_plagionite", 3)
                 .Component("ancient_wood", 2);
@@ -167,7 +155,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("pro_longsword")
                 .Level(34)
                 .Quantity(1)
-                .RequirementPerk(PerkType.WeaponBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_keromber", 3)
                 .Component("aracia_wood", 2);
@@ -178,7 +165,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("oph_longsword")
                 .Level(44)
                 .Quantity(1)
-                .RequirementPerk(PerkType.WeaponBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_jasioclase", 3)
                 .Component("hyphae_wood", 2);
@@ -189,7 +175,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("chi_longsword")
                 .Level(52)
                 .Quantity(1)
-                .RequirementPerk(PerkType.WeaponBlueprints, 5)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .ResearchCostModifier(0.2f)
@@ -211,7 +196,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("electroblade_1")
                 .Level(6)
                 .Quantity(1)
-                .RequirementPerk(PerkType.WeaponBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
                 .Component("elec_ruined", 4)
                 .Component("ref_veldite", 2);
@@ -222,7 +206,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("electroblade_2")
                 .Level(16)
                 .Quantity(1)
-                .RequirementPerk(PerkType.WeaponBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("elec_flawed", 4)
                 .Component("ref_scordspar", 2);
@@ -233,7 +216,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("sith_electro")
                 .Level(19)
                 .Quantity(1)
-                .RequirementPerk(PerkType.WeaponBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
                 .Component("elec_flawed", 5)
                 .Component("ref_scordspar", 3);
@@ -244,7 +226,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("electroblade_3")
                 .Level(26)
                 .Quantity(1)
-                .RequirementPerk(PerkType.WeaponBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("elec_good", 4)
                 .Component("ref_plagionite", 2);
@@ -255,7 +236,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("electroblade_4")
                 .Level(36)
                 .Quantity(1)
-                .RequirementPerk(PerkType.WeaponBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("elec_imperfect", 4)
                 .Component("ref_keromber", 2);
@@ -266,7 +246,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("electroblade_5")
                 .Level(46)
                 .Quantity(1)
-                .RequirementPerk(PerkType.WeaponBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("elec_high", 4)
                 .Component("ref_jasioclase", 2);
@@ -277,7 +256,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("chi_electroblade")
                 .Level(52)
                 .Quantity(1)
-                .RequirementPerk(PerkType.WeaponBlueprints, 5)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .ResearchCostModifier(0.2f)
@@ -296,7 +274,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("saber_train_1")
                 .Level(8)
                 .Quantity(1)
-                .RequirementPerk(PerkType.WeaponBlueprints, 1)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
                 .Component("jade", 4)
@@ -309,7 +286,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("saber_train_2")
                 .Level(18)
                 .Quantity(1)
-                .RequirementPerk(PerkType.WeaponBlueprints, 2)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("agate", 4)
@@ -322,7 +298,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("saber_train_3")
                 .Level(28)
                 .Quantity(1)
-                .RequirementPerk(PerkType.WeaponBlueprints, 3)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("citrine", 4)
@@ -335,7 +310,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("saber_train_4")
                 .Level(38)
                 .Quantity(1)
-                .RequirementPerk(PerkType.WeaponBlueprints, 4)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ruby", 4)
@@ -348,7 +322,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("saber_train_5")
                 .Level(48)
                 .Quantity(1)
-                .RequirementPerk(PerkType.WeaponBlueprints, 5)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("emerald", 4)
@@ -361,7 +334,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("saber_upg1")
                 .Level(52)
                 .Quantity(1)
-                .RequirementPerk(PerkType.WeaponBlueprints, 5)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.None, 0)
                 .ResearchCostModifier(0.2f)
@@ -383,7 +355,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("b_greatsword")
                 .Level(8)
                 .Quantity(1)
-                .RequirementPerk(PerkType.WeaponBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
                 .Component("ref_veldite", 5)
                 .Component("wood", 3);
@@ -394,7 +365,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("tit_greatsword")
                 .Level(18)
                 .Quantity(1)
-                .RequirementPerk(PerkType.WeaponBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_scordspar", 5)
                 .Component("fine_wood", 3);
@@ -405,7 +375,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("sith_gswd")
                 .Level(14)
                 .Quantity(1)
-                .RequirementPerk(PerkType.WeaponBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
                 .Component("ref_scordspar", 3)
                 .Component("fine_wood", 2);
@@ -416,7 +385,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("del_greatsword")
                 .Level(28)
                 .Quantity(1)
-                .RequirementPerk(PerkType.WeaponBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_plagionite", 5)
                 .Component("ancient_wood", 3);
@@ -427,7 +395,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("proto_greatsword")
                 .Level(38)
                 .Quantity(1)
-                .RequirementPerk(PerkType.WeaponBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_keromber", 5)
                 .Component("aracia_wood", 3);
@@ -438,7 +405,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("oph_greatsword")
                 .Level(48)
                 .Quantity(1)
-                .RequirementPerk(PerkType.WeaponBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_jasioclase", 5)
                 .Component("hyphae_wood", 3);
@@ -449,7 +415,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("chi_greatsword")
                 .Level(52)
                 .Quantity(1)
-                .RequirementPerk(PerkType.WeaponBlueprints, 5)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .ResearchCostModifier(0.2f)
@@ -471,7 +436,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("b_spear")
                 .Level(7)
                 .Quantity(1)
-                .RequirementPerk(PerkType.WeaponBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
                 .Component("ref_veldite", 4)
                 .Component("wood", 2);
@@ -482,7 +446,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("tit_spear")
                 .Level(17)
                 .Quantity(1)
-                .RequirementPerk(PerkType.WeaponBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_scordspar", 4)
                 .Component("fine_wood", 2);
@@ -493,7 +456,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("sith_spear")
                 .Level(13)
                 .Quantity(1)
-                .RequirementPerk(PerkType.WeaponBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
                 .Component("ref_scordspar", 3)
                 .Component("fine_wood", 2);
@@ -504,7 +466,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("del_spear")
                 .Level(27)
                 .Quantity(1)
-                .RequirementPerk(PerkType.WeaponBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_plagionite", 4)
                 .Component("ancient_wood", 2);
@@ -515,7 +476,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("proto_spear")
                 .Level(37)
                 .Quantity(1)
-                .RequirementPerk(PerkType.WeaponBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_keromber", 4)
                 .Component("aracia_wood", 2);
@@ -526,7 +486,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("oph_spear")
                 .Level(47)
                 .Quantity(1)
-                .RequirementPerk(PerkType.WeaponBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("aracia_wood", 4)
                 .Component("hyphae_wood", 2);
@@ -537,7 +496,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("chi_spear")
                 .Level(52)
                 .Quantity(1)
-                .RequirementPerk(PerkType.WeaponBlueprints, 5)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .ResearchCostModifier(0.2f)
@@ -556,7 +514,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("alc_spear")
                 .Level(52)
                 .Quantity(1)
-                .RequirementPerk(PerkType.WeaponBlueprints, 5)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .ResearchCostModifier(0.2f)
@@ -578,7 +535,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("b_twinblade")
                 .Level(8)
                 .Quantity(1)
-                .RequirementPerk(PerkType.WeaponBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
                 .Component("ref_veldite", 3)
                 .Component("wood", 2);
@@ -589,7 +545,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("tit_twinblade")
                 .Level(18)
                 .Quantity(1)
-                .RequirementPerk(PerkType.WeaponBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_scordspar", 3)
                 .Component("fine_wood", 2);
@@ -600,7 +555,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("sith_twinblade")
                 .Level(16)
                 .Quantity(1)
-                .RequirementPerk(PerkType.WeaponBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
                 .Component("ref_scordspar", 4)
                 .Component("fine_wood", 2);
@@ -611,7 +565,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("del_twinblade")
                 .Level(28)
                 .Quantity(1)
-                .RequirementPerk(PerkType.WeaponBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_plagionite", 3)
                 .Component("ancient_wood", 2);
@@ -622,7 +575,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("proto_twinblade")
                 .Level(38)
                 .Quantity(1)
-                .RequirementPerk(PerkType.WeaponBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_keromber", 3)
                 .Component("aracia_wood", 2);
@@ -633,7 +585,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("oph_twinblade")
                 .Level(48)
                 .Quantity(1)
-                .RequirementPerk(PerkType.WeaponBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_jasioclase", 3)
                 .Component("hyphae_wood", 2);
@@ -644,7 +595,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("chi_twinblade")
                 .Level(52)
                 .Quantity(1)
-                .RequirementPerk(PerkType.WeaponBlueprints, 5)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .ResearchCostModifier(0.2f)
@@ -666,7 +616,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("twin_elec_1")
                 .Level(7)
                 .Quantity(1)
-                .RequirementPerk(PerkType.WeaponBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
                 .Component("elec_ruined", 5)
                 .Component("ref_veldite", 3);
@@ -677,7 +626,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("twin_elec_2")
                 .Level(17)
                 .Quantity(1)
-                .RequirementPerk(PerkType.WeaponBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
                 .Component("elec_flawed", 5)
                 .Component("ref_scordspar", 3);
@@ -688,7 +636,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("twin_elec_3")
                 .Level(27)
                 .Quantity(1)
-                .RequirementPerk(PerkType.WeaponBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("elec_good", 5)
                 .Component("ref_plagionite", 3);
@@ -699,7 +646,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("twin_elec_4")
                 .Level(37)
                 .Quantity(1)
-                .RequirementPerk(PerkType.WeaponBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("elec_imperfect", 5)
                 .Component("ref_keromber", 3);
@@ -710,7 +656,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("twin_elec_5")
                 .Level(47)
                 .Quantity(1)
-                .RequirementPerk(PerkType.WeaponBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("elec_high", 5)
                 .Component("ref_jasioclase", 3);
@@ -721,7 +666,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("chi_twinelec")
                 .Level(52)
                 .Quantity(1)
-                .RequirementPerk(PerkType.WeaponBlueprints, 5)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .ResearchCostModifier(0.2f)
@@ -741,7 +685,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(9)
                 .Quantity(1)
                 .RequirementUnlocked()
-                .RequirementPerk(PerkType.WeaponBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
                 .Component("jade", 5)
                 .Component("ref_veldite", 3)
@@ -754,7 +697,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(19)
                 .Quantity(1)
                 .RequirementUnlocked()
-                .RequirementPerk(PerkType.WeaponBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
                 .Component("agate", 5)
                 .Component("ref_scordspar", 3)
@@ -767,7 +709,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(29)
                 .Quantity(1)
                 .RequirementUnlocked()
-                .RequirementPerk(PerkType.WeaponBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("citrine", 5)
                 .Component("ref_plagionite", 3)
@@ -780,7 +721,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(39)
                 .Quantity(1)
                 .RequirementUnlocked()
-                .RequirementPerk(PerkType.WeaponBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ruby", 5)
                 .Component("ref_keromber", 3)
@@ -793,7 +733,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(49)
                 .Quantity(1)
                 .RequirementUnlocked()
-                .RequirementPerk(PerkType.WeaponBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("emerald", 5)
                 .Component("ref_jasioclase", 3)
@@ -805,7 +744,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("saberstaff_upg1")
                 .Level(52)
                 .Quantity(1)
-                .RequirementPerk(PerkType.WeaponBlueprints, 5)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.None, 0)
                 .ResearchCostModifier(0.2f)
@@ -827,7 +765,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("b_katar")
                 .Level(3)
                 .Quantity(1)
-                .RequirementPerk(PerkType.WeaponBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
                 .Component("ref_veldite", 2)
                 .Component("wood", 1);
@@ -838,7 +775,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("tit_katar")
                 .Level(13)
                 .Quantity(1)
-                .RequirementPerk(PerkType.WeaponBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_scordspar", 2)
                 .Component("fine_wood", 1);
@@ -849,7 +785,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("sith_katar")
                 .Level(18)
                 .Quantity(1)
-                .RequirementPerk(PerkType.WeaponBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
                 .Component("ref_scordspar", 3)
                 .Component("fine_wood", 2);
@@ -860,7 +795,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("del_katar")
                 .Level(23)
                 .Quantity(1)
-                .RequirementPerk(PerkType.WeaponBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_plagionite", 2)
                 .Component("ancient_wood", 1);
@@ -871,7 +805,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("proto_katar")
                 .Level(33)
                 .Quantity(1)
-                .RequirementPerk(PerkType.WeaponBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_keromber", 2)
                 .Component("aracia_wood", 1);
@@ -882,7 +815,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("oph_katar")
                 .Level(43)
                 .Quantity(1)
-                .RequirementPerk(PerkType.WeaponBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_jasioclase", 2)
                 .Component("hyphae_wood", 1);
@@ -893,7 +825,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("chi_katar")
                 .Level(52)
                 .Quantity(1)
-                .RequirementPerk(PerkType.WeaponBlueprints, 5)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .ResearchCostModifier(0.2f)
@@ -915,7 +846,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("b_staff")
                 .Level(5)
                 .Quantity(1)
-                .RequirementPerk(PerkType.WeaponBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
                 .Component("ref_veldite", 3)
                 .Component("wood", 2);
@@ -926,7 +856,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("tit_staff")
                 .Level(15)
                 .Quantity(1)
-                .RequirementPerk(PerkType.WeaponBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_scordspar", 3)
                 .Component("fine_wood", 2);
@@ -937,7 +866,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("sith_staff")
                 .Level(12)
                 .Quantity(1)
-                .RequirementPerk(PerkType.WeaponBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
                 .Component("ref_scordspar", 2)
                 .Component("fine_wood", 1);
@@ -948,7 +876,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("del_staff")
                 .Level(25)
                 .Quantity(1)
-                .RequirementPerk(PerkType.WeaponBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_plagionite", 3)
                 .Component("ancient_wood", 2);
@@ -959,7 +886,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("proto_staff")
                 .Level(35)
                 .Quantity(1)
-                .RequirementPerk(PerkType.WeaponBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_keromber", 3)
                 .Component("aracia_wood", 2);
@@ -970,7 +896,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("oph_staff")
                 .Level(45)
                 .Quantity(1)
-                .RequirementPerk(PerkType.WeaponBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_jasioclase", 3)
                 .Component("hyphae_wood", 2);
@@ -981,7 +906,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("chi_staff")
                 .Level(52)
                 .Quantity(1)
-                .RequirementPerk(PerkType.WeaponBlueprints, 5)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .ResearchCostModifier(0.2f)
@@ -1004,7 +928,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("b_pistol")
                 .Level(6)
                 .Quantity(1)
-                .RequirementPerk(PerkType.WeaponBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
                 .Component("ref_veldite", 4)
                 .Component("elec_ruined", 2);
@@ -1015,7 +938,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("tit_pistol")
                 .Level(16)
                 .Quantity(1)
-                .RequirementPerk(PerkType.WeaponBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_scordspar", 4)
                 .Component("elec_flawed", 2);
@@ -1026,7 +948,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("sith_pistol")
                 .Level(19)
                 .Quantity(1)
-                .RequirementPerk(PerkType.WeaponBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
                 .Component("ref_scordspar", 5)
                 .Component("elec_flawed", 3);
@@ -1037,7 +958,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("del_pistol")
                 .Level(26)
                 .Quantity(1)
-                .RequirementPerk(PerkType.WeaponBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_plagionite", 4)
                 .Component("elec_good", 2);
@@ -1048,7 +968,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("proto_pistol")
                 .Level(36)
                 .Quantity(1)
-                .RequirementPerk(PerkType.WeaponBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_keromber", 4)
                 .Component("elec_imperfect", 2);
@@ -1059,7 +978,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("oph_pistol")
                 .Level(46)
                 .Quantity(1)
-                .RequirementPerk(PerkType.WeaponBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_jasioclase", 4)
                 .Component("elec_high", 2);
@@ -1070,7 +988,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("chi_pistol")
                 .Level(52)
                 .Quantity(1)
-                .RequirementPerk(PerkType.WeaponBlueprints, 5)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .ResearchCostModifier(0.2f)
@@ -1092,7 +1009,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("b_shuriken")
                 .Level(2)
                 .Quantity(1)
-                .RequirementPerk(PerkType.WeaponBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
                 .Component("ref_veldite", 2)
                 .Component("wood", 1);
@@ -1103,7 +1019,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("tit_shuriken")
                 .Level(12)
                 .Quantity(1)
-                .RequirementPerk(PerkType.WeaponBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_scordspar", 2)
                 .Component("fine_wood", 1);
@@ -1114,7 +1029,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("sith_shuriken")
                 .Level(18)
                 .Quantity(1)
-                .RequirementPerk(PerkType.WeaponBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
                 .Component("ref_scordspar", 3)
                 .Component("fine_wood", 2);
@@ -1125,7 +1039,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("del_shuriken")
                 .Level(22)
                 .Quantity(1)
-                .RequirementPerk(PerkType.WeaponBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_plagionite", 2)
                 .Component("ancient_wood", 1);
@@ -1136,7 +1049,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("proto_shuriken")
                 .Level(32)
                 .Quantity(1)
-                .RequirementPerk(PerkType.WeaponBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_keromber", 2)
                 .Component("aracia_wood", 1);
@@ -1147,7 +1059,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("oph_shuriken")
                 .Level(42)
                 .Quantity(1)
-                .RequirementPerk(PerkType.WeaponBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_jasioclase", 2)
                 .Component("hyphae_wood", 1);
@@ -1158,7 +1069,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("chi_shuriken")
                 .Level(52)
                 .Quantity(1)
-                .RequirementPerk(PerkType.WeaponBlueprints, 5)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .ResearchCostModifier(0.2f)
@@ -1180,7 +1090,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("b_rifle")
                 .Level(9)
                 .Quantity(1)
-                .RequirementPerk(PerkType.WeaponBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
                 .Component("ref_veldite", 5)
                 .Component("elec_ruined", 3);
@@ -1191,7 +1100,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("tit_rifle")
                 .Level(19)
                 .Quantity(1)
-                .RequirementPerk(PerkType.WeaponBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_scordspar", 5)
                 .Component("elec_flawed", 3);
@@ -1202,7 +1110,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("sith_rifle")
                 .Level(15)
                 .Quantity(1)
-                .RequirementPerk(PerkType.WeaponBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
                 .Component("ref_scordspar", 3)
                 .Component("elec_flawed", 2);
@@ -1213,7 +1120,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("del_rifle")
                 .Level(29)
                 .Quantity(1)
-                .RequirementPerk(PerkType.WeaponBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_plagionite", 5)
                 .Component("elec_good", 3);
@@ -1224,7 +1130,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("proto_rifle")
                 .Level(39)
                 .Quantity(1)
-                .RequirementPerk(PerkType.WeaponBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_keromber", 5)
                 .Component("elec_imperfect", 3);
@@ -1235,7 +1140,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("oph_rifle")
                 .Level(49)
                 .Quantity(1)
-                .RequirementPerk(PerkType.WeaponBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_jasioclase", 5)
                 .Component("elec_high", 3);
@@ -1246,7 +1150,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("chi_rifle")
                 .Level(52)
                 .Quantity(1)
-                .RequirementPerk(PerkType.WeaponBlueprints, 5)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .ResearchCostModifier(0.2f)
@@ -1265,7 +1168,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("bol_rifle")
                 .Level(52)
                 .Quantity(1)
-                .RequirementPerk(PerkType.WeaponBlueprints, 5)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .ResearchCostModifier(0.2f)

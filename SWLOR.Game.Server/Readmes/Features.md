@@ -139,7 +139,7 @@ public class KillRatsQuestDefinition : IQuestListDefinition
 **Location**: `Feature/PerkDefinition/`
 
 **Categories**:
-- **AgriculturePerkDefinition.cs** - Farming perks
+- **EngineeringPerkDefinition.cs** - Droid assembly perks
 - **ArmorPerkDefinition.cs** - Armor-related perks
 - **BeastBalancedPerkDefinition.cs** - Beast companion perks
 

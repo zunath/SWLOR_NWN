@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 
 namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
@@ -28,7 +27,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Resref("cap_boost_b")
 				.Level(5)
 				.Quantity(1)
-				.RequirementPerk(PerkType.StarshipBlueprints, 1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 1)
 				.Component("ref_tilarium", 3)
 				.Component("elec_ruined", 2);
@@ -39,7 +37,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Resref("com_laser_b")
 				.Level(2)
 				.Quantity(1)
-				.RequirementPerk(PerkType.StarshipBlueprints, 1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 1)
 				.Component("ref_tilarium", 2)
 				.Component("elec_ruined", 1);
@@ -50,7 +47,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("beamcannon1")
                 .Level(2)
                 .Quantity(1)
-                .RequirementPerk(PerkType.StarshipBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Module, 1)
                 .Component("ref_tilarium", 2)
                 .Component("elec_ruined", 1);
@@ -61,7 +57,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Resref("em_amp_b")
 				.Level(7)
 				.Quantity(1)
-				.RequirementPerk(PerkType.StarshipBlueprints, 1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 1)
 				.Component("ref_tilarium", 4)
 				.Component("elec_ruined", 2);
@@ -72,7 +67,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Resref("therm_amp_b")
 				.Level(6)
 				.Quantity(1)
-				.RequirementPerk(PerkType.StarshipBlueprints, 1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 1)
 				.Component("ref_tilarium", 4)
 				.Component("elec_ruined", 2);
@@ -83,7 +77,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Resref("exp_amp_b")
 				.Level(6)
 				.Quantity(1)
-				.RequirementPerk(PerkType.StarshipBlueprints, 1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 1)
 				.Component("ref_tilarium", 4)
 				.Component("elec_ruined", 2);
@@ -94,7 +87,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Resref("eva_boost_b")
 				.Level(8)
 				.Quantity(1)
-				.RequirementPerk(PerkType.StarshipBlueprints, 1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 1)
 				.Component("ref_tilarium", 5)
 				.Component("elec_ruined", 3);
@@ -105,7 +97,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Resref("hull_boost_b")
 				.Level(4)
 				.Quantity(1)
-				.RequirementPerk(PerkType.StarshipBlueprints, 1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 1)
 				.Component("ref_tilarium", 3)
 				.Component("elec_ruined", 2);
@@ -116,7 +107,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Resref("hull_rep_b")
 				.Level(3)
 				.Quantity(1)
-				.RequirementPerk(PerkType.StarshipBlueprints, 1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 1)
 				.Component("ref_tilarium", 2)
 				.Component("elec_ruined", 1);
@@ -127,7 +117,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Resref("ion_cann_b")
 				.Level(2)
 				.Quantity(1)
-				.RequirementPerk(PerkType.StarshipBlueprints, 1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 1)
 				.Component("ref_tilarium", 2)
 				.Component("elec_ruined", 1);
@@ -138,7 +127,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Resref("min_laser_b")
 				.Level(1)
 				.Quantity(1)
-				.RequirementPerk(PerkType.StarshipBlueprints, 1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 1)
 				.Component("ref_tilarium", 1)
 				.Component("elec_ruined", 1);
@@ -149,7 +137,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Resref("msl_launch_b")
 				.Level(4)
 				.Quantity(1)
-				.RequirementPerk(PerkType.StarshipBlueprints, 1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 1)
 				.Component("ref_tilarium", 3)
 				.Component("elec_ruined", 2);
@@ -160,7 +147,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Resref("shld_boost_b")
 				.Level(3)
 				.Quantity(1)
-				.RequirementPerk(PerkType.StarshipBlueprints, 1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 1)
 				.Component("ref_tilarium", 2)
 				.Component("elec_ruined", 1);
@@ -171,7 +157,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Resref("shld_rep_b")
 				.Level(8)
 				.Quantity(1)
-				.RequirementPerk(PerkType.StarshipBlueprints, 1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 1)
 				.Component("ref_tilarium", 5)
 				.Component("elec_ruined", 3);
@@ -182,7 +167,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Resref("tgt_sys_b")
 				.Level(9)
 				.Quantity(1)
-				.RequirementPerk(PerkType.StarshipBlueprints, 1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 1)
 				.Component("ref_tilarium", 5)
 				.Component("elec_ruined", 3);
@@ -193,7 +177,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Resref("cap_inject1")
 				.Level(9)
 				.Quantity(1)
-				.RequirementPerk(PerkType.StarshipBlueprints, 1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 1)
 				.Component("ref_tilarium", 5)
 				.Component("elec_ruined", 3);
@@ -204,7 +187,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Resref("las_armor_1")
 				.Level(5)
 				.Quantity(1)
-				.RequirementPerk(PerkType.StarshipBlueprints, 1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 1)
 				.Component("ref_tilarium", 5)
 				.Component("elec_ruined", 1);
@@ -215,7 +197,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Resref("ion_armor_1")
 				.Level(5)
 				.Quantity(1)
-				.RequirementPerk(PerkType.StarshipBlueprints, 1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 1)
 				.Component("ref_tilarium", 5)
 				.Component("elec_ruined", 1);
@@ -226,7 +207,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Resref("exp_armor_1")
 				.Level(5)
 				.Quantity(1)
-				.RequirementPerk(PerkType.StarshipBlueprints, 1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 1)
 				.Component("ref_tilarium", 5)
 				.Component("elec_ruined", 1);
@@ -237,7 +217,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Resref("hvy_armor_1")
 				.Level(5)
 				.Quantity(1)
-				.RequirementPerk(PerkType.StarshipBlueprints, 1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 1)
 				.Component("ref_tilarium", 5)
 				.Component("elec_ruined", 1);
@@ -248,7 +227,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("config_fig1")
                 .Level(5)
                 .Quantity(1)
-                .RequirementPerk(PerkType.StarshipBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Module, 1)
                 .Component("ref_tilarium", 3)
                 .Component("elec_ruined", 2);
@@ -259,7 +237,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("config_bmb1")
                 .Level(5)
                 .Quantity(1)
-                .RequirementPerk(PerkType.StarshipBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Module, 1)
                 .Component("ref_tilarium", 3)
                 .Component("elec_ruined", 2);
@@ -270,7 +247,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("config_int1")
                 .Level(5)
                 .Quantity(1)
-                .RequirementPerk(PerkType.StarshipBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Module, 1)
                 .Component("ref_tilarium", 3)
                 .Component("elec_ruined", 2);
@@ -281,7 +257,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("config_ind1")
                 .Level(5)
                 .Quantity(1)
-                .RequirementPerk(PerkType.StarshipBlueprints, 1)
                 .EnhancementSlots(RecipeEnhancementType.Module, 1)
                 .Component("ref_tilarium", 3)
                 .Component("elec_ruined", 2);
@@ -296,7 +271,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Resref("cap_boost_1")
 				.Level(15)
 				.Quantity(1)
-				.RequirementPerk(PerkType.StarshipBlueprints, 2)
 				.EnhancementSlots(RecipeEnhancementType.Module, 1)
 				.Component("ref_currian", 3)
 				.Component("elec_flawed", 2);
@@ -307,7 +281,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Resref("com_laser_1")
 				.Level(12)
 				.Quantity(1)
-				.RequirementPerk(PerkType.StarshipBlueprints, 2)
 				.EnhancementSlots(RecipeEnhancementType.Module, 1)
 				.Component("ref_currian", 2)
 				.Component("elec_flawed", 1);
@@ -318,7 +291,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("beamcannon2")
                 .Level(12)
                 .Quantity(1)
-                .RequirementPerk(PerkType.StarshipBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Module, 2)
                 .Component("ref_currian", 2)
                 .Component("elec_flawed", 1);
@@ -329,7 +301,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Resref("em_amp_1")
 				.Level(17)
 				.Quantity(1)
-				.RequirementPerk(PerkType.StarshipBlueprints, 2)
 				.EnhancementSlots(RecipeEnhancementType.Module, 1)
 				.Component("ref_currian", 4)
 				.Component("elec_flawed", 2);
@@ -340,7 +311,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Resref("therm_amp_1")
 				.Level(16)
 				.Quantity(1)
-				.RequirementPerk(PerkType.StarshipBlueprints, 2)
 				.EnhancementSlots(RecipeEnhancementType.Module, 1)
 				.Component("ref_currian", 4)
 				.Component("elec_flawed", 2);
@@ -351,7 +321,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Resref("exp_amp_1")
 				.Level(16)
 				.Quantity(1)
-				.RequirementPerk(PerkType.StarshipBlueprints, 2)
 				.EnhancementSlots(RecipeEnhancementType.Module, 1)
 				.Component("ref_currian", 4)
 				.Component("elec_flawed", 2);
@@ -362,7 +331,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Resref("eva_boost_1")
 				.Level(18)
 				.Quantity(1)
-				.RequirementPerk(PerkType.StarshipBlueprints, 2)
 				.EnhancementSlots(RecipeEnhancementType.Module, 1)
 				.Component("ref_currian", 5)
 				.Component("elec_flawed", 3);
@@ -373,7 +341,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Resref("hull_boost_1")
 				.Level(14)
 				.Quantity(1)
-				.RequirementPerk(PerkType.StarshipBlueprints, 2)
 				.EnhancementSlots(RecipeEnhancementType.Module, 1)
 				.Component("ref_currian", 3)
 				.Component("elec_flawed", 2);
@@ -384,7 +351,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Resref("hull_rep_1")
 				.Level(13)
 				.Quantity(1)
-				.RequirementPerk(PerkType.StarshipBlueprints, 2)
 				.EnhancementSlots(RecipeEnhancementType.Module, 1)
 				.Component("ref_currian", 2)
 				.Component("elec_flawed", 1);
@@ -395,7 +361,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Resref("ion_cann_1")
 				.Level(12)
 				.Quantity(1)
-				.RequirementPerk(PerkType.StarshipBlueprints, 2)
 				.EnhancementSlots(RecipeEnhancementType.Module, 1)
 				.Component("ref_currian", 2)
 				.Component("elec_flawed", 1);
@@ -406,7 +371,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Resref("min_laser_1")
 				.Level(11)
 				.Quantity(1)
-				.RequirementPerk(PerkType.StarshipBlueprints, 2)
 				.EnhancementSlots(RecipeEnhancementType.Module, 1)
 				.Component("ref_currian", 1)
 				.Component("elec_flawed", 1);
@@ -417,7 +381,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Resref("msl_launch_1")
 				.Level(14)
 				.Quantity(1)
-				.RequirementPerk(PerkType.StarshipBlueprints, 2)
 				.EnhancementSlots(RecipeEnhancementType.Module, 1)
 				.Component("ref_currian", 3)
 				.Component("elec_flawed", 2);
@@ -428,7 +391,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Resref("shld_boost_1")
 				.Level(13)
 				.Quantity(1)
-				.RequirementPerk(PerkType.StarshipBlueprints, 2)
 				.EnhancementSlots(RecipeEnhancementType.Module, 1)
 				.Component("ref_currian", 2)
 				.Component("elec_flawed", 1);
@@ -439,7 +401,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Resref("shld_rep_1")
 				.Level(18)
 				.Quantity(1)
-				.RequirementPerk(PerkType.StarshipBlueprints, 2)
 				.EnhancementSlots(RecipeEnhancementType.Module, 1)
 				.Component("ref_currian", 5)
 				.Component("elec_flawed", 3);
@@ -450,7 +411,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Resref("tgt_sys_1")
 				.Level(19)
 				.Quantity(1)
-				.RequirementPerk(PerkType.StarshipBlueprints, 2)
 				.EnhancementSlots(RecipeEnhancementType.Module, 1)
 				.Component("ref_currian", 5)
 				.Component("elec_flawed", 3);
@@ -461,7 +421,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Resref("cap_inject2")
 				.Level(19)
 				.Quantity(1)
-				.RequirementPerk(PerkType.StarshipBlueprints, 2)
 				.EnhancementSlots(RecipeEnhancementType.Module, 1)
 				.Component("ref_currian", 5)
 				.Component("elec_flawed", 3);
@@ -472,7 +431,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Resref("las_armor_2")
 				.Level(15)
 				.Quantity(1)
-				.RequirementPerk(PerkType.StarshipBlueprints, 2)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_currian", 5)
 				.Component("elec_flawed", 1);
@@ -483,7 +441,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Resref("ion_armor_2")
 				.Level(15)
 				.Quantity(1)
-				.RequirementPerk(PerkType.StarshipBlueprints, 2)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_currian", 5)
 				.Component("elec_flawed", 1);
@@ -494,7 +451,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Resref("exp_armor_2")
 				.Level(15)
 				.Quantity(1)
-				.RequirementPerk(PerkType.StarshipBlueprints, 2)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_currian", 5)
 				.Component("elec_flawed", 1);
@@ -505,7 +461,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Resref("hvy_armor_2")
 				.Level(15)
 				.Quantity(1)
-				.RequirementPerk(PerkType.StarshipBlueprints, 2)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_currian", 5)
 				.Component("elec_flawed", 1);
@@ -516,7 +471,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("config_fig2")
                 .Level(15)
                 .Quantity(1)
-                .RequirementPerk(PerkType.StarshipBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Module, 2)
                 .Component("ref_currian", 3)
                 .Component("elec_flawed", 2);
@@ -527,7 +481,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("config_bmb2")
                 .Level(15)
                 .Quantity(1)
-                .RequirementPerk(PerkType.StarshipBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Module, 2)
                 .Component("ref_currian", 3)
                 .Component("elec_flawed", 2);
@@ -538,7 +491,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("config_int2")
                 .Level(15)
                 .Quantity(1)
-                .RequirementPerk(PerkType.StarshipBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Module, 2)
                 .Component("ref_currian", 3)
                 .Component("elec_flawed", 2);
@@ -549,7 +501,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("config_ind2")
                 .Level(15)
                 .Quantity(1)
-                .RequirementPerk(PerkType.StarshipBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Module, 2)
                 .Component("ref_currian", 3)
                 .Component("elec_flawed", 2);
@@ -564,7 +515,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Resref("cap_boost_2")
 				.Level(25)
 				.Quantity(1)
-				.RequirementPerk(PerkType.StarshipBlueprints, 3)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_idailia", 3)
 				.Component("elec_good", 2);
@@ -575,7 +525,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Resref("com_laser_2")
 				.Level(22)
 				.Quantity(1)
-				.RequirementPerk(PerkType.StarshipBlueprints, 3)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_idailia", 2)
 				.Component("elec_good", 1);
@@ -586,7 +535,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("beamcannon3")
                 .Level(22)
                 .Quantity(1)
-                .RequirementPerk(PerkType.StarshipBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Module, 2)
                 .Component("ref_idailia", 2)
                 .Component("elec_good", 1);
@@ -597,7 +545,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Resref("em_amp_2")
 				.Level(27)
 				.Quantity(1)
-				.RequirementPerk(PerkType.StarshipBlueprints, 3)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_idailia", 4)
 				.Component("elec_good", 2);
@@ -608,7 +555,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Resref("therm_amp_2")
 				.Level(26)
 				.Quantity(1)
-				.RequirementPerk(PerkType.StarshipBlueprints, 3)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_idailia", 4)
 				.Component("elec_good", 2);
@@ -619,7 +565,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Resref("exp_amp_2")
 				.Level(26)
 				.Quantity(1)
-				.RequirementPerk(PerkType.StarshipBlueprints, 3)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_idailia", 4)
 				.Component("elec_good", 2);
@@ -630,7 +575,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Resref("eva_boost_2")
 				.Level(28)
 				.Quantity(1)
-				.RequirementPerk(PerkType.StarshipBlueprints, 3)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_idailia", 5)
 				.Component("elec_good", 3);
@@ -641,7 +585,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Resref("hull_boost_2")
 				.Level(24)
 				.Quantity(1)
-				.RequirementPerk(PerkType.StarshipBlueprints, 3)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_idailia", 3)
 				.Component("elec_good", 2);
@@ -652,7 +595,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Resref("hull_rep_2")
 				.Level(23)
 				.Quantity(1)
-				.RequirementPerk(PerkType.StarshipBlueprints, 3)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_idailia", 2)
 				.Component("elec_good", 1);
@@ -663,7 +605,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Resref("ion_cann_2")
 				.Level(22)
 				.Quantity(1)
-				.RequirementPerk(PerkType.StarshipBlueprints, 3)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_idailia", 2)
 				.Component("elec_good", 1);
@@ -674,7 +615,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Resref("min_laser_2")
 				.Level(21)
 				.Quantity(1)
-				.RequirementPerk(PerkType.StarshipBlueprints, 3)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_idailia", 1)
 				.Component("elec_good", 1);
@@ -685,7 +625,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Resref("msl_launch_2")
 				.Level(24)
 				.Quantity(1)
-				.RequirementPerk(PerkType.StarshipBlueprints, 3)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_idailia", 3)
 				.Component("elec_good", 2);
@@ -696,7 +635,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Resref("shld_boost_2")
 				.Level(23)
 				.Quantity(1)
-				.RequirementPerk(PerkType.StarshipBlueprints, 3)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_idailia", 2)
 				.Component("elec_good", 1);
@@ -707,7 +645,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Resref("shld_rep_2")
 				.Level(28)
 				.Quantity(1)
-				.RequirementPerk(PerkType.StarshipBlueprints, 3)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_idailia", 5)
 				.Component("elec_good", 3);
@@ -718,7 +655,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Resref("tgt_sys_2")
 				.Level(29)
 				.Quantity(1)
-				.RequirementPerk(PerkType.StarshipBlueprints, 3)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_idailia", 5)
 				.Component("elec_good", 3);
@@ -729,7 +665,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Resref("cap_inject3")
 				.Level(29)
 				.Quantity(1)
-				.RequirementPerk(PerkType.StarshipBlueprints, 3)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_idailia", 5)
 				.Component("elec_good", 3);
@@ -740,7 +675,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Resref("las_armor_3")
 				.Level(25)
 				.Quantity(1)
-				.RequirementPerk(PerkType.StarshipBlueprints, 3)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_idailia", 5)
 				.Component("elec_good", 1);
@@ -751,7 +685,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Resref("ion_armor_3")
 				.Level(25)
 				.Quantity(1)
-				.RequirementPerk(PerkType.StarshipBlueprints, 3)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_idailia", 5)
 				.Component("elec_good", 1);
@@ -762,7 +695,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Resref("exp_armor_3")
 				.Level(25)
 				.Quantity(1)
-				.RequirementPerk(PerkType.StarshipBlueprints, 3)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_idailia", 5)
 				.Component("elec_good", 1);
@@ -773,7 +705,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Resref("hvy_armor_3")
 				.Level(25)
 				.Quantity(1)
-				.RequirementPerk(PerkType.StarshipBlueprints, 3)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_idailia", 5)
 				.Component("elec_good", 1);
@@ -784,7 +715,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("config_fig3")
                 .Level(25)
                 .Quantity(1)
-                .RequirementPerk(PerkType.StarshipBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Module, 2)
                 .Component("ref_idailia", 3)
                 .Component("elec_good", 2);
@@ -795,7 +725,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("config_bmb3")
                 .Level(25)
                 .Quantity(1)
-                .RequirementPerk(PerkType.StarshipBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Module, 2)
                 .Component("ref_idailia", 3)
                 .Component("elec_good", 2);
@@ -806,7 +735,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("config_int3")
                 .Level(25)
                 .Quantity(1)
-                .RequirementPerk(PerkType.StarshipBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Module, 2)
                 .Component("ref_idailia", 3)
                 .Component("elec_good", 2);
@@ -817,7 +745,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("config_ind3")
                 .Level(25)
                 .Quantity(1)
-                .RequirementPerk(PerkType.StarshipBlueprints, 3)
                 .EnhancementSlots(RecipeEnhancementType.Module, 2)
                 .Component("ref_idailia", 3)
                 .Component("elec_good", 2);
@@ -832,7 +759,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Resref("cap_boost_3")
 				.Level(35)
 				.Quantity(1)
-				.RequirementPerk(PerkType.StarshipBlueprints, 4)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_barinium", 3)
 				.Component("elec_imperfect", 2);
@@ -843,7 +769,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Resref("com_laser_3")
 				.Level(32)
 				.Quantity(1)
-				.RequirementPerk(PerkType.StarshipBlueprints, 4)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_barinium", 2)
 				.Component("elec_imperfect", 1);
@@ -854,7 +779,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("beamcannon4")
                 .Level(32)
                 .Quantity(1)
-                .RequirementPerk(PerkType.StarshipBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Module, 2)
                 .Component("ref_barinium", 2)
                 .Component("elec_imperfect", 1);
@@ -865,7 +789,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Resref("em_amp_3")
 				.Level(37)
 				.Quantity(1)
-				.RequirementPerk(PerkType.StarshipBlueprints, 4)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_barinium", 4)
 				.Component("elec_imperfect", 2);
@@ -876,7 +799,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Resref("therm_amp_3")
 				.Level(36)
 				.Quantity(1)
-				.RequirementPerk(PerkType.StarshipBlueprints, 4)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_barinium", 4)
 				.Component("elec_imperfect", 2);
@@ -887,7 +809,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Resref("exp_amp_3")
 				.Level(36)
 				.Quantity(1)
-				.RequirementPerk(PerkType.StarshipBlueprints, 4)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_barinium", 4)
 				.Component("elec_imperfect", 2);
@@ -898,7 +819,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Resref("eva_boost_3")
 				.Level(38)
 				.Quantity(1)
-				.RequirementPerk(PerkType.StarshipBlueprints, 4)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_barinium", 5)
 				.Component("elec_imperfect", 3);
@@ -909,7 +829,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Resref("hull_boost_3")
 				.Level(34)
 				.Quantity(1)
-				.RequirementPerk(PerkType.StarshipBlueprints, 4)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_barinium", 3)
 				.Component("elec_imperfect", 2);
@@ -920,7 +839,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Resref("hull_rep_3")
 				.Level(33)
 				.Quantity(1)
-				.RequirementPerk(PerkType.StarshipBlueprints, 4)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_barinium", 2)
 				.Component("elec_imperfect", 1);
@@ -931,7 +849,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Resref("ion_cann_3")
 				.Level(32)
 				.Quantity(1)
-				.RequirementPerk(PerkType.StarshipBlueprints, 4)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_barinium", 2)
 				.Component("elec_imperfect", 1);
@@ -942,7 +859,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Resref("min_laser_3")
 				.Level(31)
 				.Quantity(1)
-				.RequirementPerk(PerkType.StarshipBlueprints, 4)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_barinium", 1)
 				.Component("elec_imperfect", 1);
@@ -953,7 +869,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Resref("msl_launch_3")
 				.Level(34)
 				.Quantity(1)
-				.RequirementPerk(PerkType.StarshipBlueprints, 4)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_barinium", 3)
 				.Component("elec_imperfect", 2);
@@ -964,7 +879,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Resref("shld_boost_3")
 				.Level(33)
 				.Quantity(1)
-				.RequirementPerk(PerkType.StarshipBlueprints, 4)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_barinium", 2)
 				.Component("elec_imperfect", 1);
@@ -975,7 +889,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Resref("shld_rep_3")
 				.Level(38)
 				.Quantity(1)
-				.RequirementPerk(PerkType.StarshipBlueprints, 4)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_barinium", 5)
 				.Component("elec_imperfect", 3);
@@ -986,7 +899,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Resref("tgt_sys_3")
 				.Level(39)
 				.Quantity(1)
-				.RequirementPerk(PerkType.StarshipBlueprints, 4)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_barinium", 5)
 				.Component("elec_imperfect", 3);
@@ -997,7 +909,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Resref("cap_inject4")
 				.Level(39)
 				.Quantity(1)
-				.RequirementPerk(PerkType.StarshipBlueprints, 4)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_barinium", 5)
 				.Component("elec_imperfect", 3);
@@ -1008,7 +919,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Resref("las_armor_4")
 				.Level(35)
 				.Quantity(1)
-				.RequirementPerk(PerkType.StarshipBlueprints, 4)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_barinium", 5)
 				.Component("elec_imperfect", 1);
@@ -1019,7 +929,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Resref("ion_armor_4")
 				.Level(35)
 				.Quantity(1)
-				.RequirementPerk(PerkType.StarshipBlueprints, 4)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_barinium", 5)
 				.Component("elec_imperfect", 1);
@@ -1030,7 +939,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Resref("exp_armor_4")
 				.Level(35)
 				.Quantity(1)
-				.RequirementPerk(PerkType.StarshipBlueprints, 4)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_barinium", 5)
 				.Component("elec_imperfect", 1);
@@ -1041,7 +949,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Resref("hvy_armor_4")
 				.Level(35)
 				.Quantity(1)
-				.RequirementPerk(PerkType.StarshipBlueprints, 4)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_barinium", 5)
 				.Component("elec_imperfect", 1);
@@ -1052,7 +959,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("config_fig4")
                 .Level(35)
                 .Quantity(1)
-                .RequirementPerk(PerkType.StarshipBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Module, 2)
                 .Component("ref_barinium", 3)
                 .Component("elec_imperfect", 2);
@@ -1063,7 +969,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("config_bmb4")
                 .Level(35)
                 .Quantity(1)
-                .RequirementPerk(PerkType.StarshipBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Module, 2)
                 .Component("ref_barinium", 3)
                 .Component("elec_imperfect", 2);
@@ -1074,7 +979,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("config_int4")
                 .Level(35)
                 .Quantity(1)
-                .RequirementPerk(PerkType.StarshipBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Module, 2)
                 .Component("ref_barinium", 3)
                 .Component("elec_imperfect", 2);
@@ -1085,7 +989,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("config_ind4")
                 .Level(35)
                 .Quantity(1)
-                .RequirementPerk(PerkType.StarshipBlueprints, 4)
                 .EnhancementSlots(RecipeEnhancementType.Module, 2)
                 .Component("ref_barinium", 3)
                 .Component("elec_imperfect", 2);
@@ -1100,7 +1003,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Resref("cap_boost_4")
 				.Level(45)
 				.Quantity(1)
-				.RequirementPerk(PerkType.StarshipBlueprints, 5)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_gostian", 3)
 				.Component("elec_high", 2);
@@ -1111,7 +1013,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Resref("com_laser_4")
 				.Level(42)
 				.Quantity(1)
-				.RequirementPerk(PerkType.StarshipBlueprints, 5)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_gostian", 2)
 				.Component("elec_high", 1);
@@ -1122,7 +1023,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("beamcannon5")
                 .Level(42)
                 .Quantity(1)
-                .RequirementPerk(PerkType.StarshipBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Module, 2)
                 .Component("ref_gostian", 2)
                 .Component("elec_high", 1);
@@ -1133,7 +1033,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Resref("em_amp_4")
 				.Level(47)
 				.Quantity(1)
-				.RequirementPerk(PerkType.StarshipBlueprints, 5)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_gostian", 4)
 				.Component("elec_high", 2);
@@ -1144,7 +1043,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Resref("therm_amp_4")
 				.Level(46)
 				.Quantity(1)
-				.RequirementPerk(PerkType.StarshipBlueprints, 5)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_gostian", 4)
 				.Component("elec_high", 2);
@@ -1155,7 +1053,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Resref("exp_amp_4")
 				.Level(46)
 				.Quantity(1)
-				.RequirementPerk(PerkType.StarshipBlueprints, 5)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_gostian", 4)
 				.Component("elec_high", 2);
@@ -1166,7 +1063,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Resref("eva_boost_4")
 				.Level(48)
 				.Quantity(1)
-				.RequirementPerk(PerkType.StarshipBlueprints, 5)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_gostian", 5)
 				.Component("elec_high", 3);
@@ -1177,7 +1073,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Resref("hull_boost_4")
 				.Level(44)
 				.Quantity(1)
-				.RequirementPerk(PerkType.StarshipBlueprints, 5)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_gostian", 3)
 				.Component("elec_high", 2);
@@ -1188,7 +1083,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Resref("hull_rep_4")
 				.Level(43)
 				.Quantity(1)
-				.RequirementPerk(PerkType.StarshipBlueprints, 5)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_gostian", 2)
 				.Component("elec_high", 1);
@@ -1199,7 +1093,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Resref("ion_cann_4")
 				.Level(42)
 				.Quantity(1)
-				.RequirementPerk(PerkType.StarshipBlueprints, 5)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_gostian", 2)
 				.Component("elec_high", 1);
@@ -1210,7 +1103,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Resref("min_laser_4")
 				.Level(41)
 				.Quantity(1)
-				.RequirementPerk(PerkType.StarshipBlueprints, 5)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_gostian", 1)
 				.Component("elec_high", 1);
@@ -1221,7 +1113,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Resref("msl_launch_4")
 				.Level(44)
 				.Quantity(1)
-				.RequirementPerk(PerkType.StarshipBlueprints, 5)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_gostian", 3)
 				.Component("elec_high", 2);
@@ -1232,7 +1123,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("protbomblnch")
                 .Level(50)
                 .Quantity(1)
-                .RequirementPerk(PerkType.StarshipBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Module, 2)
                 .Component("ref_gostian", 3)
                 .Component("elec_high", 2);
@@ -1243,7 +1133,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Resref("shld_boost_4")
 				.Level(43)
 				.Quantity(1)
-				.RequirementPerk(PerkType.StarshipBlueprints, 5)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_gostian", 2)
 				.Component("elec_high", 1);
@@ -1254,7 +1143,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Resref("shld_rep_4")
 				.Level(48)
 				.Quantity(1)
-				.RequirementPerk(PerkType.StarshipBlueprints, 5)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_gostian", 5)
 				.Component("elec_high", 3);
@@ -1265,7 +1153,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Resref("tgt_sys_4")
 				.Level(49)
 				.Quantity(1)
-				.RequirementPerk(PerkType.StarshipBlueprints, 5)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_gostian", 5)
 				.Component("elec_high", 3);
@@ -1276,7 +1163,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Resref("cap_inject5")
 				.Level(49)
 				.Quantity(1)
-				.RequirementPerk(PerkType.StarshipBlueprints, 5)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_gostian", 5)
 				.Component("elec_high", 3);
@@ -1287,7 +1173,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Resref("las_armor_5")
 				.Level(45)
 				.Quantity(1)
-				.RequirementPerk(PerkType.StarshipBlueprints, 5)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_gostian", 5)
 				.Component("elec_high", 1);
@@ -1298,7 +1183,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Resref("ion_armor_5")
 				.Level(45)
 				.Quantity(1)
-				.RequirementPerk(PerkType.StarshipBlueprints, 5)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_gostian", 5)
 				.Component("elec_high", 1);
@@ -1309,7 +1193,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Resref("exp_armor_5")
 				.Level(45)
 				.Quantity(1)
-				.RequirementPerk(PerkType.StarshipBlueprints, 5)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_gostian", 5)
 				.Component("elec_high", 1);
@@ -1320,7 +1203,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Resref("hvy_armor_5")
 				.Level(45)
 				.Quantity(1)
-				.RequirementPerk(PerkType.StarshipBlueprints, 5)
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_gostian", 5)
 				.Component("elec_high", 1);
@@ -1331,7 +1213,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("config_fig5")
                 .Level(45)
                 .Quantity(1)
-                .RequirementPerk(PerkType.StarshipBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Module, 2)
                 .Component("ref_gostian", 3)
                 .Component("elec_high", 2);
@@ -1342,7 +1223,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("config_bmb5")
                 .Level(45)
                 .Quantity(1)
-                .RequirementPerk(PerkType.StarshipBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Module, 2)
                 .Component("ref_gostian", 3)
                 .Component("elec_high", 2);
@@ -1353,7 +1233,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("config_int5")
                 .Level(45)
                 .Quantity(1)
-                .RequirementPerk(PerkType.StarshipBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Module, 2)
                 .Component("ref_gostian", 3)
                 .Component("elec_high", 2);
@@ -1364,7 +1243,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("config_ind5")
                 .Level(45)
                 .Quantity(1)
-                .RequirementPerk(PerkType.StarshipBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Module, 2)
                 .Component("ref_gostian", 3)
                 .Component("elec_high", 2);

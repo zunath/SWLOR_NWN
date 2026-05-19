@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 
 namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
@@ -27,7 +26,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("de_sturdiness1")
                 .Level(21)
                 .Quantity(1)
-                .RequirementPerk(PerkType.EnhancementBlueprints, 3)
                 .RequirementUnlocked()
                 .Component("diag_circuit3", 1)
                 .Component("diag_circuit2", 2)
@@ -39,7 +37,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("de_ocfilt1")
                 .Level(22)
                 .Quantity(1)
-                .RequirementPerk(PerkType.EnhancementBlueprints, 3)
                 .RequirementUnlocked()
                 .Component("d_sensor3", 1)
                 .Component("d_sensor2", 2)
@@ -51,7 +48,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("de_verve1")
                 .Level(23)
                 .Quantity(1)
-                .RequirementPerk(PerkType.EnhancementBlueprints, 3)
                 .RequirementUnlocked()
                 .Component("dmotive_sys3", 1)
                 .Component("dmotive_sys2", 2)
@@ -63,7 +59,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("de_neuboost1")
                 .Level(24)
                 .Quantity(1)
-                .RequirementPerk(PerkType.EnhancementBlueprints, 3)
                 .RequirementUnlocked()
                 .Component("l_unit3", 1)
                 .Component("l_unit2", 2)
@@ -75,7 +70,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("de_mobboost1")
                 .Level(25)
                 .Quantity(1)
-                .RequirementPerk(PerkType.EnhancementBlueprints, 3)
                 .RequirementUnlocked()
                 .Component("dmotive_sys3", 1)
                 .Component("dmotive_sys2", 2)
@@ -87,7 +81,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("de_socadapt1")
                 .Level(26)
                 .Quantity(1)
-                .RequirementPerk(PerkType.EnhancementBlueprints, 3)
                 .RequirementUnlocked()
                 .Component("ca_unit3", 1)
                 .Component("ca_unit2", 2)
@@ -99,7 +92,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("de_sturdiness2")
                 .Level(41)
                 .Quantity(1)
-                .RequirementPerk(PerkType.EnhancementBlueprints, 5)
                 .RequirementUnlocked()
                 .Component("diag_circuit5", 3)
                 .Component("diag_circuit4", 2)
@@ -111,7 +103,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("de_ocfilt2")
                 .Level(42)
                 .Quantity(1)
-                .RequirementPerk(PerkType.EnhancementBlueprints, 5)
                 .RequirementUnlocked()
                 .Component("d_sensor5", 3)
                 .Component("d_sensor4", 2)
@@ -123,7 +114,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("de_verve2")
                 .Level(43)
                 .Quantity(1)
-                .RequirementPerk(PerkType.EnhancementBlueprints, 5)
                 .RequirementUnlocked()
                 .Component("dmotive_sys5", 3)
                 .Component("dmotive_sys4", 2)
@@ -135,7 +125,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("de_neuboost2")
                 .Level(44)
                 .Quantity(1)
-                .RequirementPerk(PerkType.EnhancementBlueprints, 5)
                 .RequirementUnlocked()
                 .Component("l_unit5", 3)
                 .Component("l_unit4", 2)
@@ -147,7 +136,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("de_mobboost2")
                 .Level(45)
                 .Quantity(1)
-                .RequirementPerk(PerkType.EnhancementBlueprints, 5)
                 .RequirementUnlocked()
                 .Component("dmotive_sys5", 3)
                 .Component("dmotive_sys4", 2)
@@ -159,7 +147,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("de_socadapt2")
                 .Level(46)
                 .Quantity(1)
-                .RequirementPerk(PerkType.EnhancementBlueprints, 5)
                 .RequirementUnlocked()
                 .Component("ca_unit5", 3)
                 .Component("ca_unit4", 2)
@@ -175,7 +162,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("de_memaug1")
                 .Level(6)
                 .Quantity(1)
-                .RequirementPerk(PerkType.EnhancementBlueprints, 1)
                 .RequirementUnlocked()
                 .Component("l_unit1", 2)
                 .Component("ca_unit1", 1);
@@ -186,7 +172,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("de_memaug2")
                 .Level(16)
                 .Quantity(1)
-                .RequirementPerk(PerkType.EnhancementBlueprints, 2)
                 .RequirementUnlocked()
                 .Component("l_unit2", 2)
                 .Component("ca_unit2", 1);
@@ -197,7 +182,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("de_memaug3")
                 .Level(26)
                 .Quantity(1)
-                .RequirementPerk(PerkType.EnhancementBlueprints, 3)
                 .RequirementUnlocked()
                 .Component("l_unit3", 2)
                 .Component("ca_unit3", 1);
@@ -208,7 +192,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("de_memaug4")
                 .Level(36)
                 .Quantity(1)
-                .RequirementPerk(PerkType.EnhancementBlueprints, 4)
                 .RequirementUnlocked()
                 .Component("l_unit4", 2)
                 .Component("ca_unit4", 1);
@@ -219,7 +202,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("de_memaug5")
                 .Level(46)
                 .Quantity(1)
-                .RequirementPerk(PerkType.EnhancementBlueprints, 5)
                 .RequirementUnlocked()
                 .Component("l_unit5", 2)
                 .Component("ca_unit5", 1);
@@ -227,30 +209,29 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
         private void ResistanceEnhancements()
         {
-            CreateResistanceEnhancement(RecipeType.DroidResistanceFire1, "de_res_fir1", 31, 3, "diag_circuit3", "d_sensor3");
-            CreateResistanceEnhancement(RecipeType.DroidResistancePoison1, "de_res_psn1", 31, 3, "diag_circuit3", "l_unit3");
-            CreateResistanceEnhancement(RecipeType.DroidResistanceElectrical1, "de_res_elec1", 32, 3, "d_sensor3", "l_unit3");
-            CreateResistanceEnhancement(RecipeType.DroidResistanceIce1, "de_res_ice1", 32, 3, "dmotive_sys3", "d_sensor3");
-            CreateResistanceEnhancement(RecipeType.DroidResistanceMind1, "de_res_mnd1", 33, 3, "l_unit3", "ca_unit3");
-            CreateResistanceEnhancement(RecipeType.DroidResistanceMobility1, "de_res_mob1", 33, 3, "dmotive_sys3", "l_unit3");
-            CreateResistanceEnhancement(RecipeType.DroidResistanceTrauma1, "de_res_tra1", 34, 3, "diag_circuit3", "dmotive_sys3");
-            CreateResistanceEnhancement(RecipeType.DroidResistanceDisruption1, "de_res_dis1", 34, 3, "l_unit3", "d_sensor3");
+            CreateResistanceEnhancement(RecipeType.DroidResistanceFire1, "de_res_fir1", 31, "diag_circuit3", "d_sensor3");
+            CreateResistanceEnhancement(RecipeType.DroidResistancePoison1, "de_res_psn1", 31, "diag_circuit3", "l_unit3");
+            CreateResistanceEnhancement(RecipeType.DroidResistanceElectrical1, "de_res_elec1", 32, "d_sensor3", "l_unit3");
+            CreateResistanceEnhancement(RecipeType.DroidResistanceIce1, "de_res_ice1", 32, "dmotive_sys3", "d_sensor3");
+            CreateResistanceEnhancement(RecipeType.DroidResistanceMind1, "de_res_mnd1", 33, "l_unit3", "ca_unit3");
+            CreateResistanceEnhancement(RecipeType.DroidResistanceMobility1, "de_res_mob1", 33, "dmotive_sys3", "l_unit3");
+            CreateResistanceEnhancement(RecipeType.DroidResistanceTrauma1, "de_res_tra1", 34, "diag_circuit3", "dmotive_sys3");
+            CreateResistanceEnhancement(RecipeType.DroidResistanceDisruption1, "de_res_dis1", 34, "l_unit3", "d_sensor3");
 
-            CreateResistanceEnhancement(RecipeType.DroidResistanceFire2, "de_res_fir2", 47, 5, "diag_circuit5", "d_sensor5");
-            CreateResistanceEnhancement(RecipeType.DroidResistancePoison2, "de_res_psn2", 47, 5, "diag_circuit5", "l_unit5");
-            CreateResistanceEnhancement(RecipeType.DroidResistanceElectrical2, "de_res_elec2", 48, 5, "d_sensor5", "l_unit5");
-            CreateResistanceEnhancement(RecipeType.DroidResistanceIce2, "de_res_ice2", 48, 5, "dmotive_sys5", "d_sensor5");
-            CreateResistanceEnhancement(RecipeType.DroidResistanceMind2, "de_res_mnd2", 49, 5, "l_unit5", "ca_unit5");
-            CreateResistanceEnhancement(RecipeType.DroidResistanceMobility2, "de_res_mob2", 49, 5, "dmotive_sys5", "l_unit5");
-            CreateResistanceEnhancement(RecipeType.DroidResistanceTrauma2, "de_res_tra2", 50, 5, "diag_circuit5", "dmotive_sys5");
-            CreateResistanceEnhancement(RecipeType.DroidResistanceDisruption2, "de_res_dis2", 50, 5, "l_unit5", "d_sensor5");
+            CreateResistanceEnhancement(RecipeType.DroidResistanceFire2, "de_res_fir2", 47, "diag_circuit5", "d_sensor5");
+            CreateResistanceEnhancement(RecipeType.DroidResistancePoison2, "de_res_psn2", 47, "diag_circuit5", "l_unit5");
+            CreateResistanceEnhancement(RecipeType.DroidResistanceElectrical2, "de_res_elec2", 48, "d_sensor5", "l_unit5");
+            CreateResistanceEnhancement(RecipeType.DroidResistanceIce2, "de_res_ice2", 48, "dmotive_sys5", "d_sensor5");
+            CreateResistanceEnhancement(RecipeType.DroidResistanceMind2, "de_res_mnd2", 49, "l_unit5", "ca_unit5");
+            CreateResistanceEnhancement(RecipeType.DroidResistanceMobility2, "de_res_mob2", 49, "dmotive_sys5", "l_unit5");
+            CreateResistanceEnhancement(RecipeType.DroidResistanceTrauma2, "de_res_tra2", 50, "diag_circuit5", "dmotive_sys5");
+            CreateResistanceEnhancement(RecipeType.DroidResistanceDisruption2, "de_res_dis2", 50, "l_unit5", "d_sensor5");
         }
 
         private void CreateResistanceEnhancement(
             RecipeType recipeType,
             string resref,
             int level,
-            int perkLevel,
             string component1,
             string component2)
         {
@@ -259,7 +240,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref(resref)
                 .Level(level)
                 .Quantity(1)
-                .RequirementPerk(PerkType.EnhancementBlueprints, perkLevel)
                 .RequirementUnlocked()
                 .Component(component1, 3)
                 .Component(component2, 2);
@@ -273,7 +253,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("de_vblade_b1")
                 .Level(27)
                 .Quantity(1)
-                .RequirementPerk(PerkType.EnhancementBlueprints, 3)
                 .RequirementUnlocked()
                 .Component("dmotive_sys3", 3)
                 .Component("d_sensor3", 2);
@@ -284,7 +263,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("de_vknife_b1")
                 .Level(27)
                 .Quantity(1)
-                .RequirementPerk(PerkType.EnhancementBlueprints, 3)
                 .RequirementUnlocked()
                 .Component("dmotive_sys3", 3)
                 .Component("d_sensor3", 2);
@@ -295,7 +273,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("de_lsab_b1")
                 .Level(27)
                 .Quantity(1)
-                .RequirementPerk(PerkType.EnhancementBlueprints, 3)
                 .RequirementUnlocked()
                 .Component("dmotive_sys3", 3)
                 .Component("d_sensor3", 2);
@@ -306,7 +283,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("de_hvblade_b1")
                 .Level(28)
                 .Quantity(1)
-                .RequirementPerk(PerkType.EnhancementBlueprints, 3)
                 .RequirementUnlocked()
                 .Component("dmotive_sys3", 3)
                 .Component("d_sensor3", 2);
@@ -317,7 +293,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("de_spear_b1")
                 .Level(28)
                 .Quantity(1)
-                .RequirementPerk(PerkType.EnhancementBlueprints, 3)
                 .RequirementUnlocked()
                 .Component("dmotive_sys3", 3)
                 .Component("d_sensor3", 2);
@@ -328,7 +303,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("de_tblade_b1")
                 .Level(28)
                 .Quantity(1)
-                .RequirementPerk(PerkType.EnhancementBlueprints, 3)
                 .RequirementUnlocked()
                 .Component("dmotive_sys3", 3)
                 .Component("d_sensor3", 2);
@@ -339,7 +313,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("de_sabst_b1")
                 .Level(28)
                 .Quantity(1)
-                .RequirementPerk(PerkType.EnhancementBlueprints, 3)
                 .RequirementUnlocked()
                 .Component("dmotive_sys3", 3)
                 .Component("d_sensor3", 2);
@@ -350,7 +323,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("de_katar_b1")
                 .Level(29)
                 .Quantity(1)
-                .RequirementPerk(PerkType.EnhancementBlueprints, 3)
                 .RequirementUnlocked()
                 .Component("dmotive_sys3", 3)
                 .Component("d_sensor3", 2);
@@ -361,7 +333,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("de_staff_b1")
                 .Level(29)
                 .Quantity(1)
-                .RequirementPerk(PerkType.EnhancementBlueprints, 3)
                 .RequirementUnlocked()
                 .Component("dmotive_sys3", 3)
                 .Component("d_sensor3", 2);
@@ -372,7 +343,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("de_pistol_b1")
                 .Level(30)
                 .Quantity(1)
-                .RequirementPerk(PerkType.EnhancementBlueprints, 3)
                 .RequirementUnlocked()
                 .Component("dmotive_sys3", 3)
                 .Component("d_sensor3", 2);
@@ -383,7 +353,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("de_rifle_b1")
                 .Level(30)
                 .Quantity(1)
-                .RequirementPerk(PerkType.EnhancementBlueprints, 3)
                 .RequirementUnlocked()
                 .Component("dmotive_sys3", 3)
                 .Component("d_sensor3", 2);
@@ -394,7 +363,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("de_throw_b1")
                 .Level(30)
                 .Quantity(1)
-                .RequirementPerk(PerkType.EnhancementBlueprints, 3)
                 .RequirementUnlocked()
                 .Component("dmotive_sys3", 3)
                 .Component("d_sensor3", 2);
@@ -405,7 +373,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("de_vblade_b2")
                 .Level(47)
                 .Quantity(1)
-                .RequirementPerk(PerkType.EnhancementBlueprints, 5)
                 .RequirementUnlocked()
                 .Component("dmotive_sys5", 3)
                 .Component("d_sensor5", 2);
@@ -416,7 +383,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("de_vknife_b2")
                 .Level(47)
                 .Quantity(1)
-                .RequirementPerk(PerkType.EnhancementBlueprints, 5)
                 .RequirementUnlocked()
                 .Component("dmotive_sys5", 3)
                 .Component("d_sensor5", 2);
@@ -427,7 +393,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("de_lsab_b2")
                 .Level(47)
                 .Quantity(1)
-                .RequirementPerk(PerkType.EnhancementBlueprints, 5)
                 .RequirementUnlocked()
                 .Component("dmotive_sys5", 3)
                 .Component("d_sensor5", 2);
@@ -438,7 +403,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("de_hvblade_b2")
                 .Level(48)
                 .Quantity(1)
-                .RequirementPerk(PerkType.EnhancementBlueprints, 5)
                 .RequirementUnlocked()
                 .Component("dmotive_sys5", 3)
                 .Component("d_sensor5", 2);
@@ -449,7 +413,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("de_spear_b2")
                 .Level(48)
                 .Quantity(1)
-                .RequirementPerk(PerkType.EnhancementBlueprints, 5)
                 .RequirementUnlocked()
                 .Component("dmotive_sys5", 3)
                 .Component("d_sensor5", 2);
@@ -460,7 +423,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("de_tblade_b2")
                 .Level(48)
                 .Quantity(1)
-                .RequirementPerk(PerkType.EnhancementBlueprints, 5)
                 .RequirementUnlocked()
                 .Component("dmotive_sys5", 3)
                 .Component("d_sensor5", 2);
@@ -471,7 +433,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("de_sabst_b2")
                 .Level(48)
                 .Quantity(1)
-                .RequirementPerk(PerkType.EnhancementBlueprints, 5)
                 .RequirementUnlocked()
                 .Component("dmotive_sys5", 3)
                 .Component("d_sensor5", 2);
@@ -482,7 +443,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("de_katar_b2")
                 .Level(49)
                 .Quantity(1)
-                .RequirementPerk(PerkType.EnhancementBlueprints, 5)
                 .RequirementUnlocked()
                 .Component("dmotive_sys5", 3)
                 .Component("d_sensor5", 2);
@@ -493,7 +453,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("de_staff_b2")
                 .Level(49)
                 .Quantity(1)
-                .RequirementPerk(PerkType.EnhancementBlueprints, 5)
                 .RequirementUnlocked()
                 .Component("dmotive_sys5", 3)
                 .Component("d_sensor5", 2);
@@ -504,7 +463,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("de_pistol_b2")
                 .Level(50)
                 .Quantity(1)
-                .RequirementPerk(PerkType.EnhancementBlueprints, 5)
                 .RequirementUnlocked()
                 .Component("dmotive_sys5", 3)
                 .Component("d_sensor5", 2);
@@ -515,7 +473,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("de_rifle_b2")
                 .Level(50)
                 .Quantity(1)
-                .RequirementPerk(PerkType.EnhancementBlueprints, 5)
                 .RequirementUnlocked()
                 .Component("dmotive_sys5", 3)
                 .Component("d_sensor5", 2);
@@ -526,7 +483,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Resref("de_throw_b2")
                 .Level(50)
                 .Quantity(1)
-                .RequirementPerk(PerkType.EnhancementBlueprints, 5)
                 .RequirementUnlocked()
                 .Component("dmotive_sys5", 3)
                 .Component("d_sensor5", 2);

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Bioware;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service.CombatService;
@@ -24,6 +25,7 @@ namespace SWLOR.Game.Server.Service
     public static class Craft
     {
         public const int MaxResearchLevel = 10;
+        public const int RecipeSkillUnlockOffset = 3;
 
         private static readonly Dictionary<RecipeType, RecipeDetail> _recipes = new();
         private static readonly Dictionary<RecipeCategoryType, RecipeCategoryAttribute> _allCategories = new();
@@ -318,6 +320,34 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Calculates the skill rank required to craft a recipe.
+        /// </summary>
+        /// <param name="recipe">The recipe to check.</param>
+        /// <returns>The required skill rank.</returns>
+        public static int GetRequiredSkillRankForRecipe(RecipeDetail recipe)
+        {
+            var requiredRank = recipe.Level - RecipeSkillUnlockOffset;
+            return Math.Max(requiredRank, 0);
+        }
+
+        private static string CheckRecipeSkillRequirement(uint player, RecipeDetail recipe)
+        {
+            var requiredRank = GetRequiredSkillRankForRecipe(recipe);
+            if (requiredRank <= 0)
+                return string.Empty;
+
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Player>(playerId);
+            var skillRank = dbPlayer.Skills.TryGetValue(recipe.Skill, out var skill)
+                ? skill.Rank
+                : 0;
+
+            return skillRank >= requiredRank
+                ? string.Empty
+                : $"{Skill.GetSkillDetails(recipe.Skill).Name} must be level {requiredRank}.";
+        }
+
+        /// <summary>
         /// Retrieves all of the researchable recipes associated with a skill and category.
         /// </summary>
         /// <param name="skill">The skill to search by.</param>
@@ -385,6 +415,16 @@ namespace SWLOR.Game.Server.Service
 
             recipeDetails.Add("[REQUIREMENTS]");
             recipeDetailColors.Add(GuiColor.Cyan);
+
+            var requiredSkillRank = GetRequiredSkillRankForRecipe(detail);
+            if (requiredSkillRank > 0)
+            {
+                recipeDetails.Add($"{Skill.GetSkillDetails(detail.Skill).Name} lvl {requiredSkillRank}");
+                recipeDetailColors.Add(string.IsNullOrWhiteSpace(CheckRecipeSkillRequirement(player, detail))
+                    ? GuiColor.Green
+                    : GuiColor.Red);
+            }
+
             foreach (var req in detail.Requirements)
             {
                 recipeDetails.Add(req.RequirementText);
@@ -463,6 +503,9 @@ namespace SWLOR.Game.Server.Service
         public static bool CanPlayerCraftRecipe(uint player, RecipeType recipeType)
         {
             var recipe = GetRecipe(recipeType);
+            if (!string.IsNullOrWhiteSpace(CheckRecipeSkillRequirement(player, recipe)))
+                return false;
+
             if (recipe.Requirements.Count <= 0) return true;
 
             foreach (var requirement in recipe.Requirements)

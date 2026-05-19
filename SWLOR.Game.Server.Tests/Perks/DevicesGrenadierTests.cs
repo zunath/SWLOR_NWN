@@ -129,6 +129,10 @@ public class DevicesGrenadierTests
         concussionGrenade.Should().Contain("28");
         concussionGrenade.Should().Contain("42");
         concussionGrenade.Should().Contain("typeof(KnockdownStatusEffect)");
+        concussionGrenade.Should().Contain("AbilityTargeting.ResolveImpactLocation(activator, target, targetLocation)");
+        concussionGrenade.Should().Contain("ApplyEffectAtLocation(");
+        concussionGrenade.Should().Contain("EffectVisualEffect(VisualEffect.Vfx_Fnf_Electric_Explosion)");
+        concussionGrenade.Should().Contain("areaVisualEffect: VisualEffect.None");
 
         var flashGrenade = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Devices" / "FlashGrenadeAbilityDefinition.cs").FullName);
         flashGrenade.Should().Contain("new FlashGrenade1StatusEffect(GetFlashPenalty(activator, 8))");
@@ -158,6 +162,10 @@ public class DevicesGrenadierTests
         thermalDetonator.Should().Contain("RequirementItem(\"explosives\", 2)");
         thermalDetonator.Should().Contain("typeof(BurnStatusEffect)");
         thermalDetonator.Should().Contain("DeviceAbilityEffects.ApplyGrenadeRadiusBonus(activator, 5f)");
+        thermalDetonator.Should().Contain("AbilityTargeting.ResolveImpactLocation(activator, target, targetLocation)");
+        thermalDetonator.Should().Contain("ApplyEffectAtLocation(");
+        thermalDetonator.Should().Contain("EffectVisualEffect(VisualEffect.Fnf_Fireball)");
+        thermalDetonator.Should().Contain("areaVisualEffect: VisualEffect.None");
     }
 
     [Test]

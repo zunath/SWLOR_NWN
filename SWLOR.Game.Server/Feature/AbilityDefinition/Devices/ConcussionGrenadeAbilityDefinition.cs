@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
@@ -122,10 +123,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             int duration,
             Type statusEffect)
         {
+            var impactLocation = AbilityTargeting.ResolveImpactLocation(activator, target, targetLocation);
+            ApplyEffectAtLocation(
+                DurationType.Instant,
+                EffectVisualEffect(VisualEffect.Vfx_Fnf_Electric_Explosion),
+                impactLocation);
+
             Ability.ApplyTelegraphedCombatImpact(
                 activator,
                 target,
-                targetLocation,
+                impactLocation,
                 SkillType.Devices,
                 baseDamage,
                 duration,
@@ -137,7 +144,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 Array.Empty<Type>(),
                 damageType: CombatDamageType.Electrical,
                 targetVisualEffect: VisualEffect.Vfx_Com_Hit_Electrical,
-                areaVisualEffect: VisualEffect.Vfx_Fnf_Electric_Explosion);
+                areaVisualEffect: VisualEffect.None);
         }
 
     }

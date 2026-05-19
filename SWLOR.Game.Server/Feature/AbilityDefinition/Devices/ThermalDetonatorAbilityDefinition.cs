@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
@@ -46,10 +47,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 
         private static void ThermalDetonator1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
+            var impactLocation = AbilityTargeting.ResolveImpactLocation(activator, target, targetLocation);
+            ApplyEffectAtLocation(
+                DurationType.Instant,
+                EffectVisualEffect(VisualEffect.Fnf_Fireball),
+                impactLocation);
+
             Ability.ApplyTelegraphedCombatImpact(
                 activator,
                 target,
-                targetLocation,
+                impactLocation,
                 SkillType.Devices,
                 24,
                 12,
@@ -61,7 +68,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 Array.Empty<Type>(),
                 damageType: CombatDamageType.Fire,
                 targetVisualEffect: VisualEffect.Vfx_Com_Hit_Fire,
-                areaVisualEffect: VisualEffect.Fnf_Fireball);
+                areaVisualEffect: VisualEffect.None);
         }
 
     }

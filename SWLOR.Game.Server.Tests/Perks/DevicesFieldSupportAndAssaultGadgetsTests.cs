@@ -200,8 +200,10 @@ public class DevicesFieldSupportAndAssaultGadgetsTests
     [Test]
     public void DevicesFieldSupportAndAssaultGadgetsStatuses_MatchCombatBible()
     {
-        new WeaponJam1StatusEffect().StatGroup.Stats[StatType.AbilityHitChancePercentAdjustment].Should().Be(-6);
-        new WeaponJam2StatusEffect().StatGroup.Stats[StatType.AbilityHitChancePercentAdjustment].Should().Be(-10);
+        new WeaponJam1StatusEffect().StatGroup.Stats[StatType.PhysicalAndForceAbilityHitChancePercentAdjustment].Should().Be(-6);
+        new WeaponJam1StatusEffect().StatGroup.Stats[StatType.AbilityHitChancePercentAdjustment].Should().Be(0);
+        new WeaponJam2StatusEffect().StatGroup.Stats[StatType.PhysicalAndForceAbilityHitChancePercentAdjustment].Should().Be(-10);
+        new WeaponJam2StatusEffect().StatGroup.Stats[StatType.AbilityHitChancePercentAdjustment].Should().Be(0);
         new PowerCell1StatusEffect().StatGroup.Stats[StatType.AbilityHitChancePercentAdjustment].Should().Be(4);
         new PowerCell2StatusEffect().StatGroup.Stats[StatType.AbilityHitChancePercentAdjustment].Should().Be(6);
         new PowerCell3StatusEffect().StatGroup.Stats[StatType.AbilityHitChancePercentAdjustment].Should().Be(6);

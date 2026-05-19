@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         public WeaponJam2StatusEffect()
         {
-            StatGroup.Stats[StatType.AbilityHitChancePercentAdjustment] = -10;
+            StatGroup.Stats[StatType.PhysicalAndForceAbilityHitChancePercentAdjustment] = -10;
         }
     }
 }

@@ -17,6 +17,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 {
     public sealed class IncendiaryFieldAbilityDefinition : IAbilityListDefinition
     {
+        private const VisualEffect IncendiaryFieldTargetVisualEffect = VisualEffect.Vfx_Imp_Flame_S;
+        private const VisualEffect IncendiaryFieldMarkerVisualEffect = VisualEffect.Vfx_Dur_Aura_Fire;
+
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
@@ -94,8 +97,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 5f,
                 12f,
                 CombatDamageType.Fire,
-                VisualEffect.Vfx_Com_Hit_Fire,
-                VisualEffect.Fnf_Fireball);
+                targetVisualEffect: IncendiaryFieldTargetVisualEffect,
+                markerVisualEffect: IncendiaryFieldMarkerVisualEffect,
+                markerVisualEffectScale: 2f);
         }
 
         private static void IncendiaryField2ImpactAction(uint activator, uint target, int level, Location targetLocation)
@@ -110,8 +114,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 5f,
                 15f,
                 CombatDamageType.Fire,
-                VisualEffect.Vfx_Com_Hit_Fire,
-                VisualEffect.Fnf_Fireball);
+                targetVisualEffect: IncendiaryFieldTargetVisualEffect,
+                markerVisualEffect: IncendiaryFieldMarkerVisualEffect,
+                markerVisualEffectScale: 2f);
         }
 
         private static void IncendiaryField3ImpactAction(uint activator, uint target, int level, Location targetLocation)
@@ -126,8 +131,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 5f,
                 18f,
                 CombatDamageType.Fire,
-                VisualEffect.Vfx_Com_Hit_Fire,
-                VisualEffect.Fnf_Fireball);
+                targetVisualEffect: IncendiaryFieldTargetVisualEffect,
+                markerVisualEffect: IncendiaryFieldMarkerVisualEffect,
+                markerVisualEffectScale: 2f);
         }
 
     }

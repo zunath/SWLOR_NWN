@@ -130,11 +130,18 @@ public class DevicesFieldEngineerTests
         remoteCharge.Should().Contain("CombatDamageType.Fire");
         remoteCharge.Should().Contain("typeof(KnockdownStatusEffect)");
 
+        var incendiaryField = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Devices" / "IncendiaryFieldAbilityDefinition.cs").FullName);
+        incendiaryField.Should().Contain("IncendiaryFieldTargetVisualEffect = VisualEffect.Vfx_Imp_Flame_S");
+        incendiaryField.Should().Contain("IncendiaryFieldMarkerVisualEffect = VisualEffect.Vfx_Dur_Aura_Fire");
+        incendiaryField.Should().Contain("markerVisualEffect: IncendiaryFieldMarkerVisualEffect");
+        incendiaryField.Should().NotContain("VisualEffect.Fnf_Fireball");
+
         var killzoneBeacon = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Devices" / "KillzoneBeaconAbilityDefinition.cs").FullName);
         killzoneBeacon.Should().Contain("22");
         killzoneBeacon.Should().Contain("14");
         killzoneBeacon.Should().Contain("CombatDamageType.Electrical");
         killzoneBeacon.Should().Contain("typeof(ShockStatusEffect)");
+        killzoneBeacon.Should().Contain("markerVisualEffect: VisualEffect.Vfx_Dur_Aura_Pulse_Red_Blue");
     }
 
     [Test]

@@ -18,6 +18,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
         private const float FieldEngineerPulseIntervalSeconds = 3f;
         private const float FieldEngineerVisualRefreshPaddingSeconds = 0.2f;
         private const float FieldEngineerVisualMinimumDurationSeconds = 0.1f;
+        private const string FieldEngineerPulseMarkerResref = "_mdrn_pl_emitter";
+        private const string FieldEngineerPulseMarkerTag = "field_engineer_pulse_marker";
 
         private static readonly Dictionary<uint, List<FieldEngineerPulseEmitter>> _activeFieldEngineerPulseEmitters = new();
 
@@ -53,6 +55,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 MarkerVisualEffect = markerVisualEffect;
                 MarkerVisualEffectScale = markerVisualEffectScale;
                 IsAreaPulse = isAreaPulse;
+                MarkerObject = OBJECT_INVALID;
             }
 
             public uint Activator { get; }
@@ -69,6 +72,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             public VisualEffect MarkerVisualEffect { get; }
             public float MarkerVisualEffectScale { get; }
             public bool IsAreaPulse { get; }
+            public uint MarkerObject { get; set; }
         }
 
         public static int ApplyCapacitorRigBonus(uint activator, int amount)
@@ -213,6 +217,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             }
 
             emitters.Add(emitter);
+            EnsureFieldEngineerPulseEmitterMarker(emitter);
             ApplyFieldEngineerPulseEmitterVisual(emitter);
             ScheduleNextFieldEngineerPulse(emitter);
         }
@@ -313,6 +318,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 return;
             }
 
+            EnsureFieldEngineerPulseEmitterMarker(emitter);
+            if (GetIsObjectValid(emitter.MarkerObject))
+                return;
+
             var refreshDuration = Math.Min(
                                       Math.Max(emitter.RemainingSeconds, FieldEngineerVisualMinimumDurationSeconds),
                                       FieldEngineerPulseIntervalSeconds) +
@@ -323,6 +332,36 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 EffectVisualEffect(emitter.MarkerVisualEffect, false, markerVisualEffectScale),
                 emitter.Location,
                 refreshDuration);
+        }
+
+        private static void EnsureFieldEngineerPulseEmitterMarker(FieldEngineerPulseEmitter emitter)
+        {
+            if (emitter.MarkerVisualEffect == VisualEffect.None ||
+                GetIsObjectValid(emitter.MarkerObject) ||
+                !GetIsObjectValid(GetAreaFromLocation(emitter.Location)))
+            {
+                return;
+            }
+
+            var marker = CreateObject(
+                ObjectType.Placeable,
+                FieldEngineerPulseMarkerResref,
+                emitter.Location,
+                false,
+                FieldEngineerPulseMarkerTag);
+            if (!GetIsObjectValid(marker))
+                return;
+
+            SetPlotFlag(marker, true);
+            emitter.MarkerObject = marker;
+
+            ApplyEffectToObject(
+                DurationType.Permanent,
+                EffectVisualEffect(
+                    emitter.MarkerVisualEffect,
+                    false,
+                    Math.Max(FieldEngineerVisualMinimumDurationSeconds, emitter.MarkerVisualEffectScale)),
+                marker);
         }
 
         private static bool IsFieldEngineerEmitterTracked(FieldEngineerPulseEmitter emitter)
@@ -344,6 +383,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 return;
 
             emitters.Remove(emitter);
+            if (GetIsObjectValid(emitter.MarkerObject))
+                DestroyObject(emitter.MarkerObject);
+
             if (emitters.Count <= 0)
                 _activeFieldEngineerPulseEmitters.Remove(emitter.Activator);
         }

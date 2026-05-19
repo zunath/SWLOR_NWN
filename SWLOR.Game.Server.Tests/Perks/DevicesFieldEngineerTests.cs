@@ -105,6 +105,10 @@ public class DevicesFieldEngineerTests
         effects.Should().Contain("BeaconPulseRangeBonusMeters");
         effects.Should().Contain("ExtendActiveFieldEngineerPulses");
         effects.Should().Contain("ScheduleNextFieldEngineerPulse");
+        effects.Should().Contain("FieldEngineerPulseMarkerResref = \"_mdrn_pl_emitter\"");
+        effects.Should().Contain("CreateObject(");
+        effects.Should().Contain("ObjectType.Placeable");
+        effects.Should().Contain("DestroyObject(emitter.MarkerObject)");
 
         var maintenance = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Devices" / "MaintenancePulseAbilityDefinition.cs").FullName);
         maintenance.Should().Contain(".IsSingleTargetAbility()");

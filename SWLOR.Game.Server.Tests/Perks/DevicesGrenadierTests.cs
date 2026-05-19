@@ -120,6 +120,9 @@ public class DevicesGrenadierTests
         fragGrenade.Should().Contain("48");
         fragGrenade.Should().Contain("DeviceAbilityEffects.ApplyGrenadeRadiusBonus(activator, 3f)");
         fragGrenade.Should().Contain("typeof(BleedStatusEffect)");
+        fragGrenade.Should().Contain("ApplyEffectAtLocation(");
+        fragGrenade.Should().Contain("EffectVisualEffect(VisualEffect.Fnf_Fireball)");
+        fragGrenade.Should().Contain("areaVisualEffect: VisualEffect.None");
 
         var concussionGrenade = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Devices" / "ConcussionGrenadeAbilityDefinition.cs").FullName);
         concussionGrenade.Should().Contain("14");

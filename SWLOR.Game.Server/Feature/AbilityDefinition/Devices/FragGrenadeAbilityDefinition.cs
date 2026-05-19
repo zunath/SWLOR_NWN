@@ -84,54 +84,39 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 
         private static void FragGrenade1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            Ability.ApplyTelegraphedCombatImpact(
-                activator,
-                target,
-                targetLocation,
-                SkillType.Devices,
-                18,
-                12,
-                null,
-                CombatImpactAreaShape.Sphere,
-                0f,
-                DeviceAbilityEffects.ApplyGrenadeRadiusBonus(activator, 3f),
-                0f,
-                Array.Empty<Type>(),
-                damageType: CombatDamageType.Fire,
-                targetVisualEffect: VisualEffect.Vfx_Com_Hit_Fire,
-                areaVisualEffect: VisualEffect.Fnf_Fireball);
+            ApplyFragGrenade(activator, target, targetLocation, 18, null);
         }
 
         private static void FragGrenade2ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            Ability.ApplyTelegraphedCombatImpact(
-                activator,
-                target,
-                targetLocation,
-                SkillType.Devices,
-                32,
-                12,
-                typeof(BleedStatusEffect),
-                CombatImpactAreaShape.Sphere,
-                0f,
-                DeviceAbilityEffects.ApplyGrenadeRadiusBonus(activator, 3f),
-                0f,
-                Array.Empty<Type>(),
-                damageType: CombatDamageType.Fire,
-                targetVisualEffect: VisualEffect.Vfx_Com_Hit_Fire,
-                areaVisualEffect: VisualEffect.Fnf_Fireball);
+            ApplyFragGrenade(activator, target, targetLocation, 32, typeof(BleedStatusEffect));
         }
 
         private static void FragGrenade3ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
+            ApplyFragGrenade(activator, target, targetLocation, 48, typeof(BleedStatusEffect));
+        }
+
+        private static void ApplyFragGrenade(
+            uint activator,
+            uint target,
+            Location targetLocation,
+            int baseDamage,
+            Type statusEffect)
+        {
+            ApplyEffectAtLocation(
+                DurationType.Instant,
+                EffectVisualEffect(VisualEffect.Fnf_Fireball),
+                GetFragGrenadeImpactLocation(activator, target, targetLocation));
+
             Ability.ApplyTelegraphedCombatImpact(
                 activator,
                 target,
                 targetLocation,
                 SkillType.Devices,
-                48,
+                baseDamage,
                 12,
-                typeof(BleedStatusEffect),
+                statusEffect,
                 CombatImpactAreaShape.Sphere,
                 0f,
                 DeviceAbilityEffects.ApplyGrenadeRadiusBonus(activator, 3f),
@@ -139,7 +124,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 Array.Empty<Type>(),
                 damageType: CombatDamageType.Fire,
                 targetVisualEffect: VisualEffect.Vfx_Com_Hit_Fire,
-                areaVisualEffect: VisualEffect.Fnf_Fireball);
+                areaVisualEffect: VisualEffect.None);
+        }
+
+        private static Location GetFragGrenadeImpactLocation(uint activator, uint target, Location targetLocation)
+        {
+            if (GetIsObjectValid(target))
+                return GetLocation(target);
+
+            return GetIsObjectValid(GetAreaFromLocation(targetLocation))
+                ? targetLocation
+                : GetLocation(activator);
         }
 
     }

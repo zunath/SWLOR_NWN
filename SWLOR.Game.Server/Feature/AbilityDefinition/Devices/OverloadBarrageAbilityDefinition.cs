@@ -34,6 +34,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .HasActivationDelay(1.5f)
                 .HasRecastDelay(RecastGroup.OverloadBarrage, 120f)
                 .SkillType(SkillType.Devices)
+                .UsesImpactAnimation(Animation.CastOutAnimation)
                 .HasMaxRange(DeviceAbilityRange.Standard)
                 .IsSingleTargetAbility()
                 .RequiresTarget()

@@ -39,6 +39,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .HasActivationDelay(1f)
                 .HasRecastDelay(RecastGroup.ClusterGrenade, 45f)
                 .SkillType(SkillType.Devices)
+                .UsesImpactAnimation(Animation.ThrowGrenade)
                 .IsAreaAbility()
                 .HasImpactAction(ClusterGrenade1ImpactAction)
                 .IsCastedAbility()

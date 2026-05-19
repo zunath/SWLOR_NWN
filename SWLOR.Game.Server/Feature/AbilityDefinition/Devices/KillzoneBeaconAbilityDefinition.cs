@@ -35,6 +35,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .HasActivationDelay(2f)
                 .HasRecastDelay(RecastGroup.KillzoneBeacon, 120f)
                 .SkillType(SkillType.Devices)
+                .UsesAnimation(Animation.CastOutAnimation)
                 .IsAreaAbility()
                 .HasImpactAction(KillzoneBeacon1ImpactAction)
                 .IsCastedAbility()

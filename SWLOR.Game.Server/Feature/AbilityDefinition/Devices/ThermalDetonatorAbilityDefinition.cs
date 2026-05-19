@@ -34,6 +34,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .HasActivationDelay(1.5f)
                 .HasRecastDelay(RecastGroup.ThermalDetonator, 120f)
                 .SkillType(SkillType.Devices)
+                .UsesImpactAnimation(Animation.ThrowGrenade)
                 .IsAreaAbility()
                 .HasImpactAction(ThermalDetonator1ImpactAction)
                 .IsCastedAbility()

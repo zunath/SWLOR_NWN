@@ -221,12 +221,8 @@ namespace SWLOR.Game.Server.Service.PerkService
         DeflectorShield = 217,
         DemolitionExpert = 218,
         GuildRelations = 219,
-        SmitheryEquipment = 220,
-        EngineeringEquipment = 221,
-        FabricationEquipment = 222,
-        AgricultureEquipment = 223,
         EnhancementBlueprints = 224,
-        // IDs 225-226 are free.
+        // IDs 220-223 and 225-226 are free.
         Premonition = 227,
         Disturbance = 228,
         Benevolence = 229,
@@ -251,7 +247,7 @@ namespace SWLOR.Game.Server.Service.PerkService
         IncubationManagement = 254,
         IntuitivePiloting = 255,
         ScientificNetworking = 256,
-        FishingRods = 257,
+        // ID 257 is free.
         ShoutRange = 258,
         // ID 259 is free.
         Infusion = 260,

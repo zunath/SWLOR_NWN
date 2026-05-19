@@ -286,7 +286,7 @@ function Get-RecastShortName {
         "Incendiary Field" = "Incend Field"
         "Killzone Beacon" = "Killzone Bcn"
         "Last Stand of the Light" = "Light's Stand"
-        "Maintenance Pulse" = "Maint. Pulse"
+        "Pulse Relay" = "Pulse Relay"
         "Nightmare Field" = "Nightmare Fld"
         "Overload Barrage" = "Overload Barr"
         "Pain Suppressant" = "Pain Suppress"

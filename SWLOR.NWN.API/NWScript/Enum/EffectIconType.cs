@@ -405,6 +405,8 @@ namespace SWLOR.NWN.API.NWScript.Enum
         WeaponJam1StatusEffect = 399,
         WeaponJam2StatusEffect = 400,
         WhirlingGuardStatusEffect = 401,
+        CalibratedField1StatusEffect = 402,
+        CalibratedField2StatusEffect = 403,
         // End custom status effect icons
     }
 }

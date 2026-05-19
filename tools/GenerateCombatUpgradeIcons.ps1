@@ -153,7 +153,7 @@ function Get-IconKind([string]$label) {
     if ($label -match "Stance$") { return "stance" }
     if ($label -match "ForceSpark|ForceBody|ForceLightning|ForceDrain|ForceGrip|ForceChoke|ForceMaelstrom|MindShroud|Nightmare|Dominate|Collapse|Eclipse|Creeping|WeakenResolve|FractureFocus|SaberRend|ForceRage|DevouringStrike|HungerOfTheDark") { return "darkforce" }
     if ($label -match "Benevolence|Renewal|Clarity|Pacify|MindTrick|ComprehendSpeech|ForcePush|ForceLeap|ForceTouch|ForceMend|ForceSanctuary|GuardianWard|BastionOfLight|LastStandOfTheLight|CircleOfHarmony|PurifyingWave|Innervate|Infusion") { return "lightforce" }
-    if ($label -match "MedKit|TreatmentKit|Kolto|Resuscitation|EmergencyTriage|EmergencySealant|Coagulant|Antitoxin|PainSuppressant|AdrenalStim|FocusStim|MaintenancePulse|EmergencyCocktail") { return "medical" }
+    if ($label -match "MedKit|TreatmentKit|Kolto|Resuscitation|EmergencyTriage|EmergencySealant|Coagulant|Antitoxin|PainSuppressant|AdrenalStim|FocusStim|PulseRelay|EmergencyCocktail") { return "medical" }
     if ($label -match "Grenade|Beacon|RemoteCharge|Flamethrower|WristRocket|RailDart|CryoSprayer|SonicBurst|PowerCell|Shielding|Deflector|Rayshield|Dampening|OverloadBarrage|WeaponJam") { return "tech" }
     if ($label -match "Bite|Claw|Pounce|Howl|Roar|Hide|Beast|Prey|Predator|Apex|Pack|Rampage|Primal") { return "beast" }
     if ($label -match "Order|Command|Standard|Formation|Rally|WatchfulPresence|Coordinated|ChargeOrder|PressTheAttack|HoldTheLine|MarkTarget|BreakMorale|CleanseOrder|CourageousResolve|Bolster") { return "command" }
@@ -899,7 +899,7 @@ function Draw-NamedMotif($g, [string]$label, [System.Drawing.Color]$accent, [Sys
         "^ComprehendSpeech$" { Draw-SpeechGlyph $g $accent $hot; return $true }
         "^ForcePush$" { Draw-ForcePushGlyph $g $accent $hot; return $true }
         "^ForceLeap$|^ForceIntercept$" { Draw-ForceLeapGlyph $g $accent $hot; return $true }
-        "MedKit|TreatmentKit|EmergencyTriage|EmergencyCocktail|Resuscitation|KoltoMist|Coagulant|Antitoxin|PainSuppressant|AdrenalStim|FocusStim|MaintenancePulse|EmergencySealant" { Draw-KitGlyph $g $accent $hot; return $true }
+        "MedKit|TreatmentKit|EmergencyTriage|EmergencyCocktail|Resuscitation|KoltoMist|Coagulant|Antitoxin|PainSuppressant|AdrenalStim|FocusStim|PulseRelay|EmergencySealant" { Draw-KitGlyph $g $accent $hot; return $true }
         "Grenade|Bomb|Toss|Detonator|RemoteCharge" { Draw-GrenadeGlyph $g $accent $hot; return $true }
         "Beacon" { Draw-BeaconGlyph $g $accent $hot; return $true }
         "Flamethrower|Incendiary|Fireburst" { Draw-FlameGlyph $g $accent $hot; return $true }

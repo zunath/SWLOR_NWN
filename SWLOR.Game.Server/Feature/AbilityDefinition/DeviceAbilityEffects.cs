@@ -208,6 +208,33 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             return extendedAny;
         }
 
+        public static bool TriggerActiveFieldEngineerPulses(uint activator)
+        {
+            if (!_activeFieldEngineerPulseEmitters.TryGetValue(activator, out var emitters))
+                return false;
+
+            var triggeredAny = false;
+            foreach (var emitter in emitters.ToArray())
+            {
+                if (!IsFieldEngineerEmitterValid(emitter))
+                {
+                    RemoveFieldEngineerPulseEmitter(emitter);
+                    continue;
+                }
+
+                ApplyFieldEngineerPulseEmitterVisual(emitter);
+
+                if (emitter.IsAreaPulse)
+                    ApplyAreaHostilePulse(emitter);
+                else
+                    ApplySingleHostilePulse(emitter);
+
+                triggeredAny = true;
+            }
+
+            return triggeredAny;
+        }
+
         private static void TrackFieldEngineerPulseEmitter(FieldEngineerPulseEmitter emitter)
         {
             if (!_activeFieldEngineerPulseEmitters.TryGetValue(emitter.Activator, out var emitters))

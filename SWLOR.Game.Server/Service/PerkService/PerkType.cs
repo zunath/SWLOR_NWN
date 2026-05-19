@@ -68,7 +68,7 @@ namespace SWLOR.Game.Server.Service.PerkService
         KoltoMist = 61,
         LastGuardian = 62,
         LastStandOfTheLight = 63,
-        MaintenancePulse = 64,
+        PulseRelay = 64,
         MarkTarget = 65,
         MedicalInjectorRig = 66,
         MindfulHide = 67,

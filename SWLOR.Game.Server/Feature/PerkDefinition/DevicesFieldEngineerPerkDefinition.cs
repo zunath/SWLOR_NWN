@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             BeaconTargeting();
             IncendiaryField();
             RemoteCharge();
-            MaintenancePulse();
+            PulseRelay();
             ShockBeacon();
             KillzoneBeacon();
 
@@ -138,24 +138,24 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.RemoteCharge3);
         }
 
-        private void MaintenancePulse()
+        private void PulseRelay()
         {
-            _builder.Create(PerkCategoryType.DevicesFieldEngineer, PerkType.MaintenancePulse)
-                .Name("Maintenance Pulse")
+            _builder.Create(PerkCategoryType.DevicesFieldEngineer, PerkType.PulseRelay)
+                .Name("Pulse Relay")
 
                 .AddPerkLevel()
-                .Description("Restores 12% of maximum HP to one friendly droid or mechanical ally. If you have an active Field Engineer beacon or field, its duration is extended by 3 seconds.")
+                .Description("You and nearby allies within 10m gain +6% Evasion and +6% Defense for 8 seconds. Active Field Engineer beacons and fields immediately fire one bonus pulse.")
                 .Price(3)
                 .RequirementSkill(SkillType.Devices, 18)
                 .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(FeatType.MaintenancePulse1)
+                .GrantsFeat(FeatType.PulseRelay1)
 
                 .AddPerkLevel()
-                .Description("Restores high HP to one friendly droid or mechanical ally and removes Shock. If you have an active Field Engineer beacon or field, its duration is extended by 5 seconds.")
+                .Description("You and nearby allies within 10m gain +10% Evasion and +10% Defense for 10 seconds and remove Shock. Active Field Engineer beacons and fields immediately fire one bonus pulse and gain 3 seconds duration.")
                 .Price(3)
                 .RequirementSkill(SkillType.Devices, 38)
                 .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(FeatType.MaintenancePulse2);
+                .GrantsFeat(FeatType.PulseRelay2);
         }
 
         private void ShockBeacon()

@@ -31,8 +31,8 @@ public class DevicesFieldEngineerTests
             "Arms a visible charge at your target location that detonates after 3 seconds for fire DMG plus PER scaling.");
         AssertPerkLevel(perks[PerkType.BlasterBeacon], "Blaster Beacon", 2, 3, 15, FeatType.BlasterBeacon2,
             "Plants a targeting beacon for 21 seconds. Every 3 seconds, one hostile target within 12m is hit by an increased automated ranged energy pulse for DMG plus PER scaling.");
-        AssertPerkLevel(perks[PerkType.MaintenancePulse], "Maintenance Pulse", 1, 3, 18, FeatType.MaintenancePulse1,
-            "Restores 12% of maximum HP to one friendly droid or mechanical ally. If you have an active Field Engineer beacon or field, its duration is extended by 3 seconds.");
+        AssertPerkLevel(perks[PerkType.PulseRelay], "Pulse Relay", 1, 3, 18, FeatType.PulseRelay1,
+            "You and nearby allies within 10m gain +6% Evasion and +6% Defense for 8 seconds. Active Field Engineer beacons and fields immediately fire one bonus pulse.");
         AssertPerkLevel(perks[PerkType.BeaconTargeting], "Beacon Targeting", 2, 2, 22, null,
             "Beacon pulses gain +10% Accuracy, +10% critical chance, and +5% damage.",
             (StatType.BeaconPulseAccuracyPercentAdjustment, 10),
@@ -46,8 +46,8 @@ public class DevicesFieldEngineerTests
             "Arms a visible charge that detonates after 3 seconds for fire DMG plus PER scaling and knock down.");
         AssertPerkLevel(perks[PerkType.BlasterBeacon], "Blaster Beacon", 3, 3, 35, FeatType.BlasterBeacon3,
             "Plants a targeting beacon for 24 seconds. Every 3 seconds, one hostile target within 14m is hit by a high automated ranged energy pulse for DMG plus PER scaling.");
-        AssertPerkLevel(perks[PerkType.MaintenancePulse], "Maintenance Pulse", 2, 3, 38, FeatType.MaintenancePulse2,
-            "Restores high HP to one friendly droid or mechanical ally and removes Shock. If you have an active Field Engineer beacon or field, its duration is extended by 5 seconds.");
+        AssertPerkLevel(perks[PerkType.PulseRelay], "Pulse Relay", 2, 3, 38, FeatType.PulseRelay2,
+            "You and nearby allies within 10m gain +10% Evasion and +10% Defense for 10 seconds and remove Shock. Active Field Engineer beacons and fields immediately fire one bonus pulse and gain 3 seconds duration.");
         AssertPerkLevel(perks[PerkType.ShockBeacon], "Shock Beacon", 2, 4, 40, FeatType.ShockBeacon2,
             "Plants a shock beacon for 18 seconds. Every 3 seconds, one hostile target within 12m is hit by an increased electrical pulse and suffers Shock.");
         AssertPerkLevel(perks[PerkType.IncendiaryField], "Incendiary Field", 3, 4, 42, FeatType.IncendiaryField3,
@@ -82,9 +82,9 @@ public class DevicesFieldEngineerTests
         AssertAbility(remoteCharge[FeatType.RemoteCharge2], "Remote Charge II", 2, RecastGroup.RemoteCharge, 30f, 1f, 5, true, true, false, false);
         AssertAbility(remoteCharge[FeatType.RemoteCharge3], "Remote Charge III", 3, RecastGroup.RemoteCharge, 30f, 1f, 7, true, true, false, false);
 
-        var maintenancePulse = new MaintenancePulseAbilityDefinition().BuildAbilities();
-        AssertAbility(maintenancePulse[FeatType.MaintenancePulse1], "Maintenance Pulse I", 1, RecastGroup.MaintenancePulse, 18f, 1f, 3, false, false, true, true);
-        AssertAbility(maintenancePulse[FeatType.MaintenancePulse2], "Maintenance Pulse II", 2, RecastGroup.MaintenancePulse, 18f, 1f, 4, false, false, true, true);
+        var pulseRelay = new PulseRelayAbilityDefinition().BuildAbilities();
+        AssertAbility(pulseRelay[FeatType.PulseRelay1], "Pulse Relay I", 1, RecastGroup.PulseRelay, 18f, 1f, 3, false, true, false, false);
+        AssertAbility(pulseRelay[FeatType.PulseRelay2], "Pulse Relay II", 2, RecastGroup.PulseRelay, 18f, 1f, 4, false, true, false, false);
 
         var shockBeacon = new ShockBeaconAbilityDefinition().BuildAbilities();
         AssertAbility(shockBeacon[FeatType.ShockBeacon1], "Shock Beacon I", 1, RecastGroup.ShockBeacon, 75f, 1.5f, 5, true, true, false, false);
@@ -104,22 +104,25 @@ public class DevicesFieldEngineerTests
         effects.Should().Contain("BeaconPulseDamagePercentAdjustment");
         effects.Should().Contain("BeaconPulseRangeBonusMeters");
         effects.Should().Contain("ExtendActiveFieldEngineerPulses");
+        effects.Should().Contain("TriggerActiveFieldEngineerPulses");
         effects.Should().Contain("ScheduleNextFieldEngineerPulse");
         effects.Should().Contain("FieldEngineerPulseMarkerResref = \"_mdrn_pl_emitter\"");
         effects.Should().Contain("CreateObject(");
         effects.Should().Contain("ObjectType.Placeable");
         effects.Should().Contain("DestroyObject(emitter.MarkerObject)");
 
-        var maintenance = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Devices" / "MaintenancePulseAbilityDefinition.cs").FullName);
-        maintenance.Should().Contain(".IsSingleTargetAbility()");
-        maintenance.Should().Contain(".RequiresTarget()");
-        maintenance.Should().Contain("ValidateMaintenanceTarget");
-        maintenance.Should().Contain("Droid.IsDroid");
-        maintenance.Should().Contain("RacialType.Construct");
-        maintenance.Should().Contain("ApplyMaintenancePulse(activator, target, 12, 3f, false)");
-        maintenance.Should().Contain("ApplyMaintenancePulse(activator, target, 20, 5f, true)");
-        maintenance.Should().Contain("DeviceAbilityEffects.ExtendActiveFieldEngineerPulses(activator, extensionSeconds)");
-        maintenance.Should().NotContain("ScaleDirectEffect");
+        var pulseRelay = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Devices" / "PulseRelayAbilityDefinition.cs").FullName);
+        pulseRelay.Should().Contain(".IsAreaAbility()");
+        pulseRelay.Should().Contain("private const float AllyRadius = 10f;");
+        pulseRelay.Should().Contain("AbilityTargeting.GetFriendlyTargets(activator, activator, true, AllyRadius)");
+        pulseRelay.Should().Contain("typeof(CalibratedField1StatusEffect), 8f, false, 0f");
+        pulseRelay.Should().Contain("typeof(CalibratedField2StatusEffect), 10f, true, 3f");
+        pulseRelay.Should().Contain("StatusEffect.RemoveStatusEffect(friendly, typeof(ShockStatusEffect), false)");
+        pulseRelay.Should().Contain("DeviceAbilityEffects.TriggerActiveFieldEngineerPulses(activator)");
+        pulseRelay.Should().Contain("DeviceAbilityEffects.ExtendActiveFieldEngineerPulses(activator, emitterExtensionSeconds)");
+        pulseRelay.Should().NotContain("Droid.IsDroid");
+        pulseRelay.Should().NotContain("RacialType.Construct");
+        pulseRelay.Should().NotContain("ScaleDirectEffect");
 
         var remoteCharge = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Devices" / "RemoteChargeAbilityDefinition.cs").FullName);
         remoteCharge.Should().Contain("DetonateRemoteCharge(activator, target, targetLocation, 10, null)");
@@ -157,12 +160,12 @@ public class DevicesFieldEngineerTests
             (FeatType.IncendiaryField1, "ife_ncndryfld1", "M", "0x3E", "1", "sphere", "5", "****", "1", "****"),
             (FeatType.RemoteCharge1, "ife_rmtchrg1", "M", "0x3E", "1", "sphere", "5", "****", "1", "****"),
             (FeatType.BlasterBeacon2, "ife_blstrbcn2", "M", "0x3E", "1", "sphere", "12", "****", "1", "****"),
-            (FeatType.MaintenancePulse1, "ife_mntnncpls1", "M", "0x03", "0", "****", "****", "****", "****", "****"),
+            (FeatType.PulseRelay1, "ife_pulserly1", "P", "0x01", "****", "sphere", "10", "****", "17", "1"),
             (FeatType.ShockBeacon1, "ife_shokbcn1", "M", "0x3E", "1", "sphere", "10", "****", "1", "****"),
             (FeatType.IncendiaryField2, "ife_ncndryfld2", "M", "0x3E", "1", "sphere", "5", "****", "1", "****"),
             (FeatType.RemoteCharge2, "ife_rmtchrg2", "M", "0x3E", "1", "sphere", "5", "****", "1", "****"),
             (FeatType.BlasterBeacon3, "ife_blstrbcn3", "M", "0x3E", "1", "sphere", "14", "****", "1", "****"),
-            (FeatType.MaintenancePulse2, "ife_mntnncpls2", "M", "0x03", "0", "****", "****", "****", "****", "****"),
+            (FeatType.PulseRelay2, "ife_pulserly2", "P", "0x01", "****", "sphere", "10", "****", "17", "1"),
             (FeatType.ShockBeacon2, "ife_shokbcn2", "M", "0x3E", "1", "sphere", "12", "****", "1", "****"),
             (FeatType.IncendiaryField3, "ife_ncndryfld3", "M", "0x3E", "1", "sphere", "5", "****", "1", "****"),
             (FeatType.RemoteCharge3, "ife_rmtchrg3", "M", "0x3E", "1", "sphere", "5", "****", "1", "****"),
@@ -318,7 +321,7 @@ public class DevicesFieldEngineerTests
             "BlasterBeacon",
             "IncendiaryField",
             "KillzoneBeacon",
-            "MaintenancePulse",
+            "PulseRelay",
             "RemoteCharge",
             "ShockBeacon"
         };

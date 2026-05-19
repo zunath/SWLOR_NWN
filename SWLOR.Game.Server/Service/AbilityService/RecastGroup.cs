@@ -683,8 +683,8 @@ namespace SWLOR.Game.Server.Service.AbilityService
         KoltoMist = 363,
         [RecastGroup("Last Stand of the Light", "Light's Stand", true)]
         LastStandOfTheLight = 364,
-        [RecastGroup("Maintenance Pulse", "Maint. Pulse", true)]
-        MaintenancePulse = 365,
+        [RecastGroup("Pulse Relay", "Pulse Relay", true)]
+        PulseRelay = 365,
         [RecastGroup("Mark Target", "Mark Target", true)]
         MarkTarget = 366,
         [RecastGroup("Med Kit", "Med Kit", true)]

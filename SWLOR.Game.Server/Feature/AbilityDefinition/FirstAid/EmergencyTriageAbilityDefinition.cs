@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
@@ -51,29 +50,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             var friendly = AbilityTargeting.ResolveFriendlyTarget(activator, target);
             var multiplier = GetCurrentHitPoints(friendly) <= GetMaxHitPoints(friendly) * 0.35f ? 2f : 1f;
             FirstAidTreatmentAdjustments.ApplyMedicalScaledHeal(activator, friendly, 18, multiplier: multiplier);
-        }
-
-
-        private static void HealPercent(uint activator, uint target, SkillType skill, int percent)
-        {
-            var ability = skill switch
-            {
-                SkillType.Leadership => AbilityType.Social,
-                SkillType.Devices => AbilityType.Perception,
-                SkillType.BeastMastery => AbilityType.Might,
-                _ => AbilityType.Willpower
-            };
-            var baseAmount = PercentOf(GetMaxHitPoints(target), percent);
-            var amount = SWLOR.Game.Server.Feature.AbilityDefinition.AbilityEffectScaling.ScaleDirectEffect(baseAmount, GetAbilityScore(activator, ability));
-            amount = Stat.ApplyHealingReceivedAdjustment(target, amount);
-
-            ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), target);
-            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_M), target);
-        }
-
-        private static int PercentOf(int value, int percent)
-        {
-            return Math.Max(1, value * percent / 100);
         }
     }
 }

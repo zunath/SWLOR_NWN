@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
 {
@@ -53,7 +54,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 CombatImpactAreaShape.Sphere,
                 0.25f,
                 5f,
-                afterSuccessfulHit: affectedEnemy => Enmity.ReduceEnmity(activator, affectedEnemy, EnmityReductionPercent));
+                areaVisualEffect: VisualEffect.Vfx_Fnf_Smoke_Puff,
+                afterSuccessfulHit: affectedEnemy => Enmity.ReduceEnmity(activator, affectedEnemy, EnmityReductionPercent),
+                alwaysApplyAreaVisualEffect: true);
         }
     }
 }

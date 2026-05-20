@@ -1015,7 +1015,8 @@ namespace SWLOR.Game.Server.Service
             bool useNPCStatScaling = false,
             bool awardsCombatPoints = true,
             DamageType? effectDamageType = null,
-            bool playImpactAnimation = true)
+            bool playImpactAnimation = true,
+            bool alwaysApplyAreaVisualEffect = false)
         {
             RecordAbilityImpactShape(activator, skillType, true);
 
@@ -1050,7 +1051,8 @@ namespace SWLOR.Game.Server.Service
                     criticalRatePercentAdjustment,
                     useNPCStatScaling,
                     awardsCombatPoints,
-                    effectDamageType);
+                    effectDamageType,
+                    alwaysApplyAreaVisualEffect);
                 if (playImpactAnimation)
                     PlayCombatImpactAnimation(activator, impactAnimation);
 
@@ -1093,7 +1095,8 @@ namespace SWLOR.Game.Server.Service
                 criticalRatePercentAdjustment,
                 useNPCStatScaling,
                 awardsCombatPoints,
-                effectDamageType);
+                effectDamageType,
+                alwaysApplyAreaVisualEffect);
 
             switch (shape)
             {
@@ -1165,7 +1168,8 @@ namespace SWLOR.Game.Server.Service
             int criticalRatePercentAdjustment,
             bool useNPCStatScaling,
             bool awardsCombatPoints,
-            DamageType? effectDamageType)
+            DamageType? effectDamageType,
+            bool alwaysApplyAreaVisualEffect)
         {
             RecordAbilityImpactShape(activator, skillType, true);
 
@@ -1194,7 +1198,8 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            if (creatures.Any(creature => GetIsObjectValid(creature) && GetIsReactionTypeHostile(creature, activator)))
+            var hasHostileCreatures = creatures.Any(creature => GetIsObjectValid(creature) && GetIsReactionTypeHostile(creature, activator));
+            if (alwaysApplyAreaVisualEffect || hasHostileCreatures)
             {
                 if (areaVisualEffect != VisualEffect.None)
                 {
@@ -1256,7 +1261,8 @@ namespace SWLOR.Game.Server.Service
             int criticalRatePercentAdjustment,
             bool useNPCStatScaling,
             bool awardsCombatPoints,
-            DamageType? effectDamageType)
+            DamageType? effectDamageType,
+            bool alwaysApplyAreaVisualEffect)
         {
             return (creator, creatures) =>
             {
@@ -1278,6 +1284,11 @@ namespace SWLOR.Game.Server.Service
 
                 if (hostileCreatures.Count <= 0)
                 {
+                    if (alwaysApplyAreaVisualEffect && areaVisualEffect != VisualEffect.None)
+                    {
+                        ApplyEffectAtLocation(DurationType.Instant, EffectVisualEffect(areaVisualEffect), areaVisualLocation);
+                    }
+
                     SendCombatImpactNoTargetsMessage(creator, ability);
                     return;
                 }

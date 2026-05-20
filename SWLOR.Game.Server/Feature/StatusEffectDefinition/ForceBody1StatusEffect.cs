@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         {
             MorePowerfulEffectTypes.Add(typeof(ForceBody2StatusEffect));
 
-            StatGroup.Stats[StatType.DarkForceDamageFPRestore] = 1;
+            StatGroup.Stats[StatType.DarkForceConversionFPCostPercentAdjustment] = -100;
             StatGroup.Stats[StatType.DarkForceDamageHPCostPercent] = 2;
         }
     }

@@ -1,4 +1,5 @@
 using System;
+using SWLOR.Game.Server.Service.StatService;
 
 namespace SWLOR.Game.Server.Service.AbilityService
 {
@@ -49,6 +50,20 @@ namespace SWLOR.Game.Server.Service.AbilityService
                 ? Combat.ConsumeNextAbilityFPCostAdjustment(player, skillType)
                 : Combat.GetNextAbilityFPCostAdjustment(player, skillType);
 
+            adjusted = Math.Max(0, adjusted);
+            return ApplyDarkForceConversionCostAdjustment(player, ability, adjusted);
+        }
+
+        private static int ApplyDarkForceConversionCostAdjustment(uint player, AbilityDetail ability, int adjustedCost)
+        {
+            if (adjustedCost <= 0 || ability.TriggersDarkForceConversion != true)
+                return adjustedCost;
+
+            var percentAdjustment = Stat.GetStatAdjustment(player, StatType.DarkForceConversionFPCostPercentAdjustment);
+            if (percentAdjustment == 0)
+                return adjustedCost;
+
+            var adjusted = (int)Math.Ceiling(adjustedCost * (1 + percentAdjustment / 100f));
             return Math.Max(0, adjusted);
         }
     }

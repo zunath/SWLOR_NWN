@@ -2592,7 +2592,13 @@ namespace SWLOR.Game.Server.Service.StatService
         /// If greater than zero, creature movement speed is reduced to zero.
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
-        MovementSpeedDisabled = 433
+        MovementSpeedDisabled = 433,
+
+        /// <summary>
+        /// Percent adjustment applied to FP costs for damaging Dark Force conversion powers.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenNegative)]
+        DarkForceConversionFPCostPercentAdjustment = 434
     }
 
     public class StatTypeAttribute : Attribute

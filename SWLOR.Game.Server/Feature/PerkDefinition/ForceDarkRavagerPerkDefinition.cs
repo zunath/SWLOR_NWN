@@ -60,14 +60,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .ForceAffinity(ForceAffinityType.Dark)
 
                 .AddPerkLevel()
-                .Description("For 30 seconds, your damaging Dark powers restore 1 FP, but each cast costs HP equal to 2% of your maximum HP.")
+                .Description("For 30 seconds, damaging Dark Force powers cost no FP. When one lands, you lose HP equal to 2% of your maximum HP.")
                 .Price(2)
                 .RequirementSkill(SkillType.Force, 5)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ForceBody1)
 
                 .AddPerkLevel()
-                .Description("For 30 seconds, damaging Dark powers restore FP. Each cast costs HP, reduced when you damage a target below 50% HP.")
+                .Description("For 30 seconds, damaging Dark Force powers cost no FP. When one lands, you lose HP, reduced when the target is below 50% HP.")
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 38)
                 .RequirementCharacterType(CharacterType.ForceSensitive)

@@ -23,7 +23,7 @@ public class ForceDarkRavagerTests
         AssertPerkLevel(perks[PerkType.ForceSpark], "Force Spark", 1, 2, null, FeatType.ForceSpark1,
             "Deals 18 force DMG plus WIL scaling to one target and reduce evasion chance by 4% for 20 seconds.");
         AssertPerkLevel(perks[PerkType.ForceBody], "Force Body", 1, 2, 5, FeatType.ForceBody1,
-            "For 30 seconds, your damaging Dark powers restore 1 FP, but each cast costs HP equal to 2% of your maximum HP.");
+            "For 30 seconds, damaging Dark Force powers cost no FP. When one lands, you lose HP equal to 2% of your maximum HP.");
         AssertPerkLevel(perks[PerkType.ForceLightning], "Force Lightning", 1, 3, 8, FeatType.ForceLightning1,
             "Deals 14 force DMG plus WIL scaling to up to 3 targets with an electrical visual.");
         AssertPerkLevel(perks[PerkType.ForceDrain], "Force Drain", 1, 3, 12, FeatType.ForceDrain1,
@@ -43,7 +43,7 @@ public class ForceDarkRavagerTests
         AssertPerkLevel(perks[PerkType.SaberRend], "Saber Rend", 2, 3, 35, FeatType.SaberRend2,
             "Your next melee attack deals +24 force DMG plus WIL scaling. Requires a melee weapon.");
         AssertPerkLevel(perks[PerkType.ForceBody], "Force Body", 2, 3, 38, FeatType.ForceBody2,
-            "For 30 seconds, damaging Dark powers restore FP. Each cast costs HP, reduced when you damage a target below 50% HP.");
+            "For 30 seconds, damaging Dark Force powers cost no FP. When one lands, you lose HP, reduced when the target is below 50% HP.");
         AssertPerkLevel(perks[PerkType.ForceMaelstrom], "Force Maelstrom", 1, 4, 40, FeatType.ForceMaelstrom1,
             "Deals 10 force DMG plus WIL scaling to nearby enemies and pulls them slightly toward you.");
         AssertPerkLevel(perks[PerkType.ForceDrain], "Force Drain", 3, 4, 42, FeatType.ForceDrain3,
@@ -105,11 +105,11 @@ public class ForceDarkRavagerTests
         new ForceSpark3StatusEffect().StatGroup.Stats[StatType.EvasionPercentAdjustment].Should().Be(-8);
 
         var forceBody1 = new ForceBody1StatusEffect();
-        forceBody1.StatGroup.Stats[StatType.DarkForceDamageFPRestore].Should().Be(1);
+        forceBody1.StatGroup.Stats[StatType.DarkForceConversionFPCostPercentAdjustment].Should().Be(-100);
         forceBody1.StatGroup.Stats[StatType.DarkForceDamageHPCostPercent].Should().Be(2);
 
         var forceBody2 = new ForceBody2StatusEffect();
-        forceBody2.StatGroup.Stats[StatType.DarkForceDamageFPRestore].Should().Be(1);
+        forceBody2.StatGroup.Stats[StatType.DarkForceConversionFPCostPercentAdjustment].Should().Be(-100);
         forceBody2.StatGroup.Stats[StatType.DarkForceDamageHPCostPercent].Should().Be(2);
         forceBody2.StatGroup.Stats[StatType.DarkForceDamageLowTargetHPCostPercent].Should().Be(1);
         forceBody2.StatGroup.Stats[StatType.DarkForceDamageLowTargetHPThresholdPercent].Should().Be(50);

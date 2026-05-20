@@ -6,7 +6,7 @@ using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 {
     public sealed class DominateWeakMindAbilityDefinition : IAbilityListDefinition
     {
-        private const int DominateWeakMindWillSaveDC = 14;
+        private const int DominateWeakMindDurationSeconds = 8;
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
@@ -56,21 +56,63 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 targetLocation,
                 SkillType.Force,
                 0,
-                8,
+                0,
                 null,
                 false,
                 Array.Empty<Type>(),
-                statusEffectFactory: () => CreateDominateWeakMindStatusEffect(activator, target),
                 damageType: CombatDamageType.Force,
-                targetVisualEffect: VisualEffect.Vfx_Imp_Pulse_Negative);
+                afterSuccessfulHit: hitTarget => ApplyDominateWeakMindEffects(activator, hitTarget));
         }
 
-        private static IStatusEffect CreateDominateWeakMindStatusEffect(uint activator, uint target)
+        private static void ApplyDominateWeakMindEffects(uint activator, uint target)
         {
-            var saveResult = WillSave(target, DominateWeakMindWillSaveDC, SavingThrowType.MindSpells, activator);
-            return saveResult == SavingThrowResultType.Failed
-                ? new FoggyMindStatusEffect()
-                : new DominateWeakMind1StatusEffect();
+            var duration = GetAdjustedDurationSeconds(activator);
+            var statusApplied = HasMindStatusImmunity(target)
+                ? ApplyAccuracyFallback(activator, target, duration)
+                : StatusEffect.ApplyStatusEffect(
+                    activator,
+                    target,
+                    typeof(FoggyMindStatusEffect),
+                    duration,
+                    ResistanceType.Mind);
+
+            if (!statusApplied)
+            {
+                statusApplied = ApplyAccuracyFallback(activator, target, duration);
+            }
+
+            if (statusApplied)
+            {
+                ApplyEffectToObject(
+                    DurationType.Instant,
+                    EffectVisualEffect(VisualEffect.Vfx_Imp_Pulse_Negative),
+                    target);
+            }
+        }
+
+        private static int GetAdjustedDurationSeconds(uint activator)
+        {
+            var adjustment = Combat.GetAbilityStatusDurationPercentAdjustment(activator, PerkType.DominateWeakMind);
+            if (adjustment == 0)
+                return DominateWeakMindDurationSeconds;
+
+            return Math.Max(
+                1,
+                DominateWeakMindDurationSeconds + (int)Math.Ceiling(DominateWeakMindDurationSeconds * (adjustment / 100f)));
+        }
+
+        private static bool ApplyAccuracyFallback(uint activator, uint target, int duration)
+        {
+            return StatusEffect.ApplyStatusEffect(
+                activator,
+                target,
+                typeof(DominateWeakMind1StatusEffect),
+                duration);
+        }
+
+        private static bool HasMindStatusImmunity(uint target)
+        {
+            return Stat.GetStatAdjustment(target, StatType.MindStatusImmunity) > 0;
         }
 
         private static bool IsNonMechanical(uint target)

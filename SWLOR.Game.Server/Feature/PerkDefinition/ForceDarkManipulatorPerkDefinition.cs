@@ -179,7 +179,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .ForceAffinity(ForceAffinityType.Dark)
 
                 .AddPerkLevel()
-                .Description("Confuse one non-mechanical target for 8 seconds unless it succeeds a DC 14 Will save. Resisting targets suffer -15 Accuracy instead.")
+                .Description("Inflicts Foggy Mind on one non-mechanical target for 8 seconds. Mind resistance shortens the duration. Mind-immune targets suffer -15 Accuracy instead.")
                 .Price(4)
                 .RequirementSkill(SkillType.Force, 40)
                 .RequirementCharacterType(CharacterType.ForceSensitive)

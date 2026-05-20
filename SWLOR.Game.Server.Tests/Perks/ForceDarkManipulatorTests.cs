@@ -45,7 +45,7 @@ public class ForceDarkManipulatorTests
         AssertPerkLevel(perks[PerkType.FractureFocus], "Fracture Focus", 2, 3, 38, FeatType.FractureFocus2,
             "Increase nearby enemies' FP and STM ability costs by 25% for 12 seconds.");
         AssertPerkLevel(perks[PerkType.DominateWeakMind], "Dominate Weak Mind", 1, 4, 40, FeatType.DominateWeakMind1,
-            "Confuse one non-mechanical target for 8 seconds unless it succeeds a DC 14 Will save. Resisting targets suffer -15 Accuracy instead.");
+            "Inflicts Foggy Mind on one non-mechanical target for 8 seconds. Mind resistance shortens the duration. Mind-immune targets suffer -15 Accuracy instead.");
         AssertPerkLevel(perks[PerkType.CreepingTerror], "Creeping Terror", 3, 4, 42, FeatType.CreepingTerror3,
             "Hobble nearby enemies for 6 seconds and applies force damage over time equal to 12 force DMG plus WIL scaling over 18 seconds.");
         AssertPerkLevel(perks[PerkType.CollapseWill], "Collapse Will", 1, 4, 45, FeatType.CollapseWill1,
@@ -131,7 +131,7 @@ public class ForceDarkManipulatorTests
 
         var dominateWeakMindFallback = new DominateWeakMind1StatusEffect();
         dominateWeakMindFallback.StatGroup.Stats[StatType.Accuracy].Should().Be(-15);
-        dominateWeakMindFallback.ResistanceType.Should().Be(SWLOR.Game.Server.Service.CombatService.ResistanceType.Mind);
+        dominateWeakMindFallback.ResistanceType.Should().Be(SWLOR.Game.Server.Service.CombatService.ResistanceType.Invalid);
 
         var eclipse = new EclipseOfResolve1StatusEffect();
         eclipse.StatGroup.Stats[StatType.AbilityHitChancePercentAdjustment].Should().Be(-20);
@@ -177,10 +177,12 @@ public class ForceDarkManipulatorTests
 
         var dominateWeakMind = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Force" / "DominateWeakMindAbilityDefinition.cs").FullName);
         dominateWeakMind.Should().Contain("HasCustomValidation");
-        dominateWeakMind.Should().Contain("WillSave");
-        dominateWeakMind.Should().Contain("SavingThrowType.MindSpells");
-        dominateWeakMind.Should().Contain("new DominateWeakMind1StatusEffect()");
-        dominateWeakMind.Should().Contain("new FoggyMindStatusEffect()");
+        dominateWeakMind.Should().NotContain("WillSave");
+        dominateWeakMind.Should().NotContain("SavingThrowType");
+        dominateWeakMind.Should().Contain("StatType.MindStatusImmunity");
+        dominateWeakMind.Should().Contain("ResistanceType.Mind");
+        dominateWeakMind.Should().Contain("typeof(DominateWeakMind1StatusEffect)");
+        dominateWeakMind.Should().Contain("typeof(FoggyMindStatusEffect)");
 
         var staminaRequirement = File.ReadAllText((root / "SWLOR.Game.Server" / "Service" / "AbilityService" / "AbilityRequirementStamina.cs").FullName);
         staminaRequirement.Should().Contain("AbilityStaminaCostPercentAdjustment");

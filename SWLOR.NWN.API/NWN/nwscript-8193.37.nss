@@ -12488,9 +12488,11 @@ int GetLastRunScriptEffectScriptType();
 effect HideEffectIcon(effect eEffect);
 
 // Create an Icon effect.
-// * nIconID: The effect icon (EFFECT_ICON_*) to display.
+// * nIconID: The effect icon row from effecticons.2da or EFFECT_ICON_* constants to display.
 //            Using the icon for Poison/Disease will also color the health bar green/brown, useful to simulate custom poisons/diseases.
-// Returns an effect of type EFFECT_TYPE_INVALIDEFFECT when nIconID is < 1 or > 255.
+//            In 1.89.8193.37 and newer, effecticons.2da rows past 255 are supported.
+//            Older clients are simply not sent icons past row 255.
+// Returns an effect of type EFFECT_TYPE_INVALIDEFFECT when nIconID is < 1.
 effect EffectIcon(int nIconID);
 
 // Gets the player that last triggered the module OnPlayerGuiEvent event.

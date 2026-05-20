@@ -1376,9 +1376,13 @@ namespace SWLOR.NWN.API.NWScript
         /// <summary>
         /// Creates an Icon effect.
         /// </summary>
-        /// <param name="nIconId">The effect icon (EFFECT_ICON_* constants) to display</param>
-        /// <returns>The Icon effect. Returns an effect of type EFFECT_TYPE_INVALIDEFFECT when nIconID is < 1 or > 255</returns>
-        /// <remarks>Using the icon for Poison/Disease will also color the health bar green/brown, useful to simulate custom poisons/diseases.</remarks>
+        /// <param name="nIconId">The effect icon row from effecticons.2da or EFFECT_ICON_* constants to display</param>
+        /// <returns>The Icon effect. Returns an effect of type EFFECT_TYPE_INVALIDEFFECT when nIconID is less than 1.</returns>
+        /// <remarks>
+        /// NWN:EE 1.89.8193.37 and newer support effecticons.2da rows past 255.
+        /// Older clients are simply not sent icons past row 255.
+        /// Using the icon for Poison/Disease will also color the health bar green/brown, useful to simulate custom poisons/diseases.
+        /// </remarks>
         public static Effect EffectIcon(EffectIconType nIconId)
         {
             return global::NWN.Core.NWScript.EffectIcon((int)nIconId);

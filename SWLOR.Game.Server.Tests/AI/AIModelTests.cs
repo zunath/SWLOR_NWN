@@ -325,15 +325,15 @@ public class AIModelTests
     }
 
     [Test]
-    public void AggroAreaEffect_DefinesCreatureAggroRadius()
+    public void CustomAoePersistentVfx_DefinesCreatureAggroRadius()
     {
-        var areaEffects = File.ReadAllLines(Path.Combine(
+        var persistentVfx = File.ReadAllLines(Path.Combine(
             FindRepositoryRoot().FullName,
             "SWLOR_Haks",
             "swlor2_2da",
-            "areaeffects.2da"));
+            "vfx_persistent.2da"));
 
-        var rows = areaEffects
+        var rows = persistentVfx
             .Select(line => line.Split(new[] {' ', '\t'}, StringSplitOptions.RemoveEmptyEntries))
             .Where(columns => columns.Length > 0 && int.TryParse(columns[0], out _))
             .ToArray();
@@ -341,10 +341,9 @@ public class AIModelTests
 
         columns.Should().HaveCountGreaterThanOrEqualTo(9);
         columns[0].Should().Be("37");
-        columns[1].Should().Be("Creature_Aggro");
-        columns[2].Should().Be("37");
-        columns[3].Should().Be("C");
-        columns[4].Should().Be("8.5");
+        columns[1].Should().Be("VFX_CUSTOM");
+        columns[2].Should().Be("C");
+        columns[3].Should().Be("8.5");
     }
 
     private static AIContext CreateContext(

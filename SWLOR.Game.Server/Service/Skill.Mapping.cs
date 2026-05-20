@@ -81,15 +81,15 @@ namespace SWLOR.Game.Server.Service
 
             // Pistol
             _itemToSkillMapping[BaseItem.Pistol] = SkillType.Pistol;
+            _itemToSkillMapping[BaseItem.Arrow] = SkillType.Pistol;
+            _itemToSkillMapping[BaseItem.Bullet] = SkillType.Pistol;
+            _itemToSkillMapping[BaseItem.Sling] = SkillType.Pistol;
 
             // Rifle
             _itemToSkillMapping[BaseItem.Cannon] = SkillType.Rifle;
             _itemToSkillMapping[BaseItem.Rifle] = SkillType.Rifle;
             _itemToSkillMapping[BaseItem.Longbow] = SkillType.Rifle;
-            _itemToSkillMapping[BaseItem.Arrow] = SkillType.Rifle;
             _itemToSkillMapping[BaseItem.Bolt] = SkillType.Rifle;
-            _itemToSkillMapping[BaseItem.Bullet] = SkillType.Rifle;
-            _itemToSkillMapping[BaseItem.Sling] = SkillType.Rifle;
             _itemToSkillMapping[BaseItem.Grenade] = SkillType.Rifle;
 
             // Throwing

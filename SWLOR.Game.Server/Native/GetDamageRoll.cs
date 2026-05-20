@@ -87,13 +87,13 @@ namespace SWLOR.Game.Server.Native
 
                 var attackType = attacker.GetRangeWeaponEquipped() == 1 ? (uint)AttackType.Ranged : (uint)AttackType.Melee;
 
-                LogAttackInfo(attacker, defender, attackType, weapon);
-
-                // Nothing equipped - check gloves
+                // CurrentAttackWeapon can be null on the opening swing for creature natural weapons.
                 if (weapon == null)
                 {
-                    weapon = attacker.m_pInventory.GetItemInSlot((uint)EquipmentSlot.Arms);
+                    weapon = GetFallbackAttackWeapon(attacker);
                 }
+
+                LogAttackInfo(attacker, defender, attackType, weapon);
 
                 // Extract weapon damage properties and get ability stats
                 var damageProfile = ExtractAttackDamageProfile(attacker, weapon);
@@ -145,6 +145,25 @@ namespace SWLOR.Game.Server.Native
             Log.Write(LogGroup.Attack, $"DAMAGE: Attacker: {attacker.GetFirstName().GetSimple()}, PC?: {attacker.m_bPlayerCharacter}, " +
                                       $"Defender {targetObject.GetFirstName().GetSimple()}, object type {targetObject.m_nObjectType}, " +
                                       $"Attack type: {attackType}, weapon {(weapon == null ? "None" : weapon.GetFirstName().GetSimple())}");
+        }
+
+        private static CNWSItem GetFallbackAttackWeapon(CNWSCreature attacker)
+        {
+            var arms = attacker.m_pInventory.GetItemInSlot((uint)EquipmentSlot.Arms);
+            return arms ?? GetCreatureNaturalWeapon(attacker);
+        }
+
+        private static CNWSItem GetCreatureNaturalWeapon(CNWSCreature attacker)
+        {
+            var creatureRight = attacker.m_pInventory.GetItemInSlot((uint)EquipmentSlot.CreatureWeaponRight);
+            if (creatureRight != null)
+                return creatureRight;
+
+            var creatureLeft = attacker.m_pInventory.GetItemInSlot((uint)EquipmentSlot.CreatureWeaponLeft);
+            if (creatureLeft != null)
+                return creatureLeft;
+
+            return attacker.m_pInventory.GetItemInSlot((uint)EquipmentSlot.CreatureWeaponBite);
         }
 
         private static void LogDamageCalculation(int attackerStat, WeaponDamageProfile damageProfile)

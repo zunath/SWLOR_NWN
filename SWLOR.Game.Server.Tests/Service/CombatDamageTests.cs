@@ -117,6 +117,19 @@ public class CombatDamageTests
     }
 
     [Test]
+    public void DamageRoll_FallsBackToCreatureNaturalWeapons()
+    {
+        var root = FindRepositoryRoot();
+        var damageRollSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Native", "GetDamageRoll.cs"));
+
+        damageRollSource.Should().Contain("weapon = GetFallbackAttackWeapon(attacker);");
+        damageRollSource.Should().Contain("private static CNWSItem GetCreatureNaturalWeapon(CNWSCreature attacker)");
+        damageRollSource.Should().Contain("EquipmentSlot.CreatureWeaponRight");
+        damageRollSource.Should().Contain("EquipmentSlot.CreatureWeaponLeft");
+        damageRollSource.Should().Contain("EquipmentSlot.CreatureWeaponBite");
+    }
+
+    [Test]
     public void IsWeaponSkillType_UsesSkillCombatPointMetadata()
     {
         Combat.IsWeaponSkillType(SkillType.Lightsaber).Should().BeTrue();

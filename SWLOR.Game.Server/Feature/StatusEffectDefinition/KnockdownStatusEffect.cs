@@ -40,7 +40,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         private void ApplyKnockdown(uint creature, float duration)
         {
-            var effect = TagEffect(EffectKnockdown(), Id);
+            var effect = TagNativeEffect(EffectKnockdown());
             ApplyEffectToObject(DurationType.Temporary, effect, creature, duration);
         }
     }

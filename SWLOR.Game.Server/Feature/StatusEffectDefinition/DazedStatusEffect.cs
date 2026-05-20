@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         private void ApplyDaze(uint creature, float duration)
         {
-            var effect = TagEffect(EffectDazed(), Id);
+            var effect = TagNativeEffect(EffectDazed());
             ApplyEffectToObject(DurationType.Temporary, effect, creature, duration);
             Ability.ApplyTemporaryImmunity(creature, duration, ImmunityType.Dazed);
         }

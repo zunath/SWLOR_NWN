@@ -725,6 +725,7 @@ namespace SWLOR.Game.Server.Service
         {
             foreach (var statusEffect in effects.GetAllEffects())
             {
+                statusEffect.RemoveNativeEffects(creature);
                 RemoveNativeStatusEffect(creature, statusEffect.Id);
             }
 

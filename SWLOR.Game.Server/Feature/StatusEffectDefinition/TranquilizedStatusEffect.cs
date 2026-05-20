@@ -56,7 +56,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         private void ApplySleep(uint creature, float duration)
         {
-            var effect = TagEffect(IgnoreEffectImmunity(EffectSleep()), Id);
+            var effect = TagNativeEffect(IgnoreEffectImmunity(EffectSleep()));
             ApplyEffectToObject(DurationType.Temporary, effect, creature, duration);
             Ability.ApplyTemporaryImmunity(creature, duration, ImmunityType.Sleep);
         }

@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         private void ApplyBlindness(uint creature, float duration)
         {
-            var effect = TagEffect(EffectBlindness(), Id);
+            var effect = TagNativeEffect(EffectBlindness());
             ApplyEffectToObject(DurationType.Temporary, effect, creature, duration);
         }
     }

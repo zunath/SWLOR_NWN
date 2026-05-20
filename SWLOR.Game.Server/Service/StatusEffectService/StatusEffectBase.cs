@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Service.StatusEffectService
@@ -9,6 +10,7 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
         private bool _isPermanent;
         private int _durationTicks;
         private DateTime _lastRun;
+        private readonly HashSet<string> _nativeEffectTagSuffixes = new();
 
         public string Id { get; }
         public uint Source { get; private set; }
@@ -85,6 +87,15 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
         public void RemoveEffect(uint creature)
         {
             Remove(creature);
+            RemoveNativeEffects(creature);
+        }
+
+        public void RemoveNativeEffects(uint creature)
+        {
+            foreach (var tagSuffix in _nativeEffectTagSuffixes)
+            {
+                RemoveEffectByTag(creature, GetNativeEffectTag(tagSuffix));
+            }
         }
 
         protected virtual void Tick(uint creature) { }
@@ -166,6 +177,21 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
             return durationTicks < 0
                 ? 0f
                 : Math.Max(0.1f, durationTicks * Frequency);
+        }
+
+        protected Effect TagNativeEffect(Effect effect, string tagSuffix = null)
+        {
+            tagSuffix = string.IsNullOrWhiteSpace(tagSuffix)
+                ? GetType().Name
+                : tagSuffix;
+
+            _nativeEffectTagSuffixes.Add(tagSuffix);
+            return TagEffect(effect, GetNativeEffectTag(tagSuffix));
+        }
+
+        private string GetNativeEffectTag(string tagSuffix)
+        {
+            return $"{Id}:Native:{tagSuffix}";
         }
     }
 }

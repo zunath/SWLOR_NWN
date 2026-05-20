@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         private void ApplyStun(uint creature, float duration)
         {
-            var effect = TagEffect(EffectStunned(), Id);
+            var effect = TagNativeEffect(EffectStunned());
             ApplyEffectToObject(DurationType.Temporary, effect, creature, duration);
             Ability.ApplyTemporaryImmunity(creature, duration, ImmunityType.Stun);
         }

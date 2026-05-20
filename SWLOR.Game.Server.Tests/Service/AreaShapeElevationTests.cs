@@ -49,6 +49,30 @@ public class AreaShapeElevationTests
     }
 
     [Test]
+    public void CombatImpactShape_LineUsesHorizontalAxis()
+    {
+        InvokeCombatImpactShape(
+                new Vector3(4f, 0f, 20f),
+                Vector3.Zero,
+                0f,
+                CombatImpactAreaShape.Line,
+                8f,
+                2.5f)
+            .Should()
+            .BeTrue();
+
+        InvokeCombatImpactShape(
+                new Vector3(0f, 4f, 20f),
+                Vector3.Zero,
+                0f,
+                CombatImpactAreaShape.Line,
+                8f,
+                2.5f)
+            .Should()
+            .BeFalse();
+    }
+
+    [Test]
     public void TelegraphShape_SphereUsesHorizontalDistance()
     {
         InvokeTelegraphShape(
@@ -73,6 +97,24 @@ public class AreaShapeElevationTests
                 new Vector3(4f, 4f, -20f),
                 TelegraphType.Cone,
                 new Vector2(6f, 5f))
+            .Should()
+            .BeFalse();
+    }
+
+    [Test]
+    public void TelegraphShape_LineUsesHorizontalAxis()
+    {
+        InvokeTelegraphShape(
+                new Vector3(4f, 0f, -20f),
+                TelegraphType.Line,
+                new Vector2(8f, 2.5f))
+            .Should()
+            .BeTrue();
+
+        InvokeTelegraphShape(
+                new Vector3(0f, 4f, -20f),
+                TelegraphType.Line,
+                new Vector2(8f, 2.5f))
             .Should()
             .BeFalse();
     }

@@ -149,7 +149,7 @@ public class RiflePacificationTests
             (FeatType.TranquilizerShot2, "ife_trnqlzrshot2", "P", "0x01", "0", "****", "****", "****", "****"),
             (FeatType.CripplingShot2, "ife_cripshot2", "P", "0x01", "0", "****", "****", "****", "****"),
             (FeatType.TranqCone1, "ife_tranqcone1", "M", "0x3E", "1", "cone", "8", "6", "17"),
-            (FeatType.PinningFire2, "ife_pinfire2", "M", "0x3E", "1", "rectangle", "2.5", "8", "17"),
+            (FeatType.PinningFire2, "ife_pinfire2", "M", "0x3E", "1", "rectangle", "8", "2.5", "17"),
             (FeatType.Overwatch1, "ife_ovrw1", "M", "0x02", "1", "****", "****", "****", "****"),
             (FeatType.CripplingShot3, "ife_cripshot3", "P", "0x01", "0", "****", "****", "****", "****"),
             (FeatType.TranqCone2, "ife_tranqcone2", "M", "0x3E", "1", "cone", "10", "7", "17"),

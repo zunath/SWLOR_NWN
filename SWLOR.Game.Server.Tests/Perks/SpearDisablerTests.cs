@@ -150,7 +150,7 @@ public class SpearDisablerTests
             (FeatType.DisruptionField1, "ife_disrpfld1", "0x3E", "1", "sphere", "5", "****", "1"),
             (FeatType.ForceNullification1, "ife_forcenull1", "0x02", "1", "****", "****", "****", "****"),
             (FeatType.TotalForceDenial1, "ife_totforceden1", "0x3E", "1", "cone", "5", "5", "17"),
-            (FeatType.FractureStrike1, "ife_fractstrk1", "0x3E", "1", "rectangle", "2.5", "8", "17"),
+            (FeatType.FractureStrike1, "ife_fractstrk1", "0x3E", "1", "rectangle", "8", "2.5", "17"),
             (FeatType.Forcebane1, "ife_fbane1", "0x3E", "1", "sphere", "5", "****", "1")
         };
         var seenIcons = new HashSet<string>();

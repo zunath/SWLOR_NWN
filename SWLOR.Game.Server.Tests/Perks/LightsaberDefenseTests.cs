@@ -131,7 +131,7 @@ public class LightsaberDefenseTests
             (FeatType.PunishingStrike1, "ife_punstrk1", "0x01", "1", "sphere", "5", "****", "17"),
             (FeatType.GuardiansChallenge1, "ife_guardchal1", "0x3E", "1", "cone", "5", "5", "17"),
             (FeatType.ImpenetrableGuard1, "ife_impengrd1", "0x01", "0", "****", "****", "****", "****"),
-            (FeatType.ThunderousChallenge1, "ife_thndrschal1", "0x3E", "1", "rectangle", "2.5", "8", "17"),
+            (FeatType.ThunderousChallenge1, "ife_thndrschal1", "0x3E", "1", "rectangle", "8", "2.5", "17"),
             (FeatType.GuardianMaster1, "ife_guardmstr1", "0x01", "0", "****", "****", "****", "****")
         };
         var seenIcons = new HashSet<string>();

@@ -363,6 +363,22 @@ namespace SWLOR.Game.Server.Service.AbilityService
                 sizeResolver);
         }
 
+        public AbilityBuilder HasTargetingLine(
+            Spell spell,
+            float length,
+            float width,
+            AbilityTargetingFlags flags,
+            AbilityTargetingSizeResolver sizeResolver = null)
+        {
+            return HasTargeting(
+                spell,
+                AbilityTargetingShapeType.Rect,
+                length,
+                width,
+                flags,
+                sizeResolver);
+        }
+
         public AbilityBuilder HasTargeting(
             Spell spell,
             AbilityTargetingShapeType shape,

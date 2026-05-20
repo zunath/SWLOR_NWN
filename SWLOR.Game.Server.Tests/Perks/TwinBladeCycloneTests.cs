@@ -177,7 +177,7 @@ public class TwinBladeCycloneTests
             (FeatType.CycloneStance1, "ife_cyclstnc1", "P", "0x01", "0", "****", "****", "****", "****"),
             (FeatType.BladeVortex1, "ife_bladevort1", "P", "0x01", "1", "sphere", "5", "****", "17"),
             (FeatType.BladeVortex2, "ife_bladevort2", "P", "0x01", "1", "sphere", "5", "****", "17"),
-            (FeatType.SweepingAdvance1, "ife_swpngdvnc1", "M", "0x3E", "1", "rectangle", "2.5", "8", "17"),
+            (FeatType.SweepingAdvance1, "ife_swpngdvnc1", "M", "0x3E", "1", "rectangle", "8", "2.5", "17"),
             (FeatType.StormRelease1, "ife_strmrel1", "P", "0x01", "1", "sphere", "5", "****", "17"),
             (FeatType.TempestBloom1, "ife_tempblm1", "P", "0x01", "1", "sphere", "5", "****", "17")
         };

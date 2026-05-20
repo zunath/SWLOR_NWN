@@ -156,7 +156,7 @@ public class StaffSentinelTests
             (FeatType.LegSweep3, "ife_legswp3", "P", "0x01", "0", "****", "****", "****", "****"),
             (FeatType.SentinelStance1, "ife_sentstnc1", "P", "0x01", "0", "****", "****", "****", "****"),
             (FeatType.GuardingStep1, "ife_grdstep1", "P", "0x01", "0", "****", "****", "****", "****"),
-            (FeatType.LineBreaker1, "ife_linebrkr1", "M", "0x3E", "1", "rectangle", "2.5", "8", "17"),
+            (FeatType.LineBreaker1, "ife_linebrkr1", "M", "0x3E", "1", "rectangle", "8", "2.5", "17"),
             (FeatType.SentinelGuard1, "ife_sentgrd1", "P", "0x01", "0", "****", "****", "****", "****"),
             (FeatType.ShelterCircle1, "ife_shelcirc1", "P", "0x01", "0", "****", "****", "****", "****"),
             (FeatType.SweepingGuard1, "ife_swpnggrd1", "P", "0x01", "1", "sphere", "5", "****", "17"),

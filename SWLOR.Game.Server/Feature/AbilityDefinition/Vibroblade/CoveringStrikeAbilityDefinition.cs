@@ -29,6 +29,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.CoveringStrike, 45f)
                 .HasImpactAction(CoveringStrike1ImpactAction)
+                .HasTargetingLine(
+                    Spell.CoveringStrike1,
+                    8f,
+                    2.5f,
+                    AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()

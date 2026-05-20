@@ -155,7 +155,7 @@ function New-OriginLineRule {
         [string]$Width
     )
 
-    return New-Rule -Range "M" -TargetType "0x3E" -HostileSetting "1" -TargetShape "rectangle" -TargetSizeX $Width -TargetSizeY $Length -TargetFlags "17" -HostileFeat "1"
+    return New-Rule -Range "M" -TargetType "0x3E" -HostileSetting "1" -TargetShape "rectangle" -TargetSizeX $Length -TargetSizeY $Width -TargetFlags "17" -HostileFeat "1"
 }
 
 function New-TargetSphereRule {

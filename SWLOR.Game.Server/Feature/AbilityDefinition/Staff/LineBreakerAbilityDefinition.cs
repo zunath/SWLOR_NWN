@@ -28,6 +28,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.LineBreaker, 60f)
                 .HasImpactAction(LineBreaker1ImpactAction)
+                .HasTargetingLine(
+                    Spell.LineBreaker1,
+                    8f,
+                    2.5f,
+                    AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf)
                 .SkillType(SkillType.Staff)
                 .IsCastedAbility()
                 .IsHostileAbility()

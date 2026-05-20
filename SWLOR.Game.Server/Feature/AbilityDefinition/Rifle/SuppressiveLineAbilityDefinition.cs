@@ -29,6 +29,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 .HasRecastDelay(RecastGroup.SuppressiveLine, 60f)
                 .SkillType(SkillType.Rifle)
                 .UsesImpactAnimation(Animation.PointPistol)
+                .HasTargetingLine(
+                    Spell.SuppressiveLine1,
+                    8f,
+                    2.5f,
+                    AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf)
                 .IsAreaAbility()
                 .HasImpactAction(SuppressiveLine1ImpactAction)
                 .IsCastedAbility()

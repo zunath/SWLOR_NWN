@@ -13,11 +13,11 @@ public class TelegraphTests
     private const int PackedRotationMask = 0x3ff;
 
     [Test]
-    public void PackTelegraphData_LineOffsetsShaderRotationByQuarterTurn()
+    public void PackTelegraphData_LineKeepsGameplayRotation()
     {
         var packed = InvokePackTelegraphData(TelegraphType.Line, 0f);
 
-        ExtractPackedRotation(packed).Should().Be(256);
+        ExtractPackedRotation(packed).Should().Be(0);
     }
 
     [Test]

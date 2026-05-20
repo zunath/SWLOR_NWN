@@ -65,6 +65,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating()
                 .IsAreaAbility()
+                .HasTargetingLine(
+                    Spell.ForcePush2,
+                    8f,
+                    2.5f,
+                    AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf)
                 .HasImpactAction(ForcePush2ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()

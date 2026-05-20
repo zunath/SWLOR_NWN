@@ -28,6 +28,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.Earthshatter, 90f)
                 .HasImpactAction(Earthshatter1ImpactAction)
+                .HasTargetingLine(
+                    Spell.Earthshatter1,
+                    8f,
+                    2.5f,
+                    AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf)
                 .SkillType(SkillType.HeavyVibroblade)
                 .IsCastedAbility()
                 .IsHostileAbility()

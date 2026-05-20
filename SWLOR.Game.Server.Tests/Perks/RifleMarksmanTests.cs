@@ -168,7 +168,7 @@ public class RifleMarksmanTests
             (FeatType.SniperStance1, "ife_snipstnc1", "P", "0x01", "0", "****", "****", "****", "****"),
             (FeatType.AimedShot2, "ife_aimshot2", "M", "0x02", "1", "****", "****", "****", "****"),
             (FeatType.PiercingRound2, "ife_piercrnd2", "M", "0x02", "1", "****", "****", "****", "****"),
-            (FeatType.SuppressiveLine1, "ife_spprssvline1", "M", "0x3E", "1", "rectangle", "2.5", "8", "17"),
+            (FeatType.SuppressiveLine1, "ife_spprssvline1", "M", "0x3E", "1", "rectangle", "8", "2.5", "17"),
             (FeatType.AimedShot3, "ife_aimshot3", "M", "0x02", "1", "****", "****", "****", "****"),
             (FeatType.ExposeWeakPoint1, "ife_xposeweakpt1", "M", "0x02", "1", "****", "****", "****", "****"),
             (FeatType.BreachRound1, "ife_brchrnd1", "M", "0x02", "1", "****", "****", "****", "****"),

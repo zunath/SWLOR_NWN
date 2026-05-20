@@ -28,6 +28,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.ThunderousChallenge, 120f)
                 .HasImpactAction(ThunderousChallenge1ImpactAction)
+                .HasTargetingLine(
+                    Spell.ThunderousChallenge1,
+                    8f,
+                    2.5f,
+                    AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf)
                 .IsAreaAbility()
                 .IsCastedAbility()
                 .IsHostileAbility()

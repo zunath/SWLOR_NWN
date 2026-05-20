@@ -161,7 +161,7 @@ public class HeavyVibrobladeDefenseTests
             (FeatType.FortressStrike2, "ife_fortstrk2", "0x01", "0", "****", "****", "****", "****"),
             (FeatType.GuardiansResolve1, "ife_guardres1", "0x01", "0", "****", "****", "****", "****"),
             (FeatType.Rampart1, "ife_ramp1", "0x01", "0", "sphere", "5", "****", "17"),
-            (FeatType.Earthshatter1, "ife_earth1", "0x3E", "1", "rectangle", "2.5", "8", "17"),
+            (FeatType.Earthshatter1, "ife_earth1", "0x3E", "1", "rectangle", "8", "2.5", "17"),
             (FeatType.EdgeOfDarkness1, "ife_edgedark1", "0x01", "1", "sphere", "5", "****", "17"),
             (FeatType.FortressStrike3, "ife_fortstrk3", "0x01", "0", "****", "****", "****", "****"),
             (FeatType.BloodWeapon1, "ife_bldwpn1", "0x01", "0", "****", "****", "****", "****"),

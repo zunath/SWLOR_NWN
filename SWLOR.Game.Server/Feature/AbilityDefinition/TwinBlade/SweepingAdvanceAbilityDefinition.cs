@@ -36,6 +36,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.SweepingAdvance, 60f)
                 .HasImpactAction(SweepingAdvance1ImpactAction)
+                .HasTargetingLine(
+                    Spell.SweepingAdvance1,
+                    8f,
+                    2.5f,
+                    AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf)
                 .IsAreaAbility()
                 .IsCastedAbility()
                 .IsHostileAbility()

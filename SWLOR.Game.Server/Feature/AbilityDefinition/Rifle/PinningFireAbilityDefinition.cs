@@ -51,6 +51,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 .UsesImpactAnimation(Animation.PointPistol)
                 .IsAreaAbility()
                 .HasRecastDelay(RecastGroup.PinningFire, 60f)
+                .HasTargetingLine(
+                    Spell.PinningFire2,
+                    8f,
+                    2.5f,
+                    AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf)
                 .HasImpactAction(PinningFire2ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()

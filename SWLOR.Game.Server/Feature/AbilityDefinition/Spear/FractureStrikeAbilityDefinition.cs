@@ -28,6 +28,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.FractureStrike, 90f)
                 .HasImpactAction(FractureStrike1ImpactAction)
+                .HasTargetingLine(
+                    Spell.FractureStrike1,
+                    8f,
+                    2.5f,
+                    AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf)
                 .SkillType(SkillType.Spear)
                 .IsCastedAbility()
                 .IsHostileAbility()

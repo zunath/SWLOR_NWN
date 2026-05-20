@@ -13,6 +13,7 @@ namespace SWLOR.Game.Server.Service
     {
         private const float AggroRadius = 8.5f;
         private const float ReturnHomeRadius = 15f;
+        private const float CombatLeashRadius = 35f;
         private const int ProximityEnmityAmount = 1;
         private static readonly Dictionary<uint, HashSet<uint>> _creatureAllies = new();
 
@@ -362,8 +363,8 @@ namespace SWLOR.Game.Server.Service
                                       IsOutsideHomeRadius(self, homeLocation);
             var highestEnmityTarget = Enmity.GetHighestEnmityTarget(self);
 
-            if (isOutsideHomeRadius &&
-                (GetIsInCombat(self) || GetIsObjectValid(highestEnmityTarget)))
+            if ((GetIsInCombat(self) || GetIsObjectValid(highestEnmityTarget)) &&
+                ShouldLeashCombatTarget(self, highestEnmityTarget, homeLocation))
             {
                 Enmity.ClearEnmityTable(self);
                 NPCAI.ClearState(self);
@@ -492,11 +493,19 @@ namespace SWLOR.Game.Server.Service
             return allies;
         }
 
-        private static bool IsOutsideHomeRadius(uint creature, Location homeLocation)
+        private static bool ShouldLeashCombatTarget(uint creature, uint target, Location homeLocation)
+        {
+            if (!GetIsObjectValid(target))
+                return IsOutsideHomeRadius(creature, homeLocation, CombatLeashRadius);
+
+            return IsOutsideHomeRadius(target, homeLocation, CombatLeashRadius);
+        }
+
+        private static bool IsOutsideHomeRadius(uint creature, Location homeLocation, float radius = ReturnHomeRadius)
         {
             return GetIsObjectValid(GetAreaFromLocation(homeLocation)) &&
                    (GetAreaFromLocation(homeLocation) != GetArea(creature) ||
-                    GetDistanceBetweenLocations(GetLocation(creature), homeLocation) > ReturnHomeRadius);
+                    GetDistanceBetweenLocations(GetLocation(creature), homeLocation) > radius);
         }
 
         private static bool IsInAggroRange(uint creature, uint target)

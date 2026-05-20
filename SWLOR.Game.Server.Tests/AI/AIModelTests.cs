@@ -1,4 +1,6 @@
+using System.Globalization;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Service;
@@ -325,6 +327,43 @@ public class AIModelTests
     }
 
     [Test]
+    public void CombatLeash_UsesTargetDistanceFromHomeBeforeResettingCombat()
+    {
+        var aiSource = ReadSource("SWLOR.Game.Server", "Service", "AI.cs").Replace("\r\n", "\n");
+        var processFlagsBody = aiSource.Substring(
+            aiSource.IndexOf("private static void ProcessFlags()", StringComparison.Ordinal),
+            aiSource.IndexOf("private static void ProcessCreatureAllies()", StringComparison.Ordinal) -
+            aiSource.IndexOf("private static void ProcessFlags()", StringComparison.Ordinal));
+        var leashBody = aiSource.Substring(
+            aiSource.IndexOf("private static bool ShouldLeashCombatTarget", StringComparison.Ordinal),
+            aiSource.IndexOf("private static bool IsOutsideHomeRadius", StringComparison.Ordinal) -
+            aiSource.IndexOf("private static bool ShouldLeashCombatTarget", StringComparison.Ordinal));
+
+        processFlagsBody.Should().Contain("ShouldLeashCombatTarget(self, highestEnmityTarget, homeLocation)");
+        leashBody.Should().Contain("IsOutsideHomeRadius(target, homeLocation, CombatLeashRadius)");
+        leashBody.Should().Contain("IsOutsideHomeRadius(creature, homeLocation, CombatLeashRadius)");
+    }
+
+    [Test]
+    public void CombatLeashRadius_AllowsStandardRifleEngagementRange()
+    {
+        var combatLeashRadius = ReadConstFloat(
+            "CombatLeashRadius",
+            "SWLOR.Game.Server",
+            "Service",
+            "AI.cs");
+        var rifleRange = ReadConstFloat(
+            "Standard",
+            "SWLOR.Game.Server",
+            "Feature",
+            "AbilityDefinition",
+            "Rifle",
+            "RifleAbilityRange.cs");
+
+        combatLeashRadius.Should().BeGreaterThan(rifleRange);
+    }
+
+    [Test]
     public void CustomAoePersistentVfx_DefinesCreatureAggroRadius()
     {
         var persistentVfx = File.ReadAllLines(Path.Combine(
@@ -387,6 +426,21 @@ public class AIModelTests
         return (T)typeof(Enmity)
             .GetField(name, BindingFlags.Static | BindingFlags.NonPublic)!
             .GetValue(null)!;
+    }
+
+    private static string ReadSource(params string[] pathParts)
+    {
+        var fullPath = Path.Combine(new[] { FindRepositoryRoot().FullName }.Concat(pathParts).ToArray());
+        return File.ReadAllText(fullPath);
+    }
+
+    private static float ReadConstFloat(string name, params string[] pathParts)
+    {
+        var source = ReadSource(pathParts);
+        var match = Regex.Match(source, $@"const\s+float\s+{Regex.Escape(name)}\s*=\s*(\d+(?:\.\d+)?)f");
+
+        match.Success.Should().BeTrue();
+        return float.Parse(match.Groups[1].Value, CultureInfo.InvariantCulture);
     }
 
     private static DirectoryInfo FindRepositoryRoot()

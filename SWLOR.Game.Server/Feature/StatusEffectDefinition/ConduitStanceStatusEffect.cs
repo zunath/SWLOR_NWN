@@ -8,6 +8,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     {
         public override string Name => "Conduit Stance";
         public override EffectIconType Icon => EffectIconType.ConduitStanceStatusEffect;
+        public override StatusEffectSourceType SourceType => StatusEffectSourceType.Stance;
         public ConduitStanceStatusEffect()
         {
             StatGroup.Stats[StatType.AttackPercentAdjustment] = -15;

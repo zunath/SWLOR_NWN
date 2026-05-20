@@ -193,24 +193,15 @@ namespace SWLOR.Game.Server.Service
                 _statusEffects[type] = new StatusEffectMetadata(
                     () => (IStatusEffect)Activator.CreateInstance(type),
                     effect.Name,
-                    effect.Frequency);
+                    effect.Frequency,
+                    effect.SourceType);
             }
 
             Console.WriteLine($"Loaded {_statusEffects.Count} status effects.");
         }
 
-        private static void EnsureStatusEffectsCached()
-        {
-            if (_statusEffects.Count <= 0)
-            {
-                CacheStatusEffects();
-            }
-        }
-
         private static bool TryCreateStatusEffect(Type statusEffectClass, out IStatusEffect statusEffect)
         {
-            EnsureStatusEffectsCached();
-
             if (statusEffectClass != null &&
                 _statusEffects.TryGetValue(statusEffectClass, out var metadata))
             {
@@ -929,8 +920,6 @@ namespace SWLOR.Game.Server.Service
 
         public static bool HasStatusEffectDefinition(Type statusEffectClass)
         {
-            EnsureStatusEffectsCached();
-
             return statusEffectClass != null && _statusEffects.ContainsKey(statusEffectClass);
         }
 
@@ -1137,33 +1126,55 @@ namespace SWLOR.Game.Server.Service
         public static void RemoveStatusEffect(
             uint creature,
             Type statusEffectClass,
-            bool sendsWornOffMessage = true)
+            bool sendsWornOffMessage = true,
+            bool removeNativeEffect = true)
         {
-            RemoveStatusEffect(statusEffectClass, creature, OBJECT_INVALID, sendsWornOffMessage);
+            RemoveStatusEffect(statusEffectClass, creature, OBJECT_INVALID, sendsWornOffMessage, removeNativeEffect);
         }
 
         public static void RemoveStatusEffect(
             uint creature,
             Type statusEffectClass,
             uint source,
-            bool sendsWornOffMessage = true)
+            bool sendsWornOffMessage = true,
+            bool removeNativeEffect = true)
         {
-            RemoveStatusEffect(statusEffectClass, creature, source, sendsWornOffMessage);
+            RemoveStatusEffect(statusEffectClass, creature, source, sendsWornOffMessage, removeNativeEffect);
         }
 
         public static string GetStatusEffectName(Type statusEffectClass)
         {
-            EnsureStatusEffectsCached();
-
             return statusEffectClass != null && _statusEffects.TryGetValue(statusEffectClass, out var statusEffect)
                 ? statusEffect.Name
                 : statusEffectClass?.Name ?? "Unknown";
         }
 
+        public static StatusEffectSourceType GetStatusEffectSourceType(Type statusEffectClass)
+        {
+            return statusEffectClass != null && _statusEffects.TryGetValue(statusEffectClass, out var statusEffect)
+                ? statusEffect.SourceType
+                : StatusEffectSourceType.Invalid;
+        }
+
+        public static void RemoveOtherStanceStatuses(
+            uint creature,
+            Type statusEffectType,
+            bool sendsWornOffMessage = false,
+            bool removeNativeEffect = true)
+        {
+            if (GetStatusEffectSourceType(statusEffectType) != StatusEffectSourceType.Stance)
+                return;
+
+            RemoveStatusEffectBySourceType(
+                creature,
+                StatusEffectSourceType.Stance,
+                sendsWornOffMessage,
+                statusEffectType,
+                removeNativeEffect);
+        }
+
         public static List<Type> GetStatusEffectsFromIcon(EffectIconType effectIcon)
         {
-            EnsureStatusEffectsCached();
-
             return _statusEffects
                 .Where(x => x.Value.Create().Icon == effectIcon)
                 .Select(x => x.Key)
@@ -1230,7 +1241,12 @@ namespace SWLOR.Game.Server.Service
                 : AbilityType.Invalid;
         }
 
-        private static void RemoveStatusEffect(Type type, uint creature, uint source, bool sendsWornOffMessage = true)
+        private static void RemoveStatusEffect(
+            Type type,
+            uint creature,
+            uint source,
+            bool sendsWornOffMessage = true,
+            bool removeNativeEffect = true)
         {
             if (!_creatureEffects.TryGetValue(creature, out var creatureEffects))
                 return;
@@ -1246,11 +1262,11 @@ namespace SWLOR.Game.Server.Service
                     continue;
 
                 var shouldSendMessage = sendsWornOffMessage && !hasSentMessage;
-                RemoveStatusEffectInstance(creature, creatureEffects, statusEffect, shouldSendMessage, true);
+                RemoveStatusEffectInstance(creature, creatureEffects, statusEffect, shouldSendMessage, removeNativeEffect);
                 hasSentMessage |= shouldSendMessage && statusEffect.SendsWornOffMessage;
             }
 
-            RemoveCreatureIfEmpty(creature, creatureEffects);
+            RemoveCreatureIfEmpty(creature, creatureEffects, removeNativeEffect);
         }
 
         private static void RemoveStatusEffectById(
@@ -1277,7 +1293,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             RemoveStatusEffectInstance(creature, creatureEffects, statusEffect, sendsWornOffMessage, removeNativeEffect);
-            RemoveCreatureIfEmpty(creature, creatureEffects);
+            RemoveCreatureIfEmpty(creature, creatureEffects, removeNativeEffect);
         }
 
         private static void RemoveStatusEffectInstance(
@@ -1331,13 +1347,21 @@ namespace SWLOR.Game.Server.Service
             RemoveStatusEffect(type, creature, OBJECT_INVALID);
         }
 
-        public static void RemoveStatusEffectBySourceType(uint creature, StatusEffectSourceType sourceType)
+        public static void RemoveStatusEffectBySourceType(
+            uint creature,
+            StatusEffectSourceType sourceType,
+            bool sendsWornOffMessage = true,
+            Type excludedStatusEffectType = null,
+            bool removeNativeEffect = true)
         {
             var creatureEffects = GetCreatureStatusEffects(creature);
             var effects = creatureEffects.GetAllBySourceType(sourceType);
             foreach (var effect in effects)
             {
-                RemoveStatusEffect(effect.GetType(), creature, effect.Source);
+                if (excludedStatusEffectType != null && effect.GetType() == excludedStatusEffectType)
+                    continue;
+
+                RemoveStatusEffect(effect.GetType(), creature, effect.Source, sendsWornOffMessage, removeNativeEffect);
             }
         }
 
@@ -1384,22 +1408,28 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Removes a creature from the status effect system entirely
         /// </summary>
-        public static void RemoveCreature(uint creature)
+        public static void RemoveCreature(uint creature, bool removeNativeEffect = true)
         {
             if (_creatureEffects.ContainsKey(creature))
             {
                 _creatureEffects.Remove(creature);
             }
 
-            RemoveEffectByTag(creature, StatusEffectTag);
+            if (removeNativeEffect)
+            {
+                RemoveEffectByTag(creature, StatusEffectTag);
+            }
         }
 
-        private static void RemoveCreatureIfEmpty(uint creature, CreatureStatusEffect effects)
+        private static void RemoveCreatureIfEmpty(
+            uint creature,
+            CreatureStatusEffect effects,
+            bool removeNativeEffect = true)
         {
             if (effects.GetAllEffects().Count > 0)
                 return;
 
-            RemoveCreature(creature);
+            RemoveCreature(creature, removeNativeEffect);
         }
 
         [NWNEventHandler(ScriptName.OnSWLORDamage)]
@@ -1444,12 +1474,18 @@ namespace SWLOR.Game.Server.Service
             public Func<IStatusEffect> Create { get; }
             public string Name { get; }
             public float Frequency { get; }
+            public StatusEffectSourceType SourceType { get; }
 
-            public StatusEffectMetadata(Func<IStatusEffect> create, string name, float frequency)
+            public StatusEffectMetadata(
+                Func<IStatusEffect> create,
+                string name,
+                float frequency,
+                StatusEffectSourceType sourceType)
             {
                 Create = create;
                 Name = name;
                 Frequency = frequency;
+                SourceType = sourceType;
             }
         }
 

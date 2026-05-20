@@ -8,6 +8,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     {
         public override string Name => "Bastion Stance";
         public override EffectIconType Icon => EffectIconType.BastionStanceStatusEffect;
+        public override StatusEffectSourceType SourceType => StatusEffectSourceType.Stance;
         public BastionStanceStatusEffect()
         {
             StatGroup.Stats[StatType.AttackPercentAdjustment] = -20;

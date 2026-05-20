@@ -8,6 +8,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     {
         public override string Name => "Gunfighter Stance";
         public override EffectIconType Icon => EffectIconType.GunfighterStanceStatusEffect;
+        public override StatusEffectSourceType SourceType => StatusEffectSourceType.Stance;
         public GunfighterStanceStatusEffect()
         {
             StatGroup.Stats[StatType.AttackPercentAdjustment] = 15;

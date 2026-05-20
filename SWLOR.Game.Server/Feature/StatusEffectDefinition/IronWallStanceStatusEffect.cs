@@ -8,6 +8,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     {
         public override string Name => "Iron Wall Stance";
         public override EffectIconType Icon => EffectIconType.IronWallStanceStatusEffect;
+        public override StatusEffectSourceType SourceType => StatusEffectSourceType.Stance;
         public IronWallStanceStatusEffect()
         {
             StatGroup.Stats[StatType.AttackPercentAdjustment] = -25;

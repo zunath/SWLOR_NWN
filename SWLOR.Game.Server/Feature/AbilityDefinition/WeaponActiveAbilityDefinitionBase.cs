@@ -201,6 +201,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 .HasActivationAction((activator, target, level, targetLocation) => ToggleSelfStatus(activator, type))
                 .HasImpactAction((activator, target, level, targetLocation) =>
                 {
+                    StatusEffect.RemoveOtherStanceStatuses(activator, type);
                     StatusEffect.ApplyStatusEffect(activator, activator, type, 0f);
                 })
                 .IsCastedAbility()

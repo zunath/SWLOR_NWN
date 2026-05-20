@@ -5,5 +5,6 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
         Invalid = 0,
         Normal = 1,
         WeaponSkill = 2,
+        Stance = 3,
     }
 }

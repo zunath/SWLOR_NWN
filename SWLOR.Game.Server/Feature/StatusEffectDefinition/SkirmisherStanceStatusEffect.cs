@@ -8,6 +8,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     {
         public override string Name => "Skirmisher Stance";
         public override EffectIconType Icon => EffectIconType.SkirmisherStanceStatusEffect;
+        public override StatusEffectSourceType SourceType => StatusEffectSourceType.Stance;
         public SkirmisherStanceStatusEffect()
         {
             StatGroup.Stats[StatType.AttackPercentAdjustment] = -10;

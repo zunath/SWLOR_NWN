@@ -23,6 +23,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
 
         protected static void ApplySelfStatus(uint activator, Type type)
         {
+            StatusEffect.RemoveOtherStanceStatuses(activator, type);
             StatusEffect.ApplyStatusEffect(activator, activator, type, 0f);
         }
 

@@ -10,6 +10,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     {
         public override string Name => "Defensive Stance";
         public override EffectIconType Icon => EffectIconType.DefensiveStanceStatusEffect;
+        public override StatusEffectSourceType SourceType => StatusEffectSourceType.Stance;
 
         protected override void Apply(uint creature, int durationTicks)
         {

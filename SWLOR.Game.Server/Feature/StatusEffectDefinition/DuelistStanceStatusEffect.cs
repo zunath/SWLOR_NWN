@@ -8,6 +8,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     {
         public override string Name => "Duelist Stance";
         public override EffectIconType Icon => EffectIconType.DuelistStanceStatusEffect;
+        public override StatusEffectSourceType SourceType => StatusEffectSourceType.Stance;
         public DuelistStanceStatusEffect()
         {
             StatGroup.Stats[StatType.TwinBladeSingleTargetAbilityDamagePercentAdjustment] = 15;

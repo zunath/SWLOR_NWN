@@ -70,6 +70,9 @@ public class ForceDarkManipulatorTests
         AssertAbility(forceGrip[FeatType.ForceGrip1], "Force Grip I", 1, RecastGroup.ForceGrip, 36f, 1f, 4, true, true, true, false, AbilityActivationType.Casted, 15f, false);
         AssertAbility(forceGrip[FeatType.ForceGrip2], "Force Grip II", 2, RecastGroup.ForceGrip, 36f, 1f, 5, true, true, true, false, AbilityActivationType.Casted, 15f, false);
         AssertAbility(forceGrip[FeatType.ForceGrip3], "Force Grip III", 3, RecastGroup.ForceGrip, 36f, 1f, 7, true, true, false, true, AbilityActivationType.Casted, 15f, false);
+        forceGrip[FeatType.ForceGrip1].ImpactAnimationType.Should().Be(Animation.CastOutAnimation);
+        forceGrip[FeatType.ForceGrip2].ImpactAnimationType.Should().Be(Animation.CastOutAnimation);
+        forceGrip[FeatType.ForceGrip3].ImpactAnimationType.Should().Be(Animation.CastOutAnimation);
 
         var weakenResolve = new WeakenResolveAbilityDefinition().BuildAbilities();
         AssertAbility(weakenResolve[FeatType.WeakenResolve1], "Weaken Resolve I", 1, RecastGroup.WeakenResolve, 18f, 1f, 3, true, true, true, false, AbilityActivationType.Casted, 15f, false);
@@ -167,6 +170,7 @@ public class ForceDarkManipulatorTests
         var forceGrip = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Force" / "ForceGripAbilityDefinition.cs").FullName);
         forceGrip.Should().Contain("afterSuccessfulHit: InterruptActivation");
         forceGrip.Should().Contain("ClearAllActions");
+        forceGrip.Should().NotContain(".UsesImpactAnimation(Animation.ForceChoke)");
 
         var immobilized = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "StatusEffectDefinition" / "ImmobilizedStatusEffect.cs").FullName);
         immobilized.Should().Contain("Enmity.AttackHighestEnmityTarget(creature)");

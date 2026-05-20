@@ -220,8 +220,7 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            // Must have line of sight to AOE creator
-            if (!LineOfSightObject(entering, self))
+            if (!IsInAggroRange(self, entering))
                 return;
 
             if (!GetIsEnemy(entering, self))
@@ -232,28 +231,13 @@ namespace SWLOR.Game.Server.Service
                     GetIsEnemy(attackTarget, self) &&
                     IsInAggroRange(self, attackTarget))
                 {
-                    Enmity.ModifyProximityEnmity(attackTarget, self, ProximityEnmityAmount);
+                    TryAddProximityEnmity(attackTarget, self);
                 }
 
                 return;
             }
 
-            Enmity.ModifyProximityEnmity(entering, self, ProximityEnmityAmount);
-            ProcessTrigger(self, AITriggerType.Aggro, entering);
-
-            // All allies within 5m should also aggro the player if they're not already in combat.
-            if (_creatureAllies.TryGetValue(self, out var allies))
-            {
-                foreach (var ally in allies)
-                {
-                    if (!IsAIEnabled(ally)) continue;
-                    if (!GetIsEnemy(entering, ally)) continue;
-                    if (GetDistanceBetween(self, ally) > 5f) continue;
-
-                    Enmity.ModifyProximityEnmity(entering, ally, ProximityEnmityAmount);
-                }
-            }
-
+            TryAcquireAggro(self, entering);
         }
 
         /// <summary>
@@ -521,6 +505,48 @@ namespace SWLOR.Game.Server.Service
                    GetArea(creature) == GetArea(target) &&
                    GetDistanceBetween(creature, target) <= AggroRadius &&
                    LineOfSightObject(target, creature);
+        }
+
+        private static void TryAcquireAggro(uint self, uint target)
+        {
+            if (self == target ||
+                !GetIsObjectValid(target) ||
+                GetIsDead(target) ||
+                GetHasEffect(target, EffectTypeScript.Invisibility, EffectTypeScript.ImprovedInvisibility) ||
+                !IsInAggroRange(self, target) ||
+                !GetIsEnemy(target, self) ||
+                !TryAddProximityEnmity(target, self))
+            {
+                return;
+            }
+
+            ProcessTrigger(self, AITriggerType.Aggro, target);
+            AddNearbyAllyProximityEnmity(self, target);
+        }
+
+        private static void AddNearbyAllyProximityEnmity(uint self, uint target)
+        {
+            if (!_creatureAllies.TryGetValue(self, out var allies))
+                return;
+
+            foreach (var ally in allies)
+            {
+                if (!IsAIEnabled(ally)) continue;
+                if (!GetIsEnemy(target, ally)) continue;
+                if (GetDistanceBetween(self, ally) > 5f) continue;
+                if (!LineOfSightObject(target, ally)) continue;
+
+                TryAddProximityEnmity(target, ally);
+            }
+        }
+
+        private static bool TryAddProximityEnmity(uint target, uint enemy)
+        {
+            if (Enmity.HasProximityEnmity(target, enemy))
+                return false;
+
+            Enmity.ModifyProximityEnmity(target, enemy, ProximityEnmityAmount);
+            return true;
         }
 
         private static void RemoveProximityEnmity(uint target, uint enemy)

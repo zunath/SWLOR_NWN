@@ -250,6 +250,103 @@ public class AIModelTests
         }).Should().NotBeNull();
     }
 
+    [Test]
+    public void CreatureAggroEnter_EnforcesAggroRangeBeforeAddingProximityEnmity()
+    {
+        var aiSource = File.ReadAllText(Path.Combine(
+            FindRepositoryRoot().FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "AI.cs")).Replace("\r\n", "\n");
+        var enterBody = aiSource.Substring(
+            aiSource.IndexOf("public static void CreatureAggroEnter()", StringComparison.Ordinal),
+            aiSource.IndexOf("public static void CreatureAggroExit()", StringComparison.Ordinal) -
+            aiSource.IndexOf("public static void CreatureAggroEnter()", StringComparison.Ordinal));
+
+        var rangeGuardIndex = enterBody.IndexOf("if (!IsInAggroRange(self, entering))", StringComparison.Ordinal);
+        var acquireIndex = enterBody.IndexOf("TryAcquireAggro(self, entering);", StringComparison.Ordinal);
+
+        rangeGuardIndex.Should().BeGreaterThanOrEqualTo(0);
+        rangeGuardIndex.Should().BeLessThan(acquireIndex);
+    }
+
+    [Test]
+    public void CreatureAggroRange_RequiresLineOfSight()
+    {
+        var aiSource = File.ReadAllText(Path.Combine(
+            FindRepositoryRoot().FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "AI.cs")).Replace("\r\n", "\n");
+        var rangeBody = aiSource.Substring(
+            aiSource.IndexOf("private static bool IsInAggroRange", StringComparison.Ordinal),
+            aiSource.IndexOf("private static void TryAcquireAggro", StringComparison.Ordinal) -
+            aiSource.IndexOf("private static bool IsInAggroRange", StringComparison.Ordinal));
+
+        rangeBody.Should().Contain("LineOfSightObject(target, creature)");
+    }
+
+    [Test]
+    public void AllyAggroAssist_RequiresLineOfSightBeforeAddingProximityEnmity()
+    {
+        var aiSource = File.ReadAllText(Path.Combine(
+            FindRepositoryRoot().FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "AI.cs")).Replace("\r\n", "\n");
+        var allyBody = aiSource.Substring(
+            aiSource.IndexOf("private static void AddNearbyAllyProximityEnmity", StringComparison.Ordinal),
+            aiSource.IndexOf("private static bool TryAddProximityEnmity", StringComparison.Ordinal) -
+            aiSource.IndexOf("private static void AddNearbyAllyProximityEnmity", StringComparison.Ordinal));
+
+        var lineOfSightIndex = allyBody.IndexOf("if (!LineOfSightObject(target, ally)) continue;", StringComparison.Ordinal);
+        var addEnmityIndex = allyBody.IndexOf("TryAddProximityEnmity(target, ally);", StringComparison.Ordinal);
+
+        lineOfSightIndex.Should().BeGreaterThanOrEqualTo(0);
+        lineOfSightIndex.Should().BeLessThan(addEnmityIndex);
+    }
+
+    [Test]
+    public void CreatureHeartbeat_DoesNotScanForAggroTargets()
+    {
+        var aiSource = File.ReadAllText(Path.Combine(
+            FindRepositoryRoot().FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "AI.cs")).Replace("\r\n", "\n");
+        var heartbeatBody = aiSource.Substring(
+            aiSource.IndexOf("public static void CreatureHeartbeat()", StringComparison.Ordinal),
+            aiSource.IndexOf("public static void CreaturePerception()", StringComparison.Ordinal) -
+            aiSource.IndexOf("public static void CreatureHeartbeat()", StringComparison.Ordinal));
+
+        heartbeatBody.Should().NotContain("GetFirstObjectInShape");
+        heartbeatBody.Should().NotContain("AcquireNearbyHostiles");
+        heartbeatBody.Should().NotContain("RemoveStaleProximityEnmity");
+    }
+
+    [Test]
+    public void AggroAreaEffect_DefinesCreatureAggroRadius()
+    {
+        var areaEffects = File.ReadAllLines(Path.Combine(
+            FindRepositoryRoot().FullName,
+            "SWLOR_Haks",
+            "swlor2_2da",
+            "areaeffects.2da"));
+
+        var rows = areaEffects
+            .Select(line => line.Split(new[] {' ', '\t'}, StringSplitOptions.RemoveEmptyEntries))
+            .Where(columns => columns.Length > 0 && int.TryParse(columns[0], out _))
+            .ToArray();
+        var columns = rows[37];
+
+        columns.Should().HaveCountGreaterThanOrEqualTo(9);
+        columns[0].Should().Be("37");
+        columns[1].Should().Be("Creature_Aggro");
+        columns[2].Should().Be("37");
+        columns[3].Should().Be("C");
+        columns[4].Should().Be("8.5");
+    }
+
     private static AIContext CreateContext(
         uint self = 0,
         int selfHealthPercent = 100,
@@ -291,5 +388,22 @@ public class AIModelTests
         return (T)typeof(Enmity)
             .GetField(name, BindingFlags.Static | BindingFlags.NonPublic)!
             .GetValue(null)!;
+    }
+
+    private static DirectoryInfo FindRepositoryRoot()
+    {
+        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
+        while (directory != null)
+        {
+            if (File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln")) &&
+                Directory.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server")))
+            {
+                return directory;
+            }
+
+            directory = directory.Parent;
+        }
+
+        throw new DirectoryNotFoundException("Could not locate the SWLOR_NWN repository root.");
     }
 }

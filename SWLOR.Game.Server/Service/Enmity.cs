@@ -380,6 +380,12 @@ namespace SWLOR.Game.Server.Service
             return true;
         }
 
+        public static bool HasProximityEnmity(uint creature, uint enemy)
+        {
+            return _proximityEnmityAmounts.TryGetValue(enemy, out var table) &&
+                   table.ContainsKey(creature);
+        }
+
         /// <summary>
         /// Clears every creature from an enemy's enmity table.
         /// </summary>

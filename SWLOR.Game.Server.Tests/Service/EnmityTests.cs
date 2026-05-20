@@ -114,6 +114,24 @@ public class EnmityTests
     }
 
     [Test]
+    public void HasProximityEnmity_OnlyMatchesTrackedEnemyAndTarget()
+    {
+        const uint enemy = 100;
+        const uint otherEnemy = 200;
+        const uint target = 1;
+        const uint otherTarget = 2;
+
+        ProximityEnmityAmounts()[enemy] = new Dictionary<uint, int>
+        {
+            [target] = 1
+        };
+
+        Enmity.HasProximityEnmity(target, enemy).Should().BeTrue();
+        Enmity.HasProximityEnmity(otherTarget, enemy).Should().BeFalse();
+        Enmity.HasProximityEnmity(target, otherEnemy).Should().BeFalse();
+    }
+
+    [Test]
     public void ShouldIssueAttackCommand_ReissuesWhenTargetIsStaleButNoAttackActionIsRunning()
     {
         ShouldIssueAttackCommand(1, 1, ActionType.Invalid, false)

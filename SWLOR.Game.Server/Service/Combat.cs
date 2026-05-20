@@ -484,21 +484,33 @@ namespace SWLOR.Game.Server.Service
 
         private static int PreventFatalDamageAndGrantTemporaryHP(uint defender, int damage)
         {
-            if (damage <= 0)
-                return damage;
+            return TryPreventFatalDamageAndGrantTemporaryHP(defender, damage, restoreToOneHP: false)
+                ? 0
+                : damage;
+        }
+
+        public static bool TryPreventFatalDamageAndGrantTemporaryHP(
+            uint defender,
+            int damage,
+            bool restoreToOneHP)
+        {
+            if (!GetIsObjectValid(defender) || (damage <= 0 && !restoreToOneHP))
+                return false;
 
             var temporaryHPPercent = Stat.GetStatAdjustment(defender, StatType.FatalDamageTemporaryHPPercent);
             var duration = Stat.GetStatAdjustment(defender, StatType.FatalDamageTemporaryHPDurationSeconds);
             if (temporaryHPPercent <= 0 || duration <= 0)
-                return damage;
+                return false;
 
             var currentHP = GetCurrentHitPoints(defender);
-            if (currentHP <= 0 || damage < currentHP)
-                return damage;
+            var isIncomingDamageFatal = damage > 0 && currentHP > 0 && damage >= currentHP;
+            var isDyingFallback = restoreToOneHP && currentHP <= 0;
+            if (!isIncomingDamageFatal && !isDyingFallback)
+                return false;
 
             var cooldown = Stat.GetStatAdjustment(defender, StatType.FatalDamageTemporaryHPCooldownSeconds);
             if (!TryUseStatTrigger(defender, StatType.FatalDamageTemporaryHPPercent, cooldown))
-                return damage;
+                return false;
 
             var scalingAbilityScore = Stat.GetStatAdjustment(defender, StatType.FatalDamageTemporaryHPScalingAbilityScore);
             var tempHP = Math.Max(1, (int)Math.Ceiling(GetMaxHitPoints(defender) * (temporaryHPPercent / 100f)));
@@ -507,10 +519,13 @@ namespace SWLOR.Game.Server.Service
 
             StatusEffect.RemoveStatusEffectsWithStat(defender, StatType.FatalDamageTemporaryHPPercent, false);
 
+            if (restoreToOneHP && currentHP <= 0)
+                SetCurrentHitPoints(defender, 1);
+
             ApplyEffectToObject(DurationType.Temporary, EffectTemporaryHitpoints(tempHP), defender, duration);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Ac_Bonus), defender);
 
-            return 0;
+            return true;
         }
 
         public static int ApplyTargetStatusAttackModifiers(uint attacker, uint defender, int attack, SkillType skillType)

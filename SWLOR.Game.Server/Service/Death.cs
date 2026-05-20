@@ -15,7 +15,11 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnModuleDying)]
         public static void OnPlayerDying()
         {
-            ApplyEffectToObject(DurationType.Instant, EffectDeath(), GetLastPlayerDying());
+            var player = GetLastPlayerDying();
+            if (Combat.TryPreventFatalDamageAndGrantTemporaryHP(player, 0, restoreToOneHP: true))
+                return;
+
+            ApplyEffectToObject(DurationType.Instant, EffectDeath(), player);
         }
 
         /// <summary>

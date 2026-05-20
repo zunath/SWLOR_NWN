@@ -2553,7 +2553,21 @@ namespace SWLOR.Game.Server.Service
             return angleDegrees > 90.0;
         }
 
-        public static bool ConsumeNextAbilityNoDelay(uint creature, SkillType skillType)
+        public static bool CanConsumeNextAbilityNoDelay(AbilityDetail ability)
+        {
+            return ability?.IsHostileAbility == true;
+        }
+
+        public static bool ConsumeNextAbilityNoDelay(uint creature, AbilityDetail ability)
+        {
+            if (!CanConsumeNextAbilityNoDelay(ability))
+                return false;
+
+            var skillType = GetAbilitySkillType(creature, ability);
+            return ConsumeNextAbilityNoDelay(creature, skillType);
+        }
+
+        private static bool ConsumeNextAbilityNoDelay(uint creature, SkillType skillType)
         {
             if (skillType == SkillType.Invalid)
                 return false;

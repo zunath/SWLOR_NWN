@@ -243,8 +243,7 @@ namespace SWLOR.Game.Server.Feature
         {
             float CalculateActivationDelay()
             {
-                var abilitySkillType = Combat.GetAbilitySkillType(activator, ability);
-                if (Combat.ConsumeNextAbilityNoDelay(activator, abilitySkillType))
+                if (Combat.ConsumeNextAbilityNoDelay(activator, ability))
                     return 0f;
 
                 var abilityDelay = ability.ActivationDelay?.Invoke(activator, target, ability.AbilityLevel) ?? 0.0f;

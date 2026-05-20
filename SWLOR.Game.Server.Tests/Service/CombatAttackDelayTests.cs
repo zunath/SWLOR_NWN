@@ -1,5 +1,6 @@
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Tests.Service;
@@ -69,5 +70,23 @@ public class CombatAttackDelayTests
         var effectiveDelay = Combat.CalculateEffectiveAttackDelay(attackerDelay, true);
 
         effectiveDelay.Should().Be(Combat.BaseAttackDelayMilliseconds);
+    }
+
+    [Test]
+    public void CanConsumeNextAbilityNoDelay_RequiresHostileAbility()
+    {
+        Combat.CanConsumeNextAbilityNoDelay(new AbilityDetail
+            {
+                IsHostileAbility = true
+            })
+            .Should()
+            .BeTrue();
+
+        Combat.CanConsumeNextAbilityNoDelay(new AbilityDetail
+            {
+                IsHostileAbility = false
+            })
+            .Should()
+            .BeFalse();
     }
 }

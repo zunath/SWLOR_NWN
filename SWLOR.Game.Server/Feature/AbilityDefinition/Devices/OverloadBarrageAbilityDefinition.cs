@@ -48,6 +48,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         private static void OverloadBarrage1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
             var damageAdjustment = DeviceAbilityEffects.GetAssaultGadgetDamageAdjustment(activator);
+            var baseDamageAdjustment = DeviceAbilityEffects.GetAssaultGadgetBaseDamageAdjustment(activator);
             var hitChanceAdjustment = DeviceAbilityEffects.GetAssaultGadgetAccuracyAdjustment(activator);
             var criticalRateAdjustment = DeviceAbilityEffects.GetAssaultGadgetCriticalRateAdjustment(activator);
 
@@ -68,6 +69,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 targetVisualEffect: VisualEffect.Vfx_Com_Hit_Fire,
                 areaVisualEffect: VisualEffect.Fnf_Fireball,
                 damagePercentAdjustment: damageAdjustment,
+                baseDamageAdjustment: baseDamageAdjustment,
                 hitChancePercentAdjustment: hitChanceAdjustment,
                 criticalRatePercentAdjustment: criticalRateAdjustment);
 
@@ -84,6 +86,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 damageType: CombatDamageType.Fire,
                 targetVisualEffect: VisualEffect.Vfx_Com_Hit_Fire,
                 damagePercentAdjustment: damageAdjustment,
+                baseDamageAdjustment: baseDamageAdjustment,
                 hitChancePercentAdjustment: hitChanceAdjustment,
                 criticalRatePercentAdjustment: criticalRateAdjustment);
 
@@ -104,6 +107,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 targetVisualEffect: VisualEffect.Vfx_Imp_Sonic,
                 areaVisualEffect: VisualEffect.Vfx_Fnf_Sound_Burst,
                 damagePercentAdjustment: damageAdjustment,
+                baseDamageAdjustment: baseDamageAdjustment,
                 afterSuccessfulHit: InterruptActivation,
                 hitChancePercentAdjustment: hitChanceAdjustment,
                 criticalRatePercentAdjustment: criticalRateAdjustment);

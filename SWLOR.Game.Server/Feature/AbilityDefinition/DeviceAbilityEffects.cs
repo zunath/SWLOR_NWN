@@ -127,6 +127,36 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 : _ => adjustment;
         }
 
+        public static Func<uint, int> GetAssaultGadgetBaseDamageAdjustment(uint activator)
+        {
+            var adjustment = CalculateAssaultGadgetWeaponDamageEquivalent(
+                Skill.GetCreatureSkillRank(activator, SkillType.Devices));
+
+            return adjustment == 0
+                ? null
+                : _ => adjustment;
+        }
+
+        public static int CalculateAssaultGadgetWeaponDamageEquivalent(int devicesRank)
+        {
+            if (devicesRank >= 50)
+                return 28;
+
+            if (devicesRank >= 40)
+                return 24;
+
+            if (devicesRank >= 30)
+                return 19;
+
+            if (devicesRank >= 20)
+                return 15;
+
+            if (devicesRank >= 10)
+                return 10;
+
+            return 6;
+        }
+
         public static void ScheduleSingleHostilePulses(
             uint activator,
             Location location,

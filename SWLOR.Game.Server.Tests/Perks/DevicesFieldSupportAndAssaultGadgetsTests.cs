@@ -2,6 +2,7 @@ using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Devices;
 using SWLOR.Game.Server.Feature.PerkDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
@@ -224,6 +225,22 @@ public class DevicesFieldSupportAndAssaultGadgetsTests
     }
 
     [Test]
+    public void AssaultGadgetWeaponDamageEquivalent_MatchesPistolDamageTiers()
+    {
+        DeviceAbilityEffects.CalculateAssaultGadgetWeaponDamageEquivalent(0).Should().Be(6);
+        DeviceAbilityEffects.CalculateAssaultGadgetWeaponDamageEquivalent(9).Should().Be(6);
+        DeviceAbilityEffects.CalculateAssaultGadgetWeaponDamageEquivalent(10).Should().Be(10);
+        DeviceAbilityEffects.CalculateAssaultGadgetWeaponDamageEquivalent(19).Should().Be(10);
+        DeviceAbilityEffects.CalculateAssaultGadgetWeaponDamageEquivalent(20).Should().Be(15);
+        DeviceAbilityEffects.CalculateAssaultGadgetWeaponDamageEquivalent(29).Should().Be(15);
+        DeviceAbilityEffects.CalculateAssaultGadgetWeaponDamageEquivalent(30).Should().Be(19);
+        DeviceAbilityEffects.CalculateAssaultGadgetWeaponDamageEquivalent(39).Should().Be(19);
+        DeviceAbilityEffects.CalculateAssaultGadgetWeaponDamageEquivalent(40).Should().Be(24);
+        DeviceAbilityEffects.CalculateAssaultGadgetWeaponDamageEquivalent(49).Should().Be(24);
+        DeviceAbilityEffects.CalculateAssaultGadgetWeaponDamageEquivalent(50).Should().Be(28);
+    }
+
+    [Test]
     public void DevicesFieldSupportAndAssaultGadgetsSources_IncludeBibleBehavior()
     {
         var root = FindRepositoryRoot();
@@ -258,9 +275,12 @@ public class DevicesFieldSupportAndAssaultGadgetsTests
         deviceEffects.Should().Contain("AssaultGadgetAccuracyPercentAdjustment");
         deviceEffects.Should().Contain("AssaultGadgetCriticalRatePercentAdjustment");
         deviceEffects.Should().Contain("AssaultGadgetDamagePercentAdjustment");
+        deviceEffects.Should().Contain("GetAssaultGadgetBaseDamageAdjustment");
+        deviceEffects.Should().Contain("CalculateAssaultGadgetWeaponDamageEquivalent");
 
         var railDart = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Devices" / "RailDartAbilityDefinition.cs").FullName);
         railDart.Should().Contain("CombatDamageType.Physical");
+        railDart.Should().Contain("baseDamageAdjustment: DeviceAbilityEffects.GetAssaultGadgetBaseDamageAdjustment(activator)");
         railDart.Should().NotContain("CombatDamageType.Fire");
 
         var sonicBurst = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Devices" / "SonicBurstAbilityDefinition.cs").FullName);
@@ -274,6 +294,7 @@ public class DevicesFieldSupportAndAssaultGadgetsTests
         overload.Should().Contain("typeof(KnockdownStatusEffect)");
         overload.Should().Contain("typeof(SonicBurst3StatusEffect)");
         overload.Should().Contain("CombatDamageType.Sonic");
+        overload.Should().Contain("var baseDamageAdjustment = DeviceAbilityEffects.GetAssaultGadgetBaseDamageAdjustment(activator);");
     }
 
     [Test]

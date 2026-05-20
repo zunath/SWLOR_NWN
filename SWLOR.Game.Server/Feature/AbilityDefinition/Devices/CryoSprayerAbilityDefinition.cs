@@ -82,6 +82,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 targetVisualEffect: VisualEffect.Vfx_Com_Hit_Frost,
                 areaVisualEffect: VisualEffect.Vfx_Fnf_Icestorm,
                 damagePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetDamageAdjustment(activator),
+                baseDamageAdjustment: DeviceAbilityEffects.GetAssaultGadgetBaseDamageAdjustment(activator),
                 hitChancePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetAccuracyAdjustment(activator),
                 criticalRatePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetCriticalRateAdjustment(activator));
         }
@@ -106,6 +107,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 targetVisualEffect: VisualEffect.Vfx_Com_Hit_Frost,
                 areaVisualEffect: VisualEffect.Vfx_Fnf_Icestorm,
                 damagePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetDamageAdjustment(activator),
+                baseDamageAdjustment: DeviceAbilityEffects.GetAssaultGadgetBaseDamageAdjustment(activator),
                 hitChancePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetAccuracyAdjustment(activator),
                 criticalRatePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetCriticalRateAdjustment(activator));
         }

@@ -101,6 +101,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 targetVisualEffect: VisualEffect.Vfx_Imp_Sonic,
                 areaVisualEffect: VisualEffect.Vfx_Fnf_Sound_Burst,
                 damagePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetDamageAdjustment(activator),
+                baseDamageAdjustment: DeviceAbilityEffects.GetAssaultGadgetBaseDamageAdjustment(activator),
                 afterSuccessfulHit: InterruptActivation,
                 hitChancePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetAccuracyAdjustment(activator),
                 criticalRatePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetCriticalRateAdjustment(activator));
@@ -126,6 +127,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 targetVisualEffect: VisualEffect.Vfx_Imp_Sonic,
                 areaVisualEffect: VisualEffect.Vfx_Fnf_Sound_Burst,
                 damagePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetDamageAdjustment(activator),
+                baseDamageAdjustment: DeviceAbilityEffects.GetAssaultGadgetBaseDamageAdjustment(activator),
                 afterSuccessfulHit: InterruptActivation,
                 hitChancePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetAccuracyAdjustment(activator),
                 criticalRatePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetCriticalRateAdjustment(activator));
@@ -151,6 +153,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 targetVisualEffect: VisualEffect.Vfx_Imp_Sonic,
                 areaVisualEffect: VisualEffect.Vfx_Fnf_Sound_Burst,
                 damagePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetDamageAdjustment(activator),
+                baseDamageAdjustment: DeviceAbilityEffects.GetAssaultGadgetBaseDamageAdjustment(activator),
                 afterSuccessfulHit: InterruptActivation,
                 hitChancePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetAccuracyAdjustment(activator),
                 criticalRatePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetCriticalRateAdjustment(activator));

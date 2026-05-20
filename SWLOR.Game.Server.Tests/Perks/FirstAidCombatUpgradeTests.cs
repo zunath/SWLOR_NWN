@@ -257,6 +257,13 @@ public class FirstAidCombatUpgradeTests
         pain.Should().Contain("AbilityEffectScaling.ApplyTemporaryHPPercent(activator, target, percent, durationSeconds)");
         pain.Should().NotContain("HealPercent(activator, friendly");
 
+        var koltoMist = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "FirstAid" / "KoltoMistAbilityDefinition.cs").FullName);
+        koltoMist.Should().Contain("new KoltoMistHealingStatusEffect(totalPercent, 4)");
+        koltoMist.Should().NotContain("HealPercent(");
+
+        var koltoMistStatus = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "StatusEffectDefinition" / "KoltoMistHealingStatusEffect.cs").FullName);
+        koltoMistStatus.Should().Contain("FirstAidTreatmentAdjustments.ApplyMedicalScaledHeal(Source, creature, _totalPercent / _tickCount);");
+
         var cocktail = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "FirstAid" / "EmergencyCocktailAbilityDefinition.cs").FullName);
         cocktail.Should().Contain("AbilityEffectScaling.ApplyTemporaryHPPercent(activator, friendly, 15, duration)");
         cocktail.Should().Contain("new[] { typeof(PoisonStatusEffect), typeof(ToxinStatusEffect) }");

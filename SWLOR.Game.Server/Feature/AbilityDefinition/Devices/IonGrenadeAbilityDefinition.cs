@@ -37,6 +37,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .SkillType(SkillType.Devices)
                 .UsesImpactAnimation(Animation.ThrowGrenade)
                 .IsAreaAbility()
+                .HasTargetingSphere(
+                    Spell.IonGrenade1,
+                    3f,
+                    AbilityTargetingFlags.HarmsEnemies,
+                    DeviceAbilityEffects.ApplyGrenadeRadiusBonus)
                 .HasImpactAction(IonGrenade1ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
@@ -56,6 +61,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .SkillType(SkillType.Devices)
                 .UsesImpactAnimation(Animation.ThrowGrenade)
                 .IsAreaAbility()
+                .HasTargetingSphere(
+                    Spell.IonGrenade2,
+                    3f,
+                    AbilityTargetingFlags.HarmsEnemies,
+                    DeviceAbilityEffects.ApplyGrenadeRadiusBonus)
                 .HasImpactAction(IonGrenade2ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()

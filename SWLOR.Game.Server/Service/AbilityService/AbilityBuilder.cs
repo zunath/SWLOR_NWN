@@ -348,6 +348,40 @@ namespace SWLOR.Game.Server.Service.AbilityService
             return this;
         }
 
+        public AbilityBuilder HasTargetingSphere(
+            Spell spell,
+            float radius,
+            AbilityTargetingFlags flags,
+            AbilityTargetingSizeResolver sizeResolver = null)
+        {
+            return HasTargeting(
+                spell,
+                AbilityTargetingShapeType.Sphere,
+                radius,
+                0f,
+                flags,
+                sizeResolver);
+        }
+
+        public AbilityBuilder HasTargeting(
+            Spell spell,
+            AbilityTargetingShapeType shape,
+            float sizeX,
+            float sizeY,
+            AbilityTargetingFlags flags,
+            AbilityTargetingSizeResolver sizeResolver = null)
+        {
+            _activeAbility.Targeting = new AbilityTargetingDetail(
+                spell,
+                shape,
+                sizeX,
+                sizeY,
+                flags,
+                sizeResolver);
+
+            return this;
+        }
+
         public AbilityBuilder IsSingleTargetAbility()
         {
             _activeAbility.IsSingleTargetAbility = true;

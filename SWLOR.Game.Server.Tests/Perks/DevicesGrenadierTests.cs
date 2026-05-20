@@ -1,6 +1,7 @@
 using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Devices;
 using SWLOR.Game.Server.Feature.PerkDefinition;
@@ -24,8 +25,8 @@ public class DevicesGrenadierTests
         AssertPerkLevel(perks[PerkType.FragGrenade], "Frag Grenade", 1, 2, null, FeatType.FragGrenade1,
             "Deals 18 fire DMG plus PER scaling to enemies in a 3m blast. Consumes explosives.");
         AssertPerkLevel(perks[PerkType.BlastRadius], "Blast Radius", 1, 2, 5, null,
-            "Grenade abilities gain +0.5m blast radius.",
-            (StatType.GrenadeRadiusBonusTenths, 5));
+            "Grenade abilities gain +1m blast radius.",
+            (StatType.GrenadeRadiusBonusTenths, 10));
         AssertPerkLevel(perks[PerkType.ConcussionGrenade], "Concussion Grenade", 1, 3, 8, FeatType.ConcussionGrenade1,
             "Deals 14 electrical DMG plus PER scaling in a 3m blast and knock down for 2 seconds.");
         AssertPerkLevel(perks[PerkType.FlashGrenade], "Flash Grenade", 1, 3, 12, FeatType.FlashGrenade1,
@@ -35,8 +36,8 @@ public class DevicesGrenadierTests
         AssertPerkLevel(perks[PerkType.IonGrenade], "Ion Grenade", 1, 3, 18, FeatType.IonGrenade1,
             "Deals 20 electrical DMG plus PER scaling in a 3m blast. Deals 50% bonus damage to droids. Consumes explosives.");
         AssertPerkLevel(perks[PerkType.BlastRadius], "Blast Radius", 2, 2, 22, null,
-            "Grenade abilities gain +1m blast radius.",
-            (StatType.GrenadeRadiusBonusTenths, 10));
+            "Grenade abilities gain +2m blast radius.",
+            (StatType.GrenadeRadiusBonusTenths, 20));
         AssertPerkLevel(perks[PerkType.AdhesiveGrenade], "Adhesive Grenade", 1, 4, 25, FeatType.AdhesiveGrenade1,
             "Slows enemies in a 4m blast for 6 seconds and immobilizes them for 3 seconds.");
         AssertPerkLevel(perks[PerkType.ConcussionGrenade], "Concussion Grenade", 2, 3, 28, FeatType.ConcussionGrenade2,
@@ -52,8 +53,8 @@ public class DevicesGrenadierTests
         AssertPerkLevel(perks[PerkType.AdhesiveGrenade], "Adhesive Grenade", 2, 4, 42, FeatType.AdhesiveGrenade2,
             "Slows enemies in a 4m blast for 8 seconds and immobilizes them for 4 seconds.");
         AssertPerkLevel(perks[PerkType.BlastRadius], "Blast Radius", 3, 4, 45, null,
-            "Grenade abilities gain +1.5m blast radius, and Flash Grenade and Adhesive Grenade non-save effect strength increases by 5%.",
-            (StatType.GrenadeRadiusBonusTenths, 15),
+            "Grenade abilities gain +3m blast radius, and Flash Grenade and Adhesive Grenade non-save effect strength increases by 5%.",
+            (StatType.GrenadeRadiusBonusTenths, 30),
             (StatType.GrenadeControlPotencyBonus, 5));
         AssertPerkLevel(perks[PerkType.ConcussionGrenade], "Concussion Grenade", 3, 3, 48, FeatType.ConcussionGrenade3,
             "Deals 42 electrical DMG plus PER scaling in a 3m blast and knock down for 3 seconds.");
@@ -91,6 +92,61 @@ public class DevicesGrenadierTests
 
         var thermalDetonator = new ThermalDetonatorAbilityDefinition().BuildAbilities()[FeatType.ThermalDetonator1];
         AssertAbility(thermalDetonator, "Thermal Detonator", 1, RecastGroup.ThermalDetonator, 120f, 1.5f, 8, "explosives", 2);
+    }
+
+    [Test]
+    public void DevicesGrenadierAbilities_DeclareDynamicSphereTargeting()
+    {
+        var fragGrenade = new FragGrenadeAbilityDefinition().BuildAbilities();
+        AssertTargeting(fragGrenade[FeatType.FragGrenade1], Spell.FragGrenade1, 3f);
+        AssertTargeting(fragGrenade[FeatType.FragGrenade2], Spell.FragGrenade2, 3f);
+        AssertTargeting(fragGrenade[FeatType.FragGrenade3], Spell.FragGrenade3, 3f);
+
+        var concussionGrenade = new ConcussionGrenadeAbilityDefinition().BuildAbilities();
+        AssertTargeting(concussionGrenade[FeatType.ConcussionGrenade1], Spell.ConcussionGrenade1, 3f);
+        AssertTargeting(concussionGrenade[FeatType.ConcussionGrenade2], Spell.ConcussionGrenade2, 3f);
+        AssertTargeting(concussionGrenade[FeatType.ConcussionGrenade3], Spell.ConcussionGrenade3, 3f);
+
+        var flashGrenade = new FlashGrenadeAbilityDefinition().BuildAbilities();
+        AssertTargeting(flashGrenade[FeatType.FlashGrenade1], Spell.FlashGrenade1, 4f);
+        AssertTargeting(flashGrenade[FeatType.FlashGrenade2], Spell.FlashGrenade2, 4f);
+
+        var ionGrenade = new IonGrenadeAbilityDefinition().BuildAbilities();
+        AssertTargeting(ionGrenade[FeatType.IonGrenade1], Spell.IonGrenade1, 3f);
+        AssertTargeting(ionGrenade[FeatType.IonGrenade2], Spell.IonGrenade2, 3f);
+
+        var adhesiveGrenade = new AdhesiveGrenadeAbilityDefinition().BuildAbilities();
+        AssertTargeting(adhesiveGrenade[FeatType.AdhesiveGrenade1], Spell.AdhesiveGrenade1, 4f);
+        AssertTargeting(adhesiveGrenade[FeatType.AdhesiveGrenade2], Spell.AdhesiveGrenade2, 4f);
+
+        var clusterGrenade = new ClusterGrenadeAbilityDefinition().BuildAbilities();
+        AssertTargeting(clusterGrenade[FeatType.ClusterGrenade1], Spell.ClusterGrenade1, 2f);
+
+        var thermalDetonator = new ThermalDetonatorAbilityDefinition().BuildAbilities();
+        AssertTargeting(thermalDetonator[FeatType.ThermalDetonator1], Spell.ThermalDetonator1, 5f);
+    }
+
+    [Test]
+    public void GrenadeRadiusCalculation_UsesTenthsAsMeterFractions()
+    {
+        DeviceAbilityEffects.CalculateGrenadeRadius(3f, 10).Should().Be(4f);
+        DeviceAbilityEffects.CalculateGrenadeRadius(3f, 20).Should().Be(5f);
+        DeviceAbilityEffects.CalculateGrenadeRadius(3f, 30).Should().Be(6f);
+    }
+
+    [Test]
+    public void AbilityTargetingDetail_OnlyAppliesDynamicSizeWhenFeatIsKnown()
+    {
+        var targeting = new AbilityTargetingDetail(
+            Spell.FragGrenade1,
+            AbilityTargetingShapeType.Sphere,
+            3f,
+            0f,
+            AbilityTargetingFlags.HarmsEnemies,
+            (_, baseSize) => baseSize + 1.25f);
+
+        targeting.ResolveSizeX(0, false).Should().Be(3f);
+        targeting.ResolveSizeX(0, true).Should().Be(4.25f);
     }
 
     [Test]
@@ -304,6 +360,21 @@ public class DevicesGrenadierTests
             itemRequirement.ItemResref.Should().Be(itemResref);
             itemRequirement.Quantity.Should().Be(itemQuantity);
         }
+    }
+
+    private static void AssertTargeting(AbilityDetail ability, Spell spell, float radius)
+    {
+        ability.Targeting.Should().NotBeNull();
+        var targeting = ability.Targeting;
+        targeting.Spell.Should().Be(spell);
+        targeting.Shape.Should().Be(AbilityTargetingShapeType.Sphere);
+        targeting.SizeX.Should().Be(radius);
+        targeting.SizeY.Should().Be(0f);
+        targeting.Flags.Should().Be(AbilityTargetingFlags.HarmsEnemies);
+        targeting.SizeResolver.Should().NotBeNull();
+        Assert.That(
+            targeting.SizeResolver.Method,
+            Is.EqualTo(((AbilityTargetingSizeResolver)DeviceAbilityEffects.ApplyGrenadeRadiusBonus).Method));
     }
 
     private static void AssertSkillRequirement(PerkLevel level, SkillType skill, int rank)

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
@@ -56,6 +57,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             Console.WriteLine($"Loaded {_abilities.Count} abilities.");
+            AbilityTargeting.CacheData(_abilities);
         }
 
         public static IReadOnlyDictionary<FeatType, AbilityDetail> GetAllAbilityDetails()

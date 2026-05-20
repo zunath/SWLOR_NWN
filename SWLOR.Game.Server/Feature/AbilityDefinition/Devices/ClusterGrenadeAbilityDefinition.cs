@@ -41,6 +41,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .SkillType(SkillType.Devices)
                 .UsesImpactAnimation(Animation.ThrowGrenade)
                 .IsAreaAbility()
+                .HasTargetingSphere(
+                    Spell.ClusterGrenade1,
+                    SmallBlastRadius,
+                    AbilityTargetingFlags.HarmsEnemies,
+                    DeviceAbilityEffects.ApplyGrenadeRadiusBonus)
                 .HasImpactAction(ClusterGrenade1ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()

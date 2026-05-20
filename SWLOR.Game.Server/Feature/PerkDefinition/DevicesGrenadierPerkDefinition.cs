@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
@@ -26,9 +27,16 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             return _builder.Build();
         }
 
+        private PerkBuilder CreateGrenadierPerk(PerkType perkType)
+        {
+            return _builder.Create(PerkCategoryType.DevicesGrenadier, perkType)
+                .TriggerPurchase(AbilityTargeting.RefreshClientTargeting)
+                .TriggerRefund(AbilityTargeting.RefreshClientTargeting);
+        }
+
         private void FragGrenade()
         {
-            _builder.Create(PerkCategoryType.DevicesGrenadier, PerkType.FragGrenade)
+            CreateGrenadierPerk(PerkType.FragGrenade)
                 .Name("Frag Grenade")
 
                 .AddPerkLevel()
@@ -54,35 +62,35 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void BlastRadius()
         {
-            _builder.Create(PerkCategoryType.DevicesGrenadier, PerkType.BlastRadius)
+            CreateGrenadierPerk(PerkType.BlastRadius)
                 .Name("Blast Radius")
-
-                .AddPerkLevel()
-                .Description("Grenade abilities gain +0.5m blast radius.")
-                .Price(2)
-                .RequirementSkill(SkillType.Devices, 5)
-                .RequirementCharacterType(CharacterType.Standard)
-                .IncreasesStat(StatType.GrenadeRadiusBonusTenths, 5)
 
                 .AddPerkLevel()
                 .Description("Grenade abilities gain +1m blast radius.")
                 .Price(2)
-                .RequirementSkill(SkillType.Devices, 22)
+                .RequirementSkill(SkillType.Devices, 5)
                 .RequirementCharacterType(CharacterType.Standard)
                 .IncreasesStat(StatType.GrenadeRadiusBonusTenths, 10)
 
                 .AddPerkLevel()
-                .Description("Grenade abilities gain +1.5m blast radius, and Flash Grenade and Adhesive Grenade non-save effect strength increases by 5%.")
+                .Description("Grenade abilities gain +2m blast radius.")
+                .Price(2)
+                .RequirementSkill(SkillType.Devices, 22)
+                .RequirementCharacterType(CharacterType.Standard)
+                .IncreasesStat(StatType.GrenadeRadiusBonusTenths, 20)
+
+                .AddPerkLevel()
+                .Description("Grenade abilities gain +3m blast radius, and Flash Grenade and Adhesive Grenade non-save effect strength increases by 5%.")
                 .Price(4)
                 .RequirementSkill(SkillType.Devices, 45)
                 .RequirementCharacterType(CharacterType.Standard)
-                .IncreasesStat(StatType.GrenadeRadiusBonusTenths, 15)
+                .IncreasesStat(StatType.GrenadeRadiusBonusTenths, 30)
                 .IncreasesStat(StatType.GrenadeControlPotencyBonus, 5);
         }
 
         private void ConcussionGrenade()
         {
-            _builder.Create(PerkCategoryType.DevicesGrenadier, PerkType.ConcussionGrenade)
+            CreateGrenadierPerk(PerkType.ConcussionGrenade)
                 .Name("Concussion Grenade")
 
                 .AddPerkLevel()
@@ -109,7 +117,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void FlashGrenade()
         {
-            _builder.Create(PerkCategoryType.DevicesGrenadier, PerkType.FlashGrenade)
+            CreateGrenadierPerk(PerkType.FlashGrenade)
                 .Name("Flash Grenade")
 
                 .AddPerkLevel()
@@ -129,7 +137,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void IonGrenade()
         {
-            _builder.Create(PerkCategoryType.DevicesGrenadier, PerkType.IonGrenade)
+            CreateGrenadierPerk(PerkType.IonGrenade)
                 .Name("Ion Grenade")
 
                 .AddPerkLevel()
@@ -149,7 +157,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void AdhesiveGrenade()
         {
-            _builder.Create(PerkCategoryType.DevicesGrenadier, PerkType.AdhesiveGrenade)
+            CreateGrenadierPerk(PerkType.AdhesiveGrenade)
                 .Name("Adhesive Grenade")
 
                 .AddPerkLevel()
@@ -169,7 +177,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void ClusterGrenade()
         {
-            _builder.Create(PerkCategoryType.DevicesGrenadier, PerkType.ClusterGrenade)
+            CreateGrenadierPerk(PerkType.ClusterGrenade)
                 .Name("Cluster Grenade")
 
                 .AddPerkLevel()
@@ -182,7 +190,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void ThermalDetonator()
         {
-            _builder.Create(PerkCategoryType.DevicesGrenadier, PerkType.ThermalDetonator)
+            CreateGrenadierPerk(PerkType.ThermalDetonator)
                 .Name("Thermal Detonator")
 
                 .AddPerkLevel()

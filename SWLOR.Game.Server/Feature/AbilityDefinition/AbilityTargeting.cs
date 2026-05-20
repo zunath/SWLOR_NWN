@@ -1,5 +1,9 @@
+using System;
 using System.Collections.Generic;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
@@ -9,6 +13,71 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
     public static class AbilityTargeting
     {
         private const float DefaultFriendlyTargetRadius = 5f;
+        private static readonly Dictionary<FeatType, AbilityTargetingDetail> _targetingByFeat = new();
+
+        public static IReadOnlyDictionary<FeatType, AbilityTargetingDetail> GetAllTargetingDetails()
+        {
+            return _targetingByFeat;
+        }
+
+        public static void CacheData(IReadOnlyDictionary<FeatType, AbilityDetail> abilities)
+        {
+            _targetingByFeat.Clear();
+
+            foreach (var (feat, ability) in abilities)
+            {
+                if (ability.Targeting == null)
+                    continue;
+
+                ValidateTargeting(feat, ability.Name, ability.Targeting);
+                _targetingByFeat[feat] = ability.Targeting;
+            }
+
+            Console.WriteLine($"Loaded {_targetingByFeat.Count} ability targeting overrides.");
+        }
+
+        public static void RefreshClientTargeting(uint creature)
+        {
+            if (!IsClientControlled(creature))
+                return;
+
+            foreach (var (feat, targeting) in _targetingByFeat)
+            {
+                var hasFeat = CreaturePlugin.GetKnowsFeat(creature, feat);
+                var sizeX = targeting.ResolveSizeX(creature, hasFeat);
+                var sizeY = targeting.ResolveSizeY();
+                ValidateResolvedTargeting(feat, targeting, sizeX, sizeY);
+
+                SetSpellTargetingData(
+                    creature,
+                    targeting.Spell,
+                    (int)targeting.Shape,
+                    sizeX,
+                    sizeY,
+                    (int)targeting.Flags);
+            }
+        }
+
+        [NWNEventHandler(ScriptName.OnModuleEnter)]
+        public static void RefreshClientTargetingOnEnter()
+        {
+            RefreshClientTargeting(GetEnteringObject());
+        }
+
+        [NWNEventHandler(ScriptName.OnDMPossessBefore)]
+        [NWNEventHandler(ScriptName.OnDMPossessFullPowerBefore)]
+        public static void RefreshClientTargetingOnDMPossess()
+        {
+            var target = StringToObject(EventsPlugin.GetEventData("TARGET"));
+            var creature = GetIsObjectValid(target)
+                ? target
+                : GetMaster(OBJECT_SELF);
+
+            if (!GetIsObjectValid(creature))
+                return;
+
+            DelayCommand(0.1f, () => RefreshClientTargeting(creature));
+        }
 
         public static string ValidateFriendlyTarget(
             uint activator,
@@ -187,6 +256,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                    GetCurrentHitPoints(creature) > 0;
         }
 
+        private static bool IsClientControlled(uint creature)
+        {
+            return GetIsObjectValid(creature) &&
+                   (GetIsPC(creature) || GetIsDM(creature) || GetIsDMPossessed(creature));
+        }
+
         private static bool IsValidHostileTarget(uint activator, uint target, Location location, float radius, Func<uint, bool> predicate)
         {
             return IsAlive(target) &&
@@ -199,6 +274,54 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
         {
             return GetArea(creature) == GetAreaFromLocation(location) &&
                    GetDistanceBetweenLocations(GetLocation(creature), location) <= radius;
+        }
+
+        private static void ValidateTargeting(FeatType feat, string abilityName, AbilityTargetingDetail targeting)
+        {
+            if (targeting.Spell == Spell.Invalid ||
+                targeting.Spell == Spell.AllSpells)
+            {
+                throw new InvalidOperationException(
+                    $"Ability '{abilityName}' ({feat}) declares targeting metadata without an explicit spell.");
+            }
+
+            if (!Enum.IsDefined(typeof(AbilityTargetingShapeType), targeting.Shape))
+            {
+                throw new InvalidOperationException(
+                    $"Ability '{abilityName}' ({feat}) declares unsupported targeting shape '{targeting.Shape}'.");
+            }
+
+            ValidateSize(feat, targeting.SizeX, targeting.SizeY);
+        }
+
+        private static void ValidateResolvedTargeting(
+            FeatType feat,
+            AbilityTargetingDetail targeting,
+            float sizeX,
+            float sizeY)
+        {
+            ValidateSize(feat, sizeX, sizeY);
+
+            if (!Enum.IsDefined(typeof(AbilityTargetingShapeType), targeting.Shape))
+            {
+                throw new InvalidOperationException(
+                    $"Ability '{feat}' resolved unsupported targeting shape '{targeting.Shape}'.");
+            }
+        }
+
+        private static void ValidateSize(FeatType feat, float sizeX, float sizeY)
+        {
+            if (!float.IsFinite(sizeX) || sizeX <= 0f)
+            {
+                throw new InvalidOperationException(
+                    $"Ability '{feat}' resolved invalid targeting size X '{sizeX}'.");
+            }
+
+            if (!float.IsFinite(sizeY) || sizeY < 0f)
+            {
+                throw new InvalidOperationException(
+                    $"Ability '{feat}' resolved invalid targeting size Y '{sizeY}'.");
+            }
         }
     }
 }

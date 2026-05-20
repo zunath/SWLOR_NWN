@@ -88,7 +88,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
         public static float ApplyGrenadeRadiusBonus(uint activator, float baseRadius)
         {
-            return baseRadius + Stat.GetStatAdjustment(activator, StatType.GrenadeRadiusBonusTenths) / 10f;
+            return CalculateGrenadeRadius(
+                baseRadius,
+                Stat.GetStatAdjustment(activator, StatType.GrenadeRadiusBonusTenths));
+        }
+
+        public static float CalculateGrenadeRadius(float baseRadius, int radiusBonusTenths)
+        {
+            return baseRadius + radiusBonusTenths / 10f;
         }
 
         public static int ApplyGrenadeControlPotencyBonus(uint activator, int baseAdjustment)

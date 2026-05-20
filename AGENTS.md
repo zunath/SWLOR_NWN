@@ -31,6 +31,7 @@
 ## Ability Definitions
 
 - Each distinct gameplay ability must have its own `*AbilityDefinition.cs` file and matching `IAbilityListDefinition` class named for that ability. Do not group unrelated abilities into broad definition files such as creature, combat, NPC, or package-level collections. Multiple ranks of the same ability may live in that ability's own definition file.
+- Ability-specific targeting metadata must be declared through the ability definition builder/detail pattern. Do not maintain separate explicit production lists of abilities for targeting behavior; shared targeting systems should consume the cached ability definitions.
 
 ## Ability Icons
 

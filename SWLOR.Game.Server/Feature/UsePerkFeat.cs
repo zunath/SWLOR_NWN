@@ -57,7 +57,7 @@ namespace SWLOR.Game.Server.Feature
             return OBJECT_INVALID;
         }
 
-        private static void ResumeAttack(uint activator, uint target)
+        private static void ResumeAttack(uint activator, uint target, bool clearActions = true)
         {
             if (!GetIsObjectValid(activator) ||
                 GetCurrentHitPoints(activator) <= 0)
@@ -75,21 +75,21 @@ namespace SWLOR.Game.Server.Feature
 
             AssignCommand(activator, () =>
             {
-                if (!GetIsPC(activator))
+                if (!GetIsPC(activator) && clearActions)
                     ClearAllActions();
 
                 ActionAttack(target);
             });
         }
 
-        private static void ResumeAttackAfterDelay(uint activator, uint target, float delay)
+        private static void ResumeAttackAfterDelay(uint activator, uint target, float delay, bool clearActions = true)
         {
             if (!GetIsObjectValid(target))
                 return;
 
             DelayCommand(delay, () =>
             {
-                ResumeAttack(activator, target);
+                ResumeAttack(activator, target, clearActions);
             });
         }
 
@@ -348,7 +348,7 @@ namespace SWLOR.Game.Server.Feature
                 HandleStealthBreaking(activator, ability);
                 ExecuteAbilityImpact(activator, target, feat, ability, targetLocation);
                 Recast.ApplyRecastDelay(activator, ability.RecastGroup, abilityRecastDelay, false);
-                ResumeAttackAfterDelay(activator, resumeAttackTarget, 0.1f);
+                ResumeAttackAfterDelay(activator, resumeAttackTarget, 0.1f, clearActions: false);
 
                 // If this is an attack make the NPC react.
                 if (GetIsObjectValid(target) && target != activator)

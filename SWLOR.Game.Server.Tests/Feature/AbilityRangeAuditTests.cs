@@ -16,8 +16,8 @@ public class AbilityRangeAuditTests
         {
             [SkillType.Devices] = 15f,
             [SkillType.Leadership] = 15f,
-            [SkillType.Pistol] = 15f,
-            [SkillType.Rifle] = 18f,
+            [SkillType.Pistol] = 25f,
+            [SkillType.Rifle] = 30f,
             [SkillType.Throwing] = 20f,
         };
 

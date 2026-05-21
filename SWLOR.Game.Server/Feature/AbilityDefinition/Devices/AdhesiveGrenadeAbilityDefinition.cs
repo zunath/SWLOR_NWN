@@ -48,7 +48,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
-                .RequirementStamina(4);
+                .RequirementStamina(4)
+                .RequirementItem("explosives");
         }
 
         private static void AdhesiveGrenade2(AbilityBuilder builder)
@@ -71,7 +72,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
-                .RequirementStamina(5);
+                .RequirementStamina(5)
+                .RequirementItem("explosives");
         }
 
         private static void AdhesiveGrenade1ImpactAction(uint activator, uint target, int level, Location targetLocation)

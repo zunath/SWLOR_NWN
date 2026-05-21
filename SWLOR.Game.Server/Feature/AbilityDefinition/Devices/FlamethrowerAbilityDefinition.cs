@@ -41,6 +41,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .UsesImpactAnimation(Animation.CastOutAnimation)
                 .IsAreaAbility()
                 .HasImpactAction(Flamethrower1ImpactAction)
+                .HasTargetingCone(
+                    Spell.Flamethrower1,
+                    6f,
+                    5f,
+                    AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
@@ -59,6 +64,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .UsesImpactAnimation(Animation.CastOutAnimation)
                 .IsAreaAbility()
                 .HasImpactAction(Flamethrower2ImpactAction)
+                .HasTargetingCone(
+                    Spell.Flamethrower2,
+                    6f,
+                    5f,
+                    AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
@@ -77,6 +87,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .UsesImpactAnimation(Animation.CastOutAnimation)
                 .IsAreaAbility()
                 .HasImpactAction(Flamethrower3ImpactAction)
+                .HasTargetingCone(
+                    Spell.Flamethrower3,
+                    6f,
+                    5f,
+                    AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()

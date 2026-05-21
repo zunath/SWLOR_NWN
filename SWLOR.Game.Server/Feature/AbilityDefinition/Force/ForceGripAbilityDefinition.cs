@@ -81,6 +81,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasMaxRange(15f)
                 .RequiresTarget()
                 .HasImpactAction(ForceGrip3ImpactAction)
+                .HasTargetingSphere(
+                    Spell.ForceGrip3,
+                    5f,
+                    AbilityTargetingFlags.HarmsEnemies)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()

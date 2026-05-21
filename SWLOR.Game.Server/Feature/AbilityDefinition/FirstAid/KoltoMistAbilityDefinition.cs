@@ -34,6 +34,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .SkillType(SkillType.FirstAid)
                 .IsAreaAbility()
                 .HasImpactAction(KoltoMist1ImpactAction)
+                .HasTargetingSphere(
+                    Spell.KoltoMist1,
+                    3f,
+                    AbilityTargetingFlags.HelpsAllies | AbilityTargetingFlags.OriginOnSelf)
                 .IsCastedAbility()
                 .BreaksStealth()
                 .RequirementStamina(6)
@@ -51,6 +55,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .SkillType(SkillType.FirstAid)
                 .IsAreaAbility()
                 .HasImpactAction(KoltoMist2ImpactAction)
+                .HasTargetingSphere(
+                    Spell.KoltoMist2,
+                    3f,
+                    AbilityTargetingFlags.HelpsAllies | AbilityTargetingFlags.OriginOnSelf)
                 .IsCastedAbility()
                 .BreaksStealth()
                 .RequirementStamina(7)

@@ -40,6 +40,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .UsesAnimation(Animation.CastOutAnimation)
                 .IsAreaAbility()
                 .HasImpactAction(BlasterBeacon1ImpactAction)
+                .HasTargetingSphere(
+                    Spell.BlasterBeacon1,
+                    12f,
+                    AbilityTargetingFlags.HarmsEnemies)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
@@ -58,6 +62,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .UsesAnimation(Animation.CastOutAnimation)
                 .IsAreaAbility()
                 .HasImpactAction(BlasterBeacon2ImpactAction)
+                .HasTargetingSphere(
+                    Spell.BlasterBeacon2,
+                    12f,
+                    AbilityTargetingFlags.HarmsEnemies)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
@@ -76,6 +84,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .UsesAnimation(Animation.CastOutAnimation)
                 .IsAreaAbility()
                 .HasImpactAction(BlasterBeacon3ImpactAction)
+                .HasTargetingSphere(
+                    Spell.BlasterBeacon3,
+                    14f,
+                    AbilityTargetingFlags.HarmsEnemies)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()

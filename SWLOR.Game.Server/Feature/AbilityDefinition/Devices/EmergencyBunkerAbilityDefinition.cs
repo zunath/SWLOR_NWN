@@ -37,6 +37,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .SkillType(SkillType.Devices)
                 .IsAreaAbility()
                 .HasImpactAction(EmergencyBunker1ImpactAction)
+                .HasTargetingSphere(
+                    Spell.EmergencyBunker1,
+                    4f,
+                    AbilityTargetingFlags.HelpsAllies)
                 .IsCastedAbility()
                 .BreaksStealth()
                 .RequirementStamina(CapstoneAbility.StaminaCost);

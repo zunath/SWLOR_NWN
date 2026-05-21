@@ -33,6 +33,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 .IsAreaAbility()
                 .HasRecastDelay(RecastGroup.Capstone, CapstoneAbility.RecastDelaySeconds)
                 .HasImpactAction(StasisVolley1ImpactAction)
+                .HasTargetingCone(
+                    Spell.StasisVolley1,
+                    5f,
+                    5f,
+                    AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()

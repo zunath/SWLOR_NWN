@@ -363,6 +363,21 @@ namespace SWLOR.Game.Server.Service.AbilityService
                 sizeResolver);
         }
 
+        public AbilityBuilder HasActivationTargetingSphere(
+            float radius,
+            AbilityTargetingFlags flags,
+            AbilityTargetingSizeResolver sizeResolver = null)
+        {
+            return HasTargeting(
+                Spell.Invalid,
+                AbilityTargetingShapeType.Sphere,
+                radius,
+                0f,
+                flags,
+                sizeResolver,
+                false);
+        }
+
         public AbilityBuilder HasTargetingLine(
             Spell spell,
             float length,
@@ -379,13 +394,62 @@ namespace SWLOR.Game.Server.Service.AbilityService
                 sizeResolver);
         }
 
+        public AbilityBuilder HasActivationTargetingLine(
+            float length,
+            float width,
+            AbilityTargetingFlags flags,
+            AbilityTargetingSizeResolver sizeResolver = null)
+        {
+            return HasTargeting(
+                Spell.Invalid,
+                AbilityTargetingShapeType.Rect,
+                length,
+                width,
+                flags,
+                sizeResolver,
+                false);
+        }
+
+        public AbilityBuilder HasTargetingCone(
+            Spell spell,
+            float length,
+            float width,
+            AbilityTargetingFlags flags,
+            AbilityTargetingSizeResolver sizeResolver = null)
+        {
+            return HasTargeting(
+                spell,
+                AbilityTargetingShapeType.Cone,
+                length,
+                width,
+                flags,
+                sizeResolver);
+        }
+
+        public AbilityBuilder HasActivationTargetingCone(
+            float length,
+            float width,
+            AbilityTargetingFlags flags,
+            AbilityTargetingSizeResolver sizeResolver = null)
+        {
+            return HasTargeting(
+                Spell.Invalid,
+                AbilityTargetingShapeType.Cone,
+                length,
+                width,
+                flags,
+                sizeResolver,
+                false);
+        }
+
         public AbilityBuilder HasTargeting(
             Spell spell,
             AbilityTargetingShapeType shape,
             float sizeX,
             float sizeY,
             AbilityTargetingFlags flags,
-            AbilityTargetingSizeResolver sizeResolver = null)
+            AbilityTargetingSizeResolver sizeResolver = null,
+            bool updatesClientTargeting = true)
         {
             _activeAbility.Targeting = new AbilityTargetingDetail(
                 spell,
@@ -393,7 +457,8 @@ namespace SWLOR.Game.Server.Service.AbilityService
                 sizeX,
                 sizeY,
                 flags,
-                sizeResolver);
+                sizeResolver,
+                updatesClientTargeting);
 
             return this;
         }

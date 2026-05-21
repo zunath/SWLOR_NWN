@@ -35,6 +35,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
                 .HasMaxRange(ThrowingAbilityRange.Standard)
                 .IsAreaAbility()
                 .HasImpactAction(RainOfSteel1ImpactAction)
+                .HasTargetingSphere(
+                    Spell.RainOfSteel1,
+                    8f,
+                    AbilityTargetingFlags.HarmsEnemies)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()

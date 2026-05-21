@@ -18,6 +18,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                     .Create(FeatType.Decoy1, PerkType.Decoy)
                     .Name("Decoy")
                     .Level(1)
+                    .HasTargetingSphere(
+                        Spell.Decoy1,
+                        5f,
+                        AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf)
                     .HasRecastDelay(RecastGroup.Decoy, 30f),
                 typeof(DecoyStatusEffect),
                 12f,

@@ -29,6 +29,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                 .HasActivationDelay(3f)
                 .HasRecastDelay(RecastGroup.Capstone, CapstoneAbility.RecastDelaySeconds)
                 .HasImpactAction(SystemicShutdown1ImpactAction)
+                .HasTargetingSphere(
+                    Spell.SystemicShutdown1,
+                    5f,
+                    AbilityTargetingFlags.HarmsEnemies)
                 .IsAreaAbility()
                 .IsCastedAbility()
                 .IsHostileAbility()

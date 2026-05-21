@@ -93,6 +93,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Armor
                 .RequiresTarget()
                 .IsHostileAbility()
                 .HasCustomValidation((_, target, _, _) => Validation(target))
+                .HasTargetingSphere(
+                    Spell.Provoke2,
+                    8f,
+                    AbilityTargetingFlags.HarmsEnemies)
                 .HasImpactAction((activator, target, _, targetLocation) =>
                 {
                     var impactLocation = AbilityTargeting.ResolveImpactLocation(activator, target, targetLocation);

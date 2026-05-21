@@ -39,6 +39,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .UsesImpactAnimation(Animation.CastOutAnimation)
                 .IsAreaAbility()
                 .HasImpactAction(SonicBurst1ImpactAction)
+                .HasTargetingSphere(
+                    Spell.SonicBurst1,
+                    5f,
+                    AbilityTargetingFlags.HarmsEnemies)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
@@ -57,6 +61,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .UsesImpactAnimation(Animation.CastOutAnimation)
                 .IsAreaAbility()
                 .HasImpactAction(SonicBurst2ImpactAction)
+                .HasTargetingSphere(
+                    Spell.SonicBurst2,
+                    5f,
+                    AbilityTargetingFlags.HarmsEnemies)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
@@ -75,6 +83,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .UsesImpactAnimation(Animation.CastOutAnimation)
                 .IsAreaAbility()
                 .HasImpactAction(SonicBurst3ImpactAction)
+                .HasTargetingSphere(
+                    Spell.SonicBurst3,
+                    5f,
+                    AbilityTargetingFlags.HarmsEnemies)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()

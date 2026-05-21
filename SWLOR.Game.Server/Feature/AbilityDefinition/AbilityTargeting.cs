@@ -30,6 +30,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                     continue;
 
                 ValidateTargeting(feat, ability.Name, ability.Targeting);
+                if (!ability.Targeting.UpdatesClientTargeting)
+                    continue;
+
                 _targetingByFeat[feat] = ability.Targeting;
             }
 
@@ -278,8 +281,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
         private static void ValidateTargeting(FeatType feat, string abilityName, AbilityTargetingDetail targeting)
         {
-            if (targeting.Spell == Spell.Invalid ||
-                targeting.Spell == Spell.AllSpells)
+            if (targeting.UpdatesClientTargeting &&
+                (targeting.Spell == Spell.Invalid ||
+                 targeting.Spell == Spell.AllSpells))
             {
                 throw new InvalidOperationException(
                     $"Ability '{abilityName}' ({feat}) declares targeting metadata without an explicit spell.");

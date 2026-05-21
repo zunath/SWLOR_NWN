@@ -33,6 +33,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .SkillType(SkillType.Force)
                 .IsAreaAbility()
                 .HasImpactAction(ForceSanctuary1ImpactAction)
+                .HasTargetingSphere(
+                    Spell.ForceSanctuary1,
+                    4f,
+                    AbilityTargetingFlags.HelpsAllies)
                 .IsCastedAbility()
                 .BreaksStealth()
                 .RequirementFP(8);

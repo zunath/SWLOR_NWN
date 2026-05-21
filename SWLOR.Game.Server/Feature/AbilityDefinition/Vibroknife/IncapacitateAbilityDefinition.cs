@@ -18,6 +18,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                     .Create(FeatType.Incapacitate1, PerkType.Incapacitate)
                     .Name("Incapacitate")
                     .Level(1)
+                    .HasTargetingSphere(
+                        Spell.Incapacitate1,
+                        5f,
+                        AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf)
                     .HasRecastDelay(RecastGroup.Incapacitate, 120f),
                 typeof(IncapacitateStatusEffect),
                 20f,

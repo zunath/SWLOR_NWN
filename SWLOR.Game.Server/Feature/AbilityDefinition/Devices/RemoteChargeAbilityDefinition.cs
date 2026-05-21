@@ -40,6 +40,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .UsesImpactAnimation(Animation.ThrowGrenade)
                 .IsAreaAbility()
                 .HasImpactAction(RemoteCharge1ImpactAction)
+                .HasTargetingSphere(
+                    Spell.RemoteCharge1,
+                    5f,
+                    AbilityTargetingFlags.HarmsEnemies)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
@@ -58,6 +62,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .UsesImpactAnimation(Animation.ThrowGrenade)
                 .IsAreaAbility()
                 .HasImpactAction(RemoteCharge2ImpactAction)
+                .HasTargetingSphere(
+                    Spell.RemoteCharge2,
+                    5f,
+                    AbilityTargetingFlags.HarmsEnemies)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
@@ -76,6 +84,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .UsesImpactAnimation(Animation.ThrowGrenade)
                 .IsAreaAbility()
                 .HasImpactAction(RemoteCharge3ImpactAction)
+                .HasTargetingSphere(
+                    Spell.RemoteCharge3,
+                    5f,
+                    AbilityTargetingFlags.HarmsEnemies)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()

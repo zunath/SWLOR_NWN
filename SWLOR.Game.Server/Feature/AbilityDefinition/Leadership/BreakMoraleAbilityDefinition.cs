@@ -38,6 +38,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
                 .SkillType(SkillType.Leadership)
                 .IsAreaAbility()
                 .HasImpactAction(BreakMorale1ImpactAction)
+                .HasTargetingSphere(
+                    Spell.BreakMorale1,
+                    5f,
+                    AbilityTargetingFlags.HarmsEnemies,
+                    LeadershipAbilityEffects.ApplyLeadershipCommandRadiusBonus)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
@@ -55,6 +60,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
                 .SkillType(SkillType.Leadership)
                 .IsAreaAbility()
                 .HasImpactAction(BreakMorale2ImpactAction)
+                .HasTargetingSphere(
+                    Spell.BreakMorale2,
+                    5f,
+                    AbilityTargetingFlags.HarmsEnemies,
+                    LeadershipAbilityEffects.ApplyLeadershipCommandRadiusBonus)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()

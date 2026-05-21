@@ -30,6 +30,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
                 .HasActivationDelay(2f)
                 .HasRecastDelay(RecastGroup.Capstone, CapstoneAbility.RecastDelaySeconds)
                 .HasImpactAction(SerpentsEclipse1ImpactAction)
+                .HasTargetingSphere(
+                    Spell.SerpentSEclipse1,
+                    5f,
+                    AbilityTargetingFlags.HarmsEnemies)
                 .SkillType(SkillType.Katar)
                 .IsAreaAbility()
                 .IsCastedAbility()

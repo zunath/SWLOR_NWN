@@ -110,6 +110,20 @@ public class StaffCrusherTests
     }
 
     [Test]
+    public void Worldbreaker_DeclaresSelfCenteredTargetingPreview()
+    {
+        var worldbreaker = new WorldbreakerAbilityDefinition().BuildAbilities()[FeatType.Worldbreaker1];
+
+        worldbreaker.Targeting.Should().NotBeNull();
+        worldbreaker.Targeting!.Spell.Should().Be(Spell.Worldbreaker1);
+        worldbreaker.Targeting.Shape.Should().Be(AbilityTargetingShapeType.Sphere);
+        worldbreaker.Targeting.SizeX.Should().Be(5f);
+        worldbreaker.Targeting.SizeY.Should().Be(0f);
+        worldbreaker.Targeting.Flags.Should().Be(
+            AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf);
+    }
+
+    [Test]
     public void StaffCrusherStatusEffects_MatchCombatBible()
     {
         var crusherStance = new CrusherStanceStatusEffect();

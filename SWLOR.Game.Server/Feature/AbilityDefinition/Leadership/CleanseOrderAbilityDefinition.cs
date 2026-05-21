@@ -38,6 +38,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
                 .SkillType(SkillType.Leadership)
                 .IsAreaAbility()
                 .HasImpactAction(CleanseOrder1ImpactAction)
+                .HasTargetingSphere(
+                    Spell.CleanseOrder1,
+                    5f,
+                    AbilityTargetingFlags.HelpsAllies | AbilityTargetingFlags.OriginOnSelf,
+                    LeadershipAbilityEffects.ApplyLeadershipCommandRadiusBonus)
                 .IsCastedAbility()
                 .BreaksStealth()
                 .RequirementStamina(6);
@@ -54,6 +59,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
                 .SkillType(SkillType.Leadership)
                 .IsAreaAbility()
                 .HasImpactAction(CleanseOrder2ImpactAction)
+                .HasTargetingSphere(
+                    Spell.CleanseOrder2,
+                    5f,
+                    AbilityTargetingFlags.HelpsAllies | AbilityTargetingFlags.OriginOnSelf,
+                    LeadershipAbilityEffects.ApplyLeadershipCommandRadiusBonus)
                 .IsCastedAbility()
                 .BreaksStealth()
                 .RequirementStamina(9);

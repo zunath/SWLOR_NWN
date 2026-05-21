@@ -19,6 +19,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
                     .Name("Forcebane")
                     .Level(1)
                     .SkillType(SkillType.Spear)
+                    .HasTargetingSphere(
+                        Spell.Forcebane1,
+                        5f,
+                        AbilityTargetingFlags.HarmsEnemies)
                     .HasRecastDelay(RecastGroup.Capstone, CapstoneAbility.RecastDelaySeconds),
                 typeof(ForcebaneStatusEffect),
                 CapstoneAbility.ActiveDurationSeconds,

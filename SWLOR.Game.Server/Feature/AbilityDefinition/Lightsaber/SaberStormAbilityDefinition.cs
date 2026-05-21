@@ -30,6 +30,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 .HasRecastDelay(RecastGroup.Capstone, CapstoneAbility.RecastDelaySeconds)
                 .SkillType(SkillType.Lightsaber)
                 .HasImpactAction(SaberStorm1ImpactAction)
+                .HasTargetingSphere(
+                    Spell.SaberStorm1,
+                    5f,
+                    AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf)
                 .IsAreaAbility()
                 .IsCastedAbility()
                 .IsHostileAbility()

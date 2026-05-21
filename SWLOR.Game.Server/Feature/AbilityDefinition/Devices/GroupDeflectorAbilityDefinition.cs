@@ -36,6 +36,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .SkillType(SkillType.Devices)
                 .IsAreaAbility()
                 .HasImpactAction(GroupDeflector1ImpactAction)
+                .HasTargetingSphere(
+                    Spell.GroupDeflector1,
+                    5f,
+                    AbilityTargetingFlags.HelpsAllies | AbilityTargetingFlags.OriginOnSelf)
                 .IsCastedAbility()
                 .BreaksStealth()
                 .RequirementStamina(8);

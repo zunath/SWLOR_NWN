@@ -36,6 +36,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .SkillType(SkillType.Force)
                 .IsAreaAbility()
                 .HasImpactAction(BastionOfLight1ImpactAction)
+                .HasTargetingSphere(
+                    Spell.BastionOfLight1,
+                    5f,
+                    AbilityTargetingFlags.HelpsAllies | AbilityTargetingFlags.OriginOnSelf)
                 .IsCastedAbility()
                 .BreaksStealth()
                 .RequirementFP(8);

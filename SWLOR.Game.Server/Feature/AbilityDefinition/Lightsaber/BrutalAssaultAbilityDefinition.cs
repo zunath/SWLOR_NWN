@@ -18,6 +18,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                     .Name("Brutal Assault")
                     .Level(1)
                     .IsAreaAbility()
+                    .HasTargetingSphere(
+                        Spell.BrutalAssault1,
+                        5f,
+                        AbilityTargetingFlags.HelpsAllies | AbilityTargetingFlags.OriginOnSelf)
                     .HasRecastDelay(RecastGroup.BrutalAssault, 300f),
                 typeof(BrutalAssaultStatusEffect),
                 60f,

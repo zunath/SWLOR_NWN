@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Service.ActivityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Service.TelegraphService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -253,7 +254,7 @@ namespace SWLOR.Game.Server.Feature
             }
 
             // Handles displaying animation and visual effects.
-            void ProcessAnimationAndVisualEffects(float delay)
+            string ProcessAnimationAndVisualEffects(float delay)
             {
                 // Force out of stealth
                 if (GetActionMode(activator, ActionMode.Stealth))
@@ -287,10 +288,12 @@ namespace SWLOR.Game.Server.Feature
 
                     AssignCommand(activator, () => ActionPlayAnimation(ability.AnimationType, 1.0f, animationLength));
                 }
+
+                return DisplayActivationTargetingTelegraph(activator, target, targetLocation, ability, delay);
             }
 
             // Recursive function which checks if player has moved since starting the casting.
-            void CheckForActivationInterruption(string activationId, Vector3 originalPosition)
+            void CheckForActivationInterruption(string activationId, Vector3 originalPosition, string activationTelegraphId)
             {
                 if (!GetIsPC(activator)) return;
 
@@ -305,21 +308,23 @@ namespace SWLOR.Game.Server.Feature
                     currentPosition.Z != originalPosition.Z)
                 {
                     RemoveEffectByTag(activator, "ACTIVATION_VFX");
+                    CancelActivationTargetingTelegraph(activationTelegraphId);
                     PlayerPlugin.StopGuiTimingBar(activator, string.Empty);
                     Messaging.SendMessageNearbyToPlayers(activator, $"{GetName(activator)}'s ability has been interrupted.");
                     SetLocalInt(activator, activationId, (int)ActivationStatus.Interrupted);
                     return;
                 }
 
-                DelayCommand(0.5f, () => CheckForActivationInterruption(activationId, originalPosition));
+                DelayCommand(0.5f, () => CheckForActivationInterruption(activationId, originalPosition, activationTelegraphId));
             }
 
             // This method is called after the delay of the ability has finished.
-            void CompleteActivation(string activationId, float abilityRecastDelay, uint resumeAttackTarget)
+            void CompleteActivation(string activationId, float abilityRecastDelay, uint resumeAttackTarget, string activationTelegraphId)
             {
                 void CancelActivation(bool resumeAttack)
                 {
                     DeleteLocalInt(activator, activationId);
+                    CancelActivationTargetingTelegraph(activationTelegraphId);
 
                     if (resumeAttack)
                         ResumeAttack(activator, resumeAttackTarget);
@@ -363,9 +368,9 @@ namespace SWLOR.Game.Server.Feature
             var recastDelay = ability.RecastDelay?.Invoke(activator) ?? 0f;
             var position = GetPosition(activator);
             var resumeAttackTarget = GetResumeAttackTarget(activator, target, ability);
-            ProcessAnimationAndVisualEffects(activationDelay);
+            var activationTelegraphId = ProcessAnimationAndVisualEffects(activationDelay);
             SetLocalInt(activator, activationId, (int)ActivationStatus.Started);
-            CheckForActivationInterruption(activationId, position);
+            CheckForActivationInterruption(activationId, position, activationTelegraphId);
 
             var executeImpact = ability.ActivationAction == null
                 ? true
@@ -374,6 +379,7 @@ namespace SWLOR.Game.Server.Feature
             if (executeImpact != true)
             {
                 DeleteLocalInt(activator, activationId);
+                CancelActivationTargetingTelegraph(activationTelegraphId);
                 ResumeAttack(activator, resumeAttackTarget);
                 return;
             }
@@ -387,7 +393,7 @@ namespace SWLOR.Game.Server.Feature
             }
 
             Activity.SetBusy(activator, ActivityStatusType.AbilityActivation);
-            DelayCommand(activationDelay, () => CompleteActivation(activationId, recastDelay, resumeAttackTarget));
+            DelayCommand(activationDelay, () => CompleteActivation(activationId, recastDelay, resumeAttackTarget, activationTelegraphId));
         }
 
         /// <summary>
@@ -452,6 +458,112 @@ namespace SWLOR.Game.Server.Feature
         private static bool ShouldIgnoreRecastReduction(AbilityDetail ability)
         {
             return ability?.RecastGroup == RecastGroup.Capstone;
+        }
+
+        private static string DisplayActivationTargetingTelegraph(
+            uint activator,
+            uint target,
+            Location targetLocation,
+            AbilityDetail ability,
+            float activationDelay)
+        {
+            if (activationDelay <= 0f || ability.Targeting == null)
+                return string.Empty;
+
+            var targeting = ability.Targeting;
+            var sizeX = targeting.ResolveSizeX(activator, true);
+            var sizeY = targeting.ResolveSizeY();
+            var position = ResolveActivationTargetingPosition(activator, target, targetLocation, targeting);
+            var rotation = ResolveActivationTargetingRotation(activator, target, targetLocation);
+            var isHostile = ability.IsHostileAbility || targeting.Flags.HasFlag(AbilityTargetingFlags.HarmsEnemies);
+
+            switch (targeting.Shape)
+            {
+                case AbilityTargetingShapeType.Sphere:
+                case AbilityTargetingShapeType.HSphere:
+                    return Telegraph.CreateSphereTelegraph(
+                        activator,
+                        position,
+                        sizeX,
+                        activationDelay,
+                        isHostile,
+                        null);
+                case AbilityTargetingShapeType.Rect:
+                    return Telegraph.CreateLineTelegraph(
+                        activator,
+                        position,
+                        rotation,
+                        sizeX,
+                        sizeY,
+                        activationDelay,
+                        isHostile,
+                        null);
+                case AbilityTargetingShapeType.Cone:
+                    return Telegraph.CreateConeTelegraph(
+                        activator,
+                        position,
+                        rotation,
+                        sizeX,
+                        sizeY,
+                        activationDelay,
+                        isHostile,
+                        null);
+                case AbilityTargetingShapeType.None:
+                default:
+                    return string.Empty;
+            }
+        }
+
+        private static void CancelActivationTargetingTelegraph(string telegraphId)
+        {
+            if (!string.IsNullOrWhiteSpace(telegraphId))
+                Telegraph.CancelTelegraph(telegraphId);
+        }
+
+        private static Vector3 ResolveActivationTargetingPosition(
+            uint activator,
+            uint target,
+            Location targetLocation,
+            AbilityTargetingDetail targeting)
+        {
+            if (targeting.Flags.HasFlag(AbilityTargetingFlags.OriginOnSelf))
+                return GetPosition(activator);
+
+            if (GetIsObjectValid(target))
+                return GetPosition(target);
+
+            return GetIsObjectValid(GetAreaFromLocation(targetLocation))
+                ? GetPositionFromLocation(targetLocation)
+                : GetPosition(activator);
+        }
+
+        private static Vector3 ResolveActivationTargetingDestination(
+            uint activator,
+            uint target,
+            Location targetLocation)
+        {
+            if (GetIsObjectValid(target))
+                return GetPosition(target);
+
+            return GetIsObjectValid(GetAreaFromLocation(targetLocation))
+                ? GetPositionFromLocation(targetLocation)
+                : GetPosition(activator);
+        }
+
+        private static float ResolveActivationTargetingRotation(
+            uint activator,
+            uint target,
+            Location targetLocation)
+        {
+            var origin = GetPosition(activator);
+            var destination = ResolveActivationTargetingDestination(activator, target, targetLocation);
+            var deltaX = destination.X - origin.X;
+            var deltaY = destination.Y - origin.Y;
+
+            if (Math.Abs(deltaX) <= 0.01f && Math.Abs(deltaY) <= 0.01f)
+                return GetFacing(activator) * ((float)Math.PI / 180f);
+
+            return (float)Math.Atan2(deltaY, deltaX);
         }
 
         /// <summary>

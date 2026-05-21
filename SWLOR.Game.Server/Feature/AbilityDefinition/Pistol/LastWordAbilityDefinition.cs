@@ -35,6 +35,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 .UsesImpactAnimation(Animation.PointPistol)
                 .IsAreaAbility()
                 .HasImpactAction(LastWord1ImpactAction)
+                .HasTargetingCone(
+                    Spell.LastWord1,
+                    5f,
+                    5f,
+                    AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()

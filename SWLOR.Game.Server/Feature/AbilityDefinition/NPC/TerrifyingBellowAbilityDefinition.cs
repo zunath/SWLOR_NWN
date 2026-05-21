@@ -27,6 +27,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                 .RequiresTarget()
                 .IsHostileAbility()
                 .RequirementStamina(4)
+                .HasActivationTargetingSphere(
+                    6f,
+                    AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf)
                 .HasImpactAction((activator, target, level, location) =>
                 {
                     Ability.ApplyTelegraphedCombatImpact(

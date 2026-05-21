@@ -43,6 +43,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .UsesAnimation(Animation.CastOutAnimation)
                 .IsAreaAbility()
                 .HasImpactAction(IncendiaryField1ImpactAction)
+                .HasTargetingSphere(
+                    Spell.IncendiaryField1,
+                    5f,
+                    AbilityTargetingFlags.HarmsEnemies)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
@@ -61,6 +65,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .UsesAnimation(Animation.CastOutAnimation)
                 .IsAreaAbility()
                 .HasImpactAction(IncendiaryField2ImpactAction)
+                .HasTargetingSphere(
+                    Spell.IncendiaryField2,
+                    5f,
+                    AbilityTargetingFlags.HarmsEnemies)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
@@ -79,6 +87,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .UsesAnimation(Animation.CastOutAnimation)
                 .IsAreaAbility()
                 .HasImpactAction(IncendiaryField3ImpactAction)
+                .HasTargetingSphere(
+                    Spell.IncendiaryField3,
+                    5f,
+                    AbilityTargetingFlags.HarmsEnemies)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()

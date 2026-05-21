@@ -31,6 +31,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                 .HasRecastDelay(RecastGroup.SmokeBomb, 30f)
                 .IsAreaAbility()
                 .HasImpactAction(SmokeBombImpactAction)
+                .HasTargetingSphere(
+                    Spell.SmokeBomb,
+                    5f,
+                    AbilityTargetingFlags.HarmsEnemies)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()

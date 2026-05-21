@@ -34,6 +34,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .SkillType(SkillType.Force)
                 .IsAreaAbility()
                 .HasImpactAction(PurifyingWave1ImpactAction)
+                .HasTargetingSphere(
+                    Spell.PurifyingWave1,
+                    5f,
+                    AbilityTargetingFlags.HelpsAllies | AbilityTargetingFlags.OriginOnSelf)
                 .IsCastedAbility()
                 .BreaksStealth()
                 .RequirementFP(7);

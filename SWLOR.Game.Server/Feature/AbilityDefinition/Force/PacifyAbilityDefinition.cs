@@ -59,6 +59,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .UsesImpactAnimation(Animation.CastOutAnimation)
                 .IsAreaAbility()
                 .HasImpactAction(Pacify2ImpactAction)
+                .HasTargetingSphere(
+                    Spell.Pacify2,
+                    5f,
+                    AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
@@ -77,6 +81,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .UsesImpactAnimation(Animation.CastOutAnimation)
                 .IsAreaAbility()
                 .HasImpactAction(Pacify3ImpactAction)
+                .HasTargetingSphere(
+                    Spell.Pacify3,
+                    5f,
+                    AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()

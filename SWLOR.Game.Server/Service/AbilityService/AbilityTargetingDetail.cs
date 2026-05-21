@@ -12,7 +12,8 @@ namespace SWLOR.Game.Server.Service.AbilityService
             float sizeX,
             float sizeY,
             AbilityTargetingFlags flags,
-            AbilityTargetingSizeResolver sizeResolver)
+            AbilityTargetingSizeResolver sizeResolver,
+            bool updatesClientTargeting = true)
         {
             Spell = spell;
             Shape = shape;
@@ -20,6 +21,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
             SizeY = sizeY;
             Flags = flags;
             SizeResolver = sizeResolver;
+            UpdatesClientTargeting = updatesClientTargeting;
         }
 
         public Spell Spell { get; }
@@ -28,6 +30,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public float SizeY { get; }
         public AbilityTargetingFlags Flags { get; }
         public AbilityTargetingSizeResolver SizeResolver { get; }
+        public bool UpdatesClientTargeting { get; }
 
         public float ResolveSizeX(uint creature, bool appliesDynamicSize)
         {

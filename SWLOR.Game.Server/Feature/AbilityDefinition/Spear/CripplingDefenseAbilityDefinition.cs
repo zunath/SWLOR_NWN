@@ -19,6 +19,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
                     .Name("Crippling Defense")
                     .Level(1)
                     .SkillType(SkillType.Spear)
+                    .HasTargetingSphere(
+                        Spell.CripplingDefense1,
+                        5f,
+                        AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf)
                     .HasRecastDelay(RecastGroup.Capstone, CapstoneAbility.RecastDelaySeconds),
                 typeof(CripplingDefenseStatusEffect),
                 CapstoneAbility.ActiveDurationSeconds,

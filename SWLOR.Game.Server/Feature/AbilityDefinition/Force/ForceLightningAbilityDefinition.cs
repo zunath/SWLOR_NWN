@@ -40,6 +40,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasMaxRange(15f)
                 .RequiresTarget()
                 .HasImpactAction(ForceLightning1ImpactAction)
+                .HasTargetingSphere(
+                    Spell.ForceLightning1,
+                    5f,
+                    AbilityTargetingFlags.HarmsEnemies)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .TriggersDarkForceConversion()
@@ -61,6 +65,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasMaxRange(15f)
                 .RequiresTarget()
                 .HasImpactAction(ForceLightning2ImpactAction)
+                .HasTargetingSphere(
+                    Spell.ForceLightning2,
+                    5f,
+                    AbilityTargetingFlags.HarmsEnemies)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .TriggersDarkForceConversion()

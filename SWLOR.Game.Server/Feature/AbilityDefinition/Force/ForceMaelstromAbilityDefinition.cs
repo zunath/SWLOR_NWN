@@ -40,6 +40,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .UsesImpactAnimation(Animation.CastOutAnimation)
                 .IsAreaAbility()
                 .HasImpactAction(ForceMaelstrom1ImpactAction)
+                .HasTargetingSphere(
+                    Spell.ForceMaelstrom1,
+                    5f,
+                    AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .TriggersDarkForceConversion()

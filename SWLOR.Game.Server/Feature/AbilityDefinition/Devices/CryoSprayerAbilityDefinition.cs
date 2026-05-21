@@ -38,6 +38,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .UsesImpactAnimation(Animation.CastOutAnimation)
                 .IsAreaAbility()
                 .HasImpactAction(CryoSprayer1ImpactAction)
+                .HasTargetingCone(
+                    Spell.CryoSprayer1,
+                    6f,
+                    5f,
+                    AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
@@ -56,6 +61,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .UsesImpactAnimation(Animation.CastOutAnimation)
                 .IsAreaAbility()
                 .HasImpactAction(CryoSprayer2ImpactAction)
+                .HasTargetingCone(
+                    Spell.CryoSprayer2,
+                    6f,
+                    5f,
+                    AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()

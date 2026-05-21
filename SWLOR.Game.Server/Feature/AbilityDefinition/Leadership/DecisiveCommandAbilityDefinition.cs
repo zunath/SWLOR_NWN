@@ -37,6 +37,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
                 .SkillType(SkillType.Leadership)
                 .IsAreaAbility()
                 .HasImpactAction(DecisiveCommand1ImpactAction)
+                .HasTargetingSphere(
+                    Spell.DecisiveCommand1,
+                    5f,
+                    AbilityTargetingFlags.HelpsAllies | AbilityTargetingFlags.OriginOnSelf,
+                    LeadershipAbilityEffects.ApplyLeadershipCommandRadiusBonus)
                 .IsCastedAbility()
                 .BreaksStealth()
                 .RequirementStamina(CapstoneAbility.StaminaCost);

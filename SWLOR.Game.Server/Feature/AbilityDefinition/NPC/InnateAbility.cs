@@ -163,6 +163,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                 ability.HasMaxRange(maxRange);
             }
 
+            if (activationDelay > 0f)
+            {
+                ApplyActivationTargeting(ability, shape, lengthOrRadius, width, centerOnActivator);
+            }
+
             ability.HasImpactAction((activator, target, level, location) =>
             {
                 Ability.ApplyTelegraphedCombatImpact(
@@ -224,6 +229,35 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
             return GetIsObjectValid(GetItemInSlot(InventorySlot.CreatureRight, creature)) ||
                    GetIsObjectValid(GetItemInSlot(InventorySlot.CreatureLeft, creature)) ||
                    GetIsObjectValid(GetItemInSlot(InventorySlot.CreatureBite, creature));
+        }
+
+        private static void ApplyActivationTargeting(
+            AbilityBuilder ability,
+            CombatImpactAreaShape shape,
+            float lengthOrRadius,
+            float width,
+            bool centerOnActivator)
+        {
+            var flags = AbilityTargetingFlags.HarmsEnemies;
+            if (centerOnActivator || shape != CombatImpactAreaShape.Sphere)
+            {
+                flags |= AbilityTargetingFlags.OriginOnSelf;
+            }
+
+            switch (shape)
+            {
+                case CombatImpactAreaShape.Sphere:
+                    ability.HasActivationTargetingSphere(lengthOrRadius, flags);
+                    break;
+                case CombatImpactAreaShape.Cone:
+                    ability.HasActivationTargetingCone(lengthOrRadius, width > 0f ? width : lengthOrRadius, flags);
+                    break;
+                case CombatImpactAreaShape.Line:
+                    ability.HasActivationTargetingLine(lengthOrRadius, width > 0f ? width : 2.0f, flags);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(shape), shape, null);
+            }
         }
 
         private static SkillType GetItemSkillType(uint item)

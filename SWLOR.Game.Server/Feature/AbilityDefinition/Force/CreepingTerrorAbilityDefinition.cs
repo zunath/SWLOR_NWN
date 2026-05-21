@@ -62,6 +62,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasMaxRange(15f)
                 .RequiresTarget()
                 .HasImpactAction(CreepingTerror2ImpactAction)
+                .HasTargetingSphere(
+                    Spell.CreepingTerror2,
+                    5f,
+                    AbilityTargetingFlags.HarmsEnemies)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .TriggersDarkForceConversion()
@@ -81,6 +85,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .UsesImpactAnimation(Animation.CastOutAnimation)
                 .IsAreaAbility()
                 .HasImpactAction(CreepingTerror3ImpactAction)
+                .HasTargetingSphere(
+                    Spell.CreepingTerror3,
+                    5f,
+                    AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .TriggersDarkForceConversion()

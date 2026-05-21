@@ -37,6 +37,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .UsesImpactAnimation(Animation.CastOutAnimation)
                 .IsAreaAbility()
                 .HasImpactAction(EclipseOfResolve1ImpactAction)
+                .HasTargetingSphere(
+                    Spell.EclipseOfResolve1,
+                    5f,
+                    AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()

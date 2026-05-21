@@ -32,6 +32,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
                 .SkillType(SkillType.Staff)
                 .IsAreaAbility()
                 .HasImpactAction(Worldbreaker1ImpactAction)
+                .HasTargetingSphere(
+                    Spell.Worldbreaker1,
+                    5f,
+                    AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()

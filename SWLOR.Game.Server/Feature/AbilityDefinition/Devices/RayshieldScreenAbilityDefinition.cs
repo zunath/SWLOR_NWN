@@ -38,6 +38,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .SkillType(SkillType.Devices)
                 .IsAreaAbility()
                 .HasImpactAction(RayshieldScreen1ImpactAction)
+                .HasTargetingSphere(
+                    Spell.RayshieldScreen1,
+                    4f,
+                    AbilityTargetingFlags.HelpsAllies)
                 .IsCastedAbility()
                 .BreaksStealth()
                 .RequirementStamina(5);
@@ -54,6 +58,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .SkillType(SkillType.Devices)
                 .IsAreaAbility()
                 .HasImpactAction(RayshieldScreen2ImpactAction)
+                .HasTargetingSphere(
+                    Spell.RayshieldScreen2,
+                    4f,
+                    AbilityTargetingFlags.HelpsAllies)
                 .IsCastedAbility()
                 .BreaksStealth()
                 .RequirementStamina(6);

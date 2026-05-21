@@ -38,6 +38,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 .RequiresTarget()
                 .IsAreaAbility()
                 .HasImpactAction(DeadMansHand1ImpactAction)
+                .HasTargetingSphere(
+                    Spell.DeadManSHand1,
+                    5f,
+                    AbilityTargetingFlags.HarmsEnemies)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()

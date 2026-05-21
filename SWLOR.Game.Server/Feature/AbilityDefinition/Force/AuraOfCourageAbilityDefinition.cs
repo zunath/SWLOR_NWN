@@ -36,6 +36,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .SkillType(SkillType.Force)
                 .IsAreaAbility()
                 .HasImpactAction(AuraOfCourage1ImpactAction)
+                .HasTargetingSphere(
+                    Spell.CourageousResolve1,
+                    5f,
+                    AbilityTargetingFlags.HelpsAllies | AbilityTargetingFlags.OriginOnSelf)
                 .IsCastedAbility()
                 .BreaksStealth()
                 .RequirementFP(5);

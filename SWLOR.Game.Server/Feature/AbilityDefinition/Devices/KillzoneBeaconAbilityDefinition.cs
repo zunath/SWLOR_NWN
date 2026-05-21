@@ -38,6 +38,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .UsesAnimation(Animation.CastOutAnimation)
                 .IsAreaAbility()
                 .HasImpactAction(KillzoneBeacon1ImpactAction)
+                .HasTargetingSphere(
+                    Spell.KillzoneBeacon1,
+                    12f,
+                    AbilityTargetingFlags.HarmsEnemies)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()

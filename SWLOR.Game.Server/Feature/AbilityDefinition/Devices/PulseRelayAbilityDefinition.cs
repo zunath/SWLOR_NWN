@@ -38,6 +38,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .SkillType(SkillType.Devices)
                 .IsAreaAbility()
                 .HasImpactAction(PulseRelay1ImpactAction)
+                .HasTargetingSphere(
+                    Spell.PulseRelay1,
+                    10f,
+                    AbilityTargetingFlags.HelpsAllies | AbilityTargetingFlags.OriginOnSelf)
                 .IsCastedAbility()
                 .BreaksStealth()
                 .RequirementStamina(3);
@@ -54,6 +58,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .SkillType(SkillType.Devices)
                 .IsAreaAbility()
                 .HasImpactAction(PulseRelay2ImpactAction)
+                .HasTargetingSphere(
+                    Spell.PulseRelay2,
+                    10f,
+                    AbilityTargetingFlags.HelpsAllies | AbilityTargetingFlags.OriginOnSelf)
                 .IsCastedAbility()
                 .BreaksStealth()
                 .RequirementStamina(4);

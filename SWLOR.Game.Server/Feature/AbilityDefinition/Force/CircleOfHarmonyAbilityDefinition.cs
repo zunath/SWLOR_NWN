@@ -34,6 +34,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .SkillType(SkillType.Force)
                 .IsAreaAbility()
                 .HasImpactAction(CircleOfHarmony1ImpactAction)
+                .HasTargetingSphere(
+                    Spell.CircleOfHarmony1,
+                    5f,
+                    AbilityTargetingFlags.HelpsAllies | AbilityTargetingFlags.OriginOnSelf)
                 .IsCastedAbility()
                 .BreaksStealth()
                 .RequirementFP(CapstoneAbility.ForceCost);

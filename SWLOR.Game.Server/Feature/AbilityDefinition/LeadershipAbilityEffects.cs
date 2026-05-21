@@ -12,7 +12,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
         public static float GetLeadershipCommandRadius(uint activator)
         {
-            return BaseCommandRadius + Stat.GetStatAdjustment(activator, StatType.LeadershipCommandRadiusBonusMeters);
+            return ApplyLeadershipCommandRadiusBonus(activator, BaseCommandRadius);
+        }
+
+        public static float ApplyLeadershipCommandRadiusBonus(uint activator, float baseRadius)
+        {
+            return baseRadius + Stat.GetStatAdjustment(activator, StatType.LeadershipCommandRadiusBonusMeters);
         }
 
         public static bool ToggleVanguardCommandAura(uint activator, StatType auraLevelStatType, params Type[] statusEffectTypes)

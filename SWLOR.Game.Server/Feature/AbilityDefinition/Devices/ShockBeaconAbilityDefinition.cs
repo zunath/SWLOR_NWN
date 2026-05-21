@@ -39,6 +39,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .UsesAnimation(Animation.CastOutAnimation)
                 .IsAreaAbility()
                 .HasImpactAction(ShockBeacon1ImpactAction)
+                .HasTargetingSphere(
+                    Spell.ShockBeacon1,
+                    10f,
+                    AbilityTargetingFlags.HarmsEnemies)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
@@ -57,6 +61,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .UsesAnimation(Animation.CastOutAnimation)
                 .IsAreaAbility()
                 .HasImpactAction(ShockBeacon2ImpactAction)
+                .HasTargetingSphere(
+                    Spell.ShockBeacon2,
+                    12f,
+                    AbilityTargetingFlags.HarmsEnemies)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()

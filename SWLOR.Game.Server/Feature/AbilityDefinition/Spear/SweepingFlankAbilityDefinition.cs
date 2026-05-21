@@ -28,6 +28,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
                 .HasActivationDelay(2f)
                 .HasRecastDelay(RecastGroup.SweepingFlank, 60f)
                 .HasImpactAction(SweepingFlank1ImpactAction)
+                .HasTargetingCone(
+                    Spell.SweepingFlank1,
+                    5f,
+                    5f,
+                    AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf)
                 .SkillType(SkillType.Spear)
                 .IsCastedAbility()
                 .IsHostileAbility()

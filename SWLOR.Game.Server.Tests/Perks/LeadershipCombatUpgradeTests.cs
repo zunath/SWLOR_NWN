@@ -145,7 +145,7 @@ public class LeadershipCombatUpgradeTests
         AssertAbility(breakMorale[FeatType.BreakMorale2], "Break Morale II", 2, RecastGroup.BreakMorale, 90f, 0.5f, 9, true, true, false, false);
 
         var decisive = new DecisiveCommandAbilityDefinition().BuildAbilities()[FeatType.DecisiveCommand1];
-        AssertAbility(decisive, "Decisive Command", 1, RecastGroup.Capstone, 1800f, 1f, 15, false, true, false, false);
+        AssertAbility(decisive, "Decisive Command", 1, RecastGroup.Capstone, 345f, 1f, 15, false, true, false, false);
 
         var rousing = new RousingShoutAbilityDefinition().BuildAbilities();
         AssertAbility(rousing[FeatType.RousingShout1], "Rousing Shout I", 1, RecastGroup.RousingShout, 90f, 1f, 6, false, false, true, true);
@@ -161,7 +161,7 @@ public class LeadershipCombatUpgradeTests
         AssertAbility(cleanse[FeatType.CleanseOrder2], "Cleanse Order II", 2, RecastGroup.CleanseOrder, 90f, 1f, 9, false, true, false, false);
 
         var hold = new HoldTheLineAbilityDefinition().BuildAbilities()[FeatType.HoldTheLine1];
-        AssertAbility(hold, "Hold the Line", 1, RecastGroup.Capstone, 1800f, 1f, 15, false, true, false, false);
+        AssertAbility(hold, "Hold the Line", 1, RecastGroup.Capstone, 345f, 1f, 15, false, true, false, false);
 
         AssertSingleAura(new RallyingStandardAbilityDefinition().BuildAbilities(), FeatType.RallyingStandard1, "Rallying Standard", RecastGroup.RallyingStandard);
         AssertSingleAura(new CoordinatedFocusAbilityDefinition().BuildAbilities(), FeatType.CoordinatedFocus1, "Coordinated Focus", RecastGroup.CoordinatedFocus);
@@ -183,10 +183,10 @@ public class LeadershipCombatUpgradeTests
         AssertAppliedStat(new PressTheAttack3StatusEffect(), StatType.DamageDealtPercentAdjustment, 14);
         AssertAppliedStat(new PressTheAttack3StatusEffect(), StatType.PhysicalAndForceAbilityHitChancePercentAdjustment, 5);
         AssertAppliedStat(new PressTheAttack3StatusEffect(), StatType.AbilityHitChancePercentAdjustment, 0);
-        AssertAppliedStat(new DecisiveCommand1StatusEffect(), StatType.DamageDealtPercentAdjustment, 24);
-        AssertAppliedStat(new DecisiveCommand1StatusEffect(), StatType.PhysicalAndForceAbilityHitChancePercentAdjustment, 10);
+        AssertAppliedStat(new DecisiveCommand1StatusEffect(), StatType.DamageDealtPercentAdjustment, 15);
+        AssertAppliedStat(new DecisiveCommand1StatusEffect(), StatType.PhysicalAndForceAbilityHitChancePercentAdjustment, 6);
         AssertAppliedStat(new DecisiveCommand1StatusEffect(), StatType.AbilityHitChancePercentAdjustment, 0);
-        AssertAppliedStat(new DecisiveCommand1StatusEffect(), StatType.CriticalRatePercentAdjustment, 10);
+        AssertAppliedStat(new DecisiveCommand1StatusEffect(), StatType.CriticalRatePercentAdjustment, 6);
         AssertStatusStat(new FlashStatusEffect(10), StatType.PhysicalAndForceAbilityHitChancePercentAdjustment, -10);
         AssertStatusStat(new FlashStatusEffect(10), StatType.AbilityHitChancePercentAdjustment, 0);
 
@@ -199,7 +199,7 @@ public class LeadershipCombatUpgradeTests
         AssertAppliedStat(new BolsterResolve2StatusEffect(), StatType.DamageTakenPercentAdjustment, -12);
         AssertAppliedStat(new CleanseOrder2StatusEffect(), StatType.DamageTakenPercentAdjustment, -12);
         AssertAppliedStat(new TriageProtocol2StatusEffect(), StatType.HealingReceivedPercentAdjustment, 12);
-        AssertAppliedStat(new HoldTheLine1StatusEffect(), StatType.DamageTakenPercentAdjustment, -30);
+        AssertAppliedStat(new HoldTheLine1StatusEffect(), StatType.DamageTakenPercentAdjustment, -18);
         AssertAppliedStat(new HoldTheLine1StatusEffect(), StatType.MindStatusImmunity, 1);
         AssertAppliedStat(new HoldTheLine1StatusEffect(), StatType.MobilityStatusImmunity, 1);
     }
@@ -265,7 +265,7 @@ public class LeadershipCombatUpgradeTests
             (FeatType.PressTheAttack3, "Nearby party members gain +14% damage and +5% physical and Force ability hit chance for 15 seconds. SOC scaling can raise these to +18% damage and +7% hit chance."),
             (FeatType.BreakMorale2, "Nearby enemies suffer Flash, reducing physical and Force ability hit chance by 15%, and Weakened, reducing Attack by 12%, for 15 seconds. SOC scaling can raise these penalties to 18% and 15%. This command applies reliably to valid nearby enemies."),
             (FeatType.CoordinatedFocus3, "Nearby party members gain +6% critical hit chance and +8% critical damage. SOC scaling can raise these to +7% and +10%."),
-            (FeatType.DecisiveCommand1, "For 20 seconds, nearby party members gain +24% damage, +10% physical and Force ability hit chance, +10% critical hit chance, and restore 1 STM every 3 seconds. SOC scaling can raise the bonuses to +30%, +12%, and +12%."),
+            (FeatType.DecisiveCommand1, "For 45 seconds, nearby party members including you gain +15% damage, +6% physical and Force ability hit chance, +6% critical hit chance, and restore 1 STM every 3 seconds. SOC scaling can raise the bonuses to +18%, +8%, and +8%."),
             (FeatType.WatchfulPresence1, "Nearby party members take 4% less physical and Force damage. SOC scaling can raise this to 5%."),
             (FeatType.RousingShout1, "Bolsters one living ally, granting temporary HP equal to 10% of maximum HP for 12 seconds. SOC scaling can raise this to 13%. If the target is at or below 35% HP, they also take 10% less damage, scaling up to 12%."),
             (FeatType.SteadyFormation1, "Nearby party members gain +3% evasion chance and +30 Mind and Mobility resistance. SOC scaling can raise these to +4% and +40."),
@@ -280,7 +280,7 @@ public class LeadershipCombatUpgradeTests
             (FeatType.RousingShout3, "Bolsters one living ally, granting temporary HP equal to 20% of maximum HP for 15 seconds. SOC scaling can raise this to 25%. If the target is at or below 35% HP, they also take 20% less damage, scaling up to 25%."),
             (FeatType.CleanseOrder2, "Removes one major negative status effect from nearby party members and grants 12% damage reduction for 10 seconds. SOC scaling can raise this to 15%."),
             (FeatType.WatchfulPresence3, "Nearby party members take 8% less physical and Force damage. SOC scaling can raise this to 10%."),
-            (FeatType.HoldTheLine1, "For 20 seconds, nearby party members gain temporary HP equal to 25% of maximum HP, take 30% less damage, and become immune to Mind and Mobility effects. SOC scaling can raise these to 30% temporary HP and 35% damage reduction.")
+            (FeatType.HoldTheLine1, "For 45 seconds, nearby party members including you gain temporary HP equal to 18% of maximum HP, take 18% less damage, and become immune to Mind and Mobility effects. SOC scaling can raise temporary HP and damage reduction to 22%.")
         };
 
         foreach (var (featType, expectedDescription) in descriptions)

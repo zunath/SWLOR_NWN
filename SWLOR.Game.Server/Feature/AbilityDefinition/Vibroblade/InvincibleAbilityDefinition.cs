@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Feature.AbilityDefinition;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
@@ -17,10 +19,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
                     .Create(FeatType.Invincible1, PerkType.Invincible)
                     .Name("Invincible")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.Capstone, 1800f),
+                    .HasRecastDelay(RecastGroup.Capstone, CapstoneAbility.RecastDelaySeconds),
                 typeof(InvincibleStatusEffect),
-                30f,
-                25,
+                CapstoneAbility.ActiveDurationSeconds,
+                CapstoneAbility.StaminaCost,
+                activator =>
+                {
+                    Ability.ApplyTemporaryImmunity(activator, CapstoneAbility.ActiveDurationSeconds, ImmunityType.Knockdown);
+                    Ability.ApplyTemporaryImmunity(activator, CapstoneAbility.ActiveDurationSeconds, ImmunityType.Dazed);
+                },
                 activationDelay: 1f);
 
             return builder.Build();

@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .Name("Emergency Cocktail")
                 .Level(1)
                 .HasActivationDelay(1f)
-                .HasRecastDelay(RecastGroup.EmergencyCocktail, 300f)
+                .HasRecastDelay(RecastGroup.Capstone, CapstoneAbility.RecastDelaySeconds)
                 .SkillType(SkillType.FirstAid)
                 .IsSingleTargetAbility()
                 .RequiresTarget()
@@ -39,21 +39,19 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .HasImpactAction(EmergencyCocktail1ImpactAction)
                 .IsCastedAbility()
                 .BreaksStealth()
-                .RequirementStamina(8)
-                .RequirementItem("stim_pack", 2, PerkType.FieldPharmacist, 10);
+                .RequirementStamina(CapstoneAbility.StaminaCost)
+                .RequirementItem("stim_pack", 1, PerkType.FieldPharmacist, 10);
         }
 
         private static void EmergencyCocktail1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            var duration = FirstAidTreatmentAdjustments.ApplyStimDurationBonus(activator, 18f);
+            var duration = CapstoneAbility.ActiveDurationSeconds;
             foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
                 Stat.RestoreStamina(friendly, PercentOf(Stat.GetMaxStamina(friendly), 25));
-                StatusEffect.ApplyStatusEffect(activator, friendly, new AdrenalStimStatusEffect(1), duration);
-                AbilityEffectScaling.ApplyTemporaryHPPercent(activator, friendly, 15, duration);
-                StatusEffect.ApplyStatusEffect(activator, friendly, typeof(PainSuppressant2StatusEffect), duration);
+                StatusEffect.ApplyStatusEffect(activator, friendly, typeof(EmergencyCocktailStatusEffect), duration);
+                AbilityEffectScaling.ApplyTemporaryHPPercent(activator, friendly, 12, duration);
                 StatusEffect.RemoveFirstStatusEffect(friendly, new[] { typeof(PoisonStatusEffect), typeof(ToxinStatusEffect) }, false);
-                StatusEffect.ApplyStatusEffect(activator, friendly, typeof(Antitoxin1StatusEffect), duration);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Restoration), friendly);
             }
         }

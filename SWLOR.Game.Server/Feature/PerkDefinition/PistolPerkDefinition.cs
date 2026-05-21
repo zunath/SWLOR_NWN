@@ -48,7 +48,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.DeadMansHand1)
-                .Description("Fire six shots at your target and nearby enemies, each for weapon DMG + 10. Your target is prioritized and secondary targets cannot be hit more than twice.")
+                .Description("Fire five shots at your target and nearby enemies, prioritizing the primary target. Secondary targets cannot be hit more than twice. For 45 seconds, gain +10% physical ability critical chance.")
                 .Price(4)
                 .RequirementSkill(SkillType.Pistol, 50);
         }
@@ -238,7 +238,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.LastWord1)
-                .Description("Interrupts all enemies in a cone, deals weapon DMG + 35, and inflicts Dazed for 3 seconds.")
+                .Description("Interrupts enemies in a cone, deals weapon DMG + 25, briefly Dazes, and reduces hit chance by 10% for 45 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Pistol, 50);
         }

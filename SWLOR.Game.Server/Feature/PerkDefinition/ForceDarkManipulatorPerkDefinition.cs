@@ -207,7 +207,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .ForceAffinity(ForceAffinityType.Dark)
 
                 .AddPerkLevel()
-                .Description("Nearby enemies suffer -20% hit chance, -20% evasion chance, and +35% FP and STM costs for 20 seconds.")
+                .Description("Nearby enemies suffer -15% hit chance, -15% evasion chance, and +25% FP and STM costs for 45 seconds.")
                 .Price(5)
                 .RequirementSkill(SkillType.Force, 50)
                 .RequirementCharacterType(CharacterType.ForceSensitive)

@@ -33,13 +33,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
                 .Name("Hold the Line")
                 .Level(1)
                 .HasActivationDelay(1f)
-                .HasRecastDelay(RecastGroup.Capstone, 1800f)
+                .HasRecastDelay(RecastGroup.Capstone, CapstoneAbility.RecastDelaySeconds)
                 .SkillType(SkillType.Leadership)
                 .IsAreaAbility()
                 .HasImpactAction(HoldTheLine1ImpactAction)
                 .IsCastedAbility()
                 .BreaksStealth()
-                .RequirementStamina(15);
+                .RequirementStamina(CapstoneAbility.StaminaCost);
         }
 
         private static void HoldTheLine1ImpactAction(uint activator, uint target, int level, Location targetLocation)
@@ -49,12 +49,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
 
             foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, true, radius))
             {
-                const float duration = 20f;
                 ApplyTemporaryHP(
                     friendly,
-                    AbilityEffectScaling.ScaleValueBySourceSocial(activator, 25, 30),
-                    duration);
-                StatusEffect.ApplyStatusEffect(activator, friendly, typeof(HoldTheLine1StatusEffect), duration);
+                    AbilityEffectScaling.ScaleValueBySourceSocial(activator, 18, 22),
+                    CapstoneAbility.ActiveDurationSeconds);
+                StatusEffect.ApplyStatusEffect(activator, friendly, typeof(HoldTheLine1StatusEffect), CapstoneAbility.ActiveDurationSeconds);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_M), friendly);
                 affectedCount++;
             }

@@ -173,7 +173,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Hold the Line")
 
                 .AddPerkLevel()
-                .Description("For 20 seconds, nearby party members gain temporary HP equal to 25% of maximum HP, take 30% less damage, and become immune to Mind and Mobility effects. SOC scaling can raise these to 30% temporary HP and 35% damage reduction.")
+                .Description("For 45 seconds, nearby party members including you gain temporary HP equal to 18% of maximum HP, take 18% less damage, and become immune to Mind and Mobility effects. SOC scaling can raise temporary HP and damage reduction to 22%.")
                 .Price(5)
                 .RequirementSkill(SkillType.Leadership, 50)
                 .GrantsFeat(FeatType.HoldTheLine1);

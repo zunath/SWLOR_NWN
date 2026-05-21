@@ -66,7 +66,7 @@ public class LightsaberOffenseTests
             StatType.AbilityStatusDurationPercentAdjustmentSecondaryPerkType,
             StatType.AbilityStatusDurationPercentAdjustment);
         AssertPerkLevel(perks[PerkType.SaberStorm], "Saber Storm", 1, 4, 50, FeatType.SaberStorm1,
-            "Enemies within the area of effect (sphere) around you are dealt weapon DMG + 60. Inflicts Sunder which reduces defense and force defense by 25% for 30 seconds.");
+            "Enemies within the area of effect (sphere) take weapon DMG + 30 and suffer Sunder, reducing physical and Force defense by 10% for 45 seconds.");
     }
 
     [Test]
@@ -112,7 +112,7 @@ public class LightsaberOffenseTests
         AssertAbility(rippleSlash, "Ripple Slash", 1, RecastGroup.RippleSlash, 120f, 0f, 10, null, true, false, false, true, AbilityActivationType.Weapon);
 
         var saberStorm = new SaberStormAbilityDefinition().BuildAbilities()[FeatType.SaberStorm1];
-        AssertAbility(saberStorm, "Saber Storm", 1, RecastGroup.Capstone, 1800f, 2f, 25, null, true, false, false, true, AbilityActivationType.Casted);
+        AssertAbility(saberStorm, "Saber Storm", 1, RecastGroup.Capstone, 345f, 2f, 15, null, true, false, false, true, AbilityActivationType.Casted);
     }
 
     [Test]

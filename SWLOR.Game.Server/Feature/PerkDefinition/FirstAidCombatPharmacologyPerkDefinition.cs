@@ -127,19 +127,19 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Field Pharmacist")
 
                 .AddPerkLevel()
-                .Description("Stim pack effects last 15% longer and have a 10% chance not to consume the stim pack.")
+                .Description("Non-capstone stim pack effects last 15% longer. Stim pack abilities have a 10% chance not to consume the stim pack.")
                 .IncreasesStat(StatType.StimPackDurationPercentAdjustment, 15)
                 .Price(2)
                 .RequirementSkill(SkillType.FirstAid, 22)
 
                 .AddPerkLevel()
-                .Description("Stim pack effects last 25% longer and have a 20% chance not to consume the stim pack.")
+                .Description("Non-capstone stim pack effects last 25% longer. Stim pack abilities have a 20% chance not to consume the stim pack.")
                 .IncreasesStat(StatType.StimPackDurationPercentAdjustment, 25)
                 .Price(3)
                 .RequirementSkill(SkillType.FirstAid, 38)
 
                 .AddPerkLevel()
-                .Description("Stim pack effects last 35% longer and have a 30% chance not to consume the stim pack.")
+                .Description("Non-capstone stim pack effects last 35% longer. Stim pack abilities have a 30% chance not to consume the stim pack.")
                 .IncreasesStat(StatType.StimPackDurationPercentAdjustment, 35)
                 .Price(3)
                 .RequirementSkill(SkillType.FirstAid, 48);
@@ -169,7 +169,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Emergency Cocktail")
 
                 .AddPerkLevel()
-                .Description("Restores 25% of maximum STM, restores 1 STM every 3 seconds, grants temporary HP equal to 15% of maximum HP plus WIL scaling, reduces damage taken by 15%, grants 50% Poison and Disease resistance, and removes one Poison or Toxin effect for 18 seconds. Consumes extra stim packs.")
+                .Description("Restores 25% of maximum STM, removes one Poison or Toxin effect, then for 45 seconds restores 1 STM every 3 seconds, grants temporary HP equal to 12% of maximum HP plus WIL scaling, reduces damage taken by 12%, and grants 50% Poison and Disease resistance.")
                 .Price(5)
                 .RequirementSkill(SkillType.FirstAid, 50)
                 .GrantsFeat(FeatType.EmergencyCocktail1);

@@ -33,19 +33,19 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .Name("Emergency Bunker")
                 .Level(1)
                 .HasActivationDelay(2f)
-                .HasRecastDelay(RecastGroup.EmergencyBunker, 180f)
+                .HasRecastDelay(RecastGroup.Capstone, CapstoneAbility.RecastDelaySeconds)
                 .SkillType(SkillType.Devices)
                 .IsAreaAbility()
                 .HasImpactAction(EmergencyBunker1ImpactAction)
                 .IsCastedAbility()
                 .BreaksStealth()
-                .RequirementStamina(10);
+                .RequirementStamina(CapstoneAbility.StaminaCost);
         }
 
         private static void EmergencyBunker1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
             var location = AbilityTargeting.ResolveImpactLocation(activator, target, targetLocation);
-            var duration = DeviceAbilityEffects.ApplyCapacitorRigDurationBonus(activator, 15f);
+            var duration = CapstoneAbility.ActiveDurationSeconds;
 
             AbilityAreaEffects.ScheduleFriendlyZoneStatus(
                 activator,
@@ -59,7 +59,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 
         private static void ApplyBunkerTemporaryHP(uint activator, uint target, float durationSeconds)
         {
-            var temporaryHP = 120 + (int)Math.Ceiling(GetMaxHitPoints(target) * 0.10f);
+            var temporaryHP = 60 + (int)Math.Ceiling(GetMaxHitPoints(target) * 0.08f);
             temporaryHP = DeviceAbilityEffects.ApplyCapacitorRigBonus(activator, temporaryHP);
             TemporaryHitPointEffects.ApplyFlat(target, temporaryHP, durationSeconds);
         }

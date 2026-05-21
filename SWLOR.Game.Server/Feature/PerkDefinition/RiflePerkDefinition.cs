@@ -217,7 +217,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.OneShot1)
-                .Description("Deals weapon DMG + 100 to one target. If this defeats the target, restore 25 STM and gain +15% Attack for 15 seconds.")
+                .Description("Deals weapon DMG + 50. On hit, the target is Marked for 45 seconds and takes 8% more physical ability damage.")
                 .Price(4)
                 .RequirementSkill(SkillType.Rifle, 50);
         }
@@ -343,7 +343,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.StasisVolley1)
-                .Description("All enemies in a cone take weapon DMG + 25 and are tranquilized for up to 12 seconds. Damage breaks the effect prematurely.")
+                .Description("Enemies in a cone take weapon DMG + 20 and are briefly tranquilized, breaking on damage. On hit, targets suffer -10% Attack for 45 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Rifle, 50);
         }

@@ -30,13 +30,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .Name("Circle of Harmony")
                 .Level(1)
                 .HasActivationDelay(1.5f)
-                .HasRecastDelay(RecastGroup.CircleOfHarmony, 120f)
+                .HasRecastDelay(RecastGroup.Capstone, CapstoneAbility.RecastDelaySeconds)
                 .SkillType(SkillType.Force)
                 .IsAreaAbility()
                 .HasImpactAction(CircleOfHarmony1ImpactAction)
                 .IsCastedAbility()
                 .BreaksStealth()
-                .RequirementFP(10);
+                .RequirementFP(CapstoneAbility.ForceCost);
         }
 
         private static void CircleOfHarmony1ImpactAction(uint activator, uint target, int level, Location targetLocation)
@@ -45,7 +45,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             {
                 StatusEffect.RemoveFirstCleanseableStatusEffect(friendly, StatusEffectCleanseType.TreatmentKit2, false);
                 AbilityEffectScaling.ApplyScaledHeal(activator, friendly, 14);
-                StatusEffect.ApplyStatusEffect(activator, friendly, typeof(CircleOfHarmony1StatusEffect), 18f);
+                StatusEffect.ApplyStatusEffect(activator, friendly, typeof(CircleOfHarmony1StatusEffect), CapstoneAbility.ActiveDurationSeconds);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Remove_Condition), friendly);
             }
         }

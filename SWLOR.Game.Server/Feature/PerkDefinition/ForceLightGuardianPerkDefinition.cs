@@ -218,7 +218,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .ForceAffinity(ForceAffinityType.Light)
 
                 .AddPerkLevel()
-                .Description("For 12 seconds, damage that would drop the target below 1 HP is prevented once and the target gains temporary HP equal to 20% of maximum HP plus WIL scaling.")
+                .Description("For 45 seconds, damage that would drop the target below 1 HP is prevented once and the target gains temporary HP equal to 15% of maximum HP plus WIL scaling.")
                 .Price(5)
                 .RequirementSkill(SkillType.Force, 50)
                 .RequirementCharacterType(CharacterType.ForceSensitive)

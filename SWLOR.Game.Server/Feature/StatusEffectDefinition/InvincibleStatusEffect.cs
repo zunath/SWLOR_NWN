@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         public InvincibleStatusEffect()
         {
-            StatGroup.Stats[StatType.PhysicalDamageImmunity] = 1;
+            StatGroup.Stats[StatType.PhysicalDamageTakenPercentAdjustment] = -50;
         }
     }
 }

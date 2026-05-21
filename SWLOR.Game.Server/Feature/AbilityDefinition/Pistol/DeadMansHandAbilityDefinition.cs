@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
@@ -10,7 +11,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
 {
     public class DeadMansHandAbilityDefinition : IAbilityListDefinition
     {
-        private const int ShotCount = 6;
+        private const int ShotCount = 5;
         private const int SecondaryShotLimit = 2;
         private const float SecondaryRadius = 5f;
 
@@ -30,7 +31,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 .Name("Dead Man's Hand")
                 .Level(1)
                 .HasActivationDelay(2f)
-                .HasRecastDelay(RecastGroup.Capstone, 1800f)
+                .HasRecastDelay(RecastGroup.Capstone, CapstoneAbility.RecastDelaySeconds)
                 .SkillType(SkillType.Pistol)
                 .UsesImpactAnimation(Animation.PointPistol)
                 .HasMaxRange(PistolAbilityRange.Standard)
@@ -40,7 +41,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
-                .RequirementStamina(25);
+                .RequirementStamina(CapstoneAbility.StaminaCost);
         }
 
         private static void DeadMansHand1ImpactAction(uint activator, uint target, int level, Location targetLocation)
@@ -51,6 +52,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
             {
                 Ability.ApplyCombatImpact(activator, shotTarget, GetLocation(shotTarget), SkillType.Pistol, 10, 0, null, false);
             }
+
+            StatusEffect.ApplyStatusEffect(activator, activator, typeof(DeadMansHandStatusEffect), CapstoneAbility.ActiveDurationSeconds);
         }
 
         private static List<uint> BuildShotTargets(uint activator, uint primaryTarget, Location targetLocation)

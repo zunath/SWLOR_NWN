@@ -33,24 +33,23 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
                 .Name("Decisive Command")
                 .Level(1)
                 .HasActivationDelay(1f)
-                .HasRecastDelay(RecastGroup.Capstone, 1800f)
+                .HasRecastDelay(RecastGroup.Capstone, CapstoneAbility.RecastDelaySeconds)
                 .SkillType(SkillType.Leadership)
                 .IsAreaAbility()
                 .HasImpactAction(DecisiveCommand1ImpactAction)
                 .IsCastedAbility()
                 .BreaksStealth()
-                .RequirementStamina(15);
+                .RequirementStamina(CapstoneAbility.StaminaCost);
         }
 
         private static void DecisiveCommand1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
             var radius = LeadershipAbilityEffects.GetLeadershipCommandRadius(activator);
-            const float Duration = 20f;
             var affectedCount = 0;
 
             foreach (var friendly in AbilityTargeting.GetFriendlyTargets(activator, target, true, radius))
             {
-                StatusEffect.ApplyStatusEffect(activator, friendly, typeof(DecisiveCommand1StatusEffect), Duration);
+                StatusEffect.ApplyStatusEffect(activator, friendly, typeof(DecisiveCommand1StatusEffect), CapstoneAbility.ActiveDurationSeconds);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Holy_Aid), friendly);
                 affectedCount++;
             }

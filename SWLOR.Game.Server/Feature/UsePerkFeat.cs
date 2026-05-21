@@ -346,7 +346,7 @@ namespace SWLOR.Game.Server.Feature
                 ApplyRequirementEffects(activator, ability);
                 HandleStealthBreaking(activator, ability);
                 ExecuteAbilityImpact(activator, target, feat, ability, targetLocation);
-                Recast.ApplyRecastDelay(activator, ability.RecastGroup, abilityRecastDelay, false);
+                Recast.ApplyRecastDelay(activator, ability.RecastGroup, abilityRecastDelay, ShouldIgnoreRecastReduction(ability));
                 ResumeAttackAfterDelay(activator, resumeAttackTarget, 0.1f, clearActions: false);
 
                 // If this is an attack make the NPC react.
@@ -412,7 +412,7 @@ namespace SWLOR.Game.Server.Feature
             ApplyRequirementEffects(activator, ability);
 
             var abilityRecastDelay = ability.RecastDelay?.Invoke(activator) ?? 0.0f;
-            Recast.ApplyRecastDelay(activator, ability.RecastGroup, abilityRecastDelay, false);
+            Recast.ApplyRecastDelay(activator, ability.RecastGroup, abilityRecastDelay, ShouldIgnoreRecastReduction(ability));
 
             // Activator must attack within 30 seconds after queueing or else it wears off.
             DelayCommand(30.0f, () =>
@@ -447,6 +447,11 @@ namespace SWLOR.Game.Server.Feature
 
             if (sendMessage)
                 Messaging.SendMessageNearbyToPlayers(target, $"{GetName(target)} no longer has weapon ability {abilityDetail.Name} readied.");
+        }
+
+        private static bool ShouldIgnoreRecastReduction(AbilityDetail ability)
+        {
+            return ability?.RecastGroup == RecastGroup.Capstone;
         }
 
         /// <summary>

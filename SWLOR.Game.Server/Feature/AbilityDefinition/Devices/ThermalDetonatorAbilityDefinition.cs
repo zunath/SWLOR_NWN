@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .Name("Thermal Detonator")
                 .Level(1)
                 .HasActivationDelay(1.5f)
-                .HasRecastDelay(RecastGroup.ThermalDetonator, 120f)
+                .HasRecastDelay(RecastGroup.Capstone, CapstoneAbility.RecastDelaySeconds)
                 .SkillType(SkillType.Devices)
                 .UsesImpactAnimation(Animation.ThrowGrenade)
                 .IsAreaAbility()
@@ -46,8 +46,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
-                .RequirementStamina(8)
-                .RequirementItem("explosives", 2);
+                .RequirementStamina(CapstoneAbility.StaminaCost)
+                .RequirementItem("explosives", 1);
         }
 
         private static void ThermalDetonator1ImpactAction(uint activator, uint target, int level, Location targetLocation)
@@ -64,7 +64,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 impactLocation,
                 SkillType.Devices,
                 24,
-                12,
+                45,
                 typeof(BurnStatusEffect),
                 CombatImpactAreaShape.Sphere,
                 0f,

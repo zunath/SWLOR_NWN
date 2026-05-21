@@ -182,7 +182,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Overload Barrage")
 
                 .AddPerkLevel()
-                .Description("Unleashes three attacks at your primary target's location: 18 fire DMG in a 5m burst plus Burn for 12 seconds, 20 fire DMG to the primary target plus 3-second knockdown, and 18 sonic DMG in a 5m burst that interrupts activation and reduces Accuracy by 10% for 12 seconds.")
+                .Description("Unleashes three attacks at your primary target's location: a fire burst plus Burning for 45 seconds, a single-target fire hit plus brief Knockdown, and a sonic burst that interrupts activation and reduces Accuracy by 10% for 45 seconds.")
                 .Price(5)
                 .RequirementSkill(SkillType.Devices, 50)
                 .RequirementCharacterType(CharacterType.Standard)

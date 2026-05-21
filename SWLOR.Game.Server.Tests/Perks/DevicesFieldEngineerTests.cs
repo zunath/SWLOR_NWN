@@ -61,7 +61,7 @@ public class DevicesFieldEngineerTests
         AssertPerkLevel(perks[PerkType.RemoteCharge], "Remote Charge", 3, 3, 48, FeatType.RemoteCharge3,
             "Arms a visible charge that detonates after 3 seconds for heavy fire DMG and knock down.");
         AssertPerkLevel(perks[PerkType.KillzoneBeacon], "Killzone Beacon", 1, 5, 50, FeatType.KillzoneBeacon1,
-            "Plants a killzone beacon for 18 seconds. Every 3 seconds, it triggers one energy pulse and one shock pulse against hostile targets within 12m.");
+            "Plants a killzone beacon for 45 seconds. Every 3 seconds, it triggers one moderate physical pulse and one shock pulse against hostile targets within 12m.");
     }
 
     [Test]
@@ -91,7 +91,7 @@ public class DevicesFieldEngineerTests
         AssertAbility(shockBeacon[FeatType.ShockBeacon2], "Shock Beacon II", 2, RecastGroup.ShockBeacon, 75f, 1.5f, 6, true, true, false, false);
 
         var killzoneBeacon = new KillzoneBeaconAbilityDefinition().BuildAbilities();
-        AssertAbility(killzoneBeacon[FeatType.KillzoneBeacon1], "Killzone Beacon", 1, RecastGroup.KillzoneBeacon, 120f, 2f, 9, true, true, false, false);
+        AssertAbility(killzoneBeacon[FeatType.KillzoneBeacon1], "Killzone Beacon", 1, RecastGroup.Capstone, 345f, 2f, 15, true, true, false, false);
     }
 
     [Test]
@@ -142,8 +142,10 @@ public class DevicesFieldEngineerTests
         var killzoneBeacon = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Devices" / "KillzoneBeaconAbilityDefinition.cs").FullName);
         killzoneBeacon.Should().Contain("22");
         killzoneBeacon.Should().Contain("14");
+        killzoneBeacon.Should().Contain("CombatDamageType.Physical");
         killzoneBeacon.Should().Contain("CombatDamageType.Electrical");
         killzoneBeacon.Should().Contain("typeof(ShockStatusEffect)");
+        killzoneBeacon.Should().Contain("CapstoneAbility.ActiveDurationSeconds");
         killzoneBeacon.Should().Contain("markerVisualEffect: VisualEffect.Vfx_Dur_Aura_Pulse_Red_Blue");
     }
 

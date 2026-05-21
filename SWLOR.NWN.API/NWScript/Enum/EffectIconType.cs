@@ -407,6 +407,13 @@ namespace SWLOR.NWN.API.NWScript.Enum
         WhirlingGuardStatusEffect = 401,
         CalibratedField1StatusEffect = 402,
         CalibratedField2StatusEffect = 403,
+        DeadMansHandStatusEffect = 404,
+        EmergencyCocktailStatusEffect = 405,
+        LastWordStatusEffect = 406,
+        OneShotMarkedStatusEffect = 407,
+        StasisVolleyStatusEffect = 408,
+        TempestMarkStatusEffect = 409,
+        WorldbreakerStatusEffect = 410,
         // End custom status effect icons
     }
 }

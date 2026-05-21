@@ -1,7 +1,9 @@
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.Engine;
@@ -11,10 +13,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
 {
     public class SaberCycloneAbilityDefinition : IAbilityListDefinition
     {
-        private const float ChannelDurationSeconds = 6f;
-        private const float PulseIntervalSeconds = 2f;
+        private const float PulseIntervalSeconds = 6f;
         private const float Radius = 5f;
-        private const int FPRestorePerTarget = 3;
+        private const int InitialDamage = 18;
+        private const int PulseDamage = 8;
+        private const int FPRestorePerTarget = 1;
+        private const int MaximumFPRestorePerPulse = 5;
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
@@ -34,20 +38,28 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                 .SkillType(SkillType.Saberstaff)
                 .IsAreaAbility()
                 .HasActivationDelay(0f)
-                .HasRecastDelay(RecastGroup.Capstone, 1800f)
+                .HasRecastDelay(RecastGroup.Capstone, CapstoneAbility.RecastDelaySeconds)
                 .HasImpactAction(SaberCyclone1ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
-                .RequirementStamina(25);
+                .RequirementStamina(CapstoneAbility.StaminaCost);
         }
 
         private static void SaberCyclone1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
+            CombatAreaPulses.ApplyCombatPulse(
+                activator,
+                GetLocation(activator),
+                SkillType.Saberstaff,
+                InitialDamage,
+                Radius,
+                damageType: CombatDamageType.Force);
+
             CombatAreaPulses.SchedulePulses(
                 activator,
                 GetLocation(activator),
-                ChannelDurationSeconds,
+                CapstoneAbility.ActiveDurationSeconds,
                 PulseIntervalSeconds,
                 true,
                 pulseLocation =>
@@ -58,13 +70,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                         activator,
                         pulseLocation,
                         SkillType.Saberstaff,
-                        25,
-                        Radius);
+                        PulseDamage,
+                        Radius,
+                        damageType: CombatDamageType.Force);
                     var summary = Ability.EndAbilityImpact(activator);
                     Combat.ApplyAbilityImpactEffects(activator, summary);
 
                     if (summary.ImpactedTargetCount > 0)
-                        Stat.RestoreFP(activator, summary.ImpactedTargetCount * FPRestorePerTarget);
+                    {
+                        var fpRestore = Math.Min(MaximumFPRestorePerPulse, summary.ImpactedTargetCount * FPRestorePerTarget);
+                        Stat.RestoreFP(activator, fpRestore);
+                    }
                 });
         }
     }

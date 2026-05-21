@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
@@ -18,12 +19,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
                     .Name("Crippling Defense")
                     .Level(1)
                     .SkillType(SkillType.Spear)
-                    .HasRecastDelay(RecastGroup.Capstone, 1800f),
+                    .HasRecastDelay(RecastGroup.Capstone, CapstoneAbility.RecastDelaySeconds),
                 typeof(CripplingDefenseStatusEffect),
-                15f,
-                25,
+                CapstoneAbility.ActiveDurationSeconds,
+                CapstoneAbility.StaminaCost,
                 true,
-                restoreStamina: 25,
+                restoreStamina: 15,
                 activationDelay: 3f);
 
             return builder.Build();

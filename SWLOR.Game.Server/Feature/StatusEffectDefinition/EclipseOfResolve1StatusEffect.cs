@@ -17,10 +17,10 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         public EclipseOfResolve1StatusEffect()
         {
-            StatGroup.Stats[StatType.AbilityHitChancePercentAdjustment] = -20;
-            StatGroup.Stats[StatType.EvasionPercentAdjustment] = -20;
-            StatGroup.Stats[StatType.FPCostPercentAdjustment] = 35;
-            StatGroup.Stats[StatType.AbilityStaminaCostPercentAdjustment] = 35;
+            StatGroup.Stats[StatType.AbilityHitChancePercentAdjustment] = -15;
+            StatGroup.Stats[StatType.EvasionPercentAdjustment] = -15;
+            StatGroup.Stats[StatType.FPCostPercentAdjustment] = 25;
+            StatGroup.Stats[StatType.AbilityStaminaCostPercentAdjustment] = 25;
         }
     }
 }

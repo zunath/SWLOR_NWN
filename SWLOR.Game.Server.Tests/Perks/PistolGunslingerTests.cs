@@ -68,7 +68,7 @@ public class PistolGunslingerTests
             StatType.AutoAttackStaminaRestoreChance,
             StatType.AutoAttackStaminaRestore);
         AssertPerkLevel(perks[PerkType.DeadMansHand], "Dead Man's Hand", 1, 4, 50, FeatType.DeadMansHand1,
-            "Fire six shots at your target and nearby enemies, each for weapon DMG + 10. Your target is prioritized and secondary targets cannot be hit more than twice.");
+            "Fire five shots at your target and nearby enemies, prioritizing the primary target. Secondary targets cannot be hit more than twice. For 45 seconds, gain +10% physical ability critical chance.");
     }
 
     [Test]
@@ -96,7 +96,7 @@ public class PistolGunslingerTests
         AssertAbility(gunslingerFocus, "Gunslinger Focus", 1, RecastGroup.GunslingerFocus, 120f, 0f, 6, false, false, false, false, AbilityActivationType.Casted);
 
         var deadMansHand = new DeadMansHandAbilityDefinition().BuildAbilities()[FeatType.DeadMansHand1];
-        AssertAbility(deadMansHand, "Dead Man's Hand", 1, RecastGroup.Capstone, 1800f, 2f, 25, true, true, false, true, AbilityActivationType.Casted);
+        AssertAbility(deadMansHand, "Dead Man's Hand", 1, RecastGroup.Capstone, 345f, 2f, 15, true, true, false, true, AbilityActivationType.Casted);
     }
 
     [Test]
@@ -115,6 +115,9 @@ public class PistolGunslingerTests
         gunslingerFocus.StatGroup.Stats[StatType.AbilityStaminaCostFlatAdjustmentPerkType].Should().Be((int)PerkType.QuickDraw);
         gunslingerFocus.StatGroup.Stats[StatType.AbilityStaminaCostFlatAdjustmentSecondaryPerkType].Should().Be((int)PerkType.DoubleShot);
         gunslingerFocus.StatGroup.Stats[StatType.AbilityStaminaCostFlatAdjustment].Should().Be(-2);
+
+        var deadMansHand = new DeadMansHandStatusEffect();
+        deadMansHand.StatGroup.Stats[StatType.AbilityCriticalRatePercentAdjustment].Should().Be(10);
     }
 
     [Test]
@@ -199,10 +202,11 @@ public class PistolGunslingerTests
         gunslingerFocus.Should().Contain("StatGroup.Stats[StatType.AbilityStaminaCostFlatAdjustment] = -StaminaCostReduction;");
 
         var deadMansHand = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Pistol" / "DeadMansHandAbilityDefinition.cs").FullName);
-        deadMansHand.Should().Contain("private const int ShotCount = 6;");
+        deadMansHand.Should().Contain("private const int ShotCount = 5;");
         deadMansHand.Should().Contain("private const int SecondaryShotLimit = 2;");
         deadMansHand.Should().Contain("private const float SecondaryRadius = 5f;");
         deadMansHand.Should().Contain("SkillType.Pistol, 10, 0, null");
+        deadMansHand.Should().Contain("typeof(DeadMansHandStatusEffect)");
     }
 
     private static void AssertPerkLevel(

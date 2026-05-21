@@ -72,7 +72,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .IncreasesStat(StatType.DeviceShieldTemporaryHPPercentAdjustment, 20)
 
                 .AddPerkLevel()
-                .Description("Deflector Shield, Group Deflector, and Emergency Bunker grant 30% more temporary HP and last 10 seconds longer.")
+                .Description("Deflector Shield, Group Deflector, and Emergency Bunker grant 30% more temporary HP. Deflector Shield and Group Deflector last 10 seconds longer.")
                 .Price(4)
                 .RequirementSkill(SkillType.Devices, 45)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -186,7 +186,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Emergency Bunker")
 
                 .AddPerkLevel()
-                .Description("Deploys a shield bunker for 15 seconds. Allies inside gain 120 temporary HP plus 10% of each target's maximum HP and take 20% less ranged physical damage.")
+                .Description("Deploys a shield bunker for 45 seconds. Allies inside gain 60 temporary HP plus 8% of each target's maximum HP and take 15% less ranged physical damage.")
                 .Price(5)
                 .RequirementSkill(SkillType.Devices, 50)
                 .RequirementCharacterType(CharacterType.Standard)

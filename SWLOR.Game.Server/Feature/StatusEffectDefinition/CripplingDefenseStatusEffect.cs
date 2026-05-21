@@ -14,8 +14,8 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public override ResistanceType ResistanceType => ResistanceType.Trauma;
         public CripplingDefenseStatusEffect()
         {
-            StatGroup.Stats[StatType.PhysicalDefensePercentAdjustment] = -35;
-            StatGroup.Stats[StatType.ForceDefensePercentAdjustment] = -35;
+            StatGroup.Stats[StatType.PhysicalDefensePercentAdjustment] = -15;
+            StatGroup.Stats[StatType.ForceDefensePercentAdjustment] = -15;
         }
 
     }

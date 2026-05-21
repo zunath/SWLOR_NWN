@@ -184,7 +184,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Killzone Beacon")
 
                 .AddPerkLevel()
-                .Description("Plants a killzone beacon for 18 seconds. Every 3 seconds, it triggers one energy pulse and one shock pulse against hostile targets within 12m.")
+                .Description("Plants a killzone beacon for 45 seconds. Every 3 seconds, it triggers one moderate physical pulse and one shock pulse against hostile targets within 12m.")
                 .Price(5)
                 .RequirementSkill(SkillType.Devices, 50)
                 .RequirementCharacterType(CharacterType.Standard)

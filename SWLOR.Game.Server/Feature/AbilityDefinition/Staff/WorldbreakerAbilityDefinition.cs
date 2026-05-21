@@ -1,6 +1,8 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.Engine;
@@ -26,19 +28,37 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
                 .Name("Worldbreaker")
                 .Level(1)
                 .HasActivationDelay(2f)
-                .HasRecastDelay(RecastGroup.Capstone, 1800f)
+                .HasRecastDelay(RecastGroup.Capstone, CapstoneAbility.RecastDelaySeconds)
                 .SkillType(SkillType.Staff)
                 .IsAreaAbility()
                 .HasImpactAction(Worldbreaker1ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
-                .RequirementStamina(25);
+                .RequirementStamina(CapstoneAbility.StaminaCost);
         }
 
         private static void Worldbreaker1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.Staff, 45, 4, typeof(KnockdownStatusEffect), CombatImpactAreaShape.Sphere, 0.25f, 5f, centerOnActivator: true);
+            Ability.ApplyTelegraphedCombatImpact(
+                activator,
+                target,
+                targetLocation,
+                SkillType.Staff,
+                25,
+                45,
+                typeof(WorldbreakerStatusEffect),
+                CombatImpactAreaShape.Sphere,
+                0.25f,
+                5f,
+                centerOnActivator: true,
+                afterSuccessfulHit: affectedEnemy =>
+                    StatusEffect.ApplyStatusEffect(
+                        activator,
+                        affectedEnemy,
+                        typeof(KnockdownStatusEffect),
+                        3f,
+                        CombatDamageType.Physical));
         }
     }
 }

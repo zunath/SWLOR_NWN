@@ -61,7 +61,7 @@ public class KatarVenomCurrentTests
             "Poison effects you apply also reduce the target's Attack by 10%.",
             StatType.OutgoingPoisonAttackPercentAdjustment);
         AssertPerkLevel(perks[PerkType.SerpentsEclipse], "Serpent's Eclipse", 1, 4, 50, FeatType.SerpentsEclipse1,
-            "All enemies in an area of effect (sphere) take weapon DMG + 25. Inflicts Poison and Disoriented. Enemies already affected by either effect take +30 DMG.");
+            "All enemies in an area of effect (sphere) take weapon DMG + 20 poison damage and suffer Poison and Disoriented for 45 seconds. Enemies already affected by either effect take +15 DMG.");
     }
 
     [Test]
@@ -96,7 +96,7 @@ public class KatarVenomCurrentTests
         AssertAbility(toxicRush, "Toxic Rush", 1, RecastGroup.ToxicRush, 120f, 0f, 10, false, false, false, false, AbilityActivationType.Casted);
 
         var serpentsEclipse = new SerpentsEclipseAbilityDefinition().BuildAbilities()[FeatType.SerpentsEclipse1];
-        AssertAbility(serpentsEclipse, "Serpent's Eclipse", 1, RecastGroup.Capstone, 1800f, 2f, 25, true, false, false, true, AbilityActivationType.Casted);
+        AssertAbility(serpentsEclipse, "Serpent's Eclipse", 1, RecastGroup.Capstone, 345f, 2f, 15, true, false, false, true, AbilityActivationType.Casted);
     }
 
     [Test]
@@ -188,9 +188,10 @@ public class KatarVenomCurrentTests
         toxicRush.Should().Contain("StatGroup.Stats[StatType.AttackDelayReductionPercent] = 20;");
 
         var serpentsEclipse = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Katar" / "SerpentsEclipseAbilityDefinition.cs").FullName);
-        serpentsEclipse.Replace("\r\n", "\n").Should().Contain("SkillType.Katar,\n                25,\n                12,");
+        serpentsEclipse.Replace("\r\n", "\n").Should().Contain("SkillType.Katar,\n                20,\n                45,");
         serpentsEclipse.Should().Contain("additionalStatusEffects: new[] { typeof(DisorientedStatusEffect) }");
-        serpentsEclipse.Should().Contain("baseDamageAdjustment: creature => IsPoisonedOrDisoriented(creature) ? 30 : 0");
+        serpentsEclipse.Should().Contain("damageType: CombatDamageType.Poison");
+        serpentsEclipse.Should().Contain("baseDamageAdjustment: creature => IsPoisonedOrDisoriented(creature) ? 15 : 0");
     }
 
     private static void AssertPerkLevel(

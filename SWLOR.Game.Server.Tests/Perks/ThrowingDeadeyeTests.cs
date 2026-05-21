@@ -63,7 +63,7 @@ public class ThrowingDeadeyeTests
             "Throwing abilities against bleeding or disoriented targets have +15% critical chance.",
             StatType.ThrowingAbilityCriticalRateToBleedingOrDisorientedTargetPercentAdjustment);
         AssertPerkLevel(perks[PerkType.PerfectThrow], "Perfect Throw", 1, 4, 50, FeatType.PerfectThrow1,
-            "Deals weapon DMG + 80 to one target. If the target is bleeding, also inflict Hemorrhage, increasing damage taken by 10% for 15 seconds.");
+            "Deals weapon DMG + 45. If the target is bleeding, also inflicts Hemorrhage, increasing damage taken by 10% for 45 seconds.");
 
         AssertStatBonus(perks[PerkType.ReturningGrip].PerkLevels[1], StatType.ThrowingAbilityUsedNextAutoAttackDamageBonus, 8);
         AssertStatBonus(perks[PerkType.ReturningGrip].PerkLevels[1], StatType.ThrowingAbilityUsedNextAutoAttackDamageDurationSeconds, 8);
@@ -99,7 +99,7 @@ public class ThrowingDeadeyeTests
         AssertAbility(finishingToss, "Finishing Toss", 1, RecastGroup.FinishingToss, 90f, 0f, 10, true, true, true, false, AbilityActivationType.Casted);
 
         var perfectThrow = new PerfectThrowAbilityDefinition().BuildAbilities()[FeatType.PerfectThrow1];
-        AssertAbility(perfectThrow, "Perfect Throw", 1, RecastGroup.Capstone, 1800f, 1f, 25, true, true, true, false, AbilityActivationType.Casted);
+        AssertAbility(perfectThrow, "Perfect Throw", 1, RecastGroup.Capstone, 345f, 1f, 15, true, true, true, false, AbilityActivationType.Casted);
     }
 
     [Test]
@@ -145,6 +145,9 @@ public class ThrowingDeadeyeTests
         var ricochetToss = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Throwing" / "RicochetTossAbilityDefinition.cs").FullName);
         ricochetToss.Should().Contain("private const float BounceRadius = 5f;");
         ricochetToss.Should().Contain("AbilityTargeting.GetHostileTargetsNearLocation(activator, impactLocation, BounceRadius, maxTargets, target)");
+
+        var perfectThrow = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Throwing" / "PerfectThrowAbilityDefinition.cs").FullName);
+        perfectThrow.Should().Contain("SkillType.Throwing, 45, 45, statusEffect, false");
     }
 
     [Test]

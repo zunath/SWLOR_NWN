@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
@@ -27,14 +28,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
                 .Name("Serpent's Eclipse")
                 .Level(1)
                 .HasActivationDelay(2f)
-                .HasRecastDelay(RecastGroup.Capstone, 1800f)
+                .HasRecastDelay(RecastGroup.Capstone, CapstoneAbility.RecastDelaySeconds)
                 .HasImpactAction(SerpentsEclipse1ImpactAction)
                 .SkillType(SkillType.Katar)
                 .IsAreaAbility()
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
-                .RequirementStamina(25);
+                .RequirementStamina(CapstoneAbility.StaminaCost);
         }
 
         private static void SerpentsEclipse1ImpactAction(uint activator, uint target, int level, Location targetLocation)
@@ -44,13 +45,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
                 target,
                 targetLocation,
                 SkillType.Katar,
-                25,
-                12,
+                20,
+                45,
                 typeof(PoisonStatusEffect),
                 true,
                 additionalStatusEffects: new[] { typeof(DisorientedStatusEffect) },
                 damageType: CombatDamageType.Poison,
-                baseDamageAdjustment: creature => IsPoisonedOrDisoriented(creature) ? 30 : 0);
+                baseDamageAdjustment: creature => IsPoisonedOrDisoriented(creature) ? 15 : 0);
         }
 
         private static bool IsPoisonedOrDisoriented(uint target)

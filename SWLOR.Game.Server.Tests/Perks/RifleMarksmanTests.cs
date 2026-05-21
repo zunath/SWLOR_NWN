@@ -4,6 +4,7 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Rifle;
 using SWLOR.Game.Server.Feature.PerkDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
@@ -79,7 +80,7 @@ public class RifleMarksmanTests
             StatType.AbilityDefenseIgnoreExposedOrSunderedSkillType,
             StatType.AbilityDefenseIgnoreExposedOrSunderedPercentAdjustment);
         AssertPerkLevel(perks[PerkType.OneShot], "One Shot", 1, 4, 50, FeatType.OneShot1,
-            "Deals weapon DMG + 100 to one target. If this defeats the target, restore 25 STM and gain +15% Attack for 15 seconds.");
+            "Deals weapon DMG + 50. On hit, the target is Marked for 45 seconds and takes 8% more physical ability damage.");
     }
 
     [Test]
@@ -114,7 +115,7 @@ public class RifleMarksmanTests
         AssertAbility(killZone, "Kill Zone", 1, RecastGroup.KillZone, 120f, 0f, 10, false, false, false, false, AbilityActivationType.Casted);
 
         var oneShot = new OneShotAbilityDefinition().BuildAbilities()[FeatType.OneShot1];
-        AssertAbility(oneShot, "One Shot", 1, RecastGroup.Capstone, 1800f, 2f, 25, true, true, true, false, AbilityActivationType.Casted, 30f);
+        AssertAbility(oneShot, "One Shot", 1, RecastGroup.Capstone, 345f, 2f, 15, true, true, true, false, AbilityActivationType.Casted, 30f);
     }
 
     [Test]
@@ -139,6 +140,10 @@ public class RifleMarksmanTests
         killZone.StatGroup.Stats[StatType.RepeatedTargetDamagePercentPerHit].Should().Be(4);
         killZone.StatGroup.Stats[StatType.RepeatedTargetDamagePercentMax].Should().Be(20);
         killZone.StatGroup.Stats[StatType.AttackPercentAdjustment].Should().Be(0);
+
+        var oneShotMarked = new OneShotMarkedStatusEffect();
+        oneShotMarked.StatGroup.Stats[StatType.PhysicalAbilityDamageTakenPercentAdjustment].Should().Be(8);
+        Stat.GetStatTypeCategory(StatType.PhysicalAbilityDamageTakenPercentAdjustment).Should().Be(StatTypeCategory.BeneficialWhenNegative);
     }
 
     [Test]
@@ -149,9 +154,14 @@ public class RifleMarksmanTests
         var combat = File.ReadAllText((root / "SWLOR.Game.Server" / "Service" / "Combat.cs").FullName);
         combat.Should().Contain("typeof(ExposeWeakPointStatusEffect)");
         combat.Should().Contain("ApplyCriticalDamageModifier");
+        combat.Should().Contain("isAbilityDamage && damageType.IsPhysicalDamageType()");
+        combat.Should().Contain("StatType.PhysicalAbilityDamageTakenPercentAdjustment");
 
         var ability = File.ReadAllText((root / "SWLOR.Game.Server" / "Service" / "Ability.cs").FullName);
         ability.Should().Contain("Combat.ApplyCriticalDamageModifier");
+
+        var oneShot = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Rifle" / "OneShotAbilityDefinition.cs").FullName);
+        oneShot.Should().Contain("SkillType.Rifle, 50, 45, typeof(OneShotMarkedStatusEffect), false");
     }
 
     [Test]

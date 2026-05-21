@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
@@ -19,10 +20,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
                     .Name("Adamantine Guard")
                     .Level(1)
                     .SkillType(SkillType.Katar)
-                    .HasRecastDelay(RecastGroup.Capstone, 1800f),
+                    .HasRecastDelay(RecastGroup.Capstone, CapstoneAbility.RecastDelaySeconds),
                 typeof(AdamantineGuardStatusEffect),
-                20f,
-                25,
+                CapstoneAbility.ActiveDurationSeconds,
+                CapstoneAbility.StaminaCost,
                 activationDelay: 1f);
 
             return builder.Build();

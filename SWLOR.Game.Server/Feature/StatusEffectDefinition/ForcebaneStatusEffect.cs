@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         public ForcebaneStatusEffect()
         {
-            StatGroup.Stats[StatType.FPRestorePercentAdjustment] = -100;
+            StatGroup.Stats[StatType.FPRestorePercentAdjustment] = -75;
         }
     }
 }

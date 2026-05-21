@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.Engine;
@@ -12,9 +14,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
 {
     public class TempestBloomAbilityDefinition : IAbilityListDefinition
     {
-        private const float ChannelDurationSeconds = 6f;
-        private const float PulseIntervalSeconds = 2f;
+        private const float PulseIntervalSeconds = 6f;
         private const float Radius = 5f;
+        private const int InitialDamage = 20;
+        private const int PulseDamage = 8;
+        private const int MaximumMarkStacks = 3;
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
@@ -33,24 +37,32 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
                 .Level(1)
                 .SkillType(SkillType.TwinBlade)
                 .HasActivationDelay(0f)
-                .HasRecastDelay(RecastGroup.Capstone, 1800f)
+                .HasRecastDelay(RecastGroup.Capstone, CapstoneAbility.RecastDelaySeconds)
                 .HasImpactAction(TempestBloom1ImpactAction)
                 .IsAreaAbility()
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
-                .RequirementStamina(25);
+                .RequirementStamina(CapstoneAbility.StaminaCost);
         }
 
         private static void TempestBloom1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
+            CombatAreaPulses.ApplyCombatPulse(
+                activator,
+                GetLocation(activator),
+                SkillType.TwinBlade,
+                InitialDamage,
+                Radius,
+                afterSuccessfulHit: ApplyTempestMark);
+
             CombatAreaPulses.SchedulePulses(
                 activator,
                 GetLocation(activator),
-                ChannelDurationSeconds,
+                CapstoneAbility.ActiveDurationSeconds,
                 PulseIntervalSeconds,
                 true,
-                (pulseLocation, elapsed) =>
+                pulseLocation =>
                 {
                     var ability = Ability.GetAbilityDetail(FeatType.TempestBloom1);
                     Ability.BeginAbilityImpact(activator, ability);
@@ -58,13 +70,29 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
                         activator,
                         pulseLocation,
                         SkillType.TwinBlade,
-                        20,
+                        PulseDamage,
                         Radius,
-                        elapsed >= ChannelDurationSeconds - 0.01f ? typeof(KnockdownStatusEffect) : null,
-                        elapsed >= ChannelDurationSeconds - 0.01f ? 3 : 0);
+                        afterSuccessfulHit: ApplyTempestMark);
                     var summary = Ability.EndAbilityImpact(activator);
                     Combat.ApplyAbilityImpactEffects(activator, summary);
                 });
+
+            void ApplyTempestMark(uint affectedEnemy)
+            {
+                var activeStacks = StatusEffect.GetCreatureStatusEffects(affectedEnemy)
+                    .GetAllEffects()
+                    .Count(effect => effect.GetType() == typeof(TempestMarkStatusEffect) && effect.Source == activator);
+
+                if (activeStacks >= MaximumMarkStacks)
+                    return;
+
+                StatusEffect.ApplyStatusEffect(
+                    activator,
+                    affectedEnemy,
+                    typeof(TempestMarkStatusEffect),
+                    CapstoneAbility.ActiveDurationSeconds,
+                    CombatDamageType.Physical);
+            }
         }
     }
 }

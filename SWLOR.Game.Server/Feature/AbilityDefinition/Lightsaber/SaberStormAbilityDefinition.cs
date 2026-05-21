@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
@@ -26,14 +27,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 .Name("Saber Storm")
                 .Level(1)
                 .HasActivationDelay(2f)
-                .HasRecastDelay(RecastGroup.Capstone, 1800f)
+                .HasRecastDelay(RecastGroup.Capstone, CapstoneAbility.RecastDelaySeconds)
                 .SkillType(SkillType.Lightsaber)
                 .HasImpactAction(SaberStorm1ImpactAction)
                 .IsAreaAbility()
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
-                .RequirementStamina(25);
+                .RequirementStamina(CapstoneAbility.StaminaCost);
         }
 
         private static void SaberStorm1ImpactAction(uint activator, uint target, int level, Location targetLocation)
@@ -43,14 +44,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 target,
                 targetLocation,
                 SkillType.Lightsaber,
-                60,
                 30,
+                45,
                 typeof(SunderStatusEffect),
                 CombatImpactAreaShape.Sphere,
                 0.25f,
                 5f,
                 centerOnActivator: true,
-                statusEffectFactory: () => new SunderStatusEffect(25));
+                statusEffectFactory: () => new SunderStatusEffect(10));
         }
     }
 }

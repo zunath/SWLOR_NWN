@@ -76,7 +76,7 @@ public class StaffCrusherTests
             StatType.StaffMightModifierDamageMultiplier,
             StatType.CriticalRatePercentAdjustment);
         AssertPerkLevel(perks[PerkType.Worldbreaker], "Worldbreaker", 1, 4, 50, FeatType.Worldbreaker1,
-            "Strike the ground. Enemies in an area of effect (sphere) take weapon DMG + 45 and suffer Knockdown for 4 seconds.");
+            "Strike the ground. Enemies in an area of effect (sphere) take weapon DMG + 25, suffer brief Knockdown, and deal 10% less damage for 45 seconds.");
     }
 
     [Test]
@@ -106,7 +106,7 @@ public class StaffCrusherTests
         AssertAbility(bonecrusher, "Bonecrusher", 1, RecastGroup.Bonecrusher, 120f, 0f, 12, true, true, true, false, AbilityActivationType.Casted);
 
         var worldbreaker = new WorldbreakerAbilityDefinition().BuildAbilities()[FeatType.Worldbreaker1];
-        AssertAbility(worldbreaker, "Worldbreaker", 1, RecastGroup.Capstone, 1800f, 2f, 25, true, false, false, true, AbilityActivationType.Casted);
+        AssertAbility(worldbreaker, "Worldbreaker", 1, RecastGroup.Capstone, 345f, 2f, 15, true, false, false, true, AbilityActivationType.Casted);
     }
 
     [Test]
@@ -126,6 +126,9 @@ public class StaffCrusherTests
 
         Stat.GetStatTypeCategory(StatType.CriticalTargetDefensePercentAdjustment).Should().Be(StatTypeCategory.BeneficialWhenNegative);
         Stat.GetStatTypeCategory(StatType.CriticalTargetDefenseDurationSeconds).Should().Be(StatTypeCategory.NonBeneficial);
+
+        var worldbreaker = new WorldbreakerStatusEffect();
+        worldbreaker.StatGroup.Stats[StatType.DamageDealtPercentAdjustment].Should().Be(-10);
     }
 
     [Test]
@@ -203,7 +206,13 @@ public class StaffCrusherTests
 
         var worldbreaker = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Staff" / "WorldbreakerAbilityDefinition.cs").FullName);
         worldbreaker.Should().Contain("HasActivationDelay(2f)");
-        worldbreaker.Should().Contain("SkillType.Staff, 45, 4, typeof(KnockdownStatusEffect)");
+        worldbreaker.Should().Contain("SkillType.Staff");
+        worldbreaker.Should().Contain("25");
+        worldbreaker.Should().Contain("45");
+        worldbreaker.Should().Contain("typeof(WorldbreakerStatusEffect)");
+        worldbreaker.Should().Contain("afterSuccessfulHit: affectedEnemy");
+        worldbreaker.Should().Contain("typeof(KnockdownStatusEffect)");
+        worldbreaker.Should().Contain("3f");
         worldbreaker.Should().Contain("centerOnActivator: true");
     }
 

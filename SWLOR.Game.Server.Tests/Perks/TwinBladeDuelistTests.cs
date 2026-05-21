@@ -4,6 +4,7 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade;
 using SWLOR.Game.Server.Feature.PerkDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
@@ -70,7 +71,7 @@ public class TwinBladeDuelistTests
             StatType.TwinBladeAreaAbilityCooldownStaminaRestoreMax,
             StatType.TwinBladeAreaAbilityCooldownStaminaRestoreCooldownSeconds);
         AssertPerkLevel(perks[PerkType.FinalForm], "Final Form", 1, 4, 50, FeatType.FinalForm1,
-            "For 20 seconds, single-target Twin Blade combat abilities deal +25% damage and you gain +25 Attack Deflection.");
+            "For 45 seconds, single-target physical combat abilities deal +15% damage and you gain +15 Attack Deflection.");
     }
 
     [Test]
@@ -101,7 +102,7 @@ public class TwinBladeDuelistTests
         AssertAbility(challenge, "Duelist's Challenge", 1, RecastGroup.DuelistsChallenge, 120f, 0f, 12, true, true, true, false, AbilityActivationType.Casted);
 
         var finalForm = new FinalFormAbilityDefinition().BuildAbilities()[FeatType.FinalForm1];
-        AssertAbility(finalForm, "Final Form", 1, RecastGroup.Capstone, 1800f, 2f, 25, false, false, false, false, AbilityActivationType.Casted);
+        AssertAbility(finalForm, "Final Form", 1, RecastGroup.Capstone, 345f, 2f, 15, false, false, false, false, AbilityActivationType.Casted);
     }
 
     [Test]
@@ -135,9 +136,10 @@ public class TwinBladeDuelistTests
         challengeSelf.StatGroup.Stats[StatType.DefenseAgainstStatusSourcePercentAdjustment].Should().Be(20);
 
         var finalForm = new FinalFormStatusEffect();
-        finalForm.StatGroup.Stats[StatType.TwinBladeSingleTargetAbilityDamagePercentAdjustment].Should().Be(25);
-        finalForm.StatGroup.Stats[StatType.AttackDeflection].Should().Be(25);
+        finalForm.StatGroup.Stats[StatType.SingleTargetPhysicalAbilityDamagePercentAdjustment].Should().Be(15);
+        finalForm.StatGroup.Stats[StatType.AttackDeflection].Should().Be(15);
         finalForm.StatGroup.Stats[StatType.AttackPercentAdjustment].Should().Be(0);
+        Stat.GetStatTypeCategory(StatType.SingleTargetPhysicalAbilityDamagePercentAdjustment).Should().Be(StatTypeCategory.BeneficialWhenPositive);
     }
 
     [Test]
@@ -208,6 +210,8 @@ public class TwinBladeDuelistTests
         combat.Should().Contain("ability.IsHostileAbility");
         combat.Should().Contain("GetAbilitySkillType(activator, ability)");
         combat.Should().Contain("ability.IsSingleTargetAbility");
+        combat.Should().Contain("ApplyPhysicalAbilityShapeDamageModifier");
+        combat.Should().Contain("SingleTargetPhysicalAbilityDamagePercentAdjustment");
     }
 
     private static void AssertPerkLevel(

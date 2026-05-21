@@ -63,7 +63,7 @@ public class VibroknifeSaboteurTests
         AssertPerkLevel(perks[PerkType.CascadeFailure], "Cascade Failure", 1, 3, 48, FeatType.CascadeFailure1,
             "All enemies within the area of effect (cone) take weapon DMG + 25. Inflicts Vulnerable which reduces defense by 10% for 12 seconds.");
         AssertPerkLevel(perks[PerkType.SystemicShutdown], "Systemic Shutdown", 1, 4, 50, FeatType.SystemicShutdown1,
-            "All enemies within the area of effect (sphere) take weapon DMG + 15 and an attempt to inflict Weakened, Hamstring, Exhausted, Disoriented, and Toxin is made.");
+            "All enemies within the area of effect (sphere) take weapon DMG + 15 and are inflicted with Weakened, Hamstring, Exhausted, Disoriented, and Toxin for 45 seconds.");
     }
 
     [Test]
@@ -100,7 +100,7 @@ public class VibroknifeSaboteurTests
         AssertAbility(cascadeFailure, "Cascade Failure", 1, RecastGroup.CascadeFailure, 90f, 0f, 10, true, false, false, true, AbilityActivationType.Casted);
 
         var systemicShutdown = new SystemicShutdownAbilityDefinition().BuildAbilities()[FeatType.SystemicShutdown1];
-        AssertAbility(systemicShutdown, "Systemic Shutdown", 1, RecastGroup.Capstone, 1800f, 3f, 25, true, false, false, true, AbilityActivationType.Casted);
+        AssertAbility(systemicShutdown, "Systemic Shutdown", 1, RecastGroup.Capstone, 345f, 3f, 15, true, false, false, true, AbilityActivationType.Casted);
     }
 
     [Test]

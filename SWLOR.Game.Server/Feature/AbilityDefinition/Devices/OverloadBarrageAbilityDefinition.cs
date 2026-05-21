@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .Name("Overload Barrage")
                 .Level(1)
                 .HasActivationDelay(1.5f)
-                .HasRecastDelay(RecastGroup.OverloadBarrage, 120f)
+                .HasRecastDelay(RecastGroup.Capstone, CapstoneAbility.RecastDelaySeconds)
                 .SkillType(SkillType.Devices)
                 .UsesImpactAnimation(Animation.CastOutAnimation)
                 .HasMaxRange(DeviceAbilityRange.Standard)
@@ -42,7 +42,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
-                .RequirementStamina(10);
+                .RequirementStamina(CapstoneAbility.StaminaCost);
         }
 
         private static void OverloadBarrage1ImpactAction(uint activator, uint target, int level, Location targetLocation)
@@ -51,6 +51,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             var baseDamageAdjustment = DeviceAbilityEffects.GetAssaultGadgetBaseDamageAdjustment(activator);
             var hitChanceAdjustment = DeviceAbilityEffects.GetAssaultGadgetAccuracyAdjustment(activator);
             var criticalRateAdjustment = DeviceAbilityEffects.GetAssaultGadgetCriticalRateAdjustment(activator);
+            var duration = (int)CapstoneAbility.ActiveDurationSeconds;
 
             Ability.ApplyTelegraphedCombatImpact(
                 activator,
@@ -58,7 +59,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 targetLocation,
                 SkillType.Devices,
                 18,
-                12,
+                duration,
                 typeof(BurnStatusEffect),
                 CombatImpactAreaShape.Sphere,
                 0f,
@@ -96,7 +97,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 targetLocation,
                 SkillType.Devices,
                 18,
-                12,
+                duration,
                 typeof(SonicBurst3StatusEffect),
                 CombatImpactAreaShape.Sphere,
                 0f,

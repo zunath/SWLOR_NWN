@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
@@ -18,12 +19,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
                     .Name("Forcebane")
                     .Level(1)
                     .SkillType(SkillType.Spear)
-                    .HasRecastDelay(RecastGroup.Capstone, 1800f),
+                    .HasRecastDelay(RecastGroup.Capstone, CapstoneAbility.RecastDelaySeconds),
                 typeof(ForcebaneStatusEffect),
-                8f,
-                25,
+                CapstoneAbility.ActiveDurationSeconds,
+                CapstoneAbility.StaminaCost,
                 false,
-                fpDrainPercent: 50,
+                fpDrainPercent: 30,
                 activationDelay: 2f);
 
             return builder.Build();

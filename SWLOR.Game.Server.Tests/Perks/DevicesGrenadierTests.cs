@@ -59,7 +59,7 @@ public class DevicesGrenadierTests
         AssertPerkLevel(perks[PerkType.ConcussionGrenade], "Concussion Grenade", 3, 3, 48, FeatType.ConcussionGrenade3,
             "Deals 42 electrical DMG plus PER scaling in a 3m blast and knock down for 3 seconds.");
         AssertPerkLevel(perks[PerkType.ThermalDetonator], "Thermal Detonator", 1, 5, 50, FeatType.ThermalDetonator1,
-            "Deals heavy fire DMG plus PER scaling in a 5m blast and inflicts Burning. Consumes extra explosives.");
+            "Deals moderate fire DMG plus PER scaling in a 5m blast and inflicts Burning for 45 seconds.");
     }
 
     [Test]
@@ -91,7 +91,7 @@ public class DevicesGrenadierTests
         AssertAbility(clusterGrenade, "Cluster Grenade", 1, RecastGroup.ClusterGrenade, 45f, 1f, 5);
 
         var thermalDetonator = new ThermalDetonatorAbilityDefinition().BuildAbilities()[FeatType.ThermalDetonator1];
-        AssertAbility(thermalDetonator, "Thermal Detonator", 1, RecastGroup.ThermalDetonator, 120f, 1.5f, 8, "explosives", 2);
+        AssertAbility(thermalDetonator, "Thermal Detonator", 1, RecastGroup.Capstone, 345f, 1.5f, 15, "explosives", 1);
     }
 
     [Test]
@@ -215,7 +215,7 @@ public class DevicesGrenadierTests
         clusterGrenade.Should().NotContain("centerOnActivator: true");
 
         var thermalDetonator = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Devices" / "ThermalDetonatorAbilityDefinition.cs").FullName);
-        thermalDetonator.Should().Contain("RequirementItem(\"explosives\", 2)");
+        thermalDetonator.Should().Contain("RequirementItem(\"explosives\", 1)");
         thermalDetonator.Should().Contain("typeof(BurnStatusEffect)");
         thermalDetonator.Should().Contain("DeviceAbilityEffects.ApplyGrenadeRadiusBonus(activator, 5f)");
         thermalDetonator.Should().Contain("AbilityTargeting.ResolveImpactLocation(activator, target, targetLocation)");

@@ -199,7 +199,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .ForceAffinity(ForceAffinityType.Dark)
 
                 .AddPerkLevel()
-                .Description("For 12 seconds, Dark damage you deal heals you for 25% of damage dealt and defeated enemies restore FP.")
+                .Description("For 45 seconds, Dark damage you deal heals you for 15% of damage dealt and defeated enemies restore 5 FP.")
                 .Price(5)
                 .RequirementSkill(SkillType.Force, 50)
                 .RequirementCharacterType(CharacterType.ForceSensitive)

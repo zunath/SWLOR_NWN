@@ -325,7 +325,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.InfiniteConduit1)
-                .Description("For 20 seconds, saberstaff attacks restore 5 FP and saberstaff combat abilities cost 3 less STM. The effect ends early if FP reaches zero.")
+                .Description("For 45 seconds, attacks restore 2 FP and combat abilities cost 2 less STM.")
                 .Price(4)
                 .RequirementSkill(SkillType.Saberstaff, 50)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
@@ -358,7 +358,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SaberCyclone1)
-                .Description("Channel for up to 6 seconds, hitting all nearby enemies every 2 seconds for weapon DMG + 25 and restoring 3 FP per enemy hit.")
+                .Description("Deal weapon DMG + 18 to nearby enemies. For 45 seconds, pulse every 6 seconds, dealing light Force damage to nearby enemies and restoring 1 FP per enemy hit, up to 5 FP per pulse.")
                 .Price(4)
                 .RequirementSkill(SkillType.Saberstaff, 50)
                 .RequirementCharacterType(CharacterType.ForceSensitive);

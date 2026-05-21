@@ -1,6 +1,8 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.Engine;
@@ -29,17 +31,35 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 .SkillType(SkillType.Rifle)
                 .UsesImpactAnimation(Animation.PointPistol)
                 .IsAreaAbility()
-                .HasRecastDelay(RecastGroup.Capstone, 1800f)
+                .HasRecastDelay(RecastGroup.Capstone, CapstoneAbility.RecastDelaySeconds)
                 .HasImpactAction(StasisVolley1ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
-                .RequirementStamina(25);
+                .RequirementStamina(CapstoneAbility.StaminaCost);
         }
 
         private static void StasisVolley1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.Rifle, 25, 12, typeof(TranquilizedStatusEffect), CombatImpactAreaShape.Cone, 0.25f, 5f, 5f);
+            Ability.ApplyTelegraphedCombatImpact(
+                activator,
+                target,
+                targetLocation,
+                SkillType.Rifle,
+                20,
+                45,
+                typeof(StasisVolleyStatusEffect),
+                CombatImpactAreaShape.Cone,
+                0.25f,
+                5f,
+                5f,
+                afterSuccessfulHit: affectedEnemy =>
+                    StatusEffect.ApplyStatusEffect(
+                        activator,
+                        affectedEnemy,
+                        typeof(TranquilizedStatusEffect),
+                        3f,
+                        CombatDamageType.Physical));
         }
     }
 }

@@ -40,6 +40,37 @@ public class StatusEffectIconTests
     }
 
     [Test]
+    public void CapstoneStatusEffects_UseUniqueCustomStatusIcons()
+    {
+        var cases = new[]
+        {
+            (Actual: new DeadMansHandStatusEffect().Icon, Expected: EffectIconType.DeadMansHandStatusEffect, Row: 404, Label: "DeadMansHand", Icon: "ief_deadmanhand", StrRef: "16778572"),
+            (Actual: new EmergencyCocktailStatusEffect().Icon, Expected: EffectIconType.EmergencyCocktailStatusEffect, Row: 405, Label: "EmergencyCocktail", Icon: "ief_emrgcocktl", StrRef: "16780362"),
+            (Actual: new LastWordStatusEffect().Icon, Expected: EffectIconType.LastWordStatusEffect, Row: 406, Label: "LastWord", Icon: "ief_lastword", StrRef: "16778750"),
+            (Actual: new OneShotMarkedStatusEffect().Icon, Expected: EffectIconType.OneShotMarkedStatusEffect, Row: 407, Label: "Marked", Icon: "ief_oneshotmark", StrRef: "16781055"),
+            (Actual: new StasisVolleyStatusEffect().Icon, Expected: EffectIconType.StasisVolleyStatusEffect, Row: 408, Label: "StasisVolley", Icon: "ief_stasvol", StrRef: "16778926"),
+            (Actual: new TempestMarkStatusEffect().Icon, Expected: EffectIconType.TempestMarkStatusEffect, Row: 409, Label: "TempestMark", Icon: "ief_tempmark", StrRef: "16781054"),
+            (Actual: new WorldbreakerStatusEffect().Icon, Expected: EffectIconType.WorldbreakerStatusEffect, Row: 410, Label: "Worldbreaker", Icon: "ief_worldbrk", StrRef: "16779001")
+        };
+
+        var root = FindRepositoryRoot();
+        var rows = Read2da(new FileInfo(Path.Combine(
+            root.FullName,
+            "SWLOR_Haks",
+            "swlor2_2da",
+            "effecticons.2da")));
+
+        foreach (var testCase in cases)
+        {
+            testCase.Actual.Should().Be(testCase.Expected);
+            rows[testCase.Row]["Label"].Should().Be(testCase.Label);
+            rows[testCase.Row]["Icon"].Should().Be(testCase.Icon);
+            rows[testCase.Row]["StrRef"].Should().Be(testCase.StrRef);
+            File.Exists(Path.Combine(root.FullName, "SWLOR_Haks", "swlor2_tga", $"{testCase.Icon}.tga")).Should().BeTrue();
+        }
+    }
+
+    [Test]
     public void EffectIconDocumentation_AllowsEffectIconRowsPast255()
     {
         var root = FindRepositoryRoot();

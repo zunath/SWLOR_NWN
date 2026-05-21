@@ -32,18 +32,18 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .Name("Hunger of the Dark")
                 .Level(1)
                 .HasActivationDelay(0f)
-                .HasRecastDelay(RecastGroup.HungerOfTheDark, 180f)
+                .HasRecastDelay(RecastGroup.Capstone, CapstoneAbility.RecastDelaySeconds)
                 .SkillType(SkillType.Force)
                 .IsSingleTargetAbility()
                 .HasImpactAction(HungerOfTheDark1ImpactAction)
                 .IsCastedAbility()
                 .BreaksStealth()
-                .RequirementFP(10);
+                .RequirementFP(CapstoneAbility.ForceCost);
         }
 
         private static void HungerOfTheDark1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            StatusEffect.ApplyStatusEffect(activator, activator, typeof(HungerOfTheDark1StatusEffect), 12f);
+            StatusEffect.ApplyStatusEffect(activator, activator, typeof(HungerOfTheDark1StatusEffect), CapstoneAbility.ActiveDurationSeconds);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Restoration), activator);
         }
     }

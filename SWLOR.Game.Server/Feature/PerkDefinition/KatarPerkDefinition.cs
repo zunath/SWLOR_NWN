@@ -51,7 +51,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.AdamantineGuard1)
-                .Description("For 20 seconds, gain +40% guard chance. Guarded hits reduce physical damage by 40% and generate greatly increased enmity.")
+                .Description("For 45 seconds, gain +25 Guard. Guarded hits reduce damage by an additional 20% and generate 75% more enmity.")
                 .Price(4)
                 .RequirementSkill(SkillType.Katar, 50);
         }
@@ -281,7 +281,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SerpentsEclipse1)
-                .Description("All enemies in an area of effect (sphere) take weapon DMG + 25. Inflicts Poison and Disoriented. Enemies already affected by either effect take +30 DMG.")
+                .Description("All enemies in an area of effect (sphere) take weapon DMG + 20 poison damage and suffer Poison and Disoriented for 45 seconds. Enemies already affected by either effect take +15 DMG.")
                 .Price(4)
                 .RequirementSkill(SkillType.Katar, 50);
         }

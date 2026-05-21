@@ -176,7 +176,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Decisive Command")
 
                 .AddPerkLevel()
-                .Description("For 20 seconds, nearby party members gain +24% damage, +10% physical and Force ability hit chance, +10% critical hit chance, and restore 1 STM every 3 seconds. SOC scaling can raise the bonuses to +30%, +12%, and +12%.")
+                .Description("For 45 seconds, nearby party members including you gain +15% damage, +6% physical and Force ability hit chance, +6% critical hit chance, and restore 1 STM every 3 seconds. SOC scaling can raise the bonuses to +18%, +8%, and +8%.")
                 .Price(5)
                 .RequirementSkill(SkillType.Leadership, 50)
                 .GrantsFeat(FeatType.DecisiveCommand1);

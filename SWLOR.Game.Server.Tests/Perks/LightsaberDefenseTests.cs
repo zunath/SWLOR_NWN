@@ -66,8 +66,7 @@ public class LightsaberDefenseTests
         AssertPerkLevel(perks[PerkType.ThunderousChallenge], "Thunderous Challenge", 1, 4, 45, FeatType.ThunderousChallenge1,
             "Deals weapon DMG + 35 to enemies within the area of effect (line) from your position and gain increased enmity toward you.");
         AssertPerkLevel(perks[PerkType.GuardianMaster], "Guardian Master", 1, 4, 50, FeatType.GuardianMaster1,
-            "Grants the ability Guardian's Wrath which guarantees all attacks toward you will be deflected for 30 seconds. Additionally, increases your natural attack deflection cap to 75% when equipped with a lightsaber.",
-            StatType.AttackDeflectionChanceCap);
+            "For 45 seconds, gain +50 Attack Deflection and increase your Attack Deflection cap to 85.");
     }
 
     [Test]
@@ -92,7 +91,7 @@ public class LightsaberDefenseTests
         AssertAbility(thunderousChallenge, "Thunderous Challenge", 1, RecastGroup.ThunderousChallenge, 120f, 0f, 12, true, false, false, true, AbilityActivationType.Casted);
 
         var guardianMaster = new GuardianMasterAbilityDefinition().BuildAbilities()[FeatType.GuardianMaster1];
-        AssertAbility(guardianMaster, "Guardian Master", 1, RecastGroup.Capstone, 1800f, 2f, 25, false, false, false, false, AbilityActivationType.Casted);
+        AssertAbility(guardianMaster, "Guardian Master", 1, RecastGroup.Capstone, 345f, 2f, 15, false, false, false, false, AbilityActivationType.Casted);
     }
 
     [Test]
@@ -113,8 +112,8 @@ public class LightsaberDefenseTests
         impenetrableGuard.StatGroup.Stats[StatType.ForceDefensePercentAdjustment].Should().Be(0);
 
         var guardiansWrath = new GuardiansWrathStatusEffect();
-        guardiansWrath.StatGroup.Stats[StatType.AttackDeflection].Should().Be(100);
-        guardiansWrath.StatGroup.Stats[StatType.AttackDeflectionChanceCap].Should().Be(100);
+        guardiansWrath.StatGroup.Stats[StatType.AttackDeflection].Should().Be(50);
+        guardiansWrath.StatGroup.Stats[StatType.AttackDeflectionChanceCap].Should().Be(85);
     }
 
     [Test]

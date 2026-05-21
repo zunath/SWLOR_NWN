@@ -65,7 +65,7 @@ public class ThrowingBombardierTests
             StatType.CriticalAbilityKnockdownPerkType,
             StatType.CriticalAbilityKnockdownDurationSeconds);
         AssertPerkLevel(perks[PerkType.RainOfSteel], "Rain of Steel", 1, 4, 50, FeatType.RainOfSteel1,
-            "All enemies in a large area of effect (sphere) take weapon DMG + 35 and suffer Bleed for 60 seconds. Bonus damage applies fully.");
+            "All enemies in a large area of effect (sphere) take weapon DMG + 25 and suffer Bleed for 45 seconds.");
 
         AssertStatBonus(perks[PerkType.ClusterPouch].PerkLevels[1], StatType.ThrowingAreaAbilityMinTargetsStaminaRestoreThreshold, 3);
         AssertStatBonus(perks[PerkType.ClusterPouch].PerkLevels[1], StatType.ThrowingAreaAbilityMinTargetsStaminaRestore, 4);
@@ -104,7 +104,7 @@ public class ThrowingBombardierTests
         AssertAbility(saturationToss, "Saturation Toss", 1, RecastGroup.SaturationToss, 120f, 0f, 12, true, false, false, true, AbilityActivationType.Casted);
 
         var rainOfSteel = new RainOfSteelAbilityDefinition().BuildAbilities()[FeatType.RainOfSteel1];
-        AssertAbility(rainOfSteel, "Rain of Steel", 1, RecastGroup.Capstone, 1800f, 2f, 25, true, false, false, true, AbilityActivationType.Casted);
+        AssertAbility(rainOfSteel, "Rain of Steel", 1, RecastGroup.Capstone, 345f, 2f, 15, true, false, false, true, AbilityActivationType.Casted);
     }
 
     [Test]

@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .Name("Killzone Beacon")
                 .Level(1)
                 .HasActivationDelay(2f)
-                .HasRecastDelay(RecastGroup.KillzoneBeacon, 120f)
+                .HasRecastDelay(RecastGroup.Capstone, CapstoneAbility.RecastDelaySeconds)
                 .SkillType(SkillType.Devices)
                 .UsesAnimation(Animation.CastOutAnimation)
                 .IsAreaAbility()
@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
-                .RequirementStamina(9);
+                .RequirementStamina(CapstoneAbility.StaminaCost);
         }
 
         private static void KillzoneBeacon1ImpactAction(uint activator, uint target, int level, Location targetLocation)
@@ -56,7 +56,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 0,
                 null,
                 12f,
-                18f,
+                CapstoneAbility.ActiveDurationSeconds,
                 CombatDamageType.Physical,
                 VisualEffect.Vfx_Com_Chunk_Red_Small,
                 markerVisualEffect: VisualEffect.Vfx_Dur_Aura_Pulse_Red_Blue);
@@ -66,10 +66,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 location,
                 SkillType.Devices,
                 14,
-                6,
+                45,
                 typeof(ShockStatusEffect),
                 12f,
-                18f,
+                CapstoneAbility.ActiveDurationSeconds,
                 CombatDamageType.Electrical,
                 VisualEffect.Vfx_Com_Hit_Electrical,
                 VisualEffect.Vfx_Fnf_Electric_Explosion);

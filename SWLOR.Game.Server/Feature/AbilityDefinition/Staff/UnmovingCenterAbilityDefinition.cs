@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
@@ -19,14 +20,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
                     .Name("Unmoving Center")
                     .Level(1)
                     .SkillType(SkillType.Staff)
-                    .HasRecastDelay(RecastGroup.Capstone, 1800f),
+                    .HasRecastDelay(RecastGroup.Capstone, CapstoneAbility.RecastDelaySeconds),
                 typeof(UnmovingCenterStatusEffect),
-                20f,
-                25,
+                CapstoneAbility.ActiveDurationSeconds,
+                CapstoneAbility.StaminaCost,
                 activator =>
                 {
-                    Ability.ApplyTemporaryImmunity(activator, 20f, ImmunityType.Knockdown);
-                    Ability.ApplyTemporaryImmunity(activator, 20f, ImmunityType.Dazed);
+                    Ability.ApplyTemporaryImmunity(activator, CapstoneAbility.ActiveDurationSeconds, ImmunityType.Knockdown);
+                    Ability.ApplyTemporaryImmunity(activator, CapstoneAbility.ActiveDurationSeconds, ImmunityType.Dazed);
                 },
                 activationDelay: 1f);
 

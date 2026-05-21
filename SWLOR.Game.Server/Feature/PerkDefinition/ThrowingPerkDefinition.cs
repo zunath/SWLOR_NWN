@@ -262,7 +262,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PerfectThrow1)
-                .Description("Deals weapon DMG + 80 to one target. If the target is bleeding, also inflict Hemorrhage, increasing damage taken by 10% for 15 seconds.")
+                .Description("Deals weapon DMG + 45. If the target is bleeding, also inflicts Hemorrhage, increasing damage taken by 10% for 45 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Throwing, 50);
         }
@@ -322,7 +322,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.RainOfSteel1)
-                .Description("All enemies in a large area of effect (sphere) take weapon DMG + 35 and suffer Bleed for 60 seconds. Bonus damage applies fully.")
+                .Description("All enemies in a large area of effect (sphere) take weapon DMG + 25 and suffer Bleed for 45 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Throwing, 50);
         }

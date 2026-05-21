@@ -68,7 +68,7 @@ public class SpearDisablerTests
             StatType.ForceAbilityEvadedStaminaRestore,
             StatType.ForceAbilityEvadedCooldownSeconds);
         AssertPerkLevel(perks[PerkType.Forcebane], "Forcebane", 1, 4, 50, FeatType.Forcebane1,
-            "Enemies within the area of effect (sphere) receive the Forcebane debuff, losing 50% of current FP and preventing FP recovery for 8 seconds.");
+            "Enemies within the area of effect (sphere) lose 30% of current FP and suffer Forcebane, reducing FP recovery by 75% for 45 seconds.");
     }
 
     [Test]
@@ -102,7 +102,7 @@ public class SpearDisablerTests
         AssertAbility(fractureStrike, "Fracture Strike", 1, RecastGroup.FractureStrike, 90f, 0f, 10, true, false, false, true, AbilityActivationType.Casted);
 
         var forcebane = new ForcebaneAbilityDefinition().BuildAbilities()[FeatType.Forcebane1];
-        AssertAbility(forcebane, "Forcebane", 1, RecastGroup.Capstone, 1800f, 2f, 25, true, false, false, true, AbilityActivationType.Casted);
+        AssertAbility(forcebane, "Forcebane", 1, RecastGroup.Capstone, 345f, 2f, 15, true, false, false, true, AbilityActivationType.Casted);
     }
 
     [Test]
@@ -128,7 +128,7 @@ public class SpearDisablerTests
         fracturedFocus.StatGroup.Stats[StatType.FPCostPercentAdjustment].Should().Be(100);
 
         var forcebane = new ForcebaneStatusEffect();
-        forcebane.StatGroup.Stats[StatType.FPRestorePercentAdjustment].Should().Be(-100);
+        forcebane.StatGroup.Stats[StatType.FPRestorePercentAdjustment].Should().Be(-75);
     }
 
     [Test]
@@ -189,8 +189,8 @@ public class SpearDisablerTests
         disruptionField.Should().Contain("private const int FPDrainPercent = 5;");
 
         var forcebane = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Spear" / "ForcebaneAbilityDefinition.cs").FullName);
-        forcebane.Should().Contain("8f");
-        forcebane.Should().Contain("fpDrainPercent: 50");
+        forcebane.Should().Contain("CapstoneAbility.ActiveDurationSeconds");
+        forcebane.Should().Contain("fpDrainPercent: 30");
         forcebane.Should().Contain("activationDelay: 2f");
     }
 

@@ -77,13 +77,13 @@ public class DevicesFieldSupportAndAssaultGadgetsTests
         AssertPerkLevel(perks[PerkType.GroupDeflector], "Group Deflector", 1, 4, 42, FeatType.GroupDeflector1,
             "Nearby allies gain 70 temporary HP plus 8% of each target's maximum HP for 30 seconds.");
         AssertPerkLevel(perks[PerkType.CapacitorRig], "Capacitor Rig", 3, 4, 45, null,
-            "Deflector Shield, Group Deflector, and Emergency Bunker grant 30% more temporary HP and last 10 seconds longer.",
+            "Deflector Shield, Group Deflector, and Emergency Bunker grant 30% more temporary HP. Deflector Shield and Group Deflector last 10 seconds longer.",
             (StatType.DeviceShieldTemporaryHPPercentAdjustment, 30),
             (StatType.DeviceShieldDurationBonusSeconds, 10));
         AssertPerkLevel(perks[PerkType.PowerCell], "Power Cell", 3, 3, 48, FeatType.PowerCell3,
             "Restores 18% of maximum STM to nearby allies and increases physical and Force ability Accuracy by 6% for 12 seconds.");
         AssertPerkLevel(perks[PerkType.EmergencyBunker], "Emergency Bunker", 1, 5, 50, FeatType.EmergencyBunker1,
-            "Deploys a shield bunker for 15 seconds. Allies inside gain 120 temporary HP plus 10% of each target's maximum HP and take 20% less ranged physical damage.");
+            "Deploys a shield bunker for 45 seconds. Allies inside gain 60 temporary HP plus 8% of each target's maximum HP and take 15% less ranged physical damage.");
     }
 
     [Test]
@@ -131,7 +131,7 @@ public class DevicesFieldSupportAndAssaultGadgetsTests
         AssertPerkLevel(perks[PerkType.CryoSprayer], "Cryo Sprayer", 2, 3, 48, FeatType.CryoSprayer2,
             "Deals high ice DMG plus PER scaling to hostile targets in a cone and immobilize for 2 seconds.");
         AssertPerkLevel(perks[PerkType.OverloadBarrage], "Overload Barrage", 1, 5, 50, FeatType.OverloadBarrage1,
-            "Unleashes three attacks at your primary target's location: 18 fire DMG in a 5m burst plus Burn for 12 seconds, 20 fire DMG to the primary target plus 3-second knockdown, and 18 sonic DMG in a 5m burst that interrupts activation and reduces Accuracy by 10% for 12 seconds.");
+            "Unleashes three attacks at your primary target's location: a fire burst plus Burning for 45 seconds, a single-target fire hit plus brief Knockdown, and a sonic burst that interrupts activation and reduces Accuracy by 10% for 45 seconds.");
     }
 
     [Test]
@@ -163,7 +163,7 @@ public class DevicesFieldSupportAndAssaultGadgetsTests
         AssertAbility(groupDeflector[FeatType.GroupDeflector1], "Group Deflector", 1, RecastGroup.GroupDeflector, 90f, 1.5f, 8, false, true, false, false);
 
         var emergencyBunker = new EmergencyBunkerAbilityDefinition().BuildAbilities();
-        AssertAbility(emergencyBunker[FeatType.EmergencyBunker1], "Emergency Bunker", 1, RecastGroup.EmergencyBunker, 180f, 2f, 10, false, true, false, false);
+        AssertAbility(emergencyBunker[FeatType.EmergencyBunker1], "Emergency Bunker", 1, RecastGroup.Capstone, 345f, 2f, 15, false, true, false, false);
 
         var flamethrower = new FlamethrowerAbilityDefinition().BuildAbilities();
         AssertAbility(flamethrower[FeatType.Flamethrower1], "Flamethrower I", 1, RecastGroup.Flamethrower, 12f, 1f, 3, true, true, false, false);
@@ -195,7 +195,7 @@ public class DevicesFieldSupportAndAssaultGadgetsTests
         AssertAbility(cryoSprayer[FeatType.CryoSprayer2], "Cryo Sprayer II", 2, RecastGroup.CryoSprayer, 24f, 1f, 7, true, true, false, false);
 
         var overload = new OverloadBarrageAbilityDefinition().BuildAbilities();
-        AssertAbility(overload[FeatType.OverloadBarrage1], "Overload Barrage", 1, RecastGroup.OverloadBarrage, 120f, 1.5f, 10, true, false, true, true);
+        AssertAbility(overload[FeatType.OverloadBarrage1], "Overload Barrage", 1, RecastGroup.Capstone, 345f, 1.5f, 15, true, false, true, true);
     }
 
     [Test]
@@ -214,7 +214,7 @@ public class DevicesFieldSupportAndAssaultGadgetsTests
         new DampeningField1StatusEffect().StatGroup.Stats[StatType.ForceDamageTakenPercentAdjustment].Should().Be(-10);
         new DampeningField2StatusEffect().StatGroup.Stats[StatType.PhysicalDamageTakenPercentAdjustment].Should().Be(-15);
         new DampeningField2StatusEffect().StatGroup.Stats[StatType.ForceDamageTakenPercentAdjustment].Should().Be(-15);
-        new EmergencyBunker1StatusEffect().StatGroup.Stats[StatType.RangedPhysicalDamageTakenPercentAdjustment].Should().Be(-20);
+        new EmergencyBunker1StatusEffect().StatGroup.Stats[StatType.RangedPhysicalDamageTakenPercentAdjustment].Should().Be(-15);
 
         new SonicBurst2StatusEffect().StatGroup.Stats[StatType.AbilityHitChancePercentAdjustment].Should().Be(-6);
         new SonicBurst2StatusEffect().StatGroup.Stats[StatType.AccuracyPercentAdjustment].Should().Be(0);
@@ -261,6 +261,7 @@ public class DevicesFieldSupportAndAssaultGadgetsTests
         var emergencyBunker = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Devices" / "EmergencyBunkerAbilityDefinition.cs").FullName);
         emergencyBunker.Should().Contain("(friendly, remainingDuration) => ApplyBunkerTemporaryHP(activator, friendly, remainingDuration)");
         emergencyBunker.Should().Contain("DeviceAbilityEffects.ApplyCapacitorRigBonus");
+        emergencyBunker.Should().Contain("CapstoneAbility.ActiveDurationSeconds");
 
         var areaEffects = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "AbilityAreaEffects.cs").FullName);
         areaEffects.Should().Contain("Action<uint, float> onFirstApplication = null");
@@ -293,6 +294,7 @@ public class DevicesFieldSupportAndAssaultGadgetsTests
         overload.Should().Contain("typeof(BurnStatusEffect)");
         overload.Should().Contain("typeof(KnockdownStatusEffect)");
         overload.Should().Contain("typeof(SonicBurst3StatusEffect)");
+        overload.Should().Contain("CapstoneAbility.ActiveDurationSeconds");
         overload.Should().Contain("CombatDamageType.Sonic");
         overload.Should().Contain("var baseDamageAdjustment = DeviceAbilityEffects.GetAssaultGadgetBaseDamageAdjustment(activator);");
     }

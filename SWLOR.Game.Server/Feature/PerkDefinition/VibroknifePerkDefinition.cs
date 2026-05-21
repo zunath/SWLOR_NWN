@@ -390,7 +390,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SystemicShutdown1)
-                .Description("All enemies within the area of effect (sphere) take weapon DMG + 15 and an attempt to inflict Weakened, Hamstring, Exhausted, Disoriented, and Toxin is made.")
+                .Description("All enemies within the area of effect (sphere) take weapon DMG + 15 and are inflicted with Weakened, Hamstring, Exhausted, Disoriented, and Toxin for 45 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Vibroknife, 50);
         }
@@ -420,7 +420,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.VitalStrike1)
-                .Description("Deals weapon DMG + 55. Inflicts Vital Strike debuff which causes all physical attacks to ignore 10% of defense for 12 seconds.")
+                .Description("Deals weapon DMG + 35. On hit, the target's physical defense is reduced by 10% for 45 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Vibroknife, 50);
         }

@@ -62,7 +62,7 @@ public class VibroknifeShadowTests
         AssertPerkLevel(perks[PerkType.Decoy], "Decoy", 1, 3, 45, FeatType.Decoy1,
             "For 12 seconds, enemies targeting you have -25% Accuracy.");
         AssertPerkLevel(perks[PerkType.VitalStrike], "Vital Strike", 1, 4, 50, FeatType.VitalStrike1,
-            "Deals weapon DMG + 55. Inflicts Vital Strike debuff which causes all physical attacks to ignore 10% of defense for 12 seconds.");
+            "Deals weapon DMG + 35. On hit, the target's physical defense is reduced by 10% for 45 seconds.");
     }
 
     [Test]
@@ -98,7 +98,7 @@ public class VibroknifeShadowTests
         AssertAbility(decoy, "Decoy", 1, RecastGroup.Decoy, 30f, 1f, 12, true, false, false, true, false, AbilityActivationType.Casted);
 
         var vitalStrike = new VitalStrikeAbilityDefinition().BuildAbilities()[FeatType.VitalStrike1];
-        AssertAbility(vitalStrike, "Vital Strike", 1, RecastGroup.Capstone, 1800f, 0f, 25, true, true, true, false, false, AbilityActivationType.Casted);
+        AssertAbility(vitalStrike, "Vital Strike", 1, RecastGroup.Capstone, 345f, 0f, 15, true, true, true, false, false, AbilityActivationType.Casted);
     }
 
     [Test]

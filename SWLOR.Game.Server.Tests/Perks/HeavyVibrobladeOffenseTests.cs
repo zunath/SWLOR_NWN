@@ -67,7 +67,7 @@ public class HeavyVibrobladeOffenseTests
             StatType.DefeatedEnemyAttackPercentAdjustment,
             StatType.DefeatedEnemyAttackDurationSeconds);
         AssertPerkLevel(perks[PerkType.SoulAscension], "Soul Ascension", 1, 4, 50, FeatType.SoulAscension1,
-            "You receive the Soul Ascension effect which grants +35% Attack and heals you for 50% of physical damage dealt. This effect lasts for 20 seconds.");
+            "For 45 seconds, gain +15% Attack and heal for 20% of physical damage dealt.");
     }
 
     [Test]
@@ -103,7 +103,7 @@ public class HeavyVibrobladeOffenseTests
         AssertAbility(bloodlust, "Bloodlust", 1, RecastGroup.Bloodlust, 180f, 0f, null, false, false, false, false, AbilityActivationType.Casted);
 
         var soulAscension = new SoulAscensionAbilityDefinition().BuildAbilities()[FeatType.SoulAscension1];
-        AssertAbility(soulAscension, "Soul Ascension", 1, RecastGroup.Capstone, 1800f, 0f, 25, false, false, false, false, AbilityActivationType.Casted);
+        AssertAbility(soulAscension, "Soul Ascension", 1, RecastGroup.Capstone, 345f, 0f, 15, false, false, false, false, AbilityActivationType.Casted);
     }
 
     [Test]
@@ -125,8 +125,8 @@ public class HeavyVibrobladeOffenseTests
         soulStorm.StatGroup.Stats[StatType.AttackPercentAdjustment].Should().Be(0);
 
         var soulAscension = new SoulAscensionStatusEffect();
-        soulAscension.StatGroup.Stats[StatType.AttackPercentAdjustment].Should().Be(35);
-        soulAscension.StatGroup.Stats[StatType.PhysicalDamageDealtHPPercentRestore].Should().Be(50);
+        soulAscension.StatGroup.Stats[StatType.AttackPercentAdjustment].Should().Be(15);
+        soulAscension.StatGroup.Stats[StatType.PhysicalDamageDealtHPPercentRestore].Should().Be(20);
     }
 
     [Test]

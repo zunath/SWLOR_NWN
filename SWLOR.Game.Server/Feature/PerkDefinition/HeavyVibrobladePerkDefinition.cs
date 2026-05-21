@@ -56,7 +56,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.AbsoluteDefense1)
-                .Description("All party members, excluding you, take 25% less physical and Force damage and become immune to Knockdown and Dazed for 15 seconds. Your HP, STM, and FP are restored by 25% of maximum.")
+                .Description("For 45 seconds, nearby party members including you take 15% less physical and Force damage and are immune to Knockdown and Daze.")
                 .Price(4)
                 .RequirementSkill(SkillType.HeavyVibroblade, 50);
         }
@@ -366,7 +366,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SoulAscension1)
-                .Description("You receive the Soul Ascension effect which grants +35% Attack and heals you for 50% of physical damage dealt. This effect lasts for 20 seconds.")
+                .Description("For 45 seconds, gain +15% Attack and heal for 20% of physical damage dealt.")
                 .Price(4)
                 .RequirementSkill(SkillType.HeavyVibroblade, 50);
         }

@@ -112,7 +112,8 @@ public class CombatDamageTests
         combatSource.Should().Contain("MaximumNormalDamageReductionPercent = 95");
         combatSource.Should().Contain("Math.Max(adjustment, -MaximumNormalDamageReductionPercent)");
         combatSource.Should().Contain("HasDamageImmunity(defender, damageType)");
-        invincibleSource.Should().Contain("StatType.PhysicalDamageImmunity");
+        invincibleSource.Should().Contain("PhysicalDamageTakenPercentAdjustment] = -50");
+        invincibleSource.Should().NotContain("StatType.PhysicalDamageImmunity");
         invincibleSource.Should().NotContain("PhysicalDamageTakenPercentAdjustment] = -100");
     }
 

@@ -111,7 +111,7 @@ public class FirstAidCombatUpgradeTests
         AssertPerkLevel(perks[PerkType.Antitoxin], "Antitoxin", 1, 3, 18, FeatType.Antitoxin1,
             "Grants 50% Poison and Disease resistance for 2 minutes and removes one Poison or Toxin effect. Consumes a stim pack.");
         AssertPerkLevel(perks[PerkType.FieldPharmacist], "Field Pharmacist", 1, 2, 22, null,
-            "Stim pack effects last 15% longer and have a 10% chance not to consume the stim pack.",
+            "Non-capstone stim pack effects last 15% longer. Stim pack abilities have a 10% chance not to consume the stim pack.",
             (StatType.StimPackDurationPercentAdjustment, 15));
         AssertPerkLevel(perks[PerkType.Shielding], "Shielding", 2, 4, 25, FeatType.Shielding2,
             "Reduces physical and force damage taken by 8% for 3 minutes. Consumes a stim pack.");
@@ -122,7 +122,7 @@ public class FirstAidCombatUpgradeTests
         AssertPerkLevel(perks[PerkType.PainSuppressant], "Pain Suppressant", 2, 3, 35, FeatType.PainSuppressant2,
             "Grants temporary HP equal to 15% of the target's maximum HP plus WIL scaling and 15% damage reduction for 18 seconds. Consumes a stim pack.");
         AssertPerkLevel(perks[PerkType.FieldPharmacist], "Field Pharmacist", 2, 3, 38, null,
-            "Stim pack effects last 25% longer and have a 20% chance not to consume the stim pack.",
+            "Non-capstone stim pack effects last 25% longer. Stim pack abilities have a 20% chance not to consume the stim pack.",
             (StatType.StimPackDurationPercentAdjustment, 25));
         AssertPerkLevel(perks[PerkType.Coagulant], "Coagulant", 2, 4, 40, FeatType.Coagulant2,
             "Grants Bleed immunity and 20% resistance to physical damage over time effects for 2 minutes. Consumes a stim pack.");
@@ -131,10 +131,10 @@ public class FirstAidCombatUpgradeTests
         AssertPerkLevel(perks[PerkType.FocusStim], "Focus Stim", 2, 4, 45, FeatType.FocusStim2,
             "Increases physical and Force ability Accuracy by 8% for 2 minutes. Consumes a stim pack.");
         AssertPerkLevel(perks[PerkType.FieldPharmacist], "Field Pharmacist", 3, 3, 48, null,
-            "Stim pack effects last 35% longer and have a 30% chance not to consume the stim pack.",
+            "Non-capstone stim pack effects last 35% longer. Stim pack abilities have a 30% chance not to consume the stim pack.",
             (StatType.StimPackDurationPercentAdjustment, 35));
         AssertPerkLevel(perks[PerkType.EmergencyCocktail], "Emergency Cocktail", 1, 5, 50, FeatType.EmergencyCocktail1,
-            "Restores 25% of maximum STM, restores 1 STM every 3 seconds, grants temporary HP equal to 15% of maximum HP plus WIL scaling, reduces damage taken by 15%, grants 50% Poison and Disease resistance, and removes one Poison or Toxin effect for 18 seconds. Consumes extra stim packs.");
+            "Restores 25% of maximum STM, removes one Poison or Toxin effect, then for 45 seconds restores 1 STM every 3 seconds, grants temporary HP equal to 12% of maximum HP plus WIL scaling, reduces damage taken by 12%, and grants 50% Poison and Disease resistance.");
     }
 
     [Test]
@@ -191,7 +191,7 @@ public class FirstAidCombatUpgradeTests
         AssertAbility(focus[FeatType.FocusStim1], "Focus Stim I", 1, RecastGroup.FocusStim, 45f, 1f, 4, "stim_pack", 1, false, true, true);
         AssertAbility(focus[FeatType.FocusStim2], "Focus Stim II", 2, RecastGroup.FocusStim, 45f, 1f, 5, "stim_pack", 1, false, true, true);
 
-        AssertAbility(new EmergencyCocktailAbilityDefinition().BuildAbilities()[FeatType.EmergencyCocktail1], "Emergency Cocktail", 1, RecastGroup.EmergencyCocktail, 300f, 1f, 8, "stim_pack", 2, false, true, true);
+        AssertAbility(new EmergencyCocktailAbilityDefinition().BuildAbilities()[FeatType.EmergencyCocktail1], "Emergency Cocktail", 1, RecastGroup.Capstone, 345f, 1f, 15, "stim_pack", 1, false, true, true);
     }
 
     [Test]
@@ -236,6 +236,9 @@ public class FirstAidCombatUpgradeTests
 
         new Antitoxin1StatusEffect().StatGroup.Resists[ResistanceType.Poison].Should().Be(50);
         new DiseaseStatusEffect().ResistanceType.Should().Be(ResistanceType.Poison);
+        var emergencyCocktail = new EmergencyCocktailStatusEffect();
+        emergencyCocktail.StatGroup.Stats[StatType.DamageTakenPercentAdjustment].Should().Be(-12);
+        emergencyCocktail.StatGroup.Resists[ResistanceType.Poison].Should().Be(50);
 
         var treatmentKit3 = new TreatmentKit3StatusEffect();
         treatmentKit3.StatGroup.Resists[ResistanceType.Fire].Should().Be(50);
@@ -265,7 +268,8 @@ public class FirstAidCombatUpgradeTests
         koltoMistStatus.Should().Contain("FirstAidTreatmentAdjustments.ApplyMedicalScaledHeal(Source, creature, _totalPercent / _tickCount);");
 
         var cocktail = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "FirstAid" / "EmergencyCocktailAbilityDefinition.cs").FullName);
-        cocktail.Should().Contain("AbilityEffectScaling.ApplyTemporaryHPPercent(activator, friendly, 15, duration)");
+        cocktail.Should().Contain("AbilityEffectScaling.ApplyTemporaryHPPercent(activator, friendly, 12, duration)");
+        cocktail.Should().Contain("CapstoneAbility.ActiveDurationSeconds");
         cocktail.Should().Contain("new[] { typeof(PoisonStatusEffect), typeof(ToxinStatusEffect) }");
     }
 
@@ -372,7 +376,7 @@ public class FirstAidCombatUpgradeTests
             (FeatType.Coagulant2, "Grants Bleed immunity and 20% resistance to physical damage over time effects for 2 minutes. Consumes a stim pack."),
             (FeatType.Shielding3, "Reduces physical and force damage taken by 11% for 3 minutes. Consumes a stim pack."),
             (FeatType.FocusStim2, "Increases physical and Force ability Accuracy by 8% for 2 minutes. Consumes a stim pack."),
-            (FeatType.EmergencyCocktail1, "Restores 25% of maximum STM, restores 1 STM every 3 seconds, grants temporary HP equal to 15% of maximum HP plus WIL scaling, reduces damage taken by 15%, grants 50% Poison and Disease resistance, and removes one Poison or Toxin effect for 18 seconds. Consumes extra stim packs.")
+            (FeatType.EmergencyCocktail1, "Restores 25% of maximum STM, removes one Poison or Toxin effect, then for 45 seconds restores 1 STM every 3 seconds, grants temporary HP equal to 12% of maximum HP plus WIL scaling, reduces damage taken by 12%, and grants 50% Poison and Disease resistance.")
         };
 
         foreach (var (featType, expectedDescription) in descriptions)

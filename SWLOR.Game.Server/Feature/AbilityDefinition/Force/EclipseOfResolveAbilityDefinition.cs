@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .Name("Eclipse of Resolve")
                 .Level(1)
                 .HasActivationDelay(1.5f)
-                .HasRecastDelay(RecastGroup.Capstone, 300f)
+                .HasRecastDelay(RecastGroup.Capstone, CapstoneAbility.RecastDelaySeconds)
                 .SkillType(SkillType.Force)
                 .UsesImpactAnimation(Animation.CastOutAnimation)
                 .IsAreaAbility()
@@ -40,7 +40,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
-                .RequirementFP(11);
+                .RequirementFP(CapstoneAbility.ForceCost);
         }
 
         private static void EclipseOfResolve1ImpactAction(uint activator, uint target, int level, Location targetLocation)
@@ -51,7 +51,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 targetLocation,
                 SkillType.Force,
                 0,
-                20,
+                45,
                 typeof(EclipseOfResolve1StatusEffect),
                 CombatImpactAreaShape.Sphere,
                 0f,

@@ -408,7 +408,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.UnmovingCenter1)
-                .Description("For 20 seconds, you cannot be Knocked down or Dazed, gain +50 Attack Deflection, and staff attacks generate extra enmity.")
+                .Description("For 45 seconds, you cannot be Knocked down or Dazed, gain +35 Attack Deflection, and generate +30% enmity.")
                 .Price(4)
                 .RequirementSkill(SkillType.Staff, 50);
         }
@@ -420,7 +420,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Worldbreaker1)
-                .Description("Strike the ground. Enemies in an area of effect (sphere) take weapon DMG + 45 and suffer Knockdown for 4 seconds.")
+                .Description("Strike the ground. Enemies in an area of effect (sphere) take weapon DMG + 25, suffer brief Knockdown, and deal 10% less damage for 45 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Staff, 50);
         }

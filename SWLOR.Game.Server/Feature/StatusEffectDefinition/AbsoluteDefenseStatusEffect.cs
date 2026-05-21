@@ -10,8 +10,8 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public override EffectIconType Icon => EffectIconType.AbsoluteDefenseStatusEffect;
         public AbsoluteDefenseStatusEffect()
         {
-            StatGroup.Stats[StatType.PhysicalDamageTakenPercentAdjustment] = -25;
-            StatGroup.Stats[StatType.ForceDamageTakenPercentAdjustment] = -25;
+            StatGroup.Stats[StatType.PhysicalDamageTakenPercentAdjustment] = -15;
+            StatGroup.Stats[StatType.ForceDamageTakenPercentAdjustment] = -15;
         }
 
     }

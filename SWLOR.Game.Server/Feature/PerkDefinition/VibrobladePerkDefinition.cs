@@ -220,7 +220,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Invincible1)
-                .Description("You become invulnerable to physical damage for 30 seconds.")
+                .Description("For 45 seconds, you take 50% less physical damage and are immune to Knockdown and Daze.")
                 .Price(4)
                 .RequirementSkill(SkillType.Vibroblade, 50);
         }

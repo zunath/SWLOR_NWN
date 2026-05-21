@@ -1962,6 +1962,9 @@ namespace SWLOR.Game.Server.Service
             if (damageType.IsPhysicalDamageType())
                 adjustment += Stat.GetStatAdjustment(defender, StatType.PhysicalDamageTakenPercentAdjustment);
 
+            if (isAbilityDamage && damageType.IsPhysicalDamageType())
+                adjustment += Stat.GetStatAdjustment(defender, StatType.PhysicalAbilityDamageTakenPercentAdjustment);
+
             if (damageType == CombatDamageType.Force)
                 adjustment += Stat.GetStatAdjustment(defender, StatType.ForceDamageTakenPercentAdjustment);
 
@@ -2030,6 +2033,24 @@ namespace SWLOR.Game.Server.Service
             var adjustment = Stat.GetStatAdjustment(
                 attacker,
                 StatType.ThrowingAreaAbilityDamagePercentAdjustment);
+            if (adjustment == 0)
+                return damage;
+
+            return ApplyPercentDamageAdjustment(damage, adjustment);
+        }
+
+        public static int ApplyPhysicalAbilityShapeDamageModifier(
+            uint attacker,
+            CombatDamageType damageType,
+            int damage,
+            bool isSingleTargetAbility)
+        {
+            if (damage <= 0 || !isSingleTargetAbility || !damageType.IsPhysicalDamageType())
+                return damage;
+
+            var adjustment = Stat.GetStatAdjustment(
+                attacker,
+                StatType.SingleTargetPhysicalAbilityDamagePercentAdjustment);
             if (adjustment == 0)
                 return damage;
 

@@ -53,7 +53,7 @@ public class ForceDarkRavagerTests
         AssertPerkLevel(perks[PerkType.ForceSpark], "Force Spark", 3, 3, 48, FeatType.ForceSpark3,
             "Deals 50 force DMG plus WIL scaling to one target and reduce evasion chance by 8% for 20 seconds.");
         AssertPerkLevel(perks[PerkType.HungerOfTheDark], "Hunger of the Dark", 1, 5, 50, FeatType.HungerOfTheDark1,
-            "For 12 seconds, Dark damage you deal heals you for 25% of damage dealt and defeated enemies restore FP.");
+            "For 45 seconds, Dark damage you deal heals you for 15% of damage dealt and defeated enemies restore 5 FP.");
 
         AssertUniversalForcePower(perks[PerkType.SaberRend]);
     }
@@ -94,7 +94,7 @@ public class ForceDarkRavagerTests
         AssertAbility(forceMaelstrom, "Force Maelstrom", 1, RecastGroup.ForceMaelstrom, 75f, 1.5f, 8, null, true, false, false, true, AbilityActivationType.Casted, 5f, true);
 
         var hunger = new HungerOfTheDarkAbilityDefinition().BuildAbilities()[FeatType.HungerOfTheDark1];
-        AssertAbility(hunger, "Hunger of the Dark", 1, RecastGroup.HungerOfTheDark, 180f, 0f, 10, null, false, false, true, false, AbilityActivationType.Casted, 5f, false);
+        AssertAbility(hunger, "Hunger of the Dark", 1, RecastGroup.Capstone, 345f, 0f, 10, null, false, false, true, false, AbilityActivationType.Casted, 5f, false);
     }
 
     [Test]
@@ -129,8 +129,8 @@ public class ForceDarkRavagerTests
         forceRage2.StatGroup.Stats[StatType.DamageTakenPercentAdjustment].Should().Be(8);
 
         var hunger = new HungerOfTheDark1StatusEffect();
-        hunger.StatGroup.Stats[StatType.DarkForceDamageHPPercentRestore].Should().Be(25);
-        hunger.StatGroup.Stats[StatType.DefeatedEnemyFPRestore].Should().BeGreaterThan(0);
+        hunger.StatGroup.Stats[StatType.DarkForceDamageHPPercentRestore].Should().Be(15);
+        hunger.StatGroup.Stats[StatType.DefeatedEnemyFPRestore].Should().Be(5);
     }
 
     [Test]

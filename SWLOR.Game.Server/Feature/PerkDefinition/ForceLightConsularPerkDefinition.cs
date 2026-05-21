@@ -199,7 +199,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .ForceAffinity(ForceAffinityType.Light)
 
                 .AddPerkLevel()
-                .Description("Restores 14% of maximum HP plus WIL scaling to nearby allies, removes one standard negative effect, and grants 1 FP and 1 STM every 3 seconds for 18 seconds.")
+                .Description("Nearby allies, including you, recover 14% of maximum HP plus WIL scaling, remove one standard negative effect, and restore 1 FP and 1 STM every 3 seconds for 45 seconds.")
                 .Price(5)
                 .RequirementSkill(SkillType.Force, 50)
                 .RequirementCharacterType(CharacterType.ForceSensitive)

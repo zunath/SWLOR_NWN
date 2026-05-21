@@ -2598,7 +2598,19 @@ namespace SWLOR.Game.Server.Service.StatService
         /// Percent adjustment applied to FP costs for damaging Dark Force conversion powers.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenNegative)]
-        DarkForceConversionFPCostPercentAdjustment = 434
+        DarkForceConversionFPCostPercentAdjustment = 434,
+
+        /// <summary>
+        /// Percent adjustment applied to incoming physical ability damage.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenNegative)]
+        PhysicalAbilityDamageTakenPercentAdjustment = 435,
+
+        /// <summary>
+        /// Percent damage adjustment applied to single-target physical abilities.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        SingleTargetPhysicalAbilityDamagePercentAdjustment = 436
     }
 
     public class StatTypeAttribute : Attribute

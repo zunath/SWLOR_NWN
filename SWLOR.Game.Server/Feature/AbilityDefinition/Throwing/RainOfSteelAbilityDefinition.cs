@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
@@ -28,7 +29,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
                 .Name("Rain of Steel")
                 .Level(1)
                 .HasActivationDelay(2f)
-                .HasRecastDelay(RecastGroup.Capstone, 1800f)
+                .HasRecastDelay(RecastGroup.Capstone, CapstoneAbility.RecastDelaySeconds)
                 .SkillType(SkillType.Throwing)
                 .UsesImpactAnimation(Animation.ThrowGrenade)
                 .HasMaxRange(ThrowingAbilityRange.Standard)
@@ -37,7 +38,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
-                .RequirementStamina(25);
+                .RequirementStamina(CapstoneAbility.StaminaCost);
         }
 
         private static void RainOfSteel1ImpactAction(uint activator, uint target, int level, Location targetLocation)
@@ -47,8 +48,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
                 target,
                 targetLocation,
                 SkillType.Throwing,
-                35,
-                60,
+                25,
+                45,
                 typeof(BleedStatusEffect),
                 CombatImpactAreaShape.Sphere,
                 0f,

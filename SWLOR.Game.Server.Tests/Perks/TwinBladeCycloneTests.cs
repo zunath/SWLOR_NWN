@@ -9,6 +9,7 @@ using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 using static SWLOR.NWN.API.NWScript.NWScript;
 
@@ -74,7 +75,7 @@ public class TwinBladeCycloneTests
             StatType.TwinBladeAreaAbilityStaminaRestorePerTarget,
             StatType.TwinBladeAreaAbilityStaminaRestoreMax);
         AssertPerkLevel(perks[PerkType.TempestBloom], "Tempest Bloom", 1, 4, 50, FeatType.TempestBloom1,
-            "Channel for up to 6 seconds, striking all nearby enemies every 2 seconds for weapon DMG + 20. The final hit inflicts Knockdown for 3 seconds.");
+            "Deal weapon DMG + 20 to nearby enemies. For 45 seconds, pulse every 6 seconds, dealing light physical damage and applying a Tempest mark. Each mark increases physical damage taken by 2% to a maximum of 3 stacks.");
     }
 
     [Test]
@@ -106,7 +107,7 @@ public class TwinBladeCycloneTests
         stormRelease.CustomValidation.Should().NotBeNull();
 
         var tempestBloom = new TempestBloomAbilityDefinition().BuildAbilities()[FeatType.TempestBloom1];
-        AssertAbility(tempestBloom, "Tempest Bloom", 1, SkillType.TwinBlade, RecastGroup.Capstone, 1800f, 0f, 25, true, false, false, true, AbilityActivationType.Casted);
+        AssertAbility(tempestBloom, "Tempest Bloom", 1, SkillType.TwinBlade, RecastGroup.Capstone, 345f, 0f, 15, true, false, false, true, AbilityActivationType.Casted);
     }
 
     [Test]
@@ -124,6 +125,10 @@ public class TwinBladeCycloneTests
 
         var exposed = new ExposedStatusEffect();
         exposed.StatGroup.Stats[StatType.DefensePercentAdjustment].Should().Be(-15);
+
+        var tempestMark = new TempestMarkStatusEffect();
+        tempestMark.StatGroup.Stats[StatType.PhysicalDamageTakenPercentAdjustment].Should().Be(2);
+        tempestMark.StackingType.Should().Be(StatusEffectStackType.UnlimitedStacking);
     }
 
     [Test]
@@ -227,12 +232,15 @@ public class TwinBladeCycloneTests
         stormRelease.Should().Contain("TemporaryStatModifier.Consume(");
 
         var tempestBloom = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "TwinBlade" / "TempestBloomAbilityDefinition.cs").FullName);
-        tempestBloom.Should().Contain("private const float ChannelDurationSeconds = 6f;");
-        tempestBloom.Should().Contain("private const float PulseIntervalSeconds = 2f;");
-        tempestBloom.Should().Contain("Ability.BeginAbilityImpact(activator, ability);");
+        tempestBloom.Should().Contain("private const float PulseIntervalSeconds = 6f;");
+        tempestBloom.Should().Contain("private const int InitialDamage = 20;");
+        tempestBloom.Should().Contain("private const int PulseDamage = 8;");
+        tempestBloom.Should().Contain("private const int MaximumMarkStacks = 3;");
+        tempestBloom.Should().Contain("CombatAreaPulses.SchedulePulses(");
         tempestBloom.Should().Contain("Combat.ApplyAbilityImpactEffects(activator, summary);");
-        tempestBloom.Should().Contain("typeof(KnockdownStatusEffect)");
-        tempestBloom.Should().Contain("? 3 : 0");
+        tempestBloom.Should().Contain("afterSuccessfulHit: ApplyTempestMark");
+        tempestBloom.Should().Contain("typeof(TempestMarkStatusEffect)");
+        tempestBloom.Should().Contain("activeStacks >= MaximumMarkStacks");
     }
 
     private static void AssertPerkLevel(

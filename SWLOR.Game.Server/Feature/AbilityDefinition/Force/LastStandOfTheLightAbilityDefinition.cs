@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .Name("Last Stand of the Light")
                 .Level(1)
                 .HasActivationDelay(1.5f)
-                .HasRecastDelay(RecastGroup.LastStandOfTheLight, 300f)
+                .HasRecastDelay(RecastGroup.Capstone, CapstoneAbility.RecastDelaySeconds)
                 .SkillType(SkillType.Force)
                 .IsSingleTargetAbility()
                 .HasMaxRange(15f)
@@ -42,13 +42,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasImpactAction(LastStandOfTheLight1ImpactAction)
                 .IsCastedAbility()
                 .BreaksStealth()
-                .RequirementFP(10);
+                .RequirementFP(CapstoneAbility.ForceCost);
         }
 
         private static void LastStandOfTheLight1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
             var friendly = AbilityTargeting.ResolveFriendlyTarget(activator, target);
-            StatusEffect.ApplyStatusEffect(activator, friendly, typeof(LastStandOfTheLight1StatusEffect), 12f);
+            StatusEffect.ApplyStatusEffect(activator, friendly, typeof(LastStandOfTheLight1StatusEffect), CapstoneAbility.ActiveDurationSeconds);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Ac_Bonus), friendly);
             LightGuardianPowerSupport.ApplyDeflectivePresence(activator);
         }

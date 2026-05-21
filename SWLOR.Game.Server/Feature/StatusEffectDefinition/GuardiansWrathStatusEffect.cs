@@ -10,8 +10,8 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public override EffectIconType Icon => EffectIconType.GuardiansWrathStatusEffect;
         public GuardiansWrathStatusEffect()
         {
-            StatGroup.Stats[StatType.AttackDeflection] = 100;
-            StatGroup.Stats[StatType.AttackDeflectionChanceCap] = 100;
+            StatGroup.Stats[StatType.AttackDeflection] = 50;
+            StatGroup.Stats[StatType.AttackDeflectionChanceCap] = 85;
         }
 
     }

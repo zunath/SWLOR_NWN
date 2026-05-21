@@ -1820,6 +1820,11 @@ namespace SWLOR.Game.Server.Service
                 skillType,
                 calculatedDamage,
                 IsTrackedAbilityArea(activator));
+            calculatedDamage = Combat.ApplyPhysicalAbilityShapeDamageModifier(
+                activator,
+                damageType,
+                calculatedDamage,
+                IsTrackedAbilitySingleTarget(activator));
             if (skillType == SkillType.Force)
             {
                 calculatedDamage = Perk.ApplyForceAffinityMagnitude(activator, perkType, calculatedDamage);
@@ -1990,6 +1995,11 @@ namespace SWLOR.Game.Server.Service
                 skillType,
                 calculatedDamage,
                 IsTrackedAbilityArea(activator));
+            calculatedDamage = Combat.ApplyPhysicalAbilityShapeDamageModifier(
+                activator,
+                damageType,
+                calculatedDamage,
+                IsTrackedAbilitySingleTarget(activator));
             if (skillType == SkillType.Force)
             {
                 calculatedDamage = Perk.ApplyForceAffinityMagnitude(activator, perkType, calculatedDamage);

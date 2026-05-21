@@ -163,6 +163,9 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsObjectValid(activator) || group == RecastGroup.Invalid || reduceSeconds <= 0f)
                 return;
 
+            if (group == RecastGroup.Capstone)
+                return;
+
             var now = DateTime.UtcNow;
 
             if (!GetIsPC(activator) || GetIsDMPossessed(activator))

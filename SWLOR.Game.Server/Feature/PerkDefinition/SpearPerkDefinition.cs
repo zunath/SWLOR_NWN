@@ -93,7 +93,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.CripplingDefense1)
-                .Description("All enemies within area of effect (sphere) around you receive Crippled Defense, reducing physical and Force damage mitigation by 35% for 15 seconds. Additionally restores 25 STM.")
+                .Description("Enemies within the area of effect (sphere) suffer Crippled Defense, reducing physical and Force defense by 15% for 45 seconds. Restores 15 STM.")
                 .Price(4)
                 .RequirementSkill(SkillType.Spear, 50);
         }
@@ -290,7 +290,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Forcebane1)
-                .Description("Enemies within the area of effect (sphere) receive the Forcebane debuff, losing 50% of current FP and preventing FP recovery for 8 seconds.")
+                .Description("Enemies within the area of effect (sphere) lose 30% of current FP and suffer Forcebane, reducing FP recovery by 75% for 45 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Spear, 50);
         }

@@ -72,7 +72,7 @@ public class VibrobladeDefenseTests
         AssertPerkLevel(perks[PerkType.DefensiveStance], "Defensive Stance", 2, 4, 45, FeatType.DefensiveStance2,
             "While active, grants +30% to Enmity generation, +20% Defense, +20% Force Defense, -20% Attack, and -20% Force Attack");
         AssertPerkLevel(perks[PerkType.Invincible], "Invincible", 1, 4, 50, FeatType.Invincible1,
-            "You become invulnerable to physical damage for 30 seconds.");
+            "For 45 seconds, you take 50% less physical damage and are immune to Knockdown and Daze.");
     }
 
     [Test]
@@ -94,7 +94,7 @@ public class VibrobladeDefenseTests
         AssertAbility(coveringStrike, "Covering Strike", 1, RecastGroup.CoveringStrike, 45f, 0f, 6, true, AbilityActivationType.Casted);
 
         var invincible = new InvincibleAbilityDefinition().BuildAbilities()[FeatType.Invincible1];
-        AssertAbility(invincible, "Invincible", 1, RecastGroup.Capstone, 1800f, 1f, 25, false, AbilityActivationType.Casted);
+        AssertAbility(invincible, "Invincible", 1, RecastGroup.Capstone, 345f, 1f, 15, false, AbilityActivationType.Casted);
     }
 
     [Test]
@@ -120,7 +120,7 @@ public class VibrobladeDefenseTests
         shieldWallSelf.StatGroup.Stats[StatType.EnmityPercentAdjustment].Should().Be(25);
 
         var invincible = new InvincibleStatusEffect();
-        invincible.StatGroup.Stats[StatType.PhysicalDamageImmunity].Should().Be(1);
+        invincible.StatGroup.Stats[StatType.PhysicalDamageTakenPercentAdjustment].Should().Be(-50);
     }
 
     [Test]

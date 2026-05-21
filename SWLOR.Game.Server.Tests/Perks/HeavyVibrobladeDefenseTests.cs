@@ -68,7 +68,7 @@ public class HeavyVibrobladeDefenseTests
             StatType.DefeatedEnemyNearbyAllyPhysicalDefensePercentAdjustment,
             StatType.DefeatedEnemyNearbyAllyPhysicalDefenseDurationSeconds);
         AssertPerkLevel(perks[PerkType.AbsoluteDefense], "Absolute Defense", 1, 4, 50, FeatType.AbsoluteDefense1,
-            "All party members, excluding you, take 25% less physical and Force damage and become immune to Knockdown and Dazed for 15 seconds. Your HP, STM, and FP are restored by 25% of maximum.");
+            "For 45 seconds, nearby party members including you take 15% less physical and Force damage and are immune to Knockdown and Daze.");
     }
 
     [Test]
@@ -107,7 +107,7 @@ public class HeavyVibrobladeDefenseTests
         AssertAbility(bloodWeapon, "Blood Weapon", 1, RecastGroup.BloodWeapon, 120f, 0f, 14, false, false, false, false, AbilityActivationType.Casted);
 
         var absoluteDefense = new AbsoluteDefenseAbilityDefinition().BuildAbilities()[FeatType.AbsoluteDefense1];
-        AssertAbility(absoluteDefense, "Absolute Defense", 1, RecastGroup.Capstone, 1800f, 0f, 25, false, false, false, false, AbilityActivationType.Casted);
+        AssertAbility(absoluteDefense, "Absolute Defense", 1, RecastGroup.Capstone, 345f, 0f, 15, false, false, false, false, AbilityActivationType.Casted);
     }
 
     [Test]
@@ -138,8 +138,8 @@ public class HeavyVibrobladeDefenseTests
         rampart.StatGroup.Stats[StatType.PhysicalDamageTakenPercentAdjustment].Should().Be(-15);
 
         var absoluteDefense = new AbsoluteDefenseStatusEffect();
-        absoluteDefense.StatGroup.Stats[StatType.PhysicalDamageTakenPercentAdjustment].Should().Be(-25);
-        absoluteDefense.StatGroup.Stats[StatType.ForceDamageTakenPercentAdjustment].Should().Be(-25);
+        absoluteDefense.StatGroup.Stats[StatType.PhysicalDamageTakenPercentAdjustment].Should().Be(-15);
+        absoluteDefense.StatGroup.Stats[StatType.ForceDamageTakenPercentAdjustment].Should().Be(-15);
         absoluteDefense.StatGroup.Stats[StatType.MindResistance].Should().Be(0);
         absoluteDefense.StatGroup.Stats[StatType.MobilityResistance].Should().Be(0);
     }
@@ -200,9 +200,9 @@ public class HeavyVibrobladeDefenseTests
         edgeOfDarkness.Should().Contain("enmityBonus: 350");
 
         var absoluteDefense = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "HeavyVibroblade" / "AbsoluteDefenseAbilityDefinition.cs").FullName);
-        absoluteDefense.Should().Contain("if (partyMember == activator || !GetIsObjectValid(partyMember))");
-        absoluteDefense.Should().Contain("Ability.ApplyTemporaryImmunity(partyMember, 15f, ImmunityType.Knockdown)");
-        absoluteDefense.Should().Contain("Ability.ApplyTemporaryImmunity(partyMember, 15f, ImmunityType.Dazed)");
+        absoluteDefense.Should().Contain("if (!GetIsObjectValid(partyMember))");
+        absoluteDefense.Should().Contain("Ability.ApplyTemporaryImmunity(partyMember, CapstoneAbility.ActiveDurationSeconds, ImmunityType.Knockdown)");
+        absoluteDefense.Should().Contain("Ability.ApplyTemporaryImmunity(partyMember, CapstoneAbility.ActiveDurationSeconds, ImmunityType.Dazed)");
 
         var perkDefinition = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "PerkDefinition" / "HeavyVibrobladePerkDefinition.cs").FullName)
             .ReplaceLineEndings("\n");

@@ -72,7 +72,7 @@ public class StaffSentinelTests
             StatType.LowHPEvasionDurationSeconds,
             StatType.LowHPEvasionCooldownSeconds);
         AssertPerkLevel(perks[PerkType.UnmovingCenter], "Unmoving Center", 1, 4, 50, FeatType.UnmovingCenter1,
-            "For 20 seconds, you cannot be Knocked down or Dazed, gain +50 Attack Deflection, and staff attacks generate extra enmity.");
+            "For 45 seconds, you cannot be Knocked down or Dazed, gain +35 Attack Deflection, and generate +30% enmity.");
     }
 
     [Test]
@@ -102,7 +102,7 @@ public class StaffSentinelTests
         AssertAbility(shelterCircle, "Shelter Circle", 1, RecastGroup.ShelterCircle, 180f, 0f, 12, false, false, false, true, AbilityActivationType.Casted);
 
         var unmovingCenter = new UnmovingCenterAbilityDefinition().BuildAbilities()[FeatType.UnmovingCenter1];
-        AssertAbility(unmovingCenter, "Unmoving Center", 1, RecastGroup.Capstone, 1800f, 1f, 25, false, false, false, false, AbilityActivationType.Casted);
+        AssertAbility(unmovingCenter, "Unmoving Center", 1, RecastGroup.Capstone, 345f, 1f, 15, false, false, false, false, AbilityActivationType.Casted);
     }
 
     [Test]
@@ -136,7 +136,7 @@ public class StaffSentinelTests
         shelterCircle.StatGroup.Stats[StatType.EvasionPercentAdjustment].Should().Be(20);
 
         var unmovingCenter = new UnmovingCenterStatusEffect();
-        unmovingCenter.StatGroup.Stats[StatType.AttackDeflection].Should().Be(50);
+        unmovingCenter.StatGroup.Stats[StatType.AttackDeflection].Should().Be(35);
         unmovingCenter.StatGroup.Stats[StatType.EnmityPercentAdjustment].Should().Be(30);
         unmovingCenter.StatGroup.Stats[StatType.PhysicalDefensePercentAdjustment].Should().Be(0);
         unmovingCenter.StatGroup.Stats[StatType.ForceDefensePercentAdjustment].Should().Be(0);
@@ -212,10 +212,10 @@ public class StaffSentinelTests
         sweepingGuard.Should().Contain("centerOnActivator: true");
 
         var unmovingCenter = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Staff" / "UnmovingCenterAbilityDefinition.cs").FullName);
-        unmovingCenter.Should().Contain("Ability.ApplyTemporaryImmunity(activator, 20f, ImmunityType.Knockdown);");
-        unmovingCenter.Should().Contain("Ability.ApplyTemporaryImmunity(activator, 20f, ImmunityType.Dazed);");
+        unmovingCenter.Should().Contain("Ability.ApplyTemporaryImmunity(activator, CapstoneAbility.ActiveDurationSeconds, ImmunityType.Knockdown);");
+        unmovingCenter.Should().Contain("Ability.ApplyTemporaryImmunity(activator, CapstoneAbility.ActiveDurationSeconds, ImmunityType.Dazed);");
         unmovingCenter.Should().Contain("typeof(UnmovingCenterStatusEffect)");
-        unmovingCenter.Should().Contain("20f");
+        unmovingCenter.Should().Contain("CapstoneAbility.ActiveDurationSeconds");
     }
 
     private static void AssertPerkLevel(

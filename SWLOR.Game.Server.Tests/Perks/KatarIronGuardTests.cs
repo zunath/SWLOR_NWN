@@ -75,7 +75,7 @@ public class KatarIronGuardTests
             StatType.LowHPGuardDurationSeconds,
             StatType.LowHPGuardCooldownSeconds);
         AssertPerkLevel(perks[PerkType.AdamantineGuard], "Adamantine Guard", 1, 4, 50, FeatType.AdamantineGuard1,
-            "For 20 seconds, gain +40% guard chance. Guarded hits reduce physical damage by 40% and generate greatly increased enmity.");
+            "For 45 seconds, gain +25 Guard. Guarded hits reduce damage by an additional 20% and generate 75% more enmity.");
     }
 
     [Test]
@@ -111,7 +111,7 @@ public class KatarIronGuardTests
         AssertAbility(ironWallStance, "Iron Wall Stance", 1, RecastGroup.IronWallStance, 180f, 2f, null, false, false, false, false, AbilityActivationType.Casted);
 
         var adamantineGuard = new AdamantineGuardAbilityDefinition().BuildAbilities()[FeatType.AdamantineGuard1];
-        AssertAbility(adamantineGuard, "Adamantine Guard", 1, RecastGroup.Capstone, 1800f, 1f, 25, false, false, false, false, AbilityActivationType.Casted);
+        AssertAbility(adamantineGuard, "Adamantine Guard", 1, RecastGroup.Capstone, 345f, 1f, 15, false, false, false, false, AbilityActivationType.Casted);
     }
 
     [Test]
@@ -141,9 +141,9 @@ public class KatarIronGuardTests
         ironWall.StatGroup.Stats[StatType.AttackPercentAdjustment].Should().Be(-25);
 
         var adamantineGuard = new AdamantineGuardStatusEffect();
-        adamantineGuard.StatGroup.Stats[StatType.Guard].Should().Be(40);
+        adamantineGuard.StatGroup.Stats[StatType.Guard].Should().Be(25);
         adamantineGuard.StatGroup.Stats[StatType.GuardDamageReductionPercentAdjustment].Should().Be(20);
-        adamantineGuard.StatGroup.Stats[StatType.GuardEnmityPercentAdjustment].Should().Be(100);
+        adamantineGuard.StatGroup.Stats[StatType.GuardEnmityPercentAdjustment].Should().Be(75);
     }
 
     [Test]
@@ -221,9 +221,9 @@ public class KatarIronGuardTests
         breakerReversal.Should().Contain("SkillType.Katar, 35, 12, typeof(ExposedStatusEffect), false");
 
         var adamantineGuard = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "StatusEffectDefinition" / "AdamantineGuardStatusEffect.cs").FullName);
-        adamantineGuard.Should().Contain("StatGroup.Stats[StatType.Guard] = 40;");
+        adamantineGuard.Should().Contain("StatGroup.Stats[StatType.Guard] = 25;");
         adamantineGuard.Should().Contain("StatGroup.Stats[StatType.GuardDamageReductionPercentAdjustment] = 20;");
-        adamantineGuard.Should().Contain("StatGroup.Stats[StatType.GuardEnmityPercentAdjustment] = 100;");
+        adamantineGuard.Should().Contain("StatGroup.Stats[StatType.GuardEnmityPercentAdjustment] = 75;");
     }
 
     private static void AssertPerkLevel(

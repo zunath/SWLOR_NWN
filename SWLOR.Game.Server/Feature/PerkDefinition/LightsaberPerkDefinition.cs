@@ -249,8 +249,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.GuardianMaster1)
-                .Description("Grants the ability Guardian's Wrath which guarantees all attacks toward you will be deflected for 30 seconds. Additionally, increases your natural attack deflection cap to 75% when equipped with a lightsaber.")
-                .IncreasesStat(StatType.AttackDeflectionChanceCap, creature => EquipmentPredicates.HasMainHandLightsaber(creature) ? 75 : 0)
+                .Description("For 45 seconds, gain +50 Attack Deflection and increase your Attack Deflection cap to 85.")
                 .Price(4)
                 .RequirementSkill(SkillType.Lightsaber, 50)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
@@ -431,7 +430,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SaberStorm1)
-                .Description("Enemies within the area of effect (sphere) around you are dealt weapon DMG + 60. Inflicts Sunder which reduces defense and force defense by 25% for 30 seconds.")
+                .Description("Enemies within the area of effect (sphere) take weapon DMG + 30 and suffer Sunder, reducing physical and Force defense by 10% for 45 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Lightsaber, 50)
                 .RequirementCharacterType(CharacterType.ForceSensitive);

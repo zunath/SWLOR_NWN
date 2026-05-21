@@ -55,7 +55,7 @@ public class ForceLightGuardianTests
         AssertPerkLevel(perks[PerkType.ForcePush], "Force Push", 3, 3, 48, FeatType.ForcePush3,
             "Knock down up to 3 targets in a cone for 2 seconds. slows movement for 4 seconds.");
         AssertPerkLevel(perks[PerkType.LastStandOfTheLight], "Last Stand of the Light", 1, 5, 50, FeatType.LastStandOfTheLight1,
-            "For 12 seconds, damage that would drop the target below 1 HP is prevented once and the target gains temporary HP equal to 20% of maximum HP plus WIL scaling.");
+            "For 45 seconds, damage that would drop the target below 1 HP is prevented once and the target gains temporary HP equal to 15% of maximum HP plus WIL scaling.");
 
         AssertUniversalForcePower(perks[PerkType.ForcePush]);
         AssertUniversalForcePower(perks[PerkType.ForceLeap]);
@@ -98,7 +98,7 @@ public class ForceLightGuardianTests
         AssertAbility(bastionOfLight, "Bastion of Light", 1, RecastGroup.BastionOfLight, 120f, 1.5f, 8, false, false, false, true, AbilityActivationType.Casted, 5f);
 
         var lastStand = new LastStandOfTheLightAbilityDefinition().BuildAbilities()[FeatType.LastStandOfTheLight1];
-        AssertAbility(lastStand, "Last Stand of the Light", 1, RecastGroup.LastStandOfTheLight, 300f, 1.5f, 10, false, true, true, false, AbilityActivationType.Casted, 15f);
+        AssertAbility(lastStand, "Last Stand of the Light", 1, RecastGroup.Capstone, 345f, 1.5f, 10, false, true, true, false, AbilityActivationType.Casted, 15f);
     }
 
     [Test]
@@ -117,6 +117,11 @@ public class ForceLightGuardianTests
 
         var bastion = new BastionOfLight1StatusEffect();
         bastion.StatGroup.Stats[StatType.ForceDamageTakenPercentAdjustment].Should().Be(-10);
+
+        var lastStand = new LastStandOfTheLight1StatusEffect();
+        lastStand.ApplyEffect(0, 0, 45);
+        lastStand.StatGroup.Stats[StatType.FatalDamageTemporaryHPPercent].Should().Be(15);
+        lastStand.StatGroup.Stats[StatType.FatalDamageTemporaryHPDurationSeconds].Should().Be(45);
 
         var root = FindRepositoryRoot();
         var knockdown = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "StatusEffectDefinition" / "KnockdownStatusEffect.cs").FullName);

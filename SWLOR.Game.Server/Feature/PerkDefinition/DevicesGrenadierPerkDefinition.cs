@@ -194,7 +194,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Thermal Detonator")
 
                 .AddPerkLevel()
-                .Description("Deals heavy fire DMG plus PER scaling in a 5m blast and inflicts Burning. Consumes extra explosives.")
+                .Description("Deals moderate fire DMG plus PER scaling in a 5m blast and inflicts Burning for 45 seconds.")
                 .Price(5)
                 .RequirementSkill(SkillType.Devices, 50)
                 .RequirementCharacterType(CharacterType.Standard)

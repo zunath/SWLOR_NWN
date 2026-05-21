@@ -1,6 +1,8 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.Engine;
@@ -28,7 +30,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 .Name("Last Word")
                 .Level(1)
                 .HasActivationDelay(1f)
-                .HasRecastDelay(RecastGroup.Capstone, 1800f)
+                .HasRecastDelay(RecastGroup.Capstone, CapstoneAbility.RecastDelaySeconds)
                 .SkillType(Skill)
                 .UsesImpactAnimation(Animation.PointPistol)
                 .IsAreaAbility()
@@ -36,7 +38,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
-                .RequirementStamina(25);
+                .RequirementStamina(CapstoneAbility.StaminaCost);
         }
 
         private static void LastWord1ImpactAction(uint activator, uint target, int level, Location targetLocation)
@@ -46,14 +48,21 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 target,
                 targetLocation,
                 Skill,
-                35,
-                3,
-                typeof(DazedStatusEffect),
+                25,
+                45,
+                typeof(LastWordStatusEffect),
                 CombatImpactAreaShape.Cone,
                 0.25f,
                 5f,
                 5f,
-                beforeImpact: affectedEnemy => AssignCommand(affectedEnemy, () => ClearAllActions()));
+                beforeImpact: affectedEnemy => AssignCommand(affectedEnemy, () => ClearAllActions()),
+                afterSuccessfulHit: affectedEnemy =>
+                    StatusEffect.ApplyStatusEffect(
+                        activator,
+                        affectedEnemy,
+                        typeof(DazedStatusEffect),
+                        3f,
+                        CombatDamageType.Physical));
         }
     }
 }

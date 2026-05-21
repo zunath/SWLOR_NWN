@@ -62,7 +62,7 @@ public class RiflePacificationTests
             "Rifle damage increases by 15% against enemies affected by any control effect.",
             StatType.DamageToControlTargetPercentAdjustment);
         AssertPerkLevel(perks[PerkType.StasisVolley], "Stasis Volley", 1, 4, 50, FeatType.StasisVolley1,
-            "All enemies in a cone take weapon DMG + 25 and are tranquilized for up to 12 seconds. Damage breaks the effect prematurely.");
+            "Enemies in a cone take weapon DMG + 20 and are briefly tranquilized, breaking on damage. On hit, targets suffer -10% Attack for 45 seconds.");
     }
 
     [Test]
@@ -98,7 +98,7 @@ public class RiflePacificationTests
         AssertAbility(pacificationField, "Pacification Field", 1, RecastGroup.PacificationField, 180f, 0f, 14, true, false, false, true, AbilityActivationType.Casted);
 
         var stasisVolley = new StasisVolleyAbilityDefinition().BuildAbilities()[FeatType.StasisVolley1];
-        AssertAbility(stasisVolley, "Stasis Volley", 1, RecastGroup.Capstone, 1800f, 2f, 25, true, false, false, true, AbilityActivationType.Casted);
+        AssertAbility(stasisVolley, "Stasis Volley", 1, RecastGroup.Capstone, 345f, 2f, 15, true, false, false, true, AbilityActivationType.Casted);
     }
 
     [Test]
@@ -117,6 +117,9 @@ public class RiflePacificationTests
 
         var pacificationField = new PacificationFieldStatusEffect();
         pacificationField.StatGroup.Stats[StatType.AttackPercentAdjustment].Should().Be(-10);
+
+        var stasisVolley = new StasisVolleyStatusEffect();
+        stasisVolley.StatGroup.Stats[StatType.AttackPercentAdjustment].Should().Be(-10);
     }
 
     [Test]
@@ -131,6 +134,14 @@ public class RiflePacificationTests
         var tranquilized = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "StatusEffectDefinition" / "TranquilizedStatusEffect.cs").FullName);
         tranquilized.Should().Contain("Ability.HasTemporaryImmunity(creature, ImmunityType.Sleep)");
         tranquilized.Should().Contain("IgnoreEffectImmunity(EffectSleep())");
+
+        var stasisVolley = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Rifle" / "StasisVolleyAbilityDefinition.cs").FullName);
+        stasisVolley.Should().Contain("SkillType.Rifle");
+        stasisVolley.Should().Contain("20");
+        stasisVolley.Should().Contain("45");
+        stasisVolley.Should().Contain("typeof(StasisVolleyStatusEffect)");
+        stasisVolley.Should().Contain("typeof(TranquilizedStatusEffect)");
+        stasisVolley.Should().Contain("3f");
     }
 
     [Test]

@@ -74,7 +74,7 @@ public class SaberstaffConduitTests
             StatType.HighFPAndStaminaAttackThresholdPercent,
             StatType.HighFPAndStaminaAttackPercentAdjustment);
         AssertPerkLevel(perks[PerkType.InfiniteConduit], "Infinite Conduit", 1, 4, 50, FeatType.InfiniteConduit1,
-            "For 20 seconds, saberstaff attacks restore 5 FP and saberstaff combat abilities cost 3 less STM. The effect ends early if FP reaches zero.");
+            "For 45 seconds, attacks restore 2 FP and combat abilities cost 2 less STM.");
     }
 
     [Test]
@@ -107,7 +107,7 @@ public class SaberstaffConduitTests
         AssertAbility(forceCapacitor, "Force Capacitor", 1, RecastGroup.ForceCapacitor, 180f, 0f, 10, false, false, false, false, AbilityActivationType.Casted);
 
         var infiniteConduit = new InfiniteConduitAbilityDefinition().BuildAbilities()[FeatType.InfiniteConduit1];
-        AssertAbility(infiniteConduit, "Infinite Conduit", 1, RecastGroup.Capstone, 1800f, 2f, 25, false, false, false, false, AbilityActivationType.Casted);
+        AssertAbility(infiniteConduit, "Infinite Conduit", 1, RecastGroup.Capstone, 345f, 2f, 15, false, false, false, false, AbilityActivationType.Casted);
     }
 
     [Test]
@@ -142,10 +142,8 @@ public class SaberstaffConduitTests
         forceCapacitor.StatGroup.Stats[StatType.AbilityFPCostStaminaRestorePercent].Should().Be(25);
 
         var infiniteConduit = new InfiniteConduitStatusEffect();
-        infiniteConduit.StatGroup.Stats[StatType.SkillAutoAttackFPRestoreSkillType].Should().Be((int)SkillType.Saberstaff);
-        infiniteConduit.StatGroup.Stats[StatType.SkillAutoAttackFPRestore].Should().Be(5);
-        infiniteConduit.StatGroup.Stats[StatType.SkillAbilityStaminaCostFlatAdjustmentSkillType].Should().Be((int)SkillType.Saberstaff);
-        infiniteConduit.StatGroup.Stats[StatType.SkillAbilityStaminaCostFlatAdjustment].Should().Be(-3);
+        infiniteConduit.StatGroup.Stats[StatType.AutoAttackFPRestore].Should().Be(2);
+        infiniteConduit.StatGroup.Stats[StatType.SkillAbilityStaminaCostFlatAdjustment].Should().Be(-2);
 
         var fracturedFocus = new FracturedFocusStatusEffect();
         fracturedFocus.StatGroup.Stats[StatType.FPCostPercentAdjustment].Should().Be(100);
@@ -221,9 +219,9 @@ public class SaberstaffConduitTests
         forceCapacitor.Should().Contain("StatGroup.Stats[StatType.AbilityFPCostStaminaRestorePercent] = 25;");
 
         var infiniteConduit = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "StatusEffectDefinition" / "InfiniteConduitStatusEffect.cs").FullName);
-        infiniteConduit.Should().Contain("StatGroup.Stats[StatType.SkillAutoAttackFPRestore] = 5;");
-        infiniteConduit.Should().Contain("StatGroup.Stats[StatType.SkillAbilityStaminaCostFlatAdjustment] = -3;");
-        infiniteConduit.Should().Contain("Stat.GetCurrentFP(creature) <= 0");
+        infiniteConduit.Should().Contain("StatGroup.Stats[StatType.AutoAttackFPRestore] = 2;");
+        infiniteConduit.Should().Contain("StatGroup.Stats[StatType.SkillAbilityStaminaCostFlatAdjustment] = -2;");
+        infiniteConduit.Should().NotContain("Stat.GetCurrentFP(creature) <= 0");
     }
 
     private static void AssertPerkLevel(

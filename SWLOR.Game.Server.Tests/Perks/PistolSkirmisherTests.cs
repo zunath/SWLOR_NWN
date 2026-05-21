@@ -74,7 +74,7 @@ public class PistolSkirmisherTests
             StatType.LowHPNextAbilityNoStaminaCostDurationSeconds,
             StatType.LowHPNextAbilityNoStaminaCostCooldownSeconds);
         AssertPerkLevel(perks[PerkType.LastWord], "Last Word", 1, 4, 50, FeatType.LastWord1,
-            "Interrupts all enemies in a cone, deals weapon DMG + 35, and inflicts Dazed for 3 seconds.");
+            "Interrupts enemies in a cone, deals weapon DMG + 25, briefly Dazes, and reduces hit chance by 10% for 45 seconds.");
     }
 
     [Test]
@@ -109,7 +109,7 @@ public class PistolSkirmisherTests
         AssertAbility(smokeRound, "Smoke Round", 1, RecastGroup.SmokeRound, 120f, 0f, 10, true, false, false, true, AbilityActivationType.Casted);
 
         var lastWord = new LastWordAbilityDefinition().BuildAbilities()[FeatType.LastWord1];
-        AssertAbility(lastWord, "Last Word", 1, RecastGroup.Capstone, 1800f, 1f, 25, true, false, false, true, AbilityActivationType.Casted);
+        AssertAbility(lastWord, "Last Word", 1, RecastGroup.Capstone, 345f, 1f, 15, true, false, false, true, AbilityActivationType.Casted);
     }
 
     [Test]
@@ -132,6 +132,9 @@ public class PistolSkirmisherTests
 
         var foggyMind = new FoggyMindStatusEffect(2);
         foggyMind.StatGroup.Stats[StatType.ActivationDelayFlatAdjustment].Should().Be(2);
+
+        var lastWord = new LastWordStatusEffect();
+        lastWord.StatGroup.Stats[StatType.PhysicalAndForceAbilityHitChancePercentAdjustment].Should().Be(-10);
     }
 
     [Test]
@@ -242,7 +245,9 @@ public class PistolSkirmisherTests
 
         var lastWord = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Pistol" / "LastWordAbilityDefinition.cs").FullName).Replace("\r\n", "\n");
         lastWord.Should().Contain("HasActivationDelay(1f)");
-        lastWord.Should().Contain("35,\n                3,\n                typeof(DazedStatusEffect)");
+        lastWord.Should().Contain("25,\n                45,\n                typeof(LastWordStatusEffect)");
+        lastWord.Should().Contain("typeof(DazedStatusEffect)");
+        lastWord.Should().Contain("3f");
         lastWord.Should().Contain("beforeImpact: affectedEnemy => AssignCommand(affectedEnemy, () => ClearAllActions())");
 
         var combat = File.ReadAllText((root / "SWLOR.Game.Server" / "Service" / "Combat.cs").FullName);

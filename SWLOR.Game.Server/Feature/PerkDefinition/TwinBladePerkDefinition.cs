@@ -216,7 +216,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.FinalForm1)
-                .Description("For 20 seconds, single-target Twin Blade combat abilities deal +25% damage and you gain +25 Attack Deflection.")
+                .Description("For 45 seconds, single-target physical combat abilities deal +15% damage and you gain +15 Attack Deflection.")
                 .Price(4)
                 .RequirementSkill(SkillType.TwinBlade, 50);
         }
@@ -418,7 +418,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.TempestBloom1)
-                .Description("Channel for up to 6 seconds, striking all nearby enemies every 2 seconds for weapon DMG + 20. The final hit inflicts Knockdown for 3 seconds.")
+                .Description("Deal weapon DMG + 20 to nearby enemies. For 45 seconds, pulse every 6 seconds, dealing light physical damage and applying a Tempest mark. Each mark increases physical damage taken by 2% to a maximum of 3 stacks.")
                 .Price(4)
                 .RequirementSkill(SkillType.TwinBlade, 50);
         }

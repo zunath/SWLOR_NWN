@@ -13,18 +13,8 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         public InfiniteConduitStatusEffect()
         {
-            StatGroup.Stats[StatType.SkillAutoAttackFPRestoreSkillType] = (int)SkillType.Saberstaff;
-            StatGroup.Stats[StatType.SkillAutoAttackFPRestore] = 5;
-            StatGroup.Stats[StatType.SkillAbilityStaminaCostFlatAdjustmentSkillType] = (int)SkillType.Saberstaff;
-            StatGroup.Stats[StatType.SkillAbilityStaminaCostFlatAdjustment] = -3;
-        }
-
-        protected override void Tick(uint creature)
-        {
-            if (Stat.GetCurrentFP(creature) <= 0)
-            {
-                IsFlaggedForRemoval = true;
-            }
+            StatGroup.Stats[StatType.AutoAttackFPRestore] = 2;
+            StatGroup.Stats[StatType.SkillAbilityStaminaCostFlatAdjustment] = -2;
         }
     }
 }

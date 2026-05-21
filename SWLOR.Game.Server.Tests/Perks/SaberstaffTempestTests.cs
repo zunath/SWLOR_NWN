@@ -74,7 +74,7 @@ public class SaberstaffTempestTests
             StatType.SaberstaffAreaAbilityAttackDeflection,
             StatType.SaberstaffAreaAbilityBuffDurationSeconds);
         AssertPerkLevel(perks[PerkType.SaberCyclone], "Saber Cyclone", 1, 4, 50, FeatType.SaberCyclone1,
-            "Channel for up to 6 seconds, hitting all nearby enemies every 2 seconds for weapon DMG + 25 and restoring 3 FP per enemy hit.");
+            "Deal weapon DMG + 18 to nearby enemies. For 45 seconds, pulse every 6 seconds, dealing light Force damage to nearby enemies and restoring 1 FP per enemy hit, up to 5 FP per pulse.");
     }
 
     [Test]
@@ -105,7 +105,7 @@ public class SaberstaffTempestTests
         AssertAbility(tempestRelease, "Tempest Release", 1, RecastGroup.TempestRelease, 120f, 0f, 12, true, false, false, true, AbilityActivationType.Casted);
 
         var saberCyclone = new SaberCycloneAbilityDefinition().BuildAbilities()[FeatType.SaberCyclone1];
-        AssertAbility(saberCyclone, "Saber Cyclone", 1, RecastGroup.Capstone, 1800f, 0f, 25, true, false, false, true, AbilityActivationType.Casted);
+        AssertAbility(saberCyclone, "Saber Cyclone", 1, RecastGroup.Capstone, 345f, 0f, 15, true, false, false, true, AbilityActivationType.Casted);
     }
 
     [Test]
@@ -204,12 +204,14 @@ public class SaberstaffTempestTests
         tempestRelease.Should().Contain("private const int MaximumForcePointDamageBonus = 20;");
 
         var saberCyclone = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Saberstaff" / "SaberCycloneAbilityDefinition.cs").FullName);
-        saberCyclone.Should().Contain("private const float ChannelDurationSeconds = 6f;");
-        saberCyclone.Should().Contain("private const float PulseIntervalSeconds = 2f;");
-        saberCyclone.Should().Contain("private const int FPRestorePerTarget = 3;");
-        saberCyclone.Should().Contain("Ability.BeginAbilityImpact(activator, ability);");
+        saberCyclone.Should().Contain("private const float PulseIntervalSeconds = 6f;");
+        saberCyclone.Should().Contain("private const int InitialDamage = 18;");
+        saberCyclone.Should().Contain("private const int PulseDamage = 8;");
+        saberCyclone.Should().Contain("private const int FPRestorePerTarget = 1;");
+        saberCyclone.Should().Contain("private const int MaximumFPRestorePerPulse = 5;");
+        saberCyclone.Should().Contain("CombatAreaPulses.SchedulePulses(");
         saberCyclone.Should().Contain("Combat.ApplyAbilityImpactEffects(activator, summary);");
-        saberCyclone.Should().Contain("summary.ImpactedTargetCount * FPRestorePerTarget");
+        saberCyclone.Should().Contain("Math.Min(MaximumFPRestorePerPulse, summary.ImpactedTargetCount * FPRestorePerTarget)");
     }
 
     private static void AssertPerkLevel(

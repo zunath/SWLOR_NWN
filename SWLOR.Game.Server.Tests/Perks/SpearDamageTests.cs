@@ -70,7 +70,7 @@ public class SpearDamageTests
             StatType.SideAttackEvasionIgnoreChanceMaximum,
             StatType.SideAttackEvasionIgnorePercent);
         AssertPerkLevel(perks[PerkType.CripplingDefense], "Crippling Defense", 1, 4, 50, FeatType.CripplingDefense1,
-            "All enemies within area of effect (sphere) around you receive Crippled Defense, reducing physical and Force damage mitigation by 35% for 15 seconds. Additionally restores 25 STM.");
+            "Enemies within the area of effect (sphere) suffer Crippled Defense, reducing physical and Force defense by 15% for 45 seconds. Restores 15 STM.");
     }
 
     [Test]
@@ -104,7 +104,7 @@ public class SpearDamageTests
         AssertAbility(calmingStance, "Calming Stance", 1, RecastGroup.CalmingStance, 180f, 2f, null, false, false, false, false, AbilityActivationType.Casted);
 
         var cripplingDefense = new CripplingDefenseAbilityDefinition().BuildAbilities()[FeatType.CripplingDefense1];
-        AssertAbility(cripplingDefense, "Crippling Defense", 1, RecastGroup.Capstone, 1800f, 3f, 25, true, false, false, true, AbilityActivationType.Casted);
+        AssertAbility(cripplingDefense, "Crippling Defense", 1, RecastGroup.Capstone, 345f, 3f, 15, true, false, false, true, AbilityActivationType.Casted);
     }
 
     [Test]
@@ -142,8 +142,8 @@ public class SpearDamageTests
         calming.StatGroup.Stats[StatType.ForceDefensePercentAdjustment].Should().Be(-40);
 
         var cripplingDefense = new CripplingDefenseStatusEffect();
-        cripplingDefense.StatGroup.Stats[StatType.PhysicalDefensePercentAdjustment].Should().Be(-35);
-        cripplingDefense.StatGroup.Stats[StatType.ForceDefensePercentAdjustment].Should().Be(-35);
+        cripplingDefense.StatGroup.Stats[StatType.PhysicalDefensePercentAdjustment].Should().Be(-15);
+        cripplingDefense.StatGroup.Stats[StatType.ForceDefensePercentAdjustment].Should().Be(-15);
     }
 
     [Test]
@@ -206,8 +206,8 @@ public class SpearDamageTests
         improvedAttentiveness.Should().Contain("60f");
 
         var cripplingDefense = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Spear" / "CripplingDefenseAbilityDefinition.cs").FullName);
-        cripplingDefense.Replace("\r\n", "\n").Should().Contain("25,\n                true,\n                restoreStamina: 25");
-        cripplingDefense.Should().Contain("restoreStamina: 25");
+        cripplingDefense.Replace("\r\n", "\n").Should().Contain("CapstoneAbility.StaminaCost,\n                true,\n                restoreStamina: 15");
+        cripplingDefense.Should().Contain("restoreStamina: 15");
         cripplingDefense.Should().Contain("activationDelay: 3f");
     }
 

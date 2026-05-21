@@ -131,6 +131,21 @@ public class ThrowingBombardierTests
     }
 
     [Test]
+    public void SaturationTossSource_PulsesImmediatelyAndSkipsEmptyDelayedPulses()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Throwing" / "SaturationTossAbilityDefinition.cs").FullName);
+
+        var immediatePulseIndex = source.IndexOf("CombatAreaPulses.ApplyCombatPulse(", StringComparison.Ordinal);
+        var delayedPulseIndex = source.IndexOf("CombatAreaPulses.SchedulePulses(", StringComparison.Ordinal);
+
+        immediatePulseIndex.Should().BeGreaterThanOrEqualTo(0);
+        delayedPulseIndex.Should().BeGreaterThan(immediatePulseIndex);
+        source.Should().Contain("FieldDurationSeconds - PulseIntervalSeconds");
+        source.Should().Contain("CountHostileCreatures(activator, pulseLocation, FieldRadius) <= 0");
+    }
+
+    [Test]
     public void ThrowingBombardierFeatAndAbilityIcons_AreUniqueAndPresent()
     {
         var root = FindRepositoryRoot();

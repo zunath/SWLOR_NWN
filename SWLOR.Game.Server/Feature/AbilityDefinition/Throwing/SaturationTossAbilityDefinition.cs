@@ -45,25 +45,39 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
 
         private static void SaturationToss1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
+            var location = AbilityTargeting.ResolveImpactLocation(activator, target, targetLocation);
+
+            CombatAreaPulses.ApplyCombatPulse(
+                activator,
+                location,
+                SkillType.Throwing,
+                10,
+                FieldRadius);
+
             CombatAreaPulses.SchedulePulses(
                 activator,
-                AbilityTargeting.ResolveImpactLocation(activator, target, targetLocation),
-                FieldDurationSeconds,
+                location,
+                FieldDurationSeconds - PulseIntervalSeconds,
                 PulseIntervalSeconds,
                 false,
-                pulseLocation =>
-                {
-                    var ability = Ability.GetAbilityDetail(FeatType.SaturationToss1);
-                    Ability.BeginAbilityImpact(activator, ability);
-                    CombatAreaPulses.ApplyCombatPulse(
-                        activator,
-                        pulseLocation,
-                        SkillType.Throwing,
-                        10,
-                        FieldRadius);
-                    var summary = Ability.EndAbilityImpact(activator);
-                    Combat.ApplyAbilityImpactEffects(activator, summary);
-                });
+                pulseLocation => ApplyDelayedSaturationPulse(activator, pulseLocation));
+        }
+
+        private static void ApplyDelayedSaturationPulse(uint activator, Location pulseLocation)
+        {
+            if (CombatAreaPulses.CountHostileCreatures(activator, pulseLocation, FieldRadius) <= 0)
+                return;
+
+            var ability = Ability.GetAbilityDetail(FeatType.SaturationToss1);
+            Ability.BeginAbilityImpact(activator, ability);
+            CombatAreaPulses.ApplyCombatPulse(
+                activator,
+                pulseLocation,
+                SkillType.Throwing,
+                10,
+                FieldRadius);
+            var summary = Ability.EndAbilityImpact(activator);
+            Combat.ApplyAbilityImpactEffects(activator, summary);
         }
     }
 }

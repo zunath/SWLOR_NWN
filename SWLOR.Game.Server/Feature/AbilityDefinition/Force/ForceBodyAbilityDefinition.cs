@@ -57,13 +57,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         private static void ForceBody1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
             StatusEffect.ApplyStatusEffect(activator, activator, typeof(ForceBody1StatusEffect), 30f);
-            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Holy_Aid), activator);
+            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Aura_Negative_Energy), activator);
         }
 
         private static void ForceBody2ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
             StatusEffect.ApplyStatusEffect(activator, activator, typeof(ForceBody2StatusEffect), 30f);
-            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Holy_Aid), activator);
+            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Aura_Negative_Energy), activator);
         }
     }
 }

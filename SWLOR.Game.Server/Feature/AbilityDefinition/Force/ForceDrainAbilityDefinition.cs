@@ -128,10 +128,18 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             if (damage <= 0)
                 return;
 
+            ApplyDrainVisual(activator, target);
+
             var healAmount = Math.Max(1, (int)Math.Ceiling(damage * (healPercent / 100f)));
             healAmount = Stat.ApplyHealingReceivedAdjustment(activator, healAmount);
             ApplyEffectToObject(DurationType.Instant, EffectHeal(healAmount), activator);
-            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_M), activator);
+            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Evil_Help), activator);
+        }
+
+        private static void ApplyDrainVisual(uint activator, uint target)
+        {
+            var drainBeam = EffectBeam(VisualEffect.Vfx_Beam_Drain, activator, BodyNode.Hand, true);
+            AssignCommand(activator, () => ApplyEffectToObject(DurationType.Temporary, drainBeam, target, 2.0f));
         }
 
     }

@@ -71,7 +71,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
-                .RequirementStamina(3);
+                .RequirementStamina(3)
+                .RequirementItem("explosives");
         }
 
         private static void FragGrenade3(AbilityBuilder builder)
@@ -94,7 +95,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
-                .RequirementStamina(5);
+                .RequirementStamina(5)
+                .RequirementItem("explosives");
         }
 
         private static void FragGrenade1ImpactAction(uint activator, uint target, int level, Location targetLocation)

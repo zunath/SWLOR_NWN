@@ -50,7 +50,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
-                .RequirementStamina(5);
+                .RequirementStamina(5)
+                .RequirementItem("explosives");
         }
 
         private static void ClusterGrenade1ImpactAction(uint activator, uint target, int level, Location targetLocation)

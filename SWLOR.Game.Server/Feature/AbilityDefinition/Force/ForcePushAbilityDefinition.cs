@@ -131,7 +131,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 centerOnActivator: !GetIsObjectValid(target),
                 damageType: CombatDamageType.Force,
                 targetVisualEffect: VisualEffect.Vfx_Imp_Pulse_Negative,
-                areaVisualEffect: VisualEffect.Vfx_Fnf_Howl_Mind,
+                areaVisualEffect: VisualEffect.None,
                 maxTargets: 2,
                 afterSuccessfulHit: hitTarget => ApplyHobble(activator, hitTarget, ForcePush2HobbleDurationSeconds),
                 playImpactAnimation: false);
@@ -155,7 +155,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 centerOnActivator: !GetIsObjectValid(target),
                 damageType: CombatDamageType.Force,
                 targetVisualEffect: VisualEffect.Vfx_Imp_Pulse_Negative,
-                areaVisualEffect: VisualEffect.Vfx_Fnf_Howl_Mind,
+                areaVisualEffect: VisualEffect.None,
                 maxTargets: 3,
                 afterSuccessfulHit: hitTarget => ApplyHobble(activator, hitTarget, ForcePush3HobbleDurationSeconds),
                 playImpactAnimation: false);

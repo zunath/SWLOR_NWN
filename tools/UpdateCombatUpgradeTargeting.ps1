@@ -439,7 +439,10 @@ foreach ($label in @(
     "DoubleStrike2",
     "DoubleStrike3",
     "DoubleStrike4",
-    "MarkedForDeath1"
+    "MarkedForDeath1",
+    "RiotBlade1",
+    "RiotBlade2",
+    "RiotBlade3"
 )) {
     $rulesByLabel[$label] = $hostileCreatureRule
 }

@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.StatService;
@@ -15,7 +14,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         public ForceIntercept1StatusEffect()
         {
-            StatGroup.Stats[StatType.DamageTakenPercentAdjustment] = -50;
+            StatGroup.Stats[StatType.DamageTakenRedirectToStatusSourcePercent] = 50;
         }
 
         protected override void OnDamageTaken(uint defender, uint attacker, int damage, CombatDamageType damageType)

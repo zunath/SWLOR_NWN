@@ -113,7 +113,7 @@ public class ForceLightGuardianTests
         aura.StatGroup.Stats[StatType.MindResistance].Should().Be(10);
 
         var intercept = new ForceIntercept1StatusEffect();
-        intercept.StatGroup.Stats[StatType.DamageTakenPercentAdjustment].Should().Be(-50);
+        intercept.StatGroup.Stats[StatType.DamageTakenRedirectToStatusSourcePercent].Should().Be(50);
 
         var bastion = new BastionOfLight1StatusEffect();
         bastion.StatGroup.Stats[StatType.ForceDamageTakenPercentAdjustment].Should().Be(-10);

@@ -60,6 +60,7 @@ public class ArmorProvokeTests
         provoke1.IsSingleTargetAbility.Should().BeTrue();
         provoke1.IsAreaAbility.Should().BeFalse();
         AssertHostileTargeting(provoke1);
+        provoke1.RequiresTarget.Should().BeTrue();
 
         var provoke2 = abilities[FeatType.Provoke2];
         provoke2.Name.Should().Be("Provoke II");
@@ -71,6 +72,8 @@ public class ArmorProvokeTests
         provoke2.IsAreaAbility.Should().BeTrue();
         provoke2.IsSingleTargetAbility.Should().BeFalse();
         AssertHostileTargeting(provoke2);
+        provoke2.RequiresTarget.Should().BeFalse();
+        provoke2.Targeting!.Flags.Should().NotHaveFlag(AbilityTargetingFlags.OriginOnSelf);
     }
 
     [Test]
@@ -95,6 +98,26 @@ public class ArmorProvokeTests
         File.Exists((root / "SWLOR_Haks" / "swlor2_tga" / $"{provoke2FeatIcon}.tga").FullName).Should().BeTrue();
     }
 
+    [Test]
+    public void Provoke2FeatAndSpellTargeting_IsSelectableArea()
+    {
+        var root = FindRepositoryRoot();
+        var featRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "feat.2da");
+        var spellRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "spells.2da");
+
+        var provoke2Feat = featRows[1814];
+        var provoke2Spell = spellRows[972];
+
+        provoke2Feat["TARGETSELF"].Should().Be("****");
+        provoke2Spell["Range"].Should().Be("S");
+        provoke2Spell["TargetType"].Should().Be("0x06");
+        provoke2Spell["HostileSetting"].Should().Be("0");
+        provoke2Spell["FeatID"].Should().Be("****");
+        provoke2Spell["TargetShape"].Should().Be("sphere");
+        provoke2Spell["TargetSizeX"].Should().Be("8.0");
+        provoke2Spell["TargetFlags"].Should().Be("3");
+    }
+
     private static void AssertSkillRequirement(PerkLevel level, SkillType skill, int rank)
     {
         var requirement = level.Requirements
@@ -110,7 +133,6 @@ public class ArmorProvokeTests
     private static void AssertHostileTargeting(AbilityDetail ability)
     {
         ability.IsHostileAbility.Should().BeTrue();
-        ability.RequiresTarget.Should().BeTrue();
     }
 
     private static PerkDetail BuildProvokePerkWithout2daLookup()

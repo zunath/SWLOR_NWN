@@ -85,12 +85,11 @@ public class AIProfileValidationTests
     }
 
     [Test]
-    public void NPCHostileAreaAbilities_RequireEnemyTargetsForAISelection()
+    public void NPCTargetedHostileAreaAbilities_RequireEnemyTargetsForAISelection()
     {
         Ability.CacheData();
         var feats = new[]
         {
-            FeatType.Provoke2,
             FeatType.RupturingQuake,
             FeatType.SeismicSlam,
             FeatType.ScorchingBreath,
@@ -107,6 +106,17 @@ public class AIProfileValidationTests
             ability.RequiresTarget.Should().BeTrue($"{feat} should only be selected when an enemy target exists");
             ability.MaxRange.Should().BeGreaterThan(0f);
         }
+    }
+
+    [Test]
+    public void NPCLocationSelectableHostileAreaAbilities_DoNotRequireTargets()
+    {
+        Ability.CacheData();
+        var ability = Ability.GetAbilityDetail(FeatType.Provoke2);
+
+        ability.IsHostileAbility.Should().BeTrue();
+        ability.IsAreaAbility.Should().BeTrue();
+        ability.RequiresTarget.Should().BeFalse();
     }
 
     [Test]

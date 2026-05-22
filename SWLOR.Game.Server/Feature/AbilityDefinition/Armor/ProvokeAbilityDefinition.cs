@@ -90,7 +90,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Armor
                 .IsCastedAbility()
                 .HasMaxRange(15f)
                 .IsAreaAbility()
-                .RequiresTarget()
                 .IsHostileAbility()
                 .HasCustomValidation((_, target, _, _) => Validation(target))
                 .HasTargetingSphere(

@@ -640,15 +640,7 @@ namespace SWLOR.Game.Server.Service
             // Perks
             foreach (var (perk, level) in details.Perks)
             {
-                var perkDefinition = Perk.GetPerkDetails(perk);
-                var perkFeats = perkDefinition.PerkLevels.ContainsKey(level)
-                    ? perkDefinition.PerkLevels[level].GrantedFeats
-                    : new List<FeatType>();
-
-                foreach (var feat in perkFeats)
-                {
-                    CreaturePlugin.AddFeat(droid, feat);
-                }
+                Perk.SyncGrantedFeats(droid, perk, level, false);
             }
 
             AI.SetAIProfile(droid, AIProfileType.DroidCompanion);

@@ -340,7 +340,12 @@ namespace SWLOR.Game.Server.Feature
                     return;
                 }
 
-                if (!Ability.CanUseAbility(activator, target, feat, ability.AbilityLevel, targetLocation))
+                var effectivePerkLevel =
+                    ability.EffectiveLevelPerkType == PerkType.Invalid
+                        ? 1
+                        : Perk.GetPerkLevel(activator, ability.EffectiveLevelPerkType);
+
+                if (!Ability.CanUseAbility(activator, target, feat, effectivePerkLevel, targetLocation))
                 {
                     CancelActivation(true);
                     return;

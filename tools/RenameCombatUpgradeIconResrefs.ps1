@@ -30,7 +30,7 @@ $WordAliases = @{
     Iron = "iron"; Elbows = "elbw"; Wall = "wall"; Kill = "kill"; Zone = "zone"; Last = "last"; Word = "word"; Leg = "leg"
     Slash = "slsh"; Life = "life"; Siphon = "siph"; Line = "line"; Low = "low"; Maelstrom = "mael"; Marked = "mark"; For = ""
     Death = "death"; Marking = "mark"; Nerve = "nerv"; Neural = "neural"; Shock = "shok"; Neutralizing = "neut"; One = "one"
-    Overwatch = "ovrw"; Overwhelming = "ovrw"; Pacification = "pac"; Perceptive = "percp"; Perfect = "perf"; Throw = "throw"
+    Overwatch = "ovrw"; Overwhelming = "ovrw"; Pacification = "pac"; Perceptive = "percp"; Perfect = "perf"; Pulse = "pulse"; Relay = "rly"; Throw = "throw"
     Piercing = "pierc"; Pinning = "pin"; Fire = "fire"; Blank = "blank"; Burst = "burst"; Punishing = "pun"; Purify = "pur"
     Rain = "rain"; Steel = "steel"; Rampart = "ramp"; Rending = "rend"; Rib = "rib"; Ricochet = "rico"; Ripple = "ripl"
     Saber = "sabr"; Sacrificial = "sac"; Sap = "sap"; Vitality = "vit"; Saturation = "sat"; Savage = "sav"; Cleave = "clv"

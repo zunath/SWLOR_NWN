@@ -199,6 +199,10 @@ function Get-RankFamilyKey([object]$row) {
 function Add-RankBadgeMetadata([object[]]$rows) {
     $rankValuesByFamily = @{}
     foreach ($row in $rows) {
+        if ([string]$row.Type -eq "Ability") {
+            continue
+        }
+
         $rank = ([string]$row.Rank).Trim()
         if ([string]::IsNullOrWhiteSpace($rank)) {
             continue
@@ -220,7 +224,7 @@ function Add-RankBadgeMetadata([object[]]$rows) {
     foreach ($row in $rows) {
         $rank = ([string]$row.Rank).Trim()
         $badgeRank = ""
-        if (![string]::IsNullOrWhiteSpace($rank)) {
+        if ([string]$row.Type -ne "Ability" -and ![string]::IsNullOrWhiteSpace($rank)) {
             $family = Get-RankFamilyKey $row
             if ($rankValuesByFamily.ContainsKey($family) -and $rankValuesByFamily[$family].Count -gt 1) {
                 $badgeRank = $rank
@@ -320,8 +324,8 @@ Strict sheet rules:
 - Keep all central art, glows, particles, waves, projectiles, and highlights inside the icon frame/border.
 - Use a consistent frame, border thickness, and background treatment across all $BatchSize icons.
 - Exact semantic frame colors are stamped later by the SWLOR import tool at final 32x32 size. The generated source art may include a matching frame, but the final category color must come from the import tool.
-- Do not draw rank badges or numbers. When a badge is required, the SWLOR import tool adds it later at final 32x32 size for readability.
-- Leave the bottom-right corner visually calm and uncluttered on every icon so a later badge can be stamped there when the icon belongs to a multi-rank family.
+- Do not draw rank badges or numbers. Ability icons do not use rank badges; the SWLOR import tool adds any remaining non-ability badges later at final 32x32 size for readability.
+- Leave the bottom-right corner visually calm and uncluttered on every icon.
 - No text labels, filenames, watermark, letters, words, or numbers.
 - Simplify small details for 32x32 readability: use bold silhouettes, strong contrast, and fewer tiny particles.
 - Anatomy validation: if any human, humanoid, beast, or creature appendage is visible, it must be anatomically coherent. No extra fingers, missing fingers, fused fingers, malformed hands, broken claws, impossible wings, or incoherent tails. Prefer closed armored gauntlets, paws, claws, silhouettes, or symbolic emblems when exposed fingers are not essential.
@@ -341,6 +345,9 @@ for ($batchIndex = 0; $batchIndex -lt $batchCount; $batchIndex++) {
         $target = $batchTargets[$i]
         if ([string]::IsNullOrWhiteSpace($target.Rank)) {
             $rankText = "unranked"
+        }
+        elseif ($target.Type -eq "Ability") {
+            $rankText = "ability rank $($target.Rank); do not draw a rank number or badge"
         }
         elseif ([string]::IsNullOrWhiteSpace($target.RankBadge)) {
             $rankText = "single-level rank $($target.Rank); do not draw a rank number or badge"

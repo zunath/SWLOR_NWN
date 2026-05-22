@@ -6,11 +6,16 @@ param(
     [int]$GeneratedFeatStart = 2000,
     [int]$GeneratedFeatEnd = 2558,
     [string]$SampleOutputPath = "",
-    [string[]]$SampleIconResRefs = @()
+    [string[]]$SampleIconResRefs = @(),
+    [switch]$AllowPlaceholderArtwork
 )
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
+
+if (!$AllowPlaceholderArtwork) {
+    throw "GenerateCombatUpgradeIcons.ps1 creates placeholder-quality ability artwork. Use tools\ImportCodexIconContactSheet.ps1 for new source art or tools\RestoreAbilityIconArtwork.ps1 to restore cached polished artwork. Pass -AllowPlaceholderArtwork only for local experiments."
+}
 
 Add-Type -AssemblyName System.Drawing
 
@@ -80,26 +85,6 @@ function Get-RankFamilyKey([object]$row) {
 }
 
 function Get-RankBadgeMap([object[]]$rows) {
-    $rankValuesByFamily = @{}
-    foreach ($row in $rows) {
-        $rank = (Get-OptionalProperty $row "Rank").Trim()
-        if ([string]::IsNullOrWhiteSpace($rank)) {
-            continue
-        }
-
-        $rankValue = 0
-        if (![int]::TryParse($rank, [ref]$rankValue) -or $rankValue -lt 1) {
-            continue
-        }
-
-        $family = Get-RankFamilyKey $row
-        if (!$rankValuesByFamily.ContainsKey($family)) {
-            $rankValuesByFamily[$family] = @{}
-        }
-
-        $rankValuesByFamily[$family][$rankValue] = $true
-    }
-
     $badgeMap = @{}
     foreach ($row in $rows) {
         $resref = (Get-OptionalProperty $row "IconResRef").Trim().ToLowerInvariant()
@@ -107,16 +92,7 @@ function Get-RankBadgeMap([object[]]$rows) {
             continue
         }
 
-        $rank = (Get-OptionalProperty $row "Rank").Trim()
         $badgeMap[$resref] = ""
-        if ([string]::IsNullOrWhiteSpace($rank)) {
-            continue
-        }
-
-        $family = Get-RankFamilyKey $row
-        if ($rankValuesByFamily.ContainsKey($family) -and $rankValuesByFamily[$family].Count -gt 1) {
-            $badgeMap[$resref] = $rank
-        }
     }
 
     return $badgeMap

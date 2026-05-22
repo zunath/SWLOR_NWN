@@ -167,6 +167,10 @@ function Get-RankFamilyKey([object]$row) {
 function Get-RankBadgeMap([object[]]$rows) {
     $rankValuesByFamily = @{}
     foreach ($row in $rows) {
+        if ((Get-OptionalProperty $row "Type") -ne "StatusEffect") {
+            continue
+        }
+
         $rank = (Get-OptionalProperty $row "Rank").Trim()
         if ([string]::IsNullOrWhiteSpace($rank)) {
             continue
@@ -187,6 +191,10 @@ function Get-RankBadgeMap([object[]]$rows) {
 
     $badgeMap = @{}
     foreach ($row in $rows) {
+        if ((Get-OptionalProperty $row "Type") -ne "StatusEffect") {
+            continue
+        }
+
         $resref = (Get-OptionalProperty $row "IconResRef").Trim().ToLowerInvariant()
         if ([string]::IsNullOrWhiteSpace($resref)) {
             continue
@@ -1213,6 +1221,11 @@ function Test-GameplayIconStandards([object[]]$rows, [hashtable]$statusEffectStr
     $errors = [System.Collections.Generic.List[string]]::new()
     $iconDirectory = Resolve-RepoPath $IconPath
     $enumText = Get-Content -Path (Resolve-RepoPath $EffectIconTypePath) -Raw
+    $abilityRowsByKey = @{}
+    foreach ($ability in Get-AbilityRows (Resolve-RepoPath $Feat2daPath) $GeneratedFeatStart $GeneratedFeatEnd) {
+        $abilityRowsByKey[$ability.Key] = $ability
+    }
+
     $effectIcons2daResolved = Resolve-RepoPath $EffectIcons2daPath
     $effectIconRowsByResRef = @{}
     foreach ($line in Get-Content -Path $effectIcons2daResolved) {
@@ -1243,6 +1256,7 @@ function Test-GameplayIconStandards([object[]]$rows, [hashtable]$statusEffectStr
     }
 
     $iconHashes = @{}
+    $manifestAbilityKeys = @{}
 
     foreach ($entry in $rows) {
         if ($ApprovedCategories -notcontains $entry.SemanticCategory) {
@@ -1260,6 +1274,19 @@ function Test-GameplayIconStandards([object[]]$rows, [hashtable]$statusEffectStr
 
         if ($entry.IconResRef -notmatch "^[A-Za-z0-9_]+$") {
             $errors.Add("$($entry.Type) '$($entry.Key)' icon resref '$($entry.IconResRef)' contains invalid characters.") | Out-Null
+        }
+
+        if ($entry.Type -eq "Ability") {
+            $manifestAbilityKeys[$entry.Key] = $true
+            if (!$abilityRowsByKey.ContainsKey($entry.Key)) {
+                $errors.Add("Ability '$($entry.Key)' is missing from $Feat2daPath.") | Out-Null
+            }
+            else {
+                $featIconResRef = $abilityRowsByKey[$entry.Key].IconResRef
+                if ($featIconResRef -ine $entry.IconResRef) {
+                    $errors.Add("Ability '$($entry.Key)' manifest icon '$($entry.IconResRef)' does not match $Feat2daPath icon '$featIconResRef'.") | Out-Null
+                }
+            }
         }
 
         $iconFile = Join-Path $iconDirectory "$($entry.IconResRef).tga"
@@ -1311,6 +1338,12 @@ function Test-GameplayIconStandards([object[]]$rows, [hashtable]$statusEffectStr
                     }
                 }
             }
+        }
+    }
+
+    foreach ($ability in ($abilityRowsByKey.Values | Sort-Object Key)) {
+        if (!$manifestAbilityKeys.ContainsKey($ability.Key)) {
+            $errors.Add("Ability '$($ability.Key)' in $Feat2daPath is missing from the gameplay icon manifest.") | Out-Null
         }
     }
 
@@ -1370,16 +1403,13 @@ if ($UpdateStatusEffectCode) {
 }
 
 if ($GenerateIcons) {
-    $generateCombatIcons = Join-Path $PSScriptRoot "GenerateCombatUpgradeIcons.ps1"
-    & $generateCombatIcons `
-        -Feat2daPath $Feat2daPath `
+    $restoreAbilityIcons = Join-Path $PSScriptRoot "RestoreAbilityIconArtwork.ps1"
+    & $restoreAbilityIcons `
+        -ManifestPath $ManifestPath `
         -IconOutputPath $IconPath `
-        -IconManifestPath $ManifestPath `
-        -IconSize $IconSize `
-        -GeneratedFeatStart $GeneratedFeatStart `
-        -GeneratedFeatEnd $GeneratedFeatEnd
+        -IconSize $IconSize
     if (!$?) {
-        throw "$generateCombatIcons failed."
+        throw "$restoreAbilityIcons failed."
     }
 
     $linkCombatFeatSpells = Join-Path $PSScriptRoot "LinkCombatUpgradeFeatSpells.ps1"

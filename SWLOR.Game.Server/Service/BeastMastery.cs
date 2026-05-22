@@ -259,15 +259,7 @@ namespace SWLOR.Game.Server.Service
             // Perks
             foreach (var (perk, level) in dbBeast.Perks)
             {
-                var perkDefinition = Perk.GetPerkDetails(perk);
-                var perkFeats = perkDefinition.PerkLevels.ContainsKey(level)
-                    ? perkDefinition.PerkLevels[level].GrantedFeats
-                    : new List<FeatType>();
-
-                foreach (var feat in perkFeats)
-                {
-                    CreaturePlugin.AddFeat(beast, feat);
-                }
+                Perk.SyncGrantedFeats(beast, perk, level, false);
             }
 
             // Scripts

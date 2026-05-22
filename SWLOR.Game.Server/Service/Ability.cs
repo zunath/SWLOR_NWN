@@ -260,6 +260,13 @@ namespace SWLOR.Game.Server.Service
                 return false;
             }
 
+            if (Perk.ShouldEnforceActiveAbilityFeatReplacement(activator, ability.EffectiveLevelPerkType) &&
+                !Perk.IsCurrentActiveAbilityFeat(abilityType, ability.EffectiveLevelPerkType, effectivePerkLevel))
+            {
+                SendMessageToPC(activator, "A newer rank has replaced this ability.");
+                return false;
+            }
+
             // Activator is dead.
             if (GetCurrentHitPoints(activator) <= 0)
             {

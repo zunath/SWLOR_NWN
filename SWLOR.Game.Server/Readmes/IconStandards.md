@@ -42,14 +42,17 @@ Two unrelated icons must not share the same base symbol with only a rank badge, 
 
 ## Rank Display
 
-Only multi-rank icon families show a rank badge. If an ability, status effect, feat, spell, or perk line exists only at level 1, the icon must not display a `1`. If the same icon family has more than one level, every ranked member of that family, including rank 1, must show its numeric rank in the bottom-right corner.
+Ability, feat, and spell icons that appear on the ability wheel must not show numeric rank badges. Higher ability ranks replace lower ranks, so the wheel should show the current usable ability without carrying old rank-number clutter forward.
 
-NWN presents these icons at 32x32, so any displayed number must be readable at that final in-game size.
+Status-effect icons may show numeric rank badges when a status-effect family has more than one level. If a status-effect line exists only at level 1, the icon must not display a `1`. If the same status-effect family has more than one level, every ranked member of that family, including rank 1, must show its numeric rank in the bottom-right corner.
+
+NWN presents these icons at 32x32, so any displayed status-effect number must be readable at that final in-game size.
 
 Required treatment:
 
-- Use `1`, `2`, `3`, and higher numeric ranks as needed.
-- Do not display a number for single-level rank-1 icons.
+- Never display a rank number on ability, feat, or spell icons used by the ability wheel.
+- Use `1`, `2`, `3`, and higher numeric ranks as needed for ranked status effects.
+- Do not display a number for single-level rank-1 status effects.
 - Place the number in the bottom-right corner.
 - Put the number on a dark, high-contrast badge that is fully inside the frame.
 - Size the badge for 32x32 readability; it should be large and simple enough that a final 32x32 icon still shows the number clearly.
@@ -58,7 +61,7 @@ Required treatment:
 - Generate the icon artwork without any rank number, then stamp the numeric badge during final import at the actual 32x32 output size.
 - Do not rely on filename, tooltip, color intensity, or small pips as the only rank signal.
 
-Rank families should share base art so players recognize the ability or effect line. Higher ranks may add subtle escalation such as a brighter glow, stronger contrast, or extra sparks, but the numeric badge is the required rank marker.
+Rank families should share base art so players recognize the ability or effect line. Higher ability ranks may add subtle escalation such as a brighter glow, stronger contrast, or extra sparks, but they must remain number-free. Ranked status effects use the numeric badge as the required rank marker.
 
 ## Framing
 
@@ -76,7 +79,7 @@ Gameplay icons must be polished, readable, and intentionally illustrated. Do not
 
 The central image must clearly represent the gameplay concept at the final 32x32 in-game icon size. A blaster icon should have a recognizable body, grip, barrel, muzzle, and highlight details. A food icon should clearly read as a specific food item, such as a drumstick, not an abstract oval or disconnected parts. A control icon should communicate the actual control effect, such as flash blindness, sonic disruption, fear, restraint, or accuracy disruption.
 
-The target visual style is a polished illustrated game icon, not a flat UI pictogram. Maintain the approved background, frame, semantic color, and rank badge treatment, but render the central subject with the level of finish seen in high-quality fantasy/RPG ability icons: layered forms, painterly highlights, shaded edges, faceted or glowing interiors where appropriate, and a few contained supporting accents such as sparks, shards, particles, or arcs.
+The target visual style is a polished illustrated game icon, not a flat UI pictogram. Maintain the approved background, frame, semantic color, and status-effect rank badge treatment, but render the central subject with the level of finish seen in high-quality fantasy/RPG ability icons: layered forms, painterly highlights, shaded edges, faceted or glowing interiors where appropriate, and a few contained supporting accents such as sparks, shards, particles, or arcs.
 
 Required treatment:
 
@@ -100,10 +103,11 @@ The standard pipeline is:
 
 - Generate the central subject with GPT Image 2 through Codex image generation.
 - Prompt for a polished fantasy/RPG ability-icon illustration with clear 32x32 readability, no text, no watermark, no generated numbers, and no generated rank badge.
-- Composite the generated subject into the approved SWLOR background, frame, semantic color, and conditional rank-badge treatment.
-- Keep the semantic frame color, background, border, and numeric rank badge controlled by the project icon tools so every icon remains consistent.
+- Composite the generated subject into the approved SWLOR background, frame, semantic color, and conditional status-effect rank-badge treatment.
+- Keep the semantic frame color, background, border, and status-effect numeric rank badge controlled by the project icon tools so every icon remains consistent.
 - Stamp semantic frame color after resizing to the final 32x32 icon size. Do not trust image generation or source-image downscaling to preserve the approved category color.
-- Stamp rank badges after resizing to the final 32x32 icon size only for families with multiple levels. Do not trust image generation or source-image downscaling to preserve readable numeric text.
+- Stamp rank badges after resizing to the final 32x32 icon size only for status-effect families with multiple levels. Do not trust image generation or source-image downscaling to preserve readable numeric text.
+- Do not stamp ability, feat, or spell rank badges.
 - Export production TGA files at 32x32. Source generation may happen at a larger size, but acceptance is based on the final 32x32 TGA.
 - Export production TGA files with bottom-left origin. When using ImageMagick, add a final `-flip -orient BottomLeft` so the visible icon remains upright in NWN's classic gameplay icon paths.
 - Review generated source sheets and final enlarged 32x32 previews for malformed anatomy before importing to production. Regenerate or edit any icon with incorrect fingers, claws, limbs, wings, tails, or other appendages.
@@ -149,8 +153,9 @@ Icon tools and audits must fail when a gameplay icon violates these standards:
 - Final TGA with transparent or partially transparent pixels.
 - Primitive, placeholder-quality, or unclear central artwork.
 - Incorrect anatomy, including extra or missing fingers, malformed hands, incoherent claws, or broken creature/humanoid appendages.
-- Multi-rank icon without a numeric badge readable in the final 32x32 TGA.
-- Single-level rank-1 icon with an unnecessary numeric badge.
+- Ability icon with a numeric rank badge or a painted-over badge patch.
+- Status-effect multi-rank icon without a numeric badge readable in the final 32x32 TGA.
+- Status-effect single-level rank-1 icon with an unnecessary numeric badge.
 - Generated cooldown icon name longer than NWN's 16-character resource limit.
 - Recast group or resource generators silently truncating player-facing labels or icon names.
 
@@ -166,11 +171,14 @@ After changing generated combat-upgrade ability or status-effect icons, run:
 powershell -ExecutionPolicy Bypass -File tools/UpdateGameplayIconStandards.ps1 -RefreshManifest -GenerateIcons -UpdateStatusEffectCode
 ```
 
-After changing rank-badge rules without regenerating source artwork, run:
+Do not remove ability rank badges by painting over existing TGAs. Regenerate clean source icons instead, then regenerate cooldown variants:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File tools/ApplyIconRankBadgeRules.ps1
+powershell -ExecutionPolicy Bypass -File tools/RestoreAbilityIconArtwork.ps1
+powershell -ExecutionPolicy Bypass -File tools/GenerateCooldownIcons.ps1 -Force
 ```
+
+`tools/GenerateCombatUpgradeIcons.ps1` is a placeholder-art generator and must not be used for production ability icons without an explicit local-experiment override.
 
 If any generated TGAs were written with top-left origin, normalize them before building haks:
 

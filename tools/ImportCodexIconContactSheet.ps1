@@ -118,6 +118,10 @@ function Get-RankFamilyKey([object]$row) {
 function Get-RankBadgeMap([object[]]$rows) {
     $rankValuesByFamily = @{}
     foreach ($row in $rows) {
+        if ((Get-OptionalProperty $row "Type").Trim() -eq "Ability") {
+            continue
+        }
+
         $rank = (Get-OptionalProperty $row "Rank").Trim()
         if ([string]::IsNullOrWhiteSpace($rank)) {
             continue
@@ -140,6 +144,11 @@ function Get-RankBadgeMap([object[]]$rows) {
     foreach ($row in $rows) {
         $resref = (Get-OptionalProperty $row "IconResRef").Trim().ToLowerInvariant()
         if ([string]::IsNullOrWhiteSpace($resref)) {
+            continue
+        }
+
+        if ((Get-OptionalProperty $row "Type").Trim() -eq "Ability") {
+            $badgeMap[$resref] = ""
             continue
         }
 

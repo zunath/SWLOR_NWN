@@ -21,6 +21,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         IGuiRefreshable<PerkResetAcquiredRefreshEvent>
     {
         private const int ItemsPerPage = 30;
+        private const int AutoAddHotBarSlots = 11;
+        private const int TotalHotBarSlots = 36;
         private int _pages;
         private bool _initialLoadDone;
 
@@ -498,25 +500,93 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                               currentUpgrade != null;
         };
 
-        private void GrantFeats(PerkLevel nextLevel)
+        private void GrantFeats(PerkType perkType, int rank)
         {
             var target = IsInMyPerksMode ? Player : GetAssociate(AssociateType.Henchman, Player);
             if (!GetIsObjectValid(target))
                 return;
 
-            foreach (var feat in nextLevel.GrantedFeats)
+            var previousActiveAbilityFeats = Perk.GetCurrentActiveAbilityFeats(perkType, rank - 1);
+            var currentActiveAbilityFeats = Perk.GetCurrentActiveAbilityFeats(perkType, rank);
+
+            Perk.SyncGrantedFeats(target, perkType, rank, true);
+            SyncHotBarActiveAbilityFeats(previousActiveAbilityFeats, currentActiveAbilityFeats);
+        }
+
+        private void SyncHotBarActiveAbilityFeats(
+            IReadOnlyList<FeatType> previousActiveAbilityFeats,
+            IReadOnlyList<FeatType> currentActiveAbilityFeats)
+        {
+            if (!IsInMyPerksMode)
+                return;
+
+            var currentFeats = currentActiveAbilityFeats
+                .Where(CanAddFeatToHotBar)
+                .Distinct()
+                .ToList();
+            var previousFeats = previousActiveAbilityFeats
+                .Where(CanAddFeatToHotBar)
+                .Distinct()
+                .ToList();
+            var replacedFeats = previousFeats
+                .Except(currentFeats)
+                .ToHashSet();
+            var addedFeats = currentFeats
+                .Except(previousFeats)
+                .ToList();
+            var replacementIndex = 0;
+
+            if (replacedFeats.Count > 0)
             {
-                if (GetHasFeat(feat, target)) continue;
-                CreaturePlugin.AddFeatByLevel(target, feat, 1);
+                for (var slot = 0; slot < TotalHotBarSlots; slot++)
+                {
+                    var quickBarSlot = PlayerPlugin.GetQuickBarSlot(Player, slot);
+                    if (!IsFeatHotBarSlot(quickBarSlot, replacedFeats))
+                        continue;
 
-                // If feat isn't registered or the ability doesn't have an impact action,
-                // don't add the feat to the player's hot bar.
-                if (!Ability.IsFeatRegistered(feat)) continue;
-                var abilityDetail = Ability.GetAbilityDetail(feat);
-                if (abilityDetail.ImpactAction == null) continue;
+                    if (replacementIndex < currentFeats.Count)
+                    {
+                        PlayerPlugin.SetQuickBarSlot(Player, slot, PlayerQuickBarSlot.UseFeat(currentFeats[replacementIndex]));
+                        replacementIndex++;
+                    }
+                    else
+                    {
+                        PlayerPlugin.SetQuickBarSlot(Player, slot, PlayerQuickBarSlot.Empty(QuickBarSlotType.Empty));
+                    }
+                }
+            }
 
+            foreach (var feat in addedFeats)
+            {
                 AddFeatToHotBar(feat);
             }
+        }
+
+        private static bool CanAddFeatToHotBar(FeatType feat)
+        {
+            return Ability.IsFeatRegistered(feat) &&
+                   Ability.GetAbilityDetail(feat).ImpactAction != null;
+        }
+
+        private static bool IsFeatHotBarSlot(QuickBarSlot quickBarSlot, IReadOnlySet<FeatType> feats)
+        {
+            return quickBarSlot.ObjectType == QuickBarSlotType.Feat &&
+                   feats.Contains((FeatType)quickBarSlot.INTParam1);
+        }
+
+        private bool IsFeatOnHotBar(FeatType feat)
+        {
+            for (var slot = 0; slot < TotalHotBarSlots; slot++)
+            {
+                var quickBarSlot = PlayerPlugin.GetQuickBarSlot(Player, slot);
+                if (quickBarSlot.ObjectType == QuickBarSlotType.Feat &&
+                    quickBarSlot.INTParam1 == (int)feat)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         private void AddFeatToHotBar(FeatType feat)
@@ -524,31 +594,39 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (!IsInMyPerksMode)
                 return;
 
+            if (IsFeatOnHotBar(feat))
+                return;
+
             var qbs = PlayerQuickBarSlot.UseFeat(feat);
 
             // Try to add the new feat to the player's hotbar.
-            if (PlayerPlugin.GetQuickBarSlot(Player, 0).ObjectType == QuickBarSlotType.Empty)
-                PlayerPlugin.SetQuickBarSlot(Player, 0, qbs);
-            else if (PlayerPlugin.GetQuickBarSlot(Player, 1).ObjectType == QuickBarSlotType.Empty)
-                PlayerPlugin.SetQuickBarSlot(Player, 1, qbs);
-            else if (PlayerPlugin.GetQuickBarSlot(Player, 2).ObjectType == QuickBarSlotType.Empty)
-                PlayerPlugin.SetQuickBarSlot(Player, 2, qbs);
-            else if (PlayerPlugin.GetQuickBarSlot(Player, 3).ObjectType == QuickBarSlotType.Empty)
-                PlayerPlugin.SetQuickBarSlot(Player, 3, qbs);
-            else if (PlayerPlugin.GetQuickBarSlot(Player, 4).ObjectType == QuickBarSlotType.Empty)
-                PlayerPlugin.SetQuickBarSlot(Player, 4, qbs);
-            else if (PlayerPlugin.GetQuickBarSlot(Player, 5).ObjectType == QuickBarSlotType.Empty)
-                PlayerPlugin.SetQuickBarSlot(Player, 5, qbs);
-            else if (PlayerPlugin.GetQuickBarSlot(Player, 6).ObjectType == QuickBarSlotType.Empty)
-                PlayerPlugin.SetQuickBarSlot(Player, 6, qbs);
-            else if (PlayerPlugin.GetQuickBarSlot(Player, 7).ObjectType == QuickBarSlotType.Empty)
-                PlayerPlugin.SetQuickBarSlot(Player, 7, qbs);
-            else if (PlayerPlugin.GetQuickBarSlot(Player, 8).ObjectType == QuickBarSlotType.Empty)
-                PlayerPlugin.SetQuickBarSlot(Player, 8, qbs);
-            else if (PlayerPlugin.GetQuickBarSlot(Player, 9).ObjectType == QuickBarSlotType.Empty)
-                PlayerPlugin.SetQuickBarSlot(Player, 9, qbs);
-            else if (PlayerPlugin.GetQuickBarSlot(Player, 10).ObjectType == QuickBarSlotType.Empty)
-                PlayerPlugin.SetQuickBarSlot(Player, 10, qbs);
+            for (var slot = 0; slot < AutoAddHotBarSlots; slot++)
+            {
+                if (PlayerPlugin.GetQuickBarSlot(Player, slot).ObjectType != QuickBarSlotType.Empty)
+                    continue;
+
+                PlayerPlugin.SetQuickBarSlot(Player, slot, qbs);
+                return;
+            }
+        }
+
+        private void RemoveFeatsFromHotBar(IEnumerable<FeatType> feats)
+        {
+            if (!IsInMyPerksMode)
+                return;
+
+            var featSet = feats.ToHashSet();
+            if (featSet.Count <= 0)
+                return;
+
+            for (var slot = 0; slot < TotalHotBarSlots; slot++)
+            {
+                var quickBarSlot = PlayerPlugin.GetQuickBarSlot(Player, slot);
+                if (IsFeatHotBarSlot(quickBarSlot, featSet))
+                {
+                    PlayerPlugin.SetQuickBarSlot(Player, slot, PlayerQuickBarSlot.Empty(QuickBarSlotType.Empty));
+                }
+            }
         }
 
         // Applies any Purchase triggers associated with this perk.
@@ -688,7 +766,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     }
 
                     var newRank = rank + 1;
-                    GrantFeats(nextUpgrade);
+                    GrantFeats(selectedPerk, newRank);
                     ApplyPurchasePerkTriggers(newRank, selectedPerk);
 
                     FloatingTextStringOnCreature(ColorToken.Green($"You purchase '{detail.Name}' rank {newRank}."), Player, false);
@@ -799,11 +877,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     Gui.PublishRefreshEvent(Player, new PerkRefundedRefreshEvent(selectedPerk));
 
                     // Remove all feats granted by all levels of this perk.
-                    var feats = perkDetail.PerkLevels.Values.SelectMany(s => s.GrantedFeats);
+                    var feats = perkDetail.PerkLevels.Values.SelectMany(s => s.GrantedFeats).ToList();
                     foreach (var feat in feats)
                     {
                         CreaturePlugin.RemoveFeat(target, feat);
                     }
+
+                    RemoveFeatsFromHotBar(feats);
 
                     // Run all of the triggers related to refunding this perk.
                     foreach (var action in perkDetail.RefundedTriggers)

@@ -18,7 +18,7 @@ public class HeavyVibrobladeDefenseTests
     {
         var perks = BuildHeavyVibrobladeDefensePerksWithout2daLookup();
 
-        AssertPerkLevel(perks[PerkType.FortressStrike], "Fortress Strike", 1, 2, 5, FeatType.FortressStrike1,
+        AssertPerkLevel(perks[PerkType.FortressStrike], "Fortress Strike", 1, 2, 2, FeatType.FortressStrike1,
             "Your next attack deals weapon DMG + 10 and generates extra enmity. You gain +10% Physical Defense for 16 seconds.");
         AssertPerkLevel(perks[PerkType.AngerStrike], "Anger Strike", 1, 2, 8, FeatType.AngerStrike1,
             "Your next attack deals +12 DMG and generates extra enmity.");

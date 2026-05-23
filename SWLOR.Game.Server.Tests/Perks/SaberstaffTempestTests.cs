@@ -19,7 +19,7 @@ public class SaberstaffTempestTests
     {
         var perks = BuildSaberstaffTempestPerksWithout2daLookup();
 
-        AssertPerkLevel(perks[PerkType.DoubleStrike], "Double Strike", 1, 3, 5, FeatType.DoubleStrike1,
+        AssertPerkLevel(perks[PerkType.DoubleStrike], "Double Strike", 1, 3, 2, FeatType.DoubleStrike1,
             "Instantly attacks twice, each for weapon DMG + 12.");
         AssertPerkLevel(perks[PerkType.CircleSlash], "Circle Slash", 1, 3, 8, FeatType.CircleSlash1,
             "Attacks up to 3 nearby enemies for weapon DMG + 10 each.");

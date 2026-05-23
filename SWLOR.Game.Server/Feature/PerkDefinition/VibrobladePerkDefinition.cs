@@ -325,7 +325,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .IncreasesStat(StatType.AutoAttackDamageBonusChance, 10)
                 .IncreasesStat(StatType.AutoAttackDamageBonus, 8)
                 .Price(2)
-                .RequirementSkill(SkillType.Vibroblade, 5);
+                .RequirementSkill(SkillType.Vibroblade, 2);
         }
 
         private void ShieldBash()
@@ -362,7 +362,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .IncreasesStat(StatType.DeflectionEvasionPercentAdjustment, creature => EquipmentPredicates.HasOffHandShield(creature) ? 3 : 0)
                 .IncreasesStat(StatType.DeflectionEvasionEnmityPercentAdjustment, creature => EquipmentPredicates.HasOffHandShield(creature) ? 3 : 0)
                 .Price(3)
-                .RequirementSkill(SkillType.Vibroblade, 5);
+                .RequirementSkill(SkillType.Vibroblade, 2);
         }
 
         private void ShieldWall()

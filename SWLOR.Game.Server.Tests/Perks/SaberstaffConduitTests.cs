@@ -20,7 +20,7 @@ public class SaberstaffConduitTests
     {
         var perks = BuildSaberstaffConduitPerksWithout2daLookup();
 
-        AssertPerkLevel(perks[PerkType.ConduitTraining], "Conduit Training", 1, 2, 5, null,
+        AssertPerkLevel(perks[PerkType.ConduitTraining], "Conduit Training", 1, 2, 2, null,
             "Gain +5% Force Defense and saberstaff attacks restore 1 FP. FP restoration can only trigger once every 4 seconds.",
             StatType.ForceDefensePercentAdjustment,
             StatType.AutoAttackFPRestore,

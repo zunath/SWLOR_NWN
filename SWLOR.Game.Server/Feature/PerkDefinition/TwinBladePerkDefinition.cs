@@ -87,7 +87,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .IncreasesStat(StatType.DeflectionNextSkillAbilityDamageBonus, creature => EquipmentPredicates.HasMainHandTwinBlade(creature) ? 8 : 0)
                 .IncreasesStat(StatType.DeflectionNextSkillAbilityDamageBonusWindowSeconds, creature => EquipmentPredicates.HasMainHandTwinBlade(creature) ? 8 : 0)
                 .Price(2)
-                .RequirementSkill(SkillType.TwinBlade, 5);
+                .RequirementSkill(SkillType.TwinBlade, 2);
         }
 
         private void CrossCut()
@@ -99,7 +99,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.CrossCut1)
                 .Description("Instantly attacks twice, each for weapon DMG + 8, and inflicts Disoriented for 8 seconds.")
                 .Price(3)
-                .RequirementSkill(SkillType.TwinBlade, 5)
+                .RequirementSkill(SkillType.TwinBlade, 2)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.CrossCut2)

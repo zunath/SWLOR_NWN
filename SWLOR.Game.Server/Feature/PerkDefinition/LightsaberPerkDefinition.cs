@@ -181,7 +181,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Grants +15 Attack Deflection.")
                 .IncreasesStat(StatType.AttackDeflection, creature => EquipmentPredicates.HasMainHandLightsaber(creature) ? 15 : 0)
                 .Price(2)
-                .RequirementSkill(SkillType.Lightsaber, 5)
+                .RequirementSkill(SkillType.Lightsaber, 2)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
 
                 .AddPerkLevel()
@@ -502,7 +502,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.VersatileStrike1)
                 .Description("Your next attack deals weapon DMG + 10 to your target. Inflicts Sunder which reduces defense and force defense by 10% for 30 seconds.")
                 .Price(2)
-                .RequirementSkill(SkillType.Lightsaber, 5)
+                .RequirementSkill(SkillType.Lightsaber, 2)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
 
                 .AddPerkLevel()

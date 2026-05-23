@@ -19,7 +19,7 @@ public class LightsaberDefenseTests
     {
         var perks = BuildLightsaberDefensePerksWithout2daLookup();
 
-        AssertPerkLevel(perks[PerkType.DeflectionTraining], "Deflection Training", 1, 2, 5, null,
+        AssertPerkLevel(perks[PerkType.DeflectionTraining], "Deflection Training", 1, 2, 2, null,
             "Grants +15 Attack Deflection.",
             StatType.AttackDeflection);
         AssertPerkLevel(perks[PerkType.ReactiveDeflection], "Reactive Deflection", 1, 2, 8, null,

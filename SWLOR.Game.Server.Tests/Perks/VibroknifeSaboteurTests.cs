@@ -19,7 +19,7 @@ public class VibroknifeSaboteurTests
     {
         var perks = BuildVibroknifeSaboteurPerksWithout2daLookup();
 
-        AssertPerkLevel(perks[PerkType.CalculatedStrikes], "Calculated Strikes", 1, 2, 5, null,
+        AssertPerkLevel(perks[PerkType.CalculatedStrikes], "Calculated Strikes", 1, 2, 2, null,
             "Auto-attacks have 15% chance to reduce target's Accuracy by 10% for 6s.",
             StatType.AutoAttackTargetAccuracyPercentAdjustmentChance,
             StatType.AutoAttackTargetAccuracyPercentAdjustment,

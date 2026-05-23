@@ -18,7 +18,7 @@ public class SpearDisablerTests
     {
         var perks = BuildSpearDisablerPerksWithout2daLookup();
 
-        AssertPerkLevel(perks[PerkType.ErosionStrike], "Erosion Strike", 1, 2, 5, null,
+        AssertPerkLevel(perks[PerkType.ErosionStrike], "Erosion Strike", 1, 2, 2, null,
             "When you damage your target, they receive Force Erosion which reduces Force Defense by 10% for 12 seconds.",
             StatType.DamageDealtForceErosionDurationSeconds);
         AssertPerkLevel(perks[PerkType.DisablingStrike], "Disabling Strike", 1, 2, 8, FeatType.DisablingStrike1,

@@ -19,7 +19,7 @@ public class ThrowingBombardierTests
     {
         var perks = BuildThrowingBombardierPerksWithout2daLookup();
 
-        AssertPerkLevel(perks[PerkType.ExplosiveToss], "Explosive Toss", 1, 3, 5, FeatType.ExplosiveToss1,
+        AssertPerkLevel(perks[PerkType.ExplosiveToss], "Explosive Toss", 1, 3, 2, FeatType.ExplosiveToss1,
             "Your next attack damages up to 3 creatures within 3 meters of your target for weapon DMG + 8.");
         AssertPerkLevel(perks[PerkType.FlashToss], "Flash Toss", 1, 3, 8, FeatType.FlashToss1,
             "Deals weapon DMG + 6 to enemies in the target area. Inflicts Blind for 6 seconds.");

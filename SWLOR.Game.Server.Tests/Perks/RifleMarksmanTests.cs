@@ -20,7 +20,7 @@ public class RifleMarksmanTests
     {
         var perks = BuildRifleMarksmanPerksWithout2daLookup();
 
-        AssertPerkLevel(perks[PerkType.SteadyAim], "Steady Aim", 1, 3, 5, null,
+        AssertPerkLevel(perks[PerkType.SteadyAim], "Steady Aim", 1, 3, 2, null,
             "Rifle combat abilities gain +5% accuracy and +5% critical chance.",
             StatType.AbilityHitChancePercentAdjustmentSkillType,
             StatType.AbilityHitChancePercentAdjustment,

@@ -168,7 +168,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ExplosiveToss1)
                 .Description("Your next attack damages up to 3 creatures within 3 meters of your target for weapon DMG + 8.")
                 .Price(3)
-                .RequirementSkill(SkillType.Throwing, 5)
+                .RequirementSkill(SkillType.Throwing, 2)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ExplosiveToss2)
@@ -276,7 +276,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.PiercingToss1)
                 .Description("Your next attack deals weapon DMG + 12 and inflicts Bleed for 30 seconds.")
                 .Price(2)
-                .RequirementSkill(SkillType.Throwing, 5)
+                .RequirementSkill(SkillType.Throwing, 2)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PiercingToss2)

@@ -20,7 +20,7 @@ public class VibrobladeDefenseTests
     {
         var perks = BuildVibrobladeDefensePerksWithout2daLookup();
 
-        AssertPerkLevel(perks[PerkType.ShieldTraining], "Shield Training", 1, 3, 5, null,
+        AssertPerkLevel(perks[PerkType.ShieldTraining], "Shield Training", 1, 3, 2, null,
             "When you successfully deflect an attack with a shield, gain +3% Evasion and +3% Enmity for 10 seconds.",
             StatType.DeflectionEvasionPercentAdjustment,
             StatType.DeflectionEvasionEnmityPercentAdjustment);

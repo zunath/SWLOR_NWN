@@ -20,7 +20,7 @@ public class PistolSkirmisherTests
     {
         var perks = BuildPistolSkirmisherPerksWithout2daLookup();
 
-        AssertPerkLevel(perks[PerkType.MobileFootwork], "Mobile Footwork", 1, 2, 5, null,
+        AssertPerkLevel(perks[PerkType.MobileFootwork], "Mobile Footwork", 1, 2, 2, null,
             "After using a pistol ability, gain +10% Evasion for 6 seconds.",
             StatType.PistolAbilityUsedEvasionPercentAdjustment,
             StatType.PistolAbilityUsedEvasionDurationSeconds);

@@ -19,7 +19,7 @@ public class PistolGunslingerTests
     {
         var perks = BuildPistolGunslingerPerksWithout2daLookup();
 
-        AssertPerkLevel(perks[PerkType.QuickDraw], "Quick Draw", 1, 3, 5, FeatType.QuickDraw1,
+        AssertPerkLevel(perks[PerkType.QuickDraw], "Quick Draw", 1, 3, 2, FeatType.QuickDraw1,
             "Instantly deals weapon DMG + 12 to your target.");
         AssertPerkLevel(perks[PerkType.DoubleShot], "Double Shot", 1, 3, 8, FeatType.DoubleShot1,
             "Instantly attacks twice, each for weapon DMG + 7.");

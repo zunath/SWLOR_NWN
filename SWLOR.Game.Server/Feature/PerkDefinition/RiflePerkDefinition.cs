@@ -360,7 +360,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .IncreasesStat(StatType.AbilityCriticalRatePercentAdjustmentSkillType, creature => EquipmentPredicates.HasRifle(creature) ? (int)SkillType.Rifle : 0)
                 .IncreasesStat(StatType.AbilityCriticalRatePercentAdjustment, creature => EquipmentPredicates.HasRifle(creature) ? 5 : 0)
                 .Price(3)
-                .RequirementSkill(SkillType.Rifle, 5)
+                .RequirementSkill(SkillType.Rifle, 2)
 
                 .AddPerkLevel()
                 .Description("Aimed Shot cooldowns are reduced by 5 seconds and gain an additional +10% accuracy.")
@@ -415,7 +415,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.TranquilizerShot1)
                 .Description("Your next attack tranquilizes the target for up to 8 seconds. Damage breaks the effect prematurely.")
                 .Price(2)
-                .RequirementSkill(SkillType.Rifle, 5)
+                .RequirementSkill(SkillType.Rifle, 2)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.TranquilizerShot2)

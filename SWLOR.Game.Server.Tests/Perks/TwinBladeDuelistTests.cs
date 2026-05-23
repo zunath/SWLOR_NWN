@@ -20,7 +20,7 @@ public class TwinBladeDuelistTests
     {
         var perks = BuildTwinBladeDuelistPerksWithout2daLookup();
 
-        AssertPerkLevel(perks[PerkType.CenterlineGuard], "Centerline Guard", 1, 2, 5, null,
+        AssertPerkLevel(perks[PerkType.CenterlineGuard], "Centerline Guard", 1, 2, 2, null,
             "Gain +10 Attack Deflection while wielding a twin blade. After deflecting an attack, your next attack within 8 seconds deals +8 DMG.",
             StatType.AttackDeflection,
             StatType.DeflectionNextSkillAbilityDamageBonus,

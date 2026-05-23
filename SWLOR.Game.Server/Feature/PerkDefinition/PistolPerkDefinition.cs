@@ -265,7 +265,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .IncreasesStat(StatType.PistolAbilityUsedEvasionPercentAdjustment, 10)
                 .IncreasesStat(StatType.PistolAbilityUsedEvasionDurationSeconds, 6)
                 .Price(2)
-                .RequirementSkill(SkillType.Pistol, 5);
+                .RequirementSkill(SkillType.Pistol, 2);
         }
 
         private void PointBlankBurst()
@@ -289,7 +289,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.QuickDraw1)
                 .Description("Instantly deals weapon DMG + 12 to your target.")
                 .Price(3)
-                .RequirementSkill(SkillType.Pistol, 5)
+                .RequirementSkill(SkillType.Pistol, 2)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.QuickDraw2)

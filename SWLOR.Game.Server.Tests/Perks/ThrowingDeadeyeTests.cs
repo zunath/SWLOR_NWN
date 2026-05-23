@@ -21,7 +21,7 @@ public class ThrowingDeadeyeTests
     {
         var perks = BuildThrowingDeadeyePerksWithout2daLookup();
 
-        AssertPerkLevel(perks[PerkType.PiercingToss], "Piercing Toss", 1, 2, 5, FeatType.PiercingToss1,
+        AssertPerkLevel(perks[PerkType.PiercingToss], "Piercing Toss", 1, 2, 2, FeatType.PiercingToss1,
             "Your next attack deals weapon DMG + 12 and inflicts Bleed for 30 seconds.");
         AssertPerkLevel(perks[PerkType.PinningToss], "Pinning Toss", 1, 2, 8, FeatType.PinningToss1,
             "Your next attack deals weapon DMG + 8 and inflicts Disoriented for 12 seconds.");

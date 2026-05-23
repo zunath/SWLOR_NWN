@@ -160,7 +160,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("When you damage your target, they receive Force Erosion which reduces Force Defense by 10% for 12 seconds.")
                 .IncreasesStat(StatType.DamageDealtForceErosionDurationSeconds, creature => EquipmentPredicates.HasMainHandSpear(creature) ? 12 : 0)
                 .Price(2)
-                .RequirementSkill(SkillType.Spear, 5)
+                .RequirementSkill(SkillType.Spear, 2)
 
                 .AddPerkLevel()
                 .Description("The Force Erosion effect additionally reduces FP by 2 every second.")
@@ -193,7 +193,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Attacks from the side deal +10% damage.")
                 .IncreasesStat(StatType.SideAttackDamagePercentAdjustment, creature => EquipmentPredicates.HasMainHandSpear(creature) ? 10 : 0)
                 .Price(3)
-                .RequirementSkill(SkillType.Spear, 5)
+                .RequirementSkill(SkillType.Spear, 2)
 
                 .AddPerkLevel()
                 .Description("Attacks from the side have +10% accuracy and +8% critical chance.")

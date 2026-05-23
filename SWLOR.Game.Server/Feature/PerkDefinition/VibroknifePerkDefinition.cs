@@ -115,7 +115,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .IncreasesStat(StatType.AutoAttackTargetAccuracyPercentAdjustment, -10)
                 .IncreasesStat(StatType.AutoAttackTargetAccuracyPercentAdjustmentDurationSeconds, 6)
                 .Price(2)
-                .RequirementSkill(SkillType.Vibroknife, 5);
+                .RequirementSkill(SkillType.Vibroknife, 2);
         }
 
         private void CascadeFailure()
@@ -332,7 +332,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Critical hits deal +10% damage.")
                 .IncreasesStat(StatType.CriticalDamagePercentAdjustment, creature => EquipmentPredicates.HasMainHandVibroknife(creature) ? 10 : 0)
                 .Price(2)
-                .RequirementSkill(SkillType.Vibroknife, 5);
+                .RequirementSkill(SkillType.Vibroknife, 2);
         }
 
         private void SapVitality()

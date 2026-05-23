@@ -19,7 +19,7 @@ public class KatarIronGuardTests
     {
         var perks = BuildKatarIronGuardPerksWithout2daLookup();
 
-        AssertPerkLevel(perks[PerkType.GuardTraining], "Guard Training", 1, 2, 5, null,
+        AssertPerkLevel(perks[PerkType.GuardTraining], "Guard Training", 1, 2, 2, null,
             "Dual wielding katars grants a 15% chance to guard against physical attacks, reducing that hit's damage by 20% and generating extra enmity.",
             StatType.Guard);
         AssertPerkLevel(perks[PerkType.GuardCounter], "Guard Counter", 1, 2, 8, FeatType.GuardCounter1,

@@ -20,7 +20,7 @@ public class StaffCrusherTests
     {
         var perks = BuildStaffCrusherPerksWithout2daLookup();
 
-        AssertPerkLevel(perks[PerkType.CrushingStyle], "Crushing Style", 1, 3, 5, null,
+        AssertPerkLevel(perks[PerkType.CrushingStyle], "Crushing Style", 1, 3, 2, null,
             "You gain bonus damage with staves equal to your MGT modifier and +10% critical chance.",
             StatType.StaffMightModifierDamageMultiplier,
             StatType.CriticalRatePercentAdjustment);

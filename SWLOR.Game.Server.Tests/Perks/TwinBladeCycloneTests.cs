@@ -22,7 +22,7 @@ public class TwinBladeCycloneTests
     {
         var perks = BuildTwinBladeCyclonePerksWithout2daLookup();
 
-        AssertPerkLevel(perks[PerkType.CrossCut], "Cross Cut", 1, 3, 5, FeatType.CrossCut1,
+        AssertPerkLevel(perks[PerkType.CrossCut], "Cross Cut", 1, 3, 2, FeatType.CrossCut1,
             "Instantly attacks twice, each for weapon DMG + 8, and inflicts Disoriented for 8 seconds.");
         AssertPerkLevel(perks[PerkType.SpinningWhirl], "Spinning Whirl", 1, 3, 8, FeatType.SpinningWhirl1,
             "Attacks up to 3 nearby enemies for weapon DMG + 10 each.");

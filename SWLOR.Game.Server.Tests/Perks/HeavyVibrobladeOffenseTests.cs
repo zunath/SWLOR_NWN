@@ -18,7 +18,7 @@ public class HeavyVibrobladeOffenseTests
     {
         var perks = BuildHeavyVibrobladeOffensePerksWithout2daLookup();
 
-        AssertPerkLevel(perks[PerkType.EssenceTap], "Essence Tap", 1, 2, 5, null,
+        AssertPerkLevel(perks[PerkType.EssenceTap], "Essence Tap", 1, 2, 2, null,
             "When you take damage, gain +8% Attack for 15 seconds.",
             StatType.DamageTakenAttackPercentAdjustment,
             StatType.DamageTakenAttackDurationSeconds);

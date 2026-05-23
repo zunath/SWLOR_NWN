@@ -19,7 +19,7 @@ public class VibrobladeOffenseTests
     {
         var perks = BuildVibrobladeOffensePerksWithout2daLookup();
 
-        AssertPerkLevel(perks[PerkType.SavageReflexes], "Savage Reflexes", 1, 2, 5, null,
+        AssertPerkLevel(perks[PerkType.SavageReflexes], "Savage Reflexes", 1, 2, 2, null,
             "Auto-attacks have 10% chance to deal +8 DMG.",
             StatType.AutoAttackDamageBonusChance,
             StatType.AutoAttackDamageBonus);

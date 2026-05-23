@@ -21,7 +21,7 @@ public class VibroknifeShadowTests
     {
         var perks = BuildVibroknifeShadowPerksWithout2daLookup();
 
-        AssertPerkLevel(perks[PerkType.PrecisionStrikes], "Precision Strikes", 1, 2, 5, null,
+        AssertPerkLevel(perks[PerkType.PrecisionStrikes], "Precision Strikes", 1, 2, 2, null,
             "Critical hits deal +10% damage.",
             StatType.CriticalDamagePercentAdjustment);
         AssertPerkLevel(perks[PerkType.CheapShot], "Cheap Shot", 1, 2, 8, FeatType.CheapShot1,

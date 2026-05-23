@@ -19,7 +19,7 @@ public class KatarVenomCurrentTests
     {
         var perks = BuildKatarVenomCurrentPerksWithout2daLookup();
 
-        AssertPerkLevel(perks[PerkType.StrikingCobra], "Striking Cobra", 1, 3, 5, FeatType.StrikingCobra1,
+        AssertPerkLevel(perks[PerkType.StrikingCobra], "Striking Cobra", 1, 3, 2, FeatType.StrikingCobra1,
             "Your next attack deals weapon DMG + 8 and inflicts Poison for 30 seconds.");
         AssertPerkLevel(perks[PerkType.StaticPalm], "Static Palm", 1, 3, 8, FeatType.StaticPalm1,
             "Your next attack deals weapon DMG + 8 and inflicts Disoriented for 8 seconds.");

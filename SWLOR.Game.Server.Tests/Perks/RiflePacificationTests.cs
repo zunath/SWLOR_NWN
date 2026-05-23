@@ -21,7 +21,7 @@ public class RiflePacificationTests
     {
         var perks = BuildRiflePacificationPerksWithout2daLookup();
 
-        AssertPerkLevel(perks[PerkType.TranquilizerShot], "Tranquilizer Shot", 1, 2, 5, FeatType.TranquilizerShot1,
+        AssertPerkLevel(perks[PerkType.TranquilizerShot], "Tranquilizer Shot", 1, 2, 2, FeatType.TranquilizerShot1,
             "Your next attack tranquilizes the target for up to 8 seconds. Damage breaks the effect prematurely.");
         AssertPerkLevel(perks[PerkType.CripplingShot], "Crippling Shot", 1, 2, 8, FeatType.CripplingShot1,
             "Your next attack deals weapon DMG + 12 and inflicts Disoriented for 12 seconds.");

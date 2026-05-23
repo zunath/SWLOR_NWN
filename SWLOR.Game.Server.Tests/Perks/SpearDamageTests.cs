@@ -18,7 +18,7 @@ public class SpearDamageTests
     {
         var perks = BuildSpearDamagePerksWithout2daLookup();
 
-        AssertPerkLevel(perks[PerkType.Flanking], "Flanking", 1, 3, 5, null,
+        AssertPerkLevel(perks[PerkType.Flanking], "Flanking", 1, 3, 2, null,
             "Attacks from the side deal +10% damage.",
             StatType.SideAttackDamagePercentAdjustment);
         AssertPerkLevel(perks[PerkType.LateralStrike], "Lateral Strike", 1, 3, 8, null,

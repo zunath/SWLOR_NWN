@@ -87,7 +87,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .IncreasesStat(StatType.StaffMightModifierDamageMultiplier, creature => EquipmentPredicates.HasMainHandStaff(creature) ? 1 : 0)
                 .IncreasesStat(StatType.CriticalRatePercentAdjustment, creature => EquipmentPredicates.HasMainHandStaff(creature) ? 10 : 0)
                 .Price(3)
-                .RequirementSkill(SkillType.Staff, 5);
+                .RequirementSkill(SkillType.Staff, 2);
         }
 
         private void CrushingMastery()
@@ -136,7 +136,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Staff attack delay is reduced by 10%.")
                 .IncreasesStat(StatType.AttackDelayReductionPercent, creature => EquipmentPredicates.HasMainHandStaff(creature) ? 10 : 0)
                 .Price(2)
-                .RequirementSkill(SkillType.Staff, 5);
+                .RequirementSkill(SkillType.Staff, 2);
         }
 
         private void FlowingDefense()

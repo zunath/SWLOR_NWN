@@ -117,7 +117,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .IncreasesStat(StatType.AutoAttackFPRestore, creature => EquipmentPredicates.HasMainHandSaberstaff(creature) ? 1 : 0)
                 .IncreasesStat(StatType.AutoAttackFPRestoreCooldownSeconds, creature => EquipmentPredicates.HasMainHandSaberstaff(creature) ? 4 : 0)
                 .Price(2)
-                .RequirementSkill(SkillType.Saberstaff, 5)
+                .RequirementSkill(SkillType.Saberstaff, 2)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
 
                 .AddPerkLevel()
@@ -148,7 +148,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.DoubleStrike1)
                 .Description("Instantly attacks twice, each for weapon DMG + 12.")
                 .Price(3)
-                .RequirementSkill(SkillType.Saberstaff, 5)
+                .RequirementSkill(SkillType.Saberstaff, 2)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
 
                 .AddPerkLevel()

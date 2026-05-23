@@ -19,7 +19,7 @@ public class StaffSentinelTests
     {
         var perks = BuildStaffSentinelPerksWithout2daLookup();
 
-        AssertPerkLevel(perks[PerkType.FlurryStyle], "Flurry Style", 1, 2, 5, null,
+        AssertPerkLevel(perks[PerkType.FlurryStyle], "Flurry Style", 1, 2, 2, null,
             "Staff attack delay is reduced by 10%.",
             StatType.AttackDelayReductionPercent);
         AssertPerkLevel(perks[PerkType.StaffParry], "Staff Parry", 1, 2, 8, null,

@@ -219,7 +219,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .IncreasesStat(StatType.DamageTakenAttackPercentAdjustment, 8)
                 .IncreasesStat(StatType.DamageTakenAttackDurationSeconds, 15)
                 .Price(2)
-                .RequirementSkill(SkillType.HeavyVibroblade, 5);
+                .RequirementSkill(SkillType.HeavyVibroblade, 2);
         }
 
 
@@ -245,7 +245,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.FortressStrike1)
                 .Description("Your next attack deals weapon DMG + 10 and generates extra enmity. You gain +10% Physical Defense for 16 seconds.")
                 .Price(2)
-                .RequirementSkill(SkillType.HeavyVibroblade, 5)
+                .RequirementSkill(SkillType.HeavyVibroblade, 2)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.FortressStrike2)

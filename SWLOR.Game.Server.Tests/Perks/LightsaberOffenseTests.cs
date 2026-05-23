@@ -19,7 +19,7 @@ public class LightsaberOffenseTests
     {
         var perks = BuildLightsaberOffensePerksWithout2daLookup();
 
-        AssertPerkLevel(perks[PerkType.VersatileStrike], "Versatile Strike", 1, 2, 5, FeatType.VersatileStrike1,
+        AssertPerkLevel(perks[PerkType.VersatileStrike], "Versatile Strike", 1, 2, 2, FeatType.VersatileStrike1,
             "Your next attack deals weapon DMG + 10 to your target. Inflicts Sunder which reduces defense and force defense by 10% for 30 seconds.");
         AssertPerkLevel(perks[PerkType.FerocityStance], "Ferocity Stance", 1, 2, 8, FeatType.FerocityStance1,
             "While active, grants -20% to offhand weapon delay, +10% attack, and -20% to evasion.");

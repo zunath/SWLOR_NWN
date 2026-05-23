@@ -149,7 +149,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Dual wielding katars grants a 15% chance to guard against physical attacks, reducing that hit's damage by 20% and generating extra enmity.")
                 .IncreasesStat(StatType.Guard, creature => EquipmentPredicates.HasDualWieldKatar(creature) ? 15 : 0)
                 .Price(2)
-                .RequirementSkill(SkillType.Katar, 5)
+                .RequirementSkill(SkillType.Katar, 2)
 
                 .AddPerkLevel()
                 .Description("Guard chance increases to 25% and guarded hits restore 2 STM.")
@@ -332,7 +332,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.StrikingCobra1)
                 .Description("Your next attack deals weapon DMG + 8 and inflicts Poison for 30 seconds.")
                 .Price(3)
-                .RequirementSkill(SkillType.Katar, 5)
+                .RequirementSkill(SkillType.Katar, 2)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.StrikingCobra2)

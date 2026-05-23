@@ -107,6 +107,20 @@ public class CombatDamageTests
     }
 
     [Test]
+    public void TemporaryHitPointDamageFeedback_IsSentBeforeEngineDamageIsApplied()
+    {
+        var root = FindRepositoryRoot();
+        var combatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
+        var abilitySource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Ability.cs"));
+        var damageRollSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Native", "GetDamageRoll.cs"));
+
+        combatSource.Should().Contain("public static void SendTemporaryHitPointDamageFeedback(uint attacker, uint defender, int damage)");
+        combatSource.Should().Contain("GetEffectType(effect) == EffectTypeScript.TemporaryHitpoints");
+        abilitySource.Should().Contain("Combat.SendTemporaryHitPointDamageFeedback(activator, target, damage);");
+        damageRollSource.Should().Contain("Combat.SendTemporaryHitPointDamageFeedback(attacker.m_idSelf, defender.m_idSelf, totalDamage);");
+    }
+
+    [Test]
     public void NormalDamageMitigation_IsCappedSeparatelyFromExplicitImmunity()
     {
         var root = FindRepositoryRoot();
@@ -201,6 +215,36 @@ public class CombatDamageTests
         }
 
         offenders.Should().BeEmpty("weapon DMG is a plain amount and WeaponDamageType selects the whole damage calculation type");
+    }
+
+    [Test]
+    public void CZ220DroidWeapons_UsePhysicalDamageType()
+    {
+        var root = FindRepositoryRoot();
+        foreach (var resref in new[]
+                 {
+                     "cz220_dr_pistol",
+                     "patroldroid_wp",
+                     "probedroid_wp",
+                     "malfsecdroid_wp",
+                     "malfspiddroi_wp"
+                 })
+        {
+            var file = Path.Combine(root.FullName, "Module", "uti", $"{resref}.uti.json");
+            using var document = JsonDocument.Parse(ReadJsonText(file));
+            var properties = document.RootElement.GetProperty("PropertiesList").GetProperty("value");
+
+            var weaponDamageTypes = properties.EnumerateArray()
+                .Where(property =>
+                    TryGetNestedInt(property, "PropertyName", "value", out var propertyName) &&
+                    propertyName == (int)ItemPropertyType.WeaponDamageType)
+                .Select(property => TryGetNestedInt(property, "Subtype", "value", out var subtype) ? subtype : -1)
+                .ToList();
+
+            weaponDamageTypes.Should().Equal(
+                new[] { (int)CombatDamageType.Physical },
+                $"{resref} should not inherit or declare poison damage");
+        }
     }
 
     [Test]

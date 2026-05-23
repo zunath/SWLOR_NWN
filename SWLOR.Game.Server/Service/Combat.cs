@@ -3755,6 +3755,41 @@ namespace SWLOR.Game.Server.Service
             return ColorToken.Combat($"{attackerName} uses {abilityName}, but it hits no targets.");
         }
 
+        public static void SendTemporaryHitPointDamageFeedback(uint attacker, uint defender, int damage)
+        {
+            if (damage <= 0 ||
+                !GetIsObjectValid(defender) ||
+                !HasTemporaryHitPoints(defender))
+            {
+                return;
+            }
+
+            var feedback = BuildTemporaryHitPointDamageCombatLogMessage(attacker, defender, damage);
+            Messaging.SendMessageNearbyToPlayers(defender, feedback, 60f);
+        }
+
+        private static bool HasTemporaryHitPoints(uint creature)
+        {
+            for (var effect = GetFirstEffect(creature); GetIsEffectValid(effect); effect = GetNextEffect(creature))
+            {
+                if (GetEffectType(effect) == EffectTypeScript.TemporaryHitpoints)
+                    return true;
+            }
+
+            return false;
+        }
+
+        private static string BuildTemporaryHitPointDamageCombatLogMessage(uint attacker, uint defender, int damage)
+        {
+            var defenderName = GetIsPC(defender) ? ColorToken.GetNamePCColor(defender) : ColorToken.GetNameNPCColor(defender);
+
+            if (!GetIsObjectValid(attacker) || attacker == defender)
+                return ColorToken.Combat($"{defenderName}'s temporary HP absorbs {damage} damage.");
+
+            var attackerName = GetIsPC(attacker) ? ColorToken.GetNamePCColor(attacker) : ColorToken.GetNameNPCColor(attacker);
+            return ColorToken.Combat($"{attackerName} deals {damage} damage against {defenderName}'s temporary HP.");
+        }
+
         /// <summary>
         /// Builds a combat log message based on the provided information, for native contexts.
         /// </summary>

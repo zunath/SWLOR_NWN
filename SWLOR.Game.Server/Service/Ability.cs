@@ -1596,6 +1596,7 @@ namespace SWLOR.Game.Server.Service
             damage = ApplyDamagePercentAdjustment(target, damage, damagePercentAdjustment);
             if (damage > 0)
             {
+                Combat.SendTemporaryHitPointDamageFeedback(activator, target, damage);
                 AssignCommand(
                     activator,
                     () => ApplyEffectToObject(

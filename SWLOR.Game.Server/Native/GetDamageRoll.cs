@@ -126,6 +126,7 @@ namespace SWLOR.Game.Server.Native
 
                 if (totalDamage > 0 && defender.m_nObjectType == (int)ObjectType.Creature)
                 {
+                    Combat.SendTemporaryHitPointDamageFeedback(attacker.m_idSelf, defender.m_idSelf, totalDamage);
                     Combat.ApplyCriticalHitEffects(attacker.m_idSelf, defender.m_idSelf, totalDamage, effectiveCritical, true, weaponSkillType);
                 }
 

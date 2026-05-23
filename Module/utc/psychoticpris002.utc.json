@@ -178,7 +178,7 @@
         "__struct_id": 16,
         "EquippedRes": {
           "type": "resref",
-          "value": "spear_006"
+          "value": "proto_spear"
         }
       }
     ]

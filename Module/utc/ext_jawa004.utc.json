@@ -197,6 +197,13 @@
           "type": "resref",
           "value": "vet_togejawa002"
         }
+      },
+      {
+        "__struct_id": 16,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "blast_jawa_d"
+        }
       }
     ]
   },

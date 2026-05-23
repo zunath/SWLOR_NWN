@@ -79,7 +79,7 @@
         "__struct_id": 16,
         "EquippedRes": {
           "type": "resref",
-          "value": "rifle_b"
+          "value": "rifle_npc"
         }
       },
       {

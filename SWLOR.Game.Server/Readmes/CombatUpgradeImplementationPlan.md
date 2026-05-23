@@ -152,7 +152,7 @@ Acceptance criteria:
 - All Bible perks exist in the correct skill category with correct rank/SP/requirements.
 - Existing old perks not represented in these tabs are removed from the feature branch.
 - Ability definitions, recast groups, activation times, resource costs, scaling, status applications, and requirements match the Bible.
-- Weapon delay values from `Equipment - Weapons` are reflected in haks/item properties and server-side attack delay calculations.
+- Weapon delay values from `Equipment - Weapons` are reflected in haks/item properties and server-side attack delay calculations; natural creature weapons intentionally use the fastest-category delay so haste still has room above the engine floor.
 
 ### Armor
 
@@ -360,4 +360,4 @@ Implemented cleanup so far:
 Additional follow-up:
 
 - Audit droid instruction disc availability for the final combat-upgrade perk set. Obsolete combat instruction discs are removed by migration, but retained or replacement disc availability still needs release review.
-- Finish live-module validation for weapons, armor, crafting equipment, enhancements, and droid equipment. Recent item work normalized weapon `Delay`, `DMG`, `WeaponDamageType`, and resistance enhancement values, including embedded `.git` area/store weapon copies for `Delay`; release still needs representative equip, crafting, migration, and combat smoke tests.
+- Finish live-module validation for weapons, armor, crafting equipment, enhancements, and droid equipment. Recent item work normalized weapon `Delay`, `DMG`, `WeaponDamageType`, and resistance enhancement values, including natural creature weapons, legacy Sling-based pistol resources, embedded `.git` area/store/NPC weapon copies for `Delay`, and the Bible `World NPCs` delay calculations; release still needs representative equip, crafting, migration, and combat smoke tests.

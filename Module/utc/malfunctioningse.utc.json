@@ -74,7 +74,15 @@
   },
   "Equip_ItemList": {
     "type": "list",
-    "value": []
+    "value": [
+      {
+        "__struct_id": 16,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "cz220_dr_pistol"
+        }
+      }
+    ]
   },
   "FactionID": {
     "type": "word",

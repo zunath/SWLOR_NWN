@@ -83,6 +83,13 @@
           "type": "resref",
           "value": "tukataskin"
         }
+      },
+      {
+        "__struct_id": 32768,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "k_hound_bite"
+        }
       }
     ]
   },

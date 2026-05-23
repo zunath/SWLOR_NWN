@@ -180,6 +180,13 @@
           "type": "resref",
           "value": "sirtulieutenanto"
         }
+      },
+      {
+        "__struct_id": 16,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "npcsaber003"
+        }
       }
     ]
   },

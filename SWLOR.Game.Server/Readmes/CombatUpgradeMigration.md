@@ -25,7 +25,7 @@ This note tracks player migration work for `feature/combat-upgrade`. Keep it cur
   - Splits persisted mitigation data so Physical/Force remain in `Player.Defenses` and elemental/status mitigation lives in `Player.Resistances`.
   - Moves legacy elemental defense entries into resistances, fills missing default keys, and removes Physical/Force from resistances.
   - Adds and normalizes beast resistance purities, removes legacy beast saving throw purities, and moves beast elemental purities out of defenses.
-  - Migrates live and serialized item properties for the new resistance, weapon damage, and weapon delay property model, including untyped `DMG`, separate `WeaponDamageType`, and normalized weapon `Delay`.
+  - Migrates live and serialized item properties for the new resistance, weapon damage, and weapon delay property model, including untyped `DMG`, separate `WeaponDamageType`, and normalized weapon `Delay` for held weapons and natural creature weapons.
   - Removes obsolete Bible perks, stale recast entries, and obsolete combat instruction discs from players, beasts, stored items, markets, world properties, research jobs, outfits, DM creatures, and ships.
 
 ## Player-Facing Migration Goals
@@ -85,7 +85,7 @@ Important nuance: setting the flag to `false` does not itself reset the characte
   - beast/droid setup
   - equip/purchase/refund triggers
 - Dry-run the item-property migrations against representative live data for player inventories, markets, world property storage, research jobs, player outfits, DM creatures, ships, and nested serialized inventories.
-- Confirm the weapon Delay migration updates old Throwing/Vibroknife values and preserves training-weapon and intentional short-sword delay exceptions in representative live data. Checked-in module templates and embedded `.git` area/store item instances have already been normalized to the updated delay table.
+- Confirm the weapon Delay migration updates old Throwing/Vibroknife/natural-weapon and Sling-based pistol values and preserves training-weapon and intentional short-sword delay exceptions in representative live data. Checked-in module templates and embedded `.git` area/store/NPC item instances have already been normalized to the updated delay table.
 - Confirm active status effects from the old status effect service do not need cleanup for players who were logged out with `AdrenalStim*` or `Hasten*` effects active.
 - Add release notes telling players they must perform a forced full rebuild and that removed combat perks were refunded.
 

@@ -23,7 +23,8 @@ namespace SWLOR.Game.Server.Service
             {Item.LightsaberBaseItemTypes, 32},
             {Item.SpearBaseItemTypes, 43},
             {Item.ThrowingWeaponBaseItemTypes, 29},
-            {Item.SaberstaffBaseItemTypes, 45}
+            {Item.SaberstaffBaseItemTypes, 45},
+            {Item.CreatureBaseItemTypes, 29}
         };
 
         /// <summary>
@@ -79,7 +80,8 @@ namespace SWLOR.Game.Server.Service
         public static bool IsWeapon(uint item)
         {
             var baseItemType = GetBaseItemType(item);
-            return Item.WeaponBaseItemTypes.Contains(baseItemType);
+            return Item.WeaponBaseItemTypes.Contains(baseItemType) ||
+                   Item.CreatureBaseItemTypes.Contains(baseItemType);
         }
 
         /// <summary>

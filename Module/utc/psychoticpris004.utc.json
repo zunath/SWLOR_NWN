@@ -185,7 +185,7 @@
         "__struct_id": 16,
         "EquippedRes": {
           "type": "resref",
-          "value": "twinblade_006"
+          "value": "proto_twinblade"
         }
       }
     ]

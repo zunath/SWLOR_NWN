@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import math
+import json
 import re
 import sys
 import zipfile
@@ -25,8 +26,18 @@ NEW_SHEETS = [
     "Enemy Resistance Packages",
     "Enemy Ability Packages",
     "Enemy Modifiers",
+    "World NPC Weapon Delays",
     "Enemy Formula Source",
 ]
+
+MINIMUM_ATTACK_DELAY = 290
+ITEM_PROPERTY_DELAY = 98
+WEAPON_BASE_ITEM_TYPES = {
+    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 18, 22, 28, 31, 32, 33,
+    35, 37, 38, 41, 42, 47, 50, 51, 53, 55, 58, 59, 60, 63, 69, 70, 71, 72,
+    61, 95, 108, 111, 310, 511, 512, 525, 537,
+}
+WEAPON_EQUIPMENT_SLOTS = {16, 32, 16384, 32768, 65536}
 
 DIFFICULTIES = {
     "Normal": dict(hp=1.00, resource=1.00, dmg=1.00, ability=0, offense=0, defense=0, evasion=0, resistance=0, delay=1.00),
@@ -36,13 +47,13 @@ DIFFICULTIES = {
 }
 
 ROLES = {
-    "Melee": dict(primary=["MGT"], secondary=["VIT", "AGI"], tertiary=["PER", "WIL"], hp=1.00, stm=1.15, fp=0.20, dmg=1.05, attack=5, force=0, evasion=0, pdef=2, fdef=0, delay=240, counts=(2, 3, 4, 6)),
-    "Ranged": dict(primary=["PER"], secondary=["AGI", "VIT"], tertiary=["MGT", "WIL"], hp=0.90, stm=1.00, fp=0.25, dmg=1.00, attack=5, force=0, evasion=3, pdef=0, fdef=0, delay=250, counts=(2, 3, 4, 6)),
-    "Force": dict(primary=["WIL"], secondary=["PER", "AGI"], tertiary=["MGT", "VIT"], hp=0.85, stm=0.45, fp=1.25, dmg=0.95, attack=0, force=6, evasion=1, pdef=-1, fdef=5, delay=260, counts=(2, 3, 4, 6)),
-    "Controller": dict(primary=["WIL"], secondary=["PER", "AGI"], tertiary=["MGT", "VIT"], hp=0.85, stm=0.70, fp=0.90, dmg=0.80, attack=1, force=3, evasion=2, pdef=-1, fdef=3, delay=260, counts=(2, 3, 4, 6)),
-    "Support": dict(primary=["WIL"], secondary=["VIT", "PER"], tertiary=["MGT", "AGI"], hp=0.95, stm=0.80, fp=1.00, dmg=0.75, attack=0, force=3, evasion=0, pdef=0, fdef=2, delay=270, counts=(2, 3, 4, 6)),
-    "Tank": dict(primary=["VIT"], secondary=["MGT", "WIL"], tertiary=["PER", "AGI"], hp=1.35, stm=1.05, fp=0.35, dmg=0.85, attack=2, force=0, evasion=-2, pdef=6, fdef=3, delay=280, counts=(2, 3, 4, 6)),
-    "Swarm": dict(primary=["AGI"], secondary=["PER"], tertiary=["MGT", "WIL", "VIT"], hp=0.45, stm=0.50, fp=0.15, dmg=0.55, attack=0, force=0, evasion=5, pdef=-4, fdef=-4, delay=220, counts=(1, 2, 3, 4)),
+    "Melee": dict(primary=["MGT"], secondary=["VIT", "AGI"], tertiary=["PER", "WIL"], hp=1.00, stm=1.15, fp=0.20, dmg=1.05, attack=5, force=0, evasion=0, pdef=2, fdef=0, delay=310, counts=(2, 3, 4, 6)),
+    "Ranged": dict(primary=["PER"], secondary=["AGI", "VIT"], tertiary=["MGT", "WIL"], hp=0.90, stm=1.00, fp=0.25, dmg=1.00, attack=5, force=0, evasion=3, pdef=0, fdef=0, delay=370, counts=(2, 3, 4, 6)),
+    "Force": dict(primary=["WIL"], secondary=["PER", "AGI"], tertiary=["MGT", "VIT"], hp=0.85, stm=0.45, fp=1.25, dmg=0.95, attack=0, force=6, evasion=1, pdef=-1, fdef=5, delay=410, counts=(2, 3, 4, 6)),
+    "Controller": dict(primary=["WIL"], secondary=["PER", "AGI"], tertiary=["MGT", "VIT"], hp=0.85, stm=0.70, fp=0.90, dmg=0.80, attack=1, force=3, evasion=2, pdef=-1, fdef=3, delay=410, counts=(2, 3, 4, 6)),
+    "Support": dict(primary=["WIL"], secondary=["VIT", "PER"], tertiary=["MGT", "AGI"], hp=0.95, stm=0.80, fp=1.00, dmg=0.75, attack=0, force=3, evasion=0, pdef=0, fdef=2, delay=430, counts=(2, 3, 4, 6)),
+    "Tank": dict(primary=["VIT"], secondary=["MGT", "WIL"], tertiary=["PER", "AGI"], hp=1.35, stm=1.05, fp=0.35, dmg=0.85, attack=2, force=0, evasion=-2, pdef=6, fdef=3, delay=470, counts=(2, 3, 4, 6)),
+    "Swarm": dict(primary=["AGI"], secondary=["PER"], tertiary=["MGT", "WIL", "VIT"], hp=0.45, stm=0.50, fp=0.15, dmg=0.55, attack=0, force=0, evasion=5, pdef=-4, fdef=-4, delay=290, counts=(1, 2, 3, 4)),
 }
 
 RESISTS = ["Fire", "Poison", "Electrical", "Ice", "Mind", "Mobility", "Trauma", "Disruption"]
@@ -183,7 +194,7 @@ def stat_preset(level: int, difficulty: str, role: str) -> dict[str, object]:
         "Evasion": max(0, base_evasion + role_data["evasion"] + diff["evasion"]),
         "Physical Defense": max(0, base_defense + role_data["pdef"] + diff["defense"]),
         "Force Defense": max(0, base_defense + role_data["fdef"] + diff["defense"]),
-        "Delay": max(100, rnd(role_data["delay"] * diff["delay"] / 10) * 10),
+        "Delay": max(MINIMUM_ATTACK_DELAY, rnd(role_data["delay"] * diff["delay"] / 10) * 10),
     }
     return row
 
@@ -219,7 +230,7 @@ def apply_modifier(field: str, value: int, modifier: str) -> int:
     if field in RESISTS:
         return max(0, min(100, value + mod["resistance"]))
     if field == "Delay":
-        return max(100, rnd(value * mod["delay"] / 10) * 10)
+        return max(MINIMUM_ATTACK_DELAY, rnd(value * mod["delay"] / 10) * 10)
     return value
 
 
@@ -591,8 +602,13 @@ def stat_formula(row: int, field: str, col: str) -> str:
     if field in {"Physical Defense", "Force Defense"}:
         return f"MAX(0,{base}+{lookup_mod(mod, 'I')})"
     if field == "Delay":
-        return f"ROUND({base}*{lookup_mod(mod, 'K')}/10,0)*10"
+        return f"MAX({MINIMUM_ATTACK_DELAY},ROUND({base}*{lookup_mod(mod, 'K')}/10,0)*10)"
     return base
+
+
+def world_weapon_delay_formula(row: int) -> str:
+    fallback = stat_formula(row, "Delay", "T")
+    return f"IFERROR(INDEX({q('World NPC Weapon Delays')}!$D:$D,MATCH($C{row},{q('World NPC Weapon Delays')}!$A:$A,0)),{fallback})"
 
 
 def res_formula(row: int, col: str) -> str:
@@ -606,6 +622,90 @@ def stat_rows() -> list[dict[str, object]]:
 
 def resistance_rows() -> list[dict[str, object]]:
     return [resistance_preset(level, difficulty, creature_type) for level in range(1, 101) for difficulty in DIFFICULTIES for creature_type in RESIST_OFFSETS]
+
+
+def json_value(data: dict[str, object], field: str):
+    value = data.get(field)
+    return value.get("value") if isinstance(value, dict) else None
+
+
+def read_json(path: Path) -> dict[str, object] | None:
+    if not path.exists():
+        return None
+    return json.loads(path.read_text(encoding="utf-8-sig"))
+
+
+def item_delay_values(item: dict[str, object]) -> list[int]:
+    result = []
+    for prop in json_value(item, "PropertiesList") or []:
+        if json_value(prop, "PropertyName") == ITEM_PROPERTY_DELAY:
+            result.append(int(json_value(prop, "CostValue")) * 10)
+    return result
+
+
+def equipped_weapon_delay(utc_resref: str) -> dict[str, object] | None:
+    if not utc_resref:
+        return None
+
+    utc = read_json(Path("Module/utc") / f"{utc_resref}.utc.json")
+    if utc is None:
+        return None
+
+    sources = []
+    delays = []
+    base_items = set()
+    for equipped in json_value(utc, "Equip_ItemList") or []:
+        equipped_slot = int(equipped.get("__struct_id", -1))
+        if equipped_slot not in WEAPON_EQUIPMENT_SLOTS:
+            continue
+
+        equipped_resref = json_value(equipped, "EquippedRes")
+        if not equipped_resref:
+            continue
+
+        item = read_json(Path("Module/uti") / f"{equipped_resref}.uti.json")
+        if item is None:
+            continue
+
+        base_item = json_value(item, "BaseItem")
+        if base_item not in WEAPON_BASE_ITEM_TYPES:
+            continue
+
+        item_delays = item_delay_values(item)
+        if not item_delays:
+            continue
+
+        base_items.add(int(base_item))
+        delays.extend(item_delays)
+        sources.append(equipped_resref)
+
+    if not delays:
+        return None
+
+    unique_delays = sorted(set(delays))
+    note = "Equipped weapon/natural attack delay."
+    if len(unique_delays) > 1:
+        note = "Multiple equipped weapon delays; World NPCs uses the fastest value and the row should be reviewed."
+
+    return {
+        "delay": min(unique_delays),
+        "sources": ", ".join(dict.fromkeys(sources)),
+        "base_items": ", ".join(str(value) for value in sorted(base_items)),
+        "notes": note,
+    }
+
+
+def world_npc_weapon_delay_lookup(migrated: list[dict[str, object]]) -> dict[str, dict[str, object]]:
+    result = {}
+    for npc in migrated:
+        utc_resref = str(npc.get("UTC/ResRef", "")).strip()
+        if not utc_resref or utc_resref in result:
+            continue
+
+        delay = equipped_weapon_delay(utc_resref)
+        if delay is not None:
+            result[utc_resref] = delay
+    return result
 
 
 def header_styles(row: int, column_count: int, styles: dict[str, int]) -> dict[tuple[int, int], int]:
@@ -653,6 +753,20 @@ def sheet_modifiers(styles: dict[str, int]) -> bytes:
     return build_sheet(data, widths={1: 18, 2: 10, 3: 10, 4: 10, 5: 10, 6: 12, 7: 17, 8: 12, 9: 12, 10: 15, 11: 11, 12: 55, 13: 70}, auto_filter=True, cell_styles=header_styles(1, len(headers), styles))
 
 
+def sheet_world_npc_weapon_delays(weapon_delay_lookup: dict[str, dict[str, object]], styles: dict[str, int]) -> bytes:
+    headers = ["UTC/ResRef", "Equipped Source", "Base Item", "Delay", "Notes"]
+    data = [headers]
+    for utc_resref, details in sorted(weapon_delay_lookup.items()):
+        data.append([
+            utc_resref,
+            details["sources"],
+            details["base_items"],
+            details["delay"],
+            details["notes"],
+        ])
+    return build_sheet(data, widths={1: 24, 2: 55, 3: 14, 4: 10, 5: 80}, auto_filter=True, cell_styles=header_styles(1, len(headers), styles))
+
+
 def sheet_formula_source(styles: dict[str, int]) -> bytes:
     data = [
         ["Enemy Formula Source - DO NOT EDIT BUILDER PRESETS DIRECTLY"],
@@ -660,6 +774,7 @@ def sheet_formula_source(styles: dict[str, int]) -> bytes:
         ["Important", "Fortitude, Will/Willpower saves, and Reflex are removed from the enemy-building workflow. WIL is an ability score, not a save."],
         ["Important", "Creature Type changes resistance defaults and ability flavor only. It does not change core stat math."],
         ["Important", "Difficulty normally increases HP, resources, ability count, and pressure. Hard-to-hit enemies are an approved exception modifier."],
+        ["Important", f"Delay values are clamped to {MINIMUM_ATTACK_DELAY}; this keeps Hasten II above the 1.75s practical attack floor."],
         [],
         ["Difficulty", "HP Mult", "Resource Mult", "DMG Mult", "Ability Score Bonus", "Offense Bonus", "Defense Bonus", "Evasion Bonus", "Resistance Bonus", "Delay Mult"],
     ]
@@ -682,9 +797,11 @@ def sheet_formula_source(styles: dict[str, int]) -> bytes:
         ["Resource base", "8 + Level * 1.6, then difficulty and role multipliers"],
         ["DMG base", "5 + Level * 1.45, then difficulty and role multipliers"],
         ["Resistance base", "FLOOR(Level * 0.18) + Difficulty Resistance Bonus + Creature Type Offset"],
+        ["Delay base", f"Role Base Delay * Difficulty Delay Mult * Modifier Delay Mult, rounded to 10 and clamped to {MINIMUM_ATTACK_DELAY}."],
+        ["World NPC delay", "World NPC rows first use equipped weapon/natural attack Delay from the UTC's UTI source; rows without a weapon source fall back to the preset Delay formula."],
     ]
     widths = {1: 30, 2: 45, 3: 26, 4: 26, 5: 18, 6: 15, 7: 15, 8: 15, 9: 18, 10: 18, 11: 18, 12: 20, 13: 20, 14: 20}
-    cell_styles = {(1, 1): styles["warning"], (2, 1): styles["header"], (3, 1): styles["warning"], (4, 1): styles["warning"], (5, 1): styles["warning"]}
+    cell_styles = {(1, 1): styles["warning"], (2, 1): styles["header"], (3, 1): styles["warning"], (4, 1): styles["warning"], (5, 1): styles["warning"], (6, 1): styles["warning"]}
     for row_idx, row in enumerate(data, 1):
         if row and row[0] in {"Difficulty", "Role", "Creature Type", "Base Formula"}:
             cell_styles.update(header_styles(row_idx, len(row), styles))
@@ -710,7 +827,7 @@ def builder_formula_stat(field: str, col: str) -> str:
     if field in {"Physical Defense", "Force Defense"}:
         return f"MAX(0,{base}+{lookup_mod('$B$8', 'I')})"
     if field == "Delay":
-        return f"ROUND({base}*{lookup_mod('$B$8', 'K')}/10,0)*10"
+        return f"MAX({MINIMUM_ATTACK_DELAY},ROUND({base}*{lookup_mod('$B$8', 'K')}/10,0)*10)"
     return base
 
 
@@ -748,7 +865,7 @@ def sheet_builder_guide(stat_lookup, res_lookup, styles: dict[str, int]) -> byte
         [1, "Choose Level, Difficulty, Role, Creature Type, and optional Modifier."],
         [2, "Copy the exact output numbers to the creature skin and weapon/natural attack setup."],
         [3, "Add NPCLevel, NPCHP, STM, FP, Attack/Force Attack, Evasion, Defense, and Resistance item properties as listed."],
-        [4, "Set DMG and Delay on the weapon or natural attack source used by the creature."],
+        [4, f"Set DMG and Delay on the weapon or natural attack source used by the creature; Delay must not go below {MINIMUM_ATTACK_DELAY}."],
         [5, "Add the listed ability feats. Optional swaps must come from the approved creature-type swap list."],
         [6, "Use no hand-entered stat overrides unless design explicitly approves a future override workflow."],
         [],
@@ -810,7 +927,7 @@ def sheet_builder_guide(stat_lookup, res_lookup, styles: dict[str, int]) -> byte
     return build_sheet(rows, formulas=formulas, widths=widths, freeze=None, cell_styles=cell_styles, data_validations=validations)
 
 
-def sheet_world_npcs(migrated, stat_lookup, res_lookup, styles: dict[str, int]) -> bytes:
+def sheet_world_npcs(migrated, stat_lookup, res_lookup, styles: dict[str, int], weapon_delay_lookup: dict[str, dict[str, object]]) -> bytes:
     headers = ["Area", "Enemy Name", "UTC/ResRef", "Level", "Difficulty", "Role", "Creature Type", "Modifier", "MGT", "PER", "WIL", "VIT", "AGI", "HP", "STM", "FP", "DMG", "Attack", "Force Attack", "Evasion", "Physical Defense", "Force Defense", "Fire Res", "Poison Res", "Electrical Res", "Ice Res", "Mind Res", "Mobility Res", "Trauma Res", "Disruption Res", "Skill Override", "Delay", "Ability Count", "Ability Package", "Existing Abilities", "Setup Notes"]
     rows = [headers]
     formulas = {}
@@ -821,7 +938,11 @@ def sheet_world_npcs(migrated, stat_lookup, res_lookup, styles: dict[str, int]) 
         stat = stat_lookup[(npc["Level"], npc["Difficulty"], npc["Role"])]
         res = res_lookup[(npc["Level"], npc["Difficulty"], npc["Creature Type"])]
         for col_idx, header in enumerate(headers, 1):
-            if header in stat_cols:
+            if header == "Delay":
+                delay_details = weapon_delay_lookup.get(npc["UTC/ResRef"])
+                cached = delay_details["delay"] if delay_details is not None else apply_modifier(header, stat[header], npc["Modifier"])
+                formulas[(row_idx, col_idx)] = (world_weapon_delay_formula(row_idx), cached, False)
+            elif header in stat_cols:
                 if header in {"MGT", "PER", "WIL", "VIT", "AGI", "Ability Count"}:
                     formula = lookup_stat(f"$D{row_idx}", f"$E{row_idx}", f"$F{row_idx}", stat_cols[header])
                     cached = stat[header]
@@ -960,14 +1081,16 @@ def main() -> None:
     resistances = resistance_rows()
     stat_lookup = {(row["Level"], row["Difficulty"], row["Role"]): row for row in stats}
     res_lookup = {(row["Level"], row["Difficulty"], row["Creature Type"]): row for row in resistances}
+    weapon_delay_lookup = world_npc_weapon_delay_lookup(migrated)
     payloads = {
         "Enemy Builder Guide": sheet_builder_guide(stat_lookup, res_lookup, styles),
         "Enemy Stat Presets": sheet_stat_presets(stats, styles),
         "Enemy Resistance Packages": sheet_resistances(resistances, styles),
         "Enemy Ability Packages": sheet_abilities(styles),
         "Enemy Modifiers": sheet_modifiers(styles),
+        "World NPC Weapon Delays": sheet_world_npc_weapon_delays(weapon_delay_lookup, styles),
         "Enemy Formula Source": sheet_formula_source(styles),
-        "World NPCs": sheet_world_npcs(migrated, stat_lookup, res_lookup, styles),
+        "World NPCs": sheet_world_npcs(migrated, stat_lookup, res_lookup, styles, weapon_delay_lookup),
     }
     files = update_package(files, payloads)
 
@@ -979,6 +1102,7 @@ def main() -> None:
     print(f"Updated {WORKBOOK}")
     print(f"Migrated {len(migrated)} World NPC rows")
     print(f"Generated {len(stats)} stat rows and {len(resistances)} resistance rows")
+    print(f"Matched equipped weapon delays for {len(weapon_delay_lookup)} World NPC UTCs")
 
 
 if __name__ == "__main__":

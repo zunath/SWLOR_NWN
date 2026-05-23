@@ -83,6 +83,13 @@
           "type": "resref",
           "value": "holoregenhide"
         }
+      },
+      {
+        "__struct_id": 16384,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "gimp_bite"
+        }
       }
     ]
   },

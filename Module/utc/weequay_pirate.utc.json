@@ -180,6 +180,13 @@
           "type": "resref",
           "value": "blaster_bullets"
         }
+      },
+      {
+        "__struct_id": 16,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "rifle_npc"
+        }
       }
     ]
   },

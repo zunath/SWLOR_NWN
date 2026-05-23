@@ -565,6 +565,7 @@ namespace SWLOR.Game.Server.Service
             BaseItem.QuarterStaff,
             BaseItem.LightMace,
             BaseItem.Pistol,
+            BaseItem.Sling,
             BaseItem.ThrowingAxe,
             BaseItem.Shuriken,
             BaseItem.Dart,
@@ -715,7 +716,8 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public static List<BaseItem> PistolBaseItemTypes { get; } = new List<BaseItem>
         {
-            BaseItem.Pistol
+            BaseItem.Pistol,
+            BaseItem.Sling
         };
 
         /// <summary>

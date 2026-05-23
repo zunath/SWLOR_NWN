@@ -38,7 +38,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 8
+    "value": 10
   },
   "Conversation": {
     "type": "resref",
@@ -50,7 +50,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 14
+    "value": 42
   },
   "DecayTime": {
     "type": "dword",
@@ -66,7 +66,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 8
+    "value": 12
   },
   "Disarmable": {
     "type": "byte",
@@ -79,14 +79,14 @@
         "__struct_id": 16,
         "EquippedRes": {
           "type": "resref",
-          "value": "cz220_dr_pistol"
+          "value": "probedroid_wp"
         }
       },
       {
         "__struct_id": 131072,
         "EquippedRes": {
           "type": "resref",
-          "value": "cz220_droid_hide"
+          "value": "probedroid_sk"
         }
       }
     ]
@@ -134,11 +134,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 14
+    "value": 42
   },
   "Int": {
     "type": "byte",
-    "value": 8
+    "value": 10
   },
   "Interruptable": {
     "type": "byte",
@@ -168,7 +168,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 14
+    "value": 42
   },
   "NaturalAC": {
     "type": "byte",
@@ -473,7 +473,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 8
+    "value": 7
   },
   "Subrace": {
     "type": "cexostring",
@@ -589,6 +589,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 8
+    "value": 7
   }
 }

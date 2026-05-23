@@ -38,7 +38,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 8
+    "value": 13
   },
   "Conversation": {
     "type": "resref",
@@ -50,7 +50,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 61
+    "value": 115
   },
   "DecayTime": {
     "type": "dword",
@@ -81,21 +81,21 @@
         "__struct_id": 16384,
         "EquippedRes": {
           "type": "resref",
-          "value": "kinrath_bite"
+          "value": "wwkinrath_wp"
         }
       },
       {
         "__struct_id": 32768,
         "EquippedRes": {
           "type": "resref",
-          "value": "kinrath_bite"
+          "value": "wwkinrath_wp"
         }
       },
       {
         "__struct_id": 131072,
         "EquippedRes": {
           "type": "resref",
-          "value": "ww_kin_skin"
+          "value": "wwkinrath_sk"
         }
       }
     ]
@@ -157,11 +157,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 61
+    "value": 115
   },
   "Int": {
     "type": "byte",
-    "value": 12
+    "value": 13
   },
   "Interruptable": {
     "type": "byte",
@@ -191,7 +191,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 60
+    "value": 115
   },
   "NaturalAC": {
     "type": "byte",
@@ -496,7 +496,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 12
+    "value": 9
   },
   "Subrace": {
     "type": "cexostring",
@@ -627,6 +627,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 10
+    "value": 9
   }
 }

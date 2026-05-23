@@ -130,7 +130,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 16
+    "value": 11
   },
   "Conversation": {
     "type": "resref",
@@ -142,7 +142,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 37
+    "value": 54
   },
   "DecayTime": {
     "type": "dword",
@@ -158,7 +158,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 13
+    "value": 14
   },
   "Disarmable": {
     "type": "byte",
@@ -185,7 +185,14 @@
         "__struct_id": 16,
         "EquippedRes": {
           "type": "resref",
-          "value": "rifle_npc"
+          "value": "rodianpirate_wp"
+        }
+      },
+      {
+        "__struct_id": 131072,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "rodianpirate_sk"
         }
       }
     ]
@@ -310,11 +317,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 37
+    "value": 54
   },
   "Int": {
     "type": "byte",
-    "value": 10
+    "value": 11
   },
   "Interruptable": {
     "type": "byte",
@@ -344,7 +351,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 40
+    "value": 54
   },
   "NaturalAC": {
     "type": "byte",
@@ -649,7 +656,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 16
+    "value": 8
   },
   "Subrace": {
     "type": "cexostring",
@@ -685,7 +692,7 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 10
+    "value": 8
   },
   "xAppearance_Head": {
     "type": "word",

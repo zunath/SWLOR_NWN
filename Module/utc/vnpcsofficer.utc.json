@@ -130,7 +130,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 26
+    "value": 29
   },
   "Conversation": {
     "type": "resref",
@@ -142,7 +142,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 280
+    "value": 1106
   },
   "DecayTime": {
     "type": "dword",
@@ -160,7 +160,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 20
+    "value": 29
   },
   "Disarmable": {
     "type": "byte",
@@ -187,14 +187,14 @@
         "__struct_id": 16,
         "EquippedRes": {
           "type": "resref",
-          "value": "vnpcpofficer"
+          "value": "sithofficer2_wp"
         }
       },
       {
         "__struct_id": 131072,
         "EquippedRes": {
           "type": "resref",
-          "value": "vnpcsbotspc"
+          "value": "sithofficer2_sk"
         }
       }
     ]
@@ -347,7 +347,7 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 280
+    "value": 1106
   },
   "Int": {
     "type": "byte",
@@ -401,7 +401,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 600
+    "value": 1106
   },
   "NaturalAC": {
     "type": "byte",
@@ -742,7 +742,7 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 20
+    "value": 35
   },
   "xAppearance_Head": {
     "type": "word",

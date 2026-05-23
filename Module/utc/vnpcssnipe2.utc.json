@@ -130,7 +130,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 18
+    "value": 25
   },
   "Conversation": {
     "type": "resref",
@@ -142,7 +142,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 190
+    "value": 564
   },
   "DecayTime": {
     "type": "dword",
@@ -187,14 +187,14 @@
         "__struct_id": 16,
         "EquippedRes": {
           "type": "resref",
-          "value": "vnpcrmark2"
+          "value": "sithmarksman_wp"
         }
       },
       {
         "__struct_id": 131072,
         "EquippedRes": {
           "type": "resref",
-          "value": "vnpcsmark2"
+          "value": "sithmarksman_sk"
         }
       }
     ]
@@ -312,11 +312,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 190
+    "value": 564
   },
   "Int": {
     "type": "byte",
-    "value": 24
+    "value": 25
   },
   "Interruptable": {
     "type": "byte",
@@ -346,7 +346,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 250
+    "value": 564
   },
   "NaturalAC": {
     "type": "byte",
@@ -651,7 +651,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 10
+    "value": 17
   },
   "Subrace": {
     "type": "cexostring",
@@ -687,7 +687,7 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 10
+    "value": 17
   },
   "xAppearance_Head": {
     "type": "word",

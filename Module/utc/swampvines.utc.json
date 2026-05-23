@@ -50,7 +50,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 515
+    "value": 205
   },
   "DecayTime": {
     "type": "dword",
@@ -66,7 +66,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 10
+    "value": 11
   },
   "Disarmable": {
     "type": "byte",
@@ -79,14 +79,14 @@
         "__struct_id": 16384,
         "EquippedRes": {
           "type": "resref",
-          "value": "swampvinethorns"
+          "value": "swampvines_wp"
         }
       },
       {
         "__struct_id": 131072,
         "EquippedRes": {
           "type": "resref",
-          "value": "v_cairnmoga_prop"
+          "value": "swampvines_sk"
         }
       }
     ]
@@ -197,11 +197,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 515
+    "value": 205
   },
   "Int": {
     "type": "byte",
-    "value": 14
+    "value": 16
   },
   "Interruptable": {
     "type": "byte",
@@ -231,7 +231,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 535
+    "value": 205
   },
   "NaturalAC": {
     "type": "byte",
@@ -536,7 +536,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 10
+    "value": 19
   },
   "Subrace": {
     "type": "cexostring",
@@ -572,6 +572,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 10
+    "value": 11
   }
 }

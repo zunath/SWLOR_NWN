@@ -130,7 +130,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 60
+    "value": 36
   },
   "Conversation": {
     "type": "resref",
@@ -142,7 +142,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 600
+    "value": 2419
   },
   "DecayTime": {
     "type": "dword",
@@ -158,7 +158,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 70
+    "value": 52
   },
   "Disarmable": {
     "type": "byte",
@@ -185,7 +185,14 @@
         "__struct_id": 16,
         "EquippedRes": {
           "type": "resref",
-          "value": "forcewitweap"
+          "value": "forcewitch_wp"
+        }
+      },
+      {
+        "__struct_id": 131072,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "forcewitch_sk"
         }
       }
     ]
@@ -373,11 +380,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 600
+    "value": 2419
   },
   "Int": {
     "type": "byte",
-    "value": 70
+    "value": 52
   },
   "Interruptable": {
     "type": "byte",
@@ -407,7 +414,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 850
+    "value": 2419
   },
   "NaturalAC": {
     "type": "byte",
@@ -712,7 +719,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 50
+    "value": 36
   },
   "Subrace": {
     "type": "cexostring",
@@ -748,7 +755,7 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 10
+    "value": 65
   },
   "xAppearance_Head": {
     "type": "word",

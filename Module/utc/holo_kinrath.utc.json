@@ -38,7 +38,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 8
+    "value": 10
   },
   "Conversation": {
     "type": "resref",
@@ -50,7 +50,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 61
+    "value": 47
   },
   "DecayTime": {
     "type": "dword",
@@ -68,7 +68,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 16
+    "value": 7
   },
   "Disarmable": {
     "type": "byte",
@@ -81,21 +81,21 @@
         "__struct_id": 131072,
         "EquippedRes": {
           "type": "resref",
-          "value": "holoregenhide"
+          "value": "holokin_sk"
         }
       },
       {
         "__struct_id": 16384,
         "EquippedRes": {
           "type": "resref",
-          "value": "kinrath_bite"
+          "value": "holokin_wp"
         }
       },
       {
         "__struct_id": 32768,
         "EquippedRes": {
           "type": "resref",
-          "value": "kinrath_bite"
+          "value": "holokin_wp"
         }
       }
     ]
@@ -157,11 +157,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 61
+    "value": 47
   },
   "Int": {
     "type": "byte",
-    "value": 3
+    "value": 10
   },
   "Interruptable": {
     "type": "byte",
@@ -191,7 +191,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 60
+    "value": 47
   },
   "NaturalAC": {
     "type": "byte",
@@ -567,6 +567,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 10
+    "value": 7
   }
 }

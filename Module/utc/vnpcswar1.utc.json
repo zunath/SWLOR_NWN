@@ -142,7 +142,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 210
+    "value": 640
   },
   "DecayTime": {
     "type": "dword",
@@ -160,7 +160,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 23
+    "value": 28
   },
   "Disarmable": {
     "type": "byte",
@@ -187,14 +187,14 @@
         "__struct_id": 16,
         "EquippedRes": {
           "type": "resref",
-          "value": "vnpcmwar1"
+          "value": "sithmarinit_wp"
         }
       },
       {
         "__struct_id": 131072,
         "EquippedRes": {
           "type": "resref",
-          "value": "vnpcswar1"
+          "value": "sithmarinit_sk"
         }
       }
     ]
@@ -319,7 +319,7 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 210
+    "value": 640
   },
   "Int": {
     "type": "byte",
@@ -353,7 +353,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 300
+    "value": 640
   },
   "NaturalAC": {
     "type": "byte",
@@ -658,7 +658,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 17
+    "value": 16
   },
   "Subrace": {
     "type": "cexostring",
@@ -694,7 +694,7 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 17
+    "value": 16
   },
   "xAppearance_Head": {
     "type": "word",

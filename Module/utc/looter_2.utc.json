@@ -142,7 +142,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 43
+    "value": 102
   },
   "DecayTime": {
     "type": "dword",
@@ -160,7 +160,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 17
+    "value": 16
   },
   "Disarmable": {
     "type": "byte",
@@ -180,14 +180,14 @@
         "__struct_id": 16,
         "EquippedRes": {
           "type": "resref",
-          "value": "npc_outlaw_pisto"
+          "value": "outlawhuman_wp"
         }
       },
       {
         "__struct_id": 131072,
         "EquippedRes": {
           "type": "resref",
-          "value": "ww_outlaw_skin"
+          "value": "outlawhuman_sk"
         }
       }
     ]
@@ -319,11 +319,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 43
+    "value": 102
   },
   "Int": {
     "type": "byte",
-    "value": 10
+    "value": 13
   },
   "Interruptable": {
     "type": "byte",
@@ -353,7 +353,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 47
+    "value": 102
   },
   "NaturalAC": {
     "type": "byte",
@@ -658,7 +658,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 10
+    "value": 9
   },
   "Subrace": {
     "type": "cexostring",
@@ -759,7 +759,7 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 10
+    "value": 9
   },
   "xAppearance_Head": {
     "type": "word",

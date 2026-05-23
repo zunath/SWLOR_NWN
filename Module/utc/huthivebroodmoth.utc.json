@@ -38,7 +38,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 50
+    "value": 25
   },
   "Conversation": {
     "type": "resref",
@@ -50,7 +50,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 5200
+    "value": 4485
   },
   "DecayTime": {
     "type": "dword",
@@ -68,7 +68,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 40
+    "value": 35
   },
   "Disarmable": {
     "type": "byte",
@@ -81,14 +81,14 @@
         "__struct_id": 16384,
         "EquippedRes": {
           "type": "resref",
-          "value": "vhivebroodmother"
+          "value": "qionhivebrood_wp"
         }
       },
       {
         "__struct_id": 131072,
         "EquippedRes": {
           "type": "resref",
-          "value": "vbroodmother_001"
+          "value": "qionhivebrood_sk"
         }
       }
     ]
@@ -178,11 +178,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 5200
+    "value": 4485
   },
   "Int": {
     "type": "byte",
-    "value": 40
+    "value": 35
   },
   "Interruptable": {
     "type": "byte",
@@ -212,7 +212,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 6000
+    "value": 4485
   },
   "NaturalAC": {
     "type": "byte",
@@ -517,7 +517,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 40
+    "value": 25
   },
   "Subrace": {
     "type": "cexostring",
@@ -693,6 +693,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 26
+    "value": 42
   }
 }

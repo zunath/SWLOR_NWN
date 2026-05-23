@@ -50,7 +50,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 400
+    "value": 73
   },
   "DecayTime": {
     "type": "dword",
@@ -66,7 +66,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 14
+    "value": 8
   },
   "Disarmable": {
     "type": "byte",
@@ -79,7 +79,14 @@
         "__struct_id": 16384,
         "EquippedRes": {
           "type": "resref",
-          "value": "riktashaweapon"
+          "value": "riktasha_wp"
+        }
+      },
+      {
+        "__struct_id": 131072,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "riktasha_sk"
         }
       }
     ]
@@ -141,11 +148,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 400
+    "value": 73
   },
   "Int": {
     "type": "byte",
-    "value": 3
+    "value": 11
   },
   "Interruptable": {
     "type": "byte",
@@ -175,7 +182,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 400
+    "value": 73
   },
   "NaturalAC": {
     "type": "byte",
@@ -480,7 +487,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 40
+    "value": 14
   },
   "Subrace": {
     "type": "cexostring",
@@ -581,6 +588,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 14
+    "value": 8
   }
 }

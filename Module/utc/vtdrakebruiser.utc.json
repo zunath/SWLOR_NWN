@@ -130,7 +130,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 18
+    "value": 8
   },
   "Conversation": {
     "type": "resref",
@@ -142,7 +142,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 100
+    "value": 73
   },
   "DecayTime": {
     "type": "dword",
@@ -160,7 +160,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 18
+    "value": 12
   },
   "Disarmable": {
     "type": "byte",
@@ -187,14 +187,14 @@
         "__struct_id": 16,
         "EquippedRes": {
           "type": "resref",
-          "value": "vtdrakebruisemel"
+          "value": "drakebruiser_wp"
         }
       },
       {
         "__struct_id": 131072,
         "EquippedRes": {
           "type": "resref",
-          "value": "vtundrakebruises"
+          "value": "drakebruiser_sk"
         }
       }
     ]
@@ -305,11 +305,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 100
+    "value": 73
   },
   "Int": {
     "type": "byte",
-    "value": 10
+    "value": 12
   },
   "Interruptable": {
     "type": "byte",
@@ -339,7 +339,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 140
+    "value": 73
   },
   "NaturalAC": {
     "type": "byte",
@@ -644,7 +644,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 20
+    "value": 8
   },
   "Subrace": {
     "type": "cexostring",
@@ -715,7 +715,7 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 10
+    "value": 14
   },
   "xAppearance_Head": {
     "type": "word",

@@ -50,7 +50,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 120
+    "value": 165
   },
   "DecayTime": {
     "type": "dword",
@@ -68,7 +68,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 16
+    "value": 19
   },
   "Disarmable": {
     "type": "byte",
@@ -81,14 +81,14 @@
         "__struct_id": 16384,
         "EquippedRes": {
           "type": "resref",
-          "value": "pelko_bite"
+          "value": "pelkobugs_wp"
         }
       },
       {
         "__struct_id": 131072,
         "EquippedRes": {
           "type": "resref",
-          "value": "pelko_skin"
+          "value": "pelkobugs_sk"
         }
       }
     ]
@@ -150,11 +150,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 120
+    "value": 165
   },
   "Int": {
     "type": "byte",
-    "value": 25
+    "value": 23
   },
   "Interruptable": {
     "type": "byte",
@@ -184,7 +184,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 122
+    "value": 165
   },
   "NaturalAC": {
     "type": "byte",
@@ -489,7 +489,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 18
+    "value": 13
   },
   "Subrace": {
     "type": "cexostring",
@@ -575,6 +575,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 22
+    "value": 13
   }
 }

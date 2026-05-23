@@ -130,7 +130,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 20
+    "value": 22
   },
   "Conversation": {
     "type": "resref",
@@ -142,7 +142,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 56
+    "value": 490
   },
   "DecayTime": {
     "type": "dword",
@@ -160,7 +160,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 22
+    "value": 15
   },
   "Disarmable": {
     "type": "byte",
@@ -180,14 +180,14 @@
         "__struct_id": 16,
         "EquippedRes": {
           "type": "resref",
-          "value": "npc_eco_rifle"
+          "value": "ecoterrorist_wp"
         }
       },
       {
         "__struct_id": 131072,
         "EquippedRes": {
           "type": "resref",
-          "value": "ecoter_hide"
+          "value": "ecoterrorist_sk"
         }
       }
     ]
@@ -347,11 +347,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 56
+    "value": 490
   },
   "Int": {
     "type": "byte",
-    "value": 20
+    "value": 22
   },
   "Interruptable": {
     "type": "byte",
@@ -381,7 +381,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 106
+    "value": 490
   },
   "NaturalAC": {
     "type": "byte",
@@ -686,7 +686,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 16
+    "value": 27
   },
   "Subrace": {
     "type": "cexostring",
@@ -817,7 +817,7 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 18
+    "value": 15
   },
   "xAppearance_Head": {
     "type": "word",

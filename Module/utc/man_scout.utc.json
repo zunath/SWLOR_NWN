@@ -130,7 +130,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 14
+    "value": 17
   },
   "Conversation": {
     "type": "resref",
@@ -142,7 +142,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 60
+    "value": 311
   },
   "DecayTime": {
     "type": "dword",
@@ -160,7 +160,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 16
+    "value": 21
   },
   "Disarmable": {
     "type": "byte",
@@ -187,14 +187,14 @@
         "__struct_id": 16,
         "EquippedRes": {
           "type": "resref",
-          "value": "npc_mando_knife"
+          "value": "mandoscout_wp"
         }
       },
       {
         "__struct_id": 131072,
         "EquippedRes": {
           "type": "resref",
-          "value": "mando_war_skin"
+          "value": "mandoscout_sk"
         }
       }
     ]
@@ -333,11 +333,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 60
+    "value": 311
   },
   "Int": {
     "type": "byte",
-    "value": 10
+    "value": 17
   },
   "Interruptable": {
     "type": "byte",
@@ -367,7 +367,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 70
+    "value": 311
   },
   "NaturalAC": {
     "type": "byte",
@@ -758,7 +758,7 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 10
+    "value": 12
   },
   "xAppearance_Head": {
     "type": "word",

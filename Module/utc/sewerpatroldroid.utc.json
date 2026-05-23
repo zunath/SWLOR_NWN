@@ -38,7 +38,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 18
+    "value": 13
   },
   "Conversation": {
     "type": "resref",
@@ -50,7 +50,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 64
+    "value": 90
   },
   "DecayTime": {
     "type": "dword",
@@ -66,7 +66,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 20
+    "value": 15
   },
   "Disarmable": {
     "type": "byte",
@@ -79,14 +79,14 @@
         "__struct_id": 16,
         "EquippedRes": {
           "type": "resref",
-          "value": "rifle_npc"
+          "value": "sewerpatrol_wp"
         }
       },
       {
         "__struct_id": 131072,
         "EquippedRes": {
           "type": "resref",
-          "value": "nw_it_creitemcon"
+          "value": "sewerpatrol_sk"
         }
       }
     ]
@@ -204,11 +204,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 64
+    "value": 90
   },
   "Int": {
     "type": "byte",
-    "value": 10
+    "value": 13
   },
   "Interruptable": {
     "type": "byte",
@@ -238,7 +238,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 80
+    "value": 90
   },
   "NaturalAC": {
     "type": "byte",
@@ -543,7 +543,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 20
+    "value": 9
   },
   "Subrace": {
     "type": "cexostring",
@@ -579,6 +579,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 11
+    "value": 9
   }
 }

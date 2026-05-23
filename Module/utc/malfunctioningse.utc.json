@@ -38,7 +38,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 12
+    "value": 11
   },
   "Conversation": {
     "type": "resref",
@@ -50,7 +50,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 22
+    "value": 54
   },
   "DecayTime": {
     "type": "dword",
@@ -66,7 +66,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 16
+    "value": 14
   },
   "Disarmable": {
     "type": "byte",
@@ -79,7 +79,14 @@
         "__struct_id": 16,
         "EquippedRes": {
           "type": "resref",
-          "value": "cz220_dr_pistol"
+          "value": "malfsecdroid_wp"
+        }
+      },
+      {
+        "__struct_id": 131072,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "malfsecdroid_sk"
         }
       }
     ]
@@ -134,11 +141,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 22
+    "value": 54
   },
   "Int": {
     "type": "byte",
-    "value": 10
+    "value": 11
   },
   "Interruptable": {
     "type": "byte",
@@ -168,7 +175,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 26
+    "value": 54
   },
   "NaturalAC": {
     "type": "byte",
@@ -473,7 +480,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 12
+    "value": 8
   },
   "Subrace": {
     "type": "cexostring",
@@ -509,6 +516,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 11
+    "value": 8
   }
 }

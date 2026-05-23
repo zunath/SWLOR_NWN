@@ -50,7 +50,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 107
+    "value": 384
   },
   "DecayTime": {
     "type": "dword",
@@ -68,7 +68,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 16
+    "value": 25
   },
   "Disarmable": {
     "type": "byte",
@@ -81,14 +81,14 @@
         "__struct_id": 16384,
         "EquippedRes": {
           "type": "resref",
-          "value": "mora_serpent_bit"
+          "value": "moraserpent_wp"
         }
       },
       {
         "__struct_id": 131072,
         "EquippedRes": {
           "type": "resref",
-          "value": "mora_serp_skin"
+          "value": "moraserpent_sk"
         }
       }
     ]
@@ -150,7 +150,7 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 107
+    "value": 384
   },
   "Int": {
     "type": "byte",
@@ -184,7 +184,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 132
+    "value": 384
   },
   "NaturalAC": {
     "type": "byte",
@@ -489,7 +489,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 18
+    "value": 14
   },
   "Subrace": {
     "type": "cexostring",
@@ -605,6 +605,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 18
+    "value": 14
   }
 }

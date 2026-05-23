@@ -38,7 +38,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 14
+    "value": 15
   },
   "Conversation": {
     "type": "resref",
@@ -50,7 +50,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 45
+    "value": 380
   },
   "DecayTime": {
     "type": "dword",
@@ -68,7 +68,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 18
+    "value": 22
   },
   "Disarmable": {
     "type": "byte",
@@ -81,14 +81,14 @@
         "__struct_id": 16384,
         "EquippedRes": {
           "type": "resref",
-          "value": "amphih_claw"
+          "value": "amphihydrus_wp"
         }
       },
       {
         "__struct_id": 131072,
         "EquippedRes": {
           "type": "resref",
-          "value": "mc_amphihy_hide"
+          "value": "amphihydrus_sk"
         }
       }
     ]
@@ -164,7 +164,7 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 45
+    "value": 380
   },
   "Int": {
     "type": "byte",
@@ -198,7 +198,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 63
+    "value": 380
   },
   "NaturalAC": {
     "type": "byte",
@@ -503,7 +503,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 10
+    "value": 15
   },
   "Subrace": {
     "type": "cexostring",
@@ -619,6 +619,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 24
+    "value": 26
   }
 }

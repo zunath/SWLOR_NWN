@@ -142,7 +142,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 88
+    "value": 214
   },
   "DecayTime": {
     "type": "dword",
@@ -187,14 +187,14 @@
         "__struct_id": 16,
         "EquippedRes": {
           "type": "resref",
-          "value": "npc_mando_rifle"
+          "value": "mandohunter_wp"
         }
       },
       {
         "__struct_id": 131072,
         "EquippedRes": {
           "type": "resref",
-          "value": "mando_htr_skin"
+          "value": "mandohunter_sk"
         }
       }
     ]
@@ -354,11 +354,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 88
+    "value": 214
   },
   "Int": {
     "type": "byte",
-    "value": 12
+    "value": 16
   },
   "Interruptable": {
     "type": "byte",
@@ -388,7 +388,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 100
+    "value": 214
   },
   "NaturalAC": {
     "type": "byte",
@@ -693,7 +693,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 14
+    "value": 11
   },
   "Subrace": {
     "type": "cexostring",
@@ -794,7 +794,7 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 10
+    "value": 11
   },
   "xAppearance_Head": {
     "type": "word",

@@ -142,7 +142,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 130
+    "value": 687
   },
   "DecayTime": {
     "type": "dword",
@@ -160,7 +160,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 23
+    "value": 24
   },
   "Disarmable": {
     "type": "byte",
@@ -180,14 +180,14 @@
         "__struct_id": 16,
         "EquippedRes": {
           "type": "resref",
-          "value": "vnpcmstaff1"
+          "value": "sithinqinit_wp"
         }
       },
       {
         "__struct_id": 131072,
         "EquippedRes": {
           "type": "resref",
-          "value": "vnpcsass1"
+          "value": "sithinqinit_sk"
         }
       }
     ]
@@ -333,11 +333,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 130
+    "value": 687
   },
   "Int": {
     "type": "byte",
-    "value": 23
+    "value": 24
   },
   "Interruptable": {
     "type": "byte",
@@ -367,7 +367,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 250
+    "value": 687
   },
   "NaturalAC": {
     "type": "byte",
@@ -708,7 +708,7 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 17
+    "value": 30
   },
   "xAppearance_Head": {
     "type": "word",

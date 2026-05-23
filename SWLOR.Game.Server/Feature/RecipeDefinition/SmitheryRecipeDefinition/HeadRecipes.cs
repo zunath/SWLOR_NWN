@@ -11,10 +11,15 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
         public Dictionary<RecipeType, RecipeDetail> BuildRecipes()
         {
             Tier1();
+            Tier1A();
             Tier2();
+            Tier2A();
             Tier3();
+            Tier3A();
             Tier4();
+            Tier4A();
             Tier5();
+            Tier5A();
 
             return _builder.Build();
         }
@@ -458,5 +463,170 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_plagionite", 5)
                 .Component("ref_keromber", 5);
         }
+        private void Tier1A()
+        {
+            // Warden Helmet
+            _builder.Create(RecipeType.WardenHelmet, SkillType.Smithery)
+                .Category(RecipeCategoryType.Helmet)
+                .Resref("fld_bul_helm")
+                .Level(9)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
+                .Component("ref_veldite", 3)
+                .Component("fiberp_ruined", 2);
+
+            // Mystic Cap
+            _builder.Create(RecipeType.MysticCap, SkillType.Smithery)
+                .Category(RecipeCategoryType.Cap)
+                .Resref("fld_chn_cap")
+                .Level(9)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
+                .Component("lth_ruined", 3)
+                .Component("fiberp_ruined", 2);
+
+            // Vanguard Cap
+            _builder.Create(RecipeType.VanguardCap, SkillType.Smithery)
+                .Category(RecipeCategoryType.Cap)
+                .Resref("fld_skm_cap")
+                .Level(9)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
+                .Component("lth_ruined", 3)
+                .Component("fiberp_ruined", 2);
+        }
+
+        private void Tier2A()
+        {
+            // Bastion Helmet
+            _builder.Create(RecipeType.BastionHelmet, SkillType.Smithery)
+                .Category(RecipeCategoryType.Helmet)
+                .Resref("vet_bul_helm")
+                .Level(19)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("ref_scordspar", 3)
+                .Component("fiberp_flawed", 2);
+
+            // Oracle Cap
+            _builder.Create(RecipeType.OracleCap, SkillType.Smithery)
+                .Category(RecipeCategoryType.Cap)
+                .Resref("vet_chn_cap")
+                .Level(19)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("lth_flawed", 3)
+                .Component("fiberp_flawed", 2);
+
+            // Onslaught Cap
+            _builder.Create(RecipeType.OnslaughtCap, SkillType.Smithery)
+                .Category(RecipeCategoryType.Cap)
+                .Resref("vet_skm_cap")
+                .Level(19)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("lth_flawed", 3)
+                .Component("fiberp_flawed", 2);
+        }
+
+        private void Tier3A()
+        {
+            // Sentinel Helmet
+            _builder.Create(RecipeType.SentinelHelmet, SkillType.Smithery)
+                .Category(RecipeCategoryType.Helmet)
+                .Resref("prm_bul_helm")
+                .Level(29)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("ref_plagionite", 3)
+                .Component("fiberp_good", 2);
+
+            // Arcanist Cap
+            _builder.Create(RecipeType.ArcanistCap, SkillType.Smithery)
+                .Category(RecipeCategoryType.Cap)
+                .Resref("prm_chn_cap")
+                .Level(29)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("lth_good", 3)
+                .Component("fiberp_good", 2);
+
+            // Maverick Cap
+            _builder.Create(RecipeType.MaverickCap, SkillType.Smithery)
+                .Category(RecipeCategoryType.Cap)
+                .Resref("prm_skm_cap")
+                .Level(29)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("lth_good", 3)
+                .Component("fiberp_good", 2);
+        }
+
+        private void Tier4A()
+        {
+            // Aegis Helmet
+            _builder.Create(RecipeType.AegisHelmet, SkillType.Smithery)
+                .Category(RecipeCategoryType.Helmet)
+                .Resref("asc_bul_helm")
+                .Level(39)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("ref_keromber", 3)
+                .Component("fiberp_imperfect", 2);
+
+            // Luminary Cap
+            _builder.Create(RecipeType.LuminaryCap, SkillType.Smithery)
+                .Category(RecipeCategoryType.Cap)
+                .Resref("asc_chn_cap")
+                .Level(39)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("lth_imperfect", 3)
+                .Component("fiberp_imperfect", 2);
+
+            // Apex Cap
+            _builder.Create(RecipeType.ApexCap, SkillType.Smithery)
+                .Category(RecipeCategoryType.Cap)
+                .Resref("asc_skm_cap")
+                .Level(39)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("lth_imperfect", 3)
+                .Component("fiberp_imperfect", 2);
+        }
+
+        private void Tier5A()
+        {
+            // Citadel Helmet
+            _builder.Create(RecipeType.CitadelHelmet, SkillType.Smithery)
+                .Category(RecipeCategoryType.Helmet)
+                .Resref("sov_bul_helm")
+                .Level(49)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("ref_jasioclase", 3)
+                .Component("fiberp_high", 2);
+
+            // Astral Cap
+            _builder.Create(RecipeType.AstralCap, SkillType.Smithery)
+                .Category(RecipeCategoryType.Cap)
+                .Resref("sov_chn_cap")
+                .Level(49)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("lth_high", 3)
+                .Component("fiberp_high", 2);
+
+            // Paragon Cap
+            _builder.Create(RecipeType.ParagonCap, SkillType.Smithery)
+                .Category(RecipeCategoryType.Cap)
+                .Resref("sov_skm_cap")
+                .Level(49)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("lth_high", 3)
+                .Component("fiberp_high", 2);
+        }
+
     }
 }

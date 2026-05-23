@@ -11,10 +11,15 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
         public Dictionary<RecipeType, RecipeDetail> BuildRecipes()
         {
             Tier1();
+            Tier1A();
             Tier2();
+            Tier2A();
             Tier3();
+            Tier3A();
             Tier4();
+            Tier4A();
             Tier5();
+            Tier5A();
 
             return _builder.Build();
         }
@@ -459,5 +464,170 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_plagionite", 5)
                 .Component("ref_keromber", 5);
         }
+        private void Tier1A()
+        {
+            // Warden Belt
+            _builder.Create(RecipeType.WardenBelt, SkillType.Smithery)
+                .Category(RecipeCategoryType.Belt)
+                .Resref("fld_bul_belt")
+                .Level(14)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
+                .Component("lth_ruined", 5)
+                .Component("fiberp_ruined", 3);
+
+            // Mystic Belt
+            _builder.Create(RecipeType.MysticBelt, SkillType.Smithery)
+                .Category(RecipeCategoryType.Belt)
+                .Resref("fld_chn_belt")
+                .Level(14)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
+                .Component("lth_ruined", 5)
+                .Component("fiberp_ruined", 3);
+
+            // Vanguard Belt
+            _builder.Create(RecipeType.VanguardBelt, SkillType.Smithery)
+                .Category(RecipeCategoryType.Belt)
+                .Resref("fld_skm_belt")
+                .Level(14)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
+                .Component("lth_ruined", 5)
+                .Component("fiberp_ruined", 3);
+        }
+
+        private void Tier2A()
+        {
+            // Bastion Belt
+            _builder.Create(RecipeType.BastionBelt, SkillType.Smithery)
+                .Category(RecipeCategoryType.Belt)
+                .Resref("vet_bul_belt")
+                .Level(24)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("lth_flawed", 5)
+                .Component("fiberp_flawed", 3);
+
+            // Oracle Belt
+            _builder.Create(RecipeType.OracleBelt, SkillType.Smithery)
+                .Category(RecipeCategoryType.Belt)
+                .Resref("vet_chn_belt")
+                .Level(24)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("lth_flawed", 5)
+                .Component("fiberp_flawed", 3);
+
+            // Onslaught Belt
+            _builder.Create(RecipeType.OnslaughtBelt, SkillType.Smithery)
+                .Category(RecipeCategoryType.Belt)
+                .Resref("vet_skm_belt")
+                .Level(24)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("lth_flawed", 5)
+                .Component("fiberp_flawed", 3);
+        }
+
+        private void Tier3A()
+        {
+            // Sentinel Belt
+            _builder.Create(RecipeType.SentinelBelt, SkillType.Smithery)
+                .Category(RecipeCategoryType.Belt)
+                .Resref("prm_bul_belt")
+                .Level(34)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("lth_good", 5)
+                .Component("fiberp_good", 3);
+
+            // Arcanist Belt
+            _builder.Create(RecipeType.ArcanistBelt, SkillType.Smithery)
+                .Category(RecipeCategoryType.Belt)
+                .Resref("prm_chn_belt")
+                .Level(34)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("lth_good", 5)
+                .Component("fiberp_good", 3);
+
+            // Maverick Belt
+            _builder.Create(RecipeType.MaverickBelt, SkillType.Smithery)
+                .Category(RecipeCategoryType.Belt)
+                .Resref("prm_skm_belt")
+                .Level(34)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("lth_good", 5)
+                .Component("fiberp_good", 3);
+        }
+
+        private void Tier4A()
+        {
+            // Aegis Belt
+            _builder.Create(RecipeType.AegisBelt, SkillType.Smithery)
+                .Category(RecipeCategoryType.Belt)
+                .Resref("asc_bul_belt")
+                .Level(44)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("lth_imperfect", 5)
+                .Component("fiberp_imperfect", 3);
+
+            // Luminary Belt
+            _builder.Create(RecipeType.LuminaryBelt, SkillType.Smithery)
+                .Category(RecipeCategoryType.Belt)
+                .Resref("asc_chn_belt")
+                .Level(44)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("lth_imperfect", 5)
+                .Component("fiberp_imperfect", 3);
+
+            // Apex Belt
+            _builder.Create(RecipeType.ApexBelt, SkillType.Smithery)
+                .Category(RecipeCategoryType.Belt)
+                .Resref("asc_skm_belt")
+                .Level(44)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("lth_imperfect", 5)
+                .Component("fiberp_imperfect", 3);
+        }
+
+        private void Tier5A()
+        {
+            // Citadel Belt
+            _builder.Create(RecipeType.CitadelBelt, SkillType.Smithery)
+                .Category(RecipeCategoryType.Belt)
+                .Resref("sov_bul_belt")
+                .Level(54)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("lth_high", 5)
+                .Component("fiberp_high", 3);
+
+            // Astral Belt
+            _builder.Create(RecipeType.AstralBelt, SkillType.Smithery)
+                .Category(RecipeCategoryType.Belt)
+                .Resref("sov_chn_belt")
+                .Level(54)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("lth_high", 5)
+                .Component("fiberp_high", 3);
+
+            // Paragon Belt
+            _builder.Create(RecipeType.ParagonBelt, SkillType.Smithery)
+                .Category(RecipeCategoryType.Belt)
+                .Resref("sov_skm_belt")
+                .Level(54)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("lth_high", 5)
+                .Component("fiberp_high", 3);
+        }
+
     }
 }

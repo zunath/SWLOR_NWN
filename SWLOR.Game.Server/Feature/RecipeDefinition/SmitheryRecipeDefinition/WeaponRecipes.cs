@@ -11,17 +11,29 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
         public Dictionary<RecipeType, RecipeDetail> BuildRecipes()
         {
             Knifes();
+            IntermediateKnifes();
             Longswords();
+            IntermediateLongswords();
             Lightsabers();
+            IntermediateLightsabers();
             GreatSwords();
+            IntermediateGreatSwords();
             Spears();
+            IntermediateSpears();
             TwinBlades();
+            IntermediateTwinBlades();
             Saberstaffs();
+            IntermediateSaberstaffs();
             Katars();
+            IntermediateKatars();
             Staffs();
+            IntermediateStaffs();
             Pistols();
+            IntermediatePistols();
             Shurikens();
+            IntermediateShurikens();
             Rifles();
+            IntermediateRifles();
 
             return _builder.Build();
         }
@@ -1180,5 +1192,761 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_plagionite", 5)
                 .Component("ref_keromber", 5);
         }
+        private void IntermediateKnifes()
+        {
+            // Field Knife
+            _builder.Create(RecipeType.FieldKnife, SkillType.Smithery)
+                .Category(RecipeCategoryType.Knife)
+                .Resref("fld_knife")
+                .Level(6)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
+                .Component("ref_veldite", 1)
+                .Component("wood", 1);
+
+            // Veteran Knife
+            _builder.Create(RecipeType.VeteranKnife, SkillType.Smithery)
+                .Category(RecipeCategoryType.Knife)
+                .Resref("vet_knife")
+                .Level(16)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
+                .Component("ref_scordspar", 1)
+                .Component("fine_wood", 1);
+
+            // Prime Knife
+            _builder.Create(RecipeType.PrimeKnife, SkillType.Smithery)
+                .Category(RecipeCategoryType.Knife)
+                .Resref("prm_knife")
+                .Level(26)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
+                .Component("ref_plagionite", 1)
+                .Component("ancient_wood", 1);
+
+            // Ascendant Knife
+            _builder.Create(RecipeType.AscendantKnife, SkillType.Smithery)
+                .Category(RecipeCategoryType.Knife)
+                .Resref("asc_knife")
+                .Level(36)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
+                .Component("ref_keromber", 1)
+                .Component("aracia_wood", 1);
+
+            // Sovereign Knife
+            _builder.Create(RecipeType.SovereignKnife, SkillType.Smithery)
+                .Category(RecipeCategoryType.Knife)
+                .Resref("sov_knife")
+                .Level(46)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
+                .Component("ref_jasioclase", 1)
+                .Component("hyphae_wood", 1);
+        }
+
+        private void IntermediateLongswords()
+        {
+            // Field Longsword
+            _builder.Create(RecipeType.FieldLongsword, SkillType.Smithery)
+                .Category(RecipeCategoryType.Longsword)
+                .Resref("fld_longsword")
+                .Level(9)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
+                .Component("ref_veldite", 3)
+                .Component("wood", 2);
+
+            // Veteran Longsword
+            _builder.Create(RecipeType.VeteranLongsword, SkillType.Smithery)
+                .Category(RecipeCategoryType.Longsword)
+                .Resref("vet_longsword")
+                .Level(19)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
+                .Component("ref_scordspar", 3)
+                .Component("fine_wood", 2);
+
+            // Prime Longsword
+            _builder.Create(RecipeType.PrimeLongsword, SkillType.Smithery)
+                .Category(RecipeCategoryType.Longsword)
+                .Resref("prm_longsword")
+                .Level(29)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
+                .Component("ref_plagionite", 3)
+                .Component("ancient_wood", 2);
+
+            // Ascendant Longsword
+            _builder.Create(RecipeType.AscendantLongsword, SkillType.Smithery)
+                .Category(RecipeCategoryType.Longsword)
+                .Resref("asc_longsword")
+                .Level(39)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
+                .Component("ref_keromber", 3)
+                .Component("aracia_wood", 2);
+
+            // Sovereign Longsword
+            _builder.Create(RecipeType.SovereignLongsword, SkillType.Smithery)
+                .Category(RecipeCategoryType.Longsword)
+                .Resref("sov_longsword")
+                .Level(49)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
+                .Component("ref_jasioclase", 3)
+                .Component("hyphae_wood", 2);
+        }
+
+        private void IntermediateLightsabers()
+        {
+            // Field Electroblade
+            _builder.Create(RecipeType.FieldElectroblade, SkillType.Smithery)
+                .Category(RecipeCategoryType.Lightsaber)
+                .Resref("fld_electroblade")
+                .Level(11)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
+                .Component("elec_ruined", 4)
+                .Component("ref_veldite", 2);
+
+            // Veteran Electroblade
+            _builder.Create(RecipeType.VeteranElectroblade, SkillType.Smithery)
+                .Category(RecipeCategoryType.Lightsaber)
+                .Resref("vet_electroblade")
+                .Level(21)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
+                .Component("elec_flawed", 4)
+                .Component("ref_scordspar", 2);
+
+            // Prime Electroblade
+            _builder.Create(RecipeType.PrimeElectroblade, SkillType.Smithery)
+                .Category(RecipeCategoryType.Lightsaber)
+                .Resref("prm_electroblade")
+                .Level(31)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
+                .Component("elec_good", 4)
+                .Component("ref_plagionite", 2);
+
+            // Ascendant Electroblade
+            _builder.Create(RecipeType.AscendantElectroblade, SkillType.Smithery)
+                .Category(RecipeCategoryType.Lightsaber)
+                .Resref("asc_electroblade")
+                .Level(41)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
+                .Component("elec_imperfect", 4)
+                .Component("ref_keromber", 2);
+
+            // Sovereign Electroblade
+            _builder.Create(RecipeType.SovereignElectroblade, SkillType.Smithery)
+                .Category(RecipeCategoryType.Lightsaber)
+                .Resref("sov_electroblade")
+                .Level(51)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
+                .Component("elec_high", 4)
+                .Component("ref_jasioclase", 2);
+
+            // Field Training Saber
+            _builder.Create(RecipeType.FieldTrainingSaber, SkillType.Smithery)
+                .Category(RecipeCategoryType.Lightsaber)
+                .Resref("fld_trnsaber")
+                .Level(13)
+                .Quantity(1)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
+                .Component("jade", 4)
+                .Component("ref_veldite", 2)
+                .Component("elec_ruined", 3);
+
+            // Veteran Training Saber
+            _builder.Create(RecipeType.VeteranTrainingSaber, SkillType.Smithery)
+                .Category(RecipeCategoryType.Lightsaber)
+                .Resref("vet_trnsaber")
+                .Level(23)
+                .Quantity(1)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
+                .Component("agate", 4)
+                .Component("ref_scordspar", 2)
+                .Component("elec_flawed", 3);
+
+            // Prime Training Saber
+            _builder.Create(RecipeType.PrimeTrainingSaber, SkillType.Smithery)
+                .Category(RecipeCategoryType.Lightsaber)
+                .Resref("prm_trnsaber")
+                .Level(33)
+                .Quantity(1)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
+                .Component("citrine", 4)
+                .Component("ref_plagionite", 2)
+                .Component("elec_good", 3);
+
+            // Ascendant Training Saber
+            _builder.Create(RecipeType.AscendantTrainingSaber, SkillType.Smithery)
+                .Category(RecipeCategoryType.Lightsaber)
+                .Resref("asc_trnsaber")
+                .Level(43)
+                .Quantity(1)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
+                .Component("ruby", 4)
+                .Component("ref_keromber", 2)
+                .Component("elec_imperfect", 3);
+
+            // Sovereign Training Saber
+            _builder.Create(RecipeType.SovereignTrainingSaber, SkillType.Smithery)
+                .Category(RecipeCategoryType.Lightsaber)
+                .Resref("sov_trnsaber")
+                .Level(53)
+                .Quantity(1)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
+                .Component("emerald", 4)
+                .Component("ref_jasioclase", 2)
+                .Component("elec_high", 3);
+        }
+
+        private void IntermediateGreatSwords()
+        {
+            // Field Great Sword
+            _builder.Create(RecipeType.FieldGreatSword, SkillType.Smithery)
+                .Category(RecipeCategoryType.GreatSword)
+                .Resref("fld_greatsword")
+                .Level(13)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
+                .Component("ref_veldite", 5)
+                .Component("wood", 3);
+
+            // Veteran Great Sword
+            _builder.Create(RecipeType.VeteranGreatSword, SkillType.Smithery)
+                .Category(RecipeCategoryType.GreatSword)
+                .Resref("vet_greatsword")
+                .Level(23)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
+                .Component("ref_scordspar", 5)
+                .Component("fine_wood", 3);
+
+            // Prime Great Sword
+            _builder.Create(RecipeType.PrimeGreatSword, SkillType.Smithery)
+                .Category(RecipeCategoryType.GreatSword)
+                .Resref("prm_greatsword")
+                .Level(33)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
+                .Component("ref_plagionite", 5)
+                .Component("ancient_wood", 3);
+
+            // Ascendant Great Sword
+            _builder.Create(RecipeType.AscendantGreatSword, SkillType.Smithery)
+                .Category(RecipeCategoryType.GreatSword)
+                .Resref("asc_greatsword")
+                .Level(43)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
+                .Component("ref_keromber", 5)
+                .Component("aracia_wood", 3);
+
+            // Sovereign Great Sword
+            _builder.Create(RecipeType.SovereignGreatSword, SkillType.Smithery)
+                .Category(RecipeCategoryType.GreatSword)
+                .Resref("sov_greatsword")
+                .Level(53)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
+                .Component("ref_jasioclase", 5)
+                .Component("hyphae_wood", 3);
+        }
+
+        private void IntermediateSpears()
+        {
+            // Field Spear
+            _builder.Create(RecipeType.FieldSpear, SkillType.Smithery)
+                .Category(RecipeCategoryType.Spear)
+                .Resref("fld_spear")
+                .Level(12)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
+                .Component("ref_veldite", 4)
+                .Component("wood", 2);
+
+            // Veteran Spear
+            _builder.Create(RecipeType.VeteranSpear, SkillType.Smithery)
+                .Category(RecipeCategoryType.Spear)
+                .Resref("vet_spear")
+                .Level(22)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
+                .Component("ref_scordspar", 4)
+                .Component("fine_wood", 2);
+
+            // Prime Spear
+            _builder.Create(RecipeType.PrimeSpear, SkillType.Smithery)
+                .Category(RecipeCategoryType.Spear)
+                .Resref("prm_spear")
+                .Level(32)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
+                .Component("ref_plagionite", 4)
+                .Component("ancient_wood", 2);
+
+            // Ascendant Spear
+            _builder.Create(RecipeType.AscendantSpear, SkillType.Smithery)
+                .Category(RecipeCategoryType.Spear)
+                .Resref("asc_spear")
+                .Level(42)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
+                .Component("ref_keromber", 4)
+                .Component("aracia_wood", 2);
+
+            // Sovereign Spear
+            _builder.Create(RecipeType.SovereignSpear, SkillType.Smithery)
+                .Category(RecipeCategoryType.Spear)
+                .Resref("sov_spear")
+                .Level(52)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
+                .Component("ref_jasioclase", 4)
+                .Component("hyphae_wood", 2);
+        }
+
+        private void IntermediateTwinBlades()
+        {
+            // Field Twin Blade
+            _builder.Create(RecipeType.FieldTwinBlade, SkillType.Smithery)
+                .Category(RecipeCategoryType.TwinBlade)
+                .Resref("fld_twinblade")
+                .Level(13)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
+                .Component("ref_veldite", 3)
+                .Component("wood", 2);
+
+            // Veteran Twin Blade
+            _builder.Create(RecipeType.VeteranTwinBlade, SkillType.Smithery)
+                .Category(RecipeCategoryType.TwinBlade)
+                .Resref("vet_twinblade")
+                .Level(23)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
+                .Component("ref_scordspar", 3)
+                .Component("fine_wood", 2);
+
+            // Prime Twin Blade
+            _builder.Create(RecipeType.PrimeTwinBlade, SkillType.Smithery)
+                .Category(RecipeCategoryType.TwinBlade)
+                .Resref("prm_twinblade")
+                .Level(33)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
+                .Component("ref_plagionite", 3)
+                .Component("ancient_wood", 2);
+
+            // Ascendant Twin Blade
+            _builder.Create(RecipeType.AscendantTwinBlade, SkillType.Smithery)
+                .Category(RecipeCategoryType.TwinBlade)
+                .Resref("asc_twinblade")
+                .Level(43)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
+                .Component("ref_keromber", 3)
+                .Component("aracia_wood", 2);
+
+            // Sovereign Twin Blade
+            _builder.Create(RecipeType.SovereignTwinBlade, SkillType.Smithery)
+                .Category(RecipeCategoryType.TwinBlade)
+                .Resref("sov_twinblade")
+                .Level(53)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
+                .Component("ref_jasioclase", 3)
+                .Component("hyphae_wood", 2);
+        }
+
+        private void IntermediateSaberstaffs()
+        {
+            // Field Twin Electroblade
+            _builder.Create(RecipeType.FieldTwinElectroblade, SkillType.Smithery)
+                .Category(RecipeCategoryType.Saberstaff)
+                .Resref("fld_twinelec")
+                .Level(12)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
+                .Component("elec_ruined", 5)
+                .Component("ref_veldite", 3);
+
+            // Veteran Twin Electroblade
+            _builder.Create(RecipeType.VeteranTwinElectroblade, SkillType.Smithery)
+                .Category(RecipeCategoryType.Saberstaff)
+                .Resref("vet_twinelec")
+                .Level(22)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
+                .Component("elec_flawed", 5)
+                .Component("ref_scordspar", 3);
+
+            // Prime Twin Electroblade
+            _builder.Create(RecipeType.PrimeTwinElectroblade, SkillType.Smithery)
+                .Category(RecipeCategoryType.Saberstaff)
+                .Resref("prm_twinelec")
+                .Level(32)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
+                .Component("elec_good", 5)
+                .Component("ref_plagionite", 3);
+
+            // Ascendant Twin Electroblade
+            _builder.Create(RecipeType.AscendantTwinElectroblade, SkillType.Smithery)
+                .Category(RecipeCategoryType.Saberstaff)
+                .Resref("asc_twinelec")
+                .Level(42)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
+                .Component("elec_imperfect", 5)
+                .Component("ref_keromber", 3);
+
+            // Sovereign Twin Electroblade
+            _builder.Create(RecipeType.SovereignTwinElectroblade, SkillType.Smithery)
+                .Category(RecipeCategoryType.Saberstaff)
+                .Resref("sov_twinelec")
+                .Level(52)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
+                .Component("elec_high", 5)
+                .Component("ref_jasioclase", 3);
+
+            // Field Training Saberstaff
+            _builder.Create(RecipeType.FieldTrainingSaberstaff, SkillType.Smithery)
+                .Category(RecipeCategoryType.Saberstaff)
+                .Resref("fld_trnsabstaff")
+                .Level(14)
+                .Quantity(1)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
+                .Component("jade", 5)
+                .Component("ref_veldite", 3)
+                .Component("elec_ruined", 4);
+
+            // Veteran Training Saberstaff
+            _builder.Create(RecipeType.VeteranTrainingSaberstaff, SkillType.Smithery)
+                .Category(RecipeCategoryType.Saberstaff)
+                .Resref("vet_trnsabstaff")
+                .Level(24)
+                .Quantity(1)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
+                .Component("agate", 5)
+                .Component("ref_scordspar", 3)
+                .Component("elec_flawed", 4);
+
+            // Prime Training Saberstaff
+            _builder.Create(RecipeType.PrimeTrainingSaberstaff, SkillType.Smithery)
+                .Category(RecipeCategoryType.Saberstaff)
+                .Resref("prm_trnsabstaff")
+                .Level(34)
+                .Quantity(1)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
+                .Component("citrine", 5)
+                .Component("ref_plagionite", 3)
+                .Component("elec_good", 4);
+
+            // Ascendant Training Saberstaff
+            _builder.Create(RecipeType.AscendantTrainingSaberstaff, SkillType.Smithery)
+                .Category(RecipeCategoryType.Saberstaff)
+                .Resref("asc_trnsabstaff")
+                .Level(44)
+                .Quantity(1)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
+                .Component("ruby", 5)
+                .Component("ref_keromber", 3)
+                .Component("elec_imperfect", 4);
+
+            // Sovereign Training Saberstaff
+            _builder.Create(RecipeType.SovereignTrainingSaberstaff, SkillType.Smithery)
+                .Category(RecipeCategoryType.Saberstaff)
+                .Resref("sov_trnsabstaff")
+                .Level(54)
+                .Quantity(1)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
+                .Component("emerald", 5)
+                .Component("ref_jasioclase", 3)
+                .Component("elec_high", 4);
+        }
+
+        private void IntermediateKatars()
+        {
+            // Field Katar
+            _builder.Create(RecipeType.FieldKatar, SkillType.Smithery)
+                .Category(RecipeCategoryType.Katar)
+                .Resref("fld_katar")
+                .Level(8)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
+                .Component("ref_veldite", 2)
+                .Component("wood", 1);
+
+            // Veteran Katar
+            _builder.Create(RecipeType.VeteranKatar, SkillType.Smithery)
+                .Category(RecipeCategoryType.Katar)
+                .Resref("vet_katar")
+                .Level(18)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
+                .Component("ref_scordspar", 2)
+                .Component("fine_wood", 1);
+
+            // Prime Katar
+            _builder.Create(RecipeType.PrimeKatar, SkillType.Smithery)
+                .Category(RecipeCategoryType.Katar)
+                .Resref("prm_katar")
+                .Level(28)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
+                .Component("ref_plagionite", 2)
+                .Component("ancient_wood", 1);
+
+            // Ascendant Katar
+            _builder.Create(RecipeType.AscendantKatar, SkillType.Smithery)
+                .Category(RecipeCategoryType.Katar)
+                .Resref("asc_katar")
+                .Level(38)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
+                .Component("ref_keromber", 2)
+                .Component("aracia_wood", 1);
+
+            // Sovereign Katar
+            _builder.Create(RecipeType.SovereignKatar, SkillType.Smithery)
+                .Category(RecipeCategoryType.Katar)
+                .Resref("sov_katar")
+                .Level(48)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
+                .Component("ref_jasioclase", 2)
+                .Component("hyphae_wood", 1);
+        }
+
+        private void IntermediateStaffs()
+        {
+            // Field Staff
+            _builder.Create(RecipeType.FieldStaff, SkillType.Smithery)
+                .Category(RecipeCategoryType.Staff)
+                .Resref("fld_staff")
+                .Level(10)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
+                .Component("ref_veldite", 3)
+                .Component("wood", 2);
+
+            // Veteran Staff
+            _builder.Create(RecipeType.VeteranStaff, SkillType.Smithery)
+                .Category(RecipeCategoryType.Staff)
+                .Resref("vet_staff")
+                .Level(20)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
+                .Component("ref_scordspar", 3)
+                .Component("fine_wood", 2);
+
+            // Prime Staff
+            _builder.Create(RecipeType.PrimeStaff, SkillType.Smithery)
+                .Category(RecipeCategoryType.Staff)
+                .Resref("prm_staff")
+                .Level(30)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
+                .Component("ref_plagionite", 3)
+                .Component("ancient_wood", 2);
+
+            // Ascendant Staff
+            _builder.Create(RecipeType.AscendantStaff, SkillType.Smithery)
+                .Category(RecipeCategoryType.Staff)
+                .Resref("asc_staff")
+                .Level(40)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
+                .Component("ref_keromber", 3)
+                .Component("aracia_wood", 2);
+
+            // Sovereign Staff
+            _builder.Create(RecipeType.SovereignStaff, SkillType.Smithery)
+                .Category(RecipeCategoryType.Staff)
+                .Resref("sov_staff")
+                .Level(50)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
+                .Component("ref_jasioclase", 3)
+                .Component("hyphae_wood", 2);
+        }
+
+        private void IntermediatePistols()
+        {
+            // Field Pistol
+            _builder.Create(RecipeType.FieldPistol, SkillType.Smithery)
+                .Category(RecipeCategoryType.Pistol)
+                .Resref("fld_pistol")
+                .Level(11)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
+                .Component("ref_veldite", 4)
+                .Component("elec_ruined", 2);
+
+            // Veteran Pistol
+            _builder.Create(RecipeType.VeteranPistol, SkillType.Smithery)
+                .Category(RecipeCategoryType.Pistol)
+                .Resref("vet_pistol")
+                .Level(21)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
+                .Component("ref_scordspar", 4)
+                .Component("elec_flawed", 2);
+
+            // Prime Pistol
+            _builder.Create(RecipeType.PrimePistol, SkillType.Smithery)
+                .Category(RecipeCategoryType.Pistol)
+                .Resref("prm_pistol")
+                .Level(31)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
+                .Component("ref_plagionite", 4)
+                .Component("elec_good", 2);
+
+            // Ascendant Pistol
+            _builder.Create(RecipeType.AscendantPistol, SkillType.Smithery)
+                .Category(RecipeCategoryType.Pistol)
+                .Resref("asc_pistol")
+                .Level(41)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
+                .Component("ref_keromber", 4)
+                .Component("elec_imperfect", 2);
+
+            // Sovereign Pistol
+            _builder.Create(RecipeType.SovereignPistol, SkillType.Smithery)
+                .Category(RecipeCategoryType.Pistol)
+                .Resref("sov_pistol")
+                .Level(51)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
+                .Component("ref_jasioclase", 4)
+                .Component("elec_high", 2);
+        }
+
+        private void IntermediateShurikens()
+        {
+            // Field Shuriken
+            _builder.Create(RecipeType.FieldShuriken, SkillType.Smithery)
+                .Category(RecipeCategoryType.Shuriken)
+                .Resref("fld_shuriken")
+                .Level(7)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
+                .Component("ref_veldite", 2)
+                .Component("wood", 1);
+
+            // Veteran Shuriken
+            _builder.Create(RecipeType.VeteranShuriken, SkillType.Smithery)
+                .Category(RecipeCategoryType.Shuriken)
+                .Resref("vet_shuriken")
+                .Level(17)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
+                .Component("ref_scordspar", 2)
+                .Component("fine_wood", 1);
+
+            // Prime Shuriken
+            _builder.Create(RecipeType.PrimeShuriken, SkillType.Smithery)
+                .Category(RecipeCategoryType.Shuriken)
+                .Resref("prm_shuriken")
+                .Level(27)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
+                .Component("ref_plagionite", 2)
+                .Component("ancient_wood", 1);
+
+            // Ascendant Shuriken
+            _builder.Create(RecipeType.AscendantShuriken, SkillType.Smithery)
+                .Category(RecipeCategoryType.Shuriken)
+                .Resref("asc_shuriken")
+                .Level(37)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
+                .Component("ref_keromber", 2)
+                .Component("aracia_wood", 1);
+
+            // Sovereign Shuriken
+            _builder.Create(RecipeType.SovereignShuriken, SkillType.Smithery)
+                .Category(RecipeCategoryType.Shuriken)
+                .Resref("sov_shuriken")
+                .Level(47)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
+                .Component("ref_jasioclase", 2)
+                .Component("hyphae_wood", 1);
+        }
+
+        private void IntermediateRifles()
+        {
+            // Field Rifle
+            _builder.Create(RecipeType.FieldRifle, SkillType.Smithery)
+                .Category(RecipeCategoryType.Rifle)
+                .Resref("fld_rifle")
+                .Level(14)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
+                .Component("ref_veldite", 5)
+                .Component("elec_ruined", 3);
+
+            // Veteran Rifle
+            _builder.Create(RecipeType.VeteranRifle, SkillType.Smithery)
+                .Category(RecipeCategoryType.Rifle)
+                .Resref("vet_rifle")
+                .Level(24)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
+                .Component("ref_scordspar", 5)
+                .Component("elec_flawed", 3);
+
+            // Prime Rifle
+            _builder.Create(RecipeType.PrimeRifle, SkillType.Smithery)
+                .Category(RecipeCategoryType.Rifle)
+                .Resref("prm_rifle")
+                .Level(34)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
+                .Component("ref_plagionite", 5)
+                .Component("elec_good", 3);
+
+            // Ascendant Rifle
+            _builder.Create(RecipeType.AscendantRifle, SkillType.Smithery)
+                .Category(RecipeCategoryType.Rifle)
+                .Resref("asc_rifle")
+                .Level(44)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
+                .Component("ref_keromber", 5)
+                .Component("elec_imperfect", 3);
+
+            // Sovereign Rifle
+            _builder.Create(RecipeType.SovereignRifle, SkillType.Smithery)
+                .Category(RecipeCategoryType.Rifle)
+                .Resref("sov_rifle")
+                .Level(54)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
+                .Component("ref_jasioclase", 5)
+                .Component("elec_high", 3);
+        }
+
     }
 }

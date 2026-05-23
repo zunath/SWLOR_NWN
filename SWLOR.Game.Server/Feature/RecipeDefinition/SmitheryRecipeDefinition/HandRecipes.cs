@@ -11,10 +11,15 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
         public Dictionary<RecipeType, RecipeDetail> BuildRecipes()
         {
             Tier1();
+            Tier1A();
             Tier2();
+            Tier2A();
             Tier3();
+            Tier3A();
             Tier4();
+            Tier4A();
             Tier5();
+            Tier5A();
 
             return _builder.Build();
         }
@@ -457,5 +462,170 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_plagionite", 5)
                 .Component("ref_keromber", 5);
         }
+        private void Tier1A()
+        {
+            // Warden Bracer
+            _builder.Create(RecipeType.WardenBracer, SkillType.Smithery)
+                .Category(RecipeCategoryType.Bracer)
+                .Resref("fld_bul_bracer")
+                .Level(8)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
+                .Component("ref_veldite", 2)
+                .Component("fiberp_ruined", 1);
+
+            // Mystic Gloves
+            _builder.Create(RecipeType.MysticGloves, SkillType.Smithery)
+                .Category(RecipeCategoryType.Glove)
+                .Resref("fld_chn_gloves")
+                .Level(8)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
+                .Component("lth_ruined", 2)
+                .Component("fiberp_ruined", 1);
+
+            // Vanguard Gloves
+            _builder.Create(RecipeType.VanguardGloves, SkillType.Smithery)
+                .Category(RecipeCategoryType.Glove)
+                .Resref("fld_skm_gloves")
+                .Level(8)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
+                .Component("lth_ruined", 2)
+                .Component("fiberp_ruined", 1);
+        }
+
+        private void Tier2A()
+        {
+            // Bastion Bracer
+            _builder.Create(RecipeType.BastionBracer, SkillType.Smithery)
+                .Category(RecipeCategoryType.Bracer)
+                .Resref("vet_bul_bracer")
+                .Level(18)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("ref_scordspar", 2)
+                .Component("fiberp_flawed", 1);
+
+            // Oracle Gloves
+            _builder.Create(RecipeType.OracleGloves, SkillType.Smithery)
+                .Category(RecipeCategoryType.Glove)
+                .Resref("vet_chn_gloves")
+                .Level(18)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("lth_flawed", 2)
+                .Component("fiberp_flawed", 1);
+
+            // Onslaught Gloves
+            _builder.Create(RecipeType.OnslaughtGloves, SkillType.Smithery)
+                .Category(RecipeCategoryType.Glove)
+                .Resref("vet_skm_gloves")
+                .Level(18)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("lth_flawed", 2)
+                .Component("fiberp_flawed", 1);
+        }
+
+        private void Tier3A()
+        {
+            // Sentinel Bracer
+            _builder.Create(RecipeType.SentinelBracer, SkillType.Smithery)
+                .Category(RecipeCategoryType.Bracer)
+                .Resref("prm_bul_bracer")
+                .Level(28)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("ref_plagionite", 2)
+                .Component("fiberp_good", 1);
+
+            // Arcanist Gloves
+            _builder.Create(RecipeType.ArcanistGloves, SkillType.Smithery)
+                .Category(RecipeCategoryType.Glove)
+                .Resref("prm_chn_gloves")
+                .Level(28)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("lth_good", 2)
+                .Component("fiberp_good", 1);
+
+            // Maverick Gloves
+            _builder.Create(RecipeType.MaverickGloves, SkillType.Smithery)
+                .Category(RecipeCategoryType.Glove)
+                .Resref("prm_skm_gloves")
+                .Level(28)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("lth_good", 2)
+                .Component("fiberp_good", 1);
+        }
+
+        private void Tier4A()
+        {
+            // Aegis Bracer
+            _builder.Create(RecipeType.AegisBracer, SkillType.Smithery)
+                .Category(RecipeCategoryType.Bracer)
+                .Resref("asc_bul_bracer")
+                .Level(38)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("ref_keromber", 2)
+                .Component("fiberp_imperfect", 1);
+
+            // Luminary Gloves
+            _builder.Create(RecipeType.LuminaryGloves, SkillType.Smithery)
+                .Category(RecipeCategoryType.Glove)
+                .Resref("asc_chn_gloves")
+                .Level(38)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("lth_imperfect", 2)
+                .Component("fiberp_imperfect", 1);
+
+            // Apex Gloves
+            _builder.Create(RecipeType.ApexGloves, SkillType.Smithery)
+                .Category(RecipeCategoryType.Glove)
+                .Resref("asc_skm_gloves")
+                .Level(38)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("lth_imperfect", 2)
+                .Component("fiberp_imperfect", 1);
+        }
+
+        private void Tier5A()
+        {
+            // Citadel Bracer
+            _builder.Create(RecipeType.CitadelBracer, SkillType.Smithery)
+                .Category(RecipeCategoryType.Bracer)
+                .Resref("sov_bul_bracer")
+                .Level(48)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("ref_jasioclase", 2)
+                .Component("fiberp_high", 1);
+
+            // Astral Gloves
+            _builder.Create(RecipeType.AstralGloves, SkillType.Smithery)
+                .Category(RecipeCategoryType.Glove)
+                .Resref("sov_chn_gloves")
+                .Level(48)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("lth_high", 2)
+                .Component("fiberp_high", 1);
+
+            // Paragon Gloves
+            _builder.Create(RecipeType.ParagonGloves, SkillType.Smithery)
+                .Category(RecipeCategoryType.Glove)
+                .Resref("sov_skm_gloves")
+                .Level(48)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("lth_high", 2)
+                .Component("fiberp_high", 1);
+        }
+
     }
 }

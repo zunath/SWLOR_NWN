@@ -11,10 +11,15 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
         public Dictionary<RecipeType, RecipeDetail> BuildRecipes()
         {
             Tier1();
+            Tier1A();
             Tier2();
+            Tier2A();
             Tier3();
+            Tier3A();
             Tier4();
+            Tier4A();
             Tier5();
+            Tier5A();
 
             return _builder.Build();
         }
@@ -2881,5 +2886,821 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("lth_high", 5)
                 .Component("emerald", 3);
         }
+
+        private void Tier1A()
+        {
+            // DHCL-001 A
+            _builder.Create(RecipeType.DHCL001A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Cloak)
+                .Resref("dhcl001a")
+                .Level(13)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
+                .Component("elec_ruined", 5)
+                .Component("ref_veldite", 3);
+
+            // DHBE-001 A
+            _builder.Create(RecipeType.DHBE001A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Belt)
+                .Resref("dhbe001a")
+                .Level(14)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
+                .Component("elec_ruined", 5)
+                .Component("ref_veldite", 3);
+
+            // DHRG-001 A
+            _builder.Create(RecipeType.DHRG001A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Ring)
+                .Resref("dhrg001a")
+                .Level(6)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
+                .Component("elec_ruined", 1)
+                .Component("ref_veldite", 1);
+
+            // DHNK-001 A
+            _builder.Create(RecipeType.DHNK001A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Necklace)
+                .Resref("dhnk001a")
+                .Level(7)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
+                .Component("elec_ruined", 2)
+                .Component("ref_veldite", 1);
+
+            // DHAR-001 A
+            _builder.Create(RecipeType.DHAR001A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Breastplate)
+                .Resref("dhar001a")
+                .Level(12)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
+                .Component("elec_ruined", 4)
+                .Component("ref_veldite", 2);
+
+            // DHHL-001 A
+            _builder.Create(RecipeType.DHHL001A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Helmet)
+                .Resref("dhhl001a")
+                .Level(9)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
+                .Component("elec_ruined", 3)
+                .Component("ref_veldite", 2);
+
+            // DHBR-001 A
+            _builder.Create(RecipeType.DHBR001A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Bracer)
+                .Resref("dhbr001a")
+                .Level(8)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
+                .Component("elec_ruined", 2)
+                .Component("ref_veldite", 1);
+
+            // DHLG-001 A
+            _builder.Create(RecipeType.DHLG001A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Legging)
+                .Resref("dhlg001a")
+                .Level(10)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
+                .Component("elec_ruined", 3)
+                .Component("ref_veldite", 2);
+
+            // DLCL-001 A
+            _builder.Create(RecipeType.DLCL001A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Cloak)
+                .Resref("dlcl001a")
+                .Level(13)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
+                .Component("elec_ruined", 5)
+                .Component("ref_veldite", 3);
+
+            // DLBE-001 A
+            _builder.Create(RecipeType.DLBE001A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Belt)
+                .Resref("dlbe001a")
+                .Level(14)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
+                .Component("elec_ruined", 5)
+                .Component("ref_veldite", 3);
+
+            // DLRG-001 A
+            _builder.Create(RecipeType.DLRG001A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Ring)
+                .Resref("dlrg001a")
+                .Level(6)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
+                .Component("elec_ruined", 1)
+                .Component("ref_veldite", 1);
+
+            // DLNK-001 A
+            _builder.Create(RecipeType.DLNK001A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Necklace)
+                .Resref("dlnk001a")
+                .Level(7)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
+                .Component("elec_ruined", 2)
+                .Component("ref_veldite", 1);
+
+            // DLAR-001 A
+            _builder.Create(RecipeType.DLAR001A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Breastplate)
+                .Resref("dlar001a")
+                .Level(12)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
+                .Component("elec_ruined", 4)
+                .Component("ref_veldite", 2);
+
+            // DLHL-001 A
+            _builder.Create(RecipeType.DLHL001A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Helmet)
+                .Resref("dlhl001a")
+                .Level(9)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
+                .Component("elec_ruined", 3)
+                .Component("ref_veldite", 2);
+
+            // DLBR-001 A
+            _builder.Create(RecipeType.DLBR001A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Bracer)
+                .Resref("dlbr001a")
+                .Level(8)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
+                .Component("elec_ruined", 2)
+                .Component("ref_veldite", 1);
+
+            // DLLG-001 A
+            _builder.Create(RecipeType.DLLG001A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Legging)
+                .Resref("dllg001a")
+                .Level(10)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
+                .Component("elec_ruined", 3)
+                .Component("ref_veldite", 2);
+        }
+
+        private void Tier2A()
+        {
+            // DHCL-002 A
+            _builder.Create(RecipeType.DHCL002A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Cloak)
+                .Resref("dhcl002a")
+                .Level(23)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_flawed", 5)
+                .Component("ref_scordspar", 3);
+
+            // DHBE-002 A
+            _builder.Create(RecipeType.DHBE002A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Belt)
+                .Resref("dhbe002a")
+                .Level(24)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_flawed", 5)
+                .Component("ref_scordspar", 3);
+
+            // DHRG-002 A
+            _builder.Create(RecipeType.DHRG002A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Ring)
+                .Resref("dhrg002a")
+                .Level(16)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_flawed", 1)
+                .Component("ref_scordspar", 1);
+
+            // DHNK-002 A
+            _builder.Create(RecipeType.DHNK002A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Necklace)
+                .Resref("dhnk002a")
+                .Level(17)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_flawed", 2)
+                .Component("ref_scordspar", 1);
+
+            // DHAR-002 A
+            _builder.Create(RecipeType.DHAR002A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Breastplate)
+                .Resref("dhar002a")
+                .Level(22)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_flawed", 4)
+                .Component("ref_scordspar", 2);
+
+            // DHHL-002 A
+            _builder.Create(RecipeType.DHHL002A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Helmet)
+                .Resref("dhhl002a")
+                .Level(19)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_flawed", 3)
+                .Component("ref_scordspar", 2);
+
+            // DHBR-002 A
+            _builder.Create(RecipeType.DHBR002A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Bracer)
+                .Resref("dhbr002a")
+                .Level(18)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_flawed", 2)
+                .Component("ref_scordspar", 1);
+
+            // DHLG-002 A
+            _builder.Create(RecipeType.DHLG002A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Legging)
+                .Resref("dhlg002a")
+                .Level(20)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_flawed", 3)
+                .Component("ref_scordspar", 2);
+
+            // DLCL-002 A
+            _builder.Create(RecipeType.DLCL002A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Cloak)
+                .Resref("dlcl002a")
+                .Level(23)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_flawed", 5)
+                .Component("ref_scordspar", 3);
+
+            // DLBE-002 A
+            _builder.Create(RecipeType.DLBE002A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Belt)
+                .Resref("dlbe002a")
+                .Level(24)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_flawed", 5)
+                .Component("ref_scordspar", 3);
+
+            // DLRG-002 A
+            _builder.Create(RecipeType.DLRG002A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Ring)
+                .Resref("dlrg002a")
+                .Level(16)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_flawed", 1)
+                .Component("ref_scordspar", 1);
+
+            // DLNK-002 A
+            _builder.Create(RecipeType.DLNK002A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Necklace)
+                .Resref("dlnk002a")
+                .Level(17)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_flawed", 2)
+                .Component("ref_scordspar", 1);
+
+            // DLAR-002 A
+            _builder.Create(RecipeType.DLAR002A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Breastplate)
+                .Resref("dlar002a")
+                .Level(22)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_flawed", 4)
+                .Component("ref_scordspar", 2);
+
+            // DLHL-002 A
+            _builder.Create(RecipeType.DLHL002A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Helmet)
+                .Resref("dlhl002a")
+                .Level(19)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_flawed", 3)
+                .Component("ref_scordspar", 2);
+
+            // DLBR-002 A
+            _builder.Create(RecipeType.DLBR002A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Bracer)
+                .Resref("dlbr002a")
+                .Level(18)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_flawed", 2)
+                .Component("ref_scordspar", 1);
+
+            // DLLG-002 A
+            _builder.Create(RecipeType.DLLG002A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Legging)
+                .Resref("dllg002a")
+                .Level(20)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_flawed", 3)
+                .Component("ref_scordspar", 2);
+        }
+
+        private void Tier3A()
+        {
+            // DHCL-003 A
+            _builder.Create(RecipeType.DHCL003A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Cloak)
+                .Resref("dhcl003a")
+                .Level(33)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_good", 5)
+                .Component("ref_plagionite", 3);
+
+            // DHBE-003 A
+            _builder.Create(RecipeType.DHBE003A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Belt)
+                .Resref("dhbe003a")
+                .Level(34)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_good", 5)
+                .Component("ref_plagionite", 3);
+
+            // DHRG-003 A
+            _builder.Create(RecipeType.DHRG003A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Ring)
+                .Resref("dhrg003a")
+                .Level(26)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_good", 1)
+                .Component("ref_plagionite", 1);
+
+            // DHNK-003 A
+            _builder.Create(RecipeType.DHNK003A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Necklace)
+                .Resref("dhnk003a")
+                .Level(27)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_good", 2)
+                .Component("ref_plagionite", 1);
+
+            // DHAR-003 A
+            _builder.Create(RecipeType.DHAR003A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Breastplate)
+                .Resref("dhar003a")
+                .Level(32)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_good", 4)
+                .Component("ref_plagionite", 2);
+
+            // DHHL-003 A
+            _builder.Create(RecipeType.DHHL003A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Helmet)
+                .Resref("dhhl003a")
+                .Level(29)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_good", 3)
+                .Component("ref_plagionite", 2);
+
+            // DHBR-003 A
+            _builder.Create(RecipeType.DHBR003A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Bracer)
+                .Resref("dhbr003a")
+                .Level(28)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_good", 2)
+                .Component("ref_plagionite", 1);
+
+            // DHLG-003 A
+            _builder.Create(RecipeType.DHLG003A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Legging)
+                .Resref("dhlg003a")
+                .Level(30)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_good", 3)
+                .Component("ref_plagionite", 2);
+
+            // DLCL-003 A
+            _builder.Create(RecipeType.DLCL003A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Cloak)
+                .Resref("dlcl003a")
+                .Level(33)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_good", 5)
+                .Component("ref_plagionite", 3);
+
+            // DLBE-003 A
+            _builder.Create(RecipeType.DLBE003A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Belt)
+                .Resref("dlbe003a")
+                .Level(34)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_good", 5)
+                .Component("ref_plagionite", 3);
+
+            // DLRG-003 A
+            _builder.Create(RecipeType.DLRG003A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Ring)
+                .Resref("dlrg003a")
+                .Level(26)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_good", 1)
+                .Component("ref_plagionite", 1);
+
+            // DLNK-003 A
+            _builder.Create(RecipeType.DLNK003A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Necklace)
+                .Resref("dlnk003a")
+                .Level(27)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_good", 2)
+                .Component("ref_plagionite", 1);
+
+            // DLAR-003 A
+            _builder.Create(RecipeType.DLAR003A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Breastplate)
+                .Resref("dlar003a")
+                .Level(32)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_good", 4)
+                .Component("ref_plagionite", 2);
+
+            // DLHL-003 A
+            _builder.Create(RecipeType.DLHL003A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Helmet)
+                .Resref("dlhl003a")
+                .Level(29)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_good", 3)
+                .Component("ref_plagionite", 2);
+
+            // DLBR-003 A
+            _builder.Create(RecipeType.DLBR003A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Bracer)
+                .Resref("dlbr003a")
+                .Level(28)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_good", 2)
+                .Component("ref_plagionite", 1);
+
+            // DLLG-003 A
+            _builder.Create(RecipeType.DLLG003A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Legging)
+                .Resref("dllg003a")
+                .Level(30)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_good", 3)
+                .Component("ref_plagionite", 2);
+        }
+
+        private void Tier4A()
+        {
+            // DHCL-004 A
+            _builder.Create(RecipeType.DHCL004A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Cloak)
+                .Resref("dhcl004a")
+                .Level(43)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_imperfect", 5)
+                .Component("ref_keromber", 3);
+
+            // DHBE-004 A
+            _builder.Create(RecipeType.DHBE004A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Belt)
+                .Resref("dhbe004a")
+                .Level(44)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_imperfect", 5)
+                .Component("ref_keromber", 3);
+
+            // DHRG-004 A
+            _builder.Create(RecipeType.DHRG004A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Ring)
+                .Resref("dhrg004a")
+                .Level(36)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_imperfect", 1)
+                .Component("ref_keromber", 1);
+
+            // DHNK-004 A
+            _builder.Create(RecipeType.DHNK004A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Necklace)
+                .Resref("dhnk004a")
+                .Level(37)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_imperfect", 2)
+                .Component("ref_keromber", 1);
+
+            // DHAR-004 A
+            _builder.Create(RecipeType.DHAR004A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Breastplate)
+                .Resref("dhar004a")
+                .Level(42)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_imperfect", 4)
+                .Component("ref_keromber", 2);
+
+            // DHHL-004 A
+            _builder.Create(RecipeType.DHHL004A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Helmet)
+                .Resref("dhhl004a")
+                .Level(39)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_imperfect", 3)
+                .Component("ref_keromber", 2);
+
+            // DHBR-004 A
+            _builder.Create(RecipeType.DHBR004A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Bracer)
+                .Resref("dhbr004a")
+                .Level(38)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_imperfect", 2)
+                .Component("ref_keromber", 1);
+
+            // DHLG-004 A
+            _builder.Create(RecipeType.DHLG004A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Legging)
+                .Resref("dhlg004a")
+                .Level(40)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_imperfect", 3)
+                .Component("ref_keromber", 2);
+
+            // DLCL-004 A
+            _builder.Create(RecipeType.DLCL004A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Cloak)
+                .Resref("dlcl004a")
+                .Level(43)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_imperfect", 5)
+                .Component("ref_keromber", 3);
+
+            // DLBE-004 A
+            _builder.Create(RecipeType.DLBE004A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Belt)
+                .Resref("dlbe004a")
+                .Level(44)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_imperfect", 5)
+                .Component("ref_keromber", 3);
+
+            // DLRG-004 A
+            _builder.Create(RecipeType.DLRG004A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Ring)
+                .Resref("dlrg004a")
+                .Level(36)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_imperfect", 1)
+                .Component("ref_keromber", 1);
+
+            // DLNK-004 A
+            _builder.Create(RecipeType.DLNK004A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Necklace)
+                .Resref("dlnk004a")
+                .Level(37)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_imperfect", 2)
+                .Component("ref_keromber", 1);
+
+            // DLAR-004 A
+            _builder.Create(RecipeType.DLAR004A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Breastplate)
+                .Resref("dlar004a")
+                .Level(42)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_imperfect", 4)
+                .Component("ref_keromber", 2);
+
+            // DLHL-004 A
+            _builder.Create(RecipeType.DLHL004A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Helmet)
+                .Resref("dlhl004a")
+                .Level(39)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_imperfect", 3)
+                .Component("ref_keromber", 2);
+
+            // DLBR-004 A
+            _builder.Create(RecipeType.DLBR004A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Bracer)
+                .Resref("dlbr004a")
+                .Level(38)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_imperfect", 2)
+                .Component("ref_keromber", 1);
+
+            // DLLG-004 A
+            _builder.Create(RecipeType.DLLG004A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Legging)
+                .Resref("dllg004a")
+                .Level(40)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_imperfect", 3)
+                .Component("ref_keromber", 2);
+        }
+
+        private void Tier5A()
+        {
+            // DHCL-005 A
+            _builder.Create(RecipeType.DHCL005A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Cloak)
+                .Resref("dhcl005a")
+                .Level(53)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_high", 5)
+                .Component("ref_jasioclase", 3);
+
+            // DHBE-005 A
+            _builder.Create(RecipeType.DHBE005A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Belt)
+                .Resref("dhbe005a")
+                .Level(54)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_high", 5)
+                .Component("ref_jasioclase", 3);
+
+            // DHRG-005 A
+            _builder.Create(RecipeType.DHRG005A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Ring)
+                .Resref("dhrg005a")
+                .Level(46)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_high", 1)
+                .Component("ref_jasioclase", 1);
+
+            // DHNK-005 A
+            _builder.Create(RecipeType.DHNK005A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Necklace)
+                .Resref("dhnk005a")
+                .Level(47)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_high", 2)
+                .Component("ref_jasioclase", 1);
+
+            // DHAR-005 A
+            _builder.Create(RecipeType.DHAR005A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Breastplate)
+                .Resref("dhar005a")
+                .Level(52)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_high", 4)
+                .Component("ref_jasioclase", 2);
+
+            // DHHL-005 A
+            _builder.Create(RecipeType.DHHL005A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Helmet)
+                .Resref("dhhl005a")
+                .Level(49)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_high", 3)
+                .Component("ref_jasioclase", 2);
+
+            // DHBR-005 A
+            _builder.Create(RecipeType.DHBR005A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Bracer)
+                .Resref("dhbr005a")
+                .Level(48)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_high", 2)
+                .Component("ref_jasioclase", 1);
+
+            // DHLG-005 A
+            _builder.Create(RecipeType.DHLG005A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Legging)
+                .Resref("dhlg005a")
+                .Level(50)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_high", 3)
+                .Component("ref_jasioclase", 2);
+
+            // DLCL-005 A
+            _builder.Create(RecipeType.DLCL005A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Cloak)
+                .Resref("dlcl005a")
+                .Level(53)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_high", 5)
+                .Component("ref_jasioclase", 3);
+
+            // DLBE-005 A
+            _builder.Create(RecipeType.DLBE005A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Belt)
+                .Resref("dlbe005a")
+                .Level(54)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_high", 5)
+                .Component("ref_jasioclase", 3);
+
+            // DLRG-005 A
+            _builder.Create(RecipeType.DLRG005A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Ring)
+                .Resref("dlrg005a")
+                .Level(46)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_high", 1)
+                .Component("ref_jasioclase", 1);
+
+            // DLNK-005 A
+            _builder.Create(RecipeType.DLNK005A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Necklace)
+                .Resref("dlnk005a")
+                .Level(47)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_high", 2)
+                .Component("ref_jasioclase", 1);
+
+            // DLAR-005 A
+            _builder.Create(RecipeType.DLAR005A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Breastplate)
+                .Resref("dlar005a")
+                .Level(52)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_high", 4)
+                .Component("ref_jasioclase", 2);
+
+            // DLHL-005 A
+            _builder.Create(RecipeType.DLHL005A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Helmet)
+                .Resref("dlhl005a")
+                .Level(49)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_high", 3)
+                .Component("ref_jasioclase", 2);
+
+            // DLBR-005 A
+            _builder.Create(RecipeType.DLBR005A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Bracer)
+                .Resref("dlbr005a")
+                .Level(48)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_high", 2)
+                .Component("ref_jasioclase", 1);
+
+            // DLLG-005 A
+            _builder.Create(RecipeType.DLLG005A, SkillType.Engineering)
+                .Category(RecipeCategoryType.Legging)
+                .Resref("dllg005a")
+                .Level(50)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("elec_high", 3)
+                .Component("ref_jasioclase", 2);
+        }
+
     }
 }

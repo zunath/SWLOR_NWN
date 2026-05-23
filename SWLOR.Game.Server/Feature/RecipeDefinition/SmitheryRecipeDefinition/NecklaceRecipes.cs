@@ -11,10 +11,15 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
         public Dictionary<RecipeType, RecipeDetail> BuildRecipes()
         {
             Tier1();
+            Tier1A();
             Tier2();
+            Tier2A();
             Tier3();
+            Tier3A();
             Tier4();
+            Tier4A();
             Tier5();
+            Tier5A();
 
             return _builder.Build();
         }
@@ -456,6 +461,171 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_scordspar", 5)
                 .Component("ref_plagionite", 5)
                 .Component("ref_keromber", 5);
+        }
+
+        private void Tier1A()
+        {
+            // Warden Necklace
+            _builder.Create(RecipeType.WardenNecklace, SkillType.Smithery)
+                .Category(RecipeCategoryType.Necklace)
+                .Resref("fld_bul_neck")
+                .Level(7)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
+                .Component("ref_veldite", 2)
+                .Component("jade", 1);
+
+            // Mystic Necklace
+            _builder.Create(RecipeType.MysticNecklace, SkillType.Smithery)
+                .Category(RecipeCategoryType.Necklace)
+                .Resref("fld_chn_neck")
+                .Level(7)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
+                .Component("ref_veldite", 2)
+                .Component("jade", 1);
+
+            // Vanguard Necklace
+            _builder.Create(RecipeType.VanguardNecklace, SkillType.Smithery)
+                .Category(RecipeCategoryType.Necklace)
+                .Resref("fld_skm_neck")
+                .Level(7)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
+                .Component("ref_veldite", 2)
+                .Component("jade", 1);
+        }
+
+        private void Tier2A()
+        {
+            // Bastion Necklace
+            _builder.Create(RecipeType.BastionNecklace, SkillType.Smithery)
+                .Category(RecipeCategoryType.Necklace)
+                .Resref("vet_bul_neck")
+                .Level(17)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("ref_scordspar", 2)
+                .Component("agate", 1);
+
+            // Oracle Necklace
+            _builder.Create(RecipeType.OracleNecklace, SkillType.Smithery)
+                .Category(RecipeCategoryType.Necklace)
+                .Resref("vet_chn_neck")
+                .Level(17)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("ref_scordspar", 2)
+                .Component("agate", 1);
+
+            // Onslaught Necklace
+            _builder.Create(RecipeType.OnslaughtNecklace, SkillType.Smithery)
+                .Category(RecipeCategoryType.Necklace)
+                .Resref("vet_skm_neck")
+                .Level(17)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("ref_scordspar", 2)
+                .Component("agate", 1);
+        }
+
+        private void Tier3A()
+        {
+            // Sentinel Necklace
+            _builder.Create(RecipeType.SentinelNecklace, SkillType.Smithery)
+                .Category(RecipeCategoryType.Necklace)
+                .Resref("prm_bul_neck")
+                .Level(27)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("ref_plagionite", 2)
+                .Component("citrine", 1);
+
+            // Arcanist Necklace
+            _builder.Create(RecipeType.ArcanistNecklace, SkillType.Smithery)
+                .Category(RecipeCategoryType.Necklace)
+                .Resref("prm_chn_neck")
+                .Level(27)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("ref_plagionite", 2)
+                .Component("citrine", 1);
+
+            // Maverick Necklace
+            _builder.Create(RecipeType.MaverickNecklace, SkillType.Smithery)
+                .Category(RecipeCategoryType.Necklace)
+                .Resref("prm_skm_neck")
+                .Level(27)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("ref_plagionite", 2)
+                .Component("citrine", 1);
+        }
+
+        private void Tier4A()
+        {
+            // Aegis Necklace
+            _builder.Create(RecipeType.AegisNecklace, SkillType.Smithery)
+                .Category(RecipeCategoryType.Necklace)
+                .Resref("asc_bul_neck")
+                .Level(37)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("ref_keromber", 2)
+                .Component("ruby", 1);
+
+            // Luminary Necklace
+            _builder.Create(RecipeType.LuminaryNecklace, SkillType.Smithery)
+                .Category(RecipeCategoryType.Necklace)
+                .Resref("asc_chn_neck")
+                .Level(37)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("ref_keromber", 2)
+                .Component("ruby", 1);
+
+            // Apex Necklace
+            _builder.Create(RecipeType.ApexNecklace, SkillType.Smithery)
+                .Category(RecipeCategoryType.Necklace)
+                .Resref("asc_skm_neck")
+                .Level(37)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("ref_keromber", 2)
+                .Component("ruby", 1);
+        }
+
+        private void Tier5A()
+        {
+            // Citadel Necklace
+            _builder.Create(RecipeType.CitadelNecklace, SkillType.Smithery)
+                .Category(RecipeCategoryType.Necklace)
+                .Resref("sov_bul_neck")
+                .Level(47)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("ref_jasioclase", 2)
+                .Component("emerald", 1);
+
+            // Astral Necklace
+            _builder.Create(RecipeType.AstralNecklace, SkillType.Smithery)
+                .Category(RecipeCategoryType.Necklace)
+                .Resref("sov_chn_neck")
+                .Level(47)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("ref_jasioclase", 2)
+                .Component("emerald", 1);
+
+            // Paragon Necklace
+            _builder.Create(RecipeType.ParagonNecklace, SkillType.Smithery)
+                .Category(RecipeCategoryType.Necklace)
+                .Resref("sov_skm_neck")
+                .Level(47)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("ref_jasioclase", 2)
+                .Component("emerald", 1);
         }
 
     }

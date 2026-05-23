@@ -11,10 +11,15 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
         public Dictionary<RecipeType, RecipeDetail> BuildRecipes()
         {
             Tier1();
+            Tier1A();
             Tier2();
+            Tier2A();
             Tier3();
+            Tier3A();
             Tier4();
+            Tier4A();
             Tier5();
+            Tier5A();
 
             return _builder.Build();
         }
@@ -457,5 +462,170 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_plagionite", 5)
                 .Component("ref_keromber", 5);
         }
+        private void Tier1A()
+        {
+            // Warden Leggings
+            _builder.Create(RecipeType.WardenLeggings, SkillType.Smithery)
+                .Category(RecipeCategoryType.Legging)
+                .Resref("fld_bul_legs")
+                .Level(10)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
+                .Component("ref_veldite", 3)
+                .Component("fiberp_ruined", 2);
+
+            // Mystic Boots
+            _builder.Create(RecipeType.MysticBoots, SkillType.Smithery)
+                .Category(RecipeCategoryType.Boots)
+                .Resref("fld_chn_boots")
+                .Level(10)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
+                .Component("lth_ruined", 3)
+                .Component("fiberp_ruined", 2);
+
+            // Vanguard Boots
+            _builder.Create(RecipeType.VanguardBoots, SkillType.Smithery)
+                .Category(RecipeCategoryType.Boots)
+                .Resref("fld_skm_boots")
+                .Level(10)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
+                .Component("lth_ruined", 3)
+                .Component("fiberp_ruined", 2);
+        }
+
+        private void Tier2A()
+        {
+            // Bastion Leggings
+            _builder.Create(RecipeType.BastionLeggings, SkillType.Smithery)
+                .Category(RecipeCategoryType.Legging)
+                .Resref("vet_bul_legs")
+                .Level(20)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("ref_scordspar", 3)
+                .Component("fiberp_flawed", 2);
+
+            // Oracle Boots
+            _builder.Create(RecipeType.OracleBoots, SkillType.Smithery)
+                .Category(RecipeCategoryType.Boots)
+                .Resref("vet_chn_boots")
+                .Level(20)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("lth_flawed", 3)
+                .Component("fiberp_flawed", 2);
+
+            // Onslaught Boots
+            _builder.Create(RecipeType.OnslaughtBoots, SkillType.Smithery)
+                .Category(RecipeCategoryType.Boots)
+                .Resref("vet_skm_boots")
+                .Level(20)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("lth_flawed", 3)
+                .Component("fiberp_flawed", 2);
+        }
+
+        private void Tier3A()
+        {
+            // Sentinel Leggings
+            _builder.Create(RecipeType.SentinelLeggings, SkillType.Smithery)
+                .Category(RecipeCategoryType.Legging)
+                .Resref("prm_bul_legs")
+                .Level(30)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("ref_plagionite", 3)
+                .Component("fiberp_good", 2);
+
+            // Arcanist Boots
+            _builder.Create(RecipeType.ArcanistBoots, SkillType.Smithery)
+                .Category(RecipeCategoryType.Boots)
+                .Resref("prm_chn_boots")
+                .Level(30)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("lth_good", 3)
+                .Component("fiberp_good", 2);
+
+            // Maverick Boots
+            _builder.Create(RecipeType.MaverickBoots, SkillType.Smithery)
+                .Category(RecipeCategoryType.Boots)
+                .Resref("prm_skm_boots")
+                .Level(30)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("lth_good", 3)
+                .Component("fiberp_good", 2);
+        }
+
+        private void Tier4A()
+        {
+            // Aegis Leggings
+            _builder.Create(RecipeType.AegisLeggings, SkillType.Smithery)
+                .Category(RecipeCategoryType.Legging)
+                .Resref("asc_bul_legs")
+                .Level(40)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("ref_keromber", 3)
+                .Component("fiberp_imperfect", 2);
+
+            // Luminary Boots
+            _builder.Create(RecipeType.LuminaryBoots, SkillType.Smithery)
+                .Category(RecipeCategoryType.Boots)
+                .Resref("asc_chn_boots")
+                .Level(40)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("lth_imperfect", 3)
+                .Component("fiberp_imperfect", 2);
+
+            // Apex Boots
+            _builder.Create(RecipeType.ApexBoots, SkillType.Smithery)
+                .Category(RecipeCategoryType.Boots)
+                .Resref("asc_skm_boots")
+                .Level(40)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("lth_imperfect", 3)
+                .Component("fiberp_imperfect", 2);
+        }
+
+        private void Tier5A()
+        {
+            // Citadel Leggings
+            _builder.Create(RecipeType.CitadelLeggings, SkillType.Smithery)
+                .Category(RecipeCategoryType.Legging)
+                .Resref("sov_bul_legs")
+                .Level(50)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("ref_jasioclase", 3)
+                .Component("fiberp_high", 2);
+
+            // Astral Boots
+            _builder.Create(RecipeType.AstralBoots, SkillType.Smithery)
+                .Category(RecipeCategoryType.Boots)
+                .Resref("sov_chn_boots")
+                .Level(50)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("lth_high", 3)
+                .Component("fiberp_high", 2);
+
+            // Paragon Boots
+            _builder.Create(RecipeType.ParagonBoots, SkillType.Smithery)
+                .Category(RecipeCategoryType.Boots)
+                .Resref("sov_skm_boots")
+                .Level(50)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("lth_high", 3)
+                .Component("fiberp_high", 2);
+        }
+
     }
 }

@@ -11,6 +11,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
         public Dictionary<RecipeType, RecipeDetail> BuildRecipes()
         {
             Shields();
+            IntermediateShields();
 
             return _builder.Build();
         }
@@ -84,6 +85,59 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_scordspar", 5)
                 .Component("ref_plagionite", 5)
                 .Component("ref_keromber", 5);
+        }
+
+        private void IntermediateShields()
+        {
+            // Warden Shield
+            _builder.Create(RecipeType.WardenShield, SkillType.Smithery)
+                .Category(RecipeCategoryType.Shield)
+                .Resref("fld_bul_shield")
+                .Level(11)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
+                .Component("ref_veldite", 4)
+                .Component("wood", 2);
+
+            // Bastion Shield
+            _builder.Create(RecipeType.BastionShield, SkillType.Smithery)
+                .Category(RecipeCategoryType.Shield)
+                .Resref("vet_bul_shield")
+                .Level(21)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("ref_scordspar", 4)
+                .Component("fine_wood", 2);
+
+            // Sentinel Shield
+            _builder.Create(RecipeType.SentinelShield, SkillType.Smithery)
+                .Category(RecipeCategoryType.Shield)
+                .Resref("prm_bul_shield")
+                .Level(31)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("ref_plagionite", 4)
+                .Component("ancient_wood", 2);
+
+            // Aegis Shield
+            _builder.Create(RecipeType.AegisShield, SkillType.Smithery)
+                .Category(RecipeCategoryType.Shield)
+                .Resref("asc_bul_shield")
+                .Level(41)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("ref_keromber", 4)
+                .Component("aracia_wood", 2);
+
+            // Citadel Shield
+            _builder.Create(RecipeType.CitadelShield, SkillType.Smithery)
+                .Category(RecipeCategoryType.Shield)
+                .Resref("sov_bul_shield")
+                .Level(51)
+                .Quantity(1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .Component("ref_jasioclase", 4)
+                .Component("hyphae_wood", 2);
         }
 
     }

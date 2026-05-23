@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -17,6 +18,10 @@ namespace SWLOR.Game.Server.Service
 
         // Enemy -> Creature -> proximity enmity contribution mapping
         private static readonly Dictionary<uint, Dictionary<uint, int>> _proximityEnmityAmounts = new();
+        private static readonly Dictionary<uint, DateTime> _attackCommandTimes = new();
+        private const float MinimumStaleAttackRecoverySeconds = 6f;
+        private const float MeleeAttackMoveThreshold = 2.25f;
+        private const float MeleeAttackMoveRange = 1.5f;
 
         /// <summary>
         /// When an enemy is damaged, increase enmity toward that creature by the amount of damage dealt.
@@ -145,6 +150,9 @@ namespace SWLOR.Game.Server.Service
         public static void ModifyEnmity(uint creature, uint enemy, int amount)
         {
             if (GetIsPC(enemy))
+                return;
+
+            if (AI.IsLeashEvading(enemy))
                 return;
 
             // Enmity shouldn't matter if you're dead.
@@ -334,6 +342,8 @@ namespace SWLOR.Game.Server.Service
         /// <param name="creature">The creature to remove.</param>
         public static void RemoveCreatureEnmity(uint creature)
         {
+            _attackCommandTimes.Remove(creature);
+
             // Creature isn't on any enmity table.
             if (!_creatureToEnemies.ContainsKey(creature)) return;
 
@@ -401,6 +411,8 @@ namespace SWLOR.Game.Server.Service
         /// <param name="enemy">The enemy whose tables we're clearing</param>
         private static void ClearEnmityTables(uint enemy)
         {
+            _attackCommandTimes.Remove(enemy);
+
             // Enemy isn't registered as having an enmity table.
             if (!_enemyEnmityTables.ContainsKey(enemy))
             {
@@ -453,19 +465,56 @@ namespace SWLOR.Game.Server.Service
 
             // Same target - no need to switch.
             var attackTarget = GetAttackTarget(creature);
+            var currentAction = GetCurrentAction(creature);
+            var isBusy = Activity.IsBusy(creature);
+            var shouldRecoverStaleAttack = ShouldRecoverStaleAttack(
+                creature,
+                attackTarget,
+                target,
+                currentAction);
+            _attackCommandTimes.TryGetValue(creature, out var commandTime);
+            var commandIssuedAt = commandTime == default
+                ? (DateTime?)null
+                : commandTime;
+            var recoverySeconds = GetStaleAttackRecoverySeconds(creature);
 
             if (!ShouldIssueAttackCommand(
                     attackTarget,
                     target,
-                    GetCurrentAction(creature),
-                    Activity.IsBusy(creature)))
+                    currentAction,
+                    isBusy,
+                    shouldRecoverStaleAttack,
+                    DateTime.UtcNow,
+                    commandIssuedAt,
+                    recoverySeconds))
             {
                 return;
             }
 
+            if (shouldRecoverStaleAttack)
+                Log.Write(LogGroup.AI, $"{GetName(creature)} recovered stale attack action against {GetName(target)}.");
+
+            IssueAttackCommand(creature, target);
+        }
+
+        public static void IssueAttackCommand(uint creature, uint target, bool clearActions = true)
+        {
+            if (!GetIsObjectValid(creature) ||
+                !GetIsObjectValid(target) ||
+                GetArea(creature) != GetArea(target))
+            {
+                return;
+            }
+
+            _attackCommandTimes[creature] = DateTime.UtcNow;
             AssignCommand(creature, () =>
             {
-                ClearAllActions();
+                if (clearActions)
+                    ClearAllActions(true);
+
+                if (ShouldMoveIntoAttackRange(creature, target))
+                    ActionMoveToObject(target, true, MeleeAttackMoveRange);
+
                 ActionAttack(target);
             });
         }
@@ -474,13 +523,96 @@ namespace SWLOR.Game.Server.Service
             uint attackTarget,
             uint desiredTarget,
             ActionType currentAction,
-            bool isBusy)
+            bool isBusy,
+            bool shouldRecoverStaleAttack,
+            DateTime now,
+            DateTime? commandIssuedAt,
+            float recoverySeconds)
         {
             if (isBusy)
                 return false;
 
-            return attackTarget != desiredTarget ||
-                   currentAction != ActionType.AttackObject;
+            if (shouldRecoverStaleAttack)
+                return true;
+
+            if (attackTarget != OBJECT_INVALID && attackTarget != desiredTarget)
+                return true;
+
+            if (HasRecentAttackCommand(now, commandIssuedAt, recoverySeconds))
+                return false;
+
+            return currentAction != ActionType.AttackObject;
+        }
+
+        private static bool HasRecentAttackCommand(DateTime now, DateTime? commandIssuedAt, float recoverySeconds)
+        {
+            return commandIssuedAt != null &&
+                   (now - commandIssuedAt.Value).TotalSeconds < recoverySeconds;
+        }
+
+        private static bool ShouldMoveIntoAttackRange(uint creature, uint target)
+        {
+            if (GetIsPC(creature) ||
+                !GetIsObjectValid(target) ||
+                GetDistanceBetween(creature, target) <= MeleeAttackMoveThreshold)
+            {
+                return false;
+            }
+
+            var skillType = Combat.GetEquippedWeaponSkillType(creature);
+            return !Combat.IsRangedDamageSkill(skillType);
+        }
+
+        private static bool ShouldRecoverStaleAttack(
+            uint creature,
+            uint attackTarget,
+            uint desiredTarget,
+            ActionType currentAction)
+        {
+            _attackCommandTimes.TryGetValue(creature, out var commandTime);
+            var commandIssuedAt = commandTime == default
+                ? (DateTime?)null
+                : commandTime;
+            var recoverySeconds = GetStaleAttackRecoverySeconds(creature);
+
+            return ShouldRecoverStaleAttack(
+                attackTarget,
+                desiredTarget,
+                currentAction,
+                DateTime.UtcNow,
+                commandIssuedAt,
+                Combat.HasRecentAttackActivity(creature, recoverySeconds),
+                recoverySeconds);
+        }
+
+        private static bool ShouldRecoverStaleAttack(
+            uint attackTarget,
+            uint desiredTarget,
+            ActionType currentAction,
+            DateTime now,
+            DateTime? commandIssuedAt,
+            bool hasRecentAttack,
+            float recoverySeconds)
+        {
+            if (attackTarget != desiredTarget ||
+                currentAction != ActionType.AttackObject ||
+                hasRecentAttack)
+            {
+                return false;
+            }
+
+            if (commandIssuedAt == null)
+                return true;
+
+            return (now - commandIssuedAt.Value).TotalSeconds >= recoverySeconds;
+        }
+
+        private static float GetStaleAttackRecoverySeconds(uint creature)
+        {
+            var calculatedDelay = Combat.CalculateAttackDelay(creature);
+            var effectiveDelaySeconds = Combat.CalculateEffectiveAttackDelay(calculatedDelay) / 1000f;
+
+            return Math.Max(MinimumStaleAttackRecoverySeconds, effectiveDelaySeconds * 2f + 1f);
         }
 
         /// <summary>

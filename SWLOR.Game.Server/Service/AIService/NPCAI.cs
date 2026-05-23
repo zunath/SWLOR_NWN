@@ -453,11 +453,7 @@ namespace SWLOR.Game.Server.Service.AIService
                         ExecuteAbility(context.Self, action, evaluation.Target);
                         break;
                     case AIActionType.AttackHighestEnmity:
-                        AssignCommand(context.Self, () =>
-                        {
-                            ClearAllActions();
-                            ActionAttack(evaluation.Target);
-                        });
+                        Enmity.AttackHighestEnmityTarget(context.Self);
                         break;
                     case AIActionType.MoveToTarget:
                         AssignCommand(context.Self, () =>
@@ -529,7 +525,7 @@ namespace SWLOR.Game.Server.Service.AIService
 
             AssignCommand(creature, () =>
             {
-                ClearAllActions();
+                ClearAllActions(true);
                 ActionAttack(target);
             });
         }

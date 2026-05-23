@@ -309,6 +309,94 @@ public class AIModelTests
     }
 
     [Test]
+    public void CreatureAggroExit_KeepsActiveCombatUntilLeash()
+    {
+        var aiSource = ReadSource("SWLOR.Game.Server", "Service", "AI.cs").Replace("\r\n", "\n");
+        var removeBody = aiSource.Substring(
+            aiSource.IndexOf("private static void RemoveProximityEnmity", StringComparison.Ordinal),
+            aiSource.IndexOf("private static bool ShouldKeepCombatProximityEnmity", StringComparison.Ordinal) -
+            aiSource.IndexOf("private static void RemoveProximityEnmity", StringComparison.Ordinal));
+        var keepBody = aiSource.Substring(
+            aiSource.IndexOf("private static bool ShouldKeepCombatProximityEnmity", StringComparison.Ordinal),
+            aiSource.IndexOf("private static bool IsAIEnabled", StringComparison.Ordinal) -
+            aiSource.IndexOf("private static bool ShouldKeepCombatProximityEnmity", StringComparison.Ordinal));
+
+        var keepIndex = removeBody.IndexOf("ShouldKeepCombatProximityEnmity(target, enemy)", StringComparison.Ordinal);
+        var leashEvadeIndex = removeBody.IndexOf("TryStartLeashEvade(enemy, target)", StringComparison.Ordinal);
+        var removeIndex = removeBody.IndexOf("Enmity.RemoveProximityEnmity(target, enemy)", StringComparison.Ordinal);
+
+        leashEvadeIndex.Should().BeGreaterThanOrEqualTo(0);
+        leashEvadeIndex.Should().BeLessThan(removeIndex);
+        keepIndex.Should().BeGreaterThanOrEqualTo(0);
+        keepIndex.Should().BeLessThan(removeIndex);
+        keepBody.Should().Contain("Enmity.GetHighestEnmityTarget(enemy) != target");
+        keepBody.Should().Contain("ShouldLeashCombatTarget(enemy, target, homeLocation)");
+        keepBody.Should().Contain("Activity.IsBusy(enemy)");
+        keepBody.Should().Contain("GetIsInCombat(enemy)");
+        keepBody.Should().Contain("GetAttackTarget(enemy) == target");
+        keepBody.Should().Contain("currentAction == ActionType.MoveToPoint");
+    }
+
+    [Test]
+    public void AbilityResume_ClearsNpcCombatStateBeforeReattacking()
+    {
+        var source = ReadSource("SWLOR.Game.Server", "Feature", "UsePerkFeat.cs").Replace("\r\n", "\n");
+        var resumeBody = source.Substring(
+            source.IndexOf("private static void ResumeAttack(", StringComparison.Ordinal),
+            source.IndexOf("private static void ResumeAttackAfterDelay", StringComparison.Ordinal) -
+            source.IndexOf("private static void ResumeAttack(", StringComparison.Ordinal));
+        var animationBody = source.Substring(
+            source.IndexOf("string ProcessAnimationAndVisualEffects", StringComparison.Ordinal),
+            source.IndexOf("void CheckForActivationInterruption", StringComparison.Ordinal) -
+            source.IndexOf("string ProcessAnimationAndVisualEffects", StringComparison.Ordinal));
+        var completeBody = source.Substring(
+            source.IndexOf("void CompleteActivation", StringComparison.Ordinal),
+            source.IndexOf("// Begin the main process", StringComparison.Ordinal) -
+            source.IndexOf("void CompleteActivation", StringComparison.Ordinal));
+
+        resumeBody.Should().Contain("Enmity.IssueAttackCommand(activator, target, clearActions);");
+        animationBody.Should().Contain("if (GetIsPC(activator))");
+        animationBody.Should().Contain("ClearAllActions(true);");
+        completeBody.Should().Contain("ResumeAttackAfterDelay(activator, resumeAttackTarget, 0.1f);");
+        completeBody.Should().NotContain("clearActions: false");
+    }
+
+    [Test]
+    public void NpcAttackReissue_UsesGuardedEnmityAttackBeforeReattacking()
+    {
+        var enmitySource = ReadSource("SWLOR.Game.Server", "Service", "Enmity.cs").Replace("\r\n", "\n");
+        var npcAiSource = ReadSource("SWLOR.Game.Server", "Service", "AIService", "NPCAI.cs").Replace("\r\n", "\n");
+        var attackHighestIndex = enmitySource.IndexOf("public static void AttackHighestEnmityTarget", StringComparison.Ordinal);
+        var executeActionIndex = npcAiSource.IndexOf("private static void ExecuteAction", StringComparison.Ordinal);
+        var attackActionIndex = npcAiSource.IndexOf("case AIActionType.AttackHighestEnmity:", executeActionIndex, StringComparison.Ordinal);
+        var fallbackIndex = npcAiSource.IndexOf("private static void ExecuteAbility", StringComparison.Ordinal);
+        var attackHighestBody = enmitySource.Substring(
+            attackHighestIndex,
+            enmitySource.IndexOf("private static bool ShouldIssueAttackCommand", attackHighestIndex, StringComparison.Ordinal) -
+            attackHighestIndex);
+        var issueBody = enmitySource.Substring(
+            enmitySource.IndexOf("public static void IssueAttackCommand", StringComparison.Ordinal),
+            enmitySource.IndexOf("private static bool ShouldIssueAttackCommand", StringComparison.Ordinal) -
+            enmitySource.IndexOf("public static void IssueAttackCommand", StringComparison.Ordinal));
+        var attackActionBody = npcAiSource.Substring(
+            attackActionIndex,
+            npcAiSource.IndexOf("case AIActionType.MoveToTarget:", attackActionIndex, StringComparison.Ordinal) -
+            attackActionIndex);
+        var fallbackBody = npcAiSource.Substring(
+            fallbackIndex,
+            npcAiSource.IndexOf("private static bool IsOnCooldown", fallbackIndex, StringComparison.Ordinal) -
+            fallbackIndex);
+
+        attackHighestBody.Should().Contain("IssueAttackCommand(creature, target);");
+        issueBody.Should().Contain("ClearAllActions(true);");
+        issueBody.Should().Contain("ActionMoveToObject(target, true, MeleeAttackMoveRange);");
+        attackActionBody.Should().Contain("Enmity.AttackHighestEnmityTarget(context.Self);");
+        attackActionBody.Should().NotContain("ClearAllActions");
+        attackActionBody.Should().NotContain("ActionAttack");
+        fallbackBody.Should().Contain("ClearAllActions(true);");
+    }
+
+    [Test]
     public void CreatureHeartbeat_DoesNotScanForAggroTargets()
     {
         var aiSource = File.ReadAllText(Path.Combine(
@@ -342,6 +430,129 @@ public class AIModelTests
         processFlagsBody.Should().Contain("ShouldLeashCombatTarget(self, highestEnmityTarget, homeLocation)");
         leashBody.Should().Contain("IsOutsideHomeRadius(target, homeLocation, CombatLeashRadius)");
         leashBody.Should().Contain("IsOutsideHomeRadius(creature, homeLocation, CombatLeashRadius)");
+    }
+
+    [Test]
+    public void CombatLeash_StartsFullEvadeBeforeIdleEffectGuards()
+    {
+        var aiSource = ReadSource("SWLOR.Game.Server", "Service", "AI.cs").Replace("\r\n", "\n");
+        var processFlagsBody = aiSource.Substring(
+            aiSource.IndexOf("private static void ProcessFlags()", StringComparison.Ordinal),
+            aiSource.IndexOf("private static void ProcessCreatureAllies()", StringComparison.Ordinal) -
+            aiSource.IndexOf("private static void ProcessFlags()", StringComparison.Ordinal));
+
+        var activeEvadeIndex = processFlagsBody.IndexOf("if (IsLeashEvading(self))", StringComparison.Ordinal);
+        var idleEffectGuardIndex = processFlagsBody.IndexOf("var effects = new[]", StringComparison.Ordinal);
+        var leashCheckIndex = processFlagsBody.IndexOf("ShouldLeashCombatTarget(self, highestEnmityTarget, homeLocation)", StringComparison.Ordinal);
+        var startEvadeIndex = processFlagsBody.IndexOf("StartLeashEvade(self, homeLocation)", StringComparison.Ordinal);
+
+        activeEvadeIndex.Should().BeGreaterThanOrEqualTo(0);
+        activeEvadeIndex.Should().BeLessThan(idleEffectGuardIndex);
+        leashCheckIndex.Should().BeGreaterThanOrEqualTo(0);
+        leashCheckIndex.Should().BeLessThan(idleEffectGuardIndex);
+        startEvadeIndex.Should().BeGreaterThan(leashCheckIndex);
+        startEvadeIndex.Should().BeLessThan(idleEffectGuardIndex);
+        processFlagsBody.Should().Contain("ContinueLeashEvadeReturn(self, homeLocation)");
+        processFlagsBody.Should().Contain("EndLeashEvade(self)");
+    }
+
+    [Test]
+    public void CombatRecovery_HeartbeatRechecksHighestEnmityBeforeIdleReturn()
+    {
+        var aiSource = ReadSource("SWLOR.Game.Server", "Service", "AI.cs").Replace("\r\n", "\n");
+        var processFlagsBody = aiSource.Substring(
+            aiSource.IndexOf("private static void ProcessFlags()", StringComparison.Ordinal),
+            aiSource.IndexOf("private static void ProcessCreatureAllies()", StringComparison.Ordinal) -
+            aiSource.IndexOf("private static void ProcessFlags()", StringComparison.Ordinal));
+
+        var idleEffectGuardIndex = processFlagsBody.IndexOf("var effects = new[]", StringComparison.Ordinal);
+        var recoveryIndex = processFlagsBody.IndexOf("Enmity.AttackHighestEnmityTarget(self)", StringComparison.Ordinal);
+        var idleReturnIndex = processFlagsBody.IndexOf("if (IsInConversation(self) ||", StringComparison.Ordinal);
+
+        recoveryIndex.Should().BeGreaterThan(idleEffectGuardIndex);
+        recoveryIndex.Should().BeLessThan(idleReturnIndex);
+        processFlagsBody.Should().Contain("if (GetIsObjectValid(highestEnmityTarget))");
+        processFlagsBody.Should().Contain("if (!IsInConversation(self))");
+    }
+
+    [Test]
+    public void CombatLeash_EvadeUsesPlotProtectionAndRestoresPreviousPlotState()
+    {
+        var aiSource = ReadSource("SWLOR.Game.Server", "Service", "AI.cs").Replace("\r\n", "\n");
+        var evadeMovementRate = ReadConstFloat(
+            "LeashEvadeMovementRateFactor",
+            "SWLOR.Game.Server",
+            "Service",
+            "AI.cs");
+        var startBody = aiSource.Substring(
+            aiSource.IndexOf("private static void StartLeashEvade", StringComparison.Ordinal),
+            aiSource.IndexOf("private static void ContinueLeashEvadeReturn", StringComparison.Ordinal) -
+            aiSource.IndexOf("private static void StartLeashEvade", StringComparison.Ordinal));
+        var continueBody = aiSource.Substring(
+            aiSource.IndexOf("private static void ContinueLeashEvadeReturn", StringComparison.Ordinal),
+            aiSource.IndexOf("private static void EndLeashEvade", StringComparison.Ordinal) -
+            aiSource.IndexOf("private static void ContinueLeashEvadeReturn", StringComparison.Ordinal));
+        var endBody = aiSource.Substring(
+            aiSource.IndexOf("private static void EndLeashEvade", StringComparison.Ordinal),
+            aiSource.IndexOf("private static void RemoveEnemySourcedStatusEffects", StringComparison.Ordinal) -
+            aiSource.IndexOf("private static void EndLeashEvade", StringComparison.Ordinal));
+
+        evadeMovementRate.Should().BeGreaterThan(2f);
+        startBody.Should().Contain("SetLocalBool(creature, LeashEvadeRestorePlotFlagVariable, GetPlotFlag(creature))");
+        startBody.Should().Contain("SetLocalInt(creature, LeashEvadeRestoreMovementRateVariable, GetMovementRate(creature))");
+        startBody.Should().Contain("SetPlotFlag(creature, true)");
+        startBody.Should().Contain("RemoveEnemySourcedStatusEffects(creature)");
+        startBody.Should().Contain("SetCurrentHitPoints(creature, GetMaxHitPoints(creature))");
+        startBody.Should().Contain("Enmity.ClearEnmityTable(creature)");
+        startBody.Should().Contain("NPCAI.ClearState(creature)");
+        startBody.Should().Contain("ApplyLeashEvadeMovementRate(creature)");
+        startBody.Should().Contain("DelayCommand(0.2f");
+        continueBody.Should().Contain("ApplyLeashEvadeMovementRate(creature)");
+        continueBody.Should().Contain("ClearAllActions(true)");
+        continueBody.Should().Contain("ActionForceMoveToLocation(homeLocation, true, 60f)");
+        endBody.Should().Contain("SetCurrentHitPoints(creature, GetMaxHitPoints(creature))");
+        endBody.Should().Contain("SetPlotFlag(creature, GetLocalBool(creature, LeashEvadeRestorePlotFlagVariable))");
+        endBody.Should().Contain("DeleteLocalBool(creature, LeashEvadeRestorePlotFlagVariable)");
+        endBody.Should().Contain("DeleteLocalBool(creature, LeashEvadeActiveVariable)");
+        endBody.Should().Contain("RestoreLeashEvadeMovementRate(creature)");
+        endBody.Should().Contain("CreaturePlugin.SetMovementRate(creature, MovementRate.DMFast)");
+        endBody.Should().Contain("Stat.ApplyCreatureMovementRate(creature)");
+        endBody.Should().Contain("CreaturePlugin.SetMovementRateFactor(creature, LeashEvadeMovementRateFactor)");
+    }
+
+    [Test]
+    public void CombatLeash_EvadingCreaturesIgnoreNewAggroAndEnmity()
+    {
+        var aiSource = ReadSource("SWLOR.Game.Server", "Service", "AI.cs").Replace("\r\n", "\n");
+        var enmitySource = ReadSource("SWLOR.Game.Server", "Service", "Enmity.cs").Replace("\r\n", "\n");
+        var aggroEnterBody = aiSource.Substring(
+            aiSource.IndexOf("public static void CreatureAggroEnter()", StringComparison.Ordinal),
+            aiSource.IndexOf("public static void CreatureAggroExit()", StringComparison.Ordinal) -
+            aiSource.IndexOf("public static void CreatureAggroEnter()", StringComparison.Ordinal));
+        var attackedBody = aiSource.Substring(
+            aiSource.IndexOf("public static void CreaturePhysicalAttacked()", StringComparison.Ordinal),
+            aiSource.IndexOf("public static void CreatureDamaged()", StringComparison.Ordinal) -
+            aiSource.IndexOf("public static void CreaturePhysicalAttacked()", StringComparison.Ordinal));
+        var damagedBody = aiSource.Substring(
+            aiSource.IndexOf("public static void CreatureDamaged()", StringComparison.Ordinal),
+            aiSource.IndexOf("public static void CreatureDeath()", StringComparison.Ordinal) -
+            aiSource.IndexOf("public static void CreatureDamaged()", StringComparison.Ordinal));
+        var roundEndBody = aiSource.Substring(
+            aiSource.IndexOf("public static void CreatureCombatRoundEnd()", StringComparison.Ordinal),
+            aiSource.IndexOf("public static void CreatureConversation()", StringComparison.Ordinal) -
+            aiSource.IndexOf("public static void CreatureCombatRoundEnd()", StringComparison.Ordinal));
+        var modifyBody = enmitySource.Substring(
+            enmitySource.IndexOf("public static void ModifyEnmity", StringComparison.Ordinal),
+            enmitySource.IndexOf("private static int CalculateEnmityAdjustment", StringComparison.Ordinal) -
+            enmitySource.IndexOf("public static void ModifyEnmity", StringComparison.Ordinal));
+
+        aggroEnterBody.Should().Contain("if (IsLeashEvading(self))");
+        attackedBody.Should().Contain("if (IsLeashEvading(creature))");
+        attackedBody.Should().Contain("TryStartLeashEvade(creature, GetHighestOrEventTarget(creature, GetLastAttacker(creature)))");
+        damagedBody.Should().Contain("if (IsLeashEvading(creature))");
+        damagedBody.Should().Contain("TryStartLeashEvade(creature, GetHighestOrEventTarget(creature, GetLastDamager(creature)))");
+        roundEndBody.Should().Contain("TryStartLeashEvade(creature, Enmity.GetHighestEnmityTarget(creature))");
+        modifyBody.Should().Contain("if (AI.IsLeashEvading(enemy))");
     }
 
     [Test]

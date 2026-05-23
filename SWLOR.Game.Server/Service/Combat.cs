@@ -42,6 +42,7 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<uint, DateTime> _recentDamageTaken = new();
         private static readonly Dictionary<uint, DateTime> _recentGuardedHits = new();
         private static readonly Dictionary<uint, DateTime> _lastCombatActivity = new();
+        private static readonly Dictionary<uint, DateTime> _lastAttackActivity = new();
         private static readonly Dictionary<uint, DateTime> _lastCombatAbilityUse = new();
         private static readonly Dictionary<uint, int> _autoAttackCycleCounts = new();
         private static readonly Dictionary<uint, RepeatedTargetDamageState> _repeatedTargetDamageStates = new();
@@ -1509,7 +1510,26 @@ namespace SWLOR.Game.Server.Service
 
         public static void TrackAttackActivity(uint creature)
         {
+            if (!GetIsObjectValid(creature))
+                return;
+
+            _lastAttackActivity[creature] = DateTime.UtcNow;
             TrackCombatActivity(creature);
+        }
+
+        public static bool HasRecentAttackActivity(uint creature, float windowSeconds)
+        {
+            if (!GetIsObjectValid(creature) || windowSeconds <= 0f)
+                return false;
+
+            if (!_lastAttackActivity.TryGetValue(creature, out var lastAttack))
+                return false;
+
+            var isRecent = (DateTime.UtcNow - lastAttack).TotalSeconds <= windowSeconds;
+            if (!isRecent)
+                _lastAttackActivity.Remove(creature);
+
+            return isRecent;
         }
 
         public static int PrepareOpeningAutoAttack(uint attacker, SkillType skillType)
@@ -2221,6 +2241,7 @@ namespace SWLOR.Game.Server.Service
             _recentDamageTaken.Remove(creature);
             _recentGuardedHits.Remove(creature);
             _lastCombatActivity.Remove(creature);
+            _lastAttackActivity.Remove(creature);
             _lastCombatAbilityUse.Remove(creature);
             _autoAttackCycleCounts.Remove(creature);
             _repeatedTargetDamageStates.Remove(creature);

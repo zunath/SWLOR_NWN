@@ -14,7 +14,11 @@ namespace SWLOR.Game.Server.Service
         private const float AggroRadius = 8.5f;
         private const float ReturnHomeRadius = 15f;
         private const float CombatLeashRadius = 35f;
+        private const float LeashEvadeMovementRateFactor = 3.0f;
         private const int ProximityEnmityAmount = 1;
+        private const string LeashEvadeActiveVariable = "AI_LEASH_EVADE_ACTIVE";
+        private const string LeashEvadeRestorePlotFlagVariable = "AI_LEASH_EVADE_RESTORE_PLOT_FLAG";
+        private const string LeashEvadeRestoreMovementRateVariable = "AI_LEASH_EVADE_RESTORE_MOVEMENT_RATE";
         private static readonly Dictionary<uint, HashSet<uint>> _creatureAllies = new();
 
         [NWNEventHandler(ScriptName.OnModuleCacheAfter)]
@@ -81,6 +85,9 @@ namespace SWLOR.Game.Server.Service
             var handled = false;
             if (!Activity.IsBusy(creature))
             {
+                if (TryStartLeashEvade(creature, Enmity.GetHighestEnmityTarget(creature)))
+                    return;
+
                 handled = ProcessTrigger(creature, AITriggerType.CombatRound);
             }
 
@@ -112,6 +119,12 @@ namespace SWLOR.Game.Server.Service
             if (!IsAIEnabled(creature))
                 return;
 
+            if (IsLeashEvading(creature))
+                return;
+
+            if (TryStartLeashEvade(creature, GetHighestOrEventTarget(creature, GetLastAttacker(creature))))
+                return;
+
             if (!ProcessTrigger(creature, AITriggerType.Attacked, GetLastAttacker(creature)))
                 Enmity.AttackHighestEnmityTarget(creature);
         }
@@ -124,6 +137,12 @@ namespace SWLOR.Game.Server.Service
         {
             var creature = OBJECT_SELF;
             if (!IsAIEnabled(creature))
+                return;
+
+            if (IsLeashEvading(creature))
+                return;
+
+            if (TryStartLeashEvade(creature, GetHighestOrEventTarget(creature, GetLastDamager(creature))))
                 return;
 
             if (!ProcessTrigger(creature, AITriggerType.Damaged, GetLastDamager(creature)))
@@ -213,6 +232,9 @@ namespace SWLOR.Game.Server.Service
             var entering = GetEnteringObject();
             var self = GetAreaOfEffectCreator(OBJECT_SELF);
             if (!IsAIEnabled(self))
+                return;
+
+            if (IsLeashEvading(self))
                 return;
 
             // Target is invisible
@@ -346,6 +368,32 @@ namespace SWLOR.Game.Server.Service
         private static void ProcessFlags()
         {
             var self = OBJECT_SELF;
+            var aiFlags = GetAIFlag(self);
+            var homeLocation = GetLocalLocation(self, "HOME_LOCATION");
+            var isOutsideHomeRadius = aiFlags.HasFlag(AIFlag.ReturnHome) &&
+                                      IsOutsideHomeRadius(self, homeLocation);
+            var highestEnmityTarget = Enmity.GetHighestEnmityTarget(self);
+
+            if (IsLeashEvading(self))
+            {
+                if (IsOutsideHomeRadius(self, homeLocation))
+                {
+                    ContinueLeashEvadeReturn(self, homeLocation);
+                }
+                else
+                {
+                    EndLeashEvade(self);
+                }
+
+                return;
+            }
+
+            if ((GetIsInCombat(self) || GetIsObjectValid(highestEnmityTarget)) &&
+                ShouldLeashCombatTarget(self, highestEnmityTarget, homeLocation))
+            {
+                StartLeashEvade(self, homeLocation);
+                return;
+            }
 
             // Certain effects should interrupt the random walk process.
             var effects = new[] {EffectTypeScript.Dazed, EffectTypeScript.Petrify};
@@ -357,30 +405,18 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            var aiFlags = GetAIFlag(self);
-            var homeLocation = GetLocalLocation(self, "HOME_LOCATION");
-            var isOutsideHomeRadius = aiFlags.HasFlag(AIFlag.ReturnHome) &&
-                                      IsOutsideHomeRadius(self, homeLocation);
-            var highestEnmityTarget = Enmity.GetHighestEnmityTarget(self);
-
-            if ((GetIsInCombat(self) || GetIsObjectValid(highestEnmityTarget)) &&
-                ShouldLeashCombatTarget(self, highestEnmityTarget, homeLocation))
+            if (GetIsObjectValid(highestEnmityTarget))
             {
-                Enmity.ClearEnmityTable(self);
-                NPCAI.ClearState(self);
-                AssignCommand(self, () =>
-                {
-                    ClearAllActions();
-                    ActionForceMoveToLocation(homeLocation);
-                });
+                if (!IsInConversation(self))
+                    Enmity.AttackHighestEnmityTarget(self);
+
                 return;
             }
 
             if (IsInConversation(self) ||
                 GetIsInCombat(self) ||
                 GetCurrentAction(self) == ActionType.RandomWalk ||
-                GetCurrentAction(self) == ActionType.MoveToPoint ||
-                GetIsObjectValid(highestEnmityTarget))
+                GetCurrentAction(self) == ActionType.MoveToPoint)
                 return;
 
             // Return Home flag
@@ -501,6 +537,110 @@ namespace SWLOR.Game.Server.Service
             return IsOutsideHomeRadius(target, homeLocation, CombatLeashRadius);
         }
 
+        public static bool IsLeashEvading(uint creature)
+        {
+            return GetIsObjectValid(creature) &&
+                   GetLocalBool(creature, LeashEvadeActiveVariable);
+        }
+
+        private static void StartLeashEvade(uint creature, Location homeLocation)
+        {
+            if (!IsLeashEvading(creature))
+            {
+                SetLocalBool(creature, LeashEvadeActiveVariable, true);
+                SetLocalBool(creature, LeashEvadeRestorePlotFlagVariable, GetPlotFlag(creature));
+                SetLocalInt(creature, LeashEvadeRestoreMovementRateVariable, GetMovementRate(creature));
+                SetPlotFlag(creature, true);
+            }
+
+            RemoveEnemySourcedStatusEffects(creature);
+            SetCurrentHitPoints(creature, GetMaxHitPoints(creature));
+            Enmity.ClearEnmityTable(creature);
+            NPCAI.ClearState(creature);
+            ApplyLeashEvadeMovementRate(creature);
+            DelayCommand(0.2f, () =>
+            {
+                if (IsLeashEvading(creature))
+                    ApplyLeashEvadeMovementRate(creature);
+            });
+            ContinueLeashEvadeReturn(creature, homeLocation);
+        }
+
+        private static void ContinueLeashEvadeReturn(uint creature, Location homeLocation)
+        {
+            ApplyLeashEvadeMovementRate(creature);
+            AssignCommand(creature, () =>
+            {
+                ClearAllActions(true);
+                ActionForceMoveToLocation(homeLocation, true, 60f);
+            });
+        }
+
+        private static void EndLeashEvade(uint creature)
+        {
+            if (!IsLeashEvading(creature))
+                return;
+
+            SetCurrentHitPoints(creature, GetMaxHitPoints(creature));
+            SetPlotFlag(creature, GetLocalBool(creature, LeashEvadeRestorePlotFlagVariable));
+            DeleteLocalBool(creature, LeashEvadeRestorePlotFlagVariable);
+            DeleteLocalBool(creature, LeashEvadeActiveVariable);
+            RestoreLeashEvadeMovementRate(creature);
+        }
+
+        private static bool TryStartLeashEvade(uint creature, uint target)
+        {
+            var homeLocation = GetLocalLocation(creature, "HOME_LOCATION");
+            if (!ShouldLeashCombatTarget(creature, target, homeLocation))
+                return false;
+
+            StartLeashEvade(creature, homeLocation);
+            return true;
+        }
+
+        private static uint GetHighestOrEventTarget(uint creature, uint eventTarget)
+        {
+            var highestEnmityTarget = Enmity.GetHighestEnmityTarget(creature);
+            return GetIsObjectValid(highestEnmityTarget)
+                ? highestEnmityTarget
+                : eventTarget;
+        }
+
+        private static void ApplyLeashEvadeMovementRate(uint creature)
+        {
+            if (!GetIsObjectValid(creature))
+                return;
+
+            CreaturePlugin.SetMovementRate(creature, MovementRate.DMFast);
+            CreaturePlugin.SetMovementRateFactor(creature, LeashEvadeMovementRateFactor);
+        }
+
+        private static void RestoreLeashEvadeMovementRate(uint creature)
+        {
+            if (!GetIsObjectValid(creature))
+                return;
+
+            CreaturePlugin.SetMovementRate(
+                creature,
+                (MovementRate)GetLocalInt(creature, LeashEvadeRestoreMovementRateVariable));
+            DeleteLocalInt(creature, LeashEvadeRestoreMovementRateVariable);
+            Stat.ApplyCreatureMovementRate(creature);
+        }
+
+        private static void RemoveEnemySourcedStatusEffects(uint creature)
+        {
+            var effects = StatusEffect.GetCreatureStatusEffects(creature)
+                .GetAllEffects()
+                .Where(effect => GetIsObjectValid(effect.Source) &&
+                                 GetIsEnemy(effect.Source, creature))
+                .ToArray();
+
+            foreach (var effect in effects)
+            {
+                StatusEffect.RemoveStatusEffect(creature, effect.GetType(), effect.Source, false);
+            }
+        }
+
         private static bool IsOutsideHomeRadius(uint creature, Location homeLocation, float radius = ReturnHomeRadius)
         {
             return GetIsObjectValid(GetAreaFromLocation(homeLocation)) &&
@@ -524,6 +664,7 @@ namespace SWLOR.Game.Server.Service
                 GetHasEffect(target, EffectTypeScript.Invisibility, EffectTypeScript.ImprovedInvisibility) ||
                 !IsInAggroRange(self, target) ||
                 !GetIsEnemy(target, self) ||
+                TryStartLeashEvade(self, target) ||
                 !TryAddProximityEnmity(target, self))
             {
                 return;
@@ -560,6 +701,15 @@ namespace SWLOR.Game.Server.Service
 
         private static void RemoveProximityEnmity(uint target, uint enemy)
         {
+            if (TryStartLeashEvade(enemy, target))
+                return;
+
+            if (ShouldKeepCombatProximityEnmity(target, enemy))
+            {
+                Enmity.AttackHighestEnmityTarget(enemy);
+                return;
+            }
+
             if (!Enmity.RemoveProximityEnmity(target, enemy))
                 return;
 
@@ -572,6 +722,29 @@ namespace SWLOR.Game.Server.Service
 
             NPCAI.ClearState(enemy);
             AssignCommand(enemy, () => ClearAllActions());
+        }
+
+        private static bool ShouldKeepCombatProximityEnmity(uint target, uint enemy)
+        {
+            if (!GetIsObjectValid(target) ||
+                !GetIsObjectValid(enemy) ||
+                GetCurrentHitPoints(target) <= 0 ||
+                GetCurrentHitPoints(enemy) <= 0 ||
+                Enmity.GetHighestEnmityTarget(enemy) != target)
+            {
+                return false;
+            }
+
+            var homeLocation = GetLocalLocation(enemy, "HOME_LOCATION");
+            if (ShouldLeashCombatTarget(enemy, target, homeLocation))
+                return false;
+
+            var currentAction = GetCurrentAction(enemy);
+            return Activity.IsBusy(enemy) ||
+                   GetIsInCombat(enemy) ||
+                   GetAttackTarget(enemy) == target ||
+                   currentAction == ActionType.AttackObject ||
+                   currentAction == ActionType.MoveToPoint;
         }
 
         private static bool IsAIEnabled(uint creature)

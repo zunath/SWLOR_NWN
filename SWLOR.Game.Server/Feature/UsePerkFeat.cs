@@ -74,11 +74,14 @@ namespace SWLOR.Game.Server.Feature
                 GetArea(activator) != GetArea(target))
                 return;
 
+            if (!GetIsPC(activator))
+            {
+                Enmity.IssueAttackCommand(activator, target, clearActions);
+                return;
+            }
+
             AssignCommand(activator, () =>
             {
-                if (!GetIsPC(activator) && clearActions)
-                    ClearAllActions();
-
                 ActionAttack(target);
             });
         }
@@ -260,7 +263,13 @@ namespace SWLOR.Game.Server.Feature
                 if (GetActionMode(activator, ActionMode.Stealth))
                     SetActionMode(activator, ActionMode.Stealth, false);
 
-                AssignCommand(activator, () => ClearAllActions());
+                AssignCommand(activator, () =>
+                {
+                    if (GetIsPC(activator))
+                        ClearAllActions();
+                    else
+                        ClearAllActions(true);
+                });
 
                 if (GetIsObjectValid(target) && target != activator)
                 {
@@ -357,7 +366,7 @@ namespace SWLOR.Game.Server.Feature
                 HandleStealthBreaking(activator, ability);
                 ExecuteAbilityImpact(activator, target, feat, ability, targetLocation);
                 Recast.ApplyRecastDelay(activator, ability.RecastGroup, abilityRecastDelay, ShouldIgnoreRecastReduction(ability));
-                ResumeAttackAfterDelay(activator, resumeAttackTarget, 0.1f, clearActions: false);
+                ResumeAttackAfterDelay(activator, resumeAttackTarget, 0.1f);
 
                 // If this is an attack make the NPC react.
                 if (GetIsObjectValid(target) && target != activator)

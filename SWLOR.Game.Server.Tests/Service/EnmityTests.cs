@@ -3,6 +3,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWScript.Enum;
+using static SWLOR.NWN.API.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -14,6 +15,7 @@ public class EnmityTests
         EnemyEnmityTables().Clear();
         CreatureToEnemies().Clear();
         ProximityEnmityAmounts().Clear();
+        AttackCommandTimes().Clear();
     }
 
     [TearDown]
@@ -22,6 +24,7 @@ public class EnmityTests
         EnemyEnmityTables().Clear();
         CreatureToEnemies().Clear();
         ProximityEnmityAmounts().Clear();
+        AttackCommandTimes().Clear();
     }
 
     [Test]
@@ -134,7 +137,7 @@ public class EnmityTests
     [Test]
     public void ShouldIssueAttackCommand_ReissuesWhenTargetIsStaleButNoAttackActionIsRunning()
     {
-        ShouldIssueAttackCommand(1, 1, ActionType.Invalid, false)
+        ShouldIssueAttackCommand(1, 1, ActionType.Invalid, false, commandIssuedAt: DateTime.UtcNow.AddSeconds(-7))
             .Should()
             .BeTrue();
     }
@@ -155,6 +158,136 @@ public class EnmityTests
             .BeFalse();
     }
 
+    [Test]
+    public void ShouldIssueAttackCommand_ReissuesStaleAttackAction()
+    {
+        ShouldIssueAttackCommand(1, 1, ActionType.AttackObject, false, true)
+            .Should()
+            .BeTrue();
+    }
+
+    [Test]
+    public void ShouldIssueAttackCommand_AllowsRecentAttackCommandToSettle()
+    {
+        var now = DateTime.UtcNow;
+
+        ShouldIssueAttackCommand(
+                1,
+                1,
+                ActionType.Invalid,
+                false,
+                now: now,
+                commandIssuedAt: now.AddSeconds(-2),
+                recoverySeconds: 6f)
+            .Should()
+            .BeFalse();
+    }
+
+    [Test]
+    public void ShouldIssueAttackCommand_AllowsRecentCommandToSettleBeforeAttackTargetIsPopulated()
+    {
+        var now = DateTime.UtcNow;
+
+        ShouldIssueAttackCommand(
+                OBJECT_INVALID,
+                1,
+                ActionType.Invalid,
+                false,
+                now: now,
+                commandIssuedAt: now.AddSeconds(-2),
+                recoverySeconds: 6f)
+            .Should()
+            .BeFalse();
+    }
+
+    [Test]
+    public void ShouldIssueAttackCommand_SwitchesTargetsWithoutWaitingForSettlingCommand()
+    {
+        var now = DateTime.UtcNow;
+
+        ShouldIssueAttackCommand(
+                1,
+                2,
+                ActionType.AttackObject,
+                false,
+                now: now,
+                commandIssuedAt: now,
+                recoverySeconds: 6f)
+            .Should()
+            .BeTrue();
+    }
+
+    [Test]
+    public void ShouldRecoverStaleAttack_RequiresSameAttackActionWithoutRecentAttack()
+    {
+        var now = DateTime.UtcNow;
+
+        ShouldRecoverStaleAttack(
+                1,
+                1,
+                ActionType.AttackObject,
+                now,
+                now.AddSeconds(-7),
+                false,
+                6f)
+            .Should()
+            .BeTrue();
+
+        ShouldRecoverStaleAttack(
+                1,
+                1,
+                ActionType.AttackObject,
+                now,
+                now.AddSeconds(-7),
+                true,
+                6f)
+            .Should()
+            .BeFalse();
+
+        ShouldRecoverStaleAttack(
+                1,
+                2,
+                ActionType.AttackObject,
+                now,
+                now.AddSeconds(-7),
+                false,
+                6f)
+            .Should()
+            .BeFalse();
+    }
+
+    [Test]
+    public void ShouldRecoverStaleAttack_WaitsForRecoveryWindowAfterKnownCommand()
+    {
+        var now = DateTime.UtcNow;
+
+        ShouldRecoverStaleAttack(
+                1,
+                1,
+                ActionType.AttackObject,
+                now,
+                now.AddSeconds(-5),
+                false,
+                6f)
+            .Should()
+            .BeFalse();
+    }
+
+    [Test]
+    public void ShouldRecoverStaleAttack_ReissuesUntrackedAttackAction()
+    {
+        ShouldRecoverStaleAttack(
+                1,
+                1,
+                ActionType.AttackObject,
+                DateTime.UtcNow,
+                null,
+                false,
+                6f)
+            .Should()
+            .BeTrue();
+    }
+
     private static Dictionary<uint, Dictionary<uint, int>> EnemyEnmityTables()
     {
         return GetField<Dictionary<uint, Dictionary<uint, int>>>("_enemyEnmityTables");
@@ -170,6 +303,11 @@ public class EnmityTests
         return GetField<Dictionary<uint, Dictionary<uint, int>>>("_proximityEnmityAmounts");
     }
 
+    private static Dictionary<uint, DateTime> AttackCommandTimes()
+    {
+        return GetField<Dictionary<uint, DateTime>>("_attackCommandTimes");
+    }
+
     private static T GetField<T>(string name)
     {
         return (T)typeof(Enmity)
@@ -181,10 +319,50 @@ public class EnmityTests
         uint attackTarget,
         uint desiredTarget,
         ActionType currentAction,
-        bool isBusy)
+        bool isBusy,
+        bool shouldRecoverStaleAttack = false,
+        DateTime? now = null,
+        DateTime? commandIssuedAt = null,
+        float recoverySeconds = 6f)
     {
         return (bool)typeof(Enmity)
             .GetMethod("ShouldIssueAttackCommand", BindingFlags.Static | BindingFlags.NonPublic)!
-            .Invoke(null, new object[] { attackTarget, desiredTarget, currentAction, isBusy })!;
+            .Invoke(null, new object[]
+            {
+                attackTarget,
+                desiredTarget,
+                currentAction,
+                isBusy,
+                shouldRecoverStaleAttack,
+                now ?? DateTime.UtcNow,
+                commandIssuedAt,
+                recoverySeconds
+            })!;
+    }
+
+    private static bool ShouldRecoverStaleAttack(
+        uint attackTarget,
+        uint desiredTarget,
+        ActionType currentAction,
+        DateTime now,
+        DateTime? commandIssuedAt,
+        bool hasRecentAttack,
+        float recoverySeconds)
+    {
+        return (bool)typeof(Enmity)
+            .GetMethods(BindingFlags.Static | BindingFlags.NonPublic)
+            .Single(method =>
+                method.Name == "ShouldRecoverStaleAttack" &&
+                method.GetParameters().Length == 7)
+            .Invoke(null, new object[]
+            {
+                attackTarget,
+                desiredTarget,
+                currentAction,
+                now,
+                commandIssuedAt,
+                hasRecentAttack,
+                recoverySeconds
+            })!;
     }
 }

@@ -139,7 +139,7 @@ namespace SWLOR.Game.Server.Entity
         public string ActiveShipId { get; set; }
         public AppearanceType OriginalAppearanceType { get; set; }
         public float MovementRate { get; set; }
-        public int AbilityRecastReduction { get; set; }
+        public int CombatReadiness { get; set; }
         public int MarketTill { get; set; }
         public int OutfitSlotLimit { get; set; }
         public int MarketListingLimit { get; set; }

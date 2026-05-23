@@ -336,7 +336,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 Currency.TakeCurrency(Player, CurrencyType.StatRefundToken, 1);
 
                 const int DelaySeconds = CooldownDays * 86400;
-                Recast.ApplyRecastDelay(Player, RecastGroup.StatRebuild, DelaySeconds, true);
+                Recast.ApplyRecastDelay(Player, RecastGroup.StatRebuild, DelaySeconds);
             });
         };
     }

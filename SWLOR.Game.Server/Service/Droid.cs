@@ -838,7 +838,7 @@ namespace SWLOR.Game.Server.Service
             DestroyObject(droid, 0.1f);
             ClearTemporaryData(player, droid);
 
-            Recast.ApplyRecastDelay(player, RecastGroup.DroidController, RecastDelaySeconds, true);
+            Recast.ApplyRecastDelay(player, RecastGroup.DroidController, RecastDelaySeconds);
             CloseAppearanceEditor(player);
         }
 
@@ -1006,7 +1006,7 @@ namespace SWLOR.Game.Server.Service
 
             SpeakString(personality.DeathPhrase());
             ClearTemporaryData(player, droid);
-            Recast.ApplyRecastDelay(player, RecastGroup.DroidController, RecastDelaySeconds, true);
+            Recast.ApplyRecastDelay(player, RecastGroup.DroidController, RecastDelaySeconds);
             CloseAppearanceEditor(player);
         }
 

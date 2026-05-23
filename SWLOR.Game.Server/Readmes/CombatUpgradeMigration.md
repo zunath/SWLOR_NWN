@@ -27,6 +27,7 @@ This note tracks player migration work for `feature/combat-upgrade`. Keep it cur
   - Moves legacy elemental defense entries into resistances, fills missing default keys, and removes Physical/Force from resistances.
   - Adds and normalizes beast resistance purities, removes legacy beast saving throw purities, and moves beast elemental purities out of defenses.
   - Migrates live and serialized item properties for the new resistance, weapon damage, and weapon delay property model, including untyped `DMG`, separate `WeaponDamageType`, and normalized weapon `Delay` for held weapons and natural creature weapons.
+  - Reuses the legacy cooldown-reduction equipment, enhancement, and food property IDs as Combat Readiness, drops the old blanket recast-reduction player stat during player resaves, and recalculates Combat Readiness from equipped items during player migration.
   - Removes obsolete Bible perks, stale recast entries, and obsolete combat instruction discs from players, beasts, stored items, markets, world properties, research jobs, outfits, DM creatures, and ships.
 
 ## Player-Facing Migration Goals

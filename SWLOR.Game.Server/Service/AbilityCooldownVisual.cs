@@ -301,12 +301,6 @@ namespace SWLOR.Game.Server.Service
                 .DefaultIfEmpty(0f)
                 .Max();
 
-            if (delaySeconds > 0f && group != RecastGroup.Capstone)
-            {
-                var recastReduction = Recast.GetRecastReductionPercent(player) * 0.01f;
-                delaySeconds -= delaySeconds * recastReduction;
-            }
-
             return Math.Max(remainingSeconds, delaySeconds);
         }
 

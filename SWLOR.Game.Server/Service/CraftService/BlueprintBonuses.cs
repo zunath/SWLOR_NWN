@@ -451,9 +451,9 @@ namespace SWLOR.Game.Server.Service.CraftService
                 new(5, EnhancementSubType.HP, 9),
                 new(2, EnhancementSubType.HP, 11),
 
-                // Recast Reduction
-                new(5, EnhancementSubType.RecastReduction, 1),
-                new(1, EnhancementSubType.RecastReduction, 2),
+                // Combat Readiness
+                new(5, EnhancementSubType.CombatReadiness, 1),
+                new(1, EnhancementSubType.CombatReadiness, 2),
 
                 // STM
                 new(15, EnhancementSubType.Stamina, 1),
@@ -518,9 +518,9 @@ namespace SWLOR.Game.Server.Service.CraftService
                 new(5, EnhancementSubType.HP, 11),
                 new(2, EnhancementSubType.HP, 13),
 
-                // Recast Reduction
-                new(5, EnhancementSubType.RecastReduction, 2),
-                new(1, EnhancementSubType.RecastReduction, 3),
+                // Combat Readiness
+                new(5, EnhancementSubType.CombatReadiness, 2),
+                new(1, EnhancementSubType.CombatReadiness, 3),
 
                 // STM
                 new(15, EnhancementSubType.Stamina, 2),
@@ -586,9 +586,9 @@ namespace SWLOR.Game.Server.Service.CraftService
                 new(5, EnhancementSubType.HP, 13),
                 new(2, EnhancementSubType.HP, 15),
 
-                // Recast Reduction
-                new(5, EnhancementSubType.RecastReduction, 3),
-                new(1, EnhancementSubType.RecastReduction, 4),
+                // Combat Readiness
+                new(5, EnhancementSubType.CombatReadiness, 3),
+                new(1, EnhancementSubType.CombatReadiness, 4),
 
                 // STM
                 new(15, EnhancementSubType.Stamina, 3),
@@ -796,9 +796,9 @@ namespace SWLOR.Game.Server.Service.CraftService
                 new(5, EnhancementSubType.FoodBonusHPRegen, 2),
                 new(3, EnhancementSubType.FoodBonusHPRegen, 3),
 
-                // Recast Reduction
-                new(10, EnhancementSubType.FoodBonusRecastReduction, 3),
-                new(5, EnhancementSubType.FoodBonusRecastReduction, 4),
+                // Combat Readiness
+                new(10, EnhancementSubType.FoodBonusCombatReadiness, 3),
+                new(5, EnhancementSubType.FoodBonusCombatReadiness, 4),
 
                 // Rest Regen
                 new(10, EnhancementSubType.FoodBonusRestRegen, 4),
@@ -867,10 +867,10 @@ namespace SWLOR.Game.Server.Service.CraftService
                 new(5, EnhancementSubType.FoodBonusHPRegen, 3),
                 new(3, EnhancementSubType.FoodBonusHPRegen, 4),
 
-                // Recast Reduction
-                new(15, EnhancementSubType.FoodBonusRecastReduction, 3),
-                new(10, EnhancementSubType.FoodBonusRecastReduction, 4),
-                new(5, EnhancementSubType.FoodBonusRecastReduction, 5),
+                // Combat Readiness
+                new(15, EnhancementSubType.FoodBonusCombatReadiness, 3),
+                new(10, EnhancementSubType.FoodBonusCombatReadiness, 4),
+                new(5, EnhancementSubType.FoodBonusCombatReadiness, 5),
 
                 // Rest Regen
                 new(15, EnhancementSubType.FoodBonusRestRegen, 4),
@@ -951,10 +951,10 @@ namespace SWLOR.Game.Server.Service.CraftService
                 new(5, EnhancementSubType.FoodBonusHPRegen, 4),
                 new(3, EnhancementSubType.FoodBonusHPRegen, 5),
 
-                // Recast Reduction
-                new(15, EnhancementSubType.FoodBonusRecastReduction, 4),
-                new(10, EnhancementSubType.FoodBonusRecastReduction, 5),
-                new(5, EnhancementSubType.FoodBonusRecastReduction, 6),
+                // Combat Readiness
+                new(15, EnhancementSubType.FoodBonusCombatReadiness, 4),
+                new(10, EnhancementSubType.FoodBonusCombatReadiness, 5),
+                new(5, EnhancementSubType.FoodBonusCombatReadiness, 6),
 
                 // Rest Regen
                 new(15, EnhancementSubType.FoodBonusRestRegen, 5),

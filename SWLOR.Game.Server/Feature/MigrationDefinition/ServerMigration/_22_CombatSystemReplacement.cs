@@ -265,6 +265,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
 
                 var dbPlayer = jObject.ToObject<Player>();
                 EnsureDefinedPlayerSkills(dbPlayer);
+                CombatReadinessMigration.ResetCombatReadiness(dbPlayer);
                 dbPlayer.RebuildComplete = false;
 
                 if (refundAmount > 0)

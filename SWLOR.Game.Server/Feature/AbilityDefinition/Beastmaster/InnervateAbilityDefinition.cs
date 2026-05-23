@@ -89,7 +89,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
         {
             foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
-                HealPercent(friendly, 6);
+                HealPercent(activator, friendly, 6);
             }
         }
 
@@ -97,7 +97,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
         {
             foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
-                HealPercent(friendly, 10);
+                HealPercent(activator, friendly, 10);
             }
         }
 
@@ -105,14 +105,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
         {
             foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
-                HealPercent(friendly, 14);
+                HealPercent(activator, friendly, 14);
             }
         }
 
 
-        private static void HealPercent(uint target, int percent)
+        private static void HealPercent(uint activator, uint target, int percent)
         {
             var amount = PercentOf(GetMaxHitPoints(target), percent);
+            amount = Ability.ApplyCombatReadinessToActivatedAbilityMagnitude(activator, amount);
             amount = Stat.ApplyHealingReceivedAdjustment(target, amount);
 
             ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), target);

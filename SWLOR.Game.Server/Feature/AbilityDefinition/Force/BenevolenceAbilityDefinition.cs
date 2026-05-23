@@ -100,7 +100,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             var friendly = AbilityTargeting.ResolveFriendlyTarget(activator, target);
             var multiplier = friendly == activator ? 1f : 1.25f;
-            AbilityEffectScaling.ApplyScaledHeal(activator, friendly, percent, multiplier: multiplier);
+            AbilityEffectScaling.ApplyActivatedScaledHeal(activator, friendly, percent, multiplier: multiplier);
         }
     }
 }

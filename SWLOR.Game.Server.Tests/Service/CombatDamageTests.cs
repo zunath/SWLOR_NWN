@@ -94,6 +94,64 @@ public class CombatDamageTests
     }
 
     [Test]
+    public void CombatReadiness_AppliesToActivatedAbilityDamageBeforeTargetMitigation()
+    {
+        var root = FindRepositoryRoot();
+        var abilitySource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Ability.cs"))
+            .ReplaceLineEndings("\n");
+
+        abilitySource.Should().Contain("public static int ApplyCombatReadinessToActivatedAbilityMagnitude(uint activator, int amount)");
+        abilitySource.Should().Contain("if (amount <= 0 || GetTrackedAbilityImpact(activator) == null)");
+        abilitySource.Should().Contain("var combatReadiness = Stat.GetCombatReadinessPercent(activator);");
+        abilitySource.Should().Contain(
+            "calculatedDamage = Combat.ApplyDamageDealtModifiers(activator, target, calculatedDamage, skillType, damageType, true);\n" +
+            "            calculatedDamage = ApplyCombatReadinessToActivatedAbilityMagnitude(activator, calculatedDamage);\n" +
+            "            calculatedDamage = Resistance.ApplyResistanceToDamage(target, damageType, calculatedDamage);");
+    }
+
+    [Test]
+    public void CombatReadiness_AppliesToDirectActivatedHealingButNotStatusTicks()
+    {
+        var root = FindRepositoryRoot();
+        var healingSources = new[]
+        {
+            Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "AbilityDefinition", "AbilityEffectScaling.cs"),
+            Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "AbilityDefinition", "FirstAid", "FirstAidTreatmentAdjustments.cs"),
+            Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "AbilityDefinition", "FirstAid", "MedKitAbilityDefinition.cs"),
+            Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "AbilityDefinition", "Force", "ForceDrainAbilityDefinition.cs"),
+            Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "AbilityDefinition", "HeavyVibroblade", "HeavyVibrobladeActiveAbilityDefinitionBase.cs"),
+            Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "AbilityDefinition", "Beastmaster", "InnervateAbilityDefinition.cs"),
+            Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "AbilityDefinition", "Beastmaster", "RewardAbilityDefinition.cs"),
+        };
+
+        foreach (var sourcePath in healingSources)
+        {
+            File.ReadAllText(sourcePath).Should().Contain("Ability.ApplyCombatReadinessToActivatedAbilityMagnitude");
+        }
+
+        var directScaledHealingSources = new[]
+        {
+            Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "AbilityDefinition", "FirstAid", "EmergencyTriageAbilityDefinition.cs"),
+            Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "AbilityDefinition", "FirstAid", "ResuscitationAbilityDefinition.cs"),
+            Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "AbilityDefinition", "Force", "BenevolenceAbilityDefinition.cs"),
+            Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "AbilityDefinition", "Force", "CircleOfHarmonyAbilityDefinition.cs"),
+            Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "AbilityDefinition", "Force", "ForceMendAbilityDefinition.cs"),
+            Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "AbilityDefinition", "Force", "PurifyingWaveAbilityDefinition.cs"),
+        };
+
+        foreach (var sourcePath in directScaledHealingSources)
+        {
+            File.ReadAllText(sourcePath).Should().Contain("Activated");
+        }
+
+        var statusEffectDirectory = Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "StatusEffectDefinition");
+        foreach (var sourcePath in Directory.EnumerateFiles(statusEffectDirectory, "*.cs"))
+        {
+            File.ReadAllText(sourcePath).Should().NotContain("ApplyCombatReadinessToActivatedAbilityMagnitude");
+        }
+    }
+
+    [Test]
     public void GuardedHitModifiers_OnlyRunForPhysicalDamageFromDamageRoll()
     {
         var root = FindRepositoryRoot();

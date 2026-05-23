@@ -10,6 +10,7 @@ namespace SWLOR.Game.Server.Service.StatService
         public int Attack { get; set; }
         public int ForceAttack { get; set; }
         public int Evasion { get; set; }
+        public int CombatReadiness { get; set; }
         public int FP { get; set; }
         public int Stamina { get; set; }
         public Dictionary<CombatDamageType, int> Defenses { get; set; }

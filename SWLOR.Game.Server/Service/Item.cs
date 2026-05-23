@@ -365,7 +365,7 @@ namespace SWLOR.Game.Server.Service
 
                     if (itemDetail.RecastGroup != null && itemDetail.RecastCooldown != null)
                     {
-                        Recast.ApplyRecastDelay(user, (RecastGroup)itemDetail.RecastGroup, (float)itemDetail.RecastCooldown, true);
+                        Recast.ApplyRecastDelay(user, (RecastGroup)itemDetail.RecastGroup, (float)itemDetail.RecastCooldown);
                     }
 
                     // Reduce item charge if specified.

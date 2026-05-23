@@ -174,6 +174,18 @@ namespace SWLOR.Game.Server.Service
                 amount);
         }
 
+        public static int ApplyCombatReadinessToActivatedAbilityMagnitude(uint activator, int amount)
+        {
+            if (amount <= 0 || GetTrackedAbilityImpact(activator) == null)
+                return amount;
+
+            var combatReadiness = Stat.GetCombatReadinessPercent(activator);
+            if (combatReadiness <= 0)
+                return amount;
+
+            return amount + (int)Math.Ceiling(amount * (combatReadiness / 100f));
+        }
+
         public static int ApplyActiveForceAffinityDurationAdjustment(uint activator, int durationTicks, bool isPermanent)
         {
             if (isPermanent || durationTicks <= 0)
@@ -1838,6 +1850,7 @@ namespace SWLOR.Game.Server.Service
                 calculatedDamage = Perk.ApplyForceAffinityMagnitude(activator, perkType, calculatedDamage);
             }
             calculatedDamage = Combat.ApplyDamageDealtModifiers(activator, target, calculatedDamage, skillType, damageType, true);
+            calculatedDamage = ApplyCombatReadinessToActivatedAbilityMagnitude(activator, calculatedDamage);
             calculatedDamage = Resistance.ApplyResistanceToDamage(target, damageType, calculatedDamage);
             calculatedDamage = Combat.ApplyDamageTakenModifiers(target, calculatedDamage, activator, damageType);
             Combat.ApplyDamageReflectionEffects(activator, target, calculatedDamage, damageType);
@@ -2013,6 +2026,7 @@ namespace SWLOR.Game.Server.Service
                 calculatedDamage = Perk.ApplyForceAffinityMagnitude(activator, perkType, calculatedDamage);
             }
             calculatedDamage = Combat.ApplyDamageDealtModifiers(activator, target, calculatedDamage, skillType, damageType, true);
+            calculatedDamage = ApplyCombatReadinessToActivatedAbilityMagnitude(activator, calculatedDamage);
             calculatedDamage = Resistance.ApplyResistanceToDamage(target, damageType, calculatedDamage);
             calculatedDamage = Combat.ApplyDamageTakenModifiers(target, calculatedDamage, activator, damageType);
             Combat.ApplyDamageReflectionEffects(activator, target, calculatedDamage, damageType);

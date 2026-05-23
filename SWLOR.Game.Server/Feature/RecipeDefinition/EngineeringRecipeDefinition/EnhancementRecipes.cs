@@ -274,7 +274,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("elec_ruined", 2)
 				;
 
-			// Armor Enhancement - Recast Reduction I
+			// Armor Enhancement - Combat Readiness I
 			_builder.Create(RecipeType.ArmorEnhancementRecastReduction1, SkillType.Engineering)
 				.Category(RecipeCategoryType.ArmorEnhancement)
 				.Resref("aen_recast1")
@@ -895,7 +895,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("elec_flawed", 2)
 				;
 
-			// Armor Enhancement - Recast Reduction II
+			// Armor Enhancement - Combat Readiness II
 			_builder.Create(RecipeType.ArmorEnhancementRecastReduction2, SkillType.Engineering)
 				.Category(RecipeCategoryType.ArmorEnhancement)
 				.Resref("aen_recast2")
@@ -1538,7 +1538,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("elec_good", 2)
 				;
 
-			// Armor Enhancement - Recast Reduction III
+			// Armor Enhancement - Combat Readiness III
 			_builder.Create(RecipeType.ArmorEnhancementRecastReduction3, SkillType.Engineering)
 				.Category(RecipeCategoryType.ArmorEnhancement)
 				.Resref("aen_recast3")
@@ -2159,7 +2159,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("elec_imperfect", 2)
 				;
 
-			// Armor Enhancement - Recast Reduction IV
+			// Armor Enhancement - Combat Readiness IV
 			_builder.Create(RecipeType.ArmorEnhancementRecastReduction4, SkillType.Engineering)
 				.Category(RecipeCategoryType.ArmorEnhancement)
 				.Resref("aen_recast4")
@@ -2802,7 +2802,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("elec_high", 2)
 				;
 
-			// Armor Enhancement - Recast Reduction V
+			// Armor Enhancement - Combat Readiness V
 			_builder.Create(RecipeType.ArmorEnhancementRecastReduction5, SkillType.Engineering)
 				.Category(RecipeCategoryType.ArmorEnhancement)
 				.Resref("aen_recast5")

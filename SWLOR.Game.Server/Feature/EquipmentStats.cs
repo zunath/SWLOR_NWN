@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Feature
             _statChangeActions[ItemPropertyType.FPRegen] = ApplyFPRegenBonus;
             _statChangeActions[ItemPropertyType.Stamina] = ApplySTMBonus;
             _statChangeActions[ItemPropertyType.STMRegen] = ApplySTMRegenBonus;
-            _statChangeActions[ItemPropertyType.AbilityRecastReduction] = ApplyAbilityRecastReduction;
+            _statChangeActions[ItemPropertyType.CombatReadiness] = ApplyCombatReadiness;
             _statChangeActions[ItemPropertyType.Attack] = ApplyAttack;
             _statChangeActions[ItemPropertyType.ForceAttack] = ApplyForceAttack;
             _statChangeActions[ItemPropertyType.Defense] = ApplyDefense;
@@ -338,13 +338,13 @@ namespace SWLOR.Game.Server.Feature
         }
 
         /// <summary>
-        /// Applies or removes an ability recast reduction bonus on a creature.
+        /// Applies or removes a combat readiness bonus on a creature.
         /// </summary>
         /// <param name="creature">The creature to adjust</param>
         /// <param name="item">The item being equipped or unequipped</param>
         /// <param name="ip">The item property associated with this change</param>
-        /// <param name="isAdding">If true, we're adding the reduction, if false we're removing it.</param>
-        private static void ApplyAbilityRecastReduction(uint creature, uint item, ItemProperty ip, bool isAdding)
+        /// <param name="isAdding">If true, we're adding the bonus, if false we're removing it.</param>
+        private static void ApplyCombatReadiness(uint creature, uint item, ItemProperty ip, bool isAdding)
         {
             if (GetIsDM(creature) || GetIsDMPossessed(creature))
                 return;
@@ -358,18 +358,18 @@ namespace SWLOR.Game.Server.Feature
 
                 if (isAdding)
                 {
-                    Stat.AdjustPlayerRecastReduction(dbPlayer, amount);
+                    Stat.AdjustCombatReadiness(dbPlayer, amount);
                 }
                 else
                 {
-                    Stat.AdjustPlayerRecastReduction(dbPlayer, -amount);
+                    Stat.AdjustCombatReadiness(dbPlayer, -amount);
                 }
 
                 DB.Set(dbPlayer);
             }
             else
             {
-                ReapplyNPCStat(creature, ItemPropertyType.AbilityRecastReduction, amount, isAdding);
+                ReapplyNPCStat(creature, ItemPropertyType.CombatReadiness, amount, isAdding);
             }
         }
 

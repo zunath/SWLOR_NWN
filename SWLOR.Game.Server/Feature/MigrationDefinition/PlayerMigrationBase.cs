@@ -66,6 +66,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
                 // Attack
                 dbPlayer.Attack = 0;
                 dbPlayer.ForceAttack = 0;
+                dbPlayer.CombatReadiness = 0;
 
                 // Defenses
                 foreach (var defense in Combat.GetDefenseDamageTypes())

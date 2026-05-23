@@ -384,6 +384,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 dbPlayer.UnallocatedAP = dbPlayer.TotalAPAcquired;
                 dbPlayer.RacialStat = AbilityType.Invalid;
+                dbPlayer.CombatReadiness = 0;
                 dbPlayer.RebuildComplete = false;
                 DB.Set(dbPlayer);
             }

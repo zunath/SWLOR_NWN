@@ -44,8 +44,8 @@ namespace SWLOR.Game.Server.Service.CraftService
         Perception = 25,
         [EnhancementSubType("Accuracy")]
         Accuracy = 26,
-        [EnhancementSubType("Recast Reduction")]
-        RecastReduction = 27,
+        [EnhancementSubType("Combat Readiness")]
+        CombatReadiness = 27,
         [EnhancementSubType("Structure Bonus")]
         StructureBonus = 28,
         [EnhancementSubType("Food Bonus - HP Regen")]
@@ -58,8 +58,8 @@ namespace SWLOR.Game.Server.Service.CraftService
         FoodBonusRestRegen = 32,
         [EnhancementSubType("Food Bonus - XP Bonus")]
         FoodBonusXPBonus = 33,
-        [EnhancementSubType("Food Bonus - Recast Reduction")]
-        FoodBonusRecastReduction = 34,
+        [EnhancementSubType("Food Bonus - Combat Readiness")]
+        FoodBonusCombatReadiness = 34,
         [EnhancementSubType("Food Bonus - Duration")]
         FoodBonusDuration = 35,
         [EnhancementSubType("Food Bonus - HP")]

@@ -213,12 +213,6 @@ namespace SWLOR.Game.Server.Service.StatService
         RestRegen = 34,
 
         /// <summary>
-        /// Percent reduction to ability recast delay. Recast service caps the effective reduction.
-        /// </summary>
-        [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        AbilityRecastReductionPercent = 35,
-
-        /// <summary>
         /// Percent adjustment applied to creature movement speed.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
@@ -2610,7 +2604,13 @@ namespace SWLOR.Game.Server.Service.StatService
         /// Percent damage adjustment applied to single-target physical abilities.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        SingleTargetPhysicalAbilityDamagePercentAdjustment = 436
+        SingleTargetPhysicalAbilityDamagePercentAdjustment = 436,
+
+        /// <summary>
+        /// Percent adjustment applied to activated ability damage and healing. Does not affect recast delays.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        CombatReadinessPercent = 437
     }
 
     public class StatTypeAttribute : Attribute

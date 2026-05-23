@@ -117,8 +117,8 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                             case FoodItemPropertySubType.XPBonus:
                                 foodEffect.XPBonusPercent += amount;
                                 break;
-                            case FoodItemPropertySubType.RecastReduction:
-                                foodEffect.RecastReductionPercent += amount;
+                            case FoodItemPropertySubType.CombatReadiness:
+                                foodEffect.CombatReadinessPercent += amount;
                                 break;
                             case FoodItemPropertySubType.Duration:
                                 duration += amount * (60f * 5); // 5 minutes per duration bonus

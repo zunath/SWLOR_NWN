@@ -5,7 +5,6 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.StatService;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -13,7 +12,6 @@ namespace SWLOR.Game.Server.Service
     {
         // Recast Group Descriptions
         private static readonly Dictionary<RecastGroup, string> _recastDescriptions = new Dictionary<RecastGroup, string>();
-        public const int MaximumReductionPercent = 50;
 
         [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public static void CacheRecastGroups()
@@ -100,8 +98,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="activator">The activator of the ability.</param>
         /// <param name="group">The recast group to put this delay under.</param>
         /// <param name="delaySeconds">The number of seconds to delay.</param>
-        /// <param name="ignoreRecastReduction">If true, recast reduction bonuses are ignored.</param>
-        public static void ApplyRecastDelay(uint activator, RecastGroup group, float delaySeconds, bool ignoreRecastReduction)
+        public static void ApplyRecastDelay(uint activator, RecastGroup group, float delaySeconds)
         {
             if (!GetIsObjectValid(activator) || group == RecastGroup.Invalid || delaySeconds <= 0.0f) return;
 
@@ -121,15 +118,6 @@ namespace SWLOR.Game.Server.Service
                 var dbPlayer = DB.Get<Player>(playerId);
                 dbPlayer.RecastTimes ??= new Dictionary<RecastGroup, DateTime>();
 
-                if (!ignoreRecastReduction)
-                {
-                    var recastPercentage = GetRecastReductionPercent(activator, dbPlayer) * 0.01f;
-
-                    delaySeconds -= delaySeconds * recastPercentage;
-                }
-
-
-
                 var recastDate = now.AddSeconds(delaySeconds);
                 dbPlayer.RecastTimes[group] = recastDate;
 
@@ -137,25 +125,6 @@ namespace SWLOR.Game.Server.Service
                 AbilityCooldownVisual.ApplyRecastDelay(activator, group, now, recastDate);
             }
 
-        }
-
-        public static int GetRecastReductionPercent(uint activator)
-        {
-            if (!GetIsPC(activator) || GetIsDM(activator) || GetIsDMPossessed(activator))
-                return 0;
-
-            var playerId = GetObjectUUID(activator);
-            var dbPlayer = DB.Get<Player>(playerId);
-
-            return GetRecastReductionPercent(activator, dbPlayer);
-        }
-
-        private static int GetRecastReductionPercent(uint activator, Player dbPlayer)
-        {
-            var recastReduction = dbPlayer.AbilityRecastReduction +
-                                  Stat.GetStatAdjustment(activator, StatType.AbilityRecastReductionPercent);
-
-            return Math.Clamp(recastReduction, 0, MaximumReductionPercent);
         }
 
         public static void ReduceRecastDelay(uint activator, RecastGroup group, float reduceSeconds)

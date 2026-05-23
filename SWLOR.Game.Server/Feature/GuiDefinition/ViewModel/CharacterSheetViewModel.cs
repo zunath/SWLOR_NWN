@@ -859,7 +859,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             AddStat("HP Regen", GetHPRegenValue().ToString(), "Amount of HP restored automatically by natural regeneration.");
             AddStat("FP Regen", GetFPRegenValue().ToString(), "Amount of FP restored automatically by natural regeneration.");
             AddStat("STM Regen", GetStaminaRegenValue().ToString(), "Amount of STM restored automatically by natural regeneration.");
-            AddStat("Recast Reduction", FormatPercent(Recast.GetRecastReductionPercent(_target)), "Reduces the time in between ability usage.");
+            AddStat("Combat Readiness", FormatPercent(Stat.GetCombatReadinessPercent(_target)), "Increases activated ability damage and healing. Does not reduce cooldowns.");
             AddStat("Shield Deflection", FormatPercent(Stat.GetShieldDeflectionChance(_target)), "Ability to deflect attacks with a shield.");
             AddStat("Attack Deflection", FormatPercent(Stat.GetAttackDeflectionChance(_target)), "Chance to deflect attacks while wielding a weapon without a shield.");
             AddStat("Guard", FormatPercent(Stat.GetGuardChance(_target)), "Chance to reduce damage by 20% and increase enmity gain.");

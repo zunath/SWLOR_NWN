@@ -6,7 +6,7 @@ namespace SWLOR.Game.Server.Tests.Perks;
 public class CapstoneAbilityTests
 {
     [Test]
-    public void PlayerCapstones_ShareCooldownAndBypassRecastReduction()
+    public void PlayerCapstones_ShareCooldownAndCannotBeReducedByRecastTriggers()
     {
         var root = FindRepositoryRoot();
         var abilityRoot = Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "AbilityDefinition");
@@ -31,14 +31,16 @@ public class CapstoneAbilityTests
         beastmasterCapstones.Should().BeEmpty();
 
         var usePerkFeat = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "UsePerkFeat.cs"));
-        usePerkFeat.Should().Contain("ShouldIgnoreRecastReduction(ability)");
-        usePerkFeat.Should().Contain("ability?.RecastGroup == RecastGroup.Capstone");
+        usePerkFeat.Should().NotContain("ShouldIgnoreRecastReduction");
+        usePerkFeat.Should().Contain("Recast.ApplyRecastDelay(activator, ability.RecastGroup, abilityRecastDelay);");
 
         var recast = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Recast.cs"));
         recast.Should().Contain("if (group == RecastGroup.Capstone)");
+        recast.Should().NotContain("GetRecastReductionPercent");
+        recast.Should().NotContain("AbilityRecastReductionPercent");
 
         var cooldownVisual = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "AbilityCooldownVisual.cs"));
-        cooldownVisual.Should().Contain("group != RecastGroup.Capstone");
+        cooldownVisual.Should().NotContain("GetRecastReductionPercent");
     }
 
     private static DirectoryInfo FindRepositoryRoot()

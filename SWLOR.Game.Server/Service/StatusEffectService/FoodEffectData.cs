@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
         public int STMRegen { get; set; }
         public int RestRegen { get; set; }
         public int XPBonusPercent { get; set; }
-        public int RecastReductionPercent { get; set; }
+        public int CombatReadinessPercent { get; set; }
         public int Attack { get; set; }
         public int Accuracy { get; set; }
         public int DefensePhysical { get; set; }

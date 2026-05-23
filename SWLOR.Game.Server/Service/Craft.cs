@@ -620,8 +620,8 @@ namespace SWLOR.Game.Server.Service
                     return ItemPropertyAbilityBonus(AbilityType.Perception, amount);
                 case EnhancementSubType.Accuracy: // Accuracy
                     return ItemPropertyAttackBonus(amount);
-                case EnhancementSubType.RecastReduction: // Recast Reduction
-                    return ItemPropertyCustom(ItemPropertyType.AbilityRecastReduction, -1, amount);
+                case EnhancementSubType.CombatReadiness: // Combat Readiness
+                    return ItemPropertyCustom(ItemPropertyType.CombatReadiness, -1, amount);
                 case EnhancementSubType.StructureBonus: // Structure Bonus
                     return ItemPropertyCustom(ItemPropertyType.StructureBonus, -1, amount);
                 case EnhancementSubType.FoodBonusHPRegen: // Food Bonus - HP Regen
@@ -634,8 +634,8 @@ namespace SWLOR.Game.Server.Service
                     return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.RestRegen, amount);
                 case EnhancementSubType.FoodBonusXPBonus: // Food Bonus - XP Bonus
                     return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.XPBonus, amount);
-                case EnhancementSubType.FoodBonusRecastReduction: // Food Bonus - Recast Reduction
-                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.RecastReduction, amount);
+                case EnhancementSubType.FoodBonusCombatReadiness: // Food Bonus - Combat Readiness
+                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.CombatReadiness, amount);
                 case EnhancementSubType.FoodBonusDuration: // Food Bonus - Duration
                     return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.Duration, amount);
                 case EnhancementSubType.FoodBonusHP: // Food Bonus - HP

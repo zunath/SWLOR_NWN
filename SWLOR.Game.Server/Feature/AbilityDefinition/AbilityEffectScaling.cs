@@ -75,6 +75,20 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_M), target);
         }
 
+        public static void ApplyActivatedScaledHeal(
+            uint source,
+            uint target,
+            float percent,
+            AbilityType scalingAbility = AbilityType.Willpower,
+            float multiplier = 1f)
+        {
+            var amount = CalculateScaledPercentOfMaxHP(source, target, percent, scalingAbility, multiplier);
+            amount = Ability.ApplyCombatReadinessToActivatedAbilityMagnitude(source, amount);
+            amount = Stat.ApplyHealingReceivedAdjustment(target, amount);
+            ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), target);
+            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_M), target);
+        }
+
         public static int CalculateScaledPercentOfMaxHP(
             uint source,
             uint target,

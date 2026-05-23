@@ -23,6 +23,22 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_M), target);
         }
 
+        public static void ApplyActivatedMedicalScaledHeal(
+            uint source,
+            uint target,
+            float percent,
+            AbilityType scalingAbility = AbilityType.Willpower,
+            float multiplier = 1f)
+        {
+            var amount = AbilityEffectScaling.CalculateScaledPercentOfMaxHP(source, target, percent, scalingAbility, multiplier);
+            amount = ApplyMedicalHealingBonus(source, amount);
+            amount = Ability.ApplyCombatReadinessToActivatedAbilityMagnitude(source, amount);
+            amount = Stat.ApplyHealingReceivedAdjustment(target, amount);
+
+            ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), target);
+            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_M), target);
+        }
+
         public static int ApplyMedicalHealingBonus(uint source, int amount)
         {
             if (amount <= 0 || !GetIsObjectValid(source))

@@ -12,7 +12,7 @@ namespace SWLOR.NWN.API.NWScript.Enum.Item.Property
         STMRegen = 6,
         RestRegen = 7,
         XPBonus = 8,
-        RecastReduction = 9,
+        CombatReadiness = 9,
         Duration = 10,
         Might = 11,
         Vitality = 12,

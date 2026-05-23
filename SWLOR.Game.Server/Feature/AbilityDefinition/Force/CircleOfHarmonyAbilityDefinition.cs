@@ -48,7 +48,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             foreach (var friendly in AbilityTargeting.GetFriendlyTargets(activator, target, true))
             {
                 StatusEffect.RemoveFirstCleanseableStatusEffect(friendly, StatusEffectCleanseType.TreatmentKit2, false);
-                AbilityEffectScaling.ApplyScaledHeal(activator, friendly, 14);
+                AbilityEffectScaling.ApplyActivatedScaledHeal(activator, friendly, 14);
                 StatusEffect.ApplyStatusEffect(activator, friendly, typeof(CircleOfHarmony1StatusEffect), CapstoneAbility.ActiveDurationSeconds);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Remove_Condition), friendly);
             }

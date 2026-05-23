@@ -131,6 +131,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             ApplyDrainVisual(activator, target);
 
             var healAmount = Math.Max(1, (int)Math.Ceiling(damage * (healPercent / 100f)));
+            healAmount = Ability.ApplyCombatReadinessToActivatedAbilityMagnitude(activator, healAmount);
             healAmount = Stat.ApplyHealingReceivedAdjustment(activator, healAmount);
             ApplyEffectToObject(DurationType.Instant, EffectHeal(healAmount), activator);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Evil_Help), activator);

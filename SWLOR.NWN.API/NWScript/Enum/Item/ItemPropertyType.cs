@@ -116,7 +116,7 @@ namespace SWLOR.NWN.API.NWScript.Enum.Item
         CPBonus = 115,
         DroidEnhancement = 116,
         Evasion = 117,
-        AbilityRecastReduction = 118,
+        CombatReadiness = 118,
         FPRegen = 119,
         STMRegen = 120,
         DroidStat = 121,

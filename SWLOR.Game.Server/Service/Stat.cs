@@ -36,6 +36,7 @@ namespace SWLOR.Game.Server.Service
         private const int MaximumShieldDeflectionChance = 75;
         private const int InherentShieldDeflectionChance = 10;
         private const int MaximumGuardChance = 100;
+        public const int MaximumCombatReadinessPercent = 15;
         private const float MinimumMovementSpeedMultiplier = 0f;
         private const float MaximumMovementSpeedMultiplier = 1.5f;
         private const float DeflectionEvasionBoostDurationSeconds = 10f;
@@ -645,14 +646,35 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Modifies the ability recast reduction of a player by a certain amount.
+        /// Modifies the combat readiness of a player by a certain amount.
         /// This method will not persist the changes so be sure you call DB.Set after calling this.
         /// </summary>
         /// <param name="entity">The player entity</param>
         /// <param name="adjustBy">The amount to adjust by</param>
-        public static void AdjustPlayerRecastReduction(Player entity, int adjustBy)
+        public static void AdjustCombatReadiness(Player entity, int adjustBy)
         {
-            entity.AbilityRecastReduction += adjustBy;
+            entity.CombatReadiness += adjustBy;
+        }
+
+        public static int GetCombatReadinessPercent(uint creature)
+        {
+            if (!GetIsObjectValid(creature))
+                return 0;
+
+            var combatReadiness = GetStatAdjustment(creature, StatType.CombatReadinessPercent);
+
+            if (GetIsPC(creature) && !GetIsDM(creature) && !GetIsDMPossessed(creature))
+            {
+                var playerId = GetObjectUUID(creature);
+                var dbPlayer = DB.Get<Player>(playerId);
+                combatReadiness += dbPlayer?.CombatReadiness ?? 0;
+            }
+            else
+            {
+                combatReadiness += GetNPCStats(creature).CombatReadiness;
+            }
+
+            return Math.Clamp(combatReadiness, 0, MaximumCombatReadinessPercent);
         }
 
         /// <summary>
@@ -1814,6 +1836,10 @@ namespace SWLOR.Game.Server.Service
                 else if (type == ItemPropertyType.Evasion)
                 {
                     npcStats.Evasion = GetItemPropertyCostTableValue(ip);
+                }
+                else if (type == ItemPropertyType.CombatReadiness)
+                {
+                    npcStats.CombatReadiness = GetItemPropertyCostTableValue(ip);
                 }
                 else if (type == ItemPropertyType.Stamina)
                 {

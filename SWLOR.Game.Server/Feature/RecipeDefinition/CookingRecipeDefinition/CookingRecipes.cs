@@ -321,7 +321,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("kinrath_meat", 3)
                 .Component("herb_v", 2);
 
-            // Cooking Enhancement - Recast Reduction I
+            // Cooking Enhancement - Combat Readiness I
             _builder.Create(RecipeType.CookingEnhancementRecastReduction1, SkillType.Agriculture)
                 .Category(RecipeCategoryType.CookingEnhancement)
                 .Resref("cen_recast1")
@@ -687,7 +687,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("raivor_blood", 3)
                 .Component("herb_m", 2);
 
-            // Cooking Enhancement - Recast Reduction II
+            // Cooking Enhancement - Combat Readiness II
             _builder.Create(RecipeType.CookingEnhancementRecastReduction2, SkillType.Agriculture)
                 .Category(RecipeCategoryType.CookingEnhancement)
                 .Resref("cen_recast2")
@@ -1045,7 +1045,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("byysk_meat", 3)
                 .Component("herb_c", 2);
 
-            // Cooking Enhancement - Recast Reduction III
+            // Cooking Enhancement - Combat Readiness III
             _builder.Create(RecipeType.CookingEnhancementRecastReduction3, SkillType.Agriculture)
                 .Category(RecipeCategoryType.CookingEnhancement)
                 .Resref("cen_recast3")
@@ -1414,7 +1414,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("sanddemon_meat", 3)
                 .Component("herb_t", 2);
 
-            // Cooking Enhancement - Recast Reduction IV
+            // Cooking Enhancement - Combat Readiness IV
             _builder.Create(RecipeType.CookingEnhancementRecastReduction4, SkillType.Agriculture)
                 .Category(RecipeCategoryType.CookingEnhancement)
                 .Resref("cen_recast4")
@@ -1917,7 +1917,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("wild_innards", 3)
                 .Component("herb_x", 2);
 
-            // Cooking Enhancement - Recast Reduction V
+            // Cooking Enhancement - Combat Readiness V
             _builder.Create(RecipeType.CookingEnhancementRecastReduction5, SkillType.Agriculture)
                 .Category(RecipeCategoryType.CookingEnhancement)
                 .Resref("cen_recast5")

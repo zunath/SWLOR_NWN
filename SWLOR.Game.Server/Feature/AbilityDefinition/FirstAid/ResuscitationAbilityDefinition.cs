@@ -83,7 +83,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 return;
 
             ApplyEffectToObject(DurationType.Instant, EffectResurrection(), target);
-            AbilityEffectScaling.ApplyScaledHeal(activator, target, 20);
+            AbilityEffectScaling.ApplyActivatedScaledHeal(activator, target, 20);
             DelayCommand(0.1f, () => Ability.ReapplyAuraEffectsForCreature(target));
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Raise_Dead), target);
         }

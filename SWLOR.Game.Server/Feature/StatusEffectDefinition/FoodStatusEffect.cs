@@ -43,7 +43,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             StatGroup.Stats[StatType.FPRegen] = food.FPRegen;
             StatGroup.Stats[StatType.StaminaRegen] = food.STMRegen;
             StatGroup.Stats[StatType.RestRegen] = food.RestRegen;
-            StatGroup.Stats[StatType.AbilityRecastReductionPercent] = food.RecastReductionPercent;
+            StatGroup.Stats[StatType.CombatReadinessPercent] = food.CombatReadinessPercent;
             StatGroup.Abilities[AbilityType.Might] = food.Might;
             StatGroup.Abilities[AbilityType.Vitality] = food.Vitality;
             StatGroup.Abilities[AbilityType.Perception] = food.Perception;

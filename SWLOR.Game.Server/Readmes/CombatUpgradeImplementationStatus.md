@@ -34,6 +34,8 @@ Espionage and Farming are out of scope. The audit also excludes crafting, resear
 
 Combat-upgrade stat scaling is balanced around the practical player stat band: a focused character is expected to reach 26 in one ability stat, with rare 27 cases when a racial stat point is used. Food and other temporary item effects can push a stat a little higher for short windows, but baseline perk and ability values should not be tuned around those temporary overcap states. Scaling formulas should stay bounded above the normal band by using a documented cap or explicit soft-overcap rule.
 
+The combat-upgrade skill cap is 400. Armor remains an active skill for equipment requirements and normal SP progression, but Armor perks are no longer part of the combat-upgrade implementation scope. Older workbook or manifest rows for General/Heavy/Light Armor perks should be treated as stale until the local Bible snapshot is refreshed.
+
 The first implementation pass closed a few narrow, concrete gaps:
 
 - Added Bible status IDs for Sunder, Force Disruption, Blind, Toxin, Disoriented, Weakened, Dazed, Stunned, Exposed, Hemorrhage, Knockdown, Vital Strike, Hamstring, Exhausted, Taunting Deflection, Deflective Presence, Deflecting Aura, Guardian's Wrath, Hobble, Brutal Assault, Essence Drain, Soul Ascension, Flash, Rampart, Absolute Defense, Force Erosion, Fractured Focus, Force Warding, and Foggy Mind.
@@ -77,7 +79,7 @@ The first implementation pass closed a few narrow, concrete gaps:
 - Added migration coverage for obsolete Bible perks and obsolete combat instruction discs.
 - Clamped effective auto-attack delay to the engine's 1.75s practical floor after baseline subtraction and delay reductions. Weapon delay values were raised across the table so the fastest normal weapons sit above that floor and can benefit from haste, natural creature weapons use the same fastest-category delay, training weapons use slower Bible-listed values, module templates plus embedded area/store item instances use the updated values, all Bible `World NPCs` rows now resolve to equipped weapon/natural delay sources, and player/server migrations normalize existing weapon `Delay` item properties.
 
-The latest local-workbook audit currently reports no scoped findings. After refreshing from the checked-in workbook on 2026-05-23, `CombatUpgradeBiblePerkManifest.csv` contains 897 scoped rows and `CombatUpgradePerkAudit.csv` contains only its header row.
+The latest checked-in local-workbook audit currently reports no scoped findings. After refreshing from the checked-in workbook on 2026-05-23, `CombatUpgradeBiblePerkManifest.csv` contains 897 scoped rows and `CombatUpgradePerkAudit.csv` contains only its header row. If that workbook snapshot still contains stale Armor perk rows, refresh the Bible/workbook before treating the row count as final; Armor perk rows should not be counted as combat-upgrade work.
 
 The scoped combat-upgrade audit is clean against the 2026-05-22 local workbook snapshot. Espionage remains intentionally excluded by the current combat-upgrade implementation scope.
 
@@ -86,6 +88,8 @@ The combat-upgrade feat and spell icon resource checks pass for the scoped rows 
 ## Major Remaining Gaps
 
 The static Bible-to-code audit is clean, so the remaining work is release validation rather than missing row implementation.
+
+Armor-specific perk implementation is not remaining work. The remaining Armor work is equipment requirement validation, skill-cap/SP validation at the 400 cap, and cleanup verification that stale Armor perk entries are absent from player-facing data.
 
 The telegraph service now has a combat ability integration point, and a broader set of line/cone/sphere abilities use it. Some bespoke channel, persistent field, chained, and conditional cases still need playtest review beyond static audit coverage.
 
@@ -101,6 +105,7 @@ The `experimental/combat-upgrade-status-effects` branch was checked as a referen
 
 1. Playtest conditional/channel/persistent-field abilities such as Current Overload, Serpent's Eclipse, Tempest Bloom, Pacification Field, Gas Bomb, Disruption Field, Shield Wall, Force Capacitor, and Infinite Conduit against the live module.
 2. Smoke-test forced rebuild, equipment skill requirements, weapon Delay/DMG, resistance enhancement behavior, and serialized item migrations against representative live data.
-3. Refine generated spell target metadata after any ability-specific target shape/range adjustments are confirmed in play.
-4. Decide when Espionage should enter scope; it remains Design-stage and intentionally excluded from the current audit.
-5. Keep `tools\UpdateCombatUpgradeAudit.ps1`, the build/tests, and this status file aligned when the Bible changes.
+3. Verify Armor uses the 400 skill cap/SP path and that stale Armor perk rows, feats, instruction discs, and UI entries are not exposed.
+4. Refine generated spell target metadata after any ability-specific target shape/range adjustments are confirmed in play.
+5. Decide when Espionage should enter scope; it remains Design-stage and intentionally excluded from the current audit.
+6. Keep `tools\UpdateCombatUpgradeAudit.ps1`, the build/tests, and this status file aligned when the Bible changes.

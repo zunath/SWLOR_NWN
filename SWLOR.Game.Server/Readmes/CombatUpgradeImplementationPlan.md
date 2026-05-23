@@ -12,6 +12,8 @@ Use this sheet as the combat upgrade Bible. Experimental branches are implementa
 
 The checked-in local workbook snapshot is `design\bible\SWLOR Design Bible - Combat Upgrade.xlsx`. Regenerate the local manifest and audit from that workbook with `tools\UpdateCombatUpgradeAudit.ps1 -RefreshLocalBible`.
 
+The skill-cap decision is settled: the combat-upgrade cap is 400. Armor remains an active skill for equipment requirements and contributes to the cap/SP flow like other active skills; it is not a perk tree.
+
 Do not carry over the Heavy Armor activation-time penalty. That mechanic was removed from the plan and should be ignored even if it appears in experimental branches or partial local carryover.
 
 Do not carry over the refactor-project branch as part of this plan.
@@ -88,6 +90,7 @@ If future audits compare every visible Bible tab against code, filter these area
 - Experimental branches may be used to copy working implementation mechanics, such as telegraphs, status-effect service patterns, attack-delay hooks, and data-entry examples, but only after confirming the Bible still calls for that behavior.
 - Heavy Armor activation-time penalty support must be excluded or removed before release.
 - Migration must force every player through the rebuild flow without requiring a rebuild token.
+- The skill cap is 400. Do not reintroduce a 350-cap/Armor-exception split or make Armor exempt from normal active-skill SP behavior.
 - Combat-upgrade ability and perk scaling must be balanced around the practical player stat band. A focused character is expected to reach 26 in one ability stat, with rare 27 cases when the build uses a racial stat point. Food and other temporary item effects can push a stat a little higher for short windows, so scaling formulas must remain bounded above that normal band: either clamp at the documented cap or use an explicit soft-overcap rule. Do not tune baseline perk/ability values around temporary food-buffed stats.
 
 ## Bible-Level Scope
@@ -156,19 +159,20 @@ Acceptance criteria:
 
 ### Armor
 
-Implement `Armor` exactly as written, including General, Heavy, and Light perk rows.
+Armor is a core equipment skill, not a combat-upgrade perk tree. Do not implement General, Heavy, or Light Armor perk rows from older Bible/workbook snapshots; those rows are obsolete and should not be counted as remaining combat-upgrade work.
 
-Do not implement or retain the old Heavy Armor activation-time penalty. Bible armor mechanics include heavy/light armor traits and equipment prerequisites, not a blanket activation-time penalty.
+Do not implement or retain the old Heavy Armor activation-time penalty. Armor mechanics include equipment prerequisites and item/trait behavior, not a blanket activation-time penalty and not Armor-specific perk unlocks.
 
-Open decision: Armor is effectively a required skill under the combat upgrade, so choose one of these paths before finalizing skill-cap and SP behavior:
+The cap/SP decision is final:
 
-- Armor skill levels do not count toward the 350 skill cap, and Armor does not grant SP.
-- Players receive an extra 50 skill points to account for Armor effectively being required.
+- The new skill cap is 400.
+- Armor contributes to the skill cap.
+- Armor grants SP through the normal active-skill rank-up path.
 
 Acceptance criteria:
 
 - Armor equip requirements use skill prerequisites from the Bible.
-- Armor perk definitions match Bible rows.
+- No Armor perk definitions, Armor-granted active feats, Armor instruction discs, or Armor perk-tree UI entries remain in the final combat-upgrade surface.
 - Any existing heavy-armor activation-time penalty hooks are removed before the feature branch is considered complete.
 
 ### Force, Devices, Leadership, First Aid
@@ -286,10 +290,10 @@ Migration must:
 
 Implement Bible perk trees in this order:
 
-1. Armor and weapon tabs, because they drive combat identity and equipment requirements.
+1. Weapon tabs, because they drive combat identity.
 2. Force, Devices, Leadership, and First Aid.
 3. Beast Mastery with supporting beast calculation tabs.
-4. Crafting/gathering/equipment/recipe support tabs.
+4. Crafting/gathering/equipment/recipe support tabs, including Armor equipment requirements.
 5. Starships, XP, merits, and world NPC adjustments.
 
 Each perk should be implemented row-by-row with an acceptance note linking it back to the Bible tab and row.
@@ -340,7 +344,7 @@ Status: removed from the feature branch implementation on 2026-05-05.
 
 - `CombatUpgradePerkAudit.csv` compares Bible perk rows against current perk definitions by normalized perk name.
 - `CombatUpgradeBiblePerkManifest.csv` is the exported perk-row manifest from all audited Bible tabs with perk tables.
-- Current local-workbook audit summary:
+- Current local-workbook audit summary from the checked-in 2026-05-23 workbook snapshot. If that snapshot still includes stale Armor perk rows, refresh the Bible/workbook before treating these totals as final:
   - Scoped Bible rows: 897
   - Scoped audit findings: 0
   - Missing Bible perk names in code: 0
@@ -349,6 +353,8 @@ Status: removed from the feature branch implementation on 2026-05-05.
   - Bible-described status applications absent from matching ability implementation: 0
 
 The audit is intentionally a work queue, not final truth. A clean audit means the static checks found no scoped gaps; it does not replace playtesting, value spot-checking, migration dry-runs, or target metadata review.
+
+If an older local workbook or generated manifest still includes Armor perk rows, treat those rows as stale design data. Armor remains a skill/equipment requirement, but Armor perks are no longer in combat-upgrade scope.
 
 Audit totals should exclude Espionage and Farming-only rows. If an all-tab export includes those rows, keep them in the raw manifest for traceability but omit them from combat-upgrade missing-work counts.
 

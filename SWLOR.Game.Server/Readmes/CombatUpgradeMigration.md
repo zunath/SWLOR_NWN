@@ -17,6 +17,7 @@ This note tracks player migration work for `feature/combat-upgrade`. Keep it cur
 - Player migration: `SWLOR.Game.Server/Feature/MigrationDefinition/PlayerMigration/_15_RemoveObsoleteCombatInstructionDiscs.cs`
 - Server execution type: `PostDatabaseLoad`
 - Current behavior:
+  - Uses the combat-upgrade skill-cap model: 400 total skill ranks, with Armor contributing normally to the cap and SP progression.
   - Refunds removed or materially changed combat perks through `RefundPerksByMapping`.
   - Removes refunded legacy perk keys before the forced rebuild refund path can process them again.
   - Preserves legacy numeric `FlurryStyle` saves as the current `FlurryStyle` perk so that investment is not silently dropped.
@@ -32,8 +33,10 @@ This note tracks player migration work for `feature/combat-upgrade`. Keep it cur
 
 - Force all players to perform a full rebuild for the combat upgrade.
 - Do not grant or require rebuild tokens for this forced rebuild path.
+- Use a 400 skill cap. Armor is not exempt from the cap and grants SP through the normal active-skill path.
 - Refund SP for removed attack-count/mastery perks so players are not stranded with deleted perk investments.
 - Remove deleted perks from persisted `Player.Perks` data.
+- Armor perks are gone from the combat-upgrade scope. Any stale Armor perk data should be removed/refunded through the same obsolete-perk cleanup path when it is present in persisted data.
 - Do not add new one-off migrations solely for removed perks, blueprints, skills, or similar character-build data that is already covered by the planned full rebuild.
 - Keep existing player migration versions intact. If more player-specific data cleanup is needed, add the next numbered player migration instead of editing old shipped migrations.
 
@@ -78,7 +81,8 @@ Important nuance: setting the flag to `false` does not itself reset the characte
 - Character sheet redesign remains outstanding: the first pass keeps the existing defense/resistance display shape for compatibility, but a later UI pass should rename the bound model properties and present baseline Defense separately from typed Resistances.
 - Confirm `_22_CombatSystemReplacement` still runs immediately after master migration `_21_SetDefaultOutfitAndMarketLimits`. If another migration is added first, renumber the combat upgrade migration series.
 - Confirm perk refund totals against the final perk prices in `PerkDefinition` files.
-- Confirm removed perks no longer appear in perk builders, droid default perk maps, instruction discs, or any player migration re-application logic.
+- Confirm removed perks, including stale Armor perks, no longer appear in perk builders, droid default perk maps, instruction discs, or any player migration re-application logic.
+- Confirm Armor skill rank-ups count toward the 400 skill cap and grant SP normally.
 - Confirm stale BAB/attacks-per-round logic remains removed:
   - `Stat.ApplyAttacksPerRound`
   - calls from player initialization/login temporary effects

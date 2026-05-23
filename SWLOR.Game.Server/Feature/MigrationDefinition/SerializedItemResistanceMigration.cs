@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using SWLOR.Game.Server.Core.Bioware;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.DroidService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
@@ -68,6 +69,52 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             { (int)SaveVs.MINDAFFECTING, ResistanceType.Mind },
             { (int)SaveVs.POISON, ResistanceType.Poison },
         };
+
+        private static readonly Dictionary<int, int> ArmorAndFoodResistanceAmountByRank = new()
+        {
+            [1] = 3,
+            [2] = 6,
+            [3] = 9,
+            [4] = 12,
+            [5] = 15,
+        };
+
+        private static readonly Dictionary<int, int> DroidResistanceAmountByRank = new()
+        {
+            [1] = 8,
+            [2] = 15,
+        };
+
+        private static readonly Dictionary<string, (ItemPropertyType Type, int SubType, IReadOnlyDictionary<int, int> Amounts)>
+            ResistanceEnhancementByResrefPrefix = new()
+            {
+                ["aen_def_fir"] = (ItemPropertyType.ArmorEnhancement, (int)EnhancementSubType.ResistanceFire, ArmorAndFoodResistanceAmountByRank),
+                ["aen_def_psn"] = (ItemPropertyType.ArmorEnhancement, (int)EnhancementSubType.ResistancePoison, ArmorAndFoodResistanceAmountByRank),
+                ["aen_def_elec"] = (ItemPropertyType.ArmorEnhancement, (int)EnhancementSubType.ResistanceElectrical, ArmorAndFoodResistanceAmountByRank),
+                ["aen_def_ice"] = (ItemPropertyType.ArmorEnhancement, (int)EnhancementSubType.ResistanceIce, ArmorAndFoodResistanceAmountByRank),
+                ["aen_res_mnd"] = (ItemPropertyType.ArmorEnhancement, (int)EnhancementSubType.ResistanceMind, ArmorAndFoodResistanceAmountByRank),
+                ["aen_res_mob"] = (ItemPropertyType.ArmorEnhancement, (int)EnhancementSubType.ResistanceMobility, ArmorAndFoodResistanceAmountByRank),
+                ["aen_res_tra"] = (ItemPropertyType.ArmorEnhancement, (int)EnhancementSubType.ResistanceTrauma, ArmorAndFoodResistanceAmountByRank),
+                ["aen_res_dis"] = (ItemPropertyType.ArmorEnhancement, (int)EnhancementSubType.ResistanceDisruption, ArmorAndFoodResistanceAmountByRank),
+
+                ["cen_res_fir"] = (ItemPropertyType.FoodEnhancement, (int)EnhancementSubType.FoodBonusFireResistance, ArmorAndFoodResistanceAmountByRank),
+                ["cen_res_psn"] = (ItemPropertyType.FoodEnhancement, (int)EnhancementSubType.FoodBonusPoisonResistance, ArmorAndFoodResistanceAmountByRank),
+                ["cen_res_elec"] = (ItemPropertyType.FoodEnhancement, (int)EnhancementSubType.FoodBonusElectricalResistance, ArmorAndFoodResistanceAmountByRank),
+                ["cen_res_ice"] = (ItemPropertyType.FoodEnhancement, (int)EnhancementSubType.FoodBonusIceResistance, ArmorAndFoodResistanceAmountByRank),
+                ["cen_res_mnd"] = (ItemPropertyType.FoodEnhancement, (int)EnhancementSubType.FoodBonusMindResistance, ArmorAndFoodResistanceAmountByRank),
+                ["cen_res_mob"] = (ItemPropertyType.FoodEnhancement, (int)EnhancementSubType.FoodBonusMobilityResistance, ArmorAndFoodResistanceAmountByRank),
+                ["cen_res_tra"] = (ItemPropertyType.FoodEnhancement, (int)EnhancementSubType.FoodBonusTraumaResistance, ArmorAndFoodResistanceAmountByRank),
+                ["cen_res_dis"] = (ItemPropertyType.FoodEnhancement, (int)EnhancementSubType.FoodBonusDisruptionResistance, ArmorAndFoodResistanceAmountByRank),
+
+                ["de_res_fir"] = (ItemPropertyType.DroidEnhancement, (int)EnhancementSubType.DroidResistanceFire, DroidResistanceAmountByRank),
+                ["de_res_psn"] = (ItemPropertyType.DroidEnhancement, (int)EnhancementSubType.DroidResistancePoison, DroidResistanceAmountByRank),
+                ["de_res_elec"] = (ItemPropertyType.DroidEnhancement, (int)EnhancementSubType.DroidResistanceElectrical, DroidResistanceAmountByRank),
+                ["de_res_ice"] = (ItemPropertyType.DroidEnhancement, (int)EnhancementSubType.DroidResistanceIce, DroidResistanceAmountByRank),
+                ["de_res_mnd"] = (ItemPropertyType.DroidEnhancement, (int)EnhancementSubType.DroidResistanceMind, DroidResistanceAmountByRank),
+                ["de_res_mob"] = (ItemPropertyType.DroidEnhancement, (int)EnhancementSubType.DroidResistanceMobility, DroidResistanceAmountByRank),
+                ["de_res_tra"] = (ItemPropertyType.DroidEnhancement, (int)EnhancementSubType.DroidResistanceTrauma, DroidResistanceAmountByRank),
+                ["de_res_dis"] = (ItemPropertyType.DroidEnhancement, (int)EnhancementSubType.DroidResistanceDisruption, DroidResistanceAmountByRank),
+            };
 
         private static readonly DroidStatSubType[] DroidResistanceSubTypes =
         {
@@ -140,9 +187,83 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
         {
             var wasMigrated = MigrateConstructedDroidLocalVariable(item);
             wasMigrated |= ReplaceLegacyItemProperties(item);
+            wasMigrated |= RebalanceResistanceEnhancementItem(item);
             wasMigrated |= NormalizeDroidResistanceStats(item);
 
             return wasMigrated;
+        }
+
+        private static bool RebalanceResistanceEnhancementItem(uint item)
+        {
+            if (!TryGetResistanceEnhancementBalance(
+                    GetResRef(item),
+                    out var propertyType,
+                    out var subType,
+                    out var amount))
+            {
+                return false;
+            }
+
+            var matchingProperties = new List<(ItemProperty Property, int Value)>();
+            for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
+            {
+                if (GetItemPropertyType(ip) == propertyType &&
+                    GetItemPropertySubType(ip) == subType)
+                {
+                    matchingProperties.Add((ip, GetItemPropertyCostTableValue(ip)));
+                }
+            }
+
+            if (matchingProperties.Count == 1 &&
+                matchingProperties[0].Value == amount)
+            {
+                return false;
+            }
+
+            foreach (var property in matchingProperties)
+            {
+                RemoveItemProperty(item, property.Property);
+            }
+
+            BiowareXP2.IPSafeAddItemProperty(
+                item,
+                ItemPropertyCustom(propertyType, subType, amount),
+                0.0f,
+                AddItemPropertyPolicy.ReplaceExisting,
+                false,
+                false);
+
+            return true;
+        }
+
+        private static bool TryGetResistanceEnhancementBalance(
+            string resref,
+            out ItemPropertyType propertyType,
+            out int subType,
+            out int amount)
+        {
+            propertyType = default;
+            subType = 0;
+            amount = 0;
+
+            if (string.IsNullOrWhiteSpace(resref))
+                return false;
+
+            foreach (var (prefix, details) in ResistanceEnhancementByResrefPrefix)
+            {
+                if (!resref.StartsWith(prefix, StringComparison.OrdinalIgnoreCase) ||
+                    !int.TryParse(resref[prefix.Length..], out var rank) ||
+                    !details.Amounts.TryGetValue(rank, out amount))
+                {
+                    continue;
+                }
+
+                propertyType = details.Type;
+                subType = details.SubType;
+                return true;
+            }
+
+            return false;
         }
 
         private static bool ReplaceLegacyItemProperties(uint item)

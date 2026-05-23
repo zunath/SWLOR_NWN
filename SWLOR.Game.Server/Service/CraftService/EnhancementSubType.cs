@@ -35,18 +35,9 @@ namespace SWLOR.Game.Server.Service.CraftService
         [EnhancementSubType("Craftsmanship - Smithery")]
         CraftsmanshipSmithery = 15,
 
-        [EnhancementSubType("DMG - Physical")]
-        DMGPhysical = 18,
-        [EnhancementSubType("DMG - Force")]
-        DMGForce = 19,
-        [EnhancementSubType("DMG - Fire")]
-        DMGFire = 20,
-        [EnhancementSubType("DMG - Poison")]
-        DMGPoison = 21,
-        [EnhancementSubType("DMG - Electrical")]
-        DMGElectrical = 22,
-        [EnhancementSubType("DMG - Ice")]
-        DMGIce = 23,
+        [EnhancementSubType("DMG")]
+        DMG = 18,
+        // 19-23 are free.
         [EnhancementSubType("Might")]
         Might = 24,
         [EnhancementSubType("Perception")]

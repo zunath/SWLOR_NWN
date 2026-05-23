@@ -406,8 +406,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("elec_ruined", 1)
 				;
 
-			// Weapon Enhancement - DMG - Physical I
-			_builder.Create(RecipeType.WeaponEnhancementDMGPhysical1, SkillType.Engineering)
+			// Weapon Enhancement - DMG I
+			_builder.Create(RecipeType.WeaponEnhancementDamage1, SkillType.Engineering)
 				.Category(RecipeCategoryType.WeaponEnhancement)
 				.Resref("wen_dmg_phy1")
 				.Level(9)
@@ -417,8 +417,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("elec_ruined", 2)
 				;
 
-			// Weapon Enhancement - DMG - Force I
-			_builder.Create(RecipeType.WeaponEnhancementDMGForce1, SkillType.Engineering)
+			// Weapon Enhancement - Force Damage I
+			_builder.Create(RecipeType.WeaponEnhancementForceDamage1, SkillType.Engineering)
 				.Category(RecipeCategoryType.WeaponEnhancement)
 				.Resref("wen_dmg_for1")
 				.Level(8)
@@ -1027,8 +1027,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("elec_flawed", 1)
 				;
 
-			// Weapon Enhancement - DMG - Poison I
-			_builder.Create(RecipeType.WeaponEnhancementDMGPoison1, SkillType.Engineering)
+			// Weapon Enhancement - Poison Damage I
+			_builder.Create(RecipeType.WeaponEnhancementPoisonDamage1, SkillType.Engineering)
 				.Category(RecipeCategoryType.WeaponEnhancement)
 				.Resref("wen_dmg_psn1")
 				.Level(17)
@@ -1038,8 +1038,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("elec_flawed", 2)
 				;
 
-			// Weapon Enhancement - DMG - Fire I
-			_builder.Create(RecipeType.WeaponEnhancementDMGFire1, SkillType.Engineering)
+			// Weapon Enhancement - Fire Damage I
+			_builder.Create(RecipeType.WeaponEnhancementFireDamage1, SkillType.Engineering)
 				.Category(RecipeCategoryType.WeaponEnhancement)
 				.Resref("wen_dmg_fir1")
 				.Level(16)
@@ -1049,8 +1049,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("elec_flawed", 2)
 				;
 
-			// Weapon Enhancement - DMG - Ice I
-			_builder.Create(RecipeType.WeaponEnhancementDMGIce1, SkillType.Engineering)
+			// Weapon Enhancement - Ice Damage I
+			_builder.Create(RecipeType.WeaponEnhancementIceDamage1, SkillType.Engineering)
 				.Category(RecipeCategoryType.WeaponEnhancement)
 				.Resref("wen_dmg_ice1")
 				.Level(15)
@@ -1060,7 +1060,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("elec_flawed", 2)
 				;
 
-			// Weapon Enhancement - DMG - Electrical I
+			// Weapon Enhancement - Electrical Damage I
 			_builder.Create(RecipeType.WeaponEnhancementElectrical1, SkillType.Engineering)
 				.Category(RecipeCategoryType.WeaponEnhancement)
 				.Resref("wen_dmg_elec1")
@@ -1670,8 +1670,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("elec_good", 1)
 				;
 
-			// Weapon Enhancement - DMG - Physical II
-			_builder.Create(RecipeType.WeaponEnhancementDMGPhysical2, SkillType.Engineering)
+			// Weapon Enhancement - DMG II
+			_builder.Create(RecipeType.WeaponEnhancementDamage2, SkillType.Engineering)
 				.Category(RecipeCategoryType.WeaponEnhancement)
 				.Resref("wen_dmg_phy2")
 				.Level(29)
@@ -1681,8 +1681,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("elec_good", 2)
 				;
 
-			// Weapon Enhancement - DMG - Force II
-			_builder.Create(RecipeType.WeaponEnhancementDMGForce2, SkillType.Engineering)
+			// Weapon Enhancement - Force Damage II
+			_builder.Create(RecipeType.WeaponEnhancementForceDamage2, SkillType.Engineering)
 				.Category(RecipeCategoryType.WeaponEnhancement)
 				.Resref("wen_dmg_for2")
 				.Level(28)
@@ -2291,8 +2291,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("elec_imperfect", 1)
 				;
 
-			// Weapon Enhancement - DMG - Poison II
-			_builder.Create(RecipeType.WeaponEnhancementDMGPoison2, SkillType.Engineering)
+			// Weapon Enhancement - Poison Damage II
+			_builder.Create(RecipeType.WeaponEnhancementPoisonDamage2, SkillType.Engineering)
 				.Category(RecipeCategoryType.WeaponEnhancement)
 				.Resref("wen_dmg_psn2")
 				.Level(37)
@@ -2302,8 +2302,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("elec_imperfect", 2)
 				;
 
-			// Weapon Enhancement - DMG - Fire II
-			_builder.Create(RecipeType.WeaponEnhancementDMGFire2, SkillType.Engineering)
+			// Weapon Enhancement - Fire Damage II
+			_builder.Create(RecipeType.WeaponEnhancementFireDamage2, SkillType.Engineering)
 				.Category(RecipeCategoryType.WeaponEnhancement)
 				.Resref("wen_dmg_fir2")
 				.Level(36)
@@ -2313,8 +2313,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("elec_imperfect", 2)
 				;
 
-			// Weapon Enhancement - DMG - Ice II
-			_builder.Create(RecipeType.WeaponEnhancementDMGIce2, SkillType.Engineering)
+			// Weapon Enhancement - Ice Damage II
+			_builder.Create(RecipeType.WeaponEnhancementIceDamage2, SkillType.Engineering)
 				.Category(RecipeCategoryType.WeaponEnhancement)
 				.Resref("wen_dmg_ice2")
 				.Level(35)
@@ -2324,7 +2324,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("elec_imperfect", 2)
 				;
 
-			// Weapon Enhancement - DMG - Electrical II
+			// Weapon Enhancement - Electrical Damage II
 			_builder.Create(RecipeType.WeaponEnhancementElectrical2, SkillType.Engineering)
 				.Category(RecipeCategoryType.WeaponEnhancement)
 				.Resref("wen_dmg_elec2")
@@ -2934,8 +2934,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("elec_high", 1)
 				;
 
-			// Weapon Enhancement - DMG - Physical III
-			_builder.Create(RecipeType.WeaponEnhancementDMGPhysical3, SkillType.Engineering)
+			// Weapon Enhancement - DMG III
+			_builder.Create(RecipeType.WeaponEnhancementDamage3, SkillType.Engineering)
 				.Category(RecipeCategoryType.WeaponEnhancement)
 				.Resref("wen_dmg_phy3")
 				.Level(49)
@@ -2945,8 +2945,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("elec_high", 2)
 				;
 
-			// Weapon Enhancement - DMG - Force III
-			_builder.Create(RecipeType.WeaponEnhancementDMGForce3, SkillType.Engineering)
+			// Weapon Enhancement - Force Damage III
+			_builder.Create(RecipeType.WeaponEnhancementForceDamage3, SkillType.Engineering)
 				.Category(RecipeCategoryType.WeaponEnhancement)
 				.Resref("wen_dmg_for3")
 				.Level(48)

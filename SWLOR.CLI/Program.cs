@@ -48,7 +48,7 @@ namespace SWLOR.CLI
 
             var enhancementOption = app.Option(
                 "-$|-e |--enhancement",
-                "Generates uti files in json format for all of the entries found in enhancement_list.csv.",
+                "Generates uti files in json format for all of the entries found in enhancement_list.tsv.",
                 CommandOptionType.NoValue
             );
 

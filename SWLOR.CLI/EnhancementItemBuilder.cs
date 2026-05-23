@@ -11,6 +11,7 @@ namespace SWLOR.CLI
         private const string InputData = "./InputFiles/enhancement_list.tsv";
         private const string Template = "./Templates/enhancement_template.json";
         private const string OutputFolder = "./OutputEnhancements/";
+        private const int WeaponDamageTypePropertyId = 134;
 
         private readonly int[] _iconIds = { 1, 2, 3, 4, 5, 6, 9, 10, 12, 13, 14, 15, 16, 17, 20, 22, 23, 24, 25, 26, 27, 30, 31, 41, 42, 
             44, 45, 46, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 
@@ -50,12 +51,7 @@ namespace SWLOR.CLI
             { "Recast Reduction", 27 },
             { "STM", 10 },
             { "Accuracy", 26 },
-            { "DMG - Physical", 18 },
-            { "DMG - Force", 19 },
-            { "DMG - Poison", 21 },
-            { "DMG - Fire", 20 },
-            { "DMG - Ice", 23 },
-            { "DMG - Electrical", 22 },
+            { "DMG", 18 },
             { "Structure Bonus", 28 },
             { "Duration", 35 },
             { "FP Food", 37 },
@@ -85,6 +81,16 @@ namespace SWLOR.CLI
             { "Force Attack", 84 }
         };
 
+        private readonly Dictionary<string, int> _damageTypeToId = new(StringComparer.OrdinalIgnoreCase)
+        {
+            { "Physical", 1 },
+            { "Force", 2 },
+            { "Fire", 3 },
+            { "Poison", 4 },
+            { "Electrical", 5 },
+            { "Ice", 6 },
+        };
+
         private readonly Dictionary<int, int> _levelToTier = new()
         {
             { 5, 1 },
@@ -111,11 +117,15 @@ namespace SWLOR.CLI
                 var progressPenalty = parsed[5].Trim();
                 var propertyName = parsed[6].Trim();
                 var bonus = parsed[7].Trim();
+                var damageTypeName = parsed.Length > 8 ? parsed[8].Trim() : string.Empty;
                 var iconId = _iconIds[Random.Next(_iconIds.Length - 1)];
                 var itemPropertyId = _categoryNameToId[category];
-                var subTypeId = _subTypeToId[propertyName];
+                if (!_subTypeToId.TryGetValue(propertyName, out var subTypeId))
+                    throw new InvalidOperationException($"Unknown enhancement subtype '{propertyName}' for '{resref}'.");
+
                 var tier = _levelToTier[Convert.ToInt32(level)];
                 var price = CalculatePrice(tier);
+                var extraProperties = BuildExtraProperties(category, propertyName, damageTypeName, resref);
 
                 var json = templateText
                     .Replace("%%NAME%%", name)
@@ -125,6 +135,7 @@ namespace SWLOR.CLI
                     .Replace("%%ITEMPROPERTYID%%", itemPropertyId.ToString())
                     .Replace("%%SUBTYPEID%%", subTypeId.ToString())
                     .Replace("%%BONUSAMOUNT%%", bonus)
+                    .Replace("%%EXTRA_PROPERTIES%%", extraProperties)
                     .Replace("%%TAG%%", resref)
                     .Replace("%%RESREF%%", resref)
                     .Replace("%%PRICE%%", price.ToString());
@@ -148,6 +159,54 @@ namespace SWLOR.CLI
             const int BasePrice = 250;
 
             return BasePrice * tier;
+        }
+
+        private string BuildExtraProperties(string category, string propertyName, string damageTypeName, string resref)
+        {
+            if (string.IsNullOrWhiteSpace(damageTypeName) ||
+                damageTypeName.Equals("Physical", StringComparison.OrdinalIgnoreCase))
+            {
+                return string.Empty;
+            }
+
+            if (category != "Weapon" || propertyName != "DMG")
+                throw new InvalidOperationException($"Damage type '{damageTypeName}' is only supported on weapon DMG enhancements. ResRef: {resref}");
+
+            if (!_damageTypeToId.TryGetValue(damageTypeName, out var damageTypeId))
+                throw new InvalidOperationException($"Unknown weapon damage type '{damageTypeName}' for '{resref}'.");
+
+            return $@",
+      {{
+        ""__struct_id"": 0,
+        ""ChanceAppear"": {{
+          ""type"": ""byte"",
+          ""value"": 100
+        }},
+        ""CostTable"": {{
+          ""type"": ""byte"",
+          ""value"": 0
+        }},
+        ""CostValue"": {{
+          ""type"": ""word"",
+          ""value"": 0
+        }},
+        ""Param1"": {{
+          ""type"": ""byte"",
+          ""value"": 255
+        }},
+        ""Param1Value"": {{
+          ""type"": ""byte"",
+          ""value"": 0
+        }},
+        ""PropertyName"": {{
+          ""type"": ""word"",
+          ""value"": {WeaponDamageTypePropertyId}
+        }},
+        ""Subtype"": {{
+          ""type"": ""word"",
+          ""value"": {damageTypeId}
+        }}
+      }}";
         }
     }
 }

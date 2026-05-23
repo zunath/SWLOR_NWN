@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
             migratedCount += MigrateEntityItems(SearchAll<DMCreature>(), item => item.Data, (item, data) => item.Data = data);
             migratedCount += MigratePlayerShips();
 
-            Log.Write(LogGroup.Migration, $"Migrated resistance item properties on {migratedCount} serialized records.");
+            Log.Write(LogGroup.Migration, $"Migrated resistance and weapon damage item properties on {migratedCount} serialized records.");
         }
 
         private static List<T> SearchAll<T>()
@@ -48,7 +48,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
 
             foreach (var entity in entities)
             {
-                if (!SerializedItemResistanceMigration.MigrateSerializedObject(getSerializedData(entity), out var migratedData))
+                if (!MigrateSerializedObject(getSerializedData(entity), out var migratedData))
                     continue;
 
                 setSerializedData(entity, migratedData);
@@ -57,6 +57,26 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
             }
 
             return migratedCount;
+        }
+
+        private static bool MigrateSerializedObject(string serializedObject, out string migratedSerializedObject)
+        {
+            var migrated = false;
+            migratedSerializedObject = serializedObject;
+
+            if (SerializedItemResistanceMigration.MigrateSerializedObject(migratedSerializedObject, out var resistanceData))
+            {
+                migratedSerializedObject = resistanceData;
+                migrated = true;
+            }
+
+            if (SerializedItemWeaponDamageTypeMigration.MigrateSerializedObject(migratedSerializedObject, out var weaponDamageData))
+            {
+                migratedSerializedObject = weaponDamageData;
+                migrated = true;
+            }
+
+            return migrated;
         }
 
         private static int MigrateWorldPropertyCategories()
@@ -71,7 +91,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
                 var migrated = false;
                 foreach (var item in category.Items.Values)
                 {
-                    if (!SerializedItemResistanceMigration.MigrateSerializedObject(item.Data, out var migratedData))
+                    if (!MigrateSerializedObject(item.Data, out var migratedData))
                         continue;
 
                     item.Data = migratedData;
@@ -96,7 +116,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
             {
                 var migrated = false;
 
-                if (SerializedItemResistanceMigration.MigrateSerializedObject(ship.SerializedItem, out var migratedItem))
+                if (MigrateSerializedObject(ship.SerializedItem, out var migratedItem))
                 {
                     ship.SerializedItem = migratedItem;
                     migrated = true;
@@ -135,7 +155,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
             var migrated = false;
             foreach (var module in modules.Values)
             {
-                if (!SerializedItemResistanceMigration.MigrateSerializedObject(module.SerializedItem, out var migratedItem))
+                if (!MigrateSerializedObject(module.SerializedItem, out var migratedItem))
                     continue;
 
                 module.SerializedItem = migratedItem;

@@ -138,36 +138,36 @@ Weapon	Improved Zersium II	imp_zersium_2	15	Store	40	Craftsmanship - Agriculture
 Weapon	Improved Zersium III	imp_zersium_3	25	Store	50	Craftsmanship - Agriculture	3
 Weapon	Improved Zersium IV	imp_zersium_4	35	Store	60	Craftsmanship - Agriculture	4
 Weapon	Improved Zersium V	imp_zersium_5	45	Store	70	Craftsmanship - Agriculture	5
-Weapon	Improved Meleenium I	imp_melee_1	5	Store	40	DMG - Physical	1
-Weapon	Improved Meleenium II	imp_melee_2	15	Store	50	DMG - Physical	2
-Weapon	Improved Meleenium III	imp_melee_3	25	Store	60	DMG - Physical	3
-Weapon	Improved Meleenium IV	imp_melee_4	35	Store	70	DMG - Physical	4
-Weapon	Improved Meleenium V	imp_melee_5	45	Store	80	DMG - Physical	5
-Weapon	Improved Molytex I	imp_molytex_1	5	Store	40	DMG - Force	1
-Weapon	Improved Molytex II	imp_molytex_2	15	Store	50	DMG - Force	2
-Weapon	Improved Molytex III	imp_molytex_3	25	Store	60	DMG - Force	3
-Weapon	Improved Molytex IV	imp_molytex_4	35	Store	70	DMG - Force	4
-Weapon	Improved Molytex V	imp_molytex_5	45	Store	80	DMG - Force	5
-Weapon	Improved Laminasteel I	imp_lamina_1	5	Store	30	DMG - Poison	2
-Weapon	Improved Laminasteel II	imp_lamina_2	15	Store	40	DMG - Poison	4
-Weapon	Improved Laminasteel III	imp_lamina_3	25	Store	50	DMG - Poison	6
-Weapon	Improved Laminasteel IV	imp_lamina_4	35	Store	60	DMG - Poison	8
-Weapon	Improved Laminasteel V	imp_lamina_5	45	Store	70	DMG - Poison	10
-Weapon	Improved Quadranium I	imp_quadran_1	5	Store	30	DMG - Fire	2
-Weapon	Improved Quadranium II	imp_quadran_2	15	Store	40	DMG - Fire	4
-Weapon	Improved Quadranium III	imp_quadran_3	25	Store	50	DMG - Fire	6
-Weapon	Improved Quadranium IV	imp_quadran_4	35	Store	60	DMG - Fire	8
-Weapon	Improved Quadranium V	imp_quadran_5	45	Store	70	DMG - Fire	10
-Weapon	Improved Duranium I	imp_duranium_1	5	Store	30	DMG - Ice	2
-Weapon	Improved Duranium II	imp_duranium_2	15	Store	40	DMG - Ice	4
-Weapon	Improved Duranium III	imp_duranium_3	25	Store	50	DMG - Ice	6
-Weapon	Improved Duranium IV	imp_duranium_4	35	Store	60	DMG - Ice	8
-Weapon	Improved Duranium V	imp_duranium_5	45	Store	70	DMG - Ice	10
-Weapon	Improved Ultrachrome I	imp_ultrachr_1	5	Store	30	DMG - Electrical	2
-Weapon	Improved Ultrachrome II	imp_ultrachr_2	15	Store	40	DMG - Electrical	4
-Weapon	Improved Ultrachrome III	imp_ultrachr_3	25	Store	50	DMG - Electrical	6
-Weapon	Improved Ultrachrome IV	imp_ultrachr_4	35	Store	60	DMG - Electrical	8
-Weapon	Improved Ultrachrome V	imp_ultrachr_5	45	Store	70	DMG - Electrical	10
+Weapon	Improved Meleenium I	imp_melee_1	5	Store	40	DMG	2	Physical
+Weapon	Improved Meleenium II	imp_melee_2	15	Store	50	DMG	3	Physical
+Weapon	Improved Meleenium III	imp_melee_3	25	Store	60	DMG	4	Physical
+Weapon	Improved Meleenium IV	imp_melee_4	35	Store	70	DMG	5	Physical
+Weapon	Improved Meleenium V	imp_melee_5	45	Store	80	DMG	6	Physical
+Weapon	Improved Molytex I	imp_molytex_1	5	Store	40	DMG	1	Force
+Weapon	Improved Molytex II	imp_molytex_2	15	Store	50	DMG	2	Force
+Weapon	Improved Molytex III	imp_molytex_3	25	Store	60	DMG	3	Force
+Weapon	Improved Molytex IV	imp_molytex_4	35	Store	70	DMG	4	Force
+Weapon	Improved Molytex V	imp_molytex_5	45	Store	80	DMG	5	Force
+Weapon	Improved Laminasteel I	imp_lamina_1	5	Store	30	DMG	1	Poison
+Weapon	Improved Laminasteel II	imp_lamina_2	15	Store	40	DMG	2	Poison
+Weapon	Improved Laminasteel III	imp_lamina_3	25	Store	50	DMG	3	Poison
+Weapon	Improved Laminasteel IV	imp_lamina_4	35	Store	60	DMG	4	Poison
+Weapon	Improved Laminasteel V	imp_lamina_5	45	Store	70	DMG	5	Poison
+Weapon	Improved Quadranium I	imp_quadran_1	5	Store	30	DMG	1	Fire
+Weapon	Improved Quadranium II	imp_quadran_2	15	Store	40	DMG	2	Fire
+Weapon	Improved Quadranium III	imp_quadran_3	25	Store	50	DMG	3	Fire
+Weapon	Improved Quadranium IV	imp_quadran_4	35	Store	60	DMG	4	Fire
+Weapon	Improved Quadranium V	imp_quadran_5	45	Store	70	DMG	5	Fire
+Weapon	Improved Duranium I	imp_duranium_1	5	Store	30	DMG	1	Ice
+Weapon	Improved Duranium II	imp_duranium_2	15	Store	40	DMG	2	Ice
+Weapon	Improved Duranium III	imp_duranium_3	25	Store	50	DMG	3	Ice
+Weapon	Improved Duranium IV	imp_duranium_4	35	Store	60	DMG	4	Ice
+Weapon	Improved Duranium V	imp_duranium_5	45	Store	70	DMG	5	Ice
+Weapon	Improved Ultrachrome I	imp_ultrachr_1	5	Store	30	DMG	1	Electrical
+Weapon	Improved Ultrachrome II	imp_ultrachr_2	15	Store	40	DMG	2	Electrical
+Weapon	Improved Ultrachrome III	imp_ultrachr_3	25	Store	50	DMG	3	Electrical
+Weapon	Improved Ultrachrome IV	imp_ultrachr_4	35	Store	60	DMG	4	Electrical
+Weapon	Improved Ultrachrome V	imp_ultrachr_5	45	Store	70	DMG	5	Electrical
 Weapon	Improved Phrik I	imp_phrik_1	5	Store	40	Evasion	1
 Weapon	Improved Phrik II	imp_phrik_2	15	Store	50	Evasion	2
 Weapon	Improved Phrik III	imp_phrik_3	25	Store	60	Evasion	3

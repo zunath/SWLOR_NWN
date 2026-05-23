@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Core.Bioware;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.ItemService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
@@ -81,21 +80,20 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                 .ApplyAction((user, item, target, location, itemPropertyIndex) =>
                 {
                     var numberOfUpgrades = GetWeaponLevel(target) + 1;
-                    var physicalDMG = 0;
+                    var totalDMG = 0;
 
                     for (var ip = GetFirstItemProperty(target); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(target))
                     {
                         var type = GetItemPropertyType(ip);
-                        var subType = GetItemPropertySubType(ip);
-                        if (type == ItemPropertyType.DMG && subType == (int)CombatDamageType.Physical)
+                        if (type == ItemPropertyType.DMG)
                         {
-                            physicalDMG += GetItemPropertyCostTableValue(ip);
+                            totalDMG += GetItemPropertyCostTableValue(ip);
                         }
                     }
 
-                    physicalDMG += dmgIncrease;
+                    totalDMG += dmgIncrease;
 
-                    var dmgItemProperty = ItemPropertyCustom(ItemPropertyType.DMG, (int)CombatDamageType.Physical, physicalDMG);
+                    var dmgItemProperty = ItemPropertyCustom(ItemPropertyType.DMG, -1, totalDMG);
                     BiowareXP2.IPSafeAddItemProperty(target, dmgItemProperty, 0.0f, AddItemPropertyPolicy.ReplaceExisting, true, false);
 
                     DestroyObject(item);

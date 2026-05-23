@@ -132,5 +132,6 @@ namespace SWLOR.NWN.API.NWScript.Enum.Item
         RequiresSkill = 131,
         RequiresStat = 132,
         Resistance = 133,
+        WeaponDamageType = 134,
     }
 }

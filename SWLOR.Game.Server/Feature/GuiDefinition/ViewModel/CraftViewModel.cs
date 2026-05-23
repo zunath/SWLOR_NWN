@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
@@ -661,6 +662,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var recipe = Craft.GetRecipe(_recipe);
             var progressPenalty = 0;
+            var weaponDamageType = CombatDamageType.Invalid;
+
+            for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
+            {
+                var type = GetItemPropertyType(ip);
+                if (type == ItemPropertyType.WeaponDamageType)
+                {
+                    var subType = GetItemPropertySubType(ip);
+                    if (Enum.IsDefined(typeof(CombatDamageType), subType))
+                        weaponDamageType = (CombatDamageType)subType;
+                }
+            }
 
             for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
             {
@@ -677,44 +690,37 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 else if (type == ItemPropertyType.ArmorEnhancement &&
                          recipe.EnhancementType == RecipeEnhancementType.Armor)
                 {
-                    var itemProperty = Craft.BuildItemPropertyForEnhancement(subType, amount);
-                    itemProperties.Add(itemProperty);
+                    itemProperties.AddRange(Craft.BuildItemPropertiesForEnhancement(subType, amount));
                 }
                 else if (type == ItemPropertyType.WeaponEnhancement &&
                          recipe.EnhancementType == RecipeEnhancementType.Weapon)
                 {
-                    var itemProperty = Craft.BuildItemPropertyForEnhancement(subType, amount);
-                    itemProperties.Add(itemProperty);
+                    itemProperties.AddRange(Craft.BuildItemPropertiesForEnhancement(subType, amount, weaponDamageType));
                 }
                 else if (type == ItemPropertyType.StructureEnhancement &&
                          recipe.EnhancementType == RecipeEnhancementType.Structure)
                 {
-                    var itemProperty = Craft.BuildItemPropertyForEnhancement(subType, amount);
-                    itemProperties.Add(itemProperty);
+                    itemProperties.AddRange(Craft.BuildItemPropertiesForEnhancement(subType, amount));
                 }
                 else if (type == ItemPropertyType.FoodEnhancement &&
                          recipe.EnhancementType == RecipeEnhancementType.Food)
                 {
-                    var itemProperty = Craft.BuildItemPropertyForEnhancement(subType, amount);
-                    itemProperties.Add(itemProperty);
+                    itemProperties.AddRange(Craft.BuildItemPropertiesForEnhancement(subType, amount));
                 }
                 else if (type == ItemPropertyType.StarshipEnhancement &&
                          recipe.EnhancementType == RecipeEnhancementType.Starship)
                 {
-                    var itemProperty = Craft.BuildItemPropertyForEnhancement(subType, amount);
-                    itemProperties.Add(itemProperty);
+                    itemProperties.AddRange(Craft.BuildItemPropertiesForEnhancement(subType, amount));
                 }
                 else if (type == ItemPropertyType.ModuleEnhancement &&
                          recipe.EnhancementType == RecipeEnhancementType.Module)
                 {
-                    var itemProperty = Craft.BuildItemPropertyForEnhancement(subType, amount);
-                    itemProperties.Add(itemProperty);
+                    itemProperties.AddRange(Craft.BuildItemPropertiesForEnhancement(subType, amount));
                 }
                 else if (type == ItemPropertyType.DroidEnhancement &&
                          recipe.EnhancementType == RecipeEnhancementType.Droid)
                 {
-                    var itemProperty = Craft.BuildItemPropertyForEnhancement(subType, amount);
-                    itemProperties.Add(itemProperty);
+                    itemProperties.AddRange(Craft.BuildItemPropertiesForEnhancement(subType, amount));
                 }
             }
 
@@ -1347,10 +1353,27 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var type = GetItemPropertyType(ip);
             var subType = GetItemPropertySubType(ip);
             var amount = GetItemPropertyCostTableValue(ip);
+
+            if (type == ItemPropertyType.WeaponDamageType)
+            {
+                for (var property = GetFirstItemProperty(item); GetIsItemPropertyValid(property); property = GetNextItemProperty(item))
+                {
+                    if (GetItemPropertyType(property) == ItemPropertyType.WeaponDamageType)
+                    {
+                        RemoveItemProperty(item, property);
+                    }
+                }
+
+                BiowareXP2.IPSafeAddItemProperty(item, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
+                return;
+            }
+
             for (var property = GetFirstItemProperty(item); GetIsItemPropertyValid(property); property = GetNextItemProperty(item))
             {
                 if (GetItemPropertyType(property) == type &&
-                    (GetItemPropertySubType(property) == -1 || GetItemPropertySubType(property) == subType))
+                    (type == ItemPropertyType.DMG ||
+                     GetItemPropertySubType(property) == -1 ||
+                     GetItemPropertySubType(property) == subType))
                 {
                     amount += GetItemPropertyCostTableValue(property);
                     RemoveItemProperty(item, property);
@@ -1398,12 +1421,26 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 .Concat(_itemPropertiesEnhancement5)
                 .Concat(_itemPropertiesEnhancement6)
                 .Concat(_itemPropertiesEnhancement7)
-                .Concat(_itemPropertiesEnhancement8);
-            foreach (var ip in allProperties)
+                .Concat(_itemPropertiesEnhancement8)
+                .ToList();
+            for (var index = 0; index < allProperties.Count; index++)
             {
+                var propertiesToApply = new List<ItemProperty> { allProperties[index] };
+                if (GetItemPropertyType(allProperties[index]) == ItemPropertyType.DMG &&
+                    index + 1 < allProperties.Count &&
+                    GetItemPropertyType(allProperties[index + 1]) == ItemPropertyType.WeaponDamageType)
+                {
+                    propertiesToApply.Add(allProperties[index + 1]);
+                    index++;
+                }
+
                 if (Random.D100(1) <= propertyTransferChance)
                 {
-                    ApplyProperty(item, ip);
+                    foreach (var property in propertiesToApply)
+                    {
+                        ApplyProperty(item, property);
+                    }
+
                     SendMessageToPC(Player, ColorToken.Green("Enhancement applied successfully."));
                 }
                 else
@@ -1494,11 +1531,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 if (bonus == null)
                     continue;
 
-                var ip = Craft.BuildItemPropertyForEnhancement(bonus.Type, bonus.Amount);
-                ApplyProperty(item, ip);
+                foreach (var ip in Craft.BuildItemPropertiesForEnhancement(bonus.Type, bonus.Amount, bonus.DamageType))
+                {
+                    ApplyProperty(item, ip);
+                }
 
                 var subTypeDetail = Craft.GetEnhancementSubType(bonus.Type);
-                SendMessageToPC(Player, ColorToken.Green($"Blueprint Bonus applied: {subTypeDetail.Name} +{bonus.Amount}"));
+                var bonusName = bonus.DamageType != CombatDamageType.Invalid &&
+                                !bonus.DamageType.IsPhysicalDamageType()
+                    ? $"{subTypeDetail.Name} - {bonus.DamageType}"
+                    : subTypeDetail.Name;
+                SendMessageToPC(Player, ColorToken.Green($"Blueprint Bonus applied: {bonusName} +{bonus.Amount}"));
             }
 
             // Guaranteed bonuses

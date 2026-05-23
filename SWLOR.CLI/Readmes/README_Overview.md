@@ -71,7 +71,7 @@ SWLOR.CLI.exe -u "path/to/module.mod"
 ### Required Input Files
 - `./InputFiles/beast_levels.tsv` - Beast data for BeastCodeBuilder
 - `./InputFiles/droid_item_list.tsv` - Droid data for DroidItemBuilder
-- `./InputFiles/enhancement_list.csv` - Enhancement data for EnhancementItemBuilder
+- `./InputFiles/enhancement_list.tsv` - Enhancement data for EnhancementItemBuilder
 - `./InputFiles/placeables.2da` - Placeable data for PlaceableBuilder
 - `./InputFiles/recipes.tsv` - Recipe data for RecipeCodeBuilder
 
@@ -123,4 +123,4 @@ SWLOR.CLI.exe -u "path/to/module.mod"
 - Most commands clear their output directories before generating new content
 - Template files should be modified carefully as they affect all generated content
 - External tools must be present for module operations
-- Database operations require proper Redis configuration 
+- Database operations require proper Redis configuration

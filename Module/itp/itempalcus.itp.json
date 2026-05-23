@@ -5761,7 +5761,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Revêtement de droïde éboueur"
+                      "value": "Revï¿½tement de droï¿½de ï¿½boueur"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -39017,7 +39017,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Weapon Enhancement - DMG - Electrical I"
+                      "value": "Weapon Enhancement - Electrical Damage I"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -39028,7 +39028,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Weapon Enhancement - DMG - Electrical II"
+                      "value": "Weapon Enhancement - Electrical Damage II"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -39039,7 +39039,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Weapon Enhancement - DMG - Fire I"
+                      "value": "Weapon Enhancement - Fire Damage I"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -39050,7 +39050,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Weapon Enhancement - DMG - Fire II"
+                      "value": "Weapon Enhancement - Fire Damage II"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -39061,7 +39061,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Weapon Enhancement - DMG - Force I"
+                      "value": "Weapon Enhancement - Force Damage I"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -39072,7 +39072,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Weapon Enhancement - DMG - Force II"
+                      "value": "Weapon Enhancement - Force Damage II"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -39083,7 +39083,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Weapon Enhancement - DMG - Force III"
+                      "value": "Weapon Enhancement - Force Damage III"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -39094,7 +39094,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Weapon Enhancement - DMG - Ice I"
+                      "value": "Weapon Enhancement - Ice Damage I"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -39105,7 +39105,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Weapon Enhancement - DMG - Ice II"
+                      "value": "Weapon Enhancement - Ice Damage II"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -39116,7 +39116,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Weapon Enhancement - DMG - Physical I"
+                      "value": "Weapon Enhancement - DMG I"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -39127,7 +39127,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Weapon Enhancement - DMG - Physical II"
+                      "value": "Weapon Enhancement - DMG II"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -39138,7 +39138,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Weapon Enhancement - DMG - Physical III"
+                      "value": "Weapon Enhancement - DMG III"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -39149,7 +39149,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Weapon Enhancement - DMG - Poison I"
+                      "value": "Weapon Enhancement - Poison Damage I"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -39160,7 +39160,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Weapon Enhancement - DMG - Poison II"
+                      "value": "Weapon Enhancement - Poison Damage II"
                     },
                     "RESREF": {
                       "type": "resref",

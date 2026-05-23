@@ -10,7 +10,6 @@ using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
-using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using BaseItem = SWLOR.NWN.API.NWScript.Enum.Item.BaseItem;
 using EquipmentSlot = NWN.Native.API.EquipmentSlot;
@@ -29,7 +28,7 @@ namespace SWLOR.Game.Server.Native
         private const int ImprovedPowerAttackMode = 3;
         private const int AttributeNegativeThreshold = 128;
         private const int AttributeNegativeOffset = 256;
-        private const int MaxValidDamageType = 6;
+        private const int MaxValidDamageType = (int)CombatDamageType.Sonic;
         private const int MinValidDamageType = 1;
 
         internal delegate int GetDamageRollHook(void* thisPtr, void* pTarget, int bOffHand, int bCritical, int bSneakAttack, int bDeathAttack, int bForceMax);
@@ -236,7 +235,8 @@ namespace SWLOR.Game.Server.Native
 
         private static WeaponDamageProfile ExtractWeaponDamageProfile(params CNWSItem[] weapons)
         {
-            var damageByType = new Dictionary<CombatDamageType, int>();
+            var damageType = CombatDamageType.Physical;
+            var damage = 0;
             var foundDMG = false;
 
             foreach (var weapon in weapons)
@@ -248,27 +248,24 @@ namespace SWLOR.Game.Server.Native
                 for (var index = 0; index < weapon.m_lstPassiveProperties.Count; index++)
                 {
                     var ip = weapon.GetPassiveProperty(index);
-                    if (ip?.m_nPropertyName != (ushort)ItemPropertyType.DMG) continue;
+                    if (ip == null)
+                        continue;
 
-                    var damageTypeId = ip.m_nSubType;
-                    if (damageTypeId > MaxValidDamageType || damageTypeId < MinValidDamageType)
-                        damageTypeId = MinValidDamageType;
-
-                    var damageType = (CombatDamageType)damageTypeId;
-                    if (!damageByType.ContainsKey(damageType))
-                        damageByType[damageType] = 0;
-
-                    damageByType[damageType] += ip.m_nCostTableValue;
-                    foundWeaponDMG = true;
-                    foundDMG = true;
+                    if (ip.m_nPropertyName == (ushort)ItemPropertyType.DMG)
+                    {
+                        damage += ip.m_nCostTableValue;
+                        foundWeaponDMG = true;
+                        foundDMG = true;
+                    }
+                    else if (ip.m_nPropertyName == (ushort)ItemPropertyType.WeaponDamageType)
+                    {
+                        damageType = ResolveWeaponDamageType(damageType, ip.m_nSubType);
+                    }
                 }
 
                 if (!foundWeaponDMG && IsWeapon(weapon))
                 {
-                    if (!damageByType.ContainsKey(CombatDamageType.Physical))
-                        damageByType[CombatDamageType.Physical] = 0;
-
-                    damageByType[CombatDamageType.Physical] += DefaultPhysicalDamage;
+                    damage += DefaultPhysicalDamage;
                     foundDMG = true;
                 }
             }
@@ -278,13 +275,7 @@ namespace SWLOR.Game.Server.Native
                 return new WeaponDamageProfile(CombatDamageType.Physical, DefaultPhysicalDamage);
             }
 
-            var damage = 0;
-            foreach (var amount in damageByType.Values)
-            {
-                damage += amount;
-            }
-
-            return new WeaponDamageProfile(ResolveAttackDamageType(damageByType), damage);
+            return new WeaponDamageProfile(damageType, damage);
         }
 
         private static bool HasDelayProperty(CNWSItem weapon)
@@ -317,25 +308,25 @@ namespace SWLOR.Game.Server.Native
             return false;
         }
 
-        private static CombatDamageType ResolveAttackDamageType(Dictionary<CombatDamageType, int> damageByType)
+        private static CombatDamageType ResolveWeaponDamageType(CombatDamageType current, int damageTypeId)
         {
-            var selectedType = CombatDamageType.Physical;
-            var selectedAmount = 0;
+            if (damageTypeId > MaxValidDamageType || damageTypeId < MinValidDamageType)
+                return current;
 
-            foreach (var (damageType, amount) in damageByType)
-            {
-                if (damageType.IsPhysicalDamageType())
-                    continue;
+            var candidate = (CombatDamageType)damageTypeId;
+            if (!candidate.IsCharacterDamageType())
+                return current;
 
-                if (selectedType.IsPhysicalDamageType() ||
-                    amount > selectedAmount)
-                {
-                    selectedType = damageType;
-                    selectedAmount = amount;
-                }
-            }
+            if (current.IsElementalDamageType())
+                return current;
 
-            return selectedType;
+            if (candidate.IsElementalDamageType())
+                return candidate;
+
+            if (current.IsPhysicalDamageType() && candidate == CombatDamageType.Force)
+                return CombatDamageType.Force;
+
+            return current;
         }
 
         private static AbilityType GetWeaponDamageAbilityType(uint attacker, CNWSItem weapon)

@@ -551,6 +551,20 @@ namespace SWLOR.Game.Server.Service
         /// <param name="subTypeId">The sub type of the enhancement</param>
         /// <param name="amount">The amount to apply.</param>
         /// <returns></returns>
+        public static IEnumerable<ItemProperty> BuildItemPropertiesForEnhancement(
+            EnhancementSubType subTypeId,
+            int amount,
+            CombatDamageType damageType = CombatDamageType.Invalid)
+        {
+            yield return BuildItemPropertyForEnhancement(subTypeId, amount);
+
+            if (TryGetWeaponDamageTypeForEnhancement(subTypeId, damageType, out var resolvedDamageType) &&
+                !resolvedDamageType.IsPhysicalDamageType())
+            {
+                yield return ItemPropertyCustom(ItemPropertyType.WeaponDamageType, (int)resolvedDamageType, 0);
+            }
+        }
+
         public static ItemProperty BuildItemPropertyForEnhancement(EnhancementSubType subTypeId, int amount)
         {
             switch (subTypeId)
@@ -596,18 +610,8 @@ namespace SWLOR.Game.Server.Service
 
                 // 16 and 17 are applied within the view model, as they are not actually item properties.
 
-                case EnhancementSubType.DMGPhysical: // DMG - Physical
-                    return ItemPropertyCustom(ItemPropertyType.DMG, (int)CombatDamageType.Physical, amount);
-                case EnhancementSubType.DMGForce: // DMG - Force
-                    return ItemPropertyCustom(ItemPropertyType.DMG, (int)CombatDamageType.Force, amount);
-                case EnhancementSubType.DMGFire: // DMG - Fire
-                    return ItemPropertyCustom(ItemPropertyType.DMG, (int)CombatDamageType.Fire, amount);
-                case EnhancementSubType.DMGPoison: // DMG - Poison
-                    return ItemPropertyCustom(ItemPropertyType.DMG, (int)CombatDamageType.Poison, amount);
-                case EnhancementSubType.DMGElectrical: // DMG - Electrical
-                    return ItemPropertyCustom(ItemPropertyType.DMG, (int)CombatDamageType.Electrical, amount);
-                case EnhancementSubType.DMGIce: // DMG - Ice
-                    return ItemPropertyCustom(ItemPropertyType.DMG, (int)CombatDamageType.Ice, amount);
+                case EnhancementSubType.DMG: // DMG
+                    return ItemPropertyCustom(ItemPropertyType.DMG, -1, amount);
                 case EnhancementSubType.Might: // Might
                     return ItemPropertyAbilityBonus(AbilityType.Might, amount);
                 case EnhancementSubType.Perception: // Perception
@@ -804,6 +808,32 @@ namespace SWLOR.Game.Server.Service
             throw new Exception("Unsupported enhancement type.");
         }
 
+        public static bool IsWeaponDamageEnhancement(EnhancementSubType subTypeId)
+        {
+            return subTypeId == EnhancementSubType.DMG;
+        }
+
+        public static bool TryGetWeaponDamageTypeForEnhancement(
+            EnhancementSubType subTypeId,
+            CombatDamageType explicitDamageType,
+            out CombatDamageType damageType)
+        {
+            if (!IsWeaponDamageEnhancement(subTypeId))
+            {
+                damageType = CombatDamageType.Invalid;
+                return false;
+            }
+
+            if (explicitDamageType.IsCharacterDamageType())
+            {
+                damageType = explicitDamageType;
+                return true;
+            }
+
+            damageType = CombatDamageType.Physical;
+            return true;
+        }
+
         [NWNEventHandler(ScriptName.OnRefineryUsed)]
         public static void UseRefinery()
         {
@@ -880,11 +910,22 @@ namespace SWLOR.Game.Server.Service
             blueprintDetail.Recipe = (RecipeType)recipeId;
             blueprintDetail.RandomEnhancementSlotGranted = GetLocalBool(blueprint, "BLUEPRINT_RANDOM_ENHANCEMENT_SLOT_GRANTED");
 
+            var blueprintProperties = new List<(ItemProperty Property, ItemPropertyType Type, int SubType, int CostValue)>();
             for (var ip = GetFirstItemProperty(blueprint); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(blueprint))
             {
-                var type = GetItemPropertyType(ip);
-                var subType = GetItemPropertySubType(ip);
-                var costValue = GetItemPropertyCostTableValue(ip);
+                blueprintProperties.Add((
+                    ip,
+                    GetItemPropertyType(ip),
+                    GetItemPropertySubType(ip),
+                    GetItemPropertyCostTableValue(ip)));
+            }
+
+            for (var index = 0; index < blueprintProperties.Count; index++)
+            {
+                var property = blueprintProperties[index];
+                var type = property.Type;
+                var subType = property.SubType;
+                var costValue = property.CostValue;
 
                 if (type == ItemPropertyType.Blueprint)
                 {
@@ -921,8 +962,19 @@ namespace SWLOR.Game.Server.Service
                          type == ItemPropertyType.ModuleEnhancement ||
                          type == ItemPropertyType.DroidEnhancement)
                 {
-                    var enhancementIP = BuildItemPropertyForEnhancement((EnhancementSubType)subType, costValue);
-                    blueprintDetail.GuaranteedBonuses.Add(enhancementIP);
+                    var damageType = CombatDamageType.Invalid;
+                    var enhancementSubType = (EnhancementSubType)subType;
+                    if (type == ItemPropertyType.WeaponEnhancement &&
+                        IsWeaponDamageEnhancement(enhancementSubType) &&
+                        index + 1 < blueprintProperties.Count &&
+                        blueprintProperties[index + 1].Type == ItemPropertyType.WeaponDamageType &&
+                        Enum.IsDefined(typeof(CombatDamageType), blueprintProperties[index + 1].SubType))
+                    {
+                        damageType = (CombatDamageType)blueprintProperties[index + 1].SubType;
+                        index++;
+                    }
+
+                    blueprintDetail.GuaranteedBonuses.AddRange(BuildItemPropertiesForEnhancement(enhancementSubType, costValue, damageType));
                 }
 
             }

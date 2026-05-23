@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Core.Bioware;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
@@ -455,6 +456,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     case RecipeEnhancementType.Weapon:
                         ip = ItemPropertyCustom(ItemPropertyType.WeaponEnhancement, (int)bonus.Type, bonus.Amount);
                         BiowareXP2.IPSafeAddItemProperty(item, ip, 0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
+                        if (bonus.DamageType != CombatDamageType.Invalid &&
+                            !bonus.DamageType.IsPhysicalDamageType())
+                        {
+                            ip = ItemPropertyCustom(ItemPropertyType.WeaponDamageType, (int)bonus.DamageType, 0);
+                            BiowareXP2.IPSafeAddItemProperty(item, ip, 0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
+                        }
                         break;
                     case RecipeEnhancementType.Armor:
                         ip = ItemPropertyCustom(ItemPropertyType.ArmorEnhancement, (int)bonus.Type, bonus.Amount);

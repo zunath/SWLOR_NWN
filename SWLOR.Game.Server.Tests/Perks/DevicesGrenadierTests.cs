@@ -28,38 +28,38 @@ public class DevicesGrenadierTests
             "Grenade abilities gain +1m blast radius.",
             (StatType.GrenadeRadiusBonusTenths, 10));
         AssertPerkLevel(perks[PerkType.ConcussionGrenade], "Concussion Grenade", 1, 3, 8, FeatType.ConcussionGrenade1,
-            "Deals 14 electrical DMG plus PER scaling in a 3m blast and knock down for 2 seconds.");
+            "Deals 14 electrical DMG plus PER scaling in a 3m blast and knock down for 2 seconds. Consumes explosives.");
         AssertPerkLevel(perks[PerkType.FlashGrenade], "Flash Grenade", 1, 3, 12, FeatType.FlashGrenade1,
             "Attempts to inflict Flash, reducing physical and Force ability hit chance by 8% for 20 seconds in a 4m blast. Consumes explosives.");
         AssertPerkLevel(perks[PerkType.FragGrenade], "Frag Grenade", 2, 3, 15, FeatType.FragGrenade2,
-            "Deals 32 fire DMG plus PER scaling to enemies in a 3m blast and attempts to inflict Bleed.");
+            "Deals 32 fire DMG plus PER scaling to enemies in a 3m blast and attempts to inflict Bleed. Consumes explosives.");
         AssertPerkLevel(perks[PerkType.IonGrenade], "Ion Grenade", 1, 3, 18, FeatType.IonGrenade1,
             "Deals 20 electrical DMG plus PER scaling in a 3m blast. Deals 50% bonus damage to droids. Consumes explosives.");
         AssertPerkLevel(perks[PerkType.BlastRadius], "Blast Radius", 2, 2, 22, null,
             "Grenade abilities gain +2m blast radius.",
             (StatType.GrenadeRadiusBonusTenths, 20));
         AssertPerkLevel(perks[PerkType.AdhesiveGrenade], "Adhesive Grenade", 1, 4, 25, FeatType.AdhesiveGrenade1,
-            "Slows enemies in a 4m blast for 6 seconds and immobilizes them for 3 seconds.");
+            "Slows enemies in a 4m blast for 6 seconds and immobilizes them for 3 seconds. Consumes explosives.");
         AssertPerkLevel(perks[PerkType.ConcussionGrenade], "Concussion Grenade", 2, 3, 28, FeatType.ConcussionGrenade2,
-            "Deals 28 electrical DMG plus PER scaling in a 3m blast and knock down for 2 seconds.");
+            "Deals 28 electrical DMG plus PER scaling in a 3m blast and knock down for 2 seconds. Consumes explosives.");
         AssertPerkLevel(perks[PerkType.ClusterGrenade], "Cluster Grenade", 1, 4, 30, FeatType.ClusterGrenade1,
-            "Throws three small grenades at nearby enemies, each dealing 18 fire DMG plus PER scaling in a small blast.");
+            "Throws three small grenades at nearby enemies, each dealing 18 fire DMG plus PER scaling in a small blast. Consumes explosives.");
         AssertPerkLevel(perks[PerkType.FlashGrenade], "Flash Grenade", 2, 3, 35, FeatType.FlashGrenade2,
             "Attempts to inflict Flash, reducing physical and Force ability hit chance by 14% for 20 seconds in a 4m blast. Consumes explosives.");
         AssertPerkLevel(perks[PerkType.IonGrenade], "Ion Grenade", 2, 3, 38, FeatType.IonGrenade2,
-            "Deals 34 electrical DMG plus PER scaling in a 3m blast. Deals 60% bonus damage to droids and Shock.");
+            "Deals 34 electrical DMG plus PER scaling in a 3m blast. Deals 60% bonus damage to droids and Shock. Consumes explosives.");
         AssertPerkLevel(perks[PerkType.FragGrenade], "Frag Grenade", 3, 4, 40, FeatType.FragGrenade3,
-            "Deals 48 fire DMG plus PER scaling to enemies in a 3m blast and attempts to inflict Bleed.");
+            "Deals 48 fire DMG plus PER scaling to enemies in a 3m blast and attempts to inflict Bleed. Consumes explosives.");
         AssertPerkLevel(perks[PerkType.AdhesiveGrenade], "Adhesive Grenade", 2, 4, 42, FeatType.AdhesiveGrenade2,
-            "Slows enemies in a 4m blast for 8 seconds and immobilizes them for 4 seconds.");
+            "Slows enemies in a 4m blast for 8 seconds and immobilizes them for 4 seconds. Consumes explosives.");
         AssertPerkLevel(perks[PerkType.BlastRadius], "Blast Radius", 3, 4, 45, null,
             "Grenade abilities gain +3m blast radius, and Flash Grenade and Adhesive Grenade non-save effect strength increases by 5%.",
             (StatType.GrenadeRadiusBonusTenths, 30),
             (StatType.GrenadeControlPotencyBonus, 5));
         AssertPerkLevel(perks[PerkType.ConcussionGrenade], "Concussion Grenade", 3, 3, 48, FeatType.ConcussionGrenade3,
-            "Deals 42 electrical DMG plus PER scaling in a 3m blast and knock down for 3 seconds.");
+            "Deals 42 electrical DMG plus PER scaling in a 3m blast and knock down for 3 seconds. Consumes explosives.");
         AssertPerkLevel(perks[PerkType.ThermalDetonator], "Thermal Detonator", 1, 5, 50, FeatType.ThermalDetonator1,
-            "Deals moderate fire DMG plus PER scaling in a 5m blast and inflicts Burning for 45 seconds.");
+            "Deals moderate fire DMG plus PER scaling in a 5m blast and inflicts Burning for 45 seconds. Consumes explosives.");
     }
 
     [Test]
@@ -67,13 +67,13 @@ public class DevicesGrenadierTests
     {
         var fragGrenade = new FragGrenadeAbilityDefinition().BuildAbilities();
         AssertAbility(fragGrenade[FeatType.FragGrenade1], "Frag Grenade I", 1, RecastGroup.FragGrenade, 12f, 1f, 2, "explosives", 1);
-        AssertAbility(fragGrenade[FeatType.FragGrenade2], "Frag Grenade II", 2, RecastGroup.FragGrenade, 12f, 1f, 3);
-        AssertAbility(fragGrenade[FeatType.FragGrenade3], "Frag Grenade III", 3, RecastGroup.FragGrenade, 12f, 1f, 5);
+        AssertAbility(fragGrenade[FeatType.FragGrenade2], "Frag Grenade II", 2, RecastGroup.FragGrenade, 12f, 1f, 3, "explosives", 1);
+        AssertAbility(fragGrenade[FeatType.FragGrenade3], "Frag Grenade III", 3, RecastGroup.FragGrenade, 12f, 1f, 5, "explosives", 1);
 
         var concussionGrenade = new ConcussionGrenadeAbilityDefinition().BuildAbilities();
-        AssertAbility(concussionGrenade[FeatType.ConcussionGrenade1], "Concussion Grenade I", 1, RecastGroup.ConcussionGrenade, 24f, 1f, 3);
-        AssertAbility(concussionGrenade[FeatType.ConcussionGrenade2], "Concussion Grenade II", 2, RecastGroup.ConcussionGrenade, 24f, 1f, 4);
-        AssertAbility(concussionGrenade[FeatType.ConcussionGrenade3], "Concussion Grenade III", 3, RecastGroup.ConcussionGrenade, 24f, 1f, 6);
+        AssertAbility(concussionGrenade[FeatType.ConcussionGrenade1], "Concussion Grenade I", 1, RecastGroup.ConcussionGrenade, 24f, 1f, 3, "explosives", 1);
+        AssertAbility(concussionGrenade[FeatType.ConcussionGrenade2], "Concussion Grenade II", 2, RecastGroup.ConcussionGrenade, 24f, 1f, 4, "explosives", 1);
+        AssertAbility(concussionGrenade[FeatType.ConcussionGrenade3], "Concussion Grenade III", 3, RecastGroup.ConcussionGrenade, 24f, 1f, 6, "explosives", 1);
 
         var flashGrenade = new FlashGrenadeAbilityDefinition().BuildAbilities();
         AssertAbility(flashGrenade[FeatType.FlashGrenade1], "Flash Grenade I", 1, RecastGroup.FlashGrenade, 24f, 1f, 2, "explosives", 1);
@@ -81,14 +81,14 @@ public class DevicesGrenadierTests
 
         var ionGrenade = new IonGrenadeAbilityDefinition().BuildAbilities();
         AssertAbility(ionGrenade[FeatType.IonGrenade1], "Ion Grenade I", 1, RecastGroup.IonGrenade, 18f, 1f, 3, "explosives", 1);
-        AssertAbility(ionGrenade[FeatType.IonGrenade2], "Ion Grenade II", 2, RecastGroup.IonGrenade, 18f, 1f, 5);
+        AssertAbility(ionGrenade[FeatType.IonGrenade2], "Ion Grenade II", 2, RecastGroup.IonGrenade, 18f, 1f, 5, "explosives", 1);
 
         var adhesiveGrenade = new AdhesiveGrenadeAbilityDefinition().BuildAbilities();
-        AssertAbility(adhesiveGrenade[FeatType.AdhesiveGrenade1], "Adhesive Grenade I", 1, RecastGroup.AdhesiveGrenade, 30f, 1f, 4);
-        AssertAbility(adhesiveGrenade[FeatType.AdhesiveGrenade2], "Adhesive Grenade II", 2, RecastGroup.AdhesiveGrenade, 30f, 1f, 5);
+        AssertAbility(adhesiveGrenade[FeatType.AdhesiveGrenade1], "Adhesive Grenade I", 1, RecastGroup.AdhesiveGrenade, 30f, 1f, 4, "explosives", 1);
+        AssertAbility(adhesiveGrenade[FeatType.AdhesiveGrenade2], "Adhesive Grenade II", 2, RecastGroup.AdhesiveGrenade, 30f, 1f, 5, "explosives", 1);
 
         var clusterGrenade = new ClusterGrenadeAbilityDefinition().BuildAbilities()[FeatType.ClusterGrenade1];
-        AssertAbility(clusterGrenade, "Cluster Grenade", 1, RecastGroup.ClusterGrenade, 45f, 1f, 5);
+        AssertAbility(clusterGrenade, "Cluster Grenade", 1, RecastGroup.ClusterGrenade, 45f, 1f, 5, "explosives", 1);
 
         var thermalDetonator = new ThermalDetonatorAbilityDefinition().BuildAbilities()[FeatType.ThermalDetonator1];
         AssertAbility(thermalDetonator, "Thermal Detonator", 1, RecastGroup.Capstone, 345f, 1.5f, 15, "explosives", 1);

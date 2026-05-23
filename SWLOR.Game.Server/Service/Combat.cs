@@ -3956,9 +3956,11 @@ namespace SWLOR.Game.Server.Service
             if (useDefaultMinimumDelay)
                 return BaseAttackDelayMilliseconds;
 
-            return attackerDelayMilliseconds > BaseAttackDelayMilliseconds
-                ? attackerDelayMilliseconds - BaseAttackDelayMilliseconds
-                : BaseAttackDelayMilliseconds;
+            if (attackerDelayMilliseconds <= BaseAttackDelayMilliseconds)
+                return BaseAttackDelayMilliseconds;
+
+            var effectiveDelay = attackerDelayMilliseconds - BaseAttackDelayMilliseconds;
+            return Math.Max(BaseAttackDelayMilliseconds, effectiveDelay);
         }
 
         private static int ApplyOffhandAttackDelayReduction(uint attacker, int offhandDelay)

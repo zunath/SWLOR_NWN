@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "2": "Le fusil Outland, qui peut emporter jusqu'à huit cartouches, repose sur une technologie certes primitive mais éprouvée, ne nécessitant qu'un minimum d'entretien et surtout aucun appareil moderne et coûteux.\n\nMunitions : Cellules d'énergie standard"
+      "2": "Le fusil Outland, qui peut emporter jusqu'ï¿½ huit cartouches, repose sur une technologie certes primitive mais ï¿½prouvï¿½e, ne nï¿½cessitant qu'un minimum d'entretien et surtout aucun appareil moderne et coï¿½teux.\n\nMunitions : Cellules d'ï¿½nergie standard"
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "2": "Le fusil Outland, qui peut emporter jusqu'à huit cartouches, repose sur une technologie certes primitive mais éprouvée, ne nécessitant qu'un minimum d'entretien et surtout aucun appareil moderne et coûteux.\n\nMunitions : Cellules d'énergie standard"
+      "2": "Le fusil Outland, qui peut emporter jusqu'ï¿½ huit cartouches, repose sur une technologie certes primitive mais ï¿½prouvï¿½e, ne nï¿½cessitant qu'un minimum d'entretien et surtout aucun appareil moderne et coï¿½teux.\n\nMunitions : Cellules d'ï¿½nergie standard"
     }
   },
   "Identified": {
@@ -113,7 +113,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 45
+          "value": 47
         },
         "Param1": {
           "type": "byte",

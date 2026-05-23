@@ -48,6 +48,15 @@ Standards for gameplay icon color, uniqueness, rank display, and audit/generatio
 - **Conditional numeric rank badge requirements**
 - **Generator and audit enforcement expectations**
 
+### [CombatUpgradeImplementationStatus.md](CombatUpgradeImplementationStatus.md)
+Current combat-upgrade status, latest audit results, verification notes, and remaining release-validation work.
+
+### [CombatUpgradeImplementationPlan.md](CombatUpgradeImplementationPlan.md)
+Combat-upgrade implementation scope, acceptance criteria, generated audit artifact notes, and follow-up work.
+
+### [CombatUpgradeMigration.md](CombatUpgradeMigration.md)
+Migration notes for forced rebuild, perk refunds/removals, defense/resistance data movement, and item-property cleanup.
+
 ### [Services.md](Services.md)
 Comprehensive documentation of the Service layer, which handles the core business logic and game mechanics. This includes:
 

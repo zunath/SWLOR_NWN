@@ -5,15 +5,28 @@ This note tracks player migration work for `feature/combat-upgrade`. Keep it cur
 ## Current Migration Hook
 
 - Server migration: `SWLOR.Game.Server/Feature/MigrationDefinition/ServerMigration/_22_CombatSystemReplacement.cs`
+- Server migration: `SWLOR.Game.Server/Feature/MigrationDefinition/ServerMigration/_23_UpdateSerializedItemRequirements.cs`
 - Server migration: `SWLOR.Game.Server/Feature/MigrationDefinition/ServerMigration/_28_SplitDefensesAndResistances.cs`
-- Execution type: `PostDatabaseLoad`
+- Server migration: `SWLOR.Game.Server/Feature/MigrationDefinition/ServerMigration/_29_AddBeastResistancePurities.cs`
+- Server migration: `SWLOR.Game.Server/Feature/MigrationDefinition/ServerMigration/_30_RemoveBeastSavingThrowPurities.cs`
+- Server migration: `SWLOR.Game.Server/Feature/MigrationDefinition/ServerMigration/_31_MigrateResistanceItemProperties.cs`
+- Server migration: `SWLOR.Game.Server/Feature/MigrationDefinition/ServerMigration/_32_SpaceResistanceTypeIds.cs`
+- Server migration: `SWLOR.Game.Server/Feature/MigrationDefinition/ServerMigration/_33_MoveBeastElementalPuritiesToResistances.cs`
+- Server migration: `SWLOR.Game.Server/Feature/MigrationDefinition/ServerMigration/_34_RemoveObsoleteBiblePerks.cs`
+- Player migration: `SWLOR.Game.Server/Feature/MigrationDefinition/PlayerMigration/_14_MigrateResistanceItemProperties.cs`
+- Player migration: `SWLOR.Game.Server/Feature/MigrationDefinition/PlayerMigration/_15_RemoveObsoleteCombatInstructionDiscs.cs`
+- Server execution type: `PostDatabaseLoad`
 - Current behavior:
   - Refunds removed or materially changed combat perks through `RefundPerksByMapping`.
   - Removes refunded legacy perk keys before the forced rebuild refund path can process them again.
   - Preserves legacy numeric `FlurryStyle` saves as the current `FlurryStyle` perk so that investment is not silently dropped.
   - Forces every player through a full rebuild by setting `Player.RebuildComplete = false` via `RequireFullRebuildForAllPlayers()`.
+  - Updates stored item requirement properties to the combat-upgrade skill requirement model.
   - Splits persisted mitigation data so Physical/Force remain in `Player.Defenses` and elemental/status mitigation lives in `Player.Resistances`.
   - Moves legacy elemental defense entries into resistances, fills missing default keys, and removes Physical/Force from resistances.
+  - Adds and normalizes beast resistance purities, removes legacy beast saving throw purities, and moves beast elemental purities out of defenses.
+  - Migrates live and serialized item properties for the new resistance, weapon damage, and weapon delay property model, including untyped `DMG`, separate `WeaponDamageType`, and normalized weapon `Delay`.
+  - Removes obsolete Bible perks, stale recast entries, and obsolete combat instruction discs from players, beasts, stored items, markets, world properties, research jobs, outfits, DM creatures, and ships.
 
 ## Player-Facing Migration Goals
 
@@ -65,13 +78,14 @@ Important nuance: setting the flag to `false` does not itself reset the characte
 - Character sheet redesign remains outstanding: the first pass keeps the existing defense/resistance display shape for compatibility, but a later UI pass should rename the bound model properties and present baseline Defense separately from typed Resistances.
 - Confirm `_22_CombatSystemReplacement` still runs immediately after master migration `_21_SetDefaultOutfitAndMarketLimits`. If another migration is added first, renumber the combat upgrade migration series.
 - Confirm perk refund totals against the final perk prices in `PerkDefinition` files.
-- Confirm removed perks no longer appear in perk builders, droid default perk maps, or any player migration re-application logic.
+- Confirm removed perks no longer appear in perk builders, droid default perk maps, instruction discs, or any player migration re-application logic.
 - Confirm stale BAB/attacks-per-round logic remains removed:
   - `Stat.ApplyAttacksPerRound`
   - calls from player initialization/login temporary effects
   - beast/droid setup
   - equip/purchase/refund triggers
-- Confirm player-owned weapons/items do not need a one-time item-property migration for Delay or DMG after the hak and item generation changes settle.
+- Dry-run the item-property migrations against representative live data for player inventories, markets, world property storage, research jobs, player outfits, DM creatures, ships, and nested serialized inventories.
+- Confirm the weapon Delay migration updates old Throwing/Vibroknife values and preserves training-weapon and intentional short-sword delay exceptions in representative live data. Checked-in module templates and embedded `.git` area/store item instances have already been normalized to the updated delay table.
 - Confirm active status effects from the old status effect service do not need cleanup for players who were logged out with `AdrenalStim*` or `Hasten*` effects active.
 - Add release notes telling players they must perform a forced full rebuild and that removed combat perks were refunded.
 

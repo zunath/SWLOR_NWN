@@ -1,6 +1,6 @@
 # Combat Upgrade Implementation Plan
 
-Last reviewed against the Combat Upgrade Bible on 2026-05-11.
+Last reviewed against the Combat Upgrade Bible on 2026-05-23.
 
 ## Source Of Truth
 
@@ -145,7 +145,7 @@ Implement the full weapon tabs as written:
 - Rifle
 - Throwing
 
-The initial sheet read shows 36-37 perk rows per weapon tab, and most weapon tabs are marked `Not Implemented` in the Bible. Treat this as the largest remaining feature block.
+As of the 2026-05-23 local-workbook audit refresh, the scoped perk/ability/recast/static-status audit findings for these tabs are closed. Treat the remaining weapon-tree work as live behavior validation and release hardening rather than missing row implementation.
 
 Acceptance criteria:
 
@@ -180,7 +180,7 @@ Update these tabs to Bible values:
 - Leadership
 - First Aid
 
-The Bible marks many Force, Devices, First Aid, and Leadership rows as implemented, but existing code still needs a value-by-value audit because implementation status in the sheet is not proof the feature branch matches current Bible numbers.
+The static audit is clean for the current scoped Force, Devices, Leadership, and First Aid rows. Continue to spot-check live values during playtest because implementation status in the sheet is not a substitute for runtime behavior validation.
 
 Acceptance criteria:
 
@@ -341,14 +341,14 @@ Status: removed from the feature branch implementation on 2026-05-05.
 - `CombatUpgradePerkAudit.csv` compares Bible perk rows against current perk definitions by normalized perk name.
 - `CombatUpgradeBiblePerkManifest.csv` is the exported perk-row manifest from all audited Bible tabs with perk tables.
 - Current local-workbook audit summary:
-  - Raw Bible perk rows: 999
-  - Scoped audit findings: 342
-  - Missing Bible perk names in code: 107
-  - Active Bible rows missing ability definitions: 106
-  - Active Bible rows missing detected recast wiring: 126
-  - Bible-described status applications absent from matching ability implementation: 3
+  - Scoped Bible rows: 897
+  - Scoped audit findings: 0
+  - Missing Bible perk names in code: 0
+  - Active Bible rows missing ability definitions: 0
+  - Active Bible rows missing detected recast wiring: 0
+  - Bible-described status applications absent from matching ability implementation: 0
 
-The audit is intentionally a work queue, not final truth. Some rows need human review where the Bible consolidated names, changed categories, changed tab-specific columns, or converted old proficiency concepts into skill prerequisites.
+The audit is intentionally a work queue, not final truth. A clean audit means the static checks found no scoped gaps; it does not replace playtesting, value spot-checking, migration dry-runs, or target metadata review.
 
 Audit totals should exclude Espionage and Farming-only rows. If an all-tab export includes those rows, keep them in the raw manifest for traceability but omit them from combat-upgrade missing-work counts.
 
@@ -359,5 +359,5 @@ Implemented cleanup so far:
 
 Additional follow-up:
 
-- Add droid instruction discs for the combat-upgrade perk set after the core perk implementation is stable.
-- Audit and update all existing items so weapons, armor, crafting equipment, enhancements, and droid equipment use the new skill restriction requirements consistently.
+- Audit droid instruction disc availability for the final combat-upgrade perk set. Obsolete combat instruction discs are removed by migration, but retained or replacement disc availability still needs release review.
+- Finish live-module validation for weapons, armor, crafting equipment, enhancements, and droid equipment. Recent item work normalized weapon `Delay`, `DMG`, `WeaponDamageType`, and resistance enhancement values, including embedded `.git` area/store weapon copies for `Delay`; release still needs representative equip, crafting, migration, and combat smoke tests.

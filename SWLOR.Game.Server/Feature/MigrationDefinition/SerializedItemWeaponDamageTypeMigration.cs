@@ -49,6 +49,26 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             [23] = CombatDamageType.Ice,
         };
 
+        private static readonly Dictionary<string, int> DelayCostByResref = new(StringComparer.OrdinalIgnoreCase)
+        {
+            ["t_longsword"] = 34,
+            ["t_katar"] = 32,
+            ["t_twinblade"] = 48,
+            ["t_knife"] = 32,
+            ["t_staff"] = 44,
+            ["t_rifle"] = 50,
+            ["t_greatsword"] = 50,
+            ["t_pistol"] = 40,
+            ["t_electroblade"] = 36,
+            ["t_spear"] = 46,
+            ["t_shuriken"] = 32,
+            ["t_twin_elec"] = 48,
+
+            ["byyskwarriorswor"] = 31,
+            ["sith_blade"] = 31,
+            ["wswss002"] = 31,
+        };
+
         public static bool MigrateSerializedObject(string serializedObject, out string migratedSerializedObject)
         {
             migratedSerializedObject = serializedObject;
@@ -112,6 +132,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
                 return wasMigrated;
 
             wasMigrated |= MigrateWeaponItem(item);
+            wasMigrated |= MigrateWeaponDelayItem(item);
             return wasMigrated;
         }
 
@@ -172,6 +193,54 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             }
 
             return true;
+        }
+
+        private static bool MigrateWeaponDelayItem(uint item)
+        {
+            var targetDelayCost = GetTargetDelayCost(item);
+            if (!targetDelayCost.HasValue)
+                return false;
+
+            var delayProperties = new List<(ItemProperty Property, int Value)>();
+            for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
+            {
+                if (GetItemPropertyType(ip) == ItemPropertyType.Delay)
+                    delayProperties.Add((ip, GetItemPropertyCostTableValue(ip)));
+            }
+
+            if (delayProperties.Count == 1 &&
+                delayProperties[0].Value == targetDelayCost.Value)
+            {
+                return false;
+            }
+
+            foreach (var property in delayProperties)
+            {
+                RemoveItemProperty(item, property.Property);
+            }
+
+            BiowareXP2.IPSafeAddItemProperty(
+                item,
+                ItemPropertyCustom(ItemPropertyType.Delay, -1, targetDelayCost.Value),
+                0.0f,
+                AddItemPropertyPolicy.ReplaceExisting,
+                false,
+                false);
+
+            return true;
+        }
+
+        private static int? GetTargetDelayCost(uint item)
+        {
+            var resref = GetResRef(item);
+            if (!string.IsNullOrWhiteSpace(resref) &&
+                DelayCostByResref.TryGetValue(resref, out var resrefDelayCost))
+            {
+                return resrefDelayCost;
+            }
+
+            var baseItem = GetBaseItemType(item);
+            return WeaponDelay.GetWeaponDelay(baseItem);
         }
 
         private static bool MigrateEnhancementItem(uint item)

@@ -17,6 +17,7 @@
 ## Full Rebuild Changes
 
 - For rebuild-era changes covered by a planned full character rebuild, do not add one-off player migrations solely to remove or refund deleted perks, blueprints, skills, or similar character-build data. Rely on the full rebuild path unless the change affects persistent data that survives rebuild or server/world state outside character builds.
+- Until the combat-upgrade migration set ships, fold additional combat-upgrade migration work into the existing in-flight combat-upgrade migrations instead of adding new numbered migration files. Add new numbered migrations only after the prior migration version has shipped, or when a change must run separately because of execution timing.
 
 ## TLK Entries
 

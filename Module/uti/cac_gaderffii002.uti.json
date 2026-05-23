@@ -42,7 +42,7 @@
     "type": "cexolocstring",
     "value": {
       "0": "Tusken Baton",
-      "2": "Bâton Gaderffii"
+      "2": "Bï¿½ton Gaderffii"
     }
   },
   "ModelPart1": {
@@ -80,7 +80,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 40
+          "value": 43
         },
         "Param1": {
           "type": "byte",

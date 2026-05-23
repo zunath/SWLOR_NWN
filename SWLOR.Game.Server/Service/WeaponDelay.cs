@@ -12,18 +12,18 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         private static readonly Dictionary<List<BaseItem>, int> _weaponCategoryDelays = new()
         {
-            {Item.VibrobladeBaseItemTypes, 23},
-            {Item.KatarBaseItemTypes, 21},
-            {Item.TwinBladeBaseItemTypes, 42},
-            {Item.VibroknifeBaseItemTypes, 20},
-            {Item.StaffBaseItemTypes, 37},
-            {Item.RifleBaseItemTypes, 45},
-            {Item.HeavyVibrobladeBaseItemTypes, 45},
-            {Item.PistolBaseItemTypes, 29},
-            {Item.LightsaberBaseItemTypes, 24},
-            {Item.SpearBaseItemTypes, 40},
-            {Item.ThrowingWeaponBaseItemTypes, 18},
-            {Item.SaberstaffBaseItemTypes, 43}
+            {Item.VibrobladeBaseItemTypes, 31},
+            {Item.KatarBaseItemTypes, 29},
+            {Item.TwinBladeBaseItemTypes, 45},
+            {Item.VibroknifeBaseItemTypes, 29},
+            {Item.StaffBaseItemTypes, 41},
+            {Item.RifleBaseItemTypes, 47},
+            {Item.HeavyVibrobladeBaseItemTypes, 47},
+            {Item.PistolBaseItemTypes, 37},
+            {Item.LightsaberBaseItemTypes, 32},
+            {Item.SpearBaseItemTypes, 43},
+            {Item.ThrowingWeaponBaseItemTypes, 29},
+            {Item.SaberstaffBaseItemTypes, 45}
         };
 
         /// <summary>

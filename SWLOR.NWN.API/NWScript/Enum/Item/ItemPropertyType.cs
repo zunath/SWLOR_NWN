@@ -133,5 +133,6 @@ namespace SWLOR.NWN.API.NWScript.Enum.Item
         RequiresStat = 132,
         Resistance = 133,
         WeaponDamageType = 134,
+        ShieldDeflection = 135,
     }
 }

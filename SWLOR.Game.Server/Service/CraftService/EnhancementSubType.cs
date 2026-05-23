@@ -237,6 +237,8 @@ namespace SWLOR.Game.Server.Service.CraftService
         DroidRifle = 125,
         [EnhancementSubType("Droid - Throwing")]
         DroidThrowing = 126,
+        [EnhancementSubType("Shield Deflection")]
+        ShieldDeflection = 127,
 
 
     }

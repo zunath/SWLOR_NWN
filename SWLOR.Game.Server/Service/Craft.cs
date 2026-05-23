@@ -607,6 +607,8 @@ namespace SWLOR.Game.Server.Service
                     return ItemPropertyCustom(ItemPropertyType.Control, 1, amount);
                 case EnhancementSubType.CraftsmanshipSmithery: // Craftsmanship - Smithery
                     return ItemPropertyCustom(ItemPropertyType.Craftsmanship, 1, amount);
+                case EnhancementSubType.ShieldDeflection: // Shield Deflection
+                    return ItemPropertyCustom(ItemPropertyType.ShieldDeflection, -1, amount);
 
                 // 16 and 17 are applied within the view model, as they are not actually item properties.
 

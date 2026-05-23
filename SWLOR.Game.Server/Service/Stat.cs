@@ -34,6 +34,7 @@ namespace SWLOR.Game.Server.Service
         private const int DefaultAttackDeflectionChanceCap = 50;
         private const int MaximumDeflectionChanceCap = 100;
         private const int MaximumShieldDeflectionChance = 75;
+        private const int InherentShieldDeflectionChance = 10;
         private const int MaximumGuardChance = 100;
         private const float MinimumMovementSpeedMultiplier = 0f;
         private const float MaximumMovementSpeedMultiplier = 1.5f;
@@ -1397,19 +1398,25 @@ namespace SWLOR.Game.Server.Service
 
         public static int GetShieldDeflectionChanceNative(CNWSCreature creature)
         {
-            if (!HasShieldEquippedNative(creature))
+            var shield = GetEquippedShieldNative(creature);
+            if (shield == null)
                 return 0;
 
-            var chance = GetStatAdjustment(creature.m_idSelf, StatType.ShieldDeflection);
+            var chance = InherentShieldDeflectionChance +
+                         GetShieldDeflectionItemPropertyBonusNative(shield) +
+                         GetStatAdjustment(creature.m_idSelf, StatType.ShieldDeflection);
             return Math.Clamp(chance, 0, MaximumShieldDeflectionChance);
         }
 
         public static int GetShieldDeflectionChance(uint creature)
         {
-            if (!HasShieldEquipped(creature))
+            var shield = GetEquippedShield(creature);
+            if (!GetIsObjectValid(shield))
                 return 0;
 
-            var chance = GetStatAdjustment(creature, StatType.ShieldDeflection);
+            var chance = InherentShieldDeflectionChance +
+                         GetShieldDeflectionItemPropertyBonus(shield) +
+                         GetStatAdjustment(creature, StatType.ShieldDeflection);
             return Math.Clamp(chance, 0, MaximumShieldDeflectionChance);
         }
 
@@ -1553,15 +1560,53 @@ namespace SWLOR.Game.Server.Service
 
         private static bool HasShieldEquippedNative(CNWSCreature creature)
         {
-            return Item.IsBaseItemType(
-                creature.m_pInventory.GetItemInSlot((uint)EquipmentSlot.LeftHand),
-                Item.ShieldBaseItemTypes);
+            return GetEquippedShieldNative(creature) != null;
         }
 
         private static bool HasShieldEquipped(uint creature)
         {
+            return GetIsObjectValid(GetEquippedShield(creature));
+        }
+
+        private static CNWSItem GetEquippedShieldNative(CNWSCreature creature)
+        {
+            var leftHandItem = creature.m_pInventory.GetItemInSlot((uint)EquipmentSlot.LeftHand);
+            return Item.IsBaseItemType(leftHandItem, Item.ShieldBaseItemTypes)
+                ? leftHandItem
+                : null;
+        }
+
+        private static uint GetEquippedShield(uint creature)
+        {
             var leftHandItem = GetItemInSlot(InventorySlot.LeftHand, creature);
-            return Item.IsBaseItemType(leftHandItem, Item.ShieldBaseItemTypes);
+            return Item.IsBaseItemType(leftHandItem, Item.ShieldBaseItemTypes)
+                ? leftHandItem
+                : OBJECT_INVALID;
+        }
+
+        private static int GetShieldDeflectionItemPropertyBonusNative(CNWSItem shield)
+        {
+            var bonus = 0;
+            for (var index = 0; index < shield.m_lstPassiveProperties.Count; index++)
+            {
+                var ip = shield.GetPassiveProperty(index);
+                if (ip?.m_nPropertyName == (ushort)ItemPropertyType.ShieldDeflection)
+                    bonus += ip.m_nCostTableValue;
+            }
+
+            return bonus;
+        }
+
+        private static int GetShieldDeflectionItemPropertyBonus(uint shield)
+        {
+            var bonus = 0;
+            for (var ip = GetFirstItemProperty(shield); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(shield))
+            {
+                if (GetItemPropertyType(ip) == ItemPropertyType.ShieldDeflection)
+                    bonus += GetItemPropertyCostTableValue(ip);
+            }
+
+            return bonus;
         }
 
         private static int ApplyPostAccuracyStatusModifiers(uint creature, int accuracy)

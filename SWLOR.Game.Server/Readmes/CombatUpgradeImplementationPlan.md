@@ -1,6 +1,6 @@
 # Combat Upgrade Implementation Plan
 
-Last reviewed against the Combat Upgrade Bible on 2026-05-23.
+Last reviewed against the Combat Upgrade Bible on 2026-06-08.
 
 ## Source Of Truth
 
@@ -92,6 +92,7 @@ If future audits compare every visible Bible tab against code, filter these area
 - Migration must force every player through the rebuild flow without requiring a rebuild token.
 - The skill cap is 400. Do not reintroduce a 350-cap/Armor-exception split or make Armor exempt from normal active-skill SP behavior.
 - Combat-upgrade ability and perk scaling must be balanced around the practical player stat band. A focused character is expected to reach 26 in one ability stat, with rare 27 cases when the build uses a racial stat point. Food and other temporary item effects can push a stat a little higher for short windows, so scaling formulas must remain bounded above that normal band: either clamp at the documented cap or use an explicit soft-overcap rule. Do not tune baseline perk/ability values around temporary food-buffed stats.
+- Combat perk trees should target 4-6 distinct active buttons per tree, counting rank-replacement chains as one button and counting Combat, Stance, Toggle, and Aura rows as active. Use `CombatUpgradeActivePerkBudgetReview.md` as the current design pass for active-to-trait conversions before changing the Bible workbook or generated active ability surfaces.
 
 ## Bible-Level Scope
 

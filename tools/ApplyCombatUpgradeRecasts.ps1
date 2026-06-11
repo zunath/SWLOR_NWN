@@ -68,7 +68,7 @@ function Get-ShortName {
         "Bolster Resolve" = "Bolster Res."
         "Circle of Harmony" = "Harmony Circle"
         "Cluster Grenade" = "Cluster Gren"
-        "Comprehend Speech" = "Comp. Speech"
+        "Precognition" = "Precognition"
         "Concussion Grenade" = "Concuss Gren"
         "Coordinated Strike" = "Coord. Strike"
         "Creeping Terror" = "Creep Terror"

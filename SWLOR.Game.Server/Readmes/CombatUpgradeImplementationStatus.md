@@ -1,6 +1,6 @@
 # Combat Upgrade Implementation Status
 
-Last updated: 2026-05-23
+Last updated: 2026-06-09
 
 ## Source Of Truth
 
@@ -34,7 +34,9 @@ Espionage and Farming are out of scope. The audit also excludes crafting, resear
 
 Combat-upgrade stat scaling is balanced around the practical player stat band: a focused character is expected to reach 26 in one ability stat, with rare 27 cases when a racial stat point is used. Food and other temporary item effects can push a stat a little higher for short windows, but baseline perk and ability values should not be tuned around those temporary overcap states. Scaling formulas should stay bounded above the normal band by using a documented cap or explicit soft-overcap rule.
 
-The combat-upgrade skill cap is 400. Armor remains an active skill for equipment requirements and normal SP progression, but Armor perks are no longer part of the combat-upgrade implementation scope. Older workbook or manifest rows for General/Heavy/Light Armor perks should be treated as stale until the local Bible snapshot is refreshed.
+The combat-upgrade skill cap is 400. Armor remains an active skill for equipment requirements and normal SP progression, but Armor perks are no longer part of the combat-upgrade implementation scope. Older workbook or manifest rows for General/Heavy/Light Armor perks should be ignored in combat-upgrade active-button counts.
+
+The local Bible workbook now applies the active-button budget pass from `CombatUpgradeActivePerkBudgetReview.md`. Combat perk trees target 4-6 distinct active buttons, counting rank-replacement chains as one button. After the latest local-workbook refresh, all reviewed in-scope combat trees land at 5-6 distinct active bases.
 
 The first implementation pass closed a few narrow, concrete gaps:
 
@@ -78,16 +80,17 @@ The first implementation pass closed a few narrow, concrete gaps:
 - Rebalanced armor, food, and droid resistance enhancement amounts for the new resistance curve. Player and server migrations update live player inventories plus stored serialized records in inventories, markets, world properties, research jobs, outfits, DM creatures, and ships.
 - Added migration coverage for obsolete Bible perks and obsolete combat instruction discs.
 - Clamped effective auto-attack delay to the engine's 1.75s practical floor after baseline subtraction and delay reductions. Weapon delay values were raised across the table so the fastest normal weapons sit above that floor and can benefit from haste, natural creature weapons use the same fastest-category delay, training weapons use slower Bible-listed values, module templates plus embedded area/store item instances use the updated values, all Bible `World NPCs` rows now resolve to equipped weapon/natural delay sources, and player/server migrations normalize existing weapon `Delay` item properties.
+- Converted 97 local Bible rows from active abilities to traits for the active-button budget pass, cleared their active-only cost/timing/cooldown fields, preserved stance/toggle/aura rows as active buttons, folded single-perk riders and redundant active variants into their target perk lines, broadened multi-ability riders to tree/role categories, removed redundant `Passive` wording, clarified resistance names, removed equipment-gate wording, refreshed `CombatUpgradeBiblePerkManifest.csv`, and kept the static audit header-only against the refreshed workbook.
 
-The latest checked-in local-workbook audit currently reports no scoped findings. After refreshing from the checked-in workbook on 2026-05-23, `CombatUpgradeBiblePerkManifest.csv` contains 897 scoped rows and `CombatUpgradePerkAudit.csv` contains only its header row. If that workbook snapshot still contains stale Armor perk rows, refresh the Bible/workbook before treating the row count as final; Armor perk rows should not be counted as combat-upgrade work.
+The latest checked-in local-workbook audit currently reports no scoped findings. After refreshing from the checked-in workbook on 2026-06-09, `CombatUpgradeBiblePerkManifest.csv` contains 897 scoped rows and `CombatUpgradePerkAudit.csv` contains only its header row. Armor rows should not be counted as combat-upgrade active-button work.
 
-The scoped combat-upgrade audit is clean against the 2026-05-22 local workbook snapshot. Espionage remains intentionally excluded by the current combat-upgrade implementation scope.
+The scoped combat-upgrade audit is clean against the 2026-06-09 local workbook snapshot. Espionage remains intentionally excluded by the current combat-upgrade implementation scope. The current audit does not yet flag stale active ability definitions, feat grants, or recast/2DA surfaces for rows that were changed from active types to `Trait`, so the active-to-trait implementation cleanup is now separate remaining work.
 
 The combat-upgrade feat and spell icon resource checks pass for the scoped rows audited by the script. Generated combat feat `SPELLID` links are present, and active ability definitions have detected recast wiring for Bible cooldowns.
 
 ## Major Remaining Gaps
 
-The static Bible-to-code audit is clean, so the remaining work is release validation rather than missing row implementation.
+The static Bible-to-code audit is clean, but the active-button budget pass creates a new implementation cleanup slice. Rows changed from active types to `Trait` need their old active feat grants, ability definitions, active-only recast wiring, and generated player-facing feat/spell surfaces removed or folded into retained trait/stat behavior.
 
 Armor-specific perk implementation is not remaining work. The remaining Armor work is equipment requirement validation, skill-cap/SP validation at the 400 cap, and cleanup verification that stale Armor perk entries are absent from player-facing data.
 
@@ -103,9 +106,11 @@ The `experimental/combat-upgrade-status-effects` branch was checked as a referen
 
 ## Next Steps
 
-1. Playtest conditional/channel/persistent-field abilities such as Current Overload, Serpent's Eclipse, Tempest Bloom, Pacification Field, Gas Bomb, Disruption Field, Shield Wall, Force Capacitor, and Infinite Conduit against the live module.
-2. Smoke-test forced rebuild, equipment skill requirements, weapon Delay/DMG, resistance enhancement behavior, and serialized item migrations against representative live data.
-3. Verify Armor uses the 400 skill cap/SP path and that stale Armor perk rows, feats, instruction discs, and UI entries are not exposed.
-4. Refine generated spell target metadata after any ability-specific target shape/range adjustments are confirmed in play.
-5. Decide when Espionage should enter scope; it remains Design-stage and intentionally excluded from the current audit.
-6. Keep `tools\UpdateCombatUpgradeAudit.ps1`, the build/tests, and this status file aligned when the Bible changes.
+1. Implement the active-to-trait cleanup from `CombatUpgradeActivePerkBudgetReview.md`: remove stale active feat grants/ability definitions/recasts for converted traits and preserve behavior through trait/stat/status hooks.
+2. Extend the audit so rows changed to `Trait` can flag stale active player-facing surfaces.
+3. Playtest conditional/channel/persistent-field abilities such as Current Overload, Serpent's Eclipse, Tempest Bloom, Pacification Field, Gas Bomb, Disruption Field, Shield Wall, Force Capacitor, and Infinite Conduit against the live module.
+4. Smoke-test forced rebuild, equipment skill requirements, weapon Delay/DMG, resistance enhancement behavior, and serialized item migrations against representative live data.
+5. Verify Armor uses the 400 skill cap/SP path and that stale Armor perk rows, feats, instruction discs, and UI entries are not exposed.
+6. Refine generated spell target metadata after any ability-specific target shape/range adjustments are confirmed in play.
+7. Decide when Espionage should enter scope; it remains Design-stage and intentionally excluded from the current audit.
+8. Keep `tools\UpdateCombatUpgradeAudit.ps1`, the build/tests, and this status file aligned when the Bible changes.

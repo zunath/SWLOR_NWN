@@ -1,6 +1,6 @@
 # Combat Upgrade Active Perk Budget Review
 
-Last reviewed: 2026-06-09
+Last reviewed: 2026-06-11
 
 ## Recommended Rule
 
@@ -38,7 +38,7 @@ Armor is not a combat-upgrade perk tree and should stay out of this budget. Espi
 | Beast Mastery | Training | 6 | 6 | None |
 | Devices | Assault Gadgets | 6 | 6 | None |
 | Devices | Field Engineer | 6 | 6 | None |
-| Devices | Field Support | 7 | 6 | Rayshield Screen |
+| Devices | Field Support | 7 | 5 | Rayshield Screen; Dampening Field |
 | Devices | Grenadier | 7 | 6 | Cluster Grenade |
 | First Aid | Combat Pharmacology | 7 | 6 | Coagulant |
 | First Aid | Trauma Medic | 7 | 6 | Emergency Sealant |
@@ -87,6 +87,7 @@ The conversion list favors buttons that are redundant with a retained active or 
 - Stances, toggles, and auras such as Berserker Stance, Blazing Spikes, Sniper Stance, Tempest Stance, Deadly Precision, Rallying Standard, and Steady Formation remain active buttons.
 - Converted traits should not be useless unless another unrelated perk is also purchased. The 2026-06-08 follow-up folds single-line riders such as Earthshatter II, Force Grip III, Smoke Bomb II, Predator's Mark II, Riot Blade II, and Savage Cleave II into their target perk lines, and broadens the remaining multi-ability riders to tree/role categories.
 - Thunderous Challenge was folded into Guardian's Challenge II because the old Lightsaber Defense version duplicated Guardian's Challenge as a damage-plus-enmity challenge button with only line geometry and a longer cooldown separating it.
+- The 2026-06-11 Field Support follow-up converts `Rayshield Screen I-II` and `Dampening Field I-II` into mitigation traits attached to Field Support ally buffs. This removes the placed Rayshield screen area and turns Dampening into a lower-potency support rider instead of another active buff button.
 
 ## Balance Review Notes
 
@@ -96,6 +97,8 @@ The 2026-06-09 balance pass uses these cross-tree constraints:
 - Recurring sustain traits should not outpace active healer/support tools. Heavy Vibroblade Offense keeps its high-risk HP-spend identity, but Bloodlust, Vampiric Fury, and Soul Strike III are tuned down and throttled so they do not combine into near-permanent self-healing and stamina recovery.
 - Weapon-tree passive party support should not eclipse Leadership. Spear's stance-linked party hit bonus is reduced to a small passive value, leaving larger group throughput packages to Leadership commands and capstones.
 - Light Force should not be reduced to healing and defense only. Light-side damage should read as controlled pressure, kinetic impact, judgment, or subdual paired with restraint/protection riders, while Dark remains the stronger raw damage, drain, and execute identity. Do not make a plainly nonviolent name such as `Pacify` deal damage; keep `Pacify` as mitigation/control or rename the line if it becomes offensive.
+- The 2026-06-11 additive Light DPS pass restores `Throw Rock I-III` as Light-aligned Alter kinetic damage without replacing `Throw Lightsaber`, `Force Spark`, or any other existing Force line. This raises Force from 220 SP to 229 SP, so `Arc Projector I-III` was added to Devices Assault Gadgets for a matching +9 SP and keeps Devices at 229 SP.
+- The 2026-06-11 follow-up replaces the mistaken fourth-rank idea with `Radiant Lance I-III` as a new Light Sense 8m line DPS ability. `Ion Lance I-III` was added as the matching Devices Assault Gadgets 8m line DPS ability. A later 2026-06-11 SP rebalance lowers `Radiant Lance I`, shifts Devices category costs to `59/59/59/60`, and leaves Force and Devices equal at 237 SP.
 - Universal Force riders should not be narrowed to Dark-only triggers when their notes or role say they are universal. Use `damaging Force power` for universal triggers and reserve `damaging Dark Force power` for traits that intentionally require Dark affinity or Dark tree attacks.
 - Restore `Throw Lightsaber` as a Force Universal active line. Despite the legacy name, its design should work with any equipped weapon type and should not add a lightsaber-only equipment requirement.
 - Damage and pulse descriptions should avoid vague terms such as `light damage`, `increased DMG`, or `high DMG`. Rows should state the base damage, damage type, scaling source where applicable, target count/area, and status duration.
@@ -103,9 +106,10 @@ The 2026-06-09 balance pass uses these cross-tree constraints:
 
 ## Implementation Follow-Up
 
-The local Bible workbook was updated on 2026-06-08 with `tools/ApplyCombatUpgradeActivePerkBudget.ps1`, and `CombatUpgradeBiblePerkManifest.csv` was refreshed from the workbook. The pass converted 97 active-budget workbook rows to `Trait` rows and preserved stance, toggle, and aura rows as active buttons. On 2026-06-09, `tools/ApplyCombatUpgradeForceUniversal.ps1` restored the Force Universal classification and the Throw Lightsaber line. This is a design-only review; the remaining implementation cleanup should happen in a separate code pass:
+The local Bible workbook was updated on 2026-06-08 with `tools/ApplyCombatUpgradeActivePerkBudget.ps1`, and `CombatUpgradeBiblePerkManifest.csv` was refreshed from the workbook. The pass converted 97 active-budget workbook rows to `Trait` rows and preserved stance, toggle, and aura rows as active buttons. On 2026-06-09, `tools/ApplyCombatUpgradeForceUniversal.ps1` restored the Force Universal classification and the Throw Lightsaber line. On 2026-06-11, `tools/ApplyForceDevicesAdditiveDpsBalance.ps1` restored Throw Rock as an additive Light Alter DPS line, added Radiant Lance as a new Light Sense 8m line DPS ability, and added matching Arc Projector and Ion Lance rows to Devices. On 2026-06-11, `tools/ApplyFieldSupportTraitFeedback.ps1` converted Rayshield Screen and Dampening Field into Field Support mitigation traits without changing Devices SP. On 2026-06-11, `tools/ApplyDevicesForceSpRebalance.ps1` redistributed Devices to `59/59/59/60` across its four categories and keeps Force and Devices equal at 237 SP. This is a design-only review; the remaining implementation cleanup should happen in a separate code pass:
 
 1. Update code for each converted base: remove active feat grants, remove or retire ability definitions, remove active-only recast/status wiring that no retained active uses, and preserve behavior through `StatType` or local status-effect hooks.
 2. Extend the audit to flag stale active surfaces for manifest rows that are now `Trait`, because the current audit only checks that active rows have ability definitions.
-3. Implement the restored `Throw Lightsaber` active line as Force Universal and preserve all-weapon compatibility. Until that code pass lands, `CombatUpgradePerkAudit.csv` should report three `MissingAbilityDefinition` rows for Throw Lightsaber; unrelated audit rows should be handled separately.
-3. Run the focused perk review/audit scripts and the server test project before handoff.
+3. Implement the restored `Throw Lightsaber` active line as Force Universal and preserve all-weapon compatibility. Implement `Throw Rock` as a Light Alter kinetic DPS line, `Radiant Lance` as a Light Sense 8m line DPS ability, and `Arc Projector`/`Ion Lance` as Assault Gadgets electrical DPS lines. Until that code pass lands, `CombatUpgradePerkAudit.csv` should report `MissingAbilityDefinition` rows for these design-added lines; unrelated audit rows should be handled separately.
+4. Revisit Field Support implementation math after the old Capacitor Rig removal, because the retained support buttons now carry Rayshield and Dampening mitigation riders instead of separate active mitigation areas.
+5. Run the focused perk review/audit scripts and the server test project before handoff.

@@ -308,7 +308,8 @@ foreach ($row in $scopedRows) {
 
     $expectedCategory = Get-ExpectedCategory $row
     $candidates = @($codeRows[$key])
-    $code = @($candidates | Where-Object { $_.Category -eq $expectedCategory } | Select-Object -First 1)[0]
+    $matchingCandidates = @($candidates | Where-Object { $_.Category -eq $expectedCategory } | Select-Object -First 1)
+    $code = if ($matchingCandidates.Count -gt 0) { $matchingCandidates[0] } else { $null }
     if ($null -eq $code -and $candidates.Count -eq 1) {
         $code = $candidates[0]
     }

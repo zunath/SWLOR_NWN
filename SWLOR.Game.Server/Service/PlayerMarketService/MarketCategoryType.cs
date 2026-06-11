@@ -83,6 +83,8 @@ namespace SWLOR.Game.Server.Service.PlayerMarketService
         Blueprint = 37,
         [MarketCategory("Starship Ammo", true)]
         StarshipAmmo = 38,
+        [MarketCategory("Pazaak Cards", true)]
+        PazaakCards = 39,
 
         [MarketCategory("Miscellaneous", true)]
         Miscellaneous = 99

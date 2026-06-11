@@ -312,6 +312,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Gui.TogglePlayerWindow(Player, GuiWindowType.KeyItems);
         };
 
+        public Action OnClickPazaak() => () =>
+        {
+            Gui.TogglePlayerWindow(Player, GuiWindowType.Pazaak);
+        };
+
         public Action OnClickCurrencies() => () =>
         {
             Gui.TogglePlayerWindow(Player, GuiWindowType.Currencies);

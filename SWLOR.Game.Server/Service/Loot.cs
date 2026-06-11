@@ -15,6 +15,7 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<string, LootTable> _lootTables = new();
 
         private const float CorpseLifespanSeconds = 360f;
+        public const string PazaakLootTablePrefix = "PAZAAK_LOOT_TABLE_";
         public const string CorpseBodyVariable = "CORPSE_BODY";
         private const string CorpseCopyItemVariable = "CORPSE_ITEM_COPY";
 
@@ -176,6 +177,15 @@ namespace SWLOR.Game.Server.Service
         public static void SpawnLootOnCreatureDeath()
         {
             SpawnLoot(OBJECT_SELF, OBJECT_SELF, "LOOT_TABLE_");
+        }
+
+        /// <summary>
+        /// Spawns optional Pazaak card drops after normal loot has had its own independent attempts.
+        /// </summary>
+        [NWNEventHandler(ScriptName.OnCreatureDeathBefore)]
+        public static void SpawnPazaakLootOnCreatureDeath()
+        {
+            SpawnLoot(OBJECT_SELF, OBJECT_SELF, PazaakLootTablePrefix);
         }
 
         /// <summary>

@@ -1,0 +1,113 @@
+{
+  "__data_type": "UTM ",
+  "BlackMarket": {
+    "type": "byte",
+    "value": 0
+  },
+  "BM_MarkDown": {
+    "type": "int",
+    "value": 25
+  },
+  "Comment": {
+    "type": "cexostring",
+    "value": "Runtime-stocked Pazaak card vendor store."
+  },
+  "ID": {
+    "type": "byte",
+    "value": 5
+  },
+  "IdentifyPrice": {
+    "type": "int",
+    "value": 100
+  },
+  "LocName": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "Pazaak Card Vendor"
+    }
+  },
+  "MarkDown": {
+    "type": "int",
+    "value": 65
+  },
+  "MarkUp": {
+    "type": "int",
+    "value": 100
+  },
+  "MaxBuyPrice": {
+    "type": "int",
+    "value": -1
+  },
+  "OnOpenStore": {
+    "type": "resref",
+    "value": ""
+  },
+  "OnStoreClosed": {
+    "type": "resref",
+    "value": ""
+  },
+  "ResRef": {
+    "type": "resref",
+    "value": "pazaak_cards"
+  },
+  "StoreGold": {
+    "type": "int",
+    "value": -1
+  },
+  "StoreList": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0
+      },
+      {
+        "__struct_id": 4,
+        "ItemList": {
+          "type": "list",
+          "value": []
+        }
+      },
+      {
+        "__struct_id": 2
+      },
+      {
+        "__struct_id": 3
+      },
+      {
+        "__struct_id": 1
+      }
+    ]
+  },
+  "Tag": {
+    "type": "cexostring",
+    "value": "pazaak_cards"
+  },
+  "VarTable": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "PAZAAK_VENDOR_TIER"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 0
+        }
+      }
+    ]
+  },
+  "WillNotBuy": {
+    "type": "list",
+    "value": []
+  },
+  "WillOnlyBuy": {
+    "type": "list",
+    "value": []
+  }
+}

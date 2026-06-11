@@ -141,6 +141,9 @@ namespace SWLOR.Game.Server.Service
             var baseItemType = GetBaseItemType(item);
             var tag = GetTag(item);
 
+            if (Pazaak.IsPazaakCardItem(item))
+                return MarketCategoryType.PazaakCards;
+
             // Weapon Classes
             if (Item.VibrobladeBaseItemTypes.Contains(baseItemType))
                 return MarketCategoryType.Vibroblade;

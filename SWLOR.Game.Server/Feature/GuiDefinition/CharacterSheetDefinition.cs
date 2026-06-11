@@ -535,6 +535,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 col2.AddRow(row2 =>
                                 {
                                     row2.AddButton()
+                                        .SetText("Pazaak")
+                                        .SetHeight(32f)
+                                        .SetWidth(100f)
+                                        .BindOnClicked(model => model.OnClickPazaak());
+                                });
+                                col2.AddRow(row2 =>
+                                {
+                                    row2.AddButton()
                                         .SetText("Currencies")
                                         .SetHeight(32f)
                                         .SetWidth(100f)

@@ -2697,7 +2697,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": ""
+          "value": "generic_convo"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -2967,7 +2967,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": ""
+          "value": "generic_convo"
         },
         "OnUserDefined": {
           "type": "resref",

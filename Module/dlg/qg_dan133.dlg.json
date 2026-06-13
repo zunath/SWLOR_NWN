@@ -152,7 +152,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "You finished Bol Tracks? Good. Tell me what happened and I can pay you."
+            "0": "You finished Thune Tracks? Good. Tell me what happened and I can pay you."
           }
         }
       },
@@ -250,7 +250,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "I asked you to track and kill Bol in the Wild Plains. Look in the wild plains and come back when it is handled."
+            "0": "I asked you to track and kill Plains Thune in the ruined farmlands. Look in the ruined farmlands and come back when it is handled."
           }
         }
       },
@@ -357,7 +357,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Bol Tracks: Track and kill Bol in the Wild Plains. Bring me word when the danger has passed."
+            "0": "Thune Tracks: Track and kill Plains Thune in the ruined farmlands. Bring me word when the danger has passed."
           }
         }
       },
@@ -494,7 +494,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "You finished Bol Warning? Good. Tell me what happened and I can pay you."
+            "0": "You finished Thune Warning? Good. Tell me what happened and I can pay you."
           }
         }
       },
@@ -592,7 +592,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "I asked you to cull Bol and place warning markers in Wild Plains. Look in the wild plains and come back when it is handled."
+            "0": "I asked you to cull Plains Thune and place warning markers in the ruined farmlands. Look in the ruined farmlands and come back when it is handled."
           }
         }
       },
@@ -699,7 +699,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Bol Warning: Cull Bol and place warning markers in Wild Plains. Bring me word when the danger has passed."
+            "0": "Thune Warning: Cull Plains Thune and place warning markers in the ruined farmlands. Bring me word when the danger has passed."
           }
         }
       },
@@ -836,7 +836,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "The colony needs clean records and steady hands more than grand declarations. I need you to track and kill Bol in the Wild Plains. You will want to start in the wild plains."
+            "0": "The colony needs clean records and steady hands more than grand declarations. I need you to track and kill Plains Thune in the ruined farmlands. You will want to start in the ruined farmlands."
           }
         }
       },
@@ -992,7 +992,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "I have work for you: Track and kill Bol in the Wild Plains. Are you available?"
+            "0": "I have work for you: Track and kill Plains Thune in the ruined farmlands. Are you available?"
           }
         }
       },
@@ -1129,7 +1129,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "The colony needs clean records and steady hands more than grand declarations. I need you to cull Bol and place warning markers in Wild Plains. You will want to start in the wild plains."
+            "0": "The colony needs clean records and steady hands more than grand declarations. I need you to cull Plains Thune and place warning markers in the ruined farmlands. You will want to start in the ruined farmlands."
           }
         }
       },
@@ -1285,7 +1285,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "I have work for you: Cull Bol and place warning markers in Wild Plains. Are you available?"
+            "0": "I have work for you: Cull Plains Thune and place warning markers in the ruined farmlands. Are you available?"
           }
         }
       },

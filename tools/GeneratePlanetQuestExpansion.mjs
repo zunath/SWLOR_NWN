@@ -1277,6 +1277,7 @@ function makeObjectiveTemplate() {
   marker.Static.value = 0;
   marker.Tag.value = "qst_obj_marker";
   marker.TemplateResRef.value = "qst_obj_marker";
+  marker.OnUsed.value = "generic_convo";
   marker.Useable.value = 1;
   return marker;
 }
@@ -1516,13 +1517,19 @@ const groupUpdates = new Map(
     sandworm: 64,
     ancientsandwor: 65,
     vdathdarkadept: 67,
-    vdatthrancor: 68,
+    dath_rancor: 68,
     vgapingspider: 69,
     byysk_shaman: 70,
     byysk_chieftain: 71,
     byysk_champion: 72,
     qion_hive_tunnel: 73,
     huthivebroodmoth: 74,
+  }),
+);
+
+const clonedCreatures = new Map(
+  Object.entries({
+    dath_rancor: "vdatthrancor",
   }),
 );
 
@@ -1542,12 +1549,36 @@ function ensureGroupVar(utc, groupId) {
   variable.Value.value = groupId;
 }
 
+function removeGroupVar(utc) {
+  if (!Array.isArray(utc.VarTable?.value)) return false;
+  const before = utc.VarTable.value.length;
+  utc.VarTable.value = utc.VarTable.value.filter((candidate) => candidate.Name?.value !== "QUEST_NPC_GROUP_ID");
+  return utc.VarTable.value.length !== before;
+}
+
+for (const [res, sourceRes] of clonedCreatures) {
+  const sourceFile = `${root}/Module/utc/${sourceRes}.utc.json`;
+  if (!fs.existsSync(sourceFile)) throw new Error(`Missing UTC for cloned creature ${sourceRes}`);
+  const utc = clone(JSON.parse(fs.readFileSync(sourceFile, "utf8")));
+  utc.Comment.value = "Generated Dathomir-specific quest target.";
+  utc.Tag.value = res;
+  utc.TemplateResRef.value = res;
+  writeJsonFile(`${root}/Module/utc/${res}.utc.json`, utc);
+}
+
 for (const [res, groupId] of groupUpdates) {
   const file = `${root}/Module/utc/${res}.utc.json`;
   if (!fs.existsSync(file)) throw new Error(`Missing UTC for group update ${res}`);
   const utc = JSON.parse(fs.readFileSync(file, "utf8"));
   ensureGroupVar(utc, groupId);
   writeJsonFile(file, utc);
+}
+
+for (const res of ["vdatthrancor", "dgraul", "vtattbountyhunt", "vtattkrayt"]) {
+  const file = `${root}/Module/utc/${res}.utc.json`;
+  if (!fs.existsSync(file)) continue;
+  const utc = JSON.parse(fs.readFileSync(file, "utf8"));
+  if (removeGroupVar(utc)) writeJsonFile(file, utc);
 }
 
 console.log(

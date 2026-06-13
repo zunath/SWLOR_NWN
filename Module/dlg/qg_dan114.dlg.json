@@ -250,7 +250,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "I asked you to deal with Plains Thune near the farms. Look in the south colony farms and come back when it is handled."
+            "0": "I asked you to deal with Plains Thune in the ruined farmlands. Look in the ruined farmlands and come back when it is handled."
           }
         }
       },
@@ -357,7 +357,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Thune Drive: Deal with Plains Thune near the farms. Bring me word when the danger has passed."
+            "0": "Thune Drive: Deal with Plains Thune in the ruined farmlands. Bring me word when the danger has passed."
           }
         }
       },
@@ -494,7 +494,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "The colony needs clean records and steady hands more than grand declarations. I need you to deal with Plains Thune near the farms. You will want to start in the south colony farms."
+            "0": "The colony needs clean records and steady hands more than grand declarations. I need you to deal with Plains Thune in the ruined farmlands. You will want to start in the ruined farmlands."
           }
         }
       },
@@ -650,7 +650,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "I have work for you: Deal with Plains Thune near the farms. Are you available?"
+            "0": "I have work for you: Deal with Plains Thune in the ruined farmlands. Are you available?"
           }
         }
       },

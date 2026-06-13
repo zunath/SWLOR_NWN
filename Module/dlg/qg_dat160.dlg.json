@@ -250,7 +250,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "I asked you to gather purbole hides. Look in the red desert and come back when it is handled."
+            "0": "I asked you to gather purbole hides near the Cave Ruins. Look in the cave ruins and come back when it is handled."
           }
         }
       },
@@ -357,7 +357,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Purbole Hides: Gather purbole hides. Bring the materials back here once you have them."
+            "0": "Purbole Hides: Gather purbole hides near the Cave Ruins. Bring the materials back here once you have them."
           }
         }
       },
@@ -494,7 +494,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "On Dathomir, a careful report is often the line between a rumor and a grave marker. I need you to gather purbole hides. You will want to start in the red desert."
+            "0": "On Dathomir, a careful report is often the line between a rumor and a grave marker. I need you to gather purbole hides near the Cave Ruins. You will want to start in the cave ruins."
           }
         }
       },
@@ -650,7 +650,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "I have work for you: Gather purbole hides. Are you available?"
+            "0": "I have work for you: Gather purbole hides near the Cave Ruins. Are you available?"
           }
         }
       },

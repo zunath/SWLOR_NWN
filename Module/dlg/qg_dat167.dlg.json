@@ -250,7 +250,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "I asked you to gather Shear Mite paste from Mountain Caves. Look in the mountain caves and come back when it is handled."
+            "0": "I asked you to gather Shear Mite paste from the Tarnished Jungles. Look in the tarnished jungle and come back when it is handled."
           }
         }
       },
@@ -357,7 +357,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mite Paste: Gather Shear Mite paste from Mountain Caves. Bring the materials back here once you have them."
+            "0": "Mite Paste: Gather Shear Mite paste from the Tarnished Jungles. Bring the materials back here once you have them."
           }
         }
       },
@@ -494,7 +494,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "On Dathomir, a careful report is often the line between a rumor and a grave marker. I need you to gather Shear Mite paste from Mountain Caves. You will want to start in the mountain caves."
+            "0": "On Dathomir, a careful report is often the line between a rumor and a grave marker. I need you to gather Shear Mite paste from the Tarnished Jungles. You will want to start in the tarnished jungle."
           }
         }
       },
@@ -650,7 +650,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "I have work for you: Gather Shear Mite paste from Mountain Caves. Are you available?"
+            "0": "I have work for you: Gather Shear Mite paste from the Tarnished Jungles. Are you available?"
           }
         }
       },

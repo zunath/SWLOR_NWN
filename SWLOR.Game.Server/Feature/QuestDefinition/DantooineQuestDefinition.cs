@@ -212,7 +212,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             _builder.Create("dan_thune_drive", "Thune Drive")
                 .IsRepeatable()
                 .AddState()
-                .SetStateJournalText("Farmer Willen asked you to deal with Plains Thune near the farms. The trail points toward the south colony farms. Return to Farmer Willen when it is done.")
+                .SetStateJournalText("Farmer Willen asked you to deal with Plains Thune in the ruined farmlands. Return to Farmer Willen when it is done.")
                 .AddKillObjective(NPCGroupType.Dantooine_PlainsThune, 8)
 
                 .AddState()
@@ -479,10 +479,10 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
         private void DantooineBolTracks()
         {
-            _builder.Create("dan_bol_tracks", "Bol Tracks")
+            _builder.Create("dan_bol_tracks", "Thune Tracks")
                 .AddState()
-                .SetStateJournalText("Hunter Oric asked you to track and kill Bol in the Wild Plains. Return to Hunter Oric when it is done.")
-                .AddKillObjective(NPCGroupType.Dantooine_Bol, 6)
+                .SetStateJournalText("Hunter Oric asked you to track and kill Plains Thune in the ruined farmlands. Return to Hunter Oric when it is done.")
+                .AddKillObjective(NPCGroupType.Dantooine_PlainsThune, 6)
 
                 .AddState()
                 .SetStateJournalText("Return to Hunter Oric for your reward.")
@@ -736,11 +736,11 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
         private void DantooineBolWarning()
         {
-            _builder.Create("dan_bol_warning", "Bol Warning")
+            _builder.Create("dan_bol_warning", "Thune Warning")
                 .IsRepeatable()
                 .AddState()
-                .SetStateJournalText("Hunter Oric asked you to cull Bol and place warning markers in Wild Plains. Return to Hunter Oric when it is done.")
-                .AddKillObjective(NPCGroupType.Dantooine_Bol, 8)
+                .SetStateJournalText("Hunter Oric asked you to cull Plains Thune and place warning markers in the ruined farmlands. Return to Hunter Oric when it is done.")
+                .AddKillObjective(NPCGroupType.Dantooine_PlainsThune, 8)
 
                 .AddState()
                 .SetStateJournalText("Return to Hunter Oric for your reward.")

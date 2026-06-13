@@ -2,7 +2,7 @@
   "__data_type": "UTC ",
   "Appearance_Type": {
     "type": "word",
-    "value": 10022
+    "value": 2146
   },
   "BodyBag": {
     "type": "byte",
@@ -14,7 +14,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 67.0
+    "value": 63
   },
   "ClassList": {
     "type": "list",
@@ -34,7 +34,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": ""
+    "value": "Generated Dathomir-specific quest target."
   },
   "Con": {
     "type": "byte",
@@ -46,7 +46,7 @@
   },
   "CRAdjust": {
     "type": "int",
-    "value": -125
+    "value": -34
   },
   "CurrentHitPoints": {
     "type": "short",
@@ -63,7 +63,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A mighty Canyon Krayt. Though among the lesser of the variety of species called Krayt, it is nonetheless among the apex predators of any planet it finds itself on. Deadly venom, a thick, resilient hide and peerless strength spell a sure end to any who would dare challenge it."
+      "0": "Rancors. The size of a freighter, with the power to match. Insatiably hungry, highly territorial, extremely aggressive, these creatures are not merely the apex predators of the worlds they are found on, but are known to dominate and ravage entire ecosystems when they somehow find their way to yet another world."
     }
   },
   "Dex": {
@@ -81,21 +81,14 @@
         "__struct_id": 16384,
         "EquippedRes": {
           "type": "resref",
-          "value": "kraytdragon_wp"
-        }
-      },
-      {
-        "__struct_id": 32768,
-        "EquippedRes": {
-          "type": "resref",
-          "value": "kraytdragon_wp"
+          "value": "dathrancor_wp"
         }
       },
       {
         "__struct_id": 131072,
         "EquippedRes": {
           "type": "resref",
-          "value": "kraytdragon_sk"
+          "value": "dathrancor_sk"
         }
       }
     ]
@@ -125,42 +118,42 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
+          "value": 1820
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1843
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1769
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1765
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1864
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
           "value": 1863
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 1754
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 1844
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 1766
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 1767
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 1821
         }
       }
     ]
@@ -168,7 +161,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Krayt Dragon"
+      "0": "Rancor"
     }
   },
   "fortbonus": {
@@ -231,7 +224,7 @@
   },
   "PaletteID": {
     "type": "byte",
-    "value": 154
+    "value": 156
   },
   "PerceptionRange": {
     "type": "byte",
@@ -512,7 +505,7 @@
   },
   "SoundSetFile": {
     "type": "word",
-    "value": 441
+    "value": 30
   },
   "SpecAbilityList": {
     "type": "list",
@@ -532,7 +525,7 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "KraytDragon"
+    "value": "dath_rancor"
   },
   "Tail_New": {
     "type": "dword",
@@ -544,11 +537,26 @@
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "vtattkrayt"
+    "value": "dath_rancor"
   },
   "VarTable": {
     "type": "list",
     "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "QUEST_NPC_GROUP_ID"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 68
+        }
+      },
       {
         "__struct_id": 0,
         "Name": {

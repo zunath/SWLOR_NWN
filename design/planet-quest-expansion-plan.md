@@ -370,7 +370,7 @@ Add these only after confirming no existing `NPCGroupType` entry and `QUEST_NPC_
 | # | Quest ID | Quest Name | Giver NPC | Placement Area | Objective Plan | Repeatable |
 |---|---|---|---|---|---|---|
 | 1 | dan_well_filters | Well Filters | Mella Rusk | dan_colony | Collect well filters from Colony South Farms. | no |
-| 2 | dan_thune_drive | Thune Drive | Farmer Willen | dan_colonyfarms | Kill Plains Thune near the farms. | yes |
+| 2 | dan_thune_drive | Thune Drive | Farmer Willen | dan_destroyfarm | Kill Plains Thune in the ruined farmlands. | yes |
 | 3 | dan_iriaz_census | Iriaz Census | Toma Pell | dan_iriazfarm | Scan Iriaz herds. | no |
 | 4 | dan_gizka_infestation | Gizka Infestation | Beki Lorn | dan_colony | Kill Gizka near the colony. | yes |
 | 5 | dan_kolto_cache | Kolto Cache | Nurse Orva | dan_medical | Recover kolto from the Abandoned Warehouse. | no |
@@ -389,7 +389,7 @@ Add these only after confirming no existing `NPCGroupType` entry and `QUEST_NPC_
 | 18 | dan_smuggler_manifest | Smuggler Manifest | Nila Voss | dan_smugcaverns | Recover smuggler manifests from the caverns. | no |
 | 19 | dan_lake_reeds | Lake Reeds | Sel Owin | dan_lakencave | Collect lake reed samples. | yes |
 | 20 | dan_lake_pressure | Lake Pressure | Forester Daan | dan_lakencave | Kill Kinraths around the lake. | no |
-| 21 | dan_bol_tracks | Bol Tracks | Hunter Oric | dan_wildplain | Track and kill Bol in the Wild Plains. | no |
+| 21 | dan_bol_tracks | Thune Tracks | Hunter Oric | dan_destroyfarm | Track and kill Plains Thune in the ruined farmlands. | no |
 | 22 | dan_herd_pressure | Herd Pressure | Iraz Keeper Talli | dan_iriazfarm | Cull aggressive Iriaz and scan herd markers. | no |
 | 23 | dan_dantari_rites | Dantari Rites | Scout Harlan | dan_tribefields | Recover rite tokens from Dantari Shamans. | no |
 | 24 | dan_hunter_patrol | Hunter Patrol | Ranger Elvo | dan_tribefields | Kill Dantari Hunters in South Fields. | yes |
@@ -407,7 +407,7 @@ Add these only after confirming no existing `NPCGroupType` entry and `QUEST_NPC_
 | 36 | dan_mountain_crystals | Mountain Crystals | Climber Sesk | dan_mountcrycave | Recover mountain crystal shards. | no |
 | 37 | dan_smuggler_maps | Smuggler Maps | Nila Voss | dan_smugcaverns | Recover map cases from Smuggler Caverns. | no |
 | 38 | dan_republic_ammo | Republic Ammo | Sgt. Venn | dan_repgarrison | Recover ammunition crates for Republic Garrison. | no |
-| 39 | dan_bol_warning | Bol Warning | Hunter Oric | dan_wildplain | Cull Bol and place warning markers in Wild Plains. | yes |
+| 39 | dan_bol_warning | Thune Warning | Hunter Oric | dan_destroyfarm | Cull Plains Thune and place warning markers in the ruined farmlands. | yes |
 | 40 | dan_dantari_charms | Dantari Charms | Scout Harlan | dan_tribefields | Collect charms from Dantari forces. | no |
 | 41 | dan_kinrath_eggs | Kinrath Eggs | Hira Vos | dan_kinrathcave | Collect kinrath egg clusters. | yes |
 | 42 | dan_lake_fishline | Lake Fishline | Fisher Rell | dan_lakencave | Repair fishlines around the lake. | no |
@@ -426,14 +426,14 @@ Add these only after confirming no existing `NPCGroupType` entry and `QUEST_NPC_
 | 6 | dath_shaman_fetishes | Shaman Fetishes | Mara Senn | dath_tribevill | Collect fetishes from Kwi Shamans. | no |
 | 7 | dath_guardian_challenge | Guardian Challenge | Ulren Vos | dath_ruin_base | Defeat Kwi Guardians in the Ruin Base. | no |
 | 8 | dath_cave_inscriptions | Cave Inscriptions | Scholar Anvi | dath_caveruins1 | Copy inscriptions in the Cave Ruins. | no |
-| 9 | dath_purbole_hides | Purbole Hides | Tava Orell | dath_desert | Collect purbole hides. | yes |
-| 10 | dath_turtle_shells | Dragon Turtle Shells | Shellwright Vek | dath_grottos | Collect dragon turtle shell fragments. | no |
+| 9 | dath_purbole_hides | Purbole Hides | Tava Orell | dath_caveruins1 | Collect purbole hides near the Cave Ruins. | yes |
+| 10 | dath_turtle_shells | Dragon Turtle Shells | Shellwright Vek | dathgrottocavern | Collect dragon turtle shell fragments from the grotto caverns. | no |
 | 11 | dath_desert_waterstones | Desert Waterstones | Cera Pell | dath_west_desert | Collect waterstones in Desert West Side. | no |
 | 12 | dath_desert_patrol | Desert Patrol | Ranger Tov | dath_desert | Kill Kwi patrols in the desert. | no |
 | 13 | dath_ssurian_cull | Ssurian Cull | Hunter Orla | dathgrottocavern | Kill Ssurians in Grotto Caverns. | yes |
 | 14 | dath_squellbug_ichor | Squellbug Ichor | Chemist Navo | dath_grottos | Collect squellbug ichor. | yes |
 | 15 | dath_sprantal_teeth | Sprantal Teeth | Vexa Lorn | dath_mountains | Collect Sprantal teeth in the mountains. | no |
-| 16 | dath_mite_paste | Mite Paste | Pel Ordo | dath_mountcaves | Collect Shear Mite paste from Mountain Caves. | no |
+| 16 | dath_mite_paste | Mite Paste | Pel Ordo | dath_tarnjungles | Collect Shear Mite paste from the Tarnished Jungles. | no |
 | 17 | dath_ruin_residue | Ruin Residue | Seer Hala | dath_ruin_base | Scan Force residue in the Ruin Base. | no |
 | 18 | dath_hidden_webs | Hidden Webs | Caver Jann | dath_hidtunnels | Collect web sacs in the Hidden Cave. | no |
 | 19 | dath_chirodactyl_wings | Chirodactyl Wings | Avian Keeper Sol | dath_grottos | Collect Chirodactyl wing membranes. | no |

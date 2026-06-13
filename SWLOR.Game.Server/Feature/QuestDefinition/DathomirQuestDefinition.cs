@@ -186,7 +186,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             _builder.Create("dath_purbole_hides", "Purbole Hides")
                 .IsRepeatable()
                 .AddState()
-                .SetStateJournalText("Tava Orell asked you to gather purbole hides. The trail points toward the red desert. Return to Tava Orell when it is done.")
+                .SetStateJournalText("Tava Orell asked you to gather purbole hides near the Cave Ruins. Return to Tava Orell when it is done.")
                 .AddKillObjective(NPCGroupType.Dathomir_Purbole, 8)
                 .AddCollectItemObjective("qi_dathomir_005", 1)
 
@@ -201,7 +201,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         {
             _builder.Create("dath_turtle_shells", "Dragon Turtle Shells")
                 .AddState()
-                .SetStateJournalText("Shellwright Vek asked you to gather dragon turtle shell fragments. The trail points toward the rancor grottos. Return to Shellwright Vek when it is done.")
+                .SetStateJournalText("Shellwright Vek asked you to gather dragon turtle shell fragments from the grotto caverns. Return to Shellwright Vek when it is done.")
                 .AddKillObjective(NPCGroupType.Dathomir_DragonTurtle, 6)
                 .AddCollectItemObjective("qi_dathomir_006", 1)
 
@@ -290,7 +290,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         {
             _builder.Create("dath_mite_paste", "Mite Paste")
                 .AddState()
-                .SetStateJournalText("Pel Ordo asked you to gather Shear Mite paste from Mountain Caves. Return to Pel Ordo when it is done.")
+                .SetStateJournalText("Pel Ordo asked you to gather Shear Mite paste from the Tarnished Jungles. Return to Pel Ordo when it is done.")
                 .AddKillObjective(NPCGroupType.Dathomir_ShearMite, 6)
                 .AddCollectItemObjective("qi_dathomir_010", 1)
 

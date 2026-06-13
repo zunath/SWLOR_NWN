@@ -235,20 +235,15 @@ $rulesByLabel = @{}
 foreach ($label in @(
     "AbsoluteDefense1",
     "AdamantineGuard1",
-    "AngerStrike1",
     "BastionStance1",
     "BerserkerStance1",
     "BerserkerStance2",
     "BlazingSpikes1",
-    "Bloodlust1",
     "BombardierStance1",
-    "BreakerReversal1",
     "BrutalAssault1",
     "ChargeOrder1",
     "ChargeOrder2",
     "CalmingStance1",
-    "Centering1",
-    "Centering2",
     "CobraStance1",
     "CoordinatedFocus1",
     "CoordinatedFocus2",
@@ -268,9 +263,6 @@ foreach ($label in @(
     "DisablingStrike2",
     "DisablingStrike3",
     "DuelistStance1",
-    "EssenceHunter1",
-    "EvasiveCombat1",
-    "EvasiveCombat2",
     "ExplosiveToss1",
     "ExplosiveToss2",
     "ExplosiveToss3",
@@ -282,16 +274,13 @@ foreach ($label in @(
     "FlankingStance1",
     "FocusedStance1",
     "ForceCapacitor1",
-    "ForceLens1",
     "FortressStrike1",
     "FortressStrike2",
     "FortressStrike3",
     "GuardianMaster1",
-    "GuardianSResolve1",
     "GuardedChannel1",
     "GuardedChannel2",
     "GuardedChannel3",
-    "GuardingStep1",
     "GuardCounter1",
     "GuardCounter2",
     "GuardCounter3",
@@ -304,13 +293,11 @@ foreach ($label in @(
     "Hamstring2",
     "Hamstring3",
     "ImpenetrableGuard1",
-    "ImprovedAttentiveness1",
     "InfiniteConduit1",
     "InterruptionStrike1",
     "InterruptionStrike2",
     "Invincible1",
     "IronWallStance1",
-    "KillZone1",
     "LegSweep1",
     "LegSweep2",
     "LegSweep3",
@@ -321,15 +308,9 @@ foreach ($label in @(
     "PinningToss1",
     "PinningToss2",
     "PinningToss3",
-    "Purify1",
     "Rampart1",
     "RallyingStandard1",
     "RallyingStandard2",
-    "RippleSlash1",
-    "SaberRend1",
-    "SaberRend2",
-    "SecondWind1",
-    "SentinelGuard1",
     "SentinelStance1",
     "ShelterCircle1",
     "ShieldBash1",
@@ -343,12 +324,8 @@ foreach ($label in @(
     "Slam1",
     "Slam2",
     "Slam3",
-    "SnapRoll1",
-    "SnapRoll2",
     "SniperStance1",
-    "SoulAscension1",
     "SoulDevourer1",
-    "SoulSacrifice1",
     "SoulStorm1",
     "SoulStrike1",
     "SoulStrike2",
@@ -362,13 +339,7 @@ foreach ($label in @(
     "StrikingCobra1",
     "StrikingCobra2",
     "StrikingCobra3",
-    "SurgeStrike1",
-    "TacticalEscape1",
-    "TacticalEscape2",
     "TempestStance1",
-    "ToxicCoating1",
-    "ToxicCoating2",
-    "ToxicRush1",
     "TranquilizerShot1",
     "TranquilizerShot2",
     "TwinGuardStance1",
@@ -389,23 +360,15 @@ foreach ($label in @(
     "CircleSlash1",
     "CircleSlash2",
     "CircleSlash3",
-    "ConduitFlare1",
-    "CripplingDefense1",
     "CreepingTerror3",
     "Decoy1",
     "EdgeOfDarkness1",
     "EclipseOfResolve1",
     "Flash1",
-    "FractureFocus2",
-    "ForceGyre1",
-    "ForceMaelstrom1",
     "GroundQuake1",
     "GroundQuake2",
     "Incapacitate1",
-    "IronElbows1",
     "NightmareField1",
-    "Pacify2",
-    "Pacify3",
     "PunishingStrike1",
     "SaberCyclone1",
     "SpinningWhirl1",
@@ -424,9 +387,6 @@ foreach ($label in @(
 
 $rulesByLabel["TwinIntercept1"] = $friendlyCreatureRule
 $rulesByLabel["DeadManSHand1"] = New-TargetSphereRule
-$rulesByLabel["RicochetToss1"] = New-TargetSphereRule -Radius "5"
-$rulesByLabel["RicochetToss2"] = New-TargetSphereRule -Radius "5"
-$rulesByLabel["RicochetShot1"] = $hostileCreatureRule
 $rulesByLabel["DuelistSChallenge1"] = $hostileCreatureRule
 
 foreach ($label in @(
@@ -441,7 +401,6 @@ foreach ($label in @(
     "DoubleStrike2",
     "DoubleStrike3",
     "DoubleStrike4",
-    "MarkedForDeath1",
     "RiotBlade1",
     "RiotBlade2",
     "RiotBlade3"
@@ -451,7 +410,7 @@ foreach ($label in @(
 
 foreach ($label in @(
     "CreepingTerror2",
-    "ForceGrip3",
+    "ForceChoke4",
     "ForceLightning1",
     "ForceLightning2"
 )) {
@@ -459,16 +418,13 @@ foreach ($label in @(
 }
 
 foreach ($label in @(
-    "ClusterStorm1",
     "ConcussiveToss1",
     "ConcussiveToss2",
     "DisruptionField1",
     "FireburstToss1",
     "FlashToss1",
     "FlashToss2",
-    "Forcebane1",
     "RainOfSteel1",
-    "SaturationToss1",
     "SerpentSEclipse1",
     "SmokeRound1",
     "SystemicShutdown1"
@@ -477,17 +433,13 @@ foreach ($label in @(
 }
 
 foreach ($label in @(
-    "ArcStrike1",
-    "CascadeFailure1",
-    "CoveringClaws1",
     "FanTheHammer1",
     "FanTheHammer2",
-    "GuardianSChallenge1",
+    "GuardiansChallenge1",
     "HamperingBarrage1",
     "LastWord1",
     "MaelstromArc1",
     "MaelstromArc2",
-    "OverwhelmingStrike1",
     "PointBlankBurst1",
     "SavageCleave1",
     "SoulBurst1",
@@ -495,8 +447,7 @@ foreach ($label in @(
     "SweepingFlank1",
     "TotalForceDenial1",
     "TranqCone1",
-    "TranqCone2",
-    "VenomSplash1"
+    "TranqCone2"
 )) {
     $rulesByLabel[$label] = New-OriginConeRule -Length "5" -Width "5"
 }
@@ -507,12 +458,9 @@ $rulesByLabel["TranqCone2"] = New-OriginConeRule -Length "10" -Width "7"
 foreach ($label in @(
     "CoveringStrike1",
     "Earthshatter1",
-    "FractureStrike1",
     "LineBreaker1",
-    "PinningFire2",
-    "SweepingAdvance1",
     "SuppressiveLine1",
-    "ThunderousChallenge1"
+    "GuardiansChallenge2"
 )) {
     $rulesByLabel[$label] = New-OriginLineRule -Length "8" -Width "2.5"
 }
@@ -522,7 +470,6 @@ foreach ($label in @(
     "Flamethrower2",
     "Flamethrower3",
     "CryoSprayer1",
-    "CryoSprayer2",
     "IceBreath1",
     "IceBreath2",
     "IceBreath3",
@@ -540,12 +487,9 @@ $rulesByLabel["KoltoMist1"] = New-FriendlySelfSphereRule -Radius "3"
 $rulesByLabel["KoltoMist2"] = New-FriendlySelfSphereRule -Radius "3"
 $rulesByLabel["BrutalAssault1"] = New-FriendlySelfSphereRule -Radius "5"
 $rulesByLabel["TauntingDeflection1"] = New-SelfSphereRule -Radius "5"
-$rulesByLabel["GuardianSInfluence1"] = New-FriendlySelfSphereRule -Radius "5"
 $rulesByLabel["SaberStorm1"] = New-SelfSphereRule -Radius "5"
 $rulesByLabel["SoulStorm1"] = New-FriendlySelfSphereRule -Radius "5"
 $rulesByLabel["Rampart1"] = New-FriendlySelfSphereRule -Radius "5"
-$rulesByLabel["CourageousResolve1"] = New-FriendlySelfSphereRule -Radius "5"
-$rulesByLabel["ForceLens1"] = New-FriendlySelfSphereRule -Radius "5"
 
 foreach ($label in @(
     "ChargeOrder1",
@@ -568,8 +512,6 @@ foreach ($label in @(
 
 foreach ($label in @(
     "ForceSanctuary1",
-    "RayshieldScreen1",
-    "RayshieldScreen2",
     "EmergencyBunker1"
 )) {
     $rulesByLabel[$label] = New-FriendlyGroundSphereRule -Radius "4"
@@ -596,11 +538,9 @@ $rulesByLabel["FragGrenade2"] = New-GroundSphereRule -Radius "3"
 $rulesByLabel["FragGrenade3"] = New-GroundSphereRule -Radius "3"
 $rulesByLabel["ConcussionGrenade1"] = New-GroundSphereRule -Radius "3"
 $rulesByLabel["ConcussionGrenade2"] = New-GroundSphereRule -Radius "3"
-$rulesByLabel["ConcussionGrenade3"] = New-GroundSphereRule -Radius "3"
 $rulesByLabel["IonGrenade1"] = New-GroundSphereRule -Radius "3"
 $rulesByLabel["IonGrenade2"] = New-GroundSphereRule -Radius "3"
 $rulesByLabel["FlashGrenade1"] = New-GroundSphereRule -Radius "4"
-$rulesByLabel["FlashGrenade2"] = New-GroundSphereRule -Radius "4"
 $rulesByLabel["AdhesiveGrenade1"] = New-GroundSphereRule -Radius "4"
 $rulesByLabel["AdhesiveGrenade2"] = New-GroundSphereRule -Radius "4"
 $rulesByLabel["ClusterGrenade1"] = New-GroundSphereRule -Radius "2"

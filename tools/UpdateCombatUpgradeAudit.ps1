@@ -914,7 +914,7 @@ foreach ($row in $featRows) {
         $combatUpgradeSpellIds.Add($spellId) | Out-Null
     }
 
-    if ($row.Number -ge 2000 -and $row.Fields[$spellIndex] -eq "****") {
+    if ($row.Number -ge 2000 -and $row.Fields[1] -ne "****" -and $row.Fields[$spellIndex] -eq "****") {
         $auditRows.Add([pscustomobject]@{
             AuditType = "GeneratedFeatMissingSpellLink"
             Tab = "2DA"

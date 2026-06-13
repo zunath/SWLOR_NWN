@@ -39,7 +39,7 @@ $IconWordAliases = @{
     Bastion = "bast"; Light = "lght"; Stance = "stnc"; Berserker = "bers"; Blazing = "blaz"
     Spikes = "spk"; Bleed = "bleed"; Blind = "blind"; Blood = "blood"; Weapon = "wpn"; Bolster = "bolst"
     Attack = "atk"; Bombardier = "bomb"; Breach = "brch"; Brutal = "brut"; Burn = "burn"; Calming = "calm"
-    Centering = "cent"; Charge = "chrg"; Order = "ord"; Circle = "circ"; Harmony = "harm"; Clarity = "clar"
+    Centering = "cent"; Charge = "chrg"; Order = "ord"; Circle = "circ"; Harmony = "harm"
     Cleanse = "clns"; Coagulant = "coag"; Cobra = "cobra"; Comprehend = "comp"; Speech = "spch"
     Conduit = "cond"; Coordinated = "coord"; Focus = "foc"; Covering = "cov"; Claws = "claw"; Strike = "strk"
     Creeping = "creep"; Terror = "terr"; Damage = "dmg"; Crippled = "crip"; Crippling = "crip"; Defense = "def"
@@ -64,7 +64,7 @@ $IconWordAliases = @{
     Hide = "hide"; Wall = "wall"; Kill = "kill"; Zone = "zone"; Knockdown = "knock"; Kolto = "kolto"
     Mist = "mist"; Healing = "heal"; Last = "last"; Stand = "stand"; Marked = "mark"; Marking = "mark"
     Mark = "mark"; Target = "tgt"; Predators = "pred"; Predator = "pred"; Shroud = "shrd"; Nightmare = "night"
-    Pacification = "pac"; Pacify = "pacify"; Pain = "pain"; Suppressant = "sup"; Perceptive = "perc"
+    Pacification = "pac"; Pain = "pain"; Suppressant = "sup"; Perceptive = "perc"
     Pet = "pet"; Poison = "psn"; Power = "pwr"; Cell = "cell"; Rush = "rush"; Press = "press"; Primal = "prim"
     Overrun = "ovrn"; Psychic = "psy"; Cry = "cry"; Rallying = "rally"; Standard = "std"; Rampart = "ramp"
     Rayshield = "raysh"; Screen = "scr"; Reflective = "refl"; Barrier = "bar"; Regenerative = "regen"
@@ -336,15 +336,15 @@ function Get-AbilitySemanticCategory([string]$label) {
         return "Self"
     }
 
-    if ($label -match "Stun|Daze|Dazed|Disorient|Immobil|Hobble|Hamstring|Knock|Slow|Pacify|Mind|Nightmare|Choke|Grip|WeaponJam|Flash|Concussion|Sonic|Tranquil|Terror|Fear|Confuse|CollapseWill|Dominate") {
+    if ($label -match "Stun|Daze|Dazed|Disorient|Immobil|Hobble|Hamstring|Knock|Slow|Mind|Nightmare|Choke|WeaponJam|Flash|Concussion|Sonic|Tranquil|Terror|Fear|Confuse|CollapseWill") {
         return "Control"
     }
 
-    if ($label -match "MedKit|TreatmentKit|Kolto|Infusion|Mend|Benevolence|Renewal|Clarity|Shielding|Deflector|Rayshield|Barrier|Ward|Sanctuary|Guard|Bastion|Resolve|Rally|Rousing|Bolster|Recovery|Cleanse|Antitoxin|Coagulant|PainSuppressant|Adrenal|FocusStim|PowerCell|Maintenance|Soothe|Revive|Reward|Hasten|IronHide|Warding|Unbreakable|Untouchable|PackRecovery|FieldRecovery|SteadyFormation|HoldTheLine|WatchfulPresence|CircleOfHarmony|ForceBody|ComprehendSpeech") {
+    if ($label -match "MedKit|TreatmentKit|Kolto|Infusion|Mend|Benevolence|Renewal|Shielding|Deflector|Rayshield|Barrier|Ward|Sanctuary|Guard|Bastion|Resolve|Rally|Rousing|Bolster|Recovery|Cleanse|Antitoxin|Coagulant|PainSuppressant|Adrenal|FocusStim|PowerCell|Maintenance|Soothe|Revive|Reward|Hasten|IronHide|Warding|Unbreakable|Untouchable|PackRecovery|FieldRecovery|SteadyFormation|HoldTheLine|WatchfulPresence|HarmonicRestoration|SereneFocus") {
         return "Beneficial"
     }
 
-    if ($label -match "Tame|CallBeast|ComprehendSpeech") {
+    if ($label -match "Tame|CallBeast") {
         return "Utility"
     }
 
@@ -353,7 +353,7 @@ function Get-AbilitySemanticCategory([string]$label) {
 
 function Get-StatusSemanticCategory([string]$className, [string]$name, [string]$content) {
     if ($content -match "StatusEffectCategory\.[A-Za-z0-9_ ]*(Debuff|Control|Bleeding)" -or
-        $className -match "Burn|Poison|Toxin|Bleed|Sunder|Weaken|Exhaust|Dazed|Stun|Blind|Vulnerable|Exposed|Hemorrhage|Hobble|Immobil|Pacify|Mark|Terrified|Tranquil|Disease|Penalty|Drain|Choke|Terror|Sonic|WeaponJam|Distracting|Flash|Erosion|Fracture|Disruption|Breach|Crippling|Incapacitate|SmokeBomb|Decoy|ChallengeStatusEffect|Vulnerability|Fatigue|Taunting|CoveringClaws") {
+        $className -match "Burn|Poison|Toxin|Bleed|Sunder|Weaken|Exhaust|Dazed|Stun|Blind|Vulnerable|Exposed|Hemorrhage|Hobble|Immobil|Mark|Terrified|Tranquil|Disease|Penalty|Drain|Choke|Terror|Sonic|WeaponJam|Distracting|Flash|Erosion|Fracture|Disruption|Breach|Crippling|Incapacitate|SmokeBomb|Decoy|ChallengeStatusEffect|Vulnerability|Fatigue|Taunting|CoveringClaws") {
         return "Harmful"
     }
 
@@ -490,7 +490,7 @@ function Get-MotifColor([string]$className) {
     if ($className -match "Burn|Fire|Flame") { return [System.Drawing.Color]::FromArgb(255, 255, 151, 48) }
     if ($className -match "Shock|Lightning|Current|Static") { return [System.Drawing.Color]::FromArgb(255, 152, 242, 255) }
     if ($className -match "Ice|Frost|Freezing|Cryo") { return [System.Drawing.Color]::FromArgb(255, 188, 246, 255) }
-    if ($className -match "Force|Mind|Terror|Fear|Shroud|Choke|Grip") { return [System.Drawing.Color]::FromArgb(255, 198, 147, 255) }
+    if ($className -match "Force|Mind|Terror|Fear|Shroud|Choke") { return [System.Drawing.Color]::FromArgb(255, 198, 147, 255) }
     if ($className -match "Shield|Guard|Ward|Barrier|Bastion|Defense|Resolve") { return [System.Drawing.Color]::FromArgb(255, 185, 236, 255) }
     if ($className -match "Heal|Mend|Kolto|Treatment|Triage|Recovery|Regenerative|Rejuvenation|Coagulant|Antitoxin") { return [System.Drawing.Color]::FromArgb(255, 203, 255, 213) }
     return [System.Drawing.Color]::FromArgb(255, 238, 238, 226)
@@ -732,7 +732,7 @@ function Draw-StatusMotif($g, [string]$className, [System.Drawing.Color]$motif, 
         $g.FillPolygon($brush, $bolt)
         $g.DrawPolygon($thin, $bolt)
     }
-    elseif ($className -match "Stun|Daze|Mind|Terror|Fear|Confuse|Choke|Grip|Disorient|Pacify|Tranquil|Nightmare|Psychic") {
+    elseif ($className -match "Stun|Daze|Mind|Terror|Fear|Confuse|Choke|Disorient|Tranquil|Nightmare|Psychic") {
         $eye = @(
             [System.Drawing.Point]::new(27, 64), [System.Drawing.Point]::new(48, 43),
             [System.Drawing.Point]::new(80, 43), [System.Drawing.Point]::new(101, 64),

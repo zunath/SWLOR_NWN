@@ -245,6 +245,7 @@ function Get-ManifestFeatInfo {
         if ($row.PerkName.Trim() -notmatch "\s+(I|II|III|IV|V)$") {
             $unrankedLabel = [regex]::Replace($row.PerkName.Trim(), "[^A-Za-z0-9]", "")
             $map[$unrankedLabel.ToLowerInvariant()] = $info
+            $map["$($unrankedLabel)1".ToLowerInvariant()] = $info
         }
     }
 
@@ -476,7 +477,7 @@ function Update-TlkJsonEntries {
         }
 
         $insertText = "," + $newline + (($entryBlocks -join ("," + $newline)))
-        $closingPattern = [regex]::Escape($newline) + "  \]" + [regex]::Escape($newline) + "\}\s*$"
+        $closingPattern = "\r?\n\s*\]\s*\r?\n\}\s*$"
         if ($raw -notmatch $closingPattern) {
             throw "Could not locate TLK JSON entries closing block in '$Path'."
         }

@@ -127,8 +127,8 @@ function Get-SemanticColor([string]$category) {
 
 function Get-IconKind([string]$label) {
     if ($label -match "Stance$") { return "stance" }
-    if ($label -match "ForceSpark|ForceBody|ForceLightning|ForceDrain|ForceGrip|ForceChoke|ForceMaelstrom|MindShroud|Nightmare|Dominate|Collapse|Eclipse|Creeping|WeakenResolve|FractureFocus|SaberRend|FuryStance|DevouringStrike|HungerOfTheDark") { return "darkforce" }
-    if ($label -match "Benevolence|Renewal|Clarity|Pacify|MindTrick|ComprehendSpeech|ForcePush|ForceLeap|ForceTouch|ForceMend|ForceSanctuary|GuardianWard|BastionOfLight|LastStandOfTheLight|CircleOfHarmony|PurifyingWave|Innervate|Infusion") { return "lightforce" }
+    if ($label -match "ForceSpark|ForceLightning|ForceDrain|ForceChoke|Nightmare|Collapse|Eclipse|Creeping|WeakenResolve|FuryStance|DevouringStrike|HungerOfTheDark") { return "darkforce" }
+    if ($label -match "Benevolence|Renewal|MindTrick|ForcePush|ForceLeap|ForceTouch|ForceMend|ForceSanctuary|GuardianWard|LastStandOfTheLight|PurifyingWave|Innervate|Infusion|ForceJudgment|RadiantLance|SereneFocus|HarmonicRestoration") { return "lightforce" }
     if ($label -match "MedKit|TreatmentKit|Kolto|Resuscitation|EmergencyTriage|EmergencySealant|Coagulant|Antitoxin|PainSuppressant|AdrenalStim|FocusStim|PulseRelay|EmergencyCocktail") { return "medical" }
     if ($label -match "Grenade|Beacon|RemoteCharge|Flamethrower|WristRocket|RailDart|CryoSprayer|SonicBurst|PowerCell|Shielding|Deflector|Rayshield|Dampening|OverloadBarrage|WeaponJam") { return "tech" }
     if ($label -match "Bite|Claw|Pounce|Howl|Roar|Hide|Beast|Prey|Predator|Apex|Pack|Rampage|Primal") { return "beast" }
@@ -478,15 +478,6 @@ function Draw-VortexGlyph($g, [System.Drawing.Color]$accent, [System.Drawing.Col
     $g.FillPolygon((New-Object System.Drawing.SolidBrush($hot)), $tip)
 }
 
-function Draw-SaberRendGlyph($g, [System.Drawing.Color]$accent, [System.Drawing.Color]$hot) {
-    $g.DrawLine((New-Object System.Drawing.Pen($hot, 10)), 32, 94, 90, 28)
-    $g.DrawLine((New-Object System.Drawing.Pen([System.Drawing.Color]::FromArgb(230, 255, 255, 255), 3)), 32, 94, 90, 28)
-    $tear = New-Object System.Drawing.Pen($accent, 6)
-    $g.DrawLine($tear, 75, 38, 98, 61)
-    $g.DrawLine($tear, 63, 55, 91, 84)
-    $g.DrawLine($tear, 50, 72, 73, 99)
-}
-
 function Draw-RageGlyph($g, [System.Drawing.Color]$accent, [System.Drawing.Color]$hot) {
     $flame = @(
         [System.Drawing.Point]::new(64, 18), [System.Drawing.Point]::new(82, 51),
@@ -599,15 +590,6 @@ function Draw-CrackedShieldGlyph($g, [System.Drawing.Color]$accent, [System.Draw
     $g.DrawLine((New-Object System.Drawing.Pen([System.Drawing.Color]::FromArgb(240, 8, 8, 12), 6)), 69, 73, 57, 101)
 }
 
-function Draw-FractureFocusGlyph($g, [System.Drawing.Color]$accent, [System.Drawing.Color]$hot) {
-    $g.DrawEllipse((New-Object System.Drawing.Pen($accent, 5)), 34, 34, 60, 60)
-    $g.DrawLine((New-Object System.Drawing.Pen($accent, 4)), 64, 25, 64, 103)
-    $g.DrawLine((New-Object System.Drawing.Pen($accent, 4)), 25, 64, 103, 64)
-    $g.DrawLine((New-Object System.Drawing.Pen($hot, 5)), 51, 37, 66, 56)
-    $g.DrawLine((New-Object System.Drawing.Pen($hot, 5)), 66, 56, 56, 75)
-    $g.DrawLine((New-Object System.Drawing.Pen($hot, 5)), 56, 75, 78, 94)
-}
-
 function Draw-HealingGlyph($g, [System.Drawing.Color]$accent, [System.Drawing.Color]$hot) {
     $brush = New-Object System.Drawing.SolidBrush($accent)
     $g.FillEllipse($brush, 34, 50, 27, 27)
@@ -625,23 +607,6 @@ function Draw-RenewalGlyph($g, [System.Drawing.Color]$accent, [System.Drawing.Co
     )
     $g.FillPolygon((New-Object System.Drawing.SolidBrush($accent)), $leaf)
     $g.DrawLine((New-Object System.Drawing.Pen($hot, 5)), 64, 51, 64, 101)
-}
-
-function Draw-ClarityGlyph($g, [System.Drawing.Color]$accent, [System.Drawing.Color]$hot) {
-    $crystal = @(
-        [System.Drawing.Point]::new(64, 18), [System.Drawing.Point]::new(90, 47),
-        [System.Drawing.Point]::new(78, 103), [System.Drawing.Point]::new(50, 103),
-        [System.Drawing.Point]::new(38, 47)
-    )
-    $g.FillPolygon((New-Object System.Drawing.SolidBrush($accent)), $crystal)
-    $g.DrawPolygon((New-Object System.Drawing.Pen($hot, 5)), $crystal)
-    $g.DrawLine((New-Object System.Drawing.Pen([System.Drawing.Color]::FromArgb(180,255,255,255), 3)), 64, 23, 64, 99)
-}
-
-function Draw-PacifyGlyph($g, [System.Drawing.Color]$accent, [System.Drawing.Color]$hot) {
-    Draw-GripGlyph $g $accent $hot
-    $g.DrawArc((New-Object System.Drawing.Pen($hot, 4)), 25, 23, 78, 77, 210, 120)
-    $g.DrawArc((New-Object System.Drawing.Pen($hot, 3)), 17, 14, 94, 94, 215, 110)
 }
 
 function Draw-MindTrickGlyph($g, [System.Drawing.Color]$accent, [System.Drawing.Color]$hot) {
@@ -848,31 +813,22 @@ function Draw-NamedMotif($g, [string]$label, [System.Drawing.Color]$accent, [Sys
     $base = $label -replace "\d+$", ""
     switch -Regex ($base) {
         "^ForceSpark$" { Draw-SparkBurst $g $accent $hot; return $true }
-        "^ForceBody$" { Draw-BodyAura $g $accent $hot; return $true }
         "^ForceLightning$" { Draw-LightningBolt $g $accent $hot; return $true }
         "^ForceDrain$" { Draw-DrainGlyph $g $accent $hot; return $true }
-        "^ForceMaelstrom$" { Draw-VortexGlyph $g $accent $hot; return $true }
-        "^SaberRend$" { Draw-SaberRendGlyph $g $accent $hot; return $true }
         "^FuryStance$" { Draw-RageGlyph $g $accent $hot; return $true }
         "^DevouringStrike$|^HungerOfTheDark$" { Draw-MawGlyph $g $accent $hot; return $true }
         "^CreepingTerror$" { Draw-TendrilsGlyph $g $accent $hot; return $true }
-        "^ForceGrip$" { Draw-GripGlyph $g $accent $hot; return $true }
         "^ForceChoke$" { Draw-ChokeGlyph $g $accent $hot; return $true }
-        "^MindShroud$" { Draw-ShroudedHeadGlyph $g $accent $hot; return $true }
         "^NightmareField$" { Draw-NightmareGlyph $g $accent $hot; return $true }
-        "^DominateWeakMind$" { Draw-DominateMindGlyph $g $accent $hot; return $true }
         "^CollapseWill$" { Draw-CollapseWillGlyph $g $accent $hot; return $true }
         "^EclipseOfResolve$" { Draw-EclipseGlyph $g $accent $hot; return $true }
         "^WeakenResolve$" { Draw-CrackedShieldGlyph $g $accent $hot; return $true }
-        "^FractureFocus$" { Draw-FractureFocusGlyph $g $accent $hot; return $true }
         "^GuardianWard$|^Shielding$|^DeflectorShield$|^RayshieldScreen$|^ReflectiveBarrier$|^DampeningField$" { Draw-TechShieldGlyph $g $accent $hot; return $true }
-        "^Benevolence$|^ForceMend$|^CircleOfHarmony$|^PurifyingWave$|^Infusion$|^Innervate$" { Draw-HealingGlyph $g $accent $hot; return $true }
+        "^Benevolence$|^ForceMend$|^PurifyingWave$|^Infusion$|^Innervate$|^HarmonicRestoration$" { Draw-HealingGlyph $g $accent $hot; return $true }
         "^Renewal$" { Draw-RenewalGlyph $g $accent $hot; return $true }
-        "^Clarity$" { Draw-ClarityGlyph $g $accent $hot; return $true }
         "^Flash$" { Draw-FlashGlyph $g $accent $hot; return $true }
-        "^Pacify$|^ForceTouch$" { Draw-PacifyGlyph $g $accent $hot; return $true }
+        "^ForceTouch$" { Draw-GripGlyph $g $accent $hot; return $true }
         "^MindTrick$|^PsychicCry$" { Draw-MindTrickGlyph $g $accent $hot; return $true }
-        "^ComprehendSpeech$" { Draw-SpeechGlyph $g $accent $hot; return $true }
         "^ForcePush$" { Draw-ForcePushGlyph $g $accent $hot; return $true }
         "^ForceLeap$|^ForceIntercept$" { Draw-ForceLeapGlyph $g $accent $hot; return $true }
         "MedKit|TreatmentKit|EmergencyTriage|EmergencyCocktail|Resuscitation|KoltoMist|Coagulant|Antitoxin|PainSuppressant|AdrenalStim|FocusStim|PulseRelay|EmergencySealant" { Draw-KitGlyph $g $accent $hot; return $true }

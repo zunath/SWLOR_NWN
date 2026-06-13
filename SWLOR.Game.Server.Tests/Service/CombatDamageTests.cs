@@ -114,6 +114,17 @@ public class CombatDamageTests
     }
 
     [Test]
+    public void CombatTriggeredDamage_IsAttributedToTheGameplaySource()
+    {
+        var root = FindRepositoryRoot();
+        var combatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
+
+        combatSource.Should().MatchRegex(
+            @"AssignCommand\(\s*defender,\s*\(\) => ApplyEffectToObject\(\s*DurationType\.Instant,\s*EffectDamage\(reflectedDamage, damageType\.GetNWScriptDamageType\(\)\),\s*attacker\)\);");
+        combatSource.Should().Contain("AssignCommand(attacker, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(cycleDamage), target));");
+    }
+
+    [Test]
     public void CombatImpactDamageScaling_IsDeclaredByAbilityImplementationsNotSkillType()
     {
         var root = FindRepositoryRoot();

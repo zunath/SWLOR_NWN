@@ -21,7 +21,11 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         {
             var damageAmount = Math.Max(1, (int)Math.Ceiling(GetMaxHitPoints(creature) * 0.06f));
             damageAmount = Resistance.ApplyResistanceToDamage(creature, ResistanceType, damageAmount);
-            ApplyEffectToObject(DurationType.Instant, EffectDamage(damageAmount, DamageType.Acid), creature);
+            if (damageAmount <= 0)
+                return;
+
+            var source = GetIsObjectValid(Source) ? Source : creature;
+            AssignCommand(source, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(damageAmount, DamageType.Acid), creature));
         }
     }
 }

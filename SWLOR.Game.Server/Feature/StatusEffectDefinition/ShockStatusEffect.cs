@@ -35,10 +35,14 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         protected override void Tick(uint creature)
         {
-            var agility = GetAbilityModifier(AbilityType.Agility, Source);
-            var amount = d4() + agility * 2 * _level;
+            var source = GetIsObjectValid(Source) ? Source : creature;
+            var agility = GetAbilityModifier(AbilityType.Agility, source);
+            var amount = System.Math.Max(1, d4() + agility * 2 * _level);
             amount = Resistance.ApplyResistanceToDamage(creature, ResistanceType, amount);
-            ApplyEffectToObject(DurationType.Instant, EffectDamage(amount, DamageType.Electrical), creature);
+            if (amount <= 0)
+                return;
+
+            AssignCommand(source, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(amount, DamageType.Electrical), creature));
         }
     }
 }

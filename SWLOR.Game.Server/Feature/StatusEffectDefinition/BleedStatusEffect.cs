@@ -36,7 +36,8 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             if (damageAmount <= 0)
                 return;
 
-            ApplyEffectToObject(DurationType.Instant, EffectDamage(damageAmount), creature);
+            var source = GetIsObjectValid(Source) ? Source : creature;
+            AssignCommand(source, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(damageAmount), creature));
 
             var location = GetLocation(creature);
             var placeable = CreateObject(ObjectType.Placeable, "plc_bloodstain", location);

@@ -36,17 +36,23 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         protected override void Tick(uint creature)
         {
-            var perception = GetAbilityModifier(AbilityType.Perception, Source);
-            var damage = d2() + perception * _level;
+            var source = GetIsObjectValid(Source) ? Source : creature;
+            var perception = GetAbilityModifier(AbilityType.Perception, source);
+            var damage = System.Math.Max(1, d2() + perception * _level);
             damage = Resistance.ApplyResistanceToDamage(creature, ResistanceType, damage);
-            ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, CombatDamageType.Poison.GetNWScriptDamageType()), creature);
+            if (damage > 0)
+            {
+                AssignCommand(source, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, CombatDamageType.Poison.GetNWScriptDamageType()), creature));
+            }
+
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Disease_S), creature);
-            StatusEffect.ApplyStatusEffect(Source, creature, typeof(DiseaseVitalityPenaltyStatusEffect), 6f);
+            StatusEffect.ApplyStatusEffect(source, creature, typeof(DiseaseVitalityPenaltyStatusEffect), 6f);
         }
 
         protected override void Remove(uint creature)
         {
-            StatusEffect.RemoveStatusEffect(creature, typeof(DiseaseVitalityPenaltyStatusEffect), Source, false);
+            var source = GetIsObjectValid(Source) ? Source : creature;
+            StatusEffect.RemoveStatusEffect(creature, typeof(DiseaseVitalityPenaltyStatusEffect), source, false);
         }
     }
 }

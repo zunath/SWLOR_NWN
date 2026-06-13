@@ -453,10 +453,12 @@ namespace SWLOR.Game.Server.Service
             if (reflectedDamage <= 0)
                 return;
 
-            ApplyEffectToObject(
-                DurationType.Instant,
-                EffectDamage(reflectedDamage, damageType.GetNWScriptDamageType()),
-                attacker);
+            AssignCommand(
+                defender,
+                () => ApplyEffectToObject(
+                    DurationType.Instant,
+                    EffectDamage(reflectedDamage, damageType.GetNWScriptDamageType()),
+                    attacker));
         }
 
         public static int ApplyDamageOverTimeTakenModifiers(
@@ -727,7 +729,7 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsObjectValid(target))
                 return;
 
-            ApplyEffectToObject(DurationType.Instant, EffectDamage(cycleDamage), target);
+            AssignCommand(attacker, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(cycleDamage), target));
             ApplyDamageDealtEffects(attacker, target, cycleDamage, skillType);
             Enmity.ModifyEnmity(attacker, target, cycleDamage);
         }

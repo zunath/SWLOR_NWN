@@ -4,7 +4,7 @@
 
 For each quest, capture:
 
-- Quest: `quest_id`, display name, repeatable flag, guild/rank if any, prerequisite quest IDs, prerequisite key items.
+- Quest: `quest_id`, display name, required `repeatable` mode (`one-time`/`false`/`no`, `repeatable`/`true`/`yes`, or a named cadence such as `daily` that needs custom gating), guild/rank if any, prerequisite quest IDs, prerequisite key items.
 - Giver: NPC name, UTC template resref, tag, dialogue resref or C# dialog class, target area resref, coordinates, facing.
 - Objectives: kill group, collect item resref, quantity, producer requirement, trigger/placeable objective if any.
 - Text: offer, acceptance, in-progress reminder, turn-in, completion, completed/repeat text, journal text for each state.
@@ -87,9 +87,10 @@ Get-Content 'Module\git\<area>.git.json' -Raw | ConvertFrom-Json > $null
 Search for duplicates and missing references:
 
 ```powershell
-rg -n 'Create\("<quest_id>"' SWLOR.Game.Server\Feature\QuestDefinition
-rg -n '"value": "<dialog_resref>"' Module\dlg Module\utc Module\git
-rg -n '<npc_or_item_resref>' Module SWLOR.Game.Server
+rg -n -U 'Create\s*\(\s*"<quest_id>"' SWLOR.Game.Server\Feature\QuestDefinition
+rg -n -U '"value"\s*:\s*"<dialog_resref>"' Module\dlg Module\utc Module\git
+rg -n -U '"value"\s*:\s*"<npc_or_item_resref>"' Module
+rg -n -U '"<npc_or_item_resref>"' SWLOR.Game.Server
 ```
 
 Build:

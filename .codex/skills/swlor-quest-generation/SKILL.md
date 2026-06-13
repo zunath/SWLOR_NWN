@@ -21,7 +21,7 @@ Before inventing a pattern, inspect nearby quests for the same planet, hub, guil
 
 1. Normalize the spec.
    - For many quests, use `assets/quest-batch-template.csv`.
-   - Require at least: quest ID, quest name, giver NPC, area resref or target area, objective type and target, journal states, dialogue beats, rewards, and prerequisites.
+   - Require at least: quest ID, quest name, repeatable mode, giver NPC, area resref or target area, objective type and target, journal states, dialogue beats, rewards, and prerequisites.
    - If a blocker cannot be resolved from the repo, ask one question at a time and include a recommended answer.
 
 2. Inventory existing content.
@@ -33,6 +33,7 @@ Before inventing a pattern, inspect nearby quests for the same planet, hub, guil
    - Add the quest to the appropriate planet/guild definition, or create a new `IQuestListDefinition` only when there is no appropriate owner.
    - Add a private method per quest and call it from `BuildQuests()`.
    - Use `QuestBuilder` states in order. State 1 is the accepted state; final state is the turn-in/completion state.
+   - Consume the intake `repeatable` field deterministically: omit `.IsRepeatable()` for one-time/false/no quests, add `.IsRepeatable()` for repeatable/true/yes quests, and stop to design a custom gate if a daily/cooldown cadence is requested because `QuestBuilder` has no built-in daily helper.
    - Use built-in objectives before custom code: `AddKillObjective(...)` and `AddCollectItemObjective(...)`.
    - Use built-in rewards before custom code: credits, XP, item, key item, GP, faction standing, faction points.
    - Use `PrerequisiteQuest(...)` and `PrerequisiteKeyItem(...)` for acceptance gates. Add custom prerequisites only when the builder lacks the needed gate.

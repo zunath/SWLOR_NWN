@@ -116,7 +116,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
             (RecastGroup)42, // ForceValor
             (RecastGroup)43, // ForceSpark
             (RecastGroup)44, // CreepingTerror
-            (RecastGroup)45, // ForceRage
+            (RecastGroup)45, // FuryStance
             (RecastGroup)46, // Furor
             (RecastGroup)47, // ThrowRock
             (RecastGroup)48, // ForceInspiration
@@ -158,11 +158,11 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
         {
             var (playersMigrated, playerSpRefunded) = MigratePlayers();
             var (beastsMigrated, beastSpRefunded) = MigrateBeasts();
-            var (storedItemRecordsMigrated, storedItemsRemoved) = MigrateStoredObsoleteItems();
+            var (storedItemRecordsMigrated, storedItemsRemoved, droidPerksMigrated) = MigrateStoredObsoleteItems();
 
             Log.Write(
                 LogGroup.Migration,
-                $"Removed obsolete Bible perks from {playersMigrated} players and {beastsMigrated} beasts. Refunded {playerSpRefunded} player SP and {beastSpRefunded} beast SP. Removed {storedItemsRemoved} obsolete instruction disc items across {storedItemRecordsMigrated} stored records.");
+                $"Removed obsolete Bible perks from {playersMigrated} players and {beastsMigrated} beasts. Refunded {playerSpRefunded} player SP and {beastSpRefunded} beast SP. Removed {storedItemsRemoved} obsolete instruction disc items and migrated {droidPerksMigrated} stored droid perk sets across {storedItemRecordsMigrated} stored records.");
         }
 
         private static (int EntityCount, int SpRefunded) MigratePlayers()
@@ -304,24 +304,25 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
             return changed;
         }
 
-        private static (int EntityCount, int ItemsRemoved) MigrateStoredObsoleteItems()
+        private static (int EntityCount, int ItemsRemoved, int DroidPerksMigrated) MigrateStoredObsoleteItems()
         {
             var migratedRecords = 0;
             var removedItems = 0;
+            var droidPerksMigrated = 0;
 
-            removedItems += MigrateInventoryItems(ref migratedRecords);
-            removedItems += MigrateMarketItems(ref migratedRecords);
-            removedItems += MigrateWorldPropertyCategories(ref migratedRecords);
-            removedItems += MigrateSerializedField<WorldProperty>(x => x.SerializedItem, (x, value) => x.SerializedItem = value, ref migratedRecords);
-            removedItems += MigrateSerializedField<ResearchJob>(x => x.SerializedItem, (x, value) => x.SerializedItem = value, ref migratedRecords);
-            removedItems += MigrateSerializedField<PlayerOutfit>(x => x.Data, (x, value) => x.Data = value, ref migratedRecords);
-            removedItems += MigrateSerializedField<DMCreature>(x => x.Data, (x, value) => x.Data = value, ref migratedRecords);
-            removedItems += MigratePlayerShips(ref migratedRecords);
+            removedItems += MigrateInventoryItems(ref migratedRecords, ref droidPerksMigrated);
+            removedItems += MigrateMarketItems(ref migratedRecords, ref droidPerksMigrated);
+            removedItems += MigrateWorldPropertyCategories(ref migratedRecords, ref droidPerksMigrated);
+            removedItems += MigrateSerializedField<WorldProperty>(x => x.SerializedItem, (x, value) => x.SerializedItem = value, ref migratedRecords, ref droidPerksMigrated);
+            removedItems += MigrateSerializedField<ResearchJob>(x => x.SerializedItem, (x, value) => x.SerializedItem = value, ref migratedRecords, ref droidPerksMigrated);
+            removedItems += MigrateSerializedField<PlayerOutfit>(x => x.Data, (x, value) => x.Data = value, ref migratedRecords, ref droidPerksMigrated);
+            removedItems += MigrateSerializedField<DMCreature>(x => x.Data, (x, value) => x.Data = value, ref migratedRecords, ref droidPerksMigrated);
+            removedItems += MigratePlayerShips(ref migratedRecords, ref droidPerksMigrated);
 
-            return (migratedRecords, removedItems);
+            return (migratedRecords, removedItems, droidPerksMigrated);
         }
 
-        private static int MigrateInventoryItems(ref int migratedRecords)
+        private static int MigrateInventoryItems(ref int migratedRecords, ref int droidPerksMigrated)
         {
             var removedItems = 0;
 
@@ -332,7 +333,8 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
                     item.Data,
                     out var migratedData,
                     out var removedRoot,
-                    out var serializedRemovedItems);
+                    out var serializedRemovedItems,
+                    out var serializedDroidPerks);
 
                 if (metadataRootObsolete || removedRoot)
                 {
@@ -348,13 +350,14 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
                 item.Data = migratedData;
                 DB.Set(item);
                 removedItems += serializedRemovedItems;
+                droidPerksMigrated += serializedDroidPerks;
                 migratedRecords++;
             }
 
             return removedItems;
         }
 
-        private static int MigrateMarketItems(ref int migratedRecords)
+        private static int MigrateMarketItems(ref int migratedRecords, ref int droidPerksMigrated)
         {
             var removedItems = 0;
 
@@ -365,7 +368,8 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
                     item.Data,
                     out var migratedData,
                     out var removedRoot,
-                    out var serializedRemovedItems);
+                    out var serializedRemovedItems,
+                    out var serializedDroidPerks);
 
                 if (metadataRootObsolete || removedRoot)
                 {
@@ -381,13 +385,14 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
                 item.Data = migratedData;
                 DB.Set(item);
                 removedItems += serializedRemovedItems;
+                droidPerksMigrated += serializedDroidPerks;
                 migratedRecords++;
             }
 
             return removedItems;
         }
 
-        private static int MigrateWorldPropertyCategories(ref int migratedRecords)
+        private static int MigrateWorldPropertyCategories(ref int migratedRecords, ref int droidPerksMigrated)
         {
             var removedItems = 0;
 
@@ -406,7 +411,8 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
                         item.Data,
                         out var migratedData,
                         out var removedRoot,
-                        out var serializedRemovedItems);
+                        out var serializedRemovedItems,
+                        out var serializedDroidPerks);
 
                     if (metadataRootObsolete || removedRoot)
                     {
@@ -421,6 +427,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
 
                     item.Data = migratedData;
                     removedItems += serializedRemovedItems;
+                    droidPerksMigrated += serializedDroidPerks;
                     changed = true;
                 }
 
@@ -437,7 +444,8 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
         private static int MigrateSerializedField<T>(
             Func<T, string> getSerializedObject,
             Action<T, string> setSerializedObject,
-            ref int migratedRecords)
+            ref int migratedRecords,
+            ref int droidPerksMigrated)
             where T : EntityBase
         {
             var removedItems = 0;
@@ -448,7 +456,8 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
                     getSerializedObject(entity),
                     out var migratedData,
                     out var removedRoot,
-                    out var serializedRemovedItems);
+                    out var serializedRemovedItems,
+                    out var serializedDroidPerks);
 
                 if (!changed)
                     continue;
@@ -456,13 +465,14 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
                 setSerializedObject(entity, removedRoot ? string.Empty : migratedData);
                 DB.Set(entity);
                 removedItems += serializedRemovedItems;
+                droidPerksMigrated += serializedDroidPerks;
                 migratedRecords++;
             }
 
             return removedItems;
         }
 
-        private static int MigratePlayerShips(ref int migratedRecords)
+        private static int MigratePlayerShips(ref int migratedRecords, ref int droidPerksMigrated)
         {
             var removedItems = 0;
 
@@ -472,17 +482,19 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
                     ship.SerializedItem,
                     out var migratedData,
                     out var removedRoot,
-                    out var serializedRemovedItems);
+                    out var serializedRemovedItems,
+                    out var serializedDroidPerks);
 
                 if (changed)
                 {
                     ship.SerializedItem = removedRoot ? string.Empty : migratedData;
                     removedItems += serializedRemovedItems;
+                    droidPerksMigrated += serializedDroidPerks;
                 }
 
-                changed |= MigrateShipModules(ship.Status?.HighPowerModules, ref removedItems);
-                changed |= MigrateShipModules(ship.Status?.LowPowerModules, ref removedItems);
-                changed |= MigrateShipModules(ship.Status?.ConfigurationModules, ref removedItems);
+                changed |= MigrateShipModules(ship.Status?.HighPowerModules, ref removedItems, ref droidPerksMigrated);
+                changed |= MigrateShipModules(ship.Status?.LowPowerModules, ref removedItems, ref droidPerksMigrated);
+                changed |= MigrateShipModules(ship.Status?.ConfigurationModules, ref removedItems, ref droidPerksMigrated);
 
                 if (!changed)
                     continue;
@@ -494,7 +506,10 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
             return removedItems;
         }
 
-        private static bool MigrateShipModules(Dictionary<int, ShipStatus.ShipStatusModule> modules, ref int removedItems)
+        private static bool MigrateShipModules(
+            Dictionary<int, ShipStatus.ShipStatusModule> modules,
+            ref int removedItems,
+            ref int droidPerksMigrated)
         {
             if (modules == null || modules.Count <= 0)
                 return false;
@@ -506,13 +521,15 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
                     module.SerializedItem,
                     out var migratedData,
                     out var removedRoot,
-                    out var serializedRemovedItems);
+                    out var serializedRemovedItems,
+                    out var serializedDroidPerks);
 
                 if (!moduleChanged)
                     continue;
 
                 module.SerializedItem = removedRoot ? string.Empty : migratedData;
                 removedItems += serializedRemovedItems;
+                droidPerksMigrated += serializedDroidPerks;
                 changed = true;
             }
 

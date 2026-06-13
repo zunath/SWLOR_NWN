@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public override EffectIconType Icon => EffectIconType.SentinelGuardStatusEffect;
         public SentinelGuardStatusEffect()
         {
-            StatGroup.Stats[StatType.AttackDeflection] = 10;
+            StatGroup.Stats[StatType.AttackDeflection] = 8;
         }
 
         protected override void Apply(uint creature, int durationTicks)

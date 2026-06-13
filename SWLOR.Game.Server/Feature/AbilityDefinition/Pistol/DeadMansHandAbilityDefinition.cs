@@ -33,13 +33,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 .HasActivationDelay(2f)
                 .HasRecastDelay(RecastGroup.Capstone, CapstoneAbility.RecastDelaySeconds)
                 .SkillType(SkillType.Pistol)
+                .CombatImpactDamageAbility(AbilityType.Perception)
                 .UsesImpactAnimation(Animation.PointPistol)
                 .HasMaxRange(PistolAbilityRange.Standard)
                 .RequiresTarget()
                 .IsAreaAbility()
                 .HasImpactAction(DeadMansHand1ImpactAction)
                 .HasTargetingSphere(
-                    Spell.DeadManSHand1,
+                    Spell.DeadMansHand1,
                     5f,
                     AbilityTargetingFlags.HarmsEnemies)
                 .IsCastedAbility()

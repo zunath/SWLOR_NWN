@@ -386,8 +386,8 @@ foreach ($label in @(
 }
 
 $rulesByLabel["TwinIntercept1"] = $friendlyCreatureRule
-$rulesByLabel["DeadManSHand1"] = New-TargetSphereRule
-$rulesByLabel["DuelistSChallenge1"] = $hostileCreatureRule
+$rulesByLabel["DeadMansHand1"] = New-TargetSphereRule
+$rulesByLabel["DuelistsChallenge1"] = $hostileCreatureRule
 
 foreach ($label in @(
     "Backstab1",
@@ -425,7 +425,7 @@ foreach ($label in @(
     "FlashToss1",
     "FlashToss2",
     "RainOfSteel1",
-    "SerpentSEclipse1",
+    "SerpentsEclipse1",
     "SmokeRound1",
     "SystemicShutdown1"
 )) {

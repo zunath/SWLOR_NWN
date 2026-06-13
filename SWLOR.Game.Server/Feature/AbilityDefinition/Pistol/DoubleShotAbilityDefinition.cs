@@ -55,6 +55,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.DoubleShot, RecastDelay)
                 .SkillType(Skill)
+                .CombatImpactDamageAbility(AbilityType.Perception)
                 .UsesImpactAnimation(Animation.DoubleShot)
                 .HasMaxRange(PistolAbilityRange.Standard)
                 .IsSingleTargetAbility()

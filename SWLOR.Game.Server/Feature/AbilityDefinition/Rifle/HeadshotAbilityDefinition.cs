@@ -28,6 +28,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 .HasActivationDelay(1.5f)
                 .HasRecastDelay(RecastGroup.Headshot, 120f)
                 .SkillType(SkillType.Rifle)
+                .CombatImpactDamageAbility(AbilityType.Perception)
                 .UsesImpactAnimation(Animation.PointPistol)
                 .HasMaxRange(RifleAbilityRange.Standard)
                 .IsSingleTargetAbility()

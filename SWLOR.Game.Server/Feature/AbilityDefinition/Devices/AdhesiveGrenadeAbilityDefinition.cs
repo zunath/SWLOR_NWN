@@ -37,6 +37,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .HasActivationDelay(1f)
                 .HasRecastDelay(RecastGroup.AdhesiveGrenade, 30f)
                 .SkillType(SkillType.Devices)
+                .CombatImpactDamageAbility(AbilityType.Perception)
                 .UsesImpactAnimation(Animation.ThrowGrenade)
                 .IsAreaAbility()
                 .HasTargetingSphere(
@@ -61,6 +62,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .HasActivationDelay(1f)
                 .HasRecastDelay(RecastGroup.AdhesiveGrenade, 30f)
                 .SkillType(SkillType.Devices)
+                .CombatImpactDamageAbility(AbilityType.Perception)
                 .UsesImpactAnimation(Animation.ThrowGrenade)
                 .IsAreaAbility()
                 .HasTargetingSphere(
@@ -117,7 +119,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 0f,
                 Array.Empty<Type>(),
                 centerOnActivator: !GetIsObjectValid(target),
-                statusEffectFactory: () => new AdhesiveGrenadeSlowStatusEffect(
+                statusEffectFactory: () => new AdhesiveGrenadeStatusEffect(
                     DeviceAbilityEffects.ApplyGrenadeControlPotencyBonus(activator, AdhesiveSlowPenaltyPercent)),
                 damageType: CombatDamageType.Physical,
                 targetVisualEffect: VisualEffect.Vfx_Com_Chunk_Red_Small,

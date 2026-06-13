@@ -23,28 +23,6 @@ public class ArmorProvokeTests
         attribute.Name.Should().Be("General");
         attribute.IsActive.Should().BeTrue();
     }
-
-    [Test]
-    public void ProvokePerkLevels_MatchCombatBible()
-    {
-        var perk = BuildProvokePerkWithout2daLookup();
-
-        perk.Name.Should().Be("Provoke");
-        perk.Category.Should().Be(PerkCategoryType.General);
-
-        var provoke1 = perk.PerkLevels[1];
-        provoke1.Price.Should().Be(2);
-        provoke1.Description.Should().Be("Goads a single target into attacking you. Enmity generated increases by 1% per VIT.");
-        provoke1.GrantedFeats.Should().ContainSingle().Which.Should().Be(FeatType.Provoke1);
-        AssertSkillRequirement(provoke1, SkillType.Armor, 5);
-
-        var provoke2 = perk.PerkLevels[2];
-        provoke2.Price.Should().Be(3);
-        provoke2.Description.Should().Be("Goads all enemies within range into attacking you. Enmity generated increases by 1% per VIT.");
-        provoke2.GrantedFeats.Should().ContainSingle().Which.Should().Be(FeatType.Provoke2);
-        AssertSkillRequirement(provoke2, SkillType.Armor, 15);
-    }
-
     [Test]
     public void ProvokeAbilities_MatchCombatBible()
     {

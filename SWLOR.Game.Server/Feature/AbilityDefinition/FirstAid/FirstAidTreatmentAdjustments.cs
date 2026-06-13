@@ -1,6 +1,8 @@
 using System;
+using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
@@ -61,6 +63,36 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 return durationSeconds;
 
             return durationSeconds + durationSeconds * (adjustment / 100f);
+        }
+
+        public static void ApplyCombatPharmacologyStimRiders(uint source, uint target)
+        {
+            var coagulantRank = Stat.GetStatAdjustment(source, StatType.CombatPharmacologyStimCoagulantRank);
+            if (coagulantRank <= 0)
+                return;
+
+            StatusEffect.ApplyStatusEffect(
+                source,
+                target,
+                coagulantRank >= 2 ? typeof(Coagulant2StatusEffect) : typeof(Coagulant1StatusEffect),
+                120f);
+        }
+
+        public static void ApplyTraumaMedicRiders(uint source, uint target)
+        {
+            if (Stat.GetStatAdjustment(source, StatType.TraumaMedicEmergencySealant) <= 0)
+                return;
+
+            if (StatusEffect.HasStatusEffect(target, typeof(BleedStatusEffect)))
+            {
+                StatusEffect.RemoveStatusEffect(target, typeof(BleedStatusEffect), false);
+            }
+            else
+            {
+                StatusEffect.RemoveStatusEffect(target, typeof(BurnStatusEffect), false);
+            }
+
+            StatusEffect.ApplyStatusEffect(source, target, typeof(EmergencySealant1StatusEffect), 12f);
         }
     }
 }

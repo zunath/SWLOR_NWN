@@ -33,9 +33,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .Create(FeatType.WristRocket1, PerkType.WristRocket)
                 .Name("Wrist Rocket I")
                 .Level(1)
-                .HasActivationDelay(0.5f)
+                .HasActivationDelay(1f)
                 .HasRecastDelay(RecastGroup.WristRocket, 18f)
                 .SkillType(SkillType.Devices)
+                .CombatImpactDamageAbility(AbilityType.Perception)
                 .UsesImpactAnimation(Animation.CastOutAnimation)
                 .HasMaxRange(DeviceAbilityRange.Standard)
                 .IsSingleTargetAbility()
@@ -53,9 +54,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .Create(FeatType.WristRocket2, PerkType.WristRocket)
                 .Name("Wrist Rocket II")
                 .Level(2)
-                .HasActivationDelay(0.5f)
+                .HasActivationDelay(1f)
                 .HasRecastDelay(RecastGroup.WristRocket, 18f)
                 .SkillType(SkillType.Devices)
+                .CombatImpactDamageAbility(AbilityType.Perception)
                 .UsesImpactAnimation(Animation.CastOutAnimation)
                 .HasMaxRange(DeviceAbilityRange.Standard)
                 .IsSingleTargetAbility()
@@ -73,9 +75,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .Create(FeatType.WristRocket3, PerkType.WristRocket)
                 .Name("Wrist Rocket III")
                 .Level(3)
-                .HasActivationDelay(0.5f)
+                .HasActivationDelay(1f)
                 .HasRecastDelay(RecastGroup.WristRocket, 18f)
                 .SkillType(SkillType.Devices)
+                .CombatImpactDamageAbility(AbilityType.Perception)
                 .UsesImpactAnimation(Animation.CastOutAnimation)
                 .HasMaxRange(DeviceAbilityRange.Standard)
                 .IsSingleTargetAbility()
@@ -103,6 +106,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 targetVisualEffect: VisualEffect.Vfx_Com_Hit_Fire,
                 damagePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetDamageAdjustment(activator),
                 baseDamageAdjustment: DeviceAbilityEffects.GetAssaultGadgetBaseDamageAdjustment(activator),
+                afterSuccessfulHit: _ => DeviceAbilityEffects.ApplyTacticalUplink(activator),
                 hitChancePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetAccuracyAdjustment(activator),
                 criticalRatePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetCriticalRateAdjustment(activator));
         }
@@ -123,6 +127,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 targetVisualEffect: VisualEffect.Vfx_Com_Hit_Fire,
                 damagePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetDamageAdjustment(activator),
                 baseDamageAdjustment: DeviceAbilityEffects.GetAssaultGadgetBaseDamageAdjustment(activator),
+                afterSuccessfulHit: _ => DeviceAbilityEffects.ApplyTacticalUplink(activator),
                 hitChancePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetAccuracyAdjustment(activator),
                 criticalRatePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetCriticalRateAdjustment(activator));
         }
@@ -143,6 +148,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 targetVisualEffect: VisualEffect.Vfx_Com_Hit_Fire,
                 damagePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetDamageAdjustment(activator),
                 baseDamageAdjustment: DeviceAbilityEffects.GetAssaultGadgetBaseDamageAdjustment(activator),
+                afterSuccessfulHit: _ => DeviceAbilityEffects.ApplyTacticalUplink(activator),
                 hitChancePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetAccuracyAdjustment(activator),
                 criticalRatePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetCriticalRateAdjustment(activator));
         }

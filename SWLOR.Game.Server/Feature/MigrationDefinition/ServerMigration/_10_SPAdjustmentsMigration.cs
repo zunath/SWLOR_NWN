@@ -81,15 +81,15 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
             {(PerkType.ForceLightning, 3), 5},
             {(PerkType.ForceLightning, 4), 6},
 
-            {(PerkType.ForceBody, 1), 4},
-            {(PerkType.ForceBody, 2), 6},
+            {((PerkType)164, 1), 4},
+            {((PerkType)164, 2), 6},
 
             {(PerkType.CreepingTerror, 1), 3},
             {(PerkType.CreepingTerror, 2), 3},
             {(PerkType.CreepingTerror, 3), 3},
 
-            {(PerkType.ForceRage, 1), 3},
-            {(PerkType.ForceRage, 2), 3},
+            {(PerkType.FuryStance, 1), 3},
+            {(PerkType.FuryStance, 2), 3},
         };
 
         public int Version => 10;

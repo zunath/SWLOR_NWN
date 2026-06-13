@@ -36,6 +36,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public bool RequiresTarget { get; set; }
         public int AbilityLevel { get; set; }
         public SkillType SkillType { get; set; }
+        public AbilityType CombatImpactDamageAbility { get; set; }
         public bool IsAreaAbility { get; set; }
         public bool IsSingleTargetAbility { get; set; }
         public bool TriggersDarkForceConversion { get; set; }
@@ -54,6 +55,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
             RequiresTarget = false;
             AbilityLevel = 1;
             SkillType = SkillType.Invalid;
+            CombatImpactDamageAbility = AbilityType.Invalid;
             IsAreaAbility = false;
             IsSingleTargetAbility = false;
             TriggersDarkForceConversion = false;

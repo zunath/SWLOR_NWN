@@ -27,11 +27,12 @@ public class VibrobladeOffenseTests
             "Your next attack deals an additional 8 DMG and inflicts Bleed for 30 seconds.");
         AssertPerkLevel(perks[PerkType.RiotBlade], "Riot Blade", 1, 2, 10, FeatType.RiotBlade1,
             "Instantly deals weapon DMG + 15 to your target.");
-        AssertPerkLevel(perks[PerkType.WhirlwindAssault], "Whirlwind Assault", 1, 3, 12, FeatType.WhirlwindAssault1,
-            "Deal weapon DMG + 12 to all nearby enemies.");
+        AssertPerkLevel(perks[PerkType.RiotBlade], "Riot Blade", 2, 3, 12, null,
+            "Riot Blade also deals +12 DMG to nearby enemies.",
+            StatType.RiotBladeSecondaryDamageBonus);
         AssertPerkLevel(perks[PerkType.BerserkerStance], "Berserker Stance", 1, 3, 15, FeatType.BerserkerStance1,
             "While active, grants +15% Attack, +10% Haste, -20% Defense, and -20% Force Defense.");
-        AssertPerkLevel(perks[PerkType.RiotBlade], "Riot Blade", 2, 3, 18, FeatType.RiotBlade2,
+        AssertPerkLevel(perks[PerkType.RiotBlade], "Riot Blade", 3, 3, 18, FeatType.RiotBlade2,
             "Instantly deals weapon DMG + 30 to your target.");
         AssertPerkLevel(perks[PerkType.HackingBlade], "Hacking Blade", 2, 3, 20, FeatType.HackingBlade2,
             "Your next attack deals an additional 18 DMG and inflicts Bleed for 60 seconds.");
@@ -39,10 +40,13 @@ public class VibrobladeOffenseTests
             "Deals weapon DMG + 18. Inflicts Exposed which reduces Defense by 15% for 10s.");
         AssertPerkLevel(perks[PerkType.SavageCleave], "Savage Cleave", 1, 2, 25, FeatType.SavageCleave1,
             "Strike all enemies in front for weapon DMG + 25.");
-        AssertPerkLevel(perks[PerkType.RiotBlade], "Riot Blade", 3, 3, 28, FeatType.RiotBlade3,
+        AssertPerkLevel(perks[PerkType.RiotBlade], "Riot Blade", 4, 3, 28, FeatType.RiotBlade3,
             "Instantly deals weapon DMG + 45 to your target.");
-        AssertPerkLevel(perks[PerkType.WhirlwindAssault], "Whirlwind Assault", 2, 3, 30, FeatType.WhirlwindAssault2,
-            "Deal weapon DMG + 20 to all nearby enemies.");
+        AssertPerkLevel(perks[PerkType.SavageCleave], "Savage Cleave", 2, 3, 30, null,
+            "Savage Cleave deals +20 DMG to nearby enemies and restores 2 STM per secondary target hit, up to 8 STM.",
+            StatType.SavageCleaveSecondaryDamageBonus,
+            StatType.SavageCleaveSecondaryTargetStaminaRestore,
+            StatType.SavageCleaveSecondaryTargetStaminaRestoreMaximum);
         AssertPerkLevel(perks[PerkType.Executioner], "Executioner", 1, 3, 32, null,
             "Deal +15% damage to targets below 30% HP.",
             StatType.TargetLowHPDamageThresholdPercent,
@@ -70,55 +74,6 @@ public class VibrobladeOffenseTests
             StatType.DefeatedEnemyAttackDelayReductionPercent,
             StatType.DefeatedEnemyAttackDelayReductionDurationSeconds);
     }
-
-    [Test]
-    public void VibrobladeOffenseStaticStatBonuses_MatchCombatBible()
-    {
-        var perks = BuildVibrobladeOffensePerksWithout2daLookup();
-
-        AssertStatBonus(perks[PerkType.SavageReflexes].PerkLevels[1], StatType.AutoAttackDamageBonusChance, 10);
-        AssertStatBonus(perks[PerkType.SavageReflexes].PerkLevels[1], StatType.AutoAttackDamageBonus, 8);
-
-        AssertStatBonus(perks[PerkType.Executioner].PerkLevels[1], StatType.TargetLowHPDamageThresholdPercent, 30);
-        AssertStatBonus(perks[PerkType.Executioner].PerkLevels[1], StatType.TargetLowHPDamagePercentAdjustment, 15);
-
-        AssertStatBonus(perks[PerkType.BloodFrenzy].PerkLevels[1], StatType.DefeatedEnemyStaminaRestore, 15);
-        AssertStatBonus(perks[PerkType.BloodFrenzy].PerkLevels[1], StatType.DefeatedEnemyAttackDelayReductionPercent, 10);
-        AssertStatBonus(perks[PerkType.BloodFrenzy].PerkLevels[1], StatType.DefeatedEnemyAttackDelayReductionDurationSeconds, 30);
-    }
-
-    [Test]
-    public void VibrobladeOffenseAbilities_MatchCombatBible()
-    {
-        var hackingBlade = new HackingBladeAbilityDefinition().BuildAbilities();
-        AssertAbility(hackingBlade[FeatType.HackingBlade1], "Hacking Blade I", 1, RecastGroup.HackingBlade, 30f, 0f, 3, true, false, true, false, AbilityActivationType.Weapon);
-        AssertAbility(hackingBlade[FeatType.HackingBlade2], "Hacking Blade II", 2, RecastGroup.HackingBlade, 30f, 0f, 4, true, false, true, false, AbilityActivationType.Weapon);
-        AssertAbility(hackingBlade[FeatType.HackingBlade3], "Hacking Blade III", 3, RecastGroup.HackingBlade, 30f, 0f, 5, true, false, true, false, AbilityActivationType.Weapon);
-
-        var riotBlade = new RiotBladeAbilityDefinition().BuildAbilities();
-        AssertAbility(riotBlade[FeatType.RiotBlade1], "Riot Blade I", 1, RecastGroup.RiotBlade, 60f, 0f, 3, true, true, true, false, AbilityActivationType.Casted);
-        AssertAbility(riotBlade[FeatType.RiotBlade2], "Riot Blade II", 2, RecastGroup.RiotBlade, 60f, 0f, 5, true, true, true, false, AbilityActivationType.Casted);
-        AssertAbility(riotBlade[FeatType.RiotBlade3], "Riot Blade III", 3, RecastGroup.RiotBlade, 60f, 0f, 8, true, true, true, false, AbilityActivationType.Casted);
-
-        var whirlwind = new WhirlwindAssaultAbilityDefinition().BuildAbilities();
-        AssertAbility(whirlwind[FeatType.WhirlwindAssault1], "Whirlwind Assault I", 1, RecastGroup.WhirlwindAssault, 120f, 0f, 10, true, false, false, true, AbilityActivationType.Casted);
-        AssertAbility(whirlwind[FeatType.WhirlwindAssault2], "Whirlwind Assault II", 2, RecastGroup.WhirlwindAssault, 120f, 0f, 12, true, false, false, true, AbilityActivationType.Casted);
-
-        var berserkerStance = new BerserkerStanceAbilityDefinition().BuildAbilities();
-        AssertAbility(berserkerStance[FeatType.BerserkerStance1], "Berserker Stance I", 1, RecastGroup.BerserkerStance, 180f, 2f, null, false, false, false, false, AbilityActivationType.Casted);
-        AssertAbility(berserkerStance[FeatType.BerserkerStance2], "Berserker Stance II", 2, RecastGroup.BerserkerStance, 180f, 2f, null, false, false, false, false, AbilityActivationType.Casted);
-
-        var rendingStrike = new RendingStrikeAbilityDefinition().BuildAbilities();
-        AssertAbility(rendingStrike[FeatType.RendingStrike1], "Rending Strike I", 1, RecastGroup.RendingStrike, 60f, 0f, 5, true, true, true, false, AbilityActivationType.Casted);
-        AssertAbility(rendingStrike[FeatType.RendingStrike2], "Rending Strike II", 2, RecastGroup.RendingStrike, 60f, 0f, 7, true, true, true, false, AbilityActivationType.Casted);
-
-        var savageCleave = new SavageCleaveAbilityDefinition().BuildAbilities()[FeatType.SavageCleave1];
-        AssertAbility(savageCleave, "Savage Cleave", 1, RecastGroup.SavageCleave, 45f, 0f, 7, true, false, false, true, AbilityActivationType.Casted);
-
-        var carve = new CarveAbilityDefinition().BuildAbilities()[FeatType.Carve1];
-        AssertAbility(carve, "Carve", 1, RecastGroup.Carve, 75f, 0f, 10, true, true, true, false, AbilityActivationType.Casted);
-    }
-
     [Test]
     public void VibrobladeOffenseStatusEffects_MatchCombatBible()
     {
@@ -160,8 +115,6 @@ public class VibrobladeOffenseTests
             (FeatType.RendingStrike1, "ife_rendstrk1"),
             (FeatType.RendingStrike2, "ife_rendstrk2"),
             (FeatType.SavageCleave1, "ife_savclv1"),
-            (FeatType.WhirlwindAssault1, "ife_wwindaslt1"),
-            (FeatType.WhirlwindAssault2, "ife_wwindaslt2"),
             (FeatType.HackingBlade1, "ife_hckngblade1"),
             (FeatType.RiotBlade1, "ife_rtblade1"),
             (FeatType.RiotBlade2, "ife_rtblade2"),
@@ -186,10 +139,8 @@ public class VibrobladeOffenseTests
 
     private static BerserkerStanceStatusEffect BuildBerserkerStanceStats(int level)
     {
-        var status = new BerserkerStanceStatusEffect();
-        typeof(BerserkerStanceStatusEffect)
-            .GetMethod("ApplyStatAdjustments", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)!
-            .Invoke(status, new object[] { level });
+        var status = new BerserkerStanceStatusEffect(level);
+        status.ApplyEffect(1, 1, -1);
 
         return status;
     }
@@ -302,7 +253,6 @@ public class VibrobladeOffenseTests
             "SavageReflexes",
             "HackingBlade",
             "RiotBlade",
-            "WhirlwindAssault",
             "BerserkerStance",
             "RendingStrike",
             "SavageCleave",

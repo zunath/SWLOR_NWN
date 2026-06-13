@@ -36,6 +36,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasActivationDelay(1f)
                 .HasRecastDelay(RecastGroup.ForceDrain, 18f)
                 .SkillType(SkillType.Force)
+                .CombatImpactDamageAbility(AbilityType.Willpower)
                 .UsesImpactAnimation(Animation.CastOutAnimation)
                 .IsSingleTargetAbility()
                 .HasMaxRange(15f)
@@ -57,6 +58,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasActivationDelay(1f)
                 .HasRecastDelay(RecastGroup.ForceDrain, 18f)
                 .SkillType(SkillType.Force)
+                .CombatImpactDamageAbility(AbilityType.Willpower)
                 .UsesImpactAnimation(Animation.CastOutAnimation)
                 .IsSingleTargetAbility()
                 .HasMaxRange(15f)
@@ -78,6 +80,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasActivationDelay(1f)
                 .HasRecastDelay(RecastGroup.ForceDrain, 18f)
                 .SkillType(SkillType.Force)
+                .CombatImpactDamageAbility(AbilityType.Willpower)
                 .UsesImpactAnimation(Animation.CastOutAnimation)
                 .IsSingleTargetAbility()
                 .HasMaxRange(15f)
@@ -92,17 +95,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void ForceDrain1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            ApplyForceDrain(activator, target, targetLocation, 16, 35);
+            ApplyForceDrain(activator, target, targetLocation, 14, 30, 40);
         }
 
         private static void ForceDrain2ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            ApplyForceDrain(activator, target, targetLocation, 28, 40);
+            ApplyForceDrain(activator, target, targetLocation, 24, 35, 45);
         }
 
         private static void ForceDrain3ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            ApplyForceDrain(activator, target, targetLocation, 44, 45);
+            ApplyForceDrain(activator, target, targetLocation, 36, 40, 50);
         }
 
         private static void ApplyForceDrain(
@@ -110,7 +113,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             uint target,
             Location targetLocation,
             int baseDamage,
-            int healPercent)
+            int healPercent,
+            int lowHPHealPercent)
         {
             var damage = Ability.ApplyCombatImpact(
                 activator,
@@ -130,11 +134,21 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
             ApplyDrainVisual(activator, target);
 
-            var healAmount = Math.Max(1, (int)Math.Ceiling(damage * (healPercent / 100f)));
+            var effectiveHealPercent = IsBelowHalfHP(target)
+                ? lowHPHealPercent
+                : healPercent;
+            var healAmount = Math.Max(1, (int)Math.Ceiling(damage * (effectiveHealPercent / 100f)));
             healAmount = Ability.ApplyCombatReadinessToActivatedAbilityMagnitude(activator, healAmount);
             healAmount = Stat.ApplyHealingReceivedAdjustment(activator, healAmount);
             ApplyEffectToObject(DurationType.Instant, EffectHeal(healAmount), activator);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Evil_Help), activator);
+        }
+
+        private static bool IsBelowHalfHP(uint target)
+        {
+            return GetIsObjectValid(target) &&
+                   GetMaxHitPoints(target) > 0 &&
+                   GetCurrentHitPoints(target) <= GetMaxHitPoints(target) * 0.5f;
         }
 
         private static void ApplyDrainVisual(uint activator, uint target)

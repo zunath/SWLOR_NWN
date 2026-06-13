@@ -94,6 +94,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
                 StatusEffect.ApplyStatusEffect(activator, friendly, typeof(Shielding1StatusEffect), duration);
+                FirstAidTreatmentAdjustments.ApplyCombatPharmacologyStimRiders(activator, friendly);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Holy_Aid), friendly);
             }
         }
@@ -104,6 +105,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
                 StatusEffect.ApplyStatusEffect(activator, friendly, typeof(Shielding2StatusEffect), duration);
+                FirstAidTreatmentAdjustments.ApplyCombatPharmacologyStimRiders(activator, friendly);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Holy_Aid), friendly);
             }
         }
@@ -114,6 +116,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
                 StatusEffect.ApplyStatusEffect(activator, friendly, typeof(Shielding3StatusEffect), duration);
+                FirstAidTreatmentAdjustments.ApplyCombatPharmacologyStimRiders(activator, friendly);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Holy_Aid), friendly);
             }
         }

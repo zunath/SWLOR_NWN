@@ -8,7 +8,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
     public sealed class WeaponJam1StatusEffect : StatusEffectBase
     {
-        public override string Name => "Weapon Jam I";
+        public override string Name => "Weapon Jam";
         public override EffectIconType Icon => EffectIconType.WeaponJam1StatusEffect;
 
         public WeaponJam1StatusEffect()

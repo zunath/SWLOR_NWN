@@ -23,7 +23,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 
             ConcussionGrenade1(builder);
             ConcussionGrenade2(builder);
-            ConcussionGrenade3(builder);
 
             return builder.Build();
         }
@@ -37,6 +36,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .HasActivationDelay(1f)
                 .HasRecastDelay(RecastGroup.ConcussionGrenade, 24f)
                 .SkillType(SkillType.Devices)
+                .CombatImpactDamageAbility(AbilityType.Perception)
                 .UsesImpactAnimation(Animation.ThrowGrenade)
                 .IsAreaAbility()
                 .HasTargetingSphere(
@@ -61,6 +61,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .HasActivationDelay(1f)
                 .HasRecastDelay(RecastGroup.ConcussionGrenade, 24f)
                 .SkillType(SkillType.Devices)
+                .CombatImpactDamageAbility(AbilityType.Perception)
                 .UsesImpactAnimation(Animation.ThrowGrenade)
                 .IsAreaAbility()
                 .HasTargetingSphere(
@@ -73,30 +74,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .IsHostileAbility()
                 .BreaksStealth()
                 .RequirementStamina(4)
-                .RequirementItem("explosives");
-        }
-
-        private static void ConcussionGrenade3(AbilityBuilder builder)
-        {
-            builder
-                .Create(FeatType.ConcussionGrenade3, PerkType.ConcussionGrenade)
-                .Name("Concussion Grenade III")
-                .Level(3)
-                .HasActivationDelay(1f)
-                .HasRecastDelay(RecastGroup.ConcussionGrenade, 24f)
-                .SkillType(SkillType.Devices)
-                .UsesImpactAnimation(Animation.ThrowGrenade)
-                .IsAreaAbility()
-                .HasTargetingSphere(
-                    Spell.ConcussionGrenade3,
-                    3f,
-                    AbilityTargetingFlags.HarmsEnemies,
-                    DeviceAbilityEffects.ApplyGrenadeRadiusBonus)
-                .HasImpactAction(ConcussionGrenade3ImpactAction)
-                .IsCastedAbility()
-                .IsHostileAbility()
-                .BreaksStealth()
-                .RequirementStamina(6)
                 .RequirementItem("explosives");
         }
 
@@ -119,17 +96,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 targetLocation,
                 28,
                 2,
-                typeof(KnockdownStatusEffect));
-        }
-
-        private static void ConcussionGrenade3ImpactAction(uint activator, uint target, int level, Location targetLocation)
-        {
-            ApplyConcussionGrenade(
-                activator,
-                target,
-                targetLocation,
-                42,
-                3,
                 typeof(KnockdownStatusEffect));
         }
 

@@ -42,12 +42,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(3)
                 .RequirementSkill(SkillType.Leadership, 22)
                 .IncreasesStat(StatType.WatchfulPresenceAuraLevel, 2)
+                .GrantsFeat(FeatType.WatchfulPresence2)
 
                 .AddPerkLevel()
                 .Description("Nearby party members take 8% less physical and Force damage. SOC scaling can raise this to 10%.")
                 .Price(4)
                 .RequirementSkill(SkillType.Leadership, 45)
-                .IncreasesStat(StatType.WatchfulPresenceAuraLevel, 3);
+                .IncreasesStat(StatType.WatchfulPresenceAuraLevel, 3)
+                .GrantsFeat(FeatType.WatchfulPresence3);
         }
 
         private void RousingShout()
@@ -80,17 +82,18 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Steady Formation")
 
                 .AddPerkLevel()
-                .Description("Nearby party members gain +3% evasion chance and +30 Mind and Mobility resistance. SOC scaling can raise these to +4% and +40.")
+                .Description("Nearby party members gain +3% evasion chance, +30 Mind Resistance, and +30 Mobility Resistance. SOC scaling can raise these to +4% evasion chance, +40 Mind Resistance, and +40 Mobility Resistance.")
                 .Price(3)
                 .RequirementSkill(SkillType.Leadership, 8)
                 .IncreasesStat(StatType.SteadyFormationAuraLevel, 1)
                 .GrantsFeat(FeatType.SteadyFormation1)
 
                 .AddPerkLevel()
-                .Description("Nearby party members gain +5% evasion chance and +50 Mind and Mobility resistance. SOC scaling can raise these to +6% and +65.")
+                .Description("Nearby party members gain +5% evasion chance, +50 Mind Resistance, and +50 Mobility Resistance. SOC scaling can raise these to +6% evasion chance, +65 Mind Resistance, and +65 Mobility Resistance.")
                 .Price(4)
                 .RequirementSkill(SkillType.Leadership, 28)
-                .IncreasesStat(StatType.SteadyFormationAuraLevel, 2);
+                .IncreasesStat(StatType.SteadyFormationAuraLevel, 2)
+                .GrantsFeat(FeatType.SteadyFormation2);
         }
 
         private void BolsterResolve()
@@ -99,16 +102,16 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Bolster Resolve")
 
                 .AddPerkLevel()
-                .Description("Nearby party members gain temporary HP equal to 8% of maximum HP for 12 seconds. SOC scaling can raise this to 10%.")
+                .Description("Field Steward recovery commands also grant nearby party members temporary HP equal to 8% of maximum HP for 12 seconds. SOC scaling can raise this to 10%.")
                 .Price(3)
                 .RequirementSkill(SkillType.Leadership, 12)
-                .GrantsFeat(FeatType.BolsterResolve1)
+                .IncreasesStat(StatType.LeadershipFieldStewardBolsterResolveRank, 1)
 
                 .AddPerkLevel()
-                .Description("Nearby party members gain temporary HP equal to 12% of maximum HP and take 12% less damage for 15 seconds. SOC scaling can raise these to 15% temporary HP and 15% damage reduction.")
+                .Description("Field Steward recovery commands also grant nearby party members temporary HP equal to 12% of maximum HP and 12% damage reduction for 15 seconds. SOC scaling can raise these to 15% temporary HP and 15% damage reduction.")
                 .Price(4)
                 .RequirementSkill(SkillType.Leadership, 35)
-                .GrantsFeat(FeatType.BolsterResolve2);
+                .IncreasesStat(StatType.LeadershipFieldStewardBolsterResolveRank, 2);
         }
 
         private void FieldRecovery()
@@ -127,7 +130,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Nearby party members restore 2 STM every 4 seconds. SOC scaling can raise this to 3 STM per tick.")
                 .Price(3)
                 .RequirementSkill(SkillType.Leadership, 38)
-                .IncreasesStat(StatType.FieldRecoveryAuraLevel, 2);
+                .IncreasesStat(StatType.FieldRecoveryAuraLevel, 2)
+                .GrantsFeat(FeatType.FieldRecovery2);
         }
 
         private void CleanseOrder()

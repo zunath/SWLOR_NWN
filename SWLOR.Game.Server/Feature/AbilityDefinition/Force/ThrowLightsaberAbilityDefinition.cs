@@ -1,0 +1,183 @@
+using System;
+using System.Collections.Generic;
+using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.NWN.API.Engine;
+using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.Creature;
+using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using NumericsVector3 = System.Numerics.Vector3;
+
+namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
+{
+    public sealed class ThrowLightsaberAbilityDefinition : IAbilityListDefinition
+    {
+        private const float RangeMeters = 15f;
+        private const float PathWidthMeters = 2.5f;
+
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        {
+            var builder = new AbilityBuilder();
+
+            ThrowLightsaber1(builder);
+            ThrowLightsaber2(builder);
+            ThrowLightsaber3(builder);
+
+            return builder.Build();
+        }
+
+        private static void ThrowLightsaber1(AbilityBuilder builder)
+        {
+            ConfigureThrowLightsaber(builder, FeatType.ThrowLightsaber1, Spell.ThrowLightsaber1, "Throw Lightsaber I", 1, 10, 2, 1, 1);
+        }
+
+        private static void ThrowLightsaber2(AbilityBuilder builder)
+        {
+            ConfigureThrowLightsaber(builder, FeatType.ThrowLightsaber2, Spell.ThrowLightsaber2, "Throw Lightsaber II", 2, 20, 3, 1, 2);
+        }
+
+        private static void ThrowLightsaber3(AbilityBuilder builder)
+        {
+            ConfigureThrowLightsaber(builder, FeatType.ThrowLightsaber3, Spell.ThrowLightsaber3, "Throw Lightsaber III", 3, 30, 4, 2, 3);
+        }
+
+        private static void ConfigureThrowLightsaber(
+            AbilityBuilder builder,
+            FeatType feat,
+            Spell spell,
+            string name,
+            int level,
+            int baseDamage,
+            int fp,
+            int stamina,
+            int maxTargets)
+        {
+            builder
+                .Create(feat, PerkType.ThrowLightsaber)
+                .Name(name)
+                .Level(level)
+                .HasActivationDelay(1.5f)
+                .HasRecastDelay(RecastGroup.ThrowLightsaber, 18f)
+                .SkillType(SkillType.Force)
+                .CombatImpactDamageAbility(AbilityType.Willpower)
+                .UsesImpactAnimation(Animation.CastOutAnimation)
+                .DisplaysVisualEffectWhenActivating()
+                .IsAreaAbility()
+                .HasTargetingLine(
+                    spell,
+                    RangeMeters,
+                    PathWidthMeters,
+                    AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf)
+                .HasMaxRange(RangeMeters)
+                .RequiresTarget()
+                .HasCustomValidation(ValidateWeapon)
+                .HasImpactAction((activator, target, _, targetLocation) =>
+                    ApplyThrowLightsaber(activator, target, targetLocation, baseDamage, maxTargets))
+                .IsCastedAbility()
+                .IsHostileAbility()
+                .BreaksStealth()
+                .RequirementFP(fp)
+                .RequirementStamina(stamina);
+        }
+
+        private static void ApplyThrowLightsaber(
+            uint activator,
+            uint target,
+            Location targetLocation,
+            int baseDamage,
+            int maxTargets)
+        {
+            foreach (var hitTarget in GetPathTargets(activator, target, targetLocation, maxTargets))
+            {
+                Ability.ApplyCombatImpact(
+                    activator,
+                    hitTarget,
+                    GetLocation(hitTarget),
+                    SkillType.Force,
+                    baseDamage,
+                    0,
+                    null,
+                    false,
+                    Array.Empty<Type>(),
+                    damageType: CombatDamageType.Physical,
+                    targetVisualEffect: VisualEffect.Vfx_Imp_Pulse_Negative,
+                    baseDamageAdjustment: GetEquippedWeaponDamageAdjustment(activator),
+                    playImpactAnimation: false);
+            }
+        }
+
+        private static IEnumerable<uint> GetPathTargets(
+            uint activator,
+            uint target,
+            Location targetLocation,
+            int maxTargets)
+        {
+            return AbilityTargeting.GetHostileTargetsNearLocation(
+                activator,
+                GetLocation(activator),
+                RangeMeters,
+                maxTargets,
+                target,
+                candidate => IsTargetAlongPath(activator, target, targetLocation, candidate));
+        }
+
+        private static bool IsTargetAlongPath(uint activator, uint target, Location targetLocation, uint candidate)
+        {
+            var origin = GetPosition(activator);
+            var destination = GetIsObjectValid(target)
+                ? GetPosition(target)
+                : GetPositionFromLocation(targetLocation);
+            var path = destination - origin;
+            var pathLength = path.Length();
+            if (pathLength <= 0.01f)
+                return false;
+
+            pathLength = Math.Min(pathLength, RangeMeters);
+            var direction = NumericsVector3.Normalize(path);
+            var toCandidate = GetPosition(candidate) - origin;
+            var distanceAlongPath = NumericsVector3.Dot(toCandidate, direction);
+            if (distanceAlongPath < 0f || distanceAlongPath > pathLength)
+                return false;
+
+            var closestPoint = origin + direction * distanceAlongPath;
+            var lateralDistance = (GetPosition(candidate) - closestPoint).Length();
+            return lateralDistance <= PathWidthMeters * 0.5f;
+        }
+
+        private static Func<uint, int> GetEquippedWeaponDamageAdjustment(uint activator)
+        {
+            var weapon = GetEquippedWeapon(activator);
+            var damage = GetIsObjectValid(weapon)
+                ? Item.GetDMG(weapon)
+                : 0;
+
+            return damage <= 0
+                ? null
+                : _ => damage;
+        }
+
+        private static uint GetEquippedWeapon(uint activator)
+        {
+            var rightHand = GetItemInSlot(InventorySlot.RightHand, activator);
+            if (Item.IsBaseItemType(rightHand, Item.WeaponBaseItemTypes))
+                return rightHand;
+
+            var leftHand = GetItemInSlot(InventorySlot.LeftHand, activator);
+            if (Item.IsBaseItemType(leftHand, Item.WeaponBaseItemTypes))
+                return leftHand;
+
+            return OBJECT_INVALID;
+        }
+
+        private static string ValidateWeapon(uint activator, uint target, int effectivePerkLevel, Location targetLocation)
+        {
+            return GetIsObjectValid(GetEquippedWeapon(activator))
+                ? string.Empty
+                : "An equipped weapon is required.";
+        }
+    }
+}

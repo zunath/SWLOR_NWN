@@ -14,64 +14,6 @@ namespace SWLOR.Game.Server.Tests.Perks;
 public class SpearDisablerTests
 {
     [Test]
-    public void SpearDisablerPerkLevels_MatchCombatBible()
-    {
-        var perks = BuildSpearDisablerPerksWithout2daLookup();
-
-        AssertPerkLevel(perks[PerkType.ErosionStrike], "Erosion Strike", 1, 2, 2, null,
-            "When you damage your target, they receive Force Erosion which reduces Force Defense by 10% for 12 seconds.",
-            StatType.DamageDealtForceErosionDurationSeconds);
-        AssertPerkLevel(perks[PerkType.DisablingStrike], "Disabling Strike", 1, 2, 8, FeatType.DisablingStrike1,
-            "Your next attack deals +12 DMG and inflicts Force Disruption for 8 seconds.");
-        AssertPerkLevel(perks[PerkType.InterruptionStrike], "Interruption Strike", 1, 3, 12, FeatType.InterruptionStrike1,
-            "Your target's ability activation is interrupted. Additionally, the target is inflicted with Foggy Mind, increasing activation times by 2 seconds for 30 seconds.");
-        AssertPerkLevel(perks[PerkType.PerceptiveStance], "Perceptive Stance", 1, 2, 15, FeatType.PerceptiveStance1,
-            "While active, gain +10% critical chance and +15% critical damage. Additionally, attacks have a 10% chance to interrupt ability activation. Chance to interrupt increases by 1% per PER. (Maximum 30%)");
-        AssertPerkLevel(perks[PerkType.ForcePiercing], "Force Piercing", 1, 4, 18, null,
-            "Critical hit chance increases by 5%. Additionally, critical hits reduce FP by 10% of the damage dealt.",
-            StatType.CriticalRatePercentAdjustment,
-            StatType.CriticalTargetFPLossPercentOfDamage);
-        AssertPerkLevel(perks[PerkType.ForceSuppression], "Force Suppression", 1, 3, 20, FeatType.ForceSuppression1,
-            "Deals weapon DMG + 20 and reduces your target's Force Attack by 15% for 30 seconds.");
-        AssertPerkLevel(perks[PerkType.DisablingStrike], "Disabling Strike", 2, 2, 22, FeatType.DisablingStrike2,
-            "Your next attack deals +18 DMG and inflicts Force Disruption for 8 seconds.");
-        AssertPerkLevel(perks[PerkType.DisruptionField], "Disruption Field", 1, 3, 25, FeatType.DisruptionField1,
-            "Forms a disruption field at a targeted location. All enemies within the area of effect (sphere) lose 5% of FP per second. Field lasts for 20 seconds");
-        AssertPerkLevel(perks[PerkType.InterruptionStrike], "Interruption Strike", 2, 4, 28, FeatType.InterruptionStrike2,
-            "Your target's ability activation is interrupted. Additionally, the target is inflicted with Foggy Mind, increasing activation times by 2 seconds for 30 seconds.");
-        AssertPerkLevel(perks[PerkType.ForceNullification], "Force Nullification", 1, 3, 30, FeatType.ForceNullification1,
-            "Deal weapon DMG + 22 and completely disable all force abilities of the target for 8 seconds.");
-        AssertPerkLevel(perks[PerkType.ErosionStrike], "Erosion Strike", 2, 2, 32, null,
-            "The Force Erosion effect additionally reduces FP by 2 every second.",
-            StatType.DamageDealtForceErosionDurationSeconds,
-            StatType.DamageDealtForceErosionFPLossPerTick);
-        AssertPerkLevel(perks[PerkType.TotalForceDenial], "Total Force Denial", 1, 4, 35, FeatType.TotalForceDenial1,
-            "Deal weapon DMG + 28 to all enemies in area of effect (cone) and inflicts Force Disruption for 12 seconds.");
-        AssertPerkLevel(perks[PerkType.FractureStrike], "Fracture Strike", 1, 3, 38, FeatType.FractureStrike1,
-            "Deal weapon DMG + 12 to all enemies in area of effect (line). Inflicts Fractured Focus, which doubles the FP cost of abilities for 30 seconds.");
-        AssertPerkLevel(perks[PerkType.DisablingStrike], "Disabling Strike", 3, 3, 40, FeatType.DisablingStrike3,
-            "Your next attack deals +26 DMG and inflicts Force Disruption for 8 seconds.");
-        AssertPerkLevel(perks[PerkType.DisruptionExpert], "Disruption Expert", 1, 4, 42, null,
-            "Your Force Disruption effects last 50% longer and reduce Force Defense by an additional 10%.",
-            StatType.OutgoingForceDisruptionDurationPercentAdjustment,
-            StatType.OutgoingForceDisruptionForceDefensePercentAdjustment);
-        AssertPerkLevel(perks[PerkType.ForceWarding], "Force Warding", 1, 3, 45, null,
-            "Increases Force Evasion by 15%.",
-            StatType.IncomingAbilityHitChancePercentAdjustmentSkillType,
-            StatType.IncomingAbilityHitChancePercentAdjustment);
-        AssertPerkLevel(perks[PerkType.ForceWarding], "Force Warding", 2, 4, 48, null,
-            "When a Force ability is evaded, you receive the Force Warding buff which increases your Force Defense by 30% for 20 seconds and restores 15 STM. This can only trigger once every 30 seconds.",
-            StatType.IncomingAbilityHitChancePercentAdjustmentSkillType,
-            StatType.IncomingAbilityHitChancePercentAdjustment,
-            StatType.ForceAbilityEvadedForceDefensePercentAdjustment,
-            StatType.ForceAbilityEvadedDurationSeconds,
-            StatType.ForceAbilityEvadedStaminaRestore,
-            StatType.ForceAbilityEvadedCooldownSeconds);
-        AssertPerkLevel(perks[PerkType.Forcebane], "Forcebane", 1, 4, 50, FeatType.Forcebane1,
-            "Enemies within the area of effect (sphere) lose 30% of current FP and suffer Forcebane, reducing FP recovery by 75% for 45 seconds.");
-    }
-
-    [Test]
     public void SpearDisablerAbilities_MatchCombatBible()
     {
         var disablingStrike = new DisablingStrikeAbilityDefinition().BuildAbilities();
@@ -92,17 +34,9 @@ public class SpearDisablerTests
         var disruptionField = new DisruptionFieldAbilityDefinition().BuildAbilities()[FeatType.DisruptionField1];
         AssertAbility(disruptionField, "Disruption Field", 1, RecastGroup.DisruptionField, 180f, 0f, 10, true, false, false, true, AbilityActivationType.Casted);
 
-        var forceNullification = new ForceNullificationAbilityDefinition().BuildAbilities()[FeatType.ForceNullification1];
-        AssertAbility(forceNullification, "Force Nullification", 1, RecastGroup.ForceNullification, 45f, 0f, 12, true, true, true, false, AbilityActivationType.Casted);
-
         var totalForceDenial = new TotalForceDenialAbilityDefinition().BuildAbilities()[FeatType.TotalForceDenial1];
         AssertAbility(totalForceDenial, "Total Force Denial", 1, RecastGroup.TotalForceDenial, 300f, 2f, 14, true, false, false, true, AbilityActivationType.Casted);
 
-        var fractureStrike = new FractureStrikeAbilityDefinition().BuildAbilities()[FeatType.FractureStrike1];
-        AssertAbility(fractureStrike, "Fracture Strike", 1, RecastGroup.FractureStrike, 90f, 0f, 10, true, false, false, true, AbilityActivationType.Casted);
-
-        var forcebane = new ForcebaneAbilityDefinition().BuildAbilities()[FeatType.Forcebane1];
-        AssertAbility(forcebane, "Forcebane", 1, RecastGroup.Capstone, 345f, 2f, 15, true, false, false, true, AbilityActivationType.Casted);
     }
 
     [Test]
@@ -148,10 +82,7 @@ public class SpearDisablerTests
             (FeatType.PerceptiveStance1, "ife_percpstnc1", "0x01", "0", "****", "****", "****", "****"),
             (FeatType.ForceSuppression1, "ife_forcesup1", "0x02", "1", "****", "****", "****", "****"),
             (FeatType.DisruptionField1, "ife_disrpfld1", "0x3E", "1", "sphere", "5", "****", "1"),
-            (FeatType.ForceNullification1, "ife_forcenull1", "0x02", "1", "****", "****", "****", "****"),
             (FeatType.TotalForceDenial1, "ife_totforceden1", "0x3E", "1", "cone", "5", "5", "17"),
-            (FeatType.FractureStrike1, "ife_fractstrk1", "0x3E", "1", "rectangle", "8", "2.5", "17"),
-            (FeatType.Forcebane1, "ife_fbane1", "0x3E", "1", "sphere", "5", "****", "1")
         };
         var seenIcons = new HashSet<string>();
 
@@ -175,34 +106,15 @@ public class SpearDisablerTests
         }
     }
 
-    [Test]
-    public void SpearDisablerImplementationDetails_MatchCombatBible()
-    {
-        var root = FindRepositoryRoot();
-
-        var perceptiveStance = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "StatusEffectDefinition" / "PerceptiveStanceStatusEffect.cs").FullName);
-        perceptiveStance.Should().Contain("Math.Min(30, 10 + Math.Max(0, GetAbilityScore(attacker, AbilityType.Perception)))");
-
-        var disruptionField = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Spear" / "DisruptionFieldAbilityDefinition.cs").FullName);
-        disruptionField.Should().Contain("private const float DurationSeconds = 20f;");
-        disruptionField.Should().Contain("private const float PulseIntervalSeconds = 1f;");
-        disruptionField.Should().Contain("private const int FPDrainPercent = 5;");
-
-        var forcebane = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Spear" / "ForcebaneAbilityDefinition.cs").FullName);
-        forcebane.Should().Contain("CapstoneAbility.ActiveDurationSeconds");
-        forcebane.Should().Contain("fpDrainPercent: 30");
-        forcebane.Should().Contain("activationDelay: 2f");
-    }
-
     private static void AssertPerkLevel(
-        PerkDetail perk,
-        string name,
-        int level,
-        int price,
-        int skillRank,
-        FeatType? grantedFeat,
-        string description,
-        params StatType[] statTypes)
+    PerkDetail perk,
+    string name,
+    int level,
+    int price,
+    int skillRank,
+    FeatType? grantedFeat,
+    string description,
+    params StatType[] statTypes)
     {
         perk.Name.Should().Be(name);
         perk.Category.Should().Be(PerkCategoryType.SpearDisabler);

@@ -13,8 +13,8 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         public DampeningField1StatusEffect()
         {
-            StatGroup.Stats[StatType.PhysicalDamageTakenPercentAdjustment] = -10;
-            StatGroup.Stats[StatType.ForceDamageTakenPercentAdjustment] = -10;
+            StatGroup.Stats[StatType.PhysicalDamageTakenPercentAdjustment] = -6;
+            StatGroup.Stats[StatType.ForceDamageTakenPercentAdjustment] = -6;
         }
     }
 }

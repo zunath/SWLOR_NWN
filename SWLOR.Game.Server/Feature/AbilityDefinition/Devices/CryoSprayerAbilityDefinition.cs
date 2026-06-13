@@ -21,7 +21,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             var builder = new AbilityBuilder();
 
             CryoSprayer1(builder);
-            CryoSprayer2(builder);
 
             return builder.Build();
         }
@@ -30,11 +29,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             builder
                 .Create(FeatType.CryoSprayer1, PerkType.CryoSprayer)
-                .Name("Cryo Sprayer I")
+                .Name("Cryo Sprayer")
                 .Level(1)
                 .HasActivationDelay(1f)
                 .HasRecastDelay(RecastGroup.CryoSprayer, 24f)
                 .SkillType(SkillType.Devices)
+                .CombatImpactDamageAbility(AbilityType.Perception)
                 .UsesImpactAnimation(Animation.CastOutAnimation)
                 .IsAreaAbility()
                 .HasImpactAction(CryoSprayer1ImpactAction)
@@ -47,29 +47,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .IsHostileAbility()
                 .BreaksStealth()
                 .RequirementStamina(5);
-        }
-
-        private static void CryoSprayer2(AbilityBuilder builder)
-        {
-            builder
-                .Create(FeatType.CryoSprayer2, PerkType.CryoSprayer)
-                .Name("Cryo Sprayer II")
-                .Level(2)
-                .HasActivationDelay(1f)
-                .HasRecastDelay(RecastGroup.CryoSprayer, 24f)
-                .SkillType(SkillType.Devices)
-                .UsesImpactAnimation(Animation.CastOutAnimation)
-                .IsAreaAbility()
-                .HasImpactAction(CryoSprayer2ImpactAction)
-                .HasTargetingCone(
-                    Spell.CryoSprayer2,
-                    6f,
-                    5f,
-                    AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf)
-                .IsCastedAbility()
-                .IsHostileAbility()
-                .BreaksStealth()
-                .RequirementStamina(7);
         }
 
         private static void CryoSprayer1ImpactAction(uint activator, uint target, int level, Location targetLocation)
@@ -93,31 +70,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 areaVisualEffect: VisualEffect.Vfx_Fnf_Howl_Mind,
                 damagePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetDamageAdjustment(activator),
                 baseDamageAdjustment: DeviceAbilityEffects.GetAssaultGadgetBaseDamageAdjustment(activator),
-                hitChancePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetAccuracyAdjustment(activator),
-                criticalRatePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetCriticalRateAdjustment(activator));
-        }
-
-        private static void CryoSprayer2ImpactAction(uint activator, uint target, int level, Location targetLocation)
-        {
-            Ability.ApplyTelegraphedCombatImpact(
-                activator,
-                target,
-                targetLocation,
-                SkillType.Devices,
-                14,
-                2,
-                typeof(ImmobilizedStatusEffect),
-                CombatImpactAreaShape.Cone,
-                0f,
-                6f,
-                5f,
-                Array.Empty<Type>(),
-                centerOnActivator: !GetIsObjectValid(target),
-                damageType: CombatDamageType.Ice,
-                targetVisualEffect: VisualEffect.Vfx_Com_Hit_Frost,
-                areaVisualEffect: VisualEffect.Vfx_Fnf_Howl_Mind,
-                damagePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetDamageAdjustment(activator),
-                baseDamageAdjustment: DeviceAbilityEffects.GetAssaultGadgetBaseDamageAdjustment(activator),
+                afterSuccessfulHit: _ => DeviceAbilityEffects.ApplyTacticalUplink(activator),
                 hitChancePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetAccuracyAdjustment(activator),
                 criticalRatePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetCriticalRateAdjustment(activator));
         }

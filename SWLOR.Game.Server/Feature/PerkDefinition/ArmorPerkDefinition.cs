@@ -31,7 +31,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.Provoke1)
 
                 .AddPerkLevel()
-                .Description("Goads all enemies within range into attacking you. Enmity generated increases by 1% per VIT.")
+                .Description("Goads the selected target and all other enemies within range into attacking you. Enmity generated increases by 1% per VIT.")
                 .Price(3)
                 .DroidAISlots(2)
                 .RequirementSkill(SkillType.Armor, 15)
@@ -44,19 +44,19 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Dual Wield")
 
                 .AddPerkLevel()
-                .Description("While dual wielding, reduces off-hand attack delay by 10%.")
+                .Description("Off-hand attack delay is reduced by 10% when making off-hand attacks.")
                 .Price(2)
                 .RequirementSkill(SkillType.Armor, 5)
                 .IncreasesStat(StatType.OffhandAttackDelayReductionPercent, creature => EquipmentPredicates.HasDualWield(creature) ? 10 : 0)
 
                 .AddPerkLevel()
-                .Description("While dual wielding, reduces off-hand attack delay by 20% total.")
+                .Description("Off-hand attack delay is reduced by 20% total when making off-hand attacks.")
                 .Price(3)
                 .RequirementSkill(SkillType.Armor, 25)
                 .IncreasesStat(StatType.OffhandAttackDelayReductionPercent, creature => EquipmentPredicates.HasDualWield(creature) ? 20 : 0)
 
                 .AddPerkLevel()
-                .Description("While dual wielding, reduces off-hand attack delay by 30% total.")
+                .Description("Off-hand attack delay is reduced by 30% total when making off-hand attacks.")
                 .Price(4)
                 .RequirementSkill(SkillType.Armor, 40)
                 .IncreasesStat(StatType.OffhandAttackDelayReductionPercent, creature => EquipmentPredicates.HasDualWield(creature) ? 30 : 0);

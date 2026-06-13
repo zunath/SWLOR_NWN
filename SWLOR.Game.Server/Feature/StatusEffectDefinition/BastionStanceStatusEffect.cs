@@ -16,6 +16,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             StatGroup.Stats[StatType.PhysicalDefensePercentAdjustment] = 15;
             StatGroup.Stats[StatType.ForceDefensePercentAdjustment] = 15;
             StatGroup.Stats[StatType.EnmityPercentAdjustment] = 20;
+            StatGroup.Stats[StatType.HeavyVibrobladeDefenseRecoveryWindow] = 1;
         }
 
     }

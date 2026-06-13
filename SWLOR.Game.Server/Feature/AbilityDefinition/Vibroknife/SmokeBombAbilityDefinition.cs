@@ -24,15 +24,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
         private static void SmokeBomb(AbilityBuilder builder)
         {
             builder
-                .Create(FeatType.SmokeBomb, PerkType.SmokeBomb)
-                .Name("Smoke Bomb")
+                .Create(FeatType.SmokeBomb1, PerkType.SmokeBomb)
+                .Name("Smoke Bomb I")
                 .Level(1)
                 .HasActivationDelay(2f)
                 .HasRecastDelay(RecastGroup.SmokeBomb, 30f)
                 .IsAreaAbility()
                 .HasImpactAction(SmokeBombImpactAction)
                 .HasTargetingSphere(
-                    Spell.SmokeBomb,
+                    Spell.SmokeBomb1,
                     5f,
                     AbilityTargetingFlags.HarmsEnemies)
                 .IsCastedAbility()

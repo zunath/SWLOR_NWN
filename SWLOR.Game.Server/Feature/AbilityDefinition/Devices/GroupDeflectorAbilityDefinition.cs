@@ -61,10 +61,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             float durationSeconds)
         {
             var amount = Math.Max(1, flatAmount + (int)Math.Ceiling(GetMaxHitPoints(target) * (percent / 100f)));
-            amount = DeviceAbilityEffects.ApplyCapacitorRigBonus(activator, amount);
-            var duration = DeviceAbilityEffects.ApplyCapacitorRigDurationBonus(activator, durationSeconds);
+            amount = DeviceAbilityEffects.ApplyFieldSupportOutputBonus(activator, amount);
+            var duration = durationSeconds;
 
             TemporaryHitPointEffects.ApplyFlat(target, amount, duration);
+            DeviceAbilityEffects.ApplyFieldSupportAllyBuffRiders(activator, target);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Ac_Bonus), target);
         }
     }

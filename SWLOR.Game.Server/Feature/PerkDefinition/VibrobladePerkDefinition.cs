@@ -35,7 +35,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             ShieldTraining();
             ShieldWall();
             Unbreakable();
-            WhirlwindAssault();
 
             return _builder.Build();
         }
@@ -160,7 +159,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Fortified Position")
 
                 .AddPerkLevel()
-                .Description("Grants +2 Mind, +2 Trauma, +2 Mobility Resistance with shield equipped.")
+                .Description("Grants +8 Mind Resistance rating, +8 Trauma Resistance rating, and +8 Mobility Resistance rating.")
                 .IncreasesStat(StatType.MindResistance, creature => EquipmentPredicates.HasOffHandShield(creature) ? 2 : 0)
                 .IncreasesStat(StatType.TraumaResistance, creature => EquipmentPredicates.HasOffHandShield(creature) ? 2 : 0)
                 .IncreasesStat(StatType.MobilityResistance, creature => EquipmentPredicates.HasOffHandShield(creature) ? 2 : 0)
@@ -168,7 +167,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Vibroblade, 15)
 
                 .AddPerkLevel()
-                .Description("Grants +4 Mind, +4 Trauma, +4 Mobility Resistance with shield equipped total.")
+                .Description("Grants +15 Mind Resistance rating, +15 Trauma Resistance rating, and +15 Mobility Resistance rating total.")
                 .IncreasesStat(StatType.MindResistance, creature => EquipmentPredicates.HasOffHandShield(creature) ? 4 : 0)
                 .IncreasesStat(StatType.TraumaResistance, creature => EquipmentPredicates.HasOffHandShield(creature) ? 4 : 0)
                 .IncreasesStat(StatType.MobilityResistance, creature => EquipmentPredicates.HasOffHandShield(creature) ? 4 : 0)
@@ -243,19 +242,19 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Bulwark")
 
                 .AddPerkLevel()
-                .Description("Grants +15 Shield Deflection with shield equipped.")
+                .Description("Grants +15 Shield Deflection.")
                 .IncreasesStat(StatType.ShieldDeflection, creature => EquipmentPredicates.HasOffHandShield(creature) ? 15 : 0)
                 .Price(2)
                 .RequirementSkill(SkillType.Vibroblade, 10)
 
                 .AddPerkLevel()
-                .Description("Grants +25 Shield Deflection with shield equipped total.")
+                .Description("Grants +25 Shield Deflection total.")
                 .IncreasesStat(StatType.ShieldDeflection, creature => EquipmentPredicates.HasOffHandShield(creature) ? 25 : 0)
                 .Price(3)
                 .RequirementSkill(SkillType.Vibroblade, 28)
 
                 .AddPerkLevel()
-                .Description("Grants +35 Shield Deflection with shield equipped total.")
+                .Description("Grants +35 Shield Deflection total.")
                 .IncreasesStat(StatType.ShieldDeflection, creature => EquipmentPredicates.HasOffHandShield(creature) ? 35 : 0)
                 .Price(4)
                 .RequirementSkill(SkillType.Vibroblade, 40);
@@ -291,6 +290,12 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Vibroblade, 10)
 
                 .AddPerkLevel()
+                .Description("Riot Blade also deals +12 DMG to nearby enemies.")
+                .IncreasesStat(StatType.RiotBladeSecondaryDamageBonus, creature => EquipmentPredicates.HasMainHandVibroblade(creature) ? 12 : 0)
+                .Price(3)
+                .RequirementSkill(SkillType.Vibroblade, 12)
+
+                .AddPerkLevel()
                 .GrantsFeat(FeatType.RiotBlade2)
                 .Description("Instantly deals weapon DMG + 30 to your target.")
                 .Price(3)
@@ -312,7 +317,15 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.SavageCleave1)
                 .Description("Strike all enemies in front for weapon DMG + 25.")
                 .Price(2)
-                .RequirementSkill(SkillType.Vibroblade, 25);
+                .RequirementSkill(SkillType.Vibroblade, 25)
+
+                .AddPerkLevel()
+                .Description("Savage Cleave deals +20 DMG to nearby enemies and restores 2 STM per secondary target hit, up to 8 STM.")
+                .IncreasesStat(StatType.SavageCleaveSecondaryDamageBonus, creature => EquipmentPredicates.HasMainHandVibroblade(creature) ? 20 : 0)
+                .IncreasesStat(StatType.SavageCleaveSecondaryTargetStaminaRestore, creature => EquipmentPredicates.HasMainHandVibroblade(creature) ? 2 : 0)
+                .IncreasesStat(StatType.SavageCleaveSecondaryTargetStaminaRestoreMaximum, creature => EquipmentPredicates.HasMainHandVibroblade(creature) ? 8 : 0)
+                .Price(3)
+                .RequirementSkill(SkillType.Vibroblade, 30);
         }
 
         private void SavageReflexes()
@@ -347,7 +360,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ShieldBash3)
-                .Description("Bashes an enemy for 36 DMG and inflicts Stunned for 3 seconds.")
+                .Description("Bashes an enemy for 36 DMG, inflicts Stunned for 3 seconds, and inflicts Dazed for 6 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Vibroblade, 35);
         }
@@ -383,7 +396,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Unbreakable")
 
                 .AddPerkLevel()
-                .Description("When reduced below 25% HP with shield equipped, gain +40% Physical Defense for 10s. Once per 5min.")
+                .Description("When reduced below 25% HP, gain +40% Physical Defense for 10s. Once per 5min.")
                 .IncreasesStat(StatType.LowHPPhysicalDefenseThresholdPercent, creature => EquipmentPredicates.HasOffHandShield(creature) ? 25 : 0)
                 .IncreasesStat(StatType.LowHPPhysicalDefensePercentAdjustment, creature => EquipmentPredicates.HasOffHandShield(creature) ? 40 : 0)
                 .IncreasesStat(StatType.LowHPPhysicalDefenseDurationSeconds, creature => EquipmentPredicates.HasOffHandShield(creature) ? 10 : 0)
@@ -392,23 +405,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Vibroblade, 42);
         }
 
-        private void WhirlwindAssault()
-        {
-            _builder.Create(PerkCategoryType.VibrobladeOffense, PerkType.WhirlwindAssault)
-                .Name("Whirlwind Assault")
-
-                .AddPerkLevel()
-                .GrantsFeat(FeatType.WhirlwindAssault1)
-                .Description("Deal weapon DMG + 12 to all nearby enemies.")
-                .Price(3)
-                .RequirementSkill(SkillType.Vibroblade, 12)
-
-                .AddPerkLevel()
-                .GrantsFeat(FeatType.WhirlwindAssault2)
-                .Description("Deal weapon DMG + 20 to all nearby enemies.")
-                .Price(3)
-                .RequirementSkill(SkillType.Vibroblade, 30);
-        }
     }
 }
 

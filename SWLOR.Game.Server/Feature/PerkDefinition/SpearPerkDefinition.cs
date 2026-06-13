@@ -66,10 +66,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Breach Strike")
 
                 .AddPerkLevel()
-                .GrantsFeat(FeatType.BreachStrike1)
-                .Description("Deal weapon DMG + 10. Inflicts Breach, which reduces Evasion and Defense by 20% for 30 seconds.")
+                .Description("Spear Damage flanking abilities inflict Breach, reducing Evasion and Defense by 20% for 30 seconds.")
                 .Price(4)
-                .RequirementSkill(SkillType.Spear, 18);
+                .RequirementSkill(SkillType.Spear, 18)
+                .IncreasesStat(StatType.SpearDamageBreachStrike, creature => EquipmentPredicates.HasMainHandSpear(creature) ? 1 : 0);
         }
 
 
@@ -92,10 +92,12 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Crippling Defense")
 
                 .AddPerkLevel()
-                .GrantsFeat(FeatType.CripplingDefense1)
-                .Description("Enemies within the area of effect (sphere) suffer Crippled Defense, reducing physical and Force defense by 15% for 45 seconds. Restores 15 STM.")
+                .Description("Spear Damage area abilities reduce affected targets' Physical Defense and Force Defense by 15% for 45 seconds. Restore 15 STM when this affects at least two enemies.")
                 .Price(4)
-                .RequirementSkill(SkillType.Spear, 50);
+                .RequirementSkill(SkillType.Spear, 50)
+                .IncreasesStat(StatType.SpearDamageCripplingDefense, creature => EquipmentPredicates.HasMainHandSpear(creature) ? 1 : 0)
+                .IncreasesStat(StatType.SpearDamageCripplingDefenseStaminaRestore, creature => EquipmentPredicates.HasMainHandSpear(creature) ? 15 : 0)
+                .IncreasesStat(StatType.SpearDamageCripplingDefenseMinimumTargets, creature => EquipmentPredicates.HasMainHandSpear(creature) ? 2 : 0);
         }
 
 
@@ -224,10 +226,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Force Nullification")
 
                 .AddPerkLevel()
-                .GrantsFeat(FeatType.ForceNullification1)
-                .Description("Deal weapon DMG + 22 and completely disable all force abilities of the target for 8 seconds.")
+                .Description("Spear Disabler interrupt abilities disable the target's Force abilities for 8 seconds.")
                 .Price(3)
-                .RequirementSkill(SkillType.Spear, 30);
+                .RequirementSkill(SkillType.Spear, 30)
+                .IncreasesStat(StatType.SpearDisablerForceNullification, creature => EquipmentPredicates.HasMainHandSpear(creature) ? 1 : 0);
         }
 
 
@@ -289,10 +291,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Forcebane")
 
                 .AddPerkLevel()
-                .GrantsFeat(FeatType.Forcebane1)
-                .Description("Enemies within the area of effect (sphere) lose 30% of current FP and suffer Forcebane, reducing FP recovery by 75% for 45 seconds.")
+                .Description("Spear Disabler suppression abilities reduce affected targets' FP recovery by 75% for 45 seconds.")
                 .Price(4)
-                .RequirementSkill(SkillType.Spear, 50);
+                .RequirementSkill(SkillType.Spear, 50)
+                .IncreasesStat(StatType.SpearDisablerForcebane, creature => EquipmentPredicates.HasMainHandSpear(creature) ? 1 : 0);
         }
 
 
@@ -302,10 +304,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Fracture Strike")
 
                 .AddPerkLevel()
-                .GrantsFeat(FeatType.FractureStrike1)
-                .Description("Deal weapon DMG + 12 to all enemies in area of effect (line). Inflicts Fractured Focus, which doubles the FP cost of abilities for 30 seconds.")
+                .Description("Disruption Field and Total Force Denial inflict Fractured Focus, doubling affected targets' FP costs for 30 seconds.")
                 .Price(3)
-                .RequirementSkill(SkillType.Spear, 38);
+                .RequirementSkill(SkillType.Spear, 38)
+                .IncreasesStat(StatType.SpearDisablerFractureStrike, creature => EquipmentPredicates.HasMainHandSpear(creature) ? 1 : 0);
         }
 
 
@@ -328,10 +330,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Improved Attentiveness")
 
                 .AddPerkLevel()
-                .GrantsFeat(FeatType.ImprovedAttentiveness1)
-                .Description("Your party members, excluding you, gain +15% physical and Force ability hit chance for 1 minute.")
+                .Description("While one of your Spear Damage stances is active, party members other than you gain +5% physical and Force ability hit chance.")
                 .Price(3)
-                .RequirementSkill(SkillType.Spear, 28);
+                .RequirementSkill(SkillType.Spear, 28)
+                .IncreasesStat(StatType.SpearDamageImprovedAttentiveness, creature => EquipmentPredicates.HasMainHandSpear(creature) ? 1 : 0);
         }
 
 

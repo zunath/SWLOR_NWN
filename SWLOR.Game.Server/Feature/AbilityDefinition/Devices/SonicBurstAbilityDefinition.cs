@@ -36,6 +36,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .HasActivationDelay(1f)
                 .HasRecastDelay(RecastGroup.SonicBurst, 30f)
                 .SkillType(SkillType.Devices)
+                .CombatImpactDamageAbility(AbilityType.Perception)
                 .UsesImpactAnimation(Animation.CastOutAnimation)
                 .IsAreaAbility()
                 .HasImpactAction(SonicBurst1ImpactAction)
@@ -58,6 +59,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .HasActivationDelay(1f)
                 .HasRecastDelay(RecastGroup.SonicBurst, 30f)
                 .SkillType(SkillType.Devices)
+                .CombatImpactDamageAbility(AbilityType.Perception)
                 .UsesImpactAnimation(Animation.CastOutAnimation)
                 .IsAreaAbility()
                 .HasImpactAction(SonicBurst2ImpactAction)
@@ -80,6 +82,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .HasActivationDelay(1f)
                 .HasRecastDelay(RecastGroup.SonicBurst, 30f)
                 .SkillType(SkillType.Devices)
+                .CombatImpactDamageAbility(AbilityType.Perception)
                 .UsesImpactAnimation(Animation.CastOutAnimation)
                 .IsAreaAbility()
                 .HasImpactAction(SonicBurst3ImpactAction)
@@ -114,7 +117,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 areaVisualEffect: VisualEffect.Vfx_Fnf_Sound_Burst,
                 damagePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetDamageAdjustment(activator),
                 baseDamageAdjustment: DeviceAbilityEffects.GetAssaultGadgetBaseDamageAdjustment(activator),
-                afterSuccessfulHit: InterruptActivation,
+                afterSuccessfulHit: hitTarget =>
+                {
+                    InterruptActivation(hitTarget);
+                    DeviceAbilityEffects.ApplyTacticalUplink(activator);
+                },
                 hitChancePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetAccuracyAdjustment(activator),
                 criticalRatePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetCriticalRateAdjustment(activator));
         }
@@ -140,7 +147,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 areaVisualEffect: VisualEffect.Vfx_Fnf_Sound_Burst,
                 damagePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetDamageAdjustment(activator),
                 baseDamageAdjustment: DeviceAbilityEffects.GetAssaultGadgetBaseDamageAdjustment(activator),
-                afterSuccessfulHit: InterruptActivation,
+                afterSuccessfulHit: hitTarget =>
+                {
+                    InterruptActivation(hitTarget);
+                    DeviceAbilityEffects.ApplyTacticalUplink(activator);
+                },
                 hitChancePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetAccuracyAdjustment(activator),
                 criticalRatePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetCriticalRateAdjustment(activator));
         }
@@ -166,7 +177,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 areaVisualEffect: VisualEffect.Vfx_Fnf_Sound_Burst,
                 damagePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetDamageAdjustment(activator),
                 baseDamageAdjustment: DeviceAbilityEffects.GetAssaultGadgetBaseDamageAdjustment(activator),
-                afterSuccessfulHit: InterruptActivation,
+                afterSuccessfulHit: hitTarget =>
+                {
+                    InterruptActivation(hitTarget);
+                    DeviceAbilityEffects.ApplyTacticalUplink(activator);
+                },
                 hitChancePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetAccuracyAdjustment(activator),
                 criticalRatePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetCriticalRateAdjustment(activator));
         }

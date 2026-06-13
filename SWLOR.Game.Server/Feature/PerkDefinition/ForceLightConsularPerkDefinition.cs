@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.PerkDefinition
@@ -13,17 +14,45 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         public Dictionary<PerkType, PerkDetail> BuildPerks()
         {
+            ThrowRock();
             Benevolence();
-            Pacify();
+            ForceJudgment();
+            RadiantLance();
             Renewal();
-            Clarity();
+            SereneFocus();
             MindTrick();
-            ComprehendSpeech();
             ForceMend();
             ForceSanctuary();
-            CircleOfHarmony();
+            HarmonicRestoration();
 
             return _builder.Build();
+        }
+
+        private void ThrowRock()
+        {
+            _builder.Create(PerkCategoryType.ForceLight, PerkType.ThrowRock)
+                .Name("Throw Rock")
+                .ForceAffinity(ForceAffinityType.Light)
+
+                .AddPerkLevel()
+                .Description("Hurls stone or loose debris with the Force up to 15m, dealing 18 physical DMG plus WIL/PER scaling to one target.")
+                .Price(2)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                .GrantsFeat(FeatType.ThrowRock1)
+
+                .AddPerkLevel()
+                .Description("Hurls a heavier stone or debris with the Force up to 15m, dealing 32 physical DMG plus WIL/PER scaling to one target.")
+                .Price(3)
+                .RequirementSkill(SkillType.Force, 18)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                .GrantsFeat(FeatType.ThrowRock2)
+
+                .AddPerkLevel()
+                .Description("Hurls a crushing mass of stone and debris with the Force up to 15m, dealing 46 physical DMG plus WIL/PER scaling to one target.")
+                .Price(4)
+                .RequirementSkill(SkillType.Force, 40)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                .GrantsFeat(FeatType.ThrowRock3);
         }
 
         private void Benevolence()
@@ -48,37 +77,65 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Restores 20% of the target's maximum HP plus WIL scaling to a single target. Healing gains +25% when targeting someone other than yourself.")
                 .Price(4)
-                .RequirementSkill(SkillType.Force, 42)
+                .RequirementSkill(SkillType.Force, 38)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.Benevolence3);
         }
 
-        private void Pacify()
+        private void ForceJudgment()
         {
-            _builder.Create(PerkCategoryType.ForceLight, PerkType.Pacify)
-                .Name("Pacify")
+            _builder.Create(PerkCategoryType.ForceLight, PerkType.ForceJudgment)
+                .Name("Force Judgment")
                 .ForceAffinity(ForceAffinityType.Light)
 
                 .AddPerkLevel()
-                .Description("Reduce a target's outgoing weapon and force damage by 5% for 20 seconds.")
-                .Price(2)
+                .Description("Deals 14 force DMG plus WIL scaling to one target and reduces outgoing weapon and force damage by 4% for 12 seconds.")
+                .Price(3)
                 .RequirementSkill(SkillType.Force, 5)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
-                .GrantsFeat(FeatType.Pacify1)
+                .GrantsFeat(FeatType.ForceJudgment1)
 
                 .AddPerkLevel()
-                .Description("Reduce up to 2 nearby enemies' outgoing weapon and force damage by 8% for 20 seconds.")
-                .Price(3)
-                .RequirementSkill(SkillType.Force, 28)
+                .Description("Deals 24 force DMG plus WIL scaling to the selected target and one nearby enemy, reducing outgoing weapon and force damage by 6% for 12 seconds.")
+                .Price(4)
+                .RequirementSkill(SkillType.Force, 25)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
-                .GrantsFeat(FeatType.Pacify2)
+                .GrantsFeat(FeatType.ForceJudgment2)
 
                 .AddPerkLevel()
-                .Description("Reduces nearby enemies' outgoing weapon and force damage by 12% for 20 seconds.")
+                .Description("Deals 36 force DMG plus WIL scaling to the selected target and nearby enemies, reducing outgoing weapon and force damage by 8% for 12 seconds.")
+                .Price(4)
+                .RequirementSkill(SkillType.Force, 45)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                .GrantsFeat(FeatType.ForceJudgment3);
+        }
+
+        private void RadiantLance()
+        {
+            _builder.Create(PerkCategoryType.ForceLight, PerkType.RadiantLance)
+                .Name("Radiant Lance")
+                .ForceAffinity(ForceAffinityType.Light)
+
+                .AddPerkLevel()
+                .Description("Fires a focused lance of radiant Force energy in an 8m line, dealing 12 force DMG plus WIL scaling to hostile targets in the line.")
                 .Price(3)
+                .RequirementSkill(SkillType.Force, 8)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                .GrantsFeat(FeatType.RadiantLance1)
+
+                .AddPerkLevel()
+                .Description("Fires a focused lance of radiant Force energy in an 8m line, dealing 22 force DMG plus WIL scaling to hostile targets in the line.")
+                .Price(4)
+                .RequirementSkill(SkillType.Force, 35)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                .GrantsFeat(FeatType.RadiantLance2)
+
+                .AddPerkLevel()
+                .Description("Fires a focused lance of radiant Force energy in an 8m line, dealing 32 force DMG plus WIL scaling to hostile targets in the line.")
+                .Price(4)
                 .RequirementSkill(SkillType.Force, 48)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
-                .GrantsFeat(FeatType.Pacify3);
+                .GrantsFeat(FeatType.RadiantLance3);
         }
 
         private void Renewal()
@@ -95,39 +152,32 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.Renewal1)
 
                 .AddPerkLevel()
-                .Description("Applies regeneration to a single ally, restoring 3% of maximum HP plus WIL scaling every 3 seconds for 18 seconds.")
+                .Description("Applies regeneration to a single ally, restoring 4% of maximum HP plus WIL scaling every 3 seconds for 18 seconds.")
                 .Price(4)
-                .RequirementSkill(SkillType.Force, 25)
+                .RequirementSkill(SkillType.Force, 20)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.Renewal2)
 
                 .AddPerkLevel()
-                .Description("Applies regeneration to a single ally, restoring 4% of maximum HP plus WIL scaling every 3 seconds for 18 seconds.")
+                .Description("Applies regeneration to a single ally, restoring 6% of maximum HP plus WIL scaling every 3 seconds for 18 seconds.")
                 .Price(4)
-                .RequirementSkill(SkillType.Force, 45)
+                .RequirementSkill(SkillType.Force, 40)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.Renewal3);
         }
 
-        private void Clarity()
+        private void SereneFocus()
         {
-            _builder.Create(PerkCategoryType.ForceLight, PerkType.Clarity)
-                .Name("Clarity")
+            _builder.Create(PerkCategoryType.ForceLight, PerkType.SereneFocus)
+                .Name("Serene Focus")
                 .ForceAffinity(ForceAffinityType.Light)
 
                 .AddPerkLevel()
-                .Description("Restores 10% of maximum STM to an ally and increases physical and force ability hit chance by 4% for 15 seconds. Self-target restores FP instead.")
+                .Description("Control powers that restore HP cause affected allies to restore 1 STM and 1 FP every 6 seconds for 12 seconds. This benefit does not trigger when you target yourself.")
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 12)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
-                .GrantsFeat(FeatType.Clarity1)
-
-                .AddPerkLevel()
-                .Description("Restores 18% of maximum STM to an ally and increases physical and force ability hit chance by 6% for 15 seconds. Self-target restores FP instead.")
-                .Price(3)
-                .RequirementSkill(SkillType.Force, 38)
-                .RequirementCharacterType(CharacterType.ForceSensitive)
-                .GrantsFeat(FeatType.Clarity2);
+                .IncreasesStat(StatType.ControlHealingSereneFocus, 1);
         }
 
         private void MindTrick()
@@ -136,32 +186,18 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Mind Trick")
 
                 .AddPerkLevel()
-                .Description("Confuse one non-mechanical target for 5 seconds.")
+                .Description("Inflicts Confusion with a 25% failure chance on one non-mechanical target for 10 seconds.")
                 .Price(3)
-                .RequirementSkill(SkillType.Force, 15)
+                .RequirementSkill(SkillType.Force, 12)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.MindTrick1)
 
                 .AddPerkLevel()
-                .Description("Confuse up to 2 non-mechanical targets for 5 seconds.")
-                .Price(3)
-                .RequirementSkill(SkillType.Force, 35)
+                .Description("Inflicts Confusion with a 35% failure chance on the selected non-mechanical target and one nearby non-mechanical target for 10 seconds.")
+                .Price(4)
+                .RequirementSkill(SkillType.Force, 38)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.MindTrick2);
-        }
-
-        private void ComprehendSpeech()
-        {
-            _builder.Create(PerkCategoryType.ForceLight, PerkType.ComprehendSpeech)
-                .Name("Comprehend Speech")
-                .ForceAffinity(ForceAffinityType.Light)
-
-                .AddPerkLevel()
-                .Description("For 15 minutes, you count as having 15 additional ranks in all languages for understanding spoken speech.")
-                .Price(2)
-                .RequirementSkill(SkillType.Force, 22)
-                .RequirementCharacterType(CharacterType.ForceSensitive)
-                .GrantsFeat(FeatType.ComprehendSpeech1);
         }
 
         private void ForceMend()
@@ -171,11 +207,11 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .ForceAffinity(ForceAffinityType.Light)
 
                 .AddPerkLevel()
-                .Description("Removes one major negative effect from a single ally and restores HP equal to 16% of the target's maximum HP plus WIL scaling.")
+                .Description("Control powers that restore HP can remove one standard negative effect from the target and restore HP equal to 10% of maximum HP plus WIL scaling. This can trigger once every 24 seconds per target.")
                 .Price(4)
-                .RequirementSkill(SkillType.Force, 30)
+                .RequirementSkill(SkillType.Force, 25)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
-                .GrantsFeat(FeatType.ForceMend1);
+                .IncreasesStat(StatType.ControlHealingForceMend, 1);
         }
 
         private void ForceSanctuary()
@@ -187,23 +223,23 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Creates a 4m sanctuary for 18 seconds. Allies inside gain regeneration equal to 2% of maximum HP plus WIL scaling every 3 seconds and take 5% less force damage.")
                 .Price(4)
-                .RequirementSkill(SkillType.Force, 40)
+                .RequirementSkill(SkillType.Force, 32)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ForceSanctuary1);
         }
 
-        private void CircleOfHarmony()
+        private void HarmonicRestoration()
         {
-            _builder.Create(PerkCategoryType.ForceLight, PerkType.CircleOfHarmony)
-                .Name("Circle of Harmony")
+            _builder.Create(PerkCategoryType.ForceLight, PerkType.HarmonicRestoration)
+                .Name("Harmonic Restoration")
                 .ForceAffinity(ForceAffinityType.Light)
 
                 .AddPerkLevel()
-                .Description("Nearby allies, including you, recover 14% of maximum HP plus WIL scaling, remove one standard negative effect, and restore 1 FP and 1 STM every 3 seconds for 45 seconds.")
-                .Price(5)
-                .RequirementSkill(SkillType.Force, 50)
+                .Description("When you restore HP to an ally below 50% HP with a Control power, up to two nearby allies recover 6% of maximum HP plus WIL scaling and gain +10 Trauma Resistance rating for 12 seconds. This can trigger once every 20 seconds.")
+                .Price(4)
+                .RequirementSkill(SkillType.Force, 45)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
-                .GrantsFeat(FeatType.CircleOfHarmony1);
+                .IncreasesStat(StatType.HarmonicRestoration, 1);
         }
 
     }

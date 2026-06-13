@@ -39,7 +39,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                     AbilityTargetingFlags.HelpsAllies)
                 .IsCastedAbility()
                 .BreaksStealth()
-                .RequirementFP(8);
+                .RequirementFP(6);
         }
 
         private static void ForceSanctuary1ImpactAction(uint activator, uint target, int level, Location targetLocation)
@@ -61,7 +61,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 18f,
                 2f,
                 null,
-                VisualEffect.Vfx_Imp_Healing_M);
+                VisualEffect.Vfx_Imp_Healing_M,
+                onHealed: (friendly, targetWasBelowHalfHP) =>
+                    ForceControlHealingEffects.ApplyRestorativeControlPower(
+                        activator,
+                        friendly,
+                        targetWasBelowHalfHP));
         }
     }
 }

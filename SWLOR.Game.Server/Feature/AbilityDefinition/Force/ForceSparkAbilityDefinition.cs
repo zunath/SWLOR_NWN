@@ -36,6 +36,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasActivationDelay(1f)
                 .HasRecastDelay(RecastGroup.ForceSpark, 6f)
                 .SkillType(SkillType.Force)
+                .CombatImpactDamageAbility(AbilityType.Willpower)
                 .UsesImpactAnimation(Animation.CastOutAnimation)
                 .IsSingleTargetAbility()
                 .HasMaxRange(15f)
@@ -57,6 +58,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasActivationDelay(1f)
                 .HasRecastDelay(RecastGroup.ForceSpark, 6f)
                 .SkillType(SkillType.Force)
+                .CombatImpactDamageAbility(AbilityType.Willpower)
                 .UsesImpactAnimation(Animation.CastOutAnimation)
                 .IsSingleTargetAbility()
                 .HasMaxRange(15f)
@@ -78,6 +80,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasActivationDelay(1f)
                 .HasRecastDelay(RecastGroup.ForceSpark, 6f)
                 .SkillType(SkillType.Force)
+                .CombatImpactDamageAbility(AbilityType.Willpower)
                 .UsesImpactAnimation(Animation.CastOutAnimation)
                 .IsSingleTargetAbility()
                 .HasMaxRange(15f)
@@ -97,13 +100,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 target,
                 targetLocation,
                 SkillType.Force,
-                18,
+                16,
                 20,
                 typeof(ForceSpark1StatusEffect),
                 false,
                 Array.Empty<Type>(),
                 damageType: CombatDamageType.Force,
-                targetVisualEffect: VisualEffect.Vfx_Imp_Pulse_Negative);
+                targetVisualEffect: VisualEffect.Vfx_Imp_Pulse_Negative,
+                afterSuccessfulHit: hitTarget => ForcePressureEffects.ApplyUnstablePressure(activator, hitTarget));
         }
 
         private static void ForceSpark2ImpactAction(uint activator, uint target, int level, Location targetLocation)
@@ -119,7 +123,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 false,
                 Array.Empty<Type>(),
                 damageType: CombatDamageType.Force,
-                targetVisualEffect: VisualEffect.Vfx_Imp_Pulse_Negative);
+                targetVisualEffect: VisualEffect.Vfx_Imp_Pulse_Negative,
+                afterSuccessfulHit: hitTarget => ForcePressureEffects.ApplyUnstablePressure(activator, hitTarget));
         }
 
         private static void ForceSpark3ImpactAction(uint activator, uint target, int level, Location targetLocation)
@@ -129,13 +134,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 target,
                 targetLocation,
                 SkillType.Force,
-                50,
+                44,
                 20,
                 typeof(ForceSpark3StatusEffect),
                 false,
                 Array.Empty<Type>(),
                 damageType: CombatDamageType.Force,
-                targetVisualEffect: VisualEffect.Vfx_Imp_Pulse_Negative);
+                targetVisualEffect: VisualEffect.Vfx_Imp_Pulse_Negative,
+                afterSuccessfulHit: hitTarget => ForcePressureEffects.ApplyUnstablePressure(activator, hitTarget));
         }
 
     }

@@ -21,41 +21,35 @@ public class ForceDarkRavagerTests
         var perks = BuildForceDarkRavagerPerksWithout2daLookup();
 
         AssertPerkLevel(perks[PerkType.ForceSpark], "Force Spark", 1, 2, null, FeatType.ForceSpark1,
-            "Deals 18 force DMG plus WIL scaling to one target and reduce evasion chance by 4% for 20 seconds.");
-        AssertPerkLevel(perks[PerkType.ForceBody], "Force Body", 1, 2, 5, FeatType.ForceBody1,
-            "For 30 seconds, damaging Dark Force powers cost no FP. When one lands, you lose HP equal to 2% of your maximum HP.");
-        AssertPerkLevel(perks[PerkType.ForceLightning], "Force Lightning", 1, 3, 8, FeatType.ForceLightning1,
-            "Deals 14 force DMG plus WIL scaling to up to 3 targets with an electrical visual.");
+            "Deals 16 force DMG plus WIL scaling to one target and reduces Evasion by 4% for 20 seconds.");
+        AssertPerkLevel(perks[PerkType.ForceLightning], "Force Lightning", 1, 3, 10, FeatType.ForceLightning1,
+            "Deals 10 force DMG plus WIL scaling to one target, then arcs to up to two nearby enemies for 50% damage. Affected targets suffer Shock for 6 seconds.");
         AssertPerkLevel(perks[PerkType.ForceDrain], "Force Drain", 1, 3, 12, FeatType.ForceDrain1,
-            "Deals 16 force DMG plus WIL scaling and heals you for 35% of damage dealt.");
-        AssertPerkLevel(perks[PerkType.SaberRend], "Saber Rend", 1, 3, 15, FeatType.SaberRend1,
-            "Your next melee attack deals +12 force DMG plus WIL scaling. Requires a melee weapon.");
-        AssertPerkLevel(perks[PerkType.ForceRage], "Force Rage", 1, 3, 18, FeatType.ForceRage1,
-            "Increases outgoing weapon and force damage by 8% and critical damage by 10% for 20 seconds, but increases damage taken by 5%.");
-        AssertPerkLevel(perks[PerkType.ForceSpark], "Force Spark", 2, 2, 22, FeatType.ForceSpark2,
-            "Deals 32 force DMG plus WIL scaling to one target and reduce evasion chance by 6% for 20 seconds.");
-        AssertPerkLevel(perks[PerkType.ForceLightning], "Force Lightning", 2, 4, 25, FeatType.ForceLightning2,
-            "Deals 24 force DMG plus WIL scaling to up to 4 targets with an electrical visual.");
-        AssertPerkLevel(perks[PerkType.ForceDrain], "Force Drain", 2, 3, 28, FeatType.ForceDrain2,
-            "Deals 28 force DMG plus WIL scaling and heals you for 40% of damage dealt.");
-        AssertPerkLevel(perks[PerkType.DevouringStrike], "Devouring Strike", 1, 4, 30, FeatType.DevouringStrike1,
-            "Deals 12 force DMG plus WIL scaling to one target. If the target is below 35% HP, damage is increased by 40%.");
-        AssertPerkLevel(perks[PerkType.SaberRend], "Saber Rend", 2, 3, 35, FeatType.SaberRend2,
-            "Your next melee attack deals +24 force DMG plus WIL scaling. Requires a melee weapon.");
-        AssertPerkLevel(perks[PerkType.ForceBody], "Force Body", 2, 3, 38, FeatType.ForceBody2,
-            "For 30 seconds, damaging Dark Force powers cost no FP. When one lands, you lose HP, reduced when the target is below 50% HP.");
-        AssertPerkLevel(perks[PerkType.ForceMaelstrom], "Force Maelstrom", 1, 4, 40, FeatType.ForceMaelstrom1,
-            "Deals 10 force DMG plus WIL scaling to nearby enemies and pulls them slightly toward you.");
-        AssertPerkLevel(perks[PerkType.ForceDrain], "Force Drain", 3, 4, 42, FeatType.ForceDrain3,
-            "Deals 44 force DMG plus WIL scaling and heals you for 45% of damage dealt.");
-        AssertPerkLevel(perks[PerkType.ForceRage], "Force Rage", 2, 4, 45, FeatType.ForceRage2,
-            "Increases outgoing weapon and force damage by 14% and critical damage by 15% for 20 seconds, but increases damage taken by 8%.");
-        AssertPerkLevel(perks[PerkType.ForceSpark], "Force Spark", 3, 3, 48, FeatType.ForceSpark3,
-            "Deals 50 force DMG plus WIL scaling to one target and reduce evasion chance by 8% for 20 seconds.");
+            "Deals 14 force DMG plus WIL scaling to one target and heals you for 30% of damage dealt. If the target is below 50% HP, healing increases to 40%.");
+        AssertPerkLevel(perks[PerkType.ForceSpark], "Force Spark", 2, 3, 18, FeatType.ForceSpark2,
+            "Deals 30 force DMG plus WIL scaling to one target and reduces Evasion by 6% for 20 seconds.");
+        AssertPerkLevel(perks[PerkType.ForceLightning], "Force Lightning", 2, 4, 22, FeatType.ForceLightning2,
+            "Deals 18 force DMG plus WIL scaling to one target, then arcs to up to three nearby enemies for 50% damage. Affected targets suffer Shock for 8 seconds.");
+        AssertPerkLevel(perks[PerkType.ForceDrain], "Force Drain", 2, 3, 25, FeatType.ForceDrain2,
+            "Deals 24 force DMG plus WIL scaling to one target and heals you for 35% of damage dealt. If the target is below 50% HP, healing increases to 45%.");
+        AssertPerkLevel(perks[PerkType.DevouringStrike], "Devouring Strike", 1, 4, 28, null,
+            "Alter powers that damage enemies deal 15% more damage to targets below 35% HP.");
+        AssertPerkLevel(perks[PerkType.CruelMomentum], "Cruel Momentum", 1, 4, 28, null,
+            "When an enemy you damaged within the last 6 seconds is defeated, restore 2 FP and gain +5% Force ability Accuracy for 10 seconds. This can trigger once every 10 seconds.");
+        AssertPerkLevel(perks[PerkType.UnstablePressure], "Unstable Pressure", 1, 4, 32, null,
+            "Force Spark and Force Lightning mark affected enemies with unstable pressure for 12 seconds, reducing Evasion by 5%. Enemies below 35% HP also suffer +5% force damage taken while marked.");
+        AssertPerkLevel(perks[PerkType.ForceDrain], "Force Drain", 3, 4, 38, FeatType.ForceDrain3,
+            "Deals 36 force DMG plus WIL scaling to one target and heals you for 40% of damage dealt. If the target is below 50% HP, healing increases to 50%.");
+        AssertPerkLevel(perks[PerkType.ForceSpark], "Force Spark", 3, 4, 42, FeatType.ForceSpark3,
+            "Deals 44 force DMG plus WIL scaling to one target and reduces Evasion by 8% for 20 seconds.");
         AssertPerkLevel(perks[PerkType.HungerOfTheDark], "Hunger of the Dark", 1, 5, 50, FeatType.HungerOfTheDark1,
-            "For 45 seconds, Dark damage you deal heals you for 15% of damage dealt and defeated enemies restore 5 FP.");
+            "For 45 seconds, Dark damage you deal heals you for 12% of damage dealt and defeated enemies restore 3 FP.");
 
-        AssertUniversalForcePower(perks[PerkType.SaberRend]);
+        perks[PerkType.DevouringStrike].PerkLevels[1].StatBonuses.Select(x => x.Stat).Should().Contain(new[]
+        {
+            StatType.DarkForceTargetLowHPDamageThresholdPercent,
+            StatType.DarkForceTargetLowHPDamagePercentAdjustment
+        });
     }
 
     [Test]
@@ -66,10 +60,6 @@ public class ForceDarkRavagerTests
         AssertAbility(forceSpark[FeatType.ForceSpark2], "Force Spark II", 2, RecastGroup.ForceSpark, 6f, 1f, 4, null, true, true, true, false, AbilityActivationType.Casted, 15f, true);
         AssertAbility(forceSpark[FeatType.ForceSpark3], "Force Spark III", 3, RecastGroup.ForceSpark, 6f, 1f, 6, null, true, true, true, false, AbilityActivationType.Casted, 15f, true);
 
-        var forceBody = new ForceBodyAbilityDefinition().BuildAbilities();
-        AssertAbility(forceBody[FeatType.ForceBody1], "Force Body I", 1, RecastGroup.ForceBody, 180f, 0f, 2, null, false, false, true, false, AbilityActivationType.Casted, 5f, false);
-        AssertAbility(forceBody[FeatType.ForceBody2], "Force Body II", 2, RecastGroup.ForceBody, 180f, 0f, 4, null, false, false, true, false, AbilityActivationType.Casted, 5f, false);
-
         var forceLightning = new ForceLightningAbilityDefinition().BuildAbilities();
         AssertAbility(forceLightning[FeatType.ForceLightning1], "Force Lightning I", 1, RecastGroup.ForceLightning, 24f, 1.5f, 4, null, true, true, false, true, AbilityActivationType.Casted, 15f, true);
         AssertAbility(forceLightning[FeatType.ForceLightning2], "Force Lightning II", 2, RecastGroup.ForceLightning, 24f, 1.5f, 6, null, true, true, false, true, AbilityActivationType.Casted, 15f, true);
@@ -79,19 +69,9 @@ public class ForceDarkRavagerTests
         AssertAbility(forceDrain[FeatType.ForceDrain2], "Force Drain II", 2, RecastGroup.ForceDrain, 18f, 1f, 6, null, true, true, true, false, AbilityActivationType.Casted, 15f, true);
         AssertAbility(forceDrain[FeatType.ForceDrain3], "Force Drain III", 3, RecastGroup.ForceDrain, 18f, 1f, 8, null, true, true, true, false, AbilityActivationType.Casted, 15f, true);
 
-        var saberRend = new SaberRendAbilityDefinition().BuildAbilities();
-        AssertAbility(saberRend[FeatType.SaberRend1], "Saber Rend I", 1, RecastGroup.SaberRend, 18f, 0f, 3, 1, true, false, true, false, AbilityActivationType.Weapon, 5f, false);
-        AssertAbility(saberRend[FeatType.SaberRend2], "Saber Rend II", 2, RecastGroup.SaberRend, 18f, 0f, 4, 2, true, false, true, false, AbilityActivationType.Weapon, 5f, false);
-
-        var forceRage = new ForceRageAbilityDefinition().BuildAbilities();
-        AssertAbility(forceRage[FeatType.ForceRage1], "Force Rage I", 1, RecastGroup.ForceRage, 60f, 0f, 5, null, false, false, true, false, AbilityActivationType.Casted, 5f, false);
-        AssertAbility(forceRage[FeatType.ForceRage2], "Force Rage II", 2, RecastGroup.ForceRage, 60f, 0f, 8, null, false, false, true, false, AbilityActivationType.Casted, 5f, false);
-
-        var devouringStrike = new DevouringStrikeAbilityDefinition().BuildAbilities()[FeatType.DevouringStrike1];
-        AssertAbility(devouringStrike, "Devouring Strike", 1, RecastGroup.DevouringStrike, 30f, 1f, 7, null, true, true, true, false, AbilityActivationType.Casted, 15f, true);
-
-        var forceMaelstrom = new ForceMaelstromAbilityDefinition().BuildAbilities()[FeatType.ForceMaelstrom1];
-        AssertAbility(forceMaelstrom, "Force Maelstrom", 1, RecastGroup.ForceMaelstrom, 75f, 1.5f, 8, null, true, false, false, true, AbilityActivationType.Casted, 5f, true);
+        var furyStance = new FuryStanceAbilityDefinition().BuildAbilities();
+        AssertAbility(furyStance[FeatType.FuryStance1], "Fury Stance I", 1, RecastGroup.FuryStance, 60f, 2f, 5, null, false, false, false, false, AbilityActivationType.Casted, 5f, false);
+        AssertAbility(furyStance[FeatType.FuryStance2], "Fury Stance II", 2, RecastGroup.FuryStance, 60f, 2f, 8, null, false, false, false, false, AbilityActivationType.Casted, 5f, false);
 
         var hunger = new HungerOfTheDarkAbilityDefinition().BuildAbilities()[FeatType.HungerOfTheDark1];
         AssertAbility(hunger, "Hunger of the Dark", 1, RecastGroup.Capstone, 345f, 0f, 10, null, false, false, true, false, AbilityActivationType.Casted, 5f, false);
@@ -104,43 +84,34 @@ public class ForceDarkRavagerTests
         new ForceSpark2StatusEffect().StatGroup.Stats[StatType.EvasionPercentAdjustment].Should().Be(-6);
         new ForceSpark3StatusEffect().StatGroup.Stats[StatType.EvasionPercentAdjustment].Should().Be(-8);
 
-        var forceBody1 = new ForceBody1StatusEffect();
-        forceBody1.StatGroup.Stats[StatType.DarkForceConversionFPCostPercentAdjustment].Should().Be(-100);
-        forceBody1.StatGroup.Stats[StatType.DarkForceDamageHPCostPercent].Should().Be(2);
+        var furyStance1 = new FuryStance1StatusEffect();
+        furyStance1.StatGroup.Stats[StatType.WeaponAndForceDamageDealtPercentAdjustment].Should().Be(8);
+        furyStance1.StatGroup.Stats[StatType.DamageDealtPercentAdjustment].Should().Be(0);
+        furyStance1.StatGroup.Stats[StatType.AttackPercentAdjustment].Should().Be(0);
+        furyStance1.StatGroup.Stats[StatType.CriticalDamagePercentAdjustment].Should().Be(10);
+        furyStance1.StatGroup.Stats[StatType.DamageTakenPercentAdjustment].Should().Be(5);
+        furyStance1.StatGroup.Stats[StatType.PhysicalDefensePercentAdjustment].Should().Be(-5);
+        furyStance1.StatGroup.Stats[StatType.ForceDefensePercentAdjustment].Should().Be(-5);
 
-        var forceBody2 = new ForceBody2StatusEffect();
-        forceBody2.StatGroup.Stats[StatType.DarkForceConversionFPCostPercentAdjustment].Should().Be(-100);
-        forceBody2.StatGroup.Stats[StatType.DarkForceDamageHPCostPercent].Should().Be(2);
-        forceBody2.StatGroup.Stats[StatType.DarkForceDamageLowTargetHPCostPercent].Should().Be(1);
-        forceBody2.StatGroup.Stats[StatType.DarkForceDamageLowTargetHPThresholdPercent].Should().Be(50);
+        var furyStance2 = new FuryStance2StatusEffect();
+        furyStance2.StatGroup.Stats[StatType.WeaponAndForceDamageDealtPercentAdjustment].Should().Be(12);
+        furyStance2.StatGroup.Stats[StatType.DamageDealtPercentAdjustment].Should().Be(0);
+        furyStance2.StatGroup.Stats[StatType.AttackPercentAdjustment].Should().Be(0);
+        furyStance2.StatGroup.Stats[StatType.CriticalDamagePercentAdjustment].Should().Be(15);
+        furyStance2.StatGroup.Stats[StatType.DamageTakenPercentAdjustment].Should().Be(5);
+        furyStance2.StatGroup.Stats[StatType.PhysicalDefensePercentAdjustment].Should().Be(-5);
+        furyStance2.StatGroup.Stats[StatType.ForceDefensePercentAdjustment].Should().Be(-5);
 
-        var forceRage1 = new ForceRage1StatusEffect();
-        forceRage1.StatGroup.Stats[StatType.WeaponAndForceDamageDealtPercentAdjustment].Should().Be(8);
-        forceRage1.StatGroup.Stats[StatType.DamageDealtPercentAdjustment].Should().Be(0);
-        forceRage1.StatGroup.Stats[StatType.AttackPercentAdjustment].Should().Be(0);
-        forceRage1.StatGroup.Stats[StatType.CriticalDamagePercentAdjustment].Should().Be(10);
-        forceRage1.StatGroup.Stats[StatType.DamageTakenPercentAdjustment].Should().Be(5);
+        var unstablePressure = new UnstablePressureStatusEffect();
+        unstablePressure.StatGroup.Stats[StatType.EvasionPercentAdjustment].Should().Be(-5);
 
-        var forceRage2 = new ForceRage2StatusEffect();
-        forceRage2.StatGroup.Stats[StatType.WeaponAndForceDamageDealtPercentAdjustment].Should().Be(14);
-        forceRage2.StatGroup.Stats[StatType.DamageDealtPercentAdjustment].Should().Be(0);
-        forceRage2.StatGroup.Stats[StatType.AttackPercentAdjustment].Should().Be(0);
-        forceRage2.StatGroup.Stats[StatType.CriticalDamagePercentAdjustment].Should().Be(15);
-        forceRage2.StatGroup.Stats[StatType.DamageTakenPercentAdjustment].Should().Be(8);
+        var cruelMomentum = new CruelMomentumStatusEffect();
+        cruelMomentum.StatGroup.Stats[StatType.AbilityHitChancePercentAdjustmentSkillType].Should().Be((int)SkillType.Force);
+        cruelMomentum.StatGroup.Stats[StatType.AbilityHitChancePercentAdjustment].Should().Be(5);
 
         var hunger = new HungerOfTheDark1StatusEffect();
-        hunger.StatGroup.Stats[StatType.DarkForceDamageHPPercentRestore].Should().Be(15);
-        hunger.StatGroup.Stats[StatType.DefeatedEnemyFPRestore].Should().Be(5);
-    }
-
-    [Test]
-    public void ForceMaelstrom_SourceIncludesBiblePull()
-    {
-        var root = FindRepositoryRoot();
-        var source = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Force" / "ForceMaelstromAbilityDefinition.cs").FullName);
-
-        source.Should().Contain("afterSuccessfulHit");
-        source.Should().Contain("PullTowardActivator");
+        hunger.StatGroup.Stats[StatType.DarkForceDamageHPPercentRestore].Should().Be(12);
+        hunger.StatGroup.Stats[StatType.DefeatedEnemyFPRestore].Should().Be(3);
     }
 
     [Test]
@@ -174,20 +145,14 @@ public class ForceDarkRavagerTests
         var feats = new[]
         {
             (FeatType.ForceSpark1, "ife_forcesprk1", "M", "0x02", "1", "****", "****", "****", "****"),
-            (FeatType.ForceBody1, "ife_forcebdy1", "P", "0x01", "0", "****", "****", "****", "****"),
             (FeatType.ForceLightning1, "ife_forcelghtnn1", "M", "0x02", "1", "sphere", "5", "****", "1"),
             (FeatType.ForceDrain1, "ife_forcedrn1", "M", "0x02", "1", "****", "****", "****", "****"),
-            (FeatType.SaberRend1, "ife_sabrrnd1", "P", "0x01", "0", "****", "****", "****", "****"),
-            (FeatType.ForceRage1, "ife_forcerg1", "P", "0x01", "0", "****", "****", "****", "****"),
+            (FeatType.FuryStance1, "ife_frystnc1", "P", "0x01", "0", "****", "****", "****", "****"),
             (FeatType.ForceSpark2, "ife_forcesprk2", "M", "0x02", "1", "****", "****", "****", "****"),
             (FeatType.ForceLightning2, "ife_forcelghtnn2", "M", "0x02", "1", "sphere", "5", "****", "1"),
             (FeatType.ForceDrain2, "ife_forcedrn2", "M", "0x02", "1", "****", "****", "****", "****"),
-            (FeatType.DevouringStrike1, "ife_dvrngstrk1", "M", "0x02", "1", "****", "****", "****", "****"),
-            (FeatType.SaberRend2, "ife_sabrrnd2", "P", "0x01", "0", "****", "****", "****", "****"),
-            (FeatType.ForceBody2, "ife_forcebdy2", "P", "0x01", "0", "****", "****", "****", "****"),
-            (FeatType.ForceMaelstrom1, "ife_forcemael1", "P", "0x01", "1", "sphere", "5", "****", "17"),
             (FeatType.ForceDrain3, "ife_forcedrn3", "M", "0x02", "1", "****", "****", "****", "****"),
-            (FeatType.ForceRage2, "ife_forcerg2", "P", "0x01", "0", "****", "****", "****", "****"),
+            (FeatType.FuryStance2, "ife_frystnc2", "P", "0x01", "0", "****", "****", "****", "****"),
             (FeatType.ForceSpark3, "ife_forcesprk3", "M", "0x02", "1", "****", "****", "****", "****"),
             (FeatType.HungerOfTheDark1, "ife_hngrdrk1", "P", "0x01", "0", "****", "****", "****", "****")
         };
@@ -339,14 +304,12 @@ public class ForceDarkRavagerTests
         var methodNames = new[]
         {
             "DevouringStrike",
-            "ForceBody",
             "ForceDrain",
             "ForceLightning",
-            "ForceMaelstrom",
-            "ForceRage",
             "ForceSpark",
             "HungerOfTheDark",
-            "SaberRend"
+            "CruelMomentum",
+            "UnstablePressure"
         };
 
         foreach (var methodName in methodNames)

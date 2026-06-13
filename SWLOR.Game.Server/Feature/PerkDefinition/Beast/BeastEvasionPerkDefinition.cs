@@ -123,7 +123,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition.Beast
                 .GrantsFeat(FeatType.EvasiveChallenge1)
 
                 .AddPerkLevel()
-                .Description("The beast goads nearby enemies, removes movement slow, gains +14% evasion chance for 8 seconds, and restores 1 STM the next time it evades during the effect.")
+                .Description("The beast goads the selected target and nearby enemies, removes movement slow, gains +14% evasion chance for 8 seconds, and restores 1 STM the next time it evades during the effect.")
                 .Price(4)
                 .RequirementBeastLevel(35)
                 .RequirementBeastRole(BeastRoleType.Evasion)

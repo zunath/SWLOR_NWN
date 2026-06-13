@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     {
         private readonly int _hitChancePenaltyPercent;
 
-        public override string Name => "Flash Grenade I";
+        public override string Name => "Flash Grenade";
         public override EffectIconType Icon => EffectIconType.FlashGrenade1StatusEffect;
 
         public FlashGrenade1StatusEffect()

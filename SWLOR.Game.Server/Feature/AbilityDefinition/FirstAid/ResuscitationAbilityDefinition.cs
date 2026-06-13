@@ -73,6 +73,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
 
             ApplyEffectToObject(DurationType.Instant, EffectResurrection(), target);
             ApplyEffectToObject(DurationType.Instant, EffectHeal(1), target);
+            FirstAidTreatmentAdjustments.ApplyTraumaMedicRiders(activator, target);
             DelayCommand(0.1f, () => Ability.ReapplyAuraEffectsForCreature(target));
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Raise_Dead), target);
         }
@@ -84,6 +85,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
 
             ApplyEffectToObject(DurationType.Instant, EffectResurrection(), target);
             AbilityEffectScaling.ApplyActivatedScaledHeal(activator, target, 20);
+            FirstAidTreatmentAdjustments.ApplyTraumaMedicRiders(activator, target);
             DelayCommand(0.1f, () => Ability.ReapplyAuraEffectsForCreature(target));
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Raise_Dead), target);
         }

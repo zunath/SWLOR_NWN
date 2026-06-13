@@ -90,6 +90,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             {
                 Stat.RestoreStamina(friendly, PercentOf(Stat.GetMaxStamina(friendly), 10));
                 StatusEffect.ApplyStatusEffect(activator, friendly, new AdrenalStimStatusEffect(1), duration);
+                FirstAidTreatmentAdjustments.ApplyCombatPharmacologyStimRiders(activator, friendly);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Restoration), friendly);
             }
         }
@@ -101,6 +102,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             {
                 Stat.RestoreStamina(friendly, PercentOf(Stat.GetMaxStamina(friendly), 18));
                 StatusEffect.ApplyStatusEffect(activator, friendly, new AdrenalStimStatusEffect(1), duration);
+                FirstAidTreatmentAdjustments.ApplyCombatPharmacologyStimRiders(activator, friendly);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_M), friendly);
             }
         }
@@ -112,6 +114,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             {
                 Stat.RestoreStamina(friendly, PercentOf(Stat.GetMaxStamina(friendly), 25));
                 StatusEffect.ApplyStatusEffect(activator, friendly, new AdrenalStimStatusEffect(1), duration);
+                FirstAidTreatmentAdjustments.ApplyCombatPharmacologyStimRiders(activator, friendly);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_M), friendly);
             }
         }

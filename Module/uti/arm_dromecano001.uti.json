@@ -131,8 +131,8 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Revêtement de droïde éboueur",
-      "2": "Revêtement de droïde mécano"
+      "0": "Droid Scavenger Plating",
+      "2": "Droid Mechanic Plating"
     }
   },
   "Metal1Color": {

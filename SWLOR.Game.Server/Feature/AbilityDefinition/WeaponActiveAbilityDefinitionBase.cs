@@ -24,8 +24,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             int stamina,
             Type additionalStatusEffect = null,
             Func<IStatusEffect> statusEffectFactory = null,
-            CombatDamageType damageType = CombatDamageType.Physical)
+            CombatDamageType damageType = CombatDamageType.Physical,
+            AbilityType combatImpactDamageAbility = AbilityType.Invalid)
         {
+            ApplyCombatImpactDamageAbility(ability, combatImpactDamageAbility);
+
             ability.HasActivationDelay(0f)
                 .SkillType(skill)
                 .IsSingleTargetAbility()
@@ -42,7 +45,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                         false,
                         Additional(additionalStatusEffect),
                         statusEffectFactory,
-                        damageType);
+                        damageType,
+                        combatImpactDamageAbility: combatImpactDamageAbility);
                 })
                 .IsWeaponAbility()
                 .IsHostileAbility()
@@ -59,8 +63,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             int stamina,
             int duration = 0,
             Type statusEffect = null,
-            int extraDamageWhenLowHp = 0)
+            int extraDamageWhenLowHp = 0,
+            AbilityType combatImpactDamageAbility = AbilityType.Invalid)
         {
+            ApplyCombatImpactDamageAbility(ability, combatImpactDamageAbility);
+
             ability.HasActivationDelay(0f)
                 .SkillType(skill)
                 .IsSingleTargetAbility()
@@ -73,7 +80,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                         damage += extraDamageWhenLowHp;
                     }
 
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, skill, damage, duration, statusEffect, false);
+                    Ability.ApplyCombatImpact(
+                        activator,
+                        target,
+                        targetLocation,
+                        skill,
+                        damage,
+                        duration,
+                        statusEffect,
+                        false,
+                        combatImpactDamageAbility: combatImpactDamageAbility);
                 })
                 .IsCastedAbility()
                 .IsHostileAbility()
@@ -93,8 +109,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             Type statusEffect = null,
             Type additionalStatusEffect = null,
             Type bonusStatus = null,
-            int bonusDamage = 0)
+            int bonusDamage = 0,
+            AbilityType combatImpactDamageAbility = AbilityType.Invalid)
         {
+            ApplyCombatImpactDamageAbility(ability, combatImpactDamageAbility);
+
             ability.HasActivationDelay(0f)
                 .SkillType(skill)
                 .IsSingleTargetAbility()
@@ -118,7 +137,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                             duration,
                             statusEffect,
                             false,
-                            additionalStatusEffects: Additional(additionalStatusEffect));
+                            additionalStatusEffects: Additional(additionalStatusEffect),
+                            combatImpactDamageAbility: combatImpactDamageAbility);
                     }
                 })
                 .IsCastedAbility()
@@ -136,15 +156,28 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             int duration,
             Type statusEffect,
             int stamina,
-            Func<IStatusEffect> statusEffectFactory = null)
+            Func<IStatusEffect> statusEffectFactory = null,
+            AbilityType combatImpactDamageAbility = AbilityType.Invalid)
         {
+            ApplyCombatImpactDamageAbility(ability, combatImpactDamageAbility);
+
             ability.HasActivationDelay(0f)
                 .SkillType(skill)
                 .IsSingleTargetAbility()
                 .HasImpactAction((activator, target, level, targetLocation) =>
                 {
                     AssignCommand(target, () => ClearAllActions());
-                    Ability.ApplyCombatImpact(activator, target, targetLocation, skill, baseDamage, duration, statusEffect, false, statusEffectFactory: statusEffectFactory);
+                    Ability.ApplyCombatImpact(
+                        activator,
+                        target,
+                        targetLocation,
+                        skill,
+                        baseDamage,
+                        duration,
+                        statusEffect,
+                        false,
+                        statusEffectFactory: statusEffectFactory,
+                        combatImpactDamageAbility: combatImpactDamageAbility);
                 })
                 .IsWeaponAbility()
                 .IsHostileAbility()
@@ -165,8 +198,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             float width,
             int stamina,
             bool centerOnActivator = false,
-            int maxTargets = 0)
+            int maxTargets = 0,
+            AbilityType combatImpactDamageAbility = AbilityType.Invalid)
         {
+            ApplyCombatImpactDamageAbility(ability, combatImpactDamageAbility);
+
             ability.HasActivationDelay(0f)
                 .SkillType(skill)
                 .IsAreaAbility()
@@ -185,7 +221,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                         lengthOrRadius,
                         width,
                         centerOnActivator: centerOnActivator,
-                        maxTargets: maxTargets);
+                        maxTargets: maxTargets,
+                        combatImpactDamageAbility: combatImpactDamageAbility);
                 })
                 .IsCastedAbility()
                 .IsHostileAbility()
@@ -195,14 +232,27 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 ability.RequirementStamina(stamina);
         }
 
+        private static void ApplyCombatImpactDamageAbility(
+            AbilityBuilder ability,
+            AbilityType combatImpactDamageAbility)
+        {
+            if (combatImpactDamageAbility != AbilityType.Invalid)
+                ability.CombatImpactDamageAbility(combatImpactDamageAbility);
+        }
+
         protected static void ConfigureToggle(AbilityBuilder ability, Type type)
+        {
+            ConfigureToggle(ability, type, () => (IStatusEffect)Activator.CreateInstance(type));
+        }
+
+        protected static void ConfigureToggle(AbilityBuilder ability, Type type, Func<IStatusEffect> statusEffectFactory)
         {
             ability.HasActivationDelay(ToggleActivationDelaySeconds)
                 .HasActivationAction((activator, target, level, targetLocation) => ToggleSelfStatus(activator, type))
                 .HasImpactAction((activator, target, level, targetLocation) =>
                 {
                     StatusEffect.RemoveOtherStanceStatuses(activator, type);
-                    StatusEffect.ApplyStatusEffect(activator, activator, type, 0f);
+                    StatusEffect.ApplyStatusEffect(activator, activator, statusEffectFactory(), 0f);
                 })
                 .IsCastedAbility()
                 .BreaksStealth();

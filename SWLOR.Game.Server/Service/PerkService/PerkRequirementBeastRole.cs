@@ -16,8 +16,12 @@ namespace SWLOR.Game.Server.Service.PerkService
         {
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
-            var dbBeast = DB.Get<Beast>(dbPlayer.ActiveBeastId);
             var roleDetail = BeastMastery.GetBeastRoleDetail(_requiredRole);
+
+            if (dbPlayer == null || string.IsNullOrWhiteSpace(dbPlayer.ActiveBeastId))
+                return "You do not have a beast tamed.";
+
+            var dbBeast = DB.Get<Beast>(dbPlayer.ActiveBeastId);
 
             if (dbBeast == null)
                 return "You do not have a beast tamed.";

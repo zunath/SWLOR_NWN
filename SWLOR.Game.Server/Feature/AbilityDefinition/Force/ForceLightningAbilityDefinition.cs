@@ -35,6 +35,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasActivationDelay(1.5f)
                 .HasRecastDelay(RecastGroup.ForceLightning, 24f)
                 .SkillType(SkillType.Force)
+                .CombatImpactDamageAbility(AbilityType.Willpower)
                 .UsesImpactAnimation(Animation.CastOutAnimation)
                 .IsAreaAbility()
                 .HasMaxRange(15f)
@@ -60,6 +61,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasActivationDelay(1.5f)
                 .HasRecastDelay(RecastGroup.ForceLightning, 24f)
                 .SkillType(SkillType.Force)
+                .CombatImpactDamageAbility(AbilityType.Willpower)
                 .UsesImpactAnimation(Animation.CastOutAnimation)
                 .IsAreaAbility()
                 .HasMaxRange(15f)
@@ -78,49 +80,69 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void ForceLightning1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            Ability.ApplyTelegraphedCombatImpact(
-                activator,
-                target,
-                targetLocation,
-                SkillType.Force,
-                14,
-                12,
-                null,
-                CombatImpactAreaShape.Sphere,
-                0f,
-                5f,
-                0f,
-                Array.Empty<Type>(),
-                centerOnActivator: !GetIsObjectValid(target),
-                damageType: CombatDamageType.Force,
-                effectDamageType: DamageType.Electrical,
-                afterSuccessfulHit: hitTarget => ApplyLightningVisual(activator, hitTarget),
-                maxTargets: 3);
+            ApplyForceLightning(activator, target, targetLocation, 10, 6, 1, 2);
         }
 
         private static void ForceLightning2ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            Ability.ApplyTelegraphedCombatImpact(
+            ApplyForceLightning(activator, target, targetLocation, 18, 8, 2, 3);
+        }
+
+        private static void ApplyForceLightning(
+            uint activator,
+            uint target,
+            Location targetLocation,
+            int baseDamage,
+            int shockDuration,
+            int shockLevel,
+            int maxArcTargets)
+        {
+            Ability.ApplyCombatImpact(
                 activator,
                 target,
                 targetLocation,
                 SkillType.Force,
-                24,
-                12,
-                null,
-                CombatImpactAreaShape.Sphere,
-                0f,
-                5f,
-                0f,
+                baseDamage,
+                shockDuration,
+                typeof(ShockStatusEffect),
+                false,
                 Array.Empty<Type>(),
-                centerOnActivator: !GetIsObjectValid(target),
+                statusEffectFactory: () => new ShockStatusEffect(shockLevel),
                 damageType: CombatDamageType.Force,
                 effectDamageType: DamageType.Electrical,
-                afterSuccessfulHit: hitTarget => ApplyLightningVisual(activator, hitTarget),
-                maxTargets: 4);
+                afterSuccessfulHit: hitTarget => ApplyLightningHitEffects(activator, hitTarget));
+
+            var center = GetIsObjectValid(target)
+                ? GetLocation(target)
+                : targetLocation;
+
+            foreach (var arcTarget in AbilityTargeting.GetHostileTargetsNearLocation(
+                         activator,
+                         center,
+                         5f,
+                         maxArcTargets,
+                         predicate: candidate => candidate != target))
+            {
+                Ability.ApplyCombatImpact(
+                    activator,
+                    arcTarget,
+                    GetLocation(arcTarget),
+                    SkillType.Force,
+                    baseDamage,
+                    shockDuration,
+                    typeof(ShockStatusEffect),
+                    false,
+                    Array.Empty<Type>(),
+                    statusEffectFactory: () => new ShockStatusEffect(shockLevel),
+                    damageType: CombatDamageType.Force,
+                    effectDamageType: DamageType.Electrical,
+                    damagePercentAdjustment: _ => -50,
+                    afterSuccessfulHit: hitTarget => ApplyLightningHitEffects(activator, hitTarget),
+                    playImpactAnimation: false);
+            }
         }
 
-        private static void ApplyLightningVisual(uint activator, uint target)
+        private static void ApplyLightningHitEffects(uint activator, uint target)
         {
             var lightningBeam = EffectBeam(VisualEffect.Vfx_Beam_Silent_Lightning, activator, BodyNode.Hand, true);
             var lightningBurst = EffectVisualEffect(VisualEffect.Vfx_Imp_Lightning_S);
@@ -130,6 +152,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 ApplyEffectToObject(DurationType.Temporary, lightningBeam, target, 2.5f);
                 ApplyEffectToObject(DurationType.Instant, lightningBurst, target);
             });
+            ForcePressureEffects.ApplyUnstablePressure(activator, target);
         }
 
     }

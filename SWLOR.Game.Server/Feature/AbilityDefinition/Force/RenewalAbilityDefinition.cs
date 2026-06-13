@@ -103,11 +103,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         private static void ApplyRenewal(uint activator, uint target, string name, float totalPercent)
         {
             var friendly = AbilityTargeting.ResolveFriendlyTarget(activator, target);
+            var targetWasBelowHalfHP = ForceControlHealingEffects.IsBelowHalfHP(friendly);
             StatusEffect.ApplyStatusEffect(
                 activator,
                 friendly,
                 new RegenerativeHealingStatusEffect(name, totalPercent, 6),
                 18f);
+            ForceControlHealingEffects.ApplyRestorativeControlPower(activator, friendly, targetWasBelowHalfHP);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_M), friendly);
         }
     }

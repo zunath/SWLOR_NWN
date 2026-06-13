@@ -31,6 +31,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 .HasActivationDelay(2f)
                 .HasRecastDelay(RecastGroup.Capstone, CapstoneAbility.RecastDelaySeconds)
                 .SkillType(SkillType.Rifle)
+                .CombatImpactDamageAbility(AbilityType.Perception)
                 .UsesImpactAnimation(Animation.PointPistol)
                 .HasMaxRange(RifleAbilityRange.Standard)
                 .IsSingleTargetAbility()
@@ -44,7 +45,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
 
         private static void OneShot1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Rifle, 50, 45, typeof(OneShotMarkedStatusEffect), false);
+            Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Rifle, 50, 45, typeof(MarkedStatusEffect), false);
         }
     }
 }

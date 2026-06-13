@@ -22,6 +22,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             IonGrenade();
             AdhesiveGrenade();
             ClusterGrenade();
+            DisruptionPulse();
             ThermalDetonator();
 
             return _builder.Build();
@@ -54,7 +55,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Deals 48 fire DMG plus PER scaling to enemies in a 3m blast and attempts to inflict Bleed. Consumes explosives.")
-                .Price(4)
+                .Price(5)
                 .RequirementSkill(SkillType.Devices, 40)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.FragGrenade3);
@@ -67,21 +68,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Grenade abilities gain +1m blast radius.")
-                .Price(2)
+                .Price(3)
                 .RequirementSkill(SkillType.Devices, 5)
                 .RequirementCharacterType(CharacterType.Standard)
                 .IncreasesStat(StatType.GrenadeRadiusBonusTenths, 10)
 
                 .AddPerkLevel()
                 .Description("Grenade abilities gain +2m blast radius.")
-                .Price(2)
+                .Price(4)
                 .RequirementSkill(SkillType.Devices, 22)
                 .RequirementCharacterType(CharacterType.Standard)
                 .IncreasesStat(StatType.GrenadeRadiusBonusTenths, 20)
 
                 .AddPerkLevel()
                 .Description("Grenade abilities gain +3m blast radius, and Flash Grenade and Adhesive Grenade non-save effect strength increases by 5%.")
-                .Price(4)
+                .Price(5)
                 .RequirementSkill(SkillType.Devices, 45)
                 .RequirementCharacterType(CharacterType.Standard)
                 .IncreasesStat(StatType.GrenadeRadiusBonusTenths, 30)
@@ -102,17 +103,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Deals 28 electrical DMG plus PER scaling in a 3m blast and knock down for 2 seconds. Consumes explosives.")
-                .Price(3)
+                .Price(4)
                 .RequirementSkill(SkillType.Devices, 28)
                 .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(FeatType.ConcussionGrenade2)
-
-                .AddPerkLevel()
-                .Description("Deals 42 electrical DMG plus PER scaling in a 3m blast and knock down for 3 seconds. Consumes explosives.")
-                .Price(3)
-                .RequirementSkill(SkillType.Devices, 48)
-                .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(FeatType.ConcussionGrenade3);
+                .GrantsFeat(FeatType.ConcussionGrenade2);
         }
 
         private void FlashGrenade()
@@ -125,14 +119,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(3)
                 .RequirementSkill(SkillType.Devices, 12)
                 .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(FeatType.FlashGrenade1)
-
-                .AddPerkLevel()
-                .Description("Attempts to inflict Flash, reducing physical and Force ability hit chance by 14% for 20 seconds in a 4m blast. Consumes explosives.")
-                .Price(3)
-                .RequirementSkill(SkillType.Devices, 35)
-                .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(FeatType.FlashGrenade2);
+                .GrantsFeat(FeatType.FlashGrenade1);
         }
 
         private void IonGrenade()
@@ -149,7 +136,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Deals 34 electrical DMG plus PER scaling in a 3m blast. Deals 60% bonus damage to droids and Shock. Consumes explosives.")
-                .Price(3)
+                .Price(4)
                 .RequirementSkill(SkillType.Devices, 38)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.IonGrenade2);
@@ -188,13 +175,26 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ClusterGrenade1);
         }
 
+        private void DisruptionPulse()
+        {
+            CreateGrenadierPerk(PerkType.DisruptionPulse)
+                .Name("Disruption Pulse")
+
+                .AddPerkLevel()
+                .Description("Emits a 5m disruption pulse at a target point within 12m, dealing 18 electrical DMG plus PER scaling to enemies and reducing physical and Force ability Accuracy by 6% for 12 seconds. Consumes explosives.")
+                .Price(4)
+                .RequirementSkill(SkillType.Devices, 35)
+                .RequirementCharacterType(CharacterType.Standard)
+                .GrantsFeat(FeatType.DisruptionPulse1);
+        }
+
         private void ThermalDetonator()
         {
             CreateGrenadierPerk(PerkType.ThermalDetonator)
                 .Name("Thermal Detonator")
 
                 .AddPerkLevel()
-                .Description("Deals moderate fire DMG plus PER scaling in a 5m blast and inflicts Burning for 45 seconds. Consumes explosives.")
+                .Description("Deals 60 fire DMG plus PER scaling in a 5m blast and inflicts Burning for 45 seconds. Consumes explosives.")
                 .Price(5)
                 .RequirementSkill(SkillType.Devices, 50)
                 .RequirementCharacterType(CharacterType.Standard)

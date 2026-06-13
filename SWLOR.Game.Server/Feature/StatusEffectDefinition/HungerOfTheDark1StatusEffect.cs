@@ -14,8 +14,8 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         public HungerOfTheDark1StatusEffect()
         {
-            StatGroup.Stats[StatType.DarkForceDamageHPPercentRestore] = 15;
-            StatGroup.Stats[StatType.DefeatedEnemyFPRestore] = 5;
+            StatGroup.Stats[StatType.DarkForceDamageHPPercentRestore] = 12;
+            StatGroup.Stats[StatType.DefeatedEnemyFPRestore] = 3;
         }
     }
 }

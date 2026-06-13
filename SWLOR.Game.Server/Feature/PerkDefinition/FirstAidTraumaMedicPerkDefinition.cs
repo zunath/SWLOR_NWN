@@ -73,7 +73,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.TreatmentKit2)
 
                 .AddPerkLevel()
-                .Description("Removes Bleed, Poison, Toxin, Burn, Shock, and Disease from a single target and grants 50% Fire, Poison, Electrical, Ice, and Trauma resistance for 8 seconds.")
+                .Description("Removes Bleed, Poison, Toxin, Burn, Shock, and Disease from a single target and grants 50% Fire Resistance, 50% Poison Resistance, 50% Electrical Resistance, 50% Ice Resistance, and 50% Trauma Resistance for 8 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.FirstAid, 42)
                 .GrantsFeat(FeatType.TreatmentKit3);
@@ -103,10 +103,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Emergency Sealant")
 
                 .AddPerkLevel()
-                .Description("Stops Bleed or Burn on one target and grants HP regeneration equal to 2% of the target's maximum HP plus WIL scaling every 3 seconds for 12 seconds. Consumes medical supplies.")
+                .Description("Trauma Medic healing and treatment abilities also stop one Bleed or Burn effect and restore HP equal to 2% of maximum HP plus WIL scaling every 3 seconds for 12 seconds.")
+                .IncreasesStat(StatType.TraumaMedicEmergencySealant, 1)
                 .Price(3)
-                .RequirementSkill(SkillType.FirstAid, 12)
-                .GrantsFeat(FeatType.EmergencySealant1);
+                .RequirementSkill(SkillType.FirstAid, 12);
         }
 
         private void KoltoMist()

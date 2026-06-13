@@ -75,7 +75,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 coneLength,
                 coneWidth,
                 stamina,
-                maxTargets: maxTargets);
+                maxTargets: maxTargets,
+                combatImpactDamageAbility: AbilityType.Perception);
         }
     }
 }

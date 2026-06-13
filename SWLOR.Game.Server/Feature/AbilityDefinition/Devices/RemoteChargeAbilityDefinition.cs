@@ -23,7 +23,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 
             RemoteCharge1(builder);
             RemoteCharge2(builder);
-            RemoteCharge3(builder);
 
             return builder.Build();
         }
@@ -37,6 +36,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .HasActivationDelay(1f)
                 .HasRecastDelay(RecastGroup.RemoteCharge, 30f)
                 .SkillType(SkillType.Devices)
+                .CombatImpactDamageAbility(AbilityType.Perception)
                 .UsesImpactAnimation(Animation.ThrowGrenade)
                 .IsAreaAbility()
                 .HasImpactAction(RemoteCharge1ImpactAction)
@@ -59,6 +59,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .HasActivationDelay(1f)
                 .HasRecastDelay(RecastGroup.RemoteCharge, 30f)
                 .SkillType(SkillType.Devices)
+                .CombatImpactDamageAbility(AbilityType.Perception)
                 .UsesImpactAnimation(Animation.ThrowGrenade)
                 .IsAreaAbility()
                 .HasImpactAction(RemoteCharge2ImpactAction)
@@ -72,49 +73,23 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .RequirementStamina(5);
         }
 
-        private static void RemoteCharge3(AbilityBuilder builder)
-        {
-            builder
-                .Create(FeatType.RemoteCharge3, PerkType.RemoteCharge)
-                .Name("Remote Charge III")
-                .Level(3)
-                .HasActivationDelay(1f)
-                .HasRecastDelay(RecastGroup.RemoteCharge, 30f)
-                .SkillType(SkillType.Devices)
-                .UsesImpactAnimation(Animation.ThrowGrenade)
-                .IsAreaAbility()
-                .HasImpactAction(RemoteCharge3ImpactAction)
-                .HasTargetingSphere(
-                    Spell.RemoteCharge3,
-                    5f,
-                    AbilityTargetingFlags.HarmsEnemies)
-                .IsCastedAbility()
-                .IsHostileAbility()
-                .BreaksStealth()
-                .RequirementStamina(7);
-        }
-
         private static void RemoteCharge1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            DetonateRemoteCharge(activator, target, targetLocation, 10, null);
+            DetonateRemoteCharge(activator, target, targetLocation, 30, null);
         }
 
         private static void RemoteCharge2ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            DetonateRemoteCharge(activator, target, targetLocation, 14, typeof(KnockdownStatusEffect));
-        }
-
-        private static void RemoteCharge3ImpactAction(uint activator, uint target, int level, Location targetLocation)
-        {
-            DetonateRemoteCharge(activator, target, targetLocation, 20, typeof(KnockdownStatusEffect));
+            DetonateRemoteCharge(activator, target, targetLocation, 42, typeof(KnockdownStatusEffect));
         }
 
         private static void DetonateRemoteCharge(uint activator, uint target, Location targetLocation, int baseDamage, Type statusEffect)
         {
+            var impactLocation = AbilityTargeting.ResolveImpactLocation(activator, target, targetLocation);
             Ability.ApplyTelegraphedCombatImpact(
                 activator,
                 OBJECT_INVALID,
-                AbilityTargeting.ResolveImpactLocation(activator, target, targetLocation),
+                impactLocation,
                 SkillType.Devices,
                 baseDamage,
                 12,
@@ -126,7 +101,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 Array.Empty<Type>(),
                 damageType: CombatDamageType.Fire,
                 targetVisualEffect: VisualEffect.Vfx_Com_Hit_Fire,
-                areaVisualEffect: VisualEffect.Fnf_Fireball);
+                areaVisualEffect: VisualEffect.Fnf_Fireball,
+                afterImpactAction: _ => DeviceAbilityEffects.ApplyDiagnosticSweep(activator, impactLocation, 5f));
         }
     }
 }

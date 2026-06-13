@@ -17,24 +17,30 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
         {
             var builder = new AbilityBuilder();
 
-            FieldRecovery(builder);
+            FieldRecovery(builder, FeatType.FieldRecovery1, Spell.FieldRecovery1, "Field Recovery I", 1);
+            FieldRecovery(builder, FeatType.FieldRecovery2, Spell.FieldRecovery2, "Field Recovery II", 2);
 
             return builder.Build();
         }
 
-        private static void FieldRecovery(AbilityBuilder builder)
+        private static void FieldRecovery(
+            AbilityBuilder builder,
+            FeatType featType,
+            Spell spell,
+            string name,
+            int level)
         {
             builder
-                .Create(FeatType.FieldRecovery1, PerkType.FieldRecovery)
-                .Name("Field Recovery")
-                .Level(1)
+                .Create(featType, PerkType.FieldRecovery)
+                .Name(name)
+                .Level(level)
                 .HasActivationDelay(2f)
                 .HasRecastDelay(RecastGroup.FieldRecovery, 60f)
                 .SkillType(SkillType.Leadership)
                 .IsAreaAbility()
                 .HasImpactAction(FieldRecoveryImpactAction)
                 .HasTargetingSphere(
-                    Spell.FieldRecovery1,
+                    spell,
                     5f,
                     AbilityTargetingFlags.HelpsAllies | AbilityTargetingFlags.OriginOnSelf,
                     LeadershipAbilityEffects.ApplyLeadershipCommandRadiusBonus)

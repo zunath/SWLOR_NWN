@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace SWLOR.Game.Server.Feature.PerkDefinition
 {
-    public class BeastMasteryPerkDefinition: IPerkListDefinition
+    public class BeastMasteryPerkDefinition : IPerkListDefinition
     {
         private readonly PerkBuilder _builder = new();
 
@@ -35,26 +35,31 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Enables you to harvest DNA from creatures between levels 0 and 10 and use incubators.")
                 .Price(2)
+                .RequirementBeastLevel(5)
                 .RequirementSkill(SkillType.BeastMastery, 5)
 
                 .AddPerkLevel()
                 .Description("Enables you to harvest DNA from creatures between levels 0 and 20.")
                 .Price(2)
+                .RequirementBeastLevel(15)
                 .RequirementSkill(SkillType.BeastMastery, 15)
 
                 .AddPerkLevel()
                 .Description("Enables you to harvest DNA from creatures between levels 0 and 30.")
                 .Price(2)
+                .RequirementBeastLevel(25)
                 .RequirementSkill(SkillType.BeastMastery, 25)
 
                 .AddPerkLevel()
                 .Description("Enables you to harvest DNA from creatures between levels 0 and 40.")
                 .Price(3)
+                .RequirementBeastLevel(35)
                 .RequirementSkill(SkillType.BeastMastery, 35)
 
                 .AddPerkLevel()
                 .Description("Enables you to harvest DNA from creatures between levels 0 and 50.")
                 .Price(3)
+                .RequirementBeastLevel(45)
                 .RequirementSkill(SkillType.BeastMastery, 45);
 
         }
@@ -68,21 +73,25 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Reduces incubation time by 10%.")
                 .Price(2)
+                .RequirementBeastLevel(15)
                 .RequirementSkill(SkillType.BeastMastery, 15)
 
                 .AddPerkLevel()
                 .Description("Reduces incubation time by 20%.")
                 .Price(2)
+                .RequirementBeastLevel(25)
                 .RequirementSkill(SkillType.BeastMastery, 25)
 
                 .AddPerkLevel()
                 .Description("Reduces incubation time by 30%.")
                 .Price(3)
+                .RequirementBeastLevel(35)
                 .RequirementSkill(SkillType.BeastMastery, 35)
 
                 .AddPerkLevel()
                 .Description("Reduces incubation time by 40%.")
                 .Price(3)
+                .RequirementBeastLevel(45)
                 .RequirementSkill(SkillType.BeastMastery, 45);
         }
 
@@ -95,16 +104,19 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Increases the mutation chance by 2%.")
                 .Price(2)
+                .RequirementBeastLevel(20)
                 .RequirementSkill(SkillType.BeastMastery, 20)
 
                 .AddPerkLevel()
                 .Description("Increases the mutation chance by 4%.")
                 .Price(3)
+                .RequirementBeastLevel(30)
                 .RequirementSkill(SkillType.BeastMastery, 30)
 
                 .AddPerkLevel()
                 .Description("Increases the mutation chance by 8%.")
                 .Price(3)
+                .RequirementBeastLevel(40)
                 .RequirementSkill(SkillType.BeastMastery, 40);
         }
 
@@ -117,11 +129,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Increases the maximum number of concurrent incubation jobs by 1, for a total of 2.")
                 .Price(2)
+                .RequirementBeastLevel(25)
                 .RequirementSkill(SkillType.BeastMastery, 25)
 
                 .AddPerkLevel()
                 .Description("Increases the maximum number of concurrent incubation jobs by 1, for a total of 3.")
                 .Price(3)
+                .RequirementBeastLevel(50)
                 .RequirementSkill(SkillType.BeastMastery, 50);
         }
 
@@ -140,21 +154,25 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Enables you to tame & train creatures between levels 0 and 20. Taming chance increases by 1% per SOC, capped at 95%.")
                 .Price(3)
+                .RequirementBeastLevel(10)
                 .RequirementSkill(SkillType.BeastMastery, 10)
 
                 .AddPerkLevel()
                 .Description("Enables you to tame & train creatures between levels 0 and 30. Taming chance increases by 1% per SOC, capped at 95%.")
                 .Price(4)
+                .RequirementBeastLevel(20)
                 .RequirementSkill(SkillType.BeastMastery, 20)
 
                 .AddPerkLevel()
                 .Description("Enables you to tame & train creatures between levels 0 and 40. Taming chance increases by 1% per SOC, capped at 95%.")
                 .Price(5)
+                .RequirementBeastLevel(30)
                 .RequirementSkill(SkillType.BeastMastery, 30)
 
                 .AddPerkLevel()
                 .Description("Enables you to tame & train creatures between levels 0 and 50. Taming chance increases by 1% per SOC, capped at 95%.")
                 .Price(5)
+                .RequirementBeastLevel(40)
                 .RequirementSkill(SkillType.BeastMastery, 40);
         }
 
@@ -167,18 +185,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Restores 50 HP plus 20% of your pet's max HP, increased by 1% per SOC. Consumes a treat item on use.")
                 .Price(1)
+                .RequirementBeastLevel(5)
                 .RequirementSkill(SkillType.BeastMastery, 5)
                 .GrantsFeat(FeatType.Reward1)
 
                 .AddPerkLevel()
                 .Description("Restores 90 HP plus 20% of your pet's max HP, increased by 1% per SOC. Consumes a treat item on use.")
                 .Price(2)
+                .RequirementBeastLevel(25)
                 .RequirementSkill(SkillType.BeastMastery, 25)
                 .GrantsFeat(FeatType.Reward2)
 
                 .AddPerkLevel()
                 .Description("Restores 130 HP plus 20% of your pet's max HP, increased by 1% per SOC. Consumes a treat item on use.")
                 .Price(2)
+                .RequirementBeastLevel(45)
                 .RequirementSkill(SkillType.BeastMastery, 45)
                 .GrantsFeat(FeatType.Reward3);
         }
@@ -192,26 +213,31 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Permits you to store up to two beasts at a stable.")
                 .Price(1)
+                .RequirementBeastLevel(10)
                 .RequirementSkill(SkillType.BeastMastery, 10)
 
                 .AddPerkLevel()
                 .Description("Permits you to store up to three beasts at a stable.")
                 .Price(1)
+                .RequirementBeastLevel(20)
                 .RequirementSkill(SkillType.BeastMastery, 20)
 
                 .AddPerkLevel()
                 .Description("Permits you to store up to four beasts at a stable.")
                 .Price(1)
+                .RequirementBeastLevel(30)
                 .RequirementSkill(SkillType.BeastMastery, 30)
 
                 .AddPerkLevel()
                 .Description("Permits you to store up to five beasts at a stable.")
                 .Price(1)
+                .RequirementBeastLevel(40)
                 .RequirementSkill(SkillType.BeastMastery, 40)
 
                 .AddPerkLevel()
                 .Description("Permits you to store up to six beasts at a stable.")
                 .Price(1)
+                .RequirementBeastLevel(50)
                 .RequirementSkill(SkillType.BeastMastery, 50);
         }
 
@@ -224,6 +250,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Transfers 50% of your enmity to your pet.")
                 .Price(2)
+                .RequirementBeastLevel(15)
                 .RequirementSkill(SkillType.BeastMastery, 15)
                 .GrantsFeat(FeatType.Snarl);
         }
@@ -237,6 +264,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Transfers 50% of your pet's enmity to you.")
                 .Price(2)
+                .RequirementBeastLevel(15)
                 .RequirementSkill(SkillType.BeastMastery, 15)
                 .GrantsFeat(FeatType.Growl);
         }
@@ -250,6 +278,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Removes debuffs from your pet.")
                 .Price(2)
+                .RequirementBeastLevel(25)
                 .RequirementSkill(SkillType.BeastMastery, 25)
                 .GrantsFeat(FeatType.SoothePet);
         }
@@ -268,12 +297,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Revives your pet with (10 + SOC)% HP.")
                 .Price(2)
+                .RequirementBeastLevel(25)
                 .RequirementSkill(SkillType.BeastMastery, 25)
                 .GrantsFeat(FeatType.ReviveBeast2)
 
                 .AddPerkLevel()
                 .Description("Revives your pet with (30 + 2*SOC)% HP.")
                 .Price(3)
+                .RequirementBeastLevel(40)
                 .RequirementSkill(SkillType.BeastMastery, 40)
                 .GrantsFeat(FeatType.ReviveBeast3);
         }

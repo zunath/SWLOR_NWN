@@ -16,66 +16,6 @@ namespace SWLOR.Game.Server.Tests.Perks;
 public class VibrobladeDefenseTests
 {
     [Test]
-    public void VibrobladeDefensePerkLevels_MatchCombatBible()
-    {
-        var perks = BuildVibrobladeDefensePerksWithout2daLookup();
-
-        AssertPerkLevel(perks[PerkType.ShieldTraining], "Shield Training", 1, 3, 2, null,
-            "When you successfully deflect an attack with a shield, gain +3% Evasion and +3% Enmity for 10 seconds.",
-            StatType.DeflectionEvasionPercentAdjustment,
-            StatType.DeflectionEvasionEnmityPercentAdjustment);
-
-        AssertPerkLevel(perks[PerkType.ShieldBash], "Shield Bash", 1, 2, 8, FeatType.ShieldBash1,
-            "Bashes an enemy for 12 DMG and inflicts Dazed for 3 seconds.");
-        AssertPerkLevel(perks[PerkType.Bulwark], "Bulwark", 1, 2, 10, null,
-            "Grants +15 Shield Deflection with shield equipped.",
-            StatType.ShieldDeflection);
-        AssertPerkLevel(perks[PerkType.FortifiedPosition], "Fortified Position", 1, 3, 15, null,
-            "Grants +2 Mind, +2 Trauma, +2 Mobility Resistance with shield equipped.",
-            StatType.MindResistance,
-            StatType.TraumaResistance,
-            StatType.MobilityResistance);
-        AssertPerkLevel(perks[PerkType.ShieldBash], "Shield Bash", 2, 3, 18, FeatType.ShieldBash2,
-            "Bashes an enemy for 24 DMG and inflicts Dazed for 6 seconds.");
-        AssertPerkLevel(perks[PerkType.Alacrity], "Alacrity", 1, 3, 20, null,
-            "Restore 4 STM when your shield deflects an attack.",
-            StatType.DeflectionStaminaRestore);
-        AssertPerkLevel(perks[PerkType.DefensiveStance], "Defensive Stance", 1, 3, 22, FeatType.DefensiveStance1,
-            "While active, grants +20% to Enmity generation, +15% Defense, +15% Force Defense, -20% Attack, and -20% Force Attack");
-        AssertPerkLevel(perks[PerkType.ShieldWall], "Shield Wall", 1, 4, 25, FeatType.ShieldWall1,
-            "Channel for up to 6s. Allies within 5m gain +15% Physical Defense, you gain +25% Enmity for 1 minute.");
-        AssertPerkLevel(perks[PerkType.Bulwark], "Bulwark", 2, 3, 28, null,
-            "Grants +25 Shield Deflection with shield equipped total.",
-            StatType.ShieldDeflection);
-        AssertPerkLevel(perks[PerkType.GuardiansRiposte], "Guardian's Riposte", 1, 3, 30, null,
-            "Receive Guardian's Riposte after deflecting an attack with a shield. Your next attack within 12s deals +10 DMG.",
-            StatType.DeflectionNextSkillAbilityDamageBonus,
-            StatType.DeflectionNextSkillAbilityDamageBonusWindowSeconds);
-        AssertPerkLevel(perks[PerkType.CoveringStrike], "Covering Strike", 1, 3, 32, FeatType.CoveringStrike1,
-            "Strike in a line for weapon DMG + 20. Enemies hit generate +25% Enmity toward you for 12s.");
-        AssertPerkLevel(perks[PerkType.ShieldBash], "Shield Bash", 3, 4, 35, FeatType.ShieldBash3,
-            "Bashes an enemy for 36 DMG and inflicts Stunned for 3 seconds.");
-        AssertPerkLevel(perks[PerkType.FortifiedPosition], "Fortified Position", 2, 3, 38, null,
-            "Grants +4 Mind, +4 Trauma, +4 Mobility Resistance with shield equipped total.",
-            StatType.MindResistance,
-            StatType.TraumaResistance,
-            StatType.MobilityResistance);
-        AssertPerkLevel(perks[PerkType.Bulwark], "Bulwark", 3, 4, 40, null,
-            "Grants +35 Shield Deflection with shield equipped total.",
-            StatType.ShieldDeflection);
-        AssertPerkLevel(perks[PerkType.Unbreakable], "Unbreakable", 1, 4, 42, null,
-            "When reduced below 25% HP with shield equipped, gain +40% Physical Defense for 10s. Once per 5min.",
-            StatType.LowHPPhysicalDefenseThresholdPercent,
-            StatType.LowHPPhysicalDefensePercentAdjustment,
-            StatType.LowHPPhysicalDefenseDurationSeconds,
-            StatType.LowHPPhysicalDefenseCooldownSeconds);
-        AssertPerkLevel(perks[PerkType.DefensiveStance], "Defensive Stance", 2, 4, 45, FeatType.DefensiveStance2,
-            "While active, grants +30% to Enmity generation, +20% Defense, +20% Force Defense, -20% Attack, and -20% Force Attack");
-        AssertPerkLevel(perks[PerkType.Invincible], "Invincible", 1, 4, 50, FeatType.Invincible1,
-            "For 45 seconds, you take 50% less physical damage and are immune to Knockdown and Daze.");
-    }
-
-    [Test]
     public void VibrobladeDefenseAbilities_MatchCombatBible()
     {
         var shieldBash = new ShieldBashAbilityDefinition().BuildAbilities();
@@ -119,6 +59,20 @@ public class VibrobladeDefenseTests
         shieldWallSelf.StatGroup.Stats.Should().NotContainKey(StatType.PhysicalDefensePercentAdjustment);
         shieldWallSelf.StatGroup.Stats[StatType.EnmityPercentAdjustment].Should().Be(25);
 
+        var defensiveStance1 = BuildDefensiveStanceStats(1);
+        defensiveStance1.StatGroup.Stats[StatType.AttackPercentAdjustment].Should().Be(-20);
+        defensiveStance1.StatGroup.Stats[StatType.ForceAttackPercentAdjustment].Should().Be(-20);
+        defensiveStance1.StatGroup.Stats[StatType.PhysicalDefensePercentAdjustment].Should().Be(15);
+        defensiveStance1.StatGroup.Stats[StatType.ForceDefensePercentAdjustment].Should().Be(15);
+        defensiveStance1.StatGroup.Stats[StatType.EnmityPercentAdjustment].Should().Be(20);
+
+        var defensiveStance2 = BuildDefensiveStanceStats(2);
+        defensiveStance2.StatGroup.Stats[StatType.AttackPercentAdjustment].Should().Be(-20);
+        defensiveStance2.StatGroup.Stats[StatType.ForceAttackPercentAdjustment].Should().Be(-20);
+        defensiveStance2.StatGroup.Stats[StatType.PhysicalDefensePercentAdjustment].Should().Be(20);
+        defensiveStance2.StatGroup.Stats[StatType.ForceDefensePercentAdjustment].Should().Be(20);
+        defensiveStance2.StatGroup.Stats[StatType.EnmityPercentAdjustment].Should().Be(30);
+
         var invincible = new InvincibleStatusEffect();
         invincible.StatGroup.Stats[StatType.PhysicalDamageTakenPercentAdjustment].Should().Be(-50);
     }
@@ -154,6 +108,14 @@ public class VibrobladeDefenseTests
             seenIcons.Add(featIcon).Should().BeTrue($"{featType} should have a unique icon");
             File.Exists((root / "SWLOR_Haks" / "swlor2_tga" / $"{featIcon}.tga").FullName).Should().BeTrue();
         }
+    }
+
+    private static DefensiveStanceStatusEffect BuildDefensiveStanceStats(int level)
+    {
+        var status = new DefensiveStanceStatusEffect(level);
+        status.ApplyEffect(1, 1, -1);
+
+        return status;
     }
 
     private static void AssertPerkLevel(

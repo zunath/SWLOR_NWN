@@ -57,7 +57,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             float percentPerTick,
             Type statusEffect = null,
             VisualEffect visualEffect = VisualEffect.None,
-            float multiplier = 1f)
+            float multiplier = 1f,
+            Action<uint, bool> onHealed = null)
         {
             for (var elapsed = 3f; elapsed <= durationSeconds + 0.01f; elapsed += 3f)
             {
@@ -66,7 +67,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 {
                     foreach (var friendly in AbilityTargeting.GetFriendlyTargetsNearLocation(activator, location, radius))
                     {
+                        var targetWasBelowHalfHP = GetMaxHitPoints(friendly) > 0 &&
+                                                   GetCurrentHitPoints(friendly) < GetMaxHitPoints(friendly) * 0.5f;
                         AbilityEffectScaling.ApplyScaledHeal(activator, friendly, percentPerTick, multiplier: multiplier);
+                        onHealed?.Invoke(friendly, targetWasBelowHalfHP);
 
                         if (statusEffect != null)
                             StatusEffect.ApplyStatusEffect(activator, friendly, statusEffect, 3.2f);

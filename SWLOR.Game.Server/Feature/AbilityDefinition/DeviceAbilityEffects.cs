@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
@@ -75,15 +76,113 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             public uint MarkerObject { get; set; }
         }
 
-        public static int ApplyCapacitorRigBonus(uint activator, int amount)
+        public static int ApplyFieldSupportOutputBonus(uint activator, int amount)
         {
-            var bonusPercent = Stat.GetStatAdjustment(activator, StatType.DeviceShieldTemporaryHPPercentAdjustment);
+            var bonusPercent = Stat.GetStatAdjustment(activator, StatType.DeviceAbilityOutputPercentAdjustment);
             return amount + amount * bonusPercent / 100;
         }
 
-        public static float ApplyCapacitorRigDurationBonus(uint activator, float durationSeconds)
+        public static void ApplyPowerSurge(uint activator, uint target)
         {
-            return durationSeconds + Stat.GetStatAdjustment(activator, StatType.DeviceShieldDurationBonusSeconds);
+            if (Stat.GetStatAdjustment(activator, StatType.PowerCellInitialTargetPowerSurge) <= 0)
+                return;
+
+            StatusEffect.ApplyStatusEffect(activator, target, new PowerSurgeStatusEffect(), 12f);
+        }
+
+        public static void ApplyFieldSupportAllyBuffRiders(uint activator, uint target)
+        {
+            ApplyRayshieldScreenRider(activator, target);
+            ApplyDampeningFieldRider(activator, target);
+            ApplyOverclockRoutine(activator, target);
+        }
+
+        public static void ApplyTacticalUplink(uint activator)
+        {
+            if (Stat.GetStatAdjustment(activator, StatType.AssaultGadgetTacticalUplink) <= 0)
+                return;
+
+            foreach (var friendly in AbilityTargeting.GetFriendlyTargets(activator, activator, true))
+            {
+                StatusEffect.ApplyStatusEffect(activator, friendly, new TacticalUplinkStatusEffect(), 10f);
+            }
+        }
+
+        public static void ApplyDiagnosticSweep(uint activator, Location location, float radius)
+        {
+            var revealsHidden = Stat.GetStatAdjustment(activator, StatType.FieldEngineerAreaRevealHidden) > 0;
+            var evasionPenalty = Stat.GetStatAdjustment(activator, StatType.FieldEngineerAreaEvasionPenaltyPercent);
+            var durationSeconds = Stat.GetStatAdjustment(activator, StatType.FieldEngineerAreaEvasionPenaltyDurationSeconds);
+            if (!revealsHidden && (evasionPenalty <= 0 || durationSeconds <= 0))
+                return;
+
+            var creature = GetFirstObjectInShape(Shape.Sphere, radius, location, true);
+            while (GetIsObjectValid(creature))
+            {
+                if (GetIsReactionTypeHostile(creature, activator))
+                {
+                    if (revealsHidden)
+                    {
+                        SetActionMode(creature, ActionMode.Stealth, false);
+                        RemoveEffect(creature, EffectTypeScript.Invisibility, EffectTypeScript.ImprovedInvisibility);
+                    }
+
+                    if (evasionPenalty > 0 && durationSeconds > 0)
+                    {
+                        StatusEffect.ApplyStatusEffect(
+                            activator,
+                            creature,
+                            new DiagnosticSweepStatusEffect(evasionPenalty),
+                            durationSeconds);
+                    }
+                }
+
+                creature = GetNextObjectInShape(Shape.Sphere, radius, location, true);
+            }
+        }
+
+        private static void ApplyRayshieldScreenRider(uint activator, uint target)
+        {
+            var reductionPercent = Stat.GetStatAdjustment(
+                activator,
+                StatType.FieldSupportRangedPhysicalDamageReductionPercent);
+            var durationSeconds = Stat.GetStatAdjustment(
+                activator,
+                StatType.FieldSupportRangedPhysicalDamageReductionDurationSeconds);
+            if (reductionPercent <= 0 || durationSeconds <= 0)
+                return;
+
+            StatusEffectBase statusEffect = reductionPercent >= 12
+                ? new RayshieldScreen2StatusEffect()
+                : new RayshieldScreen1StatusEffect();
+
+            StatusEffect.ApplyStatusEffect(activator, target, statusEffect, durationSeconds);
+        }
+
+        private static void ApplyDampeningFieldRider(uint activator, uint target)
+        {
+            var reductionPercent = Stat.GetStatAdjustment(
+                activator,
+                StatType.FieldSupportPhysicalAndForceDamageReductionPercent);
+            var durationSeconds = Stat.GetStatAdjustment(
+                activator,
+                StatType.FieldSupportPhysicalAndForceDamageReductionDurationSeconds);
+            if (reductionPercent <= 0 || durationSeconds <= 0)
+                return;
+
+            StatusEffectBase statusEffect = reductionPercent >= 10
+                ? new DampeningField2StatusEffect()
+                : new DampeningField1StatusEffect();
+
+            StatusEffect.ApplyStatusEffect(activator, target, statusEffect, durationSeconds);
+        }
+
+        private static void ApplyOverclockRoutine(uint activator, uint target)
+        {
+            if (Stat.GetStatAdjustment(activator, StatType.FieldSupportAllyOverclockRoutine) <= 0)
+                return;
+
+            StatusEffect.ApplyStatusEffect(activator, target, new OverclockRoutineStatusEffect(), 12f);
         }
 
         public static float ApplyGrenadeRadiusBonus(uint activator, float baseRadius)
@@ -323,6 +422,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
         private static void ApplySingleHostilePulse(FieldEngineerPulseEmitter emitter)
         {
             var radius = emitter.Radius + Stat.GetStatAdjustment(emitter.Activator, StatType.BeaconPulseRangeBonusMeters);
+            ApplyDiagnosticSweep(emitter.Activator, emitter.Location, radius);
+
             var target = GetNearestHostileCreature(emitter.Activator, emitter.Location, radius);
             if (!GetIsObjectValid(target))
                 return;
@@ -350,11 +451,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 damagePercentAdjustment: damagePercentAdjustment,
                 hitChancePercentAdjustment: Stat.GetStatAdjustment(emitter.Activator, StatType.BeaconPulseAccuracyPercentAdjustment),
                 criticalRatePercentAdjustment: Stat.GetStatAdjustment(emitter.Activator, StatType.BeaconPulseCriticalRatePercentAdjustment),
-                playImpactAnimation: false);
+                playImpactAnimation: false,
+                combatImpactDamageAbility: AbilityType.Perception);
         }
 
         private static void ApplyAreaHostilePulse(FieldEngineerPulseEmitter emitter)
         {
+            ApplyDiagnosticSweep(emitter.Activator, emitter.Location, emitter.Radius);
+
             Ability.ApplyTelegraphedCombatImpact(
                 emitter.Activator,
                 OBJECT_INVALID,
@@ -371,7 +475,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 damageType: emitter.DamageType,
                 targetVisualEffect: emitter.TargetVisualEffect,
                 areaVisualEffect: emitter.AreaVisualEffect,
-                playImpactAnimation: false);
+                playImpactAnimation: false,
+                combatImpactDamageAbility: AbilityType.Perception);
         }
 
         private static void ApplyFieldEngineerPulseEmitterVisual(FieldEngineerPulseEmitter emitter)

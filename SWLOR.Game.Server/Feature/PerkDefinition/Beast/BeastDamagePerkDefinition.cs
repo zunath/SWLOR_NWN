@@ -21,7 +21,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition.Beast
             PredatorsMark();
             ExposePrey();
             BloodFrenzy();
-            PredatorRush();
             ExecutePrey();
             ApexBite();
 
@@ -135,11 +134,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition.Beast
                 .GroupType(PerkGroupType.Beast)
 
                 .AddPerkLevel()
-                .Description("The beast marks one enemy for 15 seconds. The beast deals +10% damage to marked targets.")
+                .Description("When your beast uses a Damage active ability, it marks the target for 12 seconds. The beast deals +10% damage to marked targets.")
                 .Price(3)
                 .RequirementBeastLevel(22)
                 .RequirementBeastRole(BeastRoleType.Damage)
-                .GrantsFeat(FeatType.PredatorsMark1);
+                .IncreasesStat(StatType.PredatorsMarkDamageTakenFromBeastPercent, 10)
+
+                .AddPerkLevel()
+                .Description("Predator's Mark also causes damage against marked targets to grant the beast +5% Haste and +2% hit chance for 8 seconds, stacking up to +20% Haste and +8% hit chance.")
+                .Price(4)
+                .RequirementBeastLevel(45)
+                .RequirementBeastRole(BeastRoleType.Damage)
+                .IncreasesStat(StatType.PredatorsMarkHastePercentPerStack, 5)
+                .IncreasesStat(StatType.PredatorsMarkAbilityHitChancePercentPerStack, 2)
+                .IncreasesStat(StatType.PredatorsMarkFollowUpDurationSeconds, 8)
+                .IncreasesStat(StatType.PredatorsMarkFollowUpMaximumStacks, 4);
         }
 
         private void ExposePrey()
@@ -177,20 +186,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition.Beast
                 .RequirementBeastRole(BeastRoleType.Damage)
                 .IncreasesStat(StatType.DamageDealtBleedingTargetStaminaRestoreChance, 30)
                 .IncreasesStat(StatType.DamageDealtBleedingTargetStaminaRestore, 1);
-        }
-
-        private void PredatorRush()
-        {
-            _builder.Create(PerkCategoryType.BeastDamage, PerkType.PredatorRush)
-                .Name("Predator Rush")
-                .GroupType(PerkGroupType.Beast)
-
-                .AddPerkLevel()
-                .Description("The beast gains +20% Haste and +8% hit chance for 12 seconds.")
-                .Price(4)
-                .RequirementBeastLevel(45)
-                .RequirementBeastRole(BeastRoleType.Damage)
-                .GrantsFeat(FeatType.PredatorRush1);
         }
 
         private void ExecutePrey()

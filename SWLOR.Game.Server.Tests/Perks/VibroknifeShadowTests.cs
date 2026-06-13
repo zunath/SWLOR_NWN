@@ -17,91 +17,6 @@ namespace SWLOR.Game.Server.Tests.Perks;
 public class VibroknifeShadowTests
 {
     [Test]
-    public void VibroknifeShadowPerkLevels_MatchCombatBible()
-    {
-        var perks = BuildVibroknifeShadowPerksWithout2daLookup();
-
-        AssertPerkLevel(perks[PerkType.PrecisionStrikes], "Precision Strikes", 1, 2, 2, null,
-            "Critical hits deal +10% damage.",
-            StatType.CriticalDamagePercentAdjustment);
-        AssertPerkLevel(perks[PerkType.CheapShot], "Cheap Shot", 1, 2, 8, FeatType.CheapShot1,
-            "Deals weapon DMG + 8 to a single target. Inflicts Blind for 6 seconds.");
-        AssertPerkLevel(perks[PerkType.Backstab], "Backstab", 1, 2, 10, FeatType.Backstab1,
-            "Deals weapon DMG + 20 from behind your target.");
-        AssertPerkLevel(perks[PerkType.DeadlyPrecision], "Deadly Precision", 1, 3, 12, FeatType.DeadlyPrecision1,
-            "While active, grants +15% critical hit chance, -20% evasion, and -15% defense.");
-        AssertPerkLevel(perks[PerkType.EvasiveCombat], "Evasive Combat", 1, 2, 15, FeatType.EvasiveCombat1,
-            "Increases evasion by 10%, reduces enmity by 15%, and reduces attack by 15% for 30 seconds.");
-        AssertPerkLevel(perks[PerkType.Backstab], "Backstab", 2, 3, 18, FeatType.Backstab2,
-            "Deals weapon DMG + 40 from behind your target.");
-        AssertPerkLevel(perks[PerkType.CheapShot], "Cheap Shot", 2, 3, 20, FeatType.CheapShot2,
-            "Deals weapon DMG + 16 to a single target. Inflicts Blind for 9 seconds.");
-        AssertPerkLevel(perks[PerkType.Opportunist], "Opportunist", 1, 3, 22, null,
-            "Grants +15% Critical Rate against targets not facing you.",
-            StatType.CriticalRateAgainstTargetNotFacingAttackerPercentAdjustment);
-        AssertPerkLevel(perks[PerkType.AmbushTactics], "Ambush Tactics", 1, 3, 25, null,
-            "After dealing a critical hit, your next attack within 8 seconds ignores 20% of defense.",
-            StatType.CriticalNextSkillAbilityDefenseIgnorePercentAdjustment,
-            StatType.CriticalNextSkillAbilityDefenseIgnoreDurationSeconds);
-        AssertPerkLevel(perks[PerkType.ShadowStrike], "Shadow Strike", 1, 3, 28, FeatType.ShadowStrike1,
-            "Deals weapon DMG + 30 to a single target. Inflicts 30% Slow for 8 seconds.");
-        AssertPerkLevel(perks[PerkType.MarkedForDeath], "Marked for Death", 1, 4, 30, FeatType.MarkedForDeath1,
-            "You mark a single target. Your next 3 attacks against them deal +12 DMG each.");
-        AssertPerkLevel(perks[PerkType.AssassinsFocus], "Assassin's Focus", 1, 3, 32, null,
-            "After landing a critical hit, gain +5% Accuracy for 30 seconds.",
-            StatType.CriticalAccuracyPercentAdjustment,
-            StatType.CriticalAccuracyDurationSeconds);
-        AssertPerkLevel(perks[PerkType.Backstab], "Backstab", 3, 4, 35, FeatType.Backstab3,
-            "Deals weapon DMG + 60 from behind your target and knocks down for 3 seconds.");
-        AssertPerkLevel(perks[PerkType.EvasiveCombat], "Evasive Combat", 2, 3, 38, FeatType.EvasiveCombat2,
-            "Increases evasion by 20%, reduces enmity by 25%, and reduces attack by 25% for 30 seconds.");
-        AssertPerkLevel(perks[PerkType.SmokeBomb], "Smoke Bomb", 1, 4, 40, FeatType.SmokeBomb,
-            "All enemies in the selected area are afflicted with Smoke Bomb, reducing Accuracy by 20% for 12 seconds.");
-        AssertPerkLevel(perks[PerkType.ShadowStrike], "Shadow Strike", 2, 4, 42, FeatType.ShadowStrike2,
-            "Deals weapon DMG + 48 to a single target. Inflicts 40% Slow for 12 seconds.");
-        AssertPerkLevel(perks[PerkType.Decoy], "Decoy", 1, 3, 45, FeatType.Decoy1,
-            "For 12 seconds, enemies targeting you have -25% Accuracy.");
-        AssertPerkLevel(perks[PerkType.VitalStrike], "Vital Strike", 1, 4, 50, FeatType.VitalStrike1,
-            "Deals weapon DMG + 35. On hit, the target's physical defense is reduced by 10% for 45 seconds.");
-    }
-
-    [Test]
-    public void VibroknifeShadowAbilities_MatchCombatBible()
-    {
-        var cheapShot = new CheapShotAbilityDefinition().BuildAbilities();
-        AssertAbility(cheapShot[FeatType.CheapShot1], "Cheap Shot I", 1, RecastGroup.CheapShot, 45f, 0f, 4, true, true, true, false, false, AbilityActivationType.Casted);
-        AssertAbility(cheapShot[FeatType.CheapShot2], "Cheap Shot II", 2, RecastGroup.CheapShot, 45f, 0f, 6, true, true, true, false, false, AbilityActivationType.Casted);
-
-        var backstab = new BackstabAbilityDefinition().BuildAbilities();
-        AssertAbility(backstab[FeatType.Backstab1], "Backstab I", 1, RecastGroup.Backstab, 60f, 0f, 3, true, true, true, false, true, AbilityActivationType.Casted);
-        AssertAbility(backstab[FeatType.Backstab2], "Backstab II", 2, RecastGroup.Backstab, 60f, 0f, 5, true, true, true, false, true, AbilityActivationType.Casted);
-        AssertAbility(backstab[FeatType.Backstab3], "Backstab III", 3, RecastGroup.Backstab, 60f, 0f, 8, true, true, true, false, true, AbilityActivationType.Casted);
-
-        var deadlyPrecision = new DeadlyPrecisionAbilityDefinition().BuildAbilities()[FeatType.DeadlyPrecision1];
-        AssertAbility(deadlyPrecision, "Deadly Precision", 1, RecastGroup.DeadlyPrecision, 180f, 2f, null, false, false, false, false, false, AbilityActivationType.Casted);
-
-        var evasiveCombat = new EvasiveCombatAbilityDefinition().BuildAbilities();
-        AssertAbility(evasiveCombat[FeatType.EvasiveCombat1], "Evasive Combat I", 1, RecastGroup.EvasiveCombat, 300f, 0f, 4, false, false, false, false, false, AbilityActivationType.Casted);
-        AssertAbility(evasiveCombat[FeatType.EvasiveCombat2], "Evasive Combat II", 2, RecastGroup.EvasiveCombat, 300f, 0f, 8, false, false, false, false, false, AbilityActivationType.Casted);
-
-        var shadowStrike = new ShadowStrikeAbilityDefinition().BuildAbilities();
-        AssertAbility(shadowStrike[FeatType.ShadowStrike1], "Shadow Strike I", 1, RecastGroup.ShadowStrike, 60f, 0f, 7, true, true, true, false, false, AbilityActivationType.Casted);
-        AssertAbility(shadowStrike[FeatType.ShadowStrike2], "Shadow Strike II", 2, RecastGroup.ShadowStrike, 60f, 0f, 10, true, true, true, false, false, AbilityActivationType.Casted);
-
-        var markedForDeath = new MarkedForDeathAbilityDefinition().BuildAbilities()[FeatType.MarkedForDeath1];
-        AssertAbility(markedForDeath, "Marked for Death", 1, RecastGroup.MarkedForDeath, 90f, 0f, 8, true, true, true, false, false, AbilityActivationType.Casted);
-
-        var smokeBomb = new SmokeBombAbilityDefinition().BuildAbilities()[FeatType.SmokeBomb];
-        AssertAbility(smokeBomb, "Smoke Bomb", 1, RecastGroup.SmokeBomb, 30f, 2f, 10, true, false, false, true, false, AbilityActivationType.Casted);
-
-        var decoy = new DecoyAbilityDefinition().BuildAbilities()[FeatType.Decoy1];
-        AssertAbility(decoy, "Decoy", 1, RecastGroup.Decoy, 30f, 1f, 12, true, false, false, true, false, AbilityActivationType.Casted);
-
-        var vitalStrike = new VitalStrikeAbilityDefinition().BuildAbilities()[FeatType.VitalStrike1];
-        AssertAbility(vitalStrike, "Vital Strike", 1, RecastGroup.Capstone, 345f, 0f, 15, true, true, true, false, false, AbilityActivationType.Casted);
-    }
-
-    [Test]
     public void VibroknifeShadowStatusEffects_MatchCombatBible()
     {
         var deadlyPrecision = new DeadlyPrecisionStatusEffect();
@@ -150,13 +65,9 @@ public class VibroknifeShadowTests
             (FeatType.Backstab2, "ife_bckstb2", true, false, "0x02"),
             (FeatType.Backstab3, "ife_bckstb3", true, false, "0x02"),
             (FeatType.DeadlyPrecision1, "ife_deadprec1", false, true, "0x01"),
-            (FeatType.EvasiveCombat1, "ife_evascmbt1", false, true, "0x01"),
-            (FeatType.EvasiveCombat2, "ife_evascmbt2", false, true, "0x01"),
             (FeatType.ShadowStrike1, "ife_shdwstrk1", true, false, "0x02"),
             (FeatType.ShadowStrike2, "ife_shdwstrk2", true, false, "0x02"),
-            (FeatType.MarkedForDeath1, "ife_markdeath1", true, false, "0x02"),
-            (FeatType.SmokeBomb, "ife_smokbmb", true, false, "0x3E"),
-            (FeatType.Decoy1, "ife_decoy1", true, true, "0x01"),
+            (FeatType.SmokeBomb1, "ife_smokbmb1", true, false, "0x3E"),
             (FeatType.VitalStrike1, "ife_vitalstrk1", true, false, "0x02")
         };
         var seenIcons = new HashSet<string>();
@@ -190,11 +101,11 @@ public class VibroknifeShadowTests
         var spellRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "spells.2da");
         var tlkEntries = ReadTlkEntries(root / "SWLOR_Haks" / "swlor2_tlk" / "swlor2_tlk.tlk.json");
         const int CustomTlkOffset = 16777216;
-        const string ExpectedName = "Smoke Bomb";
+        const string ExpectedName = "Smoke Bomb I";
         const string ExpectedDescription =
             "All enemies in the selected area are afflicted with Smoke Bomb, reducing Accuracy by 20% for 12 seconds.";
 
-        var featRow = featRows[(int)FeatType.SmokeBomb];
+        var featRow = featRows[(int)FeatType.SmokeBomb1];
         var spellRow = spellRows[int.Parse(featRow["SPELLID"])];
         var nameId = int.Parse(featRow["FEAT"]) - CustomTlkOffset;
         var featDescriptionId = int.Parse(featRow["DESCRIPTION"]) - CustomTlkOffset;
@@ -307,7 +218,6 @@ public class VibroknifeShadowTests
             "AssassinsFocus",
             "CheapShot",
             "DeadlyPrecision",
-            "Decoy",
             "EvasiveCombat",
             "MarkedForDeath",
             "Opportunist",

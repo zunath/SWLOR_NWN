@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
     public sealed class ReflectiveBarrier1StatusEffect : StatusEffectBase
     {
-        private const int BaseReflectionPercent = 15;
+        private const int BaseReflectionPercent = 8;
 
         public override string Name => "Reflective Barrier";
         public override EffectIconType Icon => EffectIconType.ReflectiveBarrier1StatusEffect;

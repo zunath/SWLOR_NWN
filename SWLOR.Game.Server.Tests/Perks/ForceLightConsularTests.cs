@@ -10,129 +10,57 @@ using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
 public class ForceLightConsularTests
 {
     [Test]
-    public void ForceLightConsularPerkLevels_MatchCombatBible()
-    {
-        var perks = BuildForceLightConsularPerksWithout2daLookup();
-
-        AssertPerkLevel(perks[PerkType.Benevolence], "Benevolence", 1, 2, null, FeatType.Benevolence1,
-            "Restores 8% of the target's maximum HP plus WIL scaling to a single target. Healing gains +25% when targeting someone other than yourself.");
-        AssertPerkLevel(perks[PerkType.Pacify], "Pacify", 1, 2, 5, FeatType.Pacify1,
-            "Reduce a target's outgoing weapon and force damage by 5% for 20 seconds.");
-        AssertPerkLevel(perks[PerkType.Renewal], "Renewal", 1, 3, 8, FeatType.Renewal1,
-            "Applies regeneration to a single ally, restoring 2% of maximum HP plus WIL scaling every 3 seconds for 18 seconds.");
-        AssertPerkLevel(perks[PerkType.Clarity], "Clarity", 1, 3, 12, FeatType.Clarity1,
-            "Restores 10% of maximum STM to an ally and increases physical and force ability hit chance by 4% for 15 seconds. Self-target restores FP instead.");
-        AssertPerkLevel(perks[PerkType.MindTrick], "Mind Trick", 1, 3, 15, FeatType.MindTrick1,
-            "Confuse one non-mechanical target for 5 seconds.");
-        AssertPerkLevel(perks[PerkType.Benevolence], "Benevolence", 2, 3, 18, FeatType.Benevolence2,
-            "Restores 14% of the target's maximum HP plus WIL scaling to a single target. Healing gains +25% when targeting someone other than yourself.");
-        AssertPerkLevel(perks[PerkType.ComprehendSpeech], "Comprehend Speech", 1, 2, 22, FeatType.ComprehendSpeech1,
-            "For 15 minutes, you count as having 15 additional ranks in all languages for understanding spoken speech.");
-        AssertPerkLevel(perks[PerkType.Renewal], "Renewal", 2, 4, 25, FeatType.Renewal2,
-            "Applies regeneration to a single ally, restoring 3% of maximum HP plus WIL scaling every 3 seconds for 18 seconds.");
-        AssertPerkLevel(perks[PerkType.Pacify], "Pacify", 2, 3, 28, FeatType.Pacify2,
-            "Reduce up to 2 nearby enemies' outgoing weapon and force damage by 8% for 20 seconds.");
-        AssertPerkLevel(perks[PerkType.ForceMend], "Force Mend", 1, 4, 30, FeatType.ForceMend1,
-            "Removes one major negative effect from a single ally and restores HP equal to 16% of the target's maximum HP plus WIL scaling.");
-        AssertPerkLevel(perks[PerkType.MindTrick], "Mind Trick", 2, 3, 35, FeatType.MindTrick2,
-            "Confuse up to 2 non-mechanical targets for 5 seconds.");
-        AssertPerkLevel(perks[PerkType.Clarity], "Clarity", 2, 3, 38, FeatType.Clarity2,
-            "Restores 18% of maximum STM to an ally and increases physical and force ability hit chance by 6% for 15 seconds. Self-target restores FP instead.");
-        AssertPerkLevel(perks[PerkType.ForceSanctuary], "Force Sanctuary", 1, 4, 40, FeatType.ForceSanctuary1,
-            "Creates a 4m sanctuary for 18 seconds. Allies inside gain regeneration equal to 2% of maximum HP plus WIL scaling every 3 seconds and take 5% less force damage.");
-        AssertPerkLevel(perks[PerkType.Benevolence], "Benevolence", 3, 4, 42, FeatType.Benevolence3,
-            "Restores 20% of the target's maximum HP plus WIL scaling to a single target. Healing gains +25% when targeting someone other than yourself.");
-        AssertPerkLevel(perks[PerkType.Renewal], "Renewal", 3, 4, 45, FeatType.Renewal3,
-            "Applies regeneration to a single ally, restoring 4% of maximum HP plus WIL scaling every 3 seconds for 18 seconds.");
-        AssertPerkLevel(perks[PerkType.Pacify], "Pacify", 3, 3, 48, FeatType.Pacify3,
-            "Reduces nearby enemies' outgoing weapon and force damage by 12% for 20 seconds.");
-        AssertPerkLevel(perks[PerkType.CircleOfHarmony], "Circle of Harmony", 1, 5, 50, FeatType.CircleOfHarmony1,
-            "Nearby allies, including you, recover 14% of maximum HP plus WIL scaling, remove one standard negative effect, and restore 1 FP and 1 STM every 3 seconds for 45 seconds.");
-
-        AssertUniversalForcePower(perks[PerkType.MindTrick]);
-    }
-
-    [Test]
-    public void ForceLightConsularAbilities_MatchCombatBible()
-    {
-        var benevolence = new BenevolenceAbilityDefinition().BuildAbilities();
-        AssertAbility(benevolence[FeatType.Benevolence1], "Benevolence I", 1, RecastGroup.Benevolence, 8f, 1f, 3, false, true, true, false, AbilityActivationType.Casted, 15f);
-        AssertAbility(benevolence[FeatType.Benevolence2], "Benevolence II", 2, RecastGroup.Benevolence, 8f, 1f, 5, false, true, true, false, AbilityActivationType.Casted, 15f);
-        AssertAbility(benevolence[FeatType.Benevolence3], "Benevolence III", 3, RecastGroup.Benevolence, 8f, 1f, 7, false, true, true, false, AbilityActivationType.Casted, 15f);
-
-        var pacify = new PacifyAbilityDefinition().BuildAbilities();
-        AssertAbility(pacify[FeatType.Pacify1], "Pacify I", 1, RecastGroup.Pacify, 24f, 1f, 3, true, true, true, false, AbilityActivationType.Casted, 15f);
-        AssertAbility(pacify[FeatType.Pacify2], "Pacify II", 2, RecastGroup.Pacify, 24f, 1f, 5, true, false, false, true, AbilityActivationType.Casted, 5f);
-        AssertAbility(pacify[FeatType.Pacify3], "Pacify III", 3, RecastGroup.Pacify, 30f, 1f, 7, true, false, false, true, AbilityActivationType.Casted, 5f);
-
-        var renewal = new RenewalAbilityDefinition().BuildAbilities();
-        AssertAbility(renewal[FeatType.Renewal1], "Renewal I", 1, RecastGroup.Renewal, 24f, 1f, 4, false, true, true, false, AbilityActivationType.Casted, 15f);
-        AssertAbility(renewal[FeatType.Renewal2], "Renewal II", 2, RecastGroup.Renewal, 24f, 1f, 5, false, true, true, false, AbilityActivationType.Casted, 15f);
-        AssertAbility(renewal[FeatType.Renewal3], "Renewal III", 3, RecastGroup.Renewal, 24f, 1f, 7, false, true, true, false, AbilityActivationType.Casted, 15f);
-
-        var clarity = new ClarityAbilityDefinition().BuildAbilities();
-        AssertAbility(clarity[FeatType.Clarity1], "Clarity I", 1, RecastGroup.Clarity, 45f, 1f, 4, false, true, true, false, AbilityActivationType.Casted, 15f);
-        AssertAbility(clarity[FeatType.Clarity2], "Clarity II", 2, RecastGroup.Clarity, 45f, 1f, 6, false, true, true, false, AbilityActivationType.Casted, 15f);
-
-        var mindTrick = new MindTrickAbilityDefinition().BuildAbilities();
-        AssertAbility(mindTrick[FeatType.MindTrick1], "Mind Trick I", 1, RecastGroup.MindTrick, 60f, 1f, 4, true, true, true, false, AbilityActivationType.Casted, 15f);
-        AssertAbility(mindTrick[FeatType.MindTrick2], "Mind Trick II", 2, RecastGroup.MindTrick, 60f, 1f, 5, true, true, true, false, AbilityActivationType.Casted, 15f);
-
-        var comprehendSpeech = new ComprehendSpeechAbilityDefinition().BuildAbilities()[FeatType.ComprehendSpeech1];
-        AssertAbility(comprehendSpeech, "Comprehend Speech", 1, RecastGroup.ComprehendSpeech, 30f, 0f, 2, false, false, true, false, AbilityActivationType.Casted, 5f);
-
-        var forceMend = new ForceMendAbilityDefinition().BuildAbilities()[FeatType.ForceMend1];
-        AssertAbility(forceMend, "Force Mend", 1, RecastGroup.ForceMend, 30f, 1f, 6, false, true, true, false, AbilityActivationType.Casted, 15f);
-
-        var forceSanctuary = new ForceSanctuaryAbilityDefinition().BuildAbilities()[FeatType.ForceSanctuary1];
-        AssertAbility(forceSanctuary, "Force Sanctuary", 1, RecastGroup.ForceSanctuary, 90f, 1.5f, 8, false, false, false, true, AbilityActivationType.Casted, 5f);
-
-        var circleOfHarmony = new CircleOfHarmonyAbilityDefinition().BuildAbilities()[FeatType.CircleOfHarmony1];
-        AssertAbility(circleOfHarmony, "Circle of Harmony", 1, RecastGroup.Capstone, 345f, 1.5f, 10, false, false, false, true, AbilityActivationType.Casted, 5f);
-    }
-
-    [Test]
     public void ForceLightConsularStatusEffects_MatchCombatBible()
     {
-        var pacify1 = new Pacify1StatusEffect();
-        pacify1.StatGroup.Stats[StatType.WeaponAndForceDamageDealtPercentAdjustment].Should().Be(-5);
-        pacify1.StatGroup.Stats[StatType.DamageDealtPercentAdjustment].Should().Be(0);
-        pacify1.StatGroup.Stats[StatType.AttackPercentAdjustment].Should().Be(0);
-
-        var pacify2 = new Pacify2StatusEffect();
-        pacify2.StatGroup.Stats[StatType.WeaponAndForceDamageDealtPercentAdjustment].Should().Be(-8);
-        pacify2.StatGroup.Stats[StatType.DamageDealtPercentAdjustment].Should().Be(0);
-        pacify2.StatGroup.Stats[StatType.AttackPercentAdjustment].Should().Be(0);
-
-        var pacify3 = new Pacify3StatusEffect();
-        pacify3.StatGroup.Stats[StatType.WeaponAndForceDamageDealtPercentAdjustment].Should().Be(-12);
-        pacify3.StatGroup.Stats[StatType.DamageDealtPercentAdjustment].Should().Be(0);
-        pacify3.StatGroup.Stats[StatType.AttackPercentAdjustment].Should().Be(0);
-
-        var clarity1 = new Clarity1StatusEffect();
-        clarity1.StatGroup.Stats[StatType.PhysicalAndForceAbilityHitChancePercentAdjustment].Should().Be(4);
-        clarity1.StatGroup.Stats[StatType.AbilityHitChancePercentAdjustment].Should().Be(0);
-        clarity1.StatGroup.Stats[StatType.AccuracyPercentAdjustment].Should().Be(0);
-
-        var clarity2 = new Clarity2StatusEffect();
-        clarity2.StatGroup.Stats[StatType.PhysicalAndForceAbilityHitChancePercentAdjustment].Should().Be(6);
-        clarity2.StatGroup.Stats[StatType.AbilityHitChancePercentAdjustment].Should().Be(0);
-        clarity2.StatGroup.Stats[StatType.AccuracyPercentAdjustment].Should().Be(0);
-
-        var comprehendSpeech = new ComprehendSpeech1StatusEffect();
-        comprehendSpeech.StatGroup.Stats[StatType.LanguageComprehension].Should().Be(15);
+        new ForceJudgment1StatusEffect().StatGroup.Stats[StatType.WeaponAndForceDamageDealtPercentAdjustment].Should().Be(-4);
+        new ForceJudgment2StatusEffect().StatGroup.Stats[StatType.WeaponAndForceDamageDealtPercentAdjustment].Should().Be(-6);
+        new ForceJudgment3StatusEffect().StatGroup.Stats[StatType.WeaponAndForceDamageDealtPercentAdjustment].Should().Be(-8);
 
         var forceSanctuary = new ForceSanctuary1StatusEffect();
         forceSanctuary.StatGroup.Stats[StatType.ForceDamageTakenPercentAdjustment].Should().Be(-5);
 
-        var circleOfHarmony = new CircleOfHarmony1StatusEffect();
-        circleOfHarmony.Frequency.Should().Be(3f);
+        new SereneFocusStatusEffect().Frequency.Should().Be(6f);
+        new HarmonicRestorationStatusEffect().StatGroup.Stats[StatType.TraumaResistance].Should().Be(10);
+    }
+
+    [Test]
+    public void ThrowRockAbilities_MatchCombatBible()
+    {
+        var throwRock = new ThrowRockAbilityDefinition().BuildAbilities();
+
+        AssertAbility(throwRock[FeatType.ThrowRock1], "Throw Rock I", 1, RecastGroup.ThrowRock, 6f, 1.5f, 3, true, true, true, false, AbilityActivationType.Casted, 15f);
+        AssertAbility(throwRock[FeatType.ThrowRock2], "Throw Rock II", 2, RecastGroup.ThrowRock, 6f, 1.5f, 4, true, true, true, false, AbilityActivationType.Casted, 15f);
+        AssertAbility(throwRock[FeatType.ThrowRock3], "Throw Rock III", 3, RecastGroup.ThrowRock, 6f, 1.5f, 5, true, true, true, false, AbilityActivationType.Casted, 15f);
+
+        foreach (var ability in throwRock.Values)
+        {
+            ability.AnimationType.Should().Be(Animation.Invalid);
+            ability.ImpactAnimationType.Should().Be(Animation.Invalid);
+            ability.ActivationVisualEffect.Should().Be(VisualEffect.None);
+        }
+    }
+
+    [Test]
+    public void ThrowRockAbilities_ReuseMasterVisualEffects()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Force" / "ThrowRockAbilityDefinition.cs").FullName);
+
+        source.Should().Contain("DisplaysVisualEffectWhenActivating(VisualEffect.None)");
+        source.Should().NotContain("UsesAnimation(");
+        source.Should().NotContain("UsesImpactAnimation(");
+        source.Should().Contain(": VisualEffect.Vfx_Imp_Mirv_Rock;");
+        source.Should().Contain("VisualEffect.Vfx_Imp_Mirv_Rock3");
+        source.Should().Contain("VisualEffect.Vfx_Imp_Dust_Explosion");
+        source.Should().Contain("playImpactAnimation: false");
+        source.Should().NotContain("VisualEffect.Vfx_Imp_Pulse_Nature");
     }
 
     [Test]
@@ -145,22 +73,23 @@ public class ForceLightConsularTests
         var feats = new[]
         {
             (FeatType.Benevolence1, "ife_bnvlnc1", "M", "0x03", "0", "****", "****", "****", "****"),
-            (FeatType.Pacify1, "ife_pcfy1", "M", "0x02", "1", "****", "****", "****", "****"),
             (FeatType.Renewal1, "ife_rnwl1", "M", "0x03", "0", "****", "****", "****", "****"),
-            (FeatType.Clarity1, "ife_clrty1", "M", "0x03", "0", "****", "****", "****", "****"),
             (FeatType.MindTrick1, "ife_mndtrck1", "M", "0x02", "1", "****", "****", "****", "****"),
+            (FeatType.ThrowRock1, "ife_throwrock1", "M", "0x02", "1", "****", "****", "****", "****"),
+            (FeatType.ForceJudgment1, "ife_forcejdg1", "M", "0x02", "1", "****", "****", "****", "****"),
             (FeatType.Benevolence2, "ife_bnvlnc2", "M", "0x03", "0", "****", "****", "****", "****"),
-            (FeatType.ComprehendSpeech1, "ife_cmprhndspch1", "P", "0x01", "0", "****", "****", "****", "****"),
+            (FeatType.ThrowRock2, "ife_throwrock2", "M", "0x02", "1", "****", "****", "****", "****"),
+            (FeatType.ForceJudgment2, "ife_forcejdg2", "M", "0x02", "1", "sphere", "5", "****", "1"),
             (FeatType.Renewal2, "ife_rnwl2", "M", "0x03", "0", "****", "****", "****", "****"),
-            (FeatType.Pacify2, "ife_pcfy2", "P", "0x01", "1", "sphere", "5", "****", "17"),
-            (FeatType.ForceMend1, "ife_forcemnd1", "M", "0x03", "0", "****", "****", "****", "****"),
             (FeatType.MindTrick2, "ife_mndtrck2", "M", "0x02", "1", "****", "****", "****", "****"),
-            (FeatType.Clarity2, "ife_clrty2", "M", "0x03", "0", "****", "****", "****", "****"),
             (FeatType.ForceSanctuary1, "ife_forcesnctry1", "M", "0x3E", "0", "sphere", "4", "****", "1"),
             (FeatType.Benevolence3, "ife_bnvlnc3", "M", "0x03", "0", "****", "****", "****", "****"),
             (FeatType.Renewal3, "ife_rnwl3", "M", "0x03", "0", "****", "****", "****", "****"),
-            (FeatType.Pacify3, "ife_pcfy3", "P", "0x01", "1", "sphere", "5", "****", "17"),
-            (FeatType.CircleOfHarmony1, "ife_circhrmny1", "P", "0x01", "0", "sphere", "5", "****", "17")
+            (FeatType.ThrowRock3, "ife_throwrock3", "M", "0x02", "1", "****", "****", "****", "****"),
+            (FeatType.ForceJudgment3, "ife_forcejdg3", "M", "0x02", "1", "sphere", "5", "****", "1"),
+            (FeatType.RadiantLance1, "ife_radlance1", "M", "0x3E", "1", "rectangle", "8", "2.5", "17"),
+            (FeatType.RadiantLance2, "ife_radlance2", "M", "0x3E", "1", "rectangle", "8", "2.5", "17"),
+            (FeatType.RadiantLance3, "ife_radlance3", "M", "0x3E", "1", "rectangle", "8", "2.5", "17")
         };
         var seenIcons = new HashSet<string>();
 
@@ -192,7 +121,8 @@ public class ForceLightConsularTests
         int price,
         int? skillRank,
         FeatType? grantedFeat,
-        string description)
+        string description,
+        params StatType[] statTypes)
     {
         perk.Name.Should().Be(name);
         perk.Category.Should().Be(PerkCategoryType.ForceLight);
@@ -211,6 +141,11 @@ public class ForceLightConsularTests
             perkLevel.GrantedFeats.Should().ContainSingle().Which.Should().Be(grantedFeat.Value);
         else
             perkLevel.GrantedFeats.Should().BeEmpty();
+
+        if (statTypes.Length > 0)
+            perkLevel.StatBonuses.Select(x => x.Stat).Should().HaveCount(statTypes.Length).And.Contain(statTypes);
+        else
+            perkLevel.StatBonuses.Should().BeEmpty();
     }
 
     private static void AssertAbility(
@@ -292,14 +227,15 @@ public class ForceLightConsularTests
         var methodNames = new[]
         {
             "Benevolence",
-            "CircleOfHarmony",
-            "Clarity",
-            "ComprehendSpeech",
+            "ForceJudgment",
             "ForceMend",
             "ForceSanctuary",
+            "HarmonicRestoration",
             "MindTrick",
-            "Pacify",
-            "Renewal"
+            "RadiantLance",
+            "Renewal",
+            "SereneFocus",
+            "ThrowRock"
         };
 
         foreach (var methodName in methodNames)

@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             builder
                 .Create(FeatType.Antitoxin1, PerkType.Antitoxin)
-                .Name("Antitoxin I")
+                .Name("Antitoxin")
                 .Level(1)
                 .HasActivationDelay(1f)
                 .HasRecastDelay(RecastGroup.Antitoxin, 45f)
@@ -53,6 +53,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             {
                 StatusEffect.RemoveFirstStatusEffect(friendly, new[] { typeof(PoisonStatusEffect), typeof(ToxinStatusEffect) }, false);
                 StatusEffect.ApplyStatusEffect(activator, friendly, typeof(Antitoxin1StatusEffect), duration);
+                FirstAidTreatmentAdjustments.ApplyCombatPharmacologyStimRiders(activator, friendly);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Remove_Condition), friendly);
             }
         }

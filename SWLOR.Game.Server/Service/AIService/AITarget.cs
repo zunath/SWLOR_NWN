@@ -60,7 +60,7 @@ namespace SWLOR.Game.Server.Service.AIService
 
         public static AITargetSelector InferDefault(FeatType feat, AbilityDetail ability)
         {
-            if (ability.IsHostileAbility || IsHostileFeat(feat))
+            if (ability.IsHostileAbility)
             {
                 return ability.IsAreaAbility
                     ? HostileCluster(ability.MaxRange, 2)
@@ -70,31 +70,7 @@ namespace SWLOR.Game.Server.Service.AIService
             if (ability.RequiresTarget)
                 return LowestHealthAlly(true, ability.MaxRange);
 
-            if (IsTargetSelfFeat(feat))
-                return Self();
-
             return Self();
-        }
-
-        private static bool IsTargetSelfFeat(FeatType feat)
-        {
-            return Is2DAFlagSet(feat, "TARGETSELF");
-        }
-
-        private static bool IsHostileFeat(FeatType feat)
-        {
-            return Is2DAFlagSet(feat, "HostileFeat");
-        }
-
-        private static bool Is2DAFlagSet(FeatType feat, string column)
-        {
-            var value = Get2DAString("feat", column, (int)feat);
-            if (string.IsNullOrWhiteSpace(value) || value == "****")
-                return false;
-
-            return int.TryParse(value, out var intValue)
-                ? intValue > 0
-                : value.Equals("true", StringComparison.OrdinalIgnoreCase);
         }
     }
 }

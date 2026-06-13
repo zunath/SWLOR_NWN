@@ -86,11 +86,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Conduit Flare")
 
                 .AddPerkLevel()
-                .GrantsFeat(FeatType.ConduitFlare1)
-                .Description("Deals weapon DMG + 20 to all nearby enemies and inflicts Force Disruption for 8 seconds.")
+                .Description("Conduit offensive abilities deal +20 DMG to nearby enemies and inflict Force Disruption for 8 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Saberstaff, 38)
-                .RequirementCharacterType(CharacterType.ForceSensitive);
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                .IncreasesStat(StatType.SaberstaffConduitAreaConduitFlare, creature => EquipmentPredicates.HasMainHandSaberstaff(creature) ? 1 : 0)
+                .IncreasesStat(StatType.SaberstaffConduitFlareDamageBonus, creature => EquipmentPredicates.HasMainHandSaberstaff(creature) ? 20 : 0)
+                .IncreasesStat(StatType.SaberstaffConduitFlareForceDisruptionDurationSeconds, creature => EquipmentPredicates.HasMainHandSaberstaff(creature) ? 8 : 0);
         }
 
         private void ConduitStance()
@@ -199,7 +201,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Flow of the Maelstrom")
 
                 .AddPerkLevel()
-                .Description("After hitting 3 or more enemies with one saberstaff ability, gain +15% Haste and +10 Attack Deflection for 12 seconds.")
+                .Description("After hitting 3 or more enemies with one saberstaff ability, gain +15% Haste and +8 Attack Deflection for 12 seconds.")
                 .IncreasesStat(StatType.SaberstaffAreaAbilityMinTargetsBuffThreshold, 3)
                 .IncreasesStat(StatType.SaberstaffAreaAbilityHastePercentAdjustment, 15)
                 .IncreasesStat(StatType.SaberstaffAreaAbilityAttackDeflection, 10)
@@ -255,11 +257,12 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Force Gyre")
 
                 .AddPerkLevel()
-                .GrantsFeat(FeatType.ForceGyre1)
-                .Description("Deals weapon DMG + 24 to all nearby enemies and inflicts Force Erosion for 12 seconds.")
+                .Description("Tempest area abilities inflict Force Erosion for 12 seconds on enemies hit.")
                 .Price(3)
                 .RequirementSkill(SkillType.Saberstaff, 38)
-                .RequirementCharacterType(CharacterType.ForceSensitive);
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                .IncreasesStat(StatType.SaberstaffTempestForceGyre, creature => EquipmentPredicates.HasMainHandSaberstaff(creature) ? 1 : 0)
+                .IncreasesStat(StatType.SaberstaffTempestForceGyreDurationSeconds, creature => EquipmentPredicates.HasMainHandSaberstaff(creature) ? 12 : 0);
         }
 
         private void ForceLens()
@@ -268,11 +271,11 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Force Lens")
 
                 .AddPerkLevel()
-                .GrantsFeat(FeatType.ForceLens1)
-                .Description("Allies in an area of effect (sphere) gain +15% Force Defense for 45 seconds. You gain +10 Attack Deflection.")
+                .Description("Conduit defensive abilities grant allies +15% Force Defense for 20 seconds and grant you +8 Attack Deflection.")
                 .Price(3)
                 .RequirementSkill(SkillType.Saberstaff, 25)
-                .RequirementCharacterType(CharacterType.ForceSensitive);
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                .IncreasesStat(StatType.SaberstaffConduitForceLens, creature => EquipmentPredicates.HasMainHandSaberstaff(creature) ? 1 : 0);
         }
 
         private void ForceMomentum()
@@ -298,21 +301,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.GuardedChannel1)
-                .Description("Gain +20 Attack Deflection and +20% Force Defense for 10 seconds.")
+                .Description("Gain +12 Attack Deflection and +20% Force Defense for 10 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Saberstaff, 12)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.GuardedChannel2)
-                .Description("Gain +30 Attack Deflection and +30% Force Defense for 12 seconds.")
+                .Description("Gain +22 Attack Deflection and +30% Force Defense for 12 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Saberstaff, 28)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.GuardedChannel3)
-                .Description("Gain +40 Attack Deflection and +35% Force Defense for 15 seconds.")
+                .Description("Gain +30 Attack Deflection and +35% Force Defense for 15 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Saberstaff, 42)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
@@ -358,7 +361,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SaberCyclone1)
-                .Description("Deal weapon DMG + 18 to nearby enemies. For 45 seconds, pulse every 6 seconds, dealing light Force damage to nearby enemies and restoring 1 FP per enemy hit, up to 5 FP per pulse.")
+                .Description("Deal weapon DMG + 18 to nearby enemies. For 45 seconds, pulse every 6 seconds, dealing 8 force DMG to nearby enemies and restoring 1 FP per enemy hit, up to 5 FP per pulse.")
                 .Price(4)
                 .RequirementSkill(SkillType.Saberstaff, 50)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
@@ -390,7 +393,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Spinning Deflection")
 
                 .AddPerkLevel()
-                .Description("Gain +10 Attack Deflection. After deflecting an attack, your next Circle Slash deals +8 DMG.")
+                .Description("Gain +8 Attack Deflection. After deflecting an attack, your next Circle Slash deals +8 DMG.")
                 .IncreasesStat(StatType.AttackDeflection, creature => EquipmentPredicates.HasMainHandSaberstaff(creature) ? 10 : 0)
                 .IncreasesStat(StatType.DeflectionNextAbilityDamageBonusPerkType, creature => EquipmentPredicates.HasMainHandSaberstaff(creature) ? (int)PerkType.CircleSlash : 0)
                 .IncreasesStat(StatType.DeflectionNextAbilityDamageBonus, creature => EquipmentPredicates.HasMainHandSaberstaff(creature) ? 8 : 0)
@@ -400,7 +403,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementCharacterType(CharacterType.ForceSensitive)
 
                 .AddPerkLevel()
-                .Description("Gain +20 Attack Deflection total. Deflecting an attack restores 4 FP.")
+                .Description("Gain +16 Attack Deflection total. Deflecting an attack restores 4 FP.")
                 .IncreasesStat(StatType.AttackDeflection, creature => EquipmentPredicates.HasMainHandSaberstaff(creature) ? 20 : 0)
                 .IncreasesStat(StatType.DeflectionNextAbilityDamageBonusPerkType, creature => EquipmentPredicates.HasMainHandSaberstaff(creature) ? (int)PerkType.CircleSlash : 0)
                 .IncreasesStat(StatType.DeflectionNextAbilityDamageBonus, creature => EquipmentPredicates.HasMainHandSaberstaff(creature) ? 8 : 0)

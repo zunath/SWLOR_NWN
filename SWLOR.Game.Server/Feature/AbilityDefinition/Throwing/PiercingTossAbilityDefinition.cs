@@ -53,6 +53,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
                 .HasRecastDelay(RecastGroup.PiercingToss, 30f)
                 .HasActivationDelay(0f)
                 .SkillType(Skill)
+                .CombatImpactDamageAbility(AbilityType.Perception)
                 .UsesImpactAnimation(Animation.ThrowGrenade)
                 .HasMaxRange(ThrowingAbilityRange.Standard)
                 .IsSingleTargetAbility()

@@ -82,7 +82,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Centerline Guard")
 
                 .AddPerkLevel()
-                .Description("Gain +10 Attack Deflection while wielding a twin blade. After deflecting an attack, your next attack within 8 seconds deals +8 DMG.")
+                .Description("Gain +10 Attack Deflection. After deflecting an attack, your next attack within 8 seconds deals +8 DMG.")
                 .IncreasesStat(StatType.AttackDeflection, creature => EquipmentPredicates.HasMainHandTwinBlade(creature) ? 10 : 0)
                 .IncreasesStat(StatType.DeflectionNextSkillAbilityDamageBonus, creature => EquipmentPredicates.HasMainHandTwinBlade(creature) ? 8 : 0)
                 .IncreasesStat(StatType.DeflectionNextSkillAbilityDamageBonusWindowSeconds, creature => EquipmentPredicates.HasMainHandTwinBlade(creature) ? 8 : 0)
@@ -228,8 +228,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("After using a Twin Blade combat ability, gain +10% Evasion for 8 seconds.")
-                .IncreasesStat(StatType.TwinBladeAbilityUsedEvasionPercentAdjustment, 10)
-                .IncreasesStat(StatType.TwinBladeAbilityUsedEvasionDurationSeconds, 8)
+                .IncreasesStat(StatType.AbilityUsedEvasionPercentAdjustmentSkillType, (int)SkillType.TwinBlade)
+                .IncreasesStat(StatType.AbilityUsedEvasionPercentAdjustment, 10)
+                .IncreasesStat(StatType.AbilityUsedEvasionDurationSeconds, 8)
                 .Price(2)
                 .RequirementSkill(SkillType.TwinBlade, 22);
         }
@@ -241,8 +242,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Using a single-target Twin Blade ability grants +8 Attack Deflection for 8 seconds.")
-                .IncreasesStat(StatType.TwinBladeSingleTargetAbilityAttackDeflection, 8)
-                .IncreasesStat(StatType.TwinBladeSingleTargetAbilityAttackDeflectionDurationSeconds, 8)
+                .IncreasesStat(StatType.SingleTargetAbilityAttackDeflectionSkillType, (int)SkillType.TwinBlade)
+                .IncreasesStat(StatType.SingleTargetAbilityAttackDeflection, 8)
+                .IncreasesStat(StatType.SingleTargetAbilityAttackDeflectionDurationSeconds, 8)
                 .Price(4)
                 .RequirementSkill(SkillType.TwinBlade, 28);
         }
@@ -333,10 +335,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Reversal Cut")
 
                 .AddPerkLevel()
-                .GrantsFeat(FeatType.ReversalCut1)
-                .Description("Can be used after you are hit. Deals weapon DMG + 40 and inflicts Dazed for 3 seconds.")
+                .Description("After you are hit, your next Twin Blade Duelist ability within 8 seconds deals +40 DMG and inflicts Dazed for 3 seconds.")
                 .Price(3)
-                .RequirementSkill(SkillType.TwinBlade, 38);
+                .RequirementSkill(SkillType.TwinBlade, 38)
+                .IncreasesStat(StatType.TwinBladeDuelistReversalCut, creature => EquipmentPredicates.HasMainHandTwinBlade(creature) ? 1 : 0)
+                .IncreasesStat(StatType.TwinBladeDuelistReversalCutDamageBonus, creature => EquipmentPredicates.HasMainHandTwinBlade(creature) ? 40 : 0)
+                .IncreasesStat(StatType.TwinBladeDuelistReversalCutDazedDurationSeconds, creature => EquipmentPredicates.HasMainHandTwinBlade(creature) ? 3 : 0)
+                .IncreasesStat(StatType.TwinBladeDuelistReversalCutWindowSeconds, creature => EquipmentPredicates.HasMainHandTwinBlade(creature) ? 8 : 0);
         }
 
         private void SplitGuardStrike()
@@ -405,10 +410,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Sweeping Advance")
 
                 .AddPerkLevel()
-                .GrantsFeat(FeatType.SweepingAdvance1)
-                .Description("Deals weapon DMG + 24 to enemies in a line. If this hits 3 or more enemies, restore 6 STM and gain +10% Haste for 8 seconds.")
+                .Description("Twin Blade Cyclone area abilities restore 6 STM and grant +10% Haste for 8 seconds when they hit at least three enemies.")
                 .Price(3)
-                .RequirementSkill(SkillType.TwinBlade, 38);
+                .RequirementSkill(SkillType.TwinBlade, 38)
+                .IncreasesStat(StatType.TwinBladeCycloneSweepingAdvance, creature => EquipmentPredicates.HasMainHandTwinBlade(creature) ? 1 : 0)
+                .IncreasesStat(StatType.TwinBladeCycloneSweepingAdvanceMinimumTargets, creature => EquipmentPredicates.HasMainHandTwinBlade(creature) ? 3 : 0)
+                .IncreasesStat(StatType.TwinBladeCycloneSweepingAdvanceStaminaRestore, creature => EquipmentPredicates.HasMainHandTwinBlade(creature) ? 6 : 0)
+                .IncreasesStat(StatType.TwinBladeCycloneSweepingAdvanceHastePercent, creature => EquipmentPredicates.HasMainHandTwinBlade(creature) ? 10 : 0)
+                .IncreasesStat(StatType.TwinBladeCycloneSweepingAdvanceDurationSeconds, creature => EquipmentPredicates.HasMainHandTwinBlade(creature) ? 8 : 0);
         }
 
         private void TempestBloom()
@@ -418,7 +427,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.TempestBloom1)
-                .Description("Deal weapon DMG + 20 to nearby enemies. For 45 seconds, pulse every 6 seconds, dealing light physical damage and applying a Tempest mark. Each mark increases physical damage taken by 2% to a maximum of 3 stacks.")
+                .Description("Deal weapon DMG + 20 to nearby enemies. For 45 seconds, pulse every 6 seconds, dealing 8 physical DMG and applying a Tempest mark. Each mark increases physical damage taken by 2% to a maximum of 3 stacks.")
                 .Price(4)
                 .RequirementSkill(SkillType.TwinBlade, 50);
         }

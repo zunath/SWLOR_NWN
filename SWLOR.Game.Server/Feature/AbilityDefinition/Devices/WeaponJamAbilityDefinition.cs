@@ -21,7 +21,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             var builder = new AbilityBuilder();
 
             WeaponJam1(builder);
-            WeaponJam2(builder);
 
             return builder.Build();
         }
@@ -30,11 +29,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             builder
                 .Create(FeatType.WeaponJam1, PerkType.WeaponJam)
-                .Name("Weapon Jam I")
+                .Name("Weapon Jam")
                 .Level(1)
                 .HasActivationDelay(1f)
                 .HasRecastDelay(RecastGroup.WeaponJam, 24f)
                 .SkillType(SkillType.Devices)
+                .CombatImpactDamageAbility(AbilityType.Perception)
                 .UsesImpactAnimation(Animation.CastOutAnimation)
                 .HasMaxRange(DeviceAbilityRange.Standard)
                 .IsSingleTargetAbility()
@@ -44,26 +44,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .IsHostileAbility()
                 .BreaksStealth()
                 .RequirementStamina(4);
-        }
-
-        private static void WeaponJam2(AbilityBuilder builder)
-        {
-            builder
-                .Create(FeatType.WeaponJam2, PerkType.WeaponJam)
-                .Name("Weapon Jam II")
-                .Level(2)
-                .HasActivationDelay(1f)
-                .HasRecastDelay(RecastGroup.WeaponJam, 24f)
-                .SkillType(SkillType.Devices)
-                .UsesImpactAnimation(Animation.CastOutAnimation)
-                .HasMaxRange(DeviceAbilityRange.Standard)
-                .IsSingleTargetAbility()
-                .RequiresTarget()
-                .HasImpactAction(WeaponJam2ImpactAction)
-                .IsCastedAbility()
-                .IsHostileAbility()
-                .BreaksStealth()
-                .RequirementStamina(5);
         }
 
         private static void WeaponJam1ImpactAction(uint activator, uint target, int level, Location targetLocation)
@@ -76,22 +56,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 0,
                 18,
                 typeof(WeaponJam1StatusEffect),
-                false,
-                Array.Empty<Type>(),
-                damageType: CombatDamageType.Electrical,
-                targetVisualEffect: VisualEffect.Vfx_Com_Hit_Electrical);
-        }
-
-        private static void WeaponJam2ImpactAction(uint activator, uint target, int level, Location targetLocation)
-        {
-            Ability.ApplyCombatImpact(
-                activator,
-                target,
-                targetLocation,
-                SkillType.Devices,
-                0,
-                18,
-                typeof(WeaponJam2StatusEffect),
                 false,
                 Array.Empty<Type>(),
                 damageType: CombatDamageType.Electrical,

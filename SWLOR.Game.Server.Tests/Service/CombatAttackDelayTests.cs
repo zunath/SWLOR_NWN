@@ -143,16 +143,16 @@ public class CombatAttackDelayTests
     public void CanConsumeNextAbilityNoDelay_RequiresHostileAbility()
     {
         Combat.CanConsumeNextAbilityNoDelay(new AbilityDetail
-            {
-                IsHostileAbility = true
-            })
+        {
+            IsHostileAbility = true
+        })
             .Should()
             .BeTrue();
 
         Combat.CanConsumeNextAbilityNoDelay(new AbilityDetail
-            {
-                IsHostileAbility = false
-            })
+        {
+            IsHostileAbility = false
+        })
             .Should()
             .BeFalse();
     }

@@ -340,6 +340,13 @@ namespace SWLOR.Game.Server.Service.AbilityService
             return this;
         }
 
+        public AbilityBuilder CombatImpactDamageAbility(AbilityType abilityType)
+        {
+            _activeAbility.CombatImpactDamageAbility = abilityType;
+
+            return this;
+        }
+
         public AbilityBuilder IsAreaAbility()
         {
             _activeAbility.IsAreaAbility = true;

@@ -1,6 +1,6 @@
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.SkillService;
-using System.Collections.Generic;
 
 namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 {
@@ -18,325 +18,133 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             return _builder.Build();
         }
+
         private void Tier1()
         {
-            // Frag Grenade I
-            _builder.Create(RecipeType.InstructionFragGrenade1, SkillType.Engineering)
-                .Category(RecipeCategoryType.DroidInstruction)
-                .Resref("id_fraggren1")
-                .Level(10)
-                .Quantity(1)
-                .Component("jade", 1)
-                .Component("elec_ruined", 2)
-                .Component("quadrenium", 1);
-
-            // Concussion Grenade I
-            _builder.Create(RecipeType.InstructionConcussionGrenade1, SkillType.Engineering)
-                .Category(RecipeCategoryType.DroidInstruction)
-                .Resref("id_concgren1")
-                .Level(10)
-                .Quantity(1)
-                .Component("jade", 1)
-                .Component("elec_ruined", 2)
-                .Component("quadrenium", 1);
-
-            // Ion Grenade I
-            _builder.Create(RecipeType.InstructionIonGrenade1, SkillType.Engineering)
-                .Category(RecipeCategoryType.DroidInstruction)
-                .Resref("id_iongren1")
-                .Level(10)
-                .Quantity(1)
-                .Component("jade", 1)
-                .Component("elec_ruined", 2)
-                .Component("quadrenium", 1);
-
-            // Flamethrower I
-            _builder.Create(RecipeType.InstructionFlamethrower1, SkillType.Engineering)
-                .Category(RecipeCategoryType.DroidInstruction)
-                .Resref("id_flamethrow1")
-                .Level(10)
-                .Quantity(1)
-                .Component("jade", 1)
-                .Component("elec_ruined", 2)
-                .Component("quadrenium", 1);
-
-            // Provoke I
-            _builder.Create(RecipeType.InstructionProvoke1, SkillType.Engineering)
-                .Category(RecipeCategoryType.DroidInstruction)
-                .Resref("id_provoke1")
-                .Level(10)
-                .Quantity(1)
-                .Component("jade", 1)
-                .Component("elec_ruined", 2)
-                .Component("quadrenium", 1);
-
-            // Med Kit I
-            _builder.Create(RecipeType.InstructionMedKit1, SkillType.Engineering)
-                .Category(RecipeCategoryType.DroidInstruction)
-                .Resref("id_medkit1")
-                .Level(10)
-                .Quantity(1)
-                .Component("jade", 1)
-                .Component("elec_ruined", 2)
-                .Component("quadrenium", 1);
-
-            // Treatment Kit I
-            _builder.Create(RecipeType.InstructionTreatmentKit1, SkillType.Engineering)
-                .Category(RecipeCategoryType.DroidInstruction)
-                .Resref("id_treatkit1")
-                .Level(10)
-                .Quantity(1)
-                .Component("jade", 1)
-                .Component("elec_ruined", 2)
-                .Component("quadrenium", 1);
-
-            // Shielding I
-            _builder.Create(RecipeType.InstructionShielding1, SkillType.Engineering)
-                .Category(RecipeCategoryType.DroidInstruction)
-                .Resref("id_shielding1")
-                .Level(10)
-                .Quantity(1)
-                .Component("jade", 1)
-                .Component("elec_ruined", 2)
-                .Component("quadrenium", 1);
+            CreateTier(10, "jade", "elec_ruined", "quadrenium",
+                new DroidInstructionRecipe(RecipeType.InstructionAdrenalStim1, "id_adrenal1"),
+                new DroidInstructionRecipe(RecipeType.InstructionBlasterBeacon1, "id_blastbeac1"),
+                new DroidInstructionRecipe(RecipeType.InstructionConcussionGrenade1, "id_concgren1"),
+                new DroidInstructionRecipe(RecipeType.InstructionDeflectorShield1, "id_defshield1"),
+                new DroidInstructionRecipe(RecipeType.InstructionFlamethrower1, "id_flamethrow1"),
+                new DroidInstructionRecipe(RecipeType.InstructionFragGrenade1, "id_fraggren1"),
+                new DroidInstructionRecipe(RecipeType.InstructionIncendiaryField1, "id_incfield1"),
+                new DroidInstructionRecipe(RecipeType.InstructionIonGrenade1, "id_iongren1"),
+                new DroidInstructionRecipe(RecipeType.InstructionMedKit1, "id_medkit1"),
+                new DroidInstructionRecipe(RecipeType.InstructionProvoke1, "id_provoke1"),
+                new DroidInstructionRecipe(RecipeType.InstructionShielding1, "id_shielding1"),
+                new DroidInstructionRecipe(RecipeType.InstructionSonicBurst1, "id_sonicburst1"),
+                new DroidInstructionRecipe(RecipeType.InstructionTreatmentKit1, "id_treatkit1"),
+                new DroidInstructionRecipe(RecipeType.InstructionWeaponJam, "id_weaponjam"));
         }
+
         private void Tier2()
         {
-            // Frag Grenade II
-            _builder.Create(RecipeType.InstructionFragGrenade2, SkillType.Engineering)
-                .Category(RecipeCategoryType.DroidInstruction)
-                .Resref("id_fraggren2")
-                .Level(20)
-                .Quantity(1)
-                .Component("agate", 1)
-                .Component("elec_flawed", 2)
-                .Component("vintrium", 1);
-
-            // Wrist Rocket I
-            _builder.Create(RecipeType.InstructionWristRocket1, SkillType.Engineering)
-                .Category(RecipeCategoryType.DroidInstruction)
-                .Resref("id_wristrck1")
-                .Level(20)
-                .Quantity(1)
-                .Component("agate", 1)
-                .Component("elec_flawed", 2)
-                .Component("vintrium", 1);
-
-            // Provoke II
-            _builder.Create(RecipeType.InstructionProvoke2, SkillType.Engineering)
-                .Category(RecipeCategoryType.DroidInstruction)
-                .Resref("id_provoke2")
-                .Level(20)
-                .Quantity(1)
-                .Component("agate", 1)
-                .Component("elec_flawed", 2)
-                .Component("vintrium", 1);
-
-            // Med Kit II
-            _builder.Create(RecipeType.InstructionMedKit2, SkillType.Engineering)
-                .Category(RecipeCategoryType.DroidInstruction)
-                .Resref("id_medkit2")
-                .Level(20)
-                .Quantity(1)
-                .Component("agate", 1)
-                .Component("elec_flawed", 2)
-                .Component("vintrium", 1);
-
-            // Resuscitation I
-            _builder.Create(RecipeType.InstructionResuscitation1, SkillType.Engineering)
-                .Category(RecipeCategoryType.DroidInstruction)
-                .Resref("id_resusc1")
-                .Level(20)
-                .Quantity(1)
-                .Component("agate", 1)
-                .Component("elec_flawed", 2)
-                .Component("vintrium", 1);
-
-            // Treatment Kit II
-            _builder.Create(RecipeType.InstructionTreatmentKit2, SkillType.Engineering)
-                .Category(RecipeCategoryType.DroidInstruction)
-                .Resref("id_treatkit2")
-                .Level(20)
-                .Quantity(1)
-                .Component("agate", 1)
-                .Component("elec_flawed", 2)
-                .Component("vintrium", 1);
-
-            // Shielding II
-            _builder.Create(RecipeType.InstructionShielding2, SkillType.Engineering)
-                .Category(RecipeCategoryType.DroidInstruction)
-                .Resref("id_shielding2")
-                .Level(20)
-                .Quantity(1)
-                .Component("agate", 1)
-                .Component("elec_flawed", 2)
-                .Component("vintrium", 1);
+            CreateTier(20, "agate", "elec_flawed", "vintrium",
+                new DroidInstructionRecipe(RecipeType.InstructionAdrenalStim2, "id_adrenal2"),
+                new DroidInstructionRecipe(RecipeType.InstructionAntitoxin, "id_antitoxin"),
+                new DroidInstructionRecipe(RecipeType.InstructionArcProjector1, "id_arcproj1"),
+                new DroidInstructionRecipe(RecipeType.InstructionBlasterBeacon2, "id_blastbeac2"),
+                new DroidInstructionRecipe(RecipeType.InstructionDeflectorShield2, "id_defshield2"),
+                new DroidInstructionRecipe(RecipeType.InstructionFlashGrenade, "id_flashgren"),
+                new DroidInstructionRecipe(RecipeType.InstructionFragGrenade2, "id_fraggren2"),
+                new DroidInstructionRecipe(RecipeType.InstructionIonLance1, "id_ionlance1"),
+                new DroidInstructionRecipe(RecipeType.InstructionKoltoMist1, "id_koltomist1"),
+                new DroidInstructionRecipe(RecipeType.InstructionMedKit2, "id_medkit2"),
+                new DroidInstructionRecipe(RecipeType.InstructionPainSuppressant1, "id_painsupp1"),
+                new DroidInstructionRecipe(RecipeType.InstructionPowerCell1, "id_powercell1"),
+                new DroidInstructionRecipe(RecipeType.InstructionProvoke2, "id_provoke2"),
+                new DroidInstructionRecipe(RecipeType.InstructionRailDart1, "id_raildart1"),
+                new DroidInstructionRecipe(RecipeType.InstructionRemoteCharge1, "id_remcharge1"),
+                new DroidInstructionRecipe(RecipeType.InstructionResuscitation1, "id_resusc1"),
+                new DroidInstructionRecipe(RecipeType.InstructionShielding2, "id_shielding2"),
+                new DroidInstructionRecipe(RecipeType.InstructionSignalJammer, "id_sigjammer"),
+                new DroidInstructionRecipe(RecipeType.InstructionTreatmentKit2, "id_treatkit2"),
+                new DroidInstructionRecipe(RecipeType.InstructionWristRocket1, "id_wristrck1"));
         }
+
         private void Tier3()
         {
-            // Ion Grenade II
-            _builder.Create(RecipeType.InstructionIonGrenade2, SkillType.Engineering)
-                .Category(RecipeCategoryType.DroidInstruction)
-                .Resref("id_iongren2")
-                .Level(30)
-                .Quantity(1)
-                .Component("citrine", 1)
-                .Component("elec_good", 2)
-                .Component("ionite", 1);
-
-            // Adhesive Grenade I
-            _builder.Create(RecipeType.InstructionAdhesiveGrenade1, SkillType.Engineering)
-                .Category(RecipeCategoryType.DroidInstruction)
-                .Resref("id_adhgren1")
-                .Level(30)
-                .Quantity(1)
-                .Component("citrine", 1)
-                .Component("elec_good", 2)
-                .Component("ionite", 1);
-
-            // Flamethrower II
-            _builder.Create(RecipeType.InstructionFlamethrower2, SkillType.Engineering)
-                .Category(RecipeCategoryType.DroidInstruction)
-                .Resref("id_flamethrow2")
-                .Level(30)
-                .Quantity(1)
-                .Component("citrine", 1)
-                .Component("elec_good", 2)
-                .Component("ionite", 1);
-
-            // Wrist Rocket II
-            _builder.Create(RecipeType.InstructionWristRocket2, SkillType.Engineering)
-                .Category(RecipeCategoryType.DroidInstruction)
-                .Resref("id_wristrck2")
-                .Level(30)
-                .Quantity(1)
-                .Component("citrine", 1)
-                .Component("elec_good", 2)
-                .Component("ionite", 1);
-
-            // Med Kit III
-            _builder.Create(RecipeType.InstructionMedKit3, SkillType.Engineering)
-                .Category(RecipeCategoryType.DroidInstruction)
-                .Resref("id_medkit3")
-                .Level(30)
-                .Quantity(1)
-                .Component("citrine", 1)
-                .Component("elec_good", 2)
-                .Component("ionite", 1);
-
-            // Infusion I
-            _builder.Create(RecipeType.InstructionInfusion1, SkillType.Engineering)
-                .Category(RecipeCategoryType.DroidInstruction)
-                .Resref("id_infusion1")
-                .Level(30)
-                .Quantity(1)
-                .Component("citrine", 1)
-                .Component("elec_good", 2)
-                .Component("ionite", 1);
+            CreateTier(30, "citrine", "elec_good", "ionite",
+                new DroidInstructionRecipe(RecipeType.InstructionAdhesiveGrenade1, "id_adhgren1"),
+                new DroidInstructionRecipe(RecipeType.InstructionFlamethrower2, "id_flamethrow2"),
+                new DroidInstructionRecipe(RecipeType.InstructionFocusStim1, "id_focusstim1"),
+                new DroidInstructionRecipe(RecipeType.InstructionIncendiaryField2, "id_incfield2"),
+                new DroidInstructionRecipe(RecipeType.InstructionInfusion1, "id_infusion1"),
+                new DroidInstructionRecipe(RecipeType.InstructionIonGrenade2, "id_iongren2"),
+                new DroidInstructionRecipe(RecipeType.InstructionMedKit3, "id_medkit3"),
+                new DroidInstructionRecipe(RecipeType.InstructionPowerCell2, "id_powercell2"),
+                new DroidInstructionRecipe(RecipeType.InstructionRemoteCharge2, "id_remcharge2"),
+                new DroidInstructionRecipe(RecipeType.InstructionShockBeacon1, "id_shockbeac1"),
+                new DroidInstructionRecipe(RecipeType.InstructionSonicBurst2, "id_sonicburst2"),
+                new DroidInstructionRecipe(RecipeType.InstructionWristRocket2, "id_wristrck2"));
         }
+
         private void Tier4()
         {
-            // Frag Grenade III
-            _builder.Create(RecipeType.InstructionFragGrenade3, SkillType.Engineering)
-                .Category(RecipeCategoryType.DroidInstruction)
-                .Resref("id_fraggren3")
-                .Level(40)
-                .Quantity(1)
-                .Component("ruby", 1)
-                .Component("elec_imperfect", 2)
-                .Component("katrium", 1);
-
-            // Concussion Grenade II
-            _builder.Create(RecipeType.InstructionConcussionGrenade2, SkillType.Engineering)
-                .Category(RecipeCategoryType.DroidInstruction)
-                .Resref("id_concgren2")
-                .Level(40)
-                .Quantity(1)
-                .Component("ruby", 1)
-                .Component("elec_imperfect", 2)
-                .Component("katrium", 1);
-
-            // Adhesive Grenade II
-            _builder.Create(RecipeType.InstructionAdhesiveGrenade2, SkillType.Engineering)
-                .Category(RecipeCategoryType.DroidInstruction)
-                .Resref("id_adhgren2")
-                .Level(40)
-                .Quantity(1)
-                .Component("ruby", 1)
-                .Component("elec_imperfect", 2)
-                .Component("katrium", 1);
-
-            // Med Kit IV
-            _builder.Create(RecipeType.InstructionMedKit4, SkillType.Engineering)
-                .Category(RecipeCategoryType.DroidInstruction)
-                .Resref("id_medkit4")
-                .Level(40)
-                .Quantity(1)
-                .Component("ruby", 1)
-                .Component("elec_imperfect", 2)
-                .Component("katrium", 1);
-
-            // Resuscitation II
-            _builder.Create(RecipeType.InstructionResuscitation2, SkillType.Engineering)
-                .Category(RecipeCategoryType.DroidInstruction)
-                .Resref("id_resusc2")
-                .Level(40)
-                .Quantity(1)
-                .Component("ruby", 1)
-                .Component("elec_imperfect", 2)
-                .Component("katrium", 1);
-
-            // Shielding III
-            _builder.Create(RecipeType.InstructionShielding3, SkillType.Engineering)
-                .Category(RecipeCategoryType.DroidInstruction)
-                .Resref("id_shielding3")
-                .Level(40)
-                .Quantity(1)
-                .Component("ruby", 1)
-                .Component("elec_imperfect", 2)
-                .Component("katrium", 1);
+            CreateTier(40, "ruby", "elec_imperfect", "katrium",
+                new DroidInstructionRecipe(RecipeType.InstructionAdhesiveGrenade2, "id_adhgren2"),
+                new DroidInstructionRecipe(RecipeType.InstructionAdrenalStim3, "id_adrenal3"),
+                new DroidInstructionRecipe(RecipeType.InstructionArcProjector2, "id_arcproj2"),
+                new DroidInstructionRecipe(RecipeType.InstructionBlasterBeacon3, "id_blastbeac3"),
+                new DroidInstructionRecipe(RecipeType.InstructionClusterGrenade, "id_clustgren"),
+                new DroidInstructionRecipe(RecipeType.InstructionConcussionGrenade2, "id_concgren2"),
+                new DroidInstructionRecipe(RecipeType.InstructionCryoSprayer, "id_cryospray"),
+                new DroidInstructionRecipe(RecipeType.InstructionDeflectorShield3, "id_defshield3"),
+                new DroidInstructionRecipe(RecipeType.InstructionDisruptionPulse, "id_disrpulse"),
+                new DroidInstructionRecipe(RecipeType.InstructionFragGrenade3, "id_fraggren3"),
+                new DroidInstructionRecipe(RecipeType.InstructionIonLance2, "id_ionlance2"),
+                new DroidInstructionRecipe(RecipeType.InstructionKoltoMist2, "id_koltomist2"),
+                new DroidInstructionRecipe(RecipeType.InstructionMedKit4, "id_medkit4"),
+                new DroidInstructionRecipe(RecipeType.InstructionPainSuppressant2, "id_painsupp2"),
+                new DroidInstructionRecipe(RecipeType.InstructionRailDart2, "id_raildart2"),
+                new DroidInstructionRecipe(RecipeType.InstructionResuscitation2, "id_resusc2"),
+                new DroidInstructionRecipe(RecipeType.InstructionShielding3, "id_shielding3"),
+                new DroidInstructionRecipe(RecipeType.InstructionShockBeacon2, "id_shockbeac2"));
         }
+
         private void Tier5()
         {
-            // Concussion Grenade III
-            _builder.Create(RecipeType.InstructionConcussionGrenade3, SkillType.Engineering)
-                .Category(RecipeCategoryType.DroidInstruction)
-                .Resref("id_concgren3")
-                .Level(50)
-                .Quantity(1)
-                .Component("emerald", 1)
-                .Component("elec_high", 2)
-                .Component("zinsiam", 1);
-
-            // Flamethrower III
-            _builder.Create(RecipeType.InstructionFlamethrower3, SkillType.Engineering)
-                .Category(RecipeCategoryType.DroidInstruction)
-                .Resref("id_flamethrow3")
-                .Level(50)
-                .Quantity(1)
-                .Component("emerald", 1)
-                .Component("elec_high", 2)
-                .Component("zinsiam", 1);
-
-            // Wrist Rocket III
-            _builder.Create(RecipeType.InstructionWristRocket3, SkillType.Engineering)
-                .Category(RecipeCategoryType.DroidInstruction)
-                .Resref("id_wristrck3")
-                .Level(50)
-                .Quantity(1)
-                .Component("emerald", 1)
-                .Component("elec_high", 2)
-                .Component("zinsiam", 1);
-
-            // Infusion II
-            _builder.Create(RecipeType.InstructionInfusion2, SkillType.Engineering)
-                .Category(RecipeCategoryType.DroidInstruction)
-                .Resref("id_infusion2")
-                .Level(50)
-                .Quantity(1)
-                .Component("emerald", 1)
-                .Component("elec_high", 2)
-                .Component("zinsiam", 1);
+            CreateTier(50, "emerald", "elec_high", "zinsiam",
+                new DroidInstructionRecipe(RecipeType.InstructionArcProjector3, "id_arcproj3"),
+                new DroidInstructionRecipe(RecipeType.InstructionEmergencyBunker, "id_emgbunker"),
+                new DroidInstructionRecipe(RecipeType.InstructionEmergencyCocktail, "id_emgcocktail"),
+                new DroidInstructionRecipe(RecipeType.InstructionEmergencyTriage, "id_emgtriage"),
+                new DroidInstructionRecipe(RecipeType.InstructionFlamethrower3, "id_flamethrow3"),
+                new DroidInstructionRecipe(RecipeType.InstructionFocusStim2, "id_focusstim2"),
+                new DroidInstructionRecipe(RecipeType.InstructionGroupDeflector, "id_groupdef"),
+                new DroidInstructionRecipe(RecipeType.InstructionIncendiaryField3, "id_incfield3"),
+                new DroidInstructionRecipe(RecipeType.InstructionInfusion2, "id_infusion2"),
+                new DroidInstructionRecipe(RecipeType.InstructionIonLance3, "id_ionlance3"),
+                new DroidInstructionRecipe(RecipeType.InstructionKillzoneBeacon, "id_killbeacon"),
+                new DroidInstructionRecipe(RecipeType.InstructionOverloadBarrage, "id_overbarrage"),
+                new DroidInstructionRecipe(RecipeType.InstructionPowerCell3, "id_powercell3"),
+                new DroidInstructionRecipe(RecipeType.InstructionSonicBurst3, "id_sonicburst3"),
+                new DroidInstructionRecipe(RecipeType.InstructionThermalDetonator, "id_thermdeton"),
+                new DroidInstructionRecipe(RecipeType.InstructionTreatmentKit3, "id_treatkit3"),
+                new DroidInstructionRecipe(RecipeType.InstructionWristRocket3, "id_wristrck3"));
         }
+
+        private void CreateTier(
+            int level,
+            string gemResref,
+            string electronicResref,
+            string metalResref,
+            params DroidInstructionRecipe[] recipes)
+        {
+            foreach (var recipe in recipes)
+            {
+                _builder.Create(recipe.Type, SkillType.Engineering)
+                    .Category(RecipeCategoryType.DroidInstruction)
+                    .Resref(recipe.Resref)
+                    .Level(level)
+                    .Quantity(1)
+                    .Component(gemResref, 1)
+                    .Component(electronicResref, 2)
+                    .Component(metalResref, 1);
+            }
+        }
+
+        private readonly record struct DroidInstructionRecipe(RecipeType Type, string Resref);
     }
 }

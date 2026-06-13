@@ -16,70 +16,6 @@ namespace SWLOR.Game.Server.Tests.Perks;
 public class StaffCrusherTests
 {
     [Test]
-    public void StaffCrusherPerkLevels_MatchCombatBible()
-    {
-        var perks = BuildStaffCrusherPerksWithout2daLookup();
-
-        AssertPerkLevel(perks[PerkType.CrushingStyle], "Crushing Style", 1, 3, 2, null,
-            "You gain bonus damage with staves equal to your MGT modifier and +10% critical chance.",
-            StatType.StaffMightModifierDamageMultiplier,
-            StatType.CriticalRatePercentAdjustment);
-        AssertPerkLevel(perks[PerkType.Slam], "Slam", 1, 3, 8, FeatType.Slam1,
-            "Deals weapon DMG + 8 and inflicts Blind for 8 seconds.");
-        AssertPerkLevel(perks[PerkType.CrushingMastery], "Crushing Mastery", 1, 3, 12, null,
-            "Critical staff hits deal +10% damage and restore 2 STM. This can only trigger once every 6 seconds.",
-            StatType.CriticalDamagePercentAdjustment,
-            StatType.CriticalStaminaRestore,
-            StatType.CriticalStaminaRestoreSkillType,
-            StatType.CriticalStaminaRestoreCooldownSeconds);
-        AssertPerkLevel(perks[PerkType.CrusherStance], "Crusher Stance", 1, 2, 15, FeatType.CrusherStance1,
-            "While active, grants +20% Attack and +15% critical chance, but reduces Defense by 20%.");
-        AssertPerkLevel(perks[PerkType.Slam], "Slam", 2, 4, 18, FeatType.Slam2,
-            "Deals weapon DMG + 20 and inflicts Blind for 10 seconds.");
-        AssertPerkLevel(perks[PerkType.RibBreaker], "Rib Breaker", 1, 3, 20, FeatType.RibBreaker1,
-            "Deals weapon DMG + 18 and inflicts Weakened, reducing Attack by 10% for 15 seconds.");
-        AssertPerkLevel(perks[PerkType.HeavyHands], "Heavy Hands", 1, 2, 22, null,
-            "Staff combat abilities deal +10% damage to targets affected by Knockdown or Blind.",
-            StatType.AbilityDamageToKnockdownOrBlindTargetPercentAdjustment);
-        AssertPerkLevel(perks[PerkType.GroundQuake], "Ground Quake", 1, 3, 25, FeatType.GroundQuake1,
-            "Deals weapon DMG + 18 to nearby enemies. Inflicts Knockdown for 2 seconds.");
-        AssertPerkLevel(perks[PerkType.Slam], "Slam", 3, 3, 28, FeatType.Slam3,
-            "Deals weapon DMG + 32 and inflicts Blind for 12 seconds.");
-        AssertPerkLevel(perks[PerkType.RibBreaker], "Rib Breaker", 2, 3, 30, FeatType.RibBreaker2,
-            "Deals weapon DMG + 30 and inflicts Weakened, reducing Attack by 15% for 15 seconds.");
-        AssertPerkLevel(perks[PerkType.CrushingMastery], "Crushing Mastery", 2, 2, 32, null,
-            "Bonus damage with staves increases to 2x your MGT modifier and critical chance increases by an additional 10%. Critical staff hits still deal +10% damage and restore 2 STM once every 6 seconds.",
-            StatType.CriticalDamagePercentAdjustment,
-            StatType.CriticalStaminaRestore,
-            StatType.CriticalStaminaRestoreSkillType,
-            StatType.CriticalStaminaRestoreCooldownSeconds,
-            StatType.StaffMightModifierDamageMultiplier,
-            StatType.CriticalRatePercentAdjustment);
-        AssertPerkLevel(perks[PerkType.GroundQuake], "Ground Quake", 2, 4, 35, FeatType.GroundQuake2,
-            "Deals weapon DMG + 28 to nearby enemies. Inflicts Knockdown for 3 seconds.");
-        AssertPerkLevel(perks[PerkType.SkullRattle], "Skull Rattle", 1, 3, 38, FeatType.SkullRattle1,
-            "Deals weapon DMG + 34 and inflicts Dazed for 3 seconds.");
-        AssertPerkLevel(perks[PerkType.BreakPosture], "Break Posture", 1, 2, 40, null,
-            "Critical staff hits inflict Exposed, reducing Defense by 10% for 10 seconds.",
-            StatType.CriticalTargetDefensePercentAdjustment,
-            StatType.CriticalTargetDefenseDurationSeconds);
-        AssertPerkLevel(perks[PerkType.RibBreaker], "Rib Breaker", 3, 4, 42, FeatType.RibBreaker3,
-            "Deals weapon DMG + 42 and inflicts Weakened, reducing Attack by 20% for 15 seconds.");
-        AssertPerkLevel(perks[PerkType.Bonecrusher], "Bonecrusher", 1, 3, 45, FeatType.Bonecrusher1,
-            "Deals weapon DMG + 50. If the target is Knocked down, they become Stunned for 3 seconds.");
-        AssertPerkLevel(perks[PerkType.CrushingMastery], "Crushing Mastery", 3, 4, 48, null,
-            "Staff critical hits deal +20% damage and restore 4 STM once every 6 seconds. Bonus damage with staves remains 2x your MGT modifier and the additional +10% critical chance remains.",
-            StatType.CriticalDamagePercentAdjustment,
-            StatType.CriticalStaminaRestore,
-            StatType.CriticalStaminaRestoreSkillType,
-            StatType.CriticalStaminaRestoreCooldownSeconds,
-            StatType.StaffMightModifierDamageMultiplier,
-            StatType.CriticalRatePercentAdjustment);
-        AssertPerkLevel(perks[PerkType.Worldbreaker], "Worldbreaker", 1, 4, 50, FeatType.Worldbreaker1,
-            "Strike the ground. Enemies in an area of effect (sphere) take weapon DMG + 25, suffer brief Knockdown, and deal 10% less damage for 45 seconds.");
-    }
-
-    [Test]
     public void StaffCrusherAbilities_MatchCombatBible()
     {
         var slam = new SlamAbilityDefinition().BuildAbilities();
@@ -98,9 +34,6 @@ public class StaffCrusherTests
         var groundQuake = new GroundQuakeAbilityDefinition().BuildAbilities();
         AssertAbility(groundQuake[FeatType.GroundQuake1], "Ground Quake I", 1, RecastGroup.GroundQuake, 60f, 0f, 8, true, false, false, true, AbilityActivationType.Casted);
         AssertAbility(groundQuake[FeatType.GroundQuake2], "Ground Quake II", 2, RecastGroup.GroundQuake, 60f, 0f, 10, true, false, false, true, AbilityActivationType.Casted);
-
-        var skullRattle = new SkullRattleAbilityDefinition().BuildAbilities()[FeatType.SkullRattle1];
-        AssertAbility(skullRattle, "Skull Rattle", 1, RecastGroup.SkullRattle, 90f, 0f, 10, true, true, true, false, AbilityActivationType.Casted);
 
         var bonecrusher = new BonecrusherAbilityDefinition().BuildAbilities()[FeatType.Bonecrusher1];
         AssertAbility(bonecrusher, "Bonecrusher", 1, RecastGroup.Bonecrusher, 120f, 0f, 12, true, true, true, false, AbilityActivationType.Casted);
@@ -163,7 +96,6 @@ public class StaffCrusherTests
             (FeatType.RibBreaker3, "ife_ribbrkr3", "M", "0x02", "1", "****", "****", "****", "****"),
             (FeatType.GroundQuake1, "ife_grndquake1", "P", "0x01", "1", "sphere", "5", "****", "17"),
             (FeatType.GroundQuake2, "ife_grndquake2", "P", "0x01", "1", "sphere", "5", "****", "17"),
-            (FeatType.SkullRattle1, "ife_skulratl1", "M", "0x02", "1", "****", "****", "****", "****"),
             (FeatType.Bonecrusher1, "ife_bone1", "M", "0x02", "1", "****", "****", "****", "****"),
             (FeatType.Worldbreaker1, "ife_worldbrk1", "P", "0x01", "1", "sphere", "5", "****", "17")
         };

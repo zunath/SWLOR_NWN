@@ -114,6 +114,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
                 HealPercent(activator, friendly, SkillType.FirstAid, 10);
+                FirstAidTreatmentAdjustments.ApplyTraumaMedicRiders(activator, friendly);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_M), friendly);
             }
         }
@@ -123,6 +124,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
                 HealPercent(activator, friendly, SkillType.FirstAid, 20);
+                FirstAidTreatmentAdjustments.ApplyTraumaMedicRiders(activator, friendly);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_M), friendly);
             }
         }
@@ -132,6 +134,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
                 HealPercent(activator, friendly, SkillType.FirstAid, 28);
+                FirstAidTreatmentAdjustments.ApplyTraumaMedicRiders(activator, friendly);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_M), friendly);
             }
         }
@@ -141,6 +144,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
                 HealPercent(activator, friendly, SkillType.FirstAid, 36);
+                FirstAidTreatmentAdjustments.ApplyTraumaMedicRiders(activator, friendly);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_M), friendly);
             }
         }

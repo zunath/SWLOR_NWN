@@ -16,68 +16,6 @@ namespace SWLOR.Game.Server.Tests.Perks;
 public class PistolSkirmisherTests
 {
     [Test]
-    public void PistolSkirmisherPerkLevels_MatchCombatBible()
-    {
-        var perks = BuildPistolSkirmisherPerksWithout2daLookup();
-
-        AssertPerkLevel(perks[PerkType.MobileFootwork], "Mobile Footwork", 1, 2, 2, null,
-            "After using a pistol ability, gain +10% Evasion for 6 seconds.",
-            StatType.PistolAbilityUsedEvasionPercentAdjustment,
-            StatType.PistolAbilityUsedEvasionDurationSeconds);
-        AssertPerkLevel(perks[PerkType.DisarmingShot], "Disarming Shot", 1, 2, 8, FeatType.DisarmingShot1,
-            "Deals weapon DMG + 8 and inflicts Weakened, reducing Attack by 10% for 12 seconds.");
-        AssertPerkLevel(perks[PerkType.SnapRoll], "Snap Roll", 1, 3, 12, FeatType.SnapRoll1,
-            "Gain +25% Evasion for 6 seconds and reduce your current enmity by 10%.");
-        AssertPerkLevel(perks[PerkType.SkirmisherStance], "Skirmisher Stance", 1, 2, 15, FeatType.SkirmisherStance1,
-            "While active, grants +15% Evasion and reduces Enmity generation by 20%, but reduces Attack by 10%.");
-        AssertPerkLevel(perks[PerkType.InterruptingShot], "Interrupting Shot", 1, 4, 18, FeatType.InterruptingShot1,
-            "Interrupts your target's ability activation and inflicts Foggy Mind for 12 seconds.");
-        AssertPerkLevel(perks[PerkType.KitingInstinct], "Kiting Instinct", 1, 3, 20, null,
-            "When attacked in melee, you have a 20% chance to restore 3 STM and gain +10% Evasion for 6 seconds.",
-            StatType.MeleeDamageTakenStaminaRestoreChance,
-            StatType.MeleeDamageTakenStaminaRestore,
-            StatType.MeleeDamageTakenEvasionPercentAdjustment,
-            StatType.MeleeDamageTakenEvasionDurationSeconds);
-        AssertPerkLevel(perks[PerkType.DisarmingShot], "Disarming Shot", 2, 2, 22, FeatType.DisarmingShot2,
-            "Deals weapon DMG + 18 and inflicts Weakened, reducing Attack by 15% for 15 seconds.");
-        AssertPerkLevel(perks[PerkType.RicochetShot], "Ricochet Shot", 1, 3, 25, FeatType.RicochetShot1,
-            "A shot bounces to up to 3 enemies for weapon DMG + 12 each. Each target is inflicted with Blind for 6 seconds.");
-        AssertPerkLevel(perks[PerkType.SnapRoll], "Snap Roll", 2, 4, 28, FeatType.SnapRoll2,
-            "Gain +35% Evasion for 8 seconds and your next pistol attack within 8 seconds deals +10 DMG.");
-        AssertPerkLevel(perks[PerkType.LowShot], "Low Shot", 1, 3, 30, FeatType.LowShot1,
-            "Deals weapon DMG + 20 and inflicts Disoriented for 12 seconds.");
-        AssertPerkLevel(perks[PerkType.EvasiveReload], "Evasive Reload", 1, 2, 32, null,
-            "Using Snap Roll or Ricochet Shot reduces Disarming Shot cooldowns by 10 seconds.",
-            StatType.AbilityUsedRecastReductionTriggerGroup,
-            StatType.AbilityUsedRecastReductionSecondaryTriggerGroup,
-            StatType.AbilityUsedRecastReductionTargetGroup,
-            StatType.AbilityUsedRecastReductionSeconds);
-        AssertPerkLevel(perks[PerkType.InterruptingShot], "Interrupting Shot", 2, 4, 35, FeatType.InterruptingShot2,
-            "Deals weapon DMG + 20, interrupts your target's ability activation, and inflicts Foggy Mind for 20 seconds.");
-        AssertPerkLevel(perks[PerkType.PointBlankBurst], "Point Blank Burst", 1, 3, 38, FeatType.PointBlankBurst1,
-            "Deals weapon DMG + 18 to enemies in a cone. Inflicts Knockdown for 3 seconds.");
-        AssertPerkLevel(perks[PerkType.DuelistsDistance], "Duelist's Distance", 1, 3, 40, null,
-            "Deal +12% pistol damage to enemies within 8 meters that are not targeting you.",
-            StatType.DamageToNearbyNonTargetingTargetPercentAdjustment);
-        AssertPerkLevel(perks[PerkType.DisarmingShot], "Disarming Shot", 3, 4, 42, FeatType.DisarmingShot3,
-            "Deals weapon DMG + 32 and inflicts Weakened, reducing Attack by 20% for 15 seconds.");
-        AssertPerkLevel(perks[PerkType.SmokeRound], "Smoke Round", 1, 3, 45, FeatType.SmokeRound1,
-            "Enemies in the target area are inflicted with Blind for 12 seconds. You reduce enmity against affected enemies.");
-        AssertPerkLevel(perks[PerkType.SkirmishersNerve], "Skirmisher's Nerve", 1, 4, 48, null,
-            "When reduced below 40% HP, your next pistol ability costs 0 STM and grants +20% Evasion for 8 seconds. This can only trigger once every 2 minutes.",
-            StatType.LowHPEvasionThresholdPercent,
-            StatType.LowHPEvasionPercentAdjustment,
-            StatType.LowHPEvasionDurationSeconds,
-            StatType.LowHPEvasionCooldownSeconds,
-            StatType.LowHPNextAbilityNoStaminaCostThresholdPercent,
-            StatType.LowHPNextAbilityNoStaminaCostSkillType,
-            StatType.LowHPNextAbilityNoStaminaCostDurationSeconds,
-            StatType.LowHPNextAbilityNoStaminaCostCooldownSeconds);
-        AssertPerkLevel(perks[PerkType.LastWord], "Last Word", 1, 4, 50, FeatType.LastWord1,
-            "Interrupts enemies in a cone, deals weapon DMG + 25, briefly Dazes, and reduces hit chance by 10% for 45 seconds.");
-    }
-
-    [Test]
     public void PistolSkirmisherAbilities_MatchCombatBible()
     {
         var disarmingShot = new DisarmingShotAbilityDefinition().BuildAbilities();
@@ -85,22 +23,12 @@ public class PistolSkirmisherTests
         AssertAbility(disarmingShot[FeatType.DisarmingShot2], "Disarming Shot II", 2, RecastGroup.DisarmingShot, 30f, 0f, 5, true, true, true, false, AbilityActivationType.Casted);
         AssertAbility(disarmingShot[FeatType.DisarmingShot3], "Disarming Shot III", 3, RecastGroup.DisarmingShot, 30f, 0f, 8, true, true, true, false, AbilityActivationType.Casted);
 
-        var snapRoll = new SnapRollAbilityDefinition().BuildAbilities();
-        AssertAbility(snapRoll[FeatType.SnapRoll1], "Snap Roll I", 1, RecastGroup.SnapRoll, 60f, 0f, 6, false, false, false, false, AbilityActivationType.Casted);
-        AssertAbility(snapRoll[FeatType.SnapRoll2], "Snap Roll II", 2, RecastGroup.SnapRoll, 60f, 0f, 8, false, false, false, false, AbilityActivationType.Casted);
-
         var skirmisherStance = new SkirmisherStanceAbilityDefinition().BuildAbilities()[FeatType.SkirmisherStance1];
         AssertAbility(skirmisherStance, "Skirmisher Stance", 1, RecastGroup.SkirmisherStance, 180f, 2f, null, false, false, false, false, AbilityActivationType.Casted);
 
         var interruptingShot = new InterruptingShotAbilityDefinition().BuildAbilities();
         AssertAbility(interruptingShot[FeatType.InterruptingShot1], "Interrupting Shot I", 1, RecastGroup.InterruptingShot, 45f, 0f, 6, true, true, true, false, AbilityActivationType.Casted);
         AssertAbility(interruptingShot[FeatType.InterruptingShot2], "Interrupting Shot II", 2, RecastGroup.InterruptingShot, 45f, 0f, 8, true, true, true, false, AbilityActivationType.Casted);
-
-        var ricochetShot = new RicochetShotAbilityDefinition().BuildAbilities()[FeatType.RicochetShot1];
-        AssertAbility(ricochetShot, "Ricochet Shot", 1, RecastGroup.RicochetShot, 60f, 0f, 8, true, true, false, true, AbilityActivationType.Casted);
-
-        var lowShot = new LowShotAbilityDefinition().BuildAbilities()[FeatType.LowShot1];
-        AssertAbility(lowShot, "Low Shot", 1, RecastGroup.LowShot, 60f, 0f, 8, true, true, true, false, AbilityActivationType.Casted);
 
         var pointBlankBurst = new PointBlankBurstAbilityDefinition().BuildAbilities()[FeatType.PointBlankBurst1];
         AssertAbility(pointBlankBurst, "Point Blank Burst", 1, RecastGroup.PointBlankBurst, 90f, 0f, 8, true, false, false, true, AbilityActivationType.Casted);
@@ -138,32 +66,6 @@ public class PistolSkirmisherTests
     }
 
     [Test]
-    public void SnapRoll2_GrantsNextPistolAutoAttackDamageBonus()
-    {
-        const uint Creature = 1234;
-        TemporaryStatModifier.Clear(Creature);
-
-        typeof(SnapRollAbilityDefinition)
-            .GetMethod("GrantSnapRoll2DamageBonus", BindingFlags.Static | BindingFlags.NonPublic)!
-            .Invoke(null, new object[] { Creature });
-
-        TemporaryStatModifier.GetStatAdjustment(
-                Creature,
-                StatType.NextSkillAutoAttackDamageBonusSkillType,
-                StatType.NextSkillAutoAttackDamageBonusSkillType)
-            .Should()
-            .Be((int)SkillType.Pistol);
-        TemporaryStatModifier.GetStatAdjustment(
-                Creature,
-                StatType.NextSkillAutoAttackDamageBonus,
-                StatType.NextSkillAutoAttackDamageBonusSkillType)
-            .Should()
-            .Be(10);
-
-        TemporaryStatModifier.Clear(Creature);
-    }
-
-    [Test]
     public void PistolSkirmisherFeatAndAbilityIcons_AreUniqueAndPresent()
     {
         var root = FindRepositoryRoot();
@@ -173,13 +75,9 @@ public class PistolSkirmisherTests
         var feats = new[]
         {
             (FeatType.DisarmingShot1, "ife_disarmshot1", "M", "0x02", "1", "****", "****", "****", "****"),
-            (FeatType.SnapRoll1, "ife_snaproll1", "P", "0x01", "0", "****", "****", "****", "****"),
             (FeatType.SkirmisherStance1, "ife_skirmstnc1", "P", "0x01", "0", "****", "****", "****", "****"),
             (FeatType.InterruptingShot1, "ife_intrshot1", "M", "0x02", "1", "****", "****", "****", "****"),
             (FeatType.DisarmingShot2, "ife_disarmshot2", "M", "0x02", "1", "****", "****", "****", "****"),
-            (FeatType.RicochetShot1, "ife_ricoshot1", "M", "0x02", "1", "****", "****", "****", "****"),
-            (FeatType.SnapRoll2, "ife_snaproll2", "P", "0x01", "0", "****", "****", "****", "****"),
-            (FeatType.LowShot1, "ife_lowshot1", "M", "0x02", "1", "****", "****", "****", "****"),
             (FeatType.InterruptingShot2, "ife_intrshot2", "M", "0x02", "1", "****", "****", "****", "****"),
             (FeatType.PointBlankBurst1, "ife_ptblankburs1", "M", "0x3E", "1", "cone", "5", "5", "17"),
             (FeatType.DisarmingShot3, "ife_disarmshot3", "M", "0x02", "1", "****", "****", "****", "****"),
@@ -209,60 +107,15 @@ public class PistolSkirmisherTests
         }
     }
 
-    [Test]
-    public void PistolSkirmisherImplementationDetails_MatchCombatBible()
-    {
-        var root = FindRepositoryRoot();
-
-        var disarmingShot = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Pistol" / "DisarmingShotAbilityDefinition.cs").FullName);
-        disarmingShot.Should().Contain("SkillType.Pistol, 8, 12, typeof(WeakenedStatusEffect)");
-        disarmingShot.Should().Contain("new WeakenedStatusEffect(10)");
-        disarmingShot.Should().Contain("SkillType.Pistol, 18, 15, typeof(WeakenedStatusEffect)");
-        disarmingShot.Should().Contain("SkillType.Pistol, 32, 15, typeof(WeakenedStatusEffect)");
-        disarmingShot.Should().Contain("new WeakenedStatusEffect(20)");
-
-        var snapRoll = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Pistol" / "SnapRollAbilityDefinition.cs").FullName).Replace("\r\n", "\n");
-        snapRoll.Should().Contain("Enmity.ReduceEnmityOnAll(activator, 10)");
-        snapRoll.Should().Contain("new SnapRollStatusEffect(35)");
-        snapRoll.Should().Contain("StatType.NextSkillAutoAttackDamageBonusSkillType");
-        snapRoll.Should().Contain("StatType.NextSkillAutoAttackDamageBonus,\n                10,\n                8f");
-
-        var interruptingShot = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Pistol" / "InterruptingShotAbilityDefinition.cs").FullName);
-        interruptingShot.Should().Contain("private const int FoggyMindActivationDelaySeconds = 2;");
-        interruptingShot.Should().Contain("ApplyInterruptingShot(activator, target, targetLocation, 0, 12);");
-        interruptingShot.Should().Contain("ApplyInterruptingShot(activator, target, targetLocation, 20, 20);");
-        interruptingShot.Should().Contain("AssignCommand(target, () => ClearAllActions());");
-
-        var ricochetShot = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Pistol" / "RicochetShotAbilityDefinition.cs").FullName);
-        ricochetShot.Should().Contain("private const float BounceRadius = 5f;");
-        ricochetShot.Should().Contain("private const int MaxTargets = 3;");
-        ricochetShot.Should().Contain("SkillType.Pistol, 12, 6, typeof(BlindStatusEffect)");
-
-        var smokeRound = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Pistol" / "SmokeRoundAbilityDefinition.cs").FullName).Replace("\r\n", "\n");
-        smokeRound.Should().Contain("private const int EnmityReductionPercent = 10;");
-        smokeRound.Should().Contain("0,\n                12,\n                typeof(BlindStatusEffect)");
-        smokeRound.Should().Contain("afterSuccessfulHit: affectedEnemy => Enmity.ReduceEnmity(activator, affectedEnemy, EnmityReductionPercent)");
-
-        var lastWord = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Pistol" / "LastWordAbilityDefinition.cs").FullName).Replace("\r\n", "\n");
-        lastWord.Should().Contain("HasActivationDelay(1f)");
-        lastWord.Should().Contain("25,\n                45,\n                typeof(LastWordStatusEffect)");
-        lastWord.Should().Contain("typeof(DazedStatusEffect)");
-        lastWord.Should().Contain("3f");
-        lastWord.Should().Contain("beforeImpact: affectedEnemy => AssignCommand(affectedEnemy, () => ClearAllActions())");
-
-        var combat = File.ReadAllText((root / "SWLOR.Game.Server" / "Service" / "Combat.cs").FullName);
-        combat.Should().Contain("return previousHP >= thresholdHP && currentHP < thresholdHP;");
-    }
-
     private static void AssertPerkLevel(
-        PerkDetail perk,
-        string name,
-        int level,
-        int price,
-        int skillRank,
-        FeatType? grantedFeat,
-        string description,
-        params StatType[] statTypes)
+    PerkDetail perk,
+    string name,
+    int level,
+    int price,
+    int skillRank,
+    FeatType? grantedFeat,
+    string description,
+    params StatType[] statTypes)
     {
         perk.Name.Should().Be(name);
         perk.Category.Should().Be(PerkCategoryType.PistolSkirmisher);

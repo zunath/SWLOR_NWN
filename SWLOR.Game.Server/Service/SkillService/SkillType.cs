@@ -318,7 +318,7 @@ namespace SWLOR.Game.Server.Service.SkillService
             false,
             false,
             false)]
-            Nautila = 34,
+        Nautila = 34,
 
         [Skill(SkillCategoryType.Languages,
             "Ewokese",

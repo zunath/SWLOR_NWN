@@ -22,7 +22,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             CrushingBlow();
             DefensiveHarmony();
             Earthshatter();
-            EdgeOfDarkness();
             EssenceHunter();
             EssenceTap();
             Flash();
@@ -68,8 +67,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Anger Strike")
 
                 .AddPerkLevel()
-                .GrantsFeat(FeatType.AngerStrike1)
-                .Description("Your next attack deals +12 DMG and generates extra enmity.")
+                .Description("Heavy Vibroblade Defense attacks generate extra enmity, and your next attack after using a Heavy Vibroblade Defense ability deals +12 DMG.")
+                .IncreasesStat(StatType.HeavyVibrobladeDefenseAbilityEnmityBonus, creature => EquipmentPredicates.HasMainHandHeavyVibroblade(creature) ? 150 : 0)
+                .IncreasesStat(StatType.HeavyVibrobladeDefenseAbilityNextAutoAttackDamageBonus, creature => EquipmentPredicates.HasMainHandHeavyVibroblade(creature) ? 12 : 0)
+                .IncreasesStat(StatType.HeavyVibrobladeDefenseAbilityNextAutoAttackDamageDurationSeconds, creature => EquipmentPredicates.HasMainHandHeavyVibroblade(creature) ? 8 : 0)
                 .Price(2)
                 .RequirementSkill(SkillType.HeavyVibroblade, 8);
         }
@@ -107,8 +108,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Blood Weapon")
 
                 .AddPerkLevel()
-                .GrantsFeat(FeatType.BloodWeapon1)
-                .Description("For 20 seconds, 2% of the combat damage you deal is restored to your HP.")
+                .Description("While you have a Heavy Vibroblade Defense Physical Defense or damage-reduction buff, restore HP equal to 2% of combat damage you deal.")
+                .IncreasesStat(StatType.HeavyVibrobladeDefenseDamageDealtHPPercentRestore, creature => EquipmentPredicates.HasMainHandHeavyVibroblade(creature) ? 2 : 0)
                 .Price(3)
                 .RequirementSkill(SkillType.HeavyVibroblade, 45);
         }
@@ -120,8 +121,11 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Bloodlust")
 
                 .AddPerkLevel()
-                .GrantsFeat(FeatType.Bloodlust1)
-                .Description("Sacrifice 40% HP in exchange for 20% of your maximum STM restored. Amount of STM restored increased by 1% per MGT. (Maximum: 80%)")
+                .Description("After you spend HP on a Heavy Vibroblade Offense ability, restore 15% of maximum STM, increased by 1 percentage point per MGT to a maximum of 35%. This can trigger once every 30 seconds.")
+                .IncreasesStat(StatType.HeavyVibrobladeOffenseHitPointSpendStaminaRestoreBasePercent, creature => EquipmentPredicates.HasMainHandHeavyVibroblade(creature) ? 15 : 0)
+                .IncreasesStat(StatType.HeavyVibrobladeOffenseHitPointSpendStaminaRestoreScalingAbility, creature => EquipmentPredicates.HasMainHandHeavyVibroblade(creature) ? (int)AbilityType.Might + 1 : 0)
+                .IncreasesStat(StatType.HeavyVibrobladeOffenseHitPointSpendStaminaRestoreMaximumPercent, creature => EquipmentPredicates.HasMainHandHeavyVibroblade(creature) ? 35 : 0)
+                .IncreasesStat(StatType.HeavyVibrobladeOffenseHitPointSpendStaminaRestoreCooldownSeconds, creature => EquipmentPredicates.HasMainHandHeavyVibroblade(creature) ? 30 : 0)
                 .Price(4)
                 .RequirementSkill(SkillType.HeavyVibroblade, 42);
         }
@@ -146,8 +150,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Crushing Blow")
 
                 .AddPerkLevel()
-                .GrantsFeat(FeatType.CrushingBlow1)
-                .Description("Deal weapon DMG + 20 and generate significant enmity. Reduces the target's Defense by 15% for 16 seconds.")
+                .Description("Heavy Vibroblade Defense attacks reduce affected targets' Defense by 15% for 16 seconds and generate significant enmity.")
+                .IncreasesStat(StatType.HeavyVibrobladeDefenseAbilityCrushingBlow, creature => EquipmentPredicates.HasMainHandHeavyVibroblade(creature) ? 1 : 0)
+                .IncreasesStat(StatType.HeavyVibrobladeDefenseAbilityEnmityBonus, creature => EquipmentPredicates.HasMainHandHeavyVibroblade(creature) ? 350 : 0)
                 .Price(2)
                 .RequirementSkill(SkillType.HeavyVibroblade, 15);
         }
@@ -179,22 +184,15 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.Earthshatter1)
                 .Description("You deal weapon DMG + 20 to all enemies within the area of effect (line) from you. Inflicts Force Disruption on each target which disables the use of force abilities for 12 seconds.")
                 .Price(3)
-                .RequirementSkill(SkillType.HeavyVibroblade, 35);
-        }
-
-
-        private void EdgeOfDarkness()
-        {
-            _builder.Create(PerkCategoryType.HeavyVibrobladeDefense, PerkType.EdgeOfDarkness)
-                .Name("Edge of Darkness")
+                .RequirementSkill(SkillType.HeavyVibroblade, 35)
 
                 .AddPerkLevel()
-                .GrantsFeat(FeatType.EdgeOfDarkness1)
-                .Description("You deal weapon DMG + 15 to all enemies within the area of effect (sphere) from you and generate extra enmity.")
+                .Description("Earthshatter deals +15 DMG to affected enemies and generates extra enmity.")
+                .IncreasesStat(StatType.EarthshatterDamageBonus, creature => EquipmentPredicates.HasMainHandHeavyVibroblade(creature) ? 15 : 0)
+                .IncreasesStat(StatType.EarthshatterEnmityBonus, creature => EquipmentPredicates.HasMainHandHeavyVibroblade(creature) ? 350 : 0)
                 .Price(3)
                 .RequirementSkill(SkillType.HeavyVibroblade, 38);
         }
-
 
         private void EssenceHunter()
         {
@@ -202,8 +200,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Essence Hunter")
 
                 .AddPerkLevel()
-                .GrantsFeat(FeatType.EssenceHunter1)
-                .Description("Your next attack deals +18 DMG and inflicts Essence Drain, reducing the target's Attack by 15% for 12 seconds.")
+                .Description("Heavy Vibroblade Offense weapon abilities also inflict Essence Drain, reducing the target's Attack by 15% for 12 seconds.")
+                .IncreasesStat(StatType.HeavyVibrobladeOffenseEssenceHunter, creature => EquipmentPredicates.HasMainHandHeavyVibroblade(creature) ? 1 : 0)
                 .Price(3)
                 .RequirementSkill(SkillType.HeavyVibroblade, 12);
         }
@@ -282,8 +280,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Guardian's Resolve")
 
                 .AddPerkLevel()
-                .GrantsFeat(FeatType.GuardiansResolve1)
-                .Description("Gain a damage absorption shield equal to 30% of your max HP for 30 seconds. While active, heal for 25% of damage absorbed.")
+                .Description("When a Heavy Vibroblade Defense ability grants you Physical Defense or reduces incoming damage, you also gain a damage absorption shield equal to 12% of maximum HP for 12 seconds. You heal for 15% of damage absorbed. This can trigger once every 30 seconds.")
+                .IncreasesStat(StatType.HeavyVibrobladeDefenseGuardiansResolveShieldPercent, creature => EquipmentPredicates.HasMainHandHeavyVibroblade(creature) ? 12 : 0)
+                .IncreasesStat(StatType.HeavyVibrobladeDefenseGuardiansResolveDurationSeconds, creature => EquipmentPredicates.HasMainHandHeavyVibroblade(creature) ? 12 : 0)
+                .IncreasesStat(StatType.HeavyVibrobladeDefenseGuardiansResolveCooldownSeconds, creature => EquipmentPredicates.HasMainHandHeavyVibroblade(creature) ? 30 : 0)
                 .Price(4)
                 .RequirementSkill(SkillType.HeavyVibroblade, 28);
         }
@@ -365,8 +365,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Soul Ascension")
 
                 .AddPerkLevel()
-                .GrantsFeat(FeatType.SoulAscension1)
-                .Description("For 45 seconds, gain +15% Attack and heal for 20% of physical damage dealt.")
+                .Description("Defeating an enemy after spending HP on a Heavy Vibroblade Offense ability grants +15% Attack and heals you for 20% of physical damage dealt for 20 seconds.")
+                .IncreasesStat(StatType.HeavyVibrobladeOffenseSoulAscension, creature => EquipmentPredicates.HasMainHandHeavyVibroblade(creature) ? 1 : 0)
+                .IncreasesStat(StatType.HeavyVibrobladeOffenseHitPointSpendWindowSeconds, creature => EquipmentPredicates.HasMainHandHeavyVibroblade(creature) ? 20 : 0)
                 .Price(4)
                 .RequirementSkill(SkillType.HeavyVibroblade, 50);
         }
@@ -435,8 +436,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Soul Sacrifice")
 
                 .AddPerkLevel()
-                .GrantsFeat(FeatType.SoulSacrifice1)
-                .Description("Sacrifice 50% max HP to gain +35% Attack and +20% critical chance for 30 seconds. HP sacrificed decreases by 1% per MGT. (Minimum 20%)")
+                .Description("After you spend HP on a Heavy Vibroblade Offense ability, gain +20% Attack and +10% critical chance for 12 seconds. The HP cost reduction scales with MGT.")
+                .IncreasesStat(StatType.HeavyVibrobladeOffenseHitPointSpendSoulSacrifice, creature => EquipmentPredicates.HasMainHandHeavyVibroblade(creature) ? 1 : 0)
+                .IncreasesStat(StatType.HeavyVibrobladeOffenseHitPointSpendWindowSeconds, creature => EquipmentPredicates.HasMainHandHeavyVibroblade(creature) ? 20 : 0)
                 .Price(3)
                 .RequirementSkill(SkillType.HeavyVibroblade, 32);
         }
@@ -474,7 +476,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SoulStrike3)
-                .Description("Your next attack deals +45 DMG and heals you for 60% of damage dealt. Amount healed increased by 1% per MGT. (Maximum 90%)")
+                .Description("Your next attack deals +45 DMG and heals you for 45% of damage dealt. Amount healed increases by 1 percentage point per MGT to a maximum of 60%.")
                 .Price(3)
                 .RequirementSkill(SkillType.HeavyVibroblade, 45);
         }
@@ -486,7 +488,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Unbreakable Will")
 
                 .AddPerkLevel()
-                .Description("Grants +5% Attack Deflection. When attacks are deflected, you restore 10% of maximum STM. Deflection increases by 0.5% per MGT. (Maximum: 20%)")
+                .Description("Gain +5 Attack Deflection, increased by +1 per 2 MGT to a maximum of +15. Deflecting an attack restores 4 STM. This can trigger once every 6 seconds.")
                 .IncreasesStat(
                     StatType.AttackDeflection,
                     creature => Math.Min(20, 5 + Math.Max(0, GetAbilityScore(creature, AbilityType.Might)) / 2))
@@ -504,7 +506,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Vampiric Fury")
 
                 .AddPerkLevel()
-                .Description("Critical hits restore HP equal to 40% of damage dealt. Amount healed increases by 1% per MGT. (Maximum 75%)")
+                .Description("Critical hits restore HP equal to 25% of damage dealt, increased by 1 percentage point per MGT to a maximum of 45%. This can trigger once every 6 seconds.")
                 .IncreasesStat(
                     StatType.CriticalHPPercentOfDamageRestore,
                     creature => EquipmentPredicates.HasMainHandHeavyVibroblade(creature)

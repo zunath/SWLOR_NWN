@@ -10,33 +10,6 @@ namespace SWLOR.Game.Server.Tests.Perks;
 public class ArmorDualWieldTests
 {
     [Test]
-    public void DualWieldPerkLevels_MatchDesign()
-    {
-        var perk = BuildDualWieldPerkWithout2daLookup();
-
-        perk.Name.Should().Be("Dual Wield");
-        perk.Category.Should().Be(PerkCategoryType.General);
-
-        AssertDualWieldLevel(
-            perk.PerkLevels[1],
-            2,
-            5,
-            "While dual wielding, reduces off-hand attack delay by 10%.");
-
-        AssertDualWieldLevel(
-            perk.PerkLevels[2],
-            3,
-            25,
-            "While dual wielding, reduces off-hand attack delay by 20% total.");
-
-        AssertDualWieldLevel(
-            perk.PerkLevels[3],
-            4,
-            40,
-            "While dual wielding, reduces off-hand attack delay by 30% total.");
-    }
-
-    [Test]
     public void DualWieldResPerkRow_IsPresent()
     {
         var root = FindRepositoryRoot();

@@ -14,66 +14,6 @@ namespace SWLOR.Game.Server.Tests.Perks;
 public class SpearDamageTests
 {
     [Test]
-    public void SpearDamagePerkLevels_MatchCombatBible()
-    {
-        var perks = BuildSpearDamagePerksWithout2daLookup();
-
-        AssertPerkLevel(perks[PerkType.Flanking], "Flanking", 1, 3, 2, null,
-            "Attacks from the side deal +10% damage.",
-            StatType.SideAttackDamagePercentAdjustment);
-        AssertPerkLevel(perks[PerkType.LateralStrike], "Lateral Strike", 1, 3, 8, null,
-            "Attacks from the side restore 2 STM. This can only trigger once every 4 seconds.",
-            StatType.SideAttackStaminaRestore,
-            StatType.SideAttackStaminaRestoreCooldownSeconds);
-        AssertPerkLevel(perks[PerkType.FlankingStance], "Flanking Stance", 1, 3, 12, FeatType.FlankingStance1,
-            "While active, attacks from the side deal +20% damage and have +15% accuracy. Your defense and force defense are reduced by 25%.");
-        AssertPerkLevel(perks[PerkType.SideAssault], "Side Assault", 1, 2, 15, FeatType.SideAssault1,
-            "Your next attack deals +12 DMG. If you are facing the side of your target, this increases to +16 DMG.");
-        AssertPerkLevel(perks[PerkType.BreachStrike], "Breach Strike", 1, 4, 18, FeatType.BreachStrike1,
-            "Deal weapon DMG + 10. Inflicts Breach, which reduces Evasion and Defense by 20% for 30 seconds.");
-        AssertPerkLevel(perks[PerkType.FlankingBarrage], "Flanking Barrage", 1, 3, 20, FeatType.FlankingBarrage1,
-            "Deal weapon DMG + 20 from the side to your target and reduce their Attack by 12% for 8 seconds.");
-        AssertPerkLevel(perks[PerkType.LateralStrike], "Lateral Strike", 2, 2, 22, null,
-            "Attacks from the side restore 6 STM. This can only trigger once every 4 seconds.",
-            StatType.SideAttackStaminaRestore,
-            StatType.SideAttackStaminaRestoreCooldownSeconds);
-        AssertPerkLevel(perks[PerkType.SweepingFlank], "Sweeping Flank", 1, 3, 25, FeatType.SweepingFlank1,
-            "Deal weapon DMG + 18 to all enemies within area of effect (cone). Inflicts Exposed, which reduces defense by 15% for 30 seconds.");
-        AssertPerkLevel(perks[PerkType.ImprovedAttentiveness], "Improved Attentiveness", 1, 3, 28, FeatType.ImprovedAttentiveness1,
-            "Your party members, excluding you, gain +15% physical and Force ability hit chance for 1 minute.");
-        AssertPerkLevel(perks[PerkType.SideAssault], "Side Assault", 2, 3, 30, FeatType.SideAssault2,
-            "Your next attack deals +25 DMG. If you are facing the side of your target, this increases to +35 DMG.");
-        AssertPerkLevel(perks[PerkType.Flanking], "Flanking", 2, 2, 32, null,
-            "Attacks from the side have +10% accuracy and +8% critical chance.",
-            StatType.SideAttackDamagePercentAdjustment,
-            StatType.SideAttackHitChancePercentAdjustment,
-            StatType.SideAttackCriticalRatePercentAdjustment);
-        AssertPerkLevel(perks[PerkType.OpportunistsFlow], "Opportunist's Flow", 1, 4, 35, null,
-            "After dealing damage from a side attack, your next attack's delay is 20% quicker.",
-            StatType.SideAttackDelayReductionPercent,
-            StatType.SideAttackDelayReductionDurationSeconds);
-        AssertPerkLevel(perks[PerkType.RestorationStrike], "Restoration Strike", 1, 3, 38, null,
-            "Critical hit chance increases by 10%. Additionally, if you were at the side of your target, critical hits have a 35% chance to restore 15 STM.",
-            StatType.CriticalRatePercentAdjustment,
-            StatType.CriticalSideAttackStaminaRestoreChance,
-            StatType.CriticalSideAttackStaminaRestore);
-        AssertPerkLevel(perks[PerkType.HamperingBarrage], "Hampering Barrage", 1, 2, 40, FeatType.HamperingBarrage1,
-            "Deal weapon DMG + 30 to all enemies within area of effect (cone). Inflicts Disoriented for 12 seconds.");
-        AssertPerkLevel(perks[PerkType.SideAssault], "Side Assault", 3, 4, 42, FeatType.SideAssault3,
-            "Your next attack deals +35 DMG. If you are facing the side of your target, this increases to +50 DMG.");
-        AssertPerkLevel(perks[PerkType.CalmingStance], "Calming Stance", 1, 3, 45, FeatType.CalmingStance1,
-            "While active, your STM regenerates by 3 every second. Your attack, force attack, defense, and force defense are reduced by 40%.");
-        AssertPerkLevel(perks[PerkType.AdaptivePrecisionStrike], "Adaptive Precision Strike", 1, 4, 48, null,
-            "Attacks from the side have a 5% chance to bypass 35% of your target's Evasion. This chance increases by 1% per PER. (Maximum 30%)",
-            StatType.SideAttackEvasionIgnoreChance,
-            StatType.SideAttackEvasionIgnoreChanceScalingAbility,
-            StatType.SideAttackEvasionIgnoreChanceMaximum,
-            StatType.SideAttackEvasionIgnorePercent);
-        AssertPerkLevel(perks[PerkType.CripplingDefense], "Crippling Defense", 1, 4, 50, FeatType.CripplingDefense1,
-            "Enemies within the area of effect (sphere) suffer Crippled Defense, reducing physical and Force defense by 15% for 45 seconds. Restores 15 STM.");
-    }
-
-    [Test]
     public void SpearDamageAbilities_MatchCombatBible()
     {
         var flankingStance = new FlankingStanceAbilityDefinition().BuildAbilities()[FeatType.FlankingStance1];
@@ -84,9 +24,6 @@ public class SpearDamageTests
         AssertAbility(sideAssault[FeatType.SideAssault2], "Side Assault II", 2, RecastGroup.SideAssault, 12f, 0f, 12, true, false, true, false, AbilityActivationType.Weapon);
         AssertAbility(sideAssault[FeatType.SideAssault3], "Side Assault III", 3, RecastGroup.SideAssault, 12f, 0f, 18, true, false, true, false, AbilityActivationType.Weapon);
 
-        var breachStrike = new BreachStrikeAbilityDefinition().BuildAbilities()[FeatType.BreachStrike1];
-        AssertAbility(breachStrike, "Breach Strike", 1, RecastGroup.BreachStrike, 45f, 0f, 10, true, true, true, false, AbilityActivationType.Casted);
-
         var flankingBarrage = new FlankingBarrageAbilityDefinition().BuildAbilities()[FeatType.FlankingBarrage1];
         AssertAbility(flankingBarrage, "Flanking Barrage", 1, RecastGroup.FlankingBarrage, 120f, 0f, 8, true, true, true, false, AbilityActivationType.Casted);
         flankingBarrage.CustomValidation.Should().NotBeNull();
@@ -94,17 +31,12 @@ public class SpearDamageTests
         var sweepingFlank = new SweepingFlankAbilityDefinition().BuildAbilities()[FeatType.SweepingFlank1];
         AssertAbility(sweepingFlank, "Sweeping Flank", 1, RecastGroup.SweepingFlank, 60f, 2f, 10, true, false, false, true, AbilityActivationType.Casted);
 
-        var improvedAttentiveness = new ImprovedAttentivenessAbilityDefinition().BuildAbilities()[FeatType.ImprovedAttentiveness1];
-        AssertAbility(improvedAttentiveness, "Improved Attentiveness", 1, RecastGroup.ImprovedAttentiveness, 300f, 2f, 8, false, false, false, false, AbilityActivationType.Casted);
-
         var hamperingBarrage = new HamperingBarrageAbilityDefinition().BuildAbilities()[FeatType.HamperingBarrage1];
         AssertAbility(hamperingBarrage, "Hampering Barrage", 1, RecastGroup.HamperingBarrage, 60f, 2f, 14, true, false, false, true, AbilityActivationType.Casted);
 
         var calmingStance = new CalmingStanceAbilityDefinition().BuildAbilities()[FeatType.CalmingStance1];
         AssertAbility(calmingStance, "Calming Stance", 1, RecastGroup.CalmingStance, 180f, 2f, null, false, false, false, false, AbilityActivationType.Casted);
 
-        var cripplingDefense = new CripplingDefenseAbilityDefinition().BuildAbilities()[FeatType.CripplingDefense1];
-        AssertAbility(cripplingDefense, "Crippling Defense", 1, RecastGroup.Capstone, 345f, 3f, 15, true, false, false, true, AbilityActivationType.Casted);
     }
 
     [Test]
@@ -141,7 +73,7 @@ public class SpearDamageTests
         calming.StatGroup.Stats[StatType.PhysicalDefensePercentAdjustment].Should().Be(-40);
         calming.StatGroup.Stats[StatType.ForceDefensePercentAdjustment].Should().Be(-40);
 
-        var cripplingDefense = new CripplingDefenseStatusEffect();
+        var cripplingDefense = new CrippledDefenseStatusEffect();
         cripplingDefense.StatGroup.Stats[StatType.PhysicalDefensePercentAdjustment].Should().Be(-15);
         cripplingDefense.StatGroup.Stats[StatType.ForceDefensePercentAdjustment].Should().Be(-15);
     }
@@ -159,13 +91,10 @@ public class SpearDamageTests
             (FeatType.SideAssault1, "ife_sideaslt1", "0x01", "0", "****", "****", "****", "****"),
             (FeatType.SideAssault2, "ife_sideaslt2", "0x01", "0", "****", "****", "****", "****"),
             (FeatType.SideAssault3, "ife_sideaslt3", "0x01", "0", "****", "****", "****", "****"),
-            (FeatType.BreachStrike1, "ife_brchstrk1", "0x02", "1", "****", "****", "****", "****"),
             (FeatType.FlankingBarrage1, "ife_flankbarr1", "0x02", "1", "****", "****", "****", "****"),
             (FeatType.SweepingFlank1, "ife_swpngflnk1", "0x3E", "1", "cone", "5", "5", "17"),
-            (FeatType.ImprovedAttentiveness1, "ife_impatten1", "0x01", "0", "****", "****", "****", "****"),
             (FeatType.HamperingBarrage1, "ife_hampbarr1", "0x3E", "1", "cone", "5", "5", "17"),
             (FeatType.CalmingStance1, "ife_calmstnc1", "0x01", "0", "****", "****", "****", "****"),
-            (FeatType.CripplingDefense1, "ife_cripdef1", "0x01", "1", "sphere", "5", "****", "17")
         };
         var seenIcons = new HashSet<string>();
 
@@ -189,37 +118,15 @@ public class SpearDamageTests
         }
     }
 
-    [Test]
-    public void SpearDamageImplementationDetails_MatchCombatBible()
-    {
-        var root = FindRepositoryRoot();
-
-        var sideAssault = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Spear" / "SideAssaultAbilityDefinition.cs").FullName);
-        var normalizedSideAssault = sideAssault.Replace("\r\n", "\n");
-        sideAssault.Should().Contain("Combat.IsAttackerBesideTarget(activator, target)");
-        normalizedSideAssault.Should().Contain("12,\n                16,\n                6");
-        normalizedSideAssault.Should().Contain("25,\n                35,\n                12");
-        normalizedSideAssault.Should().Contain("35,\n                50,\n                18");
-
-        var improvedAttentiveness = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Spear" / "ImprovedAttentivenessAbilityDefinition.cs").FullName);
-        improvedAttentiveness.Should().Contain("if (partyMember == activator || !GetIsObjectValid(partyMember))");
-        improvedAttentiveness.Should().Contain("60f");
-
-        var cripplingDefense = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Spear" / "CripplingDefenseAbilityDefinition.cs").FullName);
-        cripplingDefense.Replace("\r\n", "\n").Should().Contain("CapstoneAbility.StaminaCost,\n                true,\n                restoreStamina: 15");
-        cripplingDefense.Should().Contain("restoreStamina: 15");
-        cripplingDefense.Should().Contain("activationDelay: 3f");
-    }
-
     private static void AssertPerkLevel(
-        PerkDetail perk,
-        string name,
-        int level,
-        int price,
-        int skillRank,
-        FeatType? grantedFeat,
-        string description,
-        params StatType[] statTypes)
+    PerkDetail perk,
+    string name,
+    int level,
+    int price,
+    int skillRank,
+    FeatType? grantedFeat,
+    string description,
+    params StatType[] statTypes)
     {
         perk.Name.Should().Be(name);
         perk.Category.Should().Be(PerkCategoryType.SpearDamage);

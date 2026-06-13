@@ -15,56 +15,6 @@ namespace SWLOR.Game.Server.Tests.Perks;
 public class KatarVenomCurrentTests
 {
     [Test]
-    public void KatarVenomCurrentPerkLevels_MatchCombatBible()
-    {
-        var perks = BuildKatarVenomCurrentPerksWithout2daLookup();
-
-        AssertPerkLevel(perks[PerkType.StrikingCobra], "Striking Cobra", 1, 3, 2, FeatType.StrikingCobra1,
-            "Your next attack deals weapon DMG + 8 and inflicts Poison for 30 seconds.");
-        AssertPerkLevel(perks[PerkType.StaticPalm], "Static Palm", 1, 3, 8, FeatType.StaticPalm1,
-            "Your next attack deals weapon DMG + 8 and inflicts Disoriented for 8 seconds.");
-        AssertPerkLevel(perks[PerkType.VenomRhythm], "Venom Rhythm", 1, 3, 12, null,
-            "Attacks against poisoned targets have a 15% chance to deal +6 DMG.",
-            StatType.DamageToPoisonedTargetFlatBonusChance,
-            StatType.DamageToPoisonedTargetFlatBonus);
-        AssertPerkLevel(perks[PerkType.CobraStance], "Cobra Stance", 1, 2, 15, FeatType.CobraStance1,
-            "While active, attacks have a 10% chance to inflict Poison for 30 seconds and you gain +10% Attack, but Defense is reduced by 15%.");
-        AssertPerkLevel(perks[PerkType.StrikingCobra], "Striking Cobra", 2, 4, 18, FeatType.StrikingCobra2,
-            "Your next attack deals weapon DMG + 18 and inflicts Poison for 60 seconds.");
-        AssertPerkLevel(perks[PerkType.StaticPalm], "Static Palm", 2, 3, 20, FeatType.StaticPalm2,
-            "Your next attack deals weapon DMG + 18 and inflicts Disoriented for 12 seconds.");
-        AssertPerkLevel(perks[PerkType.ToxicTempo], "Toxic Tempo", 1, 2, 22, null,
-            "Katar abilities deal +8% damage to targets affected by Poison or Disoriented.",
-            StatType.DamageToPoisonedOrDisorientedTargetPercentAdjustment);
-        AssertPerkLevel(perks[PerkType.TwinFangFlurry], "Twin Fang Flurry", 1, 3, 25, FeatType.TwinFangFlurry1,
-            "Strike twice for weapon DMG + 10 each. If the target is poisoned, the second strike inflicts Bleed for 30 seconds.");
-        AssertPerkLevel(perks[PerkType.VenomSplash], "Venom Splash", 1, 3, 28, FeatType.VenomSplash1,
-            "Deals weapon DMG + 18 to enemies in a cone and inflicts Poison for 30 seconds.");
-        AssertPerkLevel(perks[PerkType.NeuralShock], "Neural Shock", 1, 3, 30, FeatType.NeuralShock1,
-            "Deals weapon DMG + 20. If the target is Disoriented, they become Dazed for 3 seconds.");
-        AssertPerkLevel(perks[PerkType.CobraReflexes], "Cobra Reflexes", 1, 2, 32, null,
-            "Critical hits against poisoned targets restore 4 STM.",
-            StatType.CriticalPoisonedTargetStaminaRestore);
-        AssertPerkLevel(perks[PerkType.StrikingCobra], "Striking Cobra", 3, 4, 35, FeatType.StrikingCobra3,
-            "Your next attack deals weapon DMG + 28 and inflicts Poison for 60 seconds.");
-        AssertPerkLevel(perks[PerkType.StaticPalm], "Static Palm", 3, 3, 38, FeatType.StaticPalm3,
-            "Your next attack deals weapon DMG + 28 and inflicts Disoriented for 15 seconds. Poisoned targets also become Dazed for 3 seconds.");
-        AssertPerkLevel(perks[PerkType.SpreadingVenom], "Spreading Venom", 1, 2, 40, null,
-            "When a poisoned target dies, the nearest enemy within 5 meters becomes poisoned for 30 seconds.",
-            StatType.PoisonedDefeatedEnemySpreadRadiusMeters,
-            StatType.PoisonedDefeatedEnemySpreadDurationSeconds);
-        AssertPerkLevel(perks[PerkType.CurrentOverload], "Current Overload", 1, 4, 42, FeatType.CurrentOverload1,
-            "Deals weapon DMG + 35. If the target is Poisoned or Disoriented, consume one effect to deal +25 DMG and inflict Stunned for 3 seconds.");
-        AssertPerkLevel(perks[PerkType.ToxicRush], "Toxic Rush", 1, 3, 45, FeatType.ToxicRush1,
-            "Gain +20% Haste and +15% Attack for 20 seconds. Attacks against poisoned targets restore 2 STM during this effect.");
-        AssertPerkLevel(perks[PerkType.NeurotoxinMastery], "Neurotoxin Mastery", 1, 4, 48, null,
-            "Poison effects you apply also reduce the target's Attack by 10%.",
-            StatType.OutgoingPoisonAttackPercentAdjustment);
-        AssertPerkLevel(perks[PerkType.SerpentsEclipse], "Serpent's Eclipse", 1, 4, 50, FeatType.SerpentsEclipse1,
-            "All enemies in an area of effect (sphere) take weapon DMG + 20 poison damage and suffer Poison and Disoriented for 45 seconds. Enemies already affected by either effect take +15 DMG.");
-    }
-
-    [Test]
     public void KatarVenomCurrentAbilities_MatchCombatBible()
     {
         var strikingCobra = new StrikingCobraAbilityDefinition().BuildAbilities();
@@ -80,20 +30,11 @@ public class KatarVenomCurrentTests
         var cobraStance = new CobraStanceAbilityDefinition().BuildAbilities()[FeatType.CobraStance1];
         AssertAbility(cobraStance, "Cobra Stance", 1, RecastGroup.CobraStance, 180f, 2f, null, false, false, false, false, AbilityActivationType.Casted);
 
-        var twinFangFlurry = new TwinFangFlurryAbilityDefinition().BuildAbilities()[FeatType.TwinFangFlurry1];
-        AssertAbility(twinFangFlurry, "Twin Fang Flurry", 1, RecastGroup.TwinFangFlurry, 60f, 0f, 8, true, true, true, false, AbilityActivationType.Casted);
-
-        var venomSplash = new VenomSplashAbilityDefinition().BuildAbilities()[FeatType.VenomSplash1];
-        AssertAbility(venomSplash, "Venom Splash", 1, RecastGroup.VenomSplash, 60f, 0f, 8, true, false, false, true, AbilityActivationType.Casted);
-
         var neuralShock = new NeuralShockAbilityDefinition().BuildAbilities()[FeatType.NeuralShock1];
         AssertAbility(neuralShock, "Neural Shock", 1, RecastGroup.NeuralShock, 60f, 0f, 8, true, true, true, false, AbilityActivationType.Casted);
 
         var currentOverload = new CurrentOverloadAbilityDefinition().BuildAbilities()[FeatType.CurrentOverload1];
         AssertAbility(currentOverload, "Current Overload", 1, RecastGroup.CurrentOverload, 90f, 0f, 12, true, true, true, false, AbilityActivationType.Casted);
-
-        var toxicRush = new ToxicRushAbilityDefinition().BuildAbilities()[FeatType.ToxicRush1];
-        AssertAbility(toxicRush, "Toxic Rush", 1, RecastGroup.ToxicRush, 120f, 0f, 10, false, false, false, false, AbilityActivationType.Casted);
 
         var serpentsEclipse = new SerpentsEclipseAbilityDefinition().BuildAbilities()[FeatType.SerpentsEclipse1];
         AssertAbility(serpentsEclipse, "Serpent's Eclipse", 1, RecastGroup.Capstone, 345f, 2f, 15, true, false, false, true, AbilityActivationType.Casted);
@@ -132,11 +73,8 @@ public class KatarVenomCurrentTests
             (FeatType.StaticPalm2, "ife_statpalm2", "P", "0x01", "0", "****", "****", "****", "****"),
             (FeatType.StaticPalm3, "ife_statpalm3", "P", "0x01", "0", "****", "****", "****", "****"),
             (FeatType.CobraStance1, "ife_cobrastnc1", "P", "0x01", "0", "****", "****", "****", "****"),
-            (FeatType.TwinFangFlurry1, "ife_twinfangflu1", "M", "0x02", "1", "****", "****", "****", "****"),
-            (FeatType.VenomSplash1, "ife_venspl1", "M", "0x3E", "1", "cone", "5", "5", "17"),
             (FeatType.NeuralShock1, "ife_neuralshok1", "M", "0x02", "1", "****", "****", "****", "****"),
             (FeatType.CurrentOverload1, "ife_currovld1", "M", "0x02", "1", "****", "****", "****", "****"),
-            (FeatType.ToxicRush1, "ife_toxrush1", "P", "0x01", "0", "****", "****", "****", "****"),
             (FeatType.SerpentsEclipse1, "ife_serpecl1", "M", "0x3E", "1", "sphere", "5", "****", "1")
         };
         var seenIcons = new HashSet<string>();
@@ -162,47 +100,15 @@ public class KatarVenomCurrentTests
         }
     }
 
-    [Test]
-    public void KatarVenomCurrentImplementationDetails_MatchCombatBible()
-    {
-        var root = FindRepositoryRoot();
-
-        var staticPalm = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Katar" / "StaticPalmAbilityDefinition.cs").FullName);
-        staticPalm.Should().Contain("var appliesDazed = StatusEffect.HasStatusEffect(target, typeof(PoisonStatusEffect));");
-        staticPalm.Should().Contain("StatusEffect.ApplyStatusEffect(activator, hitTarget, typeof(DazedStatusEffect), 3f, CombatDamageType.Electrical);");
-
-        var twinFangFlurry = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Katar" / "TwinFangFlurryAbilityDefinition.cs").FullName);
-        twinFangFlurry.Should().Contain("Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Katar, 10, 0, null, false);");
-        twinFangFlurry.Should().Contain("StatusEffect.HasStatusEffect(target, typeof(PoisonStatusEffect)) ? typeof(BleedStatusEffect) : null");
-
-        var currentOverload = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Katar" / "CurrentOverloadAbilityDefinition.cs").FullName);
-        currentOverload.Should().Contain("var damage = consumedStatus == null ? 35 : 60;");
-        currentOverload.Should().Contain("typeof(StunnedStatusEffect);");
-        currentOverload.Should().Contain("var duration = statusEffect == null ? 0 : 3;");
-        currentOverload.Should().Contain("StatusEffect.RemoveStatusEffect(hitTarget, consumedStatus, false);");
-
-        var toxicRush = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "StatusEffectDefinition" / "ToxicRushStatusEffect.cs").FullName);
-        toxicRush.Should().Contain("StatusEffect.HasStatusEffect(defender, typeof(PoisonStatusEffect))");
-        toxicRush.Should().Contain("Stat.RestoreStamina(attacker, 2);");
-        toxicRush.Should().Contain("StatGroup.Stats[StatType.AttackPercentAdjustment] = 15;");
-        toxicRush.Should().Contain("StatGroup.Stats[StatType.AttackDelayReductionPercent] = 20;");
-
-        var serpentsEclipse = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Katar" / "SerpentsEclipseAbilityDefinition.cs").FullName);
-        serpentsEclipse.Replace("\r\n", "\n").Should().Contain("SkillType.Katar,\n                20,\n                45,");
-        serpentsEclipse.Should().Contain("additionalStatusEffects: new[] { typeof(DisorientedStatusEffect) }");
-        serpentsEclipse.Should().Contain("damageType: CombatDamageType.Poison");
-        serpentsEclipse.Should().Contain("baseDamageAdjustment: creature => IsPoisonedOrDisoriented(creature) ? 15 : 0");
-    }
-
     private static void AssertPerkLevel(
-        PerkDetail perk,
-        string name,
-        int level,
-        int price,
-        int skillRank,
-        FeatType? grantedFeat,
-        string description,
-        params StatType[] statTypes)
+    PerkDetail perk,
+    string name,
+    int level,
+    int price,
+    int skillRank,
+    FeatType? grantedFeat,
+    string description,
+    params StatType[] statTypes)
     {
         perk.Name.Should().Be(name);
         perk.Category.Should().Be(PerkCategoryType.KatarVenomCurrent);

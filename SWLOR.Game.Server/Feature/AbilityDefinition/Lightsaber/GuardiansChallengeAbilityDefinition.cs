@@ -15,6 +15,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
             var builder = new AbilityBuilder();
 
             GuardiansChallenge1(builder);
+            GuardiansChallenge2(builder);
 
             return builder.Build();
         }
@@ -23,7 +24,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
         {
             builder
                 .Create(FeatType.GuardiansChallenge1, PerkType.GuardiansChallenge)
-                .Name("Guardian's Challenge")
+                .Name("Guardian's Challenge I")
                 .Level(1)
                 .HasActivationDelay(0f)
                 .HasRecastDelay(RecastGroup.GuardiansChallenge, 90f)
@@ -38,6 +39,43 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
         private static void GuardiansChallenge1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
             Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.Lightsaber, 35, 0, null, CombatImpactAreaShape.Cone, 0.25f, 5f, 5f);
+        }
+
+        private static void GuardiansChallenge2(AbilityBuilder builder)
+        {
+            builder
+                .Create(FeatType.GuardiansChallenge2, PerkType.GuardiansChallenge)
+                .Name("Guardian's Challenge II")
+                .Level(2)
+                .HasActivationDelay(0f)
+                .HasRecastDelay(RecastGroup.GuardiansChallenge, 120f)
+                .HasImpactAction(GuardiansChallenge2ImpactAction)
+                .HasTargetingLine(
+                    Spell.GuardiansChallenge2,
+                    8f,
+                    2.5f,
+                    AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf)
+                .IsAreaAbility()
+                .IsCastedAbility()
+                .IsHostileAbility()
+                .BreaksStealth()
+                .RequirementStamina(12);
+        }
+
+        private static void GuardiansChallenge2ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        {
+            Ability.ApplyTelegraphedCombatImpact(
+                activator,
+                target,
+                targetLocation,
+                SkillType.Lightsaber,
+                35,
+                0,
+                null,
+                CombatImpactAreaShape.Line,
+                0.25f,
+                8f,
+                2.5f);
         }
     }
 }

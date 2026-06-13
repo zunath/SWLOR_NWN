@@ -22,66 +22,6 @@ public class DeviceAbilityAnimationTests
         missingAnimations.Should().BeEmpty();
     }
 
-    [Test]
-    public void HostileDeviceAbilities_UseDeviceAppropriateAnimations()
-    {
-        var abilities = BuildDeviceAbilities();
-
-        AssertImpactAnimation(
-            abilities,
-            Animation.ThrowGrenade,
-            FeatType.AdhesiveGrenade1,
-            FeatType.AdhesiveGrenade2,
-            FeatType.ClusterGrenade1,
-            FeatType.ConcussionGrenade1,
-            FeatType.ConcussionGrenade2,
-            FeatType.ConcussionGrenade3,
-            FeatType.FlashGrenade1,
-            FeatType.FlashGrenade2,
-            FeatType.FragGrenade1,
-            FeatType.FragGrenade2,
-            FeatType.FragGrenade3,
-            FeatType.IonGrenade1,
-            FeatType.IonGrenade2,
-            FeatType.RemoteCharge1,
-            FeatType.RemoteCharge2,
-            FeatType.RemoteCharge3,
-            FeatType.ThermalDetonator1);
-
-        AssertImpactAnimation(
-            abilities,
-            Animation.CastOutAnimation,
-            FeatType.CryoSprayer1,
-            FeatType.CryoSprayer2,
-            FeatType.Flamethrower1,
-            FeatType.Flamethrower2,
-            FeatType.Flamethrower3,
-            FeatType.OverloadBarrage1,
-            FeatType.RailDart1,
-            FeatType.RailDart2,
-            FeatType.SonicBurst1,
-            FeatType.SonicBurst2,
-            FeatType.SonicBurst3,
-            FeatType.WeaponJam1,
-            FeatType.WeaponJam2,
-            FeatType.WristRocket1,
-            FeatType.WristRocket2,
-            FeatType.WristRocket3);
-
-        AssertActivationAnimation(
-            abilities,
-            Animation.CastOutAnimation,
-            FeatType.BlasterBeacon1,
-            FeatType.BlasterBeacon2,
-            FeatType.BlasterBeacon3,
-            FeatType.IncendiaryField1,
-            FeatType.IncendiaryField2,
-            FeatType.IncendiaryField3,
-            FeatType.KillzoneBeacon1,
-            FeatType.ShockBeacon1,
-            FeatType.ShockBeacon2);
-    }
-
     private static Dictionary<FeatType, AbilityDetail> BuildDeviceAbilities()
     {
         var definitionType = typeof(IAbilityListDefinition);

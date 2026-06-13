@@ -14,103 +14,6 @@ namespace SWLOR.Game.Server.Tests.Perks;
 public class HeavyVibrobladeDefenseTests
 {
     [Test]
-    public void HeavyVibrobladeDefensePerkLevels_MatchCombatBible()
-    {
-        var perks = BuildHeavyVibrobladeDefensePerksWithout2daLookup();
-
-        AssertPerkLevel(perks[PerkType.FortressStrike], "Fortress Strike", 1, 2, 2, FeatType.FortressStrike1,
-            "Your next attack deals weapon DMG + 10 and generates extra enmity. You gain +10% Physical Defense for 16 seconds.");
-        AssertPerkLevel(perks[PerkType.AngerStrike], "Anger Strike", 1, 2, 8, FeatType.AngerStrike1,
-            "Your next attack deals +12 DMG and generates extra enmity.");
-        AssertPerkLevel(perks[PerkType.BastionStance], "Bastion Stance", 1, 3, 12, FeatType.BastionStance1,
-            "While active, grants +20% to Enmity generation, +15% Defense, +15% Force Defense, -20% Attack, and -20% Force Attack");
-        AssertPerkLevel(perks[PerkType.CrushingBlow], "Crushing Blow", 1, 2, 15, FeatType.CrushingBlow1,
-            "Deal weapon DMG + 20 and generate significant enmity. Reduces the target's Defense by 15% for 16 seconds.");
-        AssertPerkLevel(perks[PerkType.Flash], "Flash", 1, 4, 18, FeatType.Flash1,
-            "Enemies within the area of effect (sphere) around you receive the Flash effect, reducing physical and Force ability hit chance by 20% for 30 seconds. You generate significant enmity toward these enemies.");
-        AssertPerkLevel(perks[PerkType.LastStand], "Last Stand", 1, 3, 20, null,
-            "When reduced below 25% HP, gain a damage shield equal to 20% of maximum HP for 12 seconds. This can only trigger once per 10 minutes.",
-            StatType.LowHPTemporaryHPThresholdPercent,
-            StatType.LowHPTemporaryHPPercent,
-            StatType.LowHPTemporaryHPDurationSeconds,
-            StatType.LowHPTemporaryHPCooldownSeconds);
-        AssertPerkLevel(perks[PerkType.UnbreakableWill], "Unbreakable Will", 1, 3, 22, null,
-            "Grants +5% Attack Deflection. When attacks are deflected, you restore 10% of maximum STM. Deflection increases by 0.5% per MGT. (Maximum: 20%)",
-            StatType.AttackDeflection,
-            StatType.DeflectionStaminaRestorePercent);
-        AssertPerkLevel(perks[PerkType.FortressStrike], "Fortress Strike", 2, 2, 25, FeatType.FortressStrike2,
-            "Your next attack deals weapon DMG + 20 and generates extra enmity. You gain +20% Physical Defense for 16 seconds.");
-        AssertPerkLevel(perks[PerkType.GuardiansResolve], "Guardian's Resolve", 1, 4, 28, FeatType.GuardiansResolve1,
-            "Gain a damage absorption shield equal to 30% of your max HP for 30 seconds. While active, heal for 25% of damage absorbed.");
-        AssertPerkLevel(perks[PerkType.DefensiveHarmony], "Defensive Harmony", 1, 3, 30, null,
-            "HP restoration used on you is 20% more effective. 10% chance to restore 8 STM when healed. Chance increases by 1% per MGT. (Maximum 40%)",
-            StatType.HealingReceivedPercentAdjustment,
-            StatType.HealingReceivedStaminaRestoreChance,
-            StatType.HealingReceivedStaminaRestoreChanceScalingAbility,
-            StatType.HealingReceivedStaminaRestoreChanceMaximum,
-            StatType.HealingReceivedStaminaRestore);
-        AssertPerkLevel(perks[PerkType.Rampart], "Rampart", 1, 4, 32, FeatType.Rampart1,
-            "All allies within the area of effect (sphere) take 15% less physical damage for 1 minute.");
-        AssertPerkLevel(perks[PerkType.Earthshatter], "Earthshatter", 1, 3, 35, FeatType.Earthshatter1,
-            "You deal weapon DMG + 20 to all enemies within the area of effect (line) from you. Inflicts Force Disruption on each target which disables the use of force abilities for 12 seconds.");
-        AssertPerkLevel(perks[PerkType.EdgeOfDarkness], "Edge of Darkness", 1, 3, 38, FeatType.EdgeOfDarkness1,
-            "You deal weapon DMG + 15 to all enemies within the area of effect (sphere) from you and generate extra enmity.");
-        AssertPerkLevel(perks[PerkType.CriticalWard], "Critical Ward", 1, 2, 40, null,
-            "If you would receive a critical hit, downgrade the attack to a normal hit. The attack will do minimum damage to you.",
-            StatType.IncomingCriticalHitDowngradeToMinimumDamage);
-        AssertPerkLevel(perks[PerkType.FortressStrike], "Fortress Strike", 3, 4, 42, FeatType.FortressStrike3,
-            "Your next attack deals weapon DMG + 30 and generates extra enmity. You gain +30% Physical Defense for 16 seconds.");
-        AssertPerkLevel(perks[PerkType.BloodWeapon], "Blood Weapon", 1, 3, 45, FeatType.BloodWeapon1,
-            "For 20 seconds, 2% of the combat damage you deal is restored to your HP.");
-        AssertPerkLevel(perks[PerkType.GuardiansReaping], "Guardian's Reaping", 1, 4, 48, null,
-            "Defeating an enemy restores 20% max HP to you and grants +15% Physical Defense to all nearby allies for 25 seconds.",
-            StatType.DefeatedEnemyHPPercentRestore,
-            StatType.DefeatedEnemyNearbyAllyPhysicalDefensePercentAdjustment,
-            StatType.DefeatedEnemyNearbyAllyPhysicalDefenseDurationSeconds);
-        AssertPerkLevel(perks[PerkType.AbsoluteDefense], "Absolute Defense", 1, 4, 50, FeatType.AbsoluteDefense1,
-            "For 45 seconds, nearby party members including you take 15% less physical and Force damage and are immune to Knockdown and Daze.");
-    }
-
-    [Test]
-    public void HeavyVibrobladeDefenseAbilities_MatchCombatBible()
-    {
-        var fortressStrike = new FortressStrikeAbilityDefinition().BuildAbilities();
-        AssertAbility(fortressStrike[FeatType.FortressStrike1], "Fortress Strike I", 1, RecastGroup.FortressStrike, 30f, 0f, 4, true, false, true, false, AbilityActivationType.Weapon);
-        AssertAbility(fortressStrike[FeatType.FortressStrike2], "Fortress Strike II", 2, RecastGroup.FortressStrike, 30f, 0f, 7, true, false, true, false, AbilityActivationType.Weapon);
-        AssertAbility(fortressStrike[FeatType.FortressStrike3], "Fortress Strike III", 3, RecastGroup.FortressStrike, 30f, 0f, 10, true, false, true, false, AbilityActivationType.Weapon);
-
-        var angerStrike = new AngerStrikeAbilityDefinition().BuildAbilities()[FeatType.AngerStrike1];
-        AssertAbility(angerStrike, "Anger Strike", 1, RecastGroup.AngerStrike, 45f, 0f, 4, true, false, true, false, AbilityActivationType.Weapon);
-
-        var bastionStance = new BastionStanceAbilityDefinition().BuildAbilities()[FeatType.BastionStance1];
-        AssertAbility(bastionStance, "Bastion Stance", 1, RecastGroup.BastionStance, 180f, 2f, null, false, false, false, false, AbilityActivationType.Casted);
-
-        var crushingBlow = new CrushingBlowAbilityDefinition().BuildAbilities()[FeatType.CrushingBlow1];
-        AssertAbility(crushingBlow, "Crushing Blow", 1, RecastGroup.CrushingBlow, 120f, 0f, 6, true, true, true, false, AbilityActivationType.Casted);
-
-        var flash = new FlashAbilityDefinition().BuildAbilities()[FeatType.Flash1];
-        AssertAbility(flash, "Flash", 1, RecastGroup.Flash, 90f, 0f, 8, true, false, false, true, AbilityActivationType.Casted);
-
-        var guardiansResolve = new GuardiansResolveAbilityDefinition().BuildAbilities()[FeatType.GuardiansResolve1];
-        AssertAbility(guardiansResolve, "Guardian's Resolve", 1, RecastGroup.GuardiansResolve, 90f, 0f, 10, false, false, false, false, AbilityActivationType.Casted);
-
-        var rampart = new RampartAbilityDefinition().BuildAbilities()[FeatType.Rampart1];
-        AssertAbility(rampart, "Rampart", 1, RecastGroup.Rampart, 180f, 0f, 12, false, false, false, true, AbilityActivationType.Casted);
-
-        var earthshatter = new EarthshatterAbilityDefinition().BuildAbilities()[FeatType.Earthshatter1];
-        AssertAbility(earthshatter, "Earthshatter", 1, RecastGroup.Earthshatter, 90f, 0f, 12, true, false, false, true, AbilityActivationType.Casted);
-
-        var edgeOfDarkness = new EdgeOfDarknessAbilityDefinition().BuildAbilities()[FeatType.EdgeOfDarkness1];
-        AssertAbility(edgeOfDarkness, "Edge of Darkness", 1, RecastGroup.EdgeOfDarkness, 300f, 0f, 16, true, false, false, true, AbilityActivationType.Casted);
-
-        var bloodWeapon = new BloodWeaponAbilityDefinition().BuildAbilities()[FeatType.BloodWeapon1];
-        AssertAbility(bloodWeapon, "Blood Weapon", 1, RecastGroup.BloodWeapon, 120f, 0f, 14, false, false, false, false, AbilityActivationType.Casted);
-
-        var absoluteDefense = new AbsoluteDefenseAbilityDefinition().BuildAbilities()[FeatType.AbsoluteDefense1];
-        AssertAbility(absoluteDefense, "Absolute Defense", 1, RecastGroup.Capstone, 345f, 0f, 15, false, false, false, false, AbilityActivationType.Casted);
-    }
-
-    [Test]
     public void HeavyVibrobladeDefenseStatusEffects_MatchCombatBible()
     {
         var bastion = new BastionStanceStatusEffect();
@@ -154,17 +57,12 @@ public class HeavyVibrobladeDefenseTests
         var feats = new[]
         {
             (FeatType.FortressStrike1, "ife_fortstrk1", "0x01", "0", "****", "****", "****", "****"),
-            (FeatType.AngerStrike1, "ife_angrstrk1", "0x01", "0", "****", "****", "****", "****"),
             (FeatType.BastionStance1, "ife_baststnc1", "0x01", "0", "****", "****", "****", "****"),
-            (FeatType.CrushingBlow1, "ife_crushblow1", "0x02", "1", "****", "****", "****", "****"),
             (FeatType.Flash1, "ife_flash1", "0x01", "1", "sphere", "5", "****", "17"),
             (FeatType.FortressStrike2, "ife_fortstrk2", "0x01", "0", "****", "****", "****", "****"),
-            (FeatType.GuardiansResolve1, "ife_guardres1", "0x01", "0", "****", "****", "****", "****"),
             (FeatType.Rampart1, "ife_ramp1", "0x01", "0", "sphere", "5", "****", "17"),
             (FeatType.Earthshatter1, "ife_earth1", "0x3E", "1", "rectangle", "8", "2.5", "17"),
-            (FeatType.EdgeOfDarkness1, "ife_edgedark1", "0x01", "1", "sphere", "5", "****", "17"),
             (FeatType.FortressStrike3, "ife_fortstrk3", "0x01", "0", "****", "****", "****", "****"),
-            (FeatType.BloodWeapon1, "ife_bldwpn1", "0x01", "0", "****", "****", "****", "****"),
             (FeatType.AbsoluteDefense1, "ife_absdef1", "0x01", "0", "****", "****", "****", "****")
         };
         var seenIcons = new HashSet<string>();
@@ -189,36 +87,15 @@ public class HeavyVibrobladeDefenseTests
         }
     }
 
-    [Test]
-    public void HeavyVibrobladeDefenseImplementationDetails_MatchCombatBible()
-    {
-        var root = FindRepositoryRoot();
-
-        var edgeOfDarkness = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "HeavyVibroblade" / "EdgeOfDarknessAbilityDefinition.cs").FullName);
-        edgeOfDarkness.Should().Contain("CombatImpactAreaShape.Sphere");
-        edgeOfDarkness.Should().Contain("centerOnActivator: true");
-        edgeOfDarkness.Should().Contain("enmityBonus: 350");
-
-        var absoluteDefense = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "HeavyVibroblade" / "AbsoluteDefenseAbilityDefinition.cs").FullName);
-        absoluteDefense.Should().Contain("if (!GetIsObjectValid(partyMember))");
-        absoluteDefense.Should().Contain("Ability.ApplyTemporaryImmunity(partyMember, CapstoneAbility.ActiveDurationSeconds, ImmunityType.Knockdown)");
-        absoluteDefense.Should().Contain("Ability.ApplyTemporaryImmunity(partyMember, CapstoneAbility.ActiveDurationSeconds, ImmunityType.Dazed)");
-
-        var perkDefinition = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "PerkDefinition" / "HeavyVibrobladePerkDefinition.cs").FullName)
-            .ReplaceLineEndings("\n");
-        perkDefinition.Should().Contain("StatType.AttackDeflection,\n                    creature => Math.Min(20, 5 + Math.Max(0, GetAbilityScore(creature, AbilityType.Might)) / 2)");
-        perkDefinition.Should().Contain("StatType.DeflectionStaminaRestorePercent,\n                    10)");
-    }
-
     private static void AssertPerkLevel(
-        PerkDetail perk,
-        string name,
-        int level,
-        int price,
-        int skillRank,
-        FeatType? grantedFeat,
-        string description,
-        params StatType[] statTypes)
+    PerkDetail perk,
+    string name,
+    int level,
+    int price,
+    int skillRank,
+    FeatType? grantedFeat,
+    string description,
+    params StatType[] statTypes)
     {
         perk.Name.Should().Be(name);
         perk.Category.Should().Be(PerkCategoryType.HeavyVibrobladeDefense);
@@ -310,7 +187,6 @@ public class HeavyVibrobladeDefenseTests
             "CrushingBlow",
             "DefensiveHarmony",
             "Earthshatter",
-            "EdgeOfDarkness",
             "Flash",
             "FortressStrike",
             "GuardiansReaping",

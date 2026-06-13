@@ -17,24 +17,31 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
         {
             var builder = new AbilityBuilder();
 
-            CoordinatedFocus(builder);
+            CoordinatedFocus(builder, FeatType.CoordinatedFocus1, Spell.CoordinatedFocus1, "Coordinated Focus I", 1);
+            CoordinatedFocus(builder, FeatType.CoordinatedFocus2, Spell.CoordinatedFocus2, "Coordinated Focus II", 2);
+            CoordinatedFocus(builder, FeatType.CoordinatedFocus3, Spell.CoordinatedFocus3, "Coordinated Focus III", 3);
 
             return builder.Build();
         }
 
-        private static void CoordinatedFocus(AbilityBuilder builder)
+        private static void CoordinatedFocus(
+            AbilityBuilder builder,
+            FeatType featType,
+            Spell spell,
+            string name,
+            int level)
         {
             builder
-                .Create(FeatType.CoordinatedFocus1, PerkType.CoordinatedFocus)
-                .Name("Coordinated Focus")
-                .Level(1)
+                .Create(featType, PerkType.CoordinatedFocus)
+                .Name(name)
+                .Level(level)
                 .HasActivationDelay(2f)
                 .HasRecastDelay(RecastGroup.CoordinatedFocus, 60f)
                 .SkillType(SkillType.Leadership)
                 .IsAreaAbility()
                 .HasImpactAction(CoordinatedFocusImpactAction)
                 .HasTargetingSphere(
-                    Spell.CoordinatedFocus1,
+                    spell,
                     5f,
                     AbilityTargetingFlags.HelpsAllies | AbilityTargetingFlags.OriginOnSelf,
                     LeadershipAbilityEffects.ApplyLeadershipCommandRadiusBonus)

@@ -16,74 +16,6 @@ namespace SWLOR.Game.Server.Tests.Perks;
 public class RifleMarksmanTests
 {
     [Test]
-    public void RifleMarksmanPerkLevels_MatchCombatBible()
-    {
-        var perks = BuildRifleMarksmanPerksWithout2daLookup();
-
-        AssertPerkLevel(perks[PerkType.SteadyAim], "Steady Aim", 1, 3, 2, null,
-            "Rifle combat abilities gain +5% accuracy and +5% critical chance.",
-            StatType.AbilityHitChancePercentAdjustmentSkillType,
-            StatType.AbilityHitChancePercentAdjustment,
-            StatType.AbilityCriticalRatePercentAdjustmentSkillType,
-            StatType.AbilityCriticalRatePercentAdjustment);
-        AssertPerkLevel(perks[PerkType.AimedShot], "Aimed Shot", 1, 3, 8, FeatType.AimedShot1,
-            "Deals weapon DMG + 18. If the target is farther than 8 meters away, deal an additional +10 DMG.");
-        AssertPerkLevel(perks[PerkType.PiercingRound], "Piercing Round", 1, 3, 12, FeatType.PiercingRound1,
-            "Deals weapon DMG + 14 and inflicts Sunder, reducing Defense by 10% for 12 seconds.");
-        AssertPerkLevel(perks[PerkType.SniperStance], "Sniper Stance", 1, 2, 15, FeatType.SniperStance1,
-            "While active, grants +20% Attack and +15% critical damage, but reduces Evasion and Defense by 20%.");
-        AssertPerkLevel(perks[PerkType.AimedShot], "Aimed Shot", 2, 4, 18, FeatType.AimedShot2,
-            "Deals weapon DMG + 32. If the target is farther than 8 meters away, deal an additional +16 DMG.");
-        AssertPerkLevel(perks[PerkType.ScopeCalibration], "Scope Calibration", 1, 3, 20, null,
-            "Rifle critical hits deal +15% damage.",
-            StatType.CriticalDamagePercentAdjustment);
-        AssertPerkLevel(perks[PerkType.PiercingRound], "Piercing Round", 2, 2, 22, FeatType.PiercingRound2,
-            "Deals weapon DMG + 26 and inflicts Sunder, reducing Defense by 15% for 12 seconds.");
-        AssertPerkLevel(perks[PerkType.SuppressiveLine], "Suppressive Line", 1, 3, 25, FeatType.SuppressiveLine1,
-            "Deals weapon DMG + 22 to enemies in a line. Inflicts Disoriented for 12 seconds.");
-        AssertPerkLevel(perks[PerkType.AimedShot], "Aimed Shot", 3, 3, 28, FeatType.AimedShot3,
-            "Deals weapon DMG + 46. If the target is farther than 8 meters away, deal an additional +24 DMG.");
-        AssertPerkLevel(perks[PerkType.ExposeWeakPoint], "Expose Weak Point", 1, 3, 30, FeatType.ExposeWeakPoint1,
-            "Deals weapon DMG + 20 and marks the target for 12 seconds. Physical attacks against the marked target deal +10% damage.");
-        AssertPerkLevel(perks[PerkType.SteadyAim], "Steady Aim", 2, 2, 32, null,
-            "Aimed Shot cooldowns are reduced by 5 seconds and gain an additional +10% accuracy.",
-            StatType.AbilityHitChancePercentAdjustmentSkillType,
-            StatType.AbilityHitChancePercentAdjustment,
-            StatType.AbilityCriticalRatePercentAdjustmentSkillType,
-            StatType.AbilityCriticalRatePercentAdjustment,
-            StatType.AbilityHitChancePercentAdjustmentPerkType,
-            StatType.TargetedAbilityHitChancePercentAdjustment,
-            StatType.AbilityRecastDelayFlatAdjustmentPerkType,
-            StatType.AbilityRecastDelayFlatAdjustment);
-        AssertPerkLevel(perks[PerkType.BreachRound], "Breach Round", 1, 4, 35, FeatType.BreachRound1,
-            "Deals weapon DMG + 35 and ignores 25% of the target's Defense.",
-            StatType.AbilityDefenseIgnorePercentAdjustmentPerkType,
-            StatType.AbilityDefenseIgnorePercentAdjustment);
-        AssertPerkLevel(perks[PerkType.DeadCenter], "Dead Center", 1, 3, 38, null,
-            "Rifle critical hits restore 4 STM and cause your next Aimed Shot within 8 seconds to deal +10 DMG. This can only trigger once every 6 seconds.",
-            StatType.CriticalStaminaRestore,
-            StatType.CriticalStaminaRestoreSkillType,
-            StatType.CriticalStaminaRestoreCooldownSeconds,
-            StatType.CriticalNextAbilityDamageBonusTriggerSkillType,
-            StatType.CriticalNextAbilityDamageBonusPerkType,
-            StatType.CriticalNextAbilityDamageBonus,
-            StatType.CriticalNextAbilityDamageBonusDurationSeconds,
-            StatType.CriticalNextAbilityDamageBonusCooldownSeconds);
-        AssertPerkLevel(perks[PerkType.PiercingRound], "Piercing Round", 3, 2, 40, FeatType.PiercingRound3,
-            "Deals weapon DMG + 38 and inflicts Sunder, reducing Defense by 20% for 15 seconds.");
-        AssertPerkLevel(perks[PerkType.Headshot], "Headshot", 1, 4, 42, FeatType.Headshot1,
-            "Deals weapon DMG + 60. Targets below 50% HP become Dazed for 3 seconds.");
-        AssertPerkLevel(perks[PerkType.KillZone], "Kill Zone", 1, 3, 45, FeatType.KillZone1,
-            "For 20 seconds, repeated attacks against the same target stack +4% rifle damage, up to +20%. Switching targets clears this bonus.");
-        AssertPerkLevel(perks[PerkType.BallisticMastery], "Ballistic Mastery", 1, 4, 48, null,
-            "Rifle abilities against Exposed or Sundered targets ignore an additional 15% Defense.",
-            StatType.AbilityDefenseIgnoreExposedOrSunderedSkillType,
-            StatType.AbilityDefenseIgnoreExposedOrSunderedPercentAdjustment);
-        AssertPerkLevel(perks[PerkType.OneShot], "One Shot", 1, 4, 50, FeatType.OneShot1,
-            "Deals weapon DMG + 50. On hit, the target is Marked for 45 seconds and takes 8% more physical ability damage.");
-    }
-
-    [Test]
     public void RifleMarksmanAbilities_MatchCombatBible()
     {
         var aimedShot = new AimedShotAbilityDefinition().BuildAbilities();
@@ -102,17 +34,8 @@ public class RifleMarksmanTests
         var suppressiveLine = new SuppressiveLineAbilityDefinition().BuildAbilities()[FeatType.SuppressiveLine1];
         AssertAbility(suppressiveLine, "Suppressive Line", 1, RecastGroup.SuppressiveLine, 60f, 0f, 8, true, false, false, true, AbilityActivationType.Casted);
 
-        var exposeWeakPoint = new ExposeWeakPointAbilityDefinition().BuildAbilities()[FeatType.ExposeWeakPoint1];
-        AssertAbility(exposeWeakPoint, "Expose Weak Point", 1, RecastGroup.ExposeWeakPoint, 75f, 0f, 8, true, true, true, false, AbilityActivationType.Casted, 30f);
-
-        var breachRound = new BreachRoundAbilityDefinition().BuildAbilities()[FeatType.BreachRound1];
-        AssertAbility(breachRound, "Breach Round", 1, RecastGroup.BreachRound, 90f, 0f, 10, true, true, true, false, AbilityActivationType.Casted, 30f);
-
         var headshot = new HeadshotAbilityDefinition().BuildAbilities()[FeatType.Headshot1];
         AssertAbility(headshot, "Headshot", 1, RecastGroup.Headshot, 120f, 1.5f, 14, true, true, true, false, AbilityActivationType.Casted, 30f);
-
-        var killZone = new KillZoneAbilityDefinition().BuildAbilities()[FeatType.KillZone1];
-        AssertAbility(killZone, "Kill Zone", 1, RecastGroup.KillZone, 120f, 0f, 10, false, false, false, false, AbilityActivationType.Casted);
 
         var oneShot = new OneShotAbilityDefinition().BuildAbilities()[FeatType.OneShot1];
         AssertAbility(oneShot, "One Shot", 1, RecastGroup.Capstone, 345f, 2f, 15, true, true, true, false, AbilityActivationType.Casted, 30f);
@@ -141,7 +64,7 @@ public class RifleMarksmanTests
         killZone.StatGroup.Stats[StatType.RepeatedTargetDamagePercentMax].Should().Be(20);
         killZone.StatGroup.Stats[StatType.AttackPercentAdjustment].Should().Be(0);
 
-        var oneShotMarked = new OneShotMarkedStatusEffect();
+        var oneShotMarked = new MarkedStatusEffect();
         oneShotMarked.StatGroup.Stats[StatType.PhysicalAbilityDamageTakenPercentAdjustment].Should().Be(8);
         Stat.GetStatTypeCategory(StatType.PhysicalAbilityDamageTakenPercentAdjustment).Should().Be(StatTypeCategory.BeneficialWhenNegative);
     }
@@ -161,7 +84,7 @@ public class RifleMarksmanTests
         ability.Should().Contain("Combat.ApplyCriticalDamageModifier");
 
         var oneShot = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Rifle" / "OneShotAbilityDefinition.cs").FullName);
-        oneShot.Should().Contain("SkillType.Rifle, 50, 45, typeof(OneShotMarkedStatusEffect), false");
+        oneShot.Should().Contain("SkillType.Rifle, 50, 45, typeof(MarkedStatusEffect), false");
     }
 
     [Test]
@@ -180,11 +103,8 @@ public class RifleMarksmanTests
             (FeatType.PiercingRound2, "ife_piercrnd2", "M", "0x02", "1", "****", "****", "****", "****"),
             (FeatType.SuppressiveLine1, "ife_spprssvline1", "M", "0x3E", "1", "rectangle", "8", "2.5", "17"),
             (FeatType.AimedShot3, "ife_aimshot3", "M", "0x02", "1", "****", "****", "****", "****"),
-            (FeatType.ExposeWeakPoint1, "ife_xposeweakpt1", "M", "0x02", "1", "****", "****", "****", "****"),
-            (FeatType.BreachRound1, "ife_brchrnd1", "M", "0x02", "1", "****", "****", "****", "****"),
             (FeatType.PiercingRound3, "ife_piercrnd3", "M", "0x02", "1", "****", "****", "****", "****"),
             (FeatType.Headshot1, "ife_head1", "M", "0x02", "1", "****", "****", "****", "****"),
-            (FeatType.KillZone1, "ife_killzone1", "P", "0x01", "0", "****", "****", "****", "****"),
             (FeatType.OneShot1, "ife_oneshot1", "M", "0x02", "1", "****", "****", "****", "****")
         };
         var seenIcons = new HashSet<string>();

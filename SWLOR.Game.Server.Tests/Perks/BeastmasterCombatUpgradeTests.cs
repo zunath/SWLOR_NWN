@@ -18,9 +18,14 @@ public class BeastmasterCombatUpgradeTests
     [Test]
     public void BeastmasterPassivePerks_ExposeBibleStats()
     {
-        var damage = BuildPerksWithout2daLookup(new BeastDamagePerkDefinition(), "BloodFrenzy");
+        var damage = BuildPerksWithout2daLookup(new BeastDamagePerkDefinition(), "BloodFrenzy", "PredatorsMark");
         AssertStatBonus(damage[PerkType.BeastBloodFrenzy].PerkLevels[1], StatType.DamageDealtBleedingTargetStaminaRestoreChance, 20);
         AssertStatBonus(damage[PerkType.BeastBloodFrenzy].PerkLevels[2], StatType.DamageDealtBleedingTargetStaminaRestoreChance, 30);
+        AssertStatBonus(damage[PerkType.PredatorsMark].PerkLevels[1], StatType.PredatorsMarkDamageTakenFromBeastPercent, 10);
+        AssertStatBonus(damage[PerkType.PredatorsMark].PerkLevels[2], StatType.PredatorsMarkHastePercentPerStack, 5);
+        AssertStatBonus(damage[PerkType.PredatorsMark].PerkLevels[2], StatType.PredatorsMarkAbilityHitChancePercentPerStack, 2);
+        AssertStatBonus(damage[PerkType.PredatorsMark].PerkLevels[2], StatType.PredatorsMarkFollowUpDurationSeconds, 8);
+        AssertStatBonus(damage[PerkType.PredatorsMark].PerkLevels[2], StatType.PredatorsMarkFollowUpMaximumStacks, 4);
 
         var tank = BuildPerksWithout2daLookup(new BeastTankPerkDefinition(), "FocusAttention", "LastGuardian");
         AssertStatBonus(tank[PerkType.FocusAttention].PerkLevels[3], StatType.AbilityRecastDelayFlatAdjustmentPerkType, (int)PerkType.Anger);
@@ -51,7 +56,6 @@ public class BeastmasterCombatUpgradeTests
         new BolsterAttack3StatusEffect().StatGroup.Stats[StatType.DamageDealtPercentAdjustment].Should().Be(12);
         new Hasten1StatusEffect().StatGroup.Stats[StatType.AttackDelayReductionPercent].Should().Be(15);
         new Hasten2StatusEffect().StatGroup.Stats[StatType.AttackDelayReductionPercent].Should().Be(25);
-        new PredatorRush1StatusEffect().StatGroup.Stats[StatType.AttackDelayReductionPercent].Should().Be(20);
         new PrimalOverrun1StatusEffect().StatGroup.Stats[StatType.DamageDealtPercentAdjustment].Should().Be(12);
         new AlphaRhythm1StatusEffect().StatGroup.Stats[StatType.AbilityHitChancePercentAdjustment].Should().Be(8);
         new AlphaRhythm1BeastStatusEffect().StatGroup.Stats[StatType.DamageDealtPercentAdjustment].Should().Be(10);
@@ -60,14 +64,12 @@ public class BeastmasterCombatUpgradeTests
         new DistractingFeint1StatusEffect().StatGroup.Stats[StatType.PhysicalAndForceAbilityHitChancePercentAdjustment].Should().Be(-6);
         new EvasiveChallenge1SelfStatusEffect().StatGroup.Stats[StatType.AvoidedAttackSingleStaminaRestore].Should().Be(1);
         new Intercept2StatusEffect().StatGroup.Stats[StatType.DamageTakenRedirectToStatusSourcePercent].Should().Be(50);
+        new PredatorsMark1StatusEffect(10).StatGroup.Stats[StatType.DamageTakenFromStatusSourcePercentAdjustment].Should().Be(10);
     }
 
     [Test]
     public void BeastmasterAbilities_MatchTargetingAndResourceCosts()
     {
-        var predatorsMark = new PredatorsMarkAbilityDefinition().BuildAbilities()[FeatType.PredatorsMark1];
-        AssertStaminaAbility(predatorsMark, "Predator's Mark I", RecastGroup.PredatorsMark, 45f, 5, requiresTarget: true);
-
         var apexBite = new ApexBiteAbilityDefinition().BuildAbilities()[FeatType.ApexBite1];
         AssertStaminaAbility(apexBite, "Apex Bite", RecastGroup.ApexBite, 120f, 10, requiresTarget: true);
 
@@ -114,7 +116,29 @@ public class BeastmasterCombatUpgradeTests
         var combat = File.ReadAllText((root / "SWLOR.Game.Server" / "Service" / "Combat.cs").FullName);
         combat.Should().Contain("ApplyAbilityUsedMasterAbilityHitChance");
         combat.Should().Contain("ApplyDamageTakenRedirectToStatusSource");
+        combat.Should().Contain("ApplyPredatorsMarkEffects");
         combat.Should().Contain("InventorySlot.CreatureRight");
+    }
+
+    [Test]
+    public void BeastmasterPerkRequirements_GuardMissingActiveBeastBeforeLookup()
+    {
+        var root = FindRepositoryRoot();
+        var requirementFiles = new[]
+        {
+            root / "SWLOR.Game.Server" / "Service" / "PerkService" / "PerkRequirementBeastLevel.cs",
+            root / "SWLOR.Game.Server" / "Service" / "PerkService" / "PerkRequirementBeastRole.cs"
+        };
+
+        foreach (var file in requirementFiles)
+        {
+            var source = File.ReadAllText(file.FullName);
+            var guardIndex = source.IndexOf("string.IsNullOrWhiteSpace(dbPlayer.ActiveBeastId)", StringComparison.Ordinal);
+            var lookupIndex = source.IndexOf("DB.Get<Beast>(dbPlayer.ActiveBeastId)", StringComparison.Ordinal);
+
+            guardIndex.Should().BeGreaterThanOrEqualTo(0, $"{Path.GetFileName(file.FullName)} must handle players without an active beast");
+            lookupIndex.Should().BeGreaterThan(guardIndex, $"{Path.GetFileName(file.FullName)} must not call DB.Get<Beast> with a null active beast id");
+        }
     }
 
     private static void AssertStaminaAbility(

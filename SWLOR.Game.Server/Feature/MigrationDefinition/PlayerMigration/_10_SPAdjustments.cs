@@ -61,8 +61,8 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration
             (FeatType)1833, // CreepingTerror1
             (FeatType)1834, // CreepingTerror2
             (FeatType)1835, // CreepingTerror3
-            (FeatType)1836, // ForceRage1
-            (FeatType)1837, // ForceRage2
+            (FeatType)1836, // FuryStance1
+            (FeatType)1837, // FuryStance2
         };
 
         public override int Version => 10;

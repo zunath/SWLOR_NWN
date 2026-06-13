@@ -90,34 +90,71 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 
         private static void PowerCell1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
+            var isInitialTarget = true;
             foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
                 Stat.RestoreStamina(friendly, PercentOf(Stat.GetMaxStamina(friendly), 10));
                 StatusEffect.ApplyStatusEffect(activator, friendly, typeof(PowerCell1StatusEffect), 12f);
+                ApplyPowerCellRiders(activator, friendly, isInitialTarget);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Restoration), friendly);
+                isInitialTarget = false;
             }
         }
 
         private static void PowerCell2ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
+            var isInitialTarget = true;
             foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
                 Stat.RestoreStamina(friendly, PercentOf(Stat.GetMaxStamina(friendly), 18));
                 StatusEffect.ApplyStatusEffect(activator, friendly, typeof(PowerCell2StatusEffect), 12f);
+                ApplyPowerCellRiders(activator, friendly, isInitialTarget);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Restoration), friendly);
+                isInitialTarget = false;
             }
         }
 
         private static void PowerCell3ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, true))
+            var isInitialTarget = true;
+            foreach (var friendly in GetPowerCell3Targets(activator, target))
             {
                 Stat.RestoreStamina(friendly, PercentOf(Stat.GetMaxStamina(friendly), 18));
                 StatusEffect.ApplyStatusEffect(activator, friendly, typeof(PowerCell3StatusEffect), 12f);
+                ApplyPowerCellRiders(activator, friendly, isInitialTarget);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Restoration), friendly);
+                isInitialTarget = false;
             }
         }
 
+        private static IEnumerable<uint> GetPowerCell3Targets(uint activator, uint target)
+        {
+            var seen = new HashSet<uint>();
+            var selected = AbilityTargeting.ResolveFriendlyTarget(activator, target);
+            if (GetIsObjectValid(selected) &&
+                !GetIsDead(selected) &&
+                GetCurrentHitPoints(selected) > 0 &&
+                seen.Add(selected))
+            {
+                yield return selected;
+            }
+
+            foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, activator, true))
+            {
+                if (seen.Add(friendly))
+                    yield return friendly;
+            }
+        }
+
+        private static void ApplyPowerCellRiders(uint activator, uint target, bool isInitialTarget)
+        {
+            if (isInitialTarget)
+            {
+                DeviceAbilityEffects.ApplyPowerSurge(activator, target);
+            }
+
+            DeviceAbilityEffects.ApplyFieldSupportAllyBuffRiders(activator, target);
+        }
 
         private static int PercentOf(int value, int percent)
         {

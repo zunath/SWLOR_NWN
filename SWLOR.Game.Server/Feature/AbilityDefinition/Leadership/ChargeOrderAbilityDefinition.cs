@@ -17,24 +17,30 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
         {
             var builder = new AbilityBuilder();
 
-            ChargeOrder(builder);
+            ChargeOrder(builder, FeatType.ChargeOrder1, Spell.ChargeOrder1, "Charge Order I", 1);
+            ChargeOrder(builder, FeatType.ChargeOrder2, Spell.ChargeOrder2, "Charge Order II", 2);
 
             return builder.Build();
         }
 
-        private static void ChargeOrder(AbilityBuilder builder)
+        private static void ChargeOrder(
+            AbilityBuilder builder,
+            FeatType featType,
+            Spell spell,
+            string name,
+            int level)
         {
             builder
-                .Create(FeatType.ChargeOrder1, PerkType.ChargeOrder)
-                .Name("Charge Order")
-                .Level(1)
+                .Create(featType, PerkType.ChargeOrder)
+                .Name(name)
+                .Level(level)
                 .HasActivationDelay(2f)
                 .HasRecastDelay(RecastGroup.ChargeOrder, 60f)
                 .SkillType(SkillType.Leadership)
                 .IsAreaAbility()
                 .HasImpactAction(ChargeOrderImpactAction)
                 .HasTargetingSphere(
-                    Spell.ChargeOrder1,
+                    spell,
                     5f,
                     AbilityTargetingFlags.HelpsAllies | AbilityTargetingFlags.OriginOnSelf,
                     LeadershipAbilityEffects.ApplyLeadershipCommandRadiusBonus)

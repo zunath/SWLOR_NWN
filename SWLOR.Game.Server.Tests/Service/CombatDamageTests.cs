@@ -94,19 +94,101 @@ public class CombatDamageTests
     }
 
     [Test]
-    public void CombatReadiness_AppliesToActivatedAbilityDamageBeforeTargetMitigation()
+    public void CombatAbilityRiders_AreStatDrivenInsteadOfPerkCategoryDispatch()
     {
         var root = FindRepositoryRoot();
-        var abilitySource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Ability.cs"))
-            .ReplaceLineEndings("\n");
+        var combatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
+        var statusEffectSources = Directory
+            .EnumerateFiles(
+                Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "StatusEffectDefinition"),
+                "*.cs")
+            .Select(File.ReadAllText);
 
-        abilitySource.Should().Contain("public static int ApplyCombatReadinessToActivatedAbilityMagnitude(uint activator, int amount)");
-        abilitySource.Should().Contain("if (amount <= 0 || GetTrackedAbilityImpact(activator) == null)");
-        abilitySource.Should().Contain("var combatReadiness = Stat.GetCombatReadinessPercent(activator);");
-        abilitySource.Should().Contain(
-            "calculatedDamage = Combat.ApplyDamageDealtModifiers(activator, target, calculatedDamage, skillType, damageType, true);\n" +
-            "            calculatedDamage = ApplyCombatReadinessToActivatedAbilityMagnitude(activator, calculatedDamage);\n" +
-            "            calculatedDamage = Resistance.ApplyResistanceToDamage(target, damageType, calculatedDamage);");
+        combatSource.Should().NotContain("PerkCategoryType");
+        combatSource.Should().NotContain("GetAbilityPerkCategory");
+        combatSource.Should().NotContain("ApplyCategory");
+        statusEffectSources.Should().OnlyContain(source =>
+            !source.Contains("Perk.GetPerkLevel") &&
+            !source.Contains("Perk.GetPlayerEffectivePerkLevel") &&
+            !source.Contains("GetHasFeat("));
+    }
+
+    [Test]
+    public void CombatImpactDamageScaling_IsDeclaredByAbilityImplementationsNotSkillType()
+    {
+        var root = FindRepositoryRoot();
+        var skillTypeSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "SkillService", "SkillType.cs"));
+        var abilitySource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Ability.cs"));
+        var combatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
+
+        skillTypeSource.Should().NotContain("CombatImpactDamageAbility");
+        skillTypeSource.Should().NotContain("AbilityType.");
+        abilitySource.Should().NotContain("GetAttribute<SkillType, SkillAttribute>()");
+        abilitySource.Should().NotContain("GetCombatImpactAbilityOverride");
+        abilitySource.Should().Contain("GetTrackedAbilityImpact(activator)?.Ability?.CombatImpactDamageAbility");
+        combatSource.Should().NotContain("AbilityType.Willpower");
+
+        var abilityDefinitionRoot = Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "AbilityDefinition");
+        var failures = new List<string>();
+        var expectations = new[]
+        {
+            (DirectoryName: "Force", SkillExpression: "SkillType.Force", ConstSkill: false, AbilityExpression: "AbilityType.Willpower"),
+            (DirectoryName: "Devices", SkillExpression: "SkillType.Devices", ConstSkill: false, AbilityExpression: "AbilityType.Perception"),
+            (DirectoryName: "Pistol", SkillExpression: "SkillType.Pistol", ConstSkill: true, AbilityExpression: "AbilityType.Perception"),
+            (DirectoryName: "Rifle", SkillExpression: "SkillType.Rifle", ConstSkill: false, AbilityExpression: "AbilityType.Perception"),
+            (DirectoryName: "Throwing", SkillExpression: "SkillType.Throwing", ConstSkill: true, AbilityExpression: "AbilityType.Perception")
+        };
+
+        foreach (var expectation in expectations)
+        {
+            foreach (var sourcePath in Directory.EnumerateFiles(Path.Combine(abilityDefinitionRoot, expectation.DirectoryName), "*.cs"))
+            {
+                var source = File.ReadAllText(sourcePath);
+                var usesDirectCombatImpact =
+                    source.Contains("ApplyCombatImpact(") ||
+                    source.Contains("ApplyTelegraphedCombatImpact(");
+                var usesCombatImpactHelper =
+                    source.Contains("ConfigureWeapon(") ||
+                    source.Contains("ConfigureCastedTarget(") ||
+                    source.Contains("ConfigureMultiHit(") ||
+                    source.Contains("ConfigureInterrupt(") ||
+                    source.Contains("ConfigureTelegraphedArea(");
+                if (!usesDirectCombatImpact && !usesCombatImpactHelper)
+                    continue;
+
+                var lines = File.ReadAllLines(sourcePath);
+                for (var index = 0; index < lines.Length; index++)
+                {
+                    var line = lines[index].Trim();
+                    var isExpectedSkillLine =
+                        line == $".SkillType({expectation.SkillExpression})" ||
+                        expectation.ConstSkill && line == ".SkillType(Skill)";
+                    if (!isExpectedSkillLine)
+                        continue;
+
+                    var expectedNextLine = $".CombatImpactDamageAbility({expectation.AbilityExpression})";
+                    var actualNextLine = index + 1 < lines.Length
+                        ? lines[index + 1].Trim()
+                        : string.Empty;
+                    if (actualNextLine != expectedNextLine)
+                    {
+                        failures.Add(
+                            $"{Path.GetRelativePath(root.FullName, sourcePath)}:{index + 1} expected {expectedNextLine} after {line}, found {actualNextLine}");
+                    }
+                }
+
+                if (usesCombatImpactHelper &&
+                    !source.Contains($"combatImpactDamageAbility: {expectation.AbilityExpression}"))
+                {
+                    failures.Add(
+                        $"{Path.GetRelativePath(root.FullName, sourcePath)} must pass combatImpactDamageAbility: {expectation.AbilityExpression} to its combat-impact helper");
+                }
+            }
+        }
+
+        failures.Should().BeEmpty();
+        var deviceEffectSource = File.ReadAllText(Path.Combine(abilityDefinitionRoot, "DeviceAbilityEffects.cs"));
+        deviceEffectSource.Should().Contain("combatImpactDamageAbility: AbilityType.Perception");
     }
 
     [Test]
@@ -134,8 +216,7 @@ public class CombatDamageTests
             Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "AbilityDefinition", "FirstAid", "EmergencyTriageAbilityDefinition.cs"),
             Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "AbilityDefinition", "FirstAid", "ResuscitationAbilityDefinition.cs"),
             Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "AbilityDefinition", "Force", "BenevolenceAbilityDefinition.cs"),
-            Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "AbilityDefinition", "Force", "CircleOfHarmonyAbilityDefinition.cs"),
-            Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "AbilityDefinition", "Force", "ForceMendAbilityDefinition.cs"),
+            Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "AbilityDefinition", "Force", "ForceControlHealingEffects.cs"),
             Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "AbilityDefinition", "Force", "PurifyingWaveAbilityDefinition.cs"),
         };
 

@@ -23,7 +23,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 12,
                 12,
                 typeof(DisorientedStatusEffect),
-                4);
+                4,
+                combatImpactDamageAbility: AbilityType.Perception);
             ConfigureWeapon(
                 builder
                     .Create(FeatType.CripplingShot2, PerkType.CripplingShot)
@@ -35,7 +36,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 22,
                 15,
                 typeof(DisorientedStatusEffect),
-                6);
+                6,
+                combatImpactDamageAbility: AbilityType.Perception);
             ConfigureWeapon(
                 builder
                     .Create(FeatType.CripplingShot3, PerkType.CripplingShot)
@@ -47,7 +49,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 34,
                 20,
                 typeof(DisorientedStatusEffect),
-                8);
+                8,
+                combatImpactDamageAbility: AbilityType.Perception);
 
             return builder.Build();
         }

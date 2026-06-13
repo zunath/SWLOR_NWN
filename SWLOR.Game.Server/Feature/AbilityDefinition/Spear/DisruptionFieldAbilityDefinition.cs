@@ -53,6 +53,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
                     foreach (var hostile in CombatAreaPulses.GetHostileCreatures(activator, pulseLocation, Radius))
                     {
                         StatusEffect.ApplyStatusEffect(activator, hostile, typeof(DisruptionFieldStatusEffect), 1.2f);
+                        Combat.ApplySpearDisablerSuppressionRiders(activator, hostile);
                         Ability.ApplyHostileAbilityEnmity(activator, hostile);
                         var fpDrain = Math.Max(1, (int)Math.Ceiling(Stat.GetCurrentFP(hostile) * (FPDrainPercent / 100f)));
                         Stat.ReduceFP(hostile, fpDrain);

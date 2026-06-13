@@ -34,8 +34,10 @@ public class PistolGunslingerTests
             "Instantly attacks twice, each for weapon DMG + 15.");
         AssertPerkLevel(perks[PerkType.DeadeyeReload], "Deadeye Reload", 1, 2, 22, null,
             "After using a pistol combat ability, your next auto-attack within 6 seconds deals +10 DMG.",
-            StatType.PistolAbilityUsedNextAutoAttackDamageBonus,
-            StatType.PistolAbilityUsedNextAutoAttackDamageDurationSeconds);
+            StatType.AbilityUsedNextSkillAutoAttackDamageBonusTriggerSkillType,
+            StatType.AbilityUsedNextSkillAutoAttackDamageBonusSkillType,
+            StatType.AbilityUsedNextSkillAutoAttackDamageBonus,
+            StatType.AbilityUsedNextSkillAutoAttackDamageWindowSeconds);
         AssertPerkLevel(perks[PerkType.FanTheHammer], "Fan the Hammer", 1, 3, 25, FeatType.FanTheHammer1,
             "Fires at up to 3 enemies in a cone for weapon DMG + 12 each.");
         AssertPerkLevel(perks[PerkType.QuickDraw], "Quick Draw", 3, 3, 28, FeatType.QuickDraw3,

@@ -94,6 +94,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 foreach (var statusEffect in new[] { typeof(PoisonStatusEffect), typeof(BleedStatusEffect) })
                     StatusEffect.RemoveStatusEffect(friendly, statusEffect, false);
 
+                FirstAidTreatmentAdjustments.ApplyTraumaMedicRiders(activator, friendly);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Remove_Condition), friendly);
             }
         }
@@ -103,6 +104,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             foreach (var friendly in AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
                 StatusEffect.RemoveCleanseableStatusEffects(friendly, StatusEffectCleanseType.TreatmentKit2, false);
+                FirstAidTreatmentAdjustments.ApplyTraumaMedicRiders(activator, friendly);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Remove_Condition), friendly);
             }
         }
@@ -112,7 +114,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             foreach (var friendly in AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
                 StatusEffect.RemoveCleanseableStatusEffects(friendly, StatusEffectCleanseType.TreatmentKit2, false);
-                StatusEffect.ApplyStatusEffect(activator, friendly, typeof(TreatmentKit3StatusEffect), 8f);
+                StatusEffect.ApplyStatusEffect(activator, friendly, typeof(AilmentResistance3StatusEffect), 8f);
+                FirstAidTreatmentAdjustments.ApplyTraumaMedicRiders(activator, friendly);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Remove_Condition), friendly);
             }
         }

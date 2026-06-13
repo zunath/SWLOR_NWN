@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.PerkDefinition
@@ -14,13 +15,11 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         public Dictionary<PerkType, PerkDetail> BuildPerks()
         {
             ForceSpark();
-            ForceBody();
             ForceLightning();
+            UnstablePressure();
             ForceDrain();
-            SaberRend();
-            ForceRage();
             DevouringStrike();
-            ForceMaelstrom();
+            CruelMomentum();
             HungerOfTheDark();
 
             return _builder.Build();
@@ -33,45 +32,24 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .ForceAffinity(ForceAffinityType.Dark)
 
                 .AddPerkLevel()
-                .Description("Deals 18 force DMG plus WIL scaling to one target and reduce evasion chance by 4% for 20 seconds.")
+                .Description("Deals 16 force DMG plus WIL scaling to one target and reduces Evasion by 4% for 20 seconds.")
                 .Price(2)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ForceSpark1)
 
                 .AddPerkLevel()
-                .Description("Deals 32 force DMG plus WIL scaling to one target and reduce evasion chance by 6% for 20 seconds.")
-                .Price(2)
-                .RequirementSkill(SkillType.Force, 22)
+                .Description("Deals 30 force DMG plus WIL scaling to one target and reduces Evasion by 6% for 20 seconds.")
+                .Price(3)
+                .RequirementSkill(SkillType.Force, 18)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ForceSpark2)
 
                 .AddPerkLevel()
-                .Description("Deals 50 force DMG plus WIL scaling to one target and reduce evasion chance by 8% for 20 seconds.")
-                .Price(3)
-                .RequirementSkill(SkillType.Force, 48)
+                .Description("Deals 44 force DMG plus WIL scaling to one target and reduces Evasion by 8% for 20 seconds.")
+                .Price(4)
+                .RequirementSkill(SkillType.Force, 42)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ForceSpark3);
-        }
-
-        private void ForceBody()
-        {
-            _builder.Create(PerkCategoryType.ForceDark, PerkType.ForceBody)
-                .Name("Force Body")
-                .ForceAffinity(ForceAffinityType.Dark)
-
-                .AddPerkLevel()
-                .Description("For 30 seconds, damaging Dark Force powers cost no FP. When one lands, you lose HP equal to 2% of your maximum HP.")
-                .Price(2)
-                .RequirementSkill(SkillType.Force, 5)
-                .RequirementCharacterType(CharacterType.ForceSensitive)
-                .GrantsFeat(FeatType.ForceBody1)
-
-                .AddPerkLevel()
-                .Description("For 30 seconds, damaging Dark Force powers cost no FP. When one lands, you lose HP, reduced when the target is below 50% HP.")
-                .Price(3)
-                .RequirementSkill(SkillType.Force, 38)
-                .RequirementCharacterType(CharacterType.ForceSensitive)
-                .GrantsFeat(FeatType.ForceBody2);
         }
 
         private void ForceLightning()
@@ -81,18 +59,35 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .ForceAffinity(ForceAffinityType.Dark)
 
                 .AddPerkLevel()
-                .Description("Deals 14 force DMG plus WIL scaling to up to 3 targets with an electrical visual.")
+                .Description("Deals 10 force DMG plus WIL scaling to one target, then arcs to up to two nearby enemies for 50% damage. Affected targets suffer Shock for 6 seconds.")
                 .Price(3)
-                .RequirementSkill(SkillType.Force, 8)
+                .RequirementSkill(SkillType.Force, 10)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ForceLightning1)
 
                 .AddPerkLevel()
-                .Description("Deals 24 force DMG plus WIL scaling to up to 4 targets with an electrical visual.")
+                .Description("Deals 18 force DMG plus WIL scaling to one target, then arcs to up to three nearby enemies for 50% damage. Affected targets suffer Shock for 8 seconds.")
                 .Price(4)
-                .RequirementSkill(SkillType.Force, 25)
+                .RequirementSkill(SkillType.Force, 22)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ForceLightning2);
+        }
+
+        private void UnstablePressure()
+        {
+            _builder.Create(PerkCategoryType.ForceDark, PerkType.UnstablePressure)
+                .Name("Unstable Pressure")
+                .ForceAffinity(ForceAffinityType.Dark)
+
+                .AddPerkLevel()
+                .Description("Force Spark and Force Lightning mark affected enemies with unstable pressure for 12 seconds, reducing Evasion by 5%. Enemies below 35% HP also suffer +5% force damage taken while marked.")
+                .Price(4)
+                .RequirementSkill(SkillType.Force, 32)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                .IncreasesStat(StatType.SparkLightningPressureEvasionPenaltyPercent, 5)
+                .IncreasesStat(StatType.SparkLightningPressureLowHPForceDamageTakenPercent, 5)
+                .IncreasesStat(StatType.SparkLightningPressureLowHPThresholdPercent, 35)
+                .IncreasesStat(StatType.SparkLightningPressureDurationSeconds, 12);
         }
 
         private void ForceDrain()
@@ -102,66 +97,25 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .ForceAffinity(ForceAffinityType.Dark)
 
                 .AddPerkLevel()
-                .Description("Deals 16 force DMG plus WIL scaling and heals you for 35% of damage dealt.")
+                .Description("Deals 14 force DMG plus WIL scaling to one target and heals you for 30% of damage dealt. If the target is below 50% HP, healing increases to 40%.")
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 12)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ForceDrain1)
 
                 .AddPerkLevel()
-                .Description("Deals 28 force DMG plus WIL scaling and heals you for 40% of damage dealt.")
+                .Description("Deals 24 force DMG plus WIL scaling to one target and heals you for 35% of damage dealt. If the target is below 50% HP, healing increases to 45%.")
                 .Price(3)
-                .RequirementSkill(SkillType.Force, 28)
+                .RequirementSkill(SkillType.Force, 25)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ForceDrain2)
 
                 .AddPerkLevel()
-                .Description("Deals 44 force DMG plus WIL scaling and heals you for 45% of damage dealt.")
+                .Description("Deals 36 force DMG plus WIL scaling to one target and heals you for 40% of damage dealt. If the target is below 50% HP, healing increases to 50%.")
                 .Price(4)
-                .RequirementSkill(SkillType.Force, 42)
+                .RequirementSkill(SkillType.Force, 38)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ForceDrain3);
-        }
-
-        private void SaberRend()
-        {
-            _builder.Create(PerkCategoryType.ForceDark, PerkType.SaberRend)
-                .Name("Saber Rend")
-
-                .AddPerkLevel()
-                .Description("Your next melee attack deals +12 force DMG plus WIL scaling. Requires a melee weapon.")
-                .Price(3)
-                .RequirementSkill(SkillType.Force, 15)
-                .RequirementCharacterType(CharacterType.ForceSensitive)
-                .GrantsFeat(FeatType.SaberRend1)
-
-                .AddPerkLevel()
-                .Description("Your next melee attack deals +24 force DMG plus WIL scaling. Requires a melee weapon.")
-                .Price(3)
-                .RequirementSkill(SkillType.Force, 35)
-                .RequirementCharacterType(CharacterType.ForceSensitive)
-                .GrantsFeat(FeatType.SaberRend2);
-        }
-
-        private void ForceRage()
-        {
-            _builder.Create(PerkCategoryType.ForceDark, PerkType.ForceRage)
-                .Name("Force Rage")
-                .ForceAffinity(ForceAffinityType.Dark)
-
-                .AddPerkLevel()
-                .Description("Increases outgoing weapon and force damage by 8% and critical damage by 10% for 20 seconds, but increases damage taken by 5%.")
-                .Price(3)
-                .RequirementSkill(SkillType.Force, 18)
-                .RequirementCharacterType(CharacterType.ForceSensitive)
-                .GrantsFeat(FeatType.ForceRage1)
-
-                .AddPerkLevel()
-                .Description("Increases outgoing weapon and force damage by 14% and critical damage by 15% for 20 seconds, but increases damage taken by 8%.")
-                .Price(4)
-                .RequirementSkill(SkillType.Force, 45)
-                .RequirementCharacterType(CharacterType.ForceSensitive)
-                .GrantsFeat(FeatType.ForceRage2);
         }
 
         private void DevouringStrike()
@@ -171,25 +125,26 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .ForceAffinity(ForceAffinityType.Dark)
 
                 .AddPerkLevel()
-                .Description("Deals 12 force DMG plus WIL scaling to one target. If the target is below 35% HP, damage is increased by 40%.")
+                .Description("Alter powers that damage enemies deal 15% more damage to targets below 35% HP.")
                 .Price(4)
-                .RequirementSkill(SkillType.Force, 30)
+                .RequirementSkill(SkillType.Force, 28)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
-                .GrantsFeat(FeatType.DevouringStrike1);
+                .IncreasesStat(StatType.DarkForceTargetLowHPDamageThresholdPercent, 35)
+                .IncreasesStat(StatType.DarkForceTargetLowHPDamagePercentAdjustment, 15);
         }
 
-        private void ForceMaelstrom()
+        private void CruelMomentum()
         {
-            _builder.Create(PerkCategoryType.ForceDark, PerkType.ForceMaelstrom)
-                .Name("Force Maelstrom")
+            _builder.Create(PerkCategoryType.ForceDark, PerkType.CruelMomentum)
+                .Name("Cruel Momentum")
                 .ForceAffinity(ForceAffinityType.Dark)
 
                 .AddPerkLevel()
-                .Description("Deals 10 force DMG plus WIL scaling to nearby enemies and pulls them slightly toward you.")
+                .Description("When an enemy you damaged within the last 6 seconds is defeated, restore 2 FP and gain +5% Force ability Accuracy for 10 seconds. This can trigger once every 10 seconds.")
                 .Price(4)
-                .RequirementSkill(SkillType.Force, 40)
+                .RequirementSkill(SkillType.Force, 28)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
-                .GrantsFeat(FeatType.ForceMaelstrom1);
+                .IncreasesStat(StatType.CruelMomentum, 1);
         }
 
         private void HungerOfTheDark()
@@ -199,7 +154,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .ForceAffinity(ForceAffinityType.Dark)
 
                 .AddPerkLevel()
-                .Description("For 45 seconds, Dark damage you deal heals you for 15% of damage dealt and defeated enemies restore 5 FP.")
+                .Description("For 45 seconds, Dark damage you deal heals you for 12% of damage dealt and defeated enemies restore 3 FP.")
                 .Price(5)
                 .RequirementSkill(SkillType.Force, 50)
                 .RequirementCharacterType(CharacterType.ForceSensitive)

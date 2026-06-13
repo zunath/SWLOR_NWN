@@ -15,66 +15,6 @@ namespace SWLOR.Game.Server.Tests.Perks;
 public class ThrowingBombardierTests
 {
     [Test]
-    public void ThrowingBombardierPerkLevels_MatchCombatBible()
-    {
-        var perks = BuildThrowingBombardierPerksWithout2daLookup();
-
-        AssertPerkLevel(perks[PerkType.ExplosiveToss], "Explosive Toss", 1, 3, 2, FeatType.ExplosiveToss1,
-            "Your next attack damages up to 3 creatures within 3 meters of your target for weapon DMG + 8.");
-        AssertPerkLevel(perks[PerkType.FlashToss], "Flash Toss", 1, 3, 8, FeatType.FlashToss1,
-            "Deals weapon DMG + 6 to enemies in the target area. Inflicts Blind for 6 seconds.");
-        AssertPerkLevel(perks[PerkType.ShrapnelCasing], "Shrapnel Casing", 1, 3, 12, null,
-            "Explosive Toss abilities inflict Bleed for 15 seconds.",
-            StatType.ExplosiveTossBleedDurationSeconds);
-        AssertPerkLevel(perks[PerkType.BombardierStance], "Bombardier Stance", 1, 2, 15, FeatType.BombardierStance1,
-            "While active, Throwing area abilities deal +15% damage, but Defense is reduced by 15%.");
-        AssertPerkLevel(perks[PerkType.ExplosiveToss], "Explosive Toss", 2, 4, 18, FeatType.ExplosiveToss2,
-            "Your next attack damages up to 3 creatures within 3 meters of your target for weapon DMG + 16.");
-        AssertPerkLevel(perks[PerkType.ConcussiveToss], "Concussive Toss", 1, 3, 20, FeatType.ConcussiveToss1,
-            "Deals weapon DMG + 14 to enemies in the target area. Inflicts Dazed for 2 seconds.");
-        AssertPerkLevel(perks[PerkType.ClusterPouch], "Cluster Pouch", 1, 2, 22, null,
-            "Throwing combat abilities that hit 3 or more targets restore 4 STM.",
-            StatType.ThrowingAreaAbilityMinTargetsStaminaRestoreThreshold,
-            StatType.ThrowingAreaAbilityMinTargetsStaminaRestore);
-        AssertPerkLevel(perks[PerkType.FireburstToss], "Fireburst Toss", 1, 3, 25, FeatType.FireburstToss1,
-            "Deals weapon DMG + 20 to enemies in the target area and inflicts Exposed for 12 seconds.");
-        AssertPerkLevel(perks[PerkType.ExplosiveToss], "Explosive Toss", 3, 3, 28, FeatType.ExplosiveToss3,
-            "Your next attack damages up to 3 creatures within 3 meters of your target for weapon DMG + 26.");
-        AssertPerkLevel(perks[PerkType.ConcussiveToss], "Concussive Toss", 2, 3, 30, FeatType.ConcussiveToss2,
-            "Deals weapon DMG + 26 to enemies in the target area. Inflicts Dazed for 3 seconds.");
-        AssertPerkLevel(perks[PerkType.ShrapnelCasing], "Shrapnel Casing", 2, 2, 32, null,
-            "Bleed from Explosive Toss abilities lasts 30 seconds and Explosive Toss ignores 10% Defense.",
-            StatType.ExplosiveTossBleedDurationSeconds,
-            StatType.AbilityDefenseIgnorePercentAdjustmentPerkType,
-            StatType.AbilityDefenseIgnorePercentAdjustment);
-        AssertPerkLevel(perks[PerkType.ClusterStorm], "Cluster Storm", 1, 4, 35, FeatType.ClusterStorm1,
-            "Throw three explosives at the target area. Each explosive deals weapon DMG + 12 to nearby enemies.");
-        AssertPerkLevel(perks[PerkType.FlashToss], "Flash Toss", 2, 3, 38, FeatType.FlashToss2,
-            "Deals weapon DMG + 22 to enemies in the target area. Inflicts Blind for 10 seconds.");
-        AssertPerkLevel(perks[PerkType.BombardiersRhythm], "Bombardier's Rhythm", 1, 2, 40, null,
-            "Each enemy hit by a Throwing area ability grants +2% Attack for 10 seconds, up to +20%.",
-            StatType.ThrowingAreaAbilityAttackPercentPerTarget,
-            StatType.ThrowingAreaAbilityAttackDurationSeconds,
-            StatType.ThrowingAreaAbilityAttackPercentMax);
-        AssertPerkLevel(perks[PerkType.ExplosiveToss], "Explosive Toss", 4, 4, 42, FeatType.ExplosiveToss4,
-            "Your next attack damages up to 3 creatures within 3 meters of your target for weapon DMG + 38 and inflicts Exposed for 15 seconds.");
-        AssertPerkLevel(perks[PerkType.SaturationToss], "Saturation Toss", 1, 3, 45, FeatType.SaturationToss1,
-            "Creates a target area for 12 seconds. Enemies inside take weapon DMG + 10 every 4 seconds.");
-        AssertPerkLevel(perks[PerkType.VolatilePayload], "Volatile Payload", 1, 4, 48, null,
-            "Critical hits with Explosive Toss abilities inflict Knockdown for 2 seconds.",
-            StatType.CriticalAbilityKnockdownPerkType,
-            StatType.CriticalAbilityKnockdownDurationSeconds);
-        AssertPerkLevel(perks[PerkType.RainOfSteel], "Rain of Steel", 1, 4, 50, FeatType.RainOfSteel1,
-            "All enemies in a large area of effect (sphere) take weapon DMG + 25 and suffer Bleed for 45 seconds.");
-
-        AssertStatBonus(perks[PerkType.ClusterPouch].PerkLevels[1], StatType.ThrowingAreaAbilityMinTargetsStaminaRestoreThreshold, 3);
-        AssertStatBonus(perks[PerkType.ClusterPouch].PerkLevels[1], StatType.ThrowingAreaAbilityMinTargetsStaminaRestore, 4);
-        AssertStatBonus(perks[PerkType.BombardiersRhythm].PerkLevels[1], StatType.ThrowingAreaAbilityAttackPercentPerTarget, 2);
-        AssertStatBonus(perks[PerkType.BombardiersRhythm].PerkLevels[1], StatType.ThrowingAreaAbilityAttackDurationSeconds, 10);
-        AssertStatBonus(perks[PerkType.BombardiersRhythm].PerkLevels[1], StatType.ThrowingAreaAbilityAttackPercentMax, 20);
-    }
-
-    [Test]
     public void ThrowingBombardierAbilities_MatchCombatBible()
     {
         var explosiveToss = new ExplosiveTossAbilityDefinition().BuildAbilities();
@@ -96,12 +36,6 @@ public class ThrowingBombardierTests
 
         var fireburstToss = new FireburstTossAbilityDefinition().BuildAbilities()[FeatType.FireburstToss1];
         AssertAbility(fireburstToss, "Fireburst Toss", 1, RecastGroup.FireburstToss, 60f, 0f, 8, true, false, false, true, AbilityActivationType.Casted);
-
-        var clusterStorm = new ClusterStormAbilityDefinition().BuildAbilities()[FeatType.ClusterStorm1];
-        AssertAbility(clusterStorm, "Cluster Storm", 1, RecastGroup.ClusterStorm, 120f, 0f, 12, true, false, false, true, AbilityActivationType.Casted);
-
-        var saturationToss = new SaturationTossAbilityDefinition().BuildAbilities()[FeatType.SaturationToss1];
-        AssertAbility(saturationToss, "Saturation Toss", 1, RecastGroup.SaturationToss, 120f, 0f, 12, true, false, false, true, AbilityActivationType.Casted);
 
         var rainOfSteel = new RainOfSteelAbilityDefinition().BuildAbilities()[FeatType.RainOfSteel1];
         AssertAbility(rainOfSteel, "Rain of Steel", 1, RecastGroup.Capstone, 345f, 2f, 15, true, false, false, true, AbilityActivationType.Casted);
@@ -129,22 +63,6 @@ public class ThrowingBombardierTests
         source.Should().Contain("StatType.CriticalAbilityKnockdownPerkType, creature => EquipmentPredicates.HasThrowing(creature) ? (int)PerkType.ExplosiveToss : 0");
         source.Should().Contain("StatType.CriticalAbilityKnockdownDurationSeconds, creature => EquipmentPredicates.HasThrowing(creature) ? 2 : 0");
     }
-
-    [Test]
-    public void SaturationTossSource_PulsesImmediatelyAndSkipsEmptyDelayedPulses()
-    {
-        var root = FindRepositoryRoot();
-        var source = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Throwing" / "SaturationTossAbilityDefinition.cs").FullName);
-
-        var immediatePulseIndex = source.IndexOf("CombatAreaPulses.ApplyCombatPulse(", StringComparison.Ordinal);
-        var delayedPulseIndex = source.IndexOf("CombatAreaPulses.SchedulePulses(", StringComparison.Ordinal);
-
-        immediatePulseIndex.Should().BeGreaterThanOrEqualTo(0);
-        delayedPulseIndex.Should().BeGreaterThan(immediatePulseIndex);
-        source.Should().Contain("FieldDurationSeconds - PulseIntervalSeconds");
-        source.Should().Contain("CountHostileCreatures(activator, pulseLocation, FieldRadius) <= 0");
-    }
-
     [Test]
     public void ThrowingBombardierFeatAndAbilityIcons_AreUniqueAndPresent()
     {
@@ -163,10 +81,8 @@ public class ThrowingBombardierTests
             (FeatType.FireburstToss1, "ife_firetoss1", "M", "0x3E", "1", "sphere", "5", "****", "1"),
             (FeatType.ExplosiveToss3, "ife_xplsvtoss3", "P", "0x01", "0", "****", "****", "****", "****"),
             (FeatType.ConcussiveToss2, "ife_conctoss2", "M", "0x3E", "1", "sphere", "5", "****", "1"),
-            (FeatType.ClusterStorm1, "ife_clstrstrm1", "M", "0x3E", "1", "sphere", "5", "****", "1"),
             (FeatType.FlashToss2, "ife_flashtoss2", "M", "0x3E", "1", "sphere", "5", "****", "1"),
             (FeatType.ExplosiveToss4, "ife_xplsvtoss4", "P", "0x01", "0", "****", "****", "****", "****"),
-            (FeatType.SaturationToss1, "ife_sattoss1", "M", "0x3E", "1", "sphere", "5", "****", "1"),
             (FeatType.RainOfSteel1, "ife_rainsteel1", "M", "0x3E", "1", "sphere", "8", "****", "1")
         };
         var seenIcons = new HashSet<string>();

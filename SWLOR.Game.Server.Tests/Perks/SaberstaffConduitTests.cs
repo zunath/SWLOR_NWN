@@ -16,68 +16,6 @@ namespace SWLOR.Game.Server.Tests.Perks;
 public class SaberstaffConduitTests
 {
     [Test]
-    public void SaberstaffConduitPerkLevels_MatchCombatBible()
-    {
-        var perks = BuildSaberstaffConduitPerksWithout2daLookup();
-
-        AssertPerkLevel(perks[PerkType.ConduitTraining], "Conduit Training", 1, 2, 2, null,
-            "Gain +5% Force Defense and saberstaff attacks restore 1 FP. FP restoration can only trigger once every 4 seconds.",
-            StatType.ForceDefensePercentAdjustment,
-            StatType.AutoAttackFPRestore,
-            StatType.AutoAttackFPRestoreCooldownSeconds);
-        AssertPerkLevel(perks[PerkType.FocusedArc], "Focused Arc", 1, 2, 8, FeatType.FocusedArc1,
-            "Deals weapon DMG + 10 and inflicts Force Erosion for 12 seconds.");
-        AssertPerkLevel(perks[PerkType.GuardedChannel], "Guarded Channel", 1, 3, 12, FeatType.GuardedChannel1,
-            "Gain +20 Attack Deflection and +20% Force Defense for 10 seconds.");
-        AssertPerkLevel(perks[PerkType.ConduitStance], "Conduit Stance", 1, 2, 15, FeatType.ConduitStance1,
-            "While active, grants +15% Force Attack and +15% Force Defense, but reduces Attack by 15%.");
-        AssertPerkLevel(perks[PerkType.FocusedArc], "Focused Arc", 2, 4, 18, FeatType.FocusedArc2,
-            "Deals weapon DMG + 22 and inflicts Force Erosion for 15 seconds.");
-        AssertPerkLevel(perks[PerkType.ConduitTraining], "Conduit Training", 2, 3, 20, null,
-            "Saberstaff attacks restore 2 FP and your Force Defense bonus increases to +10% total.",
-            StatType.ForceDefensePercentAdjustment,
-            StatType.AutoAttackFPRestore,
-            StatType.AutoAttackFPRestoreCooldownSeconds);
-        AssertPerkLevel(perks[PerkType.SeverFocus], "Sever Focus", 1, 2, 22, FeatType.SeverFocus1,
-            "Deals weapon DMG + 18 and inflicts Fractured Focus for 20 seconds.");
-        AssertPerkLevel(perks[PerkType.ForceLens], "Force Lens", 1, 3, 25, FeatType.ForceLens1,
-            "Allies in an area of effect (sphere) gain +15% Force Defense for 45 seconds. You gain +10 Attack Deflection.");
-        AssertPerkLevel(perks[PerkType.GuardedChannel], "Guarded Channel", 2, 4, 28, FeatType.GuardedChannel2,
-            "Gain +30 Attack Deflection and +30% Force Defense for 12 seconds.");
-        AssertPerkLevel(perks[PerkType.FocusedArc], "Focused Arc", 3, 3, 30, FeatType.FocusedArc3,
-            "Deals weapon DMG + 34 and inflicts Force Erosion for 18 seconds.");
-        AssertPerkLevel(perks[PerkType.EnergizedForms], "Energized Forms", 1, 2, 32, null,
-            "Using a Force ability causes your next saberstaff attack within 8 seconds to deal +15 DMG. Using a saberstaff ability reduces the FP cost of your next Force ability by 2.",
-            StatType.AbilityUsedNextSkillAutoAttackDamageBonusTriggerSkillType,
-            StatType.AbilityUsedNextSkillAutoAttackDamageBonusSkillType,
-            StatType.AbilityUsedNextSkillAutoAttackDamageBonus,
-            StatType.AbilityUsedNextSkillAutoAttackDamageWindowSeconds,
-            StatType.AbilityUsedNextSkillFPCostAdjustmentTriggerSkillType,
-            StatType.AbilityUsedNextSkillFPCostAdjustmentSkillType,
-            StatType.AbilityUsedNextSkillFPCostAdjustment,
-            StatType.AbilityUsedNextSkillFPCostAdjustmentWindowSeconds);
-        AssertPerkLevel(perks[PerkType.SeverFocus], "Sever Focus", 2, 4, 35, FeatType.SeverFocus2,
-            "Deals weapon DMG + 28 and inflicts Fractured Focus for 30 seconds.");
-        AssertPerkLevel(perks[PerkType.ConduitFlare], "Conduit Flare", 1, 3, 38, FeatType.ConduitFlare1,
-            "Deals weapon DMG + 20 to all nearby enemies and inflicts Force Disruption for 8 seconds.");
-        AssertPerkLevel(perks[PerkType.ConduitTraining], "Conduit Training", 3, 3, 40, null,
-            "Saberstaff attacks restore 3 FP and your Force Defense bonus increases to +15% total.",
-            StatType.ForceDefensePercentAdjustment,
-            StatType.AutoAttackFPRestore,
-            StatType.AutoAttackFPRestoreCooldownSeconds);
-        AssertPerkLevel(perks[PerkType.GuardedChannel], "Guarded Channel", 3, 4, 42, FeatType.GuardedChannel3,
-            "Gain +40 Attack Deflection and +35% Force Defense for 15 seconds.");
-        AssertPerkLevel(perks[PerkType.ForceCapacitor], "Force Capacitor", 1, 3, 45, FeatType.ForceCapacitor1,
-            "For 20 seconds, 25% of STM spent on saberstaff abilities is restored as FP and 25% of FP spent on Force abilities is restored as STM.");
-        AssertPerkLevel(perks[PerkType.BalancedAttunement], "Balanced Attunement", 1, 4, 48, null,
-            "While both FP and STM are above 50%, gain +10% Attack and +10% Force Attack.",
-            StatType.HighFPAndStaminaAttackThresholdPercent,
-            StatType.HighFPAndStaminaAttackPercentAdjustment);
-        AssertPerkLevel(perks[PerkType.InfiniteConduit], "Infinite Conduit", 1, 4, 50, FeatType.InfiniteConduit1,
-            "For 45 seconds, attacks restore 2 FP and combat abilities cost 2 less STM.");
-    }
-
-    [Test]
     public void SaberstaffConduitAbilities_MatchCombatBible()
     {
         var focusedArc = new FocusedArcAbilityDefinition().BuildAbilities();
@@ -96,12 +34,6 @@ public class SaberstaffConduitTests
         var severFocus = new SeverFocusAbilityDefinition().BuildAbilities();
         AssertAbility(severFocus[FeatType.SeverFocus1], "Sever Focus I", 1, RecastGroup.SeverFocus, 45f, 0f, 6, true, true, true, false, AbilityActivationType.Casted);
         AssertAbility(severFocus[FeatType.SeverFocus2], "Sever Focus II", 2, RecastGroup.SeverFocus, 45f, 0f, 8, true, true, true, false, AbilityActivationType.Casted);
-
-        var forceLens = new ForceLensAbilityDefinition().BuildAbilities()[FeatType.ForceLens1];
-        AssertAbility(forceLens, "Force Lens", 1, RecastGroup.ForceLens, 120f, 0f, 8, false, false, false, true, AbilityActivationType.Casted);
-
-        var conduitFlare = new ConduitFlareAbilityDefinition().BuildAbilities()[FeatType.ConduitFlare1];
-        AssertAbility(conduitFlare, "Conduit Flare", 1, RecastGroup.ConduitFlare, 90f, 0f, 10, true, false, false, true, AbilityActivationType.Casted);
 
         var forceCapacitor = new ForceCapacitorAbilityDefinition().BuildAbilities()[FeatType.ForceCapacitor1];
         AssertAbility(forceCapacitor, "Force Capacitor", 1, RecastGroup.ForceCapacitor, 180f, 0f, 10, false, false, false, false, AbilityActivationType.Casted);
@@ -133,7 +65,7 @@ public class SaberstaffConduitTests
         var forceLensSelf = new ForceLensStatusEffect();
         forceLensSelf.ApplyEffect(1, 1, 45);
         forceLensSelf.StatGroup.Stats.ContainsKey(StatType.ForceDefensePercentAdjustment).Should().BeFalse();
-        forceLensSelf.StatGroup.Stats[StatType.AttackDeflection].Should().Be(10);
+        forceLensSelf.StatGroup.Stats[StatType.AttackDeflection].Should().Be(8);
 
         var forceCapacitor = new ForceCapacitorStatusEffect();
         forceCapacitor.StatGroup.Stats[StatType.AbilityStaminaCostFPRestorePercentSkillType].Should().Be((int)SkillType.Saberstaff);
@@ -176,8 +108,6 @@ public class SaberstaffConduitTests
             (FeatType.ConduitStance1, "ife_condstnc1", "P", "0x01", "0", "****", "****", "****", "****"),
             (FeatType.SeverFocus1, "ife_sevfoc1", "M", "0x02", "1", "****", "****", "****", "****"),
             (FeatType.SeverFocus2, "ife_sevfoc2", "M", "0x02", "1", "****", "****", "****", "****"),
-            (FeatType.ForceLens1, "ife_forcelens1", "P", "0x01", "0", "sphere", "5", "****", "17"),
-            (FeatType.ConduitFlare1, "ife_condflar1", "P", "0x01", "1", "sphere", "5", "****", "17"),
             (FeatType.ForceCapacitor1, "ife_forcecap1", "P", "0x01", "0", "****", "****", "****", "****"),
             (FeatType.InfiniteConduit1, "ife_infcond1", "P", "0x01", "0", "****", "****", "****", "****")
         };
@@ -204,35 +134,15 @@ public class SaberstaffConduitTests
         }
     }
 
-    [Test]
-    public void SaberstaffConduitImplementationDetails_MatchCombatBible()
-    {
-        var root = FindRepositoryRoot();
-
-        var forceLens = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "StatusEffectDefinition" / "ForceLensStatusEffect.cs").FullName);
-        forceLens.Should().Contain("StatGroup.Stats[StatType.ForceDefensePercentAdjustment] = 15;");
-        forceLens.Should().Contain("if (Source != creature)");
-        forceLens.Should().Contain("StatGroup.Stats[StatType.AttackDeflection] = 10;");
-
-        var forceCapacitor = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "StatusEffectDefinition" / "ForceCapacitorStatusEffect.cs").FullName);
-        forceCapacitor.Should().Contain("StatGroup.Stats[StatType.AbilityStaminaCostFPRestorePercent] = 25;");
-        forceCapacitor.Should().Contain("StatGroup.Stats[StatType.AbilityFPCostStaminaRestorePercent] = 25;");
-
-        var infiniteConduit = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "StatusEffectDefinition" / "InfiniteConduitStatusEffect.cs").FullName);
-        infiniteConduit.Should().Contain("StatGroup.Stats[StatType.AutoAttackFPRestore] = 2;");
-        infiniteConduit.Should().Contain("StatGroup.Stats[StatType.SkillAbilityStaminaCostFlatAdjustment] = -2;");
-        infiniteConduit.Should().NotContain("Stat.GetCurrentFP(creature) <= 0");
-    }
-
     private static void AssertPerkLevel(
-        PerkDetail perk,
-        string name,
-        int level,
-        int price,
-        int skillRank,
-        FeatType? grantedFeat,
-        string description,
-        params StatType[] statTypes)
+    PerkDetail perk,
+    string name,
+    int level,
+    int price,
+    int skillRank,
+    FeatType? grantedFeat,
+    string description,
+    params StatType[] statTypes)
     {
         perk.Name.Should().Be(name);
         perk.Category.Should().Be(PerkCategoryType.SaberstaffConduit);

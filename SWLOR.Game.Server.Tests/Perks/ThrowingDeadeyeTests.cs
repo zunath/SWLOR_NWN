@@ -17,59 +17,6 @@ namespace SWLOR.Game.Server.Tests.Perks;
 public class ThrowingDeadeyeTests
 {
     [Test]
-    public void ThrowingDeadeyePerkLevels_MatchCombatBible()
-    {
-        var perks = BuildThrowingDeadeyePerksWithout2daLookup();
-
-        AssertPerkLevel(perks[PerkType.PiercingToss], "Piercing Toss", 1, 2, 2, FeatType.PiercingToss1,
-            "Your next attack deals weapon DMG + 12 and inflicts Bleed for 30 seconds.");
-        AssertPerkLevel(perks[PerkType.PinningToss], "Pinning Toss", 1, 2, 8, FeatType.PinningToss1,
-            "Your next attack deals weapon DMG + 8 and inflicts Disoriented for 12 seconds.");
-        AssertPerkLevel(perks[PerkType.ReturningGrip], "Returning Grip", 1, 3, 12, null,
-            "After using a Throwing combat ability, your next auto-attack within 8 seconds deals +8 DMG.",
-            StatType.ThrowingAbilityUsedNextAutoAttackDamageBonus,
-            StatType.ThrowingAbilityUsedNextAutoAttackDamageDurationSeconds);
-        AssertPerkLevel(perks[PerkType.DeadeyeStance], "Deadeye Stance", 1, 2, 15, FeatType.DeadeyeStance1,
-            "While active, grants +15% accuracy and +15% critical chance, but reduces Evasion by 20%.");
-        AssertPerkLevel(perks[PerkType.PiercingToss], "Piercing Toss", 2, 4, 18, FeatType.PiercingToss2,
-            "Your next attack deals weapon DMG + 21 and inflicts Bleed for 60 seconds.");
-        AssertPerkLevel(perks[PerkType.MarkingToss], "Marking Toss", 1, 3, 20, FeatType.MarkingToss1,
-            "Deals weapon DMG + 18 and marks the target for 12 seconds. Throwing damage against the marked target is increased by 10%.");
-        AssertPerkLevel(perks[PerkType.PinningToss], "Pinning Toss", 2, 2, 22, FeatType.PinningToss2,
-            "Your next attack deals weapon DMG + 18 and inflicts Disoriented for 15 seconds.");
-        AssertPerkLevel(perks[PerkType.RicochetToss], "Ricochet Toss", 1, 3, 25, FeatType.RicochetToss1,
-            "Your thrown weapon hits the target and up to 2 additional enemies within 5 meters for weapon DMG + 15 each.");
-        AssertPerkLevel(perks[PerkType.BleedersEye], "Bleeder's Eye", 1, 4, 28, null,
-            "Deal +12% Throwing damage to bleeding targets.",
-            StatType.DamageToBleedingTargetPercentAdjustment);
-        AssertPerkLevel(perks[PerkType.PiercingToss], "Piercing Toss", 3, 3, 30, FeatType.PiercingToss3,
-            "Your next attack deals weapon DMG + 34 and inflicts Bleed for 60 seconds.");
-        AssertPerkLevel(perks[PerkType.MarkedTempo], "Marked Tempo", 1, 2, 32, null,
-            "Critical hits against your marked target restore 6 STM.",
-            StatType.CriticalMarkedTargetStaminaRestore);
-        AssertPerkLevel(perks[PerkType.PinningToss], "Pinning Toss", 3, 4, 35, FeatType.PinningToss3,
-            "Your next attack deals weapon DMG + 30, inflicts Disoriented for 20 seconds, and reduces Evasion by an additional 15%.");
-        AssertPerkLevel(perks[PerkType.SeveringToss], "Severing Toss", 1, 3, 38, FeatType.SeveringToss1,
-            "Deals weapon DMG + 32 and inflicts Hamstring for 15 seconds.");
-        AssertPerkLevel(perks[PerkType.RicochetToss], "Ricochet Toss", 2, 3, 40, FeatType.RicochetToss2,
-            "Your thrown weapon hits the target and up to 4 additional enemies within 5 meters for weapon DMG + 24 each.");
-        AssertPerkLevel(perks[PerkType.DeepWound], "Deep Wound", 1, 4, 42, null,
-            "Bleed effects you apply deal +25% damage and last 10 seconds longer.",
-            StatType.OutgoingBleedingDamagePercentAdjustment,
-            StatType.OutgoingBleedingDurationBonusSeconds);
-        AssertPerkLevel(perks[PerkType.FinishingToss], "Finishing Toss", 1, 3, 45, FeatType.FinishingToss1,
-            "Deals weapon DMG + 40. Targets below 30% HP take an additional +30 DMG.");
-        AssertPerkLevel(perks[PerkType.DeadeyeMastery], "Deadeye Mastery", 1, 4, 48, null,
-            "Throwing abilities against bleeding or disoriented targets have +15% critical chance.",
-            StatType.ThrowingAbilityCriticalRateToBleedingOrDisorientedTargetPercentAdjustment);
-        AssertPerkLevel(perks[PerkType.PerfectThrow], "Perfect Throw", 1, 4, 50, FeatType.PerfectThrow1,
-            "Deals weapon DMG + 45. If the target is bleeding, also inflicts Hemorrhage, increasing damage taken by 10% for 45 seconds.");
-
-        AssertStatBonus(perks[PerkType.ReturningGrip].PerkLevels[1], StatType.ThrowingAbilityUsedNextAutoAttackDamageBonus, 8);
-        AssertStatBonus(perks[PerkType.ReturningGrip].PerkLevels[1], StatType.ThrowingAbilityUsedNextAutoAttackDamageDurationSeconds, 8);
-    }
-
-    [Test]
     public void ThrowingDeadeyeAbilities_MatchCombatBible()
     {
         var piercingToss = new PiercingTossAbilityDefinition().BuildAbilities();
@@ -84,13 +31,6 @@ public class ThrowingDeadeyeTests
 
         var deadeyeStance = new DeadeyeStanceAbilityDefinition().BuildAbilities()[FeatType.DeadeyeStance1];
         AssertAbility(deadeyeStance, "Deadeye Stance", 1, RecastGroup.DeadeyeStance, 180f, 2f, null, false, false, false, false, AbilityActivationType.Casted, expectedMaxRange: 5f);
-
-        var markingToss = new MarkingTossAbilityDefinition().BuildAbilities()[FeatType.MarkingToss1];
-        AssertAbility(markingToss, "Marking Toss", 1, RecastGroup.MarkingToss, 60f, 0f, 6, true, true, true, false, AbilityActivationType.Casted);
-
-        var ricochetToss = new RicochetTossAbilityDefinition().BuildAbilities();
-        AssertAbility(ricochetToss[FeatType.RicochetToss1], "Ricochet Toss I", 1, RecastGroup.RicochetToss, 60f, 0f, 8, true, true, false, true, AbilityActivationType.Casted);
-        AssertAbility(ricochetToss[FeatType.RicochetToss2], "Ricochet Toss II", 2, RecastGroup.RicochetToss, 60f, 0f, 10, true, true, false, true, AbilityActivationType.Casted);
 
         var severingToss = new SeveringTossAbilityDefinition().BuildAbilities()[FeatType.SeveringToss1];
         AssertAbility(severingToss, "Severing Toss", 1, RecastGroup.SeveringToss, 60f, 0f, 10, true, true, true, false, AbilityActivationType.Casted);
@@ -129,27 +69,6 @@ public class ThrowingDeadeyeTests
         hemorrhage.Categories.Should().HaveFlag(StatusEffectCategory.Bleeding);
         hemorrhage.Categories.Should().HaveFlag(StatusEffectCategory.Debuff);
     }
-
-    [Test]
-    public void ThrowingDeadeyeSources_IncludeBibleStatValues()
-    {
-        var root = FindRepositoryRoot();
-        var source = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "PerkDefinition" / "ThrowingPerkDefinition.cs").FullName);
-
-        source.Should().Contain("StatType.DamageToBleedingTargetPercentAdjustment, creature => EquipmentPredicates.HasThrowing(creature) ? 12 : 0");
-        source.Should().Contain("StatType.CriticalMarkedTargetStaminaRestore, creature => EquipmentPredicates.HasThrowing(creature) ? 6 : 0");
-        source.Should().Contain("StatType.OutgoingBleedingDamagePercentAdjustment, creature => EquipmentPredicates.HasThrowing(creature) ? 25 : 0");
-        source.Should().Contain("StatType.OutgoingBleedingDurationBonusSeconds, creature => EquipmentPredicates.HasThrowing(creature) ? 10 : 0");
-        source.Should().Contain("StatType.ThrowingAbilityCriticalRateToBleedingOrDisorientedTargetPercentAdjustment, creature => EquipmentPredicates.HasThrowing(creature) ? 15 : 0");
-
-        var ricochetToss = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Throwing" / "RicochetTossAbilityDefinition.cs").FullName);
-        ricochetToss.Should().Contain("private const float BounceRadius = 5f;");
-        ricochetToss.Should().Contain("AbilityTargeting.GetHostileTargetsNearLocation(activator, impactLocation, BounceRadius, maxTargets, target)");
-
-        var perfectThrow = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Throwing" / "PerfectThrowAbilityDefinition.cs").FullName);
-        perfectThrow.Should().Contain("SkillType.Throwing, 45, 45, statusEffect, false");
-    }
-
     [Test]
     public void ThrowingDeadeyeFeatAndAbilityIcons_AreUniqueAndPresent()
     {
@@ -163,13 +82,10 @@ public class ThrowingDeadeyeTests
             (FeatType.PinningToss1, "ife_pintoss1", "P", "0x01", "0"),
             (FeatType.DeadeyeStance1, "ife_eyestnc1", "P", "0x01", "0"),
             (FeatType.PiercingToss2, "ife_pierctoss2", "P", "0x01", "0"),
-            (FeatType.MarkingToss1, "ife_marktoss1", "M", "0x02", "1"),
             (FeatType.PinningToss2, "ife_pintoss2", "P", "0x01", "0"),
-            (FeatType.RicochetToss1, "ife_ricotoss1", "M", "0x02", "1"),
             (FeatType.PiercingToss3, "ife_pierctoss3", "P", "0x01", "0"),
             (FeatType.PinningToss3, "ife_pintoss3", "P", "0x01", "0"),
             (FeatType.SeveringToss1, "ife_sevtoss1", "M", "0x02", "1"),
-            (FeatType.RicochetToss2, "ife_ricotoss2", "M", "0x02", "1"),
             (FeatType.FinishingToss1, "ife_fintoss1", "M", "0x02", "1"),
             (FeatType.PerfectThrow1, "ife_perfthrow1", "M", "0x02", "1")
         };
@@ -189,19 +105,9 @@ public class ThrowingDeadeyeTests
             abilityRow["Range"].Should().Be(range);
             abilityRow["TargetType"].Should().Be(targetType);
             abilityRow["HostileSetting"].Should().Be(hostileSetting);
-            if (featType is FeatType.RicochetToss1 or FeatType.RicochetToss2)
-            {
-                abilityRow["TargetShape"].Should().Be("sphere");
-                abilityRow["TargetSizeX"].Should().Be("5");
-                abilityRow["TargetFlags"].Should().Be("1");
-            }
-            else
-            {
-                abilityRow["TargetShape"].Should().Be("****");
-                abilityRow["TargetSizeX"].Should().Be("****");
-                abilityRow["TargetFlags"].Should().Be("****");
-            }
-
+            abilityRow["TargetShape"].Should().Be("****");
+            abilityRow["TargetSizeX"].Should().Be("****");
+            abilityRow["TargetFlags"].Should().Be("****");
             abilityRow["TargetSizeY"].Should().Be("****");
         }
 

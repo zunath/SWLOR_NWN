@@ -5,28 +5,16 @@ namespace SWLOR.Game.Server.Service.AbilityService
     {
         [RecastGroup("Invalid", "Invalid", false)]
         Invalid = 0,
-        [RecastGroup("Bloodlust", "Bloodlust", true)]
-        Bloodlust = 1,
-        [RecastGroup("Blood Weapon", "Blood Weapon", true)]
-        BloodWeapon = 2,
         [RecastGroup("Earthshatter", "Earthshatter", true)]
         Earthshatter = 3,
         [RecastGroup("Flash", "Flash", true)]
         Flash = 4,
         [RecastGroup("Fortress Strike", "Fortress Str.", true)]
         FortressStrike = 5,
-        [RecastGroup("Arc Strike", "Arc Strike", true)]
-        ArcStrike = 6,
-        [RecastGroup("Overwhelming Strike", "Overwhelm Str.", true)]
-        OverwhelmingStrike = 7,
         [RecastGroup("Interruption Strike", "Interrupt Str.", true)]
         InterruptionStrike = 8,
-        [RecastGroup("Fracture Strike", "Fracture Str.", true)]
-        FractureStrike = 9,
         [RecastGroup("Saber Storm", "Saber Storm", true)]
         SaberStorm = 10,
-        [RecastGroup("Thunderous Challenge", "Thunder Chal.", true)]
-        ThunderousChallenge = 11,
         [RecastGroup("Rest", "Rest", true)]
         Rest = 16,
         [RecastGroup("Mauling Bite", "Maul Bite", true)]
@@ -161,28 +149,16 @@ namespace SWLOR.Game.Server.Service.AbilityService
         WhirlwindAssault = 102,
         [RecastGroup("Soul Burst", "Soul Burst", true)]
         SoulBurst = 103,
-        [RecastGroup("Crushing Blow", "Crushing Blow", true)]
-        CrushingBlow = 104,
         [RecastGroup("Edge of Darkness", "E. Darkness", true)]
         EdgeOfDarkness = 105,
         [RecastGroup("Sacrificial Blade", "Sacrif. Blade", true)]
         SacrificialBlade = 106,
-        [RecastGroup("Iron Elbows", "Iron Elbows", true)]
-        IronElbows = 107,
         [RecastGroup("Guard Counter", "Guard Counter", true)]
         GuardCounter = 108,
-        [RecastGroup("Covering Claws", "Covering Claws", true)]
-        CoveringClaws = 109,
         [RecastGroup("Whirling Guard", "Whirling Guard", true)]
         WhirlingGuard = 110,
-        [RecastGroup("Breaker Reversal", "Breaker Rev.", true)]
-        BreakerReversal = 111,
         [RecastGroup("Static Palm", "Static Palm", true)]
         StaticPalm = 112,
-        [RecastGroup("Twin Fang Flurry", "Twin Flurry", true)]
-        TwinFangFlurry = 113,
-        [RecastGroup("Venom Splash", "Venom Splash", true)]
-        VenomSplash = 114,
         [RecastGroup("Neural Shock", "Neural Shock", true)]
         NeuralShock = 115,
         [RecastGroup("Current Overload", "Curr. Overload", true)]
@@ -197,8 +173,6 @@ namespace SWLOR.Game.Server.Service.AbilityService
         VersatileStrike = 120,
         [RecastGroup("Leg Slash", "Leg Slash", true)]
         LegSlash = 121,
-        [RecastGroup("Ripple Slash", "Ripple Slash", true)]
-        RippleSlash = 122,
         [RecastGroup("Fan the Hammer", "Fan the Hammer", true)]
         FanTheHammer = 123,
         [RecastGroup("Dead Man's Hand", "Dead Man's", true)]
@@ -207,8 +181,6 @@ namespace SWLOR.Game.Server.Service.AbilityService
         DisarmingShot = 125,
         [RecastGroup("Ricochet Shot", "Ricochet Shot", true)]
         RicochetShot = 126,
-        [RecastGroup("Low Shot", "Low Shot", true)]
-        LowShot = 127,
         [RecastGroup("Point Blank Burst", "P. Blank Burst", true)]
         PointBlankBurst = 128,
         [RecastGroup("Smoke Round", "Smoke Round", true)]
@@ -221,28 +193,16 @@ namespace SWLOR.Game.Server.Service.AbilityService
         PiercingRound = 132,
         [RecastGroup("Suppressive Line", "Suppress Line", true)]
         SuppressiveLine = 133,
-        [RecastGroup("Expose Weak Point", "Expose W. Pt.", true)]
-        ExposeWeakPoint = 134,
-        [RecastGroup("Breach Round", "Breach Round", true)]
-        BreachRound = 135,
         [RecastGroup("Headshot", "Headshot", true)]
         Headshot = 136,
         [RecastGroup("One Shot", "One Shot", true)]
         OneShot = 137,
-        [RecastGroup("Pinning Fire", "Pinning Fire", true)]
-        PinningFire = 138,
-        [RecastGroup("Overwatch", "Overwatch", true)]
-        Overwatch = 139,
-        [RecastGroup("Neutralizing Shot", "Neutral Shot", true)]
-        NeutralizingShot = 140,
         [RecastGroup("Pacification Field", "Pacify Field", true)]
         PacificationField = 141,
         [RecastGroup("Stasis Volley", "Stasis Volley", true)]
         StasisVolley = 142,
         [RecastGroup("Maelstrom Arc", "Maelstrom Arc", true)]
         MaelstromArc = 143,
-        [RecastGroup("Force Gyre", "Force Gyre", true)]
-        ForceGyre = 144,
         [RecastGroup("Tempest Release", "Temp. Release", true)]
         TempestRelease = 145,
         [RecastGroup("Saber Cyclone", "Saber Cyclone", true)]
@@ -251,16 +211,10 @@ namespace SWLOR.Game.Server.Service.AbilityService
         FocusedArc = 147,
         [RecastGroup("Sever Focus", "Sever Focus", true)]
         SeverFocus = 148,
-        [RecastGroup("Conduit Flare", "Conduit Flare", true)]
-        ConduitFlare = 149,
         [RecastGroup("Force Suppression", "F. Suppress", true)]
         ForceSuppression = 150,
-        [RecastGroup("Force Nullification", "F. Nullify", true)]
-        ForceNullification = 151,
         [RecastGroup("Total Force Denial", "Force Denial", true)]
         TotalForceDenial = 152,
-        [RecastGroup("Breach Strike", "Breach Strike", true)]
-        BreachStrike = 153,
         [RecastGroup("Flanking Barrage", "Flank Barrage", true)]
         FlankingBarrage = 154,
         [RecastGroup("Sweeping Flank", "Sweeping Flank", true)]
@@ -275,8 +229,6 @@ namespace SWLOR.Game.Server.Service.AbilityService
         RibBreaker = 159,
         [RecastGroup("Ground Quake", "Ground Quake", true)]
         GroundQuake = 160,
-        [RecastGroup("Skull Rattle", "Skull Rattle", true)]
-        SkullRattle = 161,
         [RecastGroup("Bonecrusher", "Bonecrusher", true)]
         Bonecrusher = 162,
         [RecastGroup("Worldbreaker", "Worldbreaker", true)]
@@ -285,20 +237,12 @@ namespace SWLOR.Game.Server.Service.AbilityService
         ConcussiveToss = 164,
         [RecastGroup("Fireburst Toss", "Fireburst Toss", true)]
         FireburstToss = 165,
-        [RecastGroup("Cluster Storm", "Cluster Storm", true)]
-        ClusterStorm = 166,
         [RecastGroup("Flash Toss", "Flash Toss", true)]
         FlashToss = 167,
-        [RecastGroup("Saturation Toss", "Satur. Toss", true)]
-        SaturationToss = 168,
         [RecastGroup("Rain of Steel", "Rain of Steel", true)]
         RainOfSteel = 169,
         [RecastGroup("Pinning Toss", "Pinning Toss", true)]
         PinningToss = 170,
-        [RecastGroup("Marking Toss", "Marking Toss", true)]
-        MarkingToss = 171,
-        [RecastGroup("Ricochet Toss", "Ricochet Toss", true)]
-        RicochetToss = 172,
         [RecastGroup("Severing Toss", "Severing Toss", true)]
         SeveringToss = 173,
         [RecastGroup("Finishing Toss", "Finishing Toss", true)]
@@ -307,8 +251,6 @@ namespace SWLOR.Game.Server.Service.AbilityService
         PerfectThrow = 175,
         [RecastGroup("Blade Vortex", "Blade Vortex", true)]
         BladeVortex = 176,
-        [RecastGroup("Sweeping Advance", "Sweep Advance", true)]
-        SweepingAdvance = 177,
         [RecastGroup("Storm Release", "Storm Release", true)]
         StormRelease = 178,
         [RecastGroup("Tempest Bloom", "Tempest Bloom", true)]
@@ -319,8 +261,6 @@ namespace SWLOR.Game.Server.Service.AbilityService
         FeintingCut = 181,
         [RecastGroup("Binding Cross", "Binding Cross", true)]
         BindingCross = 182,
-        [RecastGroup("Reversal Cut", "Reversal Cut", true)]
-        ReversalCut = 183,
         [RecastGroup("Cheap Shot", "Cheap Shot", true)]
         CheapShot = 184,
         [RecastGroup("Shadow Strike", "Shadow Strike", true)]
@@ -329,38 +269,22 @@ namespace SWLOR.Game.Server.Service.AbilityService
         VitalStrike = 186,
         [RecastGroup("Enfeebling Strike", "Enfeeble Str.", true)]
         EnfeeblingStrike = 187,
-        [RecastGroup("Sap Vitality", "Sap Vitality", true)]
-        SapVitality = 188,
         [RecastGroup("Nerve Strike", "Nerve Strike", true)]
         NerveStrike = 189,
-        [RecastGroup("Cascade Failure", "C. Failure", true)]
-        CascadeFailure = 190,
         [RecastGroup("Systemic Shutdown", "Sys. Shutdown", true)]
         SystemicShutdown = 191,
         [RecastGroup("Soul Strike", "Soul Strike", true)]
         SoulStrike = 192,
-        [RecastGroup("Essence Hunter", "Essence Hunt", true)]
-        EssenceHunter = 193,
         [RecastGroup("Soul Devourer", "Soul Devour", true)]
         SoulDevourer = 194,
-        [RecastGroup("Soul Sacrifice", "Soul Sacrifice", true)]
-        SoulSacrifice = 195,
         [RecastGroup("Soul Storm", "Soul Storm", true)]
         SoulStorm = 196,
-        [RecastGroup("Soul Ascension", "Soul Ascens.", true)]
-        SoulAscension = 197,
-        [RecastGroup("Anger Strike", "Anger Strike", true)]
-        AngerStrike = 198,
         [RecastGroup("Bastion Stance", "Bastion St.", true)]
         BastionStance = 199,
-        [RecastGroup("Guardian's Resolve", "Guard. Resolve", true)]
-        GuardiansResolve = 200,
         [RecastGroup("Rampart", "Rampart", true)]
         Rampart = 201,
         [RecastGroup("Absolute Defense", "Abs. Defense", true)]
         AbsoluteDefense = 202,
-        [RecastGroup("Surge Strike", "Surge Strike", true)]
-        SurgeStrike = 203,
         [RecastGroup("Quick Draw", "Quick Draw", true)]
         QuickDraw = 204,
         [RecastGroup("Snap Roll", "Snap Roll", true)]
@@ -373,10 +297,6 @@ namespace SWLOR.Game.Server.Service.AbilityService
         TwinIntercept = 208,
         [RecastGroup("Taunting Deflection", "Taunt Deflect", true)]
         TauntingDeflection = 209,
-        [RecastGroup("Second Wind", "Second Wind", true)]
-        SecondWind = 210,
-        [RecastGroup("Purify", "Purify", true)]
-        Purify = 211,
         [RecastGroup("Adamantine Guard", "Adamant Guard", true)]
         AdamantineGuard = 212,
         [RecastGroup("Cobra Stance", "Cobra Stance", true)]
@@ -385,8 +305,6 @@ namespace SWLOR.Game.Server.Service.AbilityService
         IronWallStance = 214,
         [RecastGroup("Striking Cobra", "Striking Cobra", true)]
         StrikingCobra = 215,
-        [RecastGroup("Toxic Rush", "Toxic Rush", true)]
-        ToxicRush = 216,
         [RecastGroup("Twin Guard Stance", "Twin Guard", true)]
         TwinGuardStance = 217,
         [RecastGroup("Brutal Assault", "Brutal Assault", true)]
@@ -397,8 +315,6 @@ namespace SWLOR.Game.Server.Service.AbilityService
         FocusedStance = 220,
         [RecastGroup("Guardian Master", "Guard. Master", true)]
         GuardianMaster = 221,
-        [RecastGroup("Guardian's Influence", "Guard. Influ.", true)]
-        GuardiansInfluence = 222,
         [RecastGroup("Impenetrable Guard", "Impen. Guard", true)]
         ImpenetrableGuard = 223,
         [RecastGroup("Gunfighter Stance", "Gunfighter St.", true)]
@@ -409,8 +325,6 @@ namespace SWLOR.Game.Server.Service.AbilityService
         SkirmisherStance = 226,
         [RecastGroup("Crippling Shot", "Crippling Shot", true)]
         CripplingShot = 227,
-        [RecastGroup("Kill Zone", "Kill Zone", true)]
-        KillZone = 228,
         [RecastGroup("Sniper Stance", "Sniper Stance", true)]
         SniperStance = 229,
         [RecastGroup("Spotter Stance", "Spotter Stance", true)]
@@ -427,8 +341,6 @@ namespace SWLOR.Game.Server.Service.AbilityService
         DoubleStrike = 235,
         [RecastGroup("Force Capacitor", "Force Cap.", true)]
         ForceCapacitor = 236,
-        [RecastGroup("Force Lens", "Force Lens", true)]
-        ForceLens = 237,
         [RecastGroup("Guarded Channel", "Guard Channel", true)]
         GuardedChannel = 238,
         [RecastGroup("Infinite Conduit", "Infin. Conduit", true)]
@@ -437,30 +349,20 @@ namespace SWLOR.Game.Server.Service.AbilityService
         TempestStance = 240,
         [RecastGroup("Calming Stance", "Calming Stance", true)]
         CalmingStance = 241,
-        [RecastGroup("Crippling Defense", "Crip. Def.", true)]
-        CripplingDefense = 242,
         [RecastGroup("Disabling Strike", "Disable Strike", true)]
         DisablingStrike = 243,
         [RecastGroup("Disruption Field", "Disrupt Field", true)]
         DisruptionField = 244,
         [RecastGroup("Flanking Stance", "Flank Stance", true)]
         FlankingStance = 245,
-        [RecastGroup("Forcebane", "Forcebane", true)]
-        Forcebane = 246,
-        [RecastGroup("Improved Attentiveness", "Impr. Attent.", true)]
-        ImprovedAttentiveness = 247,
         [RecastGroup("Perceptive Stance", "Percept. St.", true)]
         PerceptiveStance = 248,
         [RecastGroup("Side Assault", "Side Assault", true)]
         SideAssault = 249,
         [RecastGroup("Crusher Stance", "Crusher Stance", true)]
         CrusherStance = 250,
-        [RecastGroup("Guarding Step", "Guarding Step", true)]
-        GuardingStep = 251,
         [RecastGroup("Leg Sweep", "Leg Sweep", true)]
         LegSweep = 252,
-        [RecastGroup("Sentinel Guard", "Sentinel Guard", true)]
-        SentinelGuard = 253,
         [RecastGroup("Sentinel Stance", "Sentinel St.", true)]
         SentinelStance = 254,
         [RecastGroup("Shelter Circle", "Shelter Circle", true)]
@@ -511,18 +413,10 @@ namespace SWLOR.Game.Server.Service.AbilityService
         DebilitatingStance = 277,
         [RecastGroup("Decoy", "Decoy", true)]
         Decoy = 278,
-        [RecastGroup("Evasive Combat", "Evasive Combat", true)]
-        EvasiveCombat = 279,
         [RecastGroup("Hamstring", "Hamstring", true)]
         Hamstring = 280,
         [RecastGroup("Incapacitate", "Incapacitate", true)]
         Incapacitate = 281,
-        [RecastGroup("Marked for Death", "Marked Death", true)]
-        MarkedForDeath = 282,
-        [RecastGroup("Toxic Coating", "Toxic Coating", true)]
-        ToxicCoating = 283,
-        [RecastGroup("Centering", "Centering", true)]
-        Centering = 284,
         [RecastGroup("Adhesive Grenade", "Adhesive Gren", true)]
         AdhesiveGrenade = 285,
         [RecastGroup("Adrenal Stim", "Adrenal Stim", true)]
@@ -537,36 +431,20 @@ namespace SWLOR.Game.Server.Service.AbilityService
         ApexBite = 290,
         [RecastGroup("Assault", "Assault", true)]
         Assault = 291,
-        [RecastGroup("Courageous Resolve", "Courage Res.", true)]
-        AuraOfCourage = 292,
-        [RecastGroup("Bastion of Light", "Light Bastion", true)]
-        BastionOfLight = 293,
         [RecastGroup("Benevolence", "Benevolence", true)]
         Benevolence = 294,
         [RecastGroup("Blaster Beacon", "Blaster Beacon", true)]
         BlasterBeacon = 295,
         [RecastGroup("Bolster Attack", "Bolster Attack", true)]
         BolsterAttack = 296,
-        [RecastGroup("Bolster Resolve", "Bolster Res.", true)]
-        BolsterResolve = 297,
         [RecastGroup("Break Morale", "Break Morale", true)]
         BreakMorale = 298,
-        [RecastGroup("Circle of Harmony", "Harmony Circle", true)]
-        CircleOfHarmony = 299,
-        [RecastGroup("Clarity", "Clarity", true)]
-        Clarity = 300,
         [RecastGroup("Claw", "Claw", true)]
         Claw = 301,
         [RecastGroup("Cleanse Order", "Cleanse Order", true)]
         CleanseOrder = 302,
         [RecastGroup("Cluster Grenade", "Cluster Gren", true)]
         ClusterGrenade = 303,
-        [RecastGroup("Coagulant", "Coagulant", true)]
-        Coagulant = 304,
-        [RecastGroup("Collapse Will", "Collapse Will", true)]
-        CollapseWill = 305,
-        [RecastGroup("Comprehend Speech", "Comp. Speech", true)]
-        ComprehendSpeech = 306,
         [RecastGroup("Concussion Grenade", "Concuss Gren", true)]
         ConcussionGrenade = 307,
         [RecastGroup("Coordinated Strike", "Coord. Strike", true)]
@@ -577,26 +455,18 @@ namespace SWLOR.Game.Server.Service.AbilityService
         CrushingSlam = 310,
         [RecastGroup("Cryo Sprayer", "Cryo Sprayer", true)]
         CryoSprayer = 311,
-        [RecastGroup("Dampening Field", "Damp Field", true)]
-        DampeningField = 312,
         [RecastGroup("Decisive Command", "Decisive Cmd", true)]
         DecisiveCommand = 313,
         [RecastGroup("Deflector Shield", "Deflect Shield", true)]
         DeflectorShield = 314,
-        [RecastGroup("Devouring Strike", "Devour Strike", true)]
-        DevouringStrike = 315,
         [RecastGroup("Distracting Feint", "Distract Feint", true)]
         DistractingFeint = 316,
-        [RecastGroup("Dominate Weak Mind", "Dom Weak Mind", true)]
-        DominateWeakMind = 317,
         [RecastGroup("Eclipse of Resolve", "Eclipse Res.", true)]
         EclipseOfResolve = 318,
         [RecastGroup("Emergency Bunker", "Emerg. Bunker", true)]
         EmergencyBunker = 319,
         [RecastGroup("Emergency Cocktail", "Emerg Cocktail", true)]
         EmergencyCocktail = 320,
-        [RecastGroup("Emergency Sealant", "Emerg Sealant", true)]
-        EmergencySealant = 321,
         [RecastGroup("Emergency Triage", "Emerg Triage", true)]
         EmergencyTriage = 322,
         [RecastGroup("Evasive Challenge", "Evas Challenge", true)]
@@ -613,38 +483,28 @@ namespace SWLOR.Game.Server.Service.AbilityService
         FlashGrenade = 328,
         [RecastGroup("Focus Stim", "Focus Stim", true)]
         FocusStim = 329,
-        [RecastGroup("Force Body", "Force Body", true)]
-        ForceBody = 330,
         [RecastGroup("Force-Bonded Beast", "Bonded Beast", true)]
         ForceBondedBeast = 331,
         [RecastGroup("Force Choke", "Force Choke", true)]
         ForceChoke = 332,
         [RecastGroup("Force Drain", "Force Drain", true)]
         ForceDrain = 333,
-        [RecastGroup("Force Grip", "Force Grip", true)]
-        ForceGrip = 334,
         [RecastGroup("Force Intercept", "Force Interc.", true)]
         ForceIntercept = 335,
         [RecastGroup("Force Leap", "Force Leap", true)]
         ForceLeap = 336,
         [RecastGroup("Force Lightning", "Force Lightng", true)]
         ForceLightning = 337,
-        [RecastGroup("Force Maelstrom", "Force Maelstr", true)]
-        ForceMaelstrom = 338,
-        [RecastGroup("Force Mend", "Force Mend", true)]
-        ForceMend = 339,
         [RecastGroup("Force Push", "Force Push", true)]
         ForcePush = 340,
-        [RecastGroup("Force Rage", "Force Rage", true)]
-        ForceRage = 341,
+        [RecastGroup("Fury Stance", "Fury Stance", true)]
+        FuryStance = 341,
         [RecastGroup("Force Sanctuary", "Force Sanct.", true)]
         ForceSanctuary = 342,
         [RecastGroup("Force Spark", "Force Spark", true)]
         ForceSpark = 343,
         [RecastGroup("Force Touch", "Force Touch", true)]
         ForceTouch = 344,
-        [RecastGroup("Fracture Focus", "Fracture Focus", true)]
-        FractureFocus = 345,
         [RecastGroup("Frag Grenade", "Frag Grenade", true)]
         FragGrenade = 346,
         [RecastGroup("Group Deflector", "Group Deflect", true)]
@@ -655,8 +515,6 @@ namespace SWLOR.Game.Server.Service.AbilityService
         GuardianWard = 349,
         [RecastGroup("Guarding Roar", "Guarding Roar", true)]
         GuardingRoar = 350,
-        [RecastGroup("Rayshield Screen", "Rayshield Scrn", true)]
-        RayshieldScreen = 351,
         [RecastGroup("Hasten", "Hasten", true)]
         Hasten = 352,
         [RecastGroup("Hold the Line", "Hold the Line", true)]
@@ -685,22 +543,14 @@ namespace SWLOR.Game.Server.Service.AbilityService
         LastStandOfTheLight = 364,
         [RecastGroup("Pulse Relay", "Pulse Relay", true)]
         PulseRelay = 365,
-        [RecastGroup("Mark Target", "Mark Target", true)]
-        MarkTarget = 366,
         [RecastGroup("Med Kit", "Med Kit", true)]
         MedKit = 367,
-        [RecastGroup("Mind Shroud", "Mind Shroud", true)]
-        MindShroud = 368,
         [RecastGroup("Mind Trick", "Mind Trick", true)]
         MindTrick = 369,
         [RecastGroup("Nightmare Field", "Nightmare Fld", true)]
         NightmareField = 370,
         [RecastGroup("Overload Barrage", "Overload Barr", true)]
         OverloadBarrage = 371,
-        [RecastGroup("Pacify", "Pacify", true)]
-        Pacify = 372,
-        [RecastGroup("Pack Recovery", "Pack Recovery", true)]
-        PackRecovery = 373,
         [RecastGroup("Pain Suppressant", "Pain Suppress", true)]
         PainSuppressant = 374,
         [RecastGroup("Poison Breath", "Poison Breath", true)]
@@ -711,8 +561,6 @@ namespace SWLOR.Game.Server.Service.AbilityService
         PowerCell = 377,
         [RecastGroup("Predator Rush", "Predator Rush", true)]
         PredatorRush = 378,
-        [RecastGroup("Predator's Mark", "Predator Mark", true)]
-        PredatorsMark = 379,
         [RecastGroup("Press the Attack", "Press Attack", true)]
         PressTheAttack = 380,
         [RecastGroup("Primal Overrun", "Primal Overrun", true)]
@@ -727,8 +575,6 @@ namespace SWLOR.Game.Server.Service.AbilityService
         Rampage = 385,
         [RecastGroup("Rampart Hide", "Rampart Hide", true)]
         RampartHide = 386,
-        [RecastGroup("Reflective Barrier", "Reflect Barr", true)]
-        ReflectiveBarrier = 387,
         [RecastGroup("Remote Charge", "Remote Charge", true)]
         RemoteCharge = 388,
         [RecastGroup("Rending Claw", "Rending Claw", true)]
@@ -739,16 +585,12 @@ namespace SWLOR.Game.Server.Service.AbilityService
         Resuscitation = 391,
         [RecastGroup("Rousing Shout", "Rousing Shout", true)]
         RousingShout = 392,
-        [RecastGroup("Saber Rend", "Saber Rend", true)]
-        SaberRend = 393,
         [RecastGroup("Shielding", "Shielding", true)]
         Shielding = 394,
         [RecastGroup("Shock Beacon", "Shock Beacon", true)]
         ShockBeacon = 395,
         [RecastGroup("Sonic Burst", "Sonic Burst", true)]
         SonicBurst = 396,
-        [RecastGroup("Soothing Guard", "Soothing Guard", true)]
-        SoothingGuard = 397,
         [RecastGroup("Thermal Detonator", "Thermal Det.", true)]
         ThermalDetonator = 398,
         [RecastGroup("Treatment Kit", "Treatment Kit", true)]
@@ -779,9 +621,25 @@ namespace SWLOR.Game.Server.Service.AbilityService
         FieldRecovery = 411,
         [RecastGroup("Capstone Ability", "Capstone", true)]
         Capstone = 412,
+        [RecastGroup("Disruption Pulse", "Disrupt Pulse", true)]
+        DisruptionPulse = 413,
+        [RecastGroup("Signal Jammer", "Signal Jammer", true)]
+        SignalJammer = 414,
+        [RecastGroup("Arc Projector", "Arc Projector", true)]
+        ArcProjector = 415,
+        [RecastGroup("Ion Lance", "Ion Lance", true)]
+        IonLance = 416,
+        [RecastGroup("Throw Rock", "Throw Rock", true)]
+        ThrowRock = 417,
+        [RecastGroup("Throw Lightsaber", "Throw Saber", true)]
+        ThrowLightsaber = 418,
+        [RecastGroup("Force Judgment", "Force Judgment", true)]
+        ForceJudgment = 419,
+        [RecastGroup("Radiant Lance", "Radiant Lance", true)]
+        RadiantLance = 420,
     }
 
-    public class RecastGroupAttribute: Attribute
+    public class RecastGroupAttribute : Attribute
     {
         public string Name { get; set; }
         public string ShortName { get; set; }

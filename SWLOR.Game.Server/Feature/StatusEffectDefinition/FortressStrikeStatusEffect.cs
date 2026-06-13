@@ -20,6 +20,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         {
             _physicalDefensePercent = physicalDefensePercent;
             StatGroup.Stats[StatType.PhysicalDefensePercentAdjustment] = physicalDefensePercent;
+            StatGroup.Stats[StatType.HeavyVibrobladeDefenseRecoveryWindow] = 1;
         }
 
         public override IStatusEffect Clone()

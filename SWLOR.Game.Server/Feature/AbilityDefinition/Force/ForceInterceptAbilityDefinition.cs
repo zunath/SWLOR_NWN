@@ -56,7 +56,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             AssignCommand(activator, () => ActionJumpToObject(friendly));
             StatusEffect.ApplyStatusEffect(activator, friendly, typeof(ForceIntercept1StatusEffect), 8f);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Holy_Aid), friendly);
-            LightGuardianPowerSupport.ApplyDeflectivePresence(activator);
+            LightGuardianPowerSupport.ApplyDeflectivePresence(activator, friendly);
         }
 
 

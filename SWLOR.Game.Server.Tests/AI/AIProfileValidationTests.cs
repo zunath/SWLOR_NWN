@@ -46,6 +46,40 @@ public class AIProfileValidationTests
     }
 
     [Test]
+    public void DefaultProfiles_CanEvaluateEveryRegisteredAbilityAction()
+    {
+        Ability.CacheData();
+        var registeredAbilities = Ability.GetAllAbilityDetails();
+        var profiles = new DefaultAIProfileDefinition().BuildProfiles();
+
+        foreach (var profile in profiles.Values)
+        {
+            var abilityActions = profile.Actions
+                .Concat(profile.Phases.Values.SelectMany(phase => phase.Actions))
+                .Where(action => action.Type == AIActionType.Ability)
+                .ToArray();
+
+            profile.MaxCandidateActions.Should().BeGreaterThanOrEqualTo(
+                abilityActions.Length,
+                $"{profile.Type} must not drop registered ability actions before AI can score them");
+
+            foreach (var action in abilityActions)
+            {
+                registeredAbilities.Should().ContainKey(action.Feat);
+                var ability = registeredAbilities[action.Feat];
+
+                AITarget.InferDefault(action.Feat, ability)
+                    .Should()
+                    .NotBeNull($"{action.Feat} must have an AI target selector");
+
+                AIScore.Ability(ability)
+                    .Should()
+                    .NotBeNull($"{action.Feat} must have an AI score calculation");
+            }
+        }
+    }
+
+    [Test]
     public void NPCAI_CacheProfilesLoadsAndValidatesDefaultProfiles()
     {
         Ability.CacheData();

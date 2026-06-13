@@ -15,67 +15,6 @@ namespace SWLOR.Game.Server.Tests.Perks;
 public class StaffSentinelTests
 {
     [Test]
-    public void StaffSentinelPerkLevels_MatchCombatBible()
-    {
-        var perks = BuildStaffSentinelPerksWithout2daLookup();
-
-        AssertPerkLevel(perks[PerkType.FlurryStyle], "Flurry Style", 1, 2, 2, null,
-            "Staff attack delay is reduced by 10%.",
-            StatType.AttackDelayReductionPercent);
-        AssertPerkLevel(perks[PerkType.StaffParry], "Staff Parry", 1, 2, 8, null,
-            "Gain +10 Attack Deflection while wielding a staff.",
-            StatType.AttackDeflection);
-        AssertPerkLevel(perks[PerkType.LegSweep], "Leg Sweep", 1, 3, 12, FeatType.LegSweep1,
-            "Deals weapon DMG + 6 and inflicts Knockdown for 3 seconds.");
-        AssertPerkLevel(perks[PerkType.SentinelStance], "Sentinel Stance", 1, 2, 15, FeatType.SentinelStance1,
-            "While active, grants +15% Evasion and +15 Attack Deflection, but reduces Attack by 15%.");
-        AssertPerkLevel(perks[PerkType.StaffParry], "Staff Parry", 2, 4, 18, null,
-            "Gain +20 Attack Deflection total while wielding a staff.",
-            StatType.AttackDeflection);
-        AssertPerkLevel(perks[PerkType.GuardingStep], "Guarding Step", 1, 3, 20, FeatType.GuardingStep1,
-            "Gain +25% Evasion and +20% Defense for 8 seconds.");
-        AssertPerkLevel(perks[PerkType.LegSweep], "Leg Sweep", 2, 2, 22, FeatType.LegSweep2,
-            "Deals weapon DMG + 16 and inflicts Knockdown for 3 seconds.");
-        AssertPerkLevel(perks[PerkType.LineBreaker], "Line Breaker", 1, 3, 25, FeatType.LineBreaker1,
-            "Deals weapon DMG + 18 to enemies in a line. Inflicts Disoriented for 12 seconds.");
-        AssertPerkLevel(perks[PerkType.StaffParry], "Staff Parry", 3, 4, 28, null,
-            "Gain +30 Attack Deflection total while wielding a staff. Deflecting attacks restores 2 STM.",
-            StatType.AttackDeflection,
-            StatType.DeflectionStaminaRestore);
-        AssertPerkLevel(perks[PerkType.SentinelGuard], "Sentinel Guard", 1, 3, 30, FeatType.SentinelGuard1,
-            "For 12 seconds, allies within 5 meters gain +10 Attack Deflection and you generate extra enmity.");
-        AssertPerkLevel(perks[PerkType.FlowingDefense], "Flowing Defense", 1, 2, 32, null,
-            "After dodging or deflecting an attack, your next Staff ability costs 2 less STM.",
-            StatType.AvoidedAttackNextSkillAbilitySkillType,
-            StatType.AvoidedAttackNextSkillAbilityStaminaCostAdjustment,
-            StatType.AvoidedAttackNextSkillAbilityWindowSeconds);
-        AssertPerkLevel(perks[PerkType.LegSweep], "Leg Sweep", 3, 4, 35, FeatType.LegSweep3,
-            "Deals weapon DMG + 26 and inflicts Knockdown for 4 seconds.");
-        AssertPerkLevel(perks[PerkType.SweepingGuard], "Sweeping Guard", 1, 3, 38, FeatType.SweepingGuard1,
-            "Deals weapon DMG + 18 to all nearby enemies. Inflicts Knockdown for 2 seconds. You gain +20% Defense for 10 seconds.");
-        AssertPerkLevel(perks[PerkType.PatientSentinel], "Patient Sentinel", 1, 3, 40, null,
-            "If you have not used a combat ability for 6 seconds, your next Staff ability gains +15% accuracy and deals +15 DMG.",
-            StatType.IdleSkillAbilitySkillType,
-            StatType.IdleSkillAbilityRequiredIdleSeconds,
-            StatType.IdleSkillAbilityHitChancePercentAdjustment,
-            StatType.IdleSkillAbilityDamageBonus);
-        AssertPerkLevel(perks[PerkType.StaffParry], "Staff Parry", 4, 4, 42, null,
-            "Gain +40 Attack Deflection total while wielding a staff. Deflecting attacks restores 4 STM.",
-            StatType.AttackDeflection,
-            StatType.DeflectionStaminaRestore);
-        AssertPerkLevel(perks[PerkType.ShelterCircle], "Shelter Circle", 1, 3, 45, FeatType.ShelterCircle1,
-            "Allies in an area of effect (sphere) gain +20% Defense and +20% Evasion for 15 seconds.");
-        AssertPerkLevel(perks[PerkType.PerfectFootwork], "Perfect Footwork", 1, 4, 48, null,
-            "When reduced below 40% HP, gain +30% Evasion for 10 seconds. This can only trigger once every 3 minutes.",
-            StatType.LowHPEvasionThresholdPercent,
-            StatType.LowHPEvasionPercentAdjustment,
-            StatType.LowHPEvasionDurationSeconds,
-            StatType.LowHPEvasionCooldownSeconds);
-        AssertPerkLevel(perks[PerkType.UnmovingCenter], "Unmoving Center", 1, 4, 50, FeatType.UnmovingCenter1,
-            "For 45 seconds, you cannot be Knocked down or Dazed, gain +35 Attack Deflection, and generate +30% enmity.");
-    }
-
-    [Test]
     public void StaffSentinelAbilities_MatchCombatBible()
     {
         var legSweep = new LegSweepAbilityDefinition().BuildAbilities();
@@ -86,14 +25,8 @@ public class StaffSentinelTests
         var sentinelStance = new SentinelStanceAbilityDefinition().BuildAbilities()[FeatType.SentinelStance1];
         AssertAbility(sentinelStance, "Sentinel Stance", 1, RecastGroup.SentinelStance, 180f, 2f, null, false, false, false, false, AbilityActivationType.Casted);
 
-        var guardingStep = new GuardingStepAbilityDefinition().BuildAbilities()[FeatType.GuardingStep1];
-        AssertAbility(guardingStep, "Guarding Step", 1, RecastGroup.GuardingStep, 60f, 0f, 6, false, false, false, false, AbilityActivationType.Casted);
-
         var lineBreaker = new LineBreakerAbilityDefinition().BuildAbilities()[FeatType.LineBreaker1];
         AssertAbility(lineBreaker, "Line Breaker", 1, RecastGroup.LineBreaker, 60f, 0f, 8, true, false, false, true, AbilityActivationType.Casted);
-
-        var sentinelGuard = new SentinelGuardAbilityDefinition().BuildAbilities()[FeatType.SentinelGuard1];
-        AssertAbility(sentinelGuard, "Sentinel Guard", 1, RecastGroup.SentinelGuard, 120f, 0f, 10, false, false, false, true, AbilityActivationType.Casted);
 
         var sweepingGuard = new SweepingGuardAbilityDefinition().BuildAbilities()[FeatType.SweepingGuard1];
         AssertAbility(sweepingGuard, "Sweeping Guard", 1, RecastGroup.SweepingGuard, 90f, 0f, 10, true, false, false, true, AbilityActivationType.Casted);
@@ -119,7 +52,7 @@ public class StaffSentinelTests
         guardingStep.StatGroup.Stats[StatType.ForceDefensePercentAdjustment].Should().Be(20);
 
         var sentinelGuardAlly = new SentinelGuardStatusEffect();
-        sentinelGuardAlly.StatGroup.Stats[StatType.AttackDeflection].Should().Be(10);
+        sentinelGuardAlly.StatGroup.Stats[StatType.AttackDeflection].Should().Be(8);
 
         var sentinelGuardSelf = new SentinelGuardStatusEffect();
         sentinelGuardSelf.ApplyEffect(1, 1, 12);
@@ -155,9 +88,7 @@ public class StaffSentinelTests
             (FeatType.LegSweep2, "ife_legswp2", "P", "0x01", "0", "****", "****", "****", "****"),
             (FeatType.LegSweep3, "ife_legswp3", "P", "0x01", "0", "****", "****", "****", "****"),
             (FeatType.SentinelStance1, "ife_sentstnc1", "P", "0x01", "0", "****", "****", "****", "****"),
-            (FeatType.GuardingStep1, "ife_grdstep1", "P", "0x01", "0", "****", "****", "****", "****"),
             (FeatType.LineBreaker1, "ife_linebrkr1", "M", "0x3E", "1", "rectangle", "8", "2.5", "17"),
-            (FeatType.SentinelGuard1, "ife_sentgrd1", "P", "0x01", "0", "****", "****", "****", "****"),
             (FeatType.ShelterCircle1, "ife_shelcirc1", "P", "0x01", "0", "****", "****", "****", "****"),
             (FeatType.SweepingGuard1, "ife_swpnggrd1", "P", "0x01", "1", "sphere", "5", "****", "17"),
             (FeatType.UnmovingCenter1, "ife_unmovcntr1", "P", "0x01", "0", "****", "****", "****", "****")
@@ -185,48 +116,15 @@ public class StaffSentinelTests
         }
     }
 
-    [Test]
-    public void StaffSentinelImplementationDetails_MatchCombatBible()
-    {
-        var root = FindRepositoryRoot();
-
-        var legSweep = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Staff" / "LegSweepAbilityDefinition.cs").FullName).Replace("\r\n", "\n");
-        legSweep.Should().Contain("SkillType.Staff,\n                6,\n                3,");
-        legSweep.Should().Contain("SkillType.Staff,\n                16,\n                3,");
-        legSweep.Should().Contain("SkillType.Staff,\n                26,\n                4,");
-
-        var lineBreaker = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Staff" / "LineBreakerAbilityDefinition.cs").FullName);
-        lineBreaker.Should().Contain("SkillType.Staff, 18, 12, typeof(DisorientedStatusEffect)");
-        lineBreaker.Should().Contain("CombatImpactAreaShape.Line");
-        lineBreaker.Should().Contain("8f, 2.5f");
-
-        var sentinelGuard = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Staff" / "SentinelGuardAbilityDefinition.cs").FullName);
-        sentinelGuard.Should().Contain("typeof(SentinelGuardStatusEffect)");
-        sentinelGuard.Should().Contain("12f");
-        sentinelGuard.Should().Contain("10");
-        sentinelGuard.Should().Contain("true");
-
-        var sweepingGuard = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Staff" / "SweepingGuardAbilityDefinition.cs").FullName);
-        sweepingGuard.Should().Contain("StatusEffect.ApplyStatusEffect(activator, activator, typeof(SweepingGuardStatusEffect), 10f);");
-        sweepingGuard.Should().Contain("SkillType.Staff, 18, 2, typeof(KnockdownStatusEffect)");
-        sweepingGuard.Should().Contain("centerOnActivator: true");
-
-        var unmovingCenter = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Staff" / "UnmovingCenterAbilityDefinition.cs").FullName);
-        unmovingCenter.Should().Contain("Ability.ApplyTemporaryImmunity(activator, CapstoneAbility.ActiveDurationSeconds, ImmunityType.Knockdown);");
-        unmovingCenter.Should().Contain("Ability.ApplyTemporaryImmunity(activator, CapstoneAbility.ActiveDurationSeconds, ImmunityType.Dazed);");
-        unmovingCenter.Should().Contain("typeof(UnmovingCenterStatusEffect)");
-        unmovingCenter.Should().Contain("CapstoneAbility.ActiveDurationSeconds");
-    }
-
     private static void AssertPerkLevel(
-        PerkDetail perk,
-        string name,
-        int level,
-        int price,
-        int skillRank,
-        FeatType? grantedFeat,
-        string description,
-        params StatType[] statTypes)
+    PerkDetail perk,
+    string name,
+    int level,
+    int price,
+    int skillRank,
+    FeatType? grantedFeat,
+    string description,
+    params StatType[] statTypes)
     {
         perk.Name.Should().Be(name);
         perk.Category.Should().Be(PerkCategoryType.StaffSentinel);

@@ -182,11 +182,12 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition.Beast
                 .GroupType(PerkGroupType.Beast)
 
                 .AddPerkLevel()
-                .Description("The beast and its master each restore 4 STM.")
+                .Description("When your beast uses a Balanced active ability, the beast and master each restore 1 STM. This can trigger once every 8 seconds.")
                 .Price(4)
                 .RequirementBeastLevel(48)
                 .RequirementBeastRole(BeastRoleType.Balanced)
-                .GrantsFeat(FeatType.PackRecovery1);
+                .IncreasesStat(StatType.BeastBalancedAbilityStaminaRestore, 1)
+                .IncreasesStat(StatType.BeastBalancedAbilityStaminaRestoreCooldownSeconds, 8);
         }
 
         private void AlphaRhythm()

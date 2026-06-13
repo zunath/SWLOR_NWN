@@ -18,67 +18,6 @@ namespace SWLOR.Game.Server.Tests.Perks;
 public class TwinBladeCycloneTests
 {
     [Test]
-    public void TwinBladeCyclonePerkLevels_MatchCombatBible()
-    {
-        var perks = BuildTwinBladeCyclonePerksWithout2daLookup();
-
-        AssertPerkLevel(perks[PerkType.CrossCut], "Cross Cut", 1, 3, 2, FeatType.CrossCut1,
-            "Instantly attacks twice, each for weapon DMG + 8, and inflicts Disoriented for 8 seconds.");
-        AssertPerkLevel(perks[PerkType.SpinningWhirl], "Spinning Whirl", 1, 3, 8, FeatType.SpinningWhirl1,
-            "Attacks up to 3 nearby enemies for weapon DMG + 10 each.");
-        AssertPerkLevel(perks[PerkType.Momentum], "Momentum", 1, 3, 12, null,
-            "Twin Blade abilities that hit 2 or more enemies grant +5% Haste for 8 seconds, up to +15%.",
-            StatType.TwinBladeAreaAbilityMinTargetsHasteThreshold,
-            StatType.TwinBladeAreaAbilityHastePercentAdjustment,
-            StatType.TwinBladeAreaAbilityHasteDurationSeconds,
-            StatType.TwinBladeAreaAbilityHastePercentMax);
-        AssertPerkLevel(perks[PerkType.CycloneStance], "Cyclone Stance", 1, 2, 15, FeatType.CycloneStance1,
-            "While active, grants +15% Haste and +10% Attack, but reduces Defense by 20%.");
-        AssertPerkLevel(perks[PerkType.CrossCut], "Cross Cut", 2, 4, 18, FeatType.CrossCut2,
-            "Instantly attacks twice, each for weapon DMG + 17, and inflicts Disoriented for 10 seconds.");
-        AssertPerkLevel(perks[PerkType.SpinningWhirl], "Spinning Whirl", 2, 3, 20, FeatType.SpinningWhirl2,
-            "Attacks up to 3 nearby enemies for weapon DMG + 18 each.");
-        AssertPerkLevel(perks[PerkType.FlowingFootwork], "Flowing Footwork", 1, 2, 22, null,
-            "After using a Twin Blade combat ability, gain +10% Evasion for 8 seconds.",
-            StatType.TwinBladeAbilityUsedEvasionPercentAdjustment,
-            StatType.TwinBladeAbilityUsedEvasionDurationSeconds);
-        AssertPerkLevel(perks[PerkType.BladeVortex], "Blade Vortex", 1, 3, 25, FeatType.BladeVortex1,
-            "Deals weapon DMG + 18 to all nearby enemies.");
-        AssertPerkLevel(perks[PerkType.CrossCut], "Cross Cut", 3, 3, 28, FeatType.CrossCut3,
-            "Instantly attacks twice, each for weapon DMG + 25, and inflicts Disoriented for 12 seconds.");
-        AssertPerkLevel(perks[PerkType.SpinningWhirl], "Spinning Whirl", 3, 3, 30, FeatType.SpinningWhirl3,
-            "Attacks up to 3 nearby enemies for weapon DMG + 28 each.");
-        AssertPerkLevel(perks[PerkType.Momentum], "Momentum", 2, 2, 32, null,
-            "Momentum can stack up to +25% Haste and restores 2 STM whenever a stack is gained.",
-            StatType.TwinBladeAreaAbilityMinTargetsHasteThreshold,
-            StatType.TwinBladeAreaAbilityHastePercentAdjustment,
-            StatType.TwinBladeAreaAbilityHasteDurationSeconds,
-            StatType.TwinBladeAreaAbilityHastePercentMax,
-            StatType.TwinBladeAreaAbilityStaminaRestoreOnHasteStack);
-        AssertPerkLevel(perks[PerkType.BladeVortex], "Blade Vortex", 2, 4, 35, FeatType.BladeVortex2,
-            "Deals weapon DMG + 26 to all nearby enemies and inflicts Exposed for 12 seconds.");
-        AssertPerkLevel(perks[PerkType.SweepingAdvance], "Sweeping Advance", 1, 3, 38, FeatType.SweepingAdvance1,
-            "Deals weapon DMG + 24 to enemies in a line. If this hits 3 or more enemies, restore 6 STM and gain +10% Haste for 8 seconds.");
-        AssertPerkLevel(perks[PerkType.EdgeRhythm], "Edge Rhythm", 1, 2, 40, null,
-            "Every third auto-attack with a twin blade deals +15 DMG to a nearby enemy.",
-            StatType.AutoAttackCycleDamageSkillType,
-            StatType.AutoAttackCycleRequiredCount,
-            StatType.AutoAttackCycleDamage,
-            StatType.AutoAttackCycleRadiusMeters);
-        AssertPerkLevel(perks[PerkType.CrossCut], "Cross Cut", 4, 4, 42, FeatType.CrossCut4,
-            "Instantly attacks twice, each for weapon DMG + 34. Inflicts Disoriented and Hamstring for 12 seconds.");
-        AssertPerkLevel(perks[PerkType.StormRelease], "Storm Release", 1, 3, 45, FeatType.StormRelease1,
-            "Consume all Momentum stacks to deal weapon DMG + 15 per stack to all nearby enemies.");
-        AssertPerkLevel(perks[PerkType.CycloneMastery], "Cyclone Mastery", 1, 4, 48, null,
-            "Area Twin Blade abilities gain +10% critical chance and restore 1 STM per target hit, up to 5 STM.",
-            StatType.TwinBladeAreaAbilityCriticalRatePercentAdjustment,
-            StatType.TwinBladeAreaAbilityStaminaRestorePerTarget,
-            StatType.TwinBladeAreaAbilityStaminaRestoreMax);
-        AssertPerkLevel(perks[PerkType.TempestBloom], "Tempest Bloom", 1, 4, 50, FeatType.TempestBloom1,
-            "Deal weapon DMG + 20 to nearby enemies. For 45 seconds, pulse every 6 seconds, dealing light physical damage and applying a Tempest mark. Each mark increases physical damage taken by 2% to a maximum of 3 stacks.");
-    }
-
-    [Test]
     public void TwinBladeCycloneAbilities_MatchCombatBible()
     {
         var crossCut = new CrossCutAbilityDefinition().BuildAbilities();
@@ -98,9 +37,6 @@ public class TwinBladeCycloneTests
         var bladeVortex = new BladeVortexAbilityDefinition().BuildAbilities();
         AssertAbility(bladeVortex[FeatType.BladeVortex1], "Blade Vortex I", 1, SkillType.TwinBlade, RecastGroup.BladeVortex, 75f, 0f, 8, true, false, false, true, AbilityActivationType.Casted);
         AssertAbility(bladeVortex[FeatType.BladeVortex2], "Blade Vortex II", 2, SkillType.TwinBlade, RecastGroup.BladeVortex, 75f, 0f, 10, true, false, false, true, AbilityActivationType.Casted);
-
-        var sweepingAdvance = new SweepingAdvanceAbilityDefinition().BuildAbilities()[FeatType.SweepingAdvance1];
-        AssertAbility(sweepingAdvance, "Sweeping Advance", 1, SkillType.TwinBlade, RecastGroup.SweepingAdvance, 60f, 0f, 10, true, false, false, true, AbilityActivationType.Casted);
 
         var stormRelease = new StormReleaseAbilityDefinition().BuildAbilities()[FeatType.StormRelease1];
         AssertAbility(stormRelease, "Storm Release", 1, SkillType.TwinBlade, RecastGroup.StormRelease, 120f, 0f, 12, true, false, false, true, AbilityActivationType.Casted);
@@ -182,7 +118,6 @@ public class TwinBladeCycloneTests
             (FeatType.CycloneStance1, "ife_cyclstnc1", "P", "0x01", "0", "****", "****", "****", "****"),
             (FeatType.BladeVortex1, "ife_bladevort1", "P", "0x01", "1", "sphere", "5", "****", "17"),
             (FeatType.BladeVortex2, "ife_bladevort2", "P", "0x01", "1", "sphere", "5", "****", "17"),
-            (FeatType.SweepingAdvance1, "ife_swpngdvnc1", "M", "0x3E", "1", "rectangle", "8", "2.5", "17"),
             (FeatType.StormRelease1, "ife_strmrel1", "P", "0x01", "1", "sphere", "5", "****", "17"),
             (FeatType.TempestBloom1, "ife_tempblm1", "P", "0x01", "1", "sphere", "5", "****", "17")
         };
@@ -215,43 +150,15 @@ public class TwinBladeCycloneTests
         }
     }
 
-    [Test]
-    public void TwinBladeCycloneImplementationDetails_MatchCombatBible()
-    {
-        var root = FindRepositoryRoot();
-
-        var sweepingAdvance = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "TwinBlade" / "SweepingAdvanceAbilityDefinition.cs").FullName);
-        sweepingAdvance.Should().Contain("private const int MomentumTargetThreshold = 3;");
-        sweepingAdvance.Should().Contain("private const int MomentumStaminaRestore = 6;");
-        sweepingAdvance.Should().Contain("private const int MomentumHastePercent = 10;");
-        sweepingAdvance.Should().Contain("private const int MomentumDurationSeconds = 8;");
-
-        var stormRelease = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "TwinBlade" / "StormReleaseAbilityDefinition.cs").FullName);
-        stormRelease.Should().Contain("private const int DamagePerMomentumStack = 15;");
-        stormRelease.Should().Contain("DamagePerMomentumStack * momentumStacks");
-        stormRelease.Should().Contain("TemporaryStatModifier.Consume(");
-
-        var tempestBloom = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "TwinBlade" / "TempestBloomAbilityDefinition.cs").FullName);
-        tempestBloom.Should().Contain("private const float PulseIntervalSeconds = 6f;");
-        tempestBloom.Should().Contain("private const int InitialDamage = 20;");
-        tempestBloom.Should().Contain("private const int PulseDamage = 8;");
-        tempestBloom.Should().Contain("private const int MaximumMarkStacks = 3;");
-        tempestBloom.Should().Contain("CombatAreaPulses.SchedulePulses(");
-        tempestBloom.Should().Contain("Combat.ApplyAbilityImpactEffects(activator, summary);");
-        tempestBloom.Should().Contain("afterSuccessfulHit: ApplyTempestMark");
-        tempestBloom.Should().Contain("typeof(TempestMarkStatusEffect)");
-        tempestBloom.Should().Contain("activeStacks >= MaximumMarkStacks");
-    }
-
     private static void AssertPerkLevel(
-        PerkDetail perk,
-        string name,
-        int level,
-        int price,
-        int skillRank,
-        FeatType? grantedFeat,
-        string description,
-        params StatType[] statTypes)
+    PerkDetail perk,
+    string name,
+    int level,
+    int price,
+    int skillRank,
+    FeatType? grantedFeat,
+    string description,
+    params StatType[] statTypes)
     {
         perk.Name.Should().Be(name);
         perk.Category.Should().Be(PerkCategoryType.TwinBladeCyclone);

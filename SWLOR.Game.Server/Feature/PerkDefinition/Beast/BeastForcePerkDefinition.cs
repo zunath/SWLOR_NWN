@@ -175,7 +175,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition.Beast
                 .GroupType(PerkGroupType.Beast)
 
                 .AddPerkLevel()
-                .Description("The beast takes 8% less force damage and gains +10% resistance to confusion, daze, and fear.")
+                .Description("The beast takes 8% less force damage and gains +10% Confusion Resistance, +10% Daze Resistance, and +10% Fear Resistance.")
                 .Price(3)
                 .RequirementBeastLevel(38)
                 .RequirementBeastRole(BeastRoleType.Force)

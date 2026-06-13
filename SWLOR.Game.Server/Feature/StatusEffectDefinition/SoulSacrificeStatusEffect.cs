@@ -10,8 +10,8 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public override EffectIconType Icon => EffectIconType.SoulSacrificeStatusEffect;
         public SoulSacrificeStatusEffect()
         {
-            StatGroup.Stats[StatType.AttackPercentAdjustment] = 35;
-            StatGroup.Stats[StatType.CriticalRatePercentAdjustment] = 20;
+            StatGroup.Stats[StatType.AttackPercentAdjustment] = 20;
+            StatGroup.Stats[StatType.CriticalRatePercentAdjustment] = 10;
         }
 
     }

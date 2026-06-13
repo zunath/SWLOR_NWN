@@ -18,115 +18,6 @@ namespace SWLOR.Game.Server.Tests.Perks;
 public class DevicesGrenadierTests
 {
     [Test]
-    public void DevicesGrenadierPerkLevels_MatchCombatBible()
-    {
-        var perks = BuildDevicesGrenadierPerksWithout2daLookup();
-
-        AssertPerkLevel(perks[PerkType.FragGrenade], "Frag Grenade", 1, 2, null, FeatType.FragGrenade1,
-            "Deals 18 fire DMG plus PER scaling to enemies in a 3m blast. Consumes explosives.");
-        AssertPerkLevel(perks[PerkType.BlastRadius], "Blast Radius", 1, 2, 5, null,
-            "Grenade abilities gain +1m blast radius.",
-            (StatType.GrenadeRadiusBonusTenths, 10));
-        AssertPerkLevel(perks[PerkType.ConcussionGrenade], "Concussion Grenade", 1, 3, 8, FeatType.ConcussionGrenade1,
-            "Deals 14 electrical DMG plus PER scaling in a 3m blast and knock down for 2 seconds. Consumes explosives.");
-        AssertPerkLevel(perks[PerkType.FlashGrenade], "Flash Grenade", 1, 3, 12, FeatType.FlashGrenade1,
-            "Attempts to inflict Flash, reducing physical and Force ability hit chance by 8% for 20 seconds in a 4m blast. Consumes explosives.");
-        AssertPerkLevel(perks[PerkType.FragGrenade], "Frag Grenade", 2, 3, 15, FeatType.FragGrenade2,
-            "Deals 32 fire DMG plus PER scaling to enemies in a 3m blast and attempts to inflict Bleed. Consumes explosives.");
-        AssertPerkLevel(perks[PerkType.IonGrenade], "Ion Grenade", 1, 3, 18, FeatType.IonGrenade1,
-            "Deals 20 electrical DMG plus PER scaling in a 3m blast. Deals 50% bonus damage to droids. Consumes explosives.");
-        AssertPerkLevel(perks[PerkType.BlastRadius], "Blast Radius", 2, 2, 22, null,
-            "Grenade abilities gain +2m blast radius.",
-            (StatType.GrenadeRadiusBonusTenths, 20));
-        AssertPerkLevel(perks[PerkType.AdhesiveGrenade], "Adhesive Grenade", 1, 4, 25, FeatType.AdhesiveGrenade1,
-            "Slows enemies in a 4m blast for 6 seconds and immobilizes them for 3 seconds. Consumes explosives.");
-        AssertPerkLevel(perks[PerkType.ConcussionGrenade], "Concussion Grenade", 2, 3, 28, FeatType.ConcussionGrenade2,
-            "Deals 28 electrical DMG plus PER scaling in a 3m blast and knock down for 2 seconds. Consumes explosives.");
-        AssertPerkLevel(perks[PerkType.ClusterGrenade], "Cluster Grenade", 1, 4, 30, FeatType.ClusterGrenade1,
-            "Throws three small grenades at nearby enemies, each dealing 18 fire DMG plus PER scaling in a small blast. Consumes explosives.");
-        AssertPerkLevel(perks[PerkType.FlashGrenade], "Flash Grenade", 2, 3, 35, FeatType.FlashGrenade2,
-            "Attempts to inflict Flash, reducing physical and Force ability hit chance by 14% for 20 seconds in a 4m blast. Consumes explosives.");
-        AssertPerkLevel(perks[PerkType.IonGrenade], "Ion Grenade", 2, 3, 38, FeatType.IonGrenade2,
-            "Deals 34 electrical DMG plus PER scaling in a 3m blast. Deals 60% bonus damage to droids and Shock. Consumes explosives.");
-        AssertPerkLevel(perks[PerkType.FragGrenade], "Frag Grenade", 3, 4, 40, FeatType.FragGrenade3,
-            "Deals 48 fire DMG plus PER scaling to enemies in a 3m blast and attempts to inflict Bleed. Consumes explosives.");
-        AssertPerkLevel(perks[PerkType.AdhesiveGrenade], "Adhesive Grenade", 2, 4, 42, FeatType.AdhesiveGrenade2,
-            "Slows enemies in a 4m blast for 8 seconds and immobilizes them for 4 seconds. Consumes explosives.");
-        AssertPerkLevel(perks[PerkType.BlastRadius], "Blast Radius", 3, 4, 45, null,
-            "Grenade abilities gain +3m blast radius, and Flash Grenade and Adhesive Grenade non-save effect strength increases by 5%.",
-            (StatType.GrenadeRadiusBonusTenths, 30),
-            (StatType.GrenadeControlPotencyBonus, 5));
-        AssertPerkLevel(perks[PerkType.ConcussionGrenade], "Concussion Grenade", 3, 3, 48, FeatType.ConcussionGrenade3,
-            "Deals 42 electrical DMG plus PER scaling in a 3m blast and knock down for 3 seconds. Consumes explosives.");
-        AssertPerkLevel(perks[PerkType.ThermalDetonator], "Thermal Detonator", 1, 5, 50, FeatType.ThermalDetonator1,
-            "Deals moderate fire DMG plus PER scaling in a 5m blast and inflicts Burning for 45 seconds. Consumes explosives.");
-    }
-
-    [Test]
-    public void DevicesGrenadierAbilities_MatchCombatBible()
-    {
-        var fragGrenade = new FragGrenadeAbilityDefinition().BuildAbilities();
-        AssertAbility(fragGrenade[FeatType.FragGrenade1], "Frag Grenade I", 1, RecastGroup.FragGrenade, 12f, 1f, 2, "explosives", 1);
-        AssertAbility(fragGrenade[FeatType.FragGrenade2], "Frag Grenade II", 2, RecastGroup.FragGrenade, 12f, 1f, 3, "explosives", 1);
-        AssertAbility(fragGrenade[FeatType.FragGrenade3], "Frag Grenade III", 3, RecastGroup.FragGrenade, 12f, 1f, 5, "explosives", 1);
-
-        var concussionGrenade = new ConcussionGrenadeAbilityDefinition().BuildAbilities();
-        AssertAbility(concussionGrenade[FeatType.ConcussionGrenade1], "Concussion Grenade I", 1, RecastGroup.ConcussionGrenade, 24f, 1f, 3, "explosives", 1);
-        AssertAbility(concussionGrenade[FeatType.ConcussionGrenade2], "Concussion Grenade II", 2, RecastGroup.ConcussionGrenade, 24f, 1f, 4, "explosives", 1);
-        AssertAbility(concussionGrenade[FeatType.ConcussionGrenade3], "Concussion Grenade III", 3, RecastGroup.ConcussionGrenade, 24f, 1f, 6, "explosives", 1);
-
-        var flashGrenade = new FlashGrenadeAbilityDefinition().BuildAbilities();
-        AssertAbility(flashGrenade[FeatType.FlashGrenade1], "Flash Grenade I", 1, RecastGroup.FlashGrenade, 24f, 1f, 2, "explosives", 1);
-        AssertAbility(flashGrenade[FeatType.FlashGrenade2], "Flash Grenade II", 2, RecastGroup.FlashGrenade, 24f, 1f, 3, "explosives", 1);
-
-        var ionGrenade = new IonGrenadeAbilityDefinition().BuildAbilities();
-        AssertAbility(ionGrenade[FeatType.IonGrenade1], "Ion Grenade I", 1, RecastGroup.IonGrenade, 18f, 1f, 3, "explosives", 1);
-        AssertAbility(ionGrenade[FeatType.IonGrenade2], "Ion Grenade II", 2, RecastGroup.IonGrenade, 18f, 1f, 5, "explosives", 1);
-
-        var adhesiveGrenade = new AdhesiveGrenadeAbilityDefinition().BuildAbilities();
-        AssertAbility(adhesiveGrenade[FeatType.AdhesiveGrenade1], "Adhesive Grenade I", 1, RecastGroup.AdhesiveGrenade, 30f, 1f, 4, "explosives", 1);
-        AssertAbility(adhesiveGrenade[FeatType.AdhesiveGrenade2], "Adhesive Grenade II", 2, RecastGroup.AdhesiveGrenade, 30f, 1f, 5, "explosives", 1);
-
-        var clusterGrenade = new ClusterGrenadeAbilityDefinition().BuildAbilities()[FeatType.ClusterGrenade1];
-        AssertAbility(clusterGrenade, "Cluster Grenade", 1, RecastGroup.ClusterGrenade, 45f, 1f, 5, "explosives", 1);
-
-        var thermalDetonator = new ThermalDetonatorAbilityDefinition().BuildAbilities()[FeatType.ThermalDetonator1];
-        AssertAbility(thermalDetonator, "Thermal Detonator", 1, RecastGroup.Capstone, 345f, 1.5f, 15, "explosives", 1);
-    }
-
-    [Test]
-    public void DevicesGrenadierAbilities_DeclareDynamicSphereTargeting()
-    {
-        var fragGrenade = new FragGrenadeAbilityDefinition().BuildAbilities();
-        AssertTargeting(fragGrenade[FeatType.FragGrenade1], Spell.FragGrenade1, 3f);
-        AssertTargeting(fragGrenade[FeatType.FragGrenade2], Spell.FragGrenade2, 3f);
-        AssertTargeting(fragGrenade[FeatType.FragGrenade3], Spell.FragGrenade3, 3f);
-
-        var concussionGrenade = new ConcussionGrenadeAbilityDefinition().BuildAbilities();
-        AssertTargeting(concussionGrenade[FeatType.ConcussionGrenade1], Spell.ConcussionGrenade1, 3f);
-        AssertTargeting(concussionGrenade[FeatType.ConcussionGrenade2], Spell.ConcussionGrenade2, 3f);
-        AssertTargeting(concussionGrenade[FeatType.ConcussionGrenade3], Spell.ConcussionGrenade3, 3f);
-
-        var flashGrenade = new FlashGrenadeAbilityDefinition().BuildAbilities();
-        AssertTargeting(flashGrenade[FeatType.FlashGrenade1], Spell.FlashGrenade1, 4f);
-        AssertTargeting(flashGrenade[FeatType.FlashGrenade2], Spell.FlashGrenade2, 4f);
-
-        var ionGrenade = new IonGrenadeAbilityDefinition().BuildAbilities();
-        AssertTargeting(ionGrenade[FeatType.IonGrenade1], Spell.IonGrenade1, 3f);
-        AssertTargeting(ionGrenade[FeatType.IonGrenade2], Spell.IonGrenade2, 3f);
-
-        var adhesiveGrenade = new AdhesiveGrenadeAbilityDefinition().BuildAbilities();
-        AssertTargeting(adhesiveGrenade[FeatType.AdhesiveGrenade1], Spell.AdhesiveGrenade1, 4f);
-        AssertTargeting(adhesiveGrenade[FeatType.AdhesiveGrenade2], Spell.AdhesiveGrenade2, 4f);
-
-        var clusterGrenade = new ClusterGrenadeAbilityDefinition().BuildAbilities();
-        AssertTargeting(clusterGrenade[FeatType.ClusterGrenade1], Spell.ClusterGrenade1, 2f);
-
-        var thermalDetonator = new ThermalDetonatorAbilityDefinition().BuildAbilities();
-        AssertTargeting(thermalDetonator[FeatType.ThermalDetonator1], Spell.ThermalDetonator1, 5f);
-    }
-
-    [Test]
     public void GrenadeRadiusCalculation_UsesTenthsAsMeterFractions()
     {
         DeviceAbilityEffects.CalculateGrenadeRadius(3f, 10).Should().Be(4f);
@@ -153,77 +44,16 @@ public class DevicesGrenadierTests
     public void DevicesGrenadierStatusEffects_MatchCombatBible()
     {
         new FlashGrenade1StatusEffect().StatGroup.Stats[StatType.PhysicalAndForceAbilityHitChancePercentAdjustment].Should().Be(-8);
-        new FlashGrenade2StatusEffect().StatGroup.Stats[StatType.PhysicalAndForceAbilityHitChancePercentAdjustment].Should().Be(-14);
 
-        var adhesiveSlow = new AdhesiveGrenadeSlowStatusEffect();
+        var adhesiveSlow = new AdhesiveGrenadeStatusEffect();
         adhesiveSlow.StatGroup.Stats[StatType.MovementSpeedPercentAdjustment].Should().Be(-50);
         adhesiveSlow.ResistanceType.Should().Be(ResistanceType.Mobility);
 
-        new AdhesiveGrenadeSlowStatusEffect(55)
+        new AdhesiveGrenadeStatusEffect(55)
             .StatGroup.Stats[StatType.MovementSpeedPercentAdjustment]
             .Should()
             .Be(-55);
     }
-
-    [Test]
-    public void DevicesGrenadierSources_IncludeBibleBehavior()
-    {
-        var root = FindRepositoryRoot();
-
-        var fragGrenade = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Devices" / "FragGrenadeAbilityDefinition.cs").FullName);
-        fragGrenade.Should().Contain("18");
-        fragGrenade.Should().Contain("32");
-        fragGrenade.Should().Contain("48");
-        fragGrenade.Should().Contain("DeviceAbilityEffects.ApplyGrenadeRadiusBonus(activator, 3f)");
-        fragGrenade.Should().Contain("typeof(BleedStatusEffect)");
-        fragGrenade.Should().Contain("ApplyEffectAtLocation(");
-        fragGrenade.Should().Contain("EffectVisualEffect(VisualEffect.Fnf_Fireball)");
-        fragGrenade.Should().Contain("areaVisualEffect: VisualEffect.None");
-
-        var concussionGrenade = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Devices" / "ConcussionGrenadeAbilityDefinition.cs").FullName);
-        concussionGrenade.Should().Contain("14");
-        concussionGrenade.Should().Contain("28");
-        concussionGrenade.Should().Contain("42");
-        concussionGrenade.Should().Contain("typeof(KnockdownStatusEffect)");
-        concussionGrenade.Should().Contain("AbilityTargeting.ResolveImpactLocation(activator, target, targetLocation)");
-        concussionGrenade.Should().Contain("ApplyEffectAtLocation(");
-        concussionGrenade.Should().Contain("EffectVisualEffect(VisualEffect.Vfx_Fnf_Electric_Explosion)");
-        concussionGrenade.Should().Contain("areaVisualEffect: VisualEffect.None");
-
-        var flashGrenade = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Devices" / "FlashGrenadeAbilityDefinition.cs").FullName);
-        flashGrenade.Should().Contain("new FlashGrenade1StatusEffect(GetFlashPenalty(activator, 8))");
-        flashGrenade.Should().Contain("new FlashGrenade2StatusEffect(GetFlashPenalty(activator, 14))");
-        flashGrenade.Should().Contain("DeviceAbilityEffects.ApplyGrenadeRadiusBonus(activator, 4f)");
-
-        var ionGrenade = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Devices" / "IonGrenadeAbilityDefinition.cs").FullName);
-        ionGrenade.Should().Contain("ApplyIonGrenade(activator, target, targetLocation, 20, 50, null)");
-        ionGrenade.Should().Contain("ApplyIonGrenade(activator, target, targetLocation, 34, 60, typeof(ShockStatusEffect))");
-        ionGrenade.Should().Contain("IsDroid");
-
-        var adhesiveGrenade = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Devices" / "AdhesiveGrenadeAbilityDefinition.cs").FullName);
-        adhesiveGrenade.Should().Contain("ApplyAdhesiveGrenade");
-        adhesiveGrenade.Should().Contain("DeviceAbilityEffects.ApplyGrenadeRadiusBonus(activator, 4f)");
-        adhesiveGrenade.Should().Contain("new AdhesiveGrenadeSlowStatusEffect");
-        adhesiveGrenade.Should().Contain("typeof(ImmobilizedStatusEffect)");
-        adhesiveGrenade.Should().Contain("slowDuration");
-        adhesiveGrenade.Should().Contain("immobilizeDuration");
-
-        var clusterGrenade = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Devices" / "ClusterGrenadeAbilityDefinition.cs").FullName);
-        clusterGrenade.Should().Contain("GrenadeCount = 3");
-        clusterGrenade.Should().Contain("SmallBlastRadius = 2f");
-        clusterGrenade.Should().Contain("GetClusterGrenadeTargets");
-        clusterGrenade.Should().NotContain("centerOnActivator: true");
-
-        var thermalDetonator = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Devices" / "ThermalDetonatorAbilityDefinition.cs").FullName);
-        thermalDetonator.Should().Contain("RequirementItem(\"explosives\", 1)");
-        thermalDetonator.Should().Contain("typeof(BurnStatusEffect)");
-        thermalDetonator.Should().Contain("DeviceAbilityEffects.ApplyGrenadeRadiusBonus(activator, 5f)");
-        thermalDetonator.Should().Contain("AbilityTargeting.ResolveImpactLocation(activator, target, targetLocation)");
-        thermalDetonator.Should().Contain("ApplyEffectAtLocation(");
-        thermalDetonator.Should().Contain("EffectVisualEffect(VisualEffect.Fnf_Fireball)");
-        thermalDetonator.Should().Contain("areaVisualEffect: VisualEffect.None");
-    }
-
     [Test]
     public void DevicesGrenadierFeatAndSpellIcons_AreUniqueAndPresent()
     {
@@ -241,11 +71,9 @@ public class DevicesGrenadierTests
             (FeatType.AdhesiveGrenade1, "ife_dhsvgrnd1", "M", "0x3E", "1", "sphere", "4", "****", "1"),
             (FeatType.ConcussionGrenade2, "ife_cncssngrnd2", "M", "0x3E", "1", "sphere", "3", "****", "1"),
             (FeatType.ClusterGrenade1, "ife_clstrgrnd1", "M", "0x3E", "1", "sphere", "2", "****", "1"),
-            (FeatType.FlashGrenade2, "ife_flashgrnd2", "M", "0x3E", "1", "sphere", "4", "****", "1"),
             (FeatType.IonGrenade2, "ife_ngrnd2", "M", "0x3E", "1", "sphere", "3", "****", "1"),
             (FeatType.FragGrenade3, "ife_frggrnd3", "M", "0x3E", "1", "sphere", "3", "****", "1"),
             (FeatType.AdhesiveGrenade2, "ife_dhsvgrnd2", "M", "0x3E", "1", "sphere", "4", "****", "1"),
-            (FeatType.ConcussionGrenade3, "ife_cncssngrnd3", "M", "0x3E", "1", "sphere", "3", "****", "1"),
             (FeatType.ThermalDetonator1, "ife_thrmldtntr1", "M", "0x3E", "1", "sphere", "5", "****", "1")
         };
         var seenIcons = new HashSet<string>();

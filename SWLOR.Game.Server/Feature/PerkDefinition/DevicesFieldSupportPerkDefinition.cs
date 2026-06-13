@@ -15,11 +15,12 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         public Dictionary<PerkType, PerkDetail> BuildPerks()
         {
             DeflectorShield();
-            CapacitorRig();
             WeaponJam();
             PowerCell();
+            PowerSurge();
             RayshieldScreen();
             DampeningField();
+            OverclockRoutine();
             GroupDeflector();
             EmergencyBunker();
 
@@ -33,7 +34,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Grants one ally 35 temporary HP plus 6% of the target's maximum HP for 45 seconds.")
-                .Price(2)
+                .Price(3)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.DeflectorShield1)
 
@@ -46,38 +47,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Grants one ally 100 temporary HP plus 12% of the target's maximum HP for 45 seconds.")
-                .Price(3)
-                .RequirementSkill(SkillType.Devices, 35)
+                .Price(4)
+                .RequirementSkill(SkillType.Devices, 30)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.DeflectorShield3);
-        }
-
-        private void CapacitorRig()
-        {
-            _builder.Create(PerkCategoryType.DevicesFieldSupport, PerkType.CapacitorRig)
-                .Name("Capacitor Rig")
-
-                .AddPerkLevel()
-                .Description("Deflector Shield, Group Deflector, and Emergency Bunker grant 10% more temporary HP.")
-                .Price(2)
-                .RequirementSkill(SkillType.Devices, 5)
-                .RequirementCharacterType(CharacterType.Standard)
-                .IncreasesStat(StatType.DeviceShieldTemporaryHPPercentAdjustment, 10)
-
-                .AddPerkLevel()
-                .Description("Deflector Shield, Group Deflector, and Emergency Bunker grant 20% more temporary HP.")
-                .Price(2)
-                .RequirementSkill(SkillType.Devices, 22)
-                .RequirementCharacterType(CharacterType.Standard)
-                .IncreasesStat(StatType.DeviceShieldTemporaryHPPercentAdjustment, 20)
-
-                .AddPerkLevel()
-                .Description("Deflector Shield, Group Deflector, and Emergency Bunker grant 30% more temporary HP. Deflector Shield and Group Deflector last 10 seconds longer.")
-                .Price(4)
-                .RequirementSkill(SkillType.Devices, 45)
-                .RequirementCharacterType(CharacterType.Standard)
-                .IncreasesStat(StatType.DeviceShieldTemporaryHPPercentAdjustment, 30)
-                .IncreasesStat(StatType.DeviceShieldDurationBonusSeconds, 10);
         }
 
         private void WeaponJam()
@@ -90,14 +63,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(3)
                 .RequirementSkill(SkillType.Devices, 8)
                 .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(FeatType.WeaponJam1)
-
-                .AddPerkLevel()
-                .Description("Reduce one target's physical and Force ability Accuracy by 10% for 18 seconds.")
-                .Price(3)
-                .RequirementSkill(SkillType.Devices, 28)
-                .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(FeatType.WeaponJam2);
+                .GrantsFeat(FeatType.WeaponJam1);
         }
 
         private void PowerCell()
@@ -115,16 +81,29 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Restores 18% of maximum STM to one ally and increases physical and Force ability Accuracy by 6% for 12 seconds.")
                 .Price(4)
-                .RequirementSkill(SkillType.Devices, 30)
+                .RequirementSkill(SkillType.Devices, 25)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.PowerCell2)
 
                 .AddPerkLevel()
-                .Description("Restores 18% of maximum STM to nearby allies and increases physical and Force ability Accuracy by 6% for 12 seconds.")
-                .Price(3)
+                .Description("Restores 18% of maximum STM to the selected ally and nearby allies and increases physical and Force ability Accuracy by 6% for 12 seconds.")
+                .Price(5)
                 .RequirementSkill(SkillType.Devices, 48)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.PowerCell3);
+        }
+
+        private void PowerSurge()
+        {
+            _builder.Create(PerkCategoryType.DevicesFieldSupport, PerkType.PowerSurge)
+                .Name("Power Surge")
+
+                .AddPerkLevel()
+                .Description("Power Cell's initial target also gains Power Surge for 12 seconds: +6% physical and Force ability Accuracy, +6% critical chance, and 1 STM every 4 seconds.")
+                .Price(3)
+                .RequirementSkill(SkillType.Devices, 5)
+                .RequirementCharacterType(CharacterType.Standard)
+                .IncreasesStat(StatType.PowerCellInitialTargetPowerSurge, 1);
         }
 
         private void RayshieldScreen()
@@ -133,18 +112,20 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Rayshield Screen")
 
                 .AddPerkLevel()
-                .Description("Places a 4m screen for 15 seconds. Allies inside take 10% less ranged physical damage.")
+                .Description("Field Support ally buffs from Deflector Shield, Power Cell, Group Deflector, and Emergency Bunker also grant affected allies 8% reduced ranged physical damage for 12 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Devices, 18)
                 .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(FeatType.RayshieldScreen1)
+                .IncreasesStat(StatType.FieldSupportRangedPhysicalDamageReductionPercent, 8)
+                .IncreasesStat(StatType.FieldSupportRangedPhysicalDamageReductionDurationSeconds, 12)
 
                 .AddPerkLevel()
-                .Description("Places a 4m screen for 18 seconds. Allies inside take 15% less ranged physical damage.")
-                .Price(3)
+                .Description("Field Support ally buffs from Deflector Shield, Power Cell, Group Deflector, and Emergency Bunker also grant affected allies 12% reduced ranged physical damage for 15 seconds.")
+                .Price(5)
                 .RequirementSkill(SkillType.Devices, 38)
                 .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(FeatType.RayshieldScreen2);
+                .IncreasesStat(StatType.FieldSupportRangedPhysicalDamageReductionPercent, 12)
+                .IncreasesStat(StatType.FieldSupportRangedPhysicalDamageReductionDurationSeconds, 15);
         }
 
         private void DampeningField()
@@ -153,18 +134,33 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Dampening Field")
 
                 .AddPerkLevel()
-                .Description("One ally takes 10% less physical and force damage for 10 seconds.")
+                .Description("Field Support ally buffs from Deflector Shield, Power Cell, Group Deflector, and Emergency Bunker also grant affected allies 6% reduced physical and force damage for 8 seconds.")
                 .Price(4)
-                .RequirementSkill(SkillType.Devices, 25)
+                .RequirementSkill(SkillType.Devices, 22)
                 .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(FeatType.DampeningField1)
+                .IncreasesStat(StatType.FieldSupportPhysicalAndForceDamageReductionPercent, 6)
+                .IncreasesStat(StatType.FieldSupportPhysicalAndForceDamageReductionDurationSeconds, 8)
 
                 .AddPerkLevel()
-                .Description("One ally takes 15% less physical and force damage for 10 seconds.")
-                .Price(4)
+                .Description("Field Support ally buffs from Deflector Shield, Power Cell, Group Deflector, and Emergency Bunker also grant affected allies 10% reduced physical and force damage for 10 seconds.")
+                .Price(5)
                 .RequirementSkill(SkillType.Devices, 40)
                 .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(FeatType.DampeningField2);
+                .IncreasesStat(StatType.FieldSupportPhysicalAndForceDamageReductionPercent, 10)
+                .IncreasesStat(StatType.FieldSupportPhysicalAndForceDamageReductionDurationSeconds, 10);
+        }
+
+        private void OverclockRoutine()
+        {
+            _builder.Create(PerkCategoryType.DevicesFieldSupport, PerkType.OverclockRoutine)
+                .Name("Overclock Routine")
+
+                .AddPerkLevel()
+                .Description("Field Support abilities that affect allies also grant Overclock Routine for 12 seconds. Affected allies gain +4% Device ability damage, healing, temporary HP, and damage absorption shield values.")
+                .Price(5)
+                .RequirementSkill(SkillType.Devices, 35)
+                .RequirementCharacterType(CharacterType.Standard)
+                .IncreasesStat(StatType.FieldSupportAllyOverclockRoutine, 1);
         }
 
         private void GroupDeflector()
@@ -174,7 +170,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Nearby allies gain 70 temporary HP plus 8% of each target's maximum HP for 30 seconds.")
-                .Price(4)
+                .Price(5)
                 .RequirementSkill(SkillType.Devices, 42)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.GroupDeflector1);

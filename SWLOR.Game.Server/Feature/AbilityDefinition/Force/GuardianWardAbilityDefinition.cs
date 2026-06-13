@@ -114,9 +114,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
                 SWLOR.Game.Server.Feature.AbilityDefinition.AbilityEffectScaling.ApplyTemporaryHPPercent(activator, friendly, 6, 30f);
+                LightGuardianPowerSupport.ApplyTemporaryHPPowerRiders(activator, friendly, 30f);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_M), friendly);
             }
-            LightGuardianPowerSupport.ApplyDeflectivePresence(activator);
         }
 
         private static void GuardianWard2ImpactAction(uint activator, uint target, int level, Location targetLocation)
@@ -124,9 +124,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
                 SWLOR.Game.Server.Feature.AbilityDefinition.AbilityEffectScaling.ApplyTemporaryHPPercent(activator, friendly, 9, 30f);
+                LightGuardianPowerSupport.ApplyTemporaryHPPowerRiders(activator, friendly, 30f);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_M), friendly);
             }
-            LightGuardianPowerSupport.ApplyDeflectivePresence(activator);
         }
 
         private static void GuardianWard3ImpactAction(uint activator, uint target, int level, Location targetLocation)
@@ -134,9 +134,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
                 SWLOR.Game.Server.Feature.AbilityDefinition.AbilityEffectScaling.ApplyTemporaryHPPercent(activator, friendly, 12, 30f);
+                LightGuardianPowerSupport.ApplyTemporaryHPPowerRiders(activator, friendly, 30f);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_M), friendly);
             }
-            LightGuardianPowerSupport.ApplyDeflectivePresence(activator);
         }
 
         private static void GuardianWard4ImpactAction(uint activator, uint target, int level, Location targetLocation)
@@ -144,9 +144,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
                 SWLOR.Game.Server.Feature.AbilityDefinition.AbilityEffectScaling.ApplyTemporaryHPPercent(activator, friendly, 15, 30f);
+                LightGuardianPowerSupport.ApplyTemporaryHPPowerRiders(activator, friendly, 30f);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_M), friendly);
             }
-            LightGuardianPowerSupport.ApplyDeflectivePresence(activator);
         }
     }
 }

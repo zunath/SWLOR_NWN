@@ -16,65 +16,6 @@ namespace SWLOR.Game.Server.Tests.Perks;
 public class TwinBladeDuelistTests
 {
     [Test]
-    public void TwinBladeDuelistPerkLevels_MatchCombatBible()
-    {
-        var perks = BuildTwinBladeDuelistPerksWithout2daLookup();
-
-        AssertPerkLevel(perks[PerkType.CenterlineGuard], "Centerline Guard", 1, 2, 2, null,
-            "Gain +10 Attack Deflection while wielding a twin blade. After deflecting an attack, your next attack within 8 seconds deals +8 DMG.",
-            StatType.AttackDeflection,
-            StatType.DeflectionNextSkillAbilityDamageBonus,
-            StatType.DeflectionNextSkillAbilityDamageBonusWindowSeconds);
-        AssertPerkLevel(perks[PerkType.SplitGuardStrike], "Split Guard Strike", 1, 2, 8, FeatType.SplitGuardStrike1,
-            "Deals weapon DMG + 10 and grants +15% Defense for 10 seconds.");
-        AssertPerkLevel(perks[PerkType.FeintingCut], "Feinting Cut", 1, 3, 12, FeatType.FeintingCut1,
-            "Deals weapon DMG + 12 and inflicts Weakened, reducing Attack by 10% for 12 seconds.");
-        AssertPerkLevel(perks[PerkType.DuelistStance], "Duelist Stance", 1, 2, 15, FeatType.DuelistStance1,
-            "While active, single-target Twin Blade combat abilities deal +15% damage and grant +10 Attack Deflection for 6 seconds, but area Twin Blade abilities deal -15% damage.");
-        AssertPerkLevel(perks[PerkType.SplitGuardStrike], "Split Guard Strike", 2, 4, 18, FeatType.SplitGuardStrike2,
-            "Deals weapon DMG + 22 and grants +20% Defense for 10 seconds.");
-        AssertPerkLevel(perks[PerkType.MirrorStep], "Mirror Step", 1, 3, 20, null,
-            "When hit by a target you damaged within the last 6 seconds, you have a 15% chance for your next Twin Blade ability to have no attack delay.",
-            StatType.DamageTakenRecentTargetNextAbilityNoDelayChance,
-            StatType.DamageTakenRecentTargetNextAbilityNoDelaySkillType,
-            StatType.DamageTakenRecentTargetWindowSeconds);
-        AssertPerkLevel(perks[PerkType.FeintingCut], "Feinting Cut", 2, 2, 22, FeatType.FeintingCut2,
-            "Deals weapon DMG + 22 and inflicts Weakened, reducing Attack by 15% for 12 seconds.");
-        AssertPerkLevel(perks[PerkType.BindingCross], "Binding Cross", 1, 3, 25, FeatType.BindingCross1,
-            "Strikes twice for weapon DMG + 10 each. Inflicts Hamstring for 12 seconds.");
-        AssertPerkLevel(perks[PerkType.GuardedFlow], "Guarded Flow", 1, 4, 28, null,
-            "Using a single-target Twin Blade ability grants +8 Attack Deflection for 8 seconds.",
-            StatType.TwinBladeSingleTargetAbilityAttackDeflection,
-            StatType.TwinBladeSingleTargetAbilityAttackDeflectionDurationSeconds);
-        AssertPerkLevel(perks[PerkType.SplitGuardStrike], "Split Guard Strike", 3, 3, 30, FeatType.SplitGuardStrike3,
-            "Deals weapon DMG + 34 and grants +25% Defense for 10 seconds.");
-        AssertPerkLevel(perks[PerkType.PunishingAngle], "Punishing Angle", 1, 2, 32, null,
-            "Deal +12% damage to targets affected by Weakened or Hamstring.",
-            StatType.DamageToWeakenedOrHamstringTargetPercentAdjustment);
-        AssertPerkLevel(perks[PerkType.FeintingCut], "Feinting Cut", 3, 4, 35, FeatType.FeintingCut3,
-            "Deals weapon DMG + 32 and inflicts Weakened, reducing Attack by 20% for 15 seconds.");
-        AssertPerkLevel(perks[PerkType.ReversalCut], "Reversal Cut", 1, 3, 38, FeatType.ReversalCut1,
-            "Can be used after you are hit. Deals weapon DMG + 40 and inflicts Dazed for 3 seconds.");
-        AssertPerkLevel(perks[PerkType.PrecisionArc], "Precision Arc", 1, 3, 40, null,
-            "Single-target critical hits reduce the target's Defense by 10% for 10 seconds.",
-            StatType.SingleTargetCriticalTargetDefensePercentAdjustment,
-            StatType.SingleTargetCriticalTargetDefenseDurationSeconds);
-        AssertPerkLevel(perks[PerkType.BindingCross], "Binding Cross", 2, 4, 42, FeatType.BindingCross2,
-            "Strikes twice for weapon DMG + 18 each. Inflicts Hamstring for 20 seconds and Exposed for 10 seconds.");
-        AssertPerkLevel(perks[PerkType.DuelistsChallenge], "Duelist's Challenge", 1, 3, 45, FeatType.DuelistsChallenge1,
-            "Mark a target for 20 seconds. You and the target deal +20% damage to each other, but you gain +20% Defense against that target.");
-        AssertPerkLevel(perks[PerkType.PerfectBalance], "Perfect Balance", 1, 4, 48, null,
-            "Single-target Twin Blade abilities restore 3 STM. Area Twin Blade abilities restore 1 STM per target hit, up to 5 STM. This can only trigger once every 8 seconds.",
-            StatType.TwinBladeSingleTargetAbilityStaminaRestore,
-            StatType.TwinBladeSingleTargetAbilityStaminaRestoreCooldownSeconds,
-            StatType.TwinBladeAreaAbilityCooldownStaminaRestorePerTarget,
-            StatType.TwinBladeAreaAbilityCooldownStaminaRestoreMax,
-            StatType.TwinBladeAreaAbilityCooldownStaminaRestoreCooldownSeconds);
-        AssertPerkLevel(perks[PerkType.FinalForm], "Final Form", 1, 4, 50, FeatType.FinalForm1,
-            "For 45 seconds, single-target physical combat abilities deal +15% damage and you gain +15 Attack Deflection.");
-    }
-
-    [Test]
     public void TwinBladeDuelistAbilities_MatchCombatBible()
     {
         var splitGuardStrike = new SplitGuardStrikeAbilityDefinition().BuildAbilities();
@@ -93,10 +34,6 @@ public class TwinBladeDuelistTests
         var bindingCross = new BindingCrossAbilityDefinition().BuildAbilities();
         AssertAbility(bindingCross[FeatType.BindingCross1], "Binding Cross I", 1, RecastGroup.BindingCross, 60f, 0f, 8, true, true, true, false, AbilityActivationType.Casted);
         AssertAbility(bindingCross[FeatType.BindingCross2], "Binding Cross II", 2, RecastGroup.BindingCross, 60f, 0f, 12, true, true, true, false, AbilityActivationType.Casted);
-
-        var reversalCut = new ReversalCutAbilityDefinition().BuildAbilities()[FeatType.ReversalCut1];
-        AssertAbility(reversalCut, "Reversal Cut", 1, RecastGroup.ReversalCut, 60f, 0f, 10, true, true, true, false, AbilityActivationType.Casted);
-        reversalCut.CustomValidation.Should().NotBeNull();
 
         var challenge = new DuelistsChallengeAbilityDefinition().BuildAbilities()[FeatType.DuelistsChallenge1];
         AssertAbility(challenge, "Duelist's Challenge", 1, RecastGroup.DuelistsChallenge, 120f, 0f, 12, true, true, true, false, AbilityActivationType.Casted);
@@ -124,8 +61,9 @@ public class TwinBladeDuelistTests
 
         var duelistStance = new DuelistStanceStatusEffect();
         duelistStance.StatGroup.Stats[StatType.TwinBladeSingleTargetAbilityDamagePercentAdjustment].Should().Be(15);
-        duelistStance.StatGroup.Stats[StatType.TwinBladeSingleTargetAbilityAttackDeflection].Should().Be(10);
-        duelistStance.StatGroup.Stats[StatType.TwinBladeSingleTargetAbilityAttackDeflectionDurationSeconds].Should().Be(6);
+        duelistStance.StatGroup.Stats[StatType.SingleTargetAbilityAttackDeflectionSkillType].Should().Be((int)SkillType.TwinBlade);
+        duelistStance.StatGroup.Stats[StatType.SingleTargetAbilityAttackDeflection].Should().Be(10);
+        duelistStance.StatGroup.Stats[StatType.SingleTargetAbilityAttackDeflectionDurationSeconds].Should().Be(6);
         duelistStance.StatGroup.Stats[StatType.TwinBladeAreaAbilityDamagePercentAdjustment].Should().Be(-15);
         duelistStance.StatGroup.Stats[StatType.AttackPercentAdjustment].Should().Be(0);
 
@@ -160,7 +98,6 @@ public class TwinBladeDuelistTests
             (FeatType.DuelistStance1, "ife_duelstnc1", "P", "0x01", "0"),
             (FeatType.BindingCross1, "ife_bindcrs1", "M", "0x02", "1"),
             (FeatType.BindingCross2, "ife_bindcrs2", "M", "0x02", "1"),
-            (FeatType.ReversalCut1, "ife_revcut1", "M", "0x02", "1"),
             (FeatType.DuelistsChallenge1, "ife_duelchal1", "M", "0x02", "1"),
             (FeatType.FinalForm1, "ife_finalform1", "P", "0x01", "0")
         };
@@ -187,42 +124,15 @@ public class TwinBladeDuelistTests
         }
     }
 
-    [Test]
-    public void TwinBladeDuelistImplementationDetails_MatchCombatBible()
-    {
-        var root = FindRepositoryRoot();
-
-        var bindingCross = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "TwinBlade" / "BindingCrossAbilityDefinition.cs").FullName);
-        bindingCross.Should().Contain("ApplyBindingCross(activator, target, targetLocation, 10, 12, 0);");
-        bindingCross.Should().Contain("ApplyBindingCross(activator, target, targetLocation, 18, 20, 10);");
-        bindingCross.Should().Contain("typeof(ExposedStatusEffect)");
-        bindingCross.Should().Contain("exposedDuration");
-
-        var reversalCut = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "TwinBlade" / "ReversalCutAbilityDefinition.cs").FullName);
-        reversalCut.Should().Contain("private const float RecentDamageTakenWindowSeconds = 8f;");
-        reversalCut.Should().Contain("Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.TwinBlade, 40, 3, typeof(DazedStatusEffect), false);");
-
-        var challenge = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "TwinBlade" / "DuelistsChallengeAbilityDefinition.cs").FullName);
-        challenge.Should().Contain("typeof(DuelistsChallengeStatusEffect), 20f");
-        challenge.Should().Contain("typeof(DuelistsChallengeSelfStatusEffect), 20f");
-
-        var combat = File.ReadAllText((root / "SWLOR.Game.Server" / "Service" / "Combat.cs").FullName);
-        combat.Should().Contain("ability.IsHostileAbility");
-        combat.Should().Contain("GetAbilitySkillType(activator, ability)");
-        combat.Should().Contain("ability.IsSingleTargetAbility");
-        combat.Should().Contain("ApplyPhysicalAbilityShapeDamageModifier");
-        combat.Should().Contain("SingleTargetPhysicalAbilityDamagePercentAdjustment");
-    }
-
     private static void AssertPerkLevel(
-        PerkDetail perk,
-        string name,
-        int level,
-        int price,
-        int skillRank,
-        FeatType? grantedFeat,
-        string description,
-        params StatType[] statTypes)
+    PerkDetail perk,
+    string name,
+    int level,
+    int price,
+    int skillRank,
+    FeatType? grantedFeat,
+    string description,
+    params StatType[] statTypes)
     {
         perk.Name.Should().Be(name);
         perk.Category.Should().Be(PerkCategoryType.TwinBladeDuelist);

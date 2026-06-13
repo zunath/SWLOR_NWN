@@ -17,24 +17,30 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
         {
             var builder = new AbilityBuilder();
 
-            SteadyFormation(builder);
+            SteadyFormation(builder, FeatType.SteadyFormation1, Spell.SteadyFormation1, "Steady Formation I", 1);
+            SteadyFormation(builder, FeatType.SteadyFormation2, Spell.SteadyFormation2, "Steady Formation II", 2);
 
             return builder.Build();
         }
 
-        private static void SteadyFormation(AbilityBuilder builder)
+        private static void SteadyFormation(
+            AbilityBuilder builder,
+            FeatType featType,
+            Spell spell,
+            string name,
+            int level)
         {
             builder
-                .Create(FeatType.SteadyFormation1, PerkType.SteadyFormation)
-                .Name("Steady Formation")
-                .Level(1)
+                .Create(featType, PerkType.SteadyFormation)
+                .Name(name)
+                .Level(level)
                 .HasActivationDelay(2f)
                 .HasRecastDelay(RecastGroup.SteadyFormation, 60f)
                 .SkillType(SkillType.Leadership)
                 .IsAreaAbility()
                 .HasImpactAction(SteadyFormationImpactAction)
                 .HasTargetingSphere(
-                    Spell.SteadyFormation1,
+                    spell,
                     5f,
                     AbilityTargetingFlags.HelpsAllies | AbilityTargetingFlags.OriginOnSelf,
                     LeadershipAbilityEffects.ApplyLeadershipCommandRadiusBonus)

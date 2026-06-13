@@ -34,6 +34,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .HasActivationDelay(1.5f)
                 .HasRecastDelay(RecastGroup.Capstone, CapstoneAbility.RecastDelaySeconds)
                 .SkillType(SkillType.Devices)
+                .CombatImpactDamageAbility(AbilityType.Perception)
                 .UsesImpactAnimation(Animation.CastOutAnimation)
                 .HasMaxRange(DeviceAbilityRange.Standard)
                 .IsSingleTargetAbility()
@@ -71,6 +72,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 areaVisualEffect: VisualEffect.Fnf_Fireball,
                 damagePercentAdjustment: damageAdjustment,
                 baseDamageAdjustment: baseDamageAdjustment,
+                afterSuccessfulHit: _ => DeviceAbilityEffects.ApplyTacticalUplink(activator),
                 hitChancePercentAdjustment: hitChanceAdjustment,
                 criticalRatePercentAdjustment: criticalRateAdjustment);
 
@@ -88,6 +90,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 targetVisualEffect: VisualEffect.Vfx_Com_Hit_Fire,
                 damagePercentAdjustment: damageAdjustment,
                 baseDamageAdjustment: baseDamageAdjustment,
+                afterSuccessfulHit: _ => DeviceAbilityEffects.ApplyTacticalUplink(activator),
                 hitChancePercentAdjustment: hitChanceAdjustment,
                 criticalRatePercentAdjustment: criticalRateAdjustment);
 
@@ -109,7 +112,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 areaVisualEffect: VisualEffect.Vfx_Fnf_Sound_Burst,
                 damagePercentAdjustment: damageAdjustment,
                 baseDamageAdjustment: baseDamageAdjustment,
-                afterSuccessfulHit: InterruptActivation,
+                afterSuccessfulHit: hitTarget =>
+                {
+                    InterruptActivation(hitTarget);
+                    DeviceAbilityEffects.ApplyTacticalUplink(activator);
+                },
                 hitChancePercentAdjustment: hitChanceAdjustment,
                 criticalRatePercentAdjustment: criticalRateAdjustment);
         }

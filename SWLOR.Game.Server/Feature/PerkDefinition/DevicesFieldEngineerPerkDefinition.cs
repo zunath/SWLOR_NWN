@@ -17,9 +17,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             BlasterBeacon();
             BeaconTargeting();
             IncendiaryField();
+            SignalJammer();
             RemoteCharge();
-            PulseRelay();
             ShockBeacon();
+            DiagnosticSweep();
             KillzoneBeacon();
 
             return _builder.Build();
@@ -31,22 +32,22 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Blaster Beacon")
 
                 .AddPerkLevel()
-                .Description("Plants a targeting beacon for 18 seconds. Every 3 seconds, one hostile target within 12m is hit by an automated ranged energy pulse for DMG plus PER scaling.")
-                .Price(2)
+                .Description("Plants a targeting beacon for 18 seconds. Every 3 seconds, one hostile target within 12m is hit by an automated ranged energy pulse for 10 energy DMG plus PER scaling.")
+                .Price(3)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.BlasterBeacon1)
 
                 .AddPerkLevel()
-                .Description("Plants a targeting beacon for 21 seconds. Every 3 seconds, one hostile target within 12m is hit by an increased automated ranged energy pulse for DMG plus PER scaling.")
+                .Description("Plants a targeting beacon for 21 seconds. Every 3 seconds, one hostile target within 12m is hit by an automated ranged energy pulse for 14 energy DMG plus PER scaling.")
                 .Price(3)
                 .RequirementSkill(SkillType.Devices, 15)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.BlasterBeacon2)
 
                 .AddPerkLevel()
-                .Description("Plants a targeting beacon for 24 seconds. Every 3 seconds, one hostile target within 14m is hit by a high automated ranged energy pulse for DMG plus PER scaling.")
-                .Price(3)
-                .RequirementSkill(SkillType.Devices, 35)
+                .Description("Plants a targeting beacon for 24 seconds. Every 3 seconds, one hostile target within 14m is hit by an automated ranged energy pulse for 18 energy DMG plus PER scaling.")
+                .Price(4)
+                .RequirementSkill(SkillType.Devices, 30)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.BlasterBeacon3);
         }
@@ -58,29 +59,20 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Beacon pulses gain +5% Accuracy and +5% critical chance.")
-                .Price(2)
+                .Price(3)
                 .RequirementSkill(SkillType.Devices, 5)
                 .RequirementCharacterType(CharacterType.Standard)
                 .IncreasesStat(StatType.BeaconPulseAccuracyPercentAdjustment, 5)
                 .IncreasesStat(StatType.BeaconPulseCriticalRatePercentAdjustment, 5)
 
                 .AddPerkLevel()
-                .Description("Beacon pulses gain +10% Accuracy, +10% critical chance, and +5% damage.")
-                .Price(2)
-                .RequirementSkill(SkillType.Devices, 22)
+                .Description("Beacon pulses gain +12% Accuracy, +12% critical chance, +8% damage, and +2m pulse range.")
+                .Price(5)
+                .RequirementSkill(SkillType.Devices, 42)
                 .RequirementCharacterType(CharacterType.Standard)
-                .IncreasesStat(StatType.BeaconPulseAccuracyPercentAdjustment, 10)
-                .IncreasesStat(StatType.BeaconPulseCriticalRatePercentAdjustment, 10)
-                .IncreasesStat(StatType.BeaconPulseDamagePercentAdjustment, 5)
-
-                .AddPerkLevel()
-                .Description("Beacon pulses gain +15% Accuracy, +15% critical chance, +10% damage, and +2m pulse range.")
-                .Price(4)
-                .RequirementSkill(SkillType.Devices, 45)
-                .RequirementCharacterType(CharacterType.Standard)
-                .IncreasesStat(StatType.BeaconPulseAccuracyPercentAdjustment, 15)
-                .IncreasesStat(StatType.BeaconPulseCriticalRatePercentAdjustment, 15)
-                .IncreasesStat(StatType.BeaconPulseDamagePercentAdjustment, 10)
+                .IncreasesStat(StatType.BeaconPulseAccuracyPercentAdjustment, 12)
+                .IncreasesStat(StatType.BeaconPulseCriticalRatePercentAdjustment, 12)
+                .IncreasesStat(StatType.BeaconPulseDamagePercentAdjustment, 8)
                 .IncreasesStat(StatType.BeaconPulseRangeBonusMeters, 2);
         }
 
@@ -90,25 +82,38 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Incendiary Field")
 
                 .AddPerkLevel()
-                .Description("Deploys a visible fire field for 12 seconds. Enemies inside take fire DMG plus PER scaling every 3 seconds.")
+                .Description("Deploys a visible fire field for 12 seconds. Enemies inside take 8 fire DMG plus PER scaling every 3 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Devices, 8)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.IncendiaryField1)
 
                 .AddPerkLevel()
-                .Description("Deploys a visible fire field for 15 seconds. Enemies inside take increased fire DMG plus PER scaling every 3 seconds.")
-                .Price(3)
-                .RequirementSkill(SkillType.Devices, 28)
+                .Description("Deploys a visible fire field for 15 seconds. Enemies inside take 12 fire DMG plus PER scaling every 3 seconds.")
+                .Price(4)
+                .RequirementSkill(SkillType.Devices, 25)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.IncendiaryField2)
 
                 .AddPerkLevel()
-                .Description("Deploys a visible fire field for 18 seconds. Enemies inside take high fire DMG plus PER scaling every 3 seconds.")
-                .Price(4)
-                .RequirementSkill(SkillType.Devices, 42)
+                .Description("Deploys a visible fire field for 18 seconds. Enemies inside take 16 fire DMG plus PER scaling every 3 seconds.")
+                .Price(5)
+                .RequirementSkill(SkillType.Devices, 45)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.IncendiaryField3);
+        }
+
+        private void SignalJammer()
+        {
+            _builder.Create(PerkCategoryType.DevicesFieldEngineer, PerkType.SignalJammer)
+                .Name("Signal Jammer")
+
+                .AddPerkLevel()
+                .Description("Deploys a signal jammer for 12 seconds. Hostile targets within 5m suffer -6% physical and Force ability Accuracy and cannot benefit from Haste while inside.")
+                .Price(4)
+                .RequirementSkill(SkillType.Devices, 18)
+                .RequirementCharacterType(CharacterType.Standard)
+                .GrantsFeat(FeatType.SignalJammer1);
         }
 
         private void RemoteCharge()
@@ -117,45 +122,18 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Remote Charge")
 
                 .AddPerkLevel()
-                .Description("Arms a visible charge at your target location that detonates after 3 seconds for fire DMG plus PER scaling.")
+                .Description("Arms a visible charge at your target location that detonates after 3 seconds for 30 fire DMG plus PER scaling.")
                 .Price(3)
                 .RequirementSkill(SkillType.Devices, 12)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.RemoteCharge1)
 
                 .AddPerkLevel()
-                .Description("Arms a visible charge that detonates after 3 seconds for fire DMG plus PER scaling and knock down.")
+                .Description("Arms a visible charge that detonates after 3 seconds for 42 fire DMG plus PER scaling and knock down.")
                 .Price(4)
-                .RequirementSkill(SkillType.Devices, 30)
+                .RequirementSkill(SkillType.Devices, 28)
                 .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(FeatType.RemoteCharge2)
-
-                .AddPerkLevel()
-                .Description("Arms a visible charge that detonates after 3 seconds for heavy fire DMG and knock down.")
-                .Price(3)
-                .RequirementSkill(SkillType.Devices, 48)
-                .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(FeatType.RemoteCharge3);
-        }
-
-        private void PulseRelay()
-        {
-            _builder.Create(PerkCategoryType.DevicesFieldEngineer, PerkType.PulseRelay)
-                .Name("Pulse Relay")
-
-                .AddPerkLevel()
-                .Description("You and nearby allies within 10m gain +6% Evasion and +6% Defense for 8 seconds. Active Field Engineer beacons and fields immediately fire one bonus pulse.")
-                .Price(3)
-                .RequirementSkill(SkillType.Devices, 18)
-                .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(FeatType.PulseRelay1)
-
-                .AddPerkLevel()
-                .Description("You and nearby allies within 10m gain +10% Evasion and +10% Defense for 10 seconds and remove Shock. Active Field Engineer beacons and fields immediately fire one bonus pulse and gain 3 seconds duration.")
-                .Price(3)
-                .RequirementSkill(SkillType.Devices, 38)
-                .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(FeatType.PulseRelay2);
+                .GrantsFeat(FeatType.RemoteCharge2);
         }
 
         private void ShockBeacon()
@@ -164,18 +142,33 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Shock Beacon")
 
                 .AddPerkLevel()
-                .Description("Plants a shock beacon for 15 seconds. Every 3 seconds, one hostile target within 10m is hit by an electrical pulse and suffers Shock.")
+                .Description("Plants a shock beacon for 15 seconds. Every 3 seconds, one hostile target within 10m is hit for 10 electrical DMG plus PER scaling and suffers Shock.")
                 .Price(4)
-                .RequirementSkill(SkillType.Devices, 25)
+                .RequirementSkill(SkillType.Devices, 22)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.ShockBeacon1)
 
                 .AddPerkLevel()
-                .Description("Plants a shock beacon for 18 seconds. Every 3 seconds, one hostile target within 12m is hit by an increased electrical pulse and suffers Shock.")
-                .Price(4)
-                .RequirementSkill(SkillType.Devices, 40)
+                .Description("Plants a shock beacon for 18 seconds. Every 3 seconds, one hostile target within 12m is hit for 14 electrical DMG plus PER scaling and suffers Shock.")
+                .Price(5)
+                .RequirementSkill(SkillType.Devices, 38)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.ShockBeacon2);
+        }
+
+        private void DiagnosticSweep()
+        {
+            _builder.Create(PerkCategoryType.DevicesFieldEngineer, PerkType.DiagnosticSweep)
+                .Name("Diagnostic Sweep")
+
+                .AddPerkLevel()
+                .Description("Field Engineer beacons, fields, charges, and jammers reveal hidden enemies in their affected area and reduce Evasion by 4% for 10 seconds.")
+                .Price(5)
+                .RequirementSkill(SkillType.Devices, 35)
+                .RequirementCharacterType(CharacterType.Standard)
+                .IncreasesStat(StatType.FieldEngineerAreaRevealHidden, 1)
+                .IncreasesStat(StatType.FieldEngineerAreaEvasionPenaltyPercent, 4)
+                .IncreasesStat(StatType.FieldEngineerAreaEvasionPenaltyDurationSeconds, 10);
         }
 
         private void KillzoneBeacon()
@@ -184,7 +177,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Killzone Beacon")
 
                 .AddPerkLevel()
-                .Description("Plants a killzone beacon for 45 seconds. Every 3 seconds, it triggers one moderate physical pulse and one shock pulse against hostile targets within 12m.")
+                .Description("Plants a killzone beacon for 45 seconds. Every 3 seconds, it triggers one 16 physical DMG plus PER scaling pulse and one 16 electrical DMG plus PER scaling shock pulse against hostile targets within 12m.")
                 .Price(5)
                 .RequirementSkill(SkillType.Devices, 50)
                 .RequirementCharacterType(CharacterType.Standard)

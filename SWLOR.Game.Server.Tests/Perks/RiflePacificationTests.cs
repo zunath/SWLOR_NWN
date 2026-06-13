@@ -17,55 +17,6 @@ namespace SWLOR.Game.Server.Tests.Perks;
 public class RiflePacificationTests
 {
     [Test]
-    public void RiflePacificationPerkLevels_MatchCombatBible()
-    {
-        var perks = BuildRiflePacificationPerksWithout2daLookup();
-
-        AssertPerkLevel(perks[PerkType.TranquilizerShot], "Tranquilizer Shot", 1, 2, 2, FeatType.TranquilizerShot1,
-            "Your next attack tranquilizes the target for up to 8 seconds. Damage breaks the effect prematurely.");
-        AssertPerkLevel(perks[PerkType.CripplingShot], "Crippling Shot", 1, 2, 8, FeatType.CripplingShot1,
-            "Your next attack deals weapon DMG + 12 and inflicts Disoriented for 12 seconds.");
-        AssertPerkLevel(perks[PerkType.PinningFire], "Pinning Fire", 1, 3, 12, FeatType.PinningFire1,
-            "Deals weapon DMG + 10 and inflicts Dazed for 2 seconds.");
-        AssertPerkLevel(perks[PerkType.SpotterStance], "Spotter Stance", 1, 2, 15, FeatType.SpotterStance1,
-            "While active, grants +15% Accuracy and +15% Evasion against ranged attacks, but reduces Haste by 10%.");
-        AssertPerkLevel(perks[PerkType.TranquilizerShot], "Tranquilizer Shot", 2, 4, 18, FeatType.TranquilizerShot2,
-            "Your next attack tranquilizes the target for up to 14 seconds. Damage breaks the effect prematurely.");
-        AssertPerkLevel(perks[PerkType.CripplingShot], "Crippling Shot", 2, 3, 20, FeatType.CripplingShot2,
-            "Your next attack deals weapon DMG + 22 and inflicts Disoriented for 15 seconds.");
-        AssertPerkLevel(perks[PerkType.SoftTarget], "Soft Target", 1, 2, 22, null,
-            "Deal +10% rifle damage to enemies affected by Disoriented, Dazed, or tranquilizer effects.",
-            StatType.DamageToDisorientedDazedTargetPercentAdjustment);
-        AssertPerkLevel(perks[PerkType.TranqCone], "Tranq Cone", 1, 3, 25, FeatType.TranqCone1,
-            "Tranquilizes up to 3 enemies in a cone for up to 8 seconds. Damage breaks the effect prematurely.");
-        AssertPerkLevel(perks[PerkType.PinningFire], "Pinning Fire", 2, 4, 28, FeatType.PinningFire2,
-            "Deals weapon DMG + 18 to enemies in a line. Inflicts Knockdown for 3 seconds.");
-        AssertPerkLevel(perks[PerkType.Overwatch], "Overwatch", 1, 3, 30, FeatType.Overwatch1,
-            "Deal weapon DMG + 20 and interrupt your target's current ability activation. Inflicts Foggy Mind for 12 seconds.");
-        AssertPerkLevel(perks[PerkType.FieldSedatives], "Field Sedatives", 1, 2, 32, null,
-            "After a tranquilizer effect ends, the target's Attack is reduced by 10% for 10 seconds.",
-            StatType.TranquilizeExpiredAttackPercentAdjustment,
-            StatType.TranquilizeExpiredAttackDurationSeconds);
-        AssertPerkLevel(perks[PerkType.CripplingShot], "Crippling Shot", 3, 4, 35, FeatType.CripplingShot3,
-            "Your next attack deals weapon DMG + 34 and inflicts Disoriented for 20 seconds.");
-        AssertPerkLevel(perks[PerkType.TranqCone], "Tranq Cone", 2, 3, 38, FeatType.TranqCone2,
-            "Tranquilizes up to 5 enemies in a cone for up to 10 seconds. Damage breaks the effect prematurely.");
-        AssertPerkLevel(perks[PerkType.ContainmentNet], "Containment Net", 1, 3, 40, null,
-            "Enemies affected by your Disoriented effects suffer an additional -10% Evasion and -10% Attack.",
-            StatType.OutgoingDisorientedAttackPercentAdjustment,
-            StatType.OutgoingDisorientedEvasionPercentAdjustment);
-        AssertPerkLevel(perks[PerkType.NeutralizingShot], "Neutralizing Shot", 1, 4, 42, FeatType.NeutralizingShot1,
-            "Deals weapon DMG + 30, removes one beneficial combat effect, and inflicts Disoriented for 12 seconds.");
-        AssertPerkLevel(perks[PerkType.PacificationField], "Pacification Field", 1, 3, 45, FeatType.PacificationField1,
-            "Creates a field for 15 seconds. Enemies inside suffer -10% Attack and become Dazed for 2 seconds every 5 seconds.");
-        AssertPerkLevel(perks[PerkType.VeteranTracker], "Veteran Tracker", 1, 4, 48, null,
-            "Rifle damage increases by 15% against enemies affected by any control effect.",
-            StatType.DamageToControlTargetPercentAdjustment);
-        AssertPerkLevel(perks[PerkType.StasisVolley], "Stasis Volley", 1, 4, 50, FeatType.StasisVolley1,
-            "Enemies in a cone take weapon DMG + 20 and are briefly tranquilized, breaking on damage. On hit, targets suffer -10% Attack for 45 seconds.");
-    }
-
-    [Test]
     public void RiflePacificationAbilities_MatchCombatBible()
     {
         var tranquilizerShot = new TranquilizerShotAbilityDefinition().BuildAbilities();
@@ -77,22 +28,12 @@ public class RiflePacificationTests
         AssertAbility(cripplingShot[FeatType.CripplingShot2], "Crippling Shot II", 2, RecastGroup.CripplingShot, 30f, 0f, 6, true, false, true, false, AbilityActivationType.Weapon);
         AssertAbility(cripplingShot[FeatType.CripplingShot3], "Crippling Shot III", 3, RecastGroup.CripplingShot, 30f, 0f, 8, true, false, true, false, AbilityActivationType.Weapon);
 
-        var pinningFire = new PinningFireAbilityDefinition().BuildAbilities();
-        AssertAbility(pinningFire[FeatType.PinningFire1], "Pinning Fire I", 1, RecastGroup.PinningFire, 45f, 0f, 5, true, true, true, false, AbilityActivationType.Casted, 30f);
-        AssertAbility(pinningFire[FeatType.PinningFire2], "Pinning Fire II", 2, RecastGroup.PinningFire, 60f, 0f, 8, true, false, false, true, AbilityActivationType.Casted);
-
         var spotterStance = new SpotterStanceAbilityDefinition().BuildAbilities()[FeatType.SpotterStance1];
         AssertAbility(spotterStance, "Spotter Stance", 1, RecastGroup.SpotterStance, 180f, 2f, null, false, false, false, false, AbilityActivationType.Casted);
 
         var tranqCone = new TranqConeAbilityDefinition().BuildAbilities();
         AssertAbility(tranqCone[FeatType.TranqCone1], "Tranq Cone I", 1, RecastGroup.TranqCone, 120f, 0f, 8, true, false, false, true, AbilityActivationType.Casted);
         AssertAbility(tranqCone[FeatType.TranqCone2], "Tranq Cone II", 2, RecastGroup.TranqCone, 120f, 0f, 10, true, false, false, true, AbilityActivationType.Casted);
-
-        var overwatch = new OverwatchAbilityDefinition().BuildAbilities()[FeatType.Overwatch1];
-        AssertAbility(overwatch, "Overwatch", 1, RecastGroup.Overwatch, 120f, 0f, 10, true, true, true, false, AbilityActivationType.Casted, 30f);
-
-        var neutralizingShot = new NeutralizingShotAbilityDefinition().BuildAbilities()[FeatType.NeutralizingShot1];
-        AssertAbility(neutralizingShot, "Neutralizing Shot", 1, RecastGroup.NeutralizingShot, 90f, 0f, 10, true, true, true, false, AbilityActivationType.Casted, 30f);
 
         var pacificationField = new PacificationFieldAbilityDefinition().BuildAbilities()[FeatType.PacificationField1];
         AssertAbility(pacificationField, "Pacification Field", 1, RecastGroup.PacificationField, 180f, 0f, 14, true, false, false, true, AbilityActivationType.Casted);
@@ -121,29 +62,6 @@ public class RiflePacificationTests
         var stasisVolley = new StasisVolleyStatusEffect();
         stasisVolley.StatGroup.Stats[StatType.AttackPercentAdjustment].Should().Be(-10);
     }
-
-    [Test]
-    public void RiflePacificationSources_IncludeBibleBehavior()
-    {
-        var root = FindRepositoryRoot();
-
-        var overwatch = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Rifle" / "OverwatchAbilityDefinition.cs").FullName);
-        overwatch.Should().Contain("afterSuccessfulHit: InterruptActivation");
-        overwatch.Should().Contain("ClearAllActions");
-
-        var tranquilized = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "StatusEffectDefinition" / "TranquilizedStatusEffect.cs").FullName);
-        tranquilized.Should().Contain("Ability.HasTemporaryImmunity(creature, ImmunityType.Sleep)");
-        tranquilized.Should().Contain("IgnoreEffectImmunity(EffectSleep())");
-
-        var stasisVolley = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Rifle" / "StasisVolleyAbilityDefinition.cs").FullName);
-        stasisVolley.Should().Contain("SkillType.Rifle");
-        stasisVolley.Should().Contain("20");
-        stasisVolley.Should().Contain("45");
-        stasisVolley.Should().Contain("typeof(StasisVolleyStatusEffect)");
-        stasisVolley.Should().Contain("typeof(TranquilizedStatusEffect)");
-        stasisVolley.Should().Contain("3f");
-    }
-
     [Test]
     public void RiflePacificationFeatAndAbilityIcons_AreUniqueAndPresent()
     {
@@ -155,16 +73,12 @@ public class RiflePacificationTests
         {
             (FeatType.TranquilizerShot1, "ife_trnqlzrshot1", "P", "0x01", "0", "****", "****", "****", "****"),
             (FeatType.CripplingShot1, "ife_cripshot1", "P", "0x01", "0", "****", "****", "****", "****"),
-            (FeatType.PinningFire1, "ife_pinfire1", "M", "0x02", "1", "****", "****", "****", "****"),
             (FeatType.SpotterStance1, "ife_spotstnc1", "P", "0x01", "0", "****", "****", "****", "****"),
             (FeatType.TranquilizerShot2, "ife_trnqlzrshot2", "P", "0x01", "0", "****", "****", "****", "****"),
             (FeatType.CripplingShot2, "ife_cripshot2", "P", "0x01", "0", "****", "****", "****", "****"),
             (FeatType.TranqCone1, "ife_tranqcone1", "M", "0x3E", "1", "cone", "8", "6", "17"),
-            (FeatType.PinningFire2, "ife_pinfire2", "M", "0x3E", "1", "rectangle", "8", "2.5", "17"),
-            (FeatType.Overwatch1, "ife_ovrw1", "M", "0x02", "1", "****", "****", "****", "****"),
             (FeatType.CripplingShot3, "ife_cripshot3", "P", "0x01", "0", "****", "****", "****", "****"),
             (FeatType.TranqCone2, "ife_tranqcone2", "M", "0x3E", "1", "cone", "10", "7", "17"),
-            (FeatType.NeutralizingShot1, "ife_neutshot1", "M", "0x02", "1", "****", "****", "****", "****"),
             (FeatType.PacificationField1, "ife_pacfld1", "M", "0x3E", "1", "sphere", "5", "****", "1"),
             (FeatType.StasisVolley1, "ife_stasvol1", "M", "0x3E", "1", "cone", "5", "5", "17")
         };

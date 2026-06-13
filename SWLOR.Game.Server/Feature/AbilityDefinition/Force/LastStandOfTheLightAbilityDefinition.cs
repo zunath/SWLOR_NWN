@@ -50,7 +50,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             var friendly = AbilityTargeting.ResolveFriendlyTarget(activator, target);
             StatusEffect.ApplyStatusEffect(activator, friendly, typeof(LastStandOfTheLight1StatusEffect), CapstoneAbility.ActiveDurationSeconds);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Ac_Bonus), friendly);
-            LightGuardianPowerSupport.ApplyDeflectivePresence(activator);
+            LightGuardianPowerSupport.ApplyDeflectivePresence(activator, friendly);
         }
     }
 }

@@ -60,8 +60,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("After using a pistol combat ability, your next auto-attack within 6 seconds deals +10 DMG.")
-                .IncreasesStat(StatType.PistolAbilityUsedNextAutoAttackDamageBonus, 10)
-                .IncreasesStat(StatType.PistolAbilityUsedNextAutoAttackDamageDurationSeconds, 6)
+                .IncreasesStat(StatType.AbilityUsedNextSkillAutoAttackDamageBonusTriggerSkillType, (int)SkillType.Pistol)
+                .IncreasesStat(StatType.AbilityUsedNextSkillAutoAttackDamageBonusSkillType, (int)SkillType.Pistol)
+                .IncreasesStat(StatType.AbilityUsedNextSkillAutoAttackDamageBonus, 10)
+                .IncreasesStat(StatType.AbilityUsedNextSkillAutoAttackDamageWindowSeconds, 6)
                 .Price(2)
                 .RequirementSkill(SkillType.Pistol, 22);
         }
@@ -249,10 +251,11 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Low Shot")
 
                 .AddPerkLevel()
-                .GrantsFeat(FeatType.LowShot1)
-                .Description("Deals weapon DMG + 20 and inflicts Disoriented for 12 seconds.")
+                .Description("Skirmisher close-range abilities also inflict Disoriented for 12 seconds and deal +20 DMG to disoriented targets.")
                 .Price(3)
-                .RequirementSkill(SkillType.Pistol, 30);
+                .RequirementSkill(SkillType.Pistol, 30)
+                .IncreasesStat(StatType.PistolSkirmisherDisorientedDurationSeconds, creature => EquipmentPredicates.HasPistol(creature) ? 12 : 0)
+                .IncreasesStat(StatType.PistolSkirmisherDisorientedTargetDamageBonus, creature => EquipmentPredicates.HasPistol(creature) ? 20 : 0);
         }
 
         private void MobileFootwork()
@@ -262,8 +265,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("After using a pistol ability, gain +10% Evasion for 6 seconds.")
-                .IncreasesStat(StatType.PistolAbilityUsedEvasionPercentAdjustment, 10)
-                .IncreasesStat(StatType.PistolAbilityUsedEvasionDurationSeconds, 6)
+                .IncreasesStat(StatType.AbilityUsedEvasionPercentAdjustmentSkillType, (int)SkillType.Pistol)
+                .IncreasesStat(StatType.AbilityUsedEvasionPercentAdjustment, 10)
+                .IncreasesStat(StatType.AbilityUsedEvasionDurationSeconds, 6)
                 .Price(2)
                 .RequirementSkill(SkillType.Pistol, 2);
         }
@@ -356,10 +360,12 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Ricochet Shot")
 
                 .AddPerkLevel()
-                .GrantsFeat(FeatType.RicochetShot1)
-                .Description("A shot bounces to up to 3 enemies for weapon DMG + 12 each. Each target is inflicted with Blind for 6 seconds.")
+                .Description("Skirmisher precision shots can bounce to up to three nearby enemies for +12 DMG and Blind for 6 seconds. This can trigger once every 12 seconds.")
                 .Price(3)
-                .RequirementSkill(SkillType.Pistol, 25);
+                .RequirementSkill(SkillType.Pistol, 25)
+                .IncreasesStat(StatType.PistolSkirmisherRicochetDamageBonus, creature => EquipmentPredicates.HasPistol(creature) ? 12 : 0)
+                .IncreasesStat(StatType.PistolSkirmisherRicochetMaximumTargets, creature => EquipmentPredicates.HasPistol(creature) ? 3 : 0)
+                .IncreasesStat(StatType.PistolSkirmisherRicochetCooldownSeconds, creature => EquipmentPredicates.HasPistol(creature) ? 12 : 0);
         }
 
         private void SkirmishersNerve()
@@ -411,16 +417,20 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Snap Roll")
 
                 .AddPerkLevel()
-                .GrantsFeat(FeatType.SnapRoll1)
-                .Description("Gain +25% Evasion for 6 seconds and reduce your current enmity by 10%.")
+                .Description("Skirmisher evasive abilities grant +15% Evasion for 6 seconds and reduce current enmity by 10%.")
                 .Price(3)
                 .RequirementSkill(SkillType.Pistol, 12)
+                .IncreasesStat(StatType.PistolSkirmisherEvasiveAbilityEvasionPercent, creature => EquipmentPredicates.HasPistol(creature) ? 15 : 0)
+                .IncreasesStat(StatType.PistolSkirmisherEvasiveAbilityDurationSeconds, creature => EquipmentPredicates.HasPistol(creature) ? 6 : 0)
+                .IncreasesStat(StatType.PistolSkirmisherEvasiveAbilityEnmityReductionPercent, creature => EquipmentPredicates.HasPistol(creature) ? 10 : 0)
 
                 .AddPerkLevel()
-                .GrantsFeat(FeatType.SnapRoll2)
-                .Description("Gain +35% Evasion for 8 seconds and your next pistol attack within 8 seconds deals +10 DMG.")
+                .Description("Skirmisher evasive abilities grant +25% Evasion for 8 seconds and make your next pistol attack within 8 seconds deal +10 DMG.")
                 .Price(4)
-                .RequirementSkill(SkillType.Pistol, 28);
+                .RequirementSkill(SkillType.Pistol, 28)
+                .IncreasesStat(StatType.PistolSkirmisherEvasiveAbilityEvasionPercent, creature => EquipmentPredicates.HasPistol(creature) ? 25 : 0)
+                .IncreasesStat(StatType.PistolSkirmisherEvasiveAbilityDurationSeconds, creature => EquipmentPredicates.HasPistol(creature) ? 8 : 0)
+                .IncreasesStat(StatType.PistolSkirmisherEvasiveAbilityNextAttackDamageBonus, creature => EquipmentPredicates.HasPistol(creature) ? 10 : 0);
         }
     }
 }

@@ -130,7 +130,7 @@ namespace SWLOR.Game.Server.Service
                     // Add to active category cache if the perk and category are both active.
                     if (perkDetail.IsActive && categoryDetail.IsActive)
                     {
-                        if(!_activeCategories.ContainsKey(perkDetail.GroupType))
+                        if (!_activeCategories.ContainsKey(perkDetail.GroupType))
                             _activeCategories[perkDetail.GroupType] = new Dictionary<PerkCategoryType, PerkCategoryAttribute>();
 
                         _activeCategories[perkDetail.GroupType][perkDetail.Category] = categoryDetail;
@@ -730,7 +730,7 @@ namespace SWLOR.Game.Server.Service
             // Creatures or DM-possessed creatures
             else
             {
-                var perkLevel = GetLocalInt(creature, $"PERK_LEVEL_{(int) perkType}");
+                var perkLevel = GetLocalInt(creature, $"PERK_LEVEL_{(int)perkType}");
                 var perkMaxLevel = _perkMaxLevels[perkType];
                 return perkLevel > 0 ? perkLevel : perkMaxLevel;
             }

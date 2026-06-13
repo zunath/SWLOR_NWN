@@ -98,10 +98,11 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Cluster Storm")
 
                 .AddPerkLevel()
-                .GrantsFeat(FeatType.ClusterStorm1)
-                .Description("Throw three explosives at the target area. Each explosive deals weapon DMG + 12 to nearby enemies.")
+                .Description("Bombardier area attacks split into three secondary explosives that each deal +12 DMG to nearby enemies.")
                 .Price(4)
-                .RequirementSkill(SkillType.Throwing, 35);
+                .RequirementSkill(SkillType.Throwing, 35)
+                .IncreasesStat(StatType.ThrowingBombardierClusterStormDamageBonus, creature => EquipmentPredicates.HasThrowing(creature) ? 12 : 0)
+                .IncreasesStat(StatType.ThrowingBombardierClusterStormMaximumTargets, creature => EquipmentPredicates.HasThrowing(creature) ? 3 : 0);
         }
 
         private void ConcussiveToss()
@@ -249,10 +250,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Marking Toss")
 
                 .AddPerkLevel()
-                .GrantsFeat(FeatType.MarkingToss1)
-                .Description("Deals weapon DMG + 18 and marks the target for 12 seconds. Throwing damage against the marked target is increased by 10%.")
+                .Description("Deadeye single-target throws mark targets for 12 seconds. Throwing damage against marked targets is increased by 10%.")
                 .Price(3)
-                .RequirementSkill(SkillType.Throwing, 20);
+                .RequirementSkill(SkillType.Throwing, 20)
+                .IncreasesStat(StatType.ThrowingDeadeyeMarkingToss, creature => EquipmentPredicates.HasThrowing(creature) ? 1 : 0);
         }
 
         private void PerfectThrow()
@@ -334,8 +335,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("After using a Throwing combat ability, your next auto-attack within 8 seconds deals +8 DMG.")
-                .IncreasesStat(StatType.ThrowingAbilityUsedNextAutoAttackDamageBonus, 8)
-                .IncreasesStat(StatType.ThrowingAbilityUsedNextAutoAttackDamageDurationSeconds, 8)
+                .IncreasesStat(StatType.AbilityUsedNextSkillAutoAttackDamageBonusTriggerSkillType, (int)SkillType.Throwing)
+                .IncreasesStat(StatType.AbilityUsedNextSkillAutoAttackDamageBonusSkillType, (int)SkillType.Throwing)
+                .IncreasesStat(StatType.AbilityUsedNextSkillAutoAttackDamageBonus, 8)
+                .IncreasesStat(StatType.AbilityUsedNextSkillAutoAttackDamageWindowSeconds, 8)
                 .Price(3)
                 .RequirementSkill(SkillType.Throwing, 12);
         }
@@ -346,16 +349,18 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Ricochet Toss")
 
                 .AddPerkLevel()
-                .GrantsFeat(FeatType.RicochetToss1)
-                .Description("Your thrown weapon hits the target and up to 2 additional enemies within 5 meters for weapon DMG + 15 each.")
+                .Description("Deadeye single-target throws also hit up to two additional enemies within 5 meters for +15 DMG each.")
                 .Price(3)
                 .RequirementSkill(SkillType.Throwing, 25)
+                .IncreasesStat(StatType.ThrowingDeadeyeRicochetDamageBonus, creature => EquipmentPredicates.HasThrowing(creature) ? 15 : 0)
+                .IncreasesStat(StatType.ThrowingDeadeyeRicochetMaximumTargets, creature => EquipmentPredicates.HasThrowing(creature) ? 2 : 0)
 
                 .AddPerkLevel()
-                .GrantsFeat(FeatType.RicochetToss2)
-                .Description("Your thrown weapon hits the target and up to 4 additional enemies within 5 meters for weapon DMG + 24 each.")
+                .Description("Deadeye single-target throws also hit up to four additional enemies within 5 meters for +24 DMG each.")
                 .Price(3)
-                .RequirementSkill(SkillType.Throwing, 40);
+                .RequirementSkill(SkillType.Throwing, 40)
+                .IncreasesStat(StatType.ThrowingDeadeyeRicochetDamageBonus, creature => EquipmentPredicates.HasThrowing(creature) ? 24 : 0)
+                .IncreasesStat(StatType.ThrowingDeadeyeRicochetMaximumTargets, creature => EquipmentPredicates.HasThrowing(creature) ? 4 : 0);
         }
 
         private void SaturationToss()
@@ -364,10 +369,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Saturation Toss")
 
                 .AddPerkLevel()
-                .GrantsFeat(FeatType.SaturationToss1)
-                .Description("Creates a target area for 12 seconds. Enemies inside take weapon DMG + 10 every 4 seconds.")
+                .Description("Bombardier control attacks leave the target area saturated for 12 seconds, dealing +10 DMG every 4 seconds to enemies inside.")
                 .Price(3)
-                .RequirementSkill(SkillType.Throwing, 45);
+                .RequirementSkill(SkillType.Throwing, 45)
+                .IncreasesStat(StatType.ThrowingBombardierSaturationToss, creature => EquipmentPredicates.HasThrowing(creature) ? 1 : 0)
+                .IncreasesStat(StatType.ThrowingBombardierSaturationTossDurationSeconds, creature => EquipmentPredicates.HasThrowing(creature) ? 12 : 0)
+                .IncreasesStat(StatType.ThrowingBombardierSaturationTossDamage, creature => EquipmentPredicates.HasThrowing(creature) ? 10 : 0)
+                .IncreasesStat(StatType.ThrowingBombardierSaturationTossPulseSeconds, creature => EquipmentPredicates.HasThrowing(creature) ? 4 : 0);
         }
 
         private void SeveringToss()

@@ -11,6 +11,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public RampartStatusEffect()
         {
             StatGroup.Stats[StatType.PhysicalDamageTakenPercentAdjustment] = -15;
+            StatGroup.Stats[StatType.HeavyVibrobladeDefenseRecoveryWindow] = 1;
         }
 
     }

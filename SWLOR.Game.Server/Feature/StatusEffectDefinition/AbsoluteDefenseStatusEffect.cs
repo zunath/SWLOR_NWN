@@ -12,6 +12,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         {
             StatGroup.Stats[StatType.PhysicalDamageTakenPercentAdjustment] = -15;
             StatGroup.Stats[StatType.ForceDamageTakenPercentAdjustment] = -15;
+            StatGroup.Stats[StatType.HeavyVibrobladeDefenseRecoveryWindow] = 1;
         }
 
     }

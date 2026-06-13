@@ -69,7 +69,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition.Beast
                 .GrantsFeat(FeatType.Anger1)
 
                 .AddPerkLevel()
-                .Description("Goads a single target into attacking the beast and grants the beast temporary HP.")
+                .Description("Goads a single target into attacking the beast and grants the beast temporary HP equal to 15% of its maximum HP for 12 seconds.")
                 .Price(4)
                 .RequirementBeastLevel(28)
                 .RequirementBeastRole(BeastRoleType.Tank)

@@ -236,7 +236,7 @@ public class AIModelTests
     }
 
     [Test]
-    public void AITarget_InferDefaultPrefersHostileMetadataOverFeat2DAFallback()
+    public void AITarget_InferDefaultUsesAbilityMetadataForHostileTargets()
     {
         AITarget.InferDefault(FeatType.Bite, new AbilityDetail
         {
@@ -584,7 +584,7 @@ public class AIModelTests
             "vfx_persistent.2da"));
 
         var rows = persistentVfx
-            .Select(line => line.Split(new[] {' ', '\t'}, StringSplitOptions.RemoveEmptyEntries))
+            .Select(line => line.Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries))
             .Where(columns => columns.Length > 0 && int.TryParse(columns[0], out _))
             .ToArray();
         var columns = rows[37];

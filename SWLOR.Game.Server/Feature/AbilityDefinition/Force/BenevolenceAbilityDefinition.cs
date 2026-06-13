@@ -99,8 +99,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         private static void ApplyBenevolence(uint activator, uint target, int percent)
         {
             var friendly = AbilityTargeting.ResolveFriendlyTarget(activator, target);
+            var targetWasBelowHalfHP = ForceControlHealingEffects.IsBelowHalfHP(friendly);
             var multiplier = friendly == activator ? 1f : 1.25f;
             AbilityEffectScaling.ApplyActivatedScaledHeal(activator, friendly, percent, multiplier: multiplier);
+            ForceControlHealingEffects.ApplyRestorativeControlPower(activator, friendly, targetWasBelowHalfHP);
         }
     }
 }

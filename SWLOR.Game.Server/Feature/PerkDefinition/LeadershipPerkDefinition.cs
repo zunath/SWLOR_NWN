@@ -63,28 +63,24 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Enables you to become mayor of a city. You can manage cities up to rank 2 (Village).")
                 .Price(2)
                 .RequirementSkill(SkillType.Leadership, 5)
-                .GrantsFeat(FeatType.CityManagement1)
 
 
                 .AddPerkLevel()
                 .Description("You can manage cities up to rank 3 (Township).")
                 .Price(3)
                 .RequirementSkill(SkillType.Leadership, 10)
-                .GrantsFeat(FeatType.CityManagement2)
 
 
                 .AddPerkLevel()
                 .Description("You can manage cities up to rank 4 (City).")
                 .Price(4)
                 .RequirementSkill(SkillType.Leadership, 15)
-                .GrantsFeat(FeatType.CityManagement3)
 
 
                 .AddPerkLevel()
                 .Description("You can manage cities up to rank 5 (Metropolis).")
                 .Price(5)
-                .RequirementSkill(SkillType.Leadership, 20)
-                .GrantsFeat(FeatType.CityManagement4);
+                .RequirementSkill(SkillType.Leadership, 20);
         }
 
 
@@ -97,13 +93,11 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Weekly maintenance fees are reduced by 5%.")
                 .Price(3)
                 .RequirementSkill(SkillType.Leadership, 10)
-                .GrantsFeat(FeatType.Upkeep1)
 
                 .AddPerkLevel()
                 .Description("Weekly maintenance fees are reduced by 10%.")
                 .Price(3)
-                .RequirementSkill(SkillType.Leadership, 20)
-                .GrantsFeat(FeatType.Upkeep2);
+                .RequirementSkill(SkillType.Leadership, 20);
         }
 
 

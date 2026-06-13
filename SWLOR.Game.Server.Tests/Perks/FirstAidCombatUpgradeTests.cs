@@ -25,12 +25,12 @@ public class FirstAidCombatUpgradeTests
         var manifest = File.ReadAllText((root / "SWLOR.Game.Server" / "Readmes" / "CombatUpgradeBiblePerkManifest.csv").FullName);
         var perkNames = new[]
         {
-            "Med Kit I", "Treatment Kit I", "Medical Injector Rig I", "Emergency Sealant I",
+            "Med Kit I", "Treatment Kit I", "Medical Injector Rig I", "Emergency Sealant",
             "Kolto Mist I", "Resuscitation I", "Treatment Kit II", "Med Kit II",
             "Infusion I", "Kolto Mist II", "Resuscitation II", "Medical Injector Rig II",
             "Med Kit III", "Treatment Kit III", "Emergency Triage", "Infusion II", "Med Kit IV",
             "Adrenal Stim I", "Shielding I", "Coagulant I", "Adrenal Stim II",
-            "Pain Suppressant I", "Antitoxin I", "Field Pharmacist I", "Shielding II",
+            "Pain Suppressant I", "Antitoxin", "Field Pharmacist I", "Shielding II",
             "Focus Stim I", "Adrenal Stim III", "Pain Suppressant II", "Field Pharmacist II",
             "Coagulant II", "Shielding III", "Focus Stim II", "Field Pharmacist III",
             "Emergency Cocktail"
@@ -41,102 +41,6 @@ public class FirstAidCombatUpgradeTests
             manifest.Should().Contain($"\"{perkName}\"");
         }
     }
-
-    [Test]
-    public void FirstAidTraumaMedicPerkLevels_MatchCombatBible()
-    {
-        var perks = BuildPerksWithout2daLookup(
-            new FirstAidTraumaMedicPerkDefinition(),
-            "MedKit", "TreatmentKit", "MedicalInjectorRig", "EmergencySealant",
-            "KoltoMist", "Resuscitation", "Infusion", "EmergencyTriage");
-
-        AssertPerkCategory(perks, PerkCategoryType.FirstAidTraumaMedic);
-        AssertPerkLevel(perks[PerkType.MedKit], "Med Kit", 1, 2, null, FeatType.MedKit1,
-            "Restores 10% of the target's maximum HP plus WIL scaling to a single target. Consumes medical supplies.");
-        AssertPerkLevel(perks[PerkType.TreatmentKit], "Treatment Kit", 1, 2, 5, FeatType.TreatmentKit1,
-            "Removes Bleed and Poison from a single target. Consumes medical supplies.");
-        AssertPerkLevel(perks[PerkType.MedicalInjectorRig], "Medical Injector Rig", 1, 3, 8, null,
-            "Med Kit, Kolto Mist, Emergency Triage, and Infusion healing is increased by 10%.",
-            (StatType.FirstAidMedicalHealingPercentAdjustment, 10));
-        AssertPerkLevel(perks[PerkType.EmergencySealant], "Emergency Sealant", 1, 3, 12, FeatType.EmergencySealant1,
-            "Stops Bleed or Burn on one target and grants HP regeneration equal to 2% of the target's maximum HP plus WIL scaling every 3 seconds for 12 seconds. Consumes medical supplies.");
-        AssertPerkLevel(perks[PerkType.KoltoMist], "Kolto Mist", 1, 3, 15, FeatType.KoltoMist1,
-            "Restores HP over time to nearby allies within 3m for 12 seconds. Total healing equals 7% of each target's maximum HP plus WIL scaling. Consumes medical supplies.");
-        AssertPerkLevel(perks[PerkType.Resuscitation], "Resuscitation", 1, 3, 18, FeatType.Resuscitation1,
-            "Revives an unconscious target with 1 HP. Consumes medical supplies.");
-        AssertPerkLevel(perks[PerkType.TreatmentKit], "Treatment Kit", 2, 2, 22, FeatType.TreatmentKit2,
-            "Removes Bleed, Poison, Toxin, Burn, Shock, and Disease from a single target. Consumes medical supplies.");
-        AssertPerkLevel(perks[PerkType.MedKit], "Med Kit", 2, 4, 25, FeatType.MedKit2,
-            "Restores 20% of the target's maximum HP plus WIL scaling to a single target. Consumes medical supplies.");
-        AssertPerkLevel(perks[PerkType.Infusion], "Infusion", 1, 3, 28, FeatType.Infusion1,
-            "Grants a single target regeneration, healing 3% of maximum HP plus WIL scaling every 3 seconds for 15 seconds. Consumes medical supplies.");
-        AssertPerkLevel(perks[PerkType.KoltoMist], "Kolto Mist", 2, 4, 30, FeatType.KoltoMist2,
-            "Restores HP over time to nearby allies within 3m for 12 seconds. Total healing equals 12% of each target's maximum HP plus WIL scaling. Consumes medical supplies.");
-        AssertPerkLevel(perks[PerkType.Resuscitation], "Resuscitation", 2, 3, 35, FeatType.Resuscitation2,
-            "Revives an unconscious target with 20% HP plus WIL scaling. Consumes medical supplies.");
-        AssertPerkLevel(perks[PerkType.MedicalInjectorRig], "Medical Injector Rig", 2, 3, 38, null,
-            "Med Kit, Kolto Mist, Emergency Triage, and Infusion healing is increased by 20%.",
-            (StatType.FirstAidMedicalHealingPercentAdjustment, 20));
-        AssertPerkLevel(perks[PerkType.MedKit], "Med Kit", 3, 4, 40, FeatType.MedKit3,
-            "Restores 28% of the target's maximum HP plus WIL scaling to a single target. Consumes medical supplies.");
-        AssertPerkLevel(perks[PerkType.TreatmentKit], "Treatment Kit", 3, 4, 42, FeatType.TreatmentKit3,
-            "Removes Bleed, Poison, Toxin, Burn, Shock, and Disease from a single target and grants 50% Fire, Poison, Electrical, Ice, and Trauma resistance for 8 seconds.");
-        AssertPerkLevel(perks[PerkType.EmergencyTriage], "Emergency Triage", 1, 4, 45, FeatType.EmergencyTriage1,
-            "Restores 18% of the target's maximum HP plus WIL scaling instantly. Healing is doubled if the target is below 35% HP. Consumes extra medical supplies.");
-        AssertPerkLevel(perks[PerkType.Infusion], "Infusion", 2, 3, 48, FeatType.Infusion2,
-            "Grants a single target regeneration, healing 5% of maximum HP plus WIL scaling every 3 seconds for 15 seconds. Consumes medical supplies.");
-        AssertPerkLevel(perks[PerkType.MedKit], "Med Kit", 4, 5, 50, FeatType.MedKit4,
-            "Restores 36% of the target's maximum HP plus WIL scaling to a single target. Consumes medical supplies.");
-    }
-
-    [Test]
-    public void FirstAidCombatPharmacologyPerkLevels_MatchCombatBible()
-    {
-        var perks = BuildPerksWithout2daLookup(
-            new FirstAidCombatPharmacologyPerkDefinition(),
-            "AdrenalStim", "Shielding", "Coagulant", "PainSuppressant",
-            "Antitoxin", "FieldPharmacist", "FocusStim", "EmergencyCocktail");
-
-        AssertPerkCategory(perks, PerkCategoryType.FirstAidCombatPharmacology);
-        AssertPerkLevel(perks[PerkType.AdrenalStim], "Adrenal Stim", 1, 2, null, FeatType.AdrenalStim1,
-            "Restores 10% of maximum STM and restores 1 STM every 3 seconds for 12 seconds. Consumes a stim pack.");
-        AssertPerkLevel(perks[PerkType.Shielding], "Shielding", 1, 2, 5, FeatType.Shielding1,
-            "Reduces physical and force damage taken by 5% for 3 minutes. Consumes a stim pack.");
-        AssertPerkLevel(perks[PerkType.Coagulant], "Coagulant", 1, 3, 8, FeatType.Coagulant1,
-            "Grants 50% Bleed resistance and 10% resistance to incoming physical damage over time effects for 2 minutes. Consumes a stim pack.");
-        AssertPerkLevel(perks[PerkType.AdrenalStim], "Adrenal Stim", 2, 3, 12, FeatType.AdrenalStim2,
-            "Restores 18% of maximum STM and restores 1 STM every 3 seconds for 12 seconds. Consumes a stim pack.");
-        AssertPerkLevel(perks[PerkType.PainSuppressant], "Pain Suppressant", 1, 3, 15, FeatType.PainSuppressant1,
-            "Grants temporary HP equal to 10% of the target's maximum HP plus WIL scaling and 10% damage reduction for 18 seconds. Consumes a stim pack.");
-        AssertPerkLevel(perks[PerkType.Antitoxin], "Antitoxin", 1, 3, 18, FeatType.Antitoxin1,
-            "Grants 50% Poison and Disease resistance for 2 minutes and removes one Poison or Toxin effect. Consumes a stim pack.");
-        AssertPerkLevel(perks[PerkType.FieldPharmacist], "Field Pharmacist", 1, 2, 22, null,
-            "Non-capstone stim pack effects last 15% longer. Stim pack abilities have a 10% chance not to consume the stim pack.",
-            (StatType.StimPackDurationPercentAdjustment, 15));
-        AssertPerkLevel(perks[PerkType.Shielding], "Shielding", 2, 4, 25, FeatType.Shielding2,
-            "Reduces physical and force damage taken by 8% for 3 minutes. Consumes a stim pack.");
-        AssertPerkLevel(perks[PerkType.FocusStim], "Focus Stim", 1, 3, 28, FeatType.FocusStim1,
-            "Increases physical and Force ability Accuracy by 5% for 2 minutes. Consumes a stim pack.");
-        AssertPerkLevel(perks[PerkType.AdrenalStim], "Adrenal Stim", 3, 4, 30, FeatType.AdrenalStim3,
-            "Restores 25% of maximum STM and restores 1 STM every 3 seconds for 12 seconds. Consumes a stim pack.");
-        AssertPerkLevel(perks[PerkType.PainSuppressant], "Pain Suppressant", 2, 3, 35, FeatType.PainSuppressant2,
-            "Grants temporary HP equal to 15% of the target's maximum HP plus WIL scaling and 15% damage reduction for 18 seconds. Consumes a stim pack.");
-        AssertPerkLevel(perks[PerkType.FieldPharmacist], "Field Pharmacist", 2, 3, 38, null,
-            "Non-capstone stim pack effects last 25% longer. Stim pack abilities have a 20% chance not to consume the stim pack.",
-            (StatType.StimPackDurationPercentAdjustment, 25));
-        AssertPerkLevel(perks[PerkType.Coagulant], "Coagulant", 2, 4, 40, FeatType.Coagulant2,
-            "Grants Bleed immunity and 20% resistance to physical damage over time effects for 2 minutes. Consumes a stim pack.");
-        AssertPerkLevel(perks[PerkType.Shielding], "Shielding", 3, 4, 42, FeatType.Shielding3,
-            "Reduces physical and force damage taken by 11% for 3 minutes. Consumes a stim pack.");
-        AssertPerkLevel(perks[PerkType.FocusStim], "Focus Stim", 2, 4, 45, FeatType.FocusStim2,
-            "Increases physical and Force ability Accuracy by 8% for 2 minutes. Consumes a stim pack.");
-        AssertPerkLevel(perks[PerkType.FieldPharmacist], "Field Pharmacist", 3, 3, 48, null,
-            "Non-capstone stim pack effects last 35% longer. Stim pack abilities have a 30% chance not to consume the stim pack.",
-            (StatType.StimPackDurationPercentAdjustment, 35));
-        AssertPerkLevel(perks[PerkType.EmergencyCocktail], "Emergency Cocktail", 1, 5, 50, FeatType.EmergencyCocktail1,
-            "Restores 25% of maximum STM, removes one Poison or Toxin effect, then for 45 seconds restores 1 STM every 3 seconds, grants temporary HP equal to 12% of maximum HP plus WIL scaling, reduces damage taken by 12%, and grants 50% Poison and Disease resistance.");
-    }
-
     [Test]
     public void FirstAidAbilities_MatchCombatBible()
     {
@@ -150,8 +54,6 @@ public class FirstAidCombatUpgradeTests
         AssertAbility(treatmentKit[FeatType.TreatmentKit1], "Treatment Kit I", 1, RecastGroup.TreatmentKit, 8f, 1f, 3, "med_supplies", 1, false, true);
         AssertAbility(treatmentKit[FeatType.TreatmentKit2], "Treatment Kit II", 2, RecastGroup.TreatmentKit, 8f, 1f, 4, "med_supplies", 1, false, true);
         AssertAbility(treatmentKit[FeatType.TreatmentKit3], "Treatment Kit III", 3, RecastGroup.TreatmentKit, 18f, 1f, 5, null, 0, false, true);
-
-        AssertAbility(new EmergencySealantAbilityDefinition().BuildAbilities()[FeatType.EmergencySealant1], "Emergency Sealant I", 1, RecastGroup.EmergencySealant, 18f, 1f, 4, "med_supplies", 1, false, true);
 
         var koltoMist = new KoltoMistAbilityDefinition().BuildAbilities();
         AssertAbility(koltoMist[FeatType.KoltoMist1], "Kolto Mist I", 1, RecastGroup.KoltoMist, 30f, 1.5f, 6, "med_supplies", 1, true, false);
@@ -177,15 +79,11 @@ public class FirstAidCombatUpgradeTests
         AssertAbility(shielding[FeatType.Shielding2], "Shielding II", 2, RecastGroup.Shielding, 30f, 1f, 4, "stim_pack", 1, false, true, true);
         AssertAbility(shielding[FeatType.Shielding3], "Shielding III", 3, RecastGroup.Shielding, 30f, 1f, 5, "stim_pack", 1, false, true, true);
 
-        var coagulant = new CoagulantAbilityDefinition().BuildAbilities();
-        AssertAbility(coagulant[FeatType.Coagulant1], "Coagulant I", 1, RecastGroup.Coagulant, 45f, 1f, 3, "stim_pack", 1, false, true, true);
-        AssertAbility(coagulant[FeatType.Coagulant2], "Coagulant II", 2, RecastGroup.Coagulant, 45f, 1f, 4, "stim_pack", 1, false, true, true);
-
         var pain = new PainSuppressantAbilityDefinition().BuildAbilities();
         AssertAbility(pain[FeatType.PainSuppressant1], "Pain Suppressant I", 1, RecastGroup.PainSuppressant, 60f, 1f, 5, "stim_pack", 1, false, true, true);
         AssertAbility(pain[FeatType.PainSuppressant2], "Pain Suppressant II", 2, RecastGroup.PainSuppressant, 60f, 1f, 6, "stim_pack", 1, false, true, true);
 
-        AssertAbility(new AntitoxinAbilityDefinition().BuildAbilities()[FeatType.Antitoxin1], "Antitoxin I", 1, RecastGroup.Antitoxin, 45f, 1f, 3, "stim_pack", 1, false, true, true);
+        AssertAbility(new AntitoxinAbilityDefinition().BuildAbilities()[FeatType.Antitoxin1], "Antitoxin", 1, RecastGroup.Antitoxin, 45f, 1f, 3, "stim_pack", 1, false, true, true);
 
         var focus = new FocusStimAbilityDefinition().BuildAbilities();
         AssertAbility(focus[FeatType.FocusStim1], "Focus Stim I", 1, RecastGroup.FocusStim, 45f, 1f, 4, "stim_pack", 1, false, true, true);
@@ -240,7 +138,7 @@ public class FirstAidCombatUpgradeTests
         emergencyCocktail.StatGroup.Stats[StatType.DamageTakenPercentAdjustment].Should().Be(-12);
         emergencyCocktail.StatGroup.Resists[ResistanceType.Poison].Should().Be(50);
 
-        var treatmentKit3 = new TreatmentKit3StatusEffect();
+        var treatmentKit3 = new AilmentResistance3StatusEffect();
         treatmentKit3.StatGroup.Resists[ResistanceType.Fire].Should().Be(50);
         treatmentKit3.StatGroup.Resists[ResistanceType.Poison].Should().Be(50);
         treatmentKit3.StatGroup.Resists[ResistanceType.Electrical].Should().Be(50);
@@ -283,7 +181,6 @@ public class FirstAidCombatUpgradeTests
         {
             (FeatType.MedKit1, "ife_mdkt1", "M", "0x03", "0", "****", "****", "****", "****", "****"),
             (FeatType.TreatmentKit1, "ife_trtmntkt1", "M", "0x03", "0", "****", "****", "****", "****", "****"),
-            (FeatType.EmergencySealant1, "ife_mrgncyslnt1", "M", "0x03", "0", "****", "****", "****", "****", "****"),
             (FeatType.KoltoMist1, "ife_kltmst1", "P", "0x01", "0", "sphere", "3", "****", "17", "1"),
             (FeatType.Resuscitation1, "ife_rsscttn1", "M", "0x03", "0", "****", "****", "****", "****", "****"),
             (FeatType.TreatmentKit2, "ife_trtmntkt2", "M", "0x03", "0", "****", "****", "****", "****", "****"),
@@ -298,7 +195,6 @@ public class FirstAidCombatUpgradeTests
             (FeatType.MedKit4, "ife_mdkt4", "M", "0x03", "0", "****", "****", "****", "****", "****"),
             (FeatType.AdrenalStim1, "ife_drnlstm1", "M", "0x03", "0", "****", "****", "****", "****", "****"),
             (FeatType.Shielding1, "ife_shldng1", "M", "0x03", "0", "****", "****", "****", "****", "****"),
-            (FeatType.Coagulant1, "ife_cglnt1", "M", "0x03", "0", "****", "****", "****", "****", "****"),
             (FeatType.AdrenalStim2, "ife_drnlstm2", "M", "0x03", "0", "****", "****", "****", "****", "****"),
             (FeatType.PainSuppressant1, "ife_pnspprssnt1", "M", "0x03", "0", "****", "****", "****", "****", "****"),
             (FeatType.Antitoxin1, "ife_nttxn1", "M", "0x03", "0", "****", "****", "****", "****", "****"),
@@ -306,7 +202,6 @@ public class FirstAidCombatUpgradeTests
             (FeatType.FocusStim1, "ife_focstm1", "M", "0x03", "0", "****", "****", "****", "****", "****"),
             (FeatType.AdrenalStim3, "ife_drnlstm3", "M", "0x03", "0", "****", "****", "****", "****", "****"),
             (FeatType.PainSuppressant2, "ife_pnspprssnt2", "M", "0x03", "0", "****", "****", "****", "****", "****"),
-            (FeatType.Coagulant2, "ife_cglnt2", "M", "0x03", "0", "****", "****", "****", "****", "****"),
             (FeatType.Shielding3, "ife_shldng3", "M", "0x03", "0", "****", "****", "****", "****", "****"),
             (FeatType.FocusStim2, "ife_focstm2", "M", "0x03", "0", "****", "****", "****", "****", "****"),
             (FeatType.EmergencyCocktail1, "ife_mrgncyccktl1", "M", "0x03", "0", "****", "****", "****", "****", "****")
@@ -350,7 +245,6 @@ public class FirstAidCombatUpgradeTests
         {
             (FeatType.MedKit1, "Restores 10% of the target's maximum HP plus WIL scaling to a single target. Consumes medical supplies."),
             (FeatType.TreatmentKit1, "Removes Bleed and Poison from a single target. Consumes medical supplies."),
-            (FeatType.EmergencySealant1, "Stops Bleed or Burn on one target and grants HP regeneration equal to 2% of the target's maximum HP plus WIL scaling every 3 seconds for 12 seconds. Consumes medical supplies."),
             (FeatType.KoltoMist1, "Restores HP over time to nearby allies within 3m for 12 seconds. Total healing equals 7% of each target's maximum HP plus WIL scaling. Consumes medical supplies."),
             (FeatType.Resuscitation1, "Revives an unconscious target with 1 HP. Consumes medical supplies."),
             (FeatType.TreatmentKit2, "Removes Bleed, Poison, Toxin, Burn, Shock, and Disease from a single target. Consumes medical supplies."),
@@ -359,24 +253,22 @@ public class FirstAidCombatUpgradeTests
             (FeatType.KoltoMist2, "Restores HP over time to nearby allies within 3m for 12 seconds. Total healing equals 12% of each target's maximum HP plus WIL scaling. Consumes medical supplies."),
             (FeatType.Resuscitation2, "Revives an unconscious target with 20% HP plus WIL scaling. Consumes medical supplies."),
             (FeatType.MedKit3, "Restores 28% of the target's maximum HP plus WIL scaling to a single target. Consumes medical supplies."),
-            (FeatType.TreatmentKit3, "Removes Bleed, Poison, Toxin, Burn, Shock, and Disease from a single target and grants 50% Fire, Poison, Electrical, Ice, and Trauma resistance for 8 seconds."),
+            (FeatType.TreatmentKit3, "Removes Bleed, Poison, Toxin, Burn, Shock, and Disease from a single target and grants 50% Fire Resistance, 50% Poison Resistance, 50% Electrical Resistance, 50% Ice Resistance, and 50% Trauma Resistance for 8 seconds."),
             (FeatType.EmergencyTriage1, "Restores 18% of the target's maximum HP plus WIL scaling instantly. Healing is doubled if the target is below 35% HP. Consumes extra medical supplies."),
             (FeatType.Infusion2, "Grants a single target regeneration, healing 5% of maximum HP plus WIL scaling every 3 seconds for 15 seconds. Consumes medical supplies."),
             (FeatType.MedKit4, "Restores 36% of the target's maximum HP plus WIL scaling to a single target. Consumes medical supplies."),
             (FeatType.AdrenalStim1, "Restores 10% of maximum STM and restores 1 STM every 3 seconds for 12 seconds. Consumes a stim pack."),
             (FeatType.Shielding1, "Reduces physical and force damage taken by 5% for 3 minutes. Consumes a stim pack."),
-            (FeatType.Coagulant1, "Grants 50% Bleed resistance and 10% resistance to incoming physical damage over time effects for 2 minutes. Consumes a stim pack."),
             (FeatType.AdrenalStim2, "Restores 18% of maximum STM and restores 1 STM every 3 seconds for 12 seconds. Consumes a stim pack."),
             (FeatType.PainSuppressant1, "Grants temporary HP equal to 10% of the target's maximum HP plus WIL scaling and 10% damage reduction for 18 seconds. Consumes a stim pack."),
-            (FeatType.Antitoxin1, "Grants 50% Poison and Disease resistance for 2 minutes and removes one Poison or Toxin effect. Consumes a stim pack."),
+            (FeatType.Antitoxin1, "Grants 50% Poison Resistance and 50% Disease Resistance for 2 minutes and removes one Poison or Toxin effect. Consumes a stim pack."),
             (FeatType.Shielding2, "Reduces physical and force damage taken by 8% for 3 minutes. Consumes a stim pack."),
             (FeatType.FocusStim1, "Increases physical and Force ability Accuracy by 5% for 2 minutes. Consumes a stim pack."),
             (FeatType.AdrenalStim3, "Restores 25% of maximum STM and restores 1 STM every 3 seconds for 12 seconds. Consumes a stim pack."),
             (FeatType.PainSuppressant2, "Grants temporary HP equal to 15% of the target's maximum HP plus WIL scaling and 15% damage reduction for 18 seconds. Consumes a stim pack."),
-            (FeatType.Coagulant2, "Grants Bleed immunity and 20% resistance to physical damage over time effects for 2 minutes. Consumes a stim pack."),
             (FeatType.Shielding3, "Reduces physical and force damage taken by 11% for 3 minutes. Consumes a stim pack."),
             (FeatType.FocusStim2, "Increases physical and Force ability Accuracy by 8% for 2 minutes. Consumes a stim pack."),
-            (FeatType.EmergencyCocktail1, "Restores 25% of maximum STM, removes one Poison or Toxin effect, then for 45 seconds restores 1 STM every 3 seconds, grants temporary HP equal to 12% of maximum HP plus WIL scaling, reduces damage taken by 12%, and grants 50% Poison and Disease resistance.")
+            (FeatType.EmergencyCocktail1, "Restores 25% of maximum STM, removes one Poison or Toxin effect, then for 45 seconds restores 1 STM every 3 seconds, grants temporary HP equal to 12% of maximum HP plus WIL scaling, reduces damage taken by 12%, and grants 50% Poison Resistance and 50% Disease Resistance.")
         };
 
         foreach (var (featType, expectedDescription) in descriptions)

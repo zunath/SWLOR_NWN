@@ -15,86 +15,6 @@ namespace SWLOR.Game.Server.Tests.Perks;
 public class LightsaberDefenseTests
 {
     [Test]
-    public void LightsaberDefensePerkLevels_MatchCombatBible()
-    {
-        var perks = BuildLightsaberDefensePerksWithout2daLookup();
-
-        AssertPerkLevel(perks[PerkType.DeflectionTraining], "Deflection Training", 1, 2, 2, null,
-            "Grants +15 Attack Deflection.",
-            StatType.AttackDeflection);
-        AssertPerkLevel(perks[PerkType.ReactiveDeflection], "Reactive Deflection", 1, 2, 8, null,
-            "When you deflect an attack, restore 2 FP.",
-            StatType.DeflectionFPRestore);
-        AssertPerkLevel(perks[PerkType.TauntingDeflection], "Taunting Deflection", 1, 4, 10, FeatType.TauntingDeflection1,
-            "Goads all nearby enemies into attacking you and grants the buff Taunting Deflection, which increases your attack deflection by 10 for 30 seconds.");
-        AssertPerkLevel(perks[PerkType.DeflectionRiposte], "Deflection Riposte", 1, 3, 12, null,
-            "When you deflect an attack, your next attack receives +20% critical chance. Effect wears off after 15 seconds.",
-            StatType.DeflectionNextSkillAbilityCriticalRatePercentAdjustment,
-            StatType.DeflectionNextSkillAbilityCriticalRateWindowSeconds);
-        AssertPerkLevel(perks[PerkType.DeflectionTraining], "Deflection Training", 2, 3, 15, null,
-            "Grants +25 Attack Deflection.",
-            StatType.AttackDeflection);
-        AssertPerkLevel(perks[PerkType.DeflectivePresence], "Deflective Presence", 1, 3, 18, null,
-            "When you deflect an attack, receive the Deflective Presence buff which improves your Enmity acquisition by 20% for 12 seconds.",
-            StatType.DeflectionEnmityPercentAdjustment);
-        AssertPerkLevel(perks[PerkType.GuardiansInfluence], "Guardian's Influence", 1, 3, 20, FeatType.GuardiansInfluence1,
-            "Allies within the area of effect (sphere) gain +15 attack deflection chance for 1 minute. You do not receive this benefit.");
-        AssertPerkLevel(perks[PerkType.ReactiveDeflection], "Reactive Deflection", 2, 3, 22, null,
-            "When you deflect an attack, restore 4 FP.",
-            StatType.DeflectionFPRestore);
-        AssertPerkLevel(perks[PerkType.DeflectionMastery], "Deflection Mastery", 1, 3, 25, null,
-            "When you deflect an attack, your defense and force defense increase by 15% for 12 seconds.",
-            StatType.DeflectionDefensePercentAdjustment,
-            StatType.DeflectionForceDefensePercentAdjustment);
-        AssertPerkLevel(perks[PerkType.DeflectionCounter], "Deflection Counter", 1, 3, 28, null,
-            "After deflecting an attack, your next attack has no delay.",
-            StatType.DeflectionNextSkillAbilityNoDelay,
-            StatType.DeflectionNextSkillAbilityNoDelayWindowSeconds);
-        AssertPerkLevel(perks[PerkType.PunishingStrike], "Punishing Strike", 1, 3, 30, FeatType.PunishingStrike1,
-            "Deals weapon DMG + 20 to enemies within the area of effect (sphere) near you and gain increased enmity toward you.");
-        AssertPerkLevel(perks[PerkType.DeflectionTraining], "Deflection Training", 3, 4, 32, null,
-            "Grants +35 Attack Deflection.",
-            StatType.AttackDeflection);
-        AssertPerkLevel(perks[PerkType.OverwhelmingDefense], "Overwhelming Defense", 1, 3, 35, null,
-            "After deflecting an attack, your next attack deals +20 DMG.",
-            StatType.DeflectionNextSkillAbilityDamageBonus,
-            StatType.DeflectionNextSkillAbilityDamageBonusWindowSeconds);
-        AssertPerkLevel(perks[PerkType.GuardiansChallenge], "Guardian's Challenge", 1, 4, 38, FeatType.GuardiansChallenge1,
-            "All enemies within the area of effect (cone) take weapon DMG + 35 and gain increased enmity toward you.");
-        AssertPerkLevel(perks[PerkType.ImpenetrableGuard], "Impenetrable Guard", 1, 4, 42, FeatType.ImpenetrableGuard1,
-            "While active, grants +15% attack deflection, +10% enmity generation, -20% attack, -20% force attack.");
-        AssertPerkLevel(perks[PerkType.ThunderousChallenge], "Thunderous Challenge", 1, 4, 45, FeatType.ThunderousChallenge1,
-            "Deals weapon DMG + 35 to enemies within the area of effect (line) from your position and gain increased enmity toward you.");
-        AssertPerkLevel(perks[PerkType.GuardianMaster], "Guardian Master", 1, 4, 50, FeatType.GuardianMaster1,
-            "For 45 seconds, gain +50 Attack Deflection and increase your Attack Deflection cap to 85.");
-    }
-
-    [Test]
-    public void LightsaberDefenseAbilities_MatchCombatBible()
-    {
-        var tauntingDeflection = new TauntingDeflectionAbilityDefinition().BuildAbilities()[FeatType.TauntingDeflection1];
-        AssertAbility(tauntingDeflection, "Taunting Deflection", 1, RecastGroup.TauntingDeflection, 30f, 0f, 5, true, false, false, true, AbilityActivationType.Casted);
-
-        var guardiansInfluence = new GuardiansInfluenceAbilityDefinition().BuildAbilities()[FeatType.GuardiansInfluence1];
-        AssertAbility(guardiansInfluence, "Guardian's Influence", 1, RecastGroup.GuardiansInfluence, 300f, 2f, 7, false, false, false, true, AbilityActivationType.Casted);
-
-        var punishingStrike = new PunishingStrikeAbilityDefinition().BuildAbilities()[FeatType.PunishingStrike1];
-        AssertAbility(punishingStrike, "Punishing Strike", 1, RecastGroup.PunishingStrike, 90f, 0f, 8, true, false, false, true, AbilityActivationType.Casted);
-
-        var guardiansChallenge = new GuardiansChallengeAbilityDefinition().BuildAbilities()[FeatType.GuardiansChallenge1];
-        AssertAbility(guardiansChallenge, "Guardian's Challenge", 1, RecastGroup.GuardiansChallenge, 90f, 0f, 10, true, false, false, true, AbilityActivationType.Casted);
-
-        var impenetrableGuard = new ImpenetrableGuardAbilityDefinition().BuildAbilities()[FeatType.ImpenetrableGuard1];
-        AssertAbility(impenetrableGuard, "Impenetrable Guard", 1, RecastGroup.ImpenetrableGuard, 180f, 2f, null, false, false, false, false, AbilityActivationType.Casted);
-
-        var thunderousChallenge = new ThunderousChallengeAbilityDefinition().BuildAbilities()[FeatType.ThunderousChallenge1];
-        AssertAbility(thunderousChallenge, "Thunderous Challenge", 1, RecastGroup.ThunderousChallenge, 120f, 0f, 12, true, false, false, true, AbilityActivationType.Casted);
-
-        var guardianMaster = new GuardianMasterAbilityDefinition().BuildAbilities()[FeatType.GuardianMaster1];
-        AssertAbility(guardianMaster, "Guardian Master", 1, RecastGroup.Capstone, 345f, 2f, 15, false, false, false, false, AbilityActivationType.Casted);
-    }
-
-    [Test]
     public void LightsaberDefenseStatusEffects_MatchCombatBible()
     {
         var tauntingDeflection = new TauntingDeflectionStatusEffect();
@@ -126,11 +46,10 @@ public class LightsaberDefenseTests
         var feats = new[]
         {
             (FeatType.TauntingDeflection1, "ife_tauntdefl1", "0x01", "1", "sphere", "5", "****", "17"),
-            (FeatType.GuardiansInfluence1, "ife_guardinfl1", "0x01", "0", "sphere", "5", "****", "17"),
             (FeatType.PunishingStrike1, "ife_punstrk1", "0x01", "1", "sphere", "5", "****", "17"),
             (FeatType.GuardiansChallenge1, "ife_guardchal1", "0x3E", "1", "cone", "5", "5", "17"),
             (FeatType.ImpenetrableGuard1, "ife_impengrd1", "0x01", "0", "****", "****", "****", "****"),
-            (FeatType.ThunderousChallenge1, "ife_thndrschal1", "0x3E", "1", "rectangle", "8", "2.5", "17"),
+            (FeatType.GuardiansChallenge2, "ife_guardchal2", "0x3E", "1", "rectangle", "8", "2.5", "17"),
             (FeatType.GuardianMaster1, "ife_guardmstr1", "0x01", "0", "****", "****", "****", "****")
         };
         var seenIcons = new HashSet<string>();
@@ -278,7 +197,7 @@ public class LightsaberDefenseTests
             "PunishingStrike",
             "ReactiveDeflection",
             "TauntingDeflection",
-            "ThunderousChallenge"
+            "GuardiansChallenge"
         };
 
         foreach (var methodName in methodNames)

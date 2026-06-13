@@ -1,0 +1,105 @@
+using System;
+using System.Collections.Generic;
+using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.NWN.API.Engine;
+using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.Creature;
+using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+
+namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
+{
+    public sealed class IonLanceAbilityDefinition : IAbilityListDefinition
+    {
+        private const float LineLengthMeters = 8f;
+        private const float LineWidthMeters = 2.5f;
+
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        {
+            var builder = new AbilityBuilder();
+
+            IonLance1(builder);
+            IonLance2(builder);
+            IonLance3(builder);
+
+            return builder.Build();
+        }
+
+        private static void IonLance1(AbilityBuilder builder)
+        {
+            ConfigureIonLance(builder, FeatType.IonLance1, Spell.IonLance1, "Ion Lance I", 1, 12, 4, 24f);
+        }
+
+        private static void IonLance2(AbilityBuilder builder)
+        {
+            ConfigureIonLance(builder, FeatType.IonLance2, Spell.IonLance2, "Ion Lance II", 2, 22, 5, 24f);
+        }
+
+        private static void IonLance3(AbilityBuilder builder)
+        {
+            ConfigureIonLance(builder, FeatType.IonLance3, Spell.IonLance3, "Ion Lance III", 3, 32, 6, 30f);
+        }
+
+        private static void ConfigureIonLance(
+            AbilityBuilder builder,
+            FeatType feat,
+            Spell spell,
+            string name,
+            int level,
+            int baseDamage,
+            int stamina,
+            float cooldown)
+        {
+            builder
+                .Create(feat, PerkType.IonLance)
+                .Name(name)
+                .Level(level)
+                .HasActivationDelay(1f)
+                .HasRecastDelay(RecastGroup.IonLance, cooldown)
+                .SkillType(SkillType.Devices)
+                .CombatImpactDamageAbility(AbilityType.Perception)
+                .UsesImpactAnimation(Animation.CastOutAnimation)
+                .IsAreaAbility()
+                .HasTargetingLine(
+                    spell,
+                    LineLengthMeters,
+                    LineWidthMeters,
+                    AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf)
+                .HasImpactAction((activator, target, _, targetLocation) =>
+                    ApplyIonLance(activator, target, targetLocation, baseDamage))
+                .IsCastedAbility()
+                .IsHostileAbility()
+                .BreaksStealth()
+                .RequirementStamina(stamina);
+        }
+
+        private static void ApplyIonLance(uint activator, uint target, Location targetLocation, int baseDamage)
+        {
+            Ability.ApplyTelegraphedCombatImpact(
+                activator,
+                target,
+                targetLocation,
+                SkillType.Devices,
+                baseDamage,
+                0,
+                null,
+                CombatImpactAreaShape.Line,
+                0.25f,
+                LineLengthMeters,
+                LineWidthMeters,
+                Array.Empty<Type>(),
+                damageType: CombatDamageType.Electrical,
+                targetVisualEffect: VisualEffect.Vfx_Com_Hit_Electrical,
+                areaVisualEffect: VisualEffect.None,
+                damagePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetDamageAdjustment(activator),
+                baseDamageAdjustment: DeviceAbilityEffects.GetAssaultGadgetBaseDamageAdjustment(activator),
+                afterSuccessfulHit: _ => DeviceAbilityEffects.ApplyTacticalUplink(activator),
+                hitChancePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetAccuracyAdjustment(activator),
+                criticalRatePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetCriticalRateAdjustment(activator));
+        }
+    }
+}

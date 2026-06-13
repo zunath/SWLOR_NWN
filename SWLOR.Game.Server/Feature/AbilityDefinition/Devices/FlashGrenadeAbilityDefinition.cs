@@ -21,7 +21,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             var builder = new AbilityBuilder();
 
             FlashGrenade1(builder);
-            FlashGrenade2(builder);
 
             return builder.Build();
         }
@@ -30,11 +29,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             builder
                 .Create(FeatType.FlashGrenade1, PerkType.FlashGrenade)
-                .Name("Flash Grenade I")
+                .Name("Flash Grenade")
                 .Level(1)
                 .HasActivationDelay(1f)
                 .HasRecastDelay(RecastGroup.FlashGrenade, 24f)
                 .SkillType(SkillType.Devices)
+                .CombatImpactDamageAbility(AbilityType.Perception)
                 .UsesImpactAnimation(Animation.ThrowGrenade)
                 .IsAreaAbility()
                 .HasTargetingSphere(
@@ -47,30 +47,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .IsHostileAbility()
                 .BreaksStealth()
                 .RequirementStamina(2)
-                .RequirementItem("explosives");
-        }
-
-        private static void FlashGrenade2(AbilityBuilder builder)
-        {
-            builder
-                .Create(FeatType.FlashGrenade2, PerkType.FlashGrenade)
-                .Name("Flash Grenade II")
-                .Level(2)
-                .HasActivationDelay(1f)
-                .HasRecastDelay(RecastGroup.FlashGrenade, 24f)
-                .SkillType(SkillType.Devices)
-                .UsesImpactAnimation(Animation.ThrowGrenade)
-                .IsAreaAbility()
-                .HasTargetingSphere(
-                    Spell.FlashGrenade2,
-                    4f,
-                    AbilityTargetingFlags.HarmsEnemies,
-                    DeviceAbilityEffects.ApplyGrenadeRadiusBonus)
-                .HasImpactAction(FlashGrenade2ImpactAction)
-                .IsCastedAbility()
-                .IsHostileAbility()
-                .BreaksStealth()
-                .RequirementStamina(3)
                 .RequirementItem("explosives");
         }
 
@@ -90,27 +66,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 0f,
                 Array.Empty<Type>(),
                 statusEffectFactory: () => new FlashGrenade1StatusEffect(GetFlashPenalty(activator, 8)),
-                damageType: CombatDamageType.Force,
-                targetVisualEffect: VisualEffect.Vfx_Imp_Sonic,
-                areaVisualEffect: VisualEffect.Vfx_Fnf_Sound_Burst);
-        }
-
-        private static void FlashGrenade2ImpactAction(uint activator, uint target, int level, Location targetLocation)
-        {
-            Ability.ApplyTelegraphedCombatImpact(
-                activator,
-                target,
-                targetLocation,
-                SkillType.Devices,
-                0,
-                20,
-                typeof(FlashStatusEffect),
-                CombatImpactAreaShape.Sphere,
-                0f,
-                DeviceAbilityEffects.ApplyGrenadeRadiusBonus(activator, 4f),
-                0f,
-                Array.Empty<Type>(),
-                statusEffectFactory: () => new FlashGrenade2StatusEffect(GetFlashPenalty(activator, 14)),
                 damageType: CombatDamageType.Force,
                 targetVisualEffect: VisualEffect.Vfx_Imp_Sonic,
                 areaVisualEffect: VisualEffect.Vfx_Fnf_Sound_Burst);

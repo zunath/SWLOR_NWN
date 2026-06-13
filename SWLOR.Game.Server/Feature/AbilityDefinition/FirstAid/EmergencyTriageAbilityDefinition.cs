@@ -50,6 +50,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             var friendly = AbilityTargeting.ResolveFriendlyTarget(activator, target);
             var multiplier = GetCurrentHitPoints(friendly) <= GetMaxHitPoints(friendly) * 0.35f ? 2f : 1f;
             FirstAidTreatmentAdjustments.ApplyActivatedMedicalScaledHeal(activator, friendly, 18, multiplier: multiplier);
+            FirstAidTreatmentAdjustments.ApplyTraumaMedicRiders(activator, friendly);
         }
     }
 }

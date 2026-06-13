@@ -177,10 +177,11 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Guarding Step")
 
                 .AddPerkLevel()
-                .GrantsFeat(FeatType.GuardingStep1)
-                .Description("Gain +25% Evasion and +20% Defense for 8 seconds.")
+                .Description("Using a Staff Sentinel ability grants +25% Evasion and +20% Defense for 8 seconds. This can trigger once every 20 seconds.")
                 .Price(3)
-                .RequirementSkill(SkillType.Staff, 20);
+                .RequirementSkill(SkillType.Staff, 20)
+                .IncreasesStat(StatType.StaffSentinelGuardingStep, creature => EquipmentPredicates.HasMainHandStaff(creature) ? 1 : 0)
+                .IncreasesStat(StatType.StaffSentinelGuardingStepCooldownSeconds, creature => EquipmentPredicates.HasMainHandStaff(creature) ? 20 : 0);
         }
 
         private void HeavyHands()
@@ -291,10 +292,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Sentinel Guard")
 
                 .AddPerkLevel()
-                .GrantsFeat(FeatType.SentinelGuard1)
-                .Description("For 12 seconds, allies within 5 meters gain +10 Attack Deflection and you generate extra enmity.")
+                .Description("Staff Sentinel protection abilities grant nearby allies +8 Attack Deflection for 12 seconds and generate extra enmity.")
                 .Price(3)
-                .RequirementSkill(SkillType.Staff, 30);
+                .RequirementSkill(SkillType.Staff, 30)
+                .IncreasesStat(StatType.StaffSentinelGuard, creature => EquipmentPredicates.HasMainHandStaff(creature) ? 1 : 0);
         }
 
         private void SentinelStance()
@@ -304,7 +305,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SentinelStance1)
-                .Description("While active, grants +15% Evasion and +15 Attack Deflection, but reduces Attack by 15%.")
+                .Description("While active, grants +15% Evasion and +12 Attack Deflection, but reduces Attack by 15%.")
                 .Price(2)
                 .RequirementSkill(SkillType.Staff, 15);
         }
@@ -351,10 +352,11 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Skull Rattle")
 
                 .AddPerkLevel()
-                .GrantsFeat(FeatType.SkullRattle1)
-                .Description("Deals weapon DMG + 34 and inflicts Dazed for 3 seconds.")
+                .Description("Staff Crusher finishers inflict Dazed for 3 seconds and deal +34 DMG.")
                 .Price(3)
-                .RequirementSkill(SkillType.Staff, 38);
+                .RequirementSkill(SkillType.Staff, 38)
+                .IncreasesStat(StatType.StaffCrusherFinisherDamageBonus, creature => EquipmentPredicates.HasMainHandStaff(creature) ? 34 : 0)
+                .IncreasesStat(StatType.StaffCrusherFinisherDazedDurationSeconds, creature => EquipmentPredicates.HasMainHandStaff(creature) ? 3 : 0);
         }
 
         private void StaffParry()
@@ -363,26 +365,26 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Staff Parry")
 
                 .AddPerkLevel()
-                .Description("Gain +10 Attack Deflection while wielding a staff.")
+                .Description("Gain +8 Attack Deflection.")
                 .IncreasesStat(StatType.AttackDeflection, creature => EquipmentPredicates.HasMainHandStaff(creature) ? 10 : 0)
                 .Price(2)
                 .RequirementSkill(SkillType.Staff, 8)
 
                 .AddPerkLevel()
-                .Description("Gain +20 Attack Deflection total while wielding a staff.")
+                .Description("Gain +16 Attack Deflection total.")
                 .IncreasesStat(StatType.AttackDeflection, creature => EquipmentPredicates.HasMainHandStaff(creature) ? 20 : 0)
                 .Price(4)
                 .RequirementSkill(SkillType.Staff, 18)
 
                 .AddPerkLevel()
-                .Description("Gain +30 Attack Deflection total while wielding a staff. Deflecting attacks restores 2 STM.")
+                .Description("Gain +24 Attack Deflection total. Deflecting attacks restores 2 STM.")
                 .IncreasesStat(StatType.AttackDeflection, creature => EquipmentPredicates.HasMainHandStaff(creature) ? 30 : 0)
                 .IncreasesStat(StatType.DeflectionStaminaRestore, creature => EquipmentPredicates.HasMainHandStaff(creature) ? 2 : 0)
                 .Price(4)
                 .RequirementSkill(SkillType.Staff, 28)
 
                 .AddPerkLevel()
-                .Description("Gain +40 Attack Deflection total while wielding a staff. Deflecting attacks restores 4 STM.")
+                .Description("Gain +30 Attack Deflection total. Deflecting attacks restores 4 STM.")
                 .IncreasesStat(StatType.AttackDeflection, creature => EquipmentPredicates.HasMainHandStaff(creature) ? 40 : 0)
                 .IncreasesStat(StatType.DeflectionStaminaRestore, creature => EquipmentPredicates.HasMainHandStaff(creature) ? 4 : 0)
                 .Price(4)
@@ -408,7 +410,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.UnmovingCenter1)
-                .Description("For 45 seconds, you cannot be Knocked down or Dazed, gain +35 Attack Deflection, and generate +30% enmity.")
+                .Description("For 45 seconds, you cannot be Knocked down or Dazed, gain +30 Attack Deflection, and generate +30% enmity.")
                 .Price(4)
                 .RequirementSkill(SkillType.Staff, 50);
         }

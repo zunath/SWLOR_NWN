@@ -23,7 +23,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 0,
                 8,
                 typeof(TranquilizedStatusEffect),
-                4);
+                4,
+                combatImpactDamageAbility: AbilityType.Perception);
             ConfigureWeapon(
                 builder
                     .Create(FeatType.TranquilizerShot2, PerkType.TranquilizerShot)
@@ -35,7 +36,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 0,
                 14,
                 typeof(TranquilizedStatusEffect),
-                6);
+                6,
+                combatImpactDamageAbility: AbilityType.Perception);
 
             return builder.Build();
         }

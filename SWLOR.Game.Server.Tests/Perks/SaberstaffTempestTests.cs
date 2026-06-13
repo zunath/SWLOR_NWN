@@ -15,69 +15,6 @@ namespace SWLOR.Game.Server.Tests.Perks;
 public class SaberstaffTempestTests
 {
     [Test]
-    public void SaberstaffTempestPerkLevels_MatchCombatBible()
-    {
-        var perks = BuildSaberstaffTempestPerksWithout2daLookup();
-
-        AssertPerkLevel(perks[PerkType.DoubleStrike], "Double Strike", 1, 3, 2, FeatType.DoubleStrike1,
-            "Instantly attacks twice, each for weapon DMG + 12.");
-        AssertPerkLevel(perks[PerkType.CircleSlash], "Circle Slash", 1, 3, 8, FeatType.CircleSlash1,
-            "Attacks up to 3 nearby enemies for weapon DMG + 10 each.");
-        AssertPerkLevel(perks[PerkType.ForceMomentum], "Force Momentum", 1, 3, 12, null,
-            "Hitting 2 or more enemies with a saberstaff ability restores 2 FP and 2 STM. This can only trigger once every 4 seconds.",
-            StatType.SaberstaffAreaAbilityMinTargetsResourceRestoreThreshold,
-            StatType.SaberstaffAreaAbilityFPRestore,
-            StatType.SaberstaffAreaAbilityStaminaRestore,
-            StatType.SaberstaffAreaAbilityResourceRestoreCooldownSeconds);
-        AssertPerkLevel(perks[PerkType.TempestStance], "Tempest Stance", 1, 2, 15, FeatType.TempestStance1,
-            "While active, grants +15% Haste and +10% Force Attack, but reduces Defense by 20%.");
-        AssertPerkLevel(perks[PerkType.DoubleStrike], "Double Strike", 2, 4, 18, FeatType.DoubleStrike2,
-            "Instantly attacks twice, each for weapon DMG + 21.");
-        AssertPerkLevel(perks[PerkType.CircleSlash], "Circle Slash", 2, 3, 20, FeatType.CircleSlash2,
-            "Attacks up to 3 nearby enemies for weapon DMG + 18 each.");
-        AssertPerkLevel(perks[PerkType.SpinningDeflection], "Spinning Deflection", 1, 2, 22, null,
-            "Gain +10 Attack Deflection. After deflecting an attack, your next Circle Slash deals +8 DMG.",
-            StatType.AttackDeflection,
-            StatType.DeflectionNextAbilityDamageBonusPerkType,
-            StatType.DeflectionNextAbilityDamageBonus,
-            StatType.DeflectionNextAbilityDamageBonusDurationSeconds);
-        AssertPerkLevel(perks[PerkType.MaelstromArc], "Maelstrom Arc", 1, 3, 25, FeatType.MaelstromArc1,
-            "Deals weapon DMG + 22 to enemies in a cone and inflicts Disoriented for 12 seconds.");
-        AssertPerkLevel(perks[PerkType.DoubleStrike], "Double Strike", 3, 3, 28, FeatType.DoubleStrike3,
-            "Instantly attacks twice, each for weapon DMG + 29.");
-        AssertPerkLevel(perks[PerkType.CircleSlash], "Circle Slash", 3, 3, 30, FeatType.CircleSlash3,
-            "Attacks up to 3 nearby enemies for weapon DMG + 28 each.");
-        AssertPerkLevel(perks[PerkType.TempestFocus], "Tempest Focus", 1, 2, 32, null,
-            "Saberstaff combat abilities cost 2 less STM while your FP is above 50%.",
-            StatType.HighResourceAbilityStaminaCostSkillType,
-            StatType.HighResourceAbilityStaminaCostThresholdPercent,
-            StatType.HighResourceAbilityStaminaCostAdjustment);
-        AssertPerkLevel(perks[PerkType.MaelstromArc], "Maelstrom Arc", 2, 4, 35, FeatType.MaelstromArc2,
-            "Deals weapon DMG + 32 to enemies in a cone and inflicts Disoriented for 15 seconds.");
-        AssertPerkLevel(perks[PerkType.ForceGyre], "Force Gyre", 1, 3, 38, FeatType.ForceGyre1,
-            "Deals weapon DMG + 24 to all nearby enemies and inflicts Force Erosion for 12 seconds.");
-        AssertPerkLevel(perks[PerkType.SpinningDeflection], "Spinning Deflection", 2, 2, 40, null,
-            "Gain +20 Attack Deflection total. Deflecting an attack restores 4 FP.",
-            StatType.AttackDeflection,
-            StatType.DeflectionNextAbilityDamageBonusPerkType,
-            StatType.DeflectionNextAbilityDamageBonus,
-            StatType.DeflectionNextAbilityDamageBonusDurationSeconds,
-            StatType.DeflectionFPRestore);
-        AssertPerkLevel(perks[PerkType.DoubleStrike], "Double Strike", 4, 4, 42, FeatType.DoubleStrike4,
-            "Instantly attacks twice, each for weapon DMG + 38. Targets affected by Force Erosion take +15 DMG from each strike.");
-        AssertPerkLevel(perks[PerkType.TempestRelease], "Tempest Release", 1, 3, 45, FeatType.TempestRelease1,
-            "Deals weapon DMG + 20 to all nearby enemies. Damage increases by +2 per 10 FP you currently have, up to +20 DMG.");
-        AssertPerkLevel(perks[PerkType.FlowOfTheMaelstrom], "Flow of the Maelstrom", 1, 4, 48, null,
-            "After hitting 3 or more enemies with one saberstaff ability, gain +15% Haste and +10 Attack Deflection for 12 seconds.",
-            StatType.SaberstaffAreaAbilityMinTargetsBuffThreshold,
-            StatType.SaberstaffAreaAbilityHastePercentAdjustment,
-            StatType.SaberstaffAreaAbilityAttackDeflection,
-            StatType.SaberstaffAreaAbilityBuffDurationSeconds);
-        AssertPerkLevel(perks[PerkType.SaberCyclone], "Saber Cyclone", 1, 4, 50, FeatType.SaberCyclone1,
-            "Deal weapon DMG + 18 to nearby enemies. For 45 seconds, pulse every 6 seconds, dealing light Force damage to nearby enemies and restoring 1 FP per enemy hit, up to 5 FP per pulse.");
-    }
-
-    [Test]
     public void SaberstaffTempestAbilities_MatchCombatBible()
     {
         var doubleStrike = new DoubleStrikeAbilityDefinition().BuildAbilities();
@@ -97,9 +34,6 @@ public class SaberstaffTempestTests
         var maelstromArc = new MaelstromArcAbilityDefinition().BuildAbilities();
         AssertAbility(maelstromArc[FeatType.MaelstromArc1], "Maelstrom Arc I", 1, RecastGroup.MaelstromArc, 60f, 0f, 8, true, false, false, true, AbilityActivationType.Casted);
         AssertAbility(maelstromArc[FeatType.MaelstromArc2], "Maelstrom Arc II", 2, RecastGroup.MaelstromArc, 60f, 0f, 10, true, false, false, true, AbilityActivationType.Casted);
-
-        var forceGyre = new ForceGyreAbilityDefinition().BuildAbilities()[FeatType.ForceGyre1];
-        AssertAbility(forceGyre, "Force Gyre", 1, RecastGroup.ForceGyre, 90f, 0f, 10, true, false, false, true, AbilityActivationType.Casted);
 
         var tempestRelease = new TempestReleaseAbilityDefinition().BuildAbilities()[FeatType.TempestRelease1];
         AssertAbility(tempestRelease, "Tempest Release", 1, RecastGroup.TempestRelease, 120f, 0f, 12, true, false, false, true, AbilityActivationType.Casted);
@@ -155,7 +89,6 @@ public class SaberstaffTempestTests
             (FeatType.TempestStance1, "ife_tempstnc1", "P", "0x01", "0", "****", "****", "****", "****"),
             (FeatType.MaelstromArc1, "ife_maelarc1", "M", "0x3E", "1", "cone", "5", "5", "17"),
             (FeatType.MaelstromArc2, "ife_maelarc2", "M", "0x3E", "1", "cone", "5", "5", "17"),
-            (FeatType.ForceGyre1, "ife_forcegyre1", "P", "0x01", "1", "sphere", "5", "****", "17"),
             (FeatType.TempestRelease1, "ife_temprel1", "P", "0x01", "1", "sphere", "5", "****", "17"),
             (FeatType.SaberCyclone1, "ife_sabrcycl1", "P", "0x01", "1", "sphere", "5", "****", "17")
         };

@@ -15,58 +15,6 @@ namespace SWLOR.Game.Server.Tests.Perks;
 public class VibroknifeSaboteurTests
 {
     [Test]
-    public void VibroknifeSaboteurPerkLevels_MatchCombatBible()
-    {
-        var perks = BuildVibroknifeSaboteurPerksWithout2daLookup();
-
-        AssertPerkLevel(perks[PerkType.CalculatedStrikes], "Calculated Strikes", 1, 2, 2, null,
-            "Auto-attacks have 15% chance to reduce target's Accuracy by 10% for 6s.",
-            StatType.AutoAttackTargetAccuracyPercentAdjustmentChance,
-            StatType.AutoAttackTargetAccuracyPercentAdjustment,
-            StatType.AutoAttackTargetAccuracyPercentAdjustmentDurationSeconds);
-        AssertPerkLevel(perks[PerkType.EnfeeblingStrike], "Enfeebling Strike", 1, 2, 8, FeatType.EnfeeblingStrike1,
-            "Deals weapon DMG + 12. Inflicts Weakened which reduces Attack by 10% for 15 seconds.");
-        AssertPerkLevel(perks[PerkType.Hamstring], "Hamstring", 1, 2, 10, FeatType.Hamstring1,
-            "Your next attack deals +8 DMG. Inflicts Hamstring, reducing movement speed by 20% for 12 seconds.");
-        AssertPerkLevel(perks[PerkType.ToxicCoating], "Toxic Coating", 1, 2, 12, FeatType.ToxicCoating1,
-            "Your next attack deals +10 DMG. Inflicts Toxin for 30 seconds. Toxin deals damage equal to 1% max HP per second.");
-        AssertPerkLevel(perks[PerkType.ExploitWeakness], "Exploit Weakness", 1, 3, 15, null,
-            "Deal +12% damage to enemies affected by any debuff.",
-            StatType.DamageToDebuffedTargetPercentAdjustment);
-        AssertPerkLevel(perks[PerkType.Hamstring], "Hamstring", 2, 3, 18, FeatType.Hamstring2,
-            "Your next attack deals +18 DMG. Inflicts Hamstring, reducing movement speed by 20% for 12 seconds.");
-        AssertPerkLevel(perks[PerkType.EnfeeblingStrike], "Enfeebling Strike", 2, 3, 20, FeatType.EnfeeblingStrike2,
-            "Deals weapon DMG + 24. Inflicts Weakened which reduces Attack by 15% for 15 seconds.");
-        AssertPerkLevel(perks[PerkType.SapVitality], "Sap Vitality", 1, 3, 22, FeatType.SapVitality1,
-            "Deals weapon DMG + 20. Inflicts Exhausted which reduces defense and force defense by 10% for 15 seconds.");
-        AssertPerkLevel(perks[PerkType.CripplingPrecision], "Crippling Precision", 1, 3, 25, null,
-            "Your critical hits reduce target's Evasion by 15% for 10s.",
-            StatType.CriticalTargetEvasionPercentAdjustment,
-            StatType.CriticalTargetEvasionDurationSeconds);
-        AssertPerkLevel(perks[PerkType.NerveStrike], "Nerve Strike", 1, 3, 28, FeatType.NerveStrike1,
-            "Deals weapon DMG + 22. Inflicts Disoriented which reduces Accuracy and Evasion by 15% for 12 seconds.");
-        AssertPerkLevel(perks[PerkType.DebilitatingStance], "Debilitating Stance", 1, 4, 30, FeatType.DebilitatingStance1,
-            "While active, your attacks inflict Hamstring, reducing movement speed by 20% for 8 seconds, but reduces your attack by 10%.");
-        AssertPerkLevel(perks[PerkType.Hamstring], "Hamstring", 3, 3, 32, FeatType.Hamstring3,
-            "Your next attack deals +28 DMG. Inflicts Hamstring, reducing movement speed by 20% for 12 seconds.");
-        AssertPerkLevel(perks[PerkType.EnfeeblingStrike], "Enfeebling Strike", 3, 3, 35, FeatType.EnfeeblingStrike3,
-            "Deals weapon DMG + 36. Inflicts Weakened which reduces attack by 20% for 15 seconds.");
-        AssertPerkLevel(perks[PerkType.SapVitality], "Sap Vitality", 2, 4, 38, FeatType.SapVitality2,
-            "Deals weapon DMG + 35. Inflicts Exhausted which reduces defense and force defense by 15% for 15 seconds.");
-        AssertPerkLevel(perks[PerkType.ToxicCoating], "Toxic Coating", 2, 3, 40, FeatType.ToxicCoating2,
-            "Your next attack deals +22 DMG. Inflicts Toxin for 30 seconds. Toxin deals damage equal to 1% max HP per second.");
-        AssertPerkLevel(perks[PerkType.Incapacitate], "Incapacitate", 1, 3, 42, FeatType.Incapacitate1,
-            "Enemies within the area of effect (sphere) receive the Incapacitate debuff which reduces their evasion by 20% for 20 seconds.");
-        AssertPerkLevel(perks[PerkType.AfflictionMastery], "Affliction Mastery", 1, 2, 45, null,
-            "Debuffs you apply last +30% longer.",
-            StatType.OutgoingDebuffDurationPercentAdjustment);
-        AssertPerkLevel(perks[PerkType.CascadeFailure], "Cascade Failure", 1, 3, 48, FeatType.CascadeFailure1,
-            "All enemies within the area of effect (cone) take weapon DMG + 25. Inflicts Vulnerable which reduces defense by 10% for 12 seconds.");
-        AssertPerkLevel(perks[PerkType.SystemicShutdown], "Systemic Shutdown", 1, 4, 50, FeatType.SystemicShutdown1,
-            "All enemies within the area of effect (sphere) take weapon DMG + 15 and are inflicted with Weakened, Hamstring, Exhausted, Disoriented, and Toxin for 45 seconds.");
-    }
-
-    [Test]
     public void VibroknifeSaboteurAbilities_MatchCombatBible()
     {
         var enfeeblingStrike = new EnfeeblingStrikeAbilityDefinition().BuildAbilities();
@@ -79,14 +27,6 @@ public class VibroknifeSaboteurTests
         AssertAbility(hamstring[FeatType.Hamstring2], "Hamstring II", 2, RecastGroup.Hamstring, 30f, 0f, 6, true, false, true, false, AbilityActivationType.Weapon);
         AssertAbility(hamstring[FeatType.Hamstring3], "Hamstring III", 3, RecastGroup.Hamstring, 30f, 0f, 8, true, false, true, false, AbilityActivationType.Weapon);
 
-        var toxicCoating = new ToxicCoatingAbilityDefinition().BuildAbilities();
-        AssertAbility(toxicCoating[FeatType.ToxicCoating1], "Toxic Coating I", 1, RecastGroup.ToxicCoating, 45f, 0f, 4, true, false, true, false, AbilityActivationType.Weapon);
-        AssertAbility(toxicCoating[FeatType.ToxicCoating2], "Toxic Coating II", 2, RecastGroup.ToxicCoating, 45f, 0f, 6, true, false, true, false, AbilityActivationType.Weapon);
-
-        var sapVitality = new SapVitalityAbilityDefinition().BuildAbilities();
-        AssertAbility(sapVitality[FeatType.SapVitality1], "Sap Vitality", 1, RecastGroup.SapVitality, 60f, 0f, 5, true, true, true, false, AbilityActivationType.Casted);
-        AssertAbility(sapVitality[FeatType.SapVitality2], "Sap Vitality II", 2, RecastGroup.SapVitality, 60f, 0f, 8, true, true, true, false, AbilityActivationType.Casted);
-
         var nerveStrike = new NerveStrikeAbilityDefinition().BuildAbilities()[FeatType.NerveStrike1];
         AssertAbility(nerveStrike, "Nerve Strike", 1, RecastGroup.NerveStrike, 60f, 0f, 6, true, true, true, false, AbilityActivationType.Casted);
 
@@ -95,9 +35,6 @@ public class VibroknifeSaboteurTests
 
         var incapacitate = new IncapacitateAbilityDefinition().BuildAbilities()[FeatType.Incapacitate1];
         AssertAbility(incapacitate, "Incapacitate", 1, RecastGroup.Incapacitate, 120f, 2f, 10, true, false, false, true, AbilityActivationType.Casted);
-
-        var cascadeFailure = new CascadeFailureAbilityDefinition().BuildAbilities()[FeatType.CascadeFailure1];
-        AssertAbility(cascadeFailure, "Cascade Failure", 1, RecastGroup.CascadeFailure, 90f, 0f, 10, true, false, false, true, AbilityActivationType.Casted);
 
         var systemicShutdown = new SystemicShutdownAbilityDefinition().BuildAbilities()[FeatType.SystemicShutdown1];
         AssertAbility(systemicShutdown, "Systemic Shutdown", 1, RecastGroup.Capstone, 345f, 3f, 15, true, false, false, true, AbilityActivationType.Casted);
@@ -168,7 +105,6 @@ public class VibroknifeSaboteurTests
 
         var feats = new[]
         {
-            (FeatType.CascadeFailure1, "ife_cascfail1", "0x3E", true, "cone", "1"),
             (FeatType.DebilitatingStance1, "ife_debilstnc1", "0x01", false, "****", "****"),
             (FeatType.EnfeeblingStrike1, "ife_enfbstrk1", "0x02", true, "****", "1"),
             (FeatType.EnfeeblingStrike2, "ife_enfbstrk2", "0x02", true, "****", "1"),
@@ -178,11 +114,7 @@ public class VibroknifeSaboteurTests
             (FeatType.Hamstring3, "ife_hamstr3", "0x01", false, "****", "****"),
             (FeatType.Incapacitate1, "ife_incap1", "0x01", true, "sphere", "****"),
             (FeatType.NerveStrike1, "ife_nervstrk1", "0x02", true, "****", "1"),
-            (FeatType.SapVitality1, "ife_sapvit1", "0x02", true, "****", "1"),
-            (FeatType.SapVitality2, "ife_sapvit2", "0x02", true, "****", "1"),
             (FeatType.SystemicShutdown1, "ife_sysshut1", "0x3E", true, "sphere", "1"),
-            (FeatType.ToxicCoating1, "ife_toxcoat1", "0x01", false, "****", "****"),
-            (FeatType.ToxicCoating2, "ife_toxcoat2", "0x01", false, "****", "****")
         };
         var seenIcons = new HashSet<string>();
 

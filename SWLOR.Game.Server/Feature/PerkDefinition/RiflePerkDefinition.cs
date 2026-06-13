@@ -85,8 +85,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Breach Round")
 
                 .AddPerkLevel()
-                .GrantsFeat(FeatType.BreachRound1)
-                .Description("Deals weapon DMG + 35 and ignores 25% of the target's Defense.")
+                .Description("Marksman precision shots ignore 25% of the target's Defense and deal +35 DMG.")
                 .IncreasesStat(StatType.AbilityDefenseIgnorePercentAdjustmentPerkType, (int)PerkType.BreachRound)
                 .IncreasesStat(StatType.AbilityDefenseIgnorePercentAdjustment, 25)
                 .Price(4)
@@ -155,10 +154,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Expose Weak Point")
 
                 .AddPerkLevel()
-                .GrantsFeat(FeatType.ExposeWeakPoint1)
-                .Description("Deals weapon DMG + 20 and marks the target for 12 seconds. Physical attacks against the marked target deal +10% damage.")
+                .Description("Marksman precision shots mark the target for 12 seconds. Physical attacks against marked targets deal +10% damage.")
                 .Price(3)
-                .RequirementSkill(SkillType.Rifle, 30);
+                .RequirementSkill(SkillType.Rifle, 30)
+                .IncreasesStat(StatType.RifleMarksmanExposeWeakPoint, creature => EquipmentPredicates.HasRifle(creature) ? 1 : 0);
         }
 
         private void FieldSedatives()
@@ -192,10 +191,12 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Kill Zone")
 
                 .AddPerkLevel()
-                .GrantsFeat(FeatType.KillZone1)
-                .Description("For 20 seconds, repeated attacks against the same target stack +4% rifle damage, up to +20%. Switching targets clears this bonus.")
+                .Description("Repeated rifle attacks against the same target stack +4% rifle damage for 20 seconds, up to +20%. Switching targets clears this bonus.")
                 .Price(3)
-                .RequirementSkill(SkillType.Rifle, 45);
+                .RequirementSkill(SkillType.Rifle, 45)
+                .IncreasesStat(StatType.RepeatedTargetDamageSkillType, creature => EquipmentPredicates.HasRifle(creature) ? (int)SkillType.Rifle : 0)
+                .IncreasesStat(StatType.RepeatedTargetDamagePercentPerHit, creature => EquipmentPredicates.HasRifle(creature) ? 4 : 0)
+                .IncreasesStat(StatType.RepeatedTargetDamagePercentMax, creature => EquipmentPredicates.HasRifle(creature) ? 20 : 0);
         }
 
         private void NeutralizingShot()
@@ -204,10 +205,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Neutralizing Shot")
 
                 .AddPerkLevel()
-                .GrantsFeat(FeatType.NeutralizingShot1)
-                .Description("Deals weapon DMG + 30, removes one beneficial combat effect, and inflicts Disoriented for 12 seconds.")
+                .Description("Tranq Cone, Pacification Field, and Stasis Volley remove one beneficial combat effect from affected enemies and inflict Disoriented for 12 seconds.")
                 .Price(4)
-                .RequirementSkill(SkillType.Rifle, 42);
+                .RequirementSkill(SkillType.Rifle, 42)
+                .IncreasesStat(StatType.RiflePacificationNeutralizingShot, creature => EquipmentPredicates.HasRifle(creature) ? 1 : 0);
         }
 
         private void OneShot()
@@ -228,10 +229,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Overwatch")
 
                 .AddPerkLevel()
-                .GrantsFeat(FeatType.Overwatch1)
-                .Description("Deal weapon DMG + 20 and interrupt your target's current ability activation. Inflicts Foggy Mind for 12 seconds.")
+                .Description("Pacification control shots interrupt the target's current ability activation and inflict Foggy Mind for 12 seconds.")
                 .Price(3)
-                .RequirementSkill(SkillType.Rifle, 30);
+                .RequirementSkill(SkillType.Rifle, 30)
+                .IncreasesStat(StatType.RiflePacificationOverwatch, creature => EquipmentPredicates.HasRifle(creature) ? 1 : 0);
         }
 
         private void PacificationField()
@@ -276,16 +277,16 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Pinning Fire")
 
                 .AddPerkLevel()
-                .GrantsFeat(FeatType.PinningFire1)
-                .Description("Deals weapon DMG + 10 and inflicts Dazed for 2 seconds.")
+                .Description("Pacification control shots also inflict Dazed for 2 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Rifle, 12)
+                .IncreasesStat(StatType.RiflePacificationPinningFireRank, creature => EquipmentPredicates.HasRifle(creature) ? 1 : 0)
 
                 .AddPerkLevel()
-                .GrantsFeat(FeatType.PinningFire2)
-                .Description("Deals weapon DMG + 18 to enemies in a line. Inflicts Knockdown for 3 seconds.")
+                .Description("Pacification control shots also inflict Knockdown for 3 seconds.")
                 .Price(4)
-                .RequirementSkill(SkillType.Rifle, 28);
+                .RequirementSkill(SkillType.Rifle, 28)
+                .IncreasesStat(StatType.RiflePacificationPinningFireRank, creature => EquipmentPredicates.HasRifle(creature) ? 2 : 0);
         }
 
         private void ScopeCalibration()

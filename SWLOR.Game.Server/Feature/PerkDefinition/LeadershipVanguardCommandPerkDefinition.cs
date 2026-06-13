@@ -41,7 +41,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Nearby party members gain +5% physical and Force ability hit chance. SOC scaling can raise this to +6%.")
                 .Price(3)
                 .RequirementSkill(SkillType.Leadership, 22)
-                .IncreasesStat(StatType.RallyingStandardAuraLevel, 2);
+                .IncreasesStat(StatType.RallyingStandardAuraLevel, 2)
+                .GrantsFeat(FeatType.RallyingStandard2);
         }
 
         private void PressTheAttack()
@@ -85,12 +86,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(4)
                 .RequirementSkill(SkillType.Leadership, 28)
                 .IncreasesStat(StatType.CoordinatedFocusAuraLevel, 2)
+                .GrantsFeat(FeatType.CoordinatedFocus2)
 
                 .AddPerkLevel()
                 .Description("Nearby party members gain +6% critical hit chance and +8% critical damage. SOC scaling can raise these to +7% and +10%.")
                 .Price(4)
                 .RequirementSkill(SkillType.Leadership, 45)
-                .IncreasesStat(StatType.CoordinatedFocusAuraLevel, 3);
+                .IncreasesStat(StatType.CoordinatedFocusAuraLevel, 3)
+                .GrantsFeat(FeatType.CoordinatedFocus3);
         }
 
         private void MarkTarget()
@@ -99,16 +102,16 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Mark Target")
 
                 .AddPerkLevel()
-                .Description("Marks one enemy for 15 seconds. Party members deal +8% damage to the marked target. SOC scaling can raise this to +10%. The mark requires a successful attack-roll check.")
+                .Description("Vanguard Command offensive commands mark affected enemies for 15 seconds. Party members deal +8% damage to marked targets. SOC scaling can raise this to +10%.")
                 .Price(3)
                 .RequirementSkill(SkillType.Leadership, 12)
-                .GrantsFeat(FeatType.MarkTarget1)
+                .IncreasesStat(StatType.LeadershipVanguardMarkTargetRank, 1)
 
                 .AddPerkLevel()
-                .Description("Marks one enemy for 15 seconds. Party members deal +12% damage to the marked target, and the target suffers -10% evasion chance. SOC scaling can raise these to +15% damage and -12% evasion. The mark requires a successful attack-roll check.")
+                .Description("Vanguard Command offensive commands mark affected enemies for 15 seconds. Party members deal +12% damage to marked targets, and marked targets suffer -10% evasion chance. SOC scaling can raise these to +15% damage and -12% evasion.")
                 .Price(4)
                 .RequirementSkill(SkillType.Leadership, 35)
-                .GrantsFeat(FeatType.MarkTarget2);
+                .IncreasesStat(StatType.LeadershipVanguardMarkTargetRank, 2);
         }
 
         private void ChargeOrder()
@@ -117,17 +120,18 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Charge Order")
 
                 .AddPerkLevel()
-                .Description("Nearby party members gain +10% movement speed and +30 Mobility resistance. SOC scaling can raise these to +12% and +40.")
+                .Description("Nearby party members gain +10% movement speed and +30 Mobility Resistance. SOC scaling can raise these to +12% movement speed and +40 Mobility Resistance.")
                 .Price(2)
                 .RequirementSkill(SkillType.Leadership, 15)
                 .IncreasesStat(StatType.ChargeOrderAuraLevel, 1)
                 .GrantsFeat(FeatType.ChargeOrder1)
 
                 .AddPerkLevel()
-                .Description("Nearby party members gain +15% movement speed and +50 Mobility resistance. SOC scaling can raise these to +18% and +65.")
+                .Description("Nearby party members gain +15% movement speed and +50 Mobility Resistance. SOC scaling can raise these to +18% movement speed and +65 Mobility Resistance.")
                 .Price(3)
                 .RequirementSkill(SkillType.Leadership, 38)
-                .IncreasesStat(StatType.ChargeOrderAuraLevel, 2);
+                .IncreasesStat(StatType.ChargeOrderAuraLevel, 2)
+                .GrantsFeat(FeatType.ChargeOrder2);
         }
 
         private void BreakMorale()

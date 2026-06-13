@@ -705,54 +705,6 @@ namespace SWLOR.Game.Server.Service.StatService
         NextAttackNoDelay = 118,
 
         /// <summary>
-        /// Flat damage bonus granted to the next auto-attack after a pistol ability is used.
-        /// </summary>
-        [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        PistolAbilityUsedNextAutoAttackDamageBonus = 119,
-
-        /// <summary>
-        /// Duration in seconds for PistolAbilityUsedNextAutoAttackDamageBonus to remain available.
-        /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
-        PistolAbilityUsedNextAutoAttackDamageDurationSeconds = 120,
-
-        /// <summary>
-        /// Flat damage bonus granted to the next auto-attack after a throwing ability is used.
-        /// </summary>
-        [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        ThrowingAbilityUsedNextAutoAttackDamageBonus = 121,
-
-        /// <summary>
-        /// Duration in seconds for ThrowingAbilityUsedNextAutoAttackDamageBonus to remain available.
-        /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
-        ThrowingAbilityUsedNextAutoAttackDamageDurationSeconds = 122,
-
-        /// <summary>
-        /// Temporary percent Evasion adjustment applied after a pistol ability is used.
-        /// </summary>
-        [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        PistolAbilityUsedEvasionPercentAdjustment = 123,
-
-        /// <summary>
-        /// Duration in seconds for PistolAbilityUsedEvasionPercentAdjustment.
-        /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
-        PistolAbilityUsedEvasionDurationSeconds = 124,
-
-        /// <summary>
-        /// Temporary percent Evasion adjustment applied after a twin blade ability is used.
-        /// </summary>
-        [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        TwinBladeAbilityUsedEvasionPercentAdjustment = 125,
-
-        /// <summary>
-        /// Duration in seconds for TwinBladeAbilityUsedEvasionPercentAdjustment.
-        /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
-        TwinBladeAbilityUsedEvasionDurationSeconds = 126,
-
-        /// <summary>
         /// Primary RecastGroup id that can trigger an ability-used recast reduction.
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
@@ -907,18 +859,6 @@ namespace SWLOR.Game.Server.Service.StatService
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
         TwinBladeSingleTargetAbilityStaminaRestoreCooldownSeconds = 152,
-
-        /// <summary>
-        /// Temporary flat attack deflection chance applied after a twin blade single-target ability is used.
-        /// </summary>
-        [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        TwinBladeSingleTargetAbilityAttackDeflection = 154,
-
-        /// <summary>
-        /// Duration in seconds for TwinBladeSingleTargetAbilityAttackDeflection.
-        /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
-        TwinBladeSingleTargetAbilityAttackDeflectionDurationSeconds = 155,
 
         /// <summary>
         /// Percent chance, after taking damage from a recent target, to make the next ability activation delay zero.
@@ -2610,7 +2550,931 @@ namespace SWLOR.Game.Server.Service.StatService
         /// Percent adjustment applied to activated ability damage and healing. Does not affect recast delays.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        CombatReadinessPercent = 437
+        CombatReadinessPercent = 437,
+
+        /// <summary>
+        /// Evasion percent penalty applied by pressure marks from Force Spark and Force Lightning.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        SparkLightningPressureEvasionPenaltyPercent = 438,
+
+        /// <summary>
+        /// Force damage taken penalty applied by pressure marks while the target is below the configured HP threshold.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        SparkLightningPressureLowHPForceDamageTakenPercent = 439,
+
+        /// <summary>
+        /// HP threshold percent for SparkLightningPressureLowHPForceDamageTakenPercent.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        SparkLightningPressureLowHPThresholdPercent = 440,
+
+        /// <summary>
+        /// Duration in seconds for pressure marks from Force Spark and Force Lightning.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        SparkLightningPressureDurationSeconds = 441,
+
+        /// <summary>
+        /// Target HP threshold percent for dark force ability damage bonuses.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        DarkForceTargetLowHPDamageThresholdPercent = 442,
+
+        /// <summary>
+        /// Percent damage adjustment applied to dark force abilities against targets below the configured HP threshold.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        DarkForceTargetLowHPDamagePercentAdjustment = 443,
+
+        /// <summary>
+        /// Enables Devices Field Engineer area effects to reveal hidden enemies in their affected area.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        FieldEngineerAreaRevealHidden = 444,
+
+        /// <summary>
+        /// Evasion percent penalty applied by Devices Field Engineer area effects.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        FieldEngineerAreaEvasionPenaltyPercent = 445,
+
+        /// <summary>
+        /// Duration in seconds for FieldEngineerAreaEvasionPenaltyPercent.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        FieldEngineerAreaEvasionPenaltyDurationSeconds = 446,
+
+        /// <summary>
+        /// Enables Power Cell to apply Power Surge to its initial target.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        PowerCellInitialTargetPowerSurge = 447,
+
+        /// <summary>
+        /// Percent adjustment applied to Devices ability output granted by Overclock Routine.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        DeviceAbilityOutputPercentAdjustment = 448,
+
+        /// <summary>
+        /// Enables Field Support ally abilities to apply Overclock Routine.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        FieldSupportAllyOverclockRoutine = 449,
+
+        /// <summary>
+        /// Enables Assault Gadget damage to apply Tactical Uplink.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        AssaultGadgetTacticalUplink = 450,
+
+        /// <summary>
+        /// Enables Control healing powers to apply Serene Focus.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        ControlHealingSereneFocus = 451,
+
+        /// <summary>
+        /// Enables Control healing powers to trigger the Force Mend cleanse and bonus heal.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        ControlHealingForceMend = 471,
+
+        /// <summary>
+        /// Enables defeated-enemy Force restoration and accuracy from Cruel Momentum.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        CruelMomentum = 452,
+
+        /// <summary>
+        /// Enables low-HP ally splash healing from Harmonic Restoration.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        HarmonicRestoration = 453,
+
+        /// <summary>
+        /// Enables FP-spend restoration and Force accuracy from Force Convergence.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        ForceConvergence = 454,
+
+        /// <summary>
+        /// Enables FP-spend Defense and Evasion from Precognition.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        ForcePrecognition = 455,
+
+        /// <summary>
+        /// Secondary-area damage added to Riot Blade.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        RiotBladeSecondaryDamageBonus = 456,
+
+        /// <summary>
+        /// Secondary-target damage added to Savage Cleave.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        SavageCleaveSecondaryDamageBonus = 457,
+
+        /// <summary>
+        /// Stamina restored per secondary target hit by Savage Cleave.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        SavageCleaveSecondaryTargetStaminaRestore = 458,
+
+        /// <summary>
+        /// Maximum Stamina restored from SavageCleaveSecondaryTargetStaminaRestore per activation.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        SavageCleaveSecondaryTargetStaminaRestoreMaximum = 459,
+
+        /// <summary>
+        /// Enables Smoke Bomb to leave a decoy effect when it expires.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        SmokeBombDecoyOnExpire = 460,
+
+        /// <summary>
+        /// Damage added to Earthshatter.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        EarthshatterDamageBonus = 461,
+
+        /// <summary>
+        /// Enmity added to Earthshatter.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        EarthshatterEnmityBonus = 462,
+
+        /// <summary>
+        /// Haste percent granted by Predator's Mark follow-up hits.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        PredatorsMarkHastePercentPerStack = 463,
+
+        /// <summary>
+        /// Ability hit chance percent granted by Predator's Mark follow-up hits.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        PredatorsMarkAbilityHitChancePercentPerStack = 464,
+
+        /// <summary>
+        /// Duration in seconds for Predator's Mark follow-up stacks.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        PredatorsMarkFollowUpDurationSeconds = 465,
+
+        /// <summary>
+        /// Maximum Predator's Mark follow-up stacks.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        PredatorsMarkFollowUpMaximumStacks = 466,
+
+        /// <summary>
+        /// Damage taken from the beast that applied Predator's Mark.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        PredatorsMarkDamageTakenFromBeastPercent = 472,
+
+        /// <summary>
+        /// Ranged physical damage reduction percent applied by Field Support ally-buff riders.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        FieldSupportRangedPhysicalDamageReductionPercent = 467,
+
+        /// <summary>
+        /// Duration in seconds for FieldSupportRangedPhysicalDamageReductionPercent.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        FieldSupportRangedPhysicalDamageReductionDurationSeconds = 468,
+
+        /// <summary>
+        /// Physical and Force damage reduction percent applied by Field Support ally-buff riders.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        FieldSupportPhysicalAndForceDamageReductionPercent = 469,
+
+        /// <summary>
+        /// Duration in seconds for FieldSupportPhysicalAndForceDamageReductionPercent.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        FieldSupportPhysicalAndForceDamageReductionDurationSeconds = 470,
+
+        /// <summary>
+        /// Stamina restored to a balanced beast and its master after the beast uses a balanced active ability.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        BeastBalancedAbilityStaminaRestore = 473,
+
+        /// <summary>
+        /// Cooldown in seconds for BeastBalancedAbilityStaminaRestore.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        BeastBalancedAbilityStaminaRestoreCooldownSeconds = 474,
+
+        /// <summary>
+        /// Coagulant rank applied by Combat Pharmacology stim effects.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        CombatPharmacologyStimCoagulantRank = 475,
+
+        /// <summary>
+        /// Enables Trauma Medic healing and treatment abilities to apply Emergency Sealant.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        TraumaMedicEmergencySealant = 476,
+
+        /// <summary>
+        /// Enables Nightmare Field and Eclipse of Resolve to apply Exposed and Force Erosion.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        DarkManipulatorCollapseWill = 477,
+
+        /// <summary>
+        /// Enables Light Guardian sense powers to apply Courageous Resolve.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        LightGuardianSenseResolve = 478,
+
+        /// <summary>
+        /// Enables Light Guardian temporary HP powers to apply Reflective Barrier.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        LightGuardianTemporaryHPReflectiveBarrier = 479,
+
+        /// <summary>
+        /// Next auto-attack damage granted after using a Heavy Vibroblade Defense ability.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        HeavyVibrobladeDefenseAbilityNextAutoAttackDamageBonus = 480,
+
+        /// <summary>
+        /// Duration in seconds for HeavyVibrobladeDefenseAbilityNextAutoAttackDamageBonus.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        HeavyVibrobladeDefenseAbilityNextAutoAttackDamageDurationSeconds = 481,
+
+        /// <summary>
+        /// Enmity added by Heavy Vibroblade Defense ability hits.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        HeavyVibrobladeDefenseAbilityEnmityBonus = 482,
+
+        /// <summary>
+        /// Enables Heavy Vibroblade Defense attacks to apply Crushing Blow.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        HeavyVibrobladeDefenseAbilityCrushingBlow = 483,
+
+        /// <summary>
+        /// Marks active Heavy Vibroblade Defense physical-defense or damage-reduction buffs.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        HeavyVibrobladeDefenseRecoveryWindow = 484,
+
+        /// <summary>
+        /// Percent of combat damage restored as HP while HeavyVibrobladeDefenseRecoveryWindow is active.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        HeavyVibrobladeDefenseDamageDealtHPPercentRestore = 485,
+
+        /// <summary>
+        /// Base maximum Stamina percent restored after spending HP on a Heavy Vibroblade Offense ability.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        HeavyVibrobladeOffenseHitPointSpendStaminaRestoreBasePercent = 486,
+
+        /// <summary>
+        /// Ability score used to scale HeavyVibrobladeOffenseHitPointSpendStaminaRestoreBasePercent.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        HeavyVibrobladeOffenseHitPointSpendStaminaRestoreScalingAbility = 487,
+
+        /// <summary>
+        /// Maximum Stamina percent for HeavyVibrobladeOffenseHitPointSpendStaminaRestoreBasePercent.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        HeavyVibrobladeOffenseHitPointSpendStaminaRestoreMaximumPercent = 488,
+
+        /// <summary>
+        /// Cooldown in seconds for HeavyVibrobladeOffenseHitPointSpendStaminaRestoreBasePercent.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        HeavyVibrobladeOffenseHitPointSpendStaminaRestoreCooldownSeconds = 489,
+
+        /// <summary>
+        /// Enables Soul Sacrifice after spending HP on a Heavy Vibroblade Offense ability.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        HeavyVibrobladeOffenseHitPointSpendSoulSacrifice = 490,
+
+        /// <summary>
+        /// Window in seconds after spending HP during which Soul Ascension can trigger.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        HeavyVibrobladeOffenseHitPointSpendWindowSeconds = 491,
+
+        /// <summary>
+        /// Enables Soul Ascension on defeated enemies while the HP-spend window is active.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        HeavyVibrobladeOffenseSoulAscension = 492,
+
+        /// <summary>
+        /// Enables Heavy Vibroblade Offense weapon abilities to apply Essence Drain.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        HeavyVibrobladeOffenseEssenceHunter = 493,
+
+        /// <summary>
+        /// Percent of maximum HP used as a Guardian's Resolve absorption shield.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        HeavyVibrobladeDefenseGuardiansResolveShieldPercent = 494,
+
+        /// <summary>
+        /// Duration in seconds for HeavyVibrobladeDefenseGuardiansResolveShieldPercent.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        HeavyVibrobladeDefenseGuardiansResolveDurationSeconds = 495,
+
+        /// <summary>
+        /// Cooldown in seconds for HeavyVibrobladeDefenseGuardiansResolveShieldPercent.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        HeavyVibrobladeDefenseGuardiansResolveCooldownSeconds = 496,
+
+        /// <summary>
+        /// Duration in seconds for Exposed on the next Katar ability after guarding a hit.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        GuardedHitNextKatarAbilityExposedDurationSeconds = 497,
+
+        /// <summary>
+        /// Enables Iron Guard ally-protection abilities to apply Covering Claws.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        KatarIronGuardCoveringClaws = 498,
+
+        /// <summary>
+        /// Damage added to Iron Guard counterattacks and guard pulses.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        KatarIronGuardPulseDamageBonus = 499,
+
+        /// <summary>
+        /// Secondary hit damage added to Venom Current single-target abilities.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        KatarVenomCurrentSecondStrikeDamageBonus = 500,
+
+        /// <summary>
+        /// Radius in meters for Venom Current poison spread.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        KatarVenomCurrentPoisonSpreadRadiusMeters = 501,
+
+        /// <summary>
+        /// Duration in seconds for poison spread by Venom Current abilities.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        KatarVenomCurrentPoisonSpreadDurationSeconds = 502,
+
+        /// <summary>
+        /// Haste percent per Toxic Rush stack.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        KatarToxicRushHastePercentPerStack = 503,
+
+        /// <summary>
+        /// Attack percent per Toxic Rush stack.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        KatarToxicRushAttackPercentPerStack = 504,
+
+        /// <summary>
+        /// Maximum Toxic Rush stacks.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        KatarToxicRushMaximumStacks = 505,
+
+        /// <summary>
+        /// Duration in seconds for Toxic Rush stacks.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        KatarToxicRushDurationSeconds = 506,
+
+        /// <summary>
+        /// Bolster Resolve rank applied by Field Steward recovery commands.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        LeadershipFieldStewardBolsterResolveRank = 507,
+
+        /// <summary>
+        /// Mark Target rank applied by Vanguard offensive commands.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        LeadershipVanguardMarkTargetRank = 508,
+
+        /// <summary>
+        /// Damage added to Lightsaber Offense area abilities.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        LightsaberOffenseAreaDamageBonus = 509,
+
+        /// <summary>
+        /// Accuracy percent granted by Lightsaber Offense Centering.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        LightsaberOffenseCenteringAccuracyPercent = 510,
+
+        /// <summary>
+        /// Duration in seconds for LightsaberOffenseCenteringAccuracyPercent.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        LightsaberOffenseCenteringDurationSeconds = 511,
+
+        /// <summary>
+        /// Percent of max HP restored when Lightsaber Defense self-sustain triggers.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        LightsaberDefenseSelfRestorePercent = 512,
+
+        /// <summary>
+        /// Duration in seconds for Guardian's Influence.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        LightsaberDefenseGuardiansInfluenceDurationSeconds = 513,
+
+        /// <summary>
+        /// Damage added to Lightsaber Offense single-target abilities against debuffed enemies.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        LightsaberOffenseDebuffedTargetDamageBonus = 514,
+
+        /// <summary>
+        /// Enables Lightsaber Offense abilities to remove one harmful effect from the attacker.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        LightsaberOffensePurify = 515,
+
+        /// <summary>
+        /// Splash damage added around single-target Lightsaber Offense hits.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        LightsaberOffenseSingleTargetSplashDamage = 516,
+
+        /// <summary>
+        /// Damage added to Lightsaber Offense abilities after moving.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        LightsaberOffenseSurgeStrikeDamageBonus = 517,
+
+        /// <summary>
+        /// Damage added to Skirmisher close-range abilities against disoriented targets.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        PistolSkirmisherDisorientedTargetDamageBonus = 518,
+
+        /// <summary>
+        /// Duration in seconds for Disoriented from Skirmisher close-range abilities.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        PistolSkirmisherDisorientedDurationSeconds = 519,
+
+        /// <summary>
+        /// Damage added to Skirmisher ricochet bounces.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        PistolSkirmisherRicochetDamageBonus = 520,
+
+        /// <summary>
+        /// Maximum secondary targets for Skirmisher ricochet bounces.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        PistolSkirmisherRicochetMaximumTargets = 521,
+
+        /// <summary>
+        /// Cooldown in seconds for Skirmisher ricochet bounces.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        PistolSkirmisherRicochetCooldownSeconds = 522,
+
+        /// <summary>
+        /// Evasion percent granted by Skirmisher evasive abilities.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        PistolSkirmisherEvasiveAbilityEvasionPercent = 523,
+
+        /// <summary>
+        /// Duration in seconds for PistolSkirmisherEvasiveAbilityEvasionPercent.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        PistolSkirmisherEvasiveAbilityDurationSeconds = 524,
+
+        /// <summary>
+        /// Current enmity reduction percent from Skirmisher evasive abilities.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        PistolSkirmisherEvasiveAbilityEnmityReductionPercent = 525,
+
+        /// <summary>
+        /// Next pistol attack damage after Skirmisher evasive abilities.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        PistolSkirmisherEvasiveAbilityNextAttackDamageBonus = 526,
+
+        /// <summary>
+        /// Enables Marksman precision shots to apply Expose Weak Point.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        RifleMarksmanExposeWeakPoint = 527,
+
+        /// <summary>
+        /// Enables Pacification control shots to remove a beneficial effect.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        RiflePacificationNeutralizingShot = 528,
+
+        /// <summary>
+        /// Enables Pacification control shots to interrupt and apply Foggy Mind.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        RiflePacificationOverwatch = 529,
+
+        /// <summary>
+        /// Pinning Fire rank applied by Pacification control shots.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        RiflePacificationPinningFireRank = 530,
+
+        /// <summary>
+        /// Enables Conduit area abilities to apply Conduit Flare.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        SaberstaffConduitAreaConduitFlare = 531,
+
+        /// <summary>
+        /// Enables Tempest spinning attacks to apply Force Gyre.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        SaberstaffTempestForceGyre = 532,
+
+        /// <summary>
+        /// Enables Conduit ally buffs to apply Force Lens.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        SaberstaffConduitForceLens = 533,
+
+        /// <summary>
+        /// Enables Spear Damage attacks to apply Breach.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        SpearDamageBreachStrike = 534,
+
+        /// <summary>
+        /// Enables Spear Damage area abilities to apply Crippling Defense.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        SpearDamageCripplingDefense = 535,
+
+        /// <summary>
+        /// Enables Spear Disabler attacks to apply Force Nullification.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        SpearDisablerForceNullification = 536,
+
+        /// <summary>
+        /// Enables Spear Disabler attacks to apply Forcebane.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        SpearDisablerForcebane = 537,
+
+        /// <summary>
+        /// Enables Spear Disabler suppression abilities to apply Fractured Focus.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        SpearDisablerFractureStrike = 538,
+
+        /// <summary>
+        /// Enables Spear Damage stances to apply Improved Attentiveness.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        SpearDamageImprovedAttentiveness = 539,
+
+        /// <summary>
+        /// Enables Staff Sentinel abilities to apply Guarding Step.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        StaffSentinelGuardingStep = 540,
+
+        /// <summary>
+        /// Enables Staff Sentinel ally-protection abilities to apply Sentinel Guard.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        StaffSentinelGuard = 541,
+
+        /// <summary>
+        /// Damage added to Staff Crusher finishers.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        StaffCrusherFinisherDamageBonus = 542,
+
+        /// <summary>
+        /// Damage added to Bombardier secondary explosives.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        ThrowingBombardierClusterStormDamageBonus = 543,
+
+        /// <summary>
+        /// Enables Deadeye single-target throws to apply Marking Toss.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        ThrowingDeadeyeMarkingToss = 544,
+
+        /// <summary>
+        /// Damage added to Deadeye ricochet tosses.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        ThrowingDeadeyeRicochetDamageBonus = 545,
+
+        /// <summary>
+        /// Maximum secondary targets for Deadeye ricochet tosses.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        ThrowingDeadeyeRicochetMaximumTargets = 546,
+
+        /// <summary>
+        /// Enables Bombardier control areas to leave Saturation Toss damage.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        ThrowingBombardierSaturationToss = 547,
+
+        /// <summary>
+        /// Enables Duelist retaliatory abilities to apply Reversal Cut.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        TwinBladeDuelistReversalCut = 548,
+
+        /// <summary>
+        /// Enables Cyclone area abilities to apply Sweeping Advance.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        TwinBladeCycloneSweepingAdvance = 549,
+
+        /// <summary>
+        /// Enables Incapacitate to apply Cascade Failure.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        VibroknifeSaboteurCascadeFailure = 550,
+
+        /// <summary>
+        /// Evasive Combat rank applied by Vibroknife Shadow evasive abilities.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        VibroknifeShadowEvasiveCombatRank = 551,
+
+        /// <summary>
+        /// Enables Vibroknife Shadow single-target abilities to apply Marked for Death.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        VibroknifeShadowMarkedForDeath = 552,
+
+        /// <summary>
+        /// Sap Vitality rank applied by Vibroknife Saboteur control abilities.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        VibroknifeSaboteurSapVitalityRank = 553,
+
+        /// <summary>
+        /// Toxic Coating rank applied by Vibroknife Saboteur strike abilities.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        VibroknifeSaboteurToxicCoatingRank = 554,
+
+        /// <summary>
+        /// Damage added to the next Katar ability after guarding a hit.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        GuardedHitNextKatarAbilityDamageBonus = 555,
+
+        /// <summary>
+        /// Percent current enmity reduction granted by Lightsaber Offense Centering.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        LightsaberOffenseCenteringEnmityReductionPercent = 556,
+
+        /// <summary>
+        /// Cooldown in seconds for Lightsaber Offense Centering.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        LightsaberOffenseCenteringCooldownSeconds = 557,
+
+        /// <summary>
+        /// Attack Deflection granted to nearby allies by Guardian's Influence.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        LightsaberDefenseGuardiansInfluenceAttackDeflection = 558,
+
+        /// <summary>
+        /// Duration in seconds for Sunder from Lightsaber Offense area abilities.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        LightsaberOffenseAreaSunderDurationSeconds = 559,
+
+        /// <summary>
+        /// Cooldown in seconds for Lightsaber Offense Purify.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        LightsaberOffensePurifyCooldownSeconds = 560,
+
+        /// <summary>
+        /// Force Disruption duration in seconds from Lightsaber Offense single-target abilities.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        LightsaberOffenseSingleTargetForceDisruptionDurationSeconds = 561,
+
+        /// <summary>
+        /// Stamina threshold percent required for Lightsaber Offense Second Wind.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        LightsaberOffenseSecondWindThresholdPercent = 562,
+
+        /// <summary>
+        /// Base maximum Stamina percent restored by Lightsaber Offense Second Wind.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        LightsaberOffenseSecondWindStaminaRestoreBasePercent = 563,
+
+        /// <summary>
+        /// Ability score used to scale Lightsaber Offense Second Wind.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        LightsaberOffenseSecondWindScalingAbility = 564,
+
+        /// <summary>
+        /// Maximum Stamina percent restored by Lightsaber Offense Second Wind.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        LightsaberOffenseSecondWindStaminaRestoreMaximumPercent = 565,
+
+        /// <summary>
+        /// Cooldown in seconds for Lightsaber Offense Second Wind.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        LightsaberOffenseSecondWindCooldownSeconds = 566,
+
+        /// <summary>
+        /// Duration in seconds for Disoriented from Lightsaber Offense area abilities.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        LightsaberOffenseAreaDisorientedDurationSeconds = 567,
+
+        /// <summary>
+        /// Cooldown in seconds for Staff Sentinel Guarding Step.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        StaffSentinelGuardingStepCooldownSeconds = 568,
+
+        /// <summary>
+        /// Duration in seconds for Dazed from Staff Crusher finishers.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        StaffCrusherFinisherDazedDurationSeconds = 569,
+
+        /// <summary>
+        /// Maximum secondary explosions created by Bombardier area abilities.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        ThrowingBombardierClusterStormMaximumTargets = 570,
+
+        /// <summary>
+        /// Duration in seconds for Saturation Toss area pulses.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        ThrowingBombardierSaturationTossDurationSeconds = 571,
+
+        /// <summary>
+        /// Damage dealt by Saturation Toss area pulses.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        ThrowingBombardierSaturationTossDamage = 572,
+
+        /// <summary>
+        /// Pulse interval in seconds for Saturation Toss.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        ThrowingBombardierSaturationTossPulseSeconds = 573,
+
+        /// <summary>
+        /// Damage added to the next Twin Blade Duelist ability after taking damage.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        TwinBladeDuelistReversalCutDamageBonus = 574,
+
+        /// <summary>
+        /// Duration in seconds for Dazed from Reversal Cut.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        TwinBladeDuelistReversalCutDazedDurationSeconds = 575,
+
+        /// <summary>
+        /// Window in seconds for the next Twin Blade Duelist ability from Reversal Cut.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        TwinBladeDuelistReversalCutWindowSeconds = 576,
+
+        /// <summary>
+        /// Minimum targets hit required for Sweeping Advance.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        TwinBladeCycloneSweepingAdvanceMinimumTargets = 577,
+
+        /// <summary>
+        /// Stamina restored by Sweeping Advance.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        TwinBladeCycloneSweepingAdvanceStaminaRestore = 578,
+
+        /// <summary>
+        /// Haste percent granted by Sweeping Advance.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        TwinBladeCycloneSweepingAdvanceHastePercent = 579,
+
+        /// <summary>
+        /// Duration in seconds for Sweeping Advance.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        TwinBladeCycloneSweepingAdvanceDurationSeconds = 580,
+
+        /// <summary>
+        /// Damage added by Conduit Flare.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        SaberstaffConduitFlareDamageBonus = 581,
+
+        /// <summary>
+        /// Force Disruption duration in seconds from Conduit Flare.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        SaberstaffConduitFlareForceDisruptionDurationSeconds = 582,
+
+        /// <summary>
+        /// Force Erosion duration in seconds from Force Gyre.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        SaberstaffTempestForceGyreDurationSeconds = 583,
+
+        /// <summary>
+        /// Stamina restored when Crippling Defense affects enough targets.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        SpearDamageCripplingDefenseStaminaRestore = 584,
+
+        /// <summary>
+        /// Minimum targets required for Crippling Defense stamina restoration.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        SpearDamageCripplingDefenseMinimumTargets = 585,
+
+        /// <summary>
+        /// SkillType value of abilities that trigger AbilityUsedEvasionPercentAdjustment.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        AbilityUsedEvasionPercentAdjustmentSkillType = 586,
+
+        /// <summary>
+        /// Temporary percent Evasion adjustment applied after using a matching ability.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        AbilityUsedEvasionPercentAdjustment = 587,
+
+        /// <summary>
+        /// Duration in seconds for AbilityUsedEvasionPercentAdjustment.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        AbilityUsedEvasionDurationSeconds = 588,
+
+        /// <summary>
+        /// SkillType value of single-target abilities that trigger SingleTargetAbilityAttackDeflection.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        SingleTargetAbilityAttackDeflectionSkillType = 589,
+
+        /// <summary>
+        /// Temporary Attack Deflection granted after using a matching single-target ability.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        SingleTargetAbilityAttackDeflection = 590,
+
+        /// <summary>
+        /// Duration in seconds for SingleTargetAbilityAttackDeflection.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        SingleTargetAbilityAttackDeflectionDurationSeconds = 591
     }
 
     public class StatTypeAttribute : Attribute

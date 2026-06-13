@@ -84,6 +84,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                     friendly,
                     new KoltoMistHealingStatusEffect(totalPercent, 4),
                     12f);
+                FirstAidTreatmentAdjustments.ApplyTraumaMedicRiders(activator, friendly);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_M), friendly);
             }
         }

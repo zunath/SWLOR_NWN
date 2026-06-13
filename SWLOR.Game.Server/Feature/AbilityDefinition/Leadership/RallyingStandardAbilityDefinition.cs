@@ -17,24 +17,30 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
         {
             var builder = new AbilityBuilder();
 
-            RallyingStandard(builder);
+            RallyingStandard(builder, FeatType.RallyingStandard1, Spell.RallyingStandard1, "Rallying Standard I", 1);
+            RallyingStandard(builder, FeatType.RallyingStandard2, Spell.RallyingStandard2, "Rallying Standard II", 2);
 
             return builder.Build();
         }
 
-        private static void RallyingStandard(AbilityBuilder builder)
+        private static void RallyingStandard(
+            AbilityBuilder builder,
+            FeatType featType,
+            Spell spell,
+            string name,
+            int level)
         {
             builder
-                .Create(FeatType.RallyingStandard1, PerkType.RallyingStandard)
-                .Name("Rallying Standard")
-                .Level(1)
+                .Create(featType, PerkType.RallyingStandard)
+                .Name(name)
+                .Level(level)
                 .HasActivationDelay(2f)
                 .HasRecastDelay(RecastGroup.RallyingStandard, 60f)
                 .SkillType(SkillType.Leadership)
                 .IsAreaAbility()
                 .HasImpactAction(RallyingStandardImpactAction)
                 .HasTargetingSphere(
-                    Spell.RallyingStandard1,
+                    spell,
                     5f,
                     AbilityTargetingFlags.HelpsAllies | AbilityTargetingFlags.OriginOnSelf,
                     LeadershipAbilityEffects.ApplyLeadershipCommandRadiusBonus)

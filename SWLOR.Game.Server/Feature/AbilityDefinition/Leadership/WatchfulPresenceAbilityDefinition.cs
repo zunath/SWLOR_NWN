@@ -17,24 +17,31 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
         {
             var builder = new AbilityBuilder();
 
-            WatchfulPresence(builder);
+            WatchfulPresence(builder, FeatType.WatchfulPresence1, Spell.WatchfulPresence1, "Watchful Presence I", 1);
+            WatchfulPresence(builder, FeatType.WatchfulPresence2, Spell.WatchfulPresence2, "Watchful Presence II", 2);
+            WatchfulPresence(builder, FeatType.WatchfulPresence3, Spell.WatchfulPresence3, "Watchful Presence III", 3);
 
             return builder.Build();
         }
 
-        private static void WatchfulPresence(AbilityBuilder builder)
+        private static void WatchfulPresence(
+            AbilityBuilder builder,
+            FeatType featType,
+            Spell spell,
+            string name,
+            int level)
         {
             builder
-                .Create(FeatType.WatchfulPresence1, PerkType.WatchfulPresence)
-                .Name("Watchful Presence")
-                .Level(1)
+                .Create(featType, PerkType.WatchfulPresence)
+                .Name(name)
+                .Level(level)
                 .HasActivationDelay(2f)
                 .HasRecastDelay(RecastGroup.WatchfulPresence, 60f)
                 .SkillType(SkillType.Leadership)
                 .IsAreaAbility()
                 .HasImpactAction(WatchfulPresenceImpactAction)
                 .HasTargetingSphere(
-                    Spell.WatchfulPresence1,
+                    spell,
                     5f,
                     AbilityTargetingFlags.HelpsAllies | AbilityTargetingFlags.OriginOnSelf,
                     LeadershipAbilityEffects.ApplyLeadershipCommandRadiusBonus)

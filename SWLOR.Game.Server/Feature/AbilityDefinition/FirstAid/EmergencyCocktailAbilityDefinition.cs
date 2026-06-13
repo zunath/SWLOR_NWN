@@ -52,6 +52,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 StatusEffect.ApplyStatusEffect(activator, friendly, typeof(EmergencyCocktailStatusEffect), duration);
                 AbilityEffectScaling.ApplyTemporaryHPPercent(activator, friendly, 12, duration);
                 StatusEffect.RemoveFirstStatusEffect(friendly, new[] { typeof(PoisonStatusEffect), typeof(ToxinStatusEffect) }, false);
+                FirstAidTreatmentAdjustments.ApplyCombatPharmacologyStimRiders(activator, friendly);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Restoration), friendly);
             }
         }

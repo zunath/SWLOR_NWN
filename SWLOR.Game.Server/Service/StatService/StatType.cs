@@ -3477,16 +3477,16 @@ namespace SWLOR.Game.Server.Service.StatService
         SingleTargetAbilityAttackDeflectionDurationSeconds = 591,
 
         /// <summary>
-        /// PerkCategoryType value whose abilities trigger HeavyVibrobladeDefenseAbilityNextAutoAttackDamageBonus.
+        /// Primary PerkType value whose ability triggers HeavyVibrobladeDefenseAbilityNextAutoAttackDamageBonus.
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
-        HeavyVibrobladeDefenseAbilityNextAutoAttackDamageTriggerPerkCategory = 592,
+        HeavyVibrobladeDefenseAbilityNextAutoAttackDamageTriggerPrimaryPerkType = 592,
 
         /// <summary>
-        /// PerkCategoryType value whose abilities trigger HeavyVibrobladeDefenseAbilityCrushingBlow.
+        /// Primary PerkType value whose ability triggers HeavyVibrobladeDefenseAbilityCrushingBlow.
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
-        HeavyVibrobladeDefenseAbilityCrushingBlowTriggerPerkCategory = 593,
+        HeavyVibrobladeDefenseAbilityCrushingBlowTriggerPrimaryPerkType = 593,
 
         /// <summary>
         /// Primary PerkType value whose ability triggers HeavyVibrobladeDefenseGuardiansResolveShieldPercent.
@@ -3510,7 +3510,79 @@ namespace SWLOR.Game.Server.Service.StatService
         /// Quaternary PerkType value whose ability triggers HeavyVibrobladeDefenseGuardiansResolveShieldPercent.
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
-        HeavyVibrobladeDefenseGuardiansResolveTriggerQuaternaryPerkType = 597
+        HeavyVibrobladeDefenseGuardiansResolveTriggerQuaternaryPerkType = 597,
+
+        /// <summary>
+        /// Cooldown in seconds for DeflectionStaminaRestore.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        DeflectionStaminaRestoreCooldownSeconds = 598,
+
+        /// <summary>
+        /// Cooldown in seconds for CriticalHPPercentOfDamageRestore.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        CriticalHPPercentOfDamageRestoreCooldownSeconds = 599,
+
+        /// <summary>
+        /// Secondary PerkType value whose ability triggers HeavyVibrobladeDefenseAbilityNextAutoAttackDamageBonus.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        HeavyVibrobladeDefenseAbilityNextAutoAttackDamageTriggerSecondaryPerkType = 600,
+
+        /// <summary>
+        /// Tertiary PerkType value whose ability triggers HeavyVibrobladeDefenseAbilityNextAutoAttackDamageBonus.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        HeavyVibrobladeDefenseAbilityNextAutoAttackDamageTriggerTertiaryPerkType = 601,
+
+        /// <summary>
+        /// Quaternary PerkType value whose ability triggers HeavyVibrobladeDefenseAbilityNextAutoAttackDamageBonus.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        HeavyVibrobladeDefenseAbilityNextAutoAttackDamageTriggerQuaternaryPerkType = 602,
+
+        /// <summary>
+        /// Quinary PerkType value whose ability triggers HeavyVibrobladeDefenseAbilityNextAutoAttackDamageBonus.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        HeavyVibrobladeDefenseAbilityNextAutoAttackDamageTriggerQuinaryPerkType = 603,
+
+        /// <summary>
+        /// Senary PerkType value whose ability triggers HeavyVibrobladeDefenseAbilityNextAutoAttackDamageBonus.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        HeavyVibrobladeDefenseAbilityNextAutoAttackDamageTriggerSenaryPerkType = 604,
+
+        /// <summary>
+        /// Secondary PerkType value whose ability triggers HeavyVibrobladeDefenseAbilityCrushingBlow.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        HeavyVibrobladeDefenseAbilityCrushingBlowTriggerSecondaryPerkType = 605,
+
+        /// <summary>
+        /// Tertiary PerkType value whose ability triggers HeavyVibrobladeDefenseAbilityCrushingBlow.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        HeavyVibrobladeDefenseAbilityCrushingBlowTriggerTertiaryPerkType = 606,
+
+        /// <summary>
+        /// Quaternary PerkType value whose ability triggers HeavyVibrobladeDefenseAbilityCrushingBlow.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        HeavyVibrobladeDefenseAbilityCrushingBlowTriggerQuaternaryPerkType = 607,
+
+        /// <summary>
+        /// Quinary PerkType value whose ability triggers HeavyVibrobladeDefenseAbilityCrushingBlow.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        HeavyVibrobladeDefenseAbilityCrushingBlowTriggerQuinaryPerkType = 608,
+
+        /// <summary>
+        /// Senary PerkType value whose ability triggers HeavyVibrobladeDefenseAbilityCrushingBlow.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        HeavyVibrobladeDefenseAbilityCrushingBlowTriggerSenaryPerkType = 609
     }
 
     public class StatTypeAttribute : Attribute

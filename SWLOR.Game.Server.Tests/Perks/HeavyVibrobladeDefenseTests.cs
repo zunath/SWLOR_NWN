@@ -76,8 +76,39 @@ public class HeavyVibrobladeDefenseTests
         AssertStatBonus(guardiansResolve.PerkLevels[1], StatType.HeavyVibrobladeDefenseGuardiansResolveDurationSeconds, 12);
         AssertStatBonus(guardiansResolve.PerkLevels[1], StatType.HeavyVibrobladeDefenseGuardiansResolveCooldownSeconds, 30);
 
-        AssertStatBonus(perks[PerkType.AngerStrike].PerkLevels[1], StatType.HeavyVibrobladeDefenseAbilityNextAutoAttackDamageTriggerPerkCategory, (int)PerkCategoryType.HeavyVibrobladeDefense);
-        AssertStatBonus(perks[PerkType.CrushingBlow].PerkLevels[1], StatType.HeavyVibrobladeDefenseAbilityCrushingBlowTriggerPerkCategory, (int)PerkCategoryType.HeavyVibrobladeDefense);
+        var heavyVibrobladeDefenseAbilityPerks = new[]
+        {
+            PerkType.FortressStrike,
+            PerkType.BastionStance,
+            PerkType.Flash,
+            PerkType.Rampart,
+            PerkType.Earthshatter,
+            PerkType.AbsoluteDefense
+        };
+        AssertTriggerPerkBonuses(
+            perks[PerkType.AngerStrike].PerkLevels[1],
+            new[]
+            {
+                StatType.HeavyVibrobladeDefenseAbilityNextAutoAttackDamageTriggerPrimaryPerkType,
+                StatType.HeavyVibrobladeDefenseAbilityNextAutoAttackDamageTriggerSecondaryPerkType,
+                StatType.HeavyVibrobladeDefenseAbilityNextAutoAttackDamageTriggerTertiaryPerkType,
+                StatType.HeavyVibrobladeDefenseAbilityNextAutoAttackDamageTriggerQuaternaryPerkType,
+                StatType.HeavyVibrobladeDefenseAbilityNextAutoAttackDamageTriggerQuinaryPerkType,
+                StatType.HeavyVibrobladeDefenseAbilityNextAutoAttackDamageTriggerSenaryPerkType
+            },
+            heavyVibrobladeDefenseAbilityPerks);
+        AssertTriggerPerkBonuses(
+            perks[PerkType.CrushingBlow].PerkLevels[1],
+            new[]
+            {
+                StatType.HeavyVibrobladeDefenseAbilityCrushingBlowTriggerPrimaryPerkType,
+                StatType.HeavyVibrobladeDefenseAbilityCrushingBlowTriggerSecondaryPerkType,
+                StatType.HeavyVibrobladeDefenseAbilityCrushingBlowTriggerTertiaryPerkType,
+                StatType.HeavyVibrobladeDefenseAbilityCrushingBlowTriggerQuaternaryPerkType,
+                StatType.HeavyVibrobladeDefenseAbilityCrushingBlowTriggerQuinaryPerkType,
+                StatType.HeavyVibrobladeDefenseAbilityCrushingBlowTriggerSenaryPerkType
+            },
+            heavyVibrobladeDefenseAbilityPerks);
 
         AssertAbilityPerk(new FortressStrikeAbilityDefinition().BuildAbilities()[FeatType.FortressStrike1], PerkType.FortressStrike);
         AssertAbilityPerk(new BastionStanceAbilityDefinition().BuildAbilities()[FeatType.BastionStance1], PerkType.BastionStance);
@@ -86,6 +117,35 @@ public class HeavyVibrobladeDefenseTests
         AssertAbilityPerk(new FlashAbilityDefinition().BuildAbilities()[FeatType.Flash1], PerkType.Flash);
         AssertAbilityPerk(new EarthshatterAbilityDefinition().BuildAbilities()[FeatType.Earthshatter1], PerkType.Earthshatter);
         AssertAbilityPerk(new SacrificialBladeAbilityDefinition().BuildAbilities()[FeatType.SacrificialBlade1], PerkType.SacrificialBlade);
+    }
+
+    [Test]
+    public void UnbreakableWill_MatchesCombatBibleDeflectionValues()
+    {
+        var root = FindRepositoryRoot();
+        var perkSource = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "PerkDefinition" / "HeavyVibrobladePerkDefinition.cs").FullName);
+        var statSource = File.ReadAllText((root / "SWLOR.Game.Server" / "Service" / "Stat.cs").FullName);
+        var perks = BuildHeavyVibrobladeDefensePerksWithout2daLookup();
+        var unbreakableWill = perks[PerkType.UnbreakableWill];
+
+        AssertPerkLevel(
+            unbreakableWill,
+            "Unbreakable Will",
+            1,
+            3,
+            22,
+            null,
+            "Gain +5 Attack Deflection, increased by +1 per 2 MGT to a maximum of +15. Deflecting an attack restores 4 STM. This can trigger once every 6 seconds.",
+            StatType.AttackDeflection,
+            StatType.DeflectionStaminaRestore,
+            StatType.DeflectionStaminaRestoreCooldownSeconds);
+
+        perkSource.Should().Contain("Math.Min(15, 5 + Math.Max(0, GetAbilityScore(creature, AbilityType.Might)) / 2)");
+        perkSource.Should().Contain("StatType.DeflectionStaminaRestore,");
+        perkSource.Should().Contain("creature => EquipmentPredicates.HasMainHandHeavyVibroblade(creature) ? 4 : 0");
+        perkSource.Should().Contain("StatType.DeflectionStaminaRestoreCooldownSeconds,");
+        perkSource.Should().Contain("creature => EquipmentPredicates.HasMainHandHeavyVibroblade(creature) ? 6 : 0");
+        statSource.Should().Contain("Combat.TryUseStatTrigger(creatureId, StatType.DeflectionStaminaRestore, staminaRestoreCooldown)");
     }
 
     [Test]
@@ -174,6 +234,19 @@ public class HeavyVibrobladeDefenseTests
             .Calculate(0)
             .Should()
             .Be(value);
+    }
+
+    private static void AssertTriggerPerkBonuses(
+        PerkLevel level,
+        IReadOnlyList<StatType> statTypes,
+        IReadOnlyList<PerkType> perkTypes)
+    {
+        statTypes.Should().HaveSameCount(perkTypes);
+
+        for (var index = 0; index < statTypes.Count; index++)
+        {
+            AssertStatBonus(level, statTypes[index], (int)perkTypes[index]);
+        }
     }
 
     private static void AssertAbilityPerk(

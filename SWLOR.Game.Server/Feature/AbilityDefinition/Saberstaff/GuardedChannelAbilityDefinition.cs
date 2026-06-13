@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                     .Level(1)
                     .SkillType(SkillType.Saberstaff)
                     .HasRecastDelay(RecastGroup.GuardedChannel, 60f),
-                () => new GuardedChannelStatusEffect(20, 20),
+                () => new GuardedChannelStatusEffect(12, 20),
                 10f,
                 6);
             ConfigureSelfStatus(
@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                     .Level(2)
                     .SkillType(SkillType.Saberstaff)
                     .HasRecastDelay(RecastGroup.GuardedChannel, 60f),
-                () => new GuardedChannelStatusEffect(30, 30),
+                () => new GuardedChannelStatusEffect(22, 30),
                 12f,
                 8);
             ConfigureSelfStatus(
@@ -39,7 +39,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                     .Level(3)
                     .SkillType(SkillType.Saberstaff)
                     .HasRecastDelay(RecastGroup.GuardedChannel, 120f),
-                () => new GuardedChannelStatusEffect(40, 35),
+                () => new GuardedChannelStatusEffect(30, 35),
                 15f,
                 12);
 

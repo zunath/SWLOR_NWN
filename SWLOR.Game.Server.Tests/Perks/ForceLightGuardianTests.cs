@@ -69,6 +69,16 @@ public class ForceLightGuardianTests
     }
 
     [Test]
+    public void ForceLightGuardianTraitStatValues_MatchCombatBible()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "PerkDefinition" / "ForceLightGuardianPerkDefinition.cs").FullName);
+
+        source.Should().Contain("EquipmentPredicates.HasMainHandLightsaber(creature) || EquipmentPredicates.HasMainHandVibroblade(creature) ? 4 : 0");
+        source.Should().Contain("EquipmentPredicates.HasMainHandLightsaber(creature) || EquipmentPredicates.HasMainHandVibroblade(creature) ? 10 : 0");
+    }
+
+    [Test]
     public void LastStandOfTheLight_HasDyingFallbackBeforeForcedPlayerDeath()
     {
         var root = FindRepositoryRoot();

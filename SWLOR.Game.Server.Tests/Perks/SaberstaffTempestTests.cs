@@ -71,6 +71,27 @@ public class SaberstaffTempestTests
     }
 
     [Test]
+    public void SaberstaffTempestTraitStatValues_MatchCombatBible()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "PerkDefinition" / "SaberstaffPerkDefinition.cs").FullName);
+        var perks = BuildSaberstaffTempestPerksWithout2daLookup();
+
+        source.Should().Contain("StatType.AttackDeflection, creature => EquipmentPredicates.HasMainHandSaberstaff(creature) ? 8 : 0");
+        source.Should().Contain("StatType.AttackDeflection, creature => EquipmentPredicates.HasMainHandSaberstaff(creature) ? 16 : 0");
+
+        perks[PerkType.FlowOfTheMaelstrom]
+            .PerkLevels[1]
+            .StatBonuses
+            .Should()
+            .ContainSingle(x => x.Stat == StatType.SaberstaffAreaAbilityAttackDeflection)
+            .Which
+            .Calculate(0)
+            .Should()
+            .Be(8);
+    }
+
+    [Test]
     public void SaberstaffTempestFeatAndAbilityIcons_AreUniqueAndPresent()
     {
         var root = FindRepositoryRoot();

@@ -204,7 +204,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("After hitting 3 or more enemies with one saberstaff ability, gain +15% Haste and +8 Attack Deflection for 12 seconds.")
                 .IncreasesStat(StatType.SaberstaffAreaAbilityMinTargetsBuffThreshold, 3)
                 .IncreasesStat(StatType.SaberstaffAreaAbilityHastePercentAdjustment, 15)
-                .IncreasesStat(StatType.SaberstaffAreaAbilityAttackDeflection, 10)
+                .IncreasesStat(StatType.SaberstaffAreaAbilityAttackDeflection, 8)
                 .IncreasesStat(StatType.SaberstaffAreaAbilityBuffDurationSeconds, 12)
                 .Price(4)
                 .RequirementSkill(SkillType.Saberstaff, 48)
@@ -394,7 +394,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Gain +8 Attack Deflection. After deflecting an attack, your next Circle Slash deals +8 DMG.")
-                .IncreasesStat(StatType.AttackDeflection, creature => EquipmentPredicates.HasMainHandSaberstaff(creature) ? 10 : 0)
+                .IncreasesStat(StatType.AttackDeflection, creature => EquipmentPredicates.HasMainHandSaberstaff(creature) ? 8 : 0)
                 .IncreasesStat(StatType.DeflectionNextAbilityDamageBonusPerkType, creature => EquipmentPredicates.HasMainHandSaberstaff(creature) ? (int)PerkType.CircleSlash : 0)
                 .IncreasesStat(StatType.DeflectionNextAbilityDamageBonus, creature => EquipmentPredicates.HasMainHandSaberstaff(creature) ? 8 : 0)
                 .IncreasesStat(StatType.DeflectionNextAbilityDamageBonusDurationSeconds, creature => EquipmentPredicates.HasMainHandSaberstaff(creature) ? 8 : 0)
@@ -404,7 +404,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Gain +16 Attack Deflection total. Deflecting an attack restores 4 FP.")
-                .IncreasesStat(StatType.AttackDeflection, creature => EquipmentPredicates.HasMainHandSaberstaff(creature) ? 20 : 0)
+                .IncreasesStat(StatType.AttackDeflection, creature => EquipmentPredicates.HasMainHandSaberstaff(creature) ? 16 : 0)
                 .IncreasesStat(StatType.DeflectionNextAbilityDamageBonusPerkType, creature => EquipmentPredicates.HasMainHandSaberstaff(creature) ? (int)PerkType.CircleSlash : 0)
                 .IncreasesStat(StatType.DeflectionNextAbilityDamageBonus, creature => EquipmentPredicates.HasMainHandSaberstaff(creature) ? 8 : 0)
                 .IncreasesStat(StatType.DeflectionNextAbilityDamageBonusDurationSeconds, creature => EquipmentPredicates.HasMainHandSaberstaff(creature) ? 8 : 0)
@@ -457,4 +457,3 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
     }
 }
-

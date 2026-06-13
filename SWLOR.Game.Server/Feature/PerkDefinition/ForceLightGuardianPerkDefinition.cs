@@ -98,7 +98,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Control powers that grant temporary HP, absorb damage, or prevent defeat grant affected allies +4 Attack Deflection for 10 seconds.")
                 .IncreasesStat(StatType.LightGuardianPowerAttackDeflection, creature =>
-                    EquipmentPredicates.HasMainHandLightsaber(creature) || EquipmentPredicates.HasMainHandVibroblade(creature) ? 8 : 0)
+                    EquipmentPredicates.HasMainHandLightsaber(creature) || EquipmentPredicates.HasMainHandVibroblade(creature) ? 4 : 0)
                 .IncreasesStat(StatType.LightGuardianPowerAttackDeflectionDurationSeconds, creature =>
                     EquipmentPredicates.HasMainHandLightsaber(creature) || EquipmentPredicates.HasMainHandVibroblade(creature) ? 10 : 0)
                 .Price(4)

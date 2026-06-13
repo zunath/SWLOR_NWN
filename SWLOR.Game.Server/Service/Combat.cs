@@ -1030,7 +1030,9 @@ namespace SWLOR.Game.Server.Service
             }
 
             var hpRestorePercent = Stat.GetStatAdjustment(attacker, StatType.CriticalHPPercentOfDamageRestore);
-            if (hpRestorePercent > 0)
+            var hpRestoreCooldown = Stat.GetStatAdjustment(attacker, StatType.CriticalHPPercentOfDamageRestoreCooldownSeconds);
+            if (hpRestorePercent > 0 &&
+                TryUseStatTrigger(attacker, StatType.CriticalHPPercentOfDamageRestore, hpRestoreCooldown))
             {
                 HealFromDamage(attacker, damage, hpRestorePercent);
             }
@@ -2415,7 +2417,7 @@ namespace SWLOR.Game.Server.Service
             return adjustment;
         }
 
-        private static bool TryUseStatTrigger(uint creature, StatType statType, int cooldownSeconds)
+        internal static bool TryUseStatTrigger(uint creature, StatType statType, int cooldownSeconds)
         {
             if (cooldownSeconds <= 0)
                 return true;
@@ -2812,10 +2814,15 @@ namespace SWLOR.Game.Server.Service
                 Enmity.ModifyEnmity(activator, target, enmityBonus);
             }
 
-            if (AbilityMatchesPerkCategoryStat(
+            if (AbilityMatchesAnyPerkTypeStat(
                     activator,
                     ability,
-                    StatType.HeavyVibrobladeDefenseAbilityCrushingBlowTriggerPerkCategory) &&
+                    StatType.HeavyVibrobladeDefenseAbilityCrushingBlowTriggerPrimaryPerkType,
+                    StatType.HeavyVibrobladeDefenseAbilityCrushingBlowTriggerSecondaryPerkType,
+                    StatType.HeavyVibrobladeDefenseAbilityCrushingBlowTriggerTertiaryPerkType,
+                    StatType.HeavyVibrobladeDefenseAbilityCrushingBlowTriggerQuaternaryPerkType,
+                    StatType.HeavyVibrobladeDefenseAbilityCrushingBlowTriggerQuinaryPerkType,
+                    StatType.HeavyVibrobladeDefenseAbilityCrushingBlowTriggerSenaryPerkType) &&
                 Stat.GetStatAdjustment(activator, StatType.HeavyVibrobladeDefenseAbilityCrushingBlow) > 0)
             {
                 StatusEffect.ApplyStatusEffect(activator, target, typeof(CrushingBlowStatusEffect), 16f, CombatDamageType.Physical);
@@ -3302,10 +3309,15 @@ namespace SWLOR.Game.Server.Service
             uint activator,
             AbilityDetail ability)
         {
-            if (AbilityMatchesPerkCategoryStat(
+            if (AbilityMatchesAnyPerkTypeStat(
                     activator,
                     ability,
-                    StatType.HeavyVibrobladeDefenseAbilityNextAutoAttackDamageTriggerPerkCategory))
+                    StatType.HeavyVibrobladeDefenseAbilityNextAutoAttackDamageTriggerPrimaryPerkType,
+                    StatType.HeavyVibrobladeDefenseAbilityNextAutoAttackDamageTriggerSecondaryPerkType,
+                    StatType.HeavyVibrobladeDefenseAbilityNextAutoAttackDamageTriggerTertiaryPerkType,
+                    StatType.HeavyVibrobladeDefenseAbilityNextAutoAttackDamageTriggerQuaternaryPerkType,
+                    StatType.HeavyVibrobladeDefenseAbilityNextAutoAttackDamageTriggerQuinaryPerkType,
+                    StatType.HeavyVibrobladeDefenseAbilityNextAutoAttackDamageTriggerSenaryPerkType))
             {
                 ApplyNextAutoAttackDamageBonus(
                     activator,
@@ -4718,44 +4730,28 @@ namespace SWLOR.Game.Server.Service
                 : SkillType.Invalid;
         }
 
-        private static PerkCategoryType GetPerkCategoryTypeFromStat(int value)
-        {
-            return value > 0 && Enum.IsDefined(typeof(PerkCategoryType), value)
-                ? (PerkCategoryType)value
-                : PerkCategoryType.Invalid;
-        }
-
         private static bool AbilityMatchesHeavyVibrobladeDefenseAbilityTrigger(
             uint creature,
             AbilityDetail ability)
         {
-            return AbilityMatchesPerkCategoryStat(
+            return AbilityMatchesAnyPerkTypeStat(
                        creature,
                        ability,
-                       StatType.HeavyVibrobladeDefenseAbilityNextAutoAttackDamageTriggerPerkCategory) ||
-                   AbilityMatchesPerkCategoryStat(
+                       StatType.HeavyVibrobladeDefenseAbilityNextAutoAttackDamageTriggerPrimaryPerkType,
+                       StatType.HeavyVibrobladeDefenseAbilityNextAutoAttackDamageTriggerSecondaryPerkType,
+                       StatType.HeavyVibrobladeDefenseAbilityNextAutoAttackDamageTriggerTertiaryPerkType,
+                       StatType.HeavyVibrobladeDefenseAbilityNextAutoAttackDamageTriggerQuaternaryPerkType,
+                       StatType.HeavyVibrobladeDefenseAbilityNextAutoAttackDamageTriggerQuinaryPerkType,
+                       StatType.HeavyVibrobladeDefenseAbilityNextAutoAttackDamageTriggerSenaryPerkType) ||
+                   AbilityMatchesAnyPerkTypeStat(
                        creature,
                        ability,
-                       StatType.HeavyVibrobladeDefenseAbilityCrushingBlowTriggerPerkCategory);
-        }
-
-        private static bool AbilityMatchesPerkCategoryStat(
-            uint creature,
-            AbilityDetail ability,
-            StatType statType)
-        {
-            var perkCategory = GetPerkCategoryTypeFromStat(Stat.GetStatAdjustment(creature, statType));
-            return AbilityMatchesPerkCategory(ability, perkCategory);
-        }
-
-        private static bool AbilityMatchesPerkCategory(
-            AbilityDetail ability,
-            PerkCategoryType perkCategory)
-        {
-            var perkType = ability?.EffectiveLevelPerkType ?? PerkType.Invalid;
-            return perkCategory != PerkCategoryType.Invalid &&
-                   perkType != PerkType.Invalid &&
-                   Perk.GetPerkDetails(perkType).Category == perkCategory;
+                       StatType.HeavyVibrobladeDefenseAbilityCrushingBlowTriggerPrimaryPerkType,
+                       StatType.HeavyVibrobladeDefenseAbilityCrushingBlowTriggerSecondaryPerkType,
+                       StatType.HeavyVibrobladeDefenseAbilityCrushingBlowTriggerTertiaryPerkType,
+                       StatType.HeavyVibrobladeDefenseAbilityCrushingBlowTriggerQuaternaryPerkType,
+                       StatType.HeavyVibrobladeDefenseAbilityCrushingBlowTriggerQuinaryPerkType,
+                       StatType.HeavyVibrobladeDefenseAbilityCrushingBlowTriggerSenaryPerkType);
         }
 
         private static bool AbilityMatchesAnyPerkTypeStat(

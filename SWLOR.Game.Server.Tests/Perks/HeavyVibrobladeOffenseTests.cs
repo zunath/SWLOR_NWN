@@ -62,6 +62,32 @@ public class HeavyVibrobladeOffenseTests
     }
 
     [Test]
+    public void VampiricFury_MatchesCombatBibleRestoreValues()
+    {
+        var root = FindRepositoryRoot();
+        var perkSource = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "PerkDefinition" / "HeavyVibrobladePerkDefinition.cs").FullName);
+        var combatSource = File.ReadAllText((root / "SWLOR.Game.Server" / "Service" / "Combat.cs").FullName);
+        var perks = BuildHeavyVibrobladeOffensePerksWithout2daLookup();
+        var vampiricFury = perks[PerkType.VampiricFury];
+
+        AssertPerkLevel(
+            vampiricFury,
+            "Vampiric Fury",
+            1,
+            3,
+            22,
+            null,
+            "Critical hits restore HP equal to 25% of damage dealt, increased by 1 percentage point per MGT to a maximum of 45%. This can trigger once every 6 seconds.",
+            StatType.CriticalHPPercentOfDamageRestore,
+            StatType.CriticalHPPercentOfDamageRestoreCooldownSeconds);
+
+        perkSource.Should().Contain("Math.Min(45, 25 + Math.Max(0, GetAbilityScore(creature, AbilityType.Might)))");
+        perkSource.Should().Contain("StatType.CriticalHPPercentOfDamageRestoreCooldownSeconds,");
+        perkSource.Should().Contain("creature => EquipmentPredicates.HasMainHandHeavyVibroblade(creature) ? 6 : 0");
+        combatSource.Should().Contain("TryUseStatTrigger(attacker, StatType.CriticalHPPercentOfDamageRestore, hpRestoreCooldown)");
+    }
+
+    [Test]
     public void HeavyVibrobladeOffenseFeatAndAbilityIcons_AreUniqueAndPresent()
     {
         var root = FindRepositoryRoot();

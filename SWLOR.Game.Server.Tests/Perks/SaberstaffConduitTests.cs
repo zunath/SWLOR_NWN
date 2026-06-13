@@ -50,14 +50,14 @@ public class SaberstaffConduitTests
         conduitStance.StatGroup.Stats[StatType.ForceDefensePercentAdjustment].Should().Be(15);
         conduitStance.StatGroup.Stats[StatType.AttackPercentAdjustment].Should().Be(-15);
 
-        var guarded1 = new GuardedChannelStatusEffect(20, 20);
-        guarded1.StatGroup.Stats[StatType.AttackDeflection].Should().Be(20);
+        var guarded1 = new GuardedChannelStatusEffect(12, 20);
+        guarded1.StatGroup.Stats[StatType.AttackDeflection].Should().Be(12);
         guarded1.StatGroup.Stats[StatType.ForceDefensePercentAdjustment].Should().Be(20);
-        var guarded2 = new GuardedChannelStatusEffect(30, 30);
-        guarded2.StatGroup.Stats[StatType.AttackDeflection].Should().Be(30);
+        var guarded2 = new GuardedChannelStatusEffect(22, 30);
+        guarded2.StatGroup.Stats[StatType.AttackDeflection].Should().Be(22);
         guarded2.StatGroup.Stats[StatType.ForceDefensePercentAdjustment].Should().Be(30);
-        var guarded3 = new GuardedChannelStatusEffect(40, 35);
-        guarded3.StatGroup.Stats[StatType.AttackDeflection].Should().Be(40);
+        var guarded3 = new GuardedChannelStatusEffect(30, 35);
+        guarded3.StatGroup.Stats[StatType.AttackDeflection].Should().Be(30);
         guarded3.StatGroup.Stats[StatType.ForceDefensePercentAdjustment].Should().Be(35);
 
         var forceLensAlly = new ForceLensStatusEffect();

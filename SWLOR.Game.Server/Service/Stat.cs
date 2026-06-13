@@ -1454,6 +1454,7 @@ namespace SWLOR.Game.Server.Service
             var staminaRestore = GetStatAdjustment(creatureId, StatType.DeflectionStaminaRestore);
             var fpRestore = GetStatAdjustment(creatureId, StatType.DeflectionFPRestore);
             var staminaRestorePercent = GetStatAdjustment(creatureId, StatType.DeflectionStaminaRestorePercent);
+            var staminaRestoreCooldown = GetStatAdjustment(creatureId, StatType.DeflectionStaminaRestoreCooldownSeconds);
             var evasionBoost = GetStatAdjustment(creatureId, StatType.DeflectionEvasionPercentAdjustment);
             var evasionEnmityBoost = GetStatAdjustment(creatureId, StatType.DeflectionEvasionEnmityPercentAdjustment);
             var enmityBoost = GetStatAdjustment(creatureId, StatType.DeflectionEnmityPercentAdjustment);
@@ -1470,7 +1471,8 @@ namespace SWLOR.Game.Server.Service
             var nextSkillAbilityCriticalWindow = GetStatAdjustment(creatureId, StatType.DeflectionNextSkillAbilityCriticalRateWindowSeconds);
             var nextSkillAbilityNoDelayWindow = GetStatAdjustment(creatureId, StatType.DeflectionNextSkillAbilityNoDelayWindowSeconds);
 
-            if (staminaRestore > 0)
+            if (staminaRestore > 0 &&
+                Combat.TryUseStatTrigger(creatureId, StatType.DeflectionStaminaRestore, staminaRestoreCooldown))
             {
                 RestoreStamina(creatureId, staminaRestore);
             }

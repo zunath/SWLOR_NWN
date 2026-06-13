@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public override string Name => "Guarded Channel";
         public override EffectIconType Icon => EffectIconType.GuardedChannelStatusEffect;
         public GuardedChannelStatusEffect()
-            : this(20, 20)
+            : this(12, 20)
         {
         }
 

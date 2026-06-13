@@ -37,6 +37,17 @@ public class LightsaberDefenseTests
     }
 
     [Test]
+    public void LightsaberDefenseTraitStatValues_MatchCombatBible()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "PerkDefinition" / "LightsaberPerkDefinition.cs").FullName);
+
+        source.Should().Contain("StatType.AttackDeflection, creature => EquipmentPredicates.HasMainHandLightsaber(creature) ? 8 : 0");
+        source.Should().Contain("StatType.AttackDeflection, creature => EquipmentPredicates.HasMainHandLightsaber(creature) ? 14 : 0");
+        source.Should().Contain("StatType.AttackDeflection, creature => EquipmentPredicates.HasMainHandLightsaber(creature) ? 20 : 0");
+    }
+
+    [Test]
     public void LightsaberDefenseFeatAndAbilityIcons_AreUniqueAndPresent()
     {
         var root = FindRepositoryRoot();

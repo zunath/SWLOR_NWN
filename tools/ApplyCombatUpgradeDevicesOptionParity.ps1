@@ -515,7 +515,7 @@ $deviceRows = @(
     @{ Row = 24; PerkName = "Frag Grenade I"; Style = "Grenadier" }
     @{ Row = 25; PerkName = "Blast Radius I"; Style = "Grenadier" }
     @{ Row = 26; PerkName = "Concussion Grenade I"; Style = "Grenadier" }
-    @{ Row = 27; PerkName = "Flash Grenade I"; Style = "Grenadier"; Description = "Attempts to inflict Flash, reducing physical and Force ability Accuracy by 8% for 20 seconds in a 4m blast. Consumes explosives." }
+    @{ Row = 27; PerkName = "Flash Grenade"; Style = "Grenadier"; Description = "Attempts to inflict Flash, reducing physical and Force ability Accuracy by 8% for 20 seconds in a 4m blast. Consumes explosives." }
     @{ Row = 28; PerkName = "Frag Grenade II"; Style = "Grenadier" }
     @{ Row = 29; PerkName = "Ion Grenade I"; Style = "Grenadier" }
     @{ Row = 30; PerkName = "Blast Radius II"; Style = "Grenadier" }
@@ -550,7 +550,7 @@ $deviceRows = @(
 
     @{ Row = 64; PerkName = "Deflector Shield I"; Style = "Field Support" }
     @{ Row = 65; PerkName = "Capacitor Rig I"; Style = "Field Support"; Description = "After you use two Field Support combat abilities within 20 seconds, restore 5% maximum STM to yourself and one ally within 10m. This can trigger once every 20 seconds."; Notes = "Replaces direct shielding-perk amplification with a self-contained Field Support resource-flow line." }
-    @{ Row = 66; PerkName = "Weapon Jam I"; Style = "Field Support" }
+    @{ Row = 66; PerkName = "Weapon Jam"; Style = "Field Support" }
     @{ Row = 67; PerkName = "Power Cell I"; Style = "Field Support" }
     @{ Row = 68; PerkName = "Deflector Shield II"; Style = "Field Support" }
     @{ Row = 69; PerkName = "Rayshield Screen I"; Style = "Field Support" }
@@ -569,13 +569,13 @@ $deviceRows = @(
     @{ Row = 84; PerkName = "Flamethrower I"; Style = "Assault Gadgets" }
     @{ Row = 85; PerkName = "Wrist Rocket I"; Style = "Assault Gadgets" }
     @{ Row = 86; PerkName = "Sonic Burst I"; Style = "Assault Gadgets" }
-    @{ Row = 87; PerkName = "Gadget Harness I"; Style = "Assault Gadgets" }
+    @{ Row = 87; PerkName = "Gadget Harness"; Style = "Assault Gadgets" }
     @{ Row = 88; PerkName = "Flamethrower II"; Style = "Assault Gadgets" }
     @{ Row = 89; PerkName = "Rail Dart I"; Style = "Assault Gadgets" }
     @{ Row = 90; PerkName = "Gadget Harness II"; Style = "Assault Gadgets" }
     @{ Row = 91; PerkName = "Wrist Rocket II"; Style = "Assault Gadgets" }
     @{ Row = 92; PerkName = "Sonic Burst II"; Style = "Assault Gadgets" }
-    @{ Row = 93; PerkName = "Cryo Sprayer I"; Style = "Assault Gadgets" }
+    @{ Row = 93; PerkName = "Cryo Sprayer"; Style = "Assault Gadgets" }
     @{ Row = 94; PerkName = "Flamethrower III"; Style = "Assault Gadgets" }
     @{ Row = 95; PerkName = "Rail Dart II"; Style = "Assault Gadgets" }
     @{ Row = 96; PerkName = "Wrist Rocket III"; Style = "Assault Gadgets"; Price = "4" }

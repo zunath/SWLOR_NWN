@@ -4,7 +4,7 @@ param(
     [string]$IconManifestPath = "SWLOR.Game.Server\Readmes\GameplayIconManifest.csv",
     [int]$IconSize = 32,
     [int]$GeneratedFeatStart = 2000,
-    [int]$GeneratedFeatEnd = 2558,
+    [int]$GeneratedFeatEnd = 2578,
     [string]$SampleOutputPath = "",
     [string[]]$SampleIconResRefs = @(),
     [switch]$AllowPlaceholderArtwork
@@ -127,7 +127,7 @@ function Get-SemanticColor([string]$category) {
 
 function Get-IconKind([string]$label) {
     if ($label -match "Stance$") { return "stance" }
-    if ($label -match "ForceSpark|ForceBody|ForceLightning|ForceDrain|ForceGrip|ForceChoke|ForceMaelstrom|MindShroud|Nightmare|Dominate|Collapse|Eclipse|Creeping|WeakenResolve|FractureFocus|SaberRend|ForceRage|DevouringStrike|HungerOfTheDark") { return "darkforce" }
+    if ($label -match "ForceSpark|ForceBody|ForceLightning|ForceDrain|ForceGrip|ForceChoke|ForceMaelstrom|MindShroud|Nightmare|Dominate|Collapse|Eclipse|Creeping|WeakenResolve|FractureFocus|SaberRend|FuryStance|DevouringStrike|HungerOfTheDark") { return "darkforce" }
     if ($label -match "Benevolence|Renewal|Clarity|Pacify|MindTrick|ComprehendSpeech|ForcePush|ForceLeap|ForceTouch|ForceMend|ForceSanctuary|GuardianWard|BastionOfLight|LastStandOfTheLight|CircleOfHarmony|PurifyingWave|Innervate|Infusion") { return "lightforce" }
     if ($label -match "MedKit|TreatmentKit|Kolto|Resuscitation|EmergencyTriage|EmergencySealant|Coagulant|Antitoxin|PainSuppressant|AdrenalStim|FocusStim|PulseRelay|EmergencyCocktail") { return "medical" }
     if ($label -match "Grenade|Beacon|RemoteCharge|Flamethrower|WristRocket|RailDart|CryoSprayer|SonicBurst|PowerCell|Shielding|Deflector|Rayshield|Dampening|OverloadBarrage|WeaponJam") { return "tech" }
@@ -853,7 +853,7 @@ function Draw-NamedMotif($g, [string]$label, [System.Drawing.Color]$accent, [Sys
         "^ForceDrain$" { Draw-DrainGlyph $g $accent $hot; return $true }
         "^ForceMaelstrom$" { Draw-VortexGlyph $g $accent $hot; return $true }
         "^SaberRend$" { Draw-SaberRendGlyph $g $accent $hot; return $true }
-        "^ForceRage$" { Draw-RageGlyph $g $accent $hot; return $true }
+        "^FuryStance$" { Draw-RageGlyph $g $accent $hot; return $true }
         "^DevouringStrike$|^HungerOfTheDark$" { Draw-MawGlyph $g $accent $hot; return $true }
         "^CreepingTerror$" { Draw-TendrilsGlyph $g $accent $hot; return $true }
         "^ForceGrip$" { Draw-GripGlyph $g $accent $hot; return $true }

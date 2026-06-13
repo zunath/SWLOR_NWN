@@ -7,7 +7,7 @@ param(
     [string]$StatusEffectPath = "SWLOR.Game.Server\Feature\StatusEffectDefinition",
     [string]$TlkJsonPath = "SWLOR_Haks\swlor2_tlk\swlor2_tlk.tlk.json",
     [int]$GeneratedFeatStart = 2000,
-    [int]$GeneratedFeatEnd = 2558,
+    [int]$GeneratedFeatEnd = 2578,
     [int]$StatusEffectIconStart = 141,
     [int]$IconSize = 32,
     [switch]$RefreshManifest,

@@ -245,7 +245,7 @@ $rowUpdatesByName = @{
         Description = "Deals 36 force DMG plus WIL scaling to one target and heals you for 40% of damage dealt. If the target is below 50% HP, healing increases to 50%."
         Notes = "Replacement tier: top life siphon rank remains single-target so it does not overlap with Force Lightning's chain role."
     }
-    "Force Rage I" = @{
+    "Fury Stance I" = @{
         PerkName = "Ravager Stance I"
         Type = "Stance"
         Description = "While active, gain +8% weapon and force damage and +10% critical damage, but take 5% more damage and suffer -5% Defense and Force Defense. Only one stance may be active."
@@ -257,7 +257,7 @@ $rowUpdatesByName = @{
         Description = "Damaging Dark Ravager powers mark affected enemies with unstable pressure for 12 seconds, reducing Evasion by 5%. Enemies below 35% HP also suffer +5% force damage taken while marked."
         Notes = "Replaces a Force Lightning/Hunger-specific booster with a broader Dark Ravager pressure trait."
     }
-    "Force Rage II" = @{
+    "Fury Stance II" = @{
         PerkName = "Ravager Stance II"
         Type = "Stance"
         Description = "While active, gain +12% weapon and force damage and +15% critical damage, but take 5% more damage and suffer -5% Defense and Force Defense. Only one stance may be active."

@@ -397,12 +397,12 @@ $descriptionOverrides = @{
     "Wrist Rocket III" = "Deals 48 fire DMG plus PER scaling to one target and knock down for 3 seconds."
     "Rail Dart I" = "Fires a dart that deals 18 physical DMG plus PER scaling and attempts to inflict Bleed."
     "Rail Dart II" = "Fires a dart that deals 34 physical DMG plus PER scaling and attempts to inflict Bleed."
-    "Cryo Sprayer I" = "Deals 22 ice DMG plus PER scaling to hostile targets in a cone and slows movement for 5 seconds."
+    "Cryo Sprayer" = "Deals 22 ice DMG plus PER scaling to hostile targets in a cone and slows movement for 5 seconds."
     "Overload Barrage" = "Unleashes three attacks at your primary target's location: a 42 fire DMG burst plus Burning for 45 seconds, a 48 fire DMG single-target hit plus brief Knockdown, and a 24 sonic DMG burst that interrupts activation and reduces Accuracy by 10% for 45 seconds."
 }
 
 $notesOverrides = @{
-    "Gadget Harness I" = "Consolidates the old multi-rank harness into one early assault trait."
+    "Gadget Harness" = "Consolidates the old multi-rank harness into one early assault trait."
 }
 
 $removedPerks = @(
@@ -431,7 +431,7 @@ $layouts = @(
             @{ Source = "Frag Grenade I"; Price = "2"; SkillRequirements = "-" },
             @{ Source = "Blast Radius I"; Price = "2"; SkillRequirements = "Devices 5" },
             @{ Source = "Concussion Grenade I"; Price = "3"; SkillRequirements = "Devices 8" },
-            @{ Source = "Flash Grenade I"; Price = "3"; SkillRequirements = "Devices 12" },
+            @{ Source = "Flash Grenade"; Price = "3"; SkillRequirements = "Devices 12" },
             @{ Source = "Frag Grenade II"; Price = "3"; SkillRequirements = "Devices 15" },
             @{ Source = "Ion Grenade I"; Price = "3"; SkillRequirements = "Devices 18" },
             @{ Source = "Blast Radius II"; Price = "3"; SkillRequirements = "Devices 22" },
@@ -485,7 +485,7 @@ $layouts = @(
             @{
                 Row = New-DeviceTrait -Style "Field Support" -Price "3" -PerkName "Power Surge" -SkillRequirements "Devices 5" -Description "Power Cell's initial target also gains Power Surge for 12 seconds: +6% physical and Force ability Accuracy, +6% critical chance, and 1 STM every 4 seconds." -Notes "Carries Power Surge into Field Support as a Power Cell payoff instead of another active button."
             },
-            @{ Source = "Weapon Jam I"; Price = "3"; SkillRequirements = "Devices 8" },
+            @{ Source = "Weapon Jam"; Price = "3"; SkillRequirements = "Devices 8" },
             @{ Source = "Power Cell I"; Price = "3"; SkillRequirements = "Devices 12" },
             @{ Source = "Deflector Shield II"; Price = "3"; SkillRequirements = "Devices 15" },
             @{ Source = "Rayshield Screen I"; Price = "3"; SkillRequirements = "Devices 18" },
@@ -511,7 +511,7 @@ $layouts = @(
             @{ Source = "Flamethrower I"; Price = "2"; SkillRequirements = "-" },
             @{ Source = "Wrist Rocket I"; Price = "2"; SkillRequirements = "Devices 5" },
             @{ Source = "Sonic Burst I"; Price = "3"; SkillRequirements = "Devices 8" },
-            @{ Source = "Gadget Harness I"; Price = "4"; SkillRequirements = "Devices 12"; Description = "Assault Gadget abilities gain +8% Accuracy and +8% critical chance." },
+            @{ Source = "Gadget Harness"; Price = "4"; SkillRequirements = "Devices 12"; Description = "Assault Gadget abilities gain +8% Accuracy and +8% critical chance." },
             @{ Source = "Flamethrower II"; Price = "3"; SkillRequirements = "Devices 15" },
             @{ Source = "Rail Dart I"; Price = "3"; SkillRequirements = "Devices 18" },
             @{
@@ -519,7 +519,7 @@ $layouts = @(
             },
             @{ Source = "Wrist Rocket II"; Price = "4"; SkillRequirements = "Devices 25" },
             @{ Source = "Sonic Burst II"; Price = "3"; SkillRequirements = "Devices 28" },
-            @{ Source = "Cryo Sprayer I"; Price = "4"; SkillRequirements = "Devices 30" },
+            @{ Source = "Cryo Sprayer"; Price = "4"; SkillRequirements = "Devices 30" },
             @{ Source = "Flamethrower III"; Price = "4"; SkillRequirements = "Devices 35" },
             @{ Source = "Rail Dart II"; Price = "4"; SkillRequirements = "Devices 38" },
             @{ Source = "Wrist Rocket III"; Price = "5"; SkillRequirements = "Devices 40" },

@@ -10,7 +10,7 @@ param(
     [string]$TlkPath = "SWLOR_Haks\swlor2_tlk\swlor2_tlk.tlk",
     [string]$TlkToolPath = "SWLOR_Haks\nwn_tlk.exe",
     [int]$GeneratedFeatStart = 2000,
-    [int]$GeneratedFeatEnd = 2558,
+    [int]$GeneratedFeatEnd = 2578,
     [int]$StatusEffectIconStart = 141,
     [int[]]$ExcludedGeneratedFeatIds = @()
 )

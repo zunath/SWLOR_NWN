@@ -3,7 +3,7 @@ param(
     [string]$Feat2daPath = "SWLOR_Haks\swlor2_2da\feat.2da",
     [string]$Spells2daPath = "SWLOR_Haks\swlor2_2da\spells.2da",
     [int]$GeneratedFeatStart = 2000,
-    [int]$GeneratedFeatEnd = 2558
+    [int]$GeneratedFeatEnd = 2578
 )
 
 Set-StrictMode -Version Latest
@@ -426,6 +426,8 @@ $rulesByLabel["TwinIntercept1"] = $friendlyCreatureRule
 $rulesByLabel["DeadManSHand1"] = New-TargetSphereRule
 $rulesByLabel["RicochetToss1"] = New-TargetSphereRule -Radius "5"
 $rulesByLabel["RicochetToss2"] = New-TargetSphereRule -Radius "5"
+$rulesByLabel["RicochetShot1"] = $hostileCreatureRule
+$rulesByLabel["DuelistSChallenge1"] = $hostileCreatureRule
 
 foreach ($label in @(
     "Backstab1",
@@ -542,6 +544,8 @@ $rulesByLabel["GuardianSInfluence1"] = New-FriendlySelfSphereRule -Radius "5"
 $rulesByLabel["SaberStorm1"] = New-SelfSphereRule -Radius "5"
 $rulesByLabel["SoulStorm1"] = New-FriendlySelfSphereRule -Radius "5"
 $rulesByLabel["Rampart1"] = New-FriendlySelfSphereRule -Radius "5"
+$rulesByLabel["CourageousResolve1"] = New-FriendlySelfSphereRule -Radius "5"
+$rulesByLabel["ForceLens1"] = New-FriendlySelfSphereRule -Radius "5"
 
 foreach ($label in @(
     "ChargeOrder1",
@@ -579,10 +583,40 @@ $rulesByLabel["ShockBeacon2"] = New-GroundSphereRule -Radius "12"
 $rulesByLabel["IncendiaryField1"] = New-GroundSphereRule -Radius "5"
 $rulesByLabel["IncendiaryField2"] = New-GroundSphereRule -Radius "5"
 $rulesByLabel["IncendiaryField3"] = New-GroundSphereRule -Radius "5"
+$rulesByLabel["PulseRelay1"] = New-Rule -Range "P" -TargetType "0x01" -HostileSetting "****" -TargetSelf "1" -TargetShape "sphere" -TargetSizeX "10" -TargetFlags "17"
+$rulesByLabel["PulseRelay2"] = New-Rule -Range "P" -TargetType "0x01" -HostileSetting "****" -TargetSelf "1" -TargetShape "sphere" -TargetSizeX "10" -TargetFlags "17"
+$rulesByLabel["DisruptionPulse1"] = New-GroundSphereRule -Radius "5"
+$rulesByLabel["SignalJammer1"] = New-GroundSphereRule -Radius "5"
 $rulesByLabel["RemoteCharge1"] = New-GroundSphereRule -Radius "5"
 $rulesByLabel["RemoteCharge2"] = New-GroundSphereRule -Radius "5"
 $rulesByLabel["RemoteCharge3"] = New-GroundSphereRule -Radius "5"
 $rulesByLabel["KillzoneBeacon1"] = New-GroundSphereRule -Radius "12"
+$rulesByLabel["FragGrenade1"] = New-GroundSphereRule -Radius "3"
+$rulesByLabel["FragGrenade2"] = New-GroundSphereRule -Radius "3"
+$rulesByLabel["FragGrenade3"] = New-GroundSphereRule -Radius "3"
+$rulesByLabel["ConcussionGrenade1"] = New-GroundSphereRule -Radius "3"
+$rulesByLabel["ConcussionGrenade2"] = New-GroundSphereRule -Radius "3"
+$rulesByLabel["ConcussionGrenade3"] = New-GroundSphereRule -Radius "3"
+$rulesByLabel["IonGrenade1"] = New-GroundSphereRule -Radius "3"
+$rulesByLabel["IonGrenade2"] = New-GroundSphereRule -Radius "3"
+$rulesByLabel["FlashGrenade1"] = New-GroundSphereRule -Radius "4"
+$rulesByLabel["FlashGrenade2"] = New-GroundSphereRule -Radius "4"
+$rulesByLabel["AdhesiveGrenade1"] = New-GroundSphereRule -Radius "4"
+$rulesByLabel["AdhesiveGrenade2"] = New-GroundSphereRule -Radius "4"
+$rulesByLabel["ClusterGrenade1"] = New-GroundSphereRule -Radius "2"
+$rulesByLabel["ThermalDetonator1"] = New-GroundSphereRule -Radius "5"
+$rulesByLabel["RainOfSteel1"] = New-GroundSphereRule -Radius "8"
+$rulesByLabel["IonLance1"] = New-OriginLineRule -Length "8" -Width "2.5"
+$rulesByLabel["IonLance2"] = New-OriginLineRule -Length "8" -Width "2.5"
+$rulesByLabel["IonLance3"] = New-OriginLineRule -Length "8" -Width "2.5"
+$rulesByLabel["ThrowLightsaber1"] = New-OriginLineRule -Length "15" -Width "2.5"
+$rulesByLabel["ThrowLightsaber2"] = New-OriginLineRule -Length "15" -Width "2.5"
+$rulesByLabel["ThrowLightsaber3"] = New-OriginLineRule -Length "15" -Width "2.5"
+$rulesByLabel["RadiantLance1"] = New-OriginLineRule -Length "8" -Width "2.5"
+$rulesByLabel["RadiantLance2"] = New-OriginLineRule -Length "8" -Width "2.5"
+$rulesByLabel["RadiantLance3"] = New-OriginLineRule -Length "8" -Width "2.5"
+$rulesByLabel["ForceJudgment2"] = New-TargetSphereRule -Radius "5"
+$rulesByLabel["ForceJudgment3"] = New-TargetSphereRule -Radius "5"
 
 $abilityTargetingByLabel = Get-AbilityTargetingByLabel (Resolve-RepoPath "SWLOR.Game.Server\Feature\AbilityDefinition")
 

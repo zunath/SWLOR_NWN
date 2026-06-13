@@ -2,7 +2,7 @@ param(
     [string]$Feat2daPath = "SWLOR_Haks\swlor2_2da\feat.2da",
     [string]$IconPath = "SWLOR_Haks\swlor2_tga",
     [int]$GeneratedFeatStart = 2000,
-    [int]$GeneratedFeatEnd = 2558
+    [int]$GeneratedFeatEnd = 2578
 )
 
 Set-StrictMode -Version Latest

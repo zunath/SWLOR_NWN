@@ -3,7 +3,7 @@ param(
     [string]$IconPath = "SWLOR_Haks\swlor2_tga",
     [string]$MagickPath = "magick",
     [int]$GeneratedFeatStart = 2000,
-    [int]$GeneratedFeatEnd = 2558,
+    [int]$GeneratedFeatEnd = 2578,
     [int]$IconSize = 32,
     [switch]$Force
 )

@@ -11,7 +11,7 @@ param(
 # Diagnostic Sweep) were inflated to absorb the difference.
 # This pass reprices every outlier to its requirement band and keeps the
 # Force/Devices twin lines at identical prices:
-#   Throw Rock (Force 12/30/45) 2/3/4  <-> Arc Projector (Devices 12/30/45) 2/3/4
+#   Throw Rock (Force 0/18/40) 2/3/4  <-> Arc Projector (Devices 12/30/45) 2/3/4
 #   Radiant Lance (Force 15/32/48) 3/4/4 <-> Ion Lance (Devices 15/32/48) 3/4/4
 # Result: Force and Devices remain equal, both moving from 237 SP to 240 SP.
 

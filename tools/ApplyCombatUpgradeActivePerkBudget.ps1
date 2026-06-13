@@ -492,7 +492,7 @@ $budgetDescriptionByRow = @{
     "Devices|18|Cluster Grenade" = "Grenadier explosive abilities split into secondary fragments, dealing 30% of the original damage to up to two nearby enemies. Consumes no extra explosives."
     "Devices|52|Rayshield Screen I" = "Field Support shielding abilities also reduce ranged physical damage taken by affected allies by 10% while their temporary HP remains."
     "Devices|58|Rayshield Screen II" = "Field Support shielding abilities also reduce ranged physical damage taken by affected allies by 15% while their temporary HP remains."
-    "First Aid|11|Emergency Sealant I" = "Trauma Medic healing and treatment abilities also stop one Bleed or Burn effect and restore HP equal to 2% of maximum HP plus WIL scaling every 3 seconds for 12 seconds."
+    "First Aid|11|Emergency Sealant" = "Trauma Medic healing and treatment abilities also stop one Bleed or Burn effect and restore HP equal to 2% of maximum HP plus WIL scaling every 3 seconds for 12 seconds."
     "First Aid|29|Coagulant I" = "Combat Pharmacology stim effects also grant 50% Bleed Resistance and 10% resistance to incoming physical damage over time effects for 2 minutes."
     "First Aid|39|Coagulant II" = "Combat Pharmacology stim effects also grant Bleed immunity and 20% resistance to incoming physical damage over time effects for 2 minutes."
     "Force|12|Saber Rend I" = "After using a damaging Force power, your next melee attack within 8 seconds deals +12 force DMG plus WIL scaling."
@@ -666,7 +666,7 @@ $descriptionRewriteByRow = @{
     "Devices|70|Flamethrower II" = "Deals 14 fire DMG plus PER scaling to hostile targets in a cone and inflicts Burning for 12 seconds."
     "Devices|71|Rail Dart I" = "Fires a dart that deals 12 physical DMG plus PER scaling and inflicts Bleed for 12 seconds."
     "Devices|73|Wrist Rocket II" = "Deals 16 fire DMG plus PER scaling to one target and Knockdown for 2 seconds."
-    "Devices|75|Cryo Sprayer I" = "Deals 10 ice DMG plus PER scaling to hostile targets in a cone and inflicts Hobble for 5 seconds."
+    "Devices|75|Cryo Sprayer" = "Deals 10 ice DMG plus PER scaling to hostile targets in a cone and inflicts Hobble for 5 seconds."
     "Devices|76|Flamethrower III" = "Deals 18 fire DMG plus PER scaling to hostile targets in a cone and inflicts Burning for 12 seconds."
     "Devices|77|Rail Dart II" = "Fires a dart that deals 16 physical DMG plus PER scaling and inflicts Bleed for 12 seconds."
     "Devices|78|Wrist Rocket III" = "Deals 20 fire DMG plus PER scaling to one target and Knockdown for 3 seconds."
@@ -681,7 +681,7 @@ $descriptionRewriteByRow = @{
     "Leadership|51|Steady Formation II" = "Nearby party members gain +5% evasion chance, +50 Mind Resistance, and +50 Mobility Resistance. SOC scaling can raise these to +6% evasion chance, +65 Mind Resistance, and +65 Mobility Resistance."
     "Lightsaber|33|Focused Stance" = "While active, against Sundered targets, Lightsaber Offense attacks have +10% Accuracy and +8% critical hit chance. Versatile Strike lengthens an existing Sunder duration by 6 seconds, up to 45 seconds. Area Lightsaber Offense damage is reduced by 15%."
     "First Aid|21|Treatment Kit III" = "Removes Bleed, Poison, Toxin, Burn, Shock, and Disease from a single target and grants 50% Fire Resistance, 50% Poison Resistance, 50% Electrical Resistance, 50% Ice Resistance, and 50% Trauma Resistance for 8 seconds."
-    "First Aid|32|Antitoxin I" = "Grants 50% Poison Resistance and 50% Disease Resistance for 2 minutes and removes one Poison or Toxin effect. Consumes a stim pack."
+    "First Aid|32|Antitoxin" = "Grants 50% Poison Resistance and 50% Disease Resistance for 2 minutes and removes one Poison or Toxin effect. Consumes a stim pack."
     "First Aid|43|Emergency Cocktail" = "Restores 25% of maximum STM, removes one Poison or Toxin effect, then for 45 seconds restores 1 STM every 3 seconds, grants temporary HP equal to 12% of maximum HP plus WIL scaling, reduces damage taken by 12%, and grants 50% Poison Resistance and 50% Disease Resistance."
 }
 

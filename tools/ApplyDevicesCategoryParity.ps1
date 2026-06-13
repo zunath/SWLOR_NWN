@@ -375,7 +375,7 @@ $devicePrices = @{
     "Sonic Burst I" = 2
     "Sonic Burst II" = 3
     "Sonic Burst III" = 3
-    "Gadget Harness I" = 2
+    "Gadget Harness" = 2
     "Tactical Uplink" = 2
     "Flamethrower II" = 2
     "Flamethrower III" = 3
@@ -383,7 +383,7 @@ $devicePrices = @{
     "Rail Dart II" = 3
     "Wrist Rocket II" = 3
     "Wrist Rocket III" = 3
-    "Cryo Sprayer I" = 3
+    "Cryo Sprayer" = 3
 }
 
 $workbookPath = Resolve-RepoPath $BibleWorkbookPath

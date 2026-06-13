@@ -128,6 +128,34 @@ namespace SWLOR.Game.Server.Service.NPCService
         Korriban_AlchemizedFrog = 59,
         [NPCGroup("Dantari Shaman")]
         Dantooine_DantariShaman = 60,
+        [NPCGroup("Dantooine Kinrath")]
+        Dantooine_Kinrath = 61,
+        [NPCGroup("Dantari Hunter")]
+        Dantooine_DantariHunter = 62,
+        [NPCGroup("Tusken Elite")]
+        Tatooine_TuskenElite = 63,
+        [NPCGroup("Sand Worm")]
+        Tatooine_SandWorm = 64,
+        [NPCGroup("Ancient Sand Worm")]
+        Tatooine_AncientSandWorm = 65,
+        [NPCGroup("Tatooine Rancor")]
+        Tatooine_Rancor = 66,
+        [NPCGroup("Dark Adept")]
+        Dathomir_DarkAdept = 67,
+        [NPCGroup("Dathomir Rancor")]
+        Dathomir_Rancor = 68,
+        [NPCGroup("Gaping Spider")]
+        Dathomir_GapingSpider = 69,
+        [NPCGroup("Byysk Shaman")]
+        Hutlar_ByyskShaman = 70,
+        [NPCGroup("Byysk Chieftain")]
+        Hutlar_ByyskChieftain = 71,
+        [NPCGroup("Byysk Champion")]
+        Hutlar_ByyskChampion = 72,
+        [NPCGroup("Qion Hive Tunneler")]
+        Hutlar_QionHiveTunneler = 73,
+        [NPCGroup("Qion Broodmother")]
+        Hutlar_QionBroodmother = 74,
 
     }
 

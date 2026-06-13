@@ -20,6 +20,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
             // Actions
             ActionAcceptQuest();
             ActionAdvanceQuest();
+            ActionGiveQuestItem();
             ActionRequestItemsFromPlayer();
 
             return _builder.Build();
@@ -182,6 +183,68 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                     var questId = args[0];
                     Quest.RequestItemsFromPlayer(player, questId);
                 });
+        }
+
+        private void ActionGiveQuestItem()
+        {
+            _builder.Create("action-give-quest-item")
+                .Description("Gives a player a quest item from an objective placeable.")
+                .ActionsTakenAction((player, args) =>
+                {
+                    if (!GetIsPC(player) || GetIsDM(player)) return;
+
+                    if (args.Length < 3)
+                    {
+                        const string Error = "'action-give-quest-item' requires questId, itemResref, and quantity arguments.";
+                        SendMessageToPC(player, Error);
+                        Log.Write(LogGroup.Error, Error);
+                        return;
+                    }
+
+                    var questId = args[0];
+                    var itemResref = args[1];
+                    if (!int.TryParse(args[2], out var quantity) || quantity <= 0)
+                    {
+                        var error = $"Invalid quantity '{args[2]}' in the 'action-give-quest-item' snippet.";
+                        SendMessageToPC(player, error);
+                        Log.Write(LogGroup.Error, error);
+                        return;
+                    }
+
+                    var playerId = GetObjectUUID(player);
+                    var dbPlayer = DB.Get<Player>(playerId);
+                    if (!dbPlayer.Quests.TryGetValue(questId, out var playerQuest) ||
+                        playerQuest.DateLastCompleted != null)
+                    {
+                        SendMessageToPC(player, "You have no need for this right now.");
+                        return;
+                    }
+
+                    var currentQuantity = CountPlayerItemsByResref(player, itemResref);
+                    if (currentQuantity >= quantity)
+                    {
+                        SendMessageToPC(player, "You already recovered what you need here.");
+                        return;
+                    }
+
+                    var itemName = Cache.GetItemNameByResref(itemResref);
+                    CreateItemOnObject(itemResref, player, quantity - currentQuantity);
+                    SendMessageToPC(player, $"You recover {itemName}.");
+                });
+        }
+
+        private static int CountPlayerItemsByResref(uint player, string itemResref)
+        {
+            var count = 0;
+            for (var item = GetFirstItemInInventory(player); GetIsObjectValid(item); item = GetNextItemInInventory(player))
+            {
+                if (GetResRef(item) == itemResref)
+                {
+                    count += GetItemStackSize(item);
+                }
+            }
+
+            return count;
         }
 
     }

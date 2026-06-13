@@ -2467,11 +2467,7 @@ namespace SWLOR.Game.Server.Service
             ApplyAbilityUsedMasterAbilityHitChance(activator);
             ApplyForceFPCostActivatedEffects(activator, ability);
 
-            var skillType = summary.SkillType != SkillType.Invalid
-                ? summary.SkillType
-                : ability.IsHostileAbility
-                    ? GetAbilitySkillType(activator, ability)
-                    : SkillType.Invalid;
+            var skillType = ResolveActivatedAbilitySkillType(activator, ability, summary);
             var isSingleTargetAbility = summary.IsSingleTargetAbility ||
                 summary.SkillType == SkillType.Invalid &&
                 ability.IsHostileAbility &&
@@ -2482,6 +2478,16 @@ namespace SWLOR.Game.Server.Service
             ApplyAbilityActivatedRiders(activator, target, ability, skillType);
 
             TrackCombatAbilityUse(activator, ability);
+        }
+
+        private static SkillType ResolveActivatedAbilitySkillType(
+            uint activator,
+            AbilityDetail ability,
+            AbilityImpactSummary summary)
+        {
+            return summary.SkillType != SkillType.Invalid
+                ? summary.SkillType
+                : GetAbilitySkillType(activator, ability);
         }
 
         private static void ApplyAbilityActivatedRiders(

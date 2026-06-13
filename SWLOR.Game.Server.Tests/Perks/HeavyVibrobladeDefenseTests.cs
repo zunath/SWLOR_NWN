@@ -3,6 +3,7 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade;
 using SWLOR.Game.Server.Feature.PerkDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
@@ -85,6 +86,14 @@ public class HeavyVibrobladeDefenseTests
         AssertAbilityPerk(new FlashAbilityDefinition().BuildAbilities()[FeatType.Flash1], PerkType.Flash);
         AssertAbilityPerk(new EarthshatterAbilityDefinition().BuildAbilities()[FeatType.Earthshatter1], PerkType.Earthshatter);
         AssertAbilityPerk(new SacrificialBladeAbilityDefinition().BuildAbilities()[FeatType.SacrificialBlade1], PerkType.SacrificialBlade);
+    }
+
+    [Test]
+    public void NonHostileDefenseAbilities_ResolveActivatedSkillForGuardianResolve()
+    {
+        AssertActivatedSkill(new BastionStanceAbilityDefinition().BuildAbilities()[FeatType.BastionStance1], SkillType.HeavyVibroblade);
+        AssertActivatedSkill(new RampartAbilityDefinition().BuildAbilities()[FeatType.Rampart1], SkillType.HeavyVibroblade);
+        AssertActivatedSkill(new AbsoluteDefenseAbilityDefinition().BuildAbilities()[FeatType.AbsoluteDefense1], SkillType.HeavyVibroblade);
     }
 
     [Test]
@@ -172,6 +181,19 @@ public class HeavyVibrobladeDefenseTests
         PerkType perkType)
     {
         ability.EffectiveLevelPerkType.Should().Be(perkType);
+    }
+
+    private static void AssertActivatedSkill(
+        AbilityDetail ability,
+        SkillType skillType)
+    {
+        var method = typeof(Combat).GetMethod(
+            "ResolveActivatedAbilitySkillType",
+            System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic);
+        method.Should().NotBeNull();
+
+        var resolved = (SkillType)method!.Invoke(null, new object[] { 0u, ability, new AbilityImpactSummary() })!;
+        resolved.Should().Be(skillType);
     }
 
     private static void AssertAbility(

@@ -48,6 +48,46 @@ public class HeavyVibrobladeDefenseTests
     }
 
     [Test]
+    public void GuardiansResolve_IsCrossSkillAndUsesStatSelectors()
+    {
+        var perks = BuildHeavyVibrobladeDefensePerksWithout2daLookup();
+        var guardiansResolve = perks[PerkType.GuardiansResolve];
+        AssertPerkLevel(
+            guardiansResolve,
+            "Guardian's Resolve",
+            1,
+            4,
+            28,
+            null,
+            "When a Heavy Vibroblade Defense ability grants you Physical Defense or reduces incoming damage, you also gain a damage absorption shield equal to 12% of maximum HP for 12 seconds. You heal for 15% of damage absorbed. This can trigger once every 30 seconds.",
+            StatType.HeavyVibrobladeDefenseGuardiansResolveTriggerPrimaryPerkType,
+            StatType.HeavyVibrobladeDefenseGuardiansResolveTriggerSecondaryPerkType,
+            StatType.HeavyVibrobladeDefenseGuardiansResolveTriggerTertiaryPerkType,
+            StatType.HeavyVibrobladeDefenseGuardiansResolveTriggerQuaternaryPerkType,
+            StatType.HeavyVibrobladeDefenseGuardiansResolveShieldPercent,
+            StatType.HeavyVibrobladeDefenseGuardiansResolveDurationSeconds,
+            StatType.HeavyVibrobladeDefenseGuardiansResolveCooldownSeconds);
+        AssertStatBonus(guardiansResolve.PerkLevels[1], StatType.HeavyVibrobladeDefenseGuardiansResolveTriggerPrimaryPerkType, (int)PerkType.FortressStrike);
+        AssertStatBonus(guardiansResolve.PerkLevels[1], StatType.HeavyVibrobladeDefenseGuardiansResolveTriggerSecondaryPerkType, (int)PerkType.BastionStance);
+        AssertStatBonus(guardiansResolve.PerkLevels[1], StatType.HeavyVibrobladeDefenseGuardiansResolveTriggerTertiaryPerkType, (int)PerkType.Rampart);
+        AssertStatBonus(guardiansResolve.PerkLevels[1], StatType.HeavyVibrobladeDefenseGuardiansResolveTriggerQuaternaryPerkType, (int)PerkType.AbsoluteDefense);
+        AssertStatBonus(guardiansResolve.PerkLevels[1], StatType.HeavyVibrobladeDefenseGuardiansResolveShieldPercent, 12);
+        AssertStatBonus(guardiansResolve.PerkLevels[1], StatType.HeavyVibrobladeDefenseGuardiansResolveDurationSeconds, 12);
+        AssertStatBonus(guardiansResolve.PerkLevels[1], StatType.HeavyVibrobladeDefenseGuardiansResolveCooldownSeconds, 30);
+
+        AssertStatBonus(perks[PerkType.AngerStrike].PerkLevels[1], StatType.HeavyVibrobladeDefenseAbilityNextAutoAttackDamageTriggerPerkCategory, (int)PerkCategoryType.HeavyVibrobladeDefense);
+        AssertStatBonus(perks[PerkType.CrushingBlow].PerkLevels[1], StatType.HeavyVibrobladeDefenseAbilityCrushingBlowTriggerPerkCategory, (int)PerkCategoryType.HeavyVibrobladeDefense);
+
+        AssertAbilityPerk(new FortressStrikeAbilityDefinition().BuildAbilities()[FeatType.FortressStrike1], PerkType.FortressStrike);
+        AssertAbilityPerk(new BastionStanceAbilityDefinition().BuildAbilities()[FeatType.BastionStance1], PerkType.BastionStance);
+        AssertAbilityPerk(new RampartAbilityDefinition().BuildAbilities()[FeatType.Rampart1], PerkType.Rampart);
+        AssertAbilityPerk(new AbsoluteDefenseAbilityDefinition().BuildAbilities()[FeatType.AbsoluteDefense1], PerkType.AbsoluteDefense);
+        AssertAbilityPerk(new FlashAbilityDefinition().BuildAbilities()[FeatType.Flash1], PerkType.Flash);
+        AssertAbilityPerk(new EarthshatterAbilityDefinition().BuildAbilities()[FeatType.Earthshatter1], PerkType.Earthshatter);
+        AssertAbilityPerk(new SacrificialBladeAbilityDefinition().BuildAbilities()[FeatType.SacrificialBlade1], PerkType.SacrificialBlade);
+    }
+
+    [Test]
     public void HeavyVibrobladeDefenseFeatAndAbilityIcons_AreUniqueAndPresent()
     {
         var root = FindRepositoryRoot();
@@ -114,6 +154,24 @@ public class HeavyVibrobladeDefenseTests
             perkLevel.StatBonuses.Select(x => x.Stat).Should().HaveCount(statTypes.Length).And.Contain(statTypes);
         else
             perkLevel.StatBonuses.Should().BeEmpty();
+    }
+
+    private static void AssertStatBonus(PerkLevel level, StatType statType, int value)
+    {
+        level.StatBonuses
+            .Should()
+            .ContainSingle(x => x.Stat == statType)
+            .Which
+            .Calculate(0)
+            .Should()
+            .Be(value);
+    }
+
+    private static void AssertAbilityPerk(
+        AbilityDetail ability,
+        PerkType perkType)
+    {
+        ability.EffectiveLevelPerkType.Should().Be(perkType);
     }
 
     private static void AssertAbility(

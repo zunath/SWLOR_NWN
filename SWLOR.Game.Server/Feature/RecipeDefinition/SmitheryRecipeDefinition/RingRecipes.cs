@@ -19,7 +19,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
             Tier4();
             Tier4A();
             Tier5();
-            Tier5A();
 
             return _builder.Build();
         }
@@ -595,38 +594,5 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ruby", 1);
         }
 
-        private void Tier5A()
-        {
-            // Citadel Ring
-            _builder.Create(RecipeType.CitadelRing, SkillType.Smithery)
-                .Category(RecipeCategoryType.Ring)
-                .Resref("sov_bul_ring")
-                .Level(46)
-                .Quantity(1)
-                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("ref_jasioclase", 1)
-                .Component("emerald", 1);
-
-            // Astral Ring
-            _builder.Create(RecipeType.AstralRing, SkillType.Smithery)
-                .Category(RecipeCategoryType.Ring)
-                .Resref("sov_chn_ring")
-                .Level(46)
-                .Quantity(1)
-                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("ref_jasioclase", 1)
-                .Component("emerald", 1);
-
-            // Paragon Ring
-            _builder.Create(RecipeType.ParagonRing, SkillType.Smithery)
-                .Category(RecipeCategoryType.Ring)
-                .Resref("sov_skm_ring")
-                .Level(46)
-                .Quantity(1)
-                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("ref_jasioclase", 1)
-                .Component("emerald", 1);
-        }
-
-    }
+}
 }

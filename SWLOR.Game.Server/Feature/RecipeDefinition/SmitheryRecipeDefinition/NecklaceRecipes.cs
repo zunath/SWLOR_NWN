@@ -19,7 +19,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
             Tier4();
             Tier4A();
             Tier5();
-            Tier5A();
 
             return _builder.Build();
         }
@@ -595,38 +594,5 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ruby", 1);
         }
 
-        private void Tier5A()
-        {
-            // Citadel Necklace
-            _builder.Create(RecipeType.CitadelNecklace, SkillType.Smithery)
-                .Category(RecipeCategoryType.Necklace)
-                .Resref("sov_bul_neck")
-                .Level(47)
-                .Quantity(1)
-                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("ref_jasioclase", 2)
-                .Component("emerald", 1);
-
-            // Astral Necklace
-            _builder.Create(RecipeType.AstralNecklace, SkillType.Smithery)
-                .Category(RecipeCategoryType.Necklace)
-                .Resref("sov_chn_neck")
-                .Level(47)
-                .Quantity(1)
-                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("ref_jasioclase", 2)
-                .Component("emerald", 1);
-
-            // Paragon Necklace
-            _builder.Create(RecipeType.ParagonNecklace, SkillType.Smithery)
-                .Category(RecipeCategoryType.Necklace)
-                .Resref("sov_skm_neck")
-                .Level(47)
-                .Quantity(1)
-                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("ref_jasioclase", 2)
-                .Component("emerald", 1);
-        }
-
-    }
+}
 }

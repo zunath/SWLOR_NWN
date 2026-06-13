@@ -126,7 +126,7 @@ function Get-SemanticColor([string]$category) {
 }
 
 function Get-IconKind([string]$label) {
-    if ($label -match "Stance$") { return "stance" }
+    if ($label -match "(Stance|Form)\d*$|BlazingSpikes") { return "stance" }
     if ($label -match "ForceSpark|ForceLightning|ForceDrain|ForceChoke|Nightmare|Collapse|Eclipse|Creeping|WeakenResolve|FuryStance|DevouringStrike|HungerOfTheDark") { return "darkforce" }
     if ($label -match "Benevolence|Renewal|MindTrick|ForcePush|ForceLeap|ForceTouch|ForceMend|ForceSanctuary|GuardianWard|LastStandOfTheLight|PurifyingWave|Innervate|Infusion|ForceJudgment|RadiantLance|SereneFocus|HarmonicRestoration") { return "lightforce" }
     if ($label -match "MedKit|TreatmentKit|Kolto|Resuscitation|EmergencyTriage|EmergencySealant|Coagulant|Antitoxin|PainSuppressant|AdrenalStim|FocusStim|PulseRelay|EmergencyCocktail") { return "medical" }
@@ -151,7 +151,7 @@ function Get-KindPalette([string]$kind, [int]$hash) {
         ranged   = @(@(14, 28, 44), @(45, 112, 167), @(190, 236, 255))
         throwing = @(@(36, 25, 13), @(204, 101, 34), @(255, 218, 98))
         defense  = @(@(20, 31, 38), @(74, 116, 129), @(217, 237, 220))
-        stance   = @(@(24, 24, 36), @(109, 90, 165), @(239, 222, 255))
+        stance   = @(@(14, 28, 42), @(54, 156, 214), @(192, 242, 255))
         energy   = @(@(18, 18, 42), @(76, 73, 202), @(151, 244, 255))
         darkforce = @(@(34, 10, 32), @(136, 40, 130), @(255, 96, 196))
         lightforce = @(@(20, 30, 38), @(66, 139, 170), @(218, 255, 245))

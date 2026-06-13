@@ -19,7 +19,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
             Tier4();
             Tier4A();
             Tier5();
-            Tier5A();
 
             return _builder.Build();
         }
@@ -594,38 +593,5 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("fiberp_imperfect", 2);
         }
 
-        private void Tier5A()
-        {
-            // Citadel Breastplate
-            _builder.Create(RecipeType.CitadelBreastplate, SkillType.Smithery)
-                .Category(RecipeCategoryType.Breastplate)
-                .Resref("sov_bul_armor")
-                .Level(52)
-                .Quantity(1)
-                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("ref_jasioclase", 4)
-                .Component("fiberp_high", 2);
-
-            // Astral Tunic
-            _builder.Create(RecipeType.AstralTunic, SkillType.Smithery)
-                .Category(RecipeCategoryType.Tunic)
-                .Resref("sov_chn_tunic")
-                .Level(52)
-                .Quantity(1)
-                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("lth_high", 4)
-                .Component("fiberp_high", 2);
-
-            // Paragon Tunic
-            _builder.Create(RecipeType.ParagonTunic, SkillType.Smithery)
-                .Category(RecipeCategoryType.Tunic)
-                .Resref("sov_skm_tunic")
-                .Level(52)
-                .Quantity(1)
-                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("lth_high", 4)
-                .Component("fiberp_high", 2);
-        }
-
-    }
+}
 }

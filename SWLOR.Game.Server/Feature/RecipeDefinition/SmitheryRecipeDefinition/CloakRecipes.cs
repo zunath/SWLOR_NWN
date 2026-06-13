@@ -19,7 +19,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
             Tier4();
             Tier4A();
             Tier5();
-            Tier5A();
 
             return _builder.Build();
         }
@@ -595,38 +594,5 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("fiberp_imperfect", 3);
         }
 
-        private void Tier5A()
-        {
-            // Citadel Cloak
-            _builder.Create(RecipeType.CitadelCloak, SkillType.Smithery)
-                .Category(RecipeCategoryType.Cloak)
-                .Resref("sov_bul_cloak")
-                .Level(53)
-                .Quantity(1)
-                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("lth_high", 5)
-                .Component("fiberp_high", 3);
-
-            // Astral Cloak
-            _builder.Create(RecipeType.AstralCloak, SkillType.Smithery)
-                .Category(RecipeCategoryType.Cloak)
-                .Resref("sov_chn_cloak")
-                .Level(53)
-                .Quantity(1)
-                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("lth_high", 5)
-                .Component("fiberp_high", 3);
-
-            // Paragon Cloak
-            _builder.Create(RecipeType.ParagonCloak, SkillType.Smithery)
-                .Category(RecipeCategoryType.Cloak)
-                .Resref("sov_skm_cloak")
-                .Level(53)
-                .Quantity(1)
-                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("lth_high", 5)
-                .Component("fiberp_high", 3);
-        }
-
-    }
+}
 }

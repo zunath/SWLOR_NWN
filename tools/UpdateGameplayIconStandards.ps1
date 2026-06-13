@@ -332,7 +332,7 @@ function Get-AbilitySemanticCategory([string]$label) {
         return "Deployable"
     }
 
-    if ($label -match "Stance$|Form$|CobraStance|BastionStance|BerserkerStance|TempestStance|CycloneStance|SpotterStance|DeadeyeStance|SniperStance|SkirmisherStance|FlankingStance|DuelistStance|ToxicRush|SnapRoll|EvasiveManeuver|ShadowStep|Dash") {
+    if ($label -match "(Stance|Form)\d*$|BlazingSpikes|ToxicRush|SnapRoll|EvasiveManeuver|ShadowStep|Dash") {
         return "Self"
     }
 

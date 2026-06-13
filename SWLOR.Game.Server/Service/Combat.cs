@@ -2496,7 +2496,7 @@ namespace SWLOR.Game.Server.Service
             switch (skillType)
             {
                 case SkillType.HeavyVibroblade:
-                    ApplyHeavyVibrobladeActivatedEffects(activator);
+                    ApplyHeavyVibrobladeActivatedEffects(activator, ability);
                     break;
                 case SkillType.BeastMastery:
                     ApplyBeastBalancedAbilityRecovery(activator);
@@ -2622,7 +2622,7 @@ namespace SWLOR.Game.Server.Service
             switch (skillType)
             {
                 case SkillType.HeavyVibroblade:
-                    ApplyHeavyVibrobladeDefenseImpactRiders(activator, target, damage);
+                    ApplyHeavyVibrobladeDefenseImpactRiders(activator, target, ability);
                     ApplyHeavyVibrobladeOffenseImpactRiders(activator, target, ability);
                     break;
                 case SkillType.Force:
@@ -2795,15 +2795,22 @@ namespace SWLOR.Game.Server.Service
         private static void ApplyHeavyVibrobladeDefenseImpactRiders(
             uint activator,
             uint target,
-            int damage)
+            AbilityDetail ability)
         {
+            if (!AbilityMatchesHeavyVibrobladeDefenseAbilityTrigger(activator, ability))
+                return;
+
             var enmityBonus = Stat.GetStatAdjustment(activator, StatType.HeavyVibrobladeDefenseAbilityEnmityBonus);
             if (enmityBonus > 0)
             {
                 Enmity.ModifyEnmity(activator, target, enmityBonus);
             }
 
-            if (Stat.GetStatAdjustment(activator, StatType.HeavyVibrobladeDefenseAbilityCrushingBlow) > 0)
+            if (AbilityMatchesPerkCategoryStat(
+                    activator,
+                    ability,
+                    StatType.HeavyVibrobladeDefenseAbilityCrushingBlowTriggerPerkCategory) &&
+                Stat.GetStatAdjustment(activator, StatType.HeavyVibrobladeDefenseAbilityCrushingBlow) > 0)
             {
                 StatusEffect.ApplyStatusEffect(activator, target, typeof(CrushingBlowStatusEffect), 16f, CombatDamageType.Physical);
             }
@@ -3020,8 +3027,10 @@ namespace SWLOR.Game.Server.Service
             uint target,
             AbilityDetail ability)
         {
-            if (!ability.IsSingleTargetAbility ||
-                Stat.GetStatAdjustment(activator, StatType.RifleMarksmanExposeWeakPoint) <= 0)
+            var exposeWeakPointPerkType = GetPerkTypeFromStat(Stat.GetStatAdjustment(
+                activator,
+                StatType.RifleMarksmanExposeWeakPoint));
+            if (ability.EffectiveLevelPerkType != exposeWeakPointPerkType)
             {
                 return;
             }
@@ -3283,13 +3292,31 @@ namespace SWLOR.Game.Server.Service
             StatusEffect.ApplyStatusEffect(activator, activator, new GuardiansResolveStatusEffect(shieldAmount), duration);
         }
 
-        private static void ApplyHeavyVibrobladeActivatedEffects(uint activator)
+        private static void ApplyHeavyVibrobladeActivatedEffects(
+            uint activator,
+            AbilityDetail ability)
         {
-            ApplyNextAutoAttackDamageBonus(
-                activator,
-                StatType.HeavyVibrobladeDefenseAbilityNextAutoAttackDamageBonus,
-                StatType.HeavyVibrobladeDefenseAbilityNextAutoAttackDamageDurationSeconds);
-            ApplyGuardiansResolve(activator);
+            if (AbilityMatchesPerkCategoryStat(
+                    activator,
+                    ability,
+                    StatType.HeavyVibrobladeDefenseAbilityNextAutoAttackDamageTriggerPerkCategory))
+            {
+                ApplyNextAutoAttackDamageBonus(
+                    activator,
+                    StatType.HeavyVibrobladeDefenseAbilityNextAutoAttackDamageBonus,
+                    StatType.HeavyVibrobladeDefenseAbilityNextAutoAttackDamageDurationSeconds);
+            }
+
+            if (AbilityMatchesAnyPerkTypeStat(
+                    activator,
+                    ability,
+                    StatType.HeavyVibrobladeDefenseGuardiansResolveTriggerPrimaryPerkType,
+                    StatType.HeavyVibrobladeDefenseGuardiansResolveTriggerSecondaryPerkType,
+                    StatType.HeavyVibrobladeDefenseGuardiansResolveTriggerTertiaryPerkType,
+                    StatType.HeavyVibrobladeDefenseGuardiansResolveTriggerQuaternaryPerkType))
+            {
+                ApplyGuardiansResolve(activator);
+            }
         }
 
         private static void ApplyBeastBalancedAbilityRecovery(uint activator)
@@ -4683,6 +4710,64 @@ namespace SWLOR.Game.Server.Service
             return value > 0 && Enum.IsDefined(typeof(SkillType), value)
                 ? (SkillType)value
                 : SkillType.Invalid;
+        }
+
+        private static PerkCategoryType GetPerkCategoryTypeFromStat(int value)
+        {
+            return value > 0 && Enum.IsDefined(typeof(PerkCategoryType), value)
+                ? (PerkCategoryType)value
+                : PerkCategoryType.Invalid;
+        }
+
+        private static bool AbilityMatchesHeavyVibrobladeDefenseAbilityTrigger(
+            uint creature,
+            AbilityDetail ability)
+        {
+            return AbilityMatchesPerkCategoryStat(
+                       creature,
+                       ability,
+                       StatType.HeavyVibrobladeDefenseAbilityNextAutoAttackDamageTriggerPerkCategory) ||
+                   AbilityMatchesPerkCategoryStat(
+                       creature,
+                       ability,
+                       StatType.HeavyVibrobladeDefenseAbilityCrushingBlowTriggerPerkCategory);
+        }
+
+        private static bool AbilityMatchesPerkCategoryStat(
+            uint creature,
+            AbilityDetail ability,
+            StatType statType)
+        {
+            var perkCategory = GetPerkCategoryTypeFromStat(Stat.GetStatAdjustment(creature, statType));
+            return AbilityMatchesPerkCategory(ability, perkCategory);
+        }
+
+        private static bool AbilityMatchesPerkCategory(
+            AbilityDetail ability,
+            PerkCategoryType perkCategory)
+        {
+            var perkType = ability?.EffectiveLevelPerkType ?? PerkType.Invalid;
+            return perkCategory != PerkCategoryType.Invalid &&
+                   perkType != PerkType.Invalid &&
+                   Perk.GetPerkDetails(perkType).Category == perkCategory;
+        }
+
+        private static bool AbilityMatchesAnyPerkTypeStat(
+            uint creature,
+            AbilityDetail ability,
+            params StatType[] statTypes)
+        {
+            var perkType = ability?.EffectiveLevelPerkType ?? PerkType.Invalid;
+            if (perkType == PerkType.Invalid)
+                return false;
+
+            foreach (var statType in statTypes)
+            {
+                if (perkType == GetPerkTypeFromStat(Stat.GetStatAdjustment(creature, statType)))
+                    return true;
+            }
+
+            return false;
         }
 
         private static AbilityType GetAbilityTypeFromStatPlusOne(int value)

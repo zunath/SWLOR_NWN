@@ -69,6 +69,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Heavy Vibroblade Defense attacks generate extra enmity, and your next attack after using a Heavy Vibroblade Defense ability deals +12 DMG.")
                 .IncreasesStat(StatType.HeavyVibrobladeDefenseAbilityEnmityBonus, creature => EquipmentPredicates.HasMainHandHeavyVibroblade(creature) ? 150 : 0)
+                .IncreasesStat(StatType.HeavyVibrobladeDefenseAbilityNextAutoAttackDamageTriggerPerkCategory, (int)PerkCategoryType.HeavyVibrobladeDefense)
                 .IncreasesStat(StatType.HeavyVibrobladeDefenseAbilityNextAutoAttackDamageBonus, creature => EquipmentPredicates.HasMainHandHeavyVibroblade(creature) ? 12 : 0)
                 .IncreasesStat(StatType.HeavyVibrobladeDefenseAbilityNextAutoAttackDamageDurationSeconds, creature => EquipmentPredicates.HasMainHandHeavyVibroblade(creature) ? 8 : 0)
                 .Price(2)
@@ -151,6 +152,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Heavy Vibroblade Defense attacks reduce affected targets' Defense by 15% for 16 seconds and generate significant enmity.")
+                .IncreasesStat(StatType.HeavyVibrobladeDefenseAbilityCrushingBlowTriggerPerkCategory, (int)PerkCategoryType.HeavyVibrobladeDefense)
                 .IncreasesStat(StatType.HeavyVibrobladeDefenseAbilityCrushingBlow, creature => EquipmentPredicates.HasMainHandHeavyVibroblade(creature) ? 1 : 0)
                 .IncreasesStat(StatType.HeavyVibrobladeDefenseAbilityEnmityBonus, creature => EquipmentPredicates.HasMainHandHeavyVibroblade(creature) ? 350 : 0)
                 .Price(2)
@@ -281,9 +283,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("When a Heavy Vibroblade Defense ability grants you Physical Defense or reduces incoming damage, you also gain a damage absorption shield equal to 12% of maximum HP for 12 seconds. You heal for 15% of damage absorbed. This can trigger once every 30 seconds.")
-                .IncreasesStat(StatType.HeavyVibrobladeDefenseGuardiansResolveShieldPercent, creature => EquipmentPredicates.HasMainHandHeavyVibroblade(creature) ? 12 : 0)
-                .IncreasesStat(StatType.HeavyVibrobladeDefenseGuardiansResolveDurationSeconds, creature => EquipmentPredicates.HasMainHandHeavyVibroblade(creature) ? 12 : 0)
-                .IncreasesStat(StatType.HeavyVibrobladeDefenseGuardiansResolveCooldownSeconds, creature => EquipmentPredicates.HasMainHandHeavyVibroblade(creature) ? 30 : 0)
+                .IncreasesStat(StatType.HeavyVibrobladeDefenseGuardiansResolveTriggerPrimaryPerkType, (int)PerkType.FortressStrike)
+                .IncreasesStat(StatType.HeavyVibrobladeDefenseGuardiansResolveTriggerSecondaryPerkType, (int)PerkType.BastionStance)
+                .IncreasesStat(StatType.HeavyVibrobladeDefenseGuardiansResolveTriggerTertiaryPerkType, (int)PerkType.Rampart)
+                .IncreasesStat(StatType.HeavyVibrobladeDefenseGuardiansResolveTriggerQuaternaryPerkType, (int)PerkType.AbsoluteDefense)
+                .IncreasesStat(StatType.HeavyVibrobladeDefenseGuardiansResolveShieldPercent, 12)
+                .IncreasesStat(StatType.HeavyVibrobladeDefenseGuardiansResolveDurationSeconds, 12)
+                .IncreasesStat(StatType.HeavyVibrobladeDefenseGuardiansResolveCooldownSeconds, 30)
                 .Price(4)
                 .RequirementSkill(SkillType.HeavyVibroblade, 28);
         }

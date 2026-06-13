@@ -129,15 +129,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_keromber", 4)
                 .Component("aracia_wood", 2);
 
-            // Citadel Shield
-            _builder.Create(RecipeType.CitadelShield, SkillType.Smithery)
-                .Category(RecipeCategoryType.Shield)
-                .Resref("sov_bul_shield")
-                .Level(51)
-                .Quantity(1)
-                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("ref_jasioclase", 4)
-                .Component("hyphae_wood", 2);
         }
 
     }

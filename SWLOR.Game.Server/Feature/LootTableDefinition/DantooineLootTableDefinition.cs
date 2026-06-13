@@ -46,23 +46,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 
             _builder.Create("DANTOOINE_KINRATH_QUEEN_RECIPES")
                     .AddItem("recipe_dancarrot", 20)
-                    .AddItem("recipe_krafterk", 20)
-                    .AddItem("recipe_dhcl005c", 10)
-                    .AddItem("recipe_dhbe005c", 10)
-                    .AddItem("recipe_dhrg005c", 10)
-                    .AddItem("recipe_dhnk005c", 10)
-                    .AddItem("recipe_dhar005c", 10)
-                    .AddItem("recipe_dhhl005c", 10)
-                    .AddItem("recipe_dhbr005c", 10)
-                    .AddItem("recipe_dhlg005c", 10)
-                    .AddItem("recipe_dlcl005c", 10)
-                    .AddItem("recipe_dlbe005c", 10)
-                    .AddItem("recipe_dlrg005c", 10)
-                    .AddItem("recipe_dlnk005c", 10)
-                    .AddItem("recipe_dlar005c", 10)
-                    .AddItem("recipe_dlhl005c", 10)
-                    .AddItem("recipe_dlbr005c", 10)
-                    .AddItem("recipe_dllg005c", 10);
+                    .AddItem("recipe_krafterk", 20);
 
         }
 

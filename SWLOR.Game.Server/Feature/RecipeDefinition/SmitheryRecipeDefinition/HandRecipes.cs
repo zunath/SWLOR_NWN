@@ -19,7 +19,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
             Tier4();
             Tier4A();
             Tier5();
-            Tier5A();
 
             return _builder.Build();
         }
@@ -594,38 +593,5 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("fiberp_imperfect", 1);
         }
 
-        private void Tier5A()
-        {
-            // Citadel Bracer
-            _builder.Create(RecipeType.CitadelBracer, SkillType.Smithery)
-                .Category(RecipeCategoryType.Bracer)
-                .Resref("sov_bul_bracer")
-                .Level(48)
-                .Quantity(1)
-                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("ref_jasioclase", 2)
-                .Component("fiberp_high", 1);
-
-            // Astral Gloves
-            _builder.Create(RecipeType.AstralGloves, SkillType.Smithery)
-                .Category(RecipeCategoryType.Glove)
-                .Resref("sov_chn_gloves")
-                .Level(48)
-                .Quantity(1)
-                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("lth_high", 2)
-                .Component("fiberp_high", 1);
-
-            // Paragon Gloves
-            _builder.Create(RecipeType.ParagonGloves, SkillType.Smithery)
-                .Category(RecipeCategoryType.Glove)
-                .Resref("sov_skm_gloves")
-                .Level(48)
-                .Quantity(1)
-                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("lth_high", 2)
-                .Component("fiberp_high", 1);
-        }
-
-    }
+}
 }

@@ -1234,15 +1234,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_keromber", 1)
                 .Component("aracia_wood", 1);
 
-            // Sovereign Knife
-            _builder.Create(RecipeType.SovereignKnife, SkillType.Smithery)
-                .Category(RecipeCategoryType.Knife)
-                .Resref("sov_knife")
-                .Level(46)
-                .Quantity(1)
-                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
-                .Component("ref_jasioclase", 1)
-                .Component("hyphae_wood", 1);
         }
 
         private void IntermediateLongswords()
@@ -1287,15 +1278,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_keromber", 3)
                 .Component("aracia_wood", 2);
 
-            // Sovereign Longsword
-            _builder.Create(RecipeType.SovereignLongsword, SkillType.Smithery)
-                .Category(RecipeCategoryType.Longsword)
-                .Resref("sov_longsword")
-                .Level(49)
-                .Quantity(1)
-                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
-                .Component("ref_jasioclase", 3)
-                .Component("hyphae_wood", 2);
         }
 
         private void IntermediateLightsabers()
@@ -1340,17 +1322,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("elec_imperfect", 4)
                 .Component("ref_keromber", 2);
 
-            // Sovereign Electroblade
-            _builder.Create(RecipeType.SovereignElectroblade, SkillType.Smithery)
-                .Category(RecipeCategoryType.Lightsaber)
-                .Resref("sov_electroblade")
-                .Level(51)
-                .Quantity(1)
-                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
-                .Component("elec_high", 4)
-                .Component("ref_jasioclase", 2);
-
-            // Field Training Saber
+// Field Training Saber
             _builder.Create(RecipeType.FieldTrainingSaber, SkillType.Smithery)
                 .Category(RecipeCategoryType.Lightsaber)
                 .Resref("fld_trnsaber")
@@ -1398,17 +1370,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_keromber", 2)
                 .Component("elec_imperfect", 3);
 
-            // Sovereign Training Saber
-            _builder.Create(RecipeType.SovereignTrainingSaber, SkillType.Smithery)
-                .Category(RecipeCategoryType.Lightsaber)
-                .Resref("sov_trnsaber")
-                .Level(53)
-                .Quantity(1)
-                .RequirementUnlocked()
-                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
-                .Component("emerald", 4)
-                .Component("ref_jasioclase", 2)
-                .Component("elec_high", 3);
         }
 
         private void IntermediateGreatSwords()
@@ -1453,15 +1414,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_keromber", 5)
                 .Component("aracia_wood", 3);
 
-            // Sovereign Great Sword
-            _builder.Create(RecipeType.SovereignGreatSword, SkillType.Smithery)
-                .Category(RecipeCategoryType.GreatSword)
-                .Resref("sov_greatsword")
-                .Level(53)
-                .Quantity(1)
-                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
-                .Component("ref_jasioclase", 5)
-                .Component("hyphae_wood", 3);
         }
 
         private void IntermediateSpears()
@@ -1506,15 +1458,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_keromber", 4)
                 .Component("aracia_wood", 2);
 
-            // Sovereign Spear
-            _builder.Create(RecipeType.SovereignSpear, SkillType.Smithery)
-                .Category(RecipeCategoryType.Spear)
-                .Resref("sov_spear")
-                .Level(52)
-                .Quantity(1)
-                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
-                .Component("ref_jasioclase", 4)
-                .Component("hyphae_wood", 2);
         }
 
         private void IntermediateTwinBlades()
@@ -1559,15 +1502,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_keromber", 3)
                 .Component("aracia_wood", 2);
 
-            // Sovereign Twin Blade
-            _builder.Create(RecipeType.SovereignTwinBlade, SkillType.Smithery)
-                .Category(RecipeCategoryType.TwinBlade)
-                .Resref("sov_twinblade")
-                .Level(53)
-                .Quantity(1)
-                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
-                .Component("ref_jasioclase", 3)
-                .Component("hyphae_wood", 2);
         }
 
         private void IntermediateSaberstaffs()
@@ -1612,17 +1546,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("elec_imperfect", 5)
                 .Component("ref_keromber", 3);
 
-            // Sovereign Twin Electroblade
-            _builder.Create(RecipeType.SovereignTwinElectroblade, SkillType.Smithery)
-                .Category(RecipeCategoryType.Saberstaff)
-                .Resref("sov_twinelec")
-                .Level(52)
-                .Quantity(1)
-                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
-                .Component("elec_high", 5)
-                .Component("ref_jasioclase", 3);
-
-            // Field Training Saberstaff
+// Field Training Saberstaff
             _builder.Create(RecipeType.FieldTrainingSaberstaff, SkillType.Smithery)
                 .Category(RecipeCategoryType.Saberstaff)
                 .Resref("fld_trnsabstaff")
@@ -1670,17 +1594,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_keromber", 3)
                 .Component("elec_imperfect", 4);
 
-            // Sovereign Training Saberstaff
-            _builder.Create(RecipeType.SovereignTrainingSaberstaff, SkillType.Smithery)
-                .Category(RecipeCategoryType.Saberstaff)
-                .Resref("sov_trnsabstaff")
-                .Level(54)
-                .Quantity(1)
-                .RequirementUnlocked()
-                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
-                .Component("emerald", 5)
-                .Component("ref_jasioclase", 3)
-                .Component("elec_high", 4);
         }
 
         private void IntermediateKatars()
@@ -1725,15 +1638,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_keromber", 2)
                 .Component("aracia_wood", 1);
 
-            // Sovereign Katar
-            _builder.Create(RecipeType.SovereignKatar, SkillType.Smithery)
-                .Category(RecipeCategoryType.Katar)
-                .Resref("sov_katar")
-                .Level(48)
-                .Quantity(1)
-                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
-                .Component("ref_jasioclase", 2)
-                .Component("hyphae_wood", 1);
         }
 
         private void IntermediateStaffs()
@@ -1778,15 +1682,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_keromber", 3)
                 .Component("aracia_wood", 2);
 
-            // Sovereign Staff
-            _builder.Create(RecipeType.SovereignStaff, SkillType.Smithery)
-                .Category(RecipeCategoryType.Staff)
-                .Resref("sov_staff")
-                .Level(50)
-                .Quantity(1)
-                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
-                .Component("ref_jasioclase", 3)
-                .Component("hyphae_wood", 2);
         }
 
         private void IntermediatePistols()
@@ -1831,15 +1726,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_keromber", 4)
                 .Component("elec_imperfect", 2);
 
-            // Sovereign Pistol
-            _builder.Create(RecipeType.SovereignPistol, SkillType.Smithery)
-                .Category(RecipeCategoryType.Pistol)
-                .Resref("sov_pistol")
-                .Level(51)
-                .Quantity(1)
-                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
-                .Component("ref_jasioclase", 4)
-                .Component("elec_high", 2);
         }
 
         private void IntermediateShurikens()
@@ -1884,15 +1770,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_keromber", 2)
                 .Component("aracia_wood", 1);
 
-            // Sovereign Shuriken
-            _builder.Create(RecipeType.SovereignShuriken, SkillType.Smithery)
-                .Category(RecipeCategoryType.Shuriken)
-                .Resref("sov_shuriken")
-                .Level(47)
-                .Quantity(1)
-                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
-                .Component("ref_jasioclase", 2)
-                .Component("hyphae_wood", 1);
         }
 
         private void IntermediateRifles()
@@ -1937,15 +1814,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_keromber", 5)
                 .Component("elec_imperfect", 3);
 
-            // Sovereign Rifle
-            _builder.Create(RecipeType.SovereignRifle, SkillType.Smithery)
-                .Category(RecipeCategoryType.Rifle)
-                .Resref("sov_rifle")
-                .Level(54)
-                .Quantity(1)
-                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
-                .Component("ref_jasioclase", 5)
-                .Component("elec_high", 3);
         }
 
     }

@@ -85,9 +85,11 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Breach Round")
 
                 .AddPerkLevel()
-                .Description("Marksman precision shots ignore 25% of the target's Defense and deal +35 DMG.")
-                .IncreasesStat(StatType.AbilityDefenseIgnorePercentAdjustmentPerkType, (int)PerkType.BreachRound)
-                .IncreasesStat(StatType.AbilityDefenseIgnorePercentAdjustment, 25)
+                .Description("Aimed Shot ignores 25% of the target's Defense and deals +35 DMG.")
+                .IncreasesStat(StatType.AbilityDefenseIgnorePercentAdjustmentPerkType, creature => EquipmentPredicates.HasRifle(creature) ? (int)PerkType.AimedShot : 0)
+                .IncreasesStat(StatType.AbilityDefenseIgnorePercentAdjustment, creature => EquipmentPredicates.HasRifle(creature) ? 25 : 0)
+                .IncreasesStat(StatType.AbilityDamageFlatAdjustmentPerkType, creature => EquipmentPredicates.HasRifle(creature) ? (int)PerkType.AimedShot : 0)
+                .IncreasesStat(StatType.AbilityDamageFlatAdjustment, creature => EquipmentPredicates.HasRifle(creature) ? 35 : 0)
                 .Price(4)
                 .RequirementSkill(SkillType.Rifle, 35);
         }
@@ -154,10 +156,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Expose Weak Point")
 
                 .AddPerkLevel()
-                .Description("Marksman precision shots mark the target for 12 seconds. Physical attacks against marked targets deal +10% damage.")
+                .Description("Aimed Shot marks the target for 12 seconds. Physical attacks against marked targets deal +10% damage.")
                 .Price(3)
                 .RequirementSkill(SkillType.Rifle, 30)
-                .IncreasesStat(StatType.RifleMarksmanExposeWeakPoint, creature => EquipmentPredicates.HasRifle(creature) ? 1 : 0);
+                .IncreasesStat(StatType.RifleMarksmanExposeWeakPoint, creature => EquipmentPredicates.HasRifle(creature) ? (int)PerkType.AimedShot : 0);
         }
 
         private void FieldSedatives()

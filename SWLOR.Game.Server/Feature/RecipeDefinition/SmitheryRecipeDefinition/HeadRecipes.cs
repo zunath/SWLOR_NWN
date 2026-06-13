@@ -19,7 +19,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
             Tier4();
             Tier4A();
             Tier5();
-            Tier5A();
 
             return _builder.Build();
         }
@@ -595,38 +594,5 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("fiberp_imperfect", 2);
         }
 
-        private void Tier5A()
-        {
-            // Citadel Helmet
-            _builder.Create(RecipeType.CitadelHelmet, SkillType.Smithery)
-                .Category(RecipeCategoryType.Helmet)
-                .Resref("sov_bul_helm")
-                .Level(49)
-                .Quantity(1)
-                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("ref_jasioclase", 3)
-                .Component("fiberp_high", 2);
-
-            // Astral Cap
-            _builder.Create(RecipeType.AstralCap, SkillType.Smithery)
-                .Category(RecipeCategoryType.Cap)
-                .Resref("sov_chn_cap")
-                .Level(49)
-                .Quantity(1)
-                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("lth_high", 3)
-                .Component("fiberp_high", 2);
-
-            // Paragon Cap
-            _builder.Create(RecipeType.ParagonCap, SkillType.Smithery)
-                .Category(RecipeCategoryType.Cap)
-                .Resref("sov_skm_cap")
-                .Level(49)
-                .Quantity(1)
-                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("lth_high", 3)
-                .Component("fiberp_high", 2);
-        }
-
-    }
+}
 }

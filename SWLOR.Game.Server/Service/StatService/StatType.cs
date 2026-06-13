@@ -3087,9 +3087,9 @@ namespace SWLOR.Game.Server.Service.StatService
         PistolSkirmisherEvasiveAbilityNextAttackDamageBonus = 526,
 
         /// <summary>
-        /// Enables Marksman precision shots to apply Expose Weak Point.
+        /// PerkType value whose Rifle abilities apply Expose Weak Point.
         /// </summary>
-        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        [StatType(StatTypeCategory.NonBeneficial)]
         RifleMarksmanExposeWeakPoint = 527,
 
         /// <summary>
@@ -3177,7 +3177,7 @@ namespace SWLOR.Game.Server.Service.StatService
         StaffSentinelGuard = 541,
 
         /// <summary>
-        /// Damage added to Staff Crusher finishers.
+        /// Damage added to hostile Staff abilities.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
         StaffCrusherFinisherDamageBonus = 542,
@@ -3339,7 +3339,7 @@ namespace SWLOR.Game.Server.Service.StatService
         StaffSentinelGuardingStepCooldownSeconds = 568,
 
         /// <summary>
-        /// Duration in seconds for Dazed from Staff Crusher finishers.
+        /// Duration in seconds for Dazed from hostile Staff abilities.
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
         StaffCrusherFinisherDazedDurationSeconds = 569,
@@ -3474,7 +3474,43 @@ namespace SWLOR.Game.Server.Service.StatService
         /// Duration in seconds for SingleTargetAbilityAttackDeflection.
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
-        SingleTargetAbilityAttackDeflectionDurationSeconds = 591
+        SingleTargetAbilityAttackDeflectionDurationSeconds = 591,
+
+        /// <summary>
+        /// PerkCategoryType value whose abilities trigger HeavyVibrobladeDefenseAbilityNextAutoAttackDamageBonus.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        HeavyVibrobladeDefenseAbilityNextAutoAttackDamageTriggerPerkCategory = 592,
+
+        /// <summary>
+        /// PerkCategoryType value whose abilities trigger HeavyVibrobladeDefenseAbilityCrushingBlow.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        HeavyVibrobladeDefenseAbilityCrushingBlowTriggerPerkCategory = 593,
+
+        /// <summary>
+        /// Primary PerkType value whose ability triggers HeavyVibrobladeDefenseGuardiansResolveShieldPercent.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        HeavyVibrobladeDefenseGuardiansResolveTriggerPrimaryPerkType = 594,
+
+        /// <summary>
+        /// Secondary PerkType value whose ability triggers HeavyVibrobladeDefenseGuardiansResolveShieldPercent.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        HeavyVibrobladeDefenseGuardiansResolveTriggerSecondaryPerkType = 595,
+
+        /// <summary>
+        /// Tertiary PerkType value whose ability triggers HeavyVibrobladeDefenseGuardiansResolveShieldPercent.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        HeavyVibrobladeDefenseGuardiansResolveTriggerTertiaryPerkType = 596,
+
+        /// <summary>
+        /// Quaternary PerkType value whose ability triggers HeavyVibrobladeDefenseGuardiansResolveShieldPercent.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        HeavyVibrobladeDefenseGuardiansResolveTriggerQuaternaryPerkType = 597
     }
 
     public class StatTypeAttribute : Attribute

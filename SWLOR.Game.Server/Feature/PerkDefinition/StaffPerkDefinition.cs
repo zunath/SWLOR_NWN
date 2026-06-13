@@ -352,7 +352,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Skull Rattle")
 
                 .AddPerkLevel()
-                .Description("Staff Crusher finishers inflict Dazed for 3 seconds and deal +34 DMG.")
+                .Description("Hostile Staff abilities deal +34 DMG and inflict Dazed for 3 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Staff, 38)
                 .IncreasesStat(StatType.StaffCrusherFinisherDamageBonus, creature => EquipmentPredicates.HasMainHandStaff(creature) ? 34 : 0)
@@ -366,27 +366,27 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Gain +8 Attack Deflection.")
-                .IncreasesStat(StatType.AttackDeflection, creature => EquipmentPredicates.HasMainHandStaff(creature) ? 10 : 0)
+                .IncreasesStat(StatType.AttackDeflection, 8)
                 .Price(2)
                 .RequirementSkill(SkillType.Staff, 8)
 
                 .AddPerkLevel()
                 .Description("Gain +16 Attack Deflection total.")
-                .IncreasesStat(StatType.AttackDeflection, creature => EquipmentPredicates.HasMainHandStaff(creature) ? 20 : 0)
+                .IncreasesStat(StatType.AttackDeflection, 16)
                 .Price(4)
                 .RequirementSkill(SkillType.Staff, 18)
 
                 .AddPerkLevel()
                 .Description("Gain +24 Attack Deflection total. Deflecting attacks restores 2 STM.")
-                .IncreasesStat(StatType.AttackDeflection, creature => EquipmentPredicates.HasMainHandStaff(creature) ? 30 : 0)
-                .IncreasesStat(StatType.DeflectionStaminaRestore, creature => EquipmentPredicates.HasMainHandStaff(creature) ? 2 : 0)
+                .IncreasesStat(StatType.AttackDeflection, 24)
+                .IncreasesStat(StatType.DeflectionStaminaRestore, 2)
                 .Price(4)
                 .RequirementSkill(SkillType.Staff, 28)
 
                 .AddPerkLevel()
                 .Description("Gain +30 Attack Deflection total. Deflecting attacks restores 4 STM.")
-                .IncreasesStat(StatType.AttackDeflection, creature => EquipmentPredicates.HasMainHandStaff(creature) ? 40 : 0)
-                .IncreasesStat(StatType.DeflectionStaminaRestore, creature => EquipmentPredicates.HasMainHandStaff(creature) ? 4 : 0)
+                .IncreasesStat(StatType.AttackDeflection, 30)
+                .IncreasesStat(StatType.DeflectionStaminaRestore, 4)
                 .Price(4)
                 .RequirementSkill(SkillType.Staff, 42);
         }

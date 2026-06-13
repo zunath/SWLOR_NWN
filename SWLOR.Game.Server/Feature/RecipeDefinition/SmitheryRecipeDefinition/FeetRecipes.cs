@@ -19,7 +19,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
             Tier4();
             Tier4A();
             Tier5();
-            Tier5A();
 
             return _builder.Build();
         }
@@ -594,38 +593,5 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("fiberp_imperfect", 2);
         }
 
-        private void Tier5A()
-        {
-            // Citadel Leggings
-            _builder.Create(RecipeType.CitadelLeggings, SkillType.Smithery)
-                .Category(RecipeCategoryType.Legging)
-                .Resref("sov_bul_legs")
-                .Level(50)
-                .Quantity(1)
-                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("ref_jasioclase", 3)
-                .Component("fiberp_high", 2);
-
-            // Astral Boots
-            _builder.Create(RecipeType.AstralBoots, SkillType.Smithery)
-                .Category(RecipeCategoryType.Boots)
-                .Resref("sov_chn_boots")
-                .Level(50)
-                .Quantity(1)
-                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("lth_high", 3)
-                .Component("fiberp_high", 2);
-
-            // Paragon Boots
-            _builder.Create(RecipeType.ParagonBoots, SkillType.Smithery)
-                .Category(RecipeCategoryType.Boots)
-                .Resref("sov_skm_boots")
-                .Level(50)
-                .Quantity(1)
-                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("lth_high", 3)
-                .Component("fiberp_high", 2);
-        }
-
-    }
+}
 }

@@ -19,7 +19,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
             Tier4();
             Tier4A();
             Tier5();
-            Tier5A();
 
             return _builder.Build();
         }
@@ -100,8 +99,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("lth_ruined", 5)
                 .Component("jade", 3);
 
-
-        }
+}
 
         private void Tier2()
         {
@@ -596,38 +594,5 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("fiberp_imperfect", 3);
         }
 
-        private void Tier5A()
-        {
-            // Citadel Belt
-            _builder.Create(RecipeType.CitadelBelt, SkillType.Smithery)
-                .Category(RecipeCategoryType.Belt)
-                .Resref("sov_bul_belt")
-                .Level(54)
-                .Quantity(1)
-                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("lth_high", 5)
-                .Component("fiberp_high", 3);
-
-            // Astral Belt
-            _builder.Create(RecipeType.AstralBelt, SkillType.Smithery)
-                .Category(RecipeCategoryType.Belt)
-                .Resref("sov_chn_belt")
-                .Level(54)
-                .Quantity(1)
-                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("lth_high", 5)
-                .Component("fiberp_high", 3);
-
-            // Paragon Belt
-            _builder.Create(RecipeType.ParagonBelt, SkillType.Smithery)
-                .Category(RecipeCategoryType.Belt)
-                .Resref("sov_skm_belt")
-                .Level(54)
-                .Quantity(1)
-                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("lth_high", 5)
-                .Component("fiberp_high", 3);
-        }
-
-    }
+}
 }

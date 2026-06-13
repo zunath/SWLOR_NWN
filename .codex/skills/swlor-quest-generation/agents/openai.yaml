@@ -1,0 +1,4 @@
+interface:
+  display_name: "SWLOR Quest Generation"
+  short_description: "Generate SWLOR NPC quests end to end."
+  default_prompt: "Generate SWLOR NPC quests from structured quest specs, including quest definitions, dialogue, module placement, rewards, prerequisites, and validation."

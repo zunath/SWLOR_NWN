@@ -186,14 +186,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Mind Trick")
 
                 .AddPerkLevel()
-                .Description("Inflicts Confusion with a 25% failure chance on one non-mechanical target for 10 seconds.")
+                .Description("Attempts to inflict Confusion on one non-mechanical target for 10 seconds. Caster Willpower increases duration, while target Willpower and Mind Resistance reduce it.")
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 12)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.MindTrick1)
 
                 .AddPerkLevel()
-                .Description("Inflicts Confusion with a 35% failure chance on the selected non-mechanical target and one nearby non-mechanical target for 10 seconds.")
+                .Description("Attempts to inflict Confusion on the selected non-mechanical target and one nearby non-mechanical target for 10 seconds. Caster Willpower increases duration, while target Willpower and Mind Resistance reduce it.")
                 .Price(4)
                 .RequirementSkill(SkillType.Force, 38)
                 .RequirementCharacterType(CharacterType.ForceSensitive)

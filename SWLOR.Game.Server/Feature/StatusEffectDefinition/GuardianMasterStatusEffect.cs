@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class GuardianMasterStatusEffect : StatusEffectBase
     {
         public override string Name => "Guardian Master";
-        public override EffectIconType Icon => EffectIconType.GuardiansWrathStatusEffect;
+        public override EffectIconType Icon => EffectIconType.GuardianMasterStatusEffect;
         public GuardianMasterStatusEffect()
         {
             StatGroup.Stats[StatType.AttackDeflectionChanceCap] = 10;

@@ -17,6 +17,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
     public sealed class MindTrickAbilityDefinition : IAbilityListDefinition
     {
         private const float Radius = 5f;
+        private const int BaseConfusionDurationSeconds = 10;
+        private const int MaximumConfusionDurationSeconds = 18;
+        private const float WillpowerContestDurationSeconds = 0.5f;
         private const int MindTrick2MaxTargets = 2;
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
@@ -75,18 +78,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void MindTrick1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            Ability.ApplyCombatImpact(
-                activator,
-                target,
-                targetLocation,
-                SkillType.Force,
-                0,
-                5,
-                typeof(FoggyMindStatusEffect),
-                false,
-                Array.Empty<Type>(),
-                damageType: CombatDamageType.Force,
-                targetVisualEffect: VisualEffect.Vfx_Imp_Pulse_Negative);
+            ApplyMindTrickImpact(activator, target, targetLocation);
         }
 
         private static void MindTrick2ImpactAction(uint activator, uint target, int level, Location targetLocation)
@@ -94,19 +86,41 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             var impactLocation = AbilityTargeting.ResolveImpactLocation(activator, target, targetLocation);
             foreach (var hostileTarget in AbilityTargeting.GetHostileTargetsNearLocation(activator, impactLocation, Radius, MindTrick2MaxTargets, target, IsNonMechanical))
             {
-                Ability.ApplyCombatImpact(
-                    activator,
-                    hostileTarget,
-                    GetLocation(hostileTarget),
-                    SkillType.Force,
-                    0,
-                    5,
-                    typeof(FoggyMindStatusEffect),
-                    false,
-                    Array.Empty<Type>(),
-                    damageType: CombatDamageType.Force,
-                    targetVisualEffect: VisualEffect.Vfx_Imp_Pulse_Negative);
+                ApplyMindTrickImpact(activator, hostileTarget, GetLocation(hostileTarget));
             }
+        }
+
+        private static void ApplyMindTrickImpact(uint activator, uint target, Location targetLocation)
+        {
+            var duration = CalculateMindTrickDuration(activator, target);
+            if (duration <= 0)
+            {
+                SendMessageToPC(activator, "Your mind trick was resisted.");
+                return;
+            }
+
+            Ability.ApplyCombatImpact(
+                activator,
+                target,
+                targetLocation,
+                SkillType.Force,
+                0,
+                duration,
+                typeof(ConfusionStatusEffect),
+                false,
+                damageType: CombatDamageType.Force,
+                statusResistanceType: ResistanceType.Mind,
+                targetVisualEffect: VisualEffect.Vfx_Imp_Pulse_Negative);
+        }
+
+        private static int CalculateMindTrickDuration(uint activator, uint target)
+        {
+            var casterWillpower = GetAbilityScore(activator, AbilityType.Willpower);
+            var targetWillpower = GetAbilityScore(target, AbilityType.Willpower);
+            var contestSeconds = (int)Math.Ceiling((casterWillpower - targetWillpower) * WillpowerContestDurationSeconds);
+            var duration = BaseConfusionDurationSeconds + contestSeconds;
+
+            return Math.Clamp(duration, 0, MaximumConfusionDurationSeconds);
         }
 
         private static bool IsNonMechanical(uint target)

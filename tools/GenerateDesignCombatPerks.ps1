@@ -374,7 +374,7 @@ function Get-StatusEffects {
         "Force Warding" = "ForceWardingStatusEffect"
         "Force Erosion" = "ForceErosionStatusEffect"
         "Foggy Mind" = "FoggyMindStatusEffect"
-        "Confuse" = "FoggyMindStatusEffect"
+        "Confuse" = "ConfusionStatusEffect"
         "Vital Strike" = "VitalStrikeStatusEffect"
         "Hemorrhage" = "HemorrhageStatusEffect"
         "Disoriented" = "DisorientedStatusEffect"

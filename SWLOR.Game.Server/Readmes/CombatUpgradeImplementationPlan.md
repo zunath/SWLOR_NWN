@@ -12,7 +12,9 @@ Use this sheet as the combat upgrade Bible. Experimental branches are implementa
 
 The checked-in local workbook snapshot is `design\bible\SWLOR Design Bible - Combat Upgrade.xlsx`. Regenerate the local manifest and audit from that workbook with `tools\UpdateCombatUpgradeAudit.ps1 -RefreshLocalBible`.
 
-The skill-cap decision is settled: the combat-upgrade cap is 400. Armor remains an active skill for equipment requirements and contributes to the cap/SP flow like other active skills; it is not a perk tree.
+The skill-cap decision is settled: the combat-upgrade cap is 400. Armor remains an active skill for equipment requirements and contributes to the cap/SP flow like other active skills; it is not a weapon-style perk tree.
+
+Current Bible `General` perks use Armor skill requirements because Armor is the closest thing SWLOR has to a general character-level proxy. These General rows are valid when they are present in the current Bible and should not be confused with obsolete Heavy/Light/General Armor perk-tree rows from older snapshots.
 
 Do not carry over the Heavy Armor activation-time penalty. That mechanic was removed from the plan and should be ignored even if it appears in experimental branches or partial local carryover.
 
@@ -160,9 +162,9 @@ Acceptance criteria:
 
 ### Armor
 
-Armor is a core equipment skill, not a combat-upgrade perk tree. Do not implement General, Heavy, or Light Armor perk rows from older Bible/workbook snapshots; those rows are obsolete and should not be counted as remaining combat-upgrade work.
+Armor is a core equipment skill and general character-level proxy, not a weapon-style combat-upgrade perk tree. Current Bible `General` perks may use Armor skill requirements for character-level gating. Do not implement obsolete Heavy Armor, Light Armor, or older Armor perk-tree rows from stale Bible/workbook snapshots; those rows should not be counted as remaining combat-upgrade work.
 
-Do not implement or retain the old Heavy Armor activation-time penalty. Armor mechanics include equipment prerequisites and item/trait behavior, not a blanket activation-time penalty and not Armor-specific perk unlocks.
+Do not implement or retain the old Heavy Armor activation-time penalty. Armor mechanics include equipment prerequisites, normal SP/cap progression, and current Bible General perks that use Armor requirements; they do not include a blanket activation-time penalty or Heavy/Light Armor specialization unlocks.
 
 The cap/SP decision is final:
 
@@ -173,7 +175,8 @@ The cap/SP decision is final:
 Acceptance criteria:
 
 - Armor equip requirements use skill prerequisites from the Bible.
-- No Armor perk definitions, Armor-granted active feats, Armor instruction discs, or Armor perk-tree UI entries remain in the final combat-upgrade surface.
+- Current Bible General perks use Armor skill requirements when they are intended to act as general character-level gates.
+- No obsolete Heavy Armor, Light Armor, or stale Armor perk-tree definitions, active feats, instruction discs, or UI entries remain in the final combat-upgrade surface.
 - Any existing heavy-armor activation-time penalty hooks are removed before the feature branch is considered complete.
 
 ### Force, Devices, Leadership, First Aid
@@ -345,8 +348,9 @@ Status: removed from the feature branch implementation on 2026-05-05.
 
 - `CombatUpgradePerkAudit.csv` compares Bible perk rows against current perk definitions by normalized perk name.
 - `CombatUpgradeBiblePerkManifest.csv` is the exported perk-row manifest from all audited Bible tabs with perk tables.
-- Current local-workbook audit summary from the checked-in 2026-05-23 workbook snapshot. If that snapshot still includes stale Armor perk rows, refresh the Bible/workbook before treating these totals as final:
-  - Scoped Bible rows: 897
+- Current local-workbook audit summary from the checked-in workbook snapshot. The current manifest includes current Bible General rows that use Armor requirements, but excludes stale Heavy/Light Armor perk-tree rows from required-work totals:
+  - Manifest rows: 895
+  - Scoped implemented rows: 810
   - Scoped audit findings: 0
   - Missing Bible perk names in code: 0
   - Active Bible rows missing ability definitions: 0
@@ -355,7 +359,7 @@ Status: removed from the feature branch implementation on 2026-05-05.
 
 The audit is intentionally a work queue, not final truth. A clean audit means the static checks found no scoped gaps; it does not replace playtesting, value spot-checking, migration dry-runs, or target metadata review.
 
-If an older local workbook or generated manifest still includes Armor perk rows, treat those rows as stale design data. Armor remains a skill/equipment requirement, but Armor perks are no longer in combat-upgrade scope.
+If an older local workbook or generated manifest includes obsolete Heavy/Light Armor or stale Armor perk-tree rows, treat those rows as stale design data. Current Bible General rows that use Armor requirements remain in scope as general character-level perks, not as an Armor specialization tree.
 
 Audit totals should exclude Espionage and Farming-only rows. If an all-tab export includes those rows, keep them in the raw manifest for traceability but omit them from combat-upgrade missing-work counts.
 
@@ -366,5 +370,6 @@ Implemented cleanup so far:
 
 Additional follow-up:
 
-- Audit droid instruction disc availability for the final combat-upgrade perk set. Obsolete combat instruction discs are removed by migration, but retained or replacement disc availability still needs release review.
+- Droid instruction disc availability is covered by `CombatUpgradeBibleSyncTests.DroidInstructionResources_MatchCurrentRecipeDefinitionsAndMigration`. Retained or replacement disc availability still needs a release smoke test in game.
+- Migration entry points and storage-surface coverage are guarded by `CombatUpgradeMigrationCoverageTests`, including forced rebuild flagging, live player migrations, stored serialized items, constructed droids, and ship/module serialized items.
 - Finish live-module validation for weapons, armor, crafting equipment, enhancements, and droid equipment. Recent item work normalized weapon `Delay`, `DMG`, `WeaponDamageType`, and resistance enhancement values, including natural creature weapons, legacy Sling-based pistol resources, embedded `.git` area/store/NPC weapon copies for `Delay`, and the Bible `World NPCs` delay calculations; release still needs representative equip, crafting, migration, and combat smoke tests.

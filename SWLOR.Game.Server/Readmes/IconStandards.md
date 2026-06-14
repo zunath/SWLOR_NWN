@@ -178,8 +178,6 @@ powershell -ExecutionPolicy Bypass -File tools/RestoreAbilityIconArtwork.ps1
 powershell -ExecutionPolicy Bypass -File tools/GenerateCooldownIcons.ps1 -Force
 ```
 
-`tools/GenerateCombatUpgradeIcons.ps1` is a placeholder-art generator and must not be used for production ability icons without an explicit local-experiment override.
-
 If any generated TGAs were written with top-left origin, normalize them before building haks:
 
 ```powershell

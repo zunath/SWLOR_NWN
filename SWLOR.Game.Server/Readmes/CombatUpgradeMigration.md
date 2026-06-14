@@ -35,9 +35,10 @@ This note tracks player migration work for `feature/combat-upgrade`. Keep it cur
 - Force all players to perform a full rebuild for the combat upgrade.
 - Do not grant or require rebuild tokens for this forced rebuild path.
 - Use a 400 skill cap. Armor is not exempt from the cap and grants SP through the normal active-skill path.
+- Current Bible General perks use Armor skill requirements because Armor is the closest thing SWLOR has to a general character-level proxy.
 - Refund SP for removed attack-count/mastery perks so players are not stranded with deleted perk investments.
 - Remove deleted perks from persisted `Player.Perks` data.
-- Armor perks are gone from the combat-upgrade scope. Any stale Armor perk data should be removed/refunded through the same obsolete-perk cleanup path when it is present in persisted data.
+- Obsolete Heavy/Light Armor and stale Armor perk-tree data should be removed/refunded through the same obsolete-perk cleanup path when present in persisted data. Current Bible General perks that use Armor requirements remain valid.
 - Do not add new one-off migrations solely for removed perks, blueprints, skills, or similar character-build data that is already covered by the planned full rebuild.
 - Keep existing player migration versions intact. If more player-specific data cleanup is needed, add the next numbered player migration instead of editing old shipped migrations.
 
@@ -80,16 +81,16 @@ Important nuance: setting the flag to `false` does not itself reset the characte
 ## Follow-Up Checks Before Release
 
 - Character sheet redesign remains outstanding: the first pass keeps the existing defense/resistance display shape for compatibility, but a later UI pass should rename the bound model properties and present baseline Defense separately from typed Resistances.
-- Confirm `_22_CombatSystemReplacement` still runs immediately after master migration `_21_SetDefaultOutfitAndMarketLimits`. If another migration is added first, renumber the combat upgrade migration series.
+- Static coverage in `CombatUpgradeMigrationCoverageTests` confirms `_22_CombatSystemReplacement` still follows master migration `_21_SetDefaultOutfitAndMarketLimits`, forces `Player.RebuildComplete = false`, and does not use a rebuild-token grant path. If another migration is added first, renumber the combat upgrade migration series and update that test.
 - Confirm perk refund totals against the final perk prices in `PerkDefinition` files.
-- Confirm removed perks, including stale Armor perks, no longer appear in perk builders, droid default perk maps, instruction discs, or any player migration re-application logic.
-- Confirm Armor skill rank-ups count toward the 400 skill cap and grant SP normally.
+- Static coverage in `CombatUpgradeMigrationCoverageTests` confirms removed-perk cleanup entry points for players, beasts, stale recasts, live player migration, stored item records, constructed droids, and ship/module serialized items. Still spot-check that obsolete Heavy/Light Armor and stale Armor perk-tree rows no longer appear in player-facing builders, default perk maps, instruction discs, or UI surfaces.
+- Confirm Armor skill rank-ups count toward the 400 skill cap, grant SP normally, and gate current Bible General perks as intended.
 - Confirm stale BAB/attacks-per-round logic remains removed:
   - `Stat.ApplyAttacksPerRound`
   - calls from player initialization/login temporary effects
   - beast/droid setup
   - equip/purchase/refund triggers
-- Dry-run the item-property migrations against representative live data for player inventories, markets, world property storage, research jobs, player outfits, DM creatures, ships, and nested serialized inventories.
+- Dry-run the item-property migrations against representative live data for player inventories, markets, world property storage, research jobs, player outfits, DM creatures, ships, and nested serialized inventories. Static coverage now guards those storage surfaces and recursive live-object entry points, but representative serialized records are still needed to prove live data shape compatibility.
 - Confirm the weapon Delay migration updates old Throwing/Vibroknife/natural-weapon and Sling-based pistol values and preserves training-weapon and intentional short-sword delay exceptions in representative live data. Checked-in module templates and embedded `.git` area/store/NPC item instances have already been normalized to the updated delay table.
 - Confirm active status effects from the old status effect service do not need cleanup for players who were logged out with `AdrenalStim*` or `Hasten*` effects active.
 - Add release notes telling players they must perform a forced full rebuild and that removed combat perks were refunded.

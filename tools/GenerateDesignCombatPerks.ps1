@@ -109,7 +109,19 @@ function Get-SkillType {
 function Get-Category {
     param($Row)
     switch ($Row.Tab) {
-        "Beast Mastery" { return "Beast$($Row.Style.Replace(' ', ''))" }
+        "Beast Mastery" {
+            switch ($Row.Style) {
+                "Training" { return "BeastMasteryTraining" }
+                "Bioengineer" { return "BeastMasteryIncubation" }
+                "Damage" { return "BeastDamage" }
+                "Tank" { return "BeastTank" }
+                "Balanced" { return "BeastBalanced" }
+                "Bruiser" { return "BeastBruiser" }
+                "Evasion" { return "BeastEvasion" }
+                "Force" { return "BeastForce" }
+                default { throw "No Beast Mastery perk category mapped for style '$($Row.Style)'." }
+            }
+        }
         "Devices" {
             switch ($Row.Style) {
                 "Grenadier" { return "DevicesGrenadier" }
@@ -140,6 +152,11 @@ function Get-Category {
         }
         default { return "Invalid" }
     }
+}
+
+function Test-IsBeastPerkRow {
+    param($Row)
+    return $Row.Tab -eq "Beast Mastery" -and $Row.CharacterType -eq "Beast"
 }
 
 function Get-BeastRole {
@@ -517,13 +534,22 @@ function Get-TraitStatLines {
 function Add-RequirementLines {
     param([System.Collections.Generic.List[string]]$Lines, $Row)
     if ($Row.Tab -eq "Beast Mastery") {
-        $level = ConvertTo-Int $Row.SkillRequirements
-        if ($level -gt 0) {
-            $Lines.Add("                .RequirementBeastLevel($level)") | Out-Null
+        if (![string]::IsNullOrWhiteSpace($Row.SkillRequirements) -and $Row.SkillRequirements -ne "-") {
+            if ((Test-IsBeastPerkRow $Row) -and $Row.SkillRequirements -match "^\s*([0-9]+(?:\.[0-9]+)?)\s*$") {
+                $level = ConvertTo-Int $Matches[1]
+                $Lines.Add("                .RequirementBeastLevel($level)") | Out-Null
+            }
+            elseif ($Row.SkillRequirements -match "(.+?)\s+([0-9]+)") {
+                $skill = Get-SkillType $Matches[1]
+                $rank = ConvertTo-Int $Matches[2]
+                $Lines.Add("                .RequirementSkill(SkillType.$skill, $rank)") | Out-Null
+            }
         }
-        $role = Get-BeastRole $Row.Style
-        if ($role -ne "Invalid") {
-            $Lines.Add("                .RequirementBeastRole(BeastRoleType.$role)") | Out-Null
+        if (Test-IsBeastPerkRow $Row) {
+            $role = Get-BeastRole $Row.Style
+            if ($role -ne "Invalid") {
+                $Lines.Add("                .RequirementBeastRole(BeastRoleType.$role)") | Out-Null
+            }
         }
         return
     }
@@ -558,7 +584,7 @@ function Write-PerkDefinitions {
 
     foreach ($styleGroup in ($Rows | Group-Object { "$($_.Tab)|$($_.Style)" } | Sort-Object { [int]$_.Group[0].Row })) {
         $firstStyleRow = $styleGroup.Group[0]
-        $isBeastRole = $firstStyleRow.Tab -eq "Beast Mastery"
+        $isBeastRole = Test-IsBeastPerkRow $firstStyleRow
         $dir = if ($isBeastRole) {
             Join-Path $rootDir "Beast"
         }
@@ -616,7 +642,7 @@ function Write-PerkDefinitions {
             $lines.Add("        {") | Out-Null
             $lines.Add("            _builder.Create(PerkCategoryType.$(Get-Category $first), PerkType.$($group.Name))") | Out-Null
             $lines.Add("                .Name(""$(ConvertTo-CSharpString $first.BaseName)"")") | Out-Null
-            if ($first.Tab -eq "Beast Mastery") {
+            if (Test-IsBeastPerkRow $first) {
                 $lines.Add("                .GroupType(PerkGroupType.Beast)") | Out-Null
             }
 
@@ -1708,7 +1734,7 @@ function Write-AbilityDefinitions {
 function Write-BeastAI {
     param([object[]]$Rows)
     $path = Resolve-RepoPath "SWLOR.Game.Server\Feature\AIDefinition\BeastAIDefinition.cs"
-    $activeBeastRows = @($Rows | Where-Object { $_.Tab -eq "Beast Mastery" -and $ActiveTypes -contains $_.Type } | Sort-Object Row)
+    $activeBeastRows = @($Rows | Where-Object { (Test-IsBeastPerkRow $_) -and $ActiveTypes -contains $_.Type } | Sort-Object Row)
     $selfFeats = @(
         $activeBeastRows |
             Where-Object { !(Test-IsHostile $_) -or (Test-IsSelfCenteredHostileArea $_) } |

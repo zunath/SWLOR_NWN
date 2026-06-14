@@ -157,6 +157,12 @@ function Get-ExpectedSkillType {
     return $key
 }
 
+function Test-IsBeastPerkRow {
+    param([object]$Row)
+
+    return $Row.Tab -eq "Beast Mastery" -and $Row.CharacterType -eq "Beast"
+}
+
 function Get-ExpectedSkillRequirement {
     param([object]$Row)
 
@@ -167,7 +173,7 @@ function Get-ExpectedSkillRequirement {
     if ($Row.SkillRequirements -match "(.+?)\s+([0-9]+)") {
         return [pscustomobject]@{
             Skill = Get-ExpectedSkillType $Matches[1]
-            Rank = [int]$Matches[2]
+            Rank = ConvertTo-OptionalInt $Matches[2]
         }
     }
 
@@ -177,12 +183,12 @@ function Get-ExpectedSkillRequirement {
 function Get-ExpectedBeastLevel {
     param([object]$Row)
 
-    if ($Row.Tab -ne "Beast Mastery") {
+    if (!(Test-IsBeastPerkRow $Row)) {
         return $null
     }
 
-    if ($Row.SkillRequirements -match "([0-9]+)") {
-        return [int]$Matches[1]
+    if ($Row.SkillRequirements -match "^\s*([0-9]+(?:\.[0-9]+)?)\s*$") {
+        return ConvertTo-OptionalInt $Matches[1]
     }
 
     return $null
@@ -191,7 +197,7 @@ function Get-ExpectedBeastLevel {
 function Get-ExpectedBeastRole {
     param([object]$Row)
 
-    if ($Row.Tab -ne "Beast Mastery") {
+    if (!(Test-IsBeastPerkRow $Row)) {
         return ""
     }
 
@@ -277,10 +283,17 @@ function Replace-OrAddLine {
         return [regex]::Replace($Segment, $Pattern, $Replacement, 1)
     }
 
+    $insertReplacement = if ($Replacement -match "^\s") {
+        $Replacement
+    }
+    else {
+        "                $Replacement"
+    }
+
     return [regex]::Replace(
         $Segment,
         $InsertAfterPattern,
-        "`$0`r`n$Replacement",
+        "`$0`r`n$insertReplacement",
         1)
 }
 
@@ -357,38 +370,54 @@ function Update-LevelSegment {
             -InsertAfterPattern '\.Description\("((?:\\.|[^"\\])*)"\)'
     }
 
-    if ($Row.Tab -eq "Beast Mastery") {
-        $beastLevel = Get-ExpectedBeastLevel $Row
-        if ($null -ne $beastLevel) {
-            $Segment = Replace-OrAddLine `
-                -Segment $Segment `
-                -Pattern '\.RequirementBeastLevel\(\d+\)' `
-                -Replacement ".RequirementBeastLevel($beastLevel)" `
-                -InsertAfterPattern '\.Price\(\d+\)'
-        }
+    $expectedSkill = Get-ExpectedSkillRequirement $Row
+    if ($null -eq $expectedSkill) {
+        $Segment = Remove-Line -Segment $Segment -Pattern '\.RequirementSkill\(SkillType\.\w+\s*,\s*\d+\)'
+    }
+    else {
+        $Segment = Replace-OrAddLine `
+            -Segment $Segment `
+            -Pattern '\.RequirementSkill\(SkillType\.\w+\s*,\s*\d+\)' `
+            -Replacement ".RequirementSkill(SkillType.$($expectedSkill.Skill), $($expectedSkill.Rank))" `
+            -InsertAfterPattern '\.Price\(\d+\)'
+    }
 
+    $expectedBeastLevel = Get-ExpectedBeastLevel $Row
+    if ($null -eq $expectedBeastLevel) {
+        $Segment = Remove-Line -Segment $Segment -Pattern '\.RequirementBeastLevel\(\d+\)'
+    }
+    else {
+        $Segment = Replace-OrAddLine `
+            -Segment $Segment `
+            -Pattern '\.RequirementBeastLevel\(\d+\)' `
+            -Replacement ".RequirementBeastLevel($expectedBeastLevel)" `
+            -InsertAfterPattern '\.Price\(\d+\)'
+    }
+
+    if ($Row.Tab -eq "Beast Mastery") {
         $beastRole = Get-ExpectedBeastRole $Row
-        if (![string]::IsNullOrWhiteSpace($beastRole)) {
+        if ([string]::IsNullOrWhiteSpace($beastRole)) {
+            $Segment = Remove-Line -Segment $Segment -Pattern '\.RequirementBeastRole\(BeastRoleType\.\w+\)'
+        }
+        else {
+            $beastRoleInsertAfter = if ($null -ne $expectedBeastLevel) {
+                '\.RequirementBeastLevel\(\d+\)'
+            }
+            elseif ($null -ne $expectedSkill) {
+                '\.RequirementSkill\(SkillType\.\w+\s*,\s*\d+\)'
+            }
+            else {
+                '\.Price\(\d+\)'
+            }
+
             $Segment = Replace-OrAddLine `
                 -Segment $Segment `
                 -Pattern '\.RequirementBeastRole\(BeastRoleType\.\w+\)' `
                 -Replacement ".RequirementBeastRole(BeastRoleType.$beastRole)" `
-                -InsertAfterPattern '(\.RequirementBeastLevel\(\d+\)|\.Price\(\d+\))'
+                -InsertAfterPattern $beastRoleInsertAfter
         }
     }
     else {
-        $expectedSkill = Get-ExpectedSkillRequirement $Row
-        if ($null -eq $expectedSkill) {
-            $Segment = Remove-Line -Segment $Segment -Pattern '\.RequirementSkill\(SkillType\.\w+\s*,\s*\d+\)'
-        }
-        else {
-            $Segment = Replace-OrAddLine `
-                -Segment $Segment `
-                -Pattern '\.RequirementSkill\(SkillType\.\w+\s*,\s*\d+\)' `
-                -Replacement ".RequirementSkill(SkillType.$($expectedSkill.Skill), $($expectedSkill.Rank))" `
-                -InsertAfterPattern '\.Price\(\d+\)'
-        }
-
         $Segment = Remove-Line -Segment $Segment -Pattern '\.RequirementCharacterType\(CharacterType\.\w+\)'
         $characterInsertAfter = if ($null -ne $expectedSkill) {
             '\.RequirementSkill\(SkillType\.\w+\s*,\s*\d+\)'

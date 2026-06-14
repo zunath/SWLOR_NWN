@@ -797,11 +797,11 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "YOrientation": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         }
       },
       {
@@ -1551,7 +1551,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "XOrientation": {
           "type": "float",
@@ -1772,7 +1772,7 @@
         },
         "X": {
           "type": "float",
-          "value": 125
+          "value": 125.0
         },
         "Y": {
           "type": "float",
@@ -1780,7 +1780,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         }
       },
       {
@@ -1996,7 +1996,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         }
       },
       {
@@ -2212,7 +2212,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         }
       },
       {
@@ -2231,7 +2231,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "CloseLockDC": {
           "type": "byte",
@@ -2428,7 +2428,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         }
       },
       {
@@ -2645,7 +2645,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         }
       },
       {
@@ -2664,7 +2664,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "CloseLockDC": {
           "type": "byte",
@@ -2858,7 +2858,7 @@
         },
         "Y": {
           "type": "float",
-          "value": 165
+          "value": 165.0
         },
         "Z": {
           "type": "float",
@@ -3079,7 +3079,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         }
       },
       {
@@ -3513,7 +3513,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         }
       },
       {
@@ -3947,7 +3947,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         }
       },
       {
@@ -4183,7 +4183,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "CloseLockDC": {
           "type": "byte",
@@ -4373,15 +4373,15 @@
         },
         "X": {
           "type": "float",
-          "value": 175
+          "value": 175.0
         },
         "Y": {
           "type": "float",
-          "value": 80
+          "value": 80.0
         },
         "Z": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         }
       },
       {
@@ -4400,7 +4400,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "CloseLockDC": {
           "type": "byte",
@@ -4590,15 +4590,15 @@
         },
         "X": {
           "type": "float",
-          "value": 235
+          "value": 235.0
         },
         "Y": {
           "type": "float",
-          "value": 60
+          "value": 60.0
         },
         "Z": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         }
       },
       {
@@ -4617,7 +4617,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "CloseLockDC": {
           "type": "byte",
@@ -4807,15 +4807,15 @@
         },
         "X": {
           "type": "float",
-          "value": 215
+          "value": 215.0
         },
         "Y": {
           "type": "float",
-          "value": 50
+          "value": 50.0
         },
         "Z": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         }
       },
       {
@@ -5024,15 +5024,15 @@
         },
         "X": {
           "type": "float",
-          "value": 160
+          "value": 160.0
         },
         "Y": {
           "type": "float",
-          "value": 125
+          "value": 125.0
         },
         "Z": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         }
       },
       {
@@ -5051,7 +5051,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "CloseLockDC": {
           "type": "byte",
@@ -5241,15 +5241,15 @@
         },
         "X": {
           "type": "float",
-          "value": 195
+          "value": 195.0
         },
         "Y": {
           "type": "float",
-          "value": 190
+          "value": 190.0
         },
         "Z": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         }
       },
       {
@@ -5268,7 +5268,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "CloseLockDC": {
           "type": "byte",
@@ -5458,15 +5458,15 @@
         },
         "X": {
           "type": "float",
-          "value": 235
+          "value": 235.0
         },
         "Y": {
           "type": "float",
-          "value": 210
+          "value": 210.0
         },
         "Z": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         }
       },
       {
@@ -5675,15 +5675,15 @@
         },
         "X": {
           "type": "float",
-          "value": 195
+          "value": 195.0
         },
         "Y": {
           "type": "float",
-          "value": 80
+          "value": 80.0
         },
         "Z": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         }
       },
       {
@@ -5702,7 +5702,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "CloseLockDC": {
           "type": "byte",
@@ -5892,15 +5892,15 @@
         },
         "X": {
           "type": "float",
-          "value": 125
+          "value": 125.0
         },
         "Y": {
           "type": "float",
-          "value": 90
+          "value": 90.0
         },
         "Z": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         }
       },
       {
@@ -6109,15 +6109,15 @@
         },
         "X": {
           "type": "float",
-          "value": 90
+          "value": 90.0
         },
         "Y": {
           "type": "float",
-          "value": 125
+          "value": 125.0
         },
         "Z": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         }
       },
       {
@@ -6326,15 +6326,15 @@
         },
         "X": {
           "type": "float",
-          "value": 125
+          "value": 125.0
         },
         "Y": {
           "type": "float",
-          "value": 160
+          "value": 160.0
         },
         "Z": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         }
       },
       {
@@ -6353,7 +6353,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "CloseLockDC": {
           "type": "byte",
@@ -6543,15 +6543,15 @@
         },
         "X": {
           "type": "float",
-          "value": 55
+          "value": 55.0
         },
         "Y": {
           "type": "float",
-          "value": 170
+          "value": 170.0
         },
         "Z": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         }
       },
       {
@@ -6570,7 +6570,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "CloseLockDC": {
           "type": "byte",
@@ -6760,15 +6760,15 @@
         },
         "X": {
           "type": "float",
-          "value": 35
+          "value": 35.0
         },
         "Y": {
           "type": "float",
-          "value": 220
+          "value": 220.0
         },
         "Z": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         }
       },
       {
@@ -6977,15 +6977,15 @@
         },
         "X": {
           "type": "float",
-          "value": 90
+          "value": 90.0
         },
         "Y": {
           "type": "float",
-          "value": 215
+          "value": 215.0
         },
         "Z": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         }
       },
       {
@@ -7194,15 +7194,15 @@
         },
         "X": {
           "type": "float",
-          "value": 85
+          "value": 85.0
         },
         "Y": {
           "type": "float",
-          "value": 180
+          "value": 180.0
         },
         "Z": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         }
       }
     ]
@@ -7473,7 +7473,7 @@
         "__struct_id": 9,
         "Bearing": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "X": {
           "type": "float",
@@ -7755,7 +7755,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         }
       },
       {
@@ -8025,7 +8025,7 @@
         },
         "Z": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         }
       }
     ]
@@ -8074,15 +8074,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -8102,11 +8102,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -8194,15 +8194,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -8222,11 +8222,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -8314,15 +8314,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -8342,11 +8342,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -8434,15 +8434,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -8462,11 +8462,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -8554,15 +8554,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -8582,11 +8582,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -8674,15 +8674,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -8702,11 +8702,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -8794,15 +8794,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -8822,11 +8822,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -8914,15 +8914,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -8942,11 +8942,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -9034,15 +9034,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -9062,11 +9062,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -9154,15 +9154,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -9182,11 +9182,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -9274,15 +9274,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -9302,11 +9302,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -9394,15 +9394,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -9422,11 +9422,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -9514,15 +9514,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -9542,11 +9542,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -9634,15 +9634,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -9662,11 +9662,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -9754,15 +9754,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -9782,11 +9782,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -9874,15 +9874,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -9902,11 +9902,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -9994,15 +9994,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -10022,11 +10022,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -10114,15 +10114,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -10142,11 +10142,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -10234,15 +10234,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -10262,11 +10262,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -10354,15 +10354,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -10382,11 +10382,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -10474,15 +10474,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -10502,11 +10502,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -10594,15 +10594,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -10622,11 +10622,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -10714,15 +10714,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -10742,11 +10742,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -10834,15 +10834,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -10862,11 +10862,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -10954,15 +10954,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -10982,11 +10982,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -11074,15 +11074,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -11102,11 +11102,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -11194,15 +11194,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -11222,11 +11222,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -11314,15 +11314,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -11342,11 +11342,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -11434,15 +11434,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -11462,11 +11462,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -11554,15 +11554,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -11582,11 +11582,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -11674,15 +11674,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -11702,11 +11702,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -11794,15 +11794,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -11822,11 +11822,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -11914,15 +11914,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -11942,11 +11942,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -11990,7 +11990,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         }
       },
       {
@@ -12034,15 +12034,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -12062,11 +12062,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -12154,15 +12154,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -12182,11 +12182,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -12274,15 +12274,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -12302,11 +12302,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -12394,15 +12394,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -12422,11 +12422,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -12514,15 +12514,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -12542,11 +12542,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -12634,15 +12634,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -12662,11 +12662,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -12754,15 +12754,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -12782,11 +12782,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -12874,15 +12874,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -12902,11 +12902,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -12994,15 +12994,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -13022,11 +13022,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -13114,15 +13114,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -13142,11 +13142,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -13234,15 +13234,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -13262,11 +13262,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -13354,15 +13354,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -13382,11 +13382,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -13474,15 +13474,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -13502,11 +13502,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -13594,15 +13594,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -13622,11 +13622,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -13714,15 +13714,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -13742,11 +13742,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -13834,15 +13834,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -13862,11 +13862,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -13954,15 +13954,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -13982,11 +13982,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -14074,15 +14074,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -14102,11 +14102,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -14194,15 +14194,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -14222,11 +14222,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -14314,15 +14314,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -14342,11 +14342,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -14434,15 +14434,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -14462,11 +14462,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -14554,15 +14554,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -14582,11 +14582,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -14674,15 +14674,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -14702,11 +14702,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -14794,15 +14794,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -14822,11 +14822,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -14914,15 +14914,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -14942,11 +14942,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -15034,15 +15034,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -15062,11 +15062,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -15154,15 +15154,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -15182,11 +15182,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -15274,15 +15274,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -15302,11 +15302,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -15394,15 +15394,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -15422,11 +15422,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -15514,15 +15514,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -15542,11 +15542,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -15634,15 +15634,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -15662,11 +15662,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -15754,15 +15754,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -15782,11 +15782,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -15874,15 +15874,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -15902,11 +15902,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -15994,15 +15994,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -16022,11 +16022,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -16114,15 +16114,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -16142,11 +16142,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -16234,15 +16234,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -16262,11 +16262,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -16354,15 +16354,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -16382,11 +16382,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -16474,15 +16474,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -16502,11 +16502,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -16594,15 +16594,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -16622,11 +16622,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -16714,15 +16714,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -16742,11 +16742,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -16834,15 +16834,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -16862,11 +16862,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -16954,15 +16954,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -16982,11 +16982,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -17074,15 +17074,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -17102,11 +17102,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -17194,15 +17194,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -17222,11 +17222,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -17314,15 +17314,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -17342,11 +17342,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -17434,15 +17434,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -17462,11 +17462,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -17554,15 +17554,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -17582,11 +17582,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -17674,15 +17674,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -17702,11 +17702,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -17794,15 +17794,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -17822,11 +17822,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -17914,15 +17914,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -17942,11 +17942,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -18034,15 +18034,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -18062,11 +18062,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -18154,15 +18154,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -18182,11 +18182,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -18274,15 +18274,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -18302,11 +18302,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -18394,15 +18394,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -18422,11 +18422,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -18514,15 +18514,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -18542,11 +18542,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -18634,15 +18634,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -18662,11 +18662,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -18754,15 +18754,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -18782,11 +18782,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -18874,15 +18874,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -18902,11 +18902,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -18994,15 +18994,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -19022,11 +19022,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -19114,15 +19114,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -19142,11 +19142,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -19234,15 +19234,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -19262,11 +19262,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -19354,15 +19354,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -19382,11 +19382,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -19474,15 +19474,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -19502,11 +19502,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -19594,15 +19594,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -19622,11 +19622,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -19714,15 +19714,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -19742,11 +19742,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -19834,15 +19834,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -19862,11 +19862,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -19954,15 +19954,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -19982,11 +19982,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -20074,15 +20074,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -20102,11 +20102,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -20194,15 +20194,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -20222,11 +20222,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -20314,15 +20314,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -20342,11 +20342,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -20434,15 +20434,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -20462,11 +20462,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -20554,15 +20554,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -20582,11 +20582,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -20674,15 +20674,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -20702,11 +20702,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -20794,11 +20794,11 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 50
+          "value": 50.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 5
+          "value": 5.0
         },
         "PitchVariation": {
           "type": "float",
@@ -20822,11 +20822,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "Sounds": {
           "type": "list",
@@ -20921,7 +20921,7 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 25
+          "value": 25.0
         },
         "MinDistance": {
           "type": "float",
@@ -20949,11 +20949,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "Sounds": {
           "type": "list",
@@ -21048,11 +21048,11 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 40
+          "value": 40.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 4
+          "value": 4.0
         },
         "PitchVariation": {
           "type": "float",
@@ -21076,11 +21076,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "Sounds": {
           "type": "list",
@@ -21175,7 +21175,7 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 25
+          "value": 25.0
         },
         "MinDistance": {
           "type": "float",
@@ -21203,11 +21203,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "Sounds": {
           "type": "list",
@@ -21302,7 +21302,7 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 25
+          "value": 25.0
         },
         "MinDistance": {
           "type": "float",
@@ -21330,11 +21330,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "Sounds": {
           "type": "list",
@@ -21429,7 +21429,7 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 25
+          "value": 25.0
         },
         "MinDistance": {
           "type": "float",
@@ -21457,11 +21457,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "Sounds": {
           "type": "list",
@@ -21556,11 +21556,11 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
@@ -21584,11 +21584,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -21683,11 +21683,11 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
@@ -21711,11 +21711,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "Sounds": {
           "type": "list",
@@ -21810,11 +21810,11 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
@@ -21838,11 +21838,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "Sounds": {
           "type": "list",
@@ -21937,11 +21937,11 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
@@ -21965,11 +21965,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "Sounds": {
           "type": "list",
@@ -22064,11 +22064,11 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
@@ -22092,11 +22092,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "Sounds": {
           "type": "list",
@@ -22191,11 +22191,11 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
@@ -22219,11 +22219,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "Sounds": {
           "type": "list",
@@ -22318,11 +22318,11 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
@@ -22346,11 +22346,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "Sounds": {
           "type": "list",
@@ -22445,11 +22445,11 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
@@ -22473,11 +22473,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "Sounds": {
           "type": "list",
@@ -22572,11 +22572,11 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
@@ -22600,11 +22600,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "Sounds": {
           "type": "list",
@@ -22699,11 +22699,11 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
@@ -22727,11 +22727,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "Sounds": {
           "type": "list",
@@ -22826,11 +22826,11 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
@@ -22854,11 +22854,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "Sounds": {
           "type": "list",
@@ -22953,11 +22953,11 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
@@ -22981,11 +22981,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "Sounds": {
           "type": "list",
@@ -23080,11 +23080,11 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
@@ -23108,11 +23108,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "Sounds": {
           "type": "list",
@@ -23207,11 +23207,11 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
@@ -23235,11 +23235,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "Sounds": {
           "type": "list",
@@ -23334,11 +23334,11 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
@@ -23362,11 +23362,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "Sounds": {
           "type": "list",
@@ -23461,11 +23461,11 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
@@ -23489,11 +23489,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "Sounds": {
           "type": "list",
@@ -23588,11 +23588,11 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
@@ -23616,11 +23616,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "Sounds": {
           "type": "list",
@@ -23715,11 +23715,11 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
@@ -23743,11 +23743,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "Sounds": {
           "type": "list",
@@ -23842,11 +23842,11 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
@@ -23870,11 +23870,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "Sounds": {
           "type": "list",
@@ -23969,11 +23969,11 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
@@ -23997,11 +23997,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "Sounds": {
           "type": "list",
@@ -24096,11 +24096,11 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
@@ -24124,11 +24124,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "Sounds": {
           "type": "list",
@@ -24223,11 +24223,11 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
@@ -24251,11 +24251,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "Sounds": {
           "type": "list",
@@ -24350,11 +24350,11 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
@@ -24378,11 +24378,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "Sounds": {
           "type": "list",
@@ -24477,11 +24477,11 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
@@ -24505,11 +24505,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "Sounds": {
           "type": "list",
@@ -24604,11 +24604,11 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
@@ -24632,11 +24632,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "Sounds": {
           "type": "list",
@@ -24731,11 +24731,11 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
@@ -24759,11 +24759,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "Sounds": {
           "type": "list",
@@ -24858,11 +24858,11 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
@@ -24886,11 +24886,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "Sounds": {
           "type": "list",
@@ -24985,11 +24985,11 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
@@ -25013,11 +25013,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "Sounds": {
           "type": "list",
@@ -25112,11 +25112,11 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
@@ -25140,11 +25140,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "Sounds": {
           "type": "list",
@@ -25239,11 +25239,11 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
@@ -25267,11 +25267,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "Sounds": {
           "type": "list",
@@ -25366,11 +25366,11 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
@@ -25394,11 +25394,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "Sounds": {
           "type": "list",
@@ -25493,11 +25493,11 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
@@ -25521,11 +25521,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "Sounds": {
           "type": "list",
@@ -25620,11 +25620,11 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
@@ -25648,11 +25648,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "Sounds": {
           "type": "list",
@@ -25747,11 +25747,11 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
@@ -25775,11 +25775,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "Sounds": {
           "type": "list",
@@ -25874,11 +25874,11 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
@@ -25902,11 +25902,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "Sounds": {
           "type": "list",
@@ -26001,11 +26001,11 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
@@ -26029,11 +26029,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "Sounds": {
           "type": "list",
@@ -26128,11 +26128,11 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
@@ -26156,11 +26156,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "Sounds": {
           "type": "list",
@@ -26255,11 +26255,11 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
@@ -26283,11 +26283,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "Sounds": {
           "type": "list",
@@ -26382,11 +26382,11 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
@@ -26410,11 +26410,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "Sounds": {
           "type": "list",
@@ -26509,11 +26509,11 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
@@ -26537,11 +26537,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "Sounds": {
           "type": "list",
@@ -26636,11 +26636,11 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
@@ -26664,11 +26664,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "Sounds": {
           "type": "list",
@@ -26763,11 +26763,11 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
@@ -26791,11 +26791,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "Sounds": {
           "type": "list",
@@ -26890,11 +26890,11 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
@@ -26918,11 +26918,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "Sounds": {
           "type": "list",
@@ -27017,11 +27017,11 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
@@ -27045,11 +27045,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "Sounds": {
           "type": "list",
@@ -27144,11 +27144,11 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
@@ -27172,11 +27172,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "Sounds": {
           "type": "list",
@@ -27271,11 +27271,11 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
@@ -27299,11 +27299,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "Sounds": {
           "type": "list",
@@ -27398,11 +27398,11 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
@@ -27426,11 +27426,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "Sounds": {
           "type": "list",
@@ -27525,11 +27525,11 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
@@ -27553,11 +27553,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "Sounds": {
           "type": "list",
@@ -27652,11 +27652,11 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
@@ -27680,11 +27680,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "Sounds": {
           "type": "list",
@@ -27779,11 +27779,11 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
@@ -27807,11 +27807,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "Sounds": {
           "type": "list",
@@ -27906,11 +27906,11 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
@@ -27934,11 +27934,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "Sounds": {
           "type": "list",
@@ -28033,11 +28033,11 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
@@ -28061,11 +28061,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "Sounds": {
           "type": "list",
@@ -28160,11 +28160,11 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
@@ -28188,11 +28188,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "Sounds": {
           "type": "list",
@@ -28287,11 +28287,11 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
@@ -28315,11 +28315,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "Sounds": {
           "type": "list",
@@ -28414,11 +28414,11 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
@@ -28442,11 +28442,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "Sounds": {
           "type": "list",
@@ -28541,11 +28541,11 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
@@ -28569,11 +28569,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "Sounds": {
           "type": "list",
@@ -28668,11 +28668,11 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
@@ -28696,11 +28696,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "Sounds": {
           "type": "list",
@@ -28795,11 +28795,11 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
@@ -28823,11 +28823,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "Sounds": {
           "type": "list",
@@ -28922,15 +28922,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -28950,11 +28950,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -29042,15 +29042,15 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 10
+          "value": 10.0
         },
         "MinDistance": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "PitchVariation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Positional": {
           "type": "byte",
@@ -29070,11 +29070,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -29162,7 +29162,7 @@
         },
         "MaxDistance": {
           "type": "float",
-          "value": 15
+          "value": 15.0
         },
         "MinDistance": {
           "type": "float",
@@ -29190,11 +29190,11 @@
         },
         "RandomRangeX": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "RandomRangeY": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "Sounds": {
           "type": "list",
@@ -29312,7 +29312,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 0
+          "value": 0.0
         },
         "XPosition": {
           "type": "float",
@@ -29320,7 +29320,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 1
+          "value": 1.0
         },
         "YPosition": {
           "type": "float",

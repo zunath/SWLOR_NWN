@@ -138,7 +138,7 @@
         },
         "ChallengeRating": {
           "type": "float",
-          "value": 2
+          "value": 2.0
         },
         "ClassList": {
           "type": "list",
@@ -462,19 +462,19 @@
               },
               "XPosition": {
                 "type": "float",
-                "value": -1
+                "value": -1.0
               },
               "YOrientation": {
                 "type": "float",
-                "value": 1
+                "value": 1.0
               },
               "YPosition": {
                 "type": "float",
-                "value": -1
+                "value": -1.0
               },
               "ZPosition": {
                 "type": "float",
-                "value": -1
+                "value": -1.0
               }
             }
           ]
@@ -924,19 +924,19 @@
               },
               "XPosition": {
                 "type": "float",
-                "value": -1
+                "value": -1.0
               },
               "YOrientation": {
                 "type": "float",
-                "value": 1
+                "value": 1.0
               },
               "YPosition": {
                 "type": "float",
-                "value": -1
+                "value": -1.0
               },
               "ZPosition": {
                 "type": "float",
-                "value": -1
+                "value": -1.0
               }
             }
           ]
@@ -1398,7 +1398,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 13
+          "value": 13.0
         },
         "YOrientation": {
           "type": "float",

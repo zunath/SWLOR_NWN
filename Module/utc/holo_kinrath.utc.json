@@ -78,13 +78,6 @@
     "type": "list",
     "value": [
       {
-        "__struct_id": 131072,
-        "EquippedRes": {
-          "type": "resref",
-          "value": "holokin_sk"
-        }
-      },
-      {
         "__struct_id": 16384,
         "EquippedRes": {
           "type": "resref",
@@ -96,6 +89,13 @@
         "EquippedRes": {
           "type": "resref",
           "value": "holokin_wp"
+        }
+      },
+      {
+        "__struct_id": 131072,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "holokin_sk"
         }
       }
     ]

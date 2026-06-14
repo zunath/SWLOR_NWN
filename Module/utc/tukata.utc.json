@@ -14,7 +14,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 20.0
+    "value": 34.0
   },
   "ClassList": {
     "type": "list",
@@ -78,17 +78,17 @@
     "type": "list",
     "value": [
       {
-        "__struct_id": 131072,
-        "EquippedRes": {
-          "type": "resref",
-          "value": "tukata_sk"
-        }
-      },
-      {
         "__struct_id": 32768,
         "EquippedRes": {
           "type": "resref",
           "value": "tukata_wp"
+        }
+      },
+      {
+        "__struct_id": 131072,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "tukata_sk"
         }
       }
     ]
@@ -177,7 +177,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 595
+    "value": 675
   },
   "NaturalAC": {
     "type": "byte",

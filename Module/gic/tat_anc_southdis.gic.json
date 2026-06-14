@@ -198,6 +198,13 @@
           "type": "cexostring",
           "value": ""
         }
+      },
+      {
+        "__struct_id": 4,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
       }
     ]
   },
@@ -2212,7 +2219,7 @@
         "__struct_id": 6,
         "Comment": {
           "type": "cexostring",
-          "value": ""
+          "value": "1"
         },
         "PlayInToolset": {
           "type": "byte",

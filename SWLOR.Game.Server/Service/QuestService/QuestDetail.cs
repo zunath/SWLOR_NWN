@@ -74,7 +74,7 @@ namespace SWLOR.Game.Server.Service.QuestService
             // If they haven't accepted it yet, this will be null.
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
-            var quest = dbPlayer.Quests.ContainsKey(playerId) ? dbPlayer.Quests[QuestId] : null;
+            var quest = dbPlayer.Quests.ContainsKey(QuestId) ? dbPlayer.Quests[QuestId] : null;
 
             // If the status is null, it's assumed that the player hasn't accepted it yet.
             if (quest != null)

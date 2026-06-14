@@ -1258,7 +1258,7 @@
         },
         "ChallengeRating": {
           "type": "float",
-          "value": 4.0
+          "value": 5.0
         },
         "ClassList": {
           "type": "list",
@@ -1610,10 +1610,6 @@
                 "type": "byte",
                 "value": 0
               },
-              "Comment": {
-                "type": "cexostring",
-                "value": ""
-              },
               "Cost": {
                 "type": "dword",
                 "value": 121000
@@ -1643,10 +1639,6 @@
               "ModelPart1": {
                 "type": "byte",
                 "value": 1
-              },
-              "PaletteID": {
-                "type": "byte",
-                "value": 56
               },
               "Plot": {
                 "type": "byte",
@@ -1925,16 +1917,132 @@
                 "type": "word",
                 "value": 1
               },
-              "EquippedRes": {
-                "type": "resref",
-                "value": "malechef_wp"
+              "XOrientation": {
+                "type": "float",
+                "value": 0.0
+              },
+              "XPosition": {
+                "type": "float",
+                "value": 0.0
+              },
+              "YOrientation": {
+                "type": "float",
+                "value": 1.0
+              },
+              "YPosition": {
+                "type": "float",
+                "value": 0.0
+              },
+              "ZPosition": {
+                "type": "float",
+                "value": 0.0
               }
             },
             {
               "__struct_id": 131072,
-              "EquippedRes": {
+              "AddCost": {
+                "type": "dword",
+                "value": 0
+              },
+              "BaseItem": {
+                "type": "int",
+                "value": 0
+              },
+              "Charges": {
+                "type": "byte",
+                "value": 50
+              },
+              "Cost": {
+                "type": "dword",
+                "value": 1
+              },
+              "Cursed": {
+                "type": "byte",
+                "value": 0
+              },
+              "DescIdentified": {
+                "type": "cexolocstring",
+                "value": {}
+              },
+              "Description": {
+                "type": "cexolocstring",
+                "value": {}
+              },
+              "Identified": {
+                "type": "byte",
+                "value": 0
+              },
+              "LocalizedName": {
+                "type": "cexolocstring",
+                "value": {}
+              },
+              "ModelPart1": {
+                "type": "byte",
+                "value": 0
+              },
+              "ModelPart2": {
+                "type": "byte",
+                "value": 0
+              },
+              "ModelPart3": {
+                "type": "byte",
+                "value": 0
+              },
+              "Plot": {
+                "type": "byte",
+                "value": 0
+              },
+              "PropertiesList": {
+                "type": "list",
+                "value": []
+              },
+              "StackSize": {
+                "type": "word",
+                "value": 1
+              },
+              "Stolen": {
+                "type": "byte",
+                "value": 0
+              },
+              "Tag": {
+                "type": "cexostring",
+                "value": ""
+              },
+              "TemplateResRef": {
                 "type": "resref",
-                "value": "malechef_sk"
+                "value": ""
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 0
+              },
+              "xModelPart2": {
+                "type": "word",
+                "value": 0
+              },
+              "xModelPart3": {
+                "type": "word",
+                "value": 0
+              },
+              "XOrientation": {
+                "type": "float",
+                "value": 0.0
+              },
+              "XPosition": {
+                "type": "float",
+                "value": 0.0
+              },
+              "YOrientation": {
+                "type": "float",
+                "value": 1.0
+              },
+              "YPosition": {
+                "type": "float",
+                "value": 0.0
+              },
+              "ZPosition": {
+                "type": "float",
+                "value": 0.0
               }
             }
           ]
@@ -2100,7 +2208,7 @@
         },
         "MaxHitPoints": {
           "type": "short",
-          "value": 86
+          "value": 91
         },
         "NaturalAC": {
           "type": "byte",
@@ -2628,7 +2736,7 @@
         },
         "ChallengeRating": {
           "type": "float",
-          "value": 4.0
+          "value": 5.0
         },
         "ClassList": {
           "type": "list",
@@ -2978,10 +3086,6 @@
                 "type": "byte",
                 "value": 0
               },
-              "Comment": {
-                "type": "cexostring",
-                "value": ""
-              },
               "Cost": {
                 "type": "dword",
                 "value": 121000
@@ -3011,10 +3115,6 @@
               "ModelPart1": {
                 "type": "byte",
                 "value": 1
-              },
-              "PaletteID": {
-                "type": "byte",
-                "value": 56
               },
               "Plot": {
                 "type": "byte",
@@ -3293,16 +3393,132 @@
                 "type": "word",
                 "value": 1
               },
-              "EquippedRes": {
-                "type": "resref",
-                "value": "pho_wp"
+              "XOrientation": {
+                "type": "float",
+                "value": 0.0
+              },
+              "XPosition": {
+                "type": "float",
+                "value": 0.0
+              },
+              "YOrientation": {
+                "type": "float",
+                "value": 1.0
+              },
+              "YPosition": {
+                "type": "float",
+                "value": 0.0
+              },
+              "ZPosition": {
+                "type": "float",
+                "value": 0.0
               }
             },
             {
               "__struct_id": 131072,
-              "EquippedRes": {
+              "AddCost": {
+                "type": "dword",
+                "value": 0
+              },
+              "BaseItem": {
+                "type": "int",
+                "value": 0
+              },
+              "Charges": {
+                "type": "byte",
+                "value": 50
+              },
+              "Cost": {
+                "type": "dword",
+                "value": 1
+              },
+              "Cursed": {
+                "type": "byte",
+                "value": 0
+              },
+              "DescIdentified": {
+                "type": "cexolocstring",
+                "value": {}
+              },
+              "Description": {
+                "type": "cexolocstring",
+                "value": {}
+              },
+              "Identified": {
+                "type": "byte",
+                "value": 0
+              },
+              "LocalizedName": {
+                "type": "cexolocstring",
+                "value": {}
+              },
+              "ModelPart1": {
+                "type": "byte",
+                "value": 0
+              },
+              "ModelPart2": {
+                "type": "byte",
+                "value": 0
+              },
+              "ModelPart3": {
+                "type": "byte",
+                "value": 0
+              },
+              "Plot": {
+                "type": "byte",
+                "value": 0
+              },
+              "PropertiesList": {
+                "type": "list",
+                "value": []
+              },
+              "StackSize": {
+                "type": "word",
+                "value": 1
+              },
+              "Stolen": {
+                "type": "byte",
+                "value": 0
+              },
+              "Tag": {
+                "type": "cexostring",
+                "value": ""
+              },
+              "TemplateResRef": {
                 "type": "resref",
-                "value": "pho_sk"
+                "value": ""
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 0
+              },
+              "xModelPart2": {
+                "type": "word",
+                "value": 0
+              },
+              "xModelPart3": {
+                "type": "word",
+                "value": 0
+              },
+              "XOrientation": {
+                "type": "float",
+                "value": 0.0
+              },
+              "XPosition": {
+                "type": "float",
+                "value": 0.0
+              },
+              "YOrientation": {
+                "type": "float",
+                "value": 1.0
+              },
+              "YPosition": {
+                "type": "float",
+                "value": 0.0
+              },
+              "ZPosition": {
+                "type": "float",
+                "value": 0.0
               }
             }
           ]
@@ -3468,7 +3684,7 @@
         },
         "MaxHitPoints": {
           "type": "short",
-          "value": 86
+          "value": 91
         },
         "NaturalAC": {
           "type": "byte",
@@ -12088,7 +12304,7 @@
         },
         "ChallengeRating": {
           "type": "float",
-          "value": 4.0
+          "value": 5.0
         },
         "ClassList": {
           "type": "list",
@@ -12440,10 +12656,6 @@
                 "type": "byte",
                 "value": 0
               },
-              "Comment": {
-                "type": "cexostring",
-                "value": ""
-              },
               "Cost": {
                 "type": "dword",
                 "value": 121000
@@ -12473,10 +12685,6 @@
               "ModelPart1": {
                 "type": "byte",
                 "value": 1
-              },
-              "PaletteID": {
-                "type": "byte",
-                "value": 56
               },
               "Plot": {
                 "type": "byte",
@@ -12755,16 +12963,132 @@
                 "type": "word",
                 "value": 1
               },
-              "EquippedRes": {
-                "type": "resref",
-                "value": "malechef_wp"
+              "XOrientation": {
+                "type": "float",
+                "value": 0.0
+              },
+              "XPosition": {
+                "type": "float",
+                "value": 0.0
+              },
+              "YOrientation": {
+                "type": "float",
+                "value": 1.0
+              },
+              "YPosition": {
+                "type": "float",
+                "value": 0.0
+              },
+              "ZPosition": {
+                "type": "float",
+                "value": 0.0
               }
             },
             {
               "__struct_id": 131072,
-              "EquippedRes": {
+              "AddCost": {
+                "type": "dword",
+                "value": 0
+              },
+              "BaseItem": {
+                "type": "int",
+                "value": 0
+              },
+              "Charges": {
+                "type": "byte",
+                "value": 50
+              },
+              "Cost": {
+                "type": "dword",
+                "value": 1
+              },
+              "Cursed": {
+                "type": "byte",
+                "value": 0
+              },
+              "DescIdentified": {
+                "type": "cexolocstring",
+                "value": {}
+              },
+              "Description": {
+                "type": "cexolocstring",
+                "value": {}
+              },
+              "Identified": {
+                "type": "byte",
+                "value": 0
+              },
+              "LocalizedName": {
+                "type": "cexolocstring",
+                "value": {}
+              },
+              "ModelPart1": {
+                "type": "byte",
+                "value": 0
+              },
+              "ModelPart2": {
+                "type": "byte",
+                "value": 0
+              },
+              "ModelPart3": {
+                "type": "byte",
+                "value": 0
+              },
+              "Plot": {
+                "type": "byte",
+                "value": 0
+              },
+              "PropertiesList": {
+                "type": "list",
+                "value": []
+              },
+              "StackSize": {
+                "type": "word",
+                "value": 1
+              },
+              "Stolen": {
+                "type": "byte",
+                "value": 0
+              },
+              "Tag": {
+                "type": "cexostring",
+                "value": ""
+              },
+              "TemplateResRef": {
                 "type": "resref",
-                "value": "malechef_sk"
+                "value": ""
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 0
+              },
+              "xModelPart2": {
+                "type": "word",
+                "value": 0
+              },
+              "xModelPart3": {
+                "type": "word",
+                "value": 0
+              },
+              "XOrientation": {
+                "type": "float",
+                "value": 0.0
+              },
+              "XPosition": {
+                "type": "float",
+                "value": 0.0
+              },
+              "YOrientation": {
+                "type": "float",
+                "value": 1.0
+              },
+              "YPosition": {
+                "type": "float",
+                "value": 0.0
+              },
+              "ZPosition": {
+                "type": "float",
+                "value": 0.0
               }
             }
           ]
@@ -12930,7 +13254,7 @@
         },
         "MaxHitPoints": {
           "type": "short",
-          "value": 86
+          "value": 91
         },
         "NaturalAC": {
           "type": "byte",
@@ -13458,7 +13782,7 @@
         },
         "ChallengeRating": {
           "type": "float",
-          "value": 4.0
+          "value": 5.0
         },
         "ClassList": {
           "type": "list",
@@ -13810,10 +14134,6 @@
                 "type": "byte",
                 "value": 0
               },
-              "Comment": {
-                "type": "cexostring",
-                "value": ""
-              },
               "Cost": {
                 "type": "dword",
                 "value": 121000
@@ -13843,10 +14163,6 @@
               "ModelPart1": {
                 "type": "byte",
                 "value": 1
-              },
-              "PaletteID": {
-                "type": "byte",
-                "value": 56
               },
               "Plot": {
                 "type": "byte",
@@ -14125,16 +14441,132 @@
                 "type": "word",
                 "value": 1
               },
-              "EquippedRes": {
-                "type": "resref",
-                "value": "malechef_wp"
+              "XOrientation": {
+                "type": "float",
+                "value": 0.0
+              },
+              "XPosition": {
+                "type": "float",
+                "value": 0.0
+              },
+              "YOrientation": {
+                "type": "float",
+                "value": 1.0
+              },
+              "YPosition": {
+                "type": "float",
+                "value": 0.0
+              },
+              "ZPosition": {
+                "type": "float",
+                "value": 0.0
               }
             },
             {
               "__struct_id": 131072,
-              "EquippedRes": {
+              "AddCost": {
+                "type": "dword",
+                "value": 0
+              },
+              "BaseItem": {
+                "type": "int",
+                "value": 0
+              },
+              "Charges": {
+                "type": "byte",
+                "value": 50
+              },
+              "Cost": {
+                "type": "dword",
+                "value": 1
+              },
+              "Cursed": {
+                "type": "byte",
+                "value": 0
+              },
+              "DescIdentified": {
+                "type": "cexolocstring",
+                "value": {}
+              },
+              "Description": {
+                "type": "cexolocstring",
+                "value": {}
+              },
+              "Identified": {
+                "type": "byte",
+                "value": 0
+              },
+              "LocalizedName": {
+                "type": "cexolocstring",
+                "value": {}
+              },
+              "ModelPart1": {
+                "type": "byte",
+                "value": 0
+              },
+              "ModelPart2": {
+                "type": "byte",
+                "value": 0
+              },
+              "ModelPart3": {
+                "type": "byte",
+                "value": 0
+              },
+              "Plot": {
+                "type": "byte",
+                "value": 0
+              },
+              "PropertiesList": {
+                "type": "list",
+                "value": []
+              },
+              "StackSize": {
+                "type": "word",
+                "value": 1
+              },
+              "Stolen": {
+                "type": "byte",
+                "value": 0
+              },
+              "Tag": {
+                "type": "cexostring",
+                "value": ""
+              },
+              "TemplateResRef": {
                 "type": "resref",
-                "value": "malechef_sk"
+                "value": ""
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 0
+              },
+              "xModelPart2": {
+                "type": "word",
+                "value": 0
+              },
+              "xModelPart3": {
+                "type": "word",
+                "value": 0
+              },
+              "XOrientation": {
+                "type": "float",
+                "value": 0.0
+              },
+              "XPosition": {
+                "type": "float",
+                "value": 0.0
+              },
+              "YOrientation": {
+                "type": "float",
+                "value": 1.0
+              },
+              "YPosition": {
+                "type": "float",
+                "value": 0.0
+              },
+              "ZPosition": {
+                "type": "float",
+                "value": 0.0
               }
             }
           ]
@@ -14300,7 +14732,7 @@
         },
         "MaxHitPoints": {
           "type": "short",
-          "value": 86
+          "value": 91
         },
         "NaturalAC": {
           "type": "byte",
@@ -22752,7 +23184,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 124.1
+          "value": 124.0999984741211
         },
         "YOrientation": {
           "type": "float",
@@ -22760,7 +23192,7 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 46.2
+          "value": 46.20000076293945
         },
         "ZPosition": {
           "type": "float",
@@ -22768,7 +23200,7 @@
         }
       },
       {
-        "__data_type": "UTC ",
+        "__struct_id": 4,
         "Appearance_Head": {
           "type": "byte",
           "value": 1
@@ -22893,10 +23325,6 @@
           "type": "byte",
           "value": 1
         },
-        "Comment": {
-          "type": "cexostring",
-          "value": "Generated planet quest giver."
-        },
         "Con": {
           "type": "byte",
           "value": 16
@@ -22938,9 +23366,265 @@
           "value": [
             {
               "__struct_id": 2,
-              "EquippedRes": {
+              "AddCost": {
+                "type": "dword",
+                "value": 0
+              },
+              "ArmorPart_Belt": {
+                "type": "byte",
+                "value": 0
+              },
+              "ArmorPart_LBicep": {
+                "type": "byte",
+                "value": 1
+              },
+              "ArmorPart_LFArm": {
+                "type": "byte",
+                "value": 1
+              },
+              "ArmorPart_LFoot": {
+                "type": "byte",
+                "value": 1
+              },
+              "ArmorPart_LHand": {
+                "type": "byte",
+                "value": 1
+              },
+              "ArmorPart_LShin": {
+                "type": "byte",
+                "value": 1
+              },
+              "ArmorPart_LShoul": {
+                "type": "byte",
+                "value": 0
+              },
+              "ArmorPart_LThigh": {
+                "type": "byte",
+                "value": 247
+              },
+              "ArmorPart_Neck": {
+                "type": "byte",
+                "value": 1
+              },
+              "ArmorPart_Pelvis": {
+                "type": "byte",
+                "value": 0
+              },
+              "ArmorPart_RBicep": {
+                "type": "byte",
+                "value": 1
+              },
+              "ArmorPart_RFArm": {
+                "type": "byte",
+                "value": 1
+              },
+              "ArmorPart_RFoot": {
+                "type": "byte",
+                "value": 1
+              },
+              "ArmorPart_RHand": {
+                "type": "byte",
+                "value": 1
+              },
+              "ArmorPart_Robe": {
+                "type": "byte",
+                "value": 33
+              },
+              "ArmorPart_RShin": {
+                "type": "byte",
+                "value": 1
+              },
+              "ArmorPart_RShoul": {
+                "type": "byte",
+                "value": 0
+              },
+              "ArmorPart_RThigh": {
+                "type": "byte",
+                "value": 247
+              },
+              "ArmorPart_Torso": {
+                "type": "byte",
+                "value": 8
+              },
+              "BaseItem": {
+                "type": "int",
+                "value": 16
+              },
+              "Charges": {
+                "type": "byte",
+                "value": 0
+              },
+              "Cloth1Color": {
+                "type": "byte",
+                "value": 1
+              },
+              "Cloth2Color": {
+                "type": "byte",
+                "value": 1
+              },
+              "Cost": {
+                "type": "dword",
+                "value": 1
+              },
+              "Cursed": {
+                "type": "byte",
+                "value": 0
+              },
+              "DescIdentified": {
+                "type": "cexolocstring",
+                "value": {}
+              },
+              "Description": {
+                "type": "cexolocstring",
+                "value": {
+                  "0": ""
+                }
+              },
+              "Identified": {
+                "type": "byte",
+                "value": 1
+              },
+              "Leather1Color": {
+                "type": "byte",
+                "value": 3
+              },
+              "Leather2Color": {
+                "type": "byte",
+                "value": 3
+              },
+              "LocalizedName": {
+                "type": "cexolocstring",
+                "value": {
+                  "0": "Refugee Outfit"
+                }
+              },
+              "Metal1Color": {
+                "type": "byte",
+                "value": 8
+              },
+              "Metal2Color": {
+                "type": "byte",
+                "value": 9
+              },
+              "Plot": {
+                "type": "byte",
+                "value": 0
+              },
+              "PropertiesList": {
+                "type": "list",
+                "value": []
+              },
+              "StackSize": {
+                "type": "word",
+                "value": 1
+              },
+              "Stolen": {
+                "type": "byte",
+                "value": 0
+              },
+              "Tag": {
+                "type": "cexostring",
+                "value": "Refugee_Outfit"
+              },
+              "TemplateResRef": {
                 "type": "resref",
                 "value": "refugee_outfit"
+              },
+              "xArmorPart_Belt": {
+                "type": "word",
+                "value": 0
+              },
+              "xArmorPart_LBice": {
+                "type": "word",
+                "value": 1
+              },
+              "xArmorPart_LFArm": {
+                "type": "word",
+                "value": 1
+              },
+              "xArmorPart_LFoot": {
+                "type": "word",
+                "value": 1
+              },
+              "xArmorPart_LHand": {
+                "type": "word",
+                "value": 1
+              },
+              "xArmorPart_LShin": {
+                "type": "word",
+                "value": 1
+              },
+              "xArmorPart_LShou": {
+                "type": "word",
+                "value": 0
+              },
+              "xArmorPart_LThig": {
+                "type": "word",
+                "value": 247
+              },
+              "xArmorPart_Neck": {
+                "type": "word",
+                "value": 1
+              },
+              "xArmorPart_Pelvi": {
+                "type": "word",
+                "value": 0
+              },
+              "xArmorPart_RBice": {
+                "type": "word",
+                "value": 1
+              },
+              "xArmorPart_RFArm": {
+                "type": "word",
+                "value": 1
+              },
+              "xArmorPart_RFoot": {
+                "type": "word",
+                "value": 1
+              },
+              "xArmorPart_RHand": {
+                "type": "word",
+                "value": 1
+              },
+              "xArmorPart_Robe": {
+                "type": "word",
+                "value": 33
+              },
+              "xArmorPart_RShin": {
+                "type": "word",
+                "value": 1
+              },
+              "xArmorPart_RShou": {
+                "type": "word",
+                "value": 0
+              },
+              "xArmorPart_RThig": {
+                "type": "word",
+                "value": 247
+              },
+              "xArmorPart_Torso": {
+                "type": "word",
+                "value": 8
+              },
+              "XOrientation": {
+                "type": "float",
+                "value": 0.0
+              },
+              "XPosition": {
+                "type": "float",
+                "value": -1.0
+              },
+              "YOrientation": {
+                "type": "float",
+                "value": 1.0
+              },
+              "YPosition": {
+                "type": "float",
+                "value": -1.0
+              },
+              "ZPosition": {
+                "type": "float",
+                "value": -1.0
               }
             }
           ]
@@ -23094,10 +23778,6 @@
         "NoPermDeath": {
           "type": "byte",
           "value": 0
-        },
-        "PaletteID": {
-          "type": "byte",
-          "value": 44
         },
         "PerceptionRange": {
           "type": "byte",
@@ -23504,25 +24184,25 @@
           "type": "word",
           "value": 1
         },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.7071067690849304
+        },
         "XPosition": {
           "type": "float",
-          "value": 33.866
+          "value": 33.86600112915039
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": -0.7071067690849304
         },
         "YPosition": {
           "type": "float",
-          "value": 50.127
+          "value": 50.12699890136719
         },
         "ZPosition": {
           "type": "float",
           "value": 0.0
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 0.707106781
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": -0.707106781
         }
       }
     ]
@@ -132642,6 +133322,7 @@
         }
       },
       {
+        "__struct_id": 9,
         "AnimationState": {
           "type": "byte",
           "value": 0
@@ -132654,6 +133335,10 @@
           "type": "byte",
           "value": 0
         },
+        "Bearing": {
+          "type": "float",
+          "value": -0.7853987216949463
+        },
         "BodyBag": {
           "type": "byte",
           "value": 0
@@ -132661,10 +133346,6 @@
         "CloseLockDC": {
           "type": "byte",
           "value": 0
-        },
-        "Comment": {
-          "type": "cexostring",
-          "value": "Generated planet quest objective marker."
         },
         "Conversation": {
           "type": "resref",
@@ -132794,10 +133475,6 @@
           "type": "byte",
           "value": 0
         },
-        "PaletteID": {
-          "type": "byte",
-          "value": 0
-        },
         "Plot": {
           "type": "byte",
           "value": 1
@@ -132893,18 +133570,13 @@
           "type": "byte",
           "value": 0
         },
-        "__struct_id": 9,
-        "Bearing": {
-          "type": "float",
-          "value": 5.497787144
-        },
         "X": {
           "type": "float",
-          "value": 33.516
+          "value": 33.51599884033203
         },
         "Y": {
           "type": "float",
-          "value": 50.127
+          "value": 50.12699890136719
         },
         "Z": {
           "type": "float",

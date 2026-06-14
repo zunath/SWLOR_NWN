@@ -90,7 +90,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 60.0
+    "value": 60
   },
   "ClassList": {
     "type": "list",
@@ -639,7 +639,7 @@
         },
         "Value": {
           "type": "int",
-          "value": 0
+          "value": 62
         }
       },
       {

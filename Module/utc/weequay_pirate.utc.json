@@ -90,7 +90,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 3.0
+    "value": 4.0
   },
   "ClassList": {
     "type": "list",
@@ -175,17 +175,17 @@
         }
       },
       {
-        "__struct_id": 2048,
-        "EquippedRes": {
-          "type": "resref",
-          "value": "blaster_bullets"
-        }
-      },
-      {
         "__struct_id": 16,
         "EquippedRes": {
           "type": "resref",
           "value": "weequaypirate_wp"
+        }
+      },
+      {
+        "__struct_id": 2048,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "blaster_bullets"
         }
       },
       {
@@ -358,7 +358,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 62
+    "value": 59
   },
   "NaturalAC": {
     "type": "byte",

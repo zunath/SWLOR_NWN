@@ -90,7 +90,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 5.0
+    "value": 3.0
   },
   "ClassList": {
     "type": "list",
@@ -339,7 +339,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 73
+    "value": 63
   },
   "NaturalAC": {
     "type": "byte",

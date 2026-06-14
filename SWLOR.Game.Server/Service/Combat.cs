@@ -2696,7 +2696,7 @@ namespace SWLOR.Game.Server.Service
                 case SkillType.Katar when ability.IsSingleTargetAbility &&
                     Stat.GetStatAdjustment(activator, StatType.KatarVenomCurrentSecondStrikeDamageBonus) > 0:
                     var bonus = Stat.GetStatAdjustment(activator, StatType.KatarVenomCurrentSecondStrikeDamageBonus);
-                    ApplyRiderDamage(activator, target, bonus, damageType);
+                    ApplyTriggeredDamage(activator, target, bonus, damageType);
 
                     if (StatusEffect.HasStatusEffect(target, typeof(PoisonStatusEffect)))
                     {
@@ -2759,7 +2759,7 @@ namespace SWLOR.Game.Server.Service
                 if (nearby == target)
                     continue;
 
-                ApplyRiderDamage(activator, nearby, bonus, damageType);
+                ApplyTriggeredDamage(activator, nearby, bonus, damageType);
                 afterDamage?.Invoke(nearby);
             }
         }
@@ -2779,7 +2779,7 @@ namespace SWLOR.Game.Server.Service
                 if (nearby == target)
                     continue;
 
-                ApplyRiderDamage(activator, nearby, bonus, damageType);
+                ApplyTriggeredDamage(activator, nearby, bonus, damageType);
             }
         }
 
@@ -3272,11 +3272,12 @@ namespace SWLOR.Game.Server.Service
             StatusEffect.ApplyStatusEffect(activator, target, typeof(ExposedStatusEffect), duration, CombatDamageType.Physical);
         }
 
-        private static void ApplyRiderDamage(
+        public static void ApplyTriggeredDamage(
             uint activator,
             uint target,
             int damage,
-            CombatDamageType damageType)
+            CombatDamageType damageType,
+            SkillType skillType = SkillType.Invalid)
         {
             if (damage <= 0)
                 return;
@@ -3291,7 +3292,7 @@ namespace SWLOR.Game.Server.Service
                     DurationType.Instant,
                     EffectDamage(damage, damageType.GetNWScriptDamageType()),
                     target));
-            ApplyDamageDealtEffects(activator, target, damage, SkillType.Invalid, damageType);
+            ApplyDamageDealtEffects(activator, target, damage, skillType, damageType);
             StatusEffect.NotifyDamageStatusEffects(activator, target, damage, damageType);
         }
 

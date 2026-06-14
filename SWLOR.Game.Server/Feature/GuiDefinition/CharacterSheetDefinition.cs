@@ -210,8 +210,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             AddBoundValueRow(combatCol, "Attack", model => model.Attack, "Physical damage bonus.", null, 94f);
                             AddBoundValueRow(combatCol, "Accuracy", model => model.Accuracy, "Chance to hit.", null, 94f);
                             AddBoundValueRow(combatCol, "Evasion", model => model.Evasion, "Chance to dodge.", null, 94f);
-                            AddBoundValueRow(combatCol, "Phys. DEF", model => model.DefensePhysical, "Defense against physical attacks.", null, 94f);
-                            AddBoundValueRow(combatCol, "Force DEF", model => model.DefenseForce, "Defense against Force attacks.", null, 94f);
+                            AddBoundValueRow(combatCol, "Physical DEF", model => model.PhysicalDefense, "Defense against physical attacks.", null, 94f);
+                            AddBoundValueRow(combatCol, "Force DEF", model => model.ForceDefense, "Defense against Force attacks.", null, 94f);
                         });
                     })
                         .SetWidth(CombatPanelWidth);

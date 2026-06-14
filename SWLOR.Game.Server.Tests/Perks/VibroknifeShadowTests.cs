@@ -51,6 +51,21 @@ public class VibroknifeShadowTests
     }
 
     [Test]
+    public void MarkedForDeathBonusDamage_UsesSharedTriggeredDamagePath()
+    {
+        var root = FindRepositoryRoot();
+        var markedForDeath = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "StatusEffectDefinition" / "MarkedForDeathStatusEffect.cs").FullName);
+        var combat = File.ReadAllText((root / "SWLOR.Game.Server" / "Service" / "Combat.cs").FullName);
+
+        markedForDeath.Should().Contain("Combat.ApplyTriggeredDamage(Source, defender, DamageBonus, damageType);");
+        markedForDeath.Should().NotContain("EffectDamage(DamageBonus)");
+        combat.Should().Contain("public static void ApplyTriggeredDamage");
+        combat.Should().NotContain("ApplyRiderDamage");
+        combat.Should().Contain("ApplyDamageDealtEffects(activator, target, damage, skillType, damageType);");
+        combat.Should().Contain("StatusEffect.NotifyDamageStatusEffects(activator, target, damage, damageType);");
+    }
+
+    [Test]
     public void VibroknifeShadowFeatAndAbilityIcons_AreUniqueAndPresent()
     {
         var root = FindRepositoryRoot();

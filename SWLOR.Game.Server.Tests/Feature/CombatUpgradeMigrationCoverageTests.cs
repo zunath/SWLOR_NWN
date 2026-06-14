@@ -21,11 +21,27 @@ public class CombatUpgradeMigrationCoverageTests
         previousMigration.Should().Contain("public int Version => 21;");
         combatMigration.Should().Contain("public int Version => 22;");
         combatMigration.Should().Contain("dbPlayer.RebuildComplete = false;");
+        combatMigration.Should().NotContain("ClearLoggedOutPlayerEffects");
         combatMigration.Should().Contain("WeaponBlueprintPerkMigration.CollapsePlayerPerks");
         combatMigration.Should().Contain("DroidBoostRecipeMigration.ExpandPlayerRecipeDictionaries");
         combatMigration.Should().Contain("CombatReadinessMigration.ResetCombatReadiness");
         combatMigration.Should().NotContain("RebuildToken");
         combatMigration.Should().NotContain("GrantRebuild");
+    }
+
+    [Test]
+    public void LoggedOutStatusEffects_RemainProcessLocalRuntimeState()
+    {
+        var root = FindRepositoryRoot();
+        var statusEffectService = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "StatusEffect.cs"));
+
+        statusEffectService.Should().Contain("private static readonly Dictionary<string, LoggedOutStatusEffects> _loggedOutPlayerEffects = new();");
+        statusEffectService.Should().Contain("_loggedOutPlayerEffects[playerId] = new LoggedOutStatusEffects(player, effects, DateTime.UtcNow);");
+        statusEffectService.Should().NotContain("ClearLoggedOutPlayerEffects");
     }
 
     [Test]

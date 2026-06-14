@@ -24,18 +24,22 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         {
             if (_isApplyingBonusDamage ||
                 _remainingAttacks <= 0 ||
+                !GetIsObjectValid(Source) ||
                 attacker != Source)
             {
                 return;
             }
 
             _remainingAttacks--;
-            AssignCommand(Source, () =>
+            _isApplyingBonusDamage = true;
+            try
             {
-                _isApplyingBonusDamage = true;
-                ApplyEffectToObject(DurationType.Instant, EffectDamage(DamageBonus), defender);
+                Combat.ApplyTriggeredDamage(Source, defender, DamageBonus, damageType);
+            }
+            finally
+            {
                 _isApplyingBonusDamage = false;
-            });
+            }
 
             if (_remainingAttacks <= 0)
             {

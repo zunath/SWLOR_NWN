@@ -30,7 +30,7 @@ Espionage and Farming are out of scope. The audit also excludes crafting, resear
 
 ## Current Snapshot
 
-`dotnet test SWLOR.Game.Server.Tests\SWLOR.Game.Server.Tests.csproj --no-restore` passed on 2026-06-14: 327 passed, 0 failed, 0 skipped.
+`dotnet test SWLOR.Game.Server.Tests\SWLOR.Game.Server.Tests.csproj --no-restore` passed on 2026-06-14: 336 passed, 0 failed, 0 skipped.
 
 Combat-upgrade stat scaling is balanced around the practical player stat band: a focused character is expected to reach 26 in one ability stat, with rare 27 cases when a racial stat point is used. Food and other temporary item effects can push a stat a little higher for short windows, but baseline perk and ability values should not be tuned around those temporary overcap states. Scaling formulas should stay bounded above the normal band by using a documented cap or explicit soft-overcap rule.
 
@@ -81,6 +81,9 @@ The first implementation pass closed a few narrow, concrete gaps:
 - Added migration coverage for obsolete Bible perks and obsolete combat instruction discs. `CombatUpgradeMigrationCoverageTests` now also guards the release-critical migration surfaces: forced rebuild flagging, player migration entry points, stored item requirement migration, weapon Delay/DMG migration, resistance migration, obsolete instruction cleanup, droid instruction normalization, and ship/module serialized items.
 - Clamped effective auto-attack delay to the engine's 1.75s practical floor after baseline subtraction and delay reductions. Weapon delay values were raised across the table so the fastest normal weapons sit above that floor and can benefit from haste, natural creature weapons use the same fastest-category delay, training weapons use slower Bible-listed values, module templates plus embedded area/store item instances use the updated values, all Bible `World NPCs` rows now resolve to equipped weapon/natural delay sources, and player/server migrations normalize existing weapon `Delay` item properties.
 - Converted 97 local Bible rows from active abilities to traits for the active-button budget pass, cleared their active-only cost/timing/cooldown fields, preserved stance/toggle/aura rows as active buttons, folded single-perk riders and redundant active variants into their target perk lines, broadened multi-ability riders to tree/role categories, removed redundant `Passive` wording, clarified resistance names, removed equipment-gate wording, refreshed `CombatUpgradeBiblePerkManifest.csv`, and kept the static audit header-only against the refreshed workbook.
+- Cleaned the character sheet's combat-upgrade defense/resistance display model so Physical Defense and Force Defense are presented separately from typed elemental/status Resistances.
+- Confirmed logged-out status-effect state is process-local runtime cache and does not survive the fresh boot migration path.
+- Routed Marked for Death bonus damage through the shared triggered-damage path so it applies resistance, damage-dealt hooks, and status-effect damage notifications while preserving recursion protection.
 
 The latest checked-in local-workbook audit currently reports no scoped findings. After refreshing from the checked-in workbook, `CombatUpgradeBiblePerkManifest.csv` contains 895 manifest rows, 810 scoped implemented rows, and `CombatUpgradePerkAudit.csv` contains only its header row. Current Bible General rows that use Armor requirements are in scope, but Armor rows should not be counted as weapon-tree active-button work.
 
@@ -99,6 +102,8 @@ Armor-specific specialization implementation is not remaining work. The remainin
 The telegraph service now has a combat ability integration point, and a broader set of line/cone/sphere abilities use it. Some bespoke channel, persistent field, chained, and conditional cases still need playtest review beyond static audit coverage.
 
 The `StatusEffect` service is now adopted for status effects. Status definitions are discovered by class, so new effects are added by creating a definition rather than maintaining a separate enum list.
+
+Cached logged-out status effects are process-local runtime state and are not persisted. They do not survive the fresh boot migration path, so pre-upgrade active effect instances such as `AdrenalStim*` or `Hasten*` are not carried across the forced rebuild.
 
 Perks and abilities are functional for the earlier active weapon audit surface and for the scoped Design-phase Beast Mastery, Devices, First Aid, Force, and Leadership rows. Active perk levels grant feats, feat/spell/icon links exist, and active Bible rows have ability definitions. Several bespoke mechanics still need live behavior confirmation: channel ticks, persistent fields, target-count caps, positional bonuses, guarded-hit behavior, exact enmity math, and some critical-hit/offhand-delay effects.
 

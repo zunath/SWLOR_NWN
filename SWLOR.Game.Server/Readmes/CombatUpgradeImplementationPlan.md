@@ -367,6 +367,9 @@ Implemented cleanup so far:
 
 - Removed Heavy Armor activation-time penalty support.
 - Removed `Dash` as a player-facing perk/ability because it is implemented in code but absent from the Bible.
+- Cleaned the character sheet combat display so baseline Physical/Force Defense is separate from typed elemental/status Resistances.
+- Confirmed logged-out status effects are process-local runtime cache and do not survive the fresh boot migration path.
+- Routed Marked for Death bonus damage through the shared triggered-damage path while preserving recursion protection.
 
 Additional follow-up:
 

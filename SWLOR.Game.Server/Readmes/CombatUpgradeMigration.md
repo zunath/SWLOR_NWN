@@ -29,6 +29,7 @@ This note tracks player migration work for `feature/combat-upgrade`. Keep it cur
   - Migrates live and serialized item properties for the new resistance, weapon damage, and weapon delay property model, including untyped `DMG`, separate `WeaponDamageType`, and normalized weapon `Delay` for held weapons and natural creature weapons.
   - Reuses the legacy cooldown-reduction equipment, enhancement, and food property IDs as Combat Readiness, drops the old blanket recast-reduction player stat during player resaves, and recalculates Combat Readiness from equipped items during player migration.
   - Removes obsolete Bible perks, stale recast entries, and obsolete combat instruction discs from players, beasts, stored items, markets, world properties, research jobs, outfits, DM creatures, and ships.
+  - Leaves logged-out status-effect runtime cache out of migration. That cache is process-local and empty on the fresh boot that runs server migrations.
 
 ## Player-Facing Migration Goals
 
@@ -80,9 +81,9 @@ Important nuance: setting the flag to `false` does not itself reset the characte
 
 ## Follow-Up Checks Before Release
 
-- Character sheet redesign remains outstanding: the first pass keeps the existing defense/resistance display shape for compatibility, but a later UI pass should rename the bound model properties and present baseline Defense separately from typed Resistances.
+- Character sheet combat display cleanup is complete: Physical Defense and Force Defense use dedicated bindings, and typed elemental/status mitigation is presented through the Resistance table.
 - Static coverage in `CombatUpgradeMigrationCoverageTests` confirms `_22_CombatSystemReplacement` still follows master migration `_21_SetDefaultOutfitAndMarketLimits`, forces `Player.RebuildComplete = false`, and does not use a rebuild-token grant path. If another migration is added first, renumber the combat upgrade migration series and update that test.
-- Confirm perk refund totals against the final perk prices in `PerkDefinition` files.
+- Keep the removed-perk refund mappings in place. The forced rebuild uses `TotalSPAcquired` for skill redistribution, but deleted perk definitions cannot be refunded by the rebuild UI after their keys are removed; migration must refund those obsolete perk investments before cleanup. Recheck the hard-coded amounts only if the legacy final prices change.
 - Static coverage in `CombatUpgradeMigrationCoverageTests` confirms removed-perk cleanup entry points for players, beasts, stale recasts, live player migration, stored item records, constructed droids, and ship/module serialized items. Still spot-check that obsolete Heavy/Light Armor and stale Armor perk-tree rows no longer appear in player-facing builders, default perk maps, instruction discs, or UI surfaces.
 - Confirm Armor skill rank-ups count toward the 400 skill cap, grant SP normally, and gate current Bible General perks as intended.
 - Confirm stale BAB/attacks-per-round logic remains removed:
@@ -92,7 +93,7 @@ Important nuance: setting the flag to `false` does not itself reset the characte
   - equip/purchase/refund triggers
 - Dry-run the item-property migrations against representative live data for player inventories, markets, world property storage, research jobs, player outfits, DM creatures, ships, and nested serialized inventories. Static coverage now guards those storage surfaces and recursive live-object entry points, but representative serialized records are still needed to prove live data shape compatibility.
 - Confirm the weapon Delay migration updates old Throwing/Vibroknife/natural-weapon and Sling-based pistol values and preserves training-weapon and intentional short-sword delay exceptions in representative live data. Checked-in module templates and embedded `.git` area/store/NPC item instances have already been normalized to the updated delay table.
-- Confirm active status effects from the old status effect service do not need cleanup for players who were logged out with `AdrenalStim*` or `Hasten*` effects active.
+- Logged-out active status effects are process-local runtime cache only. They are not persisted and do not survive the fresh boot migration path, so no migration cleanup is required.
 - Add release notes telling players they must perform a forced full rebuild and that removed combat perks were refunded.
 
 ## Useful Patterns

@@ -166,12 +166,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-        public string StatusResistances
-        {
-            get => Get<string>();
-            set => Set(value);
-        }
-
         public string Name
         {
             get => Get<string>();
@@ -220,21 +214,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-        public int DefensePhysical
+        public int PhysicalDefense
         {
             get => Get<int>();
             set => Set(value);
         }
 
-        public int DefenseForce
+        public int ForceDefense
         {
             get => Get<int>();
-            set => Set(value);
-        }
-
-        public string DefenseElemental
-        {
-            get => Get<string>();
             set => Set(value);
         }
 
@@ -809,8 +797,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             var mainHandSkill = Skill.GetSkillTypeByBaseItem(mainHandType);
             Attack = Stat.GetAttack(_target, damageStat, mainHandSkill);
-            DefensePhysical = Stat.GetDefense(_target, CombatDamageType.Physical, AbilityType.Vitality);
-            DefenseForce = Stat.GetDefense(_target, CombatDamageType.Force, AbilityType.Willpower);
+            PhysicalDefense = Stat.GetDefense(_target, CombatDamageType.Physical, AbilityType.Vitality);
+            ForceDefense = Stat.GetDefense(_target, CombatDamageType.Force, AbilityType.Willpower);
 
             Accuracy = Stat.GetAccuracy(_target, mainHand, accuracyStatOverride, SkillType.Invalid);
             Evasion = Stat.GetEvasion(_target, SkillType.Invalid);
@@ -1069,16 +1057,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ResistanceDamageTaken = damageTaken;
             ResistanceStatusDurations = statusDurations;
 
-            var fireDefense = Resistance.GetResistance(_target, ResistanceType.Fire);
-            var poisonDefense = Resistance.GetResistance(_target, ResistanceType.Poison);
-            var electricalDefense = Resistance.GetResistance(_target, ResistanceType.Electrical);
-            var iceDefense = Resistance.GetResistance(_target, ResistanceType.Ice);
-            DefenseElemental = $"{fireDefense}/{poisonDefense}/{electricalDefense}/{iceDefense}";
-
-            StatusResistances = Resistance.GetResistance(_target, ResistanceType.Mind) + "/" +
-                                Resistance.GetResistance(_target, ResistanceType.Mobility) + "/" +
-                                Resistance.GetResistance(_target, ResistanceType.Trauma) + "/" +
-                                Resistance.GetResistance(_target, ResistanceType.Disruption);
         }
 
         private void RefreshCraftingStats()

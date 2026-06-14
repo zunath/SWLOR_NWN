@@ -26,8 +26,9 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
             _builder.Create("condition-any-skill")
                 .Description("Checks whether a player has any skill at a minimum rank.")
                 .AppearsWhenAction((player, args) =>
-                {// Missing at least one pair of arguments.
-                    if (args.Length <= 2)
+                {
+                    // Missing at least one pair of arguments.
+                    if (args.Length < 2)
                     {
                         const string Error = "'condition-has-any-skill' requires at least two arguments: the first should be the skillId and the second should be the minimum rank required.";
                         SendMessageToPC(player, Error);
@@ -47,7 +48,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                     var playerId = GetObjectUUID(player);
                     var dbPlayer = DB.Get<Player>(playerId);
 
-                    for (var index = 1; index <= args.Length; index++)
+                    for (var index = 0; index < args.Length; index += 2)
                     {
                         var skillId = args[index];
 
@@ -82,7 +83,6 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                         if (dbPlayer.Skills[skill].Rank >= requiredRank)
                             return true;
 
-                        index++;
                     }
 
                     return false;
@@ -96,7 +96,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                 .AppearsWhenAction((player, args) =>
                 {
                     // Missing at least one pair of arguments.
-                    if (args.Length <= 2)
+                    if (args.Length < 2)
                     {
                         const string Error = "'condition-has-all-skills' requires at least two arguments: the first should be the skillId and the second should be the minimum rank required.";
                         SendMessageToPC(player, Error);
@@ -116,7 +116,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                     var playerId = GetObjectUUID(player);
                     var dbPlayer = DB.Get<Player>(playerId);
 
-                    for (var index = 1; index <= args.Length; index++)
+                    for (var index = 0; index < args.Length; index += 2)
                     {
                         var skillId = args[index];
 
@@ -151,7 +151,6 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                         if (dbPlayer.Skills[skill].Rank < requiredRank)
                             return false;
 
-                        index++;
                     }
 
                     return true;

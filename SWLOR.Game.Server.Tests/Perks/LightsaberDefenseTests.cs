@@ -39,12 +39,13 @@ public class LightsaberDefenseTests
     [Test]
     public void LightsaberDefenseTraitStatValues_MatchCombatBible()
     {
-        var root = FindRepositoryRoot();
+        var root = FindSourceRepositoryRoot();
         var source = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "PerkDefinition" / "LightsaberPerkDefinition.cs").FullName);
 
-        source.Should().Contain("StatType.AttackDeflection, creature => EquipmentPredicates.HasMainHandLightsaber(creature) ? 8 : 0");
-        source.Should().Contain("StatType.AttackDeflection, creature => EquipmentPredicates.HasMainHandLightsaber(creature) ? 14 : 0");
-        source.Should().Contain("StatType.AttackDeflection, creature => EquipmentPredicates.HasMainHandLightsaber(creature) ? 20 : 0");
+        source.Should().Contain("StatType.AttackDeflection, 8");
+        source.Should().Contain("StatType.AttackDeflection, 14");
+        source.Should().Contain("StatType.AttackDeflection, 20");
+        source.Should().NotContain("StatType.AttackDeflection, creature => EquipmentPredicates.HasMainHandLightsaber(creature)");
     }
 
     [Test]
@@ -269,6 +270,23 @@ public class LightsaberDefenseTests
         }
 
         throw new DirectoryNotFoundException("Could not locate the SWLOR_NWN repository root.");
+    }
+
+    private static PathInfo FindSourceRepositoryRoot()
+    {
+        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
+        while (directory != null)
+        {
+            var candidate = directory.FullName;
+            if (File.Exists(Path.Combine(candidate, "SWLOR.Game.Server.sln")))
+            {
+                return new PathInfo(candidate);
+            }
+
+            directory = directory.Parent;
+        }
+
+        throw new DirectoryNotFoundException("Could not locate the SWLOR_NWN source repository root.");
     }
 
     private sealed record PathInfo(string FullName)

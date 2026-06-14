@@ -1657,6 +1657,7 @@ namespace SWLOR.Game.Server.Service
                 ApplyDarkForceConversion(activator, target, damage);
                 Combat.ApplyDamageDealtEffects(activator, target, damage, skillType, damageType);
                 StatusEffect.NotifyDamageStatusEffects(activator, target, damage, damageType);
+                Combat.ApplyDamageReflectionEffects(activator, target, damage, damageType);
             }
 
             ApplyHostileAbilityEnmity(activator, target, damage + Math.Max(0, enmityBonus));
@@ -1926,7 +1927,6 @@ namespace SWLOR.Game.Server.Service
             calculatedDamage = ApplyCombatReadinessToActivatedAbilityMagnitude(activator, calculatedDamage);
             calculatedDamage = Resistance.ApplyResistanceToDamage(target, damageType, calculatedDamage);
             calculatedDamage = Combat.ApplyDamageTakenModifiers(target, calculatedDamage, activator, damageType);
-            Combat.ApplyDamageReflectionEffects(activator, target, calculatedDamage, damageType);
 
             if (criticalRating > 0)
             {
@@ -2107,7 +2107,6 @@ namespace SWLOR.Game.Server.Service
             calculatedDamage = ApplyCombatReadinessToActivatedAbilityMagnitude(activator, calculatedDamage);
             calculatedDamage = Resistance.ApplyResistanceToDamage(target, damageType, calculatedDamage);
             calculatedDamage = Combat.ApplyDamageTakenModifiers(target, calculatedDamage, activator, damageType);
-            Combat.ApplyDamageReflectionEffects(activator, target, calculatedDamage, damageType);
 
             if (criticalRating > 0)
             {

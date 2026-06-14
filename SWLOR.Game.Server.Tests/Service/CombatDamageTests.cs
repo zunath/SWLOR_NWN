@@ -118,10 +118,13 @@ public class CombatDamageTests
     {
         var root = FindRepositoryRoot();
         var combatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
+        var abilitySource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Ability.cs"));
 
         combatSource.Should().MatchRegex(
             @"AssignCommand\(\s*defender,\s*\(\) => ApplyEffectToObject\(\s*DurationType\.Instant,\s*EffectDamage\(reflectedDamage, damageType\.GetNWScriptDamageType\(\)\),\s*attacker\)\);");
         combatSource.Should().Contain("AssignCommand(attacker, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(cycleDamage), target));");
+        abilitySource.Should().Contain("Combat.ApplyDamageReflectionEffects(activator, target, damage, damageType);");
+        abilitySource.Should().NotContain("Combat.ApplyDamageReflectionEffects(activator, target, calculatedDamage, damageType);");
     }
 
     [Test]

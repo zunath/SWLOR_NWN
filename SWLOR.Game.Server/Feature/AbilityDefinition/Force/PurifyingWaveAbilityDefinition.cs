@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatusEffectService;
@@ -32,12 +33,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasActivationDelay(1.5f)
                 .HasRecastDelay(RecastGroup.PurifyingWave, 90f)
                 .SkillType(SkillType.Force)
+                .CombatImpactDamageAbility(AbilityType.Willpower)
                 .IsAreaAbility()
                 .HasImpactAction(PurifyingWave1ImpactAction)
                 .HasTargetingSphere(
                     Spell.PurifyingWave1,
                     5f,
-                    AbilityTargetingFlags.HelpsAllies | AbilityTargetingFlags.OriginOnSelf)
+                    AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.HelpsAllies | AbilityTargetingFlags.OriginOnSelf)
                 .IsCastedAbility()
                 .BreaksStealth()
                 .RequirementFP(7);
@@ -45,6 +47,24 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void PurifyingWave1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
+            var impactLocation = GetLocation(activator);
+
+            foreach (var hostile in AbilityTargeting.GetHostileTargetsNearLocation(activator, impactLocation, 5f, 0))
+            {
+                Ability.ApplyCombatImpact(
+                    activator,
+                    hostile,
+                    GetLocation(hostile),
+                    SkillType.Force,
+                    22,
+                    0,
+                    null,
+                    false,
+                    damageType: CombatDamageType.Force,
+                    targetVisualEffect: VisualEffect.Vfx_Imp_Pulse_Holy,
+                    playImpactAnimation: false);
+            }
+
             foreach (var friendly in AbilityTargeting.GetFriendlyTargets(activator, target, true))
             {
                 StatusEffect.RemoveFirstCleanseableStatusEffect(friendly, StatusEffectCleanseType.Purify, false);

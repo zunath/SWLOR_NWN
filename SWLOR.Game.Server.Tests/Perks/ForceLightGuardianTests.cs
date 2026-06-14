@@ -38,6 +38,10 @@ public class ForceLightGuardianTests
 
         var purifyingWave = new PurifyingWaveAbilityDefinition().BuildAbilities()[FeatType.PurifyingWave1];
         AssertAbility(purifyingWave, "Purifying Wave", 1, RecastGroup.PurifyingWave, 90f, 1.5f, 7, false, false, false, true, AbilityActivationType.Casted, 5f);
+        purifyingWave.CombatImpactDamageAbility.Should().Be(AbilityType.Willpower);
+        purifyingWave.Targeting.Should().NotBeNull();
+        purifyingWave.Targeting!.Flags.Should().Be(
+            AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.HelpsAllies | AbilityTargetingFlags.OriginOnSelf);
 
         var lastStand = new LastStandOfTheLightAbilityDefinition().BuildAbilities()[FeatType.LastStandOfTheLight1];
         AssertAbility(lastStand, "Last Stand of the Light", 1, RecastGroup.Capstone, 345f, 1.5f, 10, false, true, true, false, AbilityActivationType.Casted, 15f);
@@ -76,6 +80,11 @@ public class ForceLightGuardianTests
 
         source.Should().Contain("EquipmentPredicates.HasMainHandLightsaber(creature) || EquipmentPredicates.HasMainHandVibroblade(creature) ? 4 : 0");
         source.Should().Contain("EquipmentPredicates.HasMainHandLightsaber(creature) || EquipmentPredicates.HasMainHandVibroblade(creature) ? 10 : 0");
+
+        var purifyingWaveSource = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Force" / "PurifyingWaveAbilityDefinition.cs").FullName);
+        purifyingWaveSource.Should().Contain("AbilityTargeting.GetHostileTargetsNearLocation(activator, impactLocation, 5f, 0)");
+        purifyingWaveSource.Should().MatchRegex(@"SkillType\.Force,\s*22,");
+        purifyingWaveSource.Should().Contain("damageType: CombatDamageType.Force");
     }
 
     [Test]
@@ -310,8 +319,7 @@ public class ForceLightGuardianTests
         while (directory != null)
         {
             var candidate = directory.FullName;
-            if (File.Exists(Path.Combine(candidate, "SWLOR.Game.Server.sln")) &&
-                File.Exists(Path.Combine(candidate, "SWLOR_Haks", "swlor2_2da", "feat.2da")))
+            if (File.Exists(Path.Combine(candidate, "SWLOR.Game.Server.sln")))
             {
                 return new PathInfo(candidate);
             }

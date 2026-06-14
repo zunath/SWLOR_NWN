@@ -117,7 +117,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             var casterWillpower = GetAbilityScore(activator, AbilityType.Willpower);
             var targetWillpower = GetAbilityScore(target, AbilityType.Willpower);
-            var contestSeconds = (int)Math.Ceiling((casterWillpower - targetWillpower) * WillpowerContestDurationSeconds);
+            var contestSeconds = (int)Math.Round(
+                (casterWillpower - targetWillpower) * WillpowerContestDurationSeconds,
+                MidpointRounding.AwayFromZero);
             var duration = BaseConfusionDurationSeconds + contestSeconds;
 
             return Math.Clamp(duration, 0, MaximumConfusionDurationSeconds);

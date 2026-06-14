@@ -1591,6 +1591,81 @@ namespace SWLOR.Game.Server.Service
             AssignCommand(activator, () => ActionPlayAnimation(animation));
         }
 
+        public static int ApplyHostileCombatImpact(
+            uint activator,
+            uint target,
+            SkillType skillType,
+            int damage,
+            CombatDamageType damageType,
+            Type statusEffect = null,
+            int duration = 0,
+            IEnumerable<Type> additionalStatusEffects = null,
+            Func<IStatusEffect> statusEffectFactory = null,
+            ResistanceType statusResistanceType = ResistanceType.Invalid,
+            VisualEffect targetVisualEffect = VisualEffect.None,
+            IEnumerable<Func<IStatusEffect>> additionalStatusEffectFactories = null,
+            int enmityBonus = 0,
+            Action<uint> afterSuccessfulHit = null,
+            bool awardsCombatPoints = true,
+            DamageType? effectDamageType = null)
+        {
+            var trackedImpact = GetTrackedAbilityImpact(activator);
+
+            if (damage > 0)
+            {
+                Combat.SendTemporaryHitPointDamageFeedback(activator, target, damage);
+                AssignCommand(
+                    activator,
+                    () => ApplyEffectToObject(
+                        DurationType.Instant,
+                        EffectDamage(damage, effectDamageType ?? damageType.GetNWScriptDamageType()),
+                        target));
+                ApplyDarkForceConversion(activator, target, damage);
+                Combat.ApplyDamageDealtEffects(activator, target, damage, skillType, damageType);
+                StatusEffect.NotifyDamageStatusEffects(activator, target, damage, damageType);
+                Combat.ApplyDamageReflectionEffects(activator, target, damage, damageType);
+            }
+
+            ApplyHostileAbilityEnmity(activator, target, damage + Math.Max(0, enmityBonus));
+
+            var statusApplied = ApplyCombatImpactStatusEffect(
+                activator,
+                target,
+                statusEffect,
+                duration,
+                additionalStatusEffects,
+                statusEffectFactory,
+                additionalStatusEffectFactories,
+                statusResistanceType,
+                damageType);
+            if (statusApplied)
+            {
+                ApplyDarkForceCastConversion(activator, target);
+            }
+
+            Combat.ApplySuccessfulAbilityImpactRiders(
+                activator,
+                target,
+                trackedImpact?.Ability,
+                skillType,
+                damageType,
+                damage,
+                statusApplied,
+                statusEffect,
+                additionalStatusEffects);
+
+            if ((damage > 0 || statusApplied) && targetVisualEffect != VisualEffect.None)
+            {
+                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(targetVisualEffect), target);
+            }
+
+            afterSuccessfulHit?.Invoke(target);
+            if (awardsCombatPoints)
+                CombatPoint.AddCombatPoint(activator, target, skillType, 3);
+            RecordAbilityImpactTarget(activator, target, skillType, false);
+            return damage;
+        }
+
         private static int ApplyHostileCombatImpact(
             uint activator,
             uint target,
@@ -1645,59 +1720,23 @@ namespace SWLOR.Game.Server.Service
                 : CalculateCombatImpactDamage(activator, target, skillType, adjustedBaseDamage, damageType, criticalRatePercentAdjustment, damageAbility);
             damage = ApplyDamagePercentAdjustment(target, damage, damagePercentAdjustment);
             damage = ApplyDarkForceTargetLowHPDamageModifier(activator, target, damage);
-            if (damage > 0)
-            {
-                Combat.SendTemporaryHitPointDamageFeedback(activator, target, damage);
-                AssignCommand(
-                    activator,
-                    () => ApplyEffectToObject(
-                        DurationType.Instant,
-                        EffectDamage(damage, effectDamageType ?? damageType.GetNWScriptDamageType()),
-                        target));
-                ApplyDarkForceConversion(activator, target, damage);
-                Combat.ApplyDamageDealtEffects(activator, target, damage, skillType, damageType);
-                StatusEffect.NotifyDamageStatusEffects(activator, target, damage, damageType);
-                Combat.ApplyDamageReflectionEffects(activator, target, damage, damageType);
-            }
-
-            ApplyHostileAbilityEnmity(activator, target, damage + Math.Max(0, enmityBonus));
-
-            var statusApplied = ApplyCombatImpactStatusEffect(
+            return ApplyHostileCombatImpact(
                 activator,
                 target,
+                skillType,
+                damage,
+                damageType,
                 statusEffect,
                 duration,
                 additionalStatusEffects,
                 statusEffectFactory,
-                additionalStatusEffectFactories,
                 statusResistanceType,
-                damageType);
-            if (statusApplied)
-            {
-                ApplyDarkForceCastConversion(activator, target);
-            }
-
-            Combat.ApplySuccessfulAbilityImpactRiders(
-                activator,
-                target,
-                trackedImpact?.Ability,
-                skillType,
-                damageType,
-                damage,
-                statusApplied,
-                statusEffect,
-                additionalStatusEffects);
-
-            if ((damage > 0 || statusApplied) && targetVisualEffect != VisualEffect.None)
-            {
-                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(targetVisualEffect), target);
-            }
-
-            afterSuccessfulHit?.Invoke(target);
-            if (awardsCombatPoints)
-                CombatPoint.AddCombatPoint(activator, target, skillType, 3);
-            RecordAbilityImpactTarget(activator, target, skillType, false);
-            return damage;
+                targetVisualEffect,
+                additionalStatusEffectFactories,
+                enmityBonus,
+                afterSuccessfulHit,
+                awardsCombatPoints,
+                effectDamageType);
         }
 
         private static void SendCombatImpactResultMessage(

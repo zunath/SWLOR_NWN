@@ -375,6 +375,7 @@ function Get-StatusEffects {
         "Force Erosion" = "ForceErosionStatusEffect"
         "Foggy Mind" = "FoggyMindStatusEffect"
         "Confuse" = "ConfusionStatusEffect"
+        "Confusion" = "ConfusionStatusEffect"
         "Vital Strike" = "VitalStrikeStatusEffect"
         "Hemorrhage" = "HemorrhageStatusEffect"
         "Disoriented" = "DisorientedStatusEffect"

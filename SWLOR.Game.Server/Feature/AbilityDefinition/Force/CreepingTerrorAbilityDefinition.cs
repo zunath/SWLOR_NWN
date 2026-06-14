@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         private const float FieldRadius = 5f;
         private const float FieldRange = 15f;
         private const float PulseIntervalSeconds = 3f;
-        private const float HobbleRefreshDurationSeconds = PulseIntervalSeconds + 0.2f;
+        private const int HobbleRefreshDurationSeconds = 4;
         private const int CreepingTerror1Damage = 10;
         private const int CreepingTerror2Damage = 14;
         private const int CreepingTerror3Damage = 18;
@@ -118,27 +118,32 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void CreepingTerror1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            CreateCreepingTerrorField(activator, target, targetLocation, CreepingTerror1Damage, CreepingTerror1DurationSeconds);
+            CreateCreepingTerrorField(activator, target, targetLocation, FeatType.CreepingTerror1, CreepingTerror1Damage, CreepingTerror1DurationSeconds);
         }
 
         private static void CreepingTerror2ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            CreateCreepingTerrorField(activator, target, targetLocation, CreepingTerror2Damage, CreepingTerror2DurationSeconds);
+            CreateCreepingTerrorField(activator, target, targetLocation, FeatType.CreepingTerror2, CreepingTerror2Damage, CreepingTerror2DurationSeconds);
         }
 
         private static void CreepingTerror3ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            CreateCreepingTerrorField(activator, target, targetLocation, CreepingTerror3Damage, CreepingTerror3DurationSeconds);
+            CreateCreepingTerrorField(activator, target, targetLocation, FeatType.CreepingTerror3, CreepingTerror3Damage, CreepingTerror3DurationSeconds);
         }
 
         private static void CreateCreepingTerrorField(
             uint activator,
             uint target,
             Location targetLocation,
+            FeatType featType,
             int baseDamage,
             float durationSeconds)
         {
             var location = AbilityTargeting.ResolveImpactLocation(activator, target, targetLocation);
+            var scaledPulseDamage = AbilityEffectScaling.ScaleDirectEffect(
+                baseDamage,
+                GetAbilityScore(activator, AbilityType.Willpower),
+                source: activator);
             ApplyEffectAtLocation(DurationType.Temporary, EffectVisualEffect(FieldVisualEffect), location, durationSeconds);
 
             CombatAreaPulses.SchedulePulses(
@@ -147,44 +152,45 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 durationSeconds,
                 PulseIntervalSeconds,
                 false,
-                pulseLocation => ApplyCreepingTerrorPulse(activator, pulseLocation, baseDamage));
+                pulseLocation =>
+                {
+                    var ability = Ability.GetAbilityDetail(featType);
+                    Ability.BeginAbilityImpact(activator, ability);
+                    ApplyCreepingTerrorPulse(activator, pulseLocation, scaledPulseDamage);
+                    var summary = Ability.EndAbilityImpact(activator);
+                    Combat.ApplyAbilityImpactEffects(activator, summary);
+                });
         }
 
-        private static void ApplyCreepingTerrorPulse(uint activator, Location location, int baseDamage)
+        private static void ApplyCreepingTerrorPulse(uint activator, Location location, int scaledPulseDamage)
         {
             ApplyEffectAtLocation(DurationType.Instant, EffectVisualEffect(PulseAreaVisualEffect), location);
 
             foreach (var hostile in CombatAreaPulses.GetHostileCreatures(activator, location, FieldRadius))
             {
-                StatusEffect.ApplyStatusEffect(activator, hostile, typeof(HobbleStatusEffect), HobbleRefreshDurationSeconds, CombatDamageType.Force);
-                ApplyCreepingTerrorDamage(activator, hostile, baseDamage);
+                ApplyCreepingTerrorDamage(activator, hostile, scaledPulseDamage);
             }
         }
 
-        private static void ApplyCreepingTerrorDamage(uint activator, uint target, int baseDamage)
+        private static void ApplyCreepingTerrorDamage(uint activator, uint target, int scaledPulseDamage)
         {
-            var damage = AbilityEffectScaling.ScaleDirectEffect(
-                baseDamage,
-                GetAbilityScore(activator, AbilityType.Willpower),
-                source: activator);
+            var damage = scaledPulseDamage;
             damage = Resistance.ApplyResistanceToDamage(target, ResistanceType.Disruption, damage);
             damage = Combat.ApplyDamageOverTimeTakenModifiers(target, damage, CombatDamageType.Force);
             damage = Combat.ApplyDamageTakenModifiers(target, damage);
-            if (damage <= 0)
-                return;
+            if (damage < 0)
+                damage = 0;
 
-            Combat.SendTemporaryHitPointDamageFeedback(activator, target, damage);
-            AssignCommand(
+            Ability.ApplyHostileCombatImpact(
                 activator,
-                () => ApplyEffectToObject(
-                    DurationType.Instant,
-                    EffectDamage(damage, CombatDamageType.Force.GetNWScriptDamageType()),
-                    target));
-            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(TargetVisualEffect), target);
-            Ability.ApplyDarkForceDamageRestoration(activator, damage);
-            Combat.ApplyDamageDealtEffects(activator, target, damage, SkillType.Force, CombatDamageType.Force);
-            StatusEffect.NotifyDamageStatusEffects(activator, target, damage, CombatDamageType.Force);
-            Ability.ApplyHostileAbilityEnmity(activator, target, damage);
+                target,
+                SkillType.Force,
+                damage,
+                CombatDamageType.Force,
+                statusEffect: typeof(HobbleStatusEffect),
+                duration: HobbleRefreshDurationSeconds,
+                targetVisualEffect: TargetVisualEffect,
+                awardsCombatPoints: false);
         }
     }
 }

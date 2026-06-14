@@ -13,6 +13,13 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public override StatusEffectCleanseType CleanseTypes => StatusEffectCleanseType.Purify | StatusEffectCleanseType.SoothePet;
         public override ResistanceType ResistanceType => ResistanceType.Mind;
 
+        public override string CanApply(uint creature)
+        {
+            return Ability.HasTemporaryImmunity(creature, ImmunityType.Confused)
+                ? "Target is temporarily immune to confusion."
+                : string.Empty;
+        }
+
         protected override void Apply(uint creature, int durationTicks)
         {
             ApplyConfusion(creature, GetDurationSeconds(durationTicks));

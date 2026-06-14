@@ -37,6 +37,12 @@ public class ForceLightConsularTests
         confusion.Categories.Should().Be(StatusEffectCategory.Debuff | StatusEffectCategory.Control);
         confusion.CleanseTypes.Should().Be(StatusEffectCleanseType.Purify | StatusEffectCleanseType.SoothePet);
         confusion.ResistanceType.Should().Be(ResistanceType.Mind);
+
+        var root = FindSourceRepositoryRoot();
+        var confusionSource = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "StatusEffectDefinition" / "ConfusionStatusEffect.cs").FullName);
+        confusionSource.Should().Contain("public override string CanApply(uint creature)");
+        confusionSource.Should().Contain("Ability.HasTemporaryImmunity(creature, ImmunityType.Confused)");
+        confusionSource.Should().Contain("Target is temporarily immune to confusion.");
     }
 
     [Test]
@@ -87,6 +93,9 @@ public class ForceLightConsularTests
         abilitySource.Should().Contain("typeof(ConfusionStatusEffect)");
         abilitySource.Should().NotContain("typeof(FoggyMindStatusEffect)");
         abilitySource.Should().Contain("casterWillpower - targetWillpower");
+        abilitySource.Should().Contain("Math.Round");
+        abilitySource.Should().Contain("MidpointRounding.AwayFromZero");
+        abilitySource.Should().NotContain("Math.Ceiling((casterWillpower - targetWillpower) * WillpowerContestDurationSeconds)");
         abilitySource.Should().Contain("statusResistanceType: ResistanceType.Mind");
         perkSource.Should().NotContain("failure chance");
     }

@@ -37,7 +37,7 @@ public class ForceLightGuardianTests
         AssertAbility(forceIntercept, "Force Intercept", 1, RecastGroup.ForceIntercept, 45f, 0f, 5, false, true, true, false, AbilityActivationType.Casted, 15f);
 
         var purifyingWave = new PurifyingWaveAbilityDefinition().BuildAbilities()[FeatType.PurifyingWave1];
-        AssertAbility(purifyingWave, "Purifying Wave", 1, RecastGroup.PurifyingWave, 90f, 1.5f, 7, false, false, false, true, AbilityActivationType.Casted, 5f);
+        AssertAbility(purifyingWave, "Purifying Wave", 1, RecastGroup.PurifyingWave, 90f, 1.5f, 7, true, false, false, true, AbilityActivationType.Casted, 5f);
         purifyingWave.CombatImpactDamageAbility.Should().Be(AbilityType.Willpower);
         purifyingWave.Targeting.Should().NotBeNull();
         purifyingWave.Targeting!.Flags.Should().Be(
@@ -85,6 +85,7 @@ public class ForceLightGuardianTests
         purifyingWaveSource.Should().Contain("AbilityTargeting.GetHostileTargetsNearLocation(activator, impactLocation, 5f, 0)");
         purifyingWaveSource.Should().MatchRegex(@"SkillType\.Force,\s*22,");
         purifyingWaveSource.Should().Contain("damageType: CombatDamageType.Force");
+        purifyingWaveSource.Should().Contain(".IsHostileAbility()");
     }
 
     [Test]
@@ -120,7 +121,7 @@ public class ForceLightGuardianTests
             (FeatType.GuardianWard3, "ife_guardwrd3", "M", "0x03", "0", "****", "****", "****", "****"),
             (FeatType.ForceIntercept1, "ife_forceintc1", "M", "0x03", "0", "****", "****", "****", "****"),
             (FeatType.ForceLeap2, "ife_forcelp2", "M", "0x02", "1", "****", "****", "****", "****"),
-            (FeatType.PurifyingWave1, "ife_prfyngwv1", "P", "0x01", "0", "sphere", "5", "****", "17"),
+            (FeatType.PurifyingWave1, "ife_prfyngwv1", "P", "0x01", "1", "sphere", "5", "****", "17"),
             (FeatType.GuardianWard4, "ife_guardwrd4", "M", "0x03", "0", "****", "****", "****", "****"),
             (FeatType.ForcePush3, "ife_forcepsh3", "M", "0x3E", "1", "cone", "6", "5", "17"),
             (FeatType.LastStandOfTheLight1, "ife_laststndlgh1", "M", "0x03", "0", "****", "****", "****", "****")

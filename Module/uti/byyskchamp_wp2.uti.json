@@ -6,7 +6,7 @@
   },
   "BaseItem": {
     "type": "int",
-    "value": 22
+    "value": 1
   },
   "Charges": {
     "type": "byte",
@@ -22,7 +22,7 @@
   },
   "Cursed": {
     "type": "byte",
-    "value": 1
+    "value": 0
   },
   "DescIdentified": {
     "type": "cexolocstring",
@@ -30,29 +30,31 @@
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": ""
+    }
   },
   "Identified": {
     "type": "byte",
-    "value": 1
+    "value": 0
   },
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "(NPC 3) Sith Saboteur Knife"
+      "0": "Byysk Guardian Sword"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 11
+    "value": 33
   },
   "ModelPart2": {
     "type": "byte",
-    "value": 12
+    "value": 73
   },
   "ModelPart3": {
     "type": "byte",
-    "value": 11
+    "value": 41
   },
   "PaletteID": {
     "type": "byte",
@@ -139,7 +141,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 35
+          "value": 45
         },
         "Param1": {
           "type": "byte",
@@ -170,7 +172,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 29
+          "value": 31
         },
         "Param1": {
           "type": "byte",
@@ -201,22 +203,22 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "NPC3SithSaboteurKnife"
+    "value": "byyskchamp_wp2"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "sithsabot_wp"
+    "value": "byyskchamp_wp2"
   },
   "xModelPart1": {
     "type": "word",
-    "value": 11
+    "value": 33
   },
   "xModelPart2": {
     "type": "word",
-    "value": 12
+    "value": 73
   },
   "xModelPart3": {
     "type": "word",
-    "value": 11
+    "value": 41
   }
 }

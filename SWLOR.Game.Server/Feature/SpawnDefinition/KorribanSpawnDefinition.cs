@@ -17,6 +17,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             Dunes();
             SithCrypt();
             SithTemples();
+            FrogBoss();
             KorribanFortress();
 
 
@@ -223,12 +224,16 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Creature, "korr_wraid")
                 .WithFrequency(10)
                 .RandomlyWalks()
-                .ReturnsHome()
-
-                .AddSpawn(ObjectType.Creature, "frogboss")
-                .WithFrequency(50)
-                .RandomlyWalks()
                 .ReturnsHome();
+        }
+
+        private void FrogBoss()
+        {
+            _builder.Create("FrogBoss", "Alchemized Frog Boss")
+                .AddSpawn(ObjectType.Creature, "frogboss")
+                .WithFrequency(1)
+                .ReturnsHome()
+                .RespawnDelay(120);
         }
     }
 }

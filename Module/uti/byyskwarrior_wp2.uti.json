@@ -6,7 +6,7 @@
   },
   "BaseItem": {
     "type": "int",
-    "value": 22
+    "value": 0
   },
   "Charges": {
     "type": "byte",
@@ -39,24 +39,24 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "(NPC 3) Sith Saboteur Knife"
+      "0": "Byysk Warrior Sword"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 11
+    "value": 122
   },
   "ModelPart2": {
     "type": "byte",
-    "value": 12
+    "value": 133
   },
   "ModelPart3": {
     "type": "byte",
-    "value": 11
+    "value": 214
   },
   "PaletteID": {
     "type": "byte",
-    "value": 59
+    "value": 38
   },
   "Plot": {
     "type": "byte",
@@ -89,42 +89,11 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 134
+          "value": 43
         },
         "Subtype": {
           "type": "word",
-          "value": 4
-        }
-      },
-      {
-        "__struct_id": 0,
-        "ChanceAppear": {
-          "type": "byte",
-          "value": 100
-        },
-        "CostTable": {
-          "type": "byte",
           "value": 0
-        },
-        "CostValue": {
-          "type": "word",
-          "value": 0
-        },
-        "Param1": {
-          "type": "byte",
-          "value": 255
-        },
-        "Param1Value": {
-          "type": "byte",
-          "value": 0
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 83
-        },
-        "Subtype": {
-          "type": "word",
-          "value": 42
         }
       },
       {
@@ -139,7 +108,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 35
+          "value": 22
         },
         "Param1": {
           "type": "byte",
@@ -170,7 +139,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 29
+          "value": 31
         },
         "Param1": {
           "type": "byte",
@@ -201,22 +170,22 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "NPC3SithSaboteurKnife"
+    "value": "byyskwarrior_wp2"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "sithsabot_wp"
+    "value": "byyskwarrior_wp2"
   },
   "xModelPart1": {
     "type": "word",
-    "value": 11
+    "value": 122
   },
   "xModelPart2": {
     "type": "word",
-    "value": 12
+    "value": 133
   },
   "xModelPart3": {
     "type": "word",
-    "value": 11
+    "value": 214
   }
 }

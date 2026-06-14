@@ -130,7 +130,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 24
+    "value": 22
   },
   "Conversation": {
     "type": "resref",
@@ -142,7 +142,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 81
+    "value": 490
   },
   "DecayTime": {
     "type": "dword",
@@ -160,7 +160,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 38
+    "value": 15
   },
   "Disarmable": {
     "type": "byte",
@@ -340,11 +340,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 81
+    "value": 490
   },
   "Int": {
     "type": "byte",
-    "value": 20
+    "value": 22
   },
   "Interruptable": {
     "type": "byte",
@@ -374,7 +374,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 137
+    "value": 490
   },
   "NaturalAC": {
     "type": "byte",
@@ -679,7 +679,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 17
+    "value": 27
   },
   "Subrace": {
     "type": "cexostring",
@@ -810,7 +810,7 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 20
+    "value": 15
   },
   "xAppearance_Head": {
     "type": "word",

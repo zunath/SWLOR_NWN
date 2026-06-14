@@ -6,7 +6,7 @@
   },
   "BaseItem": {
     "type": "int",
-    "value": 22
+    "value": 512
   },
   "Charges": {
     "type": "byte",
@@ -22,7 +22,7 @@
   },
   "Cursed": {
     "type": "byte",
-    "value": 1
+    "value": 0
   },
   "DescIdentified": {
     "type": "cexolocstring",
@@ -34,25 +34,25 @@
   },
   "Identified": {
     "type": "byte",
-    "value": 1
+    "value": 0
   },
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "(NPC 3) Sith Saboteur Knife"
+      "0": "(NPC 3) Sith Lightsaber"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 11
+    "value": 24
   },
   "ModelPart2": {
     "type": "byte",
-    "value": 12
+    "value": 11
   },
   "ModelPart3": {
     "type": "byte",
-    "value": 11
+    "value": 14
   },
   "PaletteID": {
     "type": "byte",
@@ -93,38 +93,7 @@
         },
         "Subtype": {
           "type": "word",
-          "value": 4
-        }
-      },
-      {
-        "__struct_id": 0,
-        "ChanceAppear": {
-          "type": "byte",
-          "value": 100
-        },
-        "CostTable": {
-          "type": "byte",
-          "value": 0
-        },
-        "CostValue": {
-          "type": "word",
-          "value": 0
-        },
-        "Param1": {
-          "type": "byte",
-          "value": 255
-        },
-        "Param1Value": {
-          "type": "byte",
-          "value": 0
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 83
-        },
-        "Subtype": {
-          "type": "word",
-          "value": 42
+          "value": 3
         }
       },
       {
@@ -139,7 +108,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 35
+          "value": 37
         },
         "Param1": {
           "type": "byte",
@@ -170,7 +139,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 29
+          "value": 32
         },
         "Param1": {
           "type": "byte",
@@ -201,22 +170,22 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "NPC3SithSaboteurKnife"
+    "value": "sithmarauder_wp2"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "sithsabot_wp"
+    "value": "sithmarauder_wp2"
   },
   "xModelPart1": {
     "type": "word",
-    "value": 11
+    "value": 24
   },
   "xModelPart2": {
     "type": "word",
-    "value": 12
+    "value": 11
   },
   "xModelPart3": {
     "type": "word",
-    "value": 11
+    "value": 14
   }
 }

@@ -4,14 +4,13 @@ using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
-    public sealed class GuardiansWrathStatusEffect : StatusEffectBase
+    public sealed class GuardianMasterStatusEffect : StatusEffectBase
     {
-        public override string Name => "Guardian's Wrath";
+        public override string Name => "Guardian Master";
         public override EffectIconType Icon => EffectIconType.GuardiansWrathStatusEffect;
-        public GuardiansWrathStatusEffect()
+        public GuardianMasterStatusEffect()
         {
-            StatGroup.Stats[StatType.AttackDeflection] = 50;
-            StatGroup.Stats[StatType.AttackDeflectionChanceCap] = 85;
+            StatGroup.Stats[StatType.AttackDeflectionChanceCap] = 10;
         }
 
     }

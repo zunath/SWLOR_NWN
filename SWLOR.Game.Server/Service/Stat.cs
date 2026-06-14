@@ -1554,23 +1554,36 @@ namespace SWLOR.Game.Server.Service
 
         private static int GetAttackDeflectionChanceCap(uint creature)
         {
-            var cap = GetStatAdjustment(creature, StatType.AttackDeflectionChanceCap);
-            if (cap <= 0)
-                cap = DefaultAttackDeflectionChanceCap;
+            var capAdjustment = GetStatAdjustment(creature, StatType.AttackDeflectionChanceCap);
+            var cap = DefaultAttackDeflectionChanceCap + capAdjustment;
 
             return Math.Clamp(cap, DefaultAttackDeflectionChanceCap, MaximumDeflectionChanceCap);
         }
 
         private static bool HasWeaponEquippedForAttackDeflectionNative(CNWSCreature creature)
         {
-            var rightHandItem = creature.m_pInventory.GetItemInSlot((uint)EquipmentSlot.RightHand);
-            return rightHandItem != null && !Item.IsBaseItemType(rightHandItem, Item.ShieldBaseItemTypes);
+            return HasWeaponEquippedForAttackDeflectionNative(creature, EquipmentSlot.RightHand) ||
+                   HasWeaponEquippedForAttackDeflectionNative(creature, EquipmentSlot.LeftHand);
+        }
+
+        private static bool HasWeaponEquippedForAttackDeflectionNative(CNWSCreature creature, EquipmentSlot slot)
+        {
+            var item = creature.m_pInventory.GetItemInSlot((uint)slot);
+            return item != null &&
+                   Skill.GetSkillTypeByBaseItem((BaseItem)item.m_nBaseItem) != SkillType.Invalid;
         }
 
         private static bool HasWeaponEquippedForAttackDeflection(uint creature)
         {
-            var rightHandItem = GetItemInSlot(InventorySlot.RightHand, creature);
-            return GetIsObjectValid(rightHandItem) && !Item.IsBaseItemType(rightHandItem, Item.ShieldBaseItemTypes);
+            return HasWeaponEquippedForAttackDeflection(creature, InventorySlot.RightHand) ||
+                   HasWeaponEquippedForAttackDeflection(creature, InventorySlot.LeftHand);
+        }
+
+        private static bool HasWeaponEquippedForAttackDeflection(uint creature, InventorySlot slot)
+        {
+            var item = GetItemInSlot(slot, creature);
+            return GetIsObjectValid(item) &&
+                   Skill.GetSkillTypeByBaseItem(GetBaseItemType(item)) != SkillType.Invalid;
         }
 
         private static SkillType GetMainHandSkillTypeNative(CNWSCreature creature)

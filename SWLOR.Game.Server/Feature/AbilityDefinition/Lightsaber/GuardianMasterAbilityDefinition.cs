@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                     .Name("Guardian Master")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.Capstone, CapstoneAbility.RecastDelaySeconds),
-                typeof(GuardiansWrathStatusEffect),
+                typeof(GuardianMasterStatusEffect),
                 CapstoneAbility.ActiveDurationSeconds,
                 CapstoneAbility.StaminaCost,
                 activationDelay: 2f);

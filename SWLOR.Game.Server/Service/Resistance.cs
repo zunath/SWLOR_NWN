@@ -10,13 +10,8 @@ namespace SWLOR.Game.Server.Service
 {
     public static class Resistance
     {
-        private const int MaximumResistance = 100;
-        private const float ResistanceDamageCurve = 50f;
-        private const float MinimumDamageMultiplier = 0.1f;
-        private const float StatusDurationCurve = 150f;
-        private const float StatusHighScoreThreshold = 90f;
-        private const float StatusHighScoreCurve = 200f;
-        private const float StatusDurationVariance = 0.03f;
+        public const int MinimumResistance = -100;
+        public const int MaximumResistance = 100;
 
         private static readonly List<ResistanceType> _allResistanceTypes = new();
         private static readonly HashSet<ResistanceType> _validResistanceTypes = new();
@@ -128,13 +123,14 @@ namespace SWLOR.Game.Server.Service
                 return baseTicks;
 
             var resistance = GetResistance(creature, type);
-            if (resistance <= 0)
+            if (resistance == 0)
                 return baseTicks;
 
-            var baseMultiplier = CalculateStatusDurationMultiplier(resistance);
-            var variance = Random.NextFloat(-StatusDurationVariance, StatusDurationVariance);
-            var finalMultiplier = Math.Clamp(baseMultiplier + variance, MinimumDamageMultiplier, 1f);
-            return Math.Max((int)Math.Round(baseTicks * finalMultiplier), 1);
+            var multiplier = CalculateResistanceDamageMultiplier(resistance);
+            if (multiplier <= 0f)
+                return 0;
+
+            return Math.Max((int)Math.Round(baseTicks * multiplier), 1);
         }
 
         public static IReadOnlyList<ResistanceType> GetAllResistanceTypes()
@@ -149,22 +145,23 @@ namespace SWLOR.Game.Server.Service
             return _validResistanceTypes.Contains(type);
         }
 
+        public static bool HasImmunity(uint creature, ResistanceType type)
+        {
+            return IsValidResistanceType(type) &&
+                   GetResistance(creature, type) >= MaximumResistance;
+        }
+
         private static void EnsureResistanceTypesLoaded()
         {
             if (_allResistanceTypes.Count <= 0)
                 LoadResistanceTypes();
         }
 
-        private static float CalculateResistanceDamageMultiplier(int resistance)
+        public static float CalculateResistanceDamageMultiplier(int resistance)
         {
             resistance = ClampResistance(resistance);
 
-            if (resistance <= 0)
-                return 1f;
-
-            return Math.Max(
-                1f - (resistance / (resistance + ResistanceDamageCurve)),
-                MinimumDamageMultiplier);
+            return Math.Max(0f, 1f - (resistance / 100f));
         }
 
         private static int GetStoredResistance(uint creature, ResistanceType type)
@@ -215,29 +212,15 @@ namespace SWLOR.Game.Server.Service
 
         private static int ApplyResistanceMultiplier(int damage, float multiplier)
         {
+            if (multiplier <= 0f)
+                return 0;
+
             return Math.Max(1, (int)Math.Round(damage * multiplier));
-        }
-
-        private static float CalculateStatusDurationMultiplier(int resistance)
-        {
-            resistance = ClampResistance(resistance);
-
-            if (resistance >= StatusHighScoreThreshold)
-            {
-                var extremeResistFactor =
-                    1f - ((resistance - StatusHighScoreThreshold) / StatusHighScoreCurve);
-
-                return
-                    (1f - (StatusHighScoreThreshold / StatusDurationCurve)) *
-                    extremeResistFactor;
-            }
-
-            return 1f - (resistance / StatusDurationCurve);
         }
 
         private static int ClampResistance(int resistance)
         {
-            return Math.Clamp(resistance, 0, MaximumResistance);
+            return Math.Clamp(resistance, MinimumResistance, MaximumResistance);
         }
 
         private static int GetStatusEffectResistance(uint creature, ResistanceType type)
@@ -258,8 +241,10 @@ namespace SWLOR.Game.Server.Service
                 ResistanceType.Mind => Stat.GetStatAdjustment(creature, StatType.MindResistance),
                 ResistanceType.Mobility => Stat.GetStatAdjustment(creature, StatType.MobilityResistance),
                 ResistanceType.Trauma => Stat.GetStatAdjustment(creature, StatType.TraumaResistance),
+                ResistanceType.Disruption => Stat.GetStatAdjustment(creature, StatType.DisruptionResistance),
                 _ => 0
             };
         }
+
     }
 }

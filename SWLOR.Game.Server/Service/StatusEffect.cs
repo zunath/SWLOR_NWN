@@ -479,7 +479,7 @@ namespace SWLOR.Game.Server.Service
             {
                 if (Resistance.IsValidResistanceType(resistanceType))
                 {
-                    if (HasStatusEffectResistanceImmunity(creature, resistanceType))
+                    if (Resistance.HasImmunity(creature, resistanceType))
                     {
                         SendMessageToPC(source, "Your ability was resisted.");
                         return false;
@@ -636,19 +636,6 @@ namespace SWLOR.Game.Server.Service
                 return sourceResistanceType;
 
             return ResistanceType.Invalid;
-        }
-
-        private static bool HasStatusEffectResistanceImmunity(uint creature, ResistanceType resistanceType)
-        {
-            var statType = resistanceType switch
-            {
-                ResistanceType.Mind => StatType.MindStatusImmunity,
-                ResistanceType.Mobility => StatType.MobilityStatusImmunity,
-                _ => StatType.Invalid
-            };
-
-            return statType != StatType.Invalid &&
-                   Stat.GetStatAdjustment(creature, statType) > 0;
         }
 
         private static void SendStatusEffectFailure(uint source, uint creature, string message)

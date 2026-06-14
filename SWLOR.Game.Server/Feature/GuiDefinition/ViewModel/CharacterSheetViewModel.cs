@@ -1015,10 +1015,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             return score switch
             {
-                <= 0 => "Full Duration",
+                < -60 => "Greatly extended",
+                < -25 => "Extended",
+                < 0 => "Slightly extended",
+                0 => "Full Duration",
                 < 25 => "Slightly reduced",
                 < 45 => "Reduced",
                 < 60 => "Strongly reduced",
+                >= Resistance.MaximumResistance => "Immune",
                 _ => "Greatly reduced"
             };
         }

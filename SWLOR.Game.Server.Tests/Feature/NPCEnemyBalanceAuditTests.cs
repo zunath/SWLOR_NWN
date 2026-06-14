@@ -1,6 +1,8 @@
 using System.Text.Json;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -23,6 +25,69 @@ public class NPCEnemyBalanceAuditTests
     private const int ForceDefenseSubtype = 2;
 
     private static readonly int[] ResistanceSubtypes = { 1, 2, 3, 4, 100, 101, 102, 103 };
+
+    private static readonly ResistanceType[] ResistanceFamilies =
+    {
+        ResistanceType.Fire,
+        ResistanceType.Poison,
+        ResistanceType.Electrical,
+        ResistanceType.Ice,
+        ResistanceType.Mind,
+        ResistanceType.Mobility,
+        ResistanceType.Trauma,
+        ResistanceType.Disruption,
+    };
+
+    private static readonly IReadOnlyDictionary<int, ResistanceType> ResistanceThreatFeats = new Dictionary<int, ResistanceType>
+    {
+        [(int)FeatType.RendingBite] = ResistanceType.Trauma,
+        [(int)FeatType.CripplingTalons] = ResistanceType.Trauma,
+        [(int)FeatType.PiercingQuills] = ResistanceType.Trauma,
+        [(int)FeatType.ToxicSpit] = ResistanceType.Poison,
+        [(int)FeatType.ScorchingBreath] = ResistanceType.Fire,
+        [(int)FeatType.InfernoBlast] = ResistanceType.Fire,
+        [(int)FeatType.SeismicSlam] = ResistanceType.Mobility,
+        [(int)FeatType.RupturingQuake] = ResistanceType.Mobility,
+        [(int)FeatType.TerrifyingBellow] = ResistanceType.Mind,
+        [(int)FeatType.DisorientingScreech] = ResistanceType.Mind,
+        [(int)FeatType.MaulingBite] = ResistanceType.Trauma,
+        [(int)FeatType.BonecrusherBite] = ResistanceType.Trauma,
+        [(int)FeatType.RakingClaws] = ResistanceType.Mobility,
+        [(int)FeatType.PouncingStrike] = ResistanceType.Mobility,
+        [(int)FeatType.TailSweep] = ResistanceType.Mind,
+        [(int)FeatType.GoringCharge] = ResistanceType.Trauma,
+        [(int)FeatType.BarbedVolley] = ResistanceType.Trauma,
+        [(int)FeatType.VenomSpray] = ResistanceType.Poison,
+        [(int)FeatType.ToxicCloud] = ResistanceType.Poison,
+        [(int)FeatType.FrostSpit] = ResistanceType.Ice,
+        [(int)FeatType.StaticBurst] = ResistanceType.Electrical,
+        [(int)FeatType.SavageRoar] = ResistanceType.Mind,
+        [(int)FeatType.SonicShriek] = ResistanceType.Mind,
+        [(int)FeatType.PrecisionShot] = ResistanceType.Trauma,
+        [(int)FeatType.SuppressingShot] = ResistanceType.Mind,
+        [(int)FeatType.GrenadeBurst] = ResistanceType.Fire,
+        [(int)FeatType.SerratedSlash] = ResistanceType.Trauma,
+        [(int)FeatType.BrutalBash] = ResistanceType.Mobility,
+        [(int)FeatType.TacticalMark] = ResistanceType.Trauma,
+        [(int)FeatType.OverloadShot] = ResistanceType.Electrical,
+        [(int)FeatType.ArcPulse] = ResistanceType.Electrical,
+        [(int)FeatType.IonBurst] = ResistanceType.Electrical,
+        [(int)FeatType.TargetLock] = ResistanceType.Trauma,
+        [(int)FeatType.ShrapnelBurst] = ResistanceType.Trauma,
+        [(int)FeatType.ForceRend] = ResistanceType.Disruption,
+        [(int)FeatType.MindSpike] = ResistanceType.Mind,
+        [(int)FeatType.DarkShock] = ResistanceType.Disruption,
+        [(int)FeatType.DreadWave] = ResistanceType.Mind,
+        [(int)FeatType.GlacialSlime] = ResistanceType.Ice,
+        [(int)FeatType.HoarfrostGlob] = ResistanceType.Ice,
+        [(int)FeatType.PermafrostRupture] = ResistanceType.Ice,
+        [(int)FeatType.RimePounce] = ResistanceType.Ice,
+        [(int)FeatType.CryoBile] = ResistanceType.Ice,
+        [(int)FeatType.CapacitorSurge] = ResistanceType.Electrical,
+        [(int)FeatType.StaticWeb] = ResistanceType.Electrical,
+        [(int)FeatType.ForceSunder] = ResistanceType.Disruption,
+        [(int)FeatType.NullShock] = ResistanceType.Disruption,
+    };
 
     private static readonly ExpectedEnemy[] ExpectedAlternateEnemies =
     {
@@ -123,6 +188,84 @@ public class NPCEnemyBalanceAuditTests
         }
     }
 
+    [Test]
+    public void NPCResistanceThreats_CoverEveryResistanceFamily()
+    {
+        var root = FindRepositoryRoot();
+        var templatesByFamily = ResistanceFamilies.ToDictionary(
+            family => family,
+            _ => new HashSet<string>());
+
+        foreach (var file in Directory.EnumerateFiles(Path.Combine(root.FullName, "Module", "utc"), "*.utc.json"))
+        {
+            using var utc = JsonDocument.Parse(File.ReadAllText(file));
+            foreach (var feat in GetCreatureFeats(utc.RootElement))
+            {
+                if (ResistanceThreatFeats.TryGetValue(feat, out var family))
+                    templatesByFamily[family].Add(Path.GetFileNameWithoutExtension(file));
+            }
+        }
+
+        foreach (var family in ResistanceFamilies)
+        {
+            templatesByFamily[family].Count
+                .Should()
+                .BeGreaterThanOrEqualTo(5, $"{family} needs enough authored NPC templates to feel like a real preparation choice");
+        }
+    }
+
+    [Test]
+    public void HutlarQionCreatures_PressureIceResistance()
+    {
+        var root = FindRepositoryRoot();
+        var spawnSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "SpawnDefinition",
+            "HutlarSpawnDefinition.cs"));
+
+        var expectedAbilitiesByResref = new Dictionary<string, FeatType>
+        {
+            ["qion_slug"] = FeatType.GlacialSlime,
+            ["qion_slug001"] = FeatType.HoarfrostGlob,
+            ["qion_hive_tunnel"] = FeatType.PermafrostRupture,
+            ["qion_tiger"] = FeatType.RimePounce,
+            ["huthivebroodmoth"] = FeatType.CryoBile,
+        };
+
+        foreach (var (resref, feat) in expectedAbilitiesByResref)
+        {
+            AssertCreatureHasFeat(root, resref, feat);
+            AssertCreatureDoesNotHaveFeat(root, resref, FeatType.FrostSpit);
+            spawnSource.Should().Contain($"\"{resref}\"", $"{resref} should be reachable through Hutlar spawn definitions");
+        }
+
+        expectedAbilitiesByResref.Values.Should().OnlyHaveUniqueItems("each Hutlar Ice threat should use a distinct ability");
+    }
+
+    [Test]
+    public void CZ220Droids_PressureElectricalResistance()
+    {
+        var root = FindRepositoryRoot();
+
+        AssertCreatureHasFeat(root, "malsecdroid", FeatType.CapacitorSurge);
+        AssertCreatureHasFeat(root, "malspiderdroid", FeatType.StaticWeb);
+        AssertCreatureDoesNotHaveFeat(root, "malsecdroid", FeatType.IonBurst);
+        AssertCreatureDoesNotHaveFeat(root, "malspiderdroid", FeatType.StaticBurst);
+    }
+
+    [Test]
+    public void KorribanForceCasters_PressureDisruptionResistance()
+    {
+        var root = FindRepositoryRoot();
+
+        AssertCreatureHasFeat(root, "vkorrdunsorc", FeatType.ForceSunder);
+        AssertCreatureHasFeat(root, "vkorrduninquis", FeatType.NullShock);
+        AssertCreatureDoesNotHaveFeat(root, "vkorrdunsorc", FeatType.ForceRend);
+        AssertCreatureDoesNotHaveFeat(root, "vkorrduninquis", FeatType.DarkShock);
+    }
+
     private static void AssertCreatureHitPoints(JsonElement utc, ExpectedEnemy expected)
     {
         GetInt(utc, "CurrentHitPoints").Should().Be(expected.HP, expected.Resref);
@@ -188,6 +331,32 @@ public class NPCEnemyBalanceAuditTests
             .Where(entry => entry.GetProperty("__struct_id").GetInt32() == slot)
             .Select(entry => GetString(entry, "EquippedRes"))
             .SingleOrDefault();
+    }
+
+    private static int[] GetCreatureFeats(JsonElement utc)
+    {
+        return utc
+            .GetProperty("FeatList")
+            .GetProperty("value")
+            .EnumerateArray()
+            .Select(entry => GetInt(entry, "Feat"))
+            .ToArray();
+    }
+
+    private static void AssertCreatureHasFeat(DirectoryInfo root, string resref, FeatType feat)
+    {
+        using var utc = ReadJson(root, "Module", "utc", $"{resref}.utc.json");
+        GetCreatureFeats(utc.RootElement)
+            .Should()
+            .Contain((int)feat, $"{resref} should pressure {ResistanceThreatFeats[(int)feat]} resistance");
+    }
+
+    private static void AssertCreatureDoesNotHaveFeat(DirectoryInfo root, string resref, FeatType feat)
+    {
+        using var utc = ReadJson(root, "Module", "utc", $"{resref}.utc.json");
+        GetCreatureFeats(utc.RootElement)
+            .Should()
+            .NotContain((int)feat, $"{resref} should use its own authored resistance-pressure ability");
     }
 
     private static int? GetItemPropertyCost(JsonElement item, int propertyName, int? subtype = null)

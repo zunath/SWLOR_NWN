@@ -637,6 +637,24 @@ namespace SWLOR.Game.Server.Service.AbilityService
         ForceJudgment = 419,
         [RecastGroup("Radiant Lance", "Radiant Lance", true)]
         RadiantLance = 420,
+        [RecastGroup("Glacial Slime", "Glacial Slime", true)]
+        GlacialSlime = 421,
+        [RecastGroup("Hoarfrost Glob", "Hoarfrost Glob", true)]
+        HoarfrostGlob = 422,
+        [RecastGroup("Permafrost Rupture", "Perma Rupture", true)]
+        PermafrostRupture = 423,
+        [RecastGroup("Rime Pounce", "Rime Pounce", true)]
+        RimePounce = 424,
+        [RecastGroup("Cryo Bile", "Cryo Bile", true)]
+        CryoBile = 425,
+        [RecastGroup("Capacitor Surge", "Cap. Surge", true)]
+        CapacitorSurge = 426,
+        [RecastGroup("Static Web", "Static Web", true)]
+        StaticWeb = 427,
+        [RecastGroup("Force Sunder", "Force Sunder", true)]
+        ForceSunder = 428,
+        [RecastGroup("Null Shock", "Null Shock", true)]
+        NullShock = 429,
     }
 
     public class RecastGroupAttribute : Attribute

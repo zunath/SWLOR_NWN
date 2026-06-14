@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
@@ -15,8 +16,8 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         protected override void Apply(uint creature, int durationTicks)
         {
             StatGroup.Stats[StatType.DamageTakenPercentAdjustment] = -ScaleBySourceSocial(18, 22);
-            StatGroup.Stats[StatType.MindStatusImmunity] = 1;
-            StatGroup.Stats[StatType.MobilityStatusImmunity] = 1;
+            StatGroup.Resists[ResistanceType.Mind] = Resistance.MaximumResistance;
+            StatGroup.Resists[ResistanceType.Mobility] = Resistance.MaximumResistance;
         }
     }
 }

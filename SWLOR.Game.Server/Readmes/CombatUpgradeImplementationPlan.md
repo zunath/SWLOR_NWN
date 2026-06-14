@@ -105,13 +105,13 @@ Implement the system changes listed in `System Changes & Migrations`:
 - Equipment requirements move from proficiency perks to prerequisite skill levels.
 - Launch requires a free full rebuild for all characters, implemented as a forced rebuild flow rather than token distribution.
 - Elemental damage applies to the whole attack instead of bypassing defenses.
-- Elemental resistances use the Xenomech diminishing-return curve, capped at a 90 resistance score.
+- Resistances use a direct -100 to 100 percentage scale. Positive scores reduce matching damage and hostile status duration, negative scores increase them, and 100 grants immunity while active.
 
 Acceptance criteria:
 
 - Equipping all relevant weapons, armor, crafting equipment, droids, and enhancements checks skill prerequisites from the Bible.
 - Old proficiency purchases are refunded or made irrelevant through the forced rebuild.
-- Damage and resistance calculations match the `Damage Calc`, `Hit Rate`, and `Status Effects` tabs.
+- Damage and resistance calculations match the `Damage Calc`, `Hit Rate`, `Status Effects`, and `Character Stats` tabs.
 
 ### Character Stats And Combat Math
 
@@ -123,6 +123,7 @@ Acceptance criteria:
 - Accuracy/evasion produce the expected hit-rate table behavior.
 - Damage calculations use the Bible's attack/defense ratio behavior and critical damage rows.
 - Elemental damage uses the normal Physical/Force defense path first, then applies the matching resistance after damage is calculated.
+- Resistance-targeting enemy abilities are represented in the Bible `NPC Abilities`, `Enemy Ability Packages`, and `World NPCs` sheets so placement and source-of-truth documentation stay aligned.
 
 ### Status Effects
 
@@ -368,6 +369,8 @@ Implemented cleanup so far:
 - Removed Heavy Armor activation-time penalty support.
 - Removed `Dash` as a player-facing perk/ability because it is implemented in code but absent from the Bible.
 - Cleaned the character sheet combat display so baseline Physical/Force Defense is separate from typed elemental/status Resistances.
+- Updated resistance gameplay to the direct -100 to 100 scale, including temporary immunity at 100 and vulnerabilities below 0.
+- Added distinct Hutlar Ice, CZ220 Electrical, and Korriban Disruption NPC pressure abilities to the Bible NPC ability/package/world NPC sheets.
 - Confirmed logged-out status effects are process-local runtime cache and do not survive the fresh boot migration path.
 - Routed Marked for Death bonus damage through the shared triggered-damage path while preserving recursion protection.
 

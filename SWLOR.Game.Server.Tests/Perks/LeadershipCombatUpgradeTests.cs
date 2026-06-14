@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Feature.AbilityDefinition.Leadership;
 using SWLOR.Game.Server.Feature.PerkDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
@@ -69,8 +70,8 @@ public class LeadershipCombatUpgradeTests
         AssertAppliedStat(new CleanseOrder2StatusEffect(), StatType.DamageTakenPercentAdjustment, -12);
         AssertAppliedStat(new TriageProtocol2StatusEffect(), StatType.HealingReceivedPercentAdjustment, 12);
         AssertAppliedStat(new HoldTheLine1StatusEffect(), StatType.DamageTakenPercentAdjustment, -18);
-        AssertAppliedStat(new HoldTheLine1StatusEffect(), StatType.MindStatusImmunity, 1);
-        AssertAppliedStat(new HoldTheLine1StatusEffect(), StatType.MobilityStatusImmunity, 1);
+        AssertAppliedResistance(new HoldTheLine1StatusEffect(), ResistanceType.Mind, 100);
+        AssertAppliedResistance(new HoldTheLine1StatusEffect(), ResistanceType.Mobility, 100);
     }
 
     [Test]
@@ -189,6 +190,12 @@ public class LeadershipCombatUpgradeTests
     {
         statusEffect.ApplyEffect(0, 0, -1);
         statusEffect.StatGroup.Stats[statType].Should().Be(expected);
+    }
+
+    private static void AssertAppliedResistance(IStatusEffect statusEffect, ResistanceType resistanceType, int expected)
+    {
+        statusEffect.ApplyEffect(0, 0, -1);
+        statusEffect.StatGroup.Resists[resistanceType].Should().Be(expected);
     }
 
     private static void AssertStatusStat(IStatusEffect statusEffect, StatType statType, int expected)

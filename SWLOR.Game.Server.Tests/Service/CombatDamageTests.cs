@@ -289,6 +289,47 @@ public class CombatDamageTests
     }
 
     [Test]
+    public void ResistanceDamageMultiplier_SupportsPositiveAndNegativeResistance()
+    {
+        Resistance.CalculateResistanceDamageMultiplier(-100).Should().Be(2f);
+        Resistance.CalculateResistanceDamageMultiplier(-50).Should().BeApproximately(1.5f, 0.0001f);
+        Resistance.CalculateResistanceDamageMultiplier(0).Should().Be(1f);
+        Resistance.CalculateResistanceDamageMultiplier(50).Should().BeApproximately(0.5f, 0.0001f);
+        Resistance.CalculateResistanceDamageMultiplier(100).Should().Be(0f);
+        Resistance.CalculateResistanceDamageMultiplier(-150).Should().Be(2f);
+        Resistance.CalculateResistanceDamageMultiplier(150).Should().Be(0f);
+    }
+
+    [Test]
+    public void ResistanceFamilies_UseResistanceScoreForTemporaryImmunity()
+    {
+        var root = FindRepositoryRoot();
+        var resistanceSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Resistance.cs"));
+        var statusEffectSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "StatusEffect.cs"));
+        var statTypeSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "StatService", "StatType.cs"));
+        var holdTheLineSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "StatusEffectDefinition", "HoldTheLine1StatusEffect.cs"));
+        var statusEffectDefinitionRoot = Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "StatusEffectDefinition");
+        var perkDefinitionRoot = Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "PerkDefinition");
+
+        resistanceSource.Should().Contain("ResistanceType.Disruption => Stat.GetStatAdjustment(creature, StatType.DisruptionResistance)");
+        resistanceSource.Should().Contain("GetResistance(creature, type) >= MaximumResistance");
+        statusEffectSource.Should().Contain("Resistance.HasImmunity(creature, resistanceType)");
+        statTypeSource.Should().NotContain("StatusImmunity");
+        holdTheLineSource.Should().Contain("StatGroup.Resists[ResistanceType.Mind] = Resistance.MaximumResistance");
+        holdTheLineSource.Should().Contain("StatGroup.Resists[ResistanceType.Mobility] = Resistance.MaximumResistance");
+
+        Directory.EnumerateFiles(perkDefinitionRoot, "*.cs", SearchOption.AllDirectories)
+            .Select(File.ReadAllText)
+            .Should()
+            .OnlyContain(source => !source.Contains("StatusImmunity"), "resistance immunity should come from reaching 100 resistance, not a perk-owned boolean flag");
+
+        Directory.EnumerateFiles(statusEffectDefinitionRoot, "*.cs", SearchOption.AllDirectories)
+            .Select(File.ReadAllText)
+            .Should()
+            .OnlyContain(source => !source.Contains("StatusImmunity"), "temporary immunity should be represented as temporary 100 resistance");
+    }
+
+    [Test]
     public void DamageRoll_FallsBackToCreatureNaturalWeapons()
     {
         var root = FindRepositoryRoot();

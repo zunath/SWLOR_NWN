@@ -2415,18 +2415,6 @@ namespace SWLOR.Game.Server.Service.StatService
         DamageTakenRedirectToStatusSourcePercent = 414,
 
         /// <summary>
-        /// Blocks incoming Mind resistance group status effects.
-        /// </summary>
-        [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        MindStatusImmunity = 415,
-
-        /// <summary>
-        /// Blocks incoming Mobility resistance group status effects.
-        /// </summary>
-        [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        MobilityStatusImmunity = 416,
-
-        /// <summary>
         /// Percent hit chance adjustment applied only to physical weapon and Force abilities.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
@@ -3582,7 +3570,13 @@ namespace SWLOR.Game.Server.Service.StatService
         /// Senary PerkType value whose ability triggers HeavyVibrobladeDefenseAbilityCrushingBlow.
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
-        HeavyVibrobladeDefenseAbilityCrushingBlowTriggerSenaryPerkType = 609
+        HeavyVibrobladeDefenseAbilityCrushingBlowTriggerSenaryPerkType = 609,
+
+        /// <summary>
+        /// Flat bonus added to Disruption resistance.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        DisruptionResistance = 610
     }
 
     public class StatTypeAttribute : Attribute

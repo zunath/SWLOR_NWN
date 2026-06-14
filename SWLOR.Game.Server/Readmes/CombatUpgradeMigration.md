@@ -27,7 +27,8 @@ This note tracks player migration work for `feature/combat-upgrade`. Keep it cur
   - Moves legacy elemental defense entries into resistances, fills missing default keys, and removes Physical/Force from resistances.
   - Adds and normalizes beast resistance purities, removes legacy beast saving throw purities, and moves beast elemental purities out of defenses.
   - Migrates live and serialized item properties for the new resistance, weapon damage, and weapon delay property model, including untyped `DMG`, separate `WeaponDamageType`, and normalized weapon `Delay` for held weapons and natural creature weapons.
-  - Reuses the legacy cooldown-reduction equipment, enhancement, and food property IDs as Combat Readiness, drops the old blanket recast-reduction player stat during player resaves, and recalculates Combat Readiness from equipped items during player migration.
+  - Stores Resistance item properties through SWLOR's `iprp_swlrescost.2da` cost table `54`. Negative gameplay vulnerability amounts are encoded as non-negative cost-table row ids `101` through `200` and decoded by runtime stat aggregation.
+  - Reuses the legacy cooldown-reduction equipment, enhancement, and food property IDs as Combat Readiness, renames the legacy recast-reduction enhancement items in live and serialized storage, drops the old blanket recast-reduction player stat during player resaves, and recalculates Combat Readiness from equipped items during player migration.
   - Removes obsolete Bible perks, stale recast entries, and obsolete combat instruction discs from players, beasts, stored items, markets, world properties, research jobs, outfits, DM creatures, and ships.
   - Leaves logged-out status-effect runtime cache out of migration. That cache is process-local and empty on the fresh boot that runs server migrations.
 
@@ -91,7 +92,7 @@ Important nuance: setting the flag to `false` does not itself reset the characte
   - calls from player initialization/login temporary effects
   - beast/droid setup
   - equip/purchase/refund triggers
-- Dry-run the item-property migrations against representative live data for player inventories, markets, world property storage, research jobs, player outfits, DM creatures, ships, and nested serialized inventories. Static coverage now guards those storage surfaces and recursive live-object entry points, but representative serialized records are still needed to prove live data shape compatibility.
+- Dry-run the item-property migrations against representative live data for player inventories, markets, world property storage, research jobs, player outfits, DM creatures, ships, and nested serialized inventories. Static coverage now guards those storage surfaces, recursive live-object entry points, and Combat Readiness enhancement item renames, but representative serialized records are still needed to prove live data shape compatibility.
 - Confirm the weapon Delay migration updates old Throwing/Vibroknife/natural-weapon and Sling-based pistol values and preserves training-weapon and intentional short-sword delay exceptions in representative live data. Checked-in module templates and embedded `.git` area/store/NPC item instances have already been normalized to the updated delay table.
 - Logged-out active status effects are process-local runtime cache only. They are not persisted and do not survive the fresh boot migration path, so no migration cleanup is required.
 - Add release notes telling players they must perform a forced full rebuild and that removed combat perks were refunded.

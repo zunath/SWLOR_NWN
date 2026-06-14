@@ -24156,7 +24156,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Armor Enhancement - Recast Reduction I"
+                      "value": "Armor Enhancement - Combat Readiness I"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -24167,7 +24167,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Armor Enhancement - Recast Reduction II"
+                      "value": "Armor Enhancement - Combat Readiness II"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -24178,7 +24178,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Armor Enhancement - Recast Reduction III"
+                      "value": "Armor Enhancement - Combat Readiness III"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -24189,7 +24189,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Armor Enhancement - Recast Reduction IV"
+                      "value": "Armor Enhancement - Combat Readiness IV"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -24200,7 +24200,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Armor Enhancement - Recast Reduction V"
+                      "value": "Armor Enhancement - Combat Readiness V"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -26730,7 +26730,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Cooking Enhancement - Recast Reduction I"
+                      "value": "Cooking Enhancement - Combat Readiness I"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -26741,7 +26741,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Cooking Enhancement - Recast Reduction II"
+                      "value": "Cooking Enhancement - Combat Readiness II"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -26752,7 +26752,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Cooking Enhancement - Recast Reduction III"
+                      "value": "Cooking Enhancement - Combat Readiness III"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -26763,7 +26763,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Cooking Enhancement - Recast Reduction IV"
+                      "value": "Cooking Enhancement - Combat Readiness IV"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -26774,7 +26774,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Cooking Enhancement - Recast Reduction V"
+                      "value": "Cooking Enhancement - Combat Readiness V"
                     },
                     "RESREF": {
                       "type": "resref",

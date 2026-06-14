@@ -574,21 +574,21 @@ namespace SWLOR.Game.Server.Service
                 case EnhancementSubType.DefenseForce: // Defense - Force
                     return ItemPropertyCustom(ItemPropertyType.Defense, (int)CombatDamageType.Force, amount);
                 case EnhancementSubType.ResistanceFire: // Resistance - Fire
-                    return ItemPropertyCustom(ItemPropertyType.Resistance, (int)ResistanceType.Fire, amount);
+                    return BuildResistanceItemProperty(ResistanceType.Fire, amount);
                 case EnhancementSubType.ResistancePoison: // Resistance - Poison
-                    return ItemPropertyCustom(ItemPropertyType.Resistance, (int)ResistanceType.Poison, amount);
+                    return BuildResistanceItemProperty(ResistanceType.Poison, amount);
                 case EnhancementSubType.ResistanceElectrical: // Resistance - Electrical
-                    return ItemPropertyCustom(ItemPropertyType.Resistance, (int)ResistanceType.Electrical, amount);
+                    return BuildResistanceItemProperty(ResistanceType.Electrical, amount);
                 case EnhancementSubType.ResistanceIce: // Resistance - Ice
-                    return ItemPropertyCustom(ItemPropertyType.Resistance, (int)ResistanceType.Ice, amount);
+                    return BuildResistanceItemProperty(ResistanceType.Ice, amount);
                 case EnhancementSubType.ResistanceMind: // Resistance - Mind
-                    return ItemPropertyCustom(ItemPropertyType.Resistance, (int)ResistanceType.Mind, amount);
+                    return BuildResistanceItemProperty(ResistanceType.Mind, amount);
                 case EnhancementSubType.ResistanceMobility: // Resistance - Mobility
-                    return ItemPropertyCustom(ItemPropertyType.Resistance, (int)ResistanceType.Mobility, amount);
+                    return BuildResistanceItemProperty(ResistanceType.Mobility, amount);
                 case EnhancementSubType.ResistanceTrauma: // Resistance - Trauma
-                    return ItemPropertyCustom(ItemPropertyType.Resistance, (int)ResistanceType.Trauma, amount);
+                    return BuildResistanceItemProperty(ResistanceType.Trauma, amount);
                 case EnhancementSubType.ResistanceDisruption: // Resistance - Disruption
-                    return ItemPropertyCustom(ItemPropertyType.Resistance, (int)ResistanceType.Disruption, amount);
+                    return BuildResistanceItemProperty(ResistanceType.Disruption, amount);
                 case EnhancementSubType.Evasion: // Evasion
                     return ItemPropertyCustom(ItemPropertyType.Evasion, -1, amount);
                 case EnhancementSubType.HP: // HP
@@ -808,6 +808,14 @@ namespace SWLOR.Game.Server.Service
             }
 
             throw new Exception("Unsupported enhancement type.");
+        }
+
+        private static ItemProperty BuildResistanceItemProperty(ResistanceType type, int amount)
+        {
+            return ItemPropertyCustom(
+                ItemPropertyType.Resistance,
+                (int)type,
+                Resistance.EncodeItemPropertyCostTableValue(amount));
         }
 
         public static bool IsWeaponDamageEnhancement(EnhancementSubType subTypeId)

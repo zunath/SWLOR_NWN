@@ -1833,7 +1833,8 @@ namespace SWLOR.Game.Server.Service
                     if (!npcStats.Resistances.ContainsKey(resistanceType))
                         npcStats.Resistances[resistanceType] = 0;
 
-                    npcStats.Resistances[resistanceType] += GetItemPropertyCostTableValue(ip);
+                    npcStats.Resistances[resistanceType] += Resistance.DecodeItemPropertyCostTableValue(
+                        GetItemPropertyCostTableValue(ip));
                 }
                 else if (type == ItemPropertyType.NPCSkill)
                 {
@@ -1897,7 +1898,8 @@ namespace SWLOR.Game.Server.Service
                         if (!npcStats.Resistances.ContainsKey(resistanceType))
                             npcStats.Resistances[resistanceType] = 0;
 
-                        npcStats.Resistances[resistanceType] += prop.m_nCostTableValue;
+                        npcStats.Resistances[resistanceType] += Resistance.DecodeItemPropertyCostTableValue(
+                            prop.m_nCostTableValue);
                     }
                     else if (prop.m_nPropertyName == (ushort)ItemPropertyType.NPCSkill)
                     {

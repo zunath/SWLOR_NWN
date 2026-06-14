@@ -126,6 +126,8 @@ public class FirstAidCombatUpgradeTests
         AssertStatusStat(new Coagulant1StatusEffect(), StatType.PhysicalDamageOverTimeTakenPercentAdjustment, -10);
         AssertStatusStat(new Coagulant2StatusEffect(), StatType.TraumaResistance, 100);
         AssertStatusStat(new Coagulant2StatusEffect(), StatType.PhysicalDamageOverTimeTakenPercentAdjustment, -20);
+        new Coagulant1StatusEffect().PersistsOnLogout.Should().BeFalse();
+        new Coagulant2StatusEffect().PersistsOnLogout.Should().BeFalse();
 
         AssertStatusStat(new PainSuppressant1StatusEffect(), StatType.DamageTakenPercentAdjustment, -10);
         AssertStatusStat(new PainSuppressant2StatusEffect(), StatType.DamageTakenPercentAdjustment, -15);

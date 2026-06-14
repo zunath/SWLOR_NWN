@@ -2,10 +2,12 @@ using System.Text;
 using System.Text.Json;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using NativeDamageType = NWN.Native.API.DamageType;
 using NWNScriptDamageType = SWLOR.NWN.API.NWScript.Enum.DamageType;
@@ -54,27 +56,60 @@ public class CombatDamageTests
     }
 
     [Test]
-    public void ForceDamage_UsesForceCombatMetadataAndMagicEnginePayload()
+    public void ForceDamage_UsesForceCombatMetadataWithoutStatusResistanceAndMagicEnginePayload()
     {
         var forceDamage = CombatDamageType.Force.GetDetails();
 
         forceDamage.Category.Should().Be(CombatDamageCategoryType.Force);
         forceDamage.DefenseDamageType.Should().Be(CombatDamageType.Force);
-        forceDamage.SourceResistanceType.Should().Be(ResistanceType.Disruption);
+        forceDamage.SourceResistanceType.Should().Be(ResistanceType.Invalid);
+        CombatDamageType.Force.TryGetSourceResistanceType(out _).Should().BeFalse();
         forceDamage.NWScriptDamageType.Should().Be(NWNScriptDamageType.Force);
         forceDamage.NativeDamageType.Should().Be(NativeDamageType.Magical);
     }
 
     [Test]
-    public void PhysicalDamage_UsesPhysicalCombatMetadataAndSlashingEnginePayload()
+    public void PhysicalDamage_UsesPhysicalCombatMetadataWithoutStatusResistanceAndSlashingEnginePayload()
     {
         var physicalDamage = CombatDamageType.Physical.GetDetails();
 
         physicalDamage.Category.Should().Be(CombatDamageCategoryType.Physical);
         physicalDamage.DefenseDamageType.Should().Be(CombatDamageType.Physical);
-        physicalDamage.SourceResistanceType.Should().Be(ResistanceType.Trauma);
+        physicalDamage.SourceResistanceType.Should().Be(ResistanceType.Invalid);
+        CombatDamageType.Physical.TryGetSourceResistanceType(out _).Should().BeFalse();
         physicalDamage.NWScriptDamageType.Should().Be(NWNScriptDamageType.Slashing);
         physicalDamage.NativeDamageType.Should().Be(NativeDamageType.Slashing);
+    }
+
+    [Test]
+    public void SonicDamage_UsesSonicEnginePayloadWithoutStatusResistance()
+    {
+        var sonicDamage = CombatDamageType.Sonic.GetDetails();
+
+        sonicDamage.Category.Should().Be(CombatDamageCategoryType.Elemental);
+        sonicDamage.DefenseDamageType.Should().Be(CombatDamageType.Physical);
+        sonicDamage.SourceResistanceType.Should().Be(ResistanceType.Invalid);
+        CombatDamageType.Sonic.TryGetSourceResistanceType(out _).Should().BeFalse();
+        sonicDamage.NWScriptDamageType.Should().Be(NWNScriptDamageType.Sonic);
+        sonicDamage.NativeDamageType.Should().Be(NativeDamageType.Sonic);
+    }
+
+    [Test]
+    public void TraumaAndDisruption_AreStatusResistancesInsteadOfDirectDamageResistances()
+    {
+        new BleedStatusEffect().ResistanceType.Should().Be(ResistanceType.Trauma);
+        new SunderStatusEffect().ResistanceType.Should().Be(ResistanceType.Trauma);
+        new ForceDisruptionStatusEffect().ResistanceType.Should().Be(ResistanceType.Disruption);
+        new ForceChokeDamageStatusEffect().ResistanceType.Should().Be(ResistanceType.Disruption);
+    }
+
+    [Test]
+    public void NPCAbilityScaling_DoesNotFallbackToUnrelatedResistancesForUnresistedDamageTypes()
+    {
+        var root = FindRepositoryRoot();
+        var abilitySource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Ability.cs"));
+
+        abilitySource.Should().NotContain("npcStats.Resistances.Values.Max()");
     }
 
     [Test]
@@ -301,6 +336,22 @@ public class CombatDamageTests
     }
 
     [Test]
+    public void ResistanceItemPropertyEncoding_UsesValidCostTableRowsForVulnerabilities()
+    {
+        Resistance.EncodeItemPropertyCostTableValue(27).Should().Be(27);
+        Resistance.EncodeItemPropertyCostTableValue(100).Should().Be(100);
+        Resistance.EncodeItemPropertyCostTableValue(-5).Should().Be(105);
+        Resistance.EncodeItemPropertyCostTableValue(-20).Should().Be(120);
+        Resistance.EncodeItemPropertyCostTableValue(-100).Should().Be(200);
+
+        Resistance.DecodeItemPropertyCostTableValue(27).Should().Be(27);
+        Resistance.DecodeItemPropertyCostTableValue(100).Should().Be(100);
+        Resistance.DecodeItemPropertyCostTableValue(105).Should().Be(-5);
+        Resistance.DecodeItemPropertyCostTableValue(120).Should().Be(-20);
+        Resistance.DecodeItemPropertyCostTableValue(200).Should().Be(-100);
+    }
+
+    [Test]
     public void ResistanceFamilies_UseResistanceScoreForTemporaryImmunity()
     {
         var root = FindRepositoryRoot();
@@ -311,8 +362,13 @@ public class CombatDamageTests
         var statusEffectDefinitionRoot = Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "StatusEffectDefinition");
         var perkDefinitionRoot = Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "PerkDefinition");
 
-        resistanceSource.Should().Contain("ResistanceType.Disruption => Stat.GetStatAdjustment(creature, StatType.DisruptionResistance)");
+        resistanceSource.Should().Contain("ResistanceType.Disruption => StatType.DisruptionResistance");
         resistanceSource.Should().Contain("GetResistance(creature, type) >= MaximumResistance");
+        resistanceSource.Should().Contain("MaximumNonTemporaryPlayerResistance = MaximumResistance - 1");
+        resistanceSource.Should().Contain("!HasTemporaryResistanceImmunity(creature, type)");
+        resistanceSource.Should().Contain("effect.DurationTicks > 0");
+        resistanceSource.Should().Contain("effect.StatGroup.Resists.TryGetValue(type");
+        resistanceSource.Should().Contain("effect.StatGroup.Stats.TryGetValue(statType");
         statusEffectSource.Should().Contain("Resistance.HasImmunity(creature, resistanceType)");
         statTypeSource.Should().NotContain("StatusImmunity");
         holdTheLineSource.Should().Contain("StatGroup.Resists[ResistanceType.Mind] = Resistance.MaximumResistance");
@@ -327,6 +383,25 @@ public class CombatDamageTests
             .Select(File.ReadAllText)
             .Should()
             .OnlyContain(source => !source.Contains("StatusImmunity"), "temporary immunity should be represented as temporary 100 resistance");
+    }
+
+    [Test]
+    public void ExplicitResistanceImmunityStatusEffects_DoNotPersistOnLogout()
+    {
+        var coagulant = new Coagulant2StatusEffect();
+        coagulant.PersistsOnLogout.Should().BeFalse();
+        coagulant.StatGroup.Stats[StatType.TraumaResistance].Should().Be(Resistance.MaximumResistance);
+
+        var unbreakableBeast = new UnbreakableBeast1StatusEffect();
+        unbreakableBeast.PersistsOnLogout.Should().BeFalse();
+        unbreakableBeast.StatGroup.Stats[StatType.MindResistance].Should().Be(Resistance.MaximumResistance);
+        unbreakableBeast.StatGroup.Stats[StatType.MobilityResistance].Should().Be(Resistance.MaximumResistance);
+
+        var holdTheLine = new HoldTheLine1StatusEffect();
+        holdTheLine.PersistsOnLogout.Should().BeFalse();
+        holdTheLine.ApplyEffect(0, 0, 1);
+        holdTheLine.StatGroup.Resists[ResistanceType.Mind].Should().Be(Resistance.MaximumResistance);
+        holdTheLine.StatGroup.Resists[ResistanceType.Mobility].Should().Be(Resistance.MaximumResistance);
     }
 
     [Test]
@@ -812,6 +887,49 @@ public class CombatDamageTests
         resistanceMigrationSource.Should().Contain("aen_def_fir");
         resistanceMigrationSource.Should().Contain("cen_res_mnd");
         resistanceMigrationSource.Should().Contain("de_res_dis");
+    }
+
+    [Test]
+    public void CombatReadinessMigration_RenamesStoredEnhancementItemsAndRecalculatesPlayers()
+    {
+        var root = FindRepositoryRoot();
+        var playerMigrationSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "MigrationDefinition",
+            "PlayerMigration",
+            "_14_MigrateResistanceItemProperties.cs"));
+        var serverMigrationSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "MigrationDefinition",
+            "ServerMigration",
+            "_31_MigrateResistanceItemProperties.cs"));
+        var combatReadinessMigrationSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "MigrationDefinition",
+            "CombatReadinessMigration.cs"));
+
+        playerMigrationSource.Should().Contain("CombatReadinessMigration.MigratePlayer(player);");
+        playerMigrationSource.Should().NotContain("SerializedItemCombatReadinessMigration");
+        serverMigrationSource.Should().Contain("CombatReadinessMigration.MigrateSerializedObject");
+        serverMigrationSource.Should().NotContain("SerializedItemCombatReadinessMigration");
+        serverMigrationSource.Should().Contain("MigrateNamedEntityItems");
+        serverMigrationSource.Should().Contain("SearchAll<InventoryItem>()");
+        serverMigrationSource.Should().Contain("SearchAll<MarketItem>()");
+        serverMigrationSource.Should().Contain("TryMigrateCombatReadinessName(item.Resref, item.Name, name => item.Name = name)");
+        combatReadinessMigrationSource.Should().Contain("MigrateObject(player);");
+        combatReadinessMigrationSource.Should().Contain("CalculateEquippedCombatReadiness(player)");
+        combatReadinessMigrationSource.Should().Contain("CombatReadinessItemNamesByResref");
+        combatReadinessMigrationSource.Should().Contain("aen_recast1");
+        combatReadinessMigrationSource.Should().Contain("cen_recast5");
+        combatReadinessMigrationSource.Should().Contain("Armor Enhancement - Combat Readiness I");
+        combatReadinessMigrationSource.Should().Contain("Cooking Enhancement - Combat Readiness V");
+        combatReadinessMigrationSource.Should().Contain("SetName(item, name)");
     }
 
     [Test]

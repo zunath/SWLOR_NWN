@@ -89,7 +89,7 @@ public class NPCAbilityDefinitionTests
     }
 
     [Test]
-    public void NewResistanceThreatAbilities_AreAvailableToDefaultNpcAI()
+    public void NPCAbilities_AreAvailableToDefaultNpcAI()
     {
         Ability.CacheData();
         var profiles = new DefaultAIProfileDefinition().BuildProfiles();
@@ -98,7 +98,7 @@ public class NPCAbilityDefinitionTests
             .Select(action => action.Feat)
             .ToHashSet();
 
-        foreach (var feat in NewResistanceThreatAbilities())
+        foreach (var feat in ExpectedAbilities().Keys)
         {
             Ability.IsFeatRegistered(feat).Should().BeTrue($"{feat} must be registered before AI can execute it");
             genericAbilityFeats.Should().Contain(feat, $"{feat} should be exposed through the Generic NPC AI profile");
@@ -157,7 +157,7 @@ public class NPCAbilityDefinitionTests
             [FeatType.BarbedVolley] = new("Barbed Volley", RecastGroup.BarbedVolley, 17f, 5),
             [FeatType.VenomSpray] = new("Venom Spray", RecastGroup.VenomSpray, 18f, 5),
             [FeatType.ToxicCloud] = new("Toxic Cloud", RecastGroup.ToxicCloud, 24f, 7),
-            [FeatType.FrostSpit] = new("Frost Spit", RecastGroup.FrostSpit, 16f, 4),
+            [FeatType.FrostSpit] = new("Frost Spit", RecastGroup.FrostSpit, 24f, 2),
             [FeatType.StaticBurst] = new("Static Burst", RecastGroup.StaticBurst, 20f, 6),
             [FeatType.SavageRoar] = new("Savage Roar", RecastGroup.SavageRoar, 21f, 4),
             [FeatType.SonicShriek] = new("Sonic Shriek", RecastGroup.SonicShriek, 19f, 5),

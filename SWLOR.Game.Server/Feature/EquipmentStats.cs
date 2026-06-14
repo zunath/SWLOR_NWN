@@ -528,7 +528,7 @@ namespace SWLOR.Game.Server.Feature
             if (GetIsDM(creature) || GetIsDMPossessed(creature))
                 return;
 
-            var amount = GetItemPropertyCostTableValue(ip);
+            var amount = Resistance.DecodeItemPropertyCostTableValue(GetItemPropertyCostTableValue(ip));
             var resistanceType = (ResistanceType)GetItemPropertySubType(ip);
             if (!Resistance.IsValidResistanceType(resistanceType))
                 return;
@@ -561,7 +561,7 @@ namespace SWLOR.Game.Server.Feature
 
                         if (subType == resistanceType)
                         {
-                            value += GetItemPropertyCostTableValue(resistanceIP);
+                            value += Resistance.DecodeItemPropertyCostTableValue(GetItemPropertyCostTableValue(resistanceIP));
                         }
                     }
                 }
@@ -575,13 +575,16 @@ namespace SWLOR.Game.Server.Feature
                     value -= amount;
                 }
 
-                if (value <= 0)
+                if (value == 0)
                 {
                     BiowareXP2.IPRemoveMatchingItemProperties(skin, ItemPropertyType.Resistance, DurationType.Invalid, (int)resistanceType);
                 }
                 else
                 {
-                    var newIP = ItemPropertyCustom(ItemPropertyType.Resistance, (int)resistanceType, value);
+                    var newIP = ItemPropertyCustom(
+                        ItemPropertyType.Resistance,
+                        (int)resistanceType,
+                        Resistance.EncodeItemPropertyCostTableValue(value));
                     BiowareXP2.IPSafeAddItemProperty(skin, newIP, 0f, AddItemPropertyPolicy.ReplaceExisting, true, false);
                 }
             }

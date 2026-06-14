@@ -105,7 +105,8 @@ Implement the system changes listed in `System Changes & Migrations`:
 - Equipment requirements move from proficiency perks to prerequisite skill levels.
 - Launch requires a free full rebuild for all characters, implemented as a forced rebuild flow rather than token distribution.
 - Elemental damage applies to the whole attack instead of bypassing defenses.
-- Resistances use a direct -100 to 100 percentage scale. Positive scores reduce matching damage and hostile status duration, negative scores increase them, and 100 grants immunity while active.
+- Resistances use a direct -100 to 100 percentage scale. Elemental resistances reduce matching elemental damage, hostile status duration, and matching status damage ticks. Status-family resistances reduce matching hostile status duration and matching status damage ticks. Negative scores increase matching effects, and 100 grants temporary immunity while active. Player totals from gear, food, perks, auras, and smaller stacked buffs cap below immunity unless an active finite-duration status explicitly grants 100 resistance.
+- Resistance item properties must follow NWN cost-table storage. Persisted `CostValue` entries are non-negative row ids in SWLOR's `iprp_swlrescost.2da` cost table `54`: rows `0` through `100` represent positive or zero resistance, and rows `101` through `200` decode to vulnerability amounts `-1` through `-100`.
 
 Acceptance criteria:
 
@@ -371,6 +372,8 @@ Implemented cleanup so far:
 - Cleaned the character sheet combat display so baseline Physical/Force Defense is separate from typed elemental/status Resistances.
 - Updated resistance gameplay to the direct -100 to 100 scale, including temporary immunity at 100 and vulnerabilities below 0.
 - Added distinct Hutlar Ice, CZ220 Electrical, and Korriban Disruption NPC pressure abilities to the Bible NPC ability/package/world NPC sheets.
+- Added conservative enemy resistance vulnerabilities, capped at -20, to the Bible enemy resistance packages and synchronized World NPC skin resistance item properties.
+- Added Coolant-Scarred Mynock, Byysk Cryo Adept, and Sith Frostbinder as spawned resistance-pressure variants that expand Ice-resistance pressure beyond the original Hutlar Qion set.
 - Confirmed logged-out status effects are process-local runtime cache and do not survive the fresh boot migration path.
 - Routed Marked for Death bonus damage through the shared triggered-damage path while preserving recursion protection.
 

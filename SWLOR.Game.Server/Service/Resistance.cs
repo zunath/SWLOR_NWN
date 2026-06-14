@@ -12,6 +12,8 @@ namespace SWLOR.Game.Server.Service
     {
         public const int MinimumResistance = -100;
         public const int MaximumResistance = 100;
+        public const int VulnerabilityCostTableOffset = MaximumResistance;
+        private const int MaximumNonTemporaryPlayerResistance = MaximumResistance - 1;
 
         private static readonly List<ResistanceType> _allResistanceTypes = new();
         private static readonly HashSet<ResistanceType> _validResistanceTypes = new();
@@ -151,6 +153,25 @@ namespace SWLOR.Game.Server.Service
                    GetResistance(creature, type) >= MaximumResistance;
         }
 
+        public static int EncodeItemPropertyCostTableValue(int resistance)
+        {
+            resistance = ClampResistance(resistance);
+            return resistance < 0
+                ? VulnerabilityCostTableOffset + Math.Abs(resistance)
+                : resistance;
+        }
+
+        public static int DecodeItemPropertyCostTableValue(int costTableValue)
+        {
+            if (costTableValue < 0)
+                return ClampResistance(costTableValue);
+
+            if (costTableValue > VulnerabilityCostTableOffset)
+                return ClampResistance(-(costTableValue - VulnerabilityCostTableOffset));
+
+            return ClampResistance(costTableValue);
+        }
+
         private static void EnsureResistanceTypesLoaded()
         {
             if (_allResistanceTypes.Count <= 0)
@@ -207,6 +228,14 @@ namespace SWLOR.Game.Server.Service
                 GetStatusEffectResistance(creature, type) +
                 GetResistanceAdjustment(creature, type);
 
+            if (GetIsPC(creature) &&
+                !GetIsDM(creature) &&
+                resistance >= MaximumResistance &&
+                !HasTemporaryResistanceImmunity(creature, type))
+            {
+                return MaximumNonTemporaryPlayerResistance;
+            }
+
             return ClampResistance(resistance);
         }
 
@@ -232,19 +261,43 @@ namespace SWLOR.Game.Server.Service
 
         private static int GetResistanceAdjustment(uint creature, ResistanceType type)
         {
+            var statType = GetResistanceStatType(type);
+            return statType == StatType.Invalid
+                ? 0
+                : Stat.GetStatAdjustment(creature, statType);
+        }
+
+        private static StatType GetResistanceStatType(ResistanceType type)
+        {
             return type switch
             {
-                ResistanceType.Fire => Stat.GetStatAdjustment(creature, StatType.FireDefense),
-                ResistanceType.Poison => Stat.GetStatAdjustment(creature, StatType.PoisonDefense),
-                ResistanceType.Electrical => Stat.GetStatAdjustment(creature, StatType.ElectricalDefense),
-                ResistanceType.Ice => Stat.GetStatAdjustment(creature, StatType.IceDefense),
-                ResistanceType.Mind => Stat.GetStatAdjustment(creature, StatType.MindResistance),
-                ResistanceType.Mobility => Stat.GetStatAdjustment(creature, StatType.MobilityResistance),
-                ResistanceType.Trauma => Stat.GetStatAdjustment(creature, StatType.TraumaResistance),
-                ResistanceType.Disruption => Stat.GetStatAdjustment(creature, StatType.DisruptionResistance),
-                _ => 0
+                ResistanceType.Fire => StatType.FireDefense,
+                ResistanceType.Poison => StatType.PoisonDefense,
+                ResistanceType.Electrical => StatType.ElectricalDefense,
+                ResistanceType.Ice => StatType.IceDefense,
+                ResistanceType.Mind => StatType.MindResistance,
+                ResistanceType.Mobility => StatType.MobilityResistance,
+                ResistanceType.Trauma => StatType.TraumaResistance,
+                ResistanceType.Disruption => StatType.DisruptionResistance,
+                _ => StatType.Invalid
             };
         }
 
+        private static bool HasTemporaryResistanceImmunity(uint creature, ResistanceType type)
+        {
+            var statType = GetResistanceStatType(type);
+
+            return StatusEffect.GetCreatureStatusEffects(creature)
+                .GetAllEffects()
+                .Any(effect =>
+                    effect.DurationTicks > 0 &&
+                    (
+                        (effect.StatGroup.Resists.TryGetValue(type, out var resistanceValue) &&
+                         resistanceValue >= MaximumResistance) ||
+                        (statType != StatType.Invalid &&
+                         effect.StatGroup.Stats.TryGetValue(statType, out var statValue) &&
+                         statValue >= MaximumResistance)
+                    ));
+        }
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Entity;
@@ -18,8 +19,20 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
         {
             var migratedCount = 0;
 
-            migratedCount += MigrateEntityItems(SearchAll<InventoryItem>(), item => item.Data, (item, data) => item.Data = data);
-            migratedCount += MigrateEntityItems(SearchAll<MarketItem>(), item => item.Data, (item, data) => item.Data = data);
+            migratedCount += MigrateNamedEntityItems(
+                SearchAll<InventoryItem>(),
+                item => item.Resref,
+                item => item.Name,
+                (item, name) => item.Name = name,
+                item => item.Data,
+                (item, data) => item.Data = data);
+            migratedCount += MigrateNamedEntityItems(
+                SearchAll<MarketItem>(),
+                item => item.Resref,
+                item => item.Name,
+                (item, name) => item.Name = name,
+                item => item.Data,
+                (item, data) => item.Data = data);
             migratedCount += MigrateWorldPropertyCategories();
             migratedCount += MigrateEntityItems(SearchAll<WorldProperty>(), item => item.SerializedItem, (item, data) => item.SerializedItem = data);
             migratedCount += MigrateEntityItems(SearchAll<ResearchJob>(), item => item.SerializedItem, (item, data) => item.SerializedItem = data);
@@ -27,7 +40,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
             migratedCount += MigrateEntityItems(SearchAll<DMCreature>(), item => item.Data, (item, data) => item.Data = data);
             migratedCount += MigratePlayerShips();
 
-            Log.Write(LogGroup.Migration, $"Migrated resistance and weapon damage item properties on {migratedCount} serialized records.");
+            Log.Write(LogGroup.Migration, $"Migrated resistance, weapon damage, and Combat Readiness item data on {migratedCount} serialized records.");
         }
 
         private static List<T> SearchAll<T>()
@@ -40,8 +53,8 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
 
         private static int MigrateEntityItems<T>(
             IEnumerable<T> entities,
-            System.Func<T, string> getSerializedData,
-            System.Action<T, string> setSerializedData)
+            Func<T, string> getSerializedData,
+            Action<T, string> setSerializedData)
             where T : EntityBase
         {
             var migratedCount = 0;
@@ -52,6 +65,38 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
                     continue;
 
                 setSerializedData(entity, migratedData);
+                DB.Set(entity);
+                migratedCount++;
+            }
+
+            return migratedCount;
+        }
+
+        private static int MigrateNamedEntityItems<T>(
+            IEnumerable<T> entities,
+            Func<T, string> getResref,
+            Func<T, string> getName,
+            Action<T, string> setName,
+            Func<T, string> getSerializedData,
+            Action<T, string> setSerializedData)
+            where T : EntityBase
+        {
+            var migratedCount = 0;
+
+            foreach (var entity in entities)
+            {
+                var migrated = false;
+                if (MigrateSerializedObject(getSerializedData(entity), out var migratedData))
+                {
+                    setSerializedData(entity, migratedData);
+                    migrated = true;
+                }
+
+                migrated |= TryMigrateCombatReadinessName(getResref(entity), getName(entity), name => setName(entity, name));
+
+                if (!migrated)
+                    continue;
+
                 DB.Set(entity);
                 migratedCount++;
             }
@@ -76,6 +121,12 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
                 migrated = true;
             }
 
+            if (CombatReadinessMigration.MigrateSerializedObject(migratedSerializedObject, out var combatReadinessData))
+            {
+                migratedSerializedObject = combatReadinessData;
+                migrated = true;
+            }
+
             return migrated;
         }
 
@@ -91,11 +142,13 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
                 var migrated = false;
                 foreach (var item in category.Items.Values)
                 {
-                    if (!MigrateSerializedObject(item.Data, out var migratedData))
-                        continue;
+                    if (MigrateSerializedObject(item.Data, out var migratedData))
+                    {
+                        item.Data = migratedData;
+                        migrated = true;
+                    }
 
-                    item.Data = migratedData;
-                    migrated = true;
+                    migrated |= TryMigrateCombatReadinessName(item.Resref, item.Name, name => item.Name = name);
                 }
 
                 if (!migrated)
@@ -106,6 +159,21 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
             }
 
             return migratedCount;
+        }
+
+        private static bool TryMigrateCombatReadinessName(
+            string resref,
+            string currentName,
+            Action<string> setName)
+        {
+            if (!CombatReadinessMigration.TryGetCombatReadinessItemName(resref, out var combatReadinessName) ||
+                currentName == combatReadinessName)
+            {
+                return false;
+            }
+
+            setName(combatReadinessName);
+            return true;
         }
 
         private static int MigratePlayerShips()

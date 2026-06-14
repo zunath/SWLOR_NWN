@@ -318,9 +318,13 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
 
             foreach (var ((type, subType), value) in replacements)
             {
+                var costTableValue = type == ItemPropertyType.Resistance
+                    ? Resistance.EncodeItemPropertyCostTableValue(value)
+                    : value;
+
                 BiowareXP2.IPSafeAddItemProperty(
                     item,
-                    ItemPropertyCustom(type, subType, value),
+                    ItemPropertyCustom(type, subType, costTableValue),
                     0.0f,
                     AddItemPropertyPolicy.ReplaceExisting,
                     false,

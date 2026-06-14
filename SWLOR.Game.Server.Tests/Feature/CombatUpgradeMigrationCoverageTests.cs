@@ -109,6 +109,7 @@ public class CombatUpgradeMigrationCoverageTests
         itemPropertyMigration.Should().Contain("public int Version => 31;");
         itemPropertyMigration.Should().Contain("SerializedItemResistanceMigration.MigrateSerializedObject");
         itemPropertyMigration.Should().Contain("SerializedItemWeaponDamageTypeMigration.MigrateSerializedObject");
+        itemPropertyMigration.Should().Contain("CombatReadinessMigration.MigrateSerializedObject");
         AssertStoredEntitySurfaces(itemPropertyMigration);
         AssertShipSurfaces(itemPropertyMigration);
 
@@ -182,6 +183,7 @@ public class CombatUpgradeMigrationCoverageTests
             "EquipmentRequirementMigration.cs",
             "SerializedItemResistanceMigration.cs",
             "SerializedItemWeaponDamageTypeMigration.cs",
+            "CombatReadinessMigration.cs",
         };
 
         foreach (var file in recursiveObjectMigrations)
@@ -198,6 +200,10 @@ public class CombatUpgradeMigrationCoverageTests
         obsoleteItemMigration.Should().Contain("GetItemInSlot((InventorySlot)index, obj)");
         obsoleteItemMigration.Should().Contain("droid.EquippedItems");
         obsoleteItemMigration.Should().Contain("droid.Inventory");
+
+        var combatReadinessMigration = File.ReadAllText(Path.Combine(migrationRoot, "CombatReadinessMigration.cs"));
+        combatReadinessMigration.Should().Contain("droid.EquippedItems");
+        combatReadinessMigration.Should().Contain("droid.Inventory");
     }
 
     private static void AssertMigrationCalls(string source, params string[] calls)

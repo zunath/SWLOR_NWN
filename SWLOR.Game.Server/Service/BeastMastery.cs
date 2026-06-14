@@ -341,7 +341,16 @@ namespace SWLOR.Game.Server.Service
             foreach (var resistanceType in Resistance.GetAllResistanceTypes())
             {
                 var resistanceBonus = BeastResistanceCalculator.CalculateResistanceBonus(level, dbBeast, resistanceType);
-                BiowareXP2.IPSafeAddItemProperty(skin, ItemPropertyCustom(ItemPropertyType.Resistance, (int)resistanceType, resistanceBonus), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+                BiowareXP2.IPSafeAddItemProperty(
+                    skin,
+                    ItemPropertyCustom(
+                        ItemPropertyType.Resistance,
+                        (int)resistanceType,
+                        Resistance.EncodeItemPropertyCostTableValue(resistanceBonus)),
+                    0f,
+                    AddItemPropertyPolicy.ReplaceExisting,
+                    false,
+                    false);
             }
         }
 

@@ -83,11 +83,11 @@ Armor	Improved Synthmesh II	imp_synthmesh_2	15	Store	40	HP	3
 Armor	Improved Synthmesh III	imp_synthmesh_3	25	Store	50	HP	4
 Armor	Improved Synthmesh IV	imp_synthmesh_4	35	Store	60	HP	5
 Armor	Improved Synthmesh V	imp_synthmesh_5	45	Store	70	HP	6
-Armor	Improved Synthcloth I	imp_synthcl_1	5	Store	40	Recast Reduction	1
-Armor	Improved Synthcloth II	imp_synthcl_2	15	Store	50	Recast Reduction	2
-Armor	Improved Synthcloth III	imp_synthcl_3	25	Store	60	Recast Reduction	3
-Armor	Improved Synthcloth IV	imp_synthcl_4	35	Store	70	Recast Reduction	4
-Armor	Improved Synthcloth V	imp_synthcl_5	45	Store	80	Recast Reduction	5
+Armor	Improved Synthcloth I	imp_synthcl_1	5	Store	40	Combat Readiness	1
+Armor	Improved Synthcloth II	imp_synthcl_2	15	Store	50	Combat Readiness	2
+Armor	Improved Synthcloth III	imp_synthcl_3	25	Store	60	Combat Readiness	3
+Armor	Improved Synthcloth IV	imp_synthcl_4	35	Store	70	Combat Readiness	4
+Armor	Improved Synthcloth V	imp_synthcl_5	45	Store	80	Combat Readiness	5
 Armor	Improved Zoosha Fabric I	imp_zoosh_1	5	Store	30	STM	2
 Armor	Improved Zoosha Fabric II	imp_zoosh_2	15	Store	40	STM	3
 Armor	Improved Zoosha Fabric III	imp_zoosh_3	25	Store	50	STM	4
@@ -218,11 +218,11 @@ Cooking	Paprika II	paprika_2	15	Store	50	HP Regen	2
 Cooking	Paprika III	paprika_3	25	Store	60	HP Regen	3
 Cooking	Paprika IV	paprika_4	35	Store	70	HP Regen	4
 Cooking	Paprika V	paprika_5	45	Store	80	HP Regen	5
-Cooking	Turmeric I	turmeric_1	5	Store	40	Recast Reduction	1
-Cooking	Turmeric II	turmeric_2	15	Store	50	Recast Reduction	2
-Cooking	Turmeric III	turmeric_3	25	Store	60	Recast Reduction	3
-Cooking	Turmeric IV	turmeric_4	35	Store	70	Recast Reduction	4
-Cooking	Turmeric V	turmeric_5	45	Store	80	Recast Reduction	5
+Cooking	Turmeric I	turmeric_1	5	Store	40	Food Bonus - Combat Readiness	1
+Cooking	Turmeric II	turmeric_2	15	Store	50	Food Bonus - Combat Readiness	2
+Cooking	Turmeric III	turmeric_3	25	Store	60	Food Bonus - Combat Readiness	3
+Cooking	Turmeric IV	turmeric_4	35	Store	70	Food Bonus - Combat Readiness	4
+Cooking	Turmeric V	turmeric_5	45	Store	80	Food Bonus - Combat Readiness	5
 Cooking	Fennel Seed I	fennel_seed_1	5	Store	30	Rest Regen	2
 Cooking	Fennel Seed II	fennel_seed_2	15	Store	40	Rest Regen	4
 Cooking	Fennel Seed III	fennel_seed_3	25	Store	50	Rest Regen	6

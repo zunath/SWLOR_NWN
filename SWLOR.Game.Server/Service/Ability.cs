@@ -2054,9 +2054,7 @@ namespace SWLOR.Game.Server.Service
                 return resistance;
             }
 
-            return npcStats.Resistances.Count > 0
-                ? npcStats.Resistances.Values.Max()
-                : 0;
+            return 0;
         }
 
         private static int CalculateNPCCombatImpactDamage(

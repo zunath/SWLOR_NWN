@@ -120,6 +120,11 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Creature, "s_app_m")
                 .WithFrequency(50)
                 .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "korr_frostbind")
+                .WithFrequency(15)
+                .RandomlyWalks()
                 .ReturnsHome();
         }
 
@@ -217,6 +222,11 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .ReturnsHome()
 
                 .AddSpawn(ObjectType.Creature, "korriinitiate")
+                .WithFrequency(10)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "korr_frostbind")
                 .WithFrequency(10)
                 .RandomlyWalks()
                 .ReturnsHome()

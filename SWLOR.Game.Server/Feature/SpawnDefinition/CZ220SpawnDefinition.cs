@@ -40,6 +40,11 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Creature, "mynock")
                 .WithFrequency(100)
                 .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "czcryo_mynock")
+                .WithFrequency(10)
+                .RandomlyWalks()
                 .ReturnsHome();
         }
 

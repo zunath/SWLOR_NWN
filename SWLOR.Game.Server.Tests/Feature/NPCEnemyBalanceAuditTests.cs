@@ -1,7 +1,9 @@
 using System.Text.Json;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Service.NPCService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Tests.Feature;
@@ -10,6 +12,8 @@ public class NPCEnemyBalanceAuditTests
 {
     private const int RightHandSlot = 16;
     private const int LeftHandSlot = 32;
+    private const int CreatureWeaponSlot = 32768;
+    private const int CreatureArmorSlot = 131072;
     private const int ItemPropertyFP = 91;
     private const int ItemPropertyStamina = 92;
     private const int ItemPropertyDMG = 93;
@@ -21,6 +25,8 @@ public class NPCEnemyBalanceAuditTests
     private const int ItemPropertyForceAttack = 112;
     private const int ItemPropertyEvasion = 117;
     private const int ItemPropertyResistance = 133;
+    private const int CustomTlkOffset = 16777216;
+    private const int ResistanceCostTable = 54;
     private const int PhysicalDefenseSubtype = 1;
     private const int ForceDefenseSubtype = 2;
 
@@ -215,6 +221,108 @@ public class NPCEnemyBalanceAuditTests
     }
 
     [Test]
+    public void NPCResistanceVulnerabilities_AreCappedAndCoverEveryResistanceFamily()
+    {
+        var root = FindRepositoryRoot();
+        var resistanceBySubtype = ResistanceFamilies.ToDictionary(type => (int)type, type => type);
+        var vulnerableTemplatesByFamily = ResistanceFamilies.ToDictionary(
+            family => family,
+            _ => new HashSet<string>());
+
+        foreach (var file in Directory.EnumerateFiles(Path.Combine(root.FullName, "Module", "uti"), "*.uti.json"))
+        {
+            using var item = ReadJson(root, "Module", "uti", Path.GetFileName(file));
+            if (GetItemPropertyCost(item.RootElement, ItemPropertyNPCLevel).HasValue == false)
+                continue;
+
+            foreach (var property in GetItemProperties(item.RootElement))
+            {
+                if (GetInt(property, "PropertyName") != ItemPropertyResistance)
+                    continue;
+
+                var subtype = GetInt(property, "Subtype");
+                var costValue = GetInt(property, "CostValue");
+                costValue.Should().BeGreaterThanOrEqualTo(0, $"{Path.GetFileName(file)} resistance CostValue must be a valid 2DA row id");
+
+                var value = Resistance.DecodeItemPropertyCostTableValue(costValue);
+                value.Should().BeGreaterThanOrEqualTo(-20, $"{Path.GetFileName(file)} resistance vulnerabilities should stay conservative this pass");
+
+                if (value < 0 && resistanceBySubtype.TryGetValue(subtype, out var family))
+                    vulnerableTemplatesByFamily[family].Add(Path.GetFileNameWithoutExtension(file));
+            }
+        }
+
+        foreach (var family in ResistanceFamilies)
+        {
+            vulnerableTemplatesByFamily[family].Count
+                .Should()
+                .BeGreaterThanOrEqualTo(5, $"{family} should have enough vulnerable NPC templates to make counter-picks visible");
+        }
+    }
+
+    [Test]
+    public void ResistanceItemProperties_UseResistanceCostTableRows()
+    {
+        var root = FindRepositoryRoot();
+        var costTableRows = Read2DARows(root, "SWLOR_Haks", "swlor2_2da", "iprp_costtable.2da");
+        var itempropdefRows = Read2DARows(root, "SWLOR_Haks", "swlor2_2da", "itempropdef.2da");
+        var resistanceCostRows = Read2DARows(root, "SWLOR_Haks", "swlor2_2da", "iprp_swlrescost.2da");
+        var resistanceAmountByRow = resistanceCostRows
+            .ToDictionary(row => row.Id, row => int.Parse(row.Columns[3]));
+        var customTlkTextById = ReadCustomTlkTextById(root);
+
+        costTableRows.Single(row => row.Id == 7).Columns[1]
+            .Should()
+            .Be("IPRP_RESISTCOST", "cost table 7 is the base NWN damage-resistance table and must remain untouched");
+        costTableRows.Single(row => row.Id == ResistanceCostTable).Columns[1]
+            .Should()
+            .Be("IPRP_SWLRESCOST", "SWLOR custom Resistance needs its own value table");
+
+        itempropdefRows.Single(row => row.Id == ItemPropertyResistance).Columns[5]
+            .Should()
+            .Be(ResistanceCostTable.ToString(), "custom Resistance item properties should use SWLOR's custom resistance cost table");
+
+        resistanceAmountByRow[0].Should().Be(0);
+        resistanceAmountByRow[100].Should().Be(100);
+        resistanceAmountByRow[105].Should().Be(-5);
+        resistanceAmountByRow[120].Should().Be(-20);
+        resistanceAmountByRow[200].Should().Be(-100);
+
+        foreach (var row in resistanceCostRows.Where(row => int.Parse(row.Columns[3]) < 0))
+        {
+            var amount = int.Parse(row.Columns[3]);
+            row.Columns[1].Should().NotBe("****", $"SWLOR resistance {amount} needs a display strref");
+
+            if (int.Parse(row.Columns[1]) < CustomTlkOffset)
+                continue;
+
+            var tlkId = int.Parse(row.Columns[1]) - CustomTlkOffset;
+            customTlkTextById.Should().ContainKey(tlkId, $"SWLOR resistance {amount} custom strref should exist in swlor2_tlk.tlk.json");
+            customTlkTextById[tlkId].Should().Be(amount.ToString(), $"SWLOR resistance {amount} should display its signed amount");
+        }
+
+        foreach (var file in Directory.EnumerateFiles(Path.Combine(root.FullName, "Module", "uti"), "*.uti.json"))
+        {
+            using var item = ReadJson(root, "Module", "uti", Path.GetFileName(file));
+            foreach (var property in GetItemProperties(item.RootElement))
+            {
+                if (GetInt(property, "PropertyName") != ItemPropertyResistance)
+                    continue;
+
+                var costTable = GetInt(property, "CostTable");
+                var costValue = GetInt(property, "CostValue");
+
+                costTable.Should().Be(ResistanceCostTable, $"{Path.GetFileName(file)} Resistance property must point at iprp_swlrescost.2da");
+                costValue.Should().BeGreaterThanOrEqualTo(0, $"{Path.GetFileName(file)} CostValue must be a cost-table row, not a signed gameplay amount");
+                resistanceAmountByRow.Should().ContainKey(costValue, $"{Path.GetFileName(file)} CostValue {costValue} must exist in iprp_swlrescost.2da");
+                resistanceAmountByRow[costValue]
+                    .Should()
+                    .Be(Resistance.DecodeItemPropertyCostTableValue(costValue), $"{Path.GetFileName(file)} encoded CostValue should decode to its 2DA Amount");
+            }
+        }
+    }
+
+    [Test]
     public void HutlarQionCreatures_PressureIceResistance()
     {
         var root = FindRepositoryRoot();
@@ -242,6 +350,72 @@ public class NPCEnemyBalanceAuditTests
         }
 
         expectedAbilitiesByResref.Values.Should().OnlyHaveUniqueItems("each Hutlar Ice threat should use a distinct ability");
+    }
+
+    [Test]
+    public void NewResistancePressureVariants_AreSpawnedAndHaveAuthoredAbilities()
+    {
+        var root = FindRepositoryRoot();
+        var expectedVariants = new[]
+        {
+            (SpawnFile: "CZ220SpawnDefinition.cs", Resref: "czcryo_mynock", Feat: FeatType.FrostSpit),
+            (SpawnFile: "HutlarSpawnDefinition.cs", Resref: "byysk_cryoadept", Feat: FeatType.HoarfrostGlob),
+            (SpawnFile: "KorribanSpawnDefinition.cs", Resref: "korr_frostbind", Feat: FeatType.GlacialSlime),
+        };
+
+        foreach (var (spawnFile, resref, feat) in expectedVariants)
+        {
+            var spawnSource = File.ReadAllText(Path.Combine(
+                root.FullName,
+                "SWLOR.Game.Server",
+                "Feature",
+                "SpawnDefinition",
+                spawnFile));
+
+            AssertCreatureHasFeat(root, resref, feat);
+            spawnSource.Should().Contain($"\"{resref}\"", $"{resref} should be reachable through its intended spawn definition");
+        }
+    }
+
+    [Test]
+    public void CZ220CoolantMynock_StaysStarterFriendly()
+    {
+        var root = FindRepositoryRoot();
+        using var baseMynock = ReadJson(root, "Module", "utc", "mynock.utc.json");
+        using var coolantMynock = ReadJson(root, "Module", "utc", "czcryo_mynock.utc.json");
+        using var baseSkin = ReadJson(root, "Module", "uti", "mynock_sk.uti.json");
+        using var coolantSkin = ReadJson(root, "Module", "uti", "czcryomyn_sk.uti.json");
+
+        GetInt(coolantMynock.RootElement, "HitPoints").Should().Be(GetInt(baseMynock.RootElement, "HitPoints"));
+        GetInt(coolantMynock.RootElement, "CurrentHitPoints").Should().Be(GetInt(baseMynock.RootElement, "CurrentHitPoints"));
+        GetInt(coolantMynock.RootElement, "MaxHitPoints").Should().Be(GetInt(baseMynock.RootElement, "MaxHitPoints"));
+        GetInt(coolantMynock.RootElement, "Str").Should().Be(GetInt(baseMynock.RootElement, "Str"));
+        GetInt(coolantMynock.RootElement, "Dex").Should().Be(GetInt(baseMynock.RootElement, "Dex"));
+        GetInt(coolantMynock.RootElement, "Con").Should().Be(GetInt(baseMynock.RootElement, "Con"));
+
+        GetEquippedResref(coolantMynock.RootElement, CreatureWeaponSlot).Should().Be("mynock_wp");
+        GetEquippedResref(coolantMynock.RootElement, CreatureArmorSlot).Should().Be("czcryomyn_sk");
+        GetItemPropertyCost(coolantSkin.RootElement, ItemPropertyNPCLevel).Should().Be(GetItemPropertyCost(baseSkin.RootElement, ItemPropertyNPCLevel));
+        GetItemPropertyCost(coolantSkin.RootElement, ItemPropertyNPCHP).Should().Be(GetItemPropertyCost(baseSkin.RootElement, ItemPropertyNPCHP));
+        GetItemPropertyCost(coolantSkin.RootElement, ItemPropertyAttack).Should().Be(GetItemPropertyCost(baseSkin.RootElement, ItemPropertyAttack));
+        GetItemPropertyCost(coolantSkin.RootElement, ItemPropertyForceAttack).Should().Be(GetItemPropertyCost(baseSkin.RootElement, ItemPropertyForceAttack));
+        GetItemPropertyCost(coolantSkin.RootElement, ItemPropertyEvasion).Should().Be(GetItemPropertyCost(baseSkin.RootElement, ItemPropertyEvasion));
+
+        GetCreatureFeats(coolantMynock.RootElement)
+            .Should()
+            .BeEquivalentTo(GetCreatureFeats(baseMynock.RootElement).Append((int)FeatType.FrostSpit));
+        GetJsonLocalInt(coolantMynock.RootElement, "QUEST_NPC_GROUP_ID")
+            .Should()
+            .Be((int)NPCGroupType.CZ220_Mynocks, "the starter-dungeon variant should count for Mynock kill quests");
+
+        var spawnSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "SpawnDefinition",
+            "CZ220SpawnDefinition.cs"))
+            .Replace("\r\n", "\n");
+        spawnSource.Should().Contain(".AddSpawn(ObjectType.Creature, \"czcryo_mynock\")\n                .WithFrequency(10)");
     }
 
     [Test]
@@ -343,6 +517,17 @@ public class NPCEnemyBalanceAuditTests
             .ToArray();
     }
 
+    private static int GetJsonLocalInt(JsonElement utc, string variableName)
+    {
+        return utc
+            .GetProperty("VarTable")
+            .GetProperty("value")
+            .EnumerateArray()
+            .Where(entry => GetString(entry, "Name") == variableName)
+            .Select(entry => GetInt(entry, "Value"))
+            .Single();
+    }
+
     private static void AssertCreatureHasFeat(DirectoryInfo root, string resref, FeatType feat)
     {
         using var utc = ReadJson(root, "Module", "utc", $"{resref}.utc.json");
@@ -386,6 +571,30 @@ public class NPCEnemyBalanceAuditTests
             .EnumerateArray();
     }
 
+    private static IReadOnlyList<TwoDARow> Read2DARows(DirectoryInfo root, params string[] pathParts)
+    {
+        var path = Path.Combine(new[] { root.FullName }.Concat(pathParts).ToArray());
+
+        return File
+            .ReadLines(path)
+            .Select(line => line.Trim())
+            .Where(line => !string.IsNullOrWhiteSpace(line))
+            .Select(line => line.Split(Array.Empty<char>(), StringSplitOptions.RemoveEmptyEntries))
+            .Where(columns => columns.Length > 0 && int.TryParse(columns[0], out _))
+            .Select(columns => new TwoDARow(int.Parse(columns[0]), columns))
+            .ToList();
+    }
+
+    private static IReadOnlyDictionary<int, string> ReadCustomTlkTextById(DirectoryInfo root)
+    {
+        using var tlk = ReadJson(root, "SWLOR_Haks", "swlor2_tlk", "swlor2_tlk.tlk.json");
+
+        return tlk.RootElement
+            .GetProperty("entries")
+            .EnumerateArray()
+            .ToDictionary(entry => entry.GetProperty("id").GetInt32(), entry => entry.GetProperty("text").GetString() ?? string.Empty);
+    }
+
     private static DirectoryInfo FindRepositoryRoot()
     {
         var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
@@ -422,4 +631,6 @@ public class NPCEnemyBalanceAuditTests
         int WeaponDelay);
 
     private sealed record ExpectedDualWieldDamage(string Resref, int TotalDMG);
+
+    private sealed record TwoDARow(int Id, string[] Columns);
 }

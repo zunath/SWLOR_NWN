@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Service.CombatService
             CombatDamageType.Physical,
             AbilityType.Vitality,
             ResistanceType.Invalid,
-            ResistanceType.Trauma,
+            ResistanceType.Invalid,
             NWNScriptDamageType.Slashing,
             NativeDamageType.Slashing)]
         Physical = 1,
@@ -34,7 +34,7 @@ namespace SWLOR.Game.Server.Service.CombatService
             CombatDamageType.Force,
             AbilityType.Willpower,
             ResistanceType.Invalid,
-            ResistanceType.Disruption,
+            ResistanceType.Invalid,
             NWNScriptDamageType.Force,
             NativeDamageType.Magical)]
         Force = 2,
@@ -84,7 +84,7 @@ namespace SWLOR.Game.Server.Service.CombatService
             CombatDamageType.Physical,
             AbilityType.Vitality,
             ResistanceType.Invalid,
-            ResistanceType.Disruption,
+            ResistanceType.Invalid,
             NWNScriptDamageType.Sonic,
             NativeDamageType.Sonic)]
         Sonic = 7,

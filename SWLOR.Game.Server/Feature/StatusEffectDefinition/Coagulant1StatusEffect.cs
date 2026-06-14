@@ -10,6 +10,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     {
         public override string Name => "Coagulant I";
         public override EffectIconType Icon => EffectIconType.Coagulant1StatusEffect;
+        public override bool PersistsOnLogout => false;
 
         public Coagulant1StatusEffect()
         {

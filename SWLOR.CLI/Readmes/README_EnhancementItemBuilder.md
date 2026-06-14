@@ -27,9 +27,10 @@ Supports various enhancement subtypes including:
 - **Control Enhancements**: Smithery, Engineering, Fabrication, Agriculture
 - **Craftsmanship Enhancements**: Smithery, Engineering, Fabrication, Agriculture
 - **Defense Enhancements**: Physical, Force, Poison, Fire, Ice, Electrical
-- **Combat Enhancements**: Evasion, Accuracy, untyped DMG, and optional weapon damage type properties
+- **Combat Enhancements**: Evasion, Accuracy, Combat Readiness, Attack, Force Attack, untyped DMG, and optional weapon damage type properties
 - **Resource Enhancements**: HP, STM, FP bonuses and regeneration
-- **Special Enhancements**: Duration, XP bonus, Structure bonus
+- **Food Combat Enhancements**: Food Bonus - Combat Readiness
+- **Special Enhancements**: Duration, XP bonus, Structure bonus, Module bonus
 - **Starship Enhancements**: Shield, Capacitor, Damage types, Defense types
 
 ## Input File Format
@@ -75,10 +76,10 @@ The tool expects a TSV file with the following columns:
 The tool maps enhancement names to specific subtype IDs:
 - Control and Craftsmanship enhancements: 14-15, 39-44
 - Defense enhancements: 1-7
-- Combat enhancements: 18-27
-- Resource enhancements: 8-10, 29-38
+- Combat enhancements: 18-27, 83-84
+- Resource and food enhancements: 8-10, 29-38
 - Starship enhancements: 46-58
-- Special enhancements: 28, 33-35, 45, 83-84
+- Special enhancements: 28, 45
 
 ## Usage
 This tool is used during development to:
@@ -91,5 +92,6 @@ This tool is used during development to:
 - Uses random icon selection from a predefined array for visual variety
 - Automatically calculates prices based on enhancement tier
 - Handles multiple enhancement categories and types
+- Combat Readiness increases activated ability damage and healing; it does not reduce cooldowns or recast timers
 - Generates JSON files compatible with the NWN module system
 - Clears the output directory before generating new files

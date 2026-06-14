@@ -626,7 +626,10 @@ namespace SWLOR.Game.Server.Service
 
             foreach (var (resistance, value) in details.Resistances)
             {
-                var resistanceIP = ItemPropertyCustom(ItemPropertyType.Resistance, (int)resistance, value);
+                var resistanceIP = ItemPropertyCustom(
+                    ItemPropertyType.Resistance,
+                    (int)resistance,
+                    Resistance.EncodeItemPropertyCostTableValue(value));
                 BiowareXP2.IPSafeAddItemProperty(skin, resistanceIP, 0.0f, AddItemPropertyPolicy.ReplaceExisting, true, false);
             }
 

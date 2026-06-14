@@ -31,9 +31,10 @@ public class LightsaberDefenseTests
         impenetrableGuard.StatGroup.Stats[StatType.PhysicalDefensePercentAdjustment].Should().Be(0);
         impenetrableGuard.StatGroup.Stats[StatType.ForceDefensePercentAdjustment].Should().Be(0);
 
-        var guardiansWrath = new GuardiansWrathStatusEffect();
-        guardiansWrath.StatGroup.Stats[StatType.AttackDeflection].Should().Be(50);
-        guardiansWrath.StatGroup.Stats[StatType.AttackDeflectionChanceCap].Should().Be(85);
+        var guardianMaster = new GuardianMasterStatusEffect();
+        guardianMaster.Name.Should().Be("Guardian Master");
+        guardianMaster.StatGroup.Stats[StatType.AttackDeflection].Should().Be(0);
+        guardianMaster.StatGroup.Stats[StatType.AttackDeflectionChanceCap].Should().Be(10);
     }
 
     [Test]
@@ -46,6 +47,17 @@ public class LightsaberDefenseTests
         source.Should().Contain("StatType.AttackDeflection, 14");
         source.Should().Contain("StatType.AttackDeflection, 20");
         source.Should().NotContain("StatType.AttackDeflection, creature => EquipmentPredicates.HasMainHandLightsaber(creature)");
+    }
+
+    [Test]
+    public void AttackDeflectionChanceCap_AddsAdjustmentsToDefaultCap()
+    {
+        var root = FindSourceRepositoryRoot();
+        var source = File.ReadAllText((root / "SWLOR.Game.Server" / "Service" / "Stat.cs").FullName);
+
+        source.Should().Contain("var capAdjustment = GetStatAdjustment(creature, StatType.AttackDeflectionChanceCap);");
+        source.Should().Contain("var cap = DefaultAttackDeflectionChanceCap + capAdjustment;");
+        source.Should().Contain("return Math.Clamp(cap, DefaultAttackDeflectionChanceCap, MaximumDeflectionChanceCap);");
     }
 
     [Test]

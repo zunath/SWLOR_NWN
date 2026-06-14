@@ -221,16 +221,36 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                     }
 
                     var currentQuantity = CountPlayerItemsByResref(player, itemResref);
-                    if (currentQuantity >= quantity)
+                    var recoveryQuantity = CalculateQuestItemRecoveryQuantity(
+                        playerQuest,
+                        itemResref,
+                        quantity,
+                        currentQuantity);
+
+                    if (recoveryQuantity <= 0)
                     {
                         SendMessageToPC(player, "You already recovered what you need here.");
                         return;
                     }
 
                     var itemName = Cache.GetItemNameByResref(itemResref);
-                    CreateItemOnObject(itemResref, player, quantity - currentQuantity);
+                    CreateItemOnObject(itemResref, player, recoveryQuantity);
                     SendMessageToPC(player, $"You recover {itemName}.");
                 });
+        }
+
+        private static int CalculateQuestItemRecoveryQuantity(
+            PlayerQuest playerQuest,
+            string itemResref,
+            int markerQuantity,
+            int inventoryQuantity)
+        {
+            if (!playerQuest.ItemProgresses.TryGetValue(itemResref, out var remainingQuantity) ||
+                remainingQuantity <= 0)
+                return 0;
+
+            var neededQuantity = Math.Min(markerQuantity, remainingQuantity);
+            return Math.Max(0, neededQuantity - inventoryQuantity);
         }
 
         private static int CountPlayerItemsByResref(uint player, string itemResref)

@@ -6,6 +6,24 @@ namespace SWLOR.Game.Server.Tests.Feature;
 
 public class NPCEnemyBalanceAuditTests
 {
+    private const int RightHandSlot = 16;
+    private const int LeftHandSlot = 32;
+    private const int ItemPropertyFP = 91;
+    private const int ItemPropertyStamina = 92;
+    private const int ItemPropertyDMG = 93;
+    private const int ItemPropertyDefense = 94;
+    private const int ItemPropertyNPCHP = 96;
+    private const int ItemPropertyDelay = 98;
+    private const int ItemPropertyNPCLevel = 99;
+    private const int ItemPropertyAttack = 111;
+    private const int ItemPropertyForceAttack = 112;
+    private const int ItemPropertyEvasion = 117;
+    private const int ItemPropertyResistance = 133;
+    private const int PhysicalDefenseSubtype = 1;
+    private const int ForceDefenseSubtype = 2;
+
+    private static readonly int[] ResistanceSubtypes = { 1, 2, 3, 4, 100, 101, 102, 103 };
+
     private static readonly ExpectedEnemy[] ExpectedAlternateEnemies =
     {
         new("man_ranger_2", "mando_rgr_skin", "npc_mando_rifle", 13, 199, 11, 19, 11, 16, 16, 29, 7, 9, 0, 5, 4, 4, 24, 47),
@@ -40,6 +58,9 @@ public class NPCEnemyBalanceAuditTests
             "SpawnDefinition",
             "KorribanSpawnDefinition.cs"));
 
+        // This source substring check is intentionally pragmatic but fragile. It avoids adding an AST parser
+        // for one spawn-table invariant, but method reordering, renaming FrogBoss, or changing the surrounding
+        // source structure can break the ambient-table extraction even when runtime behavior is still correct.
         var tableStart = source.IndexOf("_builder.Create(\"KORRIBAN_TEMPLES\"", StringComparison.Ordinal);
         var bossStart = source.IndexOf("private void FrogBoss()", StringComparison.Ordinal);
 
@@ -80,25 +101,25 @@ public class NPCEnemyBalanceAuditTests
         foreach (var expected in ExpectedDualWieldDamageTotals)
         {
             using var utc = ReadJson(root, "Module", "utc", $"{expected.Resref}.utc.json");
-            var rightHand = GetEquippedResref(utc.RootElement, 16);
-            var leftHand = GetEquippedResref(utc.RootElement, 32);
+            var rightHand = GetEquippedResref(utc.RootElement, RightHandSlot);
+            var leftHand = GetEquippedResref(utc.RootElement, LeftHandSlot);
 
-            rightHand.Should().NotBeNullOrWhiteSpace(expected.Resref);
-            leftHand.Should().NotBeNullOrWhiteSpace(expected.Resref);
+            rightHand.Should().NotBeNullOrWhiteSpace($"{expected.Resref} must have a right-hand weapon in slot {RightHandSlot}");
+            leftHand.Should().NotBeNullOrWhiteSpace($"{expected.Resref} must have a left-hand weapon in slot {LeftHandSlot}");
 
             using var rightWeapon = ReadJson(root, "Module", "uti", $"{rightHand}.uti.json");
             using var leftWeapon = ReadJson(root, "Module", "uti", $"{leftHand}.uti.json");
 
-            GetItemPropertyCost(rightWeapon.RootElement, 98).Should().NotBeNull($"{expected.Resref} right-hand weapon must use custom delay");
-            GetItemPropertyCost(leftWeapon.RootElement, 98).Should().NotBeNull($"{expected.Resref} left-hand weapon must use custom delay");
+            GetItemPropertyCost(rightWeapon.RootElement, ItemPropertyDelay).Should().NotBeNull($"{expected.Resref} right-hand weapon must use custom delay");
+            GetItemPropertyCost(leftWeapon.RootElement, ItemPropertyDelay).Should().NotBeNull($"{expected.Resref} left-hand weapon must use custom delay");
 
             var totalDamage =
-                GetItemPropertyCost(rightWeapon.RootElement, 93).GetValueOrDefault() +
-                GetItemPropertyCost(leftWeapon.RootElement, 93).GetValueOrDefault();
+                GetItemPropertyCost(rightWeapon.RootElement, ItemPropertyDMG).GetValueOrDefault() +
+                GetItemPropertyCost(leftWeapon.RootElement, ItemPropertyDMG).GetValueOrDefault();
 
-            totalDamage.Should().Be(expected.TotalDMG, expected.Resref);
-            GetString(rightWeapon.RootElement, "TemplateResRef").Should().Be(rightHand);
-            GetString(leftWeapon.RootElement, "TemplateResRef").Should().Be(leftHand);
+            totalDamage.Should().Be(expected.TotalDMG, $"{expected.Resref} dual-wield runtime damage should match the World NPC preset total");
+            GetString(rightWeapon.RootElement, "TemplateResRef").Should().Be(rightHand, $"{expected.Resref} right-hand weapon template reference should match its equipped resref");
+            GetString(leftWeapon.RootElement, "TemplateResRef").Should().Be(leftHand, $"{expected.Resref} left-hand weapon template reference should match its equipped resref");
         }
     }
 
@@ -120,26 +141,26 @@ public class NPCEnemyBalanceAuditTests
 
     private static void AssertSkinCombatStats(JsonElement skin, ExpectedEnemy expected)
     {
-        GetItemPropertyCost(skin, 99).Should().Be(expected.Level, expected.SkinResref);
-        GetItemPropertyCost(skin, 96).Should().Be(expected.HP, expected.SkinResref);
-        GetItemPropertyCost(skin, 92).Should().Be(expected.Stamina, expected.SkinResref);
-        GetItemPropertyCost(skin, 91).Should().Be(expected.FP, expected.SkinResref);
-        GetItemPropertyCost(skin, 111).Should().Be(expected.Attack, expected.SkinResref);
-        GetItemPropertyCost(skin, 112).Should().Be(expected.ForceAttack, expected.SkinResref);
-        GetItemPropertyCost(skin, 117).Should().Be(expected.Evasion, expected.SkinResref);
-        GetItemPropertyCost(skin, 94, 1).Should().Be(expected.PhysicalDefense, expected.SkinResref);
-        GetItemPropertyCost(skin, 94, 2).Should().Be(expected.ForceDefense, expected.SkinResref);
-        GetItemPropertyCost(skin, 98).Should().BeNull("attack delay belongs on equipped weapons, not creature armor");
+        GetItemPropertyCost(skin, ItemPropertyNPCLevel).Should().Be(expected.Level, expected.SkinResref);
+        GetItemPropertyCost(skin, ItemPropertyNPCHP).Should().Be(expected.HP, expected.SkinResref);
+        GetItemPropertyCost(skin, ItemPropertyStamina).Should().Be(expected.Stamina, expected.SkinResref);
+        GetItemPropertyCost(skin, ItemPropertyFP).Should().Be(expected.FP, expected.SkinResref);
+        GetItemPropertyCost(skin, ItemPropertyAttack).Should().Be(expected.Attack, expected.SkinResref);
+        GetItemPropertyCost(skin, ItemPropertyForceAttack).Should().Be(expected.ForceAttack, expected.SkinResref);
+        GetItemPropertyCost(skin, ItemPropertyEvasion).Should().Be(expected.Evasion, expected.SkinResref);
+        GetItemPropertyCost(skin, ItemPropertyDefense, PhysicalDefenseSubtype).Should().Be(expected.PhysicalDefense, expected.SkinResref);
+        GetItemPropertyCost(skin, ItemPropertyDefense, ForceDefenseSubtype).Should().Be(expected.ForceDefense, expected.SkinResref);
+        GetItemPropertyCost(skin, ItemPropertyDelay).Should().BeNull("attack delay belongs on equipped weapons, not creature armor");
 
-        GetItemPropertySubtypes(skin, 133)
+        GetItemPropertySubtypes(skin, ItemPropertyResistance)
             .Should()
-            .BeEquivalentTo(new[] { 1, 2, 3, 4, 100, 101, 102, 103 }, expected.SkinResref);
+            .BeEquivalentTo(ResistanceSubtypes, expected.SkinResref);
     }
 
     private static void AssertWeaponStats(JsonElement weapon, ExpectedEnemy expected)
     {
-        GetItemPropertyCost(weapon, 93).Should().Be(expected.WeaponDMG, expected.WeaponResref);
-        GetItemPropertyCost(weapon, 98).Should().Be(expected.WeaponDelay, expected.WeaponResref);
+        GetItemPropertyCost(weapon, ItemPropertyDMG).Should().Be(expected.WeaponDMG, expected.WeaponResref);
+        GetItemPropertyCost(weapon, ItemPropertyDelay).Should().Be(expected.WeaponDelay, expected.WeaponResref);
     }
 
     private static JsonDocument ReadJson(DirectoryInfo root, params string[] pathParts)

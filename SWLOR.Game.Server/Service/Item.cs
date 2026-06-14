@@ -3,8 +3,11 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.ActivityService;
+using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.ItemService;
 using SWLOR.Game.Server.Service.LogService;
@@ -450,6 +453,13 @@ namespace SWLOR.Game.Server.Service
         {
             var isPlayer = GetIsPC(creature);
             var isDroid = Droid.IsDroid(creature);
+            var itemType = GetBaseItemType(item);
+
+            if (ForceSensitiveWeaponBaseItemTypes.Contains(itemType) &&
+                !CanEquipForceSensitiveWeapon(creature))
+            {
+                return "Only Force Sensitive characters may equip that item.";
+            }
 
             if ((!isPlayer && !isDroid) || GetIsDM(creature) || GetIsDMPossessed(creature))
                 return string.Empty;
@@ -462,7 +472,7 @@ namespace SWLOR.Game.Server.Service
                 return itemUseError;
 
             var race = GetRacialType(creature);
-            var itemType = GetBaseItemType(item);
+
             var needsDroidLimitation = race == RacialType.Droid && DroidBaseItemTypes.Contains(itemType);
             var itemHasDroidIP = false;
 
@@ -486,6 +496,26 @@ namespace SWLOR.Game.Server.Service
                 return "Droids may not equip that item.";
 
             return string.Empty;
+        }
+
+        private static bool CanEquipForceSensitiveWeapon(uint creature)
+        {
+            if (GetIsDM(creature) || GetIsDMPossessed(creature))
+                return true;
+
+            if (Droid.IsDroid(creature) ||
+                BeastMastery.GetBeastType(creature) != BeastType.Invalid)
+            {
+                return false;
+            }
+
+            if (!GetIsPC(creature))
+                return true;
+
+            var playerId = GetObjectUUID(creature);
+            var dbPlayer = DB.Get<Player>(playerId);
+
+            return dbPlayer?.CharacterType == CharacterType.ForceSensitive;
         }
 
         /// <summary>
@@ -689,6 +719,13 @@ namespace SWLOR.Game.Server.Service
             BaseItem.Saberstaff,
             BaseItem.TwinElectroBlade
         };
+
+        /// <summary>
+        /// Retrieves the list of base item types restricted to Force Sensitive characters.
+        /// </summary>
+        public static List<BaseItem> ForceSensitiveWeaponBaseItemTypes { get; } = LightsaberBaseItemTypes
+            .Concat(SaberstaffBaseItemTypes)
+            .ToList();
 
         /// <summary>
         /// Retrieves the list of Katar base item types.

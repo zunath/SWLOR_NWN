@@ -177,7 +177,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             var damage = scaledPulseDamage;
             damage = Resistance.ApplyResistanceToDamage(target, ResistanceType.Disruption, damage);
             damage = Combat.ApplyDamageOverTimeTakenModifiers(target, damage, CombatDamageType.Force);
-            damage = Combat.ApplyDamageTakenModifiers(target, damage);
+            damage = Combat.ApplyDamageTakenModifiers(target, damage, activator, CombatDamageType.Force);
             if (damage < 0)
                 damage = 0;
 

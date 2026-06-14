@@ -43,13 +43,13 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             _remainingDamage = Math.Max(0, _remainingDamage - damage);
             _remainingTicks = Math.Max(0, _remainingTicks - 1);
 
+            var source = GetIsObjectValid(Source) ? Source : creature;
             damage = Resistance.ApplyResistanceToDamage(creature, ResistanceType, damage);
             damage = Combat.ApplyDamageOverTimeTakenModifiers(creature, damage, CombatDamageType.Force);
-            damage = Combat.ApplyDamageTakenModifiers(creature, damage);
+            damage = Combat.ApplyDamageTakenModifiers(creature, damage, source, CombatDamageType.Force);
             if (damage <= 0)
                 return;
 
-            var source = GetIsObjectValid(Source) ? Source : creature;
             AssignCommand(source, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, CombatDamageType.Force.GetNWScriptDamageType()), creature));
 
             if (!GetIsObjectValid(Source))

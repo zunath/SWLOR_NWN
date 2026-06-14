@@ -87,6 +87,7 @@ public class ForceDarkManipulatorTests
         creepingTerror.Should().Contain("Ability.ApplyHostileCombatImpact");
         creepingTerror.Should().Contain("statusEffect: typeof(HobbleStatusEffect)");
         creepingTerror.Should().Contain("awardsCombatPoints: false");
+        creepingTerror.Should().Contain("Combat.ApplyDamageTakenModifiers(target, damage, activator, CombatDamageType.Force)");
         creepingTerror.Should().Contain("CreepingTerror1Damage = 10");
         creepingTerror.Should().Contain("CreepingTerror2Damage = 14");
         creepingTerror.Should().Contain("CreepingTerror3Damage = 18");

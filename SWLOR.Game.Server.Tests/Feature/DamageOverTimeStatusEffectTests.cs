@@ -28,6 +28,17 @@ public class DamageOverTimeStatusEffectTests
         poisonSource.Should().Contain("AssignCommand(source, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(amount, DamageType.Acid), creature))");
     }
 
+    [Test]
+    public void ForceDamageOverTimeStatusEffect_AttributesForceDamageToSource()
+    {
+        var forceDotSource = ReadStatusEffectSource("ForceDamageOverTimeStatusEffectBase.cs");
+
+        forceDotSource.Should().Contain("var source = GetIsObjectValid(Source) ? Source : creature;");
+        forceDotSource.Should().Contain("Combat.ApplyDamageOverTimeTakenModifiers(creature, damage, CombatDamageType.Force)");
+        forceDotSource.Should().Contain("Combat.ApplyDamageTakenModifiers(creature, damage, source, CombatDamageType.Force)");
+        forceDotSource.Should().Contain("AssignCommand(source, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, CombatDamageType.Force.GetNWScriptDamageType()), creature))");
+    }
+
     [TestCase("BleedStatusEffect.cs", "EffectDamage(damageAmount)")]
     [TestCase("DiseaseStatusEffect.cs", "EffectDamage(damage, CombatDamageType.Poison.GetNWScriptDamageType())")]
     [TestCase("FreezingStatusEffect.cs", "EffectDamage(damage, CombatDamageType.Ice.GetNWScriptDamageType())")]

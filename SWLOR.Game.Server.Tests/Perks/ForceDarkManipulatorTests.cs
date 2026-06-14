@@ -19,9 +19,9 @@ public class ForceDarkManipulatorTests
     public void ForceDarkManipulatorAbilities_MatchCombatBible()
     {
         var creepingTerror = new CreepingTerrorAbilityDefinition().BuildAbilities();
-        AssertAbility(creepingTerror[FeatType.CreepingTerror1], "Creeping Terror I", 1, RecastGroup.CreepingTerror, 30f, 1f, 4, true, true, true, false, AbilityActivationType.Casted, 15f, true);
+        AssertAbility(creepingTerror[FeatType.CreepingTerror1], "Creeping Terror I", 1, RecastGroup.CreepingTerror, 30f, 1f, 4, true, true, false, true, AbilityActivationType.Casted, 15f, true);
         AssertAbility(creepingTerror[FeatType.CreepingTerror2], "Creeping Terror II", 2, RecastGroup.CreepingTerror, 30f, 1f, 6, true, true, false, true, AbilityActivationType.Casted, 15f, true);
-        AssertAbility(creepingTerror[FeatType.CreepingTerror3], "Creeping Terror III", 3, RecastGroup.CreepingTerror, 30f, 1.5f, 8, true, false, false, true, AbilityActivationType.Casted, 5f, true);
+        AssertAbility(creepingTerror[FeatType.CreepingTerror3], "Creeping Terror III", 3, RecastGroup.CreepingTerror, 30f, 1.5f, 8, true, true, false, true, AbilityActivationType.Casted, 15f, true);
 
         var weakenResolve = new WeakenResolveAbilityDefinition().BuildAbilities();
         AssertAbility(weakenResolve[FeatType.WeakenResolve1], "Weaken Resolve I", 1, RecastGroup.WeakenResolve, 18f, 1f, 3, true, true, true, false, AbilityActivationType.Casted, 15f, false);
@@ -78,9 +78,19 @@ public class ForceDarkManipulatorTests
         var root = FindRepositoryRoot();
 
         var creepingTerror = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Force" / "CreepingTerrorAbilityDefinition.cs").FullName);
-        creepingTerror.Should().Contain("ApplyForceDamageOverTime");
-        creepingTerror.Should().Contain("typeof(CreepingTerrorDamageStatusEffect)");
-        creepingTerror.Should().Contain("18f");
+        creepingTerror.Should().Contain("CreateCreepingTerrorField");
+        creepingTerror.Should().Contain("CombatAreaPulses.SchedulePulses");
+        creepingTerror.Should().Contain("ApplyCreepingTerrorDamage");
+        creepingTerror.Should().Contain("AssignCommand(");
+        creepingTerror.Should().Contain("EffectDamage(damage, CombatDamageType.Force.GetNWScriptDamageType())");
+        creepingTerror.Should().Contain("CreepingTerror1Damage = 10");
+        creepingTerror.Should().Contain("CreepingTerror2Damage = 14");
+        creepingTerror.Should().Contain("CreepingTerror3Damage = 18");
+        creepingTerror.Should().Contain("HobbleRefreshDurationSeconds");
+        creepingTerror.Should().Contain("Vfx_Dur_Tentacle");
+        creepingTerror.Should().NotContain("ApplyForceDamageOverTime");
+        creepingTerror.Should().NotContain("ApplyCombatImpact");
+        creepingTerror.Should().NotContain("ApplyTelegraphedCombatImpact");
 
         var forceChoke = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Force" / "ForceChokeAbilityDefinition.cs").FullName);
         forceChoke.Should().Contain("ForceChokeDamageStatusEffect(totalDamage)");
@@ -107,7 +117,7 @@ public class ForceDarkManipulatorTests
 
         var feats = new[]
         {
-            (FeatType.CreepingTerror1, "ife_crpngtrrr1", "M", "0x02", "1", "****", "****", "****", "****"),
+            (FeatType.CreepingTerror1, "ife_crpngtrrr1", "M", "0x02", "1", "sphere", "5", "****", "1"),
             (FeatType.ForceChoke2, "ife_forcechk2", "M", "0x02", "1", "****", "****", "****", "****"),
             (FeatType.WeakenResolve1, "ife_wknres1", "M", "0x02", "1", "****", "****", "****", "****"),
             (FeatType.CreepingTerror2, "ife_crpngtrrr2", "M", "0x02", "1", "sphere", "5", "****", "1"),
@@ -115,7 +125,7 @@ public class ForceDarkManipulatorTests
             (FeatType.NightmareField1, "ife_nghtmrfld1", "P", "0x01", "1", "sphere", "5", "****", "17"),
             (FeatType.WeakenResolve2, "ife_wknres2", "M", "0x02", "1", "****", "****", "****", "****"),
             (FeatType.ForceChoke1, "ife_forcechk1", "M", "0x02", "1", "****", "****", "****", "****"),
-            (FeatType.CreepingTerror3, "ife_crpngtrrr3", "P", "0x01", "1", "sphere", "5", "****", "17"),
+            (FeatType.CreepingTerror3, "ife_crpngtrrr3", "M", "0x02", "1", "sphere", "5", "****", "1"),
             (FeatType.ForceChoke4, "ife_forcechk4", "M", "0x02", "1", "sphere", "5", "****", "1"),
             (FeatType.EclipseOfResolve1, "ife_eclres1", "P", "0x01", "1", "sphere", "5", "****", "17")
         };

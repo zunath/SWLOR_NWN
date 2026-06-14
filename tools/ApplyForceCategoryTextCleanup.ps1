@@ -194,7 +194,7 @@ $noteByPerk = @{
     "Force Leap I" = "Alter mobility attack. No affinity scaling."
     "Force Leap II" = "Replacement tier: selected target receives the full lower-rank effect. Alter mobility attack. No affinity scaling."
     "Mind Trick I" = "Sense mind-control utility. Confusion mechanics are defined in the Status Effects tab."
-    "Mind Trick II" = "Replacement tier: expands target count and raises the Confusion failure chance. Confusion mechanics are defined in the Status Effects tab."
+    "Mind Trick II" = "Replacement tier: expands target count and uses the same Willpower contest as rank I. Confusion mechanics are defined in the Status Effects tab."
     "Precognition" = "Sense combat trait that benefits any Force style without adding an active button or equipment requirement."
 }
 

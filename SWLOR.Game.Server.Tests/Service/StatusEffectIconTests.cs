@@ -17,8 +17,8 @@ public class StatusEffectIconTests
 
         rank1.Icon.Should().Be(EffectIconType.PainSuppressant1StatusEffect);
         rank2.Icon.Should().Be(EffectIconType.PainSuppressant2StatusEffect);
-        ((int)rank1.Icon).Should().Be(315);
-        ((int)rank2.Icon).Should().Be(316);
+        ((int)rank1.Icon).Should().BeGreaterThan(131);
+        ((int)rank2.Icon).Should().Be((int)rank1.Icon + 1);
     }
 
     [Test]

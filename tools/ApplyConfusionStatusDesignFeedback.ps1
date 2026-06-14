@@ -268,12 +268,12 @@ function Update-ForceRows {
 
     $updatesByName = @{
         "Mind Trick I" = @{
-            Description = "Inflicts Confusion with a 25% failure chance on one non-mechanical target for 10 seconds."
-            Notes = "Universal mind-control utility. Confusion mechanics are defined in the Status Effects tab."
+            Description = "Attempts to inflict Confusion on one non-mechanical target for 10 seconds. Caster Willpower increases duration, while target Willpower and Mind Resistance reduce it."
+            Notes = "Sense mind-control utility. Confusion mechanics are defined in the Status Effects tab."
         }
         "Mind Trick II" = @{
-            Description = "Inflicts Confusion with a 35% failure chance on the selected non-mechanical target and one nearby non-mechanical target for 10 seconds."
-            Notes = "Replacement tier: expands target count and raises the Confusion failure chance. Confusion mechanics are defined in the Status Effects tab."
+            Description = "Attempts to inflict Confusion on the selected non-mechanical target and one nearby non-mechanical target for 10 seconds. Caster Willpower increases duration, while target Willpower and Mind Resistance reduce it."
+            Notes = "Replacement tier: expands target count and uses the same Willpower contest as rank I. Confusion mechanics are defined in the Status Effects tab."
         }
     }
 

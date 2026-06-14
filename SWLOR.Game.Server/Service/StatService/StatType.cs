@@ -1287,7 +1287,7 @@ namespace SWLOR.Game.Server.Service.StatService
         NextAbilityStaminaCostAdjustment = 226,
 
         /// <summary>
-        /// Maximum Attack Deflection chance allowed before temporary, explicit override effects.
+        /// Flat bonus added to the default Attack Deflection chance cap.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
         AttackDeflectionChanceCap = 227,

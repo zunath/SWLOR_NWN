@@ -37,7 +37,11 @@ public class ForceLightGuardianTests
         AssertAbility(forceIntercept, "Force Intercept", 1, RecastGroup.ForceIntercept, 45f, 0f, 5, false, true, true, false, AbilityActivationType.Casted, 15f);
 
         var purifyingWave = new PurifyingWaveAbilityDefinition().BuildAbilities()[FeatType.PurifyingWave1];
-        AssertAbility(purifyingWave, "Purifying Wave", 1, RecastGroup.PurifyingWave, 90f, 1.5f, 7, false, false, false, true, AbilityActivationType.Casted, 5f);
+        AssertAbility(purifyingWave, "Purifying Wave", 1, RecastGroup.PurifyingWave, 90f, 1.5f, 7, true, false, false, true, AbilityActivationType.Casted, 5f);
+        purifyingWave.CombatImpactDamageAbility.Should().Be(AbilityType.Willpower);
+        purifyingWave.Targeting.Should().NotBeNull();
+        purifyingWave.Targeting!.Flags.Should().Be(
+            AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.HelpsAllies | AbilityTargetingFlags.OriginOnSelf);
 
         var lastStand = new LastStandOfTheLightAbilityDefinition().BuildAbilities()[FeatType.LastStandOfTheLight1];
         AssertAbility(lastStand, "Last Stand of the Light", 1, RecastGroup.Capstone, 345f, 1.5f, 10, false, true, true, false, AbilityActivationType.Casted, 15f);
@@ -76,6 +80,12 @@ public class ForceLightGuardianTests
 
         source.Should().Contain("EquipmentPredicates.HasMainHandLightsaber(creature) || EquipmentPredicates.HasMainHandVibroblade(creature) ? 4 : 0");
         source.Should().Contain("EquipmentPredicates.HasMainHandLightsaber(creature) || EquipmentPredicates.HasMainHandVibroblade(creature) ? 10 : 0");
+
+        var purifyingWaveSource = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Force" / "PurifyingWaveAbilityDefinition.cs").FullName);
+        purifyingWaveSource.Should().Contain("AbilityTargeting.GetHostileTargetsNearLocation(activator, impactLocation, 5f, 0)");
+        purifyingWaveSource.Should().MatchRegex(@"SkillType\.Force,\s*22,");
+        purifyingWaveSource.Should().Contain("damageType: CombatDamageType.Force");
+        purifyingWaveSource.Should().Contain(".IsHostileAbility()");
     }
 
     [Test]
@@ -111,7 +121,7 @@ public class ForceLightGuardianTests
             (FeatType.GuardianWard3, "ife_guardwrd3", "M", "0x03", "0", "****", "****", "****", "****"),
             (FeatType.ForceIntercept1, "ife_forceintc1", "M", "0x03", "0", "****", "****", "****", "****"),
             (FeatType.ForceLeap2, "ife_forcelp2", "M", "0x02", "1", "****", "****", "****", "****"),
-            (FeatType.PurifyingWave1, "ife_prfyngwv1", "P", "0x01", "0", "sphere", "5", "****", "17"),
+            (FeatType.PurifyingWave1, "ife_prfyngwv1", "P", "0x01", "1", "sphere", "5", "****", "17"),
             (FeatType.GuardianWard4, "ife_guardwrd4", "M", "0x03", "0", "****", "****", "****", "****"),
             (FeatType.ForcePush3, "ife_forcepsh3", "M", "0x3E", "1", "cone", "6", "5", "17"),
             (FeatType.LastStandOfTheLight1, "ife_laststndlgh1", "M", "0x03", "0", "****", "****", "****", "****")
@@ -310,8 +320,7 @@ public class ForceLightGuardianTests
         while (directory != null)
         {
             var candidate = directory.FullName;
-            if (File.Exists(Path.Combine(candidate, "SWLOR.Game.Server.sln")) &&
-                File.Exists(Path.Combine(candidate, "SWLOR_Haks", "swlor2_2da", "feat.2da")))
+            if (File.Exists(Path.Combine(candidate, "SWLOR.Game.Server.sln")))
             {
                 return new PathInfo(candidate);
             }

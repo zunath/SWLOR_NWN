@@ -97,6 +97,20 @@ public class StaffSentinelTests
     }
 
     [Test]
+    public void StaffParry_AttackDeflectionEligibility_AllowsEitherHandWeaponSkill()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText((root / "SWLOR.Game.Server" / "Service" / "Stat.cs").FullName);
+
+        source.Should().Contain("HasWeaponEquippedForAttackDeflectionNative(creature, EquipmentSlot.RightHand) ||");
+        source.Should().Contain("HasWeaponEquippedForAttackDeflectionNative(creature, EquipmentSlot.LeftHand)");
+        source.Should().Contain("HasWeaponEquippedForAttackDeflection(creature, InventorySlot.RightHand) ||");
+        source.Should().Contain("HasWeaponEquippedForAttackDeflection(creature, InventorySlot.LeftHand)");
+        source.Should().Contain("Skill.GetSkillTypeByBaseItem((BaseItem)item.m_nBaseItem) != SkillType.Invalid");
+        source.Should().Contain("Skill.GetSkillTypeByBaseItem(GetBaseItemType(item)) != SkillType.Invalid");
+    }
+
+    [Test]
     public void StaffSentinelFeatAndAbilityIcons_AreUniqueAndPresent()
     {
         var root = FindRepositoryRoot();
@@ -303,8 +317,7 @@ public class StaffSentinelTests
         while (directory != null)
         {
             var candidate = directory.FullName;
-            if (File.Exists(Path.Combine(candidate, "SWLOR.Game.Server.sln")) &&
-                File.Exists(Path.Combine(candidate, "SWLOR_Haks", "swlor2_2da", "feat.2da")))
+            if (File.Exists(Path.Combine(candidate, "SWLOR.Game.Server.sln")))
             {
                 return new PathInfo(candidate);
             }

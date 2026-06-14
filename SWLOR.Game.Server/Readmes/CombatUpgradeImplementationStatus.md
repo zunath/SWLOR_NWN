@@ -40,7 +40,7 @@ The local Bible workbook now applies the active-button budget pass from `CombatU
 
 The first implementation pass closed a few narrow, concrete gaps:
 
-- Added Bible status IDs for Sunder, Force Disruption, Blind, Toxin, Disoriented, Weakened, Dazed, Stunned, Exposed, Hemorrhage, Knockdown, Vital Strike, Hamstring, Exhausted, Taunting Deflection, Deflective Presence, Deflecting Aura, Guardian's Wrath, Hobble, Brutal Assault, Essence Drain, Soul Ascension, Flash, Rampart, Absolute Defense, Force Erosion, Fractured Focus, Force Warding, and Foggy Mind.
+- Added Bible status IDs for Sunder, Force Disruption, Blind, Toxin, Disoriented, Weakened, Dazed, Stunned, Exposed, Hemorrhage, Knockdown, Vital Strike, Hamstring, Exhausted, Taunting Deflection, Deflective Presence, Deflecting Aura, Guardian Master, Hobble, Brutal Assault, Essence Drain, Soul Ascension, Flash, Rampart, Absolute Defense, Force Erosion, Fractured Focus, Force Warding, and Foggy Mind.
 - Added combat-upgrade status definitions/icons for those status IDs so combat-upgrade ability application has registered status metadata.
 - Updated Bleed to use max-HP Bible scaling and added Toxin max-HP ticking.
 - Added Exposed defense reduction and Hemorrhage damage-taken scaling to the current combat calculations.

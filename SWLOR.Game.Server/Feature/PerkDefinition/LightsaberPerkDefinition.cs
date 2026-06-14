@@ -184,21 +184,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Grants +8 Attack Deflection.")
-                .IncreasesStat(StatType.AttackDeflection, creature => EquipmentPredicates.HasMainHandLightsaber(creature) ? 8 : 0)
+                .IncreasesStat(StatType.AttackDeflection, 8)
                 .Price(2)
                 .RequirementSkill(SkillType.Lightsaber, 2)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
 
                 .AddPerkLevel()
                 .Description("Grants +14 Attack Deflection total.")
-                .IncreasesStat(StatType.AttackDeflection, creature => EquipmentPredicates.HasMainHandLightsaber(creature) ? 14 : 0)
+                .IncreasesStat(StatType.AttackDeflection, 14)
                 .Price(3)
                 .RequirementSkill(SkillType.Lightsaber, 15)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
 
                 .AddPerkLevel()
                 .Description("Grants +20 Attack Deflection total.")
-                .IncreasesStat(StatType.AttackDeflection, creature => EquipmentPredicates.HasMainHandLightsaber(creature) ? 20 : 0)
+                .IncreasesStat(StatType.AttackDeflection, 20)
                 .Price(4)
                 .RequirementSkill(SkillType.Lightsaber, 32)
                 .RequirementCharacterType(CharacterType.ForceSensitive);

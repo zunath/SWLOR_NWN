@@ -31,20 +31,33 @@ public class LightsaberDefenseTests
         impenetrableGuard.StatGroup.Stats[StatType.PhysicalDefensePercentAdjustment].Should().Be(0);
         impenetrableGuard.StatGroup.Stats[StatType.ForceDefensePercentAdjustment].Should().Be(0);
 
-        var guardiansWrath = new GuardiansWrathStatusEffect();
-        guardiansWrath.StatGroup.Stats[StatType.AttackDeflection].Should().Be(50);
-        guardiansWrath.StatGroup.Stats[StatType.AttackDeflectionChanceCap].Should().Be(85);
+        var guardianMaster = new GuardianMasterStatusEffect();
+        guardianMaster.Name.Should().Be("Guardian Master");
+        guardianMaster.StatGroup.Stats[StatType.AttackDeflection].Should().Be(0);
+        guardianMaster.StatGroup.Stats[StatType.AttackDeflectionChanceCap].Should().Be(10);
     }
 
     [Test]
     public void LightsaberDefenseTraitStatValues_MatchCombatBible()
     {
-        var root = FindRepositoryRoot();
+        var root = FindSourceRepositoryRoot();
         var source = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "PerkDefinition" / "LightsaberPerkDefinition.cs").FullName);
 
-        source.Should().Contain("StatType.AttackDeflection, creature => EquipmentPredicates.HasMainHandLightsaber(creature) ? 8 : 0");
-        source.Should().Contain("StatType.AttackDeflection, creature => EquipmentPredicates.HasMainHandLightsaber(creature) ? 14 : 0");
-        source.Should().Contain("StatType.AttackDeflection, creature => EquipmentPredicates.HasMainHandLightsaber(creature) ? 20 : 0");
+        source.Should().Contain("StatType.AttackDeflection, 8");
+        source.Should().Contain("StatType.AttackDeflection, 14");
+        source.Should().Contain("StatType.AttackDeflection, 20");
+        source.Should().NotContain("StatType.AttackDeflection, creature => EquipmentPredicates.HasMainHandLightsaber(creature)");
+    }
+
+    [Test]
+    public void AttackDeflectionChanceCap_AddsAdjustmentsToDefaultCap()
+    {
+        var root = FindSourceRepositoryRoot();
+        var source = File.ReadAllText((root / "SWLOR.Game.Server" / "Service" / "Stat.cs").FullName);
+
+        source.Should().Contain("var capAdjustment = GetStatAdjustment(creature, StatType.AttackDeflectionChanceCap);");
+        source.Should().Contain("var cap = DefaultAttackDeflectionChanceCap + capAdjustment;");
+        source.Should().Contain("return Math.Clamp(cap, DefaultAttackDeflectionChanceCap, MaximumDeflectionChanceCap);");
     }
 
     [Test]
@@ -269,6 +282,23 @@ public class LightsaberDefenseTests
         }
 
         throw new DirectoryNotFoundException("Could not locate the SWLOR_NWN repository root.");
+    }
+
+    private static PathInfo FindSourceRepositoryRoot()
+    {
+        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
+        while (directory != null)
+        {
+            var candidate = directory.FullName;
+            if (File.Exists(Path.Combine(candidate, "SWLOR.Game.Server.sln")))
+            {
+                return new PathInfo(candidate);
+            }
+
+            directory = directory.Parent;
+        }
+
+        throw new DirectoryNotFoundException("Could not locate the SWLOR_NWN source repository root.");
     }
 
     private sealed record PathInfo(string FullName)

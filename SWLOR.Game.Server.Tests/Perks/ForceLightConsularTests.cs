@@ -6,8 +6,10 @@ using SWLOR.Game.Server.Feature.AbilityDefinition.Force;
 using SWLOR.Game.Server.Feature.PerkDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
@@ -28,6 +30,19 @@ public class ForceLightConsularTests
 
         new SereneFocusStatusEffect().Frequency.Should().Be(6f);
         new HarmonicRestorationStatusEffect().StatGroup.Stats[StatType.TraumaResistance].Should().Be(10);
+
+        var confusion = new ConfusionStatusEffect();
+        confusion.Name.Should().Be("Confusion");
+        confusion.Icon.Should().Be(EffectIconType.ConfusionStatusEffect);
+        confusion.Categories.Should().Be(StatusEffectCategory.Debuff | StatusEffectCategory.Control);
+        confusion.CleanseTypes.Should().Be(StatusEffectCleanseType.Purify | StatusEffectCleanseType.SoothePet);
+        confusion.ResistanceType.Should().Be(ResistanceType.Mind);
+
+        var root = FindSourceRepositoryRoot();
+        var confusionSource = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "StatusEffectDefinition" / "ConfusionStatusEffect.cs").FullName);
+        confusionSource.Should().Contain("public override string CanApply(uint creature)");
+        confusionSource.Should().Contain("Ability.HasTemporaryImmunity(creature, ImmunityType.Confused)");
+        confusionSource.Should().Contain("Target is temporarily immune to confusion.");
     }
 
     [Test]
@@ -50,7 +65,7 @@ public class ForceLightConsularTests
     [Test]
     public void ThrowRockAbilities_ReuseMasterVisualEffects()
     {
-        var root = FindRepositoryRoot();
+        var root = FindSourceRepositoryRoot();
         var source = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Force" / "ThrowRockAbilityDefinition.cs").FullName);
 
         source.Should().Contain("DisplaysVisualEffectWhenActivating(VisualEffect.None)");
@@ -61,6 +76,28 @@ public class ForceLightConsularTests
         source.Should().Contain("VisualEffect.Vfx_Imp_Dust_Explosion");
         source.Should().Contain("playImpactAnimation: false");
         source.Should().NotContain("VisualEffect.Vfx_Imp_Pulse_Nature");
+    }
+
+    [Test]
+    public void MindTrick_UsesConfusionAndStatContest()
+    {
+        var mindTrick = new MindTrickAbilityDefinition().BuildAbilities();
+
+        AssertAbility(mindTrick[FeatType.MindTrick1], "Mind Trick I", 1, RecastGroup.MindTrick, 60f, 1f, 4, true, true, true, false, AbilityActivationType.Casted, 15f);
+        AssertAbility(mindTrick[FeatType.MindTrick2], "Mind Trick II", 2, RecastGroup.MindTrick, 60f, 1f, 5, true, true, true, false, AbilityActivationType.Casted, 15f);
+
+        var root = FindSourceRepositoryRoot();
+        var abilitySource = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Force" / "MindTrickAbilityDefinition.cs").FullName);
+        var perkSource = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "PerkDefinition" / "ForceLightConsularPerkDefinition.cs").FullName);
+
+        abilitySource.Should().Contain("typeof(ConfusionStatusEffect)");
+        abilitySource.Should().NotContain("typeof(FoggyMindStatusEffect)");
+        abilitySource.Should().Contain("casterWillpower - targetWillpower");
+        abilitySource.Should().Contain("Math.Round");
+        abilitySource.Should().Contain("MidpointRounding.AwayFromZero");
+        abilitySource.Should().NotContain("Math.Ceiling((casterWillpower - targetWillpower) * WillpowerContestDurationSeconds)");
+        abilitySource.Should().Contain("statusResistanceType: ResistanceType.Mind");
+        perkSource.Should().NotContain("failure chance");
     }
 
     [Test]
@@ -296,6 +333,23 @@ public class ForceLightConsularTests
         }
 
         throw new DirectoryNotFoundException("Could not locate the SWLOR_NWN repository root.");
+    }
+
+    private static PathInfo FindSourceRepositoryRoot()
+    {
+        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
+        while (directory != null)
+        {
+            var candidate = directory.FullName;
+            if (File.Exists(Path.Combine(candidate, "SWLOR.Game.Server.sln")))
+            {
+                return new PathInfo(candidate);
+            }
+
+            directory = directory.Parent;
+        }
+
+        throw new DirectoryNotFoundException("Could not locate the SWLOR_NWN source repository root.");
     }
 
     private sealed record PathInfo(string FullName)

@@ -10,6 +10,7 @@ using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.PerkDefinition;
 using SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
@@ -582,6 +583,8 @@ public class CombatUpgradeBibleSyncTests
         var baseName = GetBaseName(row.PerkName);
         var expectedLevel = GetExpectedLevel(row.PerkName);
         var expectedSkill = TryParseSkillRequirement(row.SkillRequirements);
+        var expectedBeastLevel = TryParseBeastLevelRequirement(row);
+        var expectedBeastRole = TryParseBeastRoleRequirement(row);
         var expectedCategories = GetExpectedCategories(row);
         var candidates = perks
             .Where(x => NormalizeName(x.Detail.Name) == NormalizeName(baseName))
@@ -599,6 +602,20 @@ public class CombatUpgradeBibleSyncTests
         {
             candidates = candidates
                 .Where(x => HasSkillRequirement(x.Detail.PerkLevels[expectedLevel], expectedSkill.Value.Skill, expectedSkill.Value.Rank))
+                .ToArray();
+        }
+
+        if (expectedBeastLevel != null)
+        {
+            candidates = candidates
+                .Where(x => HasBeastLevelRequirement(x.Detail.PerkLevels[expectedLevel], expectedBeastLevel.Value))
+                .ToArray();
+        }
+
+        if (expectedBeastRole != null)
+        {
+            candidates = candidates
+                .Where(x => HasBeastRoleRequirement(x.Detail.PerkLevels[expectedLevel], expectedBeastRole.Value))
                 .ToArray();
         }
 
@@ -635,6 +652,31 @@ public class CombatUpgradeBibleSyncTests
         if (expectedSkill != null && !HasSkillRequirement(level, expectedSkill.Value.Skill, expectedSkill.Value.Rank))
         {
             failures.Add($"{Describe(row)}: missing skill requirement {expectedSkill.Value.Skill} {expectedSkill.Value.Rank}.");
+        }
+
+        var expectedBeastLevel = TryParseBeastLevelRequirement(row);
+        if (expectedBeastLevel != null)
+        {
+            if (!HasBeastLevelRequirement(level, expectedBeastLevel.Value))
+            {
+                failures.Add($"{Describe(row)}: missing beast level requirement {expectedBeastLevel.Value}.");
+            }
+
+            if (level.Requirements.OfType<PerkRequirementSkill>().Any(x => x.Type == SkillType.BeastMastery))
+            {
+                failures.Add($"{Describe(row)}: beast-owned perk must not use Beast Mastery rank as its level requirement.");
+            }
+        }
+        else if (row.Tab.Equals("Beast Mastery", StringComparison.OrdinalIgnoreCase) &&
+                 level.Requirements.OfType<PerkRequirementBeastLevel>().Any())
+        {
+            failures.Add($"{Describe(row)}: player Beast Mastery perk must not require active beast level.");
+        }
+
+        var expectedBeastRole = TryParseBeastRoleRequirement(row);
+        if (expectedBeastRole != null && !HasBeastRoleRequirement(level, expectedBeastRole.Value))
+        {
+            failures.Add($"{Describe(row)}: missing beast role requirement {expectedBeastRole.Value}.");
         }
 
         var expectedCharacterType = TryParseCharacterType(row.CharacterType);
@@ -956,6 +998,12 @@ public class CombatUpgradeBibleSyncTests
                GetBaseName(row.PerkName).Equals("Tame", StringComparison.OrdinalIgnoreCase);
     }
 
+    private static bool IsBeastPerkRow(BiblePerkRow row)
+    {
+        return row.Tab.Equals("Beast Mastery", StringComparison.OrdinalIgnoreCase) &&
+               row.CharacterType.Equals("Beast", StringComparison.OrdinalIgnoreCase);
+    }
+
     private static SkillRequirement? TryParseSkillRequirement(string value)
     {
         if (string.IsNullOrWhiteSpace(value) || value == "-")
@@ -971,6 +1019,30 @@ public class CombatUpgradeBibleSyncTests
         }
 
         return null;
+    }
+
+    private static int? TryParseBeastLevelRequirement(BiblePerkRow row)
+    {
+        return IsBeastPerkRow(row)
+            ? TryParseWholeNumber(row.SkillRequirements)
+            : null;
+    }
+
+    private static BeastRoleType? TryParseBeastRoleRequirement(BiblePerkRow row)
+    {
+        if (!IsBeastPerkRow(row))
+            return null;
+
+        return row.Style switch
+        {
+            "Balanced" => BeastRoleType.Balanced,
+            "Bruiser" => BeastRoleType.Bruiser,
+            "Damage" => BeastRoleType.Damage,
+            "Evasion" => BeastRoleType.Evasion,
+            "Force" => BeastRoleType.Force,
+            "Tank" => BeastRoleType.Tank,
+            _ => null
+        };
     }
 
     private static CharacterType? TryParseCharacterType(string value)
@@ -1058,6 +1130,25 @@ public class CombatUpgradeBibleSyncTests
         return level.Requirements
             .OfType<PerkRequirementSkill>()
             .Any(x => x.Type == skill && x.RequiredRank == rank);
+    }
+
+    private static bool HasBeastLevelRequirement(PerkLevel level, int beastLevel)
+    {
+        return level.Requirements
+            .OfType<PerkRequirementBeastLevel>()
+            .Any(x => (int)typeof(PerkRequirementBeastLevel)
+                .GetField("_requiredLevel", BindingFlags.Instance | BindingFlags.NonPublic)!
+                .GetValue(x)! == beastLevel);
+    }
+
+    private static bool HasBeastRoleRequirement(PerkLevel level, BeastRoleType role)
+    {
+        return level.Requirements
+            .OfType<PerkRequirementBeastRole>()
+            .Any(x => typeof(PerkRequirementBeastRole)
+                .GetField("_requiredRole", BindingFlags.Instance | BindingFlags.NonPublic)!
+                .GetValue(x)!
+                .Equals(role));
     }
 
     private static bool HasCharacterTypeRequirement(PerkLevel level, CharacterType characterType)

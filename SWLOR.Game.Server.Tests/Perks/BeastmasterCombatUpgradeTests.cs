@@ -121,7 +121,38 @@ public class BeastmasterCombatUpgradeTests
     }
 
     [Test]
-    public void BeastmasterPerkRequirements_GuardMissingActiveBeastBeforeLookup()
+    public void BeastmasterPlayerPerkRequirements_DoNotRequireBeastLevel()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "PerkDefinition" / "BeastMasteryPerkDefinition.cs").FullName);
+
+        source.Should().NotContain(
+            "RequirementBeastLevel",
+            "player Beast Mastery perks must not gate purchase by active beast level");
+    }
+
+    [Test]
+    public void BeastmasterBeastPerkRequirements_RequireBeastLevelNotPlayerSkill()
+    {
+        var root = FindRepositoryRoot();
+        var definitionFiles = Directory.EnumerateFiles(
+            (root / "SWLOR.Game.Server" / "Feature" / "PerkDefinition" / "Beast").FullName,
+            "*.cs");
+
+        foreach (var file in definitionFiles)
+        {
+            var source = File.ReadAllText(file);
+            source.Should().Contain(
+                "RequirementBeastLevel",
+                $"{Path.GetFileName(file)} must gate beast-owned perks by beast level");
+            source.Should().NotContain(
+                "RequirementSkill(SkillType.BeastMastery",
+                $"{Path.GetFileName(file)} must not treat beast level as a player Beast Mastery rank");
+        }
+    }
+
+    [Test]
+    public void BeastmasterActiveBeastRequirements_GuardMissingActiveBeastBeforeLookup()
     {
         var root = FindRepositoryRoot();
         var requirementFiles = new[]
@@ -193,7 +224,7 @@ public class BeastmasterCombatUpgradeTests
         {
             var candidate = directory.FullName;
             if (File.Exists(Path.Combine(candidate, "SWLOR.Game.Server.sln")) &&
-                File.Exists(Path.Combine(candidate, "SWLOR_Haks", "swlor2_2da", "feat.2da")))
+                File.Exists(Path.Combine(candidate, "SWLOR.Game.Server", "Readmes", "CombatUpgradeBiblePerkManifest.csv")))
             {
                 return new PathInfo(candidate);
             }

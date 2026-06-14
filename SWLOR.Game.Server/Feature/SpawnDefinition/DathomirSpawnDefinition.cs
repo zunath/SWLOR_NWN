@@ -129,7 +129,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .WithFrequency(1)
                 .RespawnDelay(60 + Random.D100(1))
 
-                .AddSpawn(ObjectType.Creature, "dath_rancor")
+                .AddSpawn(ObjectType.Creature, "vdatthrancor")
                 .RandomlyWalks()
                 .WithFrequency(1)
                 .RespawnDelay(60 + Random.D100(1))

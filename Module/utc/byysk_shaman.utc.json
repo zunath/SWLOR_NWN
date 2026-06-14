@@ -14,7 +14,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 122.0
+    "value": 86.0
   },
   "ClassList": {
     "type": "list",
@@ -282,7 +282,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 2427
+    "value": 2319
   },
   "NaturalAC": {
     "type": "byte",
@@ -670,21 +670,6 @@
         "Value": {
           "type": "cexostring",
           "value": "QIONHIVE_RESOURCES,100,1"
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "QUEST_NPC_GROUP_ID"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 1
-        },
-        "Value": {
-          "type": "int",
-          "value": 70
         }
       }
     ]

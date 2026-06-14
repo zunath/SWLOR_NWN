@@ -78,17 +78,17 @@
     "type": "list",
     "value": [
       {
-        "__struct_id": 32768,
-        "EquippedRes": {
-          "type": "resref",
-          "value": "holokathhound_wp"
-        }
-      },
-      {
         "__struct_id": 131072,
         "EquippedRes": {
           "type": "resref",
           "value": "holokathhound_sk"
+        }
+      },
+      {
+        "__struct_id": 32768,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "holokathhound_wp"
         }
       }
     ]
@@ -184,7 +184,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 83
+    "value": 85
   },
   "NaturalAC": {
     "type": "byte",

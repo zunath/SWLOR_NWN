@@ -175,17 +175,17 @@
         }
       },
       {
-        "__struct_id": 16,
-        "EquippedRes": {
-          "type": "resref",
-          "value": "rodianpirate_wp"
-        }
-      },
-      {
         "__struct_id": 2048,
         "EquippedRes": {
           "type": "resref",
           "value": "blaster_bullets"
+        }
+      },
+      {
+        "__struct_id": 16,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "rodianpirate_wp"
         }
       },
       {

@@ -90,7 +90,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 339.0
+    "value": 78.0
   },
   "ClassList": {
     "type": "list",
@@ -182,17 +182,17 @@
         }
       },
       {
-        "__struct_id": 16,
-        "EquippedRes": {
-          "type": "resref",
-          "value": "lordsirtu_wp"
-        }
-      },
-      {
         "__struct_id": 512,
         "EquippedRes": {
           "type": "resref",
           "value": "hastejedi2"
+        }
+      },
+      {
+        "__struct_id": 16,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "lordsirtu_wp"
         }
       },
       {
@@ -799,7 +799,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 9091
+    "value": 8611
   },
   "NaturalAC": {
     "type": "byte",

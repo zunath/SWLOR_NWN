@@ -68617,17 +68617,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Marked Site"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "qst_obj_marker"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Market Terminal"
                     },
                     "RESREF": {

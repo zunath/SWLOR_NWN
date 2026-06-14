@@ -14,7 +14,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 5.0
+    "value": 6.0
   },
   "ClassList": {
     "type": "list",
@@ -78,17 +78,17 @@
     "type": "list",
     "value": [
       {
-        "__struct_id": 16384,
-        "EquippedRes": {
-          "type": "resref",
-          "value": "hologimp_lo_wp"
-        }
-      },
-      {
         "__struct_id": 131072,
         "EquippedRes": {
           "type": "resref",
           "value": "hologimp_lo_sk"
+        }
+      },
+      {
+        "__struct_id": 16384,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "hologimp_lo_wp"
         }
       }
     ]
@@ -184,7 +184,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 119
+    "value": 113
   },
   "NaturalAC": {
     "type": "byte",

@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.ActivityService;
+using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.ItemService;
 using SWLOR.Game.Server.Service.LogService;
@@ -452,6 +453,13 @@ namespace SWLOR.Game.Server.Service
         {
             var isPlayer = GetIsPC(creature);
             var isDroid = Droid.IsDroid(creature);
+            var itemType = GetBaseItemType(item);
+
+            if (ForceSensitiveWeaponBaseItemTypes.Contains(itemType) &&
+                !CanEquipForceSensitiveWeapon(creature))
+            {
+                return "Only Force Sensitive characters may equip that item.";
+            }
 
             if ((!isPlayer && !isDroid) || GetIsDM(creature) || GetIsDMPossessed(creature))
                 return string.Empty;
@@ -464,13 +472,6 @@ namespace SWLOR.Game.Server.Service
                 return itemUseError;
 
             var race = GetRacialType(creature);
-            var itemType = GetBaseItemType(item);
-
-            if (ForceSensitiveWeaponBaseItemTypes.Contains(itemType) &&
-                !CanEquipForceSensitiveWeapon(creature))
-            {
-                return "Only Force Sensitive characters may equip that item.";
-            }
 
             var needsDroidLimitation = race == RacialType.Droid && DroidBaseItemTypes.Contains(itemType);
             var itemHasDroidIP = false;
@@ -502,8 +503,14 @@ namespace SWLOR.Game.Server.Service
             if (GetIsDM(creature) || GetIsDMPossessed(creature))
                 return true;
 
-            if (!GetIsPC(creature))
+            if (Droid.IsDroid(creature) ||
+                BeastMastery.GetBeastType(creature) != BeastType.Invalid)
+            {
                 return false;
+            }
+
+            if (!GetIsPC(creature))
+                return true;
 
             var playerId = GetObjectUUID(creature);
             var dbPlayer = DB.Get<Player>(playerId);

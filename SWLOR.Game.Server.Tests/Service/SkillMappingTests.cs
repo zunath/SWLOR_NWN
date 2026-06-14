@@ -54,13 +54,26 @@ public class SkillMappingTests
 
         var root = FindRepositoryRoot();
         var itemSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Item.cs"));
+        var normalizedItemSource = itemSource.Replace("\r\n", "\n");
 
         itemSource.Should().Contain("ForceSensitiveWeaponBaseItemTypes.Contains(itemType)");
         itemSource.Should().Contain("GetIsDM(creature)");
         itemSource.Should().Contain("GetIsDMPossessed(creature)");
+        normalizedItemSource.Should().Contain("if (GetIsDM(creature) || GetIsDMPossessed(creature))\n                return true;");
+        itemSource.Should().Contain("Droid.IsDroid(creature)");
+        itemSource.Should().Contain("BeastMastery.GetBeastType(creature) != BeastType.Invalid");
+        normalizedItemSource.Should().Contain("if (!GetIsPC(creature))\n                return true;");
         itemSource.Should().Contain("DB.Get<Player>(playerId)");
         itemSource.Should().Contain("dbPlayer?.CharacterType == CharacterType.ForceSensitive");
         itemSource.Should().NotContain("GetClassByPosition(1, creature)");
+
+        var forceSensitiveGateIndex = itemSource.IndexOf("ForceSensitiveWeaponBaseItemTypes.Contains(itemType)", StringComparison.Ordinal);
+        var nonPlayerBypassIndex = itemSource.IndexOf("if ((!isPlayer && !isDroid)", StringComparison.Ordinal);
+        forceSensitiveGateIndex.Should().BeLessThan(nonPlayerBypassIndex);
+
+        var dmBypassIndex = normalizedItemSource.IndexOf("if (GetIsDM(creature) || GetIsDMPossessed(creature))\n                return true;", StringComparison.Ordinal);
+        var playerEntityLookupIndex = normalizedItemSource.IndexOf("DB.Get<Player>(playerId)", StringComparison.Ordinal);
+        dmBypassIndex.Should().BeLessThan(playerEntityLookupIndex);
     }
 
     private static DirectoryInfo FindRepositoryRoot()

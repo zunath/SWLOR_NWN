@@ -143,6 +143,43 @@ function Get-ExpectedSkillType {
     return $key
 }
 
+function Test-IsBeastPerkRow {
+    param([object]$Row)
+
+    return $Row.Tab -eq "Beast Mastery" -and $Row.CharacterType -eq "Beast"
+}
+
+function Get-ExpectedSkillRequirement {
+    param([object]$Row)
+
+    if ([string]::IsNullOrWhiteSpace($Row.SkillRequirements) -or $Row.SkillRequirements -eq "-") {
+        return $null
+    }
+
+    if ($Row.SkillRequirements -match "(.+?)\s+(\d+)") {
+        return [pscustomobject]@{
+            Skill = Get-ExpectedSkillType $Matches[1]
+            Rank = ConvertTo-OptionalInt $Matches[2]
+        }
+    }
+
+    return $null
+}
+
+function Get-ExpectedBeastLevel {
+    param([object]$Row)
+
+    if (!(Test-IsBeastPerkRow $Row)) {
+        return $null
+    }
+
+    if ($Row.SkillRequirements -match "^\s*([0-9]+(?:\.[0-9]+)?)\s*$") {
+        return ConvertTo-OptionalInt $Matches[1]
+    }
+
+    return $null
+}
+
 function Get-ExpectedCategory {
     param([object]$Row)
 
@@ -331,14 +368,15 @@ foreach ($row in $scopedRows) {
         Add-Issue -Issues $issues -Issue "DescriptionMismatch" -BibleRow $row -Field "Description" -Bible $row.Description -Code $code.Description -File $code.File
     }
 
-    if ($row.Tab -eq "Beast Mastery" -and @("Damage", "Tank", "Balanced", "Bruiser", "Evasion", "Force") -contains $row.Style) {
-        $expectedLevel = $null
-        if ($row.SkillRequirements -match "(\d+)") {
-            $expectedLevel = [int]$Matches[1]
+    if ($row.Tab -eq "Beast Mastery") {
+        $expectedBeastLevel = Get-ExpectedBeastLevel $row
+        if ($null -ne $expectedBeastLevel) {
+            if ($code.BeastLevel -ne $expectedBeastLevel) {
+                Add-Issue -Issues $issues -Issue "RequirementMismatch" -BibleRow $row -Field "BeastLevel" -Bible $expectedBeastLevel -Code $code.BeastLevel -File $code.File
+            }
         }
-
-        if ($null -ne $expectedLevel -and $code.BeastLevel -ne $expectedLevel) {
-            Add-Issue -Issues $issues -Issue "RequirementMismatch" -BibleRow $row -Field "BeastLevel" -Bible $expectedLevel -Code $code.BeastLevel -File $code.File
+        elseif ($null -ne $code.BeastLevel) {
+            Add-Issue -Issues $issues -Issue "RequirementMismatch" -BibleRow $row -Field "BeastLevel" -Bible "none" -Code $code.BeastLevel -File $code.File
         }
 
         $roleMap = @{
@@ -350,16 +388,30 @@ foreach ($row in $scopedRows) {
             Force = "Force"
         }
 
-        if ($roleMap.ContainsKey($row.Style) -and $code.BeastRole -ne $roleMap[$row.Style]) {
-            Add-Issue -Issues $issues -Issue "RequirementMismatch" -BibleRow $row -Field "BeastRole" -Bible $roleMap[$row.Style] -Code $code.BeastRole -File $code.File
+        if ((Test-IsBeastPerkRow $row) -and $roleMap.ContainsKey($row.Style)) {
+            if ($code.BeastRole -ne $roleMap[$row.Style]) {
+                Add-Issue -Issues $issues -Issue "RequirementMismatch" -BibleRow $row -Field "BeastRole" -Bible $roleMap[$row.Style] -Code $code.BeastRole -File $code.File
+            }
+        }
+        elseif (![string]::IsNullOrWhiteSpace($code.BeastRole)) {
+            Add-Issue -Issues $issues -Issue "RequirementMismatch" -BibleRow $row -Field "BeastRole" -Bible "none" -Code $code.BeastRole -File $code.File
+        }
+
+        $expectedSkillRequirement = Get-ExpectedSkillRequirement $row
+        if ($null -ne $expectedSkillRequirement) {
+            if ($code.Skill -ne $expectedSkillRequirement.Skill -or $code.Rank -ne $expectedSkillRequirement.Rank) {
+                Add-Issue -Issues $issues -Issue "RequirementMismatch" -BibleRow $row -Field "SkillRequirement" -Bible "$($expectedSkillRequirement.Skill) $($expectedSkillRequirement.Rank)" -Code "$($code.Skill) $($code.Rank)" -File $code.File
+            }
+        }
+        elseif (![string]::IsNullOrWhiteSpace($code.Skill)) {
+            Add-Issue -Issues $issues -Issue "RequirementMismatch" -BibleRow $row -Field "SkillRequirement" -Bible "none" -Code "$($code.Skill) $($code.Rank)" -File $code.File
         }
     }
     else {
-        if (![string]::IsNullOrWhiteSpace($row.SkillRequirements) -and $row.SkillRequirements -ne "-" -and $row.SkillRequirements -match "(.+?)\s+(\d+)") {
-            $expectedSkill = Get-ExpectedSkillType $Matches[1]
-            $expectedRank = [int]$Matches[2]
-            if ($code.Skill -ne $expectedSkill -or $code.Rank -ne $expectedRank) {
-                Add-Issue -Issues $issues -Issue "RequirementMismatch" -BibleRow $row -Field "SkillRequirement" -Bible "$expectedSkill $expectedRank" -Code "$($code.Skill) $($code.Rank)" -File $code.File
+        $expectedSkillRequirement = Get-ExpectedSkillRequirement $row
+        if ($null -ne $expectedSkillRequirement) {
+            if ($code.Skill -ne $expectedSkillRequirement.Skill -or $code.Rank -ne $expectedSkillRequirement.Rank) {
+                Add-Issue -Issues $issues -Issue "RequirementMismatch" -BibleRow $row -Field "SkillRequirement" -Bible "$($expectedSkillRequirement.Skill) $($expectedSkillRequirement.Rank)" -Code "$($code.Skill) $($code.Rank)" -File $code.File
             }
         }
 

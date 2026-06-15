@@ -74,6 +74,51 @@ public class KatarIronGuardTests
     }
 
     [Test]
+    public void GuardTraining_GrantsPerpetualGuardBonuses()
+    {
+        var perk = BuildKatarIronGuardPerksWithout2daLookup()[PerkType.GuardTraining];
+
+        AssertPerkLevel(
+            perk,
+            "Guard Training",
+            1,
+            2,
+            2,
+            FeatType.GuardTrainingTrait,
+            "Grants a 15% chance to guard against physical attacks, reducing that hit's damage by 20% and generating extra enmity.",
+            StatType.Guard);
+        AssertPerpetualStatBonus(perk.PerkLevels[1], StatType.Guard, 15);
+
+        AssertPerkLevel(
+            perk,
+            "Guard Training",
+            2,
+            2,
+            15,
+            null,
+            "Guard chance increases to 25% and guarded hits restore 2 STM.",
+            StatType.Guard,
+            StatType.GuardStaminaRestore);
+        AssertPerpetualStatBonus(perk.PerkLevels[2], StatType.Guard, 25);
+        AssertPerpetualStatBonus(perk.PerkLevels[2], StatType.GuardStaminaRestore, 2);
+
+        AssertPerkLevel(
+            perk,
+            "Guard Training",
+            3,
+            4,
+            28,
+            null,
+            "Guard chance increases to 35% and guarded hits reduce physical damage by 30%.",
+            StatType.Guard,
+            StatType.GuardStaminaRestore,
+            StatType.GuardDamageReductionPercentAdjustment);
+        AssertPerpetualStatBonus(perk.PerkLevels[3], StatType.Guard, 35);
+        AssertPerpetualStatBonus(perk.PerkLevels[3], StatType.GuardStaminaRestore, 2);
+        AssertPerpetualStatBonus(perk.PerkLevels[3], StatType.GuardDamageReductionPercentAdjustment, 10);
+    }
+
+    [Test]
     public void KatarIronGuardFeatAndAbilityIcons_AreUniqueAndPresent()
     {
         var root = FindRepositoryRoot();
@@ -141,6 +186,17 @@ public class KatarIronGuardTests
             perkLevel.StatBonuses.Select(x => x.Stat).Should().HaveCount(statTypes.Length).And.Contain(statTypes);
         else
             perkLevel.StatBonuses.Should().BeEmpty();
+    }
+
+    private static void AssertPerpetualStatBonus(PerkLevel level, StatType stat, int expectedValue)
+    {
+        level.StatBonuses
+            .Should()
+            .ContainSingle(x => x.Stat == stat)
+            .Which
+            .Calculate(0)
+            .Should()
+            .Be(expectedValue);
     }
 
     private static void AssertAbility(

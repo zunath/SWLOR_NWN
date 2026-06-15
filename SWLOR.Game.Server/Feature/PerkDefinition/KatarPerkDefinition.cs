@@ -152,22 +152,22 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.GuardTrainingTrait)
                 .Description("Grants a 15% chance to guard against physical attacks, reducing that hit's damage by 20% and generating extra enmity.")
-                .IncreasesStat(StatType.Guard, creature => EquipmentPredicates.HasDualWieldKatar(creature) ? 15 : 0)
+                .IncreasesStat(StatType.Guard, 15)
                 .Price(2)
                 .RequirementSkill(SkillType.Katar, 2)
 
                 .AddPerkLevel()
                 .Description("Guard chance increases to 25% and guarded hits restore 2 STM.")
-                .IncreasesStat(StatType.Guard, creature => EquipmentPredicates.HasDualWieldKatar(creature) ? 25 : 0)
-                .IncreasesStat(StatType.GuardStaminaRestore, creature => EquipmentPredicates.HasDualWieldKatar(creature) ? 2 : 0)
+                .IncreasesStat(StatType.Guard, 25)
+                .IncreasesStat(StatType.GuardStaminaRestore, 2)
                 .Price(2)
                 .RequirementSkill(SkillType.Katar, 15)
 
                 .AddPerkLevel()
                 .Description("Guard chance increases to 35% and guarded hits reduce physical damage by 30%.")
-                .IncreasesStat(StatType.Guard, creature => EquipmentPredicates.HasDualWieldKatar(creature) ? 35 : 0)
-                .IncreasesStat(StatType.GuardStaminaRestore, creature => EquipmentPredicates.HasDualWieldKatar(creature) ? 2 : 0)
-                .IncreasesStat(StatType.GuardDamageReductionPercentAdjustment, creature => EquipmentPredicates.HasDualWieldKatar(creature) ? 10 : 0)
+                .IncreasesStat(StatType.Guard, 35)
+                .IncreasesStat(StatType.GuardStaminaRestore, 2)
+                .IncreasesStat(StatType.GuardDamageReductionPercentAdjustment, 10)
                 .Price(4)
                 .RequirementSkill(SkillType.Katar, 28);
         }

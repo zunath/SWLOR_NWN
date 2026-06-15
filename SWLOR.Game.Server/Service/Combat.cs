@@ -321,15 +321,16 @@ namespace SWLOR.Game.Server.Service
             int critical,
             int deltaCap = 0)
         {
-            var wasCriticalDowngraded = GetIsObjectValid(defender) &&
+            var isDefenderValid = GetIsObjectValid(defender);
+            var wasCriticalDowngraded = isDefenderValid &&
                 critical > 0 &&
                 Stat.GetStatAdjustment(defender, StatType.IncomingCriticalHitDowngradeToMinimumDamage) > 0;
-            var forceMinimumNormalDamage = GetIsObjectValid(defender) &&
-                (wasCriticalDowngraded ||
-                 TemporaryStatModifier.Consume(
-                     defender,
-                     StatType.CurrentIncomingAttackMinimumDamage,
-                     StatType.CurrentIncomingAttackMinimumDamage) > 0);
+            var usedPendingCriticalDowngrade = isDefenderValid &&
+                TemporaryStatModifier.Consume(
+                    defender,
+                    StatType.CurrentIncomingAttackMinimumDamage,
+                    StatType.CurrentIncomingAttackMinimumDamage) > 0;
+            var forceMinimumNormalDamage = wasCriticalDowngraded || usedPendingCriticalDowngrade;
             var effectiveCritical = forceMinimumNormalDamage ? 0 : critical;
             var (minDamage, maxDamage) = CalculateDamageRange(
                 attackerAttack,
@@ -343,7 +344,7 @@ namespace SWLOR.Game.Server.Service
                 ? minDamage
                 : (int)Random.NextFloat(minDamage, maxDamage);
 
-            return (damage, effectiveCritical, wasCriticalDowngraded);
+            return (damage, effectiveCritical, wasCriticalDowngraded || usedPendingCriticalDowngrade);
         }
 
         public static int ApplyCriticalDamageModifier(uint attacker, int damage, int criticalRating)

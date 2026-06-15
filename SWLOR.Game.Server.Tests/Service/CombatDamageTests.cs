@@ -331,6 +331,7 @@ public class CombatDamageTests
         var root = FindRepositoryRoot();
         var combatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
         var abilitySource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Ability.cs"));
+        var damageRollSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Native", "GetDamageRoll.cs"));
         var resolveAttackRollSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Native", "ResolveAttackRoll.cs"));
 
         combatSource.Should().Contain("bool WasCriticalDowngraded");
@@ -340,10 +341,13 @@ public class CombatDamageTests
 
         abilitySource.Should().Contain("if (damageRoll.WasCriticalDowngraded)");
         abilitySource.Should().Contain("Combat.SendIncomingCriticalHitDowngradeFeedback(activator, target);");
-        resolveAttackRollSource.Should().Contain("Combat.SendIncomingCriticalHitDowngradeFeedback(attacker.m_idSelf, defender.m_idSelf);");
+        damageRollSource.Should().Contain("if (damageRoll.WasCriticalDowngraded)");
+        damageRollSource.Should().Contain("Combat.SendIncomingCriticalHitDowngradeFeedback(attacker.m_idSelf, target.m_idSelf);");
+        resolveAttackRollSource.Should().NotContain("Combat.SendIncomingCriticalHitDowngradeFeedback");
 
         combatSource.Should().NotContain("PerkType.CriticalWard");
         abilitySource.Should().NotContain("PerkType.CriticalWard");
+        damageRollSource.Should().NotContain("PerkType.CriticalWard");
         resolveAttackRollSource.Should().NotContain("PerkType.CriticalWard");
     }
 

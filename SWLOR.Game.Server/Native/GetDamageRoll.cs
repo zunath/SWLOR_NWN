@@ -447,6 +447,10 @@ namespace SWLOR.Game.Server.Native
                 weaponDeltaCap);
             var damage = damageRoll.Damage;
             effectiveCritical = damageRoll.CriticalRating;
+            if (damageRoll.WasCriticalDowngraded)
+            {
+                Combat.SendIncomingCriticalHitDowngradeFeedback(attacker.m_idSelf, target.m_idSelf);
+            }
 
             damage = Combat.ApplyCriticalDamageModifier(attacker.m_idSelf, damage, effectiveCritical);
 

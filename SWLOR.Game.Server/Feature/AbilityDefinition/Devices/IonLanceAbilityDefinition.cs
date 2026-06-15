@@ -88,7 +88,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 0,
                 null,
                 CombatImpactAreaShape.Line,
-                0.25f,
+                0f,
                 LineLengthMeters,
                 LineWidthMeters,
                 Array.Empty<Type>(),

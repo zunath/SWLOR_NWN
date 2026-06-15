@@ -1,6 +1,7 @@
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
+using SWLOR.Game.Server.Feature.AbilityDefinition.Devices;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Force;
 using SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber;
@@ -20,6 +21,7 @@ public class LineAbilityTargetingTests
     [TestCase(FeatType.LineBreaker1, Spell.LineBreaker1, typeof(LineBreakerAbilityDefinition))]
     [TestCase(FeatType.SuppressiveLine1, Spell.SuppressiveLine1, typeof(SuppressiveLineAbilityDefinition))]
     [TestCase(FeatType.GuardiansChallenge2, Spell.GuardiansChallenge2, typeof(GuardiansChallengeAbilityDefinition))]
+    [TestCase(FeatType.IonLance1, Spell.IonLance1, typeof(IonLanceAbilityDefinition))]
     public void OriginLineAbilities_DeclareForwardLengthAndWidthTargeting(
         FeatType feat,
         Spell spell,

@@ -87,6 +87,33 @@ public class DevicesFieldSupportAndAssaultGadgetsTests
         DeviceAbilityEffects.CalculateAssaultGadgetWeaponDamageEquivalent(49).Should().Be(24);
         DeviceAbilityEffects.CalculateAssaultGadgetWeaponDamageEquivalent(50).Should().Be(28);
     }
+
+    [Test]
+    public void Flamethrower_UsesImpactDamageBeforeCosmeticAnimationCanClearIt()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Devices" / "FlamethrowerAbilityDefinition.cs").FullName)
+            .Replace("\r\n", "\n");
+
+        source.Should().Contain("Ability.ApplyTelegraphedCombatImpact(");
+        source.Should().Contain("PlayFlamethrowerVisualEffect(activator);");
+        source.Should().Contain("EffectVisualEffect(FlamethrowerVisualEffect)");
+        source.Should().NotContain("ActionPlayAnimation(Animation.CastOutAnimation, 1f, 2.1f)");
+        source.Should().NotContain("playImpactAnimation: false");
+    }
+
+    [Test]
+    public void IonLance_ResolvesLineDamageImmediatelyAfterCastCompletion()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Devices" / "IonLanceAbilityDefinition.cs").FullName)
+            .Replace("\r\n", "\n");
+
+        source.Should().Contain("CombatImpactAreaShape.Line,\n                0f,");
+        source.Should().Contain("damageType: CombatDamageType.Electrical");
+        source.Should().Contain("afterSuccessfulHit: _ => DeviceAbilityEffects.ApplyTacticalUplink(activator)");
+    }
+
     [Test]
     public void DevicesFieldSupportAndAssaultGadgetsFeatAndSpellIcons_AreUniqueAndPresent()
     {

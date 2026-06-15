@@ -126,8 +126,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 baseDamageAdjustment: DeviceAbilityEffects.GetAssaultGadgetBaseDamageAdjustment(activator),
                 afterSuccessfulHit: _ => DeviceAbilityEffects.ApplyTacticalUplink(activator),
                 hitChancePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetAccuracyAdjustment(activator),
-                criticalRatePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetCriticalRateAdjustment(activator),
-                playImpactAnimation: false);
+                criticalRatePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetCriticalRateAdjustment(activator));
         }
 
         private static void Flamethrower2ImpactAction(uint activator, uint target, int level, Location targetLocation)
@@ -155,8 +154,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 baseDamageAdjustment: DeviceAbilityEffects.GetAssaultGadgetBaseDamageAdjustment(activator),
                 afterSuccessfulHit: _ => DeviceAbilityEffects.ApplyTacticalUplink(activator),
                 hitChancePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetAccuracyAdjustment(activator),
-                criticalRatePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetCriticalRateAdjustment(activator),
-                playImpactAnimation: false);
+                criticalRatePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetCriticalRateAdjustment(activator));
         }
 
         private static void Flamethrower3ImpactAction(uint activator, uint target, int level, Location targetLocation)
@@ -184,17 +182,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 baseDamageAdjustment: DeviceAbilityEffects.GetAssaultGadgetBaseDamageAdjustment(activator),
                 afterSuccessfulHit: _ => DeviceAbilityEffects.ApplyTacticalUplink(activator),
                 hitChancePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetAccuracyAdjustment(activator),
-                criticalRatePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetCriticalRateAdjustment(activator),
-                playImpactAnimation: false);
+                criticalRatePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetCriticalRateAdjustment(activator));
         }
 
         private static void PlayFlamethrowerVisualEffect(uint activator)
         {
-            AssignCommand(activator, () =>
-            {
-                ActionPlayAnimation(Animation.CastOutAnimation, 1f, 2.1f);
-                ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(FlamethrowerVisualEffect), activator, 2f);
-            });
+            ApplyEffectToObject(
+                DurationType.Temporary,
+                EffectVisualEffect(FlamethrowerVisualEffect),
+                activator,
+                2f);
         }
 
     }

@@ -1484,7 +1484,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "tit_knife"
+                "value": "b_knife"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -1503,7 +1503,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "vet_knife"
+                "value": "fld_knife"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -1522,7 +1522,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "tit_greatsword"
+                "value": "tit_knife"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -1541,7 +1541,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "vet_greatsword"
+                "value": "vet_knife"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -1560,7 +1560,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "tit_longsword"
+                "value": "b_greatsword"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -1579,7 +1579,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "vet_longsword"
+                "value": "fld_greatsword"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -1598,7 +1598,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "tit_katar"
+                "value": "tit_greatsword"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -1617,7 +1617,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "vet_katar"
+                "value": "vet_greatsword"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -1636,7 +1636,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "tit_staff"
+                "value": "b_longsword"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -1655,7 +1655,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "vet_staff"
+                "value": "fld_longsword"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -1674,7 +1674,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "tit_twinblade"
+                "value": "tit_longsword"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -1693,7 +1693,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "vet_twinblade"
+                "value": "vet_longsword"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -1712,7 +1712,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "tit_spear"
+                "value": "b_katar"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -1731,7 +1731,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "vet_spear"
+                "value": "fld_katar"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -1750,7 +1750,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "tit_pistol"
+                "value": "tit_katar"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -1769,7 +1769,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "vet_pistol"
+                "value": "vet_katar"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -1788,7 +1788,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "tit_rifle"
+                "value": "b_staff"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -1807,7 +1807,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "vet_rifle"
+                "value": "fld_staff"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -1826,7 +1826,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "tit_shuriken"
+                "value": "tit_staff"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -1845,7 +1845,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "vet_shuriken"
+                "value": "vet_staff"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -1864,7 +1864,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "electroblade_2"
+                "value": "b_twinblade"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -1883,7 +1883,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "vet_electroblade"
+                "value": "fld_twinblade"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -1902,7 +1902,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "twin_elec_2"
+                "value": "tit_twinblade"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -1921,7 +1921,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "vet_twinelec"
+                "value": "vet_twinblade"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -1930,6 +1930,462 @@
               "Repos_Posy": {
                 "type": "word",
                 "value": 8
+              }
+            },
+            {
+              "__struct_id": 24,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "b_spear"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 8
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 8
+              }
+            },
+            {
+              "__struct_id": 25,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "fld_spear"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 0
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 10
+              }
+            },
+            {
+              "__struct_id": 26,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "tit_spear"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 2
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 10
+              }
+            },
+            {
+              "__struct_id": 27,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "vet_spear"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 4
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 10
+              }
+            },
+            {
+              "__struct_id": 28,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "b_pistol"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 6
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 10
+              }
+            },
+            {
+              "__struct_id": 29,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "fld_pistol"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 8
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 10
+              }
+            },
+            {
+              "__struct_id": 30,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "tit_pistol"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 0
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 12
+              }
+            },
+            {
+              "__struct_id": 31,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "vet_pistol"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 2
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 12
+              }
+            },
+            {
+              "__struct_id": 32,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "b_rifle"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 4
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 12
+              }
+            },
+            {
+              "__struct_id": 33,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "fld_rifle"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 6
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 12
+              }
+            },
+            {
+              "__struct_id": 34,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "tit_rifle"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 8
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 12
+              }
+            },
+            {
+              "__struct_id": 35,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "vet_rifle"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 0
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 14
+              }
+            },
+            {
+              "__struct_id": 36,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "b_shuriken"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 2
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 14
+              }
+            },
+            {
+              "__struct_id": 37,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "fld_shuriken"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 4
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 14
+              }
+            },
+            {
+              "__struct_id": 38,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "tit_shuriken"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 6
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 14
+              }
+            },
+            {
+              "__struct_id": 39,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "vet_shuriken"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 8
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 14
+              }
+            },
+            {
+              "__struct_id": 40,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "electroblade_1"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 0
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 16
+              }
+            },
+            {
+              "__struct_id": 41,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "fld_electroblade"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 2
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 16
+              }
+            },
+            {
+              "__struct_id": 42,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "electroblade_2"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 4
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 16
+              }
+            },
+            {
+              "__struct_id": 43,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "vet_electroblade"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 6
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 16
+              }
+            },
+            {
+              "__struct_id": 44,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "twin_elec_1"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 8
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 16
+              }
+            },
+            {
+              "__struct_id": 45,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "fld_twinelec"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 0
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 18
+              }
+            },
+            {
+              "__struct_id": 46,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "twin_elec_2"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 2
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 18
+              }
+            },
+            {
+              "__struct_id": 47,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "vet_twinelec"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 4
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 18
               }
             }
           ]

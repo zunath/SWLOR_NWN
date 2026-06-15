@@ -8,6 +8,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     {
         public override string Name => "Field Recovery II";
         public override EffectIconType Icon => EffectIconType.FieldRecovery2StatusEffect;
+        public override float Frequency => 4f;
 
         protected override void Tick(uint creature)
         {

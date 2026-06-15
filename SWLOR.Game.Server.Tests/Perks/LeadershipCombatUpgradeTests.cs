@@ -75,6 +75,13 @@ public class LeadershipCombatUpgradeTests
     }
 
     [Test]
+    public void FieldRecoveryStatusEffects_UseCombatBibleRecoveryTick()
+    {
+        new FieldRecovery1StatusEffect().Frequency.Should().Be(4f);
+        new FieldRecovery2StatusEffect().Frequency.Should().Be(4f);
+    }
+
+    [Test]
     public void LeadershipFeatAndAbilityIcons_AreAssignedAndUnique()
     {
         var labels = new HashSet<string>

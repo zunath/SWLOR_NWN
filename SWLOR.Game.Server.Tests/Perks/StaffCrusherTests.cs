@@ -50,7 +50,7 @@ public class StaffCrusherTests
         worldbreaker.Targeting.Should().NotBeNull();
         worldbreaker.Targeting!.Spell.Should().Be(Spell.Worldbreaker1);
         worldbreaker.Targeting.Shape.Should().Be(AbilityTargetingShapeType.Sphere);
-        worldbreaker.Targeting.SizeX.Should().Be(5f);
+        worldbreaker.Targeting.SizeX.Should().Be(10f);
         worldbreaker.Targeting.SizeY.Should().Be(0f);
         worldbreaker.Targeting.Flags.Should().Be(
             AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf);
@@ -97,7 +97,7 @@ public class StaffCrusherTests
             (FeatType.GroundQuake1, "ife_grndquake1", "P", "0x01", "1", "sphere", "5", "****", "17"),
             (FeatType.GroundQuake2, "ife_grndquake2", "P", "0x01", "1", "sphere", "5", "****", "17"),
             (FeatType.Bonecrusher1, "ife_bone1", "M", "0x02", "1", "****", "****", "****", "****"),
-            (FeatType.Worldbreaker1, "ife_worldbrk1", "P", "0x01", "1", "sphere", "5", "****", "17")
+            (FeatType.Worldbreaker1, "ife_worldbrk1", "P", "0x01", "1", "sphere", "10", "****", "17")
         };
         var seenIcons = new HashSet<string>();
 
@@ -153,6 +153,7 @@ public class StaffCrusherTests
 
         var worldbreaker = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Staff" / "WorldbreakerAbilityDefinition.cs").FullName);
         worldbreaker.Should().Contain("HasActivationDelay(2f)");
+        worldbreaker.Should().Contain("WorldbreakerRadius = 10f");
         worldbreaker.Should().Contain("SkillType.Staff");
         worldbreaker.Should().Contain("25");
         worldbreaker.Should().Contain("45");

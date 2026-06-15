@@ -13,6 +13,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
 {
     public class WorldbreakerAbilityDefinition : IAbilityListDefinition
     {
+        private const float WorldbreakerRadius = 10f;
+
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
@@ -35,7 +37,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
                 .HasImpactAction(Worldbreaker1ImpactAction)
                 .HasTargetingSphere(
                     Spell.Worldbreaker1,
-                    5f,
+                    WorldbreakerRadius,
                     AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf)
                 .IsCastedAbility()
                 .IsHostileAbility()
@@ -55,7 +57,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
                 typeof(WorldbreakerStatusEffect),
                 CombatImpactAreaShape.Sphere,
                 0.25f,
-                5f,
+                WorldbreakerRadius,
                 centerOnActivator: true,
                 areaVisualEffect: VisualEffect.Vfx_Fnf_Screen_Shake,
                 afterSuccessfulHit: affectedEnemy =>

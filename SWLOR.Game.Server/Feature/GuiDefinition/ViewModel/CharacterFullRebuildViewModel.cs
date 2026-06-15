@@ -326,6 +326,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         CreaturePlugin.RemoveFeat(Player, feat);
                     }
 
+                    Perk.RemoveStatusEffectsOnPerkRefund(Player, type);
+
                     // Run all of the triggers related to refunding this perk.
                     foreach (var action in perkDetail.RefundedTriggers)
                     {

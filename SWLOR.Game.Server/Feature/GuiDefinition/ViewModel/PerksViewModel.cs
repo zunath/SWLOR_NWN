@@ -883,6 +883,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         CreaturePlugin.RemoveFeat(target, feat);
                     }
 
+                    Perk.RemoveStatusEffectsOnPerkRefund(target, selectedPerk);
                     RemoveFeatsFromHotBar(feats);
 
                     // Run all of the triggers related to refunding this perk.

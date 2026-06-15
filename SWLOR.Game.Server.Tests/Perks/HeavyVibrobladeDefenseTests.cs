@@ -60,7 +60,7 @@ public class HeavyVibrobladeDefenseTests
             4,
             28,
             null,
-            "When a Heavy Vibroblade Defense ability grants you Physical Defense or reduces incoming damage, you also gain a damage absorption shield equal to 12% of maximum HP for 12 seconds. You heal for 15% of damage absorbed. This can trigger once every 30 seconds.",
+            "When a Heavy Vibroblade Defense ability grants you Physical Defense or reduces incoming damage, you also gain Temporary HP equal to 12% of maximum HP for 12 seconds. You heal for 15% of damage absorbed by this Temporary HP. This can trigger once every 30 seconds.",
             StatType.HeavyVibrobladeDefenseGuardiansResolveTriggerPrimaryPerkType,
             StatType.HeavyVibrobladeDefenseGuardiansResolveTriggerSecondaryPerkType,
             StatType.HeavyVibrobladeDefenseGuardiansResolveTriggerTertiaryPerkType,
@@ -75,6 +75,11 @@ public class HeavyVibrobladeDefenseTests
         AssertStatBonus(guardiansResolve.PerkLevels[1], StatType.HeavyVibrobladeDefenseGuardiansResolveShieldPercent, 12);
         AssertStatBonus(guardiansResolve.PerkLevels[1], StatType.HeavyVibrobladeDefenseGuardiansResolveDurationSeconds, 12);
         AssertStatBonus(guardiansResolve.PerkLevels[1], StatType.HeavyVibrobladeDefenseGuardiansResolveCooldownSeconds, 30);
+
+        var root = FindRepositoryRoot();
+        var combatSource = File.ReadAllText((root / "SWLOR.Game.Server" / "Service" / "Combat.cs").FullName);
+        combatSource.Should().Contain("ApplyEffectToObject(DurationType.Temporary, EffectTemporaryHitpoints(shieldAmount), activator, duration);");
+        combatSource.Should().Contain("new GuardiansResolveStatusEffect(shieldAmount)");
 
         var heavyVibrobladeDefenseAbilityPerks = new[]
         {
@@ -122,11 +127,9 @@ public class HeavyVibrobladeDefenseTests
     [Test]
     public void PersistentTogglePerks_RegisterRefundCleanup()
     {
-        var perks = BuildHeavyVibrobladeDefensePerksWithout2daLookup();
-        var perkSource = File.ReadAllText((FindRepositoryRoot() / "SWLOR.Game.Server" / "Feature" / "PerkDefinition" / "HeavyVibrobladePerkDefinition.cs").FullName);
+        var bastion = new BastionStanceAbilityDefinition().BuildAbilities()[FeatType.BastionStance1];
 
-        perks[PerkType.BastionStance].RefundedTriggers.Should().ContainSingle();
-        perkSource.Should().Contain("RemoveActiveStatus(player, typeof(BastionStanceStatusEffect))");
+        bastion.StatusEffectTypesRemovedOnPerkRefund.Should().ContainSingle().Which.Should().Be(typeof(BastionStanceStatusEffect));
     }
 
     [Test]

@@ -25,6 +25,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
                 .Level(1)
                 .HasActivationDelay(0f)
                 .HasActivationAction((activator, target, level, targetLocation) => ToggleSelfStatus(activator, typeof(BlazingSpikesStatusEffect)))
+                .RemoveStatusEffectOnPerkRefund(typeof(BlazingSpikesStatusEffect))
                 .HasImpactAction((activator, target, level, targetLocation) => ApplySelfStatus(activator, typeof(BlazingSpikesStatusEffect)))
                 .SkillType(SkillType.HeavyVibroblade)
                 .IsCastedAbility()

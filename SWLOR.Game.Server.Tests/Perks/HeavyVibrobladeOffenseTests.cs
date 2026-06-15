@@ -72,14 +72,11 @@ public class HeavyVibrobladeOffenseTests
     [Test]
     public void PersistentTogglePerks_RegisterRefundCleanup()
     {
-        var perks = BuildHeavyVibrobladeOffensePerksWithout2daLookup();
-        var perkSource = File.ReadAllText((FindRepositoryRoot() / "SWLOR.Game.Server" / "Feature" / "PerkDefinition" / "HeavyVibrobladePerkDefinition.cs").FullName);
+        var blazingSpikes = new BlazingSpikesAbilityDefinition().BuildAbilities()[FeatType.BlazingSpikes1];
+        var soulDevourer = new SoulDevourerAbilityDefinition().BuildAbilities()[FeatType.SoulDevourer1];
 
-        perks[PerkType.BlazingSpikes].RefundedTriggers.Should().ContainSingle();
-        perks[PerkType.SoulDevourer].RefundedTriggers.Should().ContainSingle();
-        perkSource.Should().Contain("RemoveActiveStatus(player, typeof(BlazingSpikesStatusEffect))");
-        perkSource.Should().Contain("RemoveActiveStatus(player, typeof(SoulDevourerStatusEffect))");
-        perkSource.Should().Contain("StatusEffect.RemoveStatusEffect(player, statusEffectType, false)");
+        blazingSpikes.StatusEffectTypesRemovedOnPerkRefund.Should().ContainSingle().Which.Should().Be(typeof(BlazingSpikesStatusEffect));
+        soulDevourer.StatusEffectTypesRemovedOnPerkRefund.Should().ContainSingle().Which.Should().Be(typeof(SoulDevourerStatusEffect));
     }
 
     [Test]

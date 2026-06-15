@@ -42,4 +42,26 @@ public class AbilityBuilderTests
 
         abilities[FeatType.Invalid].ImpactAnimationType.Should().Be(Animation.Invalid);
     }
+
+    [Test]
+    public void RemoveStatusEffectOnPerkRefund_TracksDistinctTypes()
+    {
+        var abilities = new AbilityBuilder()
+            .Create(FeatType.Invalid, PerkType.Invalid)
+            .RemoveStatusEffectOnPerkRefund(typeof(TestStatusEffect))
+            .RemoveStatusEffectOnPerkRefund(typeof(TestStatusEffect))
+            .Build();
+
+        abilities[FeatType.Invalid]
+            .StatusEffectTypesRemovedOnPerkRefund
+            .Should()
+            .ContainSingle()
+            .Which
+            .Should()
+            .Be(typeof(TestStatusEffect));
+    }
+
+    private sealed class TestStatusEffect
+    {
+    }
 }

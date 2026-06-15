@@ -152,6 +152,17 @@ namespace SWLOR.Game.Server.Service.AbilityService
             return this;
         }
 
+        public AbilityBuilder RemoveStatusEffectOnPerkRefund(Type statusEffectType)
+        {
+            if (statusEffectType == null)
+                throw new ArgumentNullException(nameof(statusEffectType));
+
+            if (!_activeAbility.StatusEffectTypesRemovedOnPerkRefund.Contains(statusEffectType))
+                _activeAbility.StatusEffectTypesRemovedOnPerkRefund.Add(statusEffectType);
+
+            return this;
+        }
+
         /// <summary>
         /// Assigns custom validation logic on the active ability we're building.
         /// Calling this more than once will replace the previous action.

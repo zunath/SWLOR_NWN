@@ -788,6 +788,24 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
+        public static void RemoveStatusEffectsOnPerkRefund(uint creature, PerkType perkType)
+        {
+            if (perkType == PerkType.Invalid || !GetIsObjectValid(creature))
+                return;
+
+            var statusEffectTypes = Ability.GetAllAbilityDetails()
+                .Values
+                .Where(ability => ability.EffectiveLevelPerkType == perkType)
+                .SelectMany(ability => ability.StatusEffectTypesRemovedOnPerkRefund)
+                .Distinct()
+                .ToList();
+
+            foreach (var statusEffectType in statusEffectTypes)
+            {
+                StatusEffect.RemoveStatusEffect(creature, statusEffectType, false);
+            }
+        }
+
         public static bool ShouldEnforceActiveAbilityFeatReplacement(uint creature, PerkType perkType)
         {
             if (perkType == PerkType.Invalid || !GetIsObjectValid(creature))
@@ -1099,6 +1117,8 @@ namespace SWLOR.Game.Server.Service
                 }
 
                 DB.Set(dbPlayer);
+
+                RemoveStatusEffectsOnPerkRefund(player, perkType);
 
                 foreach (var refundTrigger in perkDetail.RefundedTriggers)
                 {

@@ -249,6 +249,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
         {
             ability.HasActivationDelay(ToggleActivationDelaySeconds)
                 .HasActivationAction((activator, target, level, targetLocation) => ToggleSelfStatus(activator, type))
+                .RemoveStatusEffectOnPerkRefund(type)
                 .HasImpactAction((activator, target, level, targetLocation) =>
                 {
                     StatusEffect.RemoveOtherStanceStatuses(activator, type);

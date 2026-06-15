@@ -51,6 +51,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .UsesImpactAnimation(Animation.CastOutAnimation)
                 .IsAreaAbility()
                 .HasMaxRange(FieldRange)
+                .HasCustomValidation(ValidateTargetingRange)
                 .HasImpactAction(CreepingTerror1ImpactAction)
                 .HasTargetingSphere(
                     Spell.CreepingTerror1,
@@ -76,6 +77,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .UsesImpactAnimation(Animation.CastOutAnimation)
                 .IsAreaAbility()
                 .HasMaxRange(FieldRange)
+                .HasCustomValidation(ValidateTargetingRange)
                 .HasImpactAction(CreepingTerror2ImpactAction)
                 .HasTargetingSphere(
                     Spell.CreepingTerror2,
@@ -101,6 +103,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .UsesImpactAnimation(Animation.CastOutAnimation)
                 .IsAreaAbility()
                 .HasMaxRange(FieldRange)
+                .HasCustomValidation(ValidateTargetingRange)
                 .HasImpactAction(CreepingTerror3ImpactAction)
                 .HasTargetingSphere(
                     Spell.CreepingTerror3,
@@ -126,6 +129,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         private static void CreepingTerror3ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
             CreateCreepingTerrorField(activator, target, targetLocation, FeatType.CreepingTerror3, CreepingTerror3Damage, CreepingTerror3DurationSeconds);
+        }
+
+        private static string ValidateTargetingRange(uint activator, uint target, int effectivePerkLevel, Location targetLocation)
+        {
+            var location = AbilityTargeting.ResolveImpactLocation(activator, target, targetLocation);
+            if (GetDistanceBetweenLocations(GetLocation(activator), location) <= FieldRange)
+                return string.Empty;
+
+            return $"You are out of range. This ability has a range of {FieldRange} meters.";
         }
 
         private static void CreateCreepingTerrorField(

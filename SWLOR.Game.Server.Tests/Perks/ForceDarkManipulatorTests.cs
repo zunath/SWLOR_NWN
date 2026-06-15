@@ -81,6 +81,9 @@ public class ForceDarkManipulatorTests
         creepingTerror.Should().Contain("CreateCreepingTerrorField");
         creepingTerror.Should().Contain("CombatAreaPulses.SchedulePulses");
         creepingTerror.Should().Contain("Ability.BeginAbilityImpact(activator, ability)");
+        creepingTerror.Should().Contain("HasCustomValidation(ValidateTargetingRange)");
+        creepingTerror.Should().Contain("AbilityTargeting.ResolveImpactLocation(activator, target, targetLocation)");
+        creepingTerror.Should().Contain("GetDistanceBetweenLocations(GetLocation(activator), location) <= FieldRange");
         creepingTerror.Should().Contain("var scaledPulseDamage = AbilityEffectScaling.ScaleDirectEffect");
         creepingTerror.Should().Contain("ApplyCreepingTerrorPulse(activator, pulseLocation, scaledPulseDamage)");
         creepingTerror.Should().Contain("ApplyCreepingTerrorDamage");

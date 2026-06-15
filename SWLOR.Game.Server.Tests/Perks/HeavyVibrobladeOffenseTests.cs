@@ -97,7 +97,7 @@ public class HeavyVibrobladeOffenseTests
             1,
             3,
             12,
-            null,
+            FeatType.EssenceHunterTrait,
             "Heavy Vibroblade Offense weapon abilities also inflict Essence Drain, reducing the target's Attack by 15% for 12 seconds.",
             StatType.HeavyVibrobladeOffenseEssenceHunter,
             StatType.HeavyVibrobladeOffenseEssenceHunterTriggerPrimaryPerkType);
@@ -132,7 +132,7 @@ public class HeavyVibrobladeOffenseTests
             1,
             3,
             22,
-            null,
+            FeatType.VampiricFuryTrait,
             "Critical hits restore HP equal to 25% of damage dealt, increased by 1 percentage point per MGT to a maximum of 45%. This can trigger once every 6 seconds.",
             StatType.CriticalHPPercentOfDamageRestore,
             StatType.CriticalHPPercentOfDamageRestoreCooldownSeconds);

@@ -32,11 +32,11 @@ public class ForceDarkRavagerTests
             "Deals 18 force DMG plus WIL scaling to one target, then arcs to up to three nearby enemies for 50% damage. Affected targets suffer Shock for 8 seconds.");
         AssertPerkLevel(perks[PerkType.ForceDrain], "Force Drain", 2, 3, 25, FeatType.ForceDrain2,
             "Deals 24 force DMG plus WIL scaling to one target and heals you for 35% of damage dealt. If the target is below 50% HP, healing increases to 45%.");
-        AssertPerkLevel(perks[PerkType.DevouringStrike], "Devouring Strike", 1, 4, 28, null,
+        AssertPerkLevel(perks[PerkType.DevouringStrike], "Devouring Strike", 1, 4, 28, FeatType.DevouringStrikeTrait,
             "Alter powers that damage enemies deal 15% more damage to targets below 35% HP.");
-        AssertPerkLevel(perks[PerkType.CruelMomentum], "Cruel Momentum", 1, 4, 28, null,
+        AssertPerkLevel(perks[PerkType.CruelMomentum], "Cruel Momentum", 1, 4, 28, FeatType.CruelMomentumTrait,
             "When an enemy you damaged within the last 6 seconds is defeated, restore 2 FP and gain +5% Force ability Accuracy for 10 seconds. This can trigger once every 10 seconds.");
-        AssertPerkLevel(perks[PerkType.UnstablePressure], "Unstable Pressure", 1, 4, 32, null,
+        AssertPerkLevel(perks[PerkType.UnstablePressure], "Unstable Pressure", 1, 4, 32, FeatType.UnstablePressureTrait,
             "Force Spark and Force Lightning mark affected enemies with unstable pressure for 12 seconds, reducing Evasion by 5%. Enemies below 35% HP also suffer +5% force damage taken while marked.");
         AssertPerkLevel(perks[PerkType.ForceDrain], "Force Drain", 3, 4, 38, FeatType.ForceDrain3,
             "Deals 36 force DMG plus WIL scaling to one target and heals you for 40% of damage dealt. If the target is below 50% HP, healing increases to 50%.");

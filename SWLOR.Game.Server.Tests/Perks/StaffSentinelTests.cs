@@ -81,7 +81,7 @@ public class StaffSentinelTests
         var perks = BuildStaffSentinelPerksWithout2daLookup();
         var staffParry = perks[PerkType.StaffParry];
 
-        AssertPerkLevel(staffParry, "Staff Parry", 1, 2, 8, null, "Gain +8 Attack Deflection.", StatType.AttackDeflection);
+        AssertPerkLevel(staffParry, "Staff Parry", 1, 2, 8, FeatType.StaffParryTrait, "Gain +8 Attack Deflection.", StatType.AttackDeflection);
         AssertStatBonus(staffParry.PerkLevels[1], StatType.AttackDeflection, 8);
 
         AssertPerkLevel(staffParry, "Staff Parry", 2, 4, 18, null, "Gain +16 Attack Deflection total.", StatType.AttackDeflection);

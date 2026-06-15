@@ -19,7 +19,7 @@ public class VibrobladeOffenseTests
     {
         var perks = BuildVibrobladeOffensePerksWithout2daLookup();
 
-        AssertPerkLevel(perks[PerkType.SavageReflexes], "Savage Reflexes", 1, 2, 2, null,
+        AssertPerkLevel(perks[PerkType.SavageReflexes], "Savage Reflexes", 1, 2, 2, FeatType.SavageReflexesTrait,
             "Auto-attacks have 10% chance to deal +8 DMG.",
             StatType.AutoAttackDamageBonusChance,
             StatType.AutoAttackDamageBonus);
@@ -47,7 +47,7 @@ public class VibrobladeOffenseTests
             StatType.SavageCleaveSecondaryDamageBonus,
             StatType.SavageCleaveSecondaryTargetStaminaRestore,
             StatType.SavageCleaveSecondaryTargetStaminaRestoreMaximum);
-        AssertPerkLevel(perks[PerkType.Executioner], "Executioner", 1, 3, 32, null,
+        AssertPerkLevel(perks[PerkType.Executioner], "Executioner", 1, 3, 32, FeatType.ExecutionerTrait,
             "Deal +15% damage to targets below 30% HP.",
             StatType.TargetLowHPDamageThresholdPercent,
             StatType.TargetLowHPDamagePercentAdjustment);
@@ -55,10 +55,10 @@ public class VibrobladeOffenseTests
             "Your next attack deals an additional 28 DMG and inflicts Bleed for 60 seconds.");
         AssertPerkLevel(perks[PerkType.RendingStrike], "Rending Strike", 2, 3, 38, FeatType.RendingStrike2,
             "Deals weapon DMG + 32. Inflicts Exposed which reduces Defense by 25% for 12s.");
-        AssertPerkLevel(perks[PerkType.Bloodseeker], "Bloodseeker", 1, 3, 40, null,
+        AssertPerkLevel(perks[PerkType.Bloodseeker], "Bloodseeker", 1, 3, 40, FeatType.BloodseekerTrait,
             "Gain +10% Attack against bleeding targets.",
             StatType.AttackToBleedingTargetPercentAdjustment);
-        AssertPerkLevel(perks[PerkType.CrimsonFury], "Crimson Fury", 1, 3, 42, null,
+        AssertPerkLevel(perks[PerkType.CrimsonFury], "Crimson Fury", 1, 3, 42, FeatType.CrimsonFuryTrait,
             "Each bleeding enemy within 10m grants you +3% Attack (max +15%).",
             StatType.NearbyStatusTargetAttackPercentPerTarget,
             StatType.NearbyStatusTargetAttackRadiusMeters,
@@ -68,7 +68,7 @@ public class VibrobladeOffenseTests
             "Deals weapon DMG + 35, applies Hemorrhage which increases the damage your target takes by 10% for 12 seconds");
         AssertPerkLevel(perks[PerkType.BerserkerStance], "Berserker Stance", 2, 4, 48, FeatType.BerserkerStance2,
             "While active, grants +25% Attack, +15% Haste, -20% Defense, and -20% Force Defense.");
-        AssertPerkLevel(perks[PerkType.BloodFrenzy], "Blood Frenzy", 1, 4, 50, null,
+        AssertPerkLevel(perks[PerkType.BloodFrenzy], "Blood Frenzy", 1, 4, 50, FeatType.BloodFrenzyTrait,
             "Defeating an enemy restores 15 STM and grants +10% Haste for 30 seconds.",
             StatType.DefeatedEnemyStaminaRestore,
             StatType.DefeatedEnemyAttackDelayReductionPercent,

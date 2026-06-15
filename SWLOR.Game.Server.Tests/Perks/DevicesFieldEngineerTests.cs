@@ -21,7 +21,7 @@ public class DevicesFieldEngineerTests
 
         AssertPerkLevel(perks[PerkType.BlasterBeacon], "Blaster Beacon", 1, 3, null, FeatType.BlasterBeacon1,
             "Plants a targeting beacon for 18 seconds. Every 3 seconds, one hostile target within 12m is hit by an automated ranged energy pulse for 10 energy DMG plus PER scaling.");
-        AssertPerkLevel(perks[PerkType.BeaconTargeting], "Beacon Targeting", 1, 3, 5, null,
+        AssertPerkLevel(perks[PerkType.BeaconTargeting], "Beacon Targeting", 1, 3, 5, FeatType.BeaconTargetingTrait,
             "Beacon pulses gain +5% Accuracy and +5% critical chance.",
             (StatType.BeaconPulseAccuracyPercentAdjustment, 5),
             (StatType.BeaconPulseCriticalRatePercentAdjustment, 5));
@@ -41,7 +41,7 @@ public class DevicesFieldEngineerTests
             "Arms a visible charge that detonates after 3 seconds for 42 fire DMG plus PER scaling and knock down.");
         AssertPerkLevel(perks[PerkType.BlasterBeacon], "Blaster Beacon", 3, 4, 30, FeatType.BlasterBeacon3,
             "Plants a targeting beacon for 24 seconds. Every 3 seconds, one hostile target within 14m is hit by an automated ranged energy pulse for 18 energy DMG plus PER scaling.");
-        AssertPerkLevel(perks[PerkType.DiagnosticSweep], "Diagnostic Sweep", 1, 5, 35, null,
+        AssertPerkLevel(perks[PerkType.DiagnosticSweep], "Diagnostic Sweep", 1, 5, 35, FeatType.DiagnosticSweepTrait,
             "Field Engineer beacons, fields, charges, and jammers reveal hidden enemies in their affected area and reduce Evasion by 4% for 10 seconds.",
             (StatType.FieldEngineerAreaRevealHidden, 1),
             (StatType.FieldEngineerAreaEvasionPenaltyPercent, 4),

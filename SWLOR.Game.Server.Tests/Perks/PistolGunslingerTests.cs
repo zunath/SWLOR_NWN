@@ -23,7 +23,7 @@ public class PistolGunslingerTests
             "Instantly deals weapon DMG + 12 to your target.");
         AssertPerkLevel(perks[PerkType.DoubleShot], "Double Shot", 1, 3, 8, FeatType.DoubleShot1,
             "Instantly attacks twice, each for weapon DMG + 7.");
-        AssertPerkLevel(perks[PerkType.RapidShot], "Rapid Shot", 1, 3, 12, null,
+        AssertPerkLevel(perks[PerkType.RapidShot], "Rapid Shot", 1, 3, 12, FeatType.RapidShotTrait,
             "Reduces pistol attack delay by 10%.",
             StatType.AttackDelayReductionPercent);
         AssertPerkLevel(perks[PerkType.GunfighterStance], "Gunfighter Stance", 1, 2, 15, FeatType.GunfighterStance1,
@@ -32,7 +32,7 @@ public class PistolGunslingerTests
             "Instantly deals weapon DMG + 24 to your target.");
         AssertPerkLevel(perks[PerkType.DoubleShot], "Double Shot", 2, 3, 20, FeatType.DoubleShot2,
             "Instantly attacks twice, each for weapon DMG + 15.");
-        AssertPerkLevel(perks[PerkType.DeadeyeReload], "Deadeye Reload", 1, 2, 22, null,
+        AssertPerkLevel(perks[PerkType.DeadeyeReload], "Deadeye Reload", 1, 2, 22, FeatType.DeadeyeReloadTrait,
             "After using a pistol combat ability, your next auto-attack within 6 seconds deals +10 DMG.",
             StatType.AbilityUsedNextSkillAutoAttackDamageBonusTriggerSkillType,
             StatType.AbilityUsedNextSkillAutoAttackDamageBonusSkillType,
@@ -49,13 +49,13 @@ public class PistolGunslingerTests
             StatType.AttackDelayReductionPercent);
         AssertPerkLevel(perks[PerkType.FanTheHammer], "Fan the Hammer", 2, 4, 35, FeatType.FanTheHammer2,
             "Fires at up to 5 enemies in a cone for weapon DMG + 20 each.");
-        AssertPerkLevel(perks[PerkType.HighNoon], "High Noon", 1, 3, 38, null,
+        AssertPerkLevel(perks[PerkType.HighNoon], "High Noon", 1, 3, 38, FeatType.HighNoonTrait,
             "Your first pistol attack after entering combat gains +30% critical chance and deals +20 DMG.",
             StatType.OpeningAutoAttackSkillType,
             StatType.OpeningAutoAttackCriticalRatePercentAdjustment,
             StatType.OpeningAutoAttackDamageBonus,
             StatType.OpeningAutoAttackIdleSeconds);
-        AssertPerkLevel(perks[PerkType.ReloadTempo], "Reload Tempo", 1, 2, 40, null,
+        AssertPerkLevel(perks[PerkType.ReloadTempo], "Reload Tempo", 1, 2, 40, FeatType.ReloadTempoTrait,
             "Defeating an enemy restores 10 STM and reduces Quick Draw cooldowns by 15 seconds.",
             StatType.DefeatedEnemyStaminaRestore,
             StatType.DefeatedEnemyRecastReductionGroup,

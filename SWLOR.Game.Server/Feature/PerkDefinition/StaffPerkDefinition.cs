@@ -58,6 +58,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Break Posture")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.BreakPostureTrait)
                 .Description("Critical staff hits inflict Exposed, reducing Defense by 10% for 10 seconds.")
                 .IncreasesStat(StatType.CriticalTargetDefensePercentAdjustment, creature => EquipmentPredicates.HasMainHandStaff(creature) ? -10 : 0)
                 .IncreasesStat(StatType.CriticalTargetDefenseDurationSeconds, creature => EquipmentPredicates.HasMainHandStaff(creature) ? 10 : 0)
@@ -83,6 +84,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Crushing Style")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.CrushingStyleTrait)
                 .Description("You gain bonus damage with staves equal to your MGT modifier and +10% critical chance.")
                 .IncreasesStat(StatType.StaffMightModifierDamageMultiplier, creature => EquipmentPredicates.HasMainHandStaff(creature) ? 1 : 0)
                 .IncreasesStat(StatType.CriticalRatePercentAdjustment, creature => EquipmentPredicates.HasMainHandStaff(creature) ? 10 : 0)
@@ -96,6 +98,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Crushing Mastery")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.CrushingMasteryTrait)
                 .Description("Critical staff hits deal +10% damage and restore 2 STM. This can only trigger once every 6 seconds.")
                 .IncreasesStat(StatType.CriticalDamagePercentAdjustment, creature => EquipmentPredicates.HasMainHandStaff(creature) ? 10 : 0)
                 .IncreasesStat(StatType.CriticalStaminaRestore, creature => EquipmentPredicates.HasMainHandStaff(creature) ? 2 : 0)
@@ -133,6 +136,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Flurry Style")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.FlurryStyleTrait)
                 .Description("Staff attack delay is reduced by 10%.")
                 .IncreasesStat(StatType.AttackDelayReductionPercent, creature => EquipmentPredicates.HasMainHandStaff(creature) ? 10 : 0)
                 .Price(2)
@@ -145,6 +149,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Flowing Defense")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.FlowingDefenseTrait)
                 .Description("After dodging or deflecting an attack, your next Staff ability costs 2 less STM.")
                 .IncreasesStat(StatType.AvoidedAttackNextSkillAbilitySkillType, creature => EquipmentPredicates.HasMainHandStaff(creature) ? (int)SkillType.Staff : 0)
                 .IncreasesStat(StatType.AvoidedAttackNextSkillAbilityStaminaCostAdjustment, creature => EquipmentPredicates.HasMainHandStaff(creature) ? -2 : 0)
@@ -177,6 +182,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Guarding Step")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.GuardingStepTrait)
                 .Description("Using a Staff Sentinel ability grants +25% Evasion and +20% Defense for 8 seconds. This can trigger once every 20 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Staff, 20)
@@ -190,6 +196,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Heavy Hands")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.HeavyHandsTrait)
                 .Description("Staff combat abilities deal +10% damage to targets affected by Knockdown or Blind.")
                 .IncreasesStat(StatType.AbilityDamageToKnockdownOrBlindTargetPercentAdjustment, creature => EquipmentPredicates.HasMainHandStaff(creature) ? 10 : 0)
                 .Price(2)
@@ -238,6 +245,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Patient Sentinel")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.PatientSentinelTrait)
                 .Description("If you have not used a combat ability for 6 seconds, your next Staff ability gains +15% accuracy and deals +15 DMG.")
                 .IncreasesStat(StatType.IdleSkillAbilitySkillType, creature => EquipmentPredicates.HasMainHandStaff(creature) ? (int)SkillType.Staff : 0)
                 .IncreasesStat(StatType.IdleSkillAbilityRequiredIdleSeconds, creature => EquipmentPredicates.HasMainHandStaff(creature) ? 6 : 0)
@@ -253,6 +261,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Perfect Footwork")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.PerfectFootworkTrait)
                 .Description("When reduced below 40% HP, gain +30% Evasion for 10 seconds. This can only trigger once every 3 minutes.")
                 .IncreasesStat(StatType.LowHPEvasionThresholdPercent, 40)
                 .IncreasesStat(StatType.LowHPEvasionPercentAdjustment, 30)
@@ -292,6 +301,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Sentinel Guard")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.SentinelGuardTrait)
                 .Description("Staff Sentinel protection abilities grant nearby allies +8 Attack Deflection for 12 seconds and generate extra enmity.")
                 .Price(3)
                 .RequirementSkill(SkillType.Staff, 30)
@@ -352,6 +362,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Skull Rattle")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.SkullRattleTrait)
                 .Description("Hostile Staff abilities deal +34 DMG and inflict Dazed for 3 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Staff, 38)
@@ -365,6 +376,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Staff Parry")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.StaffParryTrait)
                 .Description("Gain +8 Attack Deflection.")
                 .IncreasesStat(StatType.AttackDeflection, 8)
                 .Price(2)

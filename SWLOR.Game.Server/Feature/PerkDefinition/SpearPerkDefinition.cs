@@ -50,6 +50,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Adaptive Precision Strike")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.AdaptivePrecisionStrikeTrait)
                 .Description("Attacks from the side have a 5% chance to bypass 35% of your target's Evasion. This chance increases by 1% per PER. (Maximum 30%)")
                 .IncreasesStat(StatType.SideAttackEvasionIgnoreChance, creature => EquipmentPredicates.HasMainHandSpear(creature) ? 5 : 0)
                 .IncreasesStat(StatType.SideAttackEvasionIgnoreChanceScalingAbility, creature => EquipmentPredicates.HasMainHandSpear(creature) ? (int)AbilityType.Perception + 1 : 0)
@@ -66,6 +67,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Breach Strike")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.BreachStrikeTrait)
                 .Description("Spear Damage flanking abilities inflict Breach, reducing Evasion and Defense by 20% for 30 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Spear, 18)
@@ -92,6 +94,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Crippling Defense")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.CripplingDefenseTrait)
                 .Description("Spear Damage area abilities reduce affected targets' Physical Defense and Force Defense by 15% for 45 seconds. Restore 15 STM when this affects at least two enemies.")
                 .Price(4)
                 .RequirementSkill(SkillType.Spear, 50)
@@ -132,6 +135,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Disruption Expert")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.DisruptionExpertTrait)
                 .Description("Your Force Disruption effects last 50% longer and reduce Force Defense by an additional 10%.")
                 .IncreasesStat(StatType.OutgoingForceDisruptionDurationPercentAdjustment, creature => EquipmentPredicates.HasMainHandSpear(creature) ? 50 : 0)
                 .IncreasesStat(StatType.OutgoingForceDisruptionForceDefensePercentAdjustment, creature => EquipmentPredicates.HasMainHandSpear(creature) ? -10 : 0)
@@ -159,6 +163,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Erosion Strike")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.ErosionStrikeTrait)
                 .Description("When you damage your target, they receive Force Erosion which reduces Force Defense by 10% for 12 seconds.")
                 .IncreasesStat(StatType.DamageDealtForceErosionDurationSeconds, creature => EquipmentPredicates.HasMainHandSpear(creature) ? 12 : 0)
                 .Price(2)
@@ -192,6 +197,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Flanking")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.FlankingTrait)
                 .Description("Attacks from the side deal +10% damage.")
                 .IncreasesStat(StatType.SideAttackDamagePercentAdjustment, creature => EquipmentPredicates.HasMainHandSpear(creature) ? 10 : 0)
                 .Price(3)
@@ -226,6 +232,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Force Nullification")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.ForceNullificationTrait)
                 .Description("Spear Disabler interrupt abilities disable the target's Force abilities for 8 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Spear, 30)
@@ -239,6 +246,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Force Piercing")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.ForcePiercingTrait)
                 .Description("Critical hit chance increases by 5%. Additionally, critical hits reduce FP by 10% of the damage dealt.")
                 .IncreasesStat(StatType.CriticalRatePercentAdjustment, creature => EquipmentPredicates.HasMainHandSpear(creature) ? 5 : 0)
                 .IncreasesStat(StatType.CriticalTargetFPLossPercentOfDamage, creature => EquipmentPredicates.HasMainHandSpear(creature) ? 10 : 0)
@@ -266,6 +274,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Force Warding")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.ForceWardingTrait)
                 .Description("Increases Force Evasion by 15%.")
                 .IncreasesStat(StatType.IncomingAbilityHitChancePercentAdjustmentSkillType, creature => EquipmentPredicates.HasMainHandSpear(creature) ? (int)SkillType.Force : 0)
                 .IncreasesStat(StatType.IncomingAbilityHitChancePercentAdjustment, creature => EquipmentPredicates.HasMainHandSpear(creature) ? -15 : 0)
@@ -291,6 +300,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Forcebane")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.ForcebaneTrait)
                 .Description("Spear Disabler suppression abilities reduce affected targets' FP recovery by 75% for 45 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Spear, 50)
@@ -304,6 +314,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Fracture Strike")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.FractureStrikeTrait)
                 .Description("Disruption Field and Total Force Denial inflict Fractured Focus, doubling affected targets' FP costs for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Spear, 38)
@@ -330,6 +341,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Improved Attentiveness")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.ImprovedAttentivenessTrait)
                 .Description("While one of your Spear Damage stances is active, party members other than you gain +5% physical and Force ability hit chance.")
                 .Price(3)
                 .RequirementSkill(SkillType.Spear, 28)
@@ -362,6 +374,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Lateral Strike")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.LateralStrikeTrait)
                 .Description("Attacks from the side restore 2 STM. This can only trigger once every 4 seconds.")
                 .IncreasesStat(StatType.SideAttackStaminaRestore, creature => EquipmentPredicates.HasMainHandSpear(creature) ? 2 : 0)
                 .IncreasesStat(StatType.SideAttackStaminaRestoreCooldownSeconds, creature => EquipmentPredicates.HasMainHandSpear(creature) ? 4 : 0)
@@ -383,6 +396,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Opportunist's Flow")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.OpportunistsFlowTrait)
                 .Description("After dealing damage from a side attack, your next attack's delay is 20% quicker.")
                 .IncreasesStat(StatType.SideAttackDelayReductionPercent, creature => EquipmentPredicates.HasMainHandSpear(creature) ? 20 : 0)
                 .IncreasesStat(StatType.SideAttackDelayReductionDurationSeconds, creature => EquipmentPredicates.HasMainHandSpear(creature) ? 6 : 0)
@@ -410,6 +424,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Restoration Strike")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.RestorationStrikeTrait)
                 .Description("Critical hit chance increases by 10%. Additionally, if you were at the side of your target, critical hits have a 35% chance to restore 15 STM.")
                 .IncreasesStat(StatType.CriticalRatePercentAdjustment, creature => EquipmentPredicates.HasMainHandSpear(creature) ? 10 : 0)
                 .IncreasesStat(StatType.CriticalSideAttackStaminaRestoreChance, creature => EquipmentPredicates.HasMainHandSpear(creature) ? 35 : 0)

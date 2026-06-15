@@ -117,6 +117,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition.Beast
                 .GroupType(PerkGroupType.Beast)
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.PackRhythmTrait)
                 .Description("When the beast uses an ability, its master gains +3% physical and force ability hit chance for 8 seconds.")
                 .Price(3)
                 .RequirementBeastLevel(15)
@@ -182,6 +183,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition.Beast
                 .GroupType(PerkGroupType.Beast)
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.PackRecoveryTrait)
                 .Description("When your beast uses a Balanced active ability, the beast and master each restore 1 STM. This can trigger once every 8 seconds.")
                 .Price(4)
                 .RequirementBeastLevel(48)

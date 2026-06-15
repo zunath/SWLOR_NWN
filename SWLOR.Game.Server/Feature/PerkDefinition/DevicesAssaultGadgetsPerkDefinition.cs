@@ -114,6 +114,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Gadget Harness")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.GadgetHarnessTrait)
                 .Description("Assault Gadget abilities gain +8% Accuracy and +8% critical chance.")
                 .Price(2)
                 .RequirementSkill(SkillType.Devices, 12)
@@ -202,6 +203,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Tactical Uplink")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.TacticalUplinkTrait)
                 .Description("After an Assault Gadget ability damages an enemy, you and nearby allies gain Tactical Uplink for 10 seconds: +5% Device ability Accuracy and +5% Device critical chance.")
                 .Price(2)
                 .RequirementSkill(SkillType.Devices, 22)

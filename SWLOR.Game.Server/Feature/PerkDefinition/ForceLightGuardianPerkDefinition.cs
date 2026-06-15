@@ -96,6 +96,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .ForceAffinity(ForceAffinityType.Light)
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.LightGuardianDeflectivePresenceTrait)
                 .Description("Control powers that grant temporary HP, absorb damage, or prevent defeat grant affected allies +4 Attack Deflection for 10 seconds.")
                 .IncreasesStat(StatType.LightGuardianPowerAttackDeflection, creature =>
                     EquipmentPredicates.HasMainHandLightsaber(creature) || EquipmentPredicates.HasMainHandVibroblade(creature) ? 4 : 0)
@@ -133,6 +134,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .ForceAffinity(ForceAffinityType.Light)
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.CourageousResolveTrait)
                 .Description("When you use a Sense power, you and nearby allies gain +10 Fear Resistance rating, +10 Daze Resistance rating, and +10 Confusion Resistance rating for 12 seconds. Allies with temporary HP from one of your Force powers gain +15 instead.")
                 .Price(4)
                 .RequirementSkill(SkillType.Force, 15)
@@ -161,6 +163,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .ForceAffinity(ForceAffinityType.Light)
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.ReflectiveBarrierTrait)
                 .Description("Control powers that grant temporary HP reflect 8% of force and energy damage taken, plus WIL scaling, back to the attacker while the temporary HP remains.")
                 .Price(4)
                 .RequirementSkill(SkillType.Force, 22)

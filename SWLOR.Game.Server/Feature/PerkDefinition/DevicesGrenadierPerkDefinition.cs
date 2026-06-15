@@ -67,6 +67,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Blast Radius")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.BlastRadiusTrait)
                 .Description("Grenade abilities gain +1m blast radius.")
                 .Price(3)
                 .RequirementSkill(SkillType.Devices, 5)

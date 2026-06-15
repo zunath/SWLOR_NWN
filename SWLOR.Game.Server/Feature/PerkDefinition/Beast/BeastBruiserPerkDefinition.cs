@@ -116,6 +116,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition.Beast
                 .GroupType(PerkGroupType.Beast)
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.EnduranceLinkTrait)
                 .Description("The beast has a 10% chance to restore 1 STM to its master when it lands an attack.")
                 .Price(3)
                 .RequirementBeastLevel(15)
@@ -147,6 +148,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition.Beast
                 .GroupType(PerkGroupType.Beast)
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.VenomousHideTrait)
                 .Description("Enemies that damage the beast in melee have a 10% chance to suffer 8 poison DMG plus MGT scaling.")
                 .Price(3)
                 .RequirementBeastLevel(22)

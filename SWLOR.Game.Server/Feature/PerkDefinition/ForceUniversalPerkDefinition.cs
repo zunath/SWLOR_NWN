@@ -75,6 +75,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Precognition")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.PrecognitionTrait)
                 .Description("After spending FP on a Force power, gain +5% Defense and +5% Evasion for 8 seconds. This can trigger once every 12 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 22)
@@ -88,6 +89,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Force Convergence")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.ForceConvergenceTrait)
                 .Description("After spending FP on a Force power, restore 20% of your maximum FP over 10 seconds and gain +5% Force ability Accuracy for 10 seconds. This can trigger once every 45 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Force, 48)

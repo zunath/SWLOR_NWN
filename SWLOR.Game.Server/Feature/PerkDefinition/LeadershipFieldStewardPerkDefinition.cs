@@ -102,6 +102,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Bolster Resolve")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.BolsterResolveTrait)
                 .Description("Field Steward recovery commands also grant nearby party members temporary HP equal to 8% of maximum HP for 12 seconds. SOC scaling can raise this to 10%.")
                 .Price(3)
                 .RequirementSkill(SkillType.Leadership, 12)
@@ -158,6 +159,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Triage Protocol")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.TriageProtocolTrait)
                 .Description("Non-capstone Field Steward shouts also grant +8% healing received for their duration. SOC scaling can raise this to +10%.")
                 .Price(3)
                 .RequirementSkill(SkillType.Leadership, 30)

@@ -60,6 +60,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 })
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.CityManagementTrait)
                 .Description("Enables you to become mayor of a city. You can manage cities up to rank 2 (Village).")
                 .Price(2)
                 .RequirementSkill(SkillType.Leadership, 5)
@@ -90,6 +91,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Upkeep")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.UpkeepTrait)
                 .Description("Weekly maintenance fees are reduced by 5%.")
                 .Price(3)
                 .RequirementSkill(SkillType.Leadership, 10)
@@ -107,6 +109,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Guild Relations")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.GuildRelationsTrait)
                 .Description("Improves GP and credit rewards from guild tasks by 5%.")
                 .Price(2)
                 .RequirementSkill(SkillType.Leadership, 5)

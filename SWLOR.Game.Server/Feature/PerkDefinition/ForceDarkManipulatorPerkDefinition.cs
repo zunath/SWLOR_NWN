@@ -128,6 +128,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .ForceAffinity(ForceAffinityType.Dark)
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.CollapseWillTrait)
                 .Description("Nightmare Field and Eclipse of Resolve also apply Exposed and Force Erosion for 18 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Force, 42)

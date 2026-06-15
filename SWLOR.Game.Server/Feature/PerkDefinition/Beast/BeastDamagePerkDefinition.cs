@@ -62,6 +62,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition.Beast
                 .GroupType(PerkGroupType.Beast)
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.HuntersFocusTrait)
                 .Description("The beast gains +5% hit chance and +5% critical chance.")
                 .Price(2)
                 .RequirementBeastLevel(8)
@@ -134,6 +135,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition.Beast
                 .GroupType(PerkGroupType.Beast)
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.PredatorsMarkTrait)
                 .Description("When your beast uses a Damage active ability, it marks the target for 12 seconds. The beast deals +10% damage to marked targets.")
                 .Price(3)
                 .RequirementBeastLevel(22)
@@ -172,6 +174,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition.Beast
                 .GroupType(PerkGroupType.Beast)
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.BeastBloodFrenzyTrait)
                 .Description("When the beast damages a bleeding target, it has a 20% chance to restore 1 STM.")
                 .Price(3)
                 .RequirementBeastLevel(40)

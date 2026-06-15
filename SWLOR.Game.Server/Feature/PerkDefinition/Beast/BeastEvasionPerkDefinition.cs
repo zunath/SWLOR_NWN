@@ -137,6 +137,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition.Beast
                 .GroupType(PerkGroupType.Beast)
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.SniffTrait)
                 .Description("The beast gains +5% rare item find chance after combat.")
                 .Price(3)
                 .RequirementBeastLevel(22)
@@ -165,6 +166,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition.Beast
                 .GroupType(PerkGroupType.Beast)
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.QuickRecoveryTrait)
                 .Description("When the beast evades an attack, it has a 15% chance to restore 1 STM.")
                 .Price(3)
                 .RequirementBeastLevel(30)

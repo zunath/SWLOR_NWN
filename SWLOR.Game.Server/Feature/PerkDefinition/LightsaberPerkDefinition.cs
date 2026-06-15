@@ -53,6 +53,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Arc Strike")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.ArcStrikeTrait)
                 .Description("Lightsaber Offense area abilities deal +20 DMG to nearby secondary targets.")
                 .Price(3)
                 .RequirementSkill(SkillType.Lightsaber, 38)
@@ -67,6 +68,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Blade Blitz")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.BladeBlitzTrait)
                 .Description("After dealing a critical hit, your next lightsaber auto-attack within 15 seconds is quickened to your fastest possible swing speed.")
                 .IncreasesStat(StatType.CriticalNextAutoAttackNoDelayTriggerSkillType, creature => EquipmentPredicates.HasMainHandLightsaber(creature) ? (int)SkillType.Lightsaber : 0)
                 .IncreasesStat(StatType.CriticalNextAutoAttackNoDelaySkillType, creature => EquipmentPredicates.HasMainHandLightsaber(creature) ? (int)SkillType.Lightsaber : 0)
@@ -97,6 +99,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Brutal Efficiency")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.BrutalEfficiencyTrait)
                 .Description("Your attacks deal +15% damage to enemies afflicted by Sunder.")
                 .IncreasesStat(StatType.DamageToSunderedTargetPercentAdjustment, 15)
                 .Price(3)
@@ -111,6 +114,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Centering")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.CenteringTrait)
                 .Description("Using a Lightsaber Offense ability reduces your enmity by 10% and grants +10% Accuracy for 8 seconds. This can trigger once every 20 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Lightsaber, 12)
@@ -138,6 +142,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Deflection Counter")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.DeflectionCounterTrait)
                 .Description("After deflecting an attack, your next hostile Lightsaber ability within 15 seconds activates instantly.")
                 .IncreasesStat(StatType.DeflectionNextSkillAbilityNoDelay, creature => EquipmentPredicates.HasMainHandLightsaber(creature) ? 1 : 0)
                 .IncreasesStat(StatType.DeflectionNextSkillAbilityNoDelayWindowSeconds, creature => EquipmentPredicates.HasMainHandLightsaber(creature) ? 15 : 0)
@@ -153,6 +158,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Deflection Mastery")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.DeflectionMasteryTrait)
                 .Description("When you deflect an attack, your defense and force defense increase by 15% for 12 seconds.")
                 .IncreasesStat(StatType.DeflectionDefensePercentAdjustment, creature => EquipmentPredicates.HasMainHandLightsaber(creature) ? 15 : 0)
                 .IncreasesStat(StatType.DeflectionForceDefensePercentAdjustment, creature => EquipmentPredicates.HasMainHandLightsaber(creature) ? 15 : 0)
@@ -168,6 +174,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Deflection Riposte")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.DeflectionRiposteTrait)
                 .Description("When you deflect an attack, your next attack receives +20% critical chance. Effect wears off after 15 seconds.")
                 .IncreasesStat(StatType.DeflectionNextSkillAbilityCriticalRatePercentAdjustment, creature => EquipmentPredicates.HasMainHandLightsaber(creature) ? 20 : 0)
                 .IncreasesStat(StatType.DeflectionNextSkillAbilityCriticalRateWindowSeconds, creature => EquipmentPredicates.HasMainHandLightsaber(creature) ? 15 : 0)
@@ -183,6 +190,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Deflection Training")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.DeflectionTrainingTrait)
                 .Description("Grants +8 Attack Deflection.")
                 .IncreasesStat(StatType.AttackDeflection, 8)
                 .Price(2)
@@ -211,6 +219,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Deflective Presence")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.DeflectivePresenceTrait)
                 .Description("When you deflect an attack, receive the Deflective Presence buff which improves your Enmity acquisition by 20% for 12 seconds.")
                 .IncreasesStat(StatType.DeflectionEnmityPercentAdjustment, creature => EquipmentPredicates.HasMainHandLightsaber(creature) ? 20 : 0)
                 .Price(3)
@@ -288,6 +297,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Guardian's Influence")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.GuardiansInfluenceTrait)
                 .Description("Lightsaber Defense abilities grant nearby allies +8 Attack Deflection for 12 seconds. You do not receive this benefit.")
                 .Price(3)
                 .RequirementSkill(SkillType.Lightsaber, 20)
@@ -331,6 +341,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Overcharge")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.OverchargeTrait)
                 .Description("Your Versatile Strike and Overwhelming Strike abilities now deal +10 DMG and increase their Sunder duration by 50%.")
                 .IncreasesStat(StatType.AbilityDamageFlatAdjustmentPerkType, creature => EquipmentPredicates.HasMainHandLightsaber(creature) ? (int)PerkType.VersatileStrike : 0)
                 .IncreasesStat(StatType.AbilityDamageFlatAdjustmentSecondaryPerkType, creature => EquipmentPredicates.HasMainHandLightsaber(creature) ? (int)PerkType.OverwhelmingStrike : 0)
@@ -350,6 +361,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Overwhelming Defense")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.OverwhelmingDefenseTrait)
                 .Description("After deflecting an attack, your next attack deals +20 DMG.")
                 .IncreasesStat(StatType.DeflectionNextSkillAbilityDamageBonus, creature => EquipmentPredicates.HasMainHandLightsaber(creature) ? 20 : 0)
                 .IncreasesStat(StatType.DeflectionNextSkillAbilityDamageBonusWindowSeconds, creature => EquipmentPredicates.HasMainHandLightsaber(creature) ? 15 : 0)
@@ -365,6 +377,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Overwhelming Strike")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.OverwhelmingStrikeTrait)
                 .Description("Lightsaber Offense area abilities inflict Sunder on enemies hit, reducing Defense and Force Defense by 15% for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Lightsaber, 25)
@@ -393,6 +406,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Purify")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.PurifyTrait)
                 .Description("Lightsaber Offense area abilities remove one debuff from you and transfer it to a nearby enemy. This can trigger once every 20 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Lightsaber, 30)
@@ -408,6 +422,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Reactive Deflection")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.ReactiveDeflectionTrait)
                 .Description("When you deflect an attack, restore 2 FP.")
                 .IncreasesStat(StatType.DeflectionFPRestore, creature => EquipmentPredicates.HasMainHandLightsaber(creature) ? 2 : 0)
                 .Price(2)
@@ -429,6 +444,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Ripple Slash")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.RippleSlashTrait)
                 .Description("Lightsaber Offense area abilities also inflict Disoriented on nearby enemies, reducing Accuracy and Evasion by 15% for 20 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Lightsaber, 45)
@@ -457,6 +473,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Second Wind")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.SecondWindTrait)
                 .Description("When you fall below 35% STM, your next Lightsaber Offense ability restores 50% of maximum STM, increased by 1 percentage point per MGT to a maximum of 75%. This can trigger once every 90 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Lightsaber, 22)
@@ -475,6 +492,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Surge Strike")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.SurgeStrikeTrait)
                 .Description("Lightsaber Offense single-target abilities also inflict Force Disruption, preventing the target from using Force abilities for 8 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Lightsaber, 40)

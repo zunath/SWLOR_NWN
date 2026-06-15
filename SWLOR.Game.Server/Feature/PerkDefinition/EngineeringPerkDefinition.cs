@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.PerkDefinition
 {
@@ -21,6 +22,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Droid Assembly")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.DroidAssemblyTrait)
                 .Description("Enables the construction and programming of tier 1 droids.")
                 .Price(3)
 

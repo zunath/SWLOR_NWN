@@ -126,9 +126,12 @@ public class CombatUpgradeBibleSyncTests
             }
             else if (row.Type.Equals("Trait", StringComparison.OrdinalIgnoreCase))
             {
-                if (level.GrantedFeats.Count != 0)
+                var nonPassiveIconFeats = level.GrantedFeats
+                    .Where(feat => !IsPassiveIconTraitFeat(feat))
+                    .ToArray();
+                if (nonPassiveIconFeats.Length != 0)
                 {
-                    failures.Add($"{Describe(row)}: bible type is Trait but code grants feat(s): {string.Join(", ", level.GrantedFeats)}.");
+                    failures.Add($"{Describe(row)}: bible type is Trait but code grants non-passive feat(s): {string.Join(", ", nonPassiveIconFeats)}.");
                 }
             }
         }
@@ -300,7 +303,8 @@ public class CombatUpgradeBibleSyncTests
         {
             foreach (var (level, perkLevel) in detail.PerkLevels.OrderBy(x => x.Key))
             {
-                if (perkLevel.GrantedFeats.Count <= 0)
+                if (perkLevel.GrantedFeats.Count <= 0 ||
+                    perkLevel.GrantedFeats.All(IsPassiveIconTraitFeat))
                     continue;
 
                 var suffix = detail.PerkLevels.Count > 1
@@ -989,6 +993,13 @@ public class CombatUpgradeBibleSyncTests
     private static bool IsActiveType(string type)
     {
         return !type.Equals("Trait", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static bool IsPassiveIconTraitFeat(FeatType feat)
+    {
+        var row = (int)feat;
+        return row is >= 1171 and <= 1400 &&
+               feat.ToString().EndsWith("Trait", StringComparison.Ordinal);
     }
 
     private static bool IsTameRow(BiblePerkRow row)

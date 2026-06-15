@@ -2,6 +2,7 @@ using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using System.Collections.Generic;
+using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.PerkDefinition
 {
@@ -29,6 +30,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Defensive Modules")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.DefensiveModulesTrait)
                 .Description("Enables you to attach tier 1 defensive modules on starships.")
                 .Price(1)
 
@@ -60,6 +62,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Energy Management")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.EnergyManagementTrait)
                 .Description("Reduces energy consumption of modules by 20%.")
                 .Price(5)
                 .RequirementSkill(SkillType.Piloting, 20)
@@ -77,6 +80,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Intuitive Piloting")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.IntuitivePilotingTrait)
                 .Description("Allows for Willpower to be used in place of Perception for starship module effectiveness.")
                 .Price(3)
                 .IncreasesStat(StatType.UseWillpowerForPilotingModuleEffectiveness, 1);
@@ -89,6 +93,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Mining Modules")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.MiningModulesTrait)
                 .Description("Enables you to attach tier 1 mining modules on starships.")
                 .Price(1)
 
@@ -120,6 +125,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Offensive Modules")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.OffensiveModulesTrait)
                 .Description("Enables you to attach tier 1 offensive modules on starships.")
                 .Price(1)
 
@@ -151,6 +157,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Starship Mining")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.StarshipMiningTrait)
                 .Description("Mining yield improves by 1 unit per cycle.")
                 .Price(5)
                 .RequirementSkill(SkillType.Piloting, 20)
@@ -168,6 +175,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Starships")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.StarshipsTrait)
                 .Description("Enables you to pilot tier 1 starships.")
                 .Price(1)
 

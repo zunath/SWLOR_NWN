@@ -83,6 +83,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition.Beast
                 .GroupType(PerkGroupType.Beast)
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.FocusAttentionTrait)
                 .Description("The beast's enmity generation is increased by 15%.")
                 .Price(3)
                 .RequirementBeastLevel(12)
@@ -162,6 +163,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition.Beast
                 .GroupType(PerkGroupType.Beast)
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.BodyguardsResolveTrait)
                 .Description("The beast takes 10% less damage while its master is below 50% HP.")
                 .Price(3)
                 .RequirementBeastLevel(30)
@@ -190,6 +192,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition.Beast
                 .GroupType(PerkGroupType.Beast)
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.LastGuardianTrait)
                 .Description("Once every 3 minutes, when the beast would take fatal damage, prevent that damage and grant temporary HP equal to 20% of its maximum HP for 12 seconds.")
                 .Price(3)
                 .RequirementBeastLevel(50)

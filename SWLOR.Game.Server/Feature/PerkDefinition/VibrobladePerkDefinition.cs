@@ -63,6 +63,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Blood Frenzy")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.BloodFrenzyTrait)
                 .Description("Defeating an enemy restores 15 STM and grants +10% Haste for 30 seconds.")
                 .IncreasesStat(StatType.DefeatedEnemyStaminaRestore, 15)
                 .IncreasesStat(StatType.DefeatedEnemyAttackDelayReductionPercent, 10)
@@ -77,6 +78,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Bloodseeker")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.BloodseekerTrait)
                 .Description("Gain +10% Attack against bleeding targets.")
                 .IncreasesStat(StatType.AttackToBleedingTargetPercentAdjustment, creature => EquipmentPredicates.HasMainHandVibroblade(creature) ? 10 : 0)
                 .Price(3)
@@ -113,6 +115,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Crimson Fury")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.CrimsonFuryTrait)
                 .Description("Each bleeding enemy within 10m grants you +3% Attack (max +15%).")
                 .IncreasesStat(StatType.NearbyStatusTargetAttackPercentPerTarget, creature => EquipmentPredicates.HasMainHandVibroblade(creature) ? 3 : 0)
                 .IncreasesStat(StatType.NearbyStatusTargetAttackRadiusMeters, creature => EquipmentPredicates.HasMainHandVibroblade(creature) ? 10 : 0)
@@ -146,6 +149,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Executioner")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.ExecutionerTrait)
                 .Description("Deal +15% damage to targets below 30% HP.")
                 .IncreasesStat(StatType.TargetLowHPDamageThresholdPercent, 30)
                 .IncreasesStat(StatType.TargetLowHPDamagePercentAdjustment, 15)
@@ -159,6 +163,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Fortified Position")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.FortifiedPositionTrait)
                 .Description("Grants +8 Mind Resistance rating, +8 Trauma Resistance rating, and +8 Mobility Resistance rating.")
                 .IncreasesStat(StatType.MindResistance, creature => EquipmentPredicates.HasOffHandShield(creature) ? 2 : 0)
                 .IncreasesStat(StatType.TraumaResistance, creature => EquipmentPredicates.HasOffHandShield(creature) ? 2 : 0)
@@ -181,6 +186,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Guardian's Riposte")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.GuardiansRiposteTrait)
                 .Description("Receive Guardian's Riposte after deflecting an attack with a shield. Your next attack within 12s deals +10 DMG.")
                 .IncreasesStat(StatType.DeflectionNextSkillAbilityDamageBonus, creature => EquipmentPredicates.HasOffHandShield(creature) ? 10 : 0)
                 .IncreasesStat(StatType.DeflectionNextSkillAbilityDamageBonusWindowSeconds, creature => EquipmentPredicates.HasOffHandShield(creature) ? 12 : 0)
@@ -230,6 +236,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Alacrity")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.AlacrityTrait)
                 .Description("Restore 4 STM when your shield deflects an attack.")
                 .IncreasesStat(StatType.DeflectionStaminaRestore, creature => EquipmentPredicates.HasOffHandShield(creature) ? 4 : 0)
                 .Price(3)
@@ -242,6 +249,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Bulwark")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.BulwarkTrait)
                 .Description("Grants +15 Shield Deflection.")
                 .IncreasesStat(StatType.ShieldDeflection, creature => EquipmentPredicates.HasOffHandShield(creature) ? 15 : 0)
                 .Price(2)
@@ -334,6 +342,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Savage Reflexes")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.SavageReflexesTrait)
                 .Description("Auto-attacks have 10% chance to deal +8 DMG.")
                 .IncreasesStat(StatType.AutoAttackDamageBonusChance, 10)
                 .IncreasesStat(StatType.AutoAttackDamageBonus, 8)
@@ -371,6 +380,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Shield Training")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.ShieldTrainingTrait)
                 .Description("When you successfully deflect an attack with a shield, gain +3% Evasion and +3% Enmity for 10 seconds.")
                 .IncreasesStat(StatType.DeflectionEvasionPercentAdjustment, creature => EquipmentPredicates.HasOffHandShield(creature) ? 3 : 0)
                 .IncreasesStat(StatType.DeflectionEvasionEnmityPercentAdjustment, creature => EquipmentPredicates.HasOffHandShield(creature) ? 3 : 0)
@@ -396,6 +406,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Unbreakable")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.UnbreakableTrait)
                 .Description("When reduced below 25% HP, gain +40% Physical Defense for 10s. Once per 5min.")
                 .IncreasesStat(StatType.LowHPPhysicalDefenseThresholdPercent, creature => EquipmentPredicates.HasOffHandShield(creature) ? 25 : 0)
                 .IncreasesStat(StatType.LowHPPhysicalDefensePercentAdjustment, creature => EquipmentPredicates.HasOffHandShield(creature) ? 40 : 0)

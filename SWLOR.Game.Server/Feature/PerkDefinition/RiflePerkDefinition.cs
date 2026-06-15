@@ -72,6 +72,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Ballistic Mastery")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.BallisticMasteryTrait)
                 .Description("Rifle abilities against Exposed or Sundered targets ignore an additional 15% Defense.")
                 .IncreasesStat(StatType.AbilityDefenseIgnoreExposedOrSunderedSkillType, creature => EquipmentPredicates.HasRifle(creature) ? (int)SkillType.Rifle : 0)
                 .IncreasesStat(StatType.AbilityDefenseIgnoreExposedOrSunderedPercentAdjustment, creature => EquipmentPredicates.HasRifle(creature) ? 15 : 0)
@@ -85,6 +86,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Breach Round")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.BreachRoundTrait)
                 .Description("Aimed Shot ignores 25% of the target's Defense and deals +35 DMG.")
                 .IncreasesStat(StatType.AbilityDefenseIgnorePercentAdjustmentPerkType, creature => EquipmentPredicates.HasRifle(creature) ? (int)PerkType.AimedShot : 0)
                 .IncreasesStat(StatType.AbilityDefenseIgnorePercentAdjustment, creature => EquipmentPredicates.HasRifle(creature) ? 25 : 0)
@@ -100,6 +102,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Containment Net")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.ContainmentNetTrait)
                 .Description("Enemies affected by your Disoriented effects suffer an additional -10% Evasion and -10% Attack.")
                 .IncreasesStat(StatType.OutgoingDisorientedAttackPercentAdjustment, creature => EquipmentPredicates.HasRifle(creature) ? -10 : 0)
                 .IncreasesStat(StatType.OutgoingDisorientedEvasionPercentAdjustment, creature => EquipmentPredicates.HasRifle(creature) ? -10 : 0)
@@ -137,6 +140,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Dead Center")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.DeadCenterTrait)
                 .Description("Rifle critical hits restore 4 STM and cause your next Aimed Shot within 8 seconds to deal +10 DMG. This can only trigger once every 6 seconds.")
                 .IncreasesStat(StatType.CriticalStaminaRestore, creature => EquipmentPredicates.HasRifle(creature) ? 4 : 0)
                 .IncreasesStat(StatType.CriticalStaminaRestoreSkillType, creature => EquipmentPredicates.HasRifle(creature) ? (int)SkillType.Rifle : 0)
@@ -156,6 +160,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Expose Weak Point")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.ExposeWeakPointTrait)
                 .Description("Aimed Shot marks the target for 12 seconds. Physical attacks against marked targets deal +10% damage.")
                 .Price(3)
                 .RequirementSkill(SkillType.Rifle, 30)
@@ -168,6 +173,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Field Sedatives")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.FieldSedativesTrait)
                 .Description("After a tranquilizer effect ends, the target's Attack is reduced by 10% for 10 seconds.")
                 .IncreasesStat(StatType.TranquilizeExpiredAttackPercentAdjustment, creature => EquipmentPredicates.HasRifle(creature) ? -10 : 0)
                 .IncreasesStat(StatType.TranquilizeExpiredAttackDurationSeconds, creature => EquipmentPredicates.HasRifle(creature) ? 10 : 0)
@@ -193,6 +199,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Kill Zone")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.KillZoneTrait)
                 .Description("Repeated rifle attacks against the same target stack +4% rifle damage for 20 seconds, up to +20%. Switching targets clears this bonus.")
                 .Price(3)
                 .RequirementSkill(SkillType.Rifle, 45)
@@ -207,6 +214,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Neutralizing Shot")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.NeutralizingShotTrait)
                 .Description("Tranq Cone, Pacification Field, and Stasis Volley remove one beneficial combat effect from affected enemies and inflict Disoriented for 12 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Rifle, 42)
@@ -231,6 +239,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Overwatch")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.OverwatchTrait)
                 .Description("Pacification control shots interrupt the target's current ability activation and inflict Foggy Mind for 12 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Rifle, 30)
@@ -279,6 +288,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Pinning Fire")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.PinningFireTrait)
                 .Description("Pacification control shots also inflict Dazed for 2 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Rifle, 12)
@@ -297,6 +307,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Scope Calibration")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.ScopeCalibrationTrait)
                 .Description("Rifle critical hits deal +15% damage.")
                 .IncreasesStat(StatType.CriticalDamagePercentAdjustment, creature => EquipmentPredicates.HasRifle(creature) ? 15 : 0)
                 .Price(3)
@@ -321,6 +332,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Soft Target")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.SoftTargetTrait)
                 .Description("Deal +10% rifle damage to enemies affected by Disoriented, Dazed, or tranquilizer effects.")
                 .IncreasesStat(StatType.DamageToDisorientedDazedTargetPercentAdjustment, creature => EquipmentPredicates.HasRifle(creature) ? 10 : 0)
                 .Price(2)
@@ -357,6 +369,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Steady Aim")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.SteadyAimTrait)
                 .Description("Rifle combat abilities gain +5% accuracy and +5% critical chance.")
                 .IncreasesStat(StatType.AbilityHitChancePercentAdjustmentSkillType, creature => EquipmentPredicates.HasRifle(creature) ? (int)SkillType.Rifle : 0)
                 .IncreasesStat(StatType.AbilityHitChancePercentAdjustment, creature => EquipmentPredicates.HasRifle(creature) ? 5 : 0)
@@ -433,6 +446,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Veteran Tracker")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.VeteranTrackerTrait)
                 .Description("Rifle damage increases by 15% against enemies affected by any control effect.")
                 .IncreasesStat(StatType.DamageToControlTargetPercentAdjustment, creature => EquipmentPredicates.HasRifle(creature) ? 15 : 0)
                 .Price(4)

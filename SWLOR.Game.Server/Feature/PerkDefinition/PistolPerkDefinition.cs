@@ -59,6 +59,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Deadeye Reload")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.DeadeyeReloadTrait)
                 .Description("After using a pistol combat ability, your next auto-attack within 6 seconds deals +10 DMG.")
                 .IncreasesStat(StatType.AbilityUsedNextSkillAutoAttackDamageBonusTriggerSkillType, (int)SkillType.Pistol)
                 .IncreasesStat(StatType.AbilityUsedNextSkillAutoAttackDamageBonusSkillType, (int)SkillType.Pistol)
@@ -122,6 +123,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Duelist's Distance")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.DuelistsDistanceTrait)
                 .Description("Deal +12% pistol damage to enemies within 8 meters that are not targeting you.")
                 .IncreasesStat(StatType.DamageToNearbyNonTargetingTargetPercentAdjustment, creature => EquipmentPredicates.HasPistol(creature) ? 12 : 0)
                 .Price(3)
@@ -134,6 +136,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Evasive Reload")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.EvasiveReloadTrait)
                 .Description("Using Snap Roll or Ricochet Shot reduces Disarming Shot cooldowns by 10 seconds.")
                 .IncreasesStat(StatType.AbilityUsedRecastReductionTriggerGroup, (int)RecastGroup.SnapRoll)
                 .IncreasesStat(StatType.AbilityUsedRecastReductionSecondaryTriggerGroup, (int)RecastGroup.RicochetShot)
@@ -191,6 +194,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("High Noon")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.HighNoonTrait)
                 .Description("Your first pistol attack after entering combat gains +30% critical chance and deals +20 DMG.")
                 .IncreasesStat(StatType.OpeningAutoAttackSkillType, creature => EquipmentPredicates.HasPistol(creature) ? (int)SkillType.Pistol : 0)
                 .IncreasesStat(StatType.OpeningAutoAttackCriticalRatePercentAdjustment, creature => EquipmentPredicates.HasPistol(creature) ? 30 : 0)
@@ -224,6 +228,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Kiting Instinct")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.KitingInstinctTrait)
                 .Description("When attacked in melee, you have a 20% chance to restore 3 STM and gain +10% Evasion for 6 seconds.")
                 .IncreasesStat(StatType.MeleeDamageTakenStaminaRestoreChance, creature => EquipmentPredicates.HasPistol(creature) ? 20 : 0)
                 .IncreasesStat(StatType.MeleeDamageTakenStaminaRestore, creature => EquipmentPredicates.HasPistol(creature) ? 3 : 0)
@@ -251,6 +256,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Low Shot")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.LowShotTrait)
                 .Description("Skirmisher close-range abilities also inflict Disoriented for 12 seconds and deal +20 DMG to disoriented targets.")
                 .Price(3)
                 .RequirementSkill(SkillType.Pistol, 30)
@@ -264,6 +270,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Mobile Footwork")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.MobileFootworkTrait)
                 .Description("After using a pistol ability, gain +10% Evasion for 6 seconds.")
                 .IncreasesStat(StatType.AbilityUsedEvasionPercentAdjustmentSkillType, (int)SkillType.Pistol)
                 .IncreasesStat(StatType.AbilityUsedEvasionPercentAdjustment, 10)
@@ -320,6 +327,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Rapid Shot")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.RapidShotTrait)
                 .Description("Reduces pistol attack delay by 10%.")
                 .IncreasesStat(StatType.AttackDelayReductionPercent, creature => EquipmentPredicates.HasPistol(creature) ? 10 : 0)
                 .Price(3)
@@ -346,6 +354,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Reload Tempo")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.ReloadTempoTrait)
                 .Description("Defeating an enemy restores 10 STM and reduces Quick Draw cooldowns by 15 seconds.")
                 .IncreasesStat(StatType.DefeatedEnemyStaminaRestore, 10)
                 .IncreasesStat(StatType.DefeatedEnemyRecastReductionGroup, (int)RecastGroup.QuickDraw)
@@ -360,6 +369,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Ricochet Shot")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.RicochetShotTrait)
                 .Description("Skirmisher precision shots can bounce to up to three nearby enemies for +12 DMG and Blind for 6 seconds. This can trigger once every 12 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Pistol, 25)
@@ -374,6 +384,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Skirmisher's Nerve")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.SkirmishersNerveTrait)
                 .Description("When reduced below 40% HP, your next pistol ability costs 0 STM and grants +20% Evasion for 8 seconds. This can only trigger once every 2 minutes.")
                 .IncreasesStat(StatType.LowHPEvasionThresholdPercent, 40)
                 .IncreasesStat(StatType.LowHPEvasionPercentAdjustment, 20)
@@ -417,6 +428,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Snap Roll")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.SnapRollTrait)
                 .Description("Skirmisher evasive abilities grant +15% Evasion for 6 seconds and reduce current enmity by 10%.")
                 .Price(3)
                 .RequirementSkill(SkillType.Pistol, 12)

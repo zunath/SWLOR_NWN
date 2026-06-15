@@ -58,6 +58,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Beacon Targeting")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.BeaconTargetingTrait)
                 .Description("Beacon pulses gain +5% Accuracy and +5% critical chance.")
                 .Price(3)
                 .RequirementSkill(SkillType.Devices, 5)
@@ -162,6 +163,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Diagnostic Sweep")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.DiagnosticSweepTrait)
                 .Description("Field Engineer beacons, fields, charges, and jammers reveal hidden enemies in their affected area and reduce Evasion by 4% for 10 seconds.")
                 .Price(5)
                 .RequirementSkill(SkillType.Devices, 35)

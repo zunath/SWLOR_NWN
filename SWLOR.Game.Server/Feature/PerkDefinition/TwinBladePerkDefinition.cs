@@ -82,6 +82,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Centerline Guard")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.CenterlineGuardTrait)
                 .Description("Gain +10 Attack Deflection. After deflecting an attack, your next attack within 8 seconds deals +8 DMG.")
                 .IncreasesStat(StatType.AttackDeflection, creature => EquipmentPredicates.HasMainHandTwinBlade(creature) ? 10 : 0)
                 .IncreasesStat(StatType.DeflectionNextSkillAbilityDamageBonus, creature => EquipmentPredicates.HasMainHandTwinBlade(creature) ? 8 : 0)
@@ -126,6 +127,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Cyclone Mastery")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.CycloneMasteryTrait)
                 .Description("Area Twin Blade abilities gain +10% critical chance and restore 1 STM per target hit, up to 5 STM.")
                 .IncreasesStat(StatType.TwinBladeAreaAbilityCriticalRatePercentAdjustment, 10)
                 .IncreasesStat(StatType.TwinBladeAreaAbilityStaminaRestorePerTarget, 1)
@@ -176,6 +178,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Edge Rhythm")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.EdgeRhythmTrait)
                 .Description("Every third auto-attack with a twin blade deals +15 DMG to a nearby enemy.")
                 .IncreasesStat(StatType.AutoAttackCycleDamageSkillType, creature => EquipmentPredicates.HasMainHandTwinBlade(creature) ? (int)SkillType.TwinBlade : 0)
                 .IncreasesStat(StatType.AutoAttackCycleRequiredCount, creature => EquipmentPredicates.HasMainHandTwinBlade(creature) ? 3 : 0)
@@ -227,6 +230,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Flowing Footwork")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.FlowingFootworkTrait)
                 .Description("After using a Twin Blade combat ability, gain +10% Evasion for 8 seconds.")
                 .IncreasesStat(StatType.AbilityUsedEvasionPercentAdjustmentSkillType, (int)SkillType.TwinBlade)
                 .IncreasesStat(StatType.AbilityUsedEvasionPercentAdjustment, 10)
@@ -241,6 +245,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Guarded Flow")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.GuardedFlowTrait)
                 .Description("Using a single-target Twin Blade ability grants +8 Attack Deflection for 8 seconds.")
                 .IncreasesStat(StatType.SingleTargetAbilityAttackDeflectionSkillType, (int)SkillType.TwinBlade)
                 .IncreasesStat(StatType.SingleTargetAbilityAttackDeflection, 8)
@@ -255,6 +260,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Mirror Step")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.MirrorStepTrait)
                 .Description("When hit by a target you damaged within the last 6 seconds, you have a 15% chance for your next Twin Blade ability to have no attack delay.")
                 .IncreasesStat(StatType.DamageTakenRecentTargetNextAbilityNoDelayChance, creature => EquipmentPredicates.HasMainHandTwinBlade(creature) ? 15 : 0)
                 .IncreasesStat(StatType.DamageTakenRecentTargetNextAbilityNoDelaySkillType, creature => EquipmentPredicates.HasMainHandTwinBlade(creature) ? (int)SkillType.TwinBlade : 0)
@@ -269,6 +275,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Momentum")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.MomentumTrait)
                 .Description("Twin Blade abilities that hit 2 or more enemies grant +5% Haste for 8 seconds, up to +15%.")
                 .IncreasesStat(StatType.TwinBladeAreaAbilityMinTargetsHasteThreshold, 2)
                 .IncreasesStat(StatType.TwinBladeAreaAbilityHastePercentAdjustment, 5)
@@ -294,6 +301,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Perfect Balance")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.PerfectBalanceTrait)
                 .Description("Single-target Twin Blade abilities restore 3 STM. Area Twin Blade abilities restore 1 STM per target hit, up to 5 STM. This can only trigger once every 8 seconds.")
                 .IncreasesStat(StatType.TwinBladeSingleTargetAbilityStaminaRestore, 3)
                 .IncreasesStat(StatType.TwinBladeSingleTargetAbilityStaminaRestoreCooldownSeconds, 8)
@@ -310,6 +318,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Precision Arc")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.PrecisionArcTrait)
                 .Description("Single-target critical hits reduce the target's Defense by 10% for 10 seconds.")
                 .IncreasesStat(StatType.SingleTargetCriticalTargetDefensePercentAdjustment, creature => EquipmentPredicates.HasMainHandTwinBlade(creature) ? -10 : 0)
                 .IncreasesStat(StatType.SingleTargetCriticalTargetDefenseDurationSeconds, creature => EquipmentPredicates.HasMainHandTwinBlade(creature) ? 10 : 0)
@@ -323,6 +332,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Punishing Angle")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.PunishingAngleTrait)
                 .Description("Deal +12% damage to targets affected by Weakened or Hamstring.")
                 .IncreasesStat(StatType.DamageToWeakenedOrHamstringTargetPercentAdjustment, 12)
                 .Price(2)
@@ -335,6 +345,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Reversal Cut")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.ReversalCutTrait)
                 .Description("After you are hit, your next Twin Blade Duelist ability within 8 seconds deals +40 DMG and inflicts Dazed for 3 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.TwinBlade, 38)
@@ -410,6 +421,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Sweeping Advance")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.SweepingAdvanceTrait)
                 .Description("Twin Blade Cyclone area abilities restore 6 STM and grant +10% Haste for 8 seconds when they hit at least three enemies.")
                 .Price(3)
                 .RequirementSkill(SkillType.TwinBlade, 38)

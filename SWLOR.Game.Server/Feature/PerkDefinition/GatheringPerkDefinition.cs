@@ -29,6 +29,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Treasure Hunter")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.TreasureHunterTrait)
                 .Description("Increases the chance to find rare items by 10.")
                 .Price(3)
                 .RequirementSkill(SkillType.Gathering, 15)
@@ -51,6 +52,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Creditfinder")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.CreditFinderTrait)
                 .Description("Increases the amount of credits found by 20%.")
                 .Price(3)
                 .RequirementSkill(SkillType.Gathering, 15)

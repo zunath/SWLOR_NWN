@@ -44,6 +44,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Dual Wield")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.DualWieldTrait)
                 .Description("Off-hand attack delay is reduced by 10% when making off-hand attacks.")
                 .Price(2)
                 .RequirementSkill(SkillType.Armor, 5)

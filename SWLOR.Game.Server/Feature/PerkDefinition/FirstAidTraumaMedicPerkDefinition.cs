@@ -85,6 +85,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Medical Injector Rig")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.MedicalInjectorRigTrait)
                 .Description("Med Kit, Kolto Mist, Emergency Triage, and Infusion healing is increased by 10%.")
                 .IncreasesStat(StatType.FirstAidMedicalHealingPercentAdjustment, 10)
                 .Price(3)
@@ -103,6 +104,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Emergency Sealant")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.EmergencySealantTrait)
                 .Description("Trauma Medic healing and treatment abilities also stop one Bleed or Burn effect and restore HP equal to 2% of maximum HP plus WIL scaling every 3 seconds for 12 seconds.")
                 .IncreasesStat(StatType.TraumaMedicEmergencySealant, 1)
                 .Price(3)

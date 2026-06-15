@@ -116,6 +116,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition.Beast
                 .GroupType(PerkGroupType.Beast)
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.ForceLinkTrait)
                 .Description("The beast has a 10% chance to restore 1 FP to its master when it lands an attack.")
                 .Price(3)
                 .RequirementBeastLevel(15)
@@ -175,6 +176,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition.Beast
                 .GroupType(PerkGroupType.Beast)
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.MindfulHideTrait)
                 .Description("The beast takes 8% less force damage and gains +10% Confusion Resistance, +10% Daze Resistance, and +10% Fear Resistance.")
                 .Price(3)
                 .RequirementBeastLevel(38)

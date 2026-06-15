@@ -62,6 +62,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Breaker Reversal")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.BreakerReversalTrait)
                 .Description("After guarding an attack, your next katar attack deals +35 DMG and inflicts Exposed, reducing Defense by 15% for 12 seconds.")
                 .IncreasesStat(StatType.GuardedHitNextKatarAbilityDamageBonus, creature => EquipmentPredicates.HasDualWieldKatar(creature) ? 35 : 0)
                 .IncreasesStat(StatType.GuardedHitNextKatarAbilityExposedDurationSeconds, creature => EquipmentPredicates.HasDualWieldKatar(creature) ? 12 : 0)
@@ -75,6 +76,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Cobra Reflexes")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.CobraReflexesTrait)
                 .Description("Critical hits against poisoned targets restore 4 STM.")
                 .IncreasesStat(StatType.CriticalPoisonedTargetStaminaRestore, creature => EquipmentPredicates.HasMainHandKatar(creature) ? 4 : 0)
                 .Price(2)
@@ -99,6 +101,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Covering Claws")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.CoveringClawsTrait)
                 .Description("Iron Guard ally-protection abilities cause enemies hit to generate +25% Enmity toward you for 12 seconds.")
                 .IncreasesStat(StatType.KatarIronGuardCoveringClaws, creature => EquipmentPredicates.HasDualWieldKatar(creature) ? 1 : 0)
                 .Price(3)
@@ -147,6 +150,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Guard Training")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.GuardTrainingTrait)
                 .Description("Grants a 15% chance to guard against physical attacks, reducing that hit's damage by 20% and generating extra enmity.")
                 .IncreasesStat(StatType.Guard, creature => EquipmentPredicates.HasDualWieldKatar(creature) ? 15 : 0)
                 .Price(2)
@@ -174,6 +178,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Guardian Reflexes")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.GuardianReflexesTrait)
                 .Description("When reduced below 35% HP, gain +25% guard chance for 12 seconds. This can only trigger once every 3 minutes.")
                 .IncreasesStat(StatType.LowHPGuardThresholdPercent, creature => EquipmentPredicates.HasMainHandKatar(creature) ? 35 : 0)
                 .IncreasesStat(StatType.LowHPGuard, creature => EquipmentPredicates.HasMainHandKatar(creature) ? 25 : 0)
@@ -189,6 +194,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Impenetrable Grip")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.ImpenetrableGripTrait)
                 .Description("Gain +20% Knockdown Resistance and +20% Daze Resistance. Guarded hits restore 4 STM.")
                 .IncreasesStat(StatType.MobilityResistance, creature => EquipmentPredicates.HasDualWieldKatar(creature) ? 20 : 0)
                 .IncreasesStat(StatType.MindResistance, creature => EquipmentPredicates.HasDualWieldKatar(creature) ? 20 : 0)
@@ -203,6 +209,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Iron Elbows")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.IronElbowsTrait)
                 .Description("Iron Guard counterattacks and guard pulses deal +15 DMG to nearby enemies and generate extra enmity.")
                 .IncreasesStat(StatType.KatarIronGuardPulseDamageBonus, creature => EquipmentPredicates.HasDualWieldKatar(creature) ? 15 : 0)
                 .Price(4)
@@ -239,6 +246,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Neurotoxin Mastery")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.NeurotoxinMasteryTrait)
                 .Description("Poison effects you apply also reduce the target's Attack by 10%.")
                 .IncreasesStat(StatType.OutgoingPoisonAttackPercentAdjustment, creature => EquipmentPredicates.HasDualWieldKatar(creature) ? -10 : 0)
                 .Price(4)
@@ -251,6 +259,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Redirecting Guard")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.RedirectingGuardTrait)
                 .Description("When you guard an attack, your next katar attack within 10 seconds gains +10% critical chance and deals +10 DMG.")
                 .IncreasesStat(StatType.GuardedHitNextSkillAbilitySkillType, (int)SkillType.Katar)
                 .IncreasesStat(StatType.GuardedHitNextSkillAbilityCriticalRatePercentAdjustment, 10)
@@ -266,6 +275,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Retaliatory Flow")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.RetaliatoryFlowTrait)
                 .Description("After you guard a hit, your next Guard Counter within 8 seconds costs 2 less STM and deals +8 DMG.")
                 .IncreasesStat(StatType.GuardedHitNextMatchingAbilityPerkType, (int)PerkType.GuardCounter)
                 .IncreasesStat(StatType.GuardedHitNextMatchingAbilityDamageBonus, 8)
@@ -293,6 +303,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Spreading Venom")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.SpreadingVenomTrait)
                 .Description("When a poisoned target dies, the nearest enemy within 5 meters becomes poisoned for 30 seconds.")
                 .IncreasesStat(StatType.PoisonedDefeatedEnemySpreadRadiusMeters, creature => EquipmentPredicates.HasMainHandKatar(creature) ? 5 : 0)
                 .IncreasesStat(StatType.PoisonedDefeatedEnemySpreadDurationSeconds, creature => EquipmentPredicates.HasMainHandKatar(creature) ? 30 : 0)
@@ -354,6 +365,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Toxic Rush")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.ToxicRushTrait)
                 .Description("Damaging poisoned targets grants +4% Haste and +3% Attack for 6 seconds, stacking up to +20% Haste and +15% Attack. At maximum stacks, attacks against poisoned targets restore 2 STM.")
                 .IncreasesStat(StatType.KatarToxicRushHastePercentPerStack, creature => EquipmentPredicates.HasDualWieldKatar(creature) ? 4 : 0)
                 .IncreasesStat(StatType.KatarToxicRushAttackPercentPerStack, creature => EquipmentPredicates.HasDualWieldKatar(creature) ? 3 : 0)
@@ -369,6 +381,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Toxic Tempo")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.ToxicTempoTrait)
                 .Description("Katar abilities deal +8% damage to targets affected by Poison or Disoriented.")
                 .IncreasesStat(StatType.DamageToPoisonedOrDisorientedTargetPercentAdjustment, creature => EquipmentPredicates.HasMainHandKatar(creature) ? 8 : 0)
                 .Price(2)
@@ -381,6 +394,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Twin Fang Flurry")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.TwinFangFlurryTrait)
                 .Description("Single-target Venom Current abilities strike a second time for +10 DMG. If the target is poisoned, the second strike inflicts Bleed for 30 seconds.")
                 .IncreasesStat(StatType.KatarVenomCurrentSecondStrikeDamageBonus, creature => EquipmentPredicates.HasDualWieldKatar(creature) ? 10 : 0)
                 .Price(3)
@@ -417,6 +431,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Venom Rhythm")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.VenomRhythmTrait)
                 .Description("Attacks against poisoned targets have a 15% chance to deal +6 DMG.")
                 .IncreasesStat(StatType.DamageToPoisonedTargetFlatBonusChance, 15)
                 .IncreasesStat(StatType.DamageToPoisonedTargetFlatBonus, 6)
@@ -430,6 +445,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Venom Splash")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.VenomSplashTrait)
                 .Description("Venom Current strike abilities spread Poison to nearby enemies when they hit a poisoned target.")
                 .IncreasesStat(StatType.KatarVenomCurrentPoisonSpreadRadiusMeters, creature => EquipmentPredicates.HasDualWieldKatar(creature) ? 5 : 0)
                 .IncreasesStat(StatType.KatarVenomCurrentPoisonSpreadDurationSeconds, creature => EquipmentPredicates.HasDualWieldKatar(creature) ? 30 : 0)

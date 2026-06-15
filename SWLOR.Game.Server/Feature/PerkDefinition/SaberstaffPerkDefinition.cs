@@ -45,6 +45,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Balanced Attunement")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.BalancedAttunementTrait)
                 .Description("While both FP and STM are above 50%, gain +10% Attack and +10% Force Attack.")
                 .IncreasesStat(StatType.HighFPAndStaminaAttackThresholdPercent, 50)
                 .IncreasesStat(StatType.HighFPAndStaminaAttackPercentAdjustment, 10)
@@ -86,6 +87,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Conduit Flare")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.ConduitFlareTrait)
                 .Description("Conduit offensive abilities deal +20 DMG to nearby enemies and inflict Force Disruption for 8 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Saberstaff, 38)
@@ -114,6 +116,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Conduit Training")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.ConduitTrainingTrait)
                 .Description("Gain +5% Force Defense and saberstaff attacks restore 1 FP. FP restoration can only trigger once every 4 seconds.")
                 .IncreasesStat(StatType.ForceDefensePercentAdjustment, 5)
                 .IncreasesStat(StatType.AutoAttackFPRestore, creature => EquipmentPredicates.HasMainHandSaberstaff(creature) ? 1 : 0)
@@ -181,6 +184,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Energized Forms")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.EnergizedFormsTrait)
                 .Description("Using a Force ability causes your next saberstaff attack within 8 seconds to deal +15 DMG. Using a saberstaff ability reduces the FP cost of your next Force ability by 2.")
                 .IncreasesStat(StatType.AbilityUsedNextSkillAutoAttackDamageBonusTriggerSkillType, creature => EquipmentPredicates.HasMainHandSaberstaff(creature) ? (int)SkillType.Force : 0)
                 .IncreasesStat(StatType.AbilityUsedNextSkillAutoAttackDamageBonusSkillType, creature => EquipmentPredicates.HasMainHandSaberstaff(creature) ? (int)SkillType.Saberstaff : 0)
@@ -201,6 +205,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Flow of the Maelstrom")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.FlowOfTheMaelstromTrait)
                 .Description("After hitting 3 or more enemies with one saberstaff ability, gain +15% Haste and +8 Attack Deflection for 12 seconds.")
                 .IncreasesStat(StatType.SaberstaffAreaAbilityMinTargetsBuffThreshold, 3)
                 .IncreasesStat(StatType.SaberstaffAreaAbilityHastePercentAdjustment, 15)
@@ -257,6 +262,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Force Gyre")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.ForceGyreTrait)
                 .Description("Tempest area abilities inflict Force Erosion for 12 seconds on enemies hit.")
                 .Price(3)
                 .RequirementSkill(SkillType.Saberstaff, 38)
@@ -271,6 +277,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Force Lens")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.ForceLensTrait)
                 .Description("Conduit defensive abilities grant allies +15% Force Defense for 20 seconds and grant you +8 Attack Deflection.")
                 .Price(3)
                 .RequirementSkill(SkillType.Saberstaff, 25)
@@ -284,6 +291,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Force Momentum")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.ForceMomentumTrait)
                 .Description("Hitting 2 or more enemies with a saberstaff ability restores 2 FP and 2 STM. This can only trigger once every 4 seconds.")
                 .IncreasesStat(StatType.SaberstaffAreaAbilityMinTargetsResourceRestoreThreshold, 2)
                 .IncreasesStat(StatType.SaberstaffAreaAbilityFPRestore, 2)
@@ -393,6 +401,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Spinning Deflection")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.SpinningDeflectionTrait)
                 .Description("Gain +8 Attack Deflection. After deflecting an attack, your next Circle Slash deals +8 DMG.")
                 .IncreasesStat(StatType.AttackDeflection, creature => EquipmentPredicates.HasMainHandSaberstaff(creature) ? 8 : 0)
                 .IncreasesStat(StatType.DeflectionNextAbilityDamageBonusPerkType, creature => EquipmentPredicates.HasMainHandSaberstaff(creature) ? (int)PerkType.CircleSlash : 0)
@@ -420,6 +429,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Tempest Focus")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.TempestFocusTrait)
                 .Description("Saberstaff combat abilities cost 2 less STM while your FP is above 50%.")
                 .IncreasesStat(StatType.HighResourceAbilityStaminaCostSkillType, creature => EquipmentPredicates.HasMainHandSaberstaff(creature) ? (int)SkillType.Saberstaff : 0)
                 .IncreasesStat(StatType.HighResourceAbilityStaminaCostThresholdPercent, creature => EquipmentPredicates.HasMainHandSaberstaff(creature) ? 50 : 0)

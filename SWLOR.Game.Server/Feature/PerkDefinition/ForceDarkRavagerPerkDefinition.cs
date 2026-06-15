@@ -80,6 +80,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .ForceAffinity(ForceAffinityType.Dark)
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.UnstablePressureTrait)
                 .Description("Force Spark and Force Lightning mark affected enemies with unstable pressure for 12 seconds, reducing Evasion by 5%. Enemies below 35% HP also suffer +5% force damage taken while marked.")
                 .Price(4)
                 .RequirementSkill(SkillType.Force, 32)
@@ -125,6 +126,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .ForceAffinity(ForceAffinityType.Dark)
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.DevouringStrikeTrait)
                 .Description("Alter powers that damage enemies deal 15% more damage to targets below 35% HP.")
                 .Price(4)
                 .RequirementSkill(SkillType.Force, 28)
@@ -140,6 +142,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .ForceAffinity(ForceAffinityType.Dark)
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.CruelMomentumTrait)
                 .Description("When an enemy you damaged within the last 6 seconds is defeated, restore 2 FP and gain +5% Force ability Accuracy for 10 seconds. This can trigger once every 10 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Force, 28)

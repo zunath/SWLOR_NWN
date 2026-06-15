@@ -173,6 +173,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .ForceAffinity(ForceAffinityType.Light)
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.SereneFocusTrait)
                 .Description("Control powers that restore HP cause affected allies to restore 1 STM and 1 FP every 6 seconds for 12 seconds. This benefit does not trigger when you target yourself.")
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 12)
@@ -207,6 +208,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .ForceAffinity(ForceAffinityType.Light)
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.ForceMendTrait)
                 .Description("Control powers that restore HP can remove one standard negative effect from the target and restore HP equal to 10% of maximum HP plus WIL scaling. This can trigger once every 24 seconds per target.")
                 .Price(4)
                 .RequirementSkill(SkillType.Force, 25)
@@ -235,6 +237,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .ForceAffinity(ForceAffinityType.Light)
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.HarmonicRestorationTrait)
                 .Description("When you restore HP to an ally below 50% HP with a Control power, up to two nearby allies recover 6% of maximum HP plus WIL scaling and gain +10 Trauma Resistance rating for 12 seconds. This can trigger once every 20 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Force, 45)

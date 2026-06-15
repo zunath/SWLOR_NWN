@@ -99,6 +99,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Power Surge")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.PowerSurgeTrait)
                 .Description("Power Cell's initial target also gains Power Surge for 12 seconds: +6% physical and Force ability Accuracy, +6% critical chance, and 1 STM every 4 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Devices, 5)
@@ -112,6 +113,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Rayshield Screen")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.RayshieldScreenTrait)
                 .Description("Field Support ally buffs from Deflector Shield, Power Cell, Group Deflector, and Emergency Bunker also grant affected allies 8% reduced ranged physical damage for 12 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Devices, 18)
@@ -134,6 +136,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Dampening Field")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.DampeningFieldTrait)
                 .Description("Field Support ally buffs from Deflector Shield, Power Cell, Group Deflector, and Emergency Bunker also grant affected allies 6% reduced physical and force damage for 8 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Devices, 22)
@@ -156,6 +159,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Overclock Routine")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.OverclockRoutineTrait)
                 .Description("Field Support abilities that affect allies also grant Overclock Routine for 12 seconds. Affected allies gain +4% Device ability damage, healing, temporary HP, and damage absorption shield values.")
                 .Price(5)
                 .RequirementSkill(SkillType.Devices, 35)

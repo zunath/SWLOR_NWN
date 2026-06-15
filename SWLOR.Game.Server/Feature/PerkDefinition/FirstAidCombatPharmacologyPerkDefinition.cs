@@ -79,6 +79,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Coagulant")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.CoagulantTrait)
                 .Description("Combat Pharmacology stim effects also grant 50% Bleed Resistance and 10% resistance to incoming physical damage over time effects for 2 minutes.")
                 .IncreasesStat(StatType.CombatPharmacologyStimCoagulantRank, 1)
                 .Price(3)
@@ -127,6 +128,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Field Pharmacist")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.FieldPharmacistTrait)
                 .Description("Stim pack effects last 15% longer and have a 10% chance not to consume the stim pack.")
                 .IncreasesStat(StatType.StimPackDurationPercentAdjustment, 15)
                 .Price(2)

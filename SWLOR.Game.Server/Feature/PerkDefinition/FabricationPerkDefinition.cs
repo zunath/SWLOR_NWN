@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.PerkDefinition
 {
@@ -23,6 +24,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Research")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.ResearchTrait)
                 .Description("Grants ability to research tier 1 blueprints.")
                 .Price(2)
                 .RequirementSkill(SkillType.Fabrication, 10)
@@ -54,6 +56,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Scientific Networking")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.ScientificNetworkingTrait)
                 .Description("Blueprints are created with an additional licensed run.")
                 .Price(3)
                 .RequirementSkill(SkillType.Fabrication, 25)
@@ -70,6 +73,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Research Projects")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.ResearchProjectsTrait)
                 .Description("Increases the maximum number of concurrent research jobs by 1, for a total of 2.")
                 .Price(2)
                 .RequirementSkill(SkillType.Fabrication, 25)

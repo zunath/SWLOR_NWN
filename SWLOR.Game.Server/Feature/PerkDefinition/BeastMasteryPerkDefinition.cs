@@ -33,6 +33,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("DNA Manipulation")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.DNAManipulationTrait)
                 .Description("Enables you to harvest DNA from creatures between levels 0 and 10 and use incubators.")
                 .Price(2)
                 .RequirementSkill(SkillType.BeastMastery, 5)
@@ -66,6 +67,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Incubation Processing")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.IncubationProcessingTrait)
                 .Description("Reduces incubation time by 10%.")
                 .Price(2)
                 .RequirementSkill(SkillType.BeastMastery, 15)
@@ -93,6 +95,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Erratic Genius")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.ErraticGeniusTrait)
                 .Description("Increases the mutation chance by 2%.")
                 .Price(2)
                 .RequirementSkill(SkillType.BeastMastery, 20)
@@ -115,6 +118,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Incubation Management")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.IncubationManagementTrait)
                 .Description("Increases the maximum number of concurrent incubation jobs by 1, for a total of 2.")
                 .Price(2)
                 .RequirementSkill(SkillType.BeastMastery, 25)
@@ -190,6 +194,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Stabling")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.StablingTrait)
                 .Description("Permits you to store up to two beasts at a stable.")
                 .Price(1)
                 .RequirementSkill(SkillType.BeastMastery, 10)

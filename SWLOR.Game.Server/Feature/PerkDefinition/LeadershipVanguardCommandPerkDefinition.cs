@@ -102,6 +102,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Mark Target")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.MarkTargetTrait)
                 .Description("Vanguard Command offensive commands mark affected enemies for 15 seconds. Party members deal +8% damage to marked targets. SOC scaling can raise this to +10%.")
                 .Price(3)
                 .RequirementSkill(SkillType.Leadership, 12)
@@ -158,6 +159,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Command Presence")
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.CommandRadiusTrait)
                 .Description("All Leadership auras and area commands have +2m range. Non-capstone Leadership command buffs last 2 seconds longer. SOC scaling can raise the duration bonus to +3 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Leadership, 30)

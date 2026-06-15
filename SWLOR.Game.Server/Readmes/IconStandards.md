@@ -19,9 +19,12 @@ Approved semantic categories:
 | Self | Cyan-blue | `#4FC3FF` | Self-only stances, toggles, personal buffs, personal movement |
 | Control | Violet | `#B56CFF` | Stun, daze, immobilize, fear, silence, disorient, forced movement |
 | Deployable | Amber | `#FFB84D` | Beacons, traps, fields, ground effects, persistent placed objects |
+| Passive | Gold | `#F5D76E` | Passive traits, innate mastery, always-on bonuses, character progression perks |
 | Utility | White-steel | `#DDE6F0` | Detection, language, travel, noncombat, neutral actions |
 
 When an ability does several things, color it by the primary player-facing intent. Damage with a small debuff rider is Harmful. Enemy control with a damage rider is Control. A placed object or persistent ground effect is Deployable unless its identity is overwhelmingly heal, control, or damage.
+
+Passive trait feats use the Passive gold frame/accent even when the always-on bonus improves healing, damage, control, utility, or another active-effect domain. Passive trait icons are not usable abilities and do not need generated cooldown variants.
 
 Status effects use the same semantic frame location, but their color assignment is stricter:
 

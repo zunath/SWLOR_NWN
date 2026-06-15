@@ -253,6 +253,7 @@ public static class IconArtworkRestore
             case "Self": return Color.FromArgb(255, 79, 195, 255);
             case "Control": return Color.FromArgb(255, 181, 108, 255);
             case "Deployable": return Color.FromArgb(255, 255, 184, 77);
+            case "Passive": return Color.FromArgb(255, 245, 215, 110);
             case "Utility": return Color.FromArgb(255, 221, 230, 240);
         }
 

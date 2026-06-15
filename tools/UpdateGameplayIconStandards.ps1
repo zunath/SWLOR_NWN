@@ -23,7 +23,7 @@ $ErrorActionPreference = "Stop"
 
 Add-Type -AssemblyName System.Drawing
 
-$ApprovedCategories = @("Beneficial", "Harmful", "Self", "Control", "Deployable", "Utility")
+$ApprovedCategories = @("Beneficial", "Harmful", "Self", "Control", "Deployable", "Passive", "Utility")
 $GeneratedEnumStartMarker = "        // Custom status effect icons"
 $GeneratedEnumEndMarker = "        // End custom status effect icons"
 $CustomTlkOffset = 16777216
@@ -478,6 +478,7 @@ function Get-SemanticColor([string]$category) {
         "Self" { return [System.Drawing.Color]::FromArgb(255, 79, 195, 255) }
         "Control" { return [System.Drawing.Color]::FromArgb(255, 181, 108, 255) }
         "Deployable" { return [System.Drawing.Color]::FromArgb(255, 255, 184, 77) }
+        "Passive" { return [System.Drawing.Color]::FromArgb(255, 245, 215, 110) }
         "Utility" { return [System.Drawing.Color]::FromArgb(255, 221, 230, 240) }
     }
 

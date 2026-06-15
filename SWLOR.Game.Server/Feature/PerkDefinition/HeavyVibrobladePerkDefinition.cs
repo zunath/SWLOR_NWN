@@ -526,15 +526,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Gain +5 Attack Deflection, increased by +1 per 2 MGT to a maximum of +15. Deflecting an attack restores 4 STM. This can trigger once every 6 seconds.")
                 .IncreasesStat(
                     StatType.AttackDeflection,
-                    creature => EquipmentPredicates.HasMainHandHeavyVibroblade(creature)
-                        ? Math.Min(15, 5 + Math.Max(0, GetAbilityScore(creature, AbilityType.Might)) / 2)
-                        : 0)
-                .IncreasesStat(
-                    StatType.DeflectionStaminaRestore,
-                    creature => EquipmentPredicates.HasMainHandHeavyVibroblade(creature) ? 4 : 0)
-                .IncreasesStat(
-                    StatType.DeflectionStaminaRestoreCooldownSeconds,
-                    creature => EquipmentPredicates.HasMainHandHeavyVibroblade(creature) ? 6 : 0)
+                    creature => Math.Min(15, 5 + Math.Max(0, GetAbilityScore(creature, AbilityType.Might)) / 2))
+                .IncreasesStat(StatType.DeflectionStaminaRestore, 4)
+                .IncreasesStat(StatType.DeflectionStaminaRestoreCooldownSeconds, 6)
                 .Price(3)
                 .RequirementSkill(SkillType.HeavyVibroblade, 22);
         }

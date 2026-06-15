@@ -59,7 +59,7 @@ public class HeavyVibrobladeDefenseTests
             1,
             4,
             28,
-            null,
+            FeatType.GuardiansResolveTrait,
             "When a Heavy Vibroblade Defense ability grants you Physical Defense or reduces incoming damage, you also gain Temporary HP equal to 12% of maximum HP for 12 seconds. You heal for 15% of damage absorbed by this Temporary HP. This can trigger once every 30 seconds.",
             StatType.HeavyVibrobladeDefenseGuardiansResolveTriggerPrimaryPerkType,
             StatType.HeavyVibrobladeDefenseGuardiansResolveTriggerSecondaryPerkType,
@@ -136,7 +136,7 @@ public class HeavyVibrobladeDefenseTests
             1,
             3,
             20,
-            null,
+            FeatType.LastStandTrait,
             "When reduced below 25% HP, gain Temporary HP equal to 20% of maximum HP for 12 seconds. This can only trigger once per 10 minutes.",
             StatType.LowHPTemporaryHPThresholdPercent,
             StatType.LowHPTemporaryHPPercent,
@@ -173,6 +173,7 @@ public class HeavyVibrobladeDefenseTests
     {
         var root = FindRepositoryRoot();
         var perkSource = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "PerkDefinition" / "HeavyVibrobladePerkDefinition.cs").FullName);
+        var unbreakableWillSource = ExtractMethod(perkSource, "private void UnbreakableWill()");
         var statSource = File.ReadAllText((root / "SWLOR.Game.Server" / "Service" / "Stat.cs").FullName);
         var perks = BuildHeavyVibrobladeDefensePerksWithout2daLookup();
         var unbreakableWill = perks[PerkType.UnbreakableWill];
@@ -183,17 +184,18 @@ public class HeavyVibrobladeDefenseTests
             1,
             3,
             22,
-            null,
+            FeatType.UnbreakableWillTrait,
             "Gain +5 Attack Deflection, increased by +1 per 2 MGT to a maximum of +15. Deflecting an attack restores 4 STM. This can trigger once every 6 seconds.",
             StatType.AttackDeflection,
             StatType.DeflectionStaminaRestore,
             StatType.DeflectionStaminaRestoreCooldownSeconds);
 
-        perkSource.Should().Contain("Math.Min(15, 5 + Math.Max(0, GetAbilityScore(creature, AbilityType.Might)) / 2)");
-        perkSource.Should().Contain("StatType.DeflectionStaminaRestore,");
-        perkSource.Should().Contain("creature => EquipmentPredicates.HasMainHandHeavyVibroblade(creature) ? 4 : 0");
-        perkSource.Should().Contain("StatType.DeflectionStaminaRestoreCooldownSeconds,");
-        perkSource.Should().Contain("creature => EquipmentPredicates.HasMainHandHeavyVibroblade(creature) ? 6 : 0");
+        unbreakableWillSource.Should().Contain("Math.Min(15, 5 + Math.Max(0, GetAbilityScore(creature, AbilityType.Might)) / 2)");
+        unbreakableWillSource.Should().Contain(".IncreasesStat(StatType.DeflectionStaminaRestore, 4)");
+        unbreakableWillSource.Should().Contain(".IncreasesStat(StatType.DeflectionStaminaRestoreCooldownSeconds, 6)");
+        unbreakableWillSource.Should().NotContain("EquipmentPredicates.HasMainHandHeavyVibroblade");
+        AssertStatBonus(unbreakableWill.PerkLevels[1], StatType.DeflectionStaminaRestore, 4);
+        AssertStatBonus(unbreakableWill.PerkLevels[1], StatType.DeflectionStaminaRestoreCooldownSeconds, 6);
         statSource.Should().Contain("Combat.TryUseStatTrigger(creatureId, StatType.DeflectionStaminaRestore, staminaRestoreCooldown)");
     }
 

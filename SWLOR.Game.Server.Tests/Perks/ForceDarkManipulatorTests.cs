@@ -19,9 +19,9 @@ public class ForceDarkManipulatorTests
     public void ForceDarkManipulatorAbilities_MatchCombatBible()
     {
         var creepingTerror = new CreepingTerrorAbilityDefinition().BuildAbilities();
-        AssertAbility(creepingTerror[FeatType.CreepingTerror1], "Creeping Terror I", 1, RecastGroup.CreepingTerror, 30f, 1f, 4, true, true, false, true, AbilityActivationType.Casted, 15f, true);
-        AssertAbility(creepingTerror[FeatType.CreepingTerror2], "Creeping Terror II", 2, RecastGroup.CreepingTerror, 30f, 1f, 6, true, true, false, true, AbilityActivationType.Casted, 15f, true);
-        AssertAbility(creepingTerror[FeatType.CreepingTerror3], "Creeping Terror III", 3, RecastGroup.CreepingTerror, 30f, 1.5f, 8, true, true, false, true, AbilityActivationType.Casted, 15f, true);
+        AssertAbility(creepingTerror[FeatType.CreepingTerror1], "Creeping Terror I", 1, RecastGroup.CreepingTerror, 30f, 1f, 4, true, false, false, true, AbilityActivationType.Casted, 15f, true);
+        AssertAbility(creepingTerror[FeatType.CreepingTerror2], "Creeping Terror II", 2, RecastGroup.CreepingTerror, 30f, 1f, 6, true, false, false, true, AbilityActivationType.Casted, 15f, true);
+        AssertAbility(creepingTerror[FeatType.CreepingTerror3], "Creeping Terror III", 3, RecastGroup.CreepingTerror, 30f, 1.5f, 8, true, false, false, true, AbilityActivationType.Casted, 15f, true);
 
         var weakenResolve = new WeakenResolveAbilityDefinition().BuildAbilities();
         AssertAbility(weakenResolve[FeatType.WeakenResolve1], "Weaken Resolve I", 1, RecastGroup.WeakenResolve, 18f, 1f, 3, true, true, true, false, AbilityActivationType.Casted, 15f, false);
@@ -125,15 +125,15 @@ public class ForceDarkManipulatorTests
 
         var feats = new[]
         {
-            (FeatType.CreepingTerror1, "ife_crpngtrrr1", "M", "0x02", "1", "sphere", "5", "****", "1"),
+            (FeatType.CreepingTerror1, "ife_crpngtrrr1", "M", "0x3E", "1", "sphere", "5", "****", "1"),
             (FeatType.ForceChoke2, "ife_forcechk2", "M", "0x02", "1", "****", "****", "****", "****"),
             (FeatType.WeakenResolve1, "ife_wknres1", "M", "0x02", "1", "****", "****", "****", "****"),
-            (FeatType.CreepingTerror2, "ife_crpngtrrr2", "M", "0x02", "1", "sphere", "5", "****", "1"),
+            (FeatType.CreepingTerror2, "ife_crpngtrrr2", "M", "0x3E", "1", "sphere", "5", "****", "1"),
             (FeatType.ForceChoke3, "ife_forcechk3", "M", "0x02", "1", "****", "****", "****", "****"),
             (FeatType.NightmareField1, "ife_nghtmrfld1", "P", "0x01", "1", "sphere", "5", "****", "17"),
             (FeatType.WeakenResolve2, "ife_wknres2", "M", "0x02", "1", "****", "****", "****", "****"),
             (FeatType.ForceChoke1, "ife_forcechk1", "M", "0x02", "1", "****", "****", "****", "****"),
-            (FeatType.CreepingTerror3, "ife_crpngtrrr3", "M", "0x02", "1", "sphere", "5", "****", "1"),
+            (FeatType.CreepingTerror3, "ife_crpngtrrr3", "M", "0x3E", "1", "sphere", "5", "****", "1"),
             (FeatType.ForceChoke4, "ife_forcechk4", "M", "0x02", "1", "sphere", "5", "****", "1"),
             (FeatType.EclipseOfResolve1, "ife_eclres1", "P", "0x01", "1", "sphere", "5", "****", "17")
         };
@@ -147,6 +147,12 @@ public class ForceDarkManipulatorTests
 
             featIcon.Should().Be(expectedIcon);
             abilityRow["IconResRef"].Should().Be(featIcon);
+            if (featType is FeatType.CreepingTerror1 or FeatType.CreepingTerror2 or FeatType.CreepingTerror3)
+            {
+                featRow["TARGETSELF"].Should().Be("****");
+                featRow["HostileFeat"].Should().Be("1");
+            }
+
             seenIcons.Add(featIcon).Should().BeTrue($"{featType} should have a unique icon");
             File.Exists((root / "SWLOR_Haks" / "swlor2_tga" / $"{featIcon}.tga").FullName).Should().BeTrue();
 

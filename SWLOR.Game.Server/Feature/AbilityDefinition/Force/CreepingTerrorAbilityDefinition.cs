@@ -51,7 +51,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .UsesImpactAnimation(Animation.CastOutAnimation)
                 .IsAreaAbility()
                 .HasMaxRange(FieldRange)
-                .RequiresTarget()
                 .HasImpactAction(CreepingTerror1ImpactAction)
                 .HasTargetingSphere(
                     Spell.CreepingTerror1,
@@ -77,7 +76,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .UsesImpactAnimation(Animation.CastOutAnimation)
                 .IsAreaAbility()
                 .HasMaxRange(FieldRange)
-                .RequiresTarget()
                 .HasImpactAction(CreepingTerror2ImpactAction)
                 .HasTargetingSphere(
                     Spell.CreepingTerror2,
@@ -103,7 +101,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .UsesImpactAnimation(Animation.CastOutAnimation)
                 .IsAreaAbility()
                 .HasMaxRange(FieldRange)
-                .RequiresTarget()
                 .HasImpactAction(CreepingTerror3ImpactAction)
                 .HasTargetingSphere(
                     Spell.CreepingTerror3,

@@ -1699,7 +1699,10 @@ namespace SWLOR.Game.Server.Service
             var skillLevelOverride = usesNPCStatScaling
                 ? GetNPCAbilityScalingRank(activator, skillType, damageType, damageAbility)
                 : -1;
-            if (!Combat.TryResolveAbilityHit(activator, target, skillType, perkType, out var hitRate, hitChancePercentAdjustment, skillLevelOverride, damageAbility))
+            var shouldResolveHit = ShouldResolveCombatImpactHit(trackedImpact);
+            var hitRate = 100;
+            if (shouldResolveHit &&
+                !Combat.TryResolveAbilityHit(activator, target, skillType, perkType, out hitRate, hitChancePercentAdjustment, skillLevelOverride, damageAbility))
             {
                 SendCombatImpactResultMessage(activator, target, trackedImpact?.Ability, 4, hitRate);
                 if (awardsCombatPoints)
@@ -1707,7 +1710,9 @@ namespace SWLOR.Game.Server.Service
                 ApplyMissedHostileAbilityEnmity(activator, target);
                 return 0;
             }
-            SendCombatImpactResultMessage(activator, target, trackedImpact?.Ability, 1, hitRate);
+
+            if (shouldResolveHit)
+                SendCombatImpactResultMessage(activator, target, trackedImpact?.Ability, 1, hitRate);
 
             var adjustedBaseDamage = Math.Max(0, baseDamage + (baseDamageAdjustment?.Invoke(target) ?? 0));
             adjustedBaseDamage += Combat.GetAbilityImpactBaseDamageBonus(
@@ -1737,6 +1742,11 @@ namespace SWLOR.Game.Server.Service
                 afterSuccessfulHit,
                 awardsCombatPoints,
                 effectDamageType);
+        }
+
+        private static bool ShouldResolveCombatImpactHit(TrackedAbilityImpact trackedImpact)
+        {
+            return trackedImpact?.Ability?.ActivationType != AbilityActivationType.Weapon;
         }
 
         private static void SendCombatImpactResultMessage(

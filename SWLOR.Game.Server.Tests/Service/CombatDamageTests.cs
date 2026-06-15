@@ -129,6 +129,23 @@ public class CombatDamageTests
     }
 
     [Test]
+    public void QueuedWeaponAbilityImpacts_DoNotRollSeparateAbilityHit()
+    {
+        var root = FindRepositoryRoot();
+        var abilitySource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Ability.cs"));
+        var usePerkFeatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "UsePerkFeat.cs"));
+
+        usePerkFeatSource.Should().Contain("Weapon abilities are queued for the next time the activator's attack lands on an enemy.");
+        usePerkFeatSource.Should().Contain("ProcessQueuedWeaponAbility()");
+        usePerkFeatSource.Should().Contain("Ability.BeginAbilityImpact(activator, abilityDetail);");
+        abilitySource.Should().Contain("private static bool ShouldResolveCombatImpactHit(TrackedAbilityImpact trackedImpact)");
+        abilitySource.Should().Contain("trackedImpact?.Ability?.ActivationType != AbilityActivationType.Weapon");
+        abilitySource.Should().MatchRegex(
+            @"if \(shouldResolveHit &&\s*!Combat\.TryResolveAbilityHit\(activator, target, skillType, perkType, out hitRate");
+        abilitySource.Should().MatchRegex(@"if \(shouldResolveHit\)\s*SendCombatImpactResultMessage");
+    }
+
+    [Test]
     public void CombatAbilityRiders_AreStatDrivenInsteadOfPerkCategoryDispatch()
     {
         var root = FindRepositoryRoot();

@@ -39,6 +39,73 @@ public class CharacterSheetCombatUpgradeTests
         definition.Should().Contain("model => model.ResistanceStatusDurations");
     }
 
+    [Test]
+    public void PlayerDamageRefresh_RunsDamageTakenEffectsBeforeRefreshingSheet()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "PlayerStatusWindow.cs"));
+        var method = ExtractMethod(source, "public static void PlayerDamaged()");
+        var sharedDamageEffects = "Combat.ApplyDamageTakenEffects(player, GetLastDamager(player), GetTotalDamageDealt());";
+        var sheetRefresh = "Gui.PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.HP));";
+
+        method.Should().Contain(sharedDamageEffects);
+        method.Should().NotContain("ExecuteScript(");
+        method.Should().Contain(sheetRefresh);
+        method.IndexOf(sharedDamageEffects, StringComparison.Ordinal)
+            .Should()
+            .BeLessThan(method.IndexOf(sheetRefresh, StringComparison.Ordinal));
+    }
+
+    [Test]
+    public void CharacterSheet_PlayerStatusRefreshesCombatStats()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "GuiDefinition",
+            "ViewModel",
+            "CharacterSheetViewModel.cs"));
+        var method = ExtractMethod(source, "void IGuiRefreshable<PlayerStatusRefreshEvent>.Refresh(PlayerStatusRefreshEvent payload)");
+
+        method.Should().Contain("RefreshStats();");
+        method.Should().Contain("RefreshEquipmentStats();");
+        method.IndexOf("RefreshStats();", StringComparison.Ordinal)
+            .Should()
+            .BeLessThan(method.IndexOf("RefreshEquipmentStats();", StringComparison.Ordinal));
+    }
+
+    private static string ExtractMethod(string source, string signature)
+    {
+        var signatureIndex = source.IndexOf(signature, StringComparison.Ordinal);
+        signatureIndex.Should().BeGreaterThanOrEqualTo(0);
+
+        var openBraceIndex = source.IndexOf('{', signatureIndex);
+        openBraceIndex.Should().BeGreaterThanOrEqualTo(0);
+
+        var depth = 0;
+        for (var index = openBraceIndex; index < source.Length; index++)
+        {
+            if (source[index] == '{')
+            {
+                depth++;
+            }
+            else if (source[index] == '}')
+            {
+                depth--;
+                if (depth == 0)
+                    return source.Substring(signatureIndex, index - signatureIndex + 1);
+            }
+        }
+
+        throw new InvalidOperationException($"Could not extract method '{signature}'.");
+    }
+
     private static DirectoryInfo FindRepositoryRoot()
     {
         var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);

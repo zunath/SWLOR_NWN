@@ -1225,6 +1225,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 case PlayerStatusRefreshEvent.StatType.FP:
                 case PlayerStatusRefreshEvent.StatType.STM:
                     RefreshStats();
+                    RefreshEquipmentStats();
                     break;
             }
         }

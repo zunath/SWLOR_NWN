@@ -100,10 +100,6 @@
                         <td>@(Player.Settings.IsSubdualModeEnabled ? "Yes" : "No")</td>
                     </tr>
                     <tr>
-                        <td><strong>Lightsaber Force Share:</strong></td>
-                        <td>@(Player.Settings.IsLightsaberForceShareEnabled ? "Yes" : "No")</td>
-                    </tr>
-                    <tr>
                         <td><strong>Server Reset Reminders:</strong></td>
                         <td>@(Player.Settings.DisplayServerResetReminders ? "Yes" : "No")</td>
                     </tr>
@@ -154,4 +150,4 @@
         var attribute = field?.GetCustomAttribute<CharacterTypeAttribute>();
         return attribute?.Name ?? Player.CharacterType.ToString();
     }
-} 
+}

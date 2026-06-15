@@ -3,7 +3,6 @@ using System.Globalization;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum.Associate;
@@ -38,22 +37,8 @@ namespace SWLOR.Game.Server.Service
 
             var skill = Skill.GetSkillTypeByBaseItem(baseItemType);
             if (skill == SkillType.Invalid) return;
-            var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
-            var levelDelta = dbPlayer.Skills[SkillType.Force].Rank - dbPlayer.Skills[skill].Rank;
 
             AddCombatPoint(player, target, skill);
-
-            // Lightsabers and Saberstaffs automatically grant combat points toward Force if player has the setting enabled.
-            // Additionally, a force combat point is only added if the force skill is not 5 more levels above the one-handed or two-handed skill being used.
-            if ((Item.LightsaberBaseItemTypes.Contains(baseItemType) ||
-                Item.SaberstaffBaseItemTypes.Contains(baseItemType)) &&
-                dbPlayer.CharacterType == CharacterType.ForceSensitive &&
-                dbPlayer.Settings.IsLightsaberForceShareEnabled &&
-                levelDelta <= 5)
-            {
-                AddCombatPoint(player, target, SkillType.Force);
-            }
 
             // If player has a beast active, add a combat point for Beast Mastery.
             var associate = GetAssociate(AssociateType.Henchman, player);

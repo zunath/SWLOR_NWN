@@ -35,12 +35,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-        public bool ShareLightsaberForceXP
-        {
-            get => Get<bool>();
-            set => Set(value);
-        }
-
         public bool IsForceSensitive
         {
             get => Get<bool>();
@@ -131,7 +125,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             WatchOnClient(model => model.DisplayAchievementNotification);
             WatchOnClient(model => model.DisplayHolonetChannel);
             WatchOnClient(model => model.SubdualMode);
-            WatchOnClient(model => model.ShareLightsaberForceXP);
             WatchOnClient(model => model.DisplayServerResetReminders);
             WatchOnClient(model => model.SelectedColor);
         }
@@ -146,7 +139,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             DisplayAchievementNotification = dbPlayer.Settings.DisplayAchievementNotification;
             DisplayHolonetChannel = dbPlayer.Settings.IsHolonetEnabled;
             SubdualMode = dbPlayer.Settings.IsSubdualModeEnabled;
-            ShareLightsaberForceXP = dbPlayer.Settings.IsLightsaberForceShareEnabled;
             DisplayServerResetReminders = dbPlayer.Settings.DisplayServerResetReminders;
         }
 
@@ -253,7 +245,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             dbPlayer.Settings.DisplayAchievementNotification = DisplayAchievementNotification;
             dbPlayer.Settings.IsHolonetEnabled = DisplayHolonetChannel;
             dbPlayer.Settings.IsSubdualModeEnabled = SubdualMode;
-            dbPlayer.Settings.IsLightsaberForceShareEnabled = ShareLightsaberForceXP;
             dbPlayer.Settings.DisplayServerResetReminders = DisplayServerResetReminders;
 
             // System Colors - OOC

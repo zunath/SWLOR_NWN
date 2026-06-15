@@ -221,7 +221,6 @@ namespace SWLOR.Game.Server.Entity
         public bool ShowHelmet { get; set; }
         public bool ShowCloak { get; set; }
         public bool IsSubdualModeEnabled { get; set; }
-        public bool IsLightsaberForceShareEnabled { get; set; }
         public bool DisplayServerResetReminders { get; set; }
         public Dictionary<SkillType, PlayerColor> LanguageChatColors { get; set; }
         public PlayerColor OOCChatColor { get; set; }
@@ -234,7 +233,6 @@ namespace SWLOR.Game.Server.Entity
             ShowCloak = true;
             IsHolonetEnabled = true;
             IsSubdualModeEnabled = false;
-            IsLightsaberForceShareEnabled = true;
             DisplayServerResetReminders = true;
 
             LanguageChatColors = new Dictionary<SkillType, PlayerColor>();

@@ -74,21 +74,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                         col.AddRow(row =>
                         {
-                            row.BindIsVisible(model => model.IsForceSensitive);
-                            row.AddSpacer();
-
-                            row.AddCheckBox()
-                                .SetText("Lightsaber XP Share")
-                                .SetTooltip("If enabled, you will gain Force XP when using lightsabers during combat. Skills must be within 5 skill levels for this to take effect.")
-                                .BindIsChecked(model => model.ShareLightsaberForceXP);
-
-                            row.AddSpacer();
-                        })
-                            .SetHeight(30f);
-
-
-                        col.AddRow(row =>
-                        {
                             row.AddSpacer();
 
                             row.AddButton()

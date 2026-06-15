@@ -397,7 +397,7 @@
 "Ability","SonicBurst2","SonicBurst2","Control","2","ife_sncburst2","SWLOR_Haks\swlor2_2da\feat.2da"
 "Ability","SonicBurst3","SonicBurst3","Control","3","ife_sncburst3","SWLOR_Haks\swlor2_2da\feat.2da"
 "Ability","SoulBurst1","SoulBurst1","Harmful","1","ife_soulburst1","SWLOR_Haks\swlor2_2da\feat.2da"
-"Ability","SoulDevourer1","SoulDevourer1","Harmful","1","ife_souldev1","SWLOR_Haks\swlor2_2da\feat.2da"
+"Ability","SoulDevourer1","SoulDevourer1","Self","1","ife_souldev1","SWLOR_Haks\swlor2_2da\feat.2da"
 "Ability","SoulStorm1","SoulStorm1","Harmful","1","ife_soulstrm1","SWLOR_Haks\swlor2_2da\feat.2da"
 "Ability","SoulStrike1","SoulStrike1","Harmful","1","ife_soulstrk1","SWLOR_Haks\swlor2_2da\feat.2da"
 "Ability","SoulStrike2","SoulStrike2","Harmful","2","ife_soulstrk2","SWLOR_Haks\swlor2_2da\feat.2da"

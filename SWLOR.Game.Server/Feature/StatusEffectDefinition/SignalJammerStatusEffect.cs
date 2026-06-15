@@ -16,6 +16,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             StatusEffectCleanseType.TreatmentKit2 |
             StatusEffectCleanseType.SoothePet;
         public override ResistanceType ResistanceType => ResistanceType.Disruption;
+        public override float Frequency => 1f;
 
         public SignalJammerStatusEffect()
         {

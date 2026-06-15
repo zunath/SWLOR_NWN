@@ -16,6 +16,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public override StatusEffectCleanseType CleanseTypes =>
             StatusEffectCleanseType.Purify |
             StatusEffectCleanseType.SoothePet;
+        public override float Frequency => 1f;
 
         public UnstablePressureStatusEffect()
             : this(5, 5, 35)

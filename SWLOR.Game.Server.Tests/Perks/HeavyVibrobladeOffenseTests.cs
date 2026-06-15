@@ -70,6 +70,19 @@ public class HeavyVibrobladeOffenseTests
     }
 
     [Test]
+    public void PersistentTogglePerks_RegisterRefundCleanup()
+    {
+        var perks = BuildHeavyVibrobladeOffensePerksWithout2daLookup();
+        var perkSource = File.ReadAllText((FindRepositoryRoot() / "SWLOR.Game.Server" / "Feature" / "PerkDefinition" / "HeavyVibrobladePerkDefinition.cs").FullName);
+
+        perks[PerkType.BlazingSpikes].RefundedTriggers.Should().ContainSingle();
+        perks[PerkType.SoulDevourer].RefundedTriggers.Should().ContainSingle();
+        perkSource.Should().Contain("RemoveActiveStatus(player, typeof(BlazingSpikesStatusEffect))");
+        perkSource.Should().Contain("RemoveActiveStatus(player, typeof(SoulDevourerStatusEffect))");
+        perkSource.Should().Contain("StatusEffect.RemoveStatusEffect(player, statusEffectType, false)");
+    }
+
+    [Test]
     public void EssenceHunter_AppliesVisibleDebuffFromActivatedWeaponAbilityTarget()
     {
         var root = FindRepositoryRoot();
@@ -131,6 +144,28 @@ public class HeavyVibrobladeOffenseTests
         perkSource.Should().Contain("StatType.CriticalHPPercentOfDamageRestoreCooldownSeconds,");
         perkSource.Should().Contain("creature => EquipmentPredicates.HasMainHandHeavyVibroblade(creature) ? 6 : 0");
         combatSource.Should().Contain("TryUseStatTrigger(attacker, StatType.CriticalHPPercentOfDamageRestore, hpRestoreCooldown)");
+    }
+
+    [Test]
+    public void SoulBarrier_EvaluatesLowHPTriggersAfterHeavyVibrobladeHitPointSpend()
+    {
+        var root = FindRepositoryRoot();
+        var baseSource = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "HeavyVibroblade" / "HeavyVibrobladeActiveAbilityDefinitionBase.cs").FullName);
+        var combatSource = File.ReadAllText((root / "SWLOR.Game.Server" / "Service" / "Combat.cs").FullName);
+        var sacrificeHitPoints = ExtractMethod(baseSource, "protected static void SacrificeHitPoints(uint activator, int basePercent, int minimumPercent)");
+        var damageTakenEffects = ExtractMethod(combatSource, "public static void ApplyDamageTakenEffects(uint defender, uint attacker, int damage)");
+        var lowHPTriggers = ExtractMethod(combatSource, "public static void ApplyLowHPDamageTakenEffects(");
+        const string damageCall = "ApplyEffectToObject(DurationType.Instant, EffectDamage(amount), activator);";
+        const string lowHPCall = "Combat.ApplyLowHPDamageTakenEffects(activator, amount);";
+
+        damageTakenEffects.Should().Contain("ApplyLowHPDamageTakenEffects(defender, damage);");
+        lowHPTriggers.Should().Contain("ApplyLowHPNoSaveTemporaryHPEffect(defender, damage);");
+        sacrificeHitPoints.Should().Contain("AssignCommand(activator, () =>");
+        sacrificeHitPoints.Should().Contain(damageCall);
+        sacrificeHitPoints.Should().Contain(lowHPCall);
+        sacrificeHitPoints.IndexOf(damageCall, StringComparison.Ordinal)
+            .Should()
+            .BeLessThan(sacrificeHitPoints.IndexOf(lowHPCall, StringComparison.Ordinal));
     }
 
     [Test]

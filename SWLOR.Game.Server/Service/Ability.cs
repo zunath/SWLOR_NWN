@@ -1940,6 +1940,11 @@ namespace SWLOR.Game.Server.Service
                 criticalRating);
             var calculatedDamage = damageRoll.Damage;
             criticalRating = damageRoll.CriticalRating;
+            if (damageRoll.WasCriticalDowngraded)
+            {
+                Combat.SendIncomingCriticalHitDowngradeFeedback(activator, target);
+            }
+
             calculatedDamage = Combat.ApplyCriticalDamageModifier(activator, calculatedDamage, criticalRating);
             calculatedDamage = Combat.ApplySideAttackDamageModifier(activator, target, skillType, calculatedDamage);
             calculatedDamage = Combat.ApplyTwinBladeAbilityShapeDamageModifier(
@@ -2118,6 +2123,11 @@ namespace SWLOR.Game.Server.Service
                 criticalRating);
             var calculatedDamage = damageRoll.Damage;
             criticalRating = damageRoll.CriticalRating;
+            if (damageRoll.WasCriticalDowngraded)
+            {
+                Combat.SendIncomingCriticalHitDowngradeFeedback(activator, target);
+            }
+
             calculatedDamage = Combat.ApplyCriticalDamageModifier(activator, calculatedDamage, criticalRating);
             calculatedDamage = Combat.ApplySideAttackDamageModifier(activator, target, skillType, calculatedDamage);
             calculatedDamage = Combat.ApplyTwinBladeAbilityShapeDamageModifier(

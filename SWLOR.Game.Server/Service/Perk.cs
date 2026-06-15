@@ -393,7 +393,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Refunded Triggers: Fires when a perk is refunded.
-            if (perk.PurchasedTriggers.Count > 0)
+            if (perk.RefundedTriggers.Count > 0)
             {
                 if (!_refundTriggers.ContainsKey(perk.Type))
                     _refundTriggers[perk.Type] = new List<PerkTriggerPurchasedRefundedAction>();

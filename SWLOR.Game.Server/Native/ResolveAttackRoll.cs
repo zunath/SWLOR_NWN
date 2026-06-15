@@ -252,6 +252,7 @@ namespace SWLOR.Game.Server.Native
                         if (Stat.GetStatAdjustment(defender.m_idSelf, StatType.IncomingCriticalHitDowngradeToMinimumDamage) > 0)
                         {
                             Log.Write(LogGroup.Attack, $"Critical hit downgraded by defender stats");
+                            Combat.SendIncomingCriticalHitDowngradeFeedback(attacker.m_idSelf, defender.m_idSelf);
                             TemporaryStatModifier.Replace(
                                 defender.m_idSelf,
                                 StatType.CurrentIncomingAttackMinimumDamage,

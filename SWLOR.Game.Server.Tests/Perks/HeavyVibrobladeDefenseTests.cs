@@ -120,6 +120,16 @@ public class HeavyVibrobladeDefenseTests
     }
 
     [Test]
+    public void PersistentTogglePerks_RegisterRefundCleanup()
+    {
+        var perks = BuildHeavyVibrobladeDefensePerksWithout2daLookup();
+        var perkSource = File.ReadAllText((FindRepositoryRoot() / "SWLOR.Game.Server" / "Feature" / "PerkDefinition" / "HeavyVibrobladePerkDefinition.cs").FullName);
+
+        perks[PerkType.BastionStance].RefundedTriggers.Should().ContainSingle();
+        perkSource.Should().Contain("RemoveActiveStatus(player, typeof(BastionStanceStatusEffect))");
+    }
+
+    [Test]
     public void UnbreakableWill_MatchesCombatBibleDeflectionValues()
     {
         var root = FindRepositoryRoot();

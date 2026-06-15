@@ -1,6 +1,7 @@
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWScript.Enum;
 using System.Collections.Generic;
 
@@ -91,7 +92,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.BastionStance1)
                 .Description("While active, grants +20% to Enmity generation, +15% Defense, +15% Force Defense, -20% Attack, and -20% Force Attack")
                 .Price(3)
-                .RequirementSkill(SkillType.HeavyVibroblade, 12);
+                .RequirementSkill(SkillType.HeavyVibroblade, 12)
+                .TriggerRefund(player => RemoveActiveStatus(player, typeof(BastionStanceStatusEffect)));
         }
 
 
@@ -104,7 +106,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.BlazingSpikes1)
                 .Description("While active, this effect delivers 10% of physical damage received back to the attacker. Damage dealt increases by 1% per MGT. (Maximum 40%)")
                 .Price(3)
-                .RequirementSkill(SkillType.HeavyVibroblade, 40);
+                .RequirementSkill(SkillType.HeavyVibroblade, 40)
+                .TriggerRefund(player => RemoveActiveStatus(player, typeof(BlazingSpikesStatusEffect)));
         }
 
 
@@ -428,7 +431,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.SoulDevourer1)
                 .Description("While active, gain +35% Attack and +15% critical chance, but each attack you make deals 40% of the damage back to you. Damage reduced by 1% per MGT. (Minimum 10%)")
                 .Price(4)
-                .RequirementSkill(SkillType.HeavyVibroblade, 18);
+                .RequirementSkill(SkillType.HeavyVibroblade, 18)
+                .TriggerRefund(player => RemoveActiveStatus(player, typeof(SoulDevourerStatusEffect)));
         }
 
 
@@ -539,6 +543,11 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     creature => EquipmentPredicates.HasMainHandHeavyVibroblade(creature) ? 6 : 0)
                 .Price(3)
                 .RequirementSkill(SkillType.HeavyVibroblade, 22);
+        }
+
+        private static void RemoveActiveStatus(uint player, Type statusEffectType)
+        {
+            StatusEffect.RemoveStatusEffect(player, statusEffectType, false);
         }
     }
 }

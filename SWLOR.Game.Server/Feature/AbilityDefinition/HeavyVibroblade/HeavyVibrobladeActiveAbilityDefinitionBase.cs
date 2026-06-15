@@ -61,7 +61,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
                 return;
 
             amount = Math.Min(currentHp - 1, amount);
-            AssignCommand(activator, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(amount), activator));
+            AssignCommand(activator, () =>
+            {
+                ApplyEffectToObject(DurationType.Instant, EffectDamage(amount), activator);
+                Combat.ApplyLowHPDamageTakenEffects(activator, amount);
+            });
             Combat.ApplyHitPointSpendAbilityEffects(activator);
         }
 

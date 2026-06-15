@@ -311,7 +311,7 @@ namespace SWLOR.Game.Server.Service
             return (int)Random.NextFloat(minDamage, maxDamage);
         }
 
-        public static (int Damage, int CriticalRating) CalculateDamageWithCriticalMitigation(
+        public static (int Damage, int CriticalRating, bool WasCriticalDowngraded) CalculateDamageWithCriticalMitigation(
             uint defender,
             int attackerAttack,
             int attackerDMG,
@@ -321,8 +321,11 @@ namespace SWLOR.Game.Server.Service
             int critical,
             int deltaCap = 0)
         {
+            var wasCriticalDowngraded = GetIsObjectValid(defender) &&
+                critical > 0 &&
+                Stat.GetStatAdjustment(defender, StatType.IncomingCriticalHitDowngradeToMinimumDamage) > 0;
             var forceMinimumNormalDamage = GetIsObjectValid(defender) &&
-                (critical > 0 && Stat.GetStatAdjustment(defender, StatType.IncomingCriticalHitDowngradeToMinimumDamage) > 0 ||
+                (wasCriticalDowngraded ||
                  TemporaryStatModifier.Consume(
                      defender,
                      StatType.CurrentIncomingAttackMinimumDamage,
@@ -340,7 +343,7 @@ namespace SWLOR.Game.Server.Service
                 ? minDamage
                 : (int)Random.NextFloat(minDamage, maxDamage);
 
-            return (damage, effectiveCritical);
+            return (damage, effectiveCritical, wasCriticalDowngraded);
         }
 
         public static int ApplyCriticalDamageModifier(uint attacker, int damage, int criticalRating)
@@ -1240,15 +1243,23 @@ namespace SWLOR.Game.Server.Service
                     StatType.DamageTakenAttackPercentAdjustment);
             }
 
+            ApplyLowHPDamageTakenEffects(defender, damage);
+            ApplyReversalCutReady(defender);
+            TrackRecentDamageTaken(defender);
+            ApplyRecentDamageTargetHitEffects(defender, attacker);
+        }
+
+        public static void ApplyLowHPDamageTakenEffects(uint defender, int damage)
+        {
+            if (!GetIsObjectValid(defender) || GetIsDead(defender) || damage <= 0)
+                return;
+
             ApplyLowHPPhysicalDefenseEffect(defender, damage);
             ApplyLowHPEvasionEffect(defender, damage);
             ApplyLowHPNextAbilityNoStaminaCostEffect(defender, damage);
             ApplyLowHPTemporaryHPEffect(defender, damage);
             ApplyLowHPNoSaveTemporaryHPEffect(defender, damage);
             ApplyLowHPGuardEffect(defender, damage);
-            ApplyReversalCutReady(defender);
-            TrackRecentDamageTaken(defender);
-            ApplyRecentDamageTargetHitEffects(defender, attacker);
         }
 
         private static void ApplyReversalCutReady(uint defender)
@@ -1897,6 +1908,38 @@ namespace SWLOR.Game.Server.Service
             {
                 SendMessageToPC(attacker, feedback);
             }
+        }
+
+        public static void SendIncomingCriticalHitDowngradeFeedback(uint attacker, uint defender)
+        {
+            if (!GetIsObjectValid(defender))
+                return;
+
+            var feedback = BuildIncomingCriticalHitDowngradeCombatLogMessage(attacker, defender);
+
+            if (GetIsPC(defender))
+            {
+                SendMessageToPC(defender, feedback);
+                FloatingTextStringOnCreature(ColorToken.Combat("Critical Ward"), defender, false);
+            }
+
+            if (GetIsObjectValid(attacker) &&
+                attacker != defender &&
+                GetIsPC(attacker))
+            {
+                SendMessageToPC(attacker, feedback);
+            }
+        }
+
+        private static string BuildIncomingCriticalHitDowngradeCombatLogMessage(uint attacker, uint defender)
+        {
+            var defenderName = GetIsPC(defender) ? ColorToken.GetNamePCColor(defender) : ColorToken.GetNameNPCColor(defender);
+
+            if (!GetIsObjectValid(attacker) || attacker == defender)
+                return ColorToken.Combat($"{defenderName}'s Critical Ward negates the critical hit.");
+
+            var attackerName = GetIsPC(attacker) ? ColorToken.GetNamePCColor(attacker) : ColorToken.GetNameNPCColor(attacker);
+            return ColorToken.Combat($"{defenderName}'s Critical Ward negates {attackerName}'s critical hit.");
         }
 
         private static int GetGuardDamageReductionPercent(uint defender)

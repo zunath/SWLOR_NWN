@@ -309,6 +309,28 @@ public class CombatDamageTests
     }
 
     [Test]
+    public void IncomingCriticalHitDowngrade_FeedbackIsSentFromStatDrivenMitigationPaths()
+    {
+        var root = FindRepositoryRoot();
+        var combatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
+        var abilitySource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Ability.cs"));
+        var resolveAttackRollSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Native", "ResolveAttackRoll.cs"));
+
+        combatSource.Should().Contain("bool WasCriticalDowngraded");
+        combatSource.Should().Contain("StatType.IncomingCriticalHitDowngradeToMinimumDamage");
+        combatSource.Should().Contain("public static void SendIncomingCriticalHitDowngradeFeedback(uint attacker, uint defender)");
+        combatSource.Should().Contain("FloatingTextStringOnCreature(ColorToken.Combat(\"Critical Ward\"), defender, false);");
+
+        abilitySource.Should().Contain("if (damageRoll.WasCriticalDowngraded)");
+        abilitySource.Should().Contain("Combat.SendIncomingCriticalHitDowngradeFeedback(activator, target);");
+        resolveAttackRollSource.Should().Contain("Combat.SendIncomingCriticalHitDowngradeFeedback(attacker.m_idSelf, defender.m_idSelf);");
+
+        combatSource.Should().NotContain("PerkType.CriticalWard");
+        abilitySource.Should().NotContain("PerkType.CriticalWard");
+        resolveAttackRollSource.Should().NotContain("PerkType.CriticalWard");
+    }
+
+    [Test]
     public void NormalDamageMitigation_IsCappedSeparatelyFromExplicitImmunity()
     {
         var root = FindRepositoryRoot();

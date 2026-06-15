@@ -1116,6 +1116,7 @@ namespace SWLOR.Game.Server.Service
                 trackedImpact?.Ability,
                 trackedImpact?.NextAbilityDamageBonus ?? 0,
                 trackedImpact?.NextAbilityCriticalRatePercentAdjustment ?? 0,
+                trackedImpact?.NextAbilityDefenseIgnorePercentAdjustment ?? 0,
                 damageType,
                 statusResistanceType,
                 targetVisualEffect,
@@ -1285,6 +1286,7 @@ namespace SWLOR.Game.Server.Service
             AbilityDetail ability,
             int nextAbilityDamageBonus,
             int nextAbilityCriticalRatePercentAdjustment,
+            int nextAbilityDefenseIgnorePercentAdjustment,
             CombatDamageType damageType,
             ResistanceType statusResistanceType,
             VisualEffect targetVisualEffect,
@@ -1336,7 +1338,12 @@ namespace SWLOR.Game.Server.Service
 
                 if (ability != null)
                 {
-                    BeginAbilityImpact(creator, ability, nextAbilityDamageBonus, nextAbilityCriticalRatePercentAdjustment);
+                    BeginAbilityImpact(
+                        creator,
+                        ability,
+                        nextAbilityDamageBonus,
+                        nextAbilityCriticalRatePercentAdjustment,
+                        nextAbilityDefenseIgnorePercentAdjustment);
                     RecordAbilityImpactShape(creator, skillType, true);
                 }
 

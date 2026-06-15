@@ -62,6 +62,36 @@ public class AbilityDamageQueueTests
         flushBody.Should().Contain("EffectDamage(effect.Damage, effect.DamageType)");
     }
 
+    [Test]
+    public void DelayedTelegraphedImpacts_PreserveQueuedDefenseIgnoreBonus()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "Ability.cs")).Replace("\r\n", "\n");
+        var buildActionCall = source.Substring(
+            source.IndexOf("var action = BuildTelegraphedCombatImpactAction(", StringComparison.Ordinal),
+            source.IndexOf("switch (shape)", StringComparison.Ordinal) -
+            source.IndexOf("var action = BuildTelegraphedCombatImpactAction(", StringComparison.Ordinal));
+        var buildActionSignature = source.Substring(
+            source.IndexOf("private static ApplyTelegraphEffect BuildTelegraphedCombatImpactAction", StringComparison.Ordinal),
+            source.IndexOf("return (creator, creatures) =>", StringComparison.Ordinal) -
+            source.IndexOf("private static ApplyTelegraphEffect BuildTelegraphedCombatImpactAction", StringComparison.Ordinal));
+        var delayedImpactBody = source.Substring(
+            source.IndexOf("return (creator, creatures) =>", StringComparison.Ordinal),
+            source.IndexOf("private static int ApplyCombatImpactToCreatures", StringComparison.Ordinal) -
+            source.IndexOf("return (creator, creatures) =>", StringComparison.Ordinal));
+
+        buildActionCall.Should().Contain("trackedImpact?.NextAbilityDefenseIgnorePercentAdjustment ?? 0");
+        buildActionSignature.Should().Contain("int nextAbilityDefenseIgnorePercentAdjustment");
+        delayedImpactBody.Should().Contain("nextAbilityDefenseIgnorePercentAdjustment");
+        delayedImpactBody.Should().Contain("BeginAbilityImpact(");
+        delayedImpactBody.Should().Contain("nextAbilityDamageBonus");
+        delayedImpactBody.Should().Contain("nextAbilityCriticalRatePercentAdjustment");
+    }
+
     private static DirectoryInfo FindRepositoryRoot()
     {
         var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);

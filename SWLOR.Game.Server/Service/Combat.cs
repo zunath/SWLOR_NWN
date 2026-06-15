@@ -2506,7 +2506,7 @@ namespace SWLOR.Game.Server.Service
             switch (skillType)
             {
                 case SkillType.HeavyVibroblade:
-                    ApplyHeavyVibrobladeActivatedEffects(activator, ability);
+                    ApplyHeavyVibrobladeActivatedEffects(activator, target, ability);
                     break;
                 case SkillType.BeastMastery:
                     ApplyBeastBalancedAbilityRecovery(activator);
@@ -2633,7 +2633,6 @@ namespace SWLOR.Game.Server.Service
             {
                 case SkillType.HeavyVibroblade:
                     ApplyHeavyVibrobladeDefenseImpactRiders(activator, target, ability);
-                    ApplyHeavyVibrobladeOffenseImpactRiders(activator, target, ability);
                     break;
                 case SkillType.Force:
                     ApplyForceDarkImpactRiders(activator, target, primaryStatusEffect, additionalStatusEffects);
@@ -2831,16 +2830,25 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        private static void ApplyHeavyVibrobladeOffenseImpactRiders(
+        private static void ApplyHeavyVibrobladeOffenseActivatedEffects(
             uint activator,
             uint target,
             AbilityDetail ability)
         {
-            if (ability.IsHostileAbility &&
-                Stat.GetStatAdjustment(activator, StatType.HeavyVibrobladeOffenseEssenceHunter) > 0)
-            {
-                StatusEffect.ApplyStatusEffect(activator, target, typeof(EssenceDrainStatusEffect), 12f, CombatDamageType.Physical);
-            }
+            if (!GetIsObjectValid(target) ||
+                !GetIsReactionTypeHostile(target, activator) ||
+                !ability.IsHostileAbility ||
+                ability.ActivationType != AbilityActivationType.Weapon ||
+                !AbilityMatchesAnyPerkTypeStat(
+                    activator,
+                    ability,
+                    StatType.HeavyVibrobladeOffenseEssenceHunterTriggerPrimaryPerkType,
+                    StatType.HeavyVibrobladeOffenseEssenceHunterTriggerSecondaryPerkType,
+                    StatType.HeavyVibrobladeOffenseEssenceHunterTriggerTertiaryPerkType) ||
+                Stat.GetStatAdjustment(activator, StatType.HeavyVibrobladeOffenseEssenceHunter) <= 0)
+                return;
+
+            StatusEffect.ApplyStatusEffect(activator, target, typeof(EssenceDrainStatusEffect), 12f, CombatDamageType.Physical);
         }
 
         private static void ApplyForceDarkImpactRiders(
@@ -3310,6 +3318,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void ApplyHeavyVibrobladeActivatedEffects(
             uint activator,
+            uint target,
             AbilityDetail ability)
         {
             if (AbilityMatchesAnyPerkTypeStat(
@@ -3338,6 +3347,8 @@ namespace SWLOR.Game.Server.Service
             {
                 ApplyGuardiansResolve(activator);
             }
+
+            ApplyHeavyVibrobladeOffenseActivatedEffects(activator, target, ability);
         }
 
         private static void ApplyBeastBalancedAbilityRecovery(uint activator)

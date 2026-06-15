@@ -3576,7 +3576,25 @@ namespace SWLOR.Game.Server.Service.StatService
         /// Flat bonus added to Disruption resistance.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        DisruptionResistance = 610
+        DisruptionResistance = 610,
+
+        /// <summary>
+        /// Primary PerkType value whose weapon ability triggers HeavyVibrobladeOffenseEssenceHunter.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        HeavyVibrobladeOffenseEssenceHunterTriggerPrimaryPerkType = 611,
+
+        /// <summary>
+        /// Secondary PerkType value whose weapon ability triggers HeavyVibrobladeOffenseEssenceHunter.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        HeavyVibrobladeOffenseEssenceHunterTriggerSecondaryPerkType = 612,
+
+        /// <summary>
+        /// Tertiary PerkType value whose weapon ability triggers HeavyVibrobladeOffenseEssenceHunter.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        HeavyVibrobladeOffenseEssenceHunterTriggerTertiaryPerkType = 613
     }
 
     public class StatTypeAttribute : Attribute

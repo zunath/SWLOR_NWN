@@ -214,6 +214,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Heavy Vibroblade Offense weapon abilities also inflict Essence Drain, reducing the target's Attack by 15% for 12 seconds.")
                 .IncreasesStat(StatType.HeavyVibrobladeOffenseEssenceHunter, creature => EquipmentPredicates.HasMainHandHeavyVibroblade(creature) ? 1 : 0)
+                .IncreasesStat(StatType.HeavyVibrobladeOffenseEssenceHunterTriggerPrimaryPerkType, (int)PerkType.SoulStrike)
                 .Price(3)
                 .RequirementSkill(SkillType.HeavyVibroblade, 12);
         }

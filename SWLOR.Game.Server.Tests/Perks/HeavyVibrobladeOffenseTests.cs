@@ -4,9 +4,11 @@ using SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade;
 using SWLOR.Game.Server.Feature.PerkDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Tests.Perks;
@@ -43,6 +45,12 @@ public class HeavyVibrobladeOffenseTests
     {
         var essenceDrain = new EssenceDrainStatusEffect();
         essenceDrain.StatGroup.Stats[StatType.AttackPercentAdjustment].Should().Be(-15);
+        essenceDrain.Name.Should().Be("Essence Drain");
+        essenceDrain.Icon.Should().Be(EffectIconType.EssenceDrainStatusEffect);
+        essenceDrain.Categories.Should().HaveFlag(StatusEffectCategory.Debuff);
+        essenceDrain.CleanseTypes.Should().HaveFlag(StatusEffectCleanseType.Purify);
+        essenceDrain.CleanseTypes.Should().HaveFlag(StatusEffectCleanseType.SoothePet);
+        essenceDrain.ResistanceType.Should().Be(ResistanceType.Trauma);
 
         var soulDevourer = new SoulDevourerStatusEffect();
         soulDevourer.StatGroup.Stats[StatType.AttackPercentAdjustment].Should().Be(35);
@@ -59,6 +67,44 @@ public class HeavyVibrobladeOffenseTests
         var soulAscension = new SoulAscensionStatusEffect();
         soulAscension.StatGroup.Stats[StatType.AttackPercentAdjustment].Should().Be(15);
         soulAscension.StatGroup.Stats[StatType.PhysicalDamageDealtHPPercentRestore].Should().Be(20);
+    }
+
+    [Test]
+    public void EssenceHunter_AppliesVisibleDebuffFromActivatedWeaponAbilityTarget()
+    {
+        var root = FindRepositoryRoot();
+        var combatSource = File.ReadAllText((root / "SWLOR.Game.Server" / "Service" / "Combat.cs").FullName);
+        var perks = BuildHeavyVibrobladeOffensePerksWithout2daLookup();
+        var essenceHunterPerk = perks[PerkType.EssenceHunter];
+        var activatedRiders = ExtractMethod(combatSource, "private static void ApplyAbilityActivatedRiders(");
+        var heavyVibrobladeActivated = ExtractMethod(combatSource, "private static void ApplyHeavyVibrobladeActivatedEffects(");
+        var essenceHunter = ExtractMethod(combatSource, "private static void ApplyHeavyVibrobladeOffenseActivatedEffects(");
+        var statusRiders = ExtractMethod(combatSource, "private static void ApplyAbilityStatusRiders(");
+
+        AssertPerkLevel(
+            essenceHunterPerk,
+            "Essence Hunter",
+            1,
+            3,
+            12,
+            null,
+            "Heavy Vibroblade Offense weapon abilities also inflict Essence Drain, reducing the target's Attack by 15% for 12 seconds.",
+            StatType.HeavyVibrobladeOffenseEssenceHunter,
+            StatType.HeavyVibrobladeOffenseEssenceHunterTriggerPrimaryPerkType);
+        AssertStatBonus(
+            essenceHunterPerk.PerkLevels[1],
+            StatType.HeavyVibrobladeOffenseEssenceHunterTriggerPrimaryPerkType,
+            (int)PerkType.SoulStrike);
+
+        activatedRiders.Should().Contain("ApplyHeavyVibrobladeActivatedEffects(activator, target, ability);");
+        heavyVibrobladeActivated.Should().Contain("ApplyHeavyVibrobladeOffenseActivatedEffects(activator, target, ability);");
+        statusRiders.Should().NotContain("ApplyHeavyVibrobladeOffense");
+
+        essenceHunter.Should().Contain("ability.ActivationType != AbilityActivationType.Weapon");
+        essenceHunter.Should().Contain("AbilityMatchesAnyPerkTypeStat(");
+        essenceHunter.Should().Contain("StatType.HeavyVibrobladeOffenseEssenceHunter");
+        essenceHunter.Should().Contain("StatType.HeavyVibrobladeOffenseEssenceHunterTriggerPrimaryPerkType");
+        essenceHunter.Should().Contain("StatusEffect.ApplyStatusEffect(activator, target, typeof(EssenceDrainStatusEffect), 12f, CombatDamageType.Physical);");
     }
 
     [Test]
@@ -222,6 +268,17 @@ public class HeavyVibrobladeOffenseTests
         requirement.RequiredRank.Should().Be(rank);
     }
 
+    private static void AssertStatBonus(PerkLevel level, StatType statType, int value)
+    {
+        level.StatBonuses
+            .Should()
+            .ContainSingle(x => x.Stat == statType)
+            .Which
+            .Calculate(0)
+            .Should()
+            .Be(value);
+    }
+
     private static Dictionary<PerkType, PerkDetail> BuildHeavyVibrobladeOffensePerksWithout2daLookup()
     {
         var definition = new HeavyVibrobladePerkDefinition();
@@ -285,6 +342,32 @@ public class HeavyVibrobladeOffenseTests
         }
 
         return result;
+    }
+
+    private static string ExtractMethod(string source, string signature)
+    {
+        var signatureIndex = source.IndexOf(signature, StringComparison.Ordinal);
+        signatureIndex.Should().BeGreaterThanOrEqualTo(0);
+
+        var openBraceIndex = source.IndexOf('{', signatureIndex);
+        openBraceIndex.Should().BeGreaterThanOrEqualTo(0);
+
+        var depth = 0;
+        for (var index = openBraceIndex; index < source.Length; index++)
+        {
+            if (source[index] == '{')
+            {
+                depth++;
+            }
+            else if (source[index] == '}')
+            {
+                depth--;
+                if (depth == 0)
+                    return source.Substring(signatureIndex, index - signatureIndex + 1);
+            }
+        }
+
+        throw new InvalidOperationException($"Could not extract method '{signature}'.");
     }
 
     private static PathInfo FindRepositoryRoot()

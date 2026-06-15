@@ -14,12 +14,41 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         public Dictionary<PerkType, PerkDetail> BuildPerks()
         {
+            ForcePush();
             ThrowLightsaber();
+            ForceLeap();
             FuryStance();
             Precognition();
             ForceConvergence();
 
             return _builder.Build();
+        }
+
+        private void ForcePush()
+        {
+            _builder.Create(PerkCategoryType.ForceUniversal, PerkType.ForcePush)
+                .Name("Force Push")
+
+                .AddPerkLevel()
+                .Description("Deals 8 force DMG to one target, knocks down for 2 seconds, and slows movement for 3 seconds.")
+                .Price(2)
+                .RequirementSkill(SkillType.Force, 5)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                .GrantsFeat(FeatType.ForcePush1)
+
+                .AddPerkLevel()
+                .Description("Deals 12 force DMG to the selected target and up to 1 additional target in a line, knocks down for 2 seconds, and slows movement for 3 seconds.")
+                .Price(3)
+                .RequirementSkill(SkillType.Force, 28)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                .GrantsFeat(FeatType.ForcePush2)
+
+                .AddPerkLevel()
+                .Description("Deals 18 force DMG to the selected target and up to 2 additional targets in a cone, knocks down for 2 seconds, and slows movement for 4 seconds.")
+                .Price(4)
+                .RequirementSkill(SkillType.Force, 48)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                .GrantsFeat(FeatType.ForcePush3);
         }
 
         private void ThrowLightsaber()
@@ -47,6 +76,26 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Force, 45)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ThrowLightsaber3);
+        }
+
+        private void ForceLeap()
+        {
+            _builder.Create(PerkCategoryType.ForceUniversal, PerkType.ForceLeap)
+                .Name("Force Leap")
+
+                .AddPerkLevel()
+                .Description("Leap to a hostile target up to 15m away, dealing 10 force DMG plus WIL scaling and interrupting activation.")
+                .Price(3)
+                .RequirementSkill(SkillType.Force, 10)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                .GrantsFeat(FeatType.ForceLeap1)
+
+                .AddPerkLevel()
+                .Description("Leap to a hostile target up to 18m away, dealing 18 force DMG plus WIL scaling and interrupting activation.")
+                .Price(4)
+                .RequirementSkill(SkillType.Force, 30)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                .GrantsFeat(FeatType.ForceLeap2);
         }
 
         private void FuryStance()

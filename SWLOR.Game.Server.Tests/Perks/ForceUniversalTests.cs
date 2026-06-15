@@ -4,7 +4,6 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Force;
 using SWLOR.Game.Server.Feature.PerkDefinition;
-using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
@@ -13,90 +12,44 @@ using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
-public class ForceLightGuardianTests
+public class ForceUniversalTests
 {
     [Test]
-    public void ForceLightGuardianAbilities_MatchCombatBible()
+    public void ForceUniversalPerkLevels_MatchCombatBible()
     {
-        var guardianWard = new GuardianWardAbilityDefinition().BuildAbilities();
-        AssertAbility(guardianWard[FeatType.GuardianWard1], "Guardian Ward I", 1, RecastGroup.GuardianWard, 18f, 1f, 2, false, true, true, false, AbilityActivationType.Casted, 15f);
-        AssertAbility(guardianWard[FeatType.GuardianWard2], "Guardian Ward II", 2, RecastGroup.GuardianWard, 18f, 1f, 3, false, true, true, false, AbilityActivationType.Casted, 15f);
-        AssertAbility(guardianWard[FeatType.GuardianWard3], "Guardian Ward III", 3, RecastGroup.GuardianWard, 18f, 1f, 4, false, true, true, false, AbilityActivationType.Casted, 15f);
-        AssertAbility(guardianWard[FeatType.GuardianWard4], "Guardian Ward IV", 4, RecastGroup.GuardianWard, 18f, 1f, 6, false, true, true, false, AbilityActivationType.Casted, 15f);
+        var perks = BuildForceUniversalPerksWithout2daLookup();
 
-        var forceIntercept = new ForceInterceptAbilityDefinition().BuildAbilities()[FeatType.ForceIntercept1];
-        AssertAbility(forceIntercept, "Force Intercept", 1, RecastGroup.ForceIntercept, 45f, 0f, 5, false, true, true, false, AbilityActivationType.Casted, 15f);
+        AssertPerkLevel(perks[PerkType.ForcePush], "Force Push", 1, 2, 5, FeatType.ForcePush1,
+            "Deals 8 force DMG to one target, knocks down for 2 seconds, and slows movement for 3 seconds.");
+        AssertPerkLevel(perks[PerkType.ForcePush], "Force Push", 2, 3, 28, FeatType.ForcePush2,
+            "Deals 12 force DMG to the selected target and up to 1 additional target in a line, knocks down for 2 seconds, and slows movement for 3 seconds.");
+        AssertPerkLevel(perks[PerkType.ForcePush], "Force Push", 3, 4, 48, FeatType.ForcePush3,
+            "Deals 18 force DMG to the selected target and up to 2 additional targets in a cone, knocks down for 2 seconds, and slows movement for 4 seconds.");
 
-        var purifyingWave = new PurifyingWaveAbilityDefinition().BuildAbilities()[FeatType.PurifyingWave1];
-        AssertAbility(purifyingWave, "Purifying Wave", 1, RecastGroup.PurifyingWave, 90f, 1.5f, 7, true, false, false, true, AbilityActivationType.Casted, 5f);
-        purifyingWave.CombatImpactDamageAbility.Should().Be(AbilityType.Willpower);
-        purifyingWave.Targeting.Should().NotBeNull();
-        purifyingWave.Targeting!.Flags.Should().Be(
-            AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.HelpsAllies | AbilityTargetingFlags.OriginOnSelf);
+        AssertPerkLevel(perks[PerkType.ForceLeap], "Force Leap", 1, 3, 10, FeatType.ForceLeap1,
+            "Leap to a hostile target up to 15m away, dealing 10 force DMG plus WIL scaling and interrupting activation.");
+        AssertPerkLevel(perks[PerkType.ForceLeap], "Force Leap", 2, 4, 30, FeatType.ForceLeap2,
+            "Leap to a hostile target up to 18m away, dealing 18 force DMG plus WIL scaling and interrupting activation.");
 
-        var lastStand = new LastStandOfTheLightAbilityDefinition().BuildAbilities()[FeatType.LastStandOfTheLight1];
-        AssertAbility(lastStand, "Last Stand of the Light", 1, RecastGroup.Capstone, 345f, 1.5f, 10, false, true, true, false, AbilityActivationType.Casted, 15f);
+        AssertUniversalForcePower(perks[PerkType.ForcePush]);
+        AssertUniversalForcePower(perks[PerkType.ForceLeap]);
     }
 
     [Test]
-    public void ForceLightGuardianStatusEffects_MatchCombatBible()
+    public void ForceUniversalAbilities_MatchCombatBible()
     {
-        var aura = new CourageousResolve1StatusEffect();
-        aura.ApplyEffect(0, 0, 12);
-        aura.StatGroup.Stats[StatType.ForceDamageTakenPercentAdjustment].Should().Be(0);
-        aura.StatGroup.Stats[StatType.MindResistance].Should().Be(10);
+        var forcePush = new ForcePushAbilityDefinition().BuildAbilities();
+        AssertAbility(forcePush[FeatType.ForcePush1], "Force Push I", 1, RecastGroup.ForcePush, 24f, 0f, 2, true, true, true, false, AbilityActivationType.Casted, 8f);
+        AssertAbility(forcePush[FeatType.ForcePush2], "Force Push II", 2, RecastGroup.ForcePush, 24f, 0f, 3, true, false, false, true, AbilityActivationType.Casted, 5f);
+        AssertAbility(forcePush[FeatType.ForcePush3], "Force Push III", 3, RecastGroup.ForcePush, 24f, 0f, 4, true, false, false, true, AbilityActivationType.Casted, 5f);
 
-        var intercept = new ForceIntercept1StatusEffect();
-        intercept.StatGroup.Stats[StatType.DamageTakenRedirectToStatusSourcePercent].Should().Be(50);
-
-        var lastStand = new LastStandOfTheLight1StatusEffect();
-        lastStand.ApplyEffect(0, 0, 45);
-        lastStand.StatGroup.Stats[StatType.FatalDamageTemporaryHPPercent].Should().Be(15);
-        lastStand.StatGroup.Stats[StatType.FatalDamageTemporaryHPDurationSeconds].Should().Be(45);
-
-        var root = FindRepositoryRoot();
-        var knockdown = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "StatusEffectDefinition" / "KnockdownStatusEffect.cs").FullName);
-        knockdown.Should().Contain("StatusEffect.HasStatusEffect(creature, GetType())");
-        knockdown.Should().Contain("Ability.HasTemporaryImmunity(creature, ImmunityType.Knockdown)");
-        knockdown.Should().Contain("ApplyEffectToObject(DurationType.Temporary, effect, creature, duration);");
-        knockdown.Should().Contain("protected override void Remove(uint creature)");
-        knockdown.Should().Contain("Ability.ApplyTemporaryImmunity(creature, 0f, ImmunityType.Knockdown);");
+        var forceLeap = new ForceLeapAbilityDefinition().BuildAbilities();
+        AssertAbility(forceLeap[FeatType.ForceLeap1], "Force Leap I", 1, RecastGroup.ForceLeap, 30f, 0f, 3, true, true, true, false, AbilityActivationType.Casted, 15f);
+        AssertAbility(forceLeap[FeatType.ForceLeap2], "Force Leap II", 2, RecastGroup.ForceLeap, 30f, 0f, 4, true, true, true, false, AbilityActivationType.Casted, 18f);
     }
 
     [Test]
-    public void ForceLightGuardianTraitStatValues_MatchCombatBible()
-    {
-        var root = FindRepositoryRoot();
-        var source = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "PerkDefinition" / "ForceLightGuardianPerkDefinition.cs").FullName);
-
-        source.Should().Contain("EquipmentPredicates.HasMainHandLightsaber(creature) || EquipmentPredicates.HasMainHandVibroblade(creature) ? 4 : 0");
-        source.Should().Contain("EquipmentPredicates.HasMainHandLightsaber(creature) || EquipmentPredicates.HasMainHandVibroblade(creature) ? 10 : 0");
-
-        var purifyingWaveSource = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Force" / "PurifyingWaveAbilityDefinition.cs").FullName);
-        purifyingWaveSource.Should().Contain("AbilityTargeting.GetHostileTargetsNearLocation(activator, impactLocation, 5f, 0)");
-        purifyingWaveSource.Should().MatchRegex(@"SkillType\.Force,\s*22,");
-        purifyingWaveSource.Should().Contain("damageType: CombatDamageType.Force");
-        purifyingWaveSource.Should().Contain(".IsHostileAbility()");
-    }
-
-    [Test]
-    public void LastStandOfTheLight_HasDyingFallbackBeforeForcedPlayerDeath()
-    {
-        var root = FindRepositoryRoot();
-        var combat = File.ReadAllText((root / "SWLOR.Game.Server" / "Service" / "Combat.cs").FullName);
-        var death = File.ReadAllText((root / "SWLOR.Game.Server" / "Service" / "Death.cs").FullName);
-
-        combat.Should().Contain("public static bool TryPreventFatalDamageAndGrantTemporaryHP(");
-        combat.Should().Contain("var isDyingFallback = restoreToOneHP && currentHP <= 0;");
-        combat.Should().Contain("SetCurrentHitPoints(defender, 1);");
-
-        death.Should().Contain("if (Combat.TryPreventFatalDamageAndGrantTemporaryHP(player, 0, restoreToOneHP: true))");
-        death.Should().Contain("return;");
-        death.Should().Contain("ApplyEffectToObject(DurationType.Instant, EffectDeath(), player);");
-    }
-
-    [Test]
-    public void ForceLightGuardianFeatAndAbilityIcons_AreUniqueAndPresent()
+    public void ForceUniversalFeatAndAbilityIcons_AreUniqueAndPresent()
     {
         var root = FindRepositoryRoot();
         var featRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "feat.2da");
@@ -104,13 +57,11 @@ public class ForceLightGuardianTests
 
         var feats = new[]
         {
-            (FeatType.GuardianWard1, "ife_guardwrd1", "M", "0x03", "0", "****", "****", "****", "****"),
-            (FeatType.GuardianWard2, "ife_guardwrd2", "M", "0x03", "0", "****", "****", "****", "****"),
-            (FeatType.GuardianWard3, "ife_guardwrd3", "M", "0x03", "0", "****", "****", "****", "****"),
-            (FeatType.ForceIntercept1, "ife_forceintc1", "M", "0x03", "0", "****", "****", "****", "****"),
-            (FeatType.PurifyingWave1, "ife_prfyngwv1", "P", "0x01", "1", "sphere", "5", "****", "17"),
-            (FeatType.GuardianWard4, "ife_guardwrd4", "M", "0x03", "0", "****", "****", "****", "****"),
-            (FeatType.LastStandOfTheLight1, "ife_laststndlgh1", "M", "0x03", "0", "****", "****", "****", "****")
+            (FeatType.ForcePush1, "ife_forcepsh1", "M", "0x02", "1", "****", "****", "****", "****"),
+            (FeatType.ForceLeap1, "ife_forcelp1", "M", "0x02", "1", "****", "****", "****", "****"),
+            (FeatType.ForcePush2, "ife_forcepsh2", "M", "0x3E", "1", "rectangle", "8", "2.5", "17"),
+            (FeatType.ForceLeap2, "ife_forcelp2", "M", "0x02", "1", "****", "****", "****", "****"),
+            (FeatType.ForcePush3, "ife_forcepsh3", "M", "0x3E", "1", "cone", "6", "5", "17")
         };
         var seenIcons = new HashSet<string>();
 
@@ -142,11 +93,10 @@ public class ForceLightGuardianTests
         int price,
         int? skillRank,
         FeatType? grantedFeat,
-        string description,
-        params StatType[] statTypes)
+        string description)
     {
         perk.Name.Should().Be(name);
-        perk.Category.Should().Be(PerkCategoryType.ForceLight);
+        perk.Category.Should().Be(PerkCategoryType.ForceUniversal);
 
         var perkLevel = perk.PerkLevels[level];
         perkLevel.Price.Should().Be(price);
@@ -163,10 +113,7 @@ public class ForceLightGuardianTests
         else
             perkLevel.GrantedFeats.Should().BeEmpty();
 
-        if (statTypes.Length > 0)
-            perkLevel.StatBonuses.Select(x => x.Stat).Should().HaveCount(statTypes.Length).And.Contain(statTypes);
-        else
-            perkLevel.StatBonuses.Should().BeEmpty();
+        perkLevel.StatBonuses.Should().BeEmpty();
     }
 
     private static void AssertAbility(
@@ -242,28 +189,27 @@ public class ForceLightGuardianTests
         perk.StatBonuses.Select(x => x.Stat).Should().NotContain(StatType.ForceAffinity);
     }
 
-    private static Dictionary<PerkType, PerkDetail> BuildForceLightGuardianPerksWithout2daLookup()
+    private static Dictionary<PerkType, PerkDetail> BuildForceUniversalPerksWithout2daLookup()
     {
-        var definition = new ForceLightGuardianPerkDefinition();
+        var definition = new ForceUniversalPerkDefinition();
         var methodNames = new[]
         {
-            "CourageousResolve",
-            "DeflectivePresence",
-            "ForceIntercept",
-            "GuardianWard",
-            "LastStandOfTheLight",
-            "PurifyingWave",
-            "ReflectiveBarrier"
+            "ForcePush",
+            "ThrowLightsaber",
+            "ForceLeap",
+            "FuryStance",
+            "Precognition",
+            "ForceConvergence"
         };
 
         foreach (var methodName in methodNames)
         {
-            typeof(ForceLightGuardianPerkDefinition)
+            typeof(ForceUniversalPerkDefinition)
                 .GetMethod(methodName, BindingFlags.Instance | BindingFlags.NonPublic)!
                 .Invoke(definition, null);
         }
 
-        var builder = typeof(ForceLightGuardianPerkDefinition)
+        var builder = typeof(ForceUniversalPerkDefinition)
             .GetField("_builder", BindingFlags.Instance | BindingFlags.NonPublic)!
             .GetValue(definition);
 

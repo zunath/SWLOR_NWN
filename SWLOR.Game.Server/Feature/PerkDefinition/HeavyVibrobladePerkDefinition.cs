@@ -312,7 +312,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Last Stand")
 
                 .AddPerkLevel()
-                .Description("When reduced below 25% HP, gain a damage shield equal to 20% of maximum HP for 12 seconds. This can only trigger once per 10 minutes.")
+                .Description("When reduced below 25% HP, gain Temporary HP equal to 20% of maximum HP for 12 seconds. This can only trigger once per 10 minutes.")
                 .IncreasesStat(StatType.LowHPTemporaryHPThresholdPercent, 25)
                 .IncreasesStat(StatType.LowHPTemporaryHPPercent, 20)
                 .IncreasesStat(StatType.LowHPTemporaryHPDurationSeconds, 12)

@@ -125,6 +125,42 @@ public class HeavyVibrobladeDefenseTests
     }
 
     [Test]
+    public void LastStand_GrantsTemporaryHitPointsOnLowHPThreshold()
+    {
+        var perks = BuildHeavyVibrobladeDefensePerksWithout2daLookup();
+        var lastStand = perks[PerkType.LastStand];
+
+        AssertPerkLevel(
+            lastStand,
+            "Last Stand",
+            1,
+            3,
+            20,
+            null,
+            "When reduced below 25% HP, gain Temporary HP equal to 20% of maximum HP for 12 seconds. This can only trigger once per 10 minutes.",
+            StatType.LowHPTemporaryHPThresholdPercent,
+            StatType.LowHPTemporaryHPPercent,
+            StatType.LowHPTemporaryHPDurationSeconds,
+            StatType.LowHPTemporaryHPCooldownSeconds);
+        AssertStatBonus(lastStand.PerkLevels[1], StatType.LowHPTemporaryHPThresholdPercent, 25);
+        AssertStatBonus(lastStand.PerkLevels[1], StatType.LowHPTemporaryHPPercent, 20);
+        AssertStatBonus(lastStand.PerkLevels[1], StatType.LowHPTemporaryHPDurationSeconds, 12);
+        AssertStatBonus(lastStand.PerkLevels[1], StatType.LowHPTemporaryHPCooldownSeconds, 600);
+
+        var root = FindRepositoryRoot();
+        var combatSource = File.ReadAllText((root / "SWLOR.Game.Server" / "Service" / "Combat.cs").FullName);
+        var damageTakenModifiers = ExtractMethod(combatSource, "public static int ApplyDamageTakenModifiers(");
+        var fatalLowHPTrigger = ExtractMethod(combatSource, "private static void ApplyLowHPTemporaryHPBeforeFatalDamage(");
+
+        damageTakenModifiers.Should().Contain("if (TryPreventFatalDamageAndGrantTemporaryHP(defender, damage, restoreToOneHP: false))");
+        damageTakenModifiers.Should().Contain("ApplyLowHPTemporaryHPBeforeFatalDamage(defender, damage);");
+        fatalLowHPTrigger.Should().Contain("var projectedHP = currentHP - damage;");
+        fatalLowHPTrigger.Should().Contain("projectedHP > 0");
+        fatalLowHPTrigger.Should().Contain("TryUseStatTrigger(defender, StatType.LowHPTemporaryHPPercent, cooldown)");
+        fatalLowHPTrigger.Should().Contain("ApplyEffectToObject(DurationType.Temporary, EffectTemporaryHitpoints(temporaryHP), defender, duration);");
+    }
+
+    [Test]
     public void PersistentTogglePerks_RegisterRefundCleanup()
     {
         var bastion = new BastionStanceAbilityDefinition().BuildAbilities()[FeatType.BastionStance1];
@@ -280,6 +316,32 @@ public class HeavyVibrobladeDefenseTests
 
         var resolved = (SkillType)method!.Invoke(null, new object[] { 0u, ability, new AbilityImpactSummary() })!;
         resolved.Should().Be(skillType);
+    }
+
+    private static string ExtractMethod(string source, string signature)
+    {
+        var signatureIndex = source.IndexOf(signature, StringComparison.Ordinal);
+        signatureIndex.Should().BeGreaterThanOrEqualTo(0);
+
+        var openBraceIndex = source.IndexOf('{', signatureIndex);
+        openBraceIndex.Should().BeGreaterThanOrEqualTo(0);
+
+        var depth = 0;
+        for (var index = openBraceIndex; index < source.Length; index++)
+        {
+            if (source[index] == '{')
+            {
+                depth++;
+            }
+            else if (source[index] == '}')
+            {
+                depth--;
+                if (depth == 0)
+                    return source.Substring(signatureIndex, index - signatureIndex + 1);
+            }
+        }
+
+        throw new InvalidOperationException($"Could not extract method '{signature}'.");
     }
 
     private static void AssertAbility(

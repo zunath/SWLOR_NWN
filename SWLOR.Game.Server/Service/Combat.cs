@@ -382,7 +382,11 @@ namespace SWLOR.Game.Server.Service
             if (damage <= 0)
                 return 0;
 
-            return PreventFatalDamageAndGrantTemporaryHP(defender, damage);
+            if (TryPreventFatalDamageAndGrantTemporaryHP(defender, damage, restoreToOneHP: false))
+                return 0;
+
+            ApplyLowHPTemporaryHPBeforeFatalDamage(defender, damage);
+            return damage;
         }
 
         private static int ApplyDamageTakenRedirectToStatusSource(
@@ -486,13 +490,6 @@ namespace SWLOR.Game.Server.Service
                 damage += (int)Math.Ceiling(damage * (adjustment / 100f));
 
             return Math.Max(0, damage);
-        }
-
-        private static int PreventFatalDamageAndGrantTemporaryHP(uint defender, int damage)
-        {
-            return TryPreventFatalDamageAndGrantTemporaryHP(defender, damage, restoreToOneHP: false)
-                ? 0
-                : damage;
         }
 
         public static bool TryPreventFatalDamageAndGrantTemporaryHP(
@@ -1614,6 +1611,35 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             var temporaryHP = Math.Max(1, (int)Math.Ceiling(GetMaxHitPoints(defender) * (temporaryHPPercent / 100f)));
+            ApplyEffectToObject(DurationType.Temporary, EffectTemporaryHitpoints(temporaryHP), defender, duration);
+        }
+
+        private static void ApplyLowHPTemporaryHPBeforeFatalDamage(uint defender, int damage)
+        {
+            if (!GetIsObjectValid(defender) || GetIsDead(defender) || damage <= 0)
+                return;
+
+            var threshold = Stat.GetStatAdjustment(defender, StatType.LowHPTemporaryHPThresholdPercent);
+            var temporaryHPPercent = Stat.GetStatAdjustment(defender, StatType.LowHPTemporaryHPPercent);
+            var duration = Stat.GetStatAdjustment(defender, StatType.LowHPTemporaryHPDurationSeconds);
+            var cooldown = Stat.GetStatAdjustment(defender, StatType.LowHPTemporaryHPCooldownSeconds);
+            if (threshold <= 0 || temporaryHPPercent <= 0 || duration <= 0)
+                return;
+
+            var maxHP = GetMaxHitPoints(defender);
+            var currentHP = GetCurrentHitPoints(defender);
+            if (maxHP <= 0 || currentHP <= 0)
+                return;
+
+            var thresholdHP = maxHP * (threshold / 100f);
+            var projectedHP = currentHP - damage;
+            if (currentHP < thresholdHP || projectedHP >= thresholdHP || projectedHP > 0)
+                return;
+
+            if (!TryUseStatTrigger(defender, StatType.LowHPTemporaryHPPercent, cooldown))
+                return;
+
+            var temporaryHP = Math.Max(1, (int)Math.Ceiling(maxHP * (temporaryHPPercent / 100f)));
             ApplyEffectToObject(DurationType.Temporary, EffectTemporaryHitpoints(temporaryHP), defender, duration);
         }
 

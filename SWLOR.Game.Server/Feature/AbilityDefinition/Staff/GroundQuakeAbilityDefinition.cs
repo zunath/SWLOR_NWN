@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
 {
@@ -56,12 +57,36 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
 
         private static void GroundQuake1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.Staff, 18, 2, typeof(KnockdownStatusEffect), CombatImpactAreaShape.Sphere, 0.25f, 5f, centerOnActivator: true);
+            Ability.ApplyTelegraphedCombatImpact(
+                activator,
+                target,
+                targetLocation,
+                SkillType.Staff,
+                18,
+                2,
+                typeof(KnockdownStatusEffect),
+                CombatImpactAreaShape.Sphere,
+                0.25f,
+                5f,
+                centerOnActivator: true,
+                areaVisualEffect: VisualEffect.Vfx_Fnf_Screen_Shake);
         }
 
         private static void GroundQuake2ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.Staff, 28, 3, typeof(KnockdownStatusEffect), CombatImpactAreaShape.Sphere, 0.25f, 5f, centerOnActivator: true);
+            Ability.ApplyTelegraphedCombatImpact(
+                activator,
+                target,
+                targetLocation,
+                SkillType.Staff,
+                28,
+                3,
+                typeof(KnockdownStatusEffect),
+                CombatImpactAreaShape.Sphere,
+                0.25f,
+                5f,
+                centerOnActivator: true,
+                areaVisualEffect: VisualEffect.Vfx_Fnf_Screen_Shake);
         }
     }
 }

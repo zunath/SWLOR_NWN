@@ -139,10 +139,11 @@ public class StaffCrusherTests
         ribBreaker.Should().Contain("SkillType.Staff, 42, 15, typeof(WeakenedStatusEffect)");
         ribBreaker.Should().Contain("new WeakenedStatusEffect(20)");
 
-        var groundQuake = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Staff" / "GroundQuakeAbilityDefinition.cs").FullName);
-        groundQuake.Should().Contain("SkillType.Staff, 18, 2, typeof(KnockdownStatusEffect)");
-        groundQuake.Should().Contain("SkillType.Staff, 28, 3, typeof(KnockdownStatusEffect)");
+        var groundQuake = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Staff" / "GroundQuakeAbilityDefinition.cs").FullName).Replace("\r\n", "\n");
+        groundQuake.Should().Contain("SkillType.Staff,\n                18,\n                2,\n                typeof(KnockdownStatusEffect)");
+        groundQuake.Should().Contain("SkillType.Staff,\n                28,\n                3,\n                typeof(KnockdownStatusEffect)");
         groundQuake.Should().Contain("centerOnActivator: true");
+        groundQuake.Should().Contain("areaVisualEffect: VisualEffect.Vfx_Fnf_Screen_Shake");
 
         var bonecrusher = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Staff" / "BonecrusherAbilityDefinition.cs").FullName);
         bonecrusher.Should().Contain("StatusEffect.HasStatusEffect(target, typeof(KnockdownStatusEffect))");
@@ -160,6 +161,7 @@ public class StaffCrusherTests
         worldbreaker.Should().Contain("typeof(KnockdownStatusEffect)");
         worldbreaker.Should().Contain("3f");
         worldbreaker.Should().Contain("centerOnActivator: true");
+        worldbreaker.Should().Contain("areaVisualEffect: VisualEffect.Vfx_Fnf_Screen_Shake");
     }
 
     private static void AssertPerkLevel(

@@ -65,7 +65,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 RadiusMeters,
                 0f,
                 Array.Empty<Type>(),
-                centerOnActivator: !GetIsObjectValid(target),
                 damageType: CombatDamageType.Electrical,
                 statusResistanceType: ResistanceType.Disruption,
                 targetVisualEffect: VisualEffect.Vfx_Com_Hit_Electrical,

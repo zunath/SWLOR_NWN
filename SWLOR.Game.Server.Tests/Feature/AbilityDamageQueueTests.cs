@@ -31,6 +31,37 @@ public class AbilityDamageQueueTests
         impactIndex.Should().BeLessThan(resumeIndex);
     }
 
+    [Test]
+    public void TrackedAbilityImpacts_FlushQueuedDamageEffectsTogether()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "Ability.cs")).Replace("\r\n", "\n");
+        var endImpactBody = source.Substring(
+            source.IndexOf("public static AbilityImpactSummary EndAbilityImpact", StringComparison.Ordinal),
+            source.IndexOf("private static TrackedAbilityImpact GetTrackedAbilityImpact", StringComparison.Ordinal) -
+            source.IndexOf("public static AbilityImpactSummary EndAbilityImpact", StringComparison.Ordinal));
+        var queueBody = source.Substring(
+            source.IndexOf("public void QueueDamageEffect", StringComparison.Ordinal),
+            source.IndexOf("public void FlushDamageEffects", StringComparison.Ordinal) -
+            source.IndexOf("public void QueueDamageEffect", StringComparison.Ordinal));
+        var flushBody = source.Substring(
+            source.IndexOf("public void FlushDamageEffects", StringComparison.Ordinal),
+            source.IndexOf("private sealed class PendingDamageEffect", StringComparison.Ordinal) -
+            source.IndexOf("public void FlushDamageEffects", StringComparison.Ordinal));
+
+        endImpactBody.Should().Contain("impact.FlushDamageEffects(activator);");
+        source.Should().Contain("trackedImpact.QueueDamageEffect(");
+        queueBody.Should().Contain("_pendingDamageEffects.Add(new PendingDamageEffect(target, damage, damageType));");
+        flushBody.Should().Contain("var effects = _pendingDamageEffects.ToArray();");
+        flushBody.Should().Contain("AssignCommand(activator, () =>");
+        flushBody.Should().Contain("foreach (var effect in effects)");
+        flushBody.Should().Contain("EffectDamage(effect.Damage, effect.DamageType)");
+    }
+
     private static DirectoryInfo FindRepositoryRoot()
     {
         var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);

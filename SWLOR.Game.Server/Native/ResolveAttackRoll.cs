@@ -1,6 +1,7 @@
 using NWN.Native.API;
 using NWNX.NET;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.LogService;
@@ -228,57 +229,65 @@ namespace SWLOR.Game.Server.Native
                 // Hit
                 if (isHit)
                 {
-                    var criticalStat = attackerStats.GetDEXStat();
-                    var criticalRoll = Random.D100(1);
-                    var criticalModifier = CalculateCriticalRateModifier(attacker);
-                    criticalModifier += Combat.PrepareOpeningAutoAttack(attacker.m_idSelf, weaponSkillType);
-                    criticalModifier += Combat.GetSideAttackCriticalRateAdjustment(attacker.m_idSelf, defender.m_idSelf, weaponSkillType);
-                    var criticalSkillRank = GetCriticalSkillRank(attacker, weapon);
-                    var criticalRate = Combat.CalculateCriticalRate(
-                        criticalStat,
-                        defender.m_pStats.GetCONStat(),
-                        criticalSkillRank,
-                        criticalModifier);
-
-                    // Critical
-                    if (criticalRoll <= criticalRate)
+                    if (UsePerkFeat.HasQueuedWeaponAbility(attacker.m_idSelf))
                     {
-                        Log.Write(LogGroup.Attack, $"Critical hit");
-
-                        // Critical Hit - populate variables for feedback
-                        pAttackData.m_bCriticalThreat = 1;
-                        pAttackData.m_nThreatRoll = 1;
-
-                        if (Stat.GetStatAdjustment(defender.m_idSelf, StatType.IncomingCriticalHitDowngradeToMinimumDamage) > 0)
-                        {
-                            Log.Write(LogGroup.Attack, $"Critical hit downgraded by defender stats");
-                            TemporaryStatModifier.Replace(
-                                defender.m_idSelf,
-                                StatType.CurrentIncomingAttackMinimumDamage,
-                                1,
-                                6,
-                                StatType.CurrentIncomingAttackMinimumDamage);
-                            pAttackData.m_nAttackResult = AttackResultRegularHit;
-                        }
-                        else if (defender.m_pStats.GetEffectImmunity((byte)ImmunityType.CriticalHit, attacker) == 1)
-                        {
-                            Log.Write(LogGroup.Attack, $"Immune to critical hits");
-                            // Immune!
-                            var defenderName = (defender.GetFirstName().GetSimple() + " " + defender.GetLastName().GetSimple()).Trim();
-                            attacker.SendFeedbackString(new CExoString($"{defenderName} is immune to critical hits!"));
-                            pAttackData.m_nAttackResult = AttackResultRegularHit;
-                        }
-                        else
-                        {
-                            Log.Write(LogGroup.Attack, $"Not immune to critical hits - dealing crit damage");
-                            pAttackData.m_nAttackResult = AttackResultCriticalHit;
-                        }
+                        Log.Write(LogGroup.Attack, $"Queued weapon ability hit - attack result 1");
+                        pAttackData.m_nAttackResult = AttackResultRegularHit;
                     }
-                    // Regular Hit
                     else
                     {
-                        Log.Write(LogGroup.Attack, $"Regular hit - attack result 1");
-                        pAttackData.m_nAttackResult = AttackResultRegularHit;
+                        var criticalStat = attackerStats.GetDEXStat();
+                        var criticalRoll = Random.D100(1);
+                        var criticalModifier = CalculateCriticalRateModifier(attacker);
+                        criticalModifier += Combat.PrepareOpeningAutoAttack(attacker.m_idSelf, weaponSkillType);
+                        criticalModifier += Combat.GetSideAttackCriticalRateAdjustment(attacker.m_idSelf, defender.m_idSelf, weaponSkillType);
+                        var criticalSkillRank = GetCriticalSkillRank(attacker, weapon);
+                        var criticalRate = Combat.CalculateCriticalRate(
+                            criticalStat,
+                            defender.m_pStats.GetCONStat(),
+                            criticalSkillRank,
+                            criticalModifier);
+
+                        // Critical
+                        if (criticalRoll <= criticalRate)
+                        {
+                            Log.Write(LogGroup.Attack, $"Critical hit");
+
+                            // Critical Hit - populate variables for feedback
+                            pAttackData.m_bCriticalThreat = 1;
+                            pAttackData.m_nThreatRoll = 1;
+
+                            if (Stat.GetStatAdjustment(defender.m_idSelf, StatType.IncomingCriticalHitDowngradeToMinimumDamage) > 0)
+                            {
+                                Log.Write(LogGroup.Attack, $"Critical hit downgraded by defender stats");
+                                TemporaryStatModifier.Replace(
+                                    defender.m_idSelf,
+                                    StatType.CurrentIncomingAttackMinimumDamage,
+                                    1,
+                                    6,
+                                    StatType.CurrentIncomingAttackMinimumDamage);
+                                pAttackData.m_nAttackResult = AttackResultRegularHit;
+                            }
+                            else if (defender.m_pStats.GetEffectImmunity((byte)ImmunityType.CriticalHit, attacker) == 1)
+                            {
+                                Log.Write(LogGroup.Attack, $"Immune to critical hits");
+                                // Immune!
+                                var defenderName = (defender.GetFirstName().GetSimple() + " " + defender.GetLastName().GetSimple()).Trim();
+                                attacker.SendFeedbackString(new CExoString($"{defenderName} is immune to critical hits!"));
+                                pAttackData.m_nAttackResult = AttackResultRegularHit;
+                            }
+                            else
+                            {
+                                Log.Write(LogGroup.Attack, $"Not immune to critical hits - dealing crit damage");
+                                pAttackData.m_nAttackResult = AttackResultCriticalHit;
+                            }
+                        }
+                        // Regular Hit
+                        else
+                        {
+                            Log.Write(LogGroup.Attack, $"Regular hit - attack result 1");
+                            pAttackData.m_nAttackResult = AttackResultRegularHit;
+                        }
                     }
 
                     Combat.TrackAttackActivity(attacker.m_idSelf);
@@ -308,7 +317,7 @@ namespace SWLOR.Game.Server.Native
                 attacker.ResolveDefensiveEffects(defender, isHit ? 1 : 0);
 
                 Log.Write(LogGroup.Attack, $"Building combat log message");
-                var message = Combat.BuildCombatLogMessageNative(
+                var message = BuildAttackFeedbackMessage(
                     attacker,
                     defender,
                     pAttackData.m_nAttackResult,
@@ -324,6 +333,37 @@ namespace SWLOR.Game.Server.Native
 
                 ProfilerPlugin.PopPerfScope();
             });
+        }
+
+        private static string BuildAttackFeedbackMessage(
+            CNWSCreature attacker,
+            CNWSCreature defender,
+            int attackResultType,
+            int hitRate)
+        {
+            if (IsSuccessfulAttackResult(attackResultType) &&
+                UsePerkFeat.TryGetQueuedWeaponAbility(attacker.m_idSelf, out var queuedAbility))
+            {
+                return Combat.BuildAbilityCombatLogMessage(
+                    attacker.m_idSelf,
+                    defender.m_idSelf,
+                    queuedAbility.Name,
+                    attackResultType,
+                    hitRate);
+            }
+
+            return Combat.BuildCombatLogMessageNative(
+                attacker,
+                defender,
+                attackResultType,
+                hitRate);
+        }
+
+        private static bool IsSuccessfulAttackResult(int attackResultType)
+        {
+            return attackResultType == AttackResultAutomaticHit ||
+                   attackResultType == AttackResultRegularHit ||
+                   attackResultType == AttackResultCriticalHit;
         }
 
         private static int CalculateRangeModifiers(uint attackType, CNWSCreature attacker, CNWSCreature defender, CNWSItem weapon)

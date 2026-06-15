@@ -99,6 +99,59 @@ public class DevicesGrenadierTests
         }
     }
 
+    [Test]
+    public void DevicesGrenadierImpactDefinitions_MatchAreaDamageContracts()
+    {
+        var root = FindRepositoryRoot();
+        string ReadDeviceSource(string fileName)
+        {
+            return File.ReadAllText((
+                root /
+                "SWLOR.Game.Server" /
+                "Feature" /
+                "AbilityDefinition" /
+                "Devices" /
+                fileName).FullName).Replace("\r\n", "\n");
+        }
+
+        var ionGrenade = ReadDeviceSource("IonGrenadeAbilityDefinition.cs");
+        var concussionGrenade = ReadDeviceSource("ConcussionGrenadeAbilityDefinition.cs");
+        var clusterGrenade = ReadDeviceSource("ClusterGrenadeAbilityDefinition.cs");
+        var disruptionPulse = ReadDeviceSource("DisruptionPulseAbilityDefinition.cs");
+        var thermalDetonator = ReadDeviceSource("ThermalDetonatorAbilityDefinition.cs");
+
+        var reportedAreaDamageSources = new[]
+        {
+            ionGrenade,
+            concussionGrenade,
+            clusterGrenade,
+            disruptionPulse,
+            thermalDetonator
+        };
+
+        reportedAreaDamageSources.Should().OnlyContain(source => !source.Contains("EffectDamage("));
+
+        ionGrenade.Should().Contain("while (GetIsObjectValid(creature))");
+        ionGrenade.Should().Contain("Ability.ApplyCombatImpact(");
+        ionGrenade.Should().Contain("damageType: CombatDamageType.Electrical");
+
+        concussionGrenade.Should().Contain("Ability.ApplyTelegraphedCombatImpact(");
+        concussionGrenade.Should().Contain("DeviceAbilityEffects.ApplyGrenadeRadiusBonus(activator, 3f)");
+        concussionGrenade.Should().Contain("damageType: CombatDamageType.Electrical");
+
+        clusterGrenade.Should().Contain("foreach (var grenadeTarget in grenadeTargets)");
+        clusterGrenade.Should().Contain("ApplyClusterBlast(activator, grenadeTarget, GetLocation(grenadeTarget));");
+        clusterGrenade.Should().Contain("Ability.ApplyTelegraphedCombatImpact(");
+        clusterGrenade.Should().Contain("damageType: CombatDamageType.Fire");
+
+        disruptionPulse.Should().Contain("var impactLocation = AbilityTargeting.ResolveImpactLocation(activator, target, targetLocation);");
+        disruptionPulse.Should().Contain("RadiusMeters,");
+        disruptionPulse.Should().NotContain("centerOnActivator: !GetIsObjectValid(target)");
+
+        thermalDetonator.Should().Contain("SkillType.Devices,\n                60,");
+        thermalDetonator.Should().Contain("typeof(BurnStatusEffect)");
+    }
+
     private static void AssertPerkLevel(
         PerkDetail perk,
         string name,

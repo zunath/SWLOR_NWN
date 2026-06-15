@@ -133,16 +133,91 @@ public class CombatDamageTests
     {
         var root = FindRepositoryRoot();
         var abilitySource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Ability.cs"));
+        var combatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
         var usePerkFeatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "UsePerkFeat.cs"));
+        var damageRollSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Native", "GetDamageRoll.cs"));
+        var attackRollSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Native", "ResolveAttackRoll.cs"));
 
         usePerkFeatSource.Should().Contain("Weapon abilities are queued for the next time the activator's attack lands on an enemy.");
         usePerkFeatSource.Should().Contain("ProcessQueuedWeaponAbility()");
         usePerkFeatSource.Should().Contain("Ability.BeginAbilityImpact(activator, abilityDetail);");
+        usePerkFeatSource.Should().Contain("public static bool HasQueuedWeaponAbility(uint activator)");
+        usePerkFeatSource.Should().Contain("public static bool TryGetQueuedWeaponAbility(uint activator, out AbilityDetail ability)");
+        usePerkFeatSource.Should().Contain("var abilityId = GetLocalString(activator, ActiveAbilityIdName);");
+        usePerkFeatSource.Should().Contain("if (string.IsNullOrWhiteSpace(abilityId))");
+        usePerkFeatSource.Should().Contain("ability = Ability.GetAbilityDetail(activeWeaponAbility);");
+        usePerkFeatSource.Should().Contain("if (ability.ActivationType == AbilityActivationType.Weapon)");
+        usePerkFeatSource.Should().Contain("ability = null;");
+        usePerkFeatSource.Should().Contain("return false;");
+        combatSource.Should().Contain("public static void ConsumeSuppressedAutoAttackDamageBonuses(uint attacker, SkillType skillType)");
+        var preparedAutoAttackCleanupIndex = combatSource.IndexOf(
+            "public static void ConsumeSuppressedAutoAttackDamageBonuses",
+            StringComparison.Ordinal);
+        var nextCombatMethodIndex = combatSource.IndexOf(
+            "private static void ApplyAutoAttackMasterResourceRestore",
+            StringComparison.Ordinal);
+        preparedAutoAttackCleanupIndex.Should().BeGreaterThanOrEqualTo(0);
+        nextCombatMethodIndex.Should().BeGreaterThan(preparedAutoAttackCleanupIndex);
+        var preparedAutoAttackCleanupBody = combatSource.Substring(
+            preparedAutoAttackCleanupIndex,
+            nextCombatMethodIndex - preparedAutoAttackCleanupIndex);
+        preparedAutoAttackCleanupBody.Should().Contain("TemporaryStatModifier.Consume(");
+        preparedAutoAttackCleanupBody.Should().Contain("StatType.CurrentAutoAttackDamageBonus");
+        preparedAutoAttackCleanupBody.Should().Contain("ConsumeNextSkillAutoAttackDamageBonus(attacker, skillType);");
+        preparedAutoAttackCleanupBody.Should().Contain("StatType.NextAutoAttackDamageBonus");
+        damageRollSource.Should().Contain("UsePerkFeat.HasQueuedWeaponAbility(attacker.m_idSelf)");
+        damageRollSource.Should().Contain("Combat.ConsumeSuppressedAutoAttackDamageBonuses(attacker.m_idSelf, skillType);");
+        var queuedAbilitySuppressionIndex = damageRollSource.IndexOf(
+            "UsePerkFeat.HasQueuedWeaponAbility(attacker.m_idSelf)",
+            StringComparison.Ordinal);
+        var queuedAbilityCleanupIndex = damageRollSource.IndexOf(
+            "Combat.ConsumeSuppressedAutoAttackDamageBonuses(attacker.m_idSelf, skillType);",
+            StringComparison.Ordinal);
+        var calculateDamageIndex = damageRollSource.IndexOf(
+            "var damage = CalculateTargetSpecificDamage",
+            StringComparison.Ordinal);
+        var guardedHitIndex = damageRollSource.IndexOf(
+            "Combat.ApplyGuardedHitModifiers(target.m_idSelf, attacker.m_idSelf, damage, damageType);",
+            StringComparison.Ordinal);
+
+        queuedAbilitySuppressionIndex.Should().BeGreaterThanOrEqualTo(0);
+        queuedAbilityCleanupIndex.Should().BeGreaterThanOrEqualTo(0);
+        calculateDamageIndex.Should().BeGreaterThanOrEqualTo(0);
+        guardedHitIndex.Should().BeGreaterThanOrEqualTo(0);
+        queuedAbilitySuppressionIndex.Should().BeLessThan(calculateDamageIndex);
+        queuedAbilitySuppressionIndex.Should().BeLessThan(guardedHitIndex);
+        queuedAbilityCleanupIndex.Should().BeLessThan(calculateDamageIndex);
+        queuedAbilityCleanupIndex.Should().BeLessThan(guardedHitIndex);
         abilitySource.Should().Contain("private static bool ShouldResolveCombatImpactHit(TrackedAbilityImpact trackedImpact)");
         abilitySource.Should().Contain("trackedImpact?.Ability?.ActivationType != AbilityActivationType.Weapon");
         abilitySource.Should().MatchRegex(
             @"if \(shouldResolveHit &&\s*!Combat\.TryResolveAbilityHit\(activator, target, skillType, perkType, out hitRate");
         abilitySource.Should().MatchRegex(@"if \(shouldResolveHit\)\s*SendCombatImpactResultMessage");
+        attackRollSource.Should().Contain("private static string BuildAttackFeedbackMessage");
+        attackRollSource.Should().Contain("IsSuccessfulAttackResult(attackResultType)");
+        attackRollSource.Should().Contain("UsePerkFeat.TryGetQueuedWeaponAbility(attacker.m_idSelf, out var queuedAbility)");
+        attackRollSource.Should().Contain("Combat.BuildAbilityCombatLogMessage(");
+        attackRollSource.Should().Contain("queuedAbility.Name");
+        attackRollSource.Should().Contain("Combat.BuildCombatLogMessageNative(");
+        var queuedWeaponHitBranchIndex = attackRollSource.IndexOf(
+            "if (UsePerkFeat.HasQueuedWeaponAbility(attacker.m_idSelf))",
+            StringComparison.Ordinal);
+        var nativeCriticalPreparationIndex = attackRollSource.IndexOf(
+            "var criticalStat = attackerStats.GetDEXStat();",
+            StringComparison.Ordinal);
+        var criticalWardStateIndex = attackRollSource.IndexOf(
+            "StatType.CurrentIncomingAttackMinimumDamage",
+            StringComparison.Ordinal);
+        queuedWeaponHitBranchIndex.Should().BeGreaterThanOrEqualTo(0);
+        nativeCriticalPreparationIndex.Should().BeGreaterThan(queuedWeaponHitBranchIndex);
+        criticalWardStateIndex.Should().BeGreaterThan(queuedWeaponHitBranchIndex);
+        var queuedWeaponHitBranchBody = attackRollSource.Substring(
+            queuedWeaponHitBranchIndex,
+            nativeCriticalPreparationIndex - queuedWeaponHitBranchIndex);
+        queuedWeaponHitBranchBody.Should().Contain("pAttackData.m_nAttackResult = AttackResultRegularHit;");
+        queuedWeaponHitBranchBody.Should().Contain("else");
+        queuedWeaponHitBranchBody.Should().NotContain("Combat.PrepareOpeningAutoAttack");
+        queuedWeaponHitBranchBody.Should().NotContain("StatType.CurrentIncomingAttackMinimumDamage");
     }
 
     [Test]

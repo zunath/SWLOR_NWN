@@ -129,6 +129,7 @@ namespace SWLOR.Game.Server.Service
                 return new AbilityImpactSummary();
 
             _trackedAbilityImpacts.Remove(activator);
+            impact.FlushDamageEffects(activator);
             return impact.Summary;
         }
 
@@ -1614,12 +1615,23 @@ namespace SWLOR.Game.Server.Service
             if (damage > 0)
             {
                 Combat.SendTemporaryHitPointDamageFeedback(activator, target, damage);
-                AssignCommand(
-                    activator,
-                    () => ApplyEffectToObject(
-                        DurationType.Instant,
-                        EffectDamage(damage, effectDamageType ?? damageType.GetNWScriptDamageType()),
-                        target));
+                if (trackedImpact == null)
+                {
+                    AssignCommand(
+                        activator,
+                        () => ApplyEffectToObject(
+                            DurationType.Instant,
+                            EffectDamage(damage, effectDamageType ?? damageType.GetNWScriptDamageType()),
+                            target));
+                }
+                else
+                {
+                    trackedImpact.QueueDamageEffect(
+                        target,
+                        damage,
+                        effectDamageType ?? damageType.GetNWScriptDamageType());
+                }
+
                 ApplyDarkForceConversion(activator, target, damage);
                 Combat.ApplyDamageDealtEffects(activator, target, damage, skillType, damageType);
                 StatusEffect.NotifyDamageStatusEffects(activator, target, damage, damageType);
@@ -2363,6 +2375,7 @@ namespace SWLOR.Game.Server.Service
         private sealed class TrackedAbilityImpact
         {
             private readonly HashSet<uint> _impactedTargets = new();
+            private readonly List<PendingDamageEffect> _pendingDamageEffects = new();
 
             public AbilityDetail Ability { get; }
             public AbilityImpactSummary Summary { get; }
@@ -2418,6 +2431,51 @@ namespace SWLOR.Game.Server.Service
                     Summary.IsSingleTargetAbility = false;
                 }
             }
+
+            public void QueueDamageEffect(uint target, int damage, DamageType damageType)
+            {
+                if (!GetIsObjectValid(target) || damage <= 0)
+                    return;
+
+                _pendingDamageEffects.Add(new PendingDamageEffect(target, damage, damageType));
+            }
+
+            public void FlushDamageEffects(uint activator)
+            {
+                if (_pendingDamageEffects.Count <= 0)
+                    return;
+
+                var effects = _pendingDamageEffects.ToArray();
+                _pendingDamageEffects.Clear();
+
+                AssignCommand(activator, () =>
+                {
+                    foreach (var effect in effects)
+                    {
+                        if (!GetIsObjectValid(effect.Target))
+                            continue;
+
+                        ApplyEffectToObject(
+                            DurationType.Instant,
+                            EffectDamage(effect.Damage, effect.DamageType),
+                            effect.Target);
+                    }
+                });
+            }
+        }
+
+        private sealed class PendingDamageEffect
+        {
+            public PendingDamageEffect(uint target, int damage, DamageType damageType)
+            {
+                Target = target;
+                Damage = damage;
+                DamageType = damageType;
+            }
+
+            public uint Target { get; }
+            public int Damage { get; }
+            public DamageType DamageType { get; }
         }
     }
 }

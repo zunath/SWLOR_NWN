@@ -64,7 +64,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 target,
                 impactLocation,
                 SkillType.Devices,
-                24,
+                60,
                 45,
                 typeof(BurnStatusEffect),
                 CombatImpactAreaShape.Sphere,

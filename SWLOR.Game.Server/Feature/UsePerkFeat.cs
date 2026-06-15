@@ -469,6 +469,41 @@ namespace SWLOR.Game.Server.Feature
                 Messaging.SendMessageNearbyToPlayers(target, $"{GetName(target)} no longer has weapon ability {abilityDetail.Name} readied.");
         }
 
+        public static bool HasQueuedWeaponAbility(uint activator)
+        {
+            return TryGetQueuedWeaponAbility(activator, out _);
+        }
+
+        public static bool TryGetQueuedWeaponAbility(uint activator, out AbilityDetail ability)
+        {
+            if (!GetIsObjectValid(activator))
+            {
+                ability = null;
+                return false;
+            }
+
+            var abilityId = GetLocalString(activator, ActiveAbilityIdName);
+            if (string.IsNullOrWhiteSpace(abilityId))
+            {
+                ability = null;
+                return false;
+            }
+
+            var activeWeaponAbility = (FeatType)GetLocalInt(activator, ActiveAbilityFeatIdName);
+            if (!Ability.IsFeatRegistered(activeWeaponAbility))
+            {
+                ability = null;
+                return false;
+            }
+
+            ability = Ability.GetAbilityDetail(activeWeaponAbility);
+            if (ability.ActivationType == AbilityActivationType.Weapon)
+                return true;
+
+            ability = null;
+            return false;
+        }
+
         private static string DisplayActivationTargetingTelegraph(
             uint activator,
             uint target,

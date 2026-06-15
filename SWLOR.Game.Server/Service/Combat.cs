@@ -655,6 +655,19 @@ namespace SWLOR.Game.Server.Service
             return damage;
         }
 
+        public static void ConsumeSuppressedAutoAttackDamageBonuses(uint attacker, SkillType skillType)
+        {
+            TemporaryStatModifier.Consume(
+                attacker,
+                StatType.CurrentAutoAttackDamageBonus,
+                StatType.CurrentAutoAttackDamageBonus);
+            ConsumeNextSkillAutoAttackDamageBonus(attacker, skillType);
+            TemporaryStatModifier.Consume(
+                attacker,
+                StatType.NextAutoAttackDamageBonus,
+                StatType.NextAutoAttackDamageBonus);
+        }
+
         private static void ApplyAutoAttackMasterResourceRestore(uint attacker)
         {
             var master = GetMaster(attacker);

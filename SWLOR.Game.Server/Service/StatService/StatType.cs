@@ -2877,7 +2877,7 @@ namespace SWLOR.Game.Server.Service.StatService
         HeavyVibrobladeOffenseEssenceHunter = 493,
 
         /// <summary>
-        /// Percent of maximum HP used as a Guardian's Resolve absorption shield.
+        /// Percent of maximum HP granted as Guardian's Resolve Temporary HP.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
         HeavyVibrobladeDefenseGuardiansResolveShieldPercent = 494,

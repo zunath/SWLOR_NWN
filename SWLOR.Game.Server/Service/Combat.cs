@@ -3356,6 +3356,7 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             var shieldAmount = Math.Max(1, (int)Math.Ceiling(GetMaxHitPoints(activator) * (shieldPercent / 100f)));
+            ApplyEffectToObject(DurationType.Temporary, EffectTemporaryHitpoints(shieldAmount), activator, duration);
             StatusEffect.ApplyStatusEffect(activator, activator, new GuardiansResolveStatusEffect(shieldAmount), duration);
         }
 

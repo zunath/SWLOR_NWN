@@ -3594,7 +3594,49 @@ namespace SWLOR.Game.Server.Service.StatService
         /// Tertiary PerkType value whose weapon ability triggers HeavyVibrobladeOffenseEssenceHunter.
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
-        HeavyVibrobladeOffenseEssenceHunterTriggerTertiaryPerkType = 613
+        HeavyVibrobladeOffenseEssenceHunterTriggerTertiaryPerkType = 613,
+
+        /// <summary>
+        /// Cooldown in milliseconds for IncomingCriticalHitDowngradeToMinimumDamage.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        IncomingCriticalHitDowngradeCooldownMilliseconds = 614,
+
+        /// <summary>
+        /// SkillType value for deflection-triggered next-skill ability bonuses. Unset applies to any skill.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        DeflectionNextSkillAbilitySkillType = 615,
+
+        /// <summary>
+        /// Percent critical damage adjustment applied to Staff critical hits.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        StaffCriticalDamagePercentAdjustment = 616,
+
+        /// <summary>
+        /// Percent critical rate adjustment applied to Staff attacks and abilities.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        StaffCriticalRatePercentAdjustment = 617,
+
+        /// <summary>
+        /// Percent defense adjustment applied to the target on Staff critical hits.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenNegative)]
+        StaffCriticalTargetDefensePercentAdjustment = 618,
+
+        /// <summary>
+        /// Duration in seconds for StaffCriticalTargetDefensePercentAdjustment.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        StaffCriticalTargetDefenseDurationSeconds = 619,
+
+        /// <summary>
+        /// Percent critical damage adjustment applied to Rifle critical hits.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        RifleCriticalDamagePercentAdjustment = 620
     }
 
     public class StatTypeAttribute : Attribute

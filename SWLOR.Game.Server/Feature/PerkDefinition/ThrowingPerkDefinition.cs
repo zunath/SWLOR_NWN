@@ -49,7 +49,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.BleedersEyeTrait)
                 .Description("Deal +12% Throwing damage to bleeding targets.")
-                .IncreasesStat(StatType.DamageToBleedingTargetPercentAdjustment, creature => EquipmentPredicates.HasThrowing(creature) ? 12 : 0)
+                .IncreasesStat(StatType.DamageToBleedingTargetPercentAdjustment, 12)
                 .Price(4)
                 .RequirementSkill(SkillType.Throwing, 28);
         }
@@ -105,8 +105,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Bombardier area attacks split into three secondary explosives that each deal +12 DMG to nearby enemies.")
                 .Price(4)
                 .RequirementSkill(SkillType.Throwing, 35)
-                .IncreasesStat(StatType.ThrowingBombardierClusterStormDamageBonus, creature => EquipmentPredicates.HasThrowing(creature) ? 12 : 0)
-                .IncreasesStat(StatType.ThrowingBombardierClusterStormMaximumTargets, creature => EquipmentPredicates.HasThrowing(creature) ? 3 : 0);
+                .IncreasesStat(StatType.ThrowingBombardierClusterStormDamageBonus, 12)
+                .IncreasesStat(StatType.ThrowingBombardierClusterStormMaximumTargets, 3);
         }
 
         private void ConcussiveToss()
@@ -135,7 +135,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.DeadeyeMasteryTrait)
                 .Description("Throwing abilities against bleeding or disoriented targets have +15% critical chance.")
-                .IncreasesStat(StatType.ThrowingAbilityCriticalRateToBleedingOrDisorientedTargetPercentAdjustment, creature => EquipmentPredicates.HasThrowing(creature) ? 15 : 0)
+                .IncreasesStat(StatType.ThrowingAbilityCriticalRateToBleedingOrDisorientedTargetPercentAdjustment, 15)
                 .Price(4)
                 .RequirementSkill(SkillType.Throwing, 48);
         }
@@ -160,8 +160,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.DeepWoundTrait)
                 .Description("Bleed effects you apply deal +25% damage and last 10 seconds longer.")
-                .IncreasesStat(StatType.OutgoingBleedingDamagePercentAdjustment, creature => EquipmentPredicates.HasThrowing(creature) ? 25 : 0)
-                .IncreasesStat(StatType.OutgoingBleedingDurationBonusSeconds, creature => EquipmentPredicates.HasThrowing(creature) ? 10 : 0)
+                .IncreasesStat(StatType.OutgoingBleedingDamagePercentAdjustment, 25)
+                .IncreasesStat(StatType.OutgoingBleedingDurationBonusSeconds, 10)
                 .Price(4)
                 .RequirementSkill(SkillType.Throwing, 42);
         }
@@ -246,7 +246,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.MarkedTempoTrait)
                 .Description("Critical hits against your marked target restore 6 STM.")
-                .IncreasesStat(StatType.CriticalMarkedTargetStaminaRestore, creature => EquipmentPredicates.HasThrowing(creature) ? 6 : 0)
+                .IncreasesStat(StatType.CriticalMarkedTargetStaminaRestore, 6)
                 .Price(2)
                 .RequirementSkill(SkillType.Throwing, 32);
         }
@@ -261,7 +261,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Deadeye single-target throws mark targets for 12 seconds. Throwing damage against marked targets is increased by 10%.")
                 .Price(3)
                 .RequirementSkill(SkillType.Throwing, 20)
-                .IncreasesStat(StatType.ThrowingDeadeyeMarkingToss, creature => EquipmentPredicates.HasThrowing(creature) ? 1 : 0);
+                .IncreasesStat(StatType.ThrowingDeadeyeMarkingToss, 1);
         }
 
         private void PerfectThrow()
@@ -362,15 +362,15 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Deadeye single-target throws also hit up to two additional enemies within 5 meters for +15 DMG each.")
                 .Price(3)
                 .RequirementSkill(SkillType.Throwing, 25)
-                .IncreasesStat(StatType.ThrowingDeadeyeRicochetDamageBonus, creature => EquipmentPredicates.HasThrowing(creature) ? 15 : 0)
-                .IncreasesStat(StatType.ThrowingDeadeyeRicochetMaximumTargets, creature => EquipmentPredicates.HasThrowing(creature) ? 2 : 0)
+                .IncreasesStat(StatType.ThrowingDeadeyeRicochetDamageBonus, 15)
+                .IncreasesStat(StatType.ThrowingDeadeyeRicochetMaximumTargets, 2)
 
                 .AddPerkLevel()
                 .Description("Deadeye single-target throws also hit up to four additional enemies within 5 meters for +24 DMG each.")
                 .Price(3)
                 .RequirementSkill(SkillType.Throwing, 40)
-                .IncreasesStat(StatType.ThrowingDeadeyeRicochetDamageBonus, creature => EquipmentPredicates.HasThrowing(creature) ? 24 : 0)
-                .IncreasesStat(StatType.ThrowingDeadeyeRicochetMaximumTargets, creature => EquipmentPredicates.HasThrowing(creature) ? 4 : 0);
+                .IncreasesStat(StatType.ThrowingDeadeyeRicochetDamageBonus, 24)
+                .IncreasesStat(StatType.ThrowingDeadeyeRicochetMaximumTargets, 4);
         }
 
         private void SaturationToss()
@@ -383,10 +383,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Bombardier control attacks leave the target area saturated for 12 seconds, dealing +10 DMG every 4 seconds to enemies inside.")
                 .Price(3)
                 .RequirementSkill(SkillType.Throwing, 45)
-                .IncreasesStat(StatType.ThrowingBombardierSaturationToss, creature => EquipmentPredicates.HasThrowing(creature) ? 1 : 0)
-                .IncreasesStat(StatType.ThrowingBombardierSaturationTossDurationSeconds, creature => EquipmentPredicates.HasThrowing(creature) ? 12 : 0)
-                .IncreasesStat(StatType.ThrowingBombardierSaturationTossDamage, creature => EquipmentPredicates.HasThrowing(creature) ? 10 : 0)
-                .IncreasesStat(StatType.ThrowingBombardierSaturationTossPulseSeconds, creature => EquipmentPredicates.HasThrowing(creature) ? 4 : 0);
+                .IncreasesStat(StatType.ThrowingBombardierSaturationToss, 1)
+                .IncreasesStat(StatType.ThrowingBombardierSaturationTossDurationSeconds, 12)
+                .IncreasesStat(StatType.ThrowingBombardierSaturationTossDamage, 10)
+                .IncreasesStat(StatType.ThrowingBombardierSaturationTossPulseSeconds, 4);
         }
 
         private void SeveringToss()
@@ -409,15 +409,15 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ShrapnelCasingTrait)
                 .Description("Explosive Toss abilities inflict Bleed for 15 seconds.")
-                .IncreasesStat(StatType.ExplosiveTossBleedDurationSeconds, creature => EquipmentPredicates.HasThrowing(creature) ? 15 : 0)
+                .IncreasesStat(StatType.ExplosiveTossBleedDurationSeconds, 15)
                 .Price(3)
                 .RequirementSkill(SkillType.Throwing, 12)
 
                 .AddPerkLevel()
                 .Description("Bleed from Explosive Toss abilities lasts 30 seconds and Explosive Toss ignores 10% Defense.")
-                .IncreasesStat(StatType.ExplosiveTossBleedDurationSeconds, creature => EquipmentPredicates.HasThrowing(creature) ? 30 : 0)
-                .IncreasesStat(StatType.AbilityDefenseIgnorePercentAdjustmentPerkType, creature => EquipmentPredicates.HasThrowing(creature) ? (int)PerkType.ExplosiveToss : 0)
-                .IncreasesStat(StatType.AbilityDefenseIgnorePercentAdjustment, creature => EquipmentPredicates.HasThrowing(creature) ? 10 : 0)
+                .IncreasesStat(StatType.ExplosiveTossBleedDurationSeconds, 30)
+                .IncreasesStat(StatType.AbilityDefenseIgnorePercentAdjustmentPerkType, (int)PerkType.ExplosiveToss)
+                .IncreasesStat(StatType.AbilityDefenseIgnorePercentAdjustment, 10)
                 .Price(2)
                 .RequirementSkill(SkillType.Throwing, 32);
         }
@@ -430,8 +430,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.VolatilePayloadTrait)
                 .Description("Critical hits with Explosive Toss abilities inflict Knockdown for 2 seconds.")
-                .IncreasesStat(StatType.CriticalAbilityKnockdownPerkType, creature => EquipmentPredicates.HasThrowing(creature) ? (int)PerkType.ExplosiveToss : 0)
-                .IncreasesStat(StatType.CriticalAbilityKnockdownDurationSeconds, creature => EquipmentPredicates.HasThrowing(creature) ? 2 : 0)
+                .IncreasesStat(StatType.CriticalAbilityKnockdownPerkType, (int)PerkType.ExplosiveToss)
+                .IncreasesStat(StatType.CriticalAbilityKnockdownDurationSeconds, 2)
                 .Price(4)
                 .RequirementSkill(SkillType.Throwing, 48);
         }

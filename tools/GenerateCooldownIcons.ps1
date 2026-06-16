@@ -243,4 +243,5 @@ foreach ($icon in $icons) {
     }
 }
 
-Write-Host "Generated $generated cooldown icon textures for $($icons.Count) source feat icons with ImageMagick."
+$iconCount = @($icons).Count
+Write-Host "Generated $generated cooldown icon textures for $iconCount source feat icons with ImageMagick."

@@ -60,8 +60,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.BreakPostureTrait)
                 .Description("Critical staff hits inflict Exposed, reducing Defense by 10% for 10 seconds.")
-                .IncreasesStat(StatType.CriticalTargetDefensePercentAdjustment, creature => EquipmentPredicates.HasMainHandStaff(creature) ? -10 : 0)
-                .IncreasesStat(StatType.CriticalTargetDefenseDurationSeconds, creature => EquipmentPredicates.HasMainHandStaff(creature) ? 10 : 0)
+                .IncreasesStat(StatType.StaffCriticalTargetDefensePercentAdjustment, -10)
+                .IncreasesStat(StatType.StaffCriticalTargetDefenseDurationSeconds, 10)
                 .Price(2)
                 .RequirementSkill(SkillType.Staff, 40);
         }
@@ -86,8 +86,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.CrushingStyleTrait)
                 .Description("You gain bonus damage with staves equal to your MGT modifier and +10% critical chance.")
-                .IncreasesStat(StatType.StaffMightModifierDamageMultiplier, creature => EquipmentPredicates.HasMainHandStaff(creature) ? 1 : 0)
-                .IncreasesStat(StatType.CriticalRatePercentAdjustment, creature => EquipmentPredicates.HasMainHandStaff(creature) ? 10 : 0)
+                .IncreasesStat(StatType.StaffMightModifierDamageMultiplier, 1)
+                .IncreasesStat(StatType.StaffCriticalRatePercentAdjustment, 10)
                 .Price(3)
                 .RequirementSkill(SkillType.Staff, 2);
         }
@@ -100,32 +100,32 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.CrushingMasteryTrait)
                 .Description("Critical staff hits deal +10% damage and restore 2 STM. This can only trigger once every 6 seconds.")
-                .IncreasesStat(StatType.CriticalDamagePercentAdjustment, creature => EquipmentPredicates.HasMainHandStaff(creature) ? 10 : 0)
-                .IncreasesStat(StatType.CriticalStaminaRestore, creature => EquipmentPredicates.HasMainHandStaff(creature) ? 2 : 0)
-                .IncreasesStat(StatType.CriticalStaminaRestoreSkillType, creature => EquipmentPredicates.HasMainHandStaff(creature) ? (int)SkillType.Staff : 0)
-                .IncreasesStat(StatType.CriticalStaminaRestoreCooldownSeconds, creature => EquipmentPredicates.HasMainHandStaff(creature) ? 6 : 0)
+                .IncreasesStat(StatType.StaffCriticalDamagePercentAdjustment, 10)
+                .IncreasesStat(StatType.CriticalStaminaRestore, 2)
+                .IncreasesStat(StatType.CriticalStaminaRestoreSkillType, (int)SkillType.Staff)
+                .IncreasesStat(StatType.CriticalStaminaRestoreCooldownSeconds, 6)
                 .Price(3)
                 .RequirementSkill(SkillType.Staff, 12)
 
                 .AddPerkLevel()
                 .Description("Bonus damage with staves increases to 2x your MGT modifier and critical chance increases by an additional 10%. Critical staff hits still deal +10% damage and restore 2 STM once every 6 seconds.")
-                .IncreasesStat(StatType.CriticalDamagePercentAdjustment, creature => EquipmentPredicates.HasMainHandStaff(creature) ? 10 : 0)
-                .IncreasesStat(StatType.CriticalStaminaRestore, creature => EquipmentPredicates.HasMainHandStaff(creature) ? 2 : 0)
-                .IncreasesStat(StatType.CriticalStaminaRestoreSkillType, creature => EquipmentPredicates.HasMainHandStaff(creature) ? (int)SkillType.Staff : 0)
-                .IncreasesStat(StatType.CriticalStaminaRestoreCooldownSeconds, creature => EquipmentPredicates.HasMainHandStaff(creature) ? 6 : 0)
-                .IncreasesStat(StatType.StaffMightModifierDamageMultiplier, creature => EquipmentPredicates.HasMainHandStaff(creature) ? 1 : 0)
-                .IncreasesStat(StatType.CriticalRatePercentAdjustment, creature => EquipmentPredicates.HasMainHandStaff(creature) ? 10 : 0)
+                .IncreasesStat(StatType.StaffCriticalDamagePercentAdjustment, 10)
+                .IncreasesStat(StatType.CriticalStaminaRestore, 2)
+                .IncreasesStat(StatType.CriticalStaminaRestoreSkillType, (int)SkillType.Staff)
+                .IncreasesStat(StatType.CriticalStaminaRestoreCooldownSeconds, 6)
+                .IncreasesStat(StatType.StaffMightModifierDamageMultiplier, 1)
+                .IncreasesStat(StatType.StaffCriticalRatePercentAdjustment, 10)
                 .Price(2)
                 .RequirementSkill(SkillType.Staff, 32)
 
                 .AddPerkLevel()
                 .Description("Staff critical hits deal +20% damage and restore 4 STM once every 6 seconds. Bonus damage with staves remains 2x your MGT modifier and the additional +10% critical chance remains.")
-                .IncreasesStat(StatType.CriticalDamagePercentAdjustment, creature => EquipmentPredicates.HasMainHandStaff(creature) ? 20 : 0)
-                .IncreasesStat(StatType.CriticalStaminaRestore, creature => EquipmentPredicates.HasMainHandStaff(creature) ? 4 : 0)
-                .IncreasesStat(StatType.CriticalStaminaRestoreSkillType, creature => EquipmentPredicates.HasMainHandStaff(creature) ? (int)SkillType.Staff : 0)
-                .IncreasesStat(StatType.CriticalStaminaRestoreCooldownSeconds, creature => EquipmentPredicates.HasMainHandStaff(creature) ? 6 : 0)
-                .IncreasesStat(StatType.StaffMightModifierDamageMultiplier, creature => EquipmentPredicates.HasMainHandStaff(creature) ? 1 : 0)
-                .IncreasesStat(StatType.CriticalRatePercentAdjustment, creature => EquipmentPredicates.HasMainHandStaff(creature) ? 10 : 0)
+                .IncreasesStat(StatType.StaffCriticalDamagePercentAdjustment, 20)
+                .IncreasesStat(StatType.CriticalStaminaRestore, 4)
+                .IncreasesStat(StatType.CriticalStaminaRestoreSkillType, (int)SkillType.Staff)
+                .IncreasesStat(StatType.CriticalStaminaRestoreCooldownSeconds, 6)
+                .IncreasesStat(StatType.StaffMightModifierDamageMultiplier, 1)
+                .IncreasesStat(StatType.StaffCriticalRatePercentAdjustment, 10)
                 .Price(4)
                 .RequirementSkill(SkillType.Staff, 48);
         }
@@ -151,9 +151,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.FlowingDefenseTrait)
                 .Description("After dodging or deflecting an attack, your next Staff ability costs 2 less STM.")
-                .IncreasesStat(StatType.AvoidedAttackNextSkillAbilitySkillType, creature => EquipmentPredicates.HasMainHandStaff(creature) ? (int)SkillType.Staff : 0)
-                .IncreasesStat(StatType.AvoidedAttackNextSkillAbilityStaminaCostAdjustment, creature => EquipmentPredicates.HasMainHandStaff(creature) ? -2 : 0)
-                .IncreasesStat(StatType.AvoidedAttackNextSkillAbilityWindowSeconds, creature => EquipmentPredicates.HasMainHandStaff(creature) ? 8 : 0)
+                .IncreasesStat(StatType.AvoidedAttackNextSkillAbilitySkillType, (int)SkillType.Staff)
+                .IncreasesStat(StatType.AvoidedAttackNextSkillAbilityStaminaCostAdjustment, -2)
+                .IncreasesStat(StatType.AvoidedAttackNextSkillAbilityWindowSeconds, 8)
                 .Price(2)
                 .RequirementSkill(SkillType.Staff, 32);
         }
@@ -186,8 +186,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Using a Staff Sentinel ability grants +25% Evasion and +20% Defense for 8 seconds. This can trigger once every 20 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Staff, 20)
-                .IncreasesStat(StatType.StaffSentinelGuardingStep, creature => EquipmentPredicates.HasMainHandStaff(creature) ? 1 : 0)
-                .IncreasesStat(StatType.StaffSentinelGuardingStepCooldownSeconds, creature => EquipmentPredicates.HasMainHandStaff(creature) ? 20 : 0);
+                .IncreasesStat(StatType.StaffSentinelGuardingStep, 1)
+                .IncreasesStat(StatType.StaffSentinelGuardingStepCooldownSeconds, 20);
         }
 
         private void HeavyHands()
@@ -198,7 +198,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.HeavyHandsTrait)
                 .Description("Staff combat abilities deal +10% damage to targets affected by Knockdown or Blind.")
-                .IncreasesStat(StatType.AbilityDamageToKnockdownOrBlindTargetPercentAdjustment, creature => EquipmentPredicates.HasMainHandStaff(creature) ? 10 : 0)
+                .IncreasesStat(StatType.AbilityDamageToKnockdownOrBlindTargetPercentAdjustment, 10)
                 .Price(2)
                 .RequirementSkill(SkillType.Staff, 22);
         }
@@ -247,10 +247,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PatientSentinelTrait)
                 .Description("If you have not used a combat ability for 6 seconds, your next Staff ability gains +15% accuracy and deals +15 DMG.")
-                .IncreasesStat(StatType.IdleSkillAbilitySkillType, creature => EquipmentPredicates.HasMainHandStaff(creature) ? (int)SkillType.Staff : 0)
-                .IncreasesStat(StatType.IdleSkillAbilityRequiredIdleSeconds, creature => EquipmentPredicates.HasMainHandStaff(creature) ? 6 : 0)
-                .IncreasesStat(StatType.IdleSkillAbilityHitChancePercentAdjustment, creature => EquipmentPredicates.HasMainHandStaff(creature) ? 15 : 0)
-                .IncreasesStat(StatType.IdleSkillAbilityDamageBonus, creature => EquipmentPredicates.HasMainHandStaff(creature) ? 15 : 0)
+                .IncreasesStat(StatType.IdleSkillAbilitySkillType, (int)SkillType.Staff)
+                .IncreasesStat(StatType.IdleSkillAbilityRequiredIdleSeconds, 6)
+                .IncreasesStat(StatType.IdleSkillAbilityHitChancePercentAdjustment, 15)
+                .IncreasesStat(StatType.IdleSkillAbilityDamageBonus, 15)
                 .Price(3)
                 .RequirementSkill(SkillType.Staff, 40);
         }
@@ -305,7 +305,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Staff Sentinel protection abilities grant nearby allies +8 Attack Deflection for 12 seconds and generate extra enmity.")
                 .Price(3)
                 .RequirementSkill(SkillType.Staff, 30)
-                .IncreasesStat(StatType.StaffSentinelGuard, creature => EquipmentPredicates.HasMainHandStaff(creature) ? 1 : 0);
+                .IncreasesStat(StatType.StaffSentinelGuard, 1);
         }
 
         private void SentinelStance()
@@ -366,8 +366,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Hostile Staff abilities deal +34 DMG and inflict Dazed for 3 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Staff, 38)
-                .IncreasesStat(StatType.StaffCrusherFinisherDamageBonus, creature => EquipmentPredicates.HasMainHandStaff(creature) ? 34 : 0)
-                .IncreasesStat(StatType.StaffCrusherFinisherDazedDurationSeconds, creature => EquipmentPredicates.HasMainHandStaff(creature) ? 3 : 0);
+                .IncreasesStat(StatType.StaffCrusherFinisherDamageBonus, 34)
+                .IncreasesStat(StatType.StaffCrusherFinisherDazedDurationSeconds, 3);
         }
 
         private void StaffParry()

@@ -238,7 +238,7 @@ namespace SWLOR.Game.Server.Native
                     {
                         var criticalStat = attackerStats.GetDEXStat();
                         var criticalRoll = Random.D100(1);
-                        var criticalModifier = CalculateCriticalRateModifier(attacker);
+                        var criticalModifier = CalculateCriticalRateModifier(attacker, weaponSkillType);
                         criticalModifier += Combat.PrepareOpeningAutoAttack(attacker.m_idSelf, weaponSkillType);
                         criticalModifier += Combat.GetSideAttackCriticalRateAdjustment(attacker.m_idSelf, defender.m_idSelf, weaponSkillType);
                         var criticalSkillRank = GetCriticalSkillRank(attacker, weapon);
@@ -257,7 +257,7 @@ namespace SWLOR.Game.Server.Native
                             pAttackData.m_bCriticalThreat = 1;
                             pAttackData.m_nThreatRoll = 1;
 
-                            if (Stat.GetStatAdjustment(defender.m_idSelf, StatType.IncomingCriticalHitDowngradeToMinimumDamage) > 0)
+                            if (Combat.TryUseIncomingCriticalHitDowngrade(defender.m_idSelf, 1))
                             {
                                 Log.Write(LogGroup.Attack, $"Critical hit downgraded by defender stats");
                                 TemporaryStatModifier.Replace(
@@ -456,9 +456,10 @@ namespace SWLOR.Game.Server.Native
             return (DeflectionSource.None, 0);
         }
 
-        private static int CalculateCriticalRateModifier(CNWSCreature attacker)
+        private static int CalculateCriticalRateModifier(CNWSCreature attacker, SkillType skillType)
         {
             var criticalModifier = Stat.GetStatAdjustment(attacker.m_idSelf, StatType.CriticalRatePercentAdjustment);
+            criticalModifier += Combat.GetSkillCriticalRatePercentAdjustment(attacker.m_idSelf, skillType);
 
             Log.Write(LogGroup.Attack, $"SWLOR crit rate modifier: {criticalModifier}");
 

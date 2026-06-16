@@ -49,7 +49,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.AfflictionMasteryTrait)
                 .Description("Debuffs you apply last +30% longer.")
-                .IncreasesStat(StatType.OutgoingDebuffDurationPercentAdjustment, creature => EquipmentPredicates.HasMainHandVibroknife(creature) ? 30 : 0)
+                .IncreasesStat(StatType.OutgoingDebuffDurationPercentAdjustment, 30)
                 .Price(2)
                 .RequirementSkill(SkillType.Vibroknife, 45);
         }
@@ -62,8 +62,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.AmbushTacticsTrait)
                 .Description("After dealing a critical hit, your next attack within 8 seconds ignores 20% of defense.")
-                .IncreasesStat(StatType.CriticalNextSkillAbilityDefenseIgnorePercentAdjustment, creature => EquipmentPredicates.HasMainHandVibroknife(creature) ? 20 : 0)
-                .IncreasesStat(StatType.CriticalNextSkillAbilityDefenseIgnoreDurationSeconds, creature => EquipmentPredicates.HasMainHandVibroknife(creature) ? 8 : 0)
+                .IncreasesStat(StatType.CriticalNextSkillAbilityDefenseIgnorePercentAdjustment, 20)
+                .IncreasesStat(StatType.CriticalNextSkillAbilityDefenseIgnoreDurationSeconds, 8)
                 .Price(3)
                 .RequirementSkill(SkillType.Vibroknife, 25);
         }
@@ -100,8 +100,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.AssassinsFocusTrait)
                 .Description("After landing a critical hit, gain +5% Accuracy for 30 seconds.")
-                .IncreasesStat(StatType.CriticalAccuracyPercentAdjustment, creature => EquipmentPredicates.HasMainHandVibroknife(creature) ? 5 : 0)
-                .IncreasesStat(StatType.CriticalAccuracyDurationSeconds, creature => EquipmentPredicates.HasMainHandVibroknife(creature) ? 30 : 0)
+                .IncreasesStat(StatType.CriticalAccuracyPercentAdjustment, 5)
+                .IncreasesStat(StatType.CriticalAccuracyDurationSeconds, 30)
                 .Price(3)
                 .RequirementSkill(SkillType.Vibroknife, 32);
         }
@@ -131,7 +131,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Incapacitate also hits enemies in a cone and inflicts Vulnerable, reducing Defense by 10% for 12 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Vibroknife, 48)
-                .IncreasesStat(StatType.VibroknifeSaboteurCascadeFailure, creature => EquipmentPredicates.HasMainHandVibroknife(creature) ? 1 : 0);
+                .IncreasesStat(StatType.VibroknifeSaboteurCascadeFailure, 1);
         }
 
         private void CheapShot()
@@ -160,8 +160,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.CripplingPrecisionTrait)
                 .Description("Your critical hits reduce target's Evasion by 15% for 10s.")
-                .IncreasesStat(StatType.CriticalTargetEvasionPercentAdjustment, creature => EquipmentPredicates.HasMainHandVibroknife(creature) ? -15 : 0)
-                .IncreasesStat(StatType.CriticalTargetEvasionDurationSeconds, creature => EquipmentPredicates.HasMainHandVibroknife(creature) ? 10 : 0)
+                .IncreasesStat(StatType.CriticalTargetEvasionPercentAdjustment, -15)
+                .IncreasesStat(StatType.CriticalTargetEvasionDurationSeconds, 10)
                 .Price(3)
                 .RequirementSkill(SkillType.Vibroknife, 25);
         }
@@ -224,13 +224,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Vibroknife Shadow evasive abilities grant +10% Evasion, reduce enmity by 15%, and reduce Attack by 15% for 8 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Vibroknife, 15)
-                .IncreasesStat(StatType.VibroknifeShadowEvasiveCombatRank, creature => EquipmentPredicates.HasMainHandVibroknife(creature) ? 1 : 0)
+                .IncreasesStat(StatType.VibroknifeShadowEvasiveCombatRank, 1)
 
                 .AddPerkLevel()
                 .Description("Vibroknife Shadow evasive abilities grant +20% Evasion, reduce enmity by 25%, and reduce Attack by 15% for 8 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Vibroknife, 38)
-                .IncreasesStat(StatType.VibroknifeShadowEvasiveCombatRank, creature => EquipmentPredicates.HasMainHandVibroknife(creature) ? 2 : 0);
+                .IncreasesStat(StatType.VibroknifeShadowEvasiveCombatRank, 2);
         }
 
         private void ExploitWeakness()
@@ -292,7 +292,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Vibroknife Shadow single-target abilities mark the target. Your next three attacks against that target deal +12 DMG each.")
                 .Price(4)
                 .RequirementSkill(SkillType.Vibroknife, 30)
-                .IncreasesStat(StatType.VibroknifeShadowMarkedForDeath, creature => EquipmentPredicates.HasMainHandVibroknife(creature) ? 1 : 0);
+                .IncreasesStat(StatType.VibroknifeShadowMarkedForDeath, 1);
         }
 
         private void NerveStrike()
@@ -315,7 +315,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.OpportunistTrait)
                 .Description("Grants +15% Critical Rate against targets not facing you.")
-                .IncreasesStat(StatType.CriticalRateAgainstTargetNotFacingAttackerPercentAdjustment, creature => EquipmentPredicates.HasMainHandVibroknife(creature) ? 15 : 0)
+                .IncreasesStat(StatType.CriticalRateAgainstTargetNotFacingAttackerPercentAdjustment, 15)
                 .Price(3)
                 .RequirementSkill(SkillType.Vibroknife, 22);
         }
@@ -328,7 +328,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PrecisionStrikesTrait)
                 .Description("Critical hits deal +10% damage.")
-                .IncreasesStat(StatType.CriticalDamagePercentAdjustment, creature => EquipmentPredicates.HasMainHandVibroknife(creature) ? 10 : 0)
+                .IncreasesStat(StatType.CriticalDamagePercentAdjustment, 10)
                 .Price(2)
                 .RequirementSkill(SkillType.Vibroknife, 2);
         }
@@ -343,13 +343,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Vibroknife Saboteur abilities that inflict Hamstring, Disoriented, or Incapacitate also inflict Exhausted, reducing Defense and Force Defense by 10% for 15 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Vibroknife, 22)
-                .IncreasesStat(StatType.VibroknifeSaboteurSapVitalityRank, creature => EquipmentPredicates.HasMainHandVibroknife(creature) ? 1 : 0)
+                .IncreasesStat(StatType.VibroknifeSaboteurSapVitalityRank, 1)
 
                 .AddPerkLevel()
                 .Description("Vibroknife Saboteur abilities that inflict Hamstring, Disoriented, or Incapacitate also inflict Exhausted, reducing Defense and Force Defense by 15% for 15 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Vibroknife, 38)
-                .IncreasesStat(StatType.VibroknifeSaboteurSapVitalityRank, creature => EquipmentPredicates.HasMainHandVibroknife(creature) ? 2 : 0);
+                .IncreasesStat(StatType.VibroknifeSaboteurSapVitalityRank, 2);
         }
 
         private void ShadowStrike()
@@ -383,7 +383,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Smoke Bomb leaves a decoy behind when it ends, causing enemies targeting you to suffer -25% Accuracy for 12 seconds.")
-                .IncreasesStat(StatType.SmokeBombDecoyOnExpire, creature => EquipmentPredicates.HasMainHandVibroknife(creature) ? 1 : 0)
+                .IncreasesStat(StatType.SmokeBombDecoyOnExpire, 1)
                 .Price(3)
                 .RequirementSkill(SkillType.Vibroknife, 45);
         }
@@ -410,13 +410,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Vibroknife Saboteur strike abilities deal +10 DMG and inflict Toxin for 30 seconds. Toxin deals damage equal to 1% of maximum HP per second.")
                 .Price(2)
                 .RequirementSkill(SkillType.Vibroknife, 12)
-                .IncreasesStat(StatType.VibroknifeSaboteurToxicCoatingRank, creature => EquipmentPredicates.HasMainHandVibroknife(creature) ? 1 : 0)
+                .IncreasesStat(StatType.VibroknifeSaboteurToxicCoatingRank, 1)
 
                 .AddPerkLevel()
                 .Description("Vibroknife Saboteur strike abilities deal +22 DMG and inflict Toxin for 30 seconds. Toxin deals damage equal to 1% of maximum HP per second.")
                 .Price(3)
                 .RequirementSkill(SkillType.Vibroknife, 40)
-                .IncreasesStat(StatType.VibroknifeSaboteurToxicCoatingRank, creature => EquipmentPredicates.HasMainHandVibroknife(creature) ? 2 : 0);
+                .IncreasesStat(StatType.VibroknifeSaboteurToxicCoatingRank, 2);
         }
 
         private void VitalStrike()

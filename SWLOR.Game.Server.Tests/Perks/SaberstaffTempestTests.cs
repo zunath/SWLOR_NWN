@@ -77,8 +77,9 @@ public class SaberstaffTempestTests
         var source = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "PerkDefinition" / "SaberstaffPerkDefinition.cs").FullName);
         var perks = BuildSaberstaffTempestPerksWithout2daLookup();
 
-        source.Should().Contain("StatType.AttackDeflection, creature => EquipmentPredicates.HasMainHandSaberstaff(creature) ? 8 : 0");
-        source.Should().Contain("StatType.AttackDeflection, creature => EquipmentPredicates.HasMainHandSaberstaff(creature) ? 16 : 0");
+        source.Should().Contain("StatType.AttackDeflection, 8");
+        source.Should().Contain("StatType.AttackDeflection, 16");
+        source.Should().NotContain("StatType.AttackDeflection, creature => EquipmentPredicates.HasMainHandSaberstaff");
 
         perks[PerkType.FlowOfTheMaelstrom]
             .PerkLevels[1]

@@ -151,15 +151,43 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
         }
 
         protected virtual void OnDamageDealt(uint attacker, uint defender, int damage, CombatDamageType damageType) { }
-        public void OnDamageDealtEffect(uint attacker, uint defender, int damage, CombatDamageType damageType)
+        protected virtual void OnDamageDealt(
+            uint attacker,
+            uint defender,
+            int damage,
+            CombatDamageType damageType,
+            CombatDamageDeliveryType deliveryType)
         {
             OnDamageDealt(attacker, defender, damage, damageType);
         }
+        public void OnDamageDealtEffect(
+            uint attacker,
+            uint defender,
+            int damage,
+            CombatDamageType damageType,
+            CombatDamageDeliveryType deliveryType = CombatDamageDeliveryType.Direct)
+        {
+            OnDamageDealt(attacker, defender, damage, damageType, deliveryType);
+        }
 
         protected virtual void OnDamageTaken(uint defender, uint attacker, int damage, CombatDamageType damageType) { }
-        public void OnDamageTakenEffect(uint defender, uint attacker, int damage, CombatDamageType damageType)
+        protected virtual void OnDamageTaken(
+            uint defender,
+            uint attacker,
+            int damage,
+            CombatDamageType damageType,
+            CombatDamageDeliveryType deliveryType)
         {
             OnDamageTaken(defender, attacker, damage, damageType);
+        }
+        public void OnDamageTakenEffect(
+            uint defender,
+            uint attacker,
+            int damage,
+            CombatDamageType damageType,
+            CombatDamageDeliveryType deliveryType = CombatDamageDeliveryType.Direct)
+        {
+            OnDamageTaken(defender, attacker, damage, damageType, deliveryType);
         }
 
         protected int PercentOfDamage(int damage, int percent)

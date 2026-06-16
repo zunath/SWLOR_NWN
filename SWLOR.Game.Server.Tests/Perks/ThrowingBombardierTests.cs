@@ -56,12 +56,13 @@ public class ThrowingBombardierTests
         var root = FindRepositoryRoot();
         var source = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "PerkDefinition" / "ThrowingPerkDefinition.cs").FullName);
 
-        source.Should().Contain("StatType.ExplosiveTossBleedDurationSeconds, creature => EquipmentPredicates.HasThrowing(creature) ? 15 : 0");
-        source.Should().Contain("StatType.ExplosiveTossBleedDurationSeconds, creature => EquipmentPredicates.HasThrowing(creature) ? 30 : 0");
-        source.Should().Contain("StatType.AbilityDefenseIgnorePercentAdjustmentPerkType, creature => EquipmentPredicates.HasThrowing(creature) ? (int)PerkType.ExplosiveToss : 0");
-        source.Should().Contain("StatType.AbilityDefenseIgnorePercentAdjustment, creature => EquipmentPredicates.HasThrowing(creature) ? 10 : 0");
-        source.Should().Contain("StatType.CriticalAbilityKnockdownPerkType, creature => EquipmentPredicates.HasThrowing(creature) ? (int)PerkType.ExplosiveToss : 0");
-        source.Should().Contain("StatType.CriticalAbilityKnockdownDurationSeconds, creature => EquipmentPredicates.HasThrowing(creature) ? 2 : 0");
+        source.Should().Contain("StatType.ExplosiveTossBleedDurationSeconds, 15");
+        source.Should().Contain("StatType.ExplosiveTossBleedDurationSeconds, 30");
+        source.Should().Contain("StatType.AbilityDefenseIgnorePercentAdjustmentPerkType, (int)PerkType.ExplosiveToss");
+        source.Should().Contain("StatType.AbilityDefenseIgnorePercentAdjustment, 10");
+        source.Should().Contain("StatType.CriticalAbilityKnockdownPerkType, (int)PerkType.ExplosiveToss");
+        source.Should().Contain("StatType.CriticalAbilityKnockdownDurationSeconds, 2");
+        source.Should().NotContain("EquipmentPredicates.HasThrowing");
     }
     [Test]
     public void ThrowingBombardierFeatAndAbilityIcons_AreUniqueAndPresent()

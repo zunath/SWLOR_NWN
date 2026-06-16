@@ -1441,19 +1441,24 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        public static void NotifyDamageStatusEffects(uint attacker, uint defender, int damage, CombatDamageType damageType)
+        public static void NotifyDamageStatusEffects(
+            uint attacker,
+            uint defender,
+            int damage,
+            CombatDamageType damageType,
+            CombatDamageDeliveryType deliveryType = CombatDamageDeliveryType.Direct)
         {
             if (damage <= 0 || !GetIsObjectValid(attacker) || !GetIsObjectValid(defender))
                 return;
 
             foreach (var effect in GetCreatureStatusEffects(attacker).GetAllEffects())
             {
-                effect.OnDamageDealtEffect(attacker, defender, damage, damageType);
+                effect.OnDamageDealtEffect(attacker, defender, damage, damageType, deliveryType);
             }
 
             foreach (var effect in GetCreatureStatusEffects(defender).GetAllEffects())
             {
-                effect.OnDamageTakenEffect(defender, attacker, damage, damageType);
+                effect.OnDamageTakenEffect(defender, attacker, damage, damageType, deliveryType);
             }
         }
 

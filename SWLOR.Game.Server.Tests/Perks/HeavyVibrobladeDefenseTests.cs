@@ -161,6 +161,34 @@ public class HeavyVibrobladeDefenseTests
     }
 
     [Test]
+    public void CriticalWard_DowngradesIncomingCriticalsOnMGTScaledCooldown()
+    {
+        var root = FindRepositoryRoot();
+        var perkSource = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "PerkDefinition" / "HeavyVibrobladePerkDefinition.cs").FullName);
+        var combatSource = File.ReadAllText((root / "SWLOR.Game.Server" / "Service" / "Combat.cs").FullName);
+        var resolveAttackRollSource = File.ReadAllText((root / "SWLOR.Game.Server" / "Native" / "ResolveAttackRoll.cs").FullName);
+        var perks = BuildHeavyVibrobladeDefensePerksWithout2daLookup();
+        var criticalWard = perks[PerkType.CriticalWard];
+
+        AssertPerkLevel(
+            criticalWard,
+            "Critical Ward",
+            1,
+            2,
+            40,
+            FeatType.CriticalWardTrait,
+            "If you would receive a critical hit, downgrade the attack to a normal hit. The attack will do minimum damage to you. This can trigger once every 16 seconds, reduced by 0.5 seconds per MGT to a minimum of 12 seconds.",
+            StatType.IncomingCriticalHitDowngradeToMinimumDamage,
+            StatType.IncomingCriticalHitDowngradeCooldownMilliseconds);
+
+        perkSource.Should().Contain("Math.Max(12000, 16000 - Math.Max(0, GetAbilityScore(creature, AbilityType.Might)) * 500)");
+        combatSource.Should().Contain("TryUseIncomingCriticalHitDowngrade(defender, critical)");
+        combatSource.Should().Contain("StatType.IncomingCriticalHitDowngradeCooldownMilliseconds");
+        combatSource.Should().Contain("TimeSpan.FromMilliseconds(cooldownMilliseconds)");
+        resolveAttackRollSource.Should().Contain("Combat.TryUseIncomingCriticalHitDowngrade(defender.m_idSelf, 1)");
+    }
+
+    [Test]
     public void PersistentTogglePerks_RegisterRefundCleanup()
     {
         var bastion = new BastionStanceAbilityDefinition().BuildAbilities()[FeatType.BastionStance1];

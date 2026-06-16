@@ -74,8 +74,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.BallisticMasteryTrait)
                 .Description("Rifle abilities against Exposed or Sundered targets ignore an additional 15% Defense.")
-                .IncreasesStat(StatType.AbilityDefenseIgnoreExposedOrSunderedSkillType, creature => EquipmentPredicates.HasRifle(creature) ? (int)SkillType.Rifle : 0)
-                .IncreasesStat(StatType.AbilityDefenseIgnoreExposedOrSunderedPercentAdjustment, creature => EquipmentPredicates.HasRifle(creature) ? 15 : 0)
+                .IncreasesStat(StatType.AbilityDefenseIgnoreExposedOrSunderedSkillType, (int)SkillType.Rifle)
+                .IncreasesStat(StatType.AbilityDefenseIgnoreExposedOrSunderedPercentAdjustment, 15)
                 .Price(4)
                 .RequirementSkill(SkillType.Rifle, 48);
         }
@@ -88,10 +88,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.BreachRoundTrait)
                 .Description("Aimed Shot ignores 25% of the target's Defense and deals +35 DMG.")
-                .IncreasesStat(StatType.AbilityDefenseIgnorePercentAdjustmentPerkType, creature => EquipmentPredicates.HasRifle(creature) ? (int)PerkType.AimedShot : 0)
-                .IncreasesStat(StatType.AbilityDefenseIgnorePercentAdjustment, creature => EquipmentPredicates.HasRifle(creature) ? 25 : 0)
-                .IncreasesStat(StatType.AbilityDamageFlatAdjustmentPerkType, creature => EquipmentPredicates.HasRifle(creature) ? (int)PerkType.AimedShot : 0)
-                .IncreasesStat(StatType.AbilityDamageFlatAdjustment, creature => EquipmentPredicates.HasRifle(creature) ? 35 : 0)
+                .IncreasesStat(StatType.AbilityDefenseIgnorePercentAdjustmentPerkType, (int)PerkType.AimedShot)
+                .IncreasesStat(StatType.AbilityDefenseIgnorePercentAdjustment, 25)
+                .IncreasesStat(StatType.AbilityDamageFlatAdjustmentPerkType, (int)PerkType.AimedShot)
+                .IncreasesStat(StatType.AbilityDamageFlatAdjustment, 35)
                 .Price(4)
                 .RequirementSkill(SkillType.Rifle, 35);
         }
@@ -104,8 +104,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ContainmentNetTrait)
                 .Description("Enemies affected by your Disoriented effects suffer an additional -10% Evasion and -10% Attack.")
-                .IncreasesStat(StatType.OutgoingDisorientedAttackPercentAdjustment, creature => EquipmentPredicates.HasRifle(creature) ? -10 : 0)
-                .IncreasesStat(StatType.OutgoingDisorientedEvasionPercentAdjustment, creature => EquipmentPredicates.HasRifle(creature) ? -10 : 0)
+                .IncreasesStat(StatType.OutgoingDisorientedAttackPercentAdjustment, -10)
+                .IncreasesStat(StatType.OutgoingDisorientedEvasionPercentAdjustment, -10)
                 .Price(3)
                 .RequirementSkill(SkillType.Rifle, 40);
         }
@@ -142,14 +142,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.DeadCenterTrait)
                 .Description("Rifle critical hits restore 4 STM and cause your next Aimed Shot within 8 seconds to deal +10 DMG. This can only trigger once every 6 seconds.")
-                .IncreasesStat(StatType.CriticalStaminaRestore, creature => EquipmentPredicates.HasRifle(creature) ? 4 : 0)
-                .IncreasesStat(StatType.CriticalStaminaRestoreSkillType, creature => EquipmentPredicates.HasRifle(creature) ? (int)SkillType.Rifle : 0)
-                .IncreasesStat(StatType.CriticalStaminaRestoreCooldownSeconds, creature => EquipmentPredicates.HasRifle(creature) ? 6 : 0)
-                .IncreasesStat(StatType.CriticalNextAbilityDamageBonusTriggerSkillType, creature => EquipmentPredicates.HasRifle(creature) ? (int)SkillType.Rifle : 0)
-                .IncreasesStat(StatType.CriticalNextAbilityDamageBonusPerkType, creature => EquipmentPredicates.HasRifle(creature) ? (int)PerkType.AimedShot : 0)
-                .IncreasesStat(StatType.CriticalNextAbilityDamageBonus, creature => EquipmentPredicates.HasRifle(creature) ? 10 : 0)
-                .IncreasesStat(StatType.CriticalNextAbilityDamageBonusDurationSeconds, creature => EquipmentPredicates.HasRifle(creature) ? 8 : 0)
-                .IncreasesStat(StatType.CriticalNextAbilityDamageBonusCooldownSeconds, creature => EquipmentPredicates.HasRifle(creature) ? 6 : 0)
+                .IncreasesStat(StatType.CriticalStaminaRestore, 4)
+                .IncreasesStat(StatType.CriticalStaminaRestoreSkillType, (int)SkillType.Rifle)
+                .IncreasesStat(StatType.CriticalStaminaRestoreCooldownSeconds, 6)
+                .IncreasesStat(StatType.CriticalNextAbilityDamageBonusTriggerSkillType, (int)SkillType.Rifle)
+                .IncreasesStat(StatType.CriticalNextAbilityDamageBonusPerkType, (int)PerkType.AimedShot)
+                .IncreasesStat(StatType.CriticalNextAbilityDamageBonus, 10)
+                .IncreasesStat(StatType.CriticalNextAbilityDamageBonusDurationSeconds, 8)
+                .IncreasesStat(StatType.CriticalNextAbilityDamageBonusCooldownSeconds, 6)
                 .Price(3)
                 .RequirementSkill(SkillType.Rifle, 38);
         }
@@ -164,7 +164,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Aimed Shot marks the target for 12 seconds. Physical attacks against marked targets deal +10% damage.")
                 .Price(3)
                 .RequirementSkill(SkillType.Rifle, 30)
-                .IncreasesStat(StatType.RifleMarksmanExposeWeakPoint, creature => EquipmentPredicates.HasRifle(creature) ? (int)PerkType.AimedShot : 0);
+                .IncreasesStat(StatType.RifleMarksmanExposeWeakPoint, (int)PerkType.AimedShot);
         }
 
         private void FieldSedatives()
@@ -175,8 +175,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.FieldSedativesTrait)
                 .Description("After a tranquilizer effect ends, the target's Attack is reduced by 10% for 10 seconds.")
-                .IncreasesStat(StatType.TranquilizeExpiredAttackPercentAdjustment, creature => EquipmentPredicates.HasRifle(creature) ? -10 : 0)
-                .IncreasesStat(StatType.TranquilizeExpiredAttackDurationSeconds, creature => EquipmentPredicates.HasRifle(creature) ? 10 : 0)
+                .IncreasesStat(StatType.TranquilizeExpiredAttackPercentAdjustment, -10)
+                .IncreasesStat(StatType.TranquilizeExpiredAttackDurationSeconds, 10)
                 .Price(2)
                 .RequirementSkill(SkillType.Rifle, 32);
         }
@@ -203,9 +203,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Repeated rifle attacks against the same target stack +4% rifle damage for 20 seconds, up to +20%. Switching targets clears this bonus.")
                 .Price(3)
                 .RequirementSkill(SkillType.Rifle, 45)
-                .IncreasesStat(StatType.RepeatedTargetDamageSkillType, creature => EquipmentPredicates.HasRifle(creature) ? (int)SkillType.Rifle : 0)
-                .IncreasesStat(StatType.RepeatedTargetDamagePercentPerHit, creature => EquipmentPredicates.HasRifle(creature) ? 4 : 0)
-                .IncreasesStat(StatType.RepeatedTargetDamagePercentMax, creature => EquipmentPredicates.HasRifle(creature) ? 20 : 0);
+                .IncreasesStat(StatType.RepeatedTargetDamageSkillType, (int)SkillType.Rifle)
+                .IncreasesStat(StatType.RepeatedTargetDamagePercentPerHit, 4)
+                .IncreasesStat(StatType.RepeatedTargetDamagePercentMax, 20);
         }
 
         private void NeutralizingShot()
@@ -218,7 +218,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Tranq Cone, Pacification Field, and Stasis Volley remove one beneficial combat effect from affected enemies and inflict Disoriented for 12 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Rifle, 42)
-                .IncreasesStat(StatType.RiflePacificationNeutralizingShot, creature => EquipmentPredicates.HasRifle(creature) ? 1 : 0);
+                .IncreasesStat(StatType.RiflePacificationNeutralizingShot, 1);
         }
 
         private void OneShot()
@@ -243,7 +243,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Pacification control shots interrupt the target's current ability activation and inflict Foggy Mind for 12 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Rifle, 30)
-                .IncreasesStat(StatType.RiflePacificationOverwatch, creature => EquipmentPredicates.HasRifle(creature) ? 1 : 0);
+                .IncreasesStat(StatType.RiflePacificationOverwatch, 1);
         }
 
         private void PacificationField()
@@ -292,13 +292,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Pacification control shots also inflict Dazed for 2 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Rifle, 12)
-                .IncreasesStat(StatType.RiflePacificationPinningFireRank, creature => EquipmentPredicates.HasRifle(creature) ? 1 : 0)
+                .IncreasesStat(StatType.RiflePacificationPinningFireRank, 1)
 
                 .AddPerkLevel()
                 .Description("Pacification control shots also inflict Knockdown for 3 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Rifle, 28)
-                .IncreasesStat(StatType.RiflePacificationPinningFireRank, creature => EquipmentPredicates.HasRifle(creature) ? 2 : 0);
+                .IncreasesStat(StatType.RiflePacificationPinningFireRank, 2);
         }
 
         private void ScopeCalibration()
@@ -309,7 +309,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ScopeCalibrationTrait)
                 .Description("Rifle critical hits deal +15% damage.")
-                .IncreasesStat(StatType.CriticalDamagePercentAdjustment, creature => EquipmentPredicates.HasRifle(creature) ? 15 : 0)
+                .IncreasesStat(StatType.RifleCriticalDamagePercentAdjustment, 15)
                 .Price(3)
                 .RequirementSkill(SkillType.Rifle, 20);
         }
@@ -334,7 +334,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SoftTargetTrait)
                 .Description("Deal +10% rifle damage to enemies affected by Disoriented, Dazed, or tranquilizer effects.")
-                .IncreasesStat(StatType.DamageToDisorientedDazedTargetPercentAdjustment, creature => EquipmentPredicates.HasRifle(creature) ? 10 : 0)
+                .IncreasesStat(StatType.DamageToDisorientedDazedTargetPercentAdjustment, 10)
                 .Price(2)
                 .RequirementSkill(SkillType.Rifle, 22);
         }
@@ -371,23 +371,23 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SteadyAimTrait)
                 .Description("Rifle combat abilities gain +5% accuracy and +5% critical chance.")
-                .IncreasesStat(StatType.AbilityHitChancePercentAdjustmentSkillType, creature => EquipmentPredicates.HasRifle(creature) ? (int)SkillType.Rifle : 0)
-                .IncreasesStat(StatType.AbilityHitChancePercentAdjustment, creature => EquipmentPredicates.HasRifle(creature) ? 5 : 0)
-                .IncreasesStat(StatType.AbilityCriticalRatePercentAdjustmentSkillType, creature => EquipmentPredicates.HasRifle(creature) ? (int)SkillType.Rifle : 0)
-                .IncreasesStat(StatType.AbilityCriticalRatePercentAdjustment, creature => EquipmentPredicates.HasRifle(creature) ? 5 : 0)
+                .IncreasesStat(StatType.AbilityHitChancePercentAdjustmentSkillType, (int)SkillType.Rifle)
+                .IncreasesStat(StatType.AbilityHitChancePercentAdjustment, 5)
+                .IncreasesStat(StatType.AbilityCriticalRatePercentAdjustmentSkillType, (int)SkillType.Rifle)
+                .IncreasesStat(StatType.AbilityCriticalRatePercentAdjustment, 5)
                 .Price(3)
                 .RequirementSkill(SkillType.Rifle, 2)
 
                 .AddPerkLevel()
                 .Description("Aimed Shot cooldowns are reduced by 5 seconds and gain an additional +10% accuracy.")
-                .IncreasesStat(StatType.AbilityHitChancePercentAdjustmentSkillType, creature => EquipmentPredicates.HasRifle(creature) ? (int)SkillType.Rifle : 0)
-                .IncreasesStat(StatType.AbilityHitChancePercentAdjustment, creature => EquipmentPredicates.HasRifle(creature) ? 5 : 0)
-                .IncreasesStat(StatType.AbilityCriticalRatePercentAdjustmentSkillType, creature => EquipmentPredicates.HasRifle(creature) ? (int)SkillType.Rifle : 0)
-                .IncreasesStat(StatType.AbilityCriticalRatePercentAdjustment, creature => EquipmentPredicates.HasRifle(creature) ? 5 : 0)
-                .IncreasesStat(StatType.AbilityHitChancePercentAdjustmentPerkType, creature => EquipmentPredicates.HasRifle(creature) ? (int)PerkType.AimedShot : 0)
-                .IncreasesStat(StatType.TargetedAbilityHitChancePercentAdjustment, creature => EquipmentPredicates.HasRifle(creature) ? 10 : 0)
-                .IncreasesStat(StatType.AbilityRecastDelayFlatAdjustmentPerkType, creature => EquipmentPredicates.HasRifle(creature) ? (int)PerkType.AimedShot : 0)
-                .IncreasesStat(StatType.AbilityRecastDelayFlatAdjustment, creature => EquipmentPredicates.HasRifle(creature) ? -5 : 0)
+                .IncreasesStat(StatType.AbilityHitChancePercentAdjustmentSkillType, (int)SkillType.Rifle)
+                .IncreasesStat(StatType.AbilityHitChancePercentAdjustment, 5)
+                .IncreasesStat(StatType.AbilityCriticalRatePercentAdjustmentSkillType, (int)SkillType.Rifle)
+                .IncreasesStat(StatType.AbilityCriticalRatePercentAdjustment, 5)
+                .IncreasesStat(StatType.AbilityHitChancePercentAdjustmentPerkType, (int)PerkType.AimedShot)
+                .IncreasesStat(StatType.TargetedAbilityHitChancePercentAdjustment, 10)
+                .IncreasesStat(StatType.AbilityRecastDelayFlatAdjustmentPerkType, (int)PerkType.AimedShot)
+                .IncreasesStat(StatType.AbilityRecastDelayFlatAdjustment, -5)
                 .Price(2)
                 .RequirementSkill(SkillType.Rifle, 32);
         }
@@ -448,7 +448,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.VeteranTrackerTrait)
                 .Description("Rifle damage increases by 15% against enemies affected by any control effect.")
-                .IncreasesStat(StatType.DamageToControlTargetPercentAdjustment, creature => EquipmentPredicates.HasRifle(creature) ? 15 : 0)
+                .IncreasesStat(StatType.DamageToControlTargetPercentAdjustment, 15)
                 .Price(4)
                 .RequirementSkill(SkillType.Rifle, 48);
         }

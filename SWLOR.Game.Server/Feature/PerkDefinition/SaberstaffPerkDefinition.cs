@@ -92,9 +92,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(3)
                 .RequirementSkill(SkillType.Saberstaff, 38)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
-                .IncreasesStat(StatType.SaberstaffConduitAreaConduitFlare, creature => EquipmentPredicates.HasMainHandSaberstaff(creature) ? 1 : 0)
-                .IncreasesStat(StatType.SaberstaffConduitFlareDamageBonus, creature => EquipmentPredicates.HasMainHandSaberstaff(creature) ? 20 : 0)
-                .IncreasesStat(StatType.SaberstaffConduitFlareForceDisruptionDurationSeconds, creature => EquipmentPredicates.HasMainHandSaberstaff(creature) ? 8 : 0);
+                .IncreasesStat(StatType.SaberstaffConduitAreaConduitFlare, 1)
+                .IncreasesStat(StatType.SaberstaffConduitFlareDamageBonus, 20)
+                .IncreasesStat(StatType.SaberstaffConduitFlareForceDisruptionDurationSeconds, 8);
         }
 
         private void ConduitStance()
@@ -186,14 +186,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.EnergizedFormsTrait)
                 .Description("Using a Force ability causes your next saberstaff attack within 8 seconds to deal +15 DMG. Using a saberstaff ability reduces the FP cost of your next Force ability by 2.")
-                .IncreasesStat(StatType.AbilityUsedNextSkillAutoAttackDamageBonusTriggerSkillType, creature => EquipmentPredicates.HasMainHandSaberstaff(creature) ? (int)SkillType.Force : 0)
-                .IncreasesStat(StatType.AbilityUsedNextSkillAutoAttackDamageBonusSkillType, creature => EquipmentPredicates.HasMainHandSaberstaff(creature) ? (int)SkillType.Saberstaff : 0)
-                .IncreasesStat(StatType.AbilityUsedNextSkillAutoAttackDamageBonus, creature => EquipmentPredicates.HasMainHandSaberstaff(creature) ? 15 : 0)
-                .IncreasesStat(StatType.AbilityUsedNextSkillAutoAttackDamageWindowSeconds, creature => EquipmentPredicates.HasMainHandSaberstaff(creature) ? 8 : 0)
-                .IncreasesStat(StatType.AbilityUsedNextSkillFPCostAdjustmentTriggerSkillType, creature => EquipmentPredicates.HasMainHandSaberstaff(creature) ? (int)SkillType.Saberstaff : 0)
-                .IncreasesStat(StatType.AbilityUsedNextSkillFPCostAdjustmentSkillType, creature => EquipmentPredicates.HasMainHandSaberstaff(creature) ? (int)SkillType.Force : 0)
-                .IncreasesStat(StatType.AbilityUsedNextSkillFPCostAdjustment, creature => EquipmentPredicates.HasMainHandSaberstaff(creature) ? -2 : 0)
-                .IncreasesStat(StatType.AbilityUsedNextSkillFPCostAdjustmentWindowSeconds, creature => EquipmentPredicates.HasMainHandSaberstaff(creature) ? 8 : 0)
+                .IncreasesStat(StatType.AbilityUsedNextSkillAutoAttackDamageBonusTriggerSkillType, (int)SkillType.Force)
+                .IncreasesStat(StatType.AbilityUsedNextSkillAutoAttackDamageBonusSkillType, (int)SkillType.Saberstaff)
+                .IncreasesStat(StatType.AbilityUsedNextSkillAutoAttackDamageBonus, 15)
+                .IncreasesStat(StatType.AbilityUsedNextSkillAutoAttackDamageWindowSeconds, 8)
+                .IncreasesStat(StatType.AbilityUsedNextSkillFPCostAdjustmentTriggerSkillType, (int)SkillType.Saberstaff)
+                .IncreasesStat(StatType.AbilityUsedNextSkillFPCostAdjustmentSkillType, (int)SkillType.Force)
+                .IncreasesStat(StatType.AbilityUsedNextSkillFPCostAdjustment, -2)
+                .IncreasesStat(StatType.AbilityUsedNextSkillFPCostAdjustmentWindowSeconds, 8)
                 .Price(2)
                 .RequirementSkill(SkillType.Saberstaff, 32)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
@@ -267,8 +267,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(3)
                 .RequirementSkill(SkillType.Saberstaff, 38)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
-                .IncreasesStat(StatType.SaberstaffTempestForceGyre, creature => EquipmentPredicates.HasMainHandSaberstaff(creature) ? 1 : 0)
-                .IncreasesStat(StatType.SaberstaffTempestForceGyreDurationSeconds, creature => EquipmentPredicates.HasMainHandSaberstaff(creature) ? 12 : 0);
+                .IncreasesStat(StatType.SaberstaffTempestForceGyre, 1)
+                .IncreasesStat(StatType.SaberstaffTempestForceGyreDurationSeconds, 12);
         }
 
         private void ForceLens()
@@ -282,7 +282,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(3)
                 .RequirementSkill(SkillType.Saberstaff, 25)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
-                .IncreasesStat(StatType.SaberstaffConduitForceLens, creature => EquipmentPredicates.HasMainHandSaberstaff(creature) ? 1 : 0);
+                .IncreasesStat(StatType.SaberstaffConduitForceLens, 1);
         }
 
         private void ForceMomentum()
@@ -403,21 +403,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SpinningDeflectionTrait)
                 .Description("Gain +8 Attack Deflection. After deflecting an attack, your next Circle Slash deals +8 DMG.")
-                .IncreasesStat(StatType.AttackDeflection, creature => EquipmentPredicates.HasMainHandSaberstaff(creature) ? 8 : 0)
-                .IncreasesStat(StatType.DeflectionNextAbilityDamageBonusPerkType, creature => EquipmentPredicates.HasMainHandSaberstaff(creature) ? (int)PerkType.CircleSlash : 0)
-                .IncreasesStat(StatType.DeflectionNextAbilityDamageBonus, creature => EquipmentPredicates.HasMainHandSaberstaff(creature) ? 8 : 0)
-                .IncreasesStat(StatType.DeflectionNextAbilityDamageBonusDurationSeconds, creature => EquipmentPredicates.HasMainHandSaberstaff(creature) ? 8 : 0)
+                .IncreasesStat(StatType.AttackDeflection, 8)
+                .IncreasesStat(StatType.DeflectionNextAbilityDamageBonusPerkType, (int)PerkType.CircleSlash)
+                .IncreasesStat(StatType.DeflectionNextAbilityDamageBonus, 8)
+                .IncreasesStat(StatType.DeflectionNextAbilityDamageBonusDurationSeconds, 8)
                 .Price(2)
                 .RequirementSkill(SkillType.Saberstaff, 22)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
 
                 .AddPerkLevel()
                 .Description("Gain +16 Attack Deflection total. Deflecting an attack restores 4 FP.")
-                .IncreasesStat(StatType.AttackDeflection, creature => EquipmentPredicates.HasMainHandSaberstaff(creature) ? 16 : 0)
-                .IncreasesStat(StatType.DeflectionNextAbilityDamageBonusPerkType, creature => EquipmentPredicates.HasMainHandSaberstaff(creature) ? (int)PerkType.CircleSlash : 0)
-                .IncreasesStat(StatType.DeflectionNextAbilityDamageBonus, creature => EquipmentPredicates.HasMainHandSaberstaff(creature) ? 8 : 0)
-                .IncreasesStat(StatType.DeflectionNextAbilityDamageBonusDurationSeconds, creature => EquipmentPredicates.HasMainHandSaberstaff(creature) ? 8 : 0)
-                .IncreasesStat(StatType.DeflectionFPRestore, creature => EquipmentPredicates.HasMainHandSaberstaff(creature) ? 4 : 0)
+                .IncreasesStat(StatType.AttackDeflection, 16)
+                .IncreasesStat(StatType.DeflectionNextAbilityDamageBonusPerkType, (int)PerkType.CircleSlash)
+                .IncreasesStat(StatType.DeflectionNextAbilityDamageBonus, 8)
+                .IncreasesStat(StatType.DeflectionNextAbilityDamageBonusDurationSeconds, 8)
+                .IncreasesStat(StatType.DeflectionFPRestore, 4)
                 .Price(2)
                 .RequirementSkill(SkillType.Saberstaff, 40)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
@@ -431,9 +431,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.TempestFocusTrait)
                 .Description("Saberstaff combat abilities cost 2 less STM while your FP is above 50%.")
-                .IncreasesStat(StatType.HighResourceAbilityStaminaCostSkillType, creature => EquipmentPredicates.HasMainHandSaberstaff(creature) ? (int)SkillType.Saberstaff : 0)
-                .IncreasesStat(StatType.HighResourceAbilityStaminaCostThresholdPercent, creature => EquipmentPredicates.HasMainHandSaberstaff(creature) ? 50 : 0)
-                .IncreasesStat(StatType.HighResourceAbilityStaminaCostAdjustment, creature => EquipmentPredicates.HasMainHandSaberstaff(creature) ? -2 : 0)
+                .IncreasesStat(StatType.HighResourceAbilityStaminaCostSkillType, (int)SkillType.Saberstaff)
+                .IncreasesStat(StatType.HighResourceAbilityStaminaCostThresholdPercent, 50)
+                .IncreasesStat(StatType.HighResourceAbilityStaminaCostAdjustment, -2)
                 .Price(2)
                 .RequirementSkill(SkillType.Saberstaff, 32)
                 .RequirementCharacterType(CharacterType.ForceSensitive);

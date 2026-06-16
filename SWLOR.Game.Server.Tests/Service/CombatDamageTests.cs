@@ -117,15 +117,62 @@ public class CombatDamageTests
     {
         var root = FindRepositoryRoot();
         var abilitySource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Ability.cs"));
+        var combatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
         var damageTypeSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "CombatService", "CombatDamageType.cs"));
+        var impactWeaponDamage = ExtractMethod(combatSource, "public static int GetCombatImpactWeaponDamage");
+        var impactWeaponSelection = ExtractMethod(combatSource, "private static uint GetCombatImpactWeapon");
 
         abilitySource.Should().Contain("Combat.GetCombatImpactWeaponDamage(activator, skillType)");
         abilitySource.Should().Contain("effectDamageType ?? damageType.GetNWScriptDamageType()");
         abilitySource.Should().NotContain("GetNWScriptDamagePower");
         abilitySource.Should().NotContain("GetCombatImpactEffectDamagePower");
         abilitySource.Should().NotContain("private static int GetCombatImpactWeaponDamage");
+        combatSource.Should().NotContain("IsWeaponForSkill");
+        impactWeaponDamage.Should().Contain("var weapon = GetCombatImpactWeapon(activator);");
+        impactWeaponSelection.Should().Contain("IsCombatImpactWeapon(rightHand)");
+        impactWeaponSelection.Should().Contain("IsCombatImpactWeapon(leftHand)");
+        impactWeaponSelection.Should().NotContain("skillType");
         damageTypeSource.Should().NotContain("GetNWScriptDamagePower");
         damageTypeSource.Should().NotContain("DamagePower");
+    }
+
+    [Test]
+    public void DeflectionGrantedSkillBonuses_DoNotInferEquippedWeaponSkillWhenNoSelectorIsDeclared()
+    {
+        var root = FindRepositoryRoot();
+        var combatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
+        var statSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Stat.cs"));
+        var applyDeflectionEffects = ExtractMethod(statSource, "public static void ApplyDeflectionEffectsNative");
+        var grantNextSkillBonuses = ExtractMethod(
+            combatSource.Replace("\r\n", "\n"),
+            "public static void GrantNextSkillAbilityBonuses(\n            uint creature,\n            SkillType skillType");
+        var consumeNextSkillBonuses = ExtractMethod(
+            combatSource.Replace("\r\n", "\n"),
+            "public static (int DamageBonus, int CriticalRatePercentAdjustment, int DefenseIgnorePercentAdjustment) ConsumeNextSkillAbilityBonuses");
+
+        applyDeflectionEffects.Should().Contain("StatType.DeflectionNextSkillAbilitySkillType");
+        applyDeflectionEffects.Should().NotContain("GetMainHandSkillTypeNative");
+        grantNextSkillBonuses.Should().Contain("damageBonus == 0 && criticalRatePercentAdjustment == 0 && defenseIgnorePercentAdjustment == 0");
+        grantNextSkillBonuses.Should().NotContain("skillType == SkillType.Invalid");
+        consumeNextSkillBonuses.Should().Contain("if (!SkillTypeMatches(skillType, storedSkillType))");
+        consumeNextSkillBonuses.Should().NotContain("storedSkillType != skillType");
+    }
+
+    [Test]
+    public void SkillSpecificCriticalStats_UseAbilitySkillInsteadOfEquippedWeaponPredicates()
+    {
+        var root = FindRepositoryRoot();
+        var combatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
+        var abilitySource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Ability.cs"));
+        var damageRollSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Native", "GetDamageRoll.cs"));
+        var attackRollSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Native", "ResolveAttackRoll.cs"));
+
+        combatSource.Should().Contain("SkillType.Staff => Stat.GetStatAdjustment(attacker, StatType.StaffCriticalDamagePercentAdjustment)");
+        combatSource.Should().Contain("SkillType.Rifle => Stat.GetStatAdjustment(attacker, StatType.RifleCriticalDamagePercentAdjustment)");
+        combatSource.Should().Contain("SkillType.Staff => Stat.GetStatAdjustment(attacker, StatType.StaffCriticalRatePercentAdjustment)");
+        abilitySource.Should().Contain("Combat.ApplyCriticalDamageModifier(activator, calculatedDamage, criticalRating, skillType)");
+        damageRollSource.Should().Contain("Combat.ApplyCriticalDamageModifier(attacker.m_idSelf, damage, effectiveCritical, skillType)");
+        attackRollSource.Should().Contain("Combat.GetSkillCriticalRatePercentAdjustment(attacker.m_idSelf, skillType)");
     }
 
     [Test]
@@ -411,6 +458,9 @@ public class CombatDamageTests
 
         combatSource.Should().Contain("bool WasCriticalDowngraded");
         combatSource.Should().Contain("StatType.IncomingCriticalHitDowngradeToMinimumDamage");
+        combatSource.Should().Contain("StatType.IncomingCriticalHitDowngradeCooldownMilliseconds");
+        combatSource.Should().Contain("TryUseStatTrigger(");
+        combatSource.Should().Contain("TimeSpan.FromMilliseconds(cooldownMilliseconds)");
         combatSource.Should().Contain("public static void SendIncomingCriticalHitDowngradeFeedback(uint attacker, uint defender)");
         combatSource.Should().Contain("FloatingTextStringOnCreature(ColorToken.Combat(\"Critical Ward\"), defender, false);");
 
@@ -418,6 +468,7 @@ public class CombatDamageTests
         abilitySource.Should().Contain("Combat.SendIncomingCriticalHitDowngradeFeedback(activator, target);");
         damageRollSource.Should().Contain("if (damageRoll.WasCriticalDowngraded)");
         damageRollSource.Should().Contain("Combat.SendIncomingCriticalHitDowngradeFeedback(attacker.m_idSelf, target.m_idSelf);");
+        resolveAttackRollSource.Should().Contain("Combat.TryUseIncomingCriticalHitDowngrade(defender.m_idSelf, 1)");
         resolveAttackRollSource.Should().NotContain("Combat.SendIncomingCriticalHitDowngradeFeedback");
 
         combatSource.Should().NotContain("PerkType.CriticalWard");
@@ -1101,6 +1152,32 @@ public class CombatDamageTests
     private static string[] Split2daColumns(string line)
     {
         return line.Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
+    }
+
+    private static string ExtractMethod(string source, string signature)
+    {
+        var signatureIndex = source.IndexOf(signature, StringComparison.Ordinal);
+        signatureIndex.Should().BeGreaterThanOrEqualTo(0);
+
+        var openBraceIndex = source.IndexOf('{', signatureIndex);
+        openBraceIndex.Should().BeGreaterThanOrEqualTo(0);
+
+        var depth = 0;
+        for (var index = openBraceIndex; index < source.Length; index++)
+        {
+            if (source[index] == '{')
+            {
+                depth++;
+            }
+            else if (source[index] == '}')
+            {
+                depth--;
+                if (depth == 0)
+                    return source.Substring(signatureIndex, index - signatureIndex + 1);
+            }
+        }
+
+        throw new InvalidOperationException($"Could not extract method '{signature}'.");
     }
 
     private static void AddResistanceEnhancementExpectations(

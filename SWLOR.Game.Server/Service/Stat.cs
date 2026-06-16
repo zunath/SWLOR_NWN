@@ -1463,7 +1463,9 @@ namespace SWLOR.Game.Server.Service
             var nextAbilityDamagePerkType = GetStatAdjustment(creatureId, StatType.DeflectionNextAbilityDamageBonusPerkType);
             var nextAbilityDamageBonus = GetStatAdjustment(creatureId, StatType.DeflectionNextAbilityDamageBonus);
             var nextAbilityDamageDuration = GetStatAdjustment(creatureId, StatType.DeflectionNextAbilityDamageBonusDurationSeconds);
-            var nextSkillAbilitySkillType = GetMainHandSkillTypeNative(creature);
+            var nextSkillAbilitySkillType = GetSkillTypeFromStat(GetStatAdjustment(
+                creatureId,
+                StatType.DeflectionNextSkillAbilitySkillType));
             var nextSkillAbilityDamageBonus = GetStatAdjustment(creatureId, StatType.DeflectionNextSkillAbilityDamageBonus);
             var nextSkillAbilityCriticalRate = GetStatAdjustment(creatureId, StatType.DeflectionNextSkillAbilityCriticalRatePercentAdjustment);
             var nextSkillAbilityNoDelay = GetStatAdjustment(creatureId, StatType.DeflectionNextSkillAbilityNoDelay);
@@ -1593,6 +1595,13 @@ namespace SWLOR.Game.Server.Service
                 return SkillType.Invalid;
 
             return Skill.GetSkillTypeByBaseItem((BaseItem)rightHandItem.m_nBaseItem);
+        }
+
+        private static SkillType GetSkillTypeFromStat(int value)
+        {
+            return value > 0 && Enum.IsDefined(typeof(SkillType), value)
+                ? (SkillType)value
+                : SkillType.Invalid;
         }
 
         private static bool HasShieldEquippedNative(CNWSCreature creature)

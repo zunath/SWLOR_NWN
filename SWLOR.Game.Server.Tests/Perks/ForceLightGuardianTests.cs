@@ -69,8 +69,10 @@ public class ForceLightGuardianTests
         var root = FindRepositoryRoot();
         var source = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "PerkDefinition" / "ForceLightGuardianPerkDefinition.cs").FullName);
 
-        source.Should().Contain("EquipmentPredicates.HasMainHandLightsaber(creature) || EquipmentPredicates.HasMainHandVibroblade(creature) ? 4 : 0");
-        source.Should().Contain("EquipmentPredicates.HasMainHandLightsaber(creature) || EquipmentPredicates.HasMainHandVibroblade(creature) ? 10 : 0");
+        source.Should().Contain("StatType.LightGuardianPowerAttackDeflection, 4");
+        source.Should().Contain("StatType.LightGuardianPowerAttackDeflectionDurationSeconds, 10");
+        source.Should().NotContain("EquipmentPredicates.HasMainHandLightsaber");
+        source.Should().NotContain("EquipmentPredicates.HasMainHandVibroblade");
 
         var purifyingWaveSource = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Force" / "PurifyingWaveAbilityDefinition.cs").FullName);
         purifyingWaveSource.Should().Contain("AbilityTargeting.GetHostileTargetsNearLocation(activator, impactLocation, 5f, 0)");

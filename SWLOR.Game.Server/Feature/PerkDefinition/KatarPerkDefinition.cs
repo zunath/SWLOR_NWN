@@ -64,8 +64,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.BreakerReversalTrait)
                 .Description("After guarding an attack, your next katar attack deals +35 DMG and inflicts Exposed, reducing Defense by 15% for 12 seconds.")
-                .IncreasesStat(StatType.GuardedHitNextKatarAbilityDamageBonus, creature => EquipmentPredicates.HasDualWieldKatar(creature) ? 35 : 0)
-                .IncreasesStat(StatType.GuardedHitNextKatarAbilityExposedDurationSeconds, creature => EquipmentPredicates.HasDualWieldKatar(creature) ? 12 : 0)
+                .IncreasesStat(StatType.GuardedHitNextKatarAbilityDamageBonus, 35)
+                .IncreasesStat(StatType.GuardedHitNextKatarAbilityExposedDurationSeconds, 12)
                 .Price(3)
                 .RequirementSkill(SkillType.Katar, 45);
         }
@@ -78,7 +78,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.CobraReflexesTrait)
                 .Description("Critical hits against poisoned targets restore 4 STM.")
-                .IncreasesStat(StatType.CriticalPoisonedTargetStaminaRestore, creature => EquipmentPredicates.HasMainHandKatar(creature) ? 4 : 0)
+                .IncreasesStat(StatType.CriticalPoisonedTargetStaminaRestore, 4)
                 .Price(2)
                 .RequirementSkill(SkillType.Katar, 32);
         }
@@ -103,7 +103,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.CoveringClawsTrait)
                 .Description("Iron Guard ally-protection abilities cause enemies hit to generate +25% Enmity toward you for 12 seconds.")
-                .IncreasesStat(StatType.KatarIronGuardCoveringClaws, creature => EquipmentPredicates.HasDualWieldKatar(creature) ? 1 : 0)
+                .IncreasesStat(StatType.KatarIronGuardCoveringClaws, 1)
                 .Price(3)
                 .RequirementSkill(SkillType.Katar, 25);
         }
@@ -180,10 +180,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.GuardianReflexesTrait)
                 .Description("When reduced below 35% HP, gain +25% guard chance for 12 seconds. This can only trigger once every 3 minutes.")
-                .IncreasesStat(StatType.LowHPGuardThresholdPercent, creature => EquipmentPredicates.HasMainHandKatar(creature) ? 35 : 0)
-                .IncreasesStat(StatType.LowHPGuard, creature => EquipmentPredicates.HasMainHandKatar(creature) ? 25 : 0)
-                .IncreasesStat(StatType.LowHPGuardDurationSeconds, creature => EquipmentPredicates.HasMainHandKatar(creature) ? 12 : 0)
-                .IncreasesStat(StatType.LowHPGuardCooldownSeconds, creature => EquipmentPredicates.HasMainHandKatar(creature) ? 180 : 0)
+                .IncreasesStat(StatType.LowHPGuardThresholdPercent, 35)
+                .IncreasesStat(StatType.LowHPGuard, 25)
+                .IncreasesStat(StatType.LowHPGuardDurationSeconds, 12)
+                .IncreasesStat(StatType.LowHPGuardCooldownSeconds, 180)
                 .Price(4)
                 .RequirementSkill(SkillType.Katar, 48);
         }
@@ -196,9 +196,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ImpenetrableGripTrait)
                 .Description("Gain +20% Knockdown Resistance and +20% Daze Resistance. Guarded hits restore 4 STM.")
-                .IncreasesStat(StatType.MobilityResistance, creature => EquipmentPredicates.HasDualWieldKatar(creature) ? 20 : 0)
-                .IncreasesStat(StatType.MindResistance, creature => EquipmentPredicates.HasDualWieldKatar(creature) ? 20 : 0)
-                .IncreasesStat(StatType.GuardStaminaRestore, creature => EquipmentPredicates.HasDualWieldKatar(creature) ? 4 : 0)
+                .IncreasesStat(StatType.MobilityResistance, 20)
+                .IncreasesStat(StatType.MindResistance, 20)
+                .IncreasesStat(StatType.GuardStaminaRestore, 4)
                 .Price(3)
                 .RequirementSkill(SkillType.Katar, 40);
         }
@@ -211,7 +211,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.IronElbowsTrait)
                 .Description("Iron Guard counterattacks and guard pulses deal +15 DMG to nearby enemies and generate extra enmity.")
-                .IncreasesStat(StatType.KatarIronGuardPulseDamageBonus, creature => EquipmentPredicates.HasDualWieldKatar(creature) ? 15 : 0)
+                .IncreasesStat(StatType.KatarIronGuardPulseDamageBonus, 15)
                 .Price(4)
                 .RequirementSkill(SkillType.Katar, 18);
         }
@@ -248,7 +248,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.NeurotoxinMasteryTrait)
                 .Description("Poison effects you apply also reduce the target's Attack by 10%.")
-                .IncreasesStat(StatType.OutgoingPoisonAttackPercentAdjustment, creature => EquipmentPredicates.HasDualWieldKatar(creature) ? -10 : 0)
+                .IncreasesStat(StatType.OutgoingPoisonAttackPercentAdjustment, -10)
                 .Price(4)
                 .RequirementSkill(SkillType.Katar, 48);
         }
@@ -305,8 +305,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SpreadingVenomTrait)
                 .Description("When a poisoned target dies, the nearest enemy within 5 meters becomes poisoned for 30 seconds.")
-                .IncreasesStat(StatType.PoisonedDefeatedEnemySpreadRadiusMeters, creature => EquipmentPredicates.HasMainHandKatar(creature) ? 5 : 0)
-                .IncreasesStat(StatType.PoisonedDefeatedEnemySpreadDurationSeconds, creature => EquipmentPredicates.HasMainHandKatar(creature) ? 30 : 0)
+                .IncreasesStat(StatType.PoisonedDefeatedEnemySpreadRadiusMeters, 5)
+                .IncreasesStat(StatType.PoisonedDefeatedEnemySpreadDurationSeconds, 30)
                 .Price(2)
                 .RequirementSkill(SkillType.Katar, 40);
         }
@@ -367,10 +367,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ToxicRushTrait)
                 .Description("Damaging poisoned targets grants +4% Haste and +3% Attack for 6 seconds, stacking up to +20% Haste and +15% Attack. At maximum stacks, attacks against poisoned targets restore 2 STM.")
-                .IncreasesStat(StatType.KatarToxicRushHastePercentPerStack, creature => EquipmentPredicates.HasDualWieldKatar(creature) ? 4 : 0)
-                .IncreasesStat(StatType.KatarToxicRushAttackPercentPerStack, creature => EquipmentPredicates.HasDualWieldKatar(creature) ? 3 : 0)
-                .IncreasesStat(StatType.KatarToxicRushMaximumStacks, creature => EquipmentPredicates.HasDualWieldKatar(creature) ? 5 : 0)
-                .IncreasesStat(StatType.KatarToxicRushDurationSeconds, creature => EquipmentPredicates.HasDualWieldKatar(creature) ? 6 : 0)
+                .IncreasesStat(StatType.KatarToxicRushHastePercentPerStack, 4)
+                .IncreasesStat(StatType.KatarToxicRushAttackPercentPerStack, 3)
+                .IncreasesStat(StatType.KatarToxicRushMaximumStacks, 5)
+                .IncreasesStat(StatType.KatarToxicRushDurationSeconds, 6)
                 .Price(3)
                 .RequirementSkill(SkillType.Katar, 45);
         }
@@ -383,7 +383,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ToxicTempoTrait)
                 .Description("Katar abilities deal +8% damage to targets affected by Poison or Disoriented.")
-                .IncreasesStat(StatType.DamageToPoisonedOrDisorientedTargetPercentAdjustment, creature => EquipmentPredicates.HasMainHandKatar(creature) ? 8 : 0)
+                .IncreasesStat(StatType.DamageToPoisonedOrDisorientedTargetPercentAdjustment, 8)
                 .Price(2)
                 .RequirementSkill(SkillType.Katar, 22);
         }
@@ -396,7 +396,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.TwinFangFlurryTrait)
                 .Description("Single-target Venom Current abilities strike a second time for +10 DMG. If the target is poisoned, the second strike inflicts Bleed for 30 seconds.")
-                .IncreasesStat(StatType.KatarVenomCurrentSecondStrikeDamageBonus, creature => EquipmentPredicates.HasDualWieldKatar(creature) ? 10 : 0)
+                .IncreasesStat(StatType.KatarVenomCurrentSecondStrikeDamageBonus, 10)
                 .Price(3)
                 .RequirementSkill(SkillType.Katar, 25);
         }
@@ -447,8 +447,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.VenomSplashTrait)
                 .Description("Venom Current strike abilities spread Poison to nearby enemies when they hit a poisoned target.")
-                .IncreasesStat(StatType.KatarVenomCurrentPoisonSpreadRadiusMeters, creature => EquipmentPredicates.HasDualWieldKatar(creature) ? 5 : 0)
-                .IncreasesStat(StatType.KatarVenomCurrentPoisonSpreadDurationSeconds, creature => EquipmentPredicates.HasDualWieldKatar(creature) ? 30 : 0)
+                .IncreasesStat(StatType.KatarVenomCurrentPoisonSpreadRadiusMeters, 5)
+                .IncreasesStat(StatType.KatarVenomCurrentPoisonSpreadDurationSeconds, 30)
                 .Price(3)
                 .RequirementSkill(SkillType.Katar, 28);
         }

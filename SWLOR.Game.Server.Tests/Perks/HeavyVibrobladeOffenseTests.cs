@@ -138,8 +138,9 @@ public class HeavyVibrobladeOffenseTests
             StatType.CriticalHPPercentOfDamageRestoreCooldownSeconds);
 
         perkSource.Should().Contain("Math.Min(45, 25 + Math.Max(0, GetAbilityScore(creature, AbilityType.Might)))");
-        perkSource.Should().Contain("StatType.CriticalHPPercentOfDamageRestoreCooldownSeconds,");
-        perkSource.Should().Contain("creature => EquipmentPredicates.HasMainHandHeavyVibroblade(creature) ? 6 : 0");
+        perkSource.Should().Contain("StatType.CriticalHPPercentOfDamageRestoreCooldownSeconds");
+        perkSource.Should().NotContain("EquipmentPredicates.HasMainHandHeavyVibroblade");
+        AssertStatBonus(vampiricFury.PerkLevels[1], StatType.CriticalHPPercentOfDamageRestoreCooldownSeconds, 6);
         combatSource.Should().Contain("TryUseStatTrigger(attacker, StatType.CriticalHPPercentOfDamageRestore, hpRestoreCooldown)");
     }
 

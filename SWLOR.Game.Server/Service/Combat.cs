@@ -322,14 +322,13 @@ namespace SWLOR.Game.Server.Service
             int deltaCap = 0)
         {
             var isDefenderValid = GetIsObjectValid(defender);
-            var wasCriticalDowngraded = isDefenderValid &&
-                critical > 0 &&
-                Stat.GetStatAdjustment(defender, StatType.IncomingCriticalHitDowngradeToMinimumDamage) > 0;
             var usedPendingCriticalDowngrade = isDefenderValid &&
                 TemporaryStatModifier.Consume(
                     defender,
                     StatType.CurrentIncomingAttackMinimumDamage,
                     StatType.CurrentIncomingAttackMinimumDamage) > 0;
+            var wasCriticalDowngraded = !usedPendingCriticalDowngrade &&
+                TryUseIncomingCriticalHitDowngrade(defender, critical);
             var forceMinimumNormalDamage = wasCriticalDowngraded || usedPendingCriticalDowngrade;
             var effectiveCritical = forceMinimumNormalDamage ? 0 : critical;
             var (minDamage, maxDamage) = CalculateDamageRange(
@@ -347,16 +346,58 @@ namespace SWLOR.Game.Server.Service
             return (damage, effectiveCritical, wasCriticalDowngraded || usedPendingCriticalDowngrade);
         }
 
-        public static int ApplyCriticalDamageModifier(uint attacker, int damage, int criticalRating)
+        internal static bool TryUseIncomingCriticalHitDowngrade(uint defender, int criticalRating)
+        {
+            if (!GetIsObjectValid(defender) ||
+                criticalRating <= 0 ||
+                Stat.GetStatAdjustment(defender, StatType.IncomingCriticalHitDowngradeToMinimumDamage) <= 0)
+            {
+                return false;
+            }
+
+            var cooldownMilliseconds = Stat.GetStatAdjustment(
+                defender,
+                StatType.IncomingCriticalHitDowngradeCooldownMilliseconds);
+            return TryUseStatTrigger(
+                defender,
+                StatType.IncomingCriticalHitDowngradeToMinimumDamage,
+                TimeSpan.FromMilliseconds(cooldownMilliseconds));
+        }
+
+        public static int ApplyCriticalDamageModifier(
+            uint attacker,
+            int damage,
+            int criticalRating,
+            SkillType skillType = SkillType.Invalid)
         {
             if (criticalRating <= 0 || damage <= 0)
                 return damage;
 
             var adjustment = Stat.GetStatAdjustment(attacker, StatType.CriticalDamagePercentAdjustment);
+            adjustment += GetSkillCriticalDamagePercentAdjustment(attacker, skillType);
             if (adjustment == 0)
                 return damage;
 
             return damage + damage * adjustment / 100;
+        }
+
+        private static int GetSkillCriticalDamagePercentAdjustment(uint attacker, SkillType skillType)
+        {
+            return skillType switch
+            {
+                SkillType.Staff => Stat.GetStatAdjustment(attacker, StatType.StaffCriticalDamagePercentAdjustment),
+                SkillType.Rifle => Stat.GetStatAdjustment(attacker, StatType.RifleCriticalDamagePercentAdjustment),
+                _ => 0
+            };
+        }
+
+        public static int GetSkillCriticalRatePercentAdjustment(uint attacker, SkillType skillType)
+        {
+            return skillType switch
+            {
+                SkillType.Staff => Stat.GetStatAdjustment(attacker, StatType.StaffCriticalRatePercentAdjustment),
+                _ => 0
+            };
         }
 
         public static int ApplyDamageTakenModifiers(
@@ -991,11 +1032,6 @@ namespace SWLOR.Game.Server.Service
         private static bool IsMatchingSideAttack(uint attacker, uint defender, SkillType skillType)
         {
             var requiredSkillType = GetSkillTypeFromStat(Stat.GetStatAdjustment(attacker, StatType.SideAttackSkillType));
-            if (requiredSkillType == SkillType.Invalid)
-            {
-                requiredSkillType = GetEquippedWeaponSkillType(attacker);
-            }
-
             return SkillTypeMatches(skillType, requiredSkillType) && IsAttackerBesideTarget(attacker, defender);
         }
 
@@ -1079,6 +1115,13 @@ namespace SWLOR.Game.Server.Service
 
             var targetDefensePercent = Stat.GetStatAdjustment(attacker, StatType.CriticalTargetDefensePercentAdjustment);
             var targetDefenseDuration = Stat.GetStatAdjustment(attacker, StatType.CriticalTargetDefenseDurationSeconds);
+            if (skillType == SkillType.Staff)
+            {
+                targetDefensePercent += Stat.GetStatAdjustment(attacker, StatType.StaffCriticalTargetDefensePercentAdjustment);
+                targetDefenseDuration = Math.Max(
+                    targetDefenseDuration,
+                    Stat.GetStatAdjustment(attacker, StatType.StaffCriticalTargetDefenseDurationSeconds));
+            }
             if (targetDefensePercent != 0 && targetDefenseDuration > 0)
             {
                 StatusEffect.ApplyStatusEffect(
@@ -2504,7 +2547,12 @@ namespace SWLOR.Game.Server.Service
 
         internal static bool TryUseStatTrigger(uint creature, StatType statType, int cooldownSeconds)
         {
-            if (cooldownSeconds <= 0)
+            return TryUseStatTrigger(creature, statType, TimeSpan.FromSeconds(cooldownSeconds));
+        }
+
+        internal static bool TryUseStatTrigger(uint creature, StatType statType, TimeSpan cooldown)
+        {
+            if (cooldown <= TimeSpan.Zero)
                 return true;
 
             var key = (creature, statType);
@@ -2512,7 +2560,7 @@ namespace SWLOR.Game.Server.Service
             if (_statTriggerCooldowns.TryGetValue(key, out var nextAvailable) && nextAvailable > now)
                 return false;
 
-            _statTriggerCooldowns[key] = now.AddSeconds(cooldownSeconds);
+            _statTriggerCooldowns[key] = now.Add(cooldown);
             return true;
         }
 
@@ -3384,7 +3432,7 @@ namespace SWLOR.Game.Server.Service
                     EffectDamage(damage, damageType.GetNWScriptDamageType()),
                     target));
             ApplyDamageDealtEffects(activator, target, damage, skillType, damageType);
-            StatusEffect.NotifyDamageStatusEffects(activator, target, damage, damageType);
+            StatusEffect.NotifyDamageStatusEffects(activator, target, damage, damageType, CombatDamageDeliveryType.Triggered);
         }
 
         private static void ApplyGuardiansResolve(uint activator)
@@ -3743,6 +3791,7 @@ namespace SWLOR.Game.Server.Service
                 return 0;
 
             var criticalRate = criticalRateAdjustment;
+            criticalRate += GetSkillCriticalRatePercentAdjustment(attacker, skillType);
             criticalRate += GetAbilityHitOrCriticalAdjustment(
                 attacker,
                 skillType,
@@ -4175,7 +4224,7 @@ namespace SWLOR.Game.Server.Service
                 creature,
                 StatType.NextSkillAbilitySkillType,
                 StatType.NextSkillAbilitySkillType));
-            if (storedSkillType != skillType)
+            if (!SkillTypeMatches(skillType, storedSkillType))
                 return (0, 0, 0);
 
             var damageBonus = TemporaryStatModifier.Consume(
@@ -4909,29 +4958,29 @@ namespace SWLOR.Game.Server.Service
             if (!IsWeaponSkillType(skillType))
                 return 0;
 
-            var weapon = GetCombatImpactWeapon(activator, skillType);
+            var weapon = GetCombatImpactWeapon(activator);
             return GetIsObjectValid(weapon)
                 ? Item.GetDMG(weapon)
                 : 0;
         }
 
-        private static uint GetCombatImpactWeapon(uint activator, SkillType skillType)
+        private static uint GetCombatImpactWeapon(uint activator)
         {
             var rightHand = GetItemInSlot(InventorySlot.RightHand, activator);
-            if (IsWeaponForSkill(rightHand, skillType))
+            if (IsCombatImpactWeapon(rightHand))
                 return rightHand;
 
             var leftHand = GetItemInSlot(InventorySlot.LeftHand, activator);
-            if (IsWeaponForSkill(leftHand, skillType))
+            if (IsCombatImpactWeapon(leftHand))
                 return leftHand;
 
             return OBJECT_INVALID;
         }
 
-        private static bool IsWeaponForSkill(uint item, SkillType skillType)
+        private static bool IsCombatImpactWeapon(uint item)
         {
             return GetIsObjectValid(item) &&
-                   Skill.GetSkillTypeByBaseItem((BaseItem)GetBaseItemType(item)) == skillType;
+                   Skill.GetSkillTypeByBaseItem((BaseItem)GetBaseItemType(item)) != SkillType.Invalid;
         }
 
         public static bool IsWeaponSkillType(SkillType skillType)
@@ -5034,7 +5083,6 @@ namespace SWLOR.Game.Server.Service
             int defenseIgnorePercentAdjustment = 0)
         {
             if (!GetIsObjectValid(creature) ||
-                skillType == SkillType.Invalid ||
                 durationSeconds <= 0 ||
                 damageBonus == 0 && criticalRatePercentAdjustment == 0 && defenseIgnorePercentAdjustment == 0)
                 return;

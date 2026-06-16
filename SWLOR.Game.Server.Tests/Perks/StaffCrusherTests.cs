@@ -73,6 +73,10 @@ public class StaffCrusherTests
 
         Stat.GetStatTypeCategory(StatType.CriticalTargetDefensePercentAdjustment).Should().Be(StatTypeCategory.BeneficialWhenNegative);
         Stat.GetStatTypeCategory(StatType.CriticalTargetDefenseDurationSeconds).Should().Be(StatTypeCategory.NonBeneficial);
+        Stat.GetStatTypeCategory(StatType.StaffCriticalDamagePercentAdjustment).Should().Be(StatTypeCategory.BeneficialWhenPositive);
+        Stat.GetStatTypeCategory(StatType.StaffCriticalRatePercentAdjustment).Should().Be(StatTypeCategory.BeneficialWhenPositive);
+        Stat.GetStatTypeCategory(StatType.StaffCriticalTargetDefensePercentAdjustment).Should().Be(StatTypeCategory.BeneficialWhenNegative);
+        Stat.GetStatTypeCategory(StatType.StaffCriticalTargetDefenseDurationSeconds).Should().Be(StatTypeCategory.NonBeneficial);
 
         var worldbreaker = new WorldbreakerStatusEffect();
         worldbreaker.StatGroup.Stats[StatType.DamageDealtPercentAdjustment].Should().Be(-10);
@@ -126,6 +130,11 @@ public class StaffCrusherTests
     public void StaffCrusherImplementationDetails_MatchCombatBible()
     {
         var root = FindRepositoryRoot();
+        var perkSource = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "PerkDefinition" / "StaffPerkDefinition.cs").FullName);
+
+        perkSource.Should().Contain("StatType.StaffCriticalTargetDefensePercentAdjustment, -10");
+        perkSource.Should().Contain("StatType.StaffCriticalDamagePercentAdjustment, 20");
+        perkSource.Should().Contain("StatType.StaffCriticalRatePercentAdjustment, 10");
 
         var slam = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Staff" / "SlamAbilityDefinition.cs").FullName).Replace("\r\n", "\n");
         slam.Should().Contain("SkillType.Staff,\n                8,\n                8,");

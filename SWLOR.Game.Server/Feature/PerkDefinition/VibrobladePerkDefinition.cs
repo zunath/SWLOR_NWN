@@ -80,7 +80,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.BloodseekerTrait)
                 .Description("Gain +10% Attack against bleeding targets.")
-                .IncreasesStat(StatType.AttackToBleedingTargetPercentAdjustment, creature => EquipmentPredicates.HasMainHandVibroblade(creature) ? 10 : 0)
+                .IncreasesStat(StatType.AttackToBleedingTargetPercentAdjustment, 10)
                 .Price(3)
                 .RequirementSkill(SkillType.Vibroblade, 40);
         }
@@ -117,10 +117,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.CrimsonFuryTrait)
                 .Description("Each bleeding enemy within 10m grants you +3% Attack (max +15%).")
-                .IncreasesStat(StatType.NearbyStatusTargetAttackPercentPerTarget, creature => EquipmentPredicates.HasMainHandVibroblade(creature) ? 3 : 0)
-                .IncreasesStat(StatType.NearbyStatusTargetAttackRadiusMeters, creature => EquipmentPredicates.HasMainHandVibroblade(creature) ? 10 : 0)
-                .IncreasesStat(StatType.NearbyStatusTargetAttackPercentMaximum, creature => EquipmentPredicates.HasMainHandVibroblade(creature) ? 15 : 0)
-                .IncreasesStat(StatType.NearbyStatusTargetAttackStatusCategory, creature => EquipmentPredicates.HasMainHandVibroblade(creature) ? (int)StatusEffectCategory.Bleeding : 0)
+                .IncreasesStat(StatType.NearbyStatusTargetAttackPercentPerTarget, 3)
+                .IncreasesStat(StatType.NearbyStatusTargetAttackRadiusMeters, 10)
+                .IncreasesStat(StatType.NearbyStatusTargetAttackPercentMaximum, 15)
+                .IncreasesStat(StatType.NearbyStatusTargetAttackStatusCategory, (int)StatusEffectCategory.Bleeding)
                 .Price(3)
                 .RequirementSkill(SkillType.Vibroblade, 42);
         }
@@ -165,17 +165,17 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.FortifiedPositionTrait)
                 .Description("Grants +8 Mind Resistance rating, +8 Trauma Resistance rating, and +8 Mobility Resistance rating.")
-                .IncreasesStat(StatType.MindResistance, creature => EquipmentPredicates.HasOffHandShield(creature) ? 2 : 0)
-                .IncreasesStat(StatType.TraumaResistance, creature => EquipmentPredicates.HasOffHandShield(creature) ? 2 : 0)
-                .IncreasesStat(StatType.MobilityResistance, creature => EquipmentPredicates.HasOffHandShield(creature) ? 2 : 0)
+                .IncreasesStat(StatType.MindResistance, 2)
+                .IncreasesStat(StatType.TraumaResistance, 2)
+                .IncreasesStat(StatType.MobilityResistance, 2)
                 .Price(3)
                 .RequirementSkill(SkillType.Vibroblade, 15)
 
                 .AddPerkLevel()
                 .Description("Grants +15 Mind Resistance rating, +15 Trauma Resistance rating, and +15 Mobility Resistance rating total.")
-                .IncreasesStat(StatType.MindResistance, creature => EquipmentPredicates.HasOffHandShield(creature) ? 4 : 0)
-                .IncreasesStat(StatType.TraumaResistance, creature => EquipmentPredicates.HasOffHandShield(creature) ? 4 : 0)
-                .IncreasesStat(StatType.MobilityResistance, creature => EquipmentPredicates.HasOffHandShield(creature) ? 4 : 0)
+                .IncreasesStat(StatType.MindResistance, 4)
+                .IncreasesStat(StatType.TraumaResistance, 4)
+                .IncreasesStat(StatType.MobilityResistance, 4)
                 .Price(3)
                 .RequirementSkill(SkillType.Vibroblade, 38);
         }
@@ -299,7 +299,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Riot Blade also deals +12 DMG to nearby enemies.")
-                .IncreasesStat(StatType.RiotBladeSecondaryDamageBonus, creature => EquipmentPredicates.HasMainHandVibroblade(creature) ? 12 : 0)
+                .IncreasesStat(StatType.RiotBladeSecondaryDamageBonus, 12)
                 .Price(3)
                 .RequirementSkill(SkillType.Vibroblade, 12)
 
@@ -329,9 +329,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Savage Cleave deals +20 DMG to nearby enemies and restores 2 STM per secondary target hit, up to 8 STM.")
-                .IncreasesStat(StatType.SavageCleaveSecondaryDamageBonus, creature => EquipmentPredicates.HasMainHandVibroblade(creature) ? 20 : 0)
-                .IncreasesStat(StatType.SavageCleaveSecondaryTargetStaminaRestore, creature => EquipmentPredicates.HasMainHandVibroblade(creature) ? 2 : 0)
-                .IncreasesStat(StatType.SavageCleaveSecondaryTargetStaminaRestoreMaximum, creature => EquipmentPredicates.HasMainHandVibroblade(creature) ? 8 : 0)
+                .IncreasesStat(StatType.SavageCleaveSecondaryDamageBonus, 20)
+                .IncreasesStat(StatType.SavageCleaveSecondaryTargetStaminaRestore, 2)
+                .IncreasesStat(StatType.SavageCleaveSecondaryTargetStaminaRestoreMaximum, 8)
                 .Price(3)
                 .RequirementSkill(SkillType.Vibroblade, 30);
         }
@@ -408,10 +408,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.UnbreakableTrait)
                 .Description("When reduced below 25% HP, gain +40% Physical Defense for 10s. Once per 5min.")
-                .IncreasesStat(StatType.LowHPPhysicalDefenseThresholdPercent, creature => EquipmentPredicates.HasOffHandShield(creature) ? 25 : 0)
-                .IncreasesStat(StatType.LowHPPhysicalDefensePercentAdjustment, creature => EquipmentPredicates.HasOffHandShield(creature) ? 40 : 0)
-                .IncreasesStat(StatType.LowHPPhysicalDefenseDurationSeconds, creature => EquipmentPredicates.HasOffHandShield(creature) ? 10 : 0)
-                .IncreasesStat(StatType.LowHPPhysicalDefenseCooldownSeconds, creature => EquipmentPredicates.HasOffHandShield(creature) ? 300 : 0)
+                .IncreasesStat(StatType.LowHPPhysicalDefenseThresholdPercent, 25)
+                .IncreasesStat(StatType.LowHPPhysicalDefensePercentAdjustment, 40)
+                .IncreasesStat(StatType.LowHPPhysicalDefenseDurationSeconds, 10)
+                .IncreasesStat(StatType.LowHPPhysicalDefenseCooldownSeconds, 300)
                 .Price(4)
                 .RequirementSkill(SkillType.Vibroblade, 42);
         }

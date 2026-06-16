@@ -1974,7 +1974,7 @@ namespace SWLOR.Game.Server.Service
                 Combat.SendIncomingCriticalHitDowngradeFeedback(activator, target);
             }
 
-            calculatedDamage = Combat.ApplyCriticalDamageModifier(activator, calculatedDamage, criticalRating);
+            calculatedDamage = Combat.ApplyCriticalDamageModifier(activator, calculatedDamage, criticalRating, skillType);
             calculatedDamage = Combat.ApplySideAttackDamageModifier(activator, target, skillType, calculatedDamage);
             calculatedDamage = Combat.ApplyTwinBladeAbilityShapeDamageModifier(
                 activator,
@@ -2157,7 +2157,7 @@ namespace SWLOR.Game.Server.Service
                 Combat.SendIncomingCriticalHitDowngradeFeedback(activator, target);
             }
 
-            calculatedDamage = Combat.ApplyCriticalDamageModifier(activator, calculatedDamage, criticalRating);
+            calculatedDamage = Combat.ApplyCriticalDamageModifier(activator, calculatedDamage, criticalRating, skillType);
             calculatedDamage = Combat.ApplySideAttackDamageModifier(activator, target, skillType, calculatedDamage);
             calculatedDamage = Combat.ApplyTwinBladeAbilityShapeDamageModifier(
                 activator,

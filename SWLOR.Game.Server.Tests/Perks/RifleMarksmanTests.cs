@@ -75,10 +75,22 @@ public class RifleMarksmanTests
         var root = FindRepositoryRoot();
 
         var combat = File.ReadAllText((root / "SWLOR.Game.Server" / "Service" / "Combat.cs").FullName);
+        var perkSource = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "PerkDefinition" / "RiflePerkDefinition.cs").FullName);
+        var perks = BuildRifleMarksmanPerksWithout2daLookup();
         combat.Should().Contain("typeof(ExposeWeakPointStatusEffect)");
         combat.Should().Contain("ApplyCriticalDamageModifier");
         combat.Should().Contain("isAbilityDamage && damageType.IsPhysicalDamageType()");
         combat.Should().Contain("StatType.PhysicalAbilityDamageTakenPercentAdjustment");
+        combat.Should().Contain("SkillType.Rifle => Stat.GetStatAdjustment(attacker, StatType.RifleCriticalDamagePercentAdjustment)");
+        perkSource.Should().Contain("StatType.RifleCriticalDamagePercentAdjustment, 15");
+        perkSource.Should().NotContain("EquipmentPredicates.HasRifle");
+        perks[PerkType.ScopeCalibration].PerkLevels[1].StatBonuses
+            .Should()
+            .ContainSingle(x => x.Stat == StatType.RifleCriticalDamagePercentAdjustment)
+            .Which
+            .Calculate(0)
+            .Should()
+            .Be(15);
 
         var ability = File.ReadAllText((root / "SWLOR.Game.Server" / "Service" / "Ability.cs").FullName);
         ability.Should().Contain("Combat.ApplyCriticalDamageModifier");

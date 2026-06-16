@@ -62,7 +62,7 @@ public class VibroknifeShadowTests
         combat.Should().Contain("public static void ApplyTriggeredDamage");
         combat.Should().NotContain("ApplyRiderDamage");
         combat.Should().Contain("ApplyDamageDealtEffects(activator, target, damage, skillType, damageType);");
-        combat.Should().Contain("StatusEffect.NotifyDamageStatusEffects(activator, target, damage, damageType);");
+        combat.Should().Contain("StatusEffect.NotifyDamageStatusEffects(activator, target, damage, damageType, CombatDamageDeliveryType.Triggered);");
     }
 
     [Test]

@@ -10,8 +10,16 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public override string Name => "Blazing Spikes";
         public override EffectIconType Icon => EffectIconType.BlazingSpikesStatusEffect;
 
-        protected override void OnDamageTaken(uint defender, uint attacker, int damage, CombatDamageType damageType)
+        protected override void OnDamageTaken(
+            uint defender,
+            uint attacker,
+            int damage,
+            CombatDamageType damageType,
+            CombatDamageDeliveryType deliveryType)
         {
+            if (deliveryType != CombatDamageDeliveryType.Direct)
+                return;
+
             if (!damageType.IsPhysicalDamageType())
                 return;
 

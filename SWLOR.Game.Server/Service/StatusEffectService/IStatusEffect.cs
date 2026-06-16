@@ -37,7 +37,17 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
         void TickEffect(uint creature);
         void ReconcileElapsedTime(DateTime currentTime);
         void OnHitEffect(uint creature, uint target, int damage);
-        void OnDamageDealtEffect(uint attacker, uint defender, int damage, CombatDamageType damageType);
-        void OnDamageTakenEffect(uint defender, uint attacker, int damage, CombatDamageType damageType);
+        void OnDamageDealtEffect(
+            uint attacker,
+            uint defender,
+            int damage,
+            CombatDamageType damageType,
+            CombatDamageDeliveryType deliveryType = CombatDamageDeliveryType.Direct);
+        void OnDamageTakenEffect(
+            uint defender,
+            uint attacker,
+            int damage,
+            CombatDamageType damageType,
+            CombatDamageDeliveryType deliveryType = CombatDamageDeliveryType.Direct);
     }
 }

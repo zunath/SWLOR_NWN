@@ -568,19 +568,28 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 return OBJECT_INVALID;
             }
 
-            var nth = 1;
-            var creature = GetNearestCreatureToLocation(CreatureType.IsAlive, true, location, nth);
-            while (GetIsObjectValid(creature) &&
-                   GetDistanceBetweenLocations(location, GetLocation(creature)) <= radius)
-            {
-                if (GetIsReactionTypeHostile(creature, activator))
-                    return creature;
+            var nearestCreature = OBJECT_INVALID;
+            var nearestDistance = float.MaxValue;
+            var creature = GetFirstObjectInShape(Shape.Sphere, radius, location, true, ObjectType.Creature);
 
-                nth++;
-                creature = GetNearestCreatureToLocation(CreatureType.IsAlive, true, location, nth);
+            while (GetIsObjectValid(creature))
+            {
+                if (!GetIsDead(creature) &&
+                    GetCurrentHitPoints(creature) > 0 &&
+                    GetIsReactionTypeHostile(creature, activator))
+                {
+                    var distance = GetDistanceBetweenLocations(location, GetLocation(creature));
+                    if (distance < nearestDistance)
+                    {
+                        nearestCreature = creature;
+                        nearestDistance = distance;
+                    }
+                }
+
+                creature = GetNextObjectInShape(Shape.Sphere, radius, location, true, ObjectType.Creature);
             }
 
-            return OBJECT_INVALID;
+            return nearestCreature;
         }
     }
 }

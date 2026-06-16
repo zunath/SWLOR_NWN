@@ -111,42 +111,37 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
 
         private static void MedKit1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
-            {
-                HealPercent(activator, friendly, SkillType.FirstAid, 10);
-                FirstAidTreatmentAdjustments.ApplyTraumaMedicRiders(activator, friendly);
-                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_M), friendly);
-            }
+            ApplyMedKit(activator, target, 10);
         }
 
         private static void MedKit2ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
-            {
-                HealPercent(activator, friendly, SkillType.FirstAid, 20);
-                FirstAidTreatmentAdjustments.ApplyTraumaMedicRiders(activator, friendly);
-                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_M), friendly);
-            }
+            ApplyMedKit(activator, target, 20);
         }
 
         private static void MedKit3ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
-            {
-                HealPercent(activator, friendly, SkillType.FirstAid, 28);
-                FirstAidTreatmentAdjustments.ApplyTraumaMedicRiders(activator, friendly);
-                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_M), friendly);
-            }
+            ApplyMedKit(activator, target, 28);
         }
 
         private static void MedKit4ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
+            ApplyMedKit(activator, target, 36);
+        }
+
+        private static void ApplyMedKit(uint activator, uint target, int percent)
+        {
+            var applied = false;
+            foreach (var friendly in AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
-                HealPercent(activator, friendly, SkillType.FirstAid, 36);
+                HealPercent(activator, friendly, SkillType.FirstAid, percent);
                 FirstAidTreatmentAdjustments.ApplyTraumaMedicRiders(activator, friendly);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_M), friendly);
+                applied = true;
             }
+
+            if (applied)
+                CombatPoint.AddCombatPointToAllTagged(activator, SkillType.FirstAid);
         }
 
 

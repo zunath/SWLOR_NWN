@@ -152,6 +152,9 @@ public class FirstAidCombatUpgradeTests
     public void FirstAidSources_IncludeBibleBehavior()
     {
         var root = FindRepositoryRoot();
+        var medKit = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "FirstAid" / "MedKitAbilityDefinition.cs").FullName);
+        medKit.Should().Contain("CombatPoint.AddCombatPointToAllTagged(activator, SkillType.FirstAid);");
+
         var treatmentKit = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "FirstAid" / "TreatmentKitAbilityDefinition.cs").FullName);
         treatmentKit.Should().Contain("StatusEffectCleanseType.TreatmentKit2");
         treatmentKit.Should().Contain("RemoveCleanseableStatusEffects(friendly, StatusEffectCleanseType.TreatmentKit2, false)");

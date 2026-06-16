@@ -444,6 +444,8 @@ public class CombatDamageTests
         combatSource.Should().Contain("ApplyDamageDealtForceErosionEffect(attacker, defender, deliveryType);");
         combatSource.Should().Contain("if (deliveryType != CombatDamageDeliveryType.Direct)");
         combatSource.Should().Contain("ApplyDamageDealtEffects(activator, target, damage, skillType, damageType, CombatDamageDeliveryType.Triggered);");
+        combatSource.Should().MatchRegex(@"ApplyDamageDealtEffects\(\s*attacker,\s*target,\s*cycleDamage,\s*skillType,\s*CombatDamageType\.Physical,\s*CombatDamageDeliveryType\.Triggered\);");
+        combatSource.Should().NotContain("ApplyDamageDealtEffects(attacker, target, cycleDamage, skillType);");
         forceDotSource.Should().Contain("CombatDamageDeliveryType.DamageOverTime");
         forceDotSource.Should().NotContain("Combat.ApplyDamageDealtEffects(Source, creature, damage, SkillType.Force, CombatDamageType.Force);");
     }

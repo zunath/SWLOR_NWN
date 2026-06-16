@@ -785,7 +785,13 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             AssignCommand(attacker, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(cycleDamage), target));
-            ApplyDamageDealtEffects(attacker, target, cycleDamage, skillType);
+            ApplyDamageDealtEffects(
+                attacker,
+                target,
+                cycleDamage,
+                skillType,
+                CombatDamageType.Physical,
+                CombatDamageDeliveryType.Triggered);
             Enmity.ModifyEnmity(attacker, target, cycleDamage);
         }
 

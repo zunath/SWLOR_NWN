@@ -559,8 +559,17 @@ namespace SWLOR.Game.Server.Service
             {
                 var name = GetName(creature);
                 var effectName = statusEffect.Name;
-                Messaging.SendMessageNearbyToPlayers(creature,
-                    $"{name} receives the effect of {effectName}");
+                var applicationMessage = $"{name} receives the effect of {effectName}";
+                if (GetIsObjectValid(source) && source != creature)
+                {
+                    var sourceName = GetName(source);
+                    if (!string.IsNullOrWhiteSpace(sourceName))
+                    {
+                        applicationMessage = $"{applicationMessage} from {sourceName}";
+                    }
+                }
+
+                Messaging.SendMessageNearbyToPlayers(creature, applicationMessage);
             }
 
             return true;

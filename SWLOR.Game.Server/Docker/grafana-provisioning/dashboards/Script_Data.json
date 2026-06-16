@@ -80,6 +80,7 @@
       "targets": [
         {
           "alias": "$tag_Script",
+          "datasource": "$DS",
           "dsType": "influxdb",
           "groupBy": [
             {
@@ -211,6 +212,7 @@
       "targets": [
         {
           "alias": "$tag_ObjectType",
+          "datasource": "$DS",
           "dsType": "influxdb",
           "groupBy": [
             {
@@ -342,6 +344,7 @@
       "targets": [
         {
           "alias": "$tag_Area",
+          "datasource": "$DS",
           "dsType": "influxdb",
           "groupBy": [
             {

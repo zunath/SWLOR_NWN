@@ -64,7 +64,7 @@ services:
             
     grafana:
         hostname: grafana
-        image: grafana/grafana:latest
+        image: grafana/grafana:12.1.1
         restart: unless-stopped
         environment:
             - GF_SECURITY_ADMIN_PASSWORD=admin

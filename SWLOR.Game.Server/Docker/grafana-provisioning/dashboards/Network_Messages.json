@@ -81,6 +81,7 @@
       "targets": [
         {
           "alias": "$tag_Category",
+          "datasource": "$DS",
           "dsType": "influxdb",
           "groupBy": [
             {
@@ -124,6 +125,7 @@
         },
         {
           "alias": "bps",
+          "datasource": "$DS",
           "dsType": "influxdb",
           "groupBy": [
             {
@@ -243,6 +245,7 @@
       "targets": [
         {
           "alias": "$tag_Type:$tag_Major:$tag_Minor",
+          "datasource": "$DS",
           "dsType": "influxdb",
           "groupBy": [
             {
@@ -374,6 +377,7 @@
       "targets": [
         {
           "alias": "$tag_Type:$tag_Major:$tag_Minor",
+          "datasource": "$DS",
           "dsType": "influxdb",
           "groupBy": [
             {

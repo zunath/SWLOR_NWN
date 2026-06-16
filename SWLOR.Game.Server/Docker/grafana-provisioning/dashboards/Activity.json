@@ -73,6 +73,7 @@
       "targets": [
         {
           "alias": "$tag_Type",
+          "datasource": "$DS",
           "dsType": "influxdb",
           "groupBy": [
             {
@@ -195,6 +196,7 @@
       "targets": [
         {
           "alias": "$tag_Area",
+          "datasource": "$DS",
           "dsType": "influxdb",
           "groupBy": [
             {

@@ -202,6 +202,7 @@
       "targets": [
         {
           "alias": "$1",
+          "datasource": "$DS",
           "dsType": "influxdb",
           "groupBy": [
             {
@@ -239,6 +240,7 @@
         },
         {
           "alias": "$1 (mean last 10)",
+          "datasource": "$DS",
           "dsType": "influxdb",
           "groupBy": [
             {
@@ -396,6 +398,7 @@
       "targets": [
         {
           "alias": "$tag_EventName",
+          "datasource": "$DS",
           "dsType": "influxdb",
           "groupBy": [
             {
@@ -543,6 +546,7 @@
       "targets": [
         {
           "alias": "$tag_Level",
+          "datasource": "$DS",
           "dsType": "influxdb",
           "groupBy": [
             {
@@ -667,6 +671,7 @@
       "targets": [
         {
           "alias": "$1",
+          "datasource": "$DS",
           "dsType": "influxdb",
           "groupBy": [
             {

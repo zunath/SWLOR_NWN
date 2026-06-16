@@ -81,6 +81,7 @@
       "targets": [
         {
           "alias": "Query time",
+          "datasource": "$DS",
           "dsType": "influxdb",
           "groupBy": [
             {
@@ -118,6 +119,7 @@
         },
         {
           "alias": "Longest query time",
+          "datasource": "$DS",
           "dsType": "influxdb",
           "groupBy": [
             {

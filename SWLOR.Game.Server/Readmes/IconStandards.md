@@ -26,6 +26,8 @@ When an ability does several things, color it by the primary player-facing inten
 
 Passive trait feats use the Passive gold frame/accent even when the always-on bonus improves healing, damage, control, utility, or another active-effect domain. Passive trait icons are not usable abilities and do not need generated cooldown variants.
 
+Ship module placeholder feat icons `ife_sm1` through `ife_sm30` are dynamic texture override anchors, not final player-facing artwork. Do not stamp semantic borders on them, and do not include them in the gameplay icon manifest. The actual ship module art comes from the equipped module texture override.
+
 Status effects use the same semantic frame location, but their color assignment is stricter:
 
 - Beneficial status effects must use the Beneficial green frame/accent.
@@ -128,7 +130,7 @@ The gameplay icon manifest is:
 
 Required fields:
 
-- `Type`: `Ability` or `StatusEffect`.
+- `Type`: `Ability`, `Feat`, `Spell`, or `StatusEffect`.
 - `Key`: stable identifier, such as a feat label or status-effect class name.
 - `DisplayName`: player-facing name when available.
 - `SemanticCategory`: one of the approved semantic categories.
@@ -166,6 +168,12 @@ After adding or changing an ability icon referenced by `SWLOR_Haks/swlor2_2da/fe
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File tools/GenerateCooldownIcons.ps1 -Force
+```
+
+After changing or importing custom feat/spell icon artwork, stamp and audit the semantic frame:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File tools/UpdateFeatSpellIconBorders.ps1 -Apply
 ```
 
 After changing generated combat-upgrade ability or status-effect icons, run:

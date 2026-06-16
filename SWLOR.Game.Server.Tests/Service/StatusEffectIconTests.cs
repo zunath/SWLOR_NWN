@@ -103,11 +103,12 @@ public class StatusEffectIconTests
             featRows.Should().ContainKey(row.Key, $"{row.Key} should exist in feat.2da");
             featRows[row.Key]["ICON"].Should().Be(row.IconResRef);
 
-            spellRows.Should().ContainKey(row.Key, $"{row.Key} should exist in spells.2da");
-            spellRows[row.Key]["IconResRef"].Should().Be(row.IconResRef);
+            if (spellRows.TryGetValue(row.Key, out var spellRow))
+                spellRow["IconResRef"].Should().Be(row.IconResRef);
 
             var iconPath = Path.Combine(root.FullName, "SWLOR_Haks", "swlor2_tga", $"{row.IconResRef}.tga");
             AssertGameplayIconTga(iconPath, $"{row.Type} {row.Key}");
+            AssertSemanticFrame(iconPath, row.SemanticCategory, $"{row.Type} {row.Key}");
             AssertUniqueIconPixels(iconPath, $"{row.Type} {row.Key}", iconHashes);
 
             if (!row.IconResRef.StartsWith("ife_", StringComparison.OrdinalIgnoreCase))
@@ -119,6 +120,44 @@ public class StatusEffectIconTests
                 var cooldownPath = Path.Combine(root.FullName, "SWLOR_Haks", "swlor2_tga", $"pr{stage}_{suffix}.tga");
                 AssertGameplayIconTga(cooldownPath, $"{row.Type} {row.Key} cooldown pr{stage}");
             }
+        }
+    }
+
+    [Test]
+    public void GameplayIconManifest_CoversCustomFeatSpellIcons()
+    {
+        var root = FindRepositoryRoot();
+        var manifestRows = ReadGameplayIconManifest(root)
+            .Where(row => row.Type is "Ability" or "Feat" or "Spell")
+            .ToArray();
+        var manifestIcons = manifestRows
+            .Select(row => row.IconResRef)
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+        var customIconRefs = ReadCustomFeatSpellIconRefs(root);
+
+        customIconRefs
+            .Where(icon => !manifestIcons.Contains(icon))
+            .Should()
+            .BeEmpty("every custom feat/spell icon with a SWLOR TGA should be covered by the gameplay icon manifest");
+        manifestIcons
+            .Should()
+            .NotContain(icon => IsDynamicShipModulePlaceholderIcon(icon), "ship module feat icons are runtime texture override anchors");
+
+        manifestRows
+            .Should()
+            .Contain(row => row.IconResRef == "ife_tame" && row.SemanticCategory == "Utility");
+        manifestRows
+            .Should()
+            .Contain(row => row.IconResRef == "ife_callbeast" && row.SemanticCategory == "Utility");
+        manifestRows
+            .Should()
+            .Contain(row => row.IconResRef == "ife_harm_rest" && row.SemanticCategory == "Passive");
+
+        foreach (var row in manifestRows)
+        {
+            var iconPath = Path.Combine(root.FullName, "SWLOR_Haks", "swlor2_tga", $"{row.IconResRef}.tga");
+            AssertGameplayIconTga(iconPath, $"{row.Type} {row.Key}");
+            AssertSemanticFrame(iconPath, row.SemanticCategory, $"{row.Type} {row.Key}");
         }
     }
 
@@ -327,6 +366,7 @@ public class StatusEffectIconTests
                 fields[headerIndex["Type"]],
                 fields[headerIndex["Key"]],
                 fields[headerIndex["DisplayName"]],
+                fields[headerIndex["SemanticCategory"]],
                 fields[headerIndex["IconResRef"]]));
         }
 
@@ -377,6 +417,82 @@ public class StatusEffectIconTests
         return result;
     }
 
+    private static IReadOnlySet<string> ReadCustomFeatSpellIconRefs(DirectoryInfo root)
+    {
+        const int customTlkOffset = 16777216;
+        const int customFeatStart = 1116;
+        const int customSpellStart = 1000;
+        var iconRoot = Path.Combine(root.FullName, "SWLOR_Haks", "swlor2_tga");
+        var icons = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var featRows = Read2da(new FileInfo(Path.Combine(
+            root.FullName,
+            "SWLOR_Haks",
+            "swlor2_2da",
+            "feat.2da")));
+        var spellRows = Read2da(new FileInfo(Path.Combine(
+            root.FullName,
+            "SWLOR_Haks",
+            "swlor2_2da",
+            "spells.2da")));
+
+        foreach (var (rowNumber, row) in featRows)
+        {
+            if (!HasLabel(row) ||
+                GetLabel(row) is "****" or "DELETED" ||
+                !row.TryGetValue("ICON", out var icon) ||
+                icon == "****" ||
+                !File.Exists(Path.Combine(iconRoot, $"{icon}.tga")))
+                continue;
+
+            var customRow =
+                rowNumber >= customFeatStart ||
+                IsCustomStrRef(row.GetValueOrDefault("FEAT"), customTlkOffset) ||
+                IsCustomStrRef(row.GetValueOrDefault("DESCRIPTION"), customTlkOffset);
+
+            if (customRow)
+            {
+                if (IsDynamicShipModulePlaceholderIcon(icon))
+                    continue;
+
+                icons.Add(icon);
+            }
+        }
+
+        foreach (var (rowNumber, row) in spellRows)
+        {
+            if (!HasLabel(row) ||
+                GetLabel(row) is "****" or "DELETED" ||
+                !row.TryGetValue("IconResRef", out var icon) ||
+                icon == "****" ||
+                !File.Exists(Path.Combine(iconRoot, $"{icon}.tga")))
+                continue;
+
+            var customRow =
+                rowNumber >= customSpellStart ||
+                IsCustomStrRef(row.GetValueOrDefault("Name"), customTlkOffset) ||
+                IsCustomStrRef(row.GetValueOrDefault("SpellDesc"), customTlkOffset);
+
+            if (customRow)
+                icons.Add(icon);
+        }
+
+        return icons;
+    }
+
+    private static bool IsCustomStrRef(string value, int customTlkOffset)
+    {
+        return int.TryParse(value, out var strRef) && strRef >= customTlkOffset;
+    }
+
+    private static bool IsDynamicShipModulePlaceholderIcon(string icon)
+    {
+        if (!icon.StartsWith("ife_sm", StringComparison.OrdinalIgnoreCase))
+            return false;
+
+        return int.TryParse(icon["ife_sm".Length..], out var number) &&
+               number is >= 1 and <= 30;
+    }
+
     private static bool HasLabel(IReadOnlyDictionary<string, string> row)
     {
         return row.ContainsKey("LABEL") || row.ContainsKey("Label");
@@ -410,6 +526,67 @@ public class StatusEffectIconTests
         }
     }
 
+    private static void AssertSemanticFrame(string path, string category, string label)
+    {
+        var bytes = File.ReadAllBytes(path);
+        var width = bytes[12] + (bytes[13] << 8);
+        var height = bytes[14] + (bytes[15] << 8);
+        var bits = bytes[16];
+        var type = bytes[2];
+
+        type.Should().Be(2, $"{label} TGA should be an uncompressed final gameplay icon");
+        (bits is 24 or 32).Should().BeTrue($"{label} TGA should be 24-bit or 32-bit");
+
+        var expected = GetSemanticColor(category);
+        var bytesPerPixel = bits / 8;
+        var offset = 18 + bytes[0];
+        var matches = 0;
+
+        for (var y = 0; y < height; y++)
+        {
+            for (var x = 0; x < width; x++)
+            {
+                var isFramePixel =
+                    x is >= 1 and <= 30 && (y is 1 or 30) ||
+                    y is >= 1 and <= 30 && (x is 1 or 30) ||
+                    x is >= 3 and <= 28 && (y is 3 or 28) ||
+                    y is >= 3 and <= 28 && (x is 3 or 28);
+
+                if (isFramePixel)
+                {
+                    var blue = bytes[offset];
+                    var green = bytes[offset + 1];
+                    var red = bytes[offset + 2];
+                    if (Math.Abs(red - expected.Red) <= 55 &&
+                        Math.Abs(green - expected.Green) <= 55 &&
+                        Math.Abs(blue - expected.Blue) <= 55)
+                    {
+                        matches++;
+                    }
+                }
+
+                offset += bytesPerPixel;
+            }
+        }
+
+        matches.Should().BeGreaterThanOrEqualTo(16, $"{label} should have the {category} semantic frame color");
+    }
+
+    private static (int Red, int Green, int Blue) GetSemanticColor(string category)
+    {
+        return category switch
+        {
+            "Beneficial" => (84, 246, 122),
+            "Harmful" => (240, 84, 84),
+            "Self" => (79, 195, 255),
+            "Control" => (181, 108, 255),
+            "Deployable" => (255, 184, 77),
+            "Passive" => (245, 215, 110),
+            "Utility" => (221, 230, 240),
+            _ => throw new ArgumentOutOfRangeException(nameof(category), category, null)
+        };
+    }
+
     private static void AssertUniqueIconPixels(
         string path,
         string label,
@@ -424,5 +601,6 @@ public class StatusEffectIconTests
         string Type,
         string Key,
         string DisplayName,
+        string SemanticCategory,
         string IconResRef);
 }

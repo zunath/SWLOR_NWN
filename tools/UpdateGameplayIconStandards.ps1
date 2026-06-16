@@ -1,6 +1,7 @@
 param(
     [string]$ManifestPath = "SWLOR.Game.Server\Readmes\GameplayIconManifest.csv",
     [string]$Feat2daPath = "SWLOR_Haks\swlor2_2da\feat.2da",
+    [string]$Spells2daPath = "SWLOR_Haks\swlor2_2da\spells.2da",
     [string]$IconPath = "SWLOR_Haks\swlor2_tga",
     [string]$EffectIcons2daPath = "SWLOR_Haks\swlor2_2da\effecticons.2da",
     [string]$EffectIconTypePath = "SWLOR.NWN.API\NWScript\Enum\EffectIconType.cs",
@@ -8,6 +9,8 @@ param(
     [string]$TlkJsonPath = "SWLOR_Haks\swlor2_tlk\swlor2_tlk.tlk.json",
     [int]$GeneratedFeatStart = 2000,
     [int]$GeneratedFeatEnd = 2578,
+    [int]$CustomFeatStart = 1116,
+    [int]$CustomSpellStart = 1000,
     [int]$StatusEffectIconStart = 141,
     [int]$IconSize = 32,
     [switch]$RefreshManifest,
@@ -242,6 +245,185 @@ function Get-RankFromText([string]$text) {
     }
 
     return $null
+}
+
+function Test-CustomStrRef([string]$value) {
+    $number = 0
+    return [int]::TryParse($value, [ref]$number) -and $number -ge $CustomTlkOffset
+}
+
+function Import-2daRows([string]$path) {
+    $lines = @(Get-Content -Path $path | Where-Object { ![string]::IsNullOrWhiteSpace($_) })
+    if ($lines.Count -lt 2) {
+        return @()
+    }
+
+    $headers = $lines[1].Trim() -split "\s+"
+    $rows = @()
+    for ($i = 2; $i -lt $lines.Count; $i++) {
+        $parts = $lines[$i].Trim() -split "\s+"
+        if ($parts.Count -lt ($headers.Count + 1)) {
+            continue
+        }
+
+        $rowNumber = 0
+        if (![int]::TryParse($parts[0], [ref]$rowNumber)) {
+            continue
+        }
+
+        $row = [ordered]@{
+            Row = $rowNumber
+        }
+
+        for ($column = 0; $column -lt $headers.Count; $column++) {
+            $row[$headers[$column]] = $parts[$column + 1]
+        }
+
+        $rows += [pscustomobject]$row
+    }
+
+    return $rows
+}
+
+function Test-DynamicShipModulePlaceholder([string]$label, [string]$icon) {
+    return $label -match "^ShipModule(?:[1-9]|[12][0-9]|30)$" -and
+        $icon -match "^ife_sm(?:[1-9]|[12][0-9]|30)$"
+}
+
+function Get-FeatSpellSemanticCategory([string[]]$labels) {
+    $label = ($labels | Where-Object { ![string]::IsNullOrWhiteSpace($_) }) -join " "
+
+    if ($label -match "PropertyMenu|OpenRestMenu|Rest\b|Rename|ChatCommand|Tame|CallBeast|Sniff|Comprehend|Speech|Language|Travel|Dash|Reward|Treasure|Credit|PetFood|Food") {
+        return "Utility"
+    }
+
+    if ($label -match "\b[A-Za-z0-9]+Trait\b") {
+        return "Passive"
+    }
+
+    if ($label -match "Blueprint|Recipe|Harvest|Refin|Scaveng|Management|Module|Research|Training|Mastery|StimPacks|HardLook|Craft|Assembly|Networking|Projects|Upkeep|GuildRelations|CityManagement|Starships") {
+        return "Passive"
+    }
+
+    return Get-AbilitySemanticCategory $label
+}
+
+function Get-CustomFeatSpellRows([object[]]$abilityRows, [hashtable]$existing) {
+    $iconDirectory = Resolve-RepoPath $IconPath
+    $coveredIconResRefs = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+    foreach ($ability in $abilityRows) {
+        [void]$coveredIconResRefs.Add($ability.IconResRef)
+    }
+
+    $groupsByIcon = @{}
+
+    foreach ($row in Import-2daRows (Resolve-RepoPath $Feat2daPath)) {
+        $label = (Get-OptionalProperty $row "LABEL").Trim()
+        $icon = (Get-OptionalProperty $row "ICON").Trim()
+        if ([string]::IsNullOrWhiteSpace($label) -or
+            $label -eq "****" -or
+            $label -eq "DELETED" -or
+            [string]::IsNullOrWhiteSpace($icon) -or
+            $icon -eq "****" -or
+            $coveredIconResRefs.Contains($icon)) {
+            continue
+        }
+
+        if (Test-DynamicShipModulePlaceholder $label $icon) {
+            continue
+        }
+
+        if ($row.Row -lt $CustomFeatStart -and
+            !(Test-CustomStrRef (Get-OptionalProperty $row "FEAT")) -and
+            !(Test-CustomStrRef (Get-OptionalProperty $row "DESCRIPTION"))) {
+            continue
+        }
+
+        $iconFile = Join-Path $iconDirectory "$icon.tga"
+        if (!(Test-Path -LiteralPath $iconFile)) {
+            continue
+        }
+
+        $key = $icon.ToLowerInvariant()
+        if (!$groupsByIcon.ContainsKey($key)) {
+            $groupsByIcon[$key] = [pscustomobject]@{
+                Type = "Feat"
+                HasActiveReference = $false
+                IconResRef = $icon
+                Labels = [System.Collections.Generic.List[string]]::new()
+                SourcePath = $Feat2daPath
+            }
+        }
+
+        if ((Get-OptionalProperty $row "SPELLID") -ne "****" -or (Get-OptionalProperty $row "TARGETSELF") -eq "1") {
+            $groupsByIcon[$key].HasActiveReference = $true
+        }
+
+        $groupsByIcon[$key].Labels.Add($label) | Out-Null
+    }
+
+    foreach ($row in Import-2daRows (Resolve-RepoPath $Spells2daPath)) {
+        $label = (Get-OptionalProperty $row "Label").Trim()
+        $icon = (Get-OptionalProperty $row "IconResRef").Trim()
+        if ([string]::IsNullOrWhiteSpace($label) -or
+            $label -eq "****" -or
+            $label -eq "DELETED" -or
+            [string]::IsNullOrWhiteSpace($icon) -or
+            $icon -eq "****" -or
+            $coveredIconResRefs.Contains($icon)) {
+            continue
+        }
+
+        if ($row.Row -lt $CustomSpellStart -and
+            !(Test-CustomStrRef (Get-OptionalProperty $row "Name")) -and
+            !(Test-CustomStrRef (Get-OptionalProperty $row "SpellDesc"))) {
+            continue
+        }
+
+        $iconFile = Join-Path $iconDirectory "$icon.tga"
+        if (!(Test-Path -LiteralPath $iconFile)) {
+            continue
+        }
+
+        $key = $icon.ToLowerInvariant()
+        if (!$groupsByIcon.ContainsKey($key)) {
+            $groupsByIcon[$key] = [pscustomobject]@{
+                Type = "Spell"
+                HasActiveReference = $true
+                IconResRef = $icon
+                Labels = [System.Collections.Generic.List[string]]::new()
+                SourcePath = $Spells2daPath
+            }
+        }
+        elseif ($groupsByIcon[$key].SourcePath -notmatch [regex]::Escape($Spells2daPath)) {
+            $groupsByIcon[$key].SourcePath = "$($groupsByIcon[$key].SourcePath);$Spells2daPath"
+        }
+
+        $groupsByIcon[$key].Labels.Add($label) | Out-Null
+    }
+
+    $rows = @()
+    foreach ($group in $groupsByIcon.Values) {
+        $labels = @($group.Labels | Select-Object -Unique)
+        if ($labels.Count -eq 0) {
+            continue
+        }
+
+        $key = $labels[0]
+        $type = $group.Type
+        $category = Get-PreservedCategory $existing $type $key (Get-FeatSpellSemanticCategory $labels)
+        $rows += [pscustomobject]@{
+            Type = $type
+            Key = $key
+            DisplayName = $key
+            SemanticCategory = $category
+            Rank = Get-RankFromText $key
+            IconResRef = $group.IconResRef
+            SourcePath = $group.SourcePath
+        }
+    }
+
+    return $rows | Sort-Object Type, Key
 }
 
 function Split-IconWords([string]$text) {
@@ -970,8 +1152,9 @@ function New-StatusIcon([pscustomobject]$entry, [string]$outputPath) {
 function Build-ManifestRows([hashtable]$existing) {
     $statusIconSeen = @{}
     $rows = @()
+    $abilityRows = @(Get-AbilityRows (Resolve-RepoPath $Feat2daPath) $GeneratedFeatStart $GeneratedFeatEnd)
 
-    foreach ($ability in Get-AbilityRows (Resolve-RepoPath $Feat2daPath) $GeneratedFeatStart $GeneratedFeatEnd) {
+    foreach ($ability in $abilityRows) {
         $rows += [pscustomobject]@{
             Type = $ability.Type
             Key = $ability.Key
@@ -982,6 +1165,8 @@ function Build-ManifestRows([hashtable]$existing) {
             SourcePath = $ability.SourcePath
         }
     }
+
+    $rows += @(Get-CustomFeatSpellRows $abilityRows $existing)
 
     foreach ($status in Get-StatusEffectClasses (Resolve-RepoPath $StatusEffectPath)) {
         $resref = New-StatusIconResRef $status $statusIconSeen
@@ -1218,6 +1403,64 @@ function Add-TgaValidationErrors([System.Collections.Generic.List[string]]$error
     }
 }
 
+function Add-SemanticFrameValidationErrors(
+    [System.Collections.Generic.List[string]]$errors,
+    [string]$path,
+    [string]$label,
+    [string]$category) {
+    $bytes = [System.IO.File]::ReadAllBytes($path)
+    if ($bytes.Length -lt 18) {
+        return
+    }
+
+    $width = $bytes[12] + ($bytes[13] -shl 8)
+    $height = $bytes[14] + ($bytes[15] -shl 8)
+    if ($width -ne $IconSize -or $height -ne $IconSize) {
+        return
+    }
+
+    if ($bytes[2] -ne 2 -or ($bytes[16] -ne 24 -and $bytes[16] -ne 32)) {
+        $errors.Add("$label TGA '$path' must be an uncompressed 24-bit or 32-bit final gameplay icon to verify semantic frame color.") | Out-Null
+        return
+    }
+
+    $expected = Get-SemanticColor $category
+    $bytesPerPixel = [int]($bytes[16] / 8)
+    $offset = 18 + $bytes[0]
+    $matches = 0
+
+    for ($y = 0; $y -lt $height; $y++) {
+        for ($x = 0; $x -lt $width; $x++) {
+            if ($offset + 2 -ge $bytes.Length) {
+                break
+            }
+
+            $isFramePixel =
+                ($x -ge 1 -and $x -le 30 -and ($y -eq 1 -or $y -eq 30)) -or
+                ($y -ge 1 -and $y -le 30 -and ($x -eq 1 -or $x -eq 30)) -or
+                ($x -ge 3 -and $x -le 28 -and ($y -eq 3 -or $y -eq 28)) -or
+                ($y -ge 3 -and $y -le 28 -and ($x -eq 3 -or $x -eq 28))
+
+            if ($isFramePixel) {
+                $blue = $bytes[$offset]
+                $green = $bytes[$offset + 1]
+                $red = $bytes[$offset + 2]
+                if ([Math]::Abs($red - $expected.R) -le 55 -and
+                    [Math]::Abs($green - $expected.G) -le 55 -and
+                    [Math]::Abs($blue - $expected.B) -le 55) {
+                    $matches++
+                }
+            }
+
+            $offset += $bytesPerPixel
+        }
+    }
+
+    if ($matches -lt 16) {
+        $errors.Add("$label TGA '$path' is missing the $category semantic frame color.") | Out-Null
+    }
+}
+
 function Test-GameplayIconStandards([object[]]$rows, [hashtable]$statusEffectStrRefsByKey) {
     $errors = [System.Collections.Generic.List[string]]::new()
     $iconDirectory = Resolve-RepoPath $IconPath
@@ -1225,6 +1468,39 @@ function Test-GameplayIconStandards([object[]]$rows, [hashtable]$statusEffectStr
     $abilityRowsByKey = @{}
     foreach ($ability in Get-AbilityRows (Resolve-RepoPath $Feat2daPath) $GeneratedFeatStart $GeneratedFeatEnd) {
         $abilityRowsByKey[$ability.Key] = $ability
+    }
+    $featIconsByLabel = @{}
+    foreach ($featRow in Import-2daRows (Resolve-RepoPath $Feat2daPath)) {
+        $label = (Get-OptionalProperty $featRow "LABEL").Trim()
+        $icon = (Get-OptionalProperty $featRow "ICON").Trim()
+        if (![string]::IsNullOrWhiteSpace($label) -and
+            $label -ne "****" -and
+            $label -ne "DELETED" -and
+            ![string]::IsNullOrWhiteSpace($icon) -and
+            $icon -ne "****") {
+            if (!$featIconsByLabel.ContainsKey($label)) {
+                $featIconsByLabel[$label] = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+            }
+
+            [void]$featIconsByLabel[$label].Add($icon)
+        }
+    }
+
+    $spellIconsByLabel = @{}
+    foreach ($spellRow in Import-2daRows (Resolve-RepoPath $Spells2daPath)) {
+        $label = (Get-OptionalProperty $spellRow "Label").Trim()
+        $icon = (Get-OptionalProperty $spellRow "IconResRef").Trim()
+        if (![string]::IsNullOrWhiteSpace($label) -and
+            $label -ne "****" -and
+            $label -ne "DELETED" -and
+            ![string]::IsNullOrWhiteSpace($icon) -and
+            $icon -ne "****") {
+            if (!$spellIconsByLabel.ContainsKey($label)) {
+                $spellIconsByLabel[$label] = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+            }
+
+            [void]$spellIconsByLabel[$label].Add($icon)
+        }
     }
 
     $effectIcons2daResolved = Resolve-RepoPath $EffectIcons2daPath
@@ -1279,15 +1555,34 @@ function Test-GameplayIconStandards([object[]]$rows, [hashtable]$statusEffectStr
 
         if ($entry.Type -eq "Ability") {
             $manifestAbilityKeys[$entry.Key] = $true
-            if (!$abilityRowsByKey.ContainsKey($entry.Key)) {
-                $errors.Add("Ability '$($entry.Key)' is missing from $Feat2daPath.") | Out-Null
+        }
+
+        if ($entry.Type -eq "Ability" -or $entry.Type -eq "Feat") {
+            if (!$featIconsByLabel.ContainsKey($entry.Key)) {
+                $errors.Add("$($entry.Type) '$($entry.Key)' is missing from $Feat2daPath.") | Out-Null
             }
-            else {
-                $featIconResRef = $abilityRowsByKey[$entry.Key].IconResRef
-                if ($featIconResRef -ine $entry.IconResRef) {
-                    $errors.Add("Ability '$($entry.Key)' manifest icon '$($entry.IconResRef)' does not match $Feat2daPath icon '$featIconResRef'.") | Out-Null
-                }
+            elseif (!$featIconsByLabel[$entry.Key].Contains($entry.IconResRef)) {
+                $expectedIcons = ($featIconsByLabel[$entry.Key] | Sort-Object) -join ", "
+                $errors.Add("$($entry.Type) '$($entry.Key)' manifest icon '$($entry.IconResRef)' does not match any $Feat2daPath icon for that label: $expectedIcons.") | Out-Null
             }
+        }
+
+        if ($entry.Type -eq "Spell") {
+            if (!$spellIconsByLabel.ContainsKey($entry.Key)) {
+                $errors.Add("Spell '$($entry.Key)' is missing from $Spells2daPath.") | Out-Null
+            }
+            elseif (!$spellIconsByLabel[$entry.Key].Contains($entry.IconResRef)) {
+                $expectedIcons = ($spellIconsByLabel[$entry.Key] | Sort-Object) -join ", "
+                $errors.Add("Spell '$($entry.Key)' manifest icon '$($entry.IconResRef)' does not match any $Spells2daPath icon for that label: $expectedIcons.") | Out-Null
+            }
+        }
+
+        if ($entry.Type -eq "Ability" -and
+            $abilityRowsByKey.ContainsKey($entry.Key) -and
+            $spellIconsByLabel.ContainsKey($entry.Key) -and
+            !$spellIconsByLabel[$entry.Key].Contains($entry.IconResRef)) {
+            $expectedIcons = ($spellIconsByLabel[$entry.Key] | Sort-Object) -join ", "
+            $errors.Add("Ability '$($entry.Key)' manifest icon '$($entry.IconResRef)' does not match any $Spells2daPath icon for that label: $expectedIcons.") | Out-Null
         }
 
         $iconFile = Join-Path $iconDirectory "$($entry.IconResRef).tga"
@@ -1296,14 +1591,19 @@ function Test-GameplayIconStandards([object[]]$rows, [hashtable]$statusEffectStr
         }
         else {
             Add-TgaValidationErrors $errors $iconFile "$($entry.Type) '$($entry.Key)'"
-
-            $hash = (Get-FileHash -Algorithm SHA256 -LiteralPath $iconFile).Hash
-            if ($iconHashes.ContainsKey($hash)) {
-                $other = $iconHashes[$hash]
-                $errors.Add("$($entry.Type) '$($entry.Key)' has identical icon pixels to $($other.Type) '$($other.Key)'.") | Out-Null
+            if ($entry.Type -eq "Ability" -or $entry.Type -eq "Feat" -or $entry.Type -eq "Spell") {
+                Add-SemanticFrameValidationErrors $errors $iconFile "$($entry.Type) '$($entry.Key)'" $entry.SemanticCategory
             }
-            else {
-                $iconHashes[$hash] = $entry
+
+            if ($entry.Type -eq "Ability" -or $entry.Type -eq "StatusEffect") {
+                $hash = (Get-FileHash -Algorithm SHA256 -LiteralPath $iconFile).Hash
+                if ($iconHashes.ContainsKey($hash)) {
+                    $other = $iconHashes[$hash]
+                    $errors.Add("$($entry.Type) '$($entry.Key)' has identical icon pixels to $($other.Type) '$($other.Key)'.") | Out-Null
+                }
+                else {
+                    $iconHashes[$hash] = $entry
+                }
             }
         }
 
@@ -1417,7 +1717,7 @@ if ($GenerateIcons) {
     if (Test-Path -LiteralPath $linkCombatFeatSpells) {
         & $linkCombatFeatSpells `
             -Feat2daPath $Feat2daPath `
-            -Spells2daPath "SWLOR_Haks\swlor2_2da\spells.2da" `
+            -Spells2daPath $Spells2daPath `
             -GeneratedFeatStart $GeneratedFeatStart `
             -GeneratedFeatEnd $GeneratedFeatEnd
         if (!$?) {

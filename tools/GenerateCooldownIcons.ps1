@@ -5,6 +5,7 @@ param(
     [int]$GeneratedFeatStart = 2000,
     [int]$GeneratedFeatEnd = 2578,
     [int]$IconSize = 32,
+    [string[]]$IconResRefs = @(),
     [switch]$Force
 )
 
@@ -81,7 +82,9 @@ function Get-FeatIcons {
         }
 
         $icon = $parts[4]
-        if (![string]::IsNullOrWhiteSpace($icon) -and $icon -ne "****") {
+        if (![string]::IsNullOrWhiteSpace($icon) -and
+            $icon -ne "****" -and
+            $icon.StartsWith("ife_", [StringComparison]::OrdinalIgnoreCase)) {
             [void]$icons.Add($icon)
         }
     }
@@ -163,7 +166,25 @@ function New-CooldownOverlay {
 $script:MagickExecutable = Resolve-MagickPath $MagickPath
 $featPath = (Resolve-Path -Path $Feat2daPath).Path
 $iconDirectory = (Resolve-Path -Path $IconPath).Path
-$icons = @(Get-FeatIcons -Path $featPath -StartRow $GeneratedFeatStart -EndRow $GeneratedFeatEnd)
+$icons = if ($IconResRefs.Count -gt 0) {
+    $set = [System.Collections.Generic.HashSet[string]]::new([StringComparer]::OrdinalIgnoreCase)
+    foreach ($iconValue in $IconResRefs) {
+        foreach ($icon in ([string]$iconValue -split "[,;]")) {
+            $trimmed = $icon.Trim()
+            if ([string]::IsNullOrWhiteSpace($trimmed) -or
+                !$trimmed.StartsWith("ife_", [StringComparison]::OrdinalIgnoreCase)) {
+                continue
+            }
+
+            [void]$set.Add($trimmed)
+        }
+    }
+
+    $set | Sort-Object
+}
+else {
+    Get-FeatIcons -Path $featPath -StartRow $GeneratedFeatStart -EndRow $GeneratedFeatEnd
+}
 $overlayDirectory = Join-Path ([IO.Path]::GetTempPath()) "swlor-cooldown-overlays"
 $generated = 0
 

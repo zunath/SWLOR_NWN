@@ -9,6 +9,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     {
         public override string Name => "Soul Devourer";
         public override EffectIconType Icon => EffectIconType.SoulDevourerStatusEffect;
+        public override StatusEffectSourceType SourceType => StatusEffectSourceType.Stance;
 
         protected override void OnDamageDealt(uint attacker, uint defender, int damage, CombatDamageType damageType)
         {

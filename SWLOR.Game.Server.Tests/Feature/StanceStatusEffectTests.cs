@@ -1,8 +1,11 @@
 using FluentAssertions;
+using Microsoft.VisualBasic.FileIO;
 using NUnit.Framework;
 using System.Reflection;
+using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -50,10 +53,51 @@ public class StanceStatusEffectTests
     [Test]
     public void NonStanceToggleStatusEffects_DoNotUseStanceSourceType()
     {
-        new DeadlyPrecisionStatusEffect().SourceType.Should().Be(StatusEffectSourceType.Normal);
-        new ImpenetrableGuardStatusEffect().SourceType.Should().Be(StatusEffectSourceType.Normal);
         new BlazingSpikesStatusEffect().SourceType.Should().Be(StatusEffectSourceType.Normal);
-        new SoulDevourerStatusEffect().SourceType.Should().Be(StatusEffectSourceType.Normal);
+    }
+
+    [Test]
+    public void BibleStanceToggleStatusEffects_UseExclusiveStanceSourceType()
+    {
+        var failures = new List<string>();
+
+        foreach (var (description, statusEffectType) in GetBibleStanceStatusEffects())
+        {
+            var statusEffect = (IStatusEffect)Activator.CreateInstance(statusEffectType)!;
+            if (statusEffect.SourceType != StatusEffectSourceType.Stance)
+            {
+                failures.Add(
+                    $"{description}: {statusEffectType.Name} should use {StatusEffectSourceType.Stance} but uses {statusEffect.SourceType}.");
+            }
+        }
+
+        failures.Should().BeEmpty(string.Join(Environment.NewLine, failures));
+    }
+
+    [Test]
+    public void BibleStanceLimitedToggles_RemovePreviousStanceBeforeApplying()
+    {
+        var failures = new List<string>();
+
+        foreach (var (description, statusEffectType) in GetBibleStanceStatusEffects())
+        {
+            ResetStatusEffects();
+            AddActiveEffect(Player, new TestStanceAStatusEffect());
+
+            StatusEffect.RemoveOtherStanceStatuses(
+                Player,
+                statusEffectType,
+                removeNativeEffect: false);
+
+            var remainingEffects = StatusEffect.GetCreatureStatusEffects(Player).GetAllEffects();
+            if (remainingEffects.Count != 0)
+            {
+                failures.Add(
+                    $"{description}: activating {statusEffectType.Name} left {remainingEffects.Count} previous stance status effect(s) active.");
+            }
+        }
+
+        failures.Should().BeEmpty(string.Join(Environment.NewLine, failures));
     }
 
     [Test]
@@ -114,12 +158,130 @@ public class StanceStatusEffectTests
         CreatureEffects().Remove(Player);
     }
 
+    private static IReadOnlyList<BibleStanceStatusEffect> GetBibleStanceStatusEffects()
+    {
+        var root = FindRepositoryRoot();
+        var rows = ReadBibleStanceRows(root / "SWLOR.Game.Server" / "Readmes" / "CombatUpgradeBiblePerkManifest.csv");
+        var abilities = BuildAbilities();
+        var result = new List<BibleStanceStatusEffect>();
+        var failures = new List<string>();
+
+        foreach (var row in rows)
+        {
+            var matches = abilities
+                .Where(ability => ability.Name == row.PerkName)
+                .ToArray();
+
+            if (matches.Length != 1)
+            {
+                failures.Add($"{row.Description}: expected one live ability named '{row.PerkName}' but found {matches.Length}.");
+                continue;
+            }
+
+            var statusEffectTypes = matches[0].StatusEffectTypesRemovedOnPerkRefund;
+            if (statusEffectTypes.Count != 1)
+            {
+                failures.Add($"{row.Description}: expected one refund-cleaned status effect but found {statusEffectTypes.Count}.");
+                continue;
+            }
+
+            result.Add(new BibleStanceStatusEffect(row.Description, statusEffectTypes[0]));
+        }
+
+        failures.Should().BeEmpty(string.Join(Environment.NewLine, failures));
+        result.Should().NotBeEmpty();
+        return result;
+    }
+
+    private static IReadOnlyList<AbilityDetail> BuildAbilities()
+    {
+        var result = new List<AbilityDetail>();
+        var definitionTypes = typeof(IAbilityListDefinition).Assembly
+            .GetTypes()
+            .Where(type => !type.IsAbstract && typeof(IAbilityListDefinition).IsAssignableFrom(type))
+            .OrderBy(type => type.FullName)
+            .ToArray();
+
+        foreach (var definitionType in definitionTypes)
+        {
+            var definition = (IAbilityListDefinition)Activator.CreateInstance(definitionType)!;
+            result.AddRange(definition.BuildAbilities().Values);
+        }
+
+        return result;
+    }
+
+    private static IReadOnlyList<BibleStanceRow> ReadBibleStanceRows(PathInfo path)
+    {
+        using var parser = new TextFieldParser(path.FullName);
+        parser.SetDelimiters(",");
+        parser.HasFieldsEnclosedInQuotes = true;
+        parser.ReadFields();
+
+        var rows = new List<BibleStanceRow>();
+        while (!parser.EndOfData)
+        {
+            var cells = parser.ReadFields();
+            if (cells == null || cells.Length < 18)
+                continue;
+
+            if (!cells[7].Equals("Stance", StringComparison.OrdinalIgnoreCase) ||
+                !IsImplementedStatus(cells[17]))
+            {
+                continue;
+            }
+
+            rows.Add(new BibleStanceRow(cells[0], cells[1], cells[2], cells[4]));
+        }
+
+        return rows;
+    }
+
+    private static bool IsImplementedStatus(string devStatus)
+    {
+        return devStatus.Equals("Implemented", StringComparison.OrdinalIgnoreCase) ||
+               devStatus.Equals("Design Added", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static PathInfo FindRepositoryRoot()
+    {
+        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
+        while (directory != null)
+        {
+            var candidate = directory.FullName;
+            if (File.Exists(Path.Combine(candidate, "SWLOR.Game.Server.sln")) &&
+                File.Exists(Path.Combine(candidate, "SWLOR.Game.Server", "Readmes", "CombatUpgradeBiblePerkManifest.csv")))
+            {
+                return new PathInfo(candidate);
+            }
+
+            directory = directory.Parent;
+        }
+
+        throw new DirectoryNotFoundException("Could not locate the SWLOR_NWN repository root.");
+    }
+
     private static Dictionary<uint, CreatureStatusEffect> CreatureEffects()
     {
         return (Dictionary<uint, CreatureStatusEffect>)typeof(StatusEffect)
             .GetField("_creatureEffects", BindingFlags.NonPublic | BindingFlags.Static)!
             .GetValue(null)!;
     }
+
+    private sealed record PathInfo(string FullName)
+    {
+        public static PathInfo operator /(PathInfo path, string child)
+        {
+            return new PathInfo(Path.Combine(path.FullName, child));
+        }
+    }
+
+    private sealed record BibleStanceRow(string Tab, string Row, string Style, string PerkName)
+    {
+        public string Description => $"{Tab}/{Style}/{Row} {PerkName}";
+    }
+
+    private sealed record BibleStanceStatusEffect(string Description, Type StatusEffectType);
 
     public sealed class TestStanceAStatusEffect : StatusEffectBase
     {

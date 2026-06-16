@@ -8,6 +8,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     {
         public override string Name => "Deadly Precision";
         public override EffectIconType Icon => EffectIconType.DeadlyPrecisionStatusEffect;
+        public override StatusEffectSourceType SourceType => StatusEffectSourceType.Stance;
         public DeadlyPrecisionStatusEffect()
         {
             StatGroup.Stats[StatType.CriticalRatePercentAdjustment] = 15;

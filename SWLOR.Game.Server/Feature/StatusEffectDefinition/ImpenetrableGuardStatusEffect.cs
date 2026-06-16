@@ -8,6 +8,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     {
         public override string Name => "Impenetrable Guard";
         public override EffectIconType Icon => EffectIconType.ImpenetrableGuardStatusEffect;
+        public override StatusEffectSourceType SourceType => StatusEffectSourceType.Stance;
         public ImpenetrableGuardStatusEffect()
         {
             StatGroup.Stats[StatType.AttackPercentAdjustment] = -20;

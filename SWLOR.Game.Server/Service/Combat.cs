@@ -794,7 +794,8 @@ namespace SWLOR.Game.Server.Service
             uint defender,
             int damage,
             SkillType skillType = SkillType.Invalid,
-            CombatDamageType damageType = CombatDamageType.Physical)
+            CombatDamageType damageType = CombatDamageType.Physical,
+            CombatDamageDeliveryType deliveryType = CombatDamageDeliveryType.Direct)
         {
             if (damage <= 0)
                 return;
@@ -803,7 +804,7 @@ namespace SWLOR.Game.Server.Service
             TrackRecentDamageTarget(attacker, defender);
             ApplySideAttackDamageEffects(attacker, defender, skillType, damage);
             ApplyPredatorsMarkEffects(attacker, defender, skillType);
-            ApplyDamageDealtForceErosionEffect(attacker, defender);
+            ApplyDamageDealtForceErosionEffect(attacker, defender, deliveryType);
             ApplyBleedingTargetStaminaRestore(attacker, defender);
             ApplyHeavyVibrobladeDefenseDamageRecovery(attacker, damage);
 
@@ -935,8 +936,14 @@ namespace SWLOR.Game.Server.Service
             Stat.RestoreStamina(attacker, staminaRestore);
         }
 
-        private static void ApplyDamageDealtForceErosionEffect(uint attacker, uint defender)
+        private static void ApplyDamageDealtForceErosionEffect(
+            uint attacker,
+            uint defender,
+            CombatDamageDeliveryType deliveryType)
         {
+            if (deliveryType != CombatDamageDeliveryType.Direct)
+                return;
+
             var duration = Stat.GetStatAdjustment(attacker, StatType.DamageDealtForceErosionDurationSeconds);
             if (duration <= 0)
                 return;
@@ -3431,7 +3438,7 @@ namespace SWLOR.Game.Server.Service
                     DurationType.Instant,
                     EffectDamage(damage, damageType.GetNWScriptDamageType()),
                     target));
-            ApplyDamageDealtEffects(activator, target, damage, skillType, damageType);
+            ApplyDamageDealtEffects(activator, target, damage, skillType, damageType, CombatDamageDeliveryType.Triggered);
             StatusEffect.NotifyDamageStatusEffects(activator, target, damage, damageType, CombatDamageDeliveryType.Triggered);
         }
 

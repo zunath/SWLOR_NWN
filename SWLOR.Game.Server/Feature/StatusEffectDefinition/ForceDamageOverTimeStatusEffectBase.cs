@@ -55,7 +55,13 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             if (!GetIsObjectValid(Source))
                 return;
 
-            Combat.ApplyDamageDealtEffects(Source, creature, damage, SkillType.Force, CombatDamageType.Force);
+            Combat.ApplyDamageDealtEffects(
+                Source,
+                creature,
+                damage,
+                SkillType.Force,
+                CombatDamageType.Force,
+                CombatDamageDeliveryType.DamageOverTime);
             Ability.ApplyDarkForceDamageRestoration(Source, damage);
             StatusEffect.NotifyDamageStatusEffects(Source, creature, damage, CombatDamageType.Force, CombatDamageDeliveryType.DamageOverTime);
         }

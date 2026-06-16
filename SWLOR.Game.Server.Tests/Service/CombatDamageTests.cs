@@ -434,6 +434,21 @@ public class CombatDamageTests
     }
 
     [Test]
+    public void DamageDealtForceErosion_OnlyAppliesFromDirectDamage()
+    {
+        var root = FindRepositoryRoot();
+        var combatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
+        var forceDotSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "StatusEffectDefinition", "ForceDamageOverTimeStatusEffectBase.cs"));
+
+        combatSource.Should().Contain("CombatDamageDeliveryType deliveryType = CombatDamageDeliveryType.Direct");
+        combatSource.Should().Contain("ApplyDamageDealtForceErosionEffect(attacker, defender, deliveryType);");
+        combatSource.Should().Contain("if (deliveryType != CombatDamageDeliveryType.Direct)");
+        combatSource.Should().Contain("ApplyDamageDealtEffects(activator, target, damage, skillType, damageType, CombatDamageDeliveryType.Triggered);");
+        forceDotSource.Should().Contain("CombatDamageDeliveryType.DamageOverTime");
+        forceDotSource.Should().NotContain("Combat.ApplyDamageDealtEffects(Source, creature, damage, SkillType.Force, CombatDamageType.Force);");
+    }
+
+    [Test]
     public void TemporaryHitPointDamageFeedback_IsSentBeforeEngineDamageIsApplied()
     {
         var root = FindRepositoryRoot();

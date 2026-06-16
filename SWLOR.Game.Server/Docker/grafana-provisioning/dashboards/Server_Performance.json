@@ -173,7 +173,7 @@
       },
       "hideTimeOverride": false,
       "id": 4,
-      "interval": ">1s",
+      "interval": "1s",
       "legend": {
         "alignAsTable": false,
         "avg": false,
@@ -369,7 +369,7 @@
       },
       "hideTimeOverride": false,
       "id": 2,
-      "interval": ">1s",
+      "interval": "1s",
       "legend": {
         "alignAsTable": true,
         "avg": false,
@@ -518,7 +518,7 @@
         "y": 13
       },
       "id": 5,
-      "interval": ">1s",
+      "interval": "1s",
       "legend": {
         "alignAsTable": true,
         "avg": false,
@@ -644,7 +644,7 @@
         "y": 13
       },
       "id": 7,
-      "interval": ">1s",
+      "interval": "1s",
       "legend": {
         "alignAsTable": true,
         "avg": false,

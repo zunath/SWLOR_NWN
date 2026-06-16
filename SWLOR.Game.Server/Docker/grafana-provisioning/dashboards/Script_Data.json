@@ -51,7 +51,7 @@
         "y": 0
       },
       "id": 6,
-      "interval": ">5s",
+      "interval": "5s",
       "legend": {
         "alignAsTable": true,
         "avg": false,
@@ -183,7 +183,7 @@
         "y": 8
       },
       "id": 8,
-      "interval": ">5s",
+      "interval": "5s",
       "legend": {
         "alignAsTable": true,
         "avg": false,
@@ -315,7 +315,7 @@
         "y": 8
       },
       "id": 7,
-      "interval": ">5s",
+      "interval": "5s",
       "legend": {
         "alignAsTable": true,
         "avg": false,

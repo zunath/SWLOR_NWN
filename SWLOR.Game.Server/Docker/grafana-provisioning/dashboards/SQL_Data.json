@@ -51,7 +51,7 @@
         "y": 0
       },
       "id": 6,
-      "interval": ">5s",
+      "interval": "5s",
       "legend": {
         "alignAsTable": true,
         "avg": false,

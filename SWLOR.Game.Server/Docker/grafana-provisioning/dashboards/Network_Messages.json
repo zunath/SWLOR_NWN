@@ -48,7 +48,7 @@
         "y": 0
       },
       "id": 1,
-      "interval": ">1s",
+      "interval": "1s",
       "legend": {
         "avg": false,
         "current": false,

@@ -51,7 +51,7 @@
         "y": 0
       },
       "id": 1,
-      "interval": ">5s",
+      "interval": "5s",
       "legend": {
         "avg": false,
         "current": false,
@@ -179,7 +179,7 @@
         "y": 0
       },
       "id": 2,
-      "interval": ">5s",
+      "interval": "5s",
       "legend": {
         "avg": false,
         "current": false,

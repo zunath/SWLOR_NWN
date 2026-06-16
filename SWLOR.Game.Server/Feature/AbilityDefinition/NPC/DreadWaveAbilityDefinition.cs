@@ -16,6 +16,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                 _builder,
                 FeatType.DreadWave,
                 "Dread Wave",
+                Animation.CastOutAnimation,
                 InnateAbilityProfile.Force,
                 RecastGroup.DreadWave,
                 1.2f,

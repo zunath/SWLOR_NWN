@@ -30,6 +30,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .Name("Emergency Cocktail")
                 .Level(1)
                 .HasActivationDelay(1f)
+                .UsesAnimation(Animation.FireForgetSalute)
                 .HasRecastDelay(RecastGroup.Capstone, CapstoneAbility.RecastDelaySeconds)
                 .SkillType(SkillType.FirstAid)
                 .IsSingleTargetAbility()

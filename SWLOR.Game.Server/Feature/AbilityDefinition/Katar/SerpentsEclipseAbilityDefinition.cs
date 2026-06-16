@@ -28,6 +28,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
                 .Name("Serpent's Eclipse")
                 .Level(1)
                 .HasActivationDelay(2f)
+                .UsesAnimation(Animation.CrossCut)
                 .HasRecastDelay(RecastGroup.Capstone, CapstoneAbility.RecastDelaySeconds)
                 .HasImpactAction(SerpentsEclipse1ImpactAction)
                 .HasTargetingSphere(

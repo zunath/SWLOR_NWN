@@ -18,7 +18,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                     .Name("Guarded Channel I")
                     .Level(1)
                     .SkillType(SkillType.Saberstaff)
-                    .HasRecastDelay(RecastGroup.GuardedChannel, 60f),
+                    .HasRecastDelay(RecastGroup.GuardedChannel, 60f)
+                    .UsesAnimation(Animation.ShieldWall),
                 () => new GuardedChannelStatusEffect(12, 20),
                 10f,
                 6);
@@ -28,7 +29,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                     .Name("Guarded Channel II")
                     .Level(2)
                     .SkillType(SkillType.Saberstaff)
-                    .HasRecastDelay(RecastGroup.GuardedChannel, 60f),
+                    .HasRecastDelay(RecastGroup.GuardedChannel, 60f)
+                    .UsesAnimation(Animation.ShieldWall),
                 () => new GuardedChannelStatusEffect(22, 30),
                 12f,
                 8);
@@ -38,7 +40,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                     .Name("Guarded Channel III")
                     .Level(3)
                     .SkillType(SkillType.Saberstaff)
-                    .HasRecastDelay(RecastGroup.GuardedChannel, 120f),
+                    .HasRecastDelay(RecastGroup.GuardedChannel, 120f)
+                    .UsesAnimation(Animation.ShieldWall),
                 () => new GuardedChannelStatusEffect(30, 35),
                 15f,
                 12);

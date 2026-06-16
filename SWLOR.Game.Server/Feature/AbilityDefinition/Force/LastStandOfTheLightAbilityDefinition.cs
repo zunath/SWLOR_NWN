@@ -32,6 +32,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .Name("Last Stand of the Light")
                 .Level(1)
                 .HasActivationDelay(1.5f)
+                .UsesAnimation(Animation.LoopingConjure1)
                 .HasRecastDelay(RecastGroup.Capstone, CapstoneAbility.RecastDelaySeconds)
                 .SkillType(SkillType.Force)
                 .IsSingleTargetAbility()

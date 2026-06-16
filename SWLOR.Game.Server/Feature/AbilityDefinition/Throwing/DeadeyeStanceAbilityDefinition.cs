@@ -17,7 +17,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
                 .Name("Deadeye Stance")
                 .Level(1)
                 .SkillType(SkillType.Throwing)
-                .HasRecastDelay(RecastGroup.DeadeyeStance, 180f);
+                .HasRecastDelay(RecastGroup.DeadeyeStance, 180f)
+                .UsesAnimation(Animation.PointForward);
             ConfigureToggle(builder, typeof(DeadeyeStanceStatusEffect));
 
             return builder.Build();

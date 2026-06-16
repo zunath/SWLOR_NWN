@@ -32,6 +32,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 .Name("Expose Prey")
                 .Level(1)
                 .HasActivationDelay(0f)
+                .UsesAnimation(Animation.PointForward)
                 .HasRecastDelay(RecastGroup.ExposePrey, 45f)
                 .SkillType(SkillType.BeastMastery)
                 .IsSingleTargetAbility()

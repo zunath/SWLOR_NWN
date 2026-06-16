@@ -16,6 +16,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                 _builder,
                 FeatType.DarkShock,
                 "Dark Shock",
+                Animation.CastOutAnimation,
                 InnateAbilityProfile.Force,
                 RecastGroup.DarkShock,
                 1.5f,

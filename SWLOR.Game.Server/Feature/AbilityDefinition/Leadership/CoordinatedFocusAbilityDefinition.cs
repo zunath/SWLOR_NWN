@@ -36,6 +36,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
                 .Name(name)
                 .Level(level)
                 .HasActivationDelay(2f)
+                .UsesAnimation(Animation.FollowMe)
                 .HasRecastDelay(RecastGroup.CoordinatedFocus, 60f)
                 .SkillType(SkillType.Leadership)
                 .IsAreaAbility()

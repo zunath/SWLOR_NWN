@@ -16,6 +16,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                 _builder,
                 FeatType.TacticalMark,
                 "Tactical Mark",
+                Animation.PointForward,
                 InnateAbilityProfile.Rifle,
                 RecastGroup.TacticalMark,
                 0.9f,

@@ -22,7 +22,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                         Spell.BrutalAssault1,
                         5f,
                         AbilityTargetingFlags.HelpsAllies | AbilityTargetingFlags.OriginOnSelf)
-                    .HasRecastDelay(RecastGroup.BrutalAssault, 300f),
+                    .HasRecastDelay(RecastGroup.BrutalAssault, 300f)
+                    .UsesAnimation(Animation.DoubleStrike),
                 typeof(BrutalAssaultStatusEffect),
                 60f,
                 7,

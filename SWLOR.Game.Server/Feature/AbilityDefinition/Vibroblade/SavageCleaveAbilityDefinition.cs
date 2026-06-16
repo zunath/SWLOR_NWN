@@ -28,6 +28,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
                 .Name("Savage Cleave I")
                 .Level(1)
                 .HasActivationDelay(0f)
+                .UsesAnimation(Animation.Whirlwind)
                 .HasRecastDelay(RecastGroup.SavageCleave, 45f)
                 .IsAreaAbility()
                 .HasImpactAction(SavageCleave1ImpactAction)

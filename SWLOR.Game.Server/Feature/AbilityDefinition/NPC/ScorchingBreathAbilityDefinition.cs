@@ -21,6 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                 .Name("Scorching Breath")
                 .HasActivationDelay(1.5f)
                 .HasRecastDelay(RecastGroup.ScorchingBreath, 22f)
+                .UsesAnimation(Animation.CastOutAnimation)
                 .IsCastedAbility()
                 .HasMaxRange(8f)
                 .IsAreaAbility()

@@ -27,6 +27,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
                 .Name("Earthshatter I")
                 .Level(1)
                 .HasActivationDelay(0f)
+                .UsesAnimation(Animation.DoubleThrust)
                 .HasRecastDelay(RecastGroup.Earthshatter, 90f)
                 .HasImpactAction(Earthshatter1ImpactAction)
                 .HasTargetingLine(

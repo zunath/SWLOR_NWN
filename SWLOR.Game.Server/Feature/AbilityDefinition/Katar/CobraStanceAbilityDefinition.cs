@@ -18,7 +18,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
                     .Name("Cobra Stance")
                     .Level(1)
                     .SkillType(SkillType.Katar)
-                    .HasRecastDelay(RecastGroup.CobraStance, 180f),
+                    .HasRecastDelay(RecastGroup.CobraStance, 180f)
+                    .UsesAnimation(Animation.DualWieldingStance),
                 typeof(CobraStanceStatusEffect));
 
             return builder.Build();

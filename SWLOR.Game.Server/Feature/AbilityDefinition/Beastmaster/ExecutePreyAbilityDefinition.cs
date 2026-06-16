@@ -31,6 +31,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 .Name("Execute Prey")
                 .Level(1)
                 .HasActivationDelay(0f)
+                .UsesAnimation(Animation.DoubleStrike)
                 .HasRecastDelay(RecastGroup.ExecutePrey, 60f)
                 .SkillType(SkillType.BeastMastery)
                 .IsSingleTargetAbility()

@@ -27,6 +27,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
                 .Name("Neural Shock")
                 .Level(1)
                 .HasActivationDelay(0f)
+                .UsesAnimation(Animation.CastOutAnimation)
                 .HasRecastDelay(RecastGroup.NeuralShock, 60f)
                 .RequiresTarget()
                 .HasImpactAction(NeuralShock1ImpactAction)

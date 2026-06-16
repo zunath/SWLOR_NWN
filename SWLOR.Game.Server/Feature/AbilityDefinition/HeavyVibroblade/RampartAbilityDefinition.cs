@@ -24,6 +24,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
                 .Name("Rampart")
                 .Level(1)
                 .HasActivationDelay(0f)
+                .UsesAnimation(Animation.ShieldWall)
                 .HasRecastDelay(RecastGroup.Rampart, 180f)
                 .HasImpactAction((activator, target, level, targetLocation) =>
                 {

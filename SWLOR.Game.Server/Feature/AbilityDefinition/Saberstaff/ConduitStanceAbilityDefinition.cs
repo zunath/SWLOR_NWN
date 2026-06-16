@@ -18,7 +18,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                     .Name("Conduit Stance")
                     .Level(1)
                     .SkillType(SkillType.Saberstaff)
-                    .HasRecastDelay(RecastGroup.ConduitStance, 180f),
+                    .HasRecastDelay(RecastGroup.ConduitStance, 180f)
+                    .UsesAnimation(Animation.DoubleLSStance),
                 typeof(ConduitStanceStatusEffect));
 
             return builder.Build();

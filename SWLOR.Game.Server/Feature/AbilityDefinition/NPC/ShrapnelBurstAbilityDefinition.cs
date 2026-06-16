@@ -16,6 +16,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                 _builder,
                 FeatType.ShrapnelBurst,
                 "Shrapnel Burst",
+                Animation.ThrowGrenade,
                 InnateAbilityProfile.Devices,
                 RecastGroup.ShrapnelBurst,
                 1.4f,

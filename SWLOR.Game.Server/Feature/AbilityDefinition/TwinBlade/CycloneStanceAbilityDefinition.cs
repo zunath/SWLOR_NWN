@@ -17,7 +17,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
                     .Create(FeatType.CycloneStance1, PerkType.CycloneStance)
                     .Name("Cyclone Stance")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.CycloneStance, 180f),
+                    .HasRecastDelay(RecastGroup.CycloneStance, 180f)
+                    .UsesAnimation(Animation.DualWieldingStance),
                 typeof(CycloneStanceStatusEffect));
 
             return builder.Build();

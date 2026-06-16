@@ -27,6 +27,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                 .Name("Vital Strike")
                 .Level(1)
                 .HasActivationDelay(0f)
+                .UsesAnimation(Animation.Backstab)
                 .HasRecastDelay(RecastGroup.Capstone, CapstoneAbility.RecastDelaySeconds)
                 .RequiresTarget()
                 .IsSingleTargetAbility()

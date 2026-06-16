@@ -16,6 +16,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                 _builder,
                 FeatType.MindSpike,
                 "Mind Spike",
+                Animation.CastOutAnimation,
                 InnateAbilityProfile.Force,
                 RecastGroup.MindSpike,
                 1.1f,

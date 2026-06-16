@@ -18,7 +18,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                     .Name("Tempest Stance")
                     .Level(1)
                     .SkillType(SkillType.Saberstaff)
-                    .HasRecastDelay(RecastGroup.TempestStance, 180f),
+                    .HasRecastDelay(RecastGroup.TempestStance, 180f)
+                    .UsesAnimation(Animation.DoubleLSStance),
                 typeof(TempestStanceStatusEffect));
 
             return builder.Build();

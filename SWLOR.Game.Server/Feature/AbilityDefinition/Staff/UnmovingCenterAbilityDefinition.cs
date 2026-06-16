@@ -20,7 +20,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
                     .Name("Unmoving Center")
                     .Level(1)
                     .SkillType(SkillType.Staff)
-                    .HasRecastDelay(RecastGroup.Capstone, CapstoneAbility.RecastDelaySeconds),
+                    .HasRecastDelay(RecastGroup.Capstone, CapstoneAbility.RecastDelaySeconds)
+                    .UsesAnimation(Animation.ShieldWall),
                 typeof(UnmovingCenterStatusEffect),
                 CapstoneAbility.ActiveDurationSeconds,
                 CapstoneAbility.StaminaCost,

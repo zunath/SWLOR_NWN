@@ -33,6 +33,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
                 .Level(1)
                 .SkillType(SkillType.TwinBlade)
                 .HasActivationDelay(0f)
+                .UsesAnimation(Animation.Whirlwind)
                 .HasRecastDelay(RecastGroup.StormRelease, 120f)
                 .HasCustomValidation(ValidateHasMomentumStacks)
                 .HasImpactAction(StormRelease1ImpactAction)

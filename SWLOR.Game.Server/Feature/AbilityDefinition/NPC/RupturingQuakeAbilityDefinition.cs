@@ -21,6 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                 .Name("Rupturing Quake")
                 .HasActivationDelay(3.0f)
                 .HasRecastDelay(RecastGroup.RupturingQuake, 48f)
+                .UsesAnimation(Animation.DoubleThrust)
                 .IsCastedAbility()
                 .HasMaxRange(9f)
                 .IsAreaAbility()

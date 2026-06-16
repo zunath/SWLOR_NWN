@@ -27,6 +27,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
                 .Name("Covering Strike")
                 .Level(1)
                 .HasActivationDelay(0f)
+                .UsesAnimation(Animation.DoubleStrike)
                 .HasRecastDelay(RecastGroup.CoveringStrike, 45f)
                 .HasImpactAction(CoveringStrike1ImpactAction)
                 .HasTargetingLine(

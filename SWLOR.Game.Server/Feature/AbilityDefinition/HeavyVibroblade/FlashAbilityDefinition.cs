@@ -25,6 +25,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
                 .Name("Flash")
                 .Level(1)
                 .HasActivationDelay(0f)
+                .UsesAnimation(Animation.CastOutAnimation)
                 .HasRecastDelay(RecastGroup.Flash, 90f)
                 .HasImpactAction((activator, target, level, targetLocation) =>
                 {

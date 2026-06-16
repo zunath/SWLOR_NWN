@@ -18,7 +18,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
                     .Name("Crusher Stance")
                     .Level(1)
                     .SkillType(SkillType.Staff)
-                    .HasRecastDelay(RecastGroup.CrusherStance, 180f),
+                    .HasRecastDelay(RecastGroup.CrusherStance, 180f)
+                    .UsesAnimation(Animation.ParadeRest),
                 typeof(CrusherStanceStatusEffect));
 
             return builder.Build();

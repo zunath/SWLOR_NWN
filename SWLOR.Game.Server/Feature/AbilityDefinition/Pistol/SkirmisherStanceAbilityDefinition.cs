@@ -17,7 +17,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 .Name("Skirmisher Stance")
                 .Level(1)
                 .SkillType(SkillType.Pistol)
-                .HasRecastDelay(RecastGroup.SkirmisherStance, 180f);
+                .HasRecastDelay(RecastGroup.SkirmisherStance, 180f)
+                .UsesAnimation(Animation.FireForgetDodgeSide);
             ConfigureToggle(builder, typeof(SkirmisherStanceStatusEffect));
 
             return builder.Build();

@@ -26,6 +26,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
                 .Name("Soul Storm")
                 .Level(1)
                 .HasActivationDelay(0f)
+                .UsesAnimation(Animation.Whirlwind)
                 .HasRecastDelay(RecastGroup.SoulStorm, 300f)
                 .HasImpactAction((activator, target, level, targetLocation) =>
                 {

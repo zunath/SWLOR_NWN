@@ -16,6 +16,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                 _builder,
                 FeatType.StaticWeb,
                 "Static Web",
+                Animation.CastOutAnimation,
                 InnateAbilityProfile.Devices,
                 RecastGroup.StaticWeb,
                 1.4f,

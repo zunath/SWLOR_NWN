@@ -16,6 +16,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                 _builder,
                 FeatType.VenomSpray,
                 "Venom Spray",
+                Animation.CastOutAnimation,
                 InnateAbilityProfile.CreaturePhysical,
                 RecastGroup.VenomSpray,
                 1.4f,

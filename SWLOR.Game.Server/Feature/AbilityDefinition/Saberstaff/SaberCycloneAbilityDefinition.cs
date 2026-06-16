@@ -38,6 +38,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                 .SkillType(SkillType.Saberstaff)
                 .IsAreaAbility()
                 .HasActivationDelay(0f)
+                .UsesAnimation(Animation.Whirlwind)
                 .HasRecastDelay(RecastGroup.Capstone, CapstoneAbility.RecastDelaySeconds)
                 .HasImpactAction(SaberCyclone1ImpactAction)
                 .IsCastedAbility()

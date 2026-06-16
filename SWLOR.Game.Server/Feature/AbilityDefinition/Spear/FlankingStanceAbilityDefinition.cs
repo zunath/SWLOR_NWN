@@ -18,7 +18,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
                     .Name("Flanking Stance")
                     .Level(1)
                     .SkillType(SkillType.Spear)
-                    .HasRecastDelay(RecastGroup.FlankingStance, 180f),
+                    .HasRecastDelay(RecastGroup.FlankingStance, 180f)
+                    .UsesAnimation(Animation.ParadeRest),
                 typeof(FlankingStanceStatusEffect));
 
             return builder.Build();

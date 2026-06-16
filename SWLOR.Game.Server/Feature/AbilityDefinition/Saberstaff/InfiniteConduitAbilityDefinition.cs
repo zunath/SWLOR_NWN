@@ -19,7 +19,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                     .Name("Infinite Conduit")
                     .Level(1)
                     .SkillType(SkillType.Saberstaff)
-                    .HasRecastDelay(RecastGroup.Capstone, CapstoneAbility.RecastDelaySeconds),
+                    .HasRecastDelay(RecastGroup.Capstone, CapstoneAbility.RecastDelaySeconds)
+                    .UsesAnimation(Animation.CastOutAnimation),
                 typeof(InfiniteConduitStatusEffect),
                 CapstoneAbility.ActiveDurationSeconds,
                 CapstoneAbility.StaminaCost,

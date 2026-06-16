@@ -22,7 +22,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                         Spell.Incapacitate1,
                         5f,
                         AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf)
-                    .HasRecastDelay(RecastGroup.Incapacitate, 120f),
+                    .HasRecastDelay(RecastGroup.Incapacitate, 120f)
+                    .UsesAnimation(Animation.Backstab),
                 typeof(IncapacitateStatusEffect),
                 20f,
                 10,

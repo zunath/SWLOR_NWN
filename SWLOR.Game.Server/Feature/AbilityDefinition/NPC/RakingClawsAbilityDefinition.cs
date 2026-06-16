@@ -16,6 +16,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                 _builder,
                 FeatType.RakingClaws,
                 "Raking Claws",
+                Animation.CrossCut,
                 InnateAbilityProfile.CreaturePhysical,
                 RecastGroup.RakingClaws,
                 1f,

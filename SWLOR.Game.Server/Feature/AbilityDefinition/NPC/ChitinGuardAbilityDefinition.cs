@@ -16,6 +16,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                 _builder,
                 FeatType.ChitinGuard,
                 "Chitin Guard",
+                Animation.ShieldWall,
                 InnateAbilityProfile.CreaturePhysical,
                 RecastGroup.ChitinGuard,
                 0.8f,

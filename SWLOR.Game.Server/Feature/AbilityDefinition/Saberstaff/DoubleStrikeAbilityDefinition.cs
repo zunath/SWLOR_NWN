@@ -17,7 +17,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                     .Create(FeatType.DoubleStrike1, PerkType.DoubleStrike)
                     .Name("Double Strike I")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.DoubleStrike, 60f),
+                    .HasRecastDelay(RecastGroup.DoubleStrike, 60f)
+                    .UsesAnimation(Animation.DoubleStrike),
                 SkillType.Saberstaff,
                 12,
                 2,
@@ -27,7 +28,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                     .Create(FeatType.DoubleStrike2, PerkType.DoubleStrike)
                     .Name("Double Strike II")
                     .Level(2)
-                    .HasRecastDelay(RecastGroup.DoubleStrike, 60f),
+                    .HasRecastDelay(RecastGroup.DoubleStrike, 60f)
+                    .UsesAnimation(Animation.DoubleStrike),
                 SkillType.Saberstaff,
                 21,
                 2,
@@ -37,7 +39,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                     .Create(FeatType.DoubleStrike3, PerkType.DoubleStrike)
                     .Name("Double Strike III")
                     .Level(3)
-                    .HasRecastDelay(RecastGroup.DoubleStrike, 60f),
+                    .HasRecastDelay(RecastGroup.DoubleStrike, 60f)
+                    .UsesAnimation(Animation.DoubleStrike),
                 SkillType.Saberstaff,
                 29,
                 2,
@@ -47,7 +50,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                     .Create(FeatType.DoubleStrike4, PerkType.DoubleStrike)
                     .Name("Double Strike IV")
                     .Level(4)
-                    .HasRecastDelay(RecastGroup.DoubleStrike, 60f),
+                    .HasRecastDelay(RecastGroup.DoubleStrike, 60f)
+                    .UsesAnimation(Animation.DoubleStrike),
                 SkillType.Saberstaff,
                 38,
                 2,

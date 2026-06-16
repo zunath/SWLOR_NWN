@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
                 .Name("Twin Intercept")
                 .Level(1)
                 .HasActivationDelay(0f)
+                .UsesAnimation(Animation.ForceLeap)
                 .HasRecastDelay(RecastGroup.TwinIntercept, 120f)
                 .SkillType(SkillType.Katar)
                 .IsSingleTargetAbility()

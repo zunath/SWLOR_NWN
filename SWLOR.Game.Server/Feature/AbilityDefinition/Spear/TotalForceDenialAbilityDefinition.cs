@@ -26,6 +26,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
                 .Name("Total Force Denial")
                 .Level(1)
                 .HasActivationDelay(2f)
+                .UsesAnimation(Animation.Whirlwind)
                 .HasRecastDelay(RecastGroup.TotalForceDenial, 300f)
                 .HasImpactAction(TotalForceDenial1ImpactAction)
                 .HasTargetingCone(

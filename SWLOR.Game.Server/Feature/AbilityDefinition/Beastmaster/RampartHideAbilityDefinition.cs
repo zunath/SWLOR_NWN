@@ -32,6 +32,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 .Name("Rampart Hide")
                 .Level(1)
                 .HasActivationDelay(0f)
+                .UsesAnimation(Animation.ShieldWall)
                 .HasRecastDelay(RecastGroup.RampartHide, 90f)
                 .SkillType(SkillType.BeastMastery)
                 .IsSingleTargetAbility()

@@ -32,6 +32,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 .Name("Alpha Rhythm")
                 .Level(1)
                 .HasActivationDelay(0f)
+                .UsesAnimation(Animation.FireForgetTaunt)
                 .HasRecastDelay(RecastGroup.AlphaRhythm, 120f)
                 .SkillType(SkillType.BeastMastery)
                 .IsSingleTargetAbility()

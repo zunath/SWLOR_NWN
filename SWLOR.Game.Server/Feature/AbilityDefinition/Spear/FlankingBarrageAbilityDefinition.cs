@@ -27,6 +27,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
                 .Name("Flanking Barrage")
                 .Level(1)
                 .HasActivationDelay(0f)
+                .UsesAnimation(Animation.DoubleThrust)
                 .HasRecastDelay(RecastGroup.FlankingBarrage, 120f)
                 .RequiresTarget()
                 .HasCustomValidation(ValidateBesideTarget)

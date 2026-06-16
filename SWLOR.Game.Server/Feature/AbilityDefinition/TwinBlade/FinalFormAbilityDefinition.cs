@@ -19,7 +19,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
                     .Name("Final Form")
                     .Level(1)
                     .SkillType(SkillType.TwinBlade)
-                    .HasRecastDelay(RecastGroup.Capstone, CapstoneAbility.RecastDelaySeconds),
+                    .HasRecastDelay(RecastGroup.Capstone, CapstoneAbility.RecastDelaySeconds)
+                    .UsesAnimation(Animation.DualWieldingStance2),
                 typeof(FinalFormStatusEffect),
                 CapstoneAbility.ActiveDurationSeconds,
                 CapstoneAbility.StaminaCost,

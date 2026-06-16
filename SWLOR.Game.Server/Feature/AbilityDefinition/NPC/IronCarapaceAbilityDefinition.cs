@@ -20,6 +20,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                 .Name("Iron Carapace")
                 .HasActivationDelay(1.0f)
                 .HasRecastDelay(RecastGroup.IronCarapace, 32f)
+                .UsesAnimation(Animation.ShieldWall)
                 .IsCastedAbility()
                 .RequirementStamina(4)
                 .HasImpactAction((activator, target, level, location) =>

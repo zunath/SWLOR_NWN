@@ -27,6 +27,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 .Name("Guardian's Challenge I")
                 .Level(1)
                 .HasActivationDelay(0f)
+                .UsesAnimation(Animation.FireForgetTaunt)
                 .HasRecastDelay(RecastGroup.GuardiansChallenge, 90f)
                 .HasImpactAction(GuardiansChallenge1ImpactAction)
                 .IsAreaAbility()
@@ -48,6 +49,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 .Name("Guardian's Challenge II")
                 .Level(2)
                 .HasActivationDelay(0f)
+                .UsesAnimation(Animation.FireForgetTaunt)
                 .HasRecastDelay(RecastGroup.GuardiansChallenge, 120f)
                 .HasImpactAction(GuardiansChallenge2ImpactAction)
                 .HasTargetingLine(

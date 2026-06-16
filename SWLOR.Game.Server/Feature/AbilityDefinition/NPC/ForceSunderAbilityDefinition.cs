@@ -16,6 +16,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                 _builder,
                 FeatType.ForceSunder,
                 "Force Sunder",
+                Animation.CastOutAnimation,
                 InnateAbilityProfile.Force,
                 RecastGroup.ForceSunder,
                 1.3f,

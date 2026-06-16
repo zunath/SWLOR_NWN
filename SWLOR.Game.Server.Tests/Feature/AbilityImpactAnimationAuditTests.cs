@@ -9,6 +9,27 @@ namespace SWLOR.Game.Server.Tests.Feature;
 public class AbilityImpactAnimationAuditTests
 {
     [Test]
+    public void CastedActionAbilities_DeclareUsageAnimation()
+    {
+        var missingAnimations = new List<string>();
+
+        foreach (var (definitionType, abilities) in BuildAbilityDefinitions())
+        {
+            foreach (var (feat, ability) in abilities)
+            {
+                if (!UsesCastedActionWithoutAnimation(ability))
+                    continue;
+
+                missingAnimations.Add($"{definitionType.Name}/{feat} {ability.Name}");
+            }
+        }
+
+        missingAnimations.Should().BeEmpty(
+            "casted abilities with activation or impact work should declare a relevant usage animation. Missing: {0}",
+            string.Join(", ", missingAnimations));
+    }
+
+    [Test]
     public void CastedImpactAbilities_DoNotFallBackToDefaultWeaponAnimation()
     {
         var root = FindRepositoryRoot();
@@ -32,9 +53,9 @@ public class AbilityImpactAnimationAuditTests
             }
         }
 
-        castedImpactAbilitiesWithoutAnimation.Should().Contain(
-            entry => entry.Contains("ThrowRockAbilityDefinition/ThrowRock1", StringComparison.Ordinal),
-            "Throw Rock is the regression case this audit protects");
+        castedImpactAbilitiesWithoutAnimation.Should().BeEmpty(
+            "casted combat-impact abilities should declare the animation they play instead of inheriting a weapon fallback. Missing: {0}",
+            string.Join(", ", castedImpactAbilitiesWithoutAnimation));
         abilityServiceSource.Should().Contain(
             "trackedAbility?.ActivationType != AbilityActivationType.Weapon",
             "casted combat-impact abilities must not inherit the legacy weapon swing fallback");
@@ -45,6 +66,14 @@ public class AbilityImpactAnimationAuditTests
         return ability.IsHostileAbility &&
                ability.ImpactAction != null &&
                ability.ActivationType == AbilityActivationType.Casted &&
+               ability.AnimationType == Animation.Invalid &&
+               ability.ImpactAnimationType == Animation.Invalid;
+    }
+
+    private static bool UsesCastedActionWithoutAnimation(AbilityDetail ability)
+    {
+        return ability.ActivationType == AbilityActivationType.Casted &&
+               (ability.ActivationAction != null || ability.ImpactAction != null) &&
                ability.AnimationType == Animation.Invalid &&
                ability.ImpactAnimationType == Animation.Invalid;
     }

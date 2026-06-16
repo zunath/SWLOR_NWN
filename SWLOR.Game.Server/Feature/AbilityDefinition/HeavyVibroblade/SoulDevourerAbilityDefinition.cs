@@ -24,6 +24,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
                 .Name("Soul Devourer")
                 .Level(1)
                 .HasActivationDelay(2f)
+                .UsesAnimation(Animation.CastOutAnimation)
                 .HasRecastDelay(RecastGroup.SoulDevourer, 180f)
                 .HasActivationAction((activator, target, level, targetLocation) => ToggleSelfStatus(activator, typeof(SoulDevourerStatusEffect)))
                 .RemoveStatusEffectOnPerkRefund(typeof(SoulDevourerStatusEffect))

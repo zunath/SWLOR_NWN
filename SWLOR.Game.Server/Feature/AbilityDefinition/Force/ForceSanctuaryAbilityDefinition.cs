@@ -29,6 +29,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .Name("Force Sanctuary")
                 .Level(1)
                 .HasActivationDelay(1.5f)
+                .UsesAnimation(Animation.LoopingConjure1)
                 .HasRecastDelay(RecastGroup.ForceSanctuary, 90f)
                 .SkillType(SkillType.Force)
                 .IsAreaAbility()

@@ -16,6 +16,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                 _builder,
                 FeatType.BarbedVolley,
                 "Barbed Volley",
+                Animation.ThrowGrenade,
                 InnateAbilityProfile.CreaturePhysical,
                 RecastGroup.BarbedVolley,
                 1.4f,

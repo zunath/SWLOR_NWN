@@ -26,6 +26,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
                 .Name("Hampering Barrage")
                 .Level(1)
                 .HasActivationDelay(2f)
+                .UsesAnimation(Animation.DoubleThrust)
                 .HasRecastDelay(RecastGroup.HamperingBarrage, 60f)
                 .HasImpactAction(HamperingBarrage1ImpactAction)
                 .HasTargetingCone(

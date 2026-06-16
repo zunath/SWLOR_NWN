@@ -16,6 +16,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                 _builder,
                 FeatType.BrutalBash,
                 "Brutal Bash",
+                Animation.DoubleThrust,
                 InnateAbilityProfile.Staff,
                 RecastGroup.BrutalBash,
                 1f,

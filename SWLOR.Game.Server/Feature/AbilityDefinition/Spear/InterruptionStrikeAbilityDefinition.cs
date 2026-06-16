@@ -18,7 +18,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
                     .Create(FeatType.InterruptionStrike1, PerkType.InterruptionStrike)
                     .Name("Interruption Strike I")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.InterruptionStrike, 30f),
+                    .HasRecastDelay(RecastGroup.InterruptionStrike, 30f)
+                    .UsesAnimation(Animation.DoubleThrust),
                 SkillType.Spear,
                 0,
                 30,
@@ -30,7 +31,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
                     .Create(FeatType.InterruptionStrike2, PerkType.InterruptionStrike)
                     .Name("Interruption Strike II")
                     .Level(2)
-                    .HasRecastDelay(RecastGroup.InterruptionStrike, 30f),
+                    .HasRecastDelay(RecastGroup.InterruptionStrike, 30f)
+                    .UsesAnimation(Animation.DoubleThrust),
                 SkillType.Spear,
                 0,
                 30,

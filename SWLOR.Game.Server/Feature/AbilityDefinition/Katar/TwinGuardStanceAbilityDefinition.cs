@@ -19,7 +19,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
                     .Name("Twin Guard Stance")
                     .Level(1)
                     .SkillType(SkillType.Katar)
-                    .HasRecastDelay(RecastGroup.TwinGuardStance, 180f),
+                    .HasRecastDelay(RecastGroup.TwinGuardStance, 180f)
+                    .UsesAnimation(Animation.ShieldWall),
                 typeof(TwinGuardStanceStatusEffect));
 
             return builder.Build();

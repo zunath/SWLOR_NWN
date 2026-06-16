@@ -26,6 +26,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
                 .Name("Sweeping Guard")
                 .Level(1)
                 .HasActivationDelay(0f)
+                .UsesAnimation(Animation.Whirlwind)
                 .HasRecastDelay(RecastGroup.SweepingGuard, 90f)
                 .HasImpactAction(SweepingGuard1ImpactAction)
                 .SkillType(SkillType.Staff)

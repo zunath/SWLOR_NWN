@@ -56,7 +56,7 @@ public class ForceLightConsularTests
 
         foreach (var ability in throwRock.Values)
         {
-            ability.AnimationType.Should().Be(Animation.Invalid);
+            ability.AnimationType.Should().Be(Animation.CastOutAnimation);
             ability.ImpactAnimationType.Should().Be(Animation.Invalid);
             ability.ActivationVisualEffect.Should().Be(VisualEffect.None);
         }
@@ -69,7 +69,7 @@ public class ForceLightConsularTests
         var source = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Force" / "ThrowRockAbilityDefinition.cs").FullName);
 
         source.Should().Contain("DisplaysVisualEffectWhenActivating(VisualEffect.None)");
-        source.Should().NotContain("UsesAnimation(");
+        source.Should().Contain("UsesAnimation(Animation.CastOutAnimation)");
         source.Should().NotContain("UsesImpactAnimation(");
         source.Should().Contain(": VisualEffect.Vfx_Imp_Mirv_Rock;");
         source.Should().Contain("VisualEffect.Vfx_Imp_Mirv_Rock3");

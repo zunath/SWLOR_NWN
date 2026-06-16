@@ -16,6 +16,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                 _builder,
                 FeatType.SavageRoar,
                 "Savage Roar",
+                Animation.FireForgetTaunt,
                 InnateAbilityProfile.CreaturePhysical,
                 RecastGroup.SavageRoar,
                 1f,

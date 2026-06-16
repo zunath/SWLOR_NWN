@@ -16,6 +16,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                 _builder,
                 FeatType.SonicShriek,
                 "Sonic Shriek",
+                Animation.FireForgetTaunt,
                 InnateAbilityProfile.CreaturePhysical,
                 RecastGroup.SonicShriek,
                 1.3f,

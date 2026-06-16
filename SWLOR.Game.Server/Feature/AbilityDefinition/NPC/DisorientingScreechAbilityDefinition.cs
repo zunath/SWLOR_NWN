@@ -21,6 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                 .Name("Disorienting Screech")
                 .HasActivationDelay(2.0f)
                 .HasRecastDelay(RecastGroup.DisorientingScreech, 36f)
+                .UsesAnimation(Animation.FireForgetTaunt)
                 .IsCastedAbility()
                 .HasMaxRange(9f)
                 .IsAreaAbility()

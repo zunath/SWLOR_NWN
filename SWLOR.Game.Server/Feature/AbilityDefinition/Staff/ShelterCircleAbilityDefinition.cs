@@ -19,7 +19,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
                     .Level(1)
                     .SkillType(SkillType.Staff)
                     .IsAreaAbility()
-                    .HasRecastDelay(RecastGroup.ShelterCircle, 180f),
+                    .HasRecastDelay(RecastGroup.ShelterCircle, 180f)
+                    .UsesAnimation(Animation.ShieldWall),
                 typeof(ShelterCircleStatusEffect),
                 15f,
                 12,

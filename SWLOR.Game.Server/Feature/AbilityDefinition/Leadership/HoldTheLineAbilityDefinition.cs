@@ -33,6 +33,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
                 .Name("Hold the Line")
                 .Level(1)
                 .HasActivationDelay(1f)
+                .UsesAnimation(Animation.ShieldWall)
                 .HasRecastDelay(RecastGroup.Capstone, CapstoneAbility.RecastDelaySeconds)
                 .SkillType(SkillType.Leadership)
                 .IsAreaAbility()

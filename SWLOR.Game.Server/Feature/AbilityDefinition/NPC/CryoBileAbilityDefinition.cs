@@ -16,6 +16,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                 _builder,
                 FeatType.CryoBile,
                 "Cryo Bile",
+                Animation.CastOutAnimation,
                 InnateAbilityProfile.CreaturePhysical,
                 RecastGroup.CryoBile,
                 1.6f,

@@ -17,7 +17,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 .Name("Gunslinger Focus")
                 .Level(1)
                 .SkillType(SkillType.Pistol)
-                .HasRecastDelay(RecastGroup.GunslingerFocus, 120f);
+                .HasRecastDelay(RecastGroup.GunslingerFocus, 120f)
+                .UsesAnimation(Animation.QuickDraw);
             ConfigureSelfStatus(builder, typeof(GunslingerFocusStatusEffect), duration: 20f, stamina: 6);
 
             return builder.Build();

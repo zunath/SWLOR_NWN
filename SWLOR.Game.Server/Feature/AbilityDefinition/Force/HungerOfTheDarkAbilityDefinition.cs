@@ -32,6 +32,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .Name("Hunger of the Dark")
                 .Level(1)
                 .HasActivationDelay(0f)
+                .UsesAnimation(Animation.CastOutAnimation)
                 .HasRecastDelay(RecastGroup.Capstone, CapstoneAbility.RecastDelaySeconds)
                 .SkillType(SkillType.Force)
                 .IsSingleTargetAbility()

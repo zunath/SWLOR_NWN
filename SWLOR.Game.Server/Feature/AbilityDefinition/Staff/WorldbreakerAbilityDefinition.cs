@@ -31,6 +31,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
                 .Name("Worldbreaker")
                 .Level(1)
                 .HasActivationDelay(2f)
+                .UsesAnimation(Animation.DoubleThrust)
                 .HasRecastDelay(RecastGroup.Capstone, CapstoneAbility.RecastDelaySeconds)
                 .SkillType(SkillType.Staff)
                 .IsAreaAbility()

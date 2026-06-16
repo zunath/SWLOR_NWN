@@ -26,6 +26,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
                 .Name("Disruption Field")
                 .Level(1)
                 .HasActivationDelay(0f)
+                .UsesAnimation(Animation.DoubleThrust)
                 .HasRecastDelay(RecastGroup.DisruptionField, 180f)
                 .SkillType(SkillType.Spear)
                 .IsAreaAbility()

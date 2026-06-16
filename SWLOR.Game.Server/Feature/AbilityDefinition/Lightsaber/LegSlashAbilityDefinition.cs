@@ -26,6 +26,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 .Name("Leg Slash")
                 .Level(1)
                 .HasActivationDelay(1f)
+                .UsesAnimation(Animation.CrossCut)
                 .HasRecastDelay(RecastGroup.LegSlash, 60f)
                 .SkillType(SkillType.Lightsaber)
                 .RequiresTarget()

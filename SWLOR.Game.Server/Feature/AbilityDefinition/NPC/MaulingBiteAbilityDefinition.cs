@@ -16,6 +16,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                 _builder,
                 FeatType.MaulingBite,
                 "Mauling Bite",
+                Animation.DoubleStrike,
                 InnateAbilityProfile.CreaturePhysical,
                 RecastGroup.MaulingBite,
                 1.1f,

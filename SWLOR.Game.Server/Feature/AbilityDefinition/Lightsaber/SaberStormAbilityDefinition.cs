@@ -27,6 +27,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 .Name("Saber Storm")
                 .Level(1)
                 .HasActivationDelay(2f)
+                .UsesAnimation(Animation.Whirlwind)
                 .HasRecastDelay(RecastGroup.Capstone, CapstoneAbility.RecastDelaySeconds)
                 .SkillType(SkillType.Lightsaber)
                 .HasImpactAction(SaberStorm1ImpactAction)

@@ -31,6 +31,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .Name("Purifying Wave")
                 .Level(1)
                 .HasActivationDelay(1.5f)
+                .UsesAnimation(Animation.LoopingConjure1)
                 .HasRecastDelay(RecastGroup.PurifyingWave, 90f)
                 .SkillType(SkillType.Force)
                 .CombatImpactDamageAbility(AbilityType.Willpower)

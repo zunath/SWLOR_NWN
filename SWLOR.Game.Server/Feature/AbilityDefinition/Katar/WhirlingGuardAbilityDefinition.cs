@@ -26,7 +26,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
                     .Name("Whirling Guard")
                     .Level(1)
                     .SkillType(SkillType.Katar)
-                    .HasRecastDelay(RecastGroup.WhirlingGuard, 120f),
+                    .HasRecastDelay(RecastGroup.WhirlingGuard, 120f)
+                    .UsesAnimation(Animation.Whirlwind),
                 typeof(WhirlingGuardStatusEffect),
                 12f,
                 12);

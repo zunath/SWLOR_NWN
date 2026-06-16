@@ -21,6 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                 .Name("Terrifying Bellow")
                 .HasActivationDelay(1.0f)
                 .HasRecastDelay(RecastGroup.TerrifyingBellow, 20f)
+                .UsesAnimation(Animation.FireForgetTaunt)
                 .IsCastedAbility()
                 .HasMaxRange(6f)
                 .IsAreaAbility()

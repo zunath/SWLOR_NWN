@@ -21,6 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                 .Name("Inferno Blast")
                 .HasActivationDelay(2.5f)
                 .HasRecastDelay(RecastGroup.InfernoBlast, 34f)
+                .UsesAnimation(Animation.CastOutAnimation)
                 .IsCastedAbility()
                 .HasMaxRange(10f)
                 .IsAreaAbility()

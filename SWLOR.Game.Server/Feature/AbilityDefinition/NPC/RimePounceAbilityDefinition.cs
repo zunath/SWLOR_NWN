@@ -16,6 +16,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                 _builder,
                 FeatType.RimePounce,
                 "Rime Pounce",
+                Animation.ForceLeap,
                 InnateAbilityProfile.CreaturePhysical,
                 RecastGroup.RimePounce,
                 1.0f,

@@ -16,6 +16,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                 _builder,
                 FeatType.HoarfrostGlob,
                 "Hoarfrost Glob",
+                Animation.CastOutAnimation,
                 InnateAbilityProfile.CreaturePhysical,
                 RecastGroup.HoarfrostGlob,
                 1.3f,

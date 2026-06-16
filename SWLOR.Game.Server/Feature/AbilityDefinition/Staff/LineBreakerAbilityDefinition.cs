@@ -26,6 +26,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
                 .Name("Line Breaker")
                 .Level(1)
                 .HasActivationDelay(0f)
+                .UsesAnimation(Animation.ForceLeap)
                 .HasRecastDelay(RecastGroup.LineBreaker, 60f)
                 .HasImpactAction(LineBreaker1ImpactAction)
                 .HasTargetingLine(

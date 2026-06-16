@@ -16,6 +16,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                 _builder,
                 FeatType.OverloadShot,
                 "Overload Shot",
+                Animation.PointPistol,
                 InnateAbilityProfile.Rifle,
                 RecastGroup.OverloadShot,
                 1.2f,

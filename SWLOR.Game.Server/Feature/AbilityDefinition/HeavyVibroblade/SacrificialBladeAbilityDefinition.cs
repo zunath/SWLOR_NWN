@@ -26,6 +26,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
                 .Name("Sacrificial Blade")
                 .Level(1)
                 .HasActivationDelay(0f)
+                .UsesAnimation(Animation.DoubleStrike)
                 .HasRecastDelay(RecastGroup.SacrificialBlade, 120f)
                 .RequiresTarget()
                 .HasImpactAction(SacrificialBlade1ImpactAction)

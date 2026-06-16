@@ -28,6 +28,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                 .Name("Smoke Bomb I")
                 .Level(1)
                 .HasActivationDelay(2f)
+                .UsesAnimation(Animation.ThrowGrenade)
                 .HasRecastDelay(RecastGroup.SmokeBomb, 30f)
                 .IsAreaAbility()
                 .HasImpactAction(SmokeBombImpactAction)

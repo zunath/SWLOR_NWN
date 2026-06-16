@@ -26,6 +26,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                 .Name("Nerve Strike")
                 .Level(1)
                 .HasActivationDelay(0f)
+                .UsesAnimation(Animation.Backstab)
                 .HasRecastDelay(RecastGroup.NerveStrike, 60f)
                 .RequiresTarget()
                 .IsSingleTargetAbility()

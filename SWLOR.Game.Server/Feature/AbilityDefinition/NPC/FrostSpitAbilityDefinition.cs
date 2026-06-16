@@ -16,6 +16,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                 _builder,
                 FeatType.FrostSpit,
                 "Frost Spit",
+                Animation.CastOutAnimation,
                 InnateAbilityProfile.CreaturePhysical,
                 RecastGroup.FrostSpit,
                 1.2f,

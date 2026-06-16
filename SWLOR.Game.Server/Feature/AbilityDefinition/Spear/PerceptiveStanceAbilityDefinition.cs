@@ -18,7 +18,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
                     .Name("Perceptive Stance")
                     .Level(1)
                     .SkillType(SkillType.Spear)
-                    .HasRecastDelay(RecastGroup.PerceptiveStance, 180f),
+                    .HasRecastDelay(RecastGroup.PerceptiveStance, 180f)
+                    .UsesAnimation(Animation.ParadeRest),
                 typeof(PerceptiveStanceStatusEffect));
 
             return builder.Build();

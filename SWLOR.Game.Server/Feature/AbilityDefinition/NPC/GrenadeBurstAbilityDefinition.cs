@@ -16,6 +16,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                 _builder,
                 FeatType.GrenadeBurst,
                 "Grenade Burst",
+                Animation.ThrowGrenade,
                 InnateAbilityProfile.Devices,
                 RecastGroup.GrenadeBurst,
                 1.5f,

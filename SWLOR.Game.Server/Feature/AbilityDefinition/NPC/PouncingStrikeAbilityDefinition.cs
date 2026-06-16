@@ -16,6 +16,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                 _builder,
                 FeatType.PouncingStrike,
                 "Pouncing Strike",
+                Animation.ForceLeap,
                 InnateAbilityProfile.CreaturePhysical,
                 RecastGroup.PouncingStrike,
                 1.2f,

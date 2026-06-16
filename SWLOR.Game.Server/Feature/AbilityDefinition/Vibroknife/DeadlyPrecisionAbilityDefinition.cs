@@ -18,7 +18,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                     .Create(FeatType.DeadlyPrecision1, PerkType.DeadlyPrecision)
                     .Name("Deadly Precision")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.DeadlyPrecision, 180f),
+                    .HasRecastDelay(RecastGroup.DeadlyPrecision, 180f)
+                    .UsesAnimation(Animation.PointForward),
                 typeof(DeadlyPrecisionStatusEffect));
 
             return builder.Build();

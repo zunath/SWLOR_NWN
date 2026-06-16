@@ -21,6 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
                 .Level(1)
                 .SkillType(SkillType.TwinBlade)
                 .HasActivationDelay(0f)
+                .UsesAnimation(Animation.PointForward)
                 .RequiresTarget()
                 .HasRecastDelay(RecastGroup.DuelistsChallenge, 120f)
                 .HasImpactAction((activator, target, level, targetLocation) =>

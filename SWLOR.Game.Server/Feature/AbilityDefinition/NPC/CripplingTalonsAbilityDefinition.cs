@@ -23,6 +23,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                 .IsCastedAbility()
                 .RequirementStamina(3)
                 .HasRecastDelay(RecastGroup.CripplingTalons, 10f)
+                .UsesAnimation(Animation.CrossCut)
                 .IsSingleTargetAbility()
                 .RequiresTarget()
                 .IsHostileAbility()

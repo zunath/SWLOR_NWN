@@ -18,7 +18,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
                     .Name("Calming Stance")
                     .Level(1)
                     .SkillType(SkillType.Spear)
-                    .HasRecastDelay(RecastGroup.CalmingStance, 180f),
+                    .HasRecastDelay(RecastGroup.CalmingStance, 180f)
+                    .UsesAnimation(Animation.ParadeRest),
                 typeof(CalmingStanceStatusEffect));
 
             return builder.Build();

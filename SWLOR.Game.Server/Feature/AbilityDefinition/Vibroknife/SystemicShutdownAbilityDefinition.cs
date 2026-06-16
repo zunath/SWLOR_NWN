@@ -27,6 +27,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                 .Name("Systemic Shutdown")
                 .Level(1)
                 .HasActivationDelay(3f)
+                .UsesAnimation(Animation.CastOutAnimation)
                 .HasRecastDelay(RecastGroup.Capstone, CapstoneAbility.RecastDelaySeconds)
                 .HasImpactAction(SystemicShutdown1ImpactAction)
                 .HasTargetingSphere(

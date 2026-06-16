@@ -18,7 +18,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
                     .Name("Iron Wall Stance")
                     .Level(1)
                     .SkillType(SkillType.Katar)
-                    .HasRecastDelay(RecastGroup.IronWallStance, 180f),
+                    .HasRecastDelay(RecastGroup.IronWallStance, 180f)
+                    .UsesAnimation(Animation.ShieldWall),
                 typeof(IronWallStanceStatusEffect));
 
             return builder.Build();

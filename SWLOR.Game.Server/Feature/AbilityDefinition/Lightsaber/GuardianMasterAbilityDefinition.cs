@@ -18,7 +18,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                     .Create(FeatType.GuardianMaster1, PerkType.GuardianMaster)
                     .Name("Guardian Master")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.Capstone, CapstoneAbility.RecastDelaySeconds),
+                    .HasRecastDelay(RecastGroup.Capstone, CapstoneAbility.RecastDelaySeconds)
+                    .UsesAnimation(Animation.ShieldWall),
                 typeof(GuardianMasterStatusEffect),
                 CapstoneAbility.ActiveDurationSeconds,
                 CapstoneAbility.StaminaCost,

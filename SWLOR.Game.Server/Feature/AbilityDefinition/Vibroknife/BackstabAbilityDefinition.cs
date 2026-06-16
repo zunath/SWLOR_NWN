@@ -20,6 +20,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                     .Name("Backstab I")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.Backstab, 60f)
+                    .UsesAnimation(Animation.Backstab)
                     .HasCustomValidation(ValidateBehindTarget),
                 SkillType.Vibroknife,
                 20,
@@ -30,6 +31,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                     .Name("Backstab II")
                     .Level(2)
                     .HasRecastDelay(RecastGroup.Backstab, 60f)
+                    .UsesAnimation(Animation.Backstab)
                     .HasCustomValidation(ValidateBehindTarget),
                 SkillType.Vibroknife,
                 40,
@@ -40,6 +42,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                     .Name("Backstab III")
                     .Level(3)
                     .HasRecastDelay(RecastGroup.Backstab, 60f)
+                    .UsesAnimation(Animation.Backstab)
                     .HasCustomValidation(ValidateBehindTarget),
                 SkillType.Vibroknife,
                 60,

@@ -32,6 +32,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .Name("Emergency Triage")
                 .Level(1)
                 .HasActivationDelay(0f)
+                .UsesAnimation(Animation.FireForgetSalute)
                 .HasRecastDelay(RecastGroup.EmergencyTriage, 45f)
                 .SkillType(SkillType.FirstAid)
                 .IsSingleTargetAbility()

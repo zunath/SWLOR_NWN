@@ -32,6 +32,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 .Name("Primal Overrun")
                 .Level(1)
                 .HasActivationDelay(0f)
+                .UsesAnimation(Animation.ForceLeap)
                 .HasRecastDelay(RecastGroup.PrimalOverrun, 120f)
                 .SkillType(SkillType.BeastMastery)
                 .IsAreaAbility()

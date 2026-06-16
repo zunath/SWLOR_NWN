@@ -21,6 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                 .Name("Seismic Slam")
                 .HasActivationDelay(2.0f)
                 .HasRecastDelay(RecastGroup.SeismicSlam, 28f)
+                .UsesAnimation(Animation.DoubleThrust)
                 .IsCastedAbility()
                 .HasMaxRange(6f)
                 .IsAreaAbility()

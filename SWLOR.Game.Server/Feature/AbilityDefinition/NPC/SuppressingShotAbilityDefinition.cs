@@ -16,6 +16,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                 _builder,
                 FeatType.SuppressingShot,
                 "Suppressing Shot",
+                Animation.PointPistol,
                 InnateAbilityProfile.Rifle,
                 RecastGroup.SuppressingShot,
                 1.2f,

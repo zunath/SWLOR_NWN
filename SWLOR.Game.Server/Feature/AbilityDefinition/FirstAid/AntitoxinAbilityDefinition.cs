@@ -33,6 +33,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .Name("Antitoxin")
                 .Level(1)
                 .HasActivationDelay(1f)
+                .UsesAnimation(Animation.FireForgetSalute)
                 .HasRecastDelay(RecastGroup.Antitoxin, 45f)
                 .SkillType(SkillType.FirstAid)
                 .IsSingleTargetAbility()

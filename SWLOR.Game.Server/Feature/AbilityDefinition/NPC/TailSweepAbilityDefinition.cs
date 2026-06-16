@@ -16,6 +16,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                 _builder,
                 FeatType.TailSweep,
                 "Tail Sweep",
+                Animation.Whirlwind,
                 InnateAbilityProfile.CreaturePhysical,
                 RecastGroup.TailSweep,
                 1.4f,

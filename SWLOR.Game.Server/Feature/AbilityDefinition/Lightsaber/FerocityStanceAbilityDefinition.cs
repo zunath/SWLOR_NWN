@@ -17,7 +17,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                     .Create(FeatType.FerocityStance1, PerkType.FerocityStance)
                     .Name("Ferocity Stance")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.FerocityStance, 180f),
+                    .HasRecastDelay(RecastGroup.FerocityStance, 180f)
+                    .UsesAnimation(Animation.OneHandedStance),
                 typeof(FerocityStanceStatusEffect));
 
             return builder.Build();

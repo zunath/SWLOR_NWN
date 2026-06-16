@@ -16,6 +16,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                 _builder,
                 FeatType.GoringCharge,
                 "Goring Charge",
+                Animation.ForceLeap,
                 InnateAbilityProfile.CreaturePhysical,
                 RecastGroup.GoringCharge,
                 1.5f,

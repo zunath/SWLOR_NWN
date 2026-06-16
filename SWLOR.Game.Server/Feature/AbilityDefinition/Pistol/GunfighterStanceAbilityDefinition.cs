@@ -17,7 +17,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 .Name("Gunfighter Stance")
                 .Level(1)
                 .SkillType(SkillType.Pistol)
-                .HasRecastDelay(RecastGroup.GunfighterStance, 180f);
+                .HasRecastDelay(RecastGroup.GunfighterStance, 180f)
+                .UsesAnimation(Animation.PointPistol);
             ConfigureToggle(builder, typeof(GunfighterStanceStatusEffect));
 
             return builder.Build();

@@ -17,7 +17,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
                     .Create(FeatType.SpinningWhirl1, PerkType.SpinningWhirl)
                     .Name("Spinning Whirl I")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.SpinningWhirl, 60f),
+                    .HasRecastDelay(RecastGroup.SpinningWhirl, 60f)
+                    .UsesAnimation(Animation.Whirlwind),
                 SkillType.TwinBlade,
                 CombatImpactAreaShape.Sphere,
                 10,
@@ -33,7 +34,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
                     .Create(FeatType.SpinningWhirl2, PerkType.SpinningWhirl)
                     .Name("Spinning Whirl II")
                     .Level(2)
-                    .HasRecastDelay(RecastGroup.SpinningWhirl, 60f),
+                    .HasRecastDelay(RecastGroup.SpinningWhirl, 60f)
+                    .UsesAnimation(Animation.Whirlwind),
                 SkillType.TwinBlade,
                 CombatImpactAreaShape.Sphere,
                 18,
@@ -49,7 +51,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
                     .Create(FeatType.SpinningWhirl3, PerkType.SpinningWhirl)
                     .Name("Spinning Whirl III")
                     .Level(3)
-                    .HasRecastDelay(RecastGroup.SpinningWhirl, 60f),
+                    .HasRecastDelay(RecastGroup.SpinningWhirl, 60f)
+                    .UsesAnimation(Animation.Whirlwind),
                 SkillType.TwinBlade,
                 CombatImpactAreaShape.Sphere,
                 28,

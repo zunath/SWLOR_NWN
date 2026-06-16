@@ -27,6 +27,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
                 .Name("Force Suppression")
                 .Level(1)
                 .HasActivationDelay(0f)
+                .UsesAnimation(Animation.CastOutAnimation)
                 .HasRecastDelay(RecastGroup.ForceSuppression, 30f)
                 .RequiresTarget()
                 .HasImpactAction(ForceSuppression1ImpactAction)

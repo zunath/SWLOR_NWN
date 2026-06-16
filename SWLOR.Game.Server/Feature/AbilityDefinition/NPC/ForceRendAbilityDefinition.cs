@@ -16,6 +16,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                 _builder,
                 FeatType.ForceRend,
                 "Force Rend",
+                Animation.CastOutAnimation,
                 InnateAbilityProfile.Force,
                 RecastGroup.ForceRend,
                 1.2f,

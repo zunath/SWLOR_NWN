@@ -33,6 +33,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .Name("Emergency Bunker")
                 .Level(1)
                 .HasActivationDelay(2f)
+                .UsesAnimation(Animation.CastOutAnimation)
                 .HasRecastDelay(RecastGroup.Capstone, CapstoneAbility.RecastDelaySeconds)
                 .SkillType(SkillType.Devices)
                 .IsAreaAbility()

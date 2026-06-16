@@ -19,7 +19,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
                     .Create(FeatType.Invincible1, PerkType.Invincible)
                     .Name("Invincible")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.Capstone, CapstoneAbility.RecastDelaySeconds),
+                    .HasRecastDelay(RecastGroup.Capstone, CapstoneAbility.RecastDelaySeconds)
+                    .UsesAnimation(Animation.ShieldWall),
                 typeof(InvincibleStatusEffect),
                 CapstoneAbility.ActiveDurationSeconds,
                 CapstoneAbility.StaminaCost,

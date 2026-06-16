@@ -26,6 +26,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
                 .Name("Sweeping Flank")
                 .Level(1)
                 .HasActivationDelay(2f)
+                .UsesAnimation(Animation.Whirlwind)
                 .HasRecastDelay(RecastGroup.SweepingFlank, 60f)
                 .HasImpactAction(SweepingFlank1ImpactAction)
                 .HasTargetingCone(

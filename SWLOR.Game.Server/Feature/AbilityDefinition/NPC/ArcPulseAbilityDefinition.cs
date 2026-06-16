@@ -16,6 +16,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                 _builder,
                 FeatType.ArcPulse,
                 "Arc Pulse",
+                Animation.CastOutAnimation,
                 InnateAbilityProfile.Devices,
                 RecastGroup.ArcPulse,
                 1.3f,

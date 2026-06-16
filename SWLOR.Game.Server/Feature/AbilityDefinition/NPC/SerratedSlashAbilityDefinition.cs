@@ -16,6 +16,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                 _builder,
                 FeatType.SerratedSlash,
                 "Serrated Slash",
+                Animation.CrossCut,
                 InnateAbilityProfile.Vibroblade,
                 RecastGroup.SerratedSlash,
                 1.1f,

@@ -27,6 +27,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .Name("Fury Stance I")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.FuryStance, 60f)
+                .UsesAnimation(Animation.CastOutAnimation)
                 .SkillType(SkillType.Force)
                 .RequirementFP(5);
 
@@ -40,6 +41,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .Name("Fury Stance II")
                 .Level(2)
                 .HasRecastDelay(RecastGroup.FuryStance, 60f)
+                .UsesAnimation(Animation.CastOutAnimation)
                 .SkillType(SkillType.Force)
                 .RequirementFP(8);
 

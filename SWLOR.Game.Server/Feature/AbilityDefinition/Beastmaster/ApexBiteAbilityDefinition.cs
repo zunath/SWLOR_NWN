@@ -32,6 +32,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 .Name("Apex Bite")
                 .Level(1)
                 .HasActivationDelay(0f)
+                .UsesAnimation(Animation.DoubleStrike)
                 .HasRecastDelay(RecastGroup.ApexBite, 120f)
                 .SkillType(SkillType.BeastMastery)
                 .IsSingleTargetAbility()

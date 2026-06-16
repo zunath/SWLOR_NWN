@@ -16,6 +16,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                 _builder,
                 FeatType.IonBurst,
                 "Ion Burst",
+                Animation.CastOutAnimation,
                 InnateAbilityProfile.Devices,
                 RecastGroup.IonBurst,
                 1.3f,

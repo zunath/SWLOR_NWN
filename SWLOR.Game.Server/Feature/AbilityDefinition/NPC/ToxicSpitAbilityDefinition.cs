@@ -23,6 +23,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                 .IsCastedAbility()
                 .RequirementStamina(3)
                 .HasRecastDelay(RecastGroup.ToxicSpit, 18f)
+                .UsesAnimation(Animation.CastOutAnimation)
                 .IsSingleTargetAbility()
                 .HasMaxRange(8f)
                 .RequiresTarget()

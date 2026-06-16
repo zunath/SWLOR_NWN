@@ -16,6 +16,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                 _builder,
                 FeatType.PermafrostRupture,
                 "Permafrost Rupture",
+                Animation.DoubleThrust,
                 InnateAbilityProfile.CreaturePhysical,
                 RecastGroup.PermafrostRupture,
                 2.0f,

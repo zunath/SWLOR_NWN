@@ -17,7 +17,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
                 .Name("Bombardier Stance")
                 .Level(1)
                 .SkillType(SkillType.Throwing)
-                .HasRecastDelay(RecastGroup.BombardierStance, 180f);
+                .HasRecastDelay(RecastGroup.BombardierStance, 180f)
+                .UsesAnimation(Animation.ThrowGrenade);
             ConfigureToggle(builder, typeof(BombardierStanceStatusEffect));
 
             return builder.Build();

@@ -16,6 +16,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                 _builder,
                 FeatType.ToxicCloud,
                 "Toxic Cloud",
+                Animation.CastOutAnimation,
                 InnateAbilityProfile.CreaturePhysical,
                 RecastGroup.ToxicCloud,
                 1.6f,

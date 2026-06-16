@@ -20,7 +20,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
                     .Name("Adamantine Guard")
                     .Level(1)
                     .SkillType(SkillType.Katar)
-                    .HasRecastDelay(RecastGroup.Capstone, CapstoneAbility.RecastDelaySeconds),
+                    .HasRecastDelay(RecastGroup.Capstone, CapstoneAbility.RecastDelaySeconds)
+                    .UsesAnimation(Animation.ShieldWall),
                 typeof(AdamantineGuardStatusEffect),
                 CapstoneAbility.ActiveDurationSeconds,
                 CapstoneAbility.StaminaCost,

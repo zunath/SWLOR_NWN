@@ -16,6 +16,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                 _builder,
                 FeatType.PrecisionShot,
                 "Precision Shot",
+                Animation.PointPistol,
                 InnateAbilityProfile.Rifle,
                 RecastGroup.PrecisionShot,
                 1.1f,

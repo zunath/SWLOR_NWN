@@ -18,7 +18,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                     .Create(FeatType.DebilitatingStance1, PerkType.DebilitatingStance)
                     .Name("Debilitating Stance")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.DebilitatingStance, 180f),
+                    .HasRecastDelay(RecastGroup.DebilitatingStance, 180f)
+                    .UsesAnimation(Animation.Backstab),
                 typeof(DebilitatingStanceStatusEffect));
 
             return builder.Build();

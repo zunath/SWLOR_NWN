@@ -26,6 +26,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 .Name("Punishing Strike")
                 .Level(1)
                 .HasActivationDelay(0f)
+                .UsesAnimation(Animation.DoubleStrike)
                 .HasRecastDelay(RecastGroup.PunishingStrike, 90f)
                 .HasImpactAction(PunishingStrike1ImpactAction)
                 .IsAreaAbility()

@@ -16,6 +16,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                 _builder,
                 FeatType.CapacitorSurge,
                 "Capacitor Surge",
+                Animation.CastOutAnimation,
                 InnateAbilityProfile.Devices,
                 RecastGroup.CapacitorSurge,
                 1.2f,

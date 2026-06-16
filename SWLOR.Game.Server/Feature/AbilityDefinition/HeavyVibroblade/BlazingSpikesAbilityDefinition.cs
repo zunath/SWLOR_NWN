@@ -24,6 +24,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
                 .Name("Blazing Spikes")
                 .Level(1)
                 .HasActivationDelay(0f)
+                .UsesAnimation(Animation.CastOutAnimation)
                 .HasActivationAction((activator, target, level, targetLocation) => ToggleSelfStatus(activator, typeof(BlazingSpikesStatusEffect)))
                 .RemoveStatusEffectOnPerkRefund(typeof(BlazingSpikesStatusEffect))
                 .HasImpactAction((activator, target, level, targetLocation) => ApplySelfStatus(activator, typeof(BlazingSpikesStatusEffect)))

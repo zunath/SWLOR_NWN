@@ -16,6 +16,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                 _builder,
                 FeatType.StaticBurst,
                 "Static Burst",
+                Animation.CastOutAnimation,
                 InnateAbilityProfile.Devices,
                 RecastGroup.StaticBurst,
                 1.4f,

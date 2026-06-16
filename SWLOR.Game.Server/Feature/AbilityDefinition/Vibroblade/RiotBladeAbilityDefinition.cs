@@ -46,6 +46,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
         private static void ConfigureRiotBlade(AbilityBuilder ability, int baseDamage, int stamina)
         {
             ability.HasActivationDelay(0f)
+                .UsesAnimation(Animation.RiotBlade)
                 .SkillType(SkillType.Vibroblade)
                 .IsSingleTargetAbility()
                 .RequiresTarget()

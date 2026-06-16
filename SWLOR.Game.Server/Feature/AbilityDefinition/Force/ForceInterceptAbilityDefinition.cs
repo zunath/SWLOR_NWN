@@ -33,6 +33,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .Name("Force Intercept")
                 .Level(1)
                 .HasActivationDelay(0f)
+                .UsesAnimation(Animation.ForceLeap)
                 .HasRecastDelay(RecastGroup.ForceIntercept, 45f)
                 .SkillType(SkillType.Force)
                 .IsSingleTargetAbility()

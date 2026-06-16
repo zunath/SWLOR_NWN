@@ -74,6 +74,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
             AbilityBuilder builder,
             FeatType feat,
             string name,
+            Animation animation,
             InnateAbilityProfile profile,
             RecastGroup recastGroup,
             float activationDelay,
@@ -93,6 +94,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                 .Name(name)
                 .HasActivationDelay(activationDelay)
                 .HasRecastDelay(recastGroup, recastDelay)
+                .UsesAnimation(animation)
                 .IsCastedAbility()
                 .IsSingleTargetAbility()
                 .RequiresTarget()
@@ -127,6 +129,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
             AbilityBuilder builder,
             FeatType feat,
             string name,
+            Animation animation,
             InnateAbilityProfile profile,
             RecastGroup recastGroup,
             float activationDelay,
@@ -152,6 +155,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                 .Name(name)
                 .HasActivationDelay(activationDelay)
                 .HasRecastDelay(recastGroup, recastDelay)
+                .UsesAnimation(animation)
                 .IsCastedAbility()
                 .IsAreaAbility()
                 .RequiresTarget()
@@ -197,6 +201,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
             AbilityBuilder builder,
             FeatType feat,
             string name,
+            Animation animation,
             InnateAbilityProfile profile,
             RecastGroup recastGroup,
             float activationDelay,
@@ -211,6 +216,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                 .Name(name)
                 .HasActivationDelay(activationDelay)
                 .HasRecastDelay(recastGroup, recastDelay)
+                .UsesAnimation(animation)
                 .IsCastedAbility()
                 .RequirementStamina(stamina)
                 .HasImpactAction((activator, target, level, location) =>

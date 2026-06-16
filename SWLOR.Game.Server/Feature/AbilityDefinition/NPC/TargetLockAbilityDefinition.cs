@@ -16,6 +16,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                 _builder,
                 FeatType.TargetLock,
                 "Target Lock",
+                Animation.PointForward,
                 InnateAbilityProfile.Rifle,
                 RecastGroup.TargetLock,
                 0.8f,

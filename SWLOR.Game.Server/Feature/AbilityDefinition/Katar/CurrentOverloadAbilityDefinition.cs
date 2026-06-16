@@ -27,6 +27,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
                 .Name("Current Overload")
                 .Level(1)
                 .HasActivationDelay(0f)
+                .UsesAnimation(Animation.CastOutAnimation)
                 .HasRecastDelay(RecastGroup.CurrentOverload, 90f)
                 .RequiresTarget()
                 .HasImpactAction(CurrentOverload1ImpactAction)

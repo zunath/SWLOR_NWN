@@ -21,6 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                 .Name("Piercing Quills")
                 .HasActivationDelay(1.6f)
                 .HasRecastDelay(RecastGroup.PiercingQuills, 18f)
+                .UsesAnimation(Animation.ThrowGrenade)
                 .IsCastedAbility()
                 .HasMaxRange(8f)
                 .IsAreaAbility()

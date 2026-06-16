@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 .Name("Taunting Deflection")
                 .Level(1)
                 .HasActivationDelay(0f)
+                .UsesAnimation(Animation.FireForgetTaunt)
                 .HasRecastDelay(RecastGroup.TauntingDeflection, 30f)
                 .HasImpactAction((activator, target, level, targetLocation) =>
                 {

@@ -16,6 +16,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                 _builder,
                 FeatType.NullShock,
                 "Null Shock",
+                Animation.CastOutAnimation,
                 InnateAbilityProfile.Force,
                 RecastGroup.NullShock,
                 1.5f,

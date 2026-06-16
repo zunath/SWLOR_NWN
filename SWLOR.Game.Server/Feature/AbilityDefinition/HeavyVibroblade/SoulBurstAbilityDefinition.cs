@@ -26,6 +26,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
                 .Name("Soul Burst")
                 .Level(1)
                 .HasActivationDelay(0f)
+                .UsesAnimation(Animation.CastOutAnimation)
                 .HasRecastDelay(RecastGroup.SoulBurst, 180f)
                 .HasImpactAction(SoulBurst1ImpactAction)
                 .SkillType(SkillType.HeavyVibroblade)

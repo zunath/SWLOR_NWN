@@ -16,6 +16,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                 _builder,
                 FeatType.BonecrusherBite,
                 "Bonecrusher Bite",
+                Animation.DoubleStrike,
                 InnateAbilityProfile.CreaturePhysical,
                 RecastGroup.BonecrusherBite,
                 1.3f,

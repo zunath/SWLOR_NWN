@@ -32,6 +32,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .Name("Group Deflector")
                 .Level(1)
                 .HasActivationDelay(1.5f)
+                .UsesAnimation(Animation.CastOutAnimation)
                 .HasRecastDelay(RecastGroup.GroupDeflector, 90f)
                 .SkillType(SkillType.Devices)
                 .IsAreaAbility()

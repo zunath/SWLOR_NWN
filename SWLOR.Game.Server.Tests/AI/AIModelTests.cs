@@ -433,6 +433,36 @@ public class AIModelTests
     }
 
     [Test]
+    public void CombatLeash_UsesCompanionMasterBeforeResettingCombat()
+    {
+        var aiSource = ReadSource("SWLOR.Game.Server", "Service", "AI.cs").Replace("\r\n", "\n");
+        var leashBody = aiSource.Substring(
+            aiSource.IndexOf("private static bool ShouldLeashCombatTarget", StringComparison.Ordinal),
+            aiSource.IndexOf("public static bool IsLeashEvading", StringComparison.Ordinal) -
+            aiSource.IndexOf("private static bool ShouldLeashCombatTarget", StringComparison.Ordinal));
+
+        var targetOutsideIndex = leashBody.IndexOf(
+            "if (!IsOutsideHomeRadius(target, homeLocation, CombatLeashRadius))",
+            StringComparison.Ordinal);
+        var creatureOutsideIndex = leashBody.IndexOf(
+            "var creatureOutsideLeashRadius = IsOutsideHomeRadius(creature, homeLocation, CombatLeashRadius);",
+            StringComparison.Ordinal);
+        var masterIndex = leashBody.IndexOf("var targetMaster = GetMaster(target);", StringComparison.Ordinal);
+        var masterInsideIndex = leashBody.IndexOf(
+            "!IsOutsideHomeRadius(targetMaster, homeLocation, CombatLeashRadius)",
+            StringComparison.Ordinal);
+        var creatureInsideIndex = leashBody.IndexOf("!creatureOutsideLeashRadius", StringComparison.Ordinal);
+
+        creatureOutsideIndex.Should().BeGreaterThanOrEqualTo(0);
+        targetOutsideIndex.Should().BeGreaterThanOrEqualTo(0);
+        masterIndex.Should().BeGreaterThan(targetOutsideIndex);
+        masterInsideIndex.Should().BeGreaterThan(masterIndex);
+        creatureInsideIndex.Should().BeGreaterThan(masterInsideIndex);
+        leashBody.Should().Contain("GetIsPC(targetMaster)");
+        leashBody.Should().Contain("return true;");
+    }
+
+    [Test]
     public void CombatLeash_StartsFullEvadeBeforeIdleEffectGuards()
     {
         var aiSource = ReadSource("SWLOR.Game.Server", "Service", "AI.cs").Replace("\r\n", "\n");

@@ -531,10 +531,23 @@ namespace SWLOR.Game.Server.Service
 
         private static bool ShouldLeashCombatTarget(uint creature, uint target, Location homeLocation)
         {
+            var creatureOutsideLeashRadius = IsOutsideHomeRadius(creature, homeLocation, CombatLeashRadius);
             if (!GetIsObjectValid(target))
-                return IsOutsideHomeRadius(creature, homeLocation, CombatLeashRadius);
+                return creatureOutsideLeashRadius;
 
-            return IsOutsideHomeRadius(target, homeLocation, CombatLeashRadius);
+            if (!IsOutsideHomeRadius(target, homeLocation, CombatLeashRadius))
+                return false;
+
+            var targetMaster = GetMaster(target);
+            if (GetIsObjectValid(targetMaster) &&
+                GetIsPC(targetMaster) &&
+                !IsOutsideHomeRadius(targetMaster, homeLocation, CombatLeashRadius) &&
+                !creatureOutsideLeashRadius)
+            {
+                return false;
+            }
+
+            return true;
         }
 
         public static bool IsLeashEvading(uint creature)

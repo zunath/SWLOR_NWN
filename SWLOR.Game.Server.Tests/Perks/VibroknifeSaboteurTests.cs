@@ -136,6 +136,21 @@ public class VibroknifeSaboteurTests
         }
     }
 
+    [Test]
+    public void CascadeFailure_AddsVisibleConeAndVulnerableOverlayToIncapacitate()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Vibroknife" / "IncapacitateAbilityDefinition.cs").FullName)
+            .Replace("\r\n", "\n");
+
+        source.Should().Contain("Stat.GetStatAdjustment(activator, StatType.VibroknifeSaboteurCascadeFailure)");
+        source.Should().Contain("Telegraph.CreateConeTelegraph(");
+        source.Should().Contain("private const float CascadeFailureConeLength = 5f;");
+        source.Should().Contain("private const float CascadeFailureConeWidth = 5f;");
+        source.Should().Contain("private const float CascadeFailureVulnerableDurationSeconds = 12f;");
+        source.Should().Contain("typeof(VulnerableStatusEffect)");
+    }
+
     private static void AssertPerkLevel(
         PerkDetail perk,
         string name,

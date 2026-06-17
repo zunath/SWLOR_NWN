@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
@@ -5,6 +6,7 @@ using SWLOR.Game.Server.Service.AIService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.Associate;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
 namespace SWLOR.Game.Server.Service
@@ -13,13 +15,16 @@ namespace SWLOR.Game.Server.Service
     {
         private const float AggroRadius = 8.5f;
         private const float ReturnHomeRadius = 15f;
-        private const float CombatLeashRadius = 35f;
+        private const float CombatLeashRadius = 45f;
+        private const float ActiveCombatLeashRadius = 15f;
+        private const float CombatLeashGraceSeconds = 8f;
         private const float LeashEvadeMovementRateFactor = 3.0f;
         private const int ProximityEnmityAmount = 1;
         private const string LeashEvadeActiveVariable = "AI_LEASH_EVADE_ACTIVE";
         private const string LeashEvadeRestorePlotFlagVariable = "AI_LEASH_EVADE_RESTORE_PLOT_FLAG";
         private const string LeashEvadeRestoreMovementRateVariable = "AI_LEASH_EVADE_RESTORE_MOVEMENT_RATE";
         private static readonly Dictionary<uint, HashSet<uint>> _creatureAllies = new();
+        private static readonly Dictionary<uint, DateTime> _combatLeashCandidateTimes = new();
 
         [NWNEventHandler(ScriptName.OnModuleCacheAfter)]
         public static void CacheAIData()
@@ -388,11 +393,16 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            if ((GetIsInCombat(self) || GetIsObjectValid(highestEnmityTarget)) &&
-                ShouldLeashCombatTarget(self, highestEnmityTarget, homeLocation))
+            var hasCombatState = GetIsInCombat(self) || GetIsObjectValid(highestEnmityTarget);
+            if (hasCombatState &&
+                ShouldStartCombatLeashEvade(self, highestEnmityTarget, homeLocation))
             {
                 StartLeashEvade(self, homeLocation);
                 return;
+            }
+            else if (!hasCombatState)
+            {
+                ClearCombatLeashCandidate(self);
             }
 
             // Certain effects should interrupt the random walk process.
@@ -472,6 +482,8 @@ namespace SWLOR.Game.Server.Service
         public static void RemoveFromAlliesCache()
         {
             var self = OBJECT_SELF;
+            ClearCombatLeashCandidate(self);
+
             if (!_creatureAllies.ContainsKey(self)) return;
 
             for(var index = _creatureAllies.Count-1; index >= 0; index--)
@@ -529,25 +541,144 @@ namespace SWLOR.Game.Server.Service
             return allies;
         }
 
+        private static bool ShouldStartCombatLeashEvade(uint creature, uint target, Location homeLocation)
+        {
+            if (!ShouldLeashCombatTarget(creature, target, homeLocation))
+            {
+                ClearCombatLeashCandidate(creature);
+                return false;
+            }
+
+            if (!HasCombatLeashGraceExpired(creature))
+                return false;
+
+            ClearCombatLeashCandidate(creature);
+            return true;
+        }
+
         private static bool ShouldLeashCombatTarget(uint creature, uint target, Location homeLocation)
         {
-            var creatureOutsideLeashRadius = IsOutsideHomeRadius(creature, homeLocation, CombatLeashRadius);
+            if (!ShouldUseCombatLeash(creature))
+                return false;
+
+            var leashRadius = GetCombatLeashRadius(creature, target);
+            var creatureOutsideLeashRadius = IsOutsideHomeRadius(creature, homeLocation, leashRadius);
+
+            if (IsNearActiveCombatTarget(creature, target) ||
+                IsNearHostilePlayerOrCompanion(creature))
+                return false;
+
             if (!GetIsObjectValid(target))
                 return creatureOutsideLeashRadius;
 
-            if (!IsOutsideHomeRadius(target, homeLocation, CombatLeashRadius))
+            if (!IsOutsideHomeRadius(target, homeLocation, leashRadius))
                 return false;
 
             var targetMaster = GetMaster(target);
             if (GetIsObjectValid(targetMaster) &&
                 GetIsPC(targetMaster) &&
-                !IsOutsideHomeRadius(targetMaster, homeLocation, CombatLeashRadius) &&
+                !IsOutsideHomeRadius(targetMaster, homeLocation, leashRadius) &&
                 !creatureOutsideLeashRadius)
             {
                 return false;
             }
 
             return true;
+        }
+
+        private static bool ShouldUseCombatLeash(uint creature)
+        {
+            if (!GetAIFlag(creature).HasFlag(AIFlag.ReturnHome))
+                return false;
+
+            for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())
+            {
+                if (GetIsDM(player))
+                    continue;
+
+                if (GetArea(player) == GetArea(creature) &&
+                    GetIsEnemy(player, creature))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private static bool IsNearActiveCombatTarget(uint creature, uint target)
+        {
+            if (IsWithinCombatEngagementRange(creature, target))
+                return true;
+
+            var targetMaster = GetMaster(target);
+            return GetIsObjectValid(targetMaster) &&
+                   GetIsPC(targetMaster) &&
+                   IsWithinCombatEngagementRange(creature, targetMaster);
+        }
+
+        private static bool IsNearHostilePlayerOrCompanion(uint creature)
+        {
+            for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())
+            {
+                if (GetIsDM(player) ||
+                    GetArea(player) != GetArea(creature) ||
+                    !GetIsEnemy(player, creature))
+                {
+                    continue;
+                }
+
+                if (IsWithinCombatEngagementRange(creature, player))
+                    return true;
+
+                var companion = GetAssociate(AssociateType.Henchman, player);
+                if (IsWithinCombatEngagementRange(creature, companion))
+                    return true;
+            }
+
+            return false;
+        }
+
+        private static bool IsWithinCombatEngagementRange(uint creature, uint target)
+        {
+            return GetIsObjectValid(creature) &&
+                   GetIsObjectValid(target) &&
+                   GetArea(creature) == GetArea(target) &&
+                   GetDistanceBetween(creature, target) <= GetActiveCombatLeashRadius(creature, target);
+        }
+
+        private static float GetActiveCombatLeashRadius(uint creature, uint target)
+        {
+            return ActiveCombatLeashRadius + GetHitDistance(creature) + GetHitDistance(target);
+        }
+
+        private static float GetCombatLeashRadius(uint creature, uint target)
+        {
+            return CombatLeashRadius + GetHitDistance(creature) + GetHitDistance(target);
+        }
+
+        private static float GetHitDistance(uint creature)
+        {
+            return GetIsObjectValid(creature)
+                ? CreaturePlugin.GetHitDistance(creature)
+                : 0f;
+        }
+
+        private static bool HasCombatLeashGraceExpired(uint creature)
+        {
+            var now = DateTime.UtcNow;
+            if (!_combatLeashCandidateTimes.TryGetValue(creature, out var firstDetectedAt))
+            {
+                _combatLeashCandidateTimes[creature] = now;
+                return false;
+            }
+
+            return (now - firstDetectedAt).TotalSeconds >= CombatLeashGraceSeconds;
+        }
+
+        private static void ClearCombatLeashCandidate(uint creature)
+        {
+            _combatLeashCandidateTimes.Remove(creature);
         }
 
         public static bool IsLeashEvading(uint creature)
@@ -558,6 +689,8 @@ namespace SWLOR.Game.Server.Service
 
         private static void StartLeashEvade(uint creature, Location homeLocation)
         {
+            ClearCombatLeashCandidate(creature);
+
             if (!IsLeashEvading(creature))
             {
                 SetLocalBool(creature, LeashEvadeActiveVariable, true);
@@ -604,7 +737,7 @@ namespace SWLOR.Game.Server.Service
         private static bool TryStartLeashEvade(uint creature, uint target)
         {
             var homeLocation = GetLocalLocation(creature, "HOME_LOCATION");
-            if (!ShouldLeashCombatTarget(creature, target, homeLocation))
+            if (!ShouldStartCombatLeashEvade(creature, target, homeLocation))
                 return false;
 
             StartLeashEvade(creature, homeLocation);

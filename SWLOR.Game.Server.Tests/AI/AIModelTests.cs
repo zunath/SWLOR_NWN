@@ -424,12 +424,29 @@ public class AIModelTests
             aiSource.IndexOf("private static void ProcessFlags()", StringComparison.Ordinal));
         var leashBody = aiSource.Substring(
             aiSource.IndexOf("private static bool ShouldLeashCombatTarget", StringComparison.Ordinal),
-            aiSource.IndexOf("private static bool IsOutsideHomeRadius", StringComparison.Ordinal) -
+            aiSource.IndexOf("private static bool ShouldUseCombatLeash", StringComparison.Ordinal) -
             aiSource.IndexOf("private static bool ShouldLeashCombatTarget", StringComparison.Ordinal));
 
-        processFlagsBody.Should().Contain("ShouldLeashCombatTarget(self, highestEnmityTarget, homeLocation)");
-        leashBody.Should().Contain("IsOutsideHomeRadius(target, homeLocation, CombatLeashRadius)");
-        leashBody.Should().Contain("IsOutsideHomeRadius(creature, homeLocation, CombatLeashRadius)");
+        var policyIndex = leashBody.IndexOf("if (!ShouldUseCombatLeash(creature))", StringComparison.Ordinal);
+        var radiusIndex = leashBody.IndexOf("var leashRadius = GetCombatLeashRadius(creature, target);", StringComparison.Ordinal);
+        var creatureOutsideIndex = leashBody.IndexOf(
+            "var creatureOutsideLeashRadius = IsOutsideHomeRadius(creature, homeLocation, leashRadius);",
+            StringComparison.Ordinal);
+        var activeTargetIndex = leashBody.IndexOf("IsNearActiveCombatTarget(creature, target)", StringComparison.Ordinal);
+        var hostileCombatantIndex = leashBody.IndexOf("IsNearHostilePlayerOrCompanion(creature)", StringComparison.Ordinal);
+        var targetOutsideIndex = leashBody.IndexOf("if (!IsOutsideHomeRadius(target, homeLocation, leashRadius))", StringComparison.Ordinal);
+
+        processFlagsBody.Should().Contain("ShouldStartCombatLeashEvade(self, highestEnmityTarget, homeLocation)");
+        policyIndex.Should().BeGreaterThanOrEqualTo(0);
+        policyIndex.Should().BeLessThan(radiusIndex);
+        radiusIndex.Should().BeGreaterThanOrEqualTo(0);
+        radiusIndex.Should().BeLessThan(creatureOutsideIndex);
+        creatureOutsideIndex.Should().BeGreaterThanOrEqualTo(0);
+        activeTargetIndex.Should().BeGreaterThan(creatureOutsideIndex);
+        hostileCombatantIndex.Should().BeGreaterThan(activeTargetIndex);
+        hostileCombatantIndex.Should().BeLessThan(targetOutsideIndex);
+        activeTargetIndex.Should().BeLessThan(targetOutsideIndex);
+        targetOutsideIndex.Should().BeGreaterThanOrEqualTo(0);
     }
 
     [Test]
@@ -441,25 +458,166 @@ public class AIModelTests
             aiSource.IndexOf("public static bool IsLeashEvading", StringComparison.Ordinal) -
             aiSource.IndexOf("private static bool ShouldLeashCombatTarget", StringComparison.Ordinal));
 
+        var activeTargetIndex = leashBody.IndexOf("IsNearActiveCombatTarget(creature, target)", StringComparison.Ordinal);
+        var hostileCombatantIndex = leashBody.IndexOf("IsNearHostilePlayerOrCompanion(creature)", StringComparison.Ordinal);
         var targetOutsideIndex = leashBody.IndexOf(
-            "if (!IsOutsideHomeRadius(target, homeLocation, CombatLeashRadius))",
+            "if (!IsOutsideHomeRadius(target, homeLocation, leashRadius))",
             StringComparison.Ordinal);
         var creatureOutsideIndex = leashBody.IndexOf(
-            "var creatureOutsideLeashRadius = IsOutsideHomeRadius(creature, homeLocation, CombatLeashRadius);",
+            "var creatureOutsideLeashRadius = IsOutsideHomeRadius(creature, homeLocation, leashRadius);",
             StringComparison.Ordinal);
         var masterIndex = leashBody.IndexOf("var targetMaster = GetMaster(target);", StringComparison.Ordinal);
         var masterInsideIndex = leashBody.IndexOf(
-            "!IsOutsideHomeRadius(targetMaster, homeLocation, CombatLeashRadius)",
+            "!IsOutsideHomeRadius(targetMaster, homeLocation, leashRadius)",
             StringComparison.Ordinal);
         var creatureInsideIndex = leashBody.IndexOf("!creatureOutsideLeashRadius", StringComparison.Ordinal);
 
         creatureOutsideIndex.Should().BeGreaterThanOrEqualTo(0);
+        activeTargetIndex.Should().BeGreaterThan(creatureOutsideIndex);
+        hostileCombatantIndex.Should().BeGreaterThan(activeTargetIndex);
+        hostileCombatantIndex.Should().BeLessThan(targetOutsideIndex);
+        activeTargetIndex.Should().BeLessThan(targetOutsideIndex);
         targetOutsideIndex.Should().BeGreaterThanOrEqualTo(0);
         masterIndex.Should().BeGreaterThan(targetOutsideIndex);
         masterInsideIndex.Should().BeGreaterThan(masterIndex);
         creatureInsideIndex.Should().BeGreaterThan(masterInsideIndex);
         leashBody.Should().Contain("GetIsPC(targetMaster)");
+        leashBody.Should().Contain("IsWithinCombatEngagementRange(creature, targetMaster)");
         leashBody.Should().Contain("return true;");
+    }
+
+    [Test]
+    public void CombatLeash_RequiresReturnHomeHostilityBeforeResettingCombat()
+    {
+        var aiSource = ReadSource("SWLOR.Game.Server", "Service", "AI.cs").Replace("\r\n", "\n");
+        var leashBody = aiSource.Substring(
+            aiSource.IndexOf("private static bool ShouldLeashCombatTarget", StringComparison.Ordinal),
+            aiSource.IndexOf("private static bool ShouldUseCombatLeash", StringComparison.Ordinal) -
+            aiSource.IndexOf("private static bool ShouldLeashCombatTarget", StringComparison.Ordinal));
+        var policyBody = aiSource.Substring(
+            aiSource.IndexOf("private static bool ShouldUseCombatLeash", StringComparison.Ordinal),
+            aiSource.IndexOf("private static bool IsNearActiveCombatTarget", StringComparison.Ordinal) -
+            aiSource.IndexOf("private static bool ShouldUseCombatLeash", StringComparison.Ordinal));
+        var hostileCombatantBody = aiSource.Substring(
+            aiSource.IndexOf("private static bool IsNearHostilePlayerOrCompanion", StringComparison.Ordinal),
+            aiSource.IndexOf("private static bool IsWithinCombatEngagementRange", StringComparison.Ordinal) -
+            aiSource.IndexOf("private static bool IsNearHostilePlayerOrCompanion", StringComparison.Ordinal));
+
+        leashBody.Should().Contain("if (!ShouldUseCombatLeash(creature))");
+        policyBody.Should().Contain("GetAIFlag(creature).HasFlag(AIFlag.ReturnHome)");
+        policyBody.Should().Contain("for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())");
+        policyBody.Should().Contain("if (GetIsDM(player))");
+        policyBody.Should().Contain("GetArea(player) == GetArea(creature)");
+        policyBody.Should().Contain("GetIsEnemy(player, creature)");
+        hostileCombatantBody.Should().Contain("GetIsDM(player)");
+        hostileCombatantBody.Should().Contain("GetArea(player) != GetArea(creature)");
+        hostileCombatantBody.Should().Contain("!GetIsEnemy(player, creature)");
+        hostileCombatantBody.Should().Contain("IsWithinCombatEngagementRange(creature, player)");
+        hostileCombatantBody.Should().Contain("GetAssociate(AssociateType.Henchman, player)");
+        hostileCombatantBody.Should().Contain("IsWithinCombatEngagementRange(creature, companion)");
+    }
+
+    [Test]
+    public void CombatLeash_UsesHitDistanceAndActiveEngagementBeforeResettingCombat()
+    {
+        var aiSource = ReadSource("SWLOR.Game.Server", "Service", "AI.cs").Replace("\r\n", "\n");
+        var combatLeashRadius = ReadConstFloat(
+            "CombatLeashRadius",
+            "SWLOR.Game.Server",
+            "Service",
+            "AI.cs");
+        var activeCombatLeashRadius = ReadConstFloat(
+            "ActiveCombatLeashRadius",
+            "SWLOR.Game.Server",
+            "Service",
+            "AI.cs");
+        var nearBody = aiSource.Substring(
+            aiSource.IndexOf("private static bool IsNearActiveCombatTarget", StringComparison.Ordinal),
+            aiSource.IndexOf("private static bool IsNearHostilePlayerOrCompanion", StringComparison.Ordinal) -
+            aiSource.IndexOf("private static bool IsNearActiveCombatTarget", StringComparison.Ordinal));
+        var hostileCombatantBody = aiSource.Substring(
+            aiSource.IndexOf("private static bool IsNearHostilePlayerOrCompanion", StringComparison.Ordinal),
+            aiSource.IndexOf("private static bool IsWithinCombatEngagementRange", StringComparison.Ordinal) -
+            aiSource.IndexOf("private static bool IsNearHostilePlayerOrCompanion", StringComparison.Ordinal));
+        var engagementBody = aiSource.Substring(
+            aiSource.IndexOf("private static bool IsWithinCombatEngagementRange", StringComparison.Ordinal),
+            aiSource.IndexOf("private static float GetActiveCombatLeashRadius", StringComparison.Ordinal) -
+            aiSource.IndexOf("private static bool IsWithinCombatEngagementRange", StringComparison.Ordinal));
+        var activeRadiusBody = aiSource.Substring(
+            aiSource.IndexOf("private static float GetActiveCombatLeashRadius", StringComparison.Ordinal),
+            aiSource.IndexOf("private static float GetCombatLeashRadius", StringComparison.Ordinal) -
+            aiSource.IndexOf("private static float GetActiveCombatLeashRadius", StringComparison.Ordinal));
+        var combatRadiusBody = aiSource.Substring(
+            aiSource.IndexOf("private static float GetCombatLeashRadius", StringComparison.Ordinal),
+            aiSource.IndexOf("private static float GetHitDistance", StringComparison.Ordinal) -
+            aiSource.IndexOf("private static float GetCombatLeashRadius", StringComparison.Ordinal));
+        var hitDistanceBody = aiSource.Substring(
+            aiSource.IndexOf("private static float GetHitDistance", StringComparison.Ordinal),
+            aiSource.IndexOf("public static bool IsLeashEvading", StringComparison.Ordinal) -
+            aiSource.IndexOf("private static float GetHitDistance", StringComparison.Ordinal));
+
+        combatLeashRadius.Should().BeGreaterThan(35f);
+        activeCombatLeashRadius.Should().BeGreaterThan(0f);
+        nearBody.Should().Contain("IsWithinCombatEngagementRange(creature, target)");
+        nearBody.Should().Contain("IsWithinCombatEngagementRange(creature, targetMaster)");
+        hostileCombatantBody.Should().Contain("IsWithinCombatEngagementRange(creature, player)");
+        hostileCombatantBody.Should().Contain("IsWithinCombatEngagementRange(creature, companion)");
+        engagementBody.Should().Contain("GetArea(creature) == GetArea(target)");
+        engagementBody.Should().Contain("GetDistanceBetween(creature, target) <= GetActiveCombatLeashRadius(creature, target)");
+        activeRadiusBody.Should().Contain("ActiveCombatLeashRadius + GetHitDistance(creature) + GetHitDistance(target)");
+        combatRadiusBody.Should().Contain("CombatLeashRadius + GetHitDistance(creature) + GetHitDistance(target)");
+        hitDistanceBody.Should().Contain("CreaturePlugin.GetHitDistance(creature)");
+    }
+
+    [Test]
+    public void CombatLeash_RequiresPersistentCandidateBeforeStartingEvade()
+    {
+        var aiSource = ReadSource("SWLOR.Game.Server", "Service", "AI.cs").Replace("\r\n", "\n");
+        var processFlagsBody = aiSource.Substring(
+            aiSource.IndexOf("private static void ProcessFlags()", StringComparison.Ordinal),
+            aiSource.IndexOf("private static void ProcessCreatureAllies()", StringComparison.Ordinal) -
+            aiSource.IndexOf("private static void ProcessFlags()", StringComparison.Ordinal));
+        var startBody = aiSource.Substring(
+            aiSource.IndexOf("private static bool ShouldStartCombatLeashEvade", StringComparison.Ordinal),
+            aiSource.IndexOf("private static bool ShouldLeashCombatTarget", StringComparison.Ordinal) -
+            aiSource.IndexOf("private static bool ShouldStartCombatLeashEvade", StringComparison.Ordinal));
+        var tryStartBody = aiSource.Substring(
+            aiSource.IndexOf("private static bool TryStartLeashEvade", StringComparison.Ordinal),
+            aiSource.IndexOf("private static uint GetHighestOrEventTarget", StringComparison.Ordinal) -
+            aiSource.IndexOf("private static bool TryStartLeashEvade", StringComparison.Ordinal));
+        var graceBody = aiSource.Substring(
+            aiSource.IndexOf("private static bool HasCombatLeashGraceExpired", StringComparison.Ordinal),
+            aiSource.IndexOf("private static void ClearCombatLeashCandidate", StringComparison.Ordinal) -
+            aiSource.IndexOf("private static bool HasCombatLeashGraceExpired", StringComparison.Ordinal));
+        var clearBody = aiSource.Substring(
+            aiSource.IndexOf("private static void ClearCombatLeashCandidate", StringComparison.Ordinal),
+            aiSource.IndexOf("public static bool IsLeashEvading", StringComparison.Ordinal) -
+            aiSource.IndexOf("private static void ClearCombatLeashCandidate", StringComparison.Ordinal));
+
+        var combatLeashGraceSeconds = ReadConstFloat(
+            "CombatLeashGraceSeconds",
+            "SWLOR.Game.Server",
+            "Service",
+            "AI.cs");
+        var leashCheckIndex = processFlagsBody.IndexOf(
+            "ShouldStartCombatLeashEvade(self, highestEnmityTarget, homeLocation)",
+            StringComparison.Ordinal);
+        var startEvadeIndex = processFlagsBody.IndexOf("StartLeashEvade(self, homeLocation)", StringComparison.Ordinal);
+        var clearIdleIndex = processFlagsBody.IndexOf("ClearCombatLeashCandidate(self)", StringComparison.Ordinal);
+
+        combatLeashGraceSeconds.Should().BeGreaterThan(0f);
+        processFlagsBody.Should().Contain("var hasCombatState = GetIsInCombat(self) || GetIsObjectValid(highestEnmityTarget);");
+        leashCheckIndex.Should().BeGreaterThanOrEqualTo(0);
+        startEvadeIndex.Should().BeGreaterThan(leashCheckIndex);
+        clearIdleIndex.Should().BeGreaterThan(startEvadeIndex);
+        startBody.Should().Contain("ShouldLeashCombatTarget(creature, target, homeLocation)");
+        startBody.Should().Contain("ClearCombatLeashCandidate(creature)");
+        startBody.Should().Contain("HasCombatLeashGraceExpired(creature)");
+        tryStartBody.Should().Contain("ShouldStartCombatLeashEvade(creature, target, homeLocation)");
+        graceBody.Should().Contain("_combatLeashCandidateTimes.TryGetValue(creature, out var firstDetectedAt)");
+        graceBody.Should().Contain("_combatLeashCandidateTimes[creature] = now");
+        graceBody.Should().Contain("CombatLeashGraceSeconds");
+        clearBody.Should().Contain("_combatLeashCandidateTimes.Remove(creature)");
     }
 
     [Test]
@@ -473,7 +631,7 @@ public class AIModelTests
 
         var activeEvadeIndex = processFlagsBody.IndexOf("if (IsLeashEvading(self))", StringComparison.Ordinal);
         var idleEffectGuardIndex = processFlagsBody.IndexOf("var effects = new[]", StringComparison.Ordinal);
-        var leashCheckIndex = processFlagsBody.IndexOf("ShouldLeashCombatTarget(self, highestEnmityTarget, homeLocation)", StringComparison.Ordinal);
+        var leashCheckIndex = processFlagsBody.IndexOf("ShouldStartCombatLeashEvade(self, highestEnmityTarget, homeLocation)", StringComparison.Ordinal);
         var startEvadeIndex = processFlagsBody.IndexOf("StartLeashEvade(self, homeLocation)", StringComparison.Ordinal);
 
         activeEvadeIndex.Should().BeGreaterThanOrEqualTo(0);

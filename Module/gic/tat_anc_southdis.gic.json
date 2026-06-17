@@ -2212,7 +2212,7 @@
         "__struct_id": 6,
         "Comment": {
           "type": "cexostring",
-          "value": "1"
+          "value": ""
         },
         "PlayInToolset": {
           "type": "byte",

@@ -13701,7 +13701,7 @@
         },
         "X": {
           "type": "float",
-          "value": 68.6970443725586
+          "value": 68.69704437255859
         },
         "Y": {
           "type": "float",
@@ -14157,7 +14157,7 @@
         },
         "X": {
           "type": "float",
-          "value": 66.9617691040039
+          "value": 66.96176910400391
         },
         "Y": {
           "type": "float",
@@ -19405,7 +19405,7 @@
         },
         "Y": {
           "type": "float",
-          "value": 71.03518676757812
+          "value": 71.03518676757813
         },
         "Z": {
           "type": "float",
@@ -21229,7 +21229,7 @@
         },
         "Y": {
           "type": "float",
-          "value": 90.5396499633789
+          "value": 90.53964996337891
         },
         "Z": {
           "type": "float",
@@ -22601,7 +22601,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.0000057220458984375
+          "value": -5.7220458984375e-006
         }
       },
       {
@@ -22829,7 +22829,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.000005222045729169622
+          "value": -5.222045729169622e-006
         }
       },
       {
@@ -23057,7 +23057,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.000005222045729169622
+          "value": -5.222045729169622e-006
         }
       },
       {
@@ -23285,7 +23285,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.000005222045729169622
+          "value": -5.222045729169622e-006
         }
       },
       {
@@ -23513,7 +23513,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.000005222045729169622
+          "value": -5.222045729169622e-006
         }
       },
       {
@@ -23741,7 +23741,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.0000057220458984375
+          "value": -5.7220458984375e-006
         }
       },
       {
@@ -24653,7 +24653,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.0000057220458984375
+          "value": -5.7220458984375e-006
         }
       },
       {
@@ -25785,7 +25785,7 @@
         },
         "X": {
           "type": "float",
-          "value": 94.2827377319336
+          "value": 94.28273773193359
         },
         "Y": {
           "type": "float",
@@ -26249,7 +26249,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.000005222045729169622
+          "value": -5.222045729169622e-006
         }
       },
       {
@@ -26477,7 +26477,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.000005222045729169622
+          "value": -5.222045729169622e-006
         }
       },
       {
@@ -26705,7 +26705,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.000005222045729169622
+          "value": -5.222045729169622e-006
         }
       },
       {
@@ -30125,7 +30125,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.0000057220458984375
+          "value": -5.7220458984375e-006
         }
       },
       {
@@ -30353,7 +30353,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.0000057220458984375
+          "value": -5.7220458984375e-006
         }
       },
       {
@@ -30581,7 +30581,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.0000057220458984375
+          "value": -5.7220458984375e-006
         }
       },
       {
@@ -30809,7 +30809,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.0000057220458984375
+          "value": -5.7220458984375e-006
         }
       },
       {
@@ -31037,7 +31037,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.0000057220458984375
+          "value": -5.7220458984375e-006
         }
       },
       {
@@ -31265,7 +31265,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.0000057220458984375
+          "value": -5.7220458984375e-006
         }
       },
       {
@@ -31949,7 +31949,7 @@
         },
         "Z": {
           "type": "float",
-          "value": -0.000005222045729169622
+          "value": -5.222045729169622e-006
         }
       },
       {
@@ -32625,7 +32625,7 @@
         },
         "X": {
           "type": "float",
-          "value": 74.2999038696289
+          "value": 74.29990386962891
         },
         "Y": {
           "type": "float",
@@ -34547,7 +34547,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 91.79324340820312
+          "value": 91.79324340820313
         },
         "YOrientation": {
           "type": "float",
@@ -34621,7 +34621,7 @@
               "__struct_id": 3,
               "PointX": {
                 "type": "float",
-                "value": -0.0000152587890625
+                "value": -1.52587890625e-005
               },
               "PointY": {
                 "type": "float",
@@ -34794,7 +34794,7 @@
               "__struct_id": 3,
               "PointX": {
                 "type": "float",
-                "value": -9.5367431640625e-7
+                "value": -9.5367431640625e-007
               },
               "PointY": {
                 "type": "float",
@@ -34828,7 +34828,7 @@
               },
               "PointY": {
                 "type": "float",
-                "value": 0.00000762939453125
+                "value": 7.62939453125e-006
               },
               "PointZ": {
                 "type": "float",
@@ -34961,7 +34961,7 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 90.3065414428711
+          "value": 90.30654144287109
         },
         "ZOrientation": {
           "type": "float",
@@ -35060,7 +35060,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 0.000002102055759678478
+          "value": 2.102055759678478e-006
         },
         "YPosition": {
           "type": "float",
@@ -35119,7 +35119,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 0.000002102055759678478
+          "value": 2.102055759678478e-006
         },
         "YPosition": {
           "type": "float",
@@ -35159,11 +35159,11 @@
           "value": {
             "0": "Anchorhead",
             "2": "Anchorhead",
-            "4": "<Placez votre texte ici>",
-            "8": "<Placez votre texte ici>",
             "256": "<Placez votre texte ici>",
             "258": "<Placez votre texte ici>",
-            "260": "<Placez votre texte ici>"
+            "260": "<Placez votre texte ici>",
+            "4": "<Placez votre texte ici>",
+            "8": "<Placez votre texte ici>"
           }
         },
         "MapNoteEnabled": {
@@ -35180,7 +35180,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.0000106414136098465
+          "value": 1.06414136098465e-005
         },
         "XPosition": {
           "type": "float",
@@ -35287,11 +35287,11 @@
           "value": {
             "0": "Towards the dunes",
             "2": "Vers le désert de dunes",
-            "4": "<Placez votre texte ici>",
-            "8": "<Placez votre texte ici>",
             "256": "<Placez votre texte ici>",
             "258": "<Placez votre texte ici>",
-            "260": "<Placez votre texte ici>"
+            "260": "<Placez votre texte ici>",
+            "4": "<Placez votre texte ici>",
+            "8": "<Placez votre texte ici>"
           }
         },
         "MapNoteEnabled": {
@@ -35308,7 +35308,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.0000106414136098465
+          "value": 1.06414136098465e-005
         },
         "XPosition": {
           "type": "float",
@@ -35356,11 +35356,11 @@
           "value": {
             "0": "Ferme du fou",
             "2": "Ferme du fou",
-            "4": "<Placez votre texte ici>",
-            "8": "<Placez votre texte ici>",
             "256": "<Placez votre texte ici>",
             "258": "<Placez votre texte ici>",
-            "260": "<Placez votre texte ici>"
+            "260": "<Placez votre texte ici>",
+            "4": "<Placez votre texte ici>",
+            "8": "<Placez votre texte ici>"
           }
         },
         "MapNoteEnabled": {
@@ -35377,7 +35377,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.0000106414136098465
+          "value": 1.06414136098465e-005
         },
         "XPosition": {
           "type": "float",
@@ -35425,11 +35425,11 @@
           "value": {
             "0": "Towards the dunes",
             "2": "Vers Motesta",
-            "4": "<Placez votre texte ici>",
-            "8": "<Placez votre texte ici>",
             "256": "<Placez votre texte ici>",
             "258": "<Placez votre texte ici>",
-            "260": "<Placez votre texte ici>"
+            "260": "<Placez votre texte ici>",
+            "4": "<Placez votre texte ici>",
+            "8": "<Placez votre texte ici>"
           }
         },
         "MapNoteEnabled": {
@@ -35446,7 +35446,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.0000106414136098465
+          "value": 1.06414136098465e-005
         },
         "XPosition": {
           "type": "float",

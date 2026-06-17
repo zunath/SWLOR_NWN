@@ -10039,6 +10039,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Byysk Cryo Adept Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "byyskcryo_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Byysk Guardian Hide"
                     },
                     "RESREF": {
@@ -10264,6 +10275,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "spe_droide"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Coolant-Scarred Mynock Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "czcryomyn_sk"
                     }
                   },
                   {
@@ -12354,6 +12376,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "vnpcselite3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Frostbinder Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "korrfrost_sk"
                     }
                   },
                   {
@@ -23386,6 +23419,61 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Armor Enhancement - Combat Readiness I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_recast1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Combat Readiness II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_recast2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Combat Readiness III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_recast3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Combat Readiness IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_recast4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Enhancement - Combat Readiness V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aen_recast5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Armor Enhancement - Control - Agriculture I"
                     },
                     "RESREF": {
@@ -24150,61 +24238,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "aen_hp5"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Armor Enhancement - Combat Readiness I"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "aen_recast1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Armor Enhancement - Combat Readiness II"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "aen_recast2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Armor Enhancement - Combat Readiness III"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "aen_recast3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Armor Enhancement - Combat Readiness IV"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "aen_recast4"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Armor Enhancement - Combat Readiness V"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "aen_recast5"
                     }
                   },
                   {
@@ -26455,6 +26488,61 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Cooking Enhancement - Combat Readiness I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cen_recast1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooking Enhancement - Combat Readiness II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cen_recast2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooking Enhancement - Combat Readiness III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cen_recast3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooking Enhancement - Combat Readiness IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cen_recast4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cooking Enhancement - Combat Readiness V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cen_recast5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Cooking Enhancement - Duration I"
                     },
                     "RESREF": {
@@ -26724,61 +26812,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "cen_hp5"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Cooking Enhancement - Combat Readiness I"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "cen_recast1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Cooking Enhancement - Combat Readiness II"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "cen_recast2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Cooking Enhancement - Combat Readiness III"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "cen_recast3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Cooking Enhancement - Combat Readiness IV"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "cen_recast4"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Cooking Enhancement - Combat Readiness V"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "cen_recast5"
                     }
                   },
                   {

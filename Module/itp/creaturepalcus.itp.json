@@ -10623,6 +10623,25 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 2.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Coolant-Scarred Mynock"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "czcryo_mynock"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 1.0
                     },
                     "FACTION": {
@@ -11241,6 +11260,25 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 122.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Byysk Cryo Adept"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "byysk_cryoadept"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 123.0
                     },
                     "FACTION": {
@@ -11732,7 +11770,26 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 139.0
+                      "value": 15.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Frostbinder"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "korr_frostbind"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 140.0
                     },
                     "FACTION": {
                       "type": "cexostring",

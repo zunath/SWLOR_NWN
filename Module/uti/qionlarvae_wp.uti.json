@@ -39,7 +39,7 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Qion Hive Slug Claw"
+      "0": "Qion Hive Larvae Claw"
     }
   },
   "ModelPart1": {
@@ -131,7 +131,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 35
+          "value": 16
         },
         "Param1": {
           "type": "byte",

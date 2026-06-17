@@ -50,7 +50,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 897
+    "value": 762
   },
   "DecayTime": {
     "type": "dword",
@@ -88,7 +88,7 @@
         "__struct_id": 32768,
         "EquippedRes": {
           "type": "resref",
-          "value": "qiontunneler_wp"
+          "value": "qiontunneler_wp2"
         }
       },
       {
@@ -122,28 +122,7 @@
         }
       },
       {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 1822
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 1760
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 1843
-        }
-      },
-      {
-        "__struct_id": 1,
+        "__struct_id": 2,
         "Feat": {
           "type": "word",
           "value": 1867
@@ -171,7 +150,7 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 897
+    "value": 762
   },
   "Int": {
     "type": "byte",
@@ -205,7 +184,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 951
+    "value": 762
   },
   "NaturalAC": {
     "type": "byte",

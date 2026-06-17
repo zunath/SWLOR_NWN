@@ -50,7 +50,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 462
+    "value": 392
   },
   "DecayTime": {
     "type": "dword",
@@ -88,7 +88,7 @@
         "__struct_id": 32768,
         "EquippedRes": {
           "type": "resref",
-          "value": "qionbugswarm_wp"
+          "value": "qionbugswarm_wp2"
         }
       },
       {
@@ -115,24 +115,10 @@
         }
       },
       {
-        "__struct_id": 1,
+        "__struct_id": 2,
         "Feat": {
           "type": "word",
-          "value": 1769
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 1823
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 1763
+          "value": 1822
         }
       }
     ]
@@ -157,7 +143,7 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 462
+    "value": 392
   },
   "Int": {
     "type": "byte",
@@ -191,7 +177,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 472
+    "value": 392
   },
   "NaturalAC": {
     "type": "byte",

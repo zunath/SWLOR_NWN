@@ -39,7 +39,7 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "(NPC 1) Sorcerer's Saber"
+      "0": "Sith Sorcerer, Initiate Saber"
     }
   },
   "ModelPart1": {
@@ -139,7 +139,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 40
+          "value": 22
         },
         "Param1": {
           "type": "byte",

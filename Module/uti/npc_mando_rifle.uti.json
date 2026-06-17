@@ -42,7 +42,7 @@
     "id": 173,
     "type": "cexolocstring",
     "value": {
-      "0": "[NPC] Mandalorian Rifle"
+      "0": "Mandalorian Ranger Heavy Rifle"
     }
   },
   "ModelPart1": {
@@ -80,7 +80,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 22
+          "value": 21
         },
         "Param1": {
           "type": "byte",

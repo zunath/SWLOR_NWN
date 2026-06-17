@@ -42,7 +42,7 @@
     "id": 173,
     "type": "cexolocstring",
     "value": {
-      "0": "[NPC] Eco Terrorist Rifle"
+      "0": "Eco Terrorist Rifle"
     }
   },
   "ModelPart1": {
@@ -111,7 +111,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 43
+          "value": 42
         },
         "Param1": {
           "type": "byte",

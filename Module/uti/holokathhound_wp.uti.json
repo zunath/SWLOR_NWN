@@ -41,7 +41,7 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Kath Hound Bite"
+      "0": "Holographic Kath Hound Bite"
     }
   },
   "ModelPart1": {
@@ -71,7 +71,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 10
+          "value": 5
         },
         "Param1": {
           "type": "byte",

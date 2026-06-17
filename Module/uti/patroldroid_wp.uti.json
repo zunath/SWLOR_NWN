@@ -42,7 +42,7 @@
     "id": 171,
     "type": "cexolocstring",
     "value": {
-      "0": "CZ-220 Droid Pistol"
+      "0": "Malfunctioning Patrol Droid Pistol"
     }
   },
   "ModelPart1": {
@@ -142,7 +142,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 5
+          "value": 6
         },
         "Param1": {
           "type": "byte",

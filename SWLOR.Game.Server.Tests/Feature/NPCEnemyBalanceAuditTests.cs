@@ -12,7 +12,9 @@ public class NPCEnemyBalanceAuditTests
 {
     private const int RightHandSlot = 16;
     private const int LeftHandSlot = 32;
+    private const int CreatureLeftSlot = 16384;
     private const int CreatureWeaponSlot = 32768;
+    private const int CreatureBiteSlot = 65536;
     private const int CreatureArmorSlot = 131072;
     private const int ItemPropertyFP = 91;
     private const int ItemPropertyStamina = 92;
@@ -97,25 +99,34 @@ public class NPCEnemyBalanceAuditTests
 
     private static readonly ExpectedEnemy[] ExpectedAlternateEnemies =
     {
-        new("man_ranger_2", "mando_rgr_skin", "npc_mando_rifle", 13, 199, 11, 19, 11, 16, 16, 29, 7, 9, 0, 5, 4, 4, 22, 41),
-        new("man_warrior_2", "mando_war_skin", "npc_mando_blade", 14, 203, 11, 16, 20, 11, 16, 21, 27, 5, 7, 4, 3, 7, 18, 27),
-        new("v_raivor2", "raivor_skin", "raivor_c_claw", 14, 238, 20, 11, 11, 16, 16, 35, 6, 9, 0, 2, 6, 4, 27, 29),
-        new("v_flesheater2", "flesheater_skin", "vellen_claw", 17, 291, 21, 12, 12, 17, 17, 40, 7, 10, 0, 3, 7, 5, 31, 29),
-        new("s_app_m", "s_app_hide", "s_app_electro", 24, 363, 14, 20, 25, 14, 20, 32, 42, 9, 11, 6, 7, 11, 27, 28),
-        new("ecoterr_2", "ecoter_hide", "npc_eco_rifle", 27, 490, 27, 15, 15, 22, 22, 59, 10, 14, 0, 5, 11, 9, 43, 41),
+        new("man_ranger_2", "mando_rgr_skin", "npc_mando_rifle", 13, 169, 11, 19, 11, 16, 16, 23, 6, 9, 0, 5, 4, 4, 21, 41),
+        new("man_warrior_2", "mando_war_skin", "npc_mando_blade", 14, 172, 11, 16, 20, 11, 16, 17, 22, 5, 7, 4, 3, 7, 11, 27),
+        new("v_raivor2", "raivor_skin", "raivor_c_claw", 14, 203, 20, 11, 11, 16, 16, 28, 5, 9, 0, 2, 6, 4, 24, 29),
+        new("v_flesheater2", "flesheater_skin", "vellen_claw", 17, 247, 21, 12, 12, 17, 17, 32, 6, 10, 0, 3, 7, 5, 17, 29),
+        new("s_app_m", "s_app_hide", "s_app_electro", 24, 308, 14, 20, 25, 14, 20, 17, 46, 8, 14, 5, 7, 13, 17, 28),
+        new("ecoterr_2", "ecoter_hide", "npc_eco_rifle", 27, 417, 27, 15, 15, 22, 22, 47, 8, 14, 0, 5, 11, 9, 42, 41),
         new("byysk_guard002", "hu_byyskgua_hide", "vbyyskguardsword", 50, 2441, 42, 24, 24, 34, 34, 152, 26, 24, 2, 11, 21, 19, 77, 27),
     };
 
     private static readonly ExpectedDualWieldDamage[] ExpectedDualWieldDamageTotals =
     {
         new("s_app", 34),
-        new("byysk_warrior", 37),
+        new("byysk_warrior", 39),
         new("vdathguard", 66),
         new("vkorrdunmarauder", 67),
         new("byysk_champion", 75),
-        new("sith_commando", 30),
-        new("vnpcssabot", 58),
         new("vnpcswar3", 53),
+    };
+
+    private static readonly ExpectedRuntimeWeaponDamage[] ExpectedPressureNormalizedNormalDamage =
+    {
+        new("vdathtribal", 33),
+        new("vnpcssorc4", 36),
+        new("qion_hive_tunnel", 33),
+        new("vkorrdun1sword", 47),
+        new("vdathchirodac", 66),
+        new("korr_wraid", 16),
+        new("ww_kinrath", 10),
     };
 
     [Test]
@@ -191,6 +202,21 @@ public class NPCEnemyBalanceAuditTests
             totalDamage.Should().Be(expected.TotalDMG, $"{expected.Resref} dual-wield runtime damage should match the World NPC preset total");
             GetString(rightWeapon.RootElement, "TemplateResRef").Should().Be(rightHand, $"{expected.Resref} right-hand weapon template reference should match its equipped resref");
             GetString(leftWeapon.RootElement, "TemplateResRef").Should().Be(leftHand, $"{expected.Resref} left-hand weapon template reference should match its equipped resref");
+        }
+    }
+
+    [Test]
+    public void FastCadenceNormalWorldNPCs_UsePressureNormalizedWeaponDamage()
+    {
+        var root = FindRepositoryRoot();
+
+        foreach (var expected in ExpectedPressureNormalizedNormalDamage)
+        {
+            using var utc = ReadJson(root, "Module", "utc", $"{expected.Resref}.utc.json");
+
+            GetTotalEquippedWeaponDamage(root, utc.RootElement)
+                .Should()
+                .Be(expected.TotalDMG, $"{expected.Resref} should keep Normal auto-attack pressure aligned to its role baseline when its equipped weapon cadence is faster");
         }
     }
 
@@ -402,8 +428,9 @@ public class NPCEnemyBalanceAuditTests
         GetItemPropertyCost(coolantSkin.RootElement, ItemPropertyEvasion).Should().Be(GetItemPropertyCost(baseSkin.RootElement, ItemPropertyEvasion));
 
         GetCreatureFeats(coolantMynock.RootElement)
+            .Intersect(ResistanceThreatFeats.Keys)
             .Should()
-            .BeEquivalentTo(GetCreatureFeats(baseMynock.RootElement).Append((int)FeatType.FrostSpit));
+            .BeEquivalentTo(new[] { (int)FeatType.FrostSpit });
         GetJsonLocalInt(coolantMynock.RootElement, "QUEST_NPC_GROUP_ID")
             .Should()
             .Be((int)NPCGroupType.CZ220_Mynocks, "the starter-dungeon variant should count for Mynock kill quests");
@@ -505,6 +532,31 @@ public class NPCEnemyBalanceAuditTests
             .Where(entry => entry.GetProperty("__struct_id").GetInt32() == slot)
             .Select(entry => GetString(entry, "EquippedRes"))
             .SingleOrDefault();
+    }
+
+    private static int GetTotalEquippedWeaponDamage(DirectoryInfo root, JsonElement utc)
+    {
+        var weaponSlots = new[]
+        {
+            RightHandSlot,
+            LeftHandSlot,
+            CreatureLeftSlot,
+            CreatureWeaponSlot,
+            CreatureBiteSlot,
+        };
+
+        var totalDamage = 0;
+        foreach (var slot in weaponSlots)
+        {
+            var weaponResref = GetEquippedResref(utc, slot);
+            if (string.IsNullOrWhiteSpace(weaponResref))
+                continue;
+
+            using var weapon = ReadJson(root, "Module", "uti", $"{weaponResref}.uti.json");
+            totalDamage += GetItemPropertyCost(weapon.RootElement, ItemPropertyDMG).GetValueOrDefault();
+        }
+
+        return totalDamage;
     }
 
     private static int[] GetCreatureFeats(JsonElement utc)
@@ -631,6 +683,8 @@ public class NPCEnemyBalanceAuditTests
         int WeaponDelay);
 
     private sealed record ExpectedDualWieldDamage(string Resref, int TotalDMG);
+
+    private sealed record ExpectedRuntimeWeaponDamage(string Resref, int TotalDMG);
 
     private sealed record TwoDARow(int Id, string[] Columns);
 }

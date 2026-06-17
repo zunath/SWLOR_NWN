@@ -39,7 +39,7 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "(NPC 4) Sorcerer's Saber"
+      "0": "Tier 4 Sith Sorcerer Saber"
     }
   },
   "ModelPart1": {
@@ -170,7 +170,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 66
+          "value": 36
         },
         "Param1": {
           "type": "byte",

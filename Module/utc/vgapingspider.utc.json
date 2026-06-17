@@ -50,7 +50,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 728
+    "value": 619
   },
   "DecayTime": {
     "type": "dword",
@@ -86,7 +86,7 @@
         "__struct_id": 32768,
         "EquippedRes": {
           "type": "resref",
-          "value": "gapingspider_wp"
+          "value": "gapingspider_wp2"
         }
       },
       {
@@ -113,24 +113,10 @@
         }
       },
       {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 1760
-        }
-      },
-      {
-        "__struct_id": 1,
+        "__struct_id": 2,
         "Feat": {
           "type": "word",
           "value": 1843
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 1769
         }
       }
     ]
@@ -155,7 +141,7 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 728
+    "value": 619
   },
   "Int": {
     "type": "byte",
@@ -189,7 +175,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 733
+    "value": 619
   },
   "NaturalAC": {
     "type": "byte",

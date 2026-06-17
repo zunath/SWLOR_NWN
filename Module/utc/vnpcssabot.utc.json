@@ -142,7 +142,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 846
+    "value": 719
   },
   "DecayTime": {
     "type": "dword",
@@ -194,7 +194,7 @@
         "__struct_id": 32,
         "EquippedRes": {
           "type": "resref",
-          "value": "sithsabot_wp"
+          "value": "sithsabot_wp2"
         }
       },
       {
@@ -319,24 +319,10 @@
         }
       },
       {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 1754
-        }
-      },
-      {
-        "__struct_id": 1,
+        "__struct_id": 2,
         "Feat": {
           "type": "word",
           "value": 1856
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 1857
         }
       }
     ]
@@ -361,7 +347,7 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 846
+    "value": 719
   },
   "Int": {
     "type": "byte",
@@ -395,7 +381,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 1246
+    "value": 719
   },
   "NaturalAC": {
     "type": "byte",

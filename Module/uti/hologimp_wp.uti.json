@@ -41,7 +41,7 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Gimpassa Bite"
+      "0": "Holographic Gimpassa Bite"
     }
   },
   "ModelPart1": {
@@ -71,7 +71,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 20
+          "value": 18
         },
         "Param1": {
           "type": "byte",

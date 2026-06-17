@@ -39,7 +39,7 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Sith Sorcerer Stat Skin"
+      "0": "Tier 3 Sith Sorcerer Stat Skin"
     }
   },
   "ModelPart1": {
@@ -131,7 +131,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 823
+          "value": 699
         },
         "Param1": {
           "type": "byte",
@@ -162,7 +162,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 37
+          "value": 29
         },
         "Param1": {
           "type": "byte",
@@ -193,7 +193,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 102
+          "value": 82
         },
         "Param1": {
           "type": "byte",

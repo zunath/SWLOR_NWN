@@ -39,7 +39,7 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Byysk Warrior Sword"
+      "0": "Byysk Warrior Primary Sword"
     }
   },
   "ModelPart1": {
@@ -108,7 +108,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 18
+          "value": 19
         },
         "Param1": {
           "type": "byte",

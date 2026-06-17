@@ -50,7 +50,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 473
+    "value": 402
   },
   "DecayTime": {
     "type": "dword",
@@ -88,7 +88,7 @@
         "__struct_id": 32768,
         "EquippedRes": {
           "type": "resref",
-          "value": "scorchellus_wp"
+          "value": "scorchellus_wp2"
         }
       },
       {
@@ -115,24 +115,10 @@
         }
       },
       {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 1842
-        }
-      },
-      {
-        "__struct_id": 1,
+        "__struct_id": 2,
         "Feat": {
           "type": "word",
           "value": 1843
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 1768
         }
       }
     ]
@@ -157,7 +143,7 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 473
+    "value": 402
   },
   "Int": {
     "type": "byte",
@@ -191,7 +177,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 491
+    "value": 402
   },
   "NaturalAC": {
     "type": "byte",

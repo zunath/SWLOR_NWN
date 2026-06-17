@@ -42,7 +42,7 @@
     "id": 166,
     "type": "cexolocstring",
     "value": {
-      "0": "[NPC] Mandalorian Blade"
+      "0": "Mandalorian Warrior Heavy Blade"
     }
   },
   "ModelPart1": {
@@ -80,7 +80,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 18
+          "value": 11
         },
         "Param1": {
           "type": "byte",

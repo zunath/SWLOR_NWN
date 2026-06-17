@@ -41,7 +41,7 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Sith Apprentice Electroblade"
+      "0": "Rogue Initiate Electroblade"
     }
   },
   "ModelPart1": {
@@ -110,7 +110,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 19
+          "value": 11
         },
         "Param1": {
           "type": "byte",

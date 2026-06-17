@@ -41,7 +41,7 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Vellen Flesheater Claw"
+      "0": "Vellen Flesheater Primary Claw"
     }
   },
   "ModelPart1": {
@@ -71,7 +71,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 24
+          "value": 13
         },
         "Param1": {
           "type": "byte",

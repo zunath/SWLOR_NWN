@@ -41,7 +41,7 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Raivor Claw"
+      "0": "Raivor Heavy Claw"
     }
   },
   "ModelPart1": {
@@ -71,7 +71,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 27
+          "value": 24
         },
         "Param1": {
           "type": "byte",

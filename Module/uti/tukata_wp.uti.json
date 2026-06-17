@@ -41,7 +41,7 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Kath Hound Bite"
+      "0": "Tuk'ata Bite"
     }
   },
   "ModelPart1": {
@@ -71,7 +71,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 46
+          "value": 25
         },
         "Param1": {
           "type": "byte",

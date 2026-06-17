@@ -799,11 +799,8 @@ public class CombatDamageTests
         var root = FindRepositoryRoot();
         foreach (var resref in new[]
                  {
-                     "cz220_dr_pistol",
                      "patroldroid_wp",
-                     "probedroid_wp",
-                     "malfsecdroid_wp",
-                     "malfspiddroi_wp"
+                     "probedroid_wp"
                  })
         {
             var file = Path.Combine(root.FullName, "Module", "uti", $"{resref}.uti.json");

@@ -39,7 +39,7 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "(NPC 3) Elite Sword"
+      "0": "Sith Temple Guard Sword"
     }
   },
   "ModelPart1": {
@@ -139,7 +139,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 70
+          "value": 47
         },
         "Param1": {
           "type": "byte",

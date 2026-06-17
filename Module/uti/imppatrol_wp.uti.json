@@ -39,7 +39,7 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "(NPC 2) Droid Rifle"
+      "0": "Imperial Patrol Unit Rifle"
     }
   },
   "ModelPart1": {
@@ -108,7 +108,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 30
+          "value": 29
         },
         "Param1": {
           "type": "byte",

@@ -41,7 +41,7 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Sith Apprentice Electroblade"
+      "0": "Possessed Apprentice Electroblade"
     }
   },
   "ModelPart1": {
@@ -79,7 +79,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 27
+          "value": 17
         },
         "Param1": {
           "type": "byte",

@@ -1082,6 +1082,7 @@ namespace SWLOR.NWN.API.NWScript.Enum
         SaberCyclone1 = 1184,
         SacrificialBlade1 = 1185,
         SavageCleave1 = 1189,
+        SavageCleave2 = 1190,
         SentinelStance1 = 1192,
         SerpentsEclipse1 = 1193,
         SeverFocus1 = 1194,

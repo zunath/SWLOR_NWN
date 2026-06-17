@@ -328,6 +328,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Vibroblade, 25)
 
                 .AddPerkLevel()
+                .GrantsFeat(FeatType.SavageCleave2)
                 .Description("Savage Cleave deals +20 DMG to nearby enemies and restores 2 STM per secondary target hit, up to 8 STM.")
                 .IncreasesStat(StatType.SavageCleaveSecondaryDamageBonus, 20)
                 .IncreasesStat(StatType.SavageCleaveSecondaryTargetStaminaRestore, 2)

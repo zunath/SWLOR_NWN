@@ -17,6 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
             var builder = new AbilityBuilder();
 
             SavageCleave1(builder);
+            SavageCleave2(builder);
 
             return builder.Build();
         }
@@ -36,6 +37,23 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
                 .IsHostileAbility()
                 .BreaksStealth()
                 .RequirementStamina(7);
+        }
+
+        private static void SavageCleave2(AbilityBuilder builder)
+        {
+            builder
+                .Create(FeatType.SavageCleave2, PerkType.SavageCleave)
+                .Name("Savage Cleave II")
+                .Level(2)
+                .HasActivationDelay(0f)
+                .UsesAnimation(Animation.Whirlwind)
+                .HasRecastDelay(RecastGroup.SavageCleave, 120f)
+                .IsAreaAbility()
+                .HasImpactAction(SavageCleave1ImpactAction)
+                .IsCastedAbility()
+                .IsHostileAbility()
+                .BreaksStealth()
+                .RequirementStamina(12);
         }
 
         private static void SavageCleave1ImpactAction(uint activator, uint target, int level, Location targetLocation)

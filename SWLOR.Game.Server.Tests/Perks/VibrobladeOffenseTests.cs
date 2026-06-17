@@ -42,7 +42,7 @@ public class VibrobladeOffenseTests
             "Strike all enemies in front for weapon DMG + 25.");
         AssertPerkLevel(perks[PerkType.RiotBlade], "Riot Blade", 4, 3, 28, FeatType.RiotBlade3,
             "Instantly deals weapon DMG + 45 to your target.");
-        AssertPerkLevel(perks[PerkType.SavageCleave], "Savage Cleave", 2, 3, 30, null,
+        AssertPerkLevel(perks[PerkType.SavageCleave], "Savage Cleave", 2, 3, 30, FeatType.SavageCleave2,
             "Savage Cleave deals +20 DMG to nearby enemies and restores 2 STM per secondary target hit, up to 8 STM.",
             StatType.SavageCleaveSecondaryDamageBonus,
             StatType.SavageCleaveSecondaryTargetStaminaRestore,
@@ -115,6 +115,7 @@ public class VibrobladeOffenseTests
             (FeatType.RendingStrike1, "ife_rendstrk1"),
             (FeatType.RendingStrike2, "ife_rendstrk2"),
             (FeatType.SavageCleave1, "ife_savclv1"),
+            (FeatType.SavageCleave2, "ife_savclv2"),
             (FeatType.HackingBlade1, "ife_hckngblade1"),
             (FeatType.RiotBlade1, "ife_rtblade1"),
             (FeatType.RiotBlade2, "ife_rtblade2"),

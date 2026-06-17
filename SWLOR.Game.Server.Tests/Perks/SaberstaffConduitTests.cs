@@ -91,6 +91,17 @@ public class SaberstaffConduitTests
     }
 
     [Test]
+    public void SaberstaffCooldownDurationStats_AreNonBeneficialMetadata()
+    {
+        Stat.GetStatTypeCategory(StatType.AutoAttackFPRestoreCooldownSeconds)
+            .Should()
+            .Be(StatTypeCategory.NonBeneficial);
+        Stat.GetStatTypeCategory(StatType.SaberstaffAreaAbilityResourceRestoreCooldownSeconds)
+            .Should()
+            .Be(StatTypeCategory.NonBeneficial);
+    }
+
+    [Test]
     public void SaberstaffConduitFeatAndAbilityIcons_AreUniqueAndPresent()
     {
         var root = FindRepositoryRoot();

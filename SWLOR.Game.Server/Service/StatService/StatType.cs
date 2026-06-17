@@ -641,7 +641,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// Cooldown in seconds for AutoAttackFPRestore.
         /// </summary>
-        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        [StatType(StatTypeCategory.NonBeneficial)]
         AutoAttackFPRestoreCooldownSeconds = 108,
 
         /// <summary>
@@ -779,7 +779,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// Cooldown in seconds for saberstaff area ability resource restoration.
         /// </summary>
-        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        [StatType(StatTypeCategory.NonBeneficial)]
         SaberstaffAreaAbilityResourceRestoreCooldownSeconds = 139,
 
         /// <summary>

@@ -80,7 +80,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 66
+          "value": 63
         },
         "Param1": {
           "type": "byte",
@@ -142,7 +142,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 47
+          "value": 41
         },
         "Param1": {
           "type": "byte",

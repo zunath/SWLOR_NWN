@@ -16,6 +16,15 @@ namespace SWLOR.Game.Server.Tests.Service;
 
 public class CombatDamageTests
 {
+    private static readonly string[] NwnBaseDescriptionMarkers =
+    {
+        "Base Damage",
+        "Base Critical Threat",
+        "Base Damage Type",
+        "Weapon Size",
+        "Base Item",
+    };
+
     [OneTimeSetUp]
     public void OneTimeSetUp()
     {
@@ -607,16 +616,7 @@ public class CombatDamageTests
     public void ModuleWeaponItems_UseUntypedDmgAndSeparateDamageTypeProperty()
     {
         var root = FindRepositoryRoot();
-        var weaponBaseItems = SWLOR.Game.Server.Service.Item.WeaponBaseItemTypes
-            .Concat(new[]
-            {
-                BaseItem.CreatureSlashWeapon,
-                BaseItem.CreaturePierceWeapon,
-                BaseItem.CreatureBludgeonWeapon,
-                BaseItem.CreatureSlashPierceWeapon
-            })
-            .Select(x => (int)x)
-            .ToHashSet();
+        var weaponBaseItems = BuildWeaponBaseItemIds();
         var offenders = new List<string>();
 
         foreach (var file in Directory.EnumerateFiles(Path.Combine(root.FullName, "Module", "uti"), "*.uti.json"))
@@ -631,45 +631,166 @@ public class CombatDamageTests
                 continue;
             }
 
-            var dmgCount = 0;
-            var damageTypeCount = 0;
-            var hasTypedDmg = false;
-            var hasInvalidDamageType = false;
-            foreach (var property in properties.EnumerateArray())
-            {
-                if (!TryGetNestedInt(property, "PropertyName", "value", out var propertyName))
-                {
-                    continue;
-                }
-
-                if (propertyName == (int)ItemPropertyType.DMG)
-                {
-                    dmgCount++;
-                    if (!TryGetNestedInt(property, "Subtype", "value", out var subtype) ||
-                        subtype != 0)
-                    {
-                        hasTypedDmg = true;
-                    }
-                }
-                else if (propertyName == (int)ItemPropertyType.WeaponDamageType)
-                {
-                    damageTypeCount++;
-                    if (!TryGetNestedInt(property, "Subtype", "value", out var subtype) ||
-                        subtype < (int)CombatDamageType.Physical ||
-                        subtype > (int)CombatDamageType.Sonic)
-                    {
-                        hasInvalidDamageType = true;
-                    }
-                }
-            }
-
-            if (dmgCount > 1 || damageTypeCount > 1 || hasTypedDmg || hasInvalidDamageType)
-            {
-                offenders.Add(Path.GetRelativePath(root.FullName, file));
-            }
+            var finding = GetWeaponDamageShapeFinding(properties);
+            if (!string.IsNullOrWhiteSpace(finding))
+                offenders.Add($"{Path.GetRelativePath(root.FullName, file)} {finding}");
         }
 
         offenders.Should().BeEmpty("weapon DMG is a plain amount and WeaponDamageType selects the whole damage calculation type");
+    }
+
+    [Test]
+    public void ModuleEmbeddedWeaponItems_UseUntypedDmgAndSeparateDamageTypeProperty()
+    {
+        var root = FindRepositoryRoot();
+        var weaponBaseItems = BuildWeaponBaseItemIds();
+        var offenders = new List<string>();
+
+        foreach (var file in Directory.EnumerateFiles(Path.Combine(root.FullName, "Module", "git"), "*.json"))
+        {
+            using var document = JsonDocument.Parse(ReadJsonText(file));
+            InspectWeaponDamageShape(
+                document.RootElement,
+                Path.GetRelativePath(root.FullName, file),
+                string.Empty,
+                weaponBaseItems,
+                offenders);
+        }
+
+        offenders.Should().BeEmpty(string.Join("\n", offenders.Take(25)));
+    }
+
+    [Test]
+    public void ModuleVibroknifeItems_DoNotUseNwnBaseDescriptionOrWeaponDamageType()
+    {
+        var root = FindRepositoryRoot();
+        var vibroknifeBaseItems = BuildVibroknifeBaseItemIds();
+        var baseItemLines = File.ReadAllLines(Path.Combine(
+            root.FullName,
+            "SWLOR_Haks",
+            "swlor2_2da",
+            "baseitems.2da"));
+        var header = Split2daColumns(baseItemLines.First(line => line.Contains("InvSlotWidth")));
+        var descriptionIndex = Array.IndexOf(header, "Description");
+        descriptionIndex.Should().BeGreaterThanOrEqualTo(0);
+        var baseItemDescriptions = baseItemLines
+            .Select(Split2daColumns)
+            .Where(columns => columns.Length > descriptionIndex + 1 &&
+                              int.TryParse(columns[0], out var row) &&
+                              vibroknifeBaseItems.Contains(row))
+            .ToDictionary(columns => int.Parse(columns[0]), columns => columns[descriptionIndex + 1]);
+
+        baseItemDescriptions.Keys.Should().BeEquivalentTo(vibroknifeBaseItems);
+        baseItemDescriptions.Values.Should().OnlyContain(
+            description => description == "****",
+            "vibroknife-family base items otherwise show the NWN base description block");
+
+        var offenders = new List<string>();
+        foreach (var file in Directory.EnumerateFiles(Path.Combine(root.FullName, "Module"), "*.json", SearchOption.AllDirectories))
+        {
+            using var document = JsonDocument.Parse(ReadJsonText(file));
+            InspectVibroknifeItemPresentation(
+                document.RootElement,
+                Path.GetRelativePath(root.FullName, file),
+                string.Empty,
+                vibroknifeBaseItems,
+                offenders);
+        }
+
+        offenders.Should().BeEmpty(string.Join("\n", offenders.Take(25)));
+    }
+
+    [Test]
+    public void ModuleCraftedWeaponBlueprints_UseSpeedierDamageAndDelayTable()
+    {
+        var root = FindRepositoryRoot();
+        var expectedWeaponStats = new (string Resref, int DMG, int Delay)[]
+        {
+            ("b_knife", 5, 25),
+            ("tit_knife", 8, 25),
+            ("del_knife", 12, 25),
+            ("proto_knife", 16, 25),
+            ("oph_knife", 19, 25),
+            ("b_shuriken", 4, 25),
+            ("tit_shuriken", 6, 25),
+            ("del_shuriken", 9, 25),
+            ("proto_shuriken", 12, 25),
+            ("oph_shuriken", 15, 25),
+            ("b_katar", 7, 25),
+            ("tit_katar", 9, 25),
+            ("del_katar", 11, 25),
+            ("proto_katar", 13, 25),
+            ("oph_katar", 16, 25),
+            ("b_longsword", 5, 27),
+            ("tit_longsword", 9, 27),
+            ("del_longsword", 13, 27),
+            ("pro_longsword", 17, 27),
+            ("oph_longsword", 21, 27),
+            ("lightsaber", 6, 28),
+            ("electroblade_1", 5, 28),
+            ("electroblade_2", 9, 28),
+            ("electroblade_3", 13, 28),
+            ("electroblade_4", 17, 28),
+            ("electroblade_5", 21, 28),
+            ("saber_train_1", 5, 28),
+            ("saber_train_2", 9, 28),
+            ("saber_train_3", 13, 28),
+            ("saber_train_4", 17, 28),
+            ("saber_train_5", 21, 28),
+            ("fld_trnsaber", 7, 28),
+            ("vet_trnsaber", 11, 28),
+            ("prm_trnsaber", 15, 28),
+            ("asc_trnsaber", 19, 28),
+            ("b_pistol", 5, 31),
+            ("tit_pistol", 9, 31),
+            ("del_pistol", 13, 31),
+            ("proto_pistol", 16, 31),
+            ("oph_pistol", 20, 31),
+            ("b_staff", 5, 35),
+            ("tit_staff", 9, 35),
+            ("del_staff", 13, 35),
+            ("proto_staff", 17, 35),
+            ("oph_staff", 21, 35),
+            ("b_spear", 7, 37),
+            ("tit_spear", 14, 37),
+            ("del_spear", 25, 37),
+            ("proto_spear", 32, 37),
+            ("oph_spear", 38, 37),
+            ("b_twinblade", 7, 39),
+            ("tit_twinblade", 12, 39),
+            ("del_twinblade", 16, 39),
+            ("proto_twinblade", 20, 39),
+            ("oph_twinblade", 25, 39),
+            ("trn_saberstaff_1", 7, 39),
+            ("trn_saberstaff_2", 12, 39),
+            ("trn_saberstaff_3", 16, 39),
+            ("trn_saberstaff_4", 20, 39),
+            ("trn_saberstaff_5", 25, 39),
+            ("twin_elec_1", 7, 39),
+            ("twin_elec_2", 12, 39),
+            ("twin_elec_3", 16, 39),
+            ("twin_elec_4", 20, 39),
+            ("twin_elec_5", 25, 39),
+            ("b_rifle", 7, 41),
+            ("tit_rifle", 14, 41),
+            ("del_rifle", 25, 41),
+            ("proto_rifle", 31, 41),
+            ("oph_rifle", 36, 41),
+            ("b_greatsword", 8, 41),
+            ("tit_greatsword", 15, 41),
+            ("del_greatsword", 27, 41),
+            ("proto_greatsword", 34, 41),
+            ("oph_greatsword", 40, 41),
+        };
+
+        foreach (var expected in expectedWeaponStats)
+        {
+            var file = Path.Combine(root.FullName, "Module", "uti", $"{expected.Resref}.uti.json");
+            using var document = JsonDocument.Parse(ReadJsonText(file));
+
+            GetItemPropertyCost(document.RootElement, ItemPropertyType.DMG).Should().Be(expected.DMG, expected.Resref);
+            GetItemPropertyCost(document.RootElement, ItemPropertyType.Delay).Should().Be(expected.Delay, expected.Resref);
+        }
     }
 
     [Test]
@@ -1025,7 +1146,16 @@ public class CombatDamageTests
         playerMigrationSource.Should().Contain("SerializedItemWeaponDamageTypeMigration.MigrateObject(player);");
         serverMigrationSource.Should().Contain("SerializedItemWeaponDamageTypeMigration.MigrateSerializedObject");
         weaponMigrationSource.Should().Contain("ItemPropertyType.DMG");
+        weaponMigrationSource.Should().Contain("WeaponDamageScales");
+        weaponMigrationSource.Should().Contain("BuildWeaponBaseItemTypes");
+        weaponMigrationSource.Should().Contain("StaffBaseItemTypes");
+        weaponMigrationSource.Should().Contain("TrainingSaberDamageResrefs");
+        weaponMigrationSource.Should().Contain("HasTargetWeaponDelay");
+        weaponMigrationSource.Should().Contain("MigrateWeaponDamageAmountItem");
+        weaponMigrationSource.Should().Contain("CalculateScaledWeaponDamage");
         weaponMigrationSource.Should().Contain("ItemPropertyType.WeaponDamageType");
+        weaponMigrationSource.Should().Contain("ShouldRemoveWeaponDamageType");
+        weaponMigrationSource.Should().Contain("VibroknifeBaseItemTypes.Contains(baseItem)");
         weaponMigrationSource.Should().Contain("ItemPropertyType.WeaponEnhancement");
         weaponMigrationSource.Should().Contain("RawDamageEnhancementAmountsByResref");
         weaponMigrationSource.Should().Contain("LegacyEnhancementDamageTypesBySubType");
@@ -1156,6 +1286,219 @@ public class CombatDamageTests
         {
             return Encoding.Latin1.GetString(bytes);
         }
+    }
+
+    private static HashSet<int> BuildWeaponBaseItemIds()
+    {
+        return new[]
+            {
+                SWLOR.Game.Server.Service.Item.VibrobladeBaseItemTypes,
+                SWLOR.Game.Server.Service.Item.KatarBaseItemTypes,
+                SWLOR.Game.Server.Service.Item.TwinBladeBaseItemTypes,
+                SWLOR.Game.Server.Service.Item.VibroknifeBaseItemTypes,
+                SWLOR.Game.Server.Service.Item.StaffBaseItemTypes,
+                SWLOR.Game.Server.Service.Item.RifleBaseItemTypes,
+                SWLOR.Game.Server.Service.Item.HeavyVibrobladeBaseItemTypes,
+                SWLOR.Game.Server.Service.Item.PistolBaseItemTypes,
+                SWLOR.Game.Server.Service.Item.LightsaberBaseItemTypes,
+                SWLOR.Game.Server.Service.Item.SpearBaseItemTypes,
+                SWLOR.Game.Server.Service.Item.ThrowingWeaponBaseItemTypes,
+                SWLOR.Game.Server.Service.Item.SaberstaffBaseItemTypes,
+                SWLOR.Game.Server.Service.Item.CreatureBaseItemTypes
+            }
+            .SelectMany(x => x)
+            .Select(x => (int)x)
+            .ToHashSet();
+    }
+
+    private static HashSet<int> BuildVibroknifeBaseItemIds()
+    {
+        return SWLOR.Game.Server.Service.Item.VibroknifeBaseItemTypes
+            .Select(x => (int)x)
+            .ToHashSet();
+    }
+
+    private static void InspectWeaponDamageShape(
+        JsonElement element,
+        string file,
+        string path,
+        HashSet<int> weaponBaseItems,
+        ICollection<string> offenders)
+    {
+        switch (element.ValueKind)
+        {
+            case JsonValueKind.Object:
+                if (TryGetNestedInt(element, "BaseItem", "value", out var baseItem) &&
+                    weaponBaseItems.Contains(baseItem) &&
+                    element.TryGetProperty("PropertiesList", out var propertiesList) &&
+                    propertiesList.TryGetProperty("value", out var properties))
+                {
+                    var finding = GetWeaponDamageShapeFinding(properties);
+                    if (!string.IsNullOrWhiteSpace(finding))
+                        offenders.Add($"{file}:{path} {finding}");
+                }
+
+                foreach (var property in element.EnumerateObject())
+                {
+                    if (property.Name == "__struct_id")
+                        continue;
+
+                    InspectWeaponDamageShape(
+                        property.Value,
+                        file,
+                        string.IsNullOrWhiteSpace(path) ? property.Name : $"{path}.{property.Name}",
+                        weaponBaseItems,
+                        offenders);
+                }
+                break;
+            case JsonValueKind.Array:
+                var index = 0;
+                foreach (var item in element.EnumerateArray())
+                {
+                    InspectWeaponDamageShape(item, file, $"{path}[{index}]", weaponBaseItems, offenders);
+                    index++;
+                }
+                break;
+        }
+    }
+
+    private static void InspectVibroknifeItemPresentation(
+        JsonElement element,
+        string file,
+        string path,
+        HashSet<int> vibroknifeBaseItems,
+        ICollection<string> offenders)
+    {
+        switch (element.ValueKind)
+        {
+            case JsonValueKind.Object:
+                if (TryGetNestedInt(element, "BaseItem", "value", out var baseItem) &&
+                    vibroknifeBaseItems.Contains(baseItem))
+                {
+                    var findings = new List<string>();
+                    if (HasWeaponDamageTypeProperty(element))
+                        findings.Add("WeaponDamageType");
+
+                    if (HasNwnBaseDescriptionText(element))
+                        findings.Add("NWN base description text");
+
+                    if (findings.Count > 0)
+                        offenders.Add($"{file}:{path} {string.Join(", ", findings)}");
+                }
+
+                foreach (var property in element.EnumerateObject())
+                {
+                    if (property.Name == "__struct_id")
+                        continue;
+
+                    InspectVibroknifeItemPresentation(
+                        property.Value,
+                        file,
+                        string.IsNullOrWhiteSpace(path) ? property.Name : $"{path}.{property.Name}",
+                        vibroknifeBaseItems,
+                        offenders);
+                }
+                break;
+            case JsonValueKind.Array:
+                var index = 0;
+                foreach (var item in element.EnumerateArray())
+                {
+                    InspectVibroknifeItemPresentation(item, file, $"{path}[{index}]", vibroknifeBaseItems, offenders);
+                    index++;
+                }
+                break;
+        }
+    }
+
+    private static bool HasWeaponDamageTypeProperty(JsonElement item)
+    {
+        if (!item.TryGetProperty("PropertiesList", out var propertiesList) ||
+            !propertiesList.TryGetProperty("value", out var properties) ||
+            properties.ValueKind != JsonValueKind.Array)
+        {
+            return false;
+        }
+
+        return properties.EnumerateArray().Any(property =>
+            TryGetNestedInt(property, "PropertyName", "value", out var propertyName) &&
+            propertyName == (int)ItemPropertyType.WeaponDamageType);
+    }
+
+    private static bool HasNwnBaseDescriptionText(JsonElement item)
+    {
+        return HasNwnBaseDescriptionText(item, "Description") ||
+               HasNwnBaseDescriptionText(item, "DescIdentified");
+    }
+
+    private static bool HasNwnBaseDescriptionText(JsonElement item, string fieldName)
+    {
+        if (!item.TryGetProperty(fieldName, out var field) ||
+            !field.TryGetProperty("value", out var values) ||
+            values.ValueKind != JsonValueKind.Object)
+        {
+            return false;
+        }
+
+        return values.EnumerateObject()
+            .Select(value => value.Value.ValueKind == JsonValueKind.String ? value.Value.GetString() : null)
+            .Where(value => !string.IsNullOrWhiteSpace(value))
+            .Any(value => NwnBaseDescriptionMarkers.Any(marker => value!.Contains(marker, StringComparison.OrdinalIgnoreCase)));
+    }
+
+    private static string GetWeaponDamageShapeFinding(JsonElement properties)
+    {
+        var dmgCount = 0;
+        var damageTypeCount = 0;
+        var hasTypedDmg = false;
+        var hasInvalidDamageType = false;
+        foreach (var property in properties.EnumerateArray())
+        {
+            if (!TryGetNestedInt(property, "PropertyName", "value", out var propertyName))
+                continue;
+
+            if (propertyName == (int)ItemPropertyType.DMG)
+            {
+                dmgCount++;
+                if (!TryGetNestedInt(property, "Subtype", "value", out var subtype) ||
+                    subtype != 0)
+                {
+                    hasTypedDmg = true;
+                }
+            }
+            else if (propertyName == (int)ItemPropertyType.WeaponDamageType)
+            {
+                damageTypeCount++;
+                if (!TryGetNestedInt(property, "Subtype", "value", out var subtype) ||
+                    subtype < (int)CombatDamageType.Physical ||
+                    subtype > (int)CombatDamageType.Sonic)
+                {
+                    hasInvalidDamageType = true;
+                }
+            }
+        }
+
+        return dmgCount > 1 || damageTypeCount > 1 || hasTypedDmg || hasInvalidDamageType
+            ? $"DMG={dmgCount}, WeaponDamageType={damageTypeCount}, typedDMG={hasTypedDmg}, invalidDamageType={hasInvalidDamageType}"
+            : null;
+    }
+
+    private static int? GetItemPropertyCost(JsonElement item, ItemPropertyType type)
+    {
+        if (!item.TryGetProperty("PropertiesList", out var propertiesList) ||
+            !propertiesList.TryGetProperty("value", out var properties))
+        {
+            return null;
+        }
+
+        return properties.EnumerateArray()
+            .Where(property =>
+                TryGetNestedInt(property, "PropertyName", "value", out var propertyName) &&
+                propertyName == (int)type)
+            .Select(property =>
+                TryGetNestedInt(property, "CostValue", "value", out var costValue)
+                    ? (int?)costValue
+                    : null)
+            .SingleOrDefault();
     }
 
     private static bool TryGetNestedInt(JsonElement element, string property, string nestedProperty, out int value)

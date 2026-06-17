@@ -12,18 +12,18 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         private static readonly Dictionary<List<BaseItem>, int> _weaponCategoryDelays = new()
         {
-            {Item.VibrobladeBaseItemTypes, 31},
-            {Item.KatarBaseItemTypes, 29},
-            {Item.TwinBladeBaseItemTypes, 45},
-            {Item.VibroknifeBaseItemTypes, 29},
-            {Item.StaffBaseItemTypes, 41},
-            {Item.RifleBaseItemTypes, 47},
-            {Item.HeavyVibrobladeBaseItemTypes, 47},
-            {Item.PistolBaseItemTypes, 37},
-            {Item.LightsaberBaseItemTypes, 32},
-            {Item.SpearBaseItemTypes, 43},
-            {Item.ThrowingWeaponBaseItemTypes, 29},
-            {Item.SaberstaffBaseItemTypes, 45},
+            {Item.VibrobladeBaseItemTypes, 27},
+            {Item.KatarBaseItemTypes, 25},
+            {Item.TwinBladeBaseItemTypes, 39},
+            {Item.VibroknifeBaseItemTypes, 25},
+            {Item.StaffBaseItemTypes, 35},
+            {Item.RifleBaseItemTypes, 41},
+            {Item.HeavyVibrobladeBaseItemTypes, 41},
+            {Item.PistolBaseItemTypes, 31},
+            {Item.LightsaberBaseItemTypes, 28},
+            {Item.SpearBaseItemTypes, 37},
+            {Item.ThrowingWeaponBaseItemTypes, 25},
+            {Item.SaberstaffBaseItemTypes, 39},
             {Item.CreatureBaseItemTypes, 29}
         };
 
@@ -80,8 +80,7 @@ namespace SWLOR.Game.Server.Service
         public static bool IsWeapon(uint item)
         {
             var baseItemType = GetBaseItemType(item);
-            return Item.WeaponBaseItemTypes.Contains(baseItemType) ||
-                   Item.CreatureBaseItemTypes.Contains(baseItemType);
+            return GetWeaponDelay(baseItemType).HasValue;
         }
 
         /// <summary>

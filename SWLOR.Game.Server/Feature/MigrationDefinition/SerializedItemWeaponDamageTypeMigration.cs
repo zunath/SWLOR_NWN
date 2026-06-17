@@ -14,16 +14,40 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
 {
     internal static class SerializedItemWeaponDamageTypeMigration
     {
-        private static readonly HashSet<BaseItem> WeaponBaseItemTypes =
-            SWLOR.Game.Server.Service.Item.WeaponBaseItemTypes
-                .Concat(new[]
-                {
-                    BaseItem.CreatureSlashWeapon,
-                    BaseItem.CreaturePierceWeapon,
-                    BaseItem.CreatureBludgeonWeapon,
-                    BaseItem.CreatureSlashPierceWeapon,
-                })
-                .ToHashSet();
+        private static readonly HashSet<BaseItem> WeaponBaseItemTypes = BuildWeaponBaseItemTypes();
+
+        private static readonly WeaponDamageScale[] WeaponDamageScales =
+        {
+            new(SWLOR.Game.Server.Service.Item.VibrobladeBaseItemTypes, new[] { 6, 10, 15, 19, 24 }, new[] { 5, 9, 13, 17, 21 }),
+            new(SWLOR.Game.Server.Service.Item.VibroknifeBaseItemTypes, new[] { 5, 9, 14, 18, 22 }, new[] { 5, 8, 12, 16, 19 }),
+            new(SWLOR.Game.Server.Service.Item.HeavyVibrobladeBaseItemTypes, new[] { 8, 16, 29, 37, 43 }, new[] { 8, 15, 27, 34, 40 }),
+            new(SWLOR.Game.Server.Service.Item.SpearBaseItemTypes, new[] { 8, 16, 29, 37, 43 }, new[] { 7, 14, 25, 32, 38 }),
+            new(SWLOR.Game.Server.Service.Item.TwinBladeBaseItemTypes, new[] { 8, 13, 18, 22, 27 }, new[] { 7, 12, 16, 20, 25 }),
+            new(SWLOR.Game.Server.Service.Item.SaberstaffBaseItemTypes, new[] { 8, 13, 18, 22, 27 }, new[] { 7, 12, 16, 20, 25 }),
+            new(SWLOR.Game.Server.Service.Item.KatarBaseItemTypes, new[] { 8, 10, 13, 15, 19 }, new[] { 7, 9, 11, 13, 16 }),
+            new(SWLOR.Game.Server.Service.Item.StaffBaseItemTypes, new[] { 6, 10, 15, 19, 24 }, new[] { 5, 9, 13, 17, 21 }),
+            new(SWLOR.Game.Server.Service.Item.PistolBaseItemTypes, new[] { 6, 10, 15, 19, 24 }, new[] { 5, 9, 13, 16, 20 }),
+            new(SWLOR.Game.Server.Service.Item.ThrowingWeaponBaseItemTypes, new[] { 4, 7, 11, 14, 17 }, new[] { 4, 6, 9, 12, 15 }),
+            new(SWLOR.Game.Server.Service.Item.RifleBaseItemTypes, new[] { 8, 15, 27, 34, 39 }, new[] { 7, 14, 25, 31, 36 }),
+            new(new[] { BaseItem.Lightsaber }, new[] { 8, 12, 16, 20, 24 }, new[] { 6, 10, 14, 17, 21 }),
+            new(new[] { BaseItem.Electroblade }, new[] { 6, 10, 15, 19, 24 }, new[] { 5, 9, 13, 17, 21 }),
+        };
+
+        private static readonly WeaponDamageScale TrainingSaberDamageScale =
+            new(new[] { BaseItem.Lightsaber }, new[] { 6, 10, 15, 19, 24 }, new[] { 5, 9, 13, 17, 21 });
+
+        private static readonly HashSet<string> TrainingSaberDamageResrefs = new(StringComparer.OrdinalIgnoreCase)
+        {
+            "saber_train_1",
+            "saber_train_2",
+            "saber_train_3",
+            "saber_train_4",
+            "saber_train_5",
+            "fld_trnsaber",
+            "vet_trnsaber",
+            "prm_trnsaber",
+            "asc_trnsaber",
+        };
 
         private static readonly Dictionary<string, int> RawDamageEnhancementAmountsByResref = new()
         {
@@ -51,23 +75,45 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
 
         private static readonly Dictionary<string, int> DelayCostByResref = new(StringComparer.OrdinalIgnoreCase)
         {
-            ["t_longsword"] = 34,
-            ["t_katar"] = 32,
-            ["t_twinblade"] = 48,
-            ["t_knife"] = 32,
-            ["t_staff"] = 44,
-            ["t_rifle"] = 50,
-            ["t_greatsword"] = 50,
-            ["t_pistol"] = 40,
-            ["t_electroblade"] = 36,
-            ["t_spear"] = 46,
-            ["t_shuriken"] = 32,
-            ["t_twin_elec"] = 48,
+            ["t_longsword"] = 27,
+            ["t_katar"] = 25,
+            ["t_twinblade"] = 39,
+            ["t_knife"] = 25,
+            ["t_staff"] = 35,
+            ["t_rifle"] = 41,
+            ["t_greatsword"] = 41,
+            ["t_pistol"] = 31,
+            ["t_electroblade"] = 28,
+            ["t_spear"] = 37,
+            ["t_shuriken"] = 25,
+            ["t_twin_elec"] = 39,
 
-            ["byyskwarriorswor"] = 31,
-            ["sith_blade"] = 31,
-            ["wswss002"] = 31,
+            ["byyskwarriorswor"] = 27,
+            ["sith_blade"] = 27,
+            ["wswss002"] = 27,
         };
+
+        private static HashSet<BaseItem> BuildWeaponBaseItemTypes()
+        {
+            return new[]
+                {
+                    SWLOR.Game.Server.Service.Item.VibrobladeBaseItemTypes,
+                    SWLOR.Game.Server.Service.Item.KatarBaseItemTypes,
+                    SWLOR.Game.Server.Service.Item.TwinBladeBaseItemTypes,
+                    SWLOR.Game.Server.Service.Item.VibroknifeBaseItemTypes,
+                    SWLOR.Game.Server.Service.Item.StaffBaseItemTypes,
+                    SWLOR.Game.Server.Service.Item.RifleBaseItemTypes,
+                    SWLOR.Game.Server.Service.Item.HeavyVibrobladeBaseItemTypes,
+                    SWLOR.Game.Server.Service.Item.PistolBaseItemTypes,
+                    SWLOR.Game.Server.Service.Item.LightsaberBaseItemTypes,
+                    SWLOR.Game.Server.Service.Item.SpearBaseItemTypes,
+                    SWLOR.Game.Server.Service.Item.ThrowingWeaponBaseItemTypes,
+                    SWLOR.Game.Server.Service.Item.SaberstaffBaseItemTypes,
+                    SWLOR.Game.Server.Service.Item.CreatureBaseItemTypes,
+                }
+                .SelectMany(x => x)
+                .ToHashSet();
+        }
 
         public static bool MigrateSerializedObject(string serializedObject, out string migratedSerializedObject)
         {
@@ -131,13 +177,18 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             if (!WeaponBaseItemTypes.Contains(baseItem))
                 return wasMigrated;
 
+            var hasTargetWeaponDelay = HasTargetWeaponDelay(item);
             wasMigrated |= MigrateWeaponItem(item);
+            if (!hasTargetWeaponDelay)
+                wasMigrated |= MigrateWeaponDamageAmountItem(item);
+
             wasMigrated |= MigrateWeaponDelayItem(item);
             return wasMigrated;
         }
 
         private static bool MigrateWeaponItem(uint item)
         {
+            var baseItem = GetBaseItemType(item);
             var damageProperties = new List<(ItemProperty Property, int SubType, int Value)>();
             var damageTypeProperties = new List<(ItemProperty Property, int SubType)>();
 
@@ -155,10 +206,10 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             }
 
             if (damageProperties.Count <= 0)
-                return NormalizeDamageTypePropertiesWithoutDmg(item, damageTypeProperties);
+                return NormalizeDamageTypePropertiesWithoutDmg(item, baseItem, damageTypeProperties);
 
             var damageType = ResolveDamageType(damageProperties, damageTypeProperties);
-            if (!ShouldMigrate(damageProperties, damageTypeProperties, damageType))
+            if (!ShouldMigrate(baseItem, damageProperties, damageTypeProperties, damageType))
                 return false;
 
             var damage = damageProperties.Sum(x => x.Value);
@@ -181,7 +232,8 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
                 false,
                 false);
 
-            if (!damageType.IsPhysicalDamageType())
+            if (!ShouldRemoveWeaponDamageType(baseItem) &&
+                !damageType.IsPhysicalDamageType())
             {
                 BiowareXP2.IPSafeAddItemProperty(
                     item,
@@ -191,6 +243,47 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
                     false,
                     false);
             }
+
+            return true;
+        }
+
+        private static bool MigrateWeaponDamageAmountItem(uint item)
+        {
+            var baseItem = GetBaseItemType(item);
+            var resref = GetResRef(item);
+            if (!TryGetWeaponDamageScale(baseItem, resref, out var scale))
+                return false;
+
+            var damageProperties = new List<(ItemProperty Property, int Value)>();
+            for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
+            {
+                if (GetItemPropertyType(ip) == ItemPropertyType.DMG)
+                    damageProperties.Add((ip, GetItemPropertyCostTableValue(ip)));
+            }
+
+            if (damageProperties.Count <= 0)
+                return false;
+
+            var currentDamage = damageProperties.Sum(x => x.Value);
+            var targetDamage = CalculateScaledWeaponDamage(currentDamage, scale.OldDamage, scale.NewDamage);
+            if (damageProperties.Count == 1 &&
+                damageProperties[0].Value == targetDamage)
+            {
+                return false;
+            }
+
+            foreach (var property in damageProperties)
+            {
+                RemoveItemProperty(item, property.Property);
+            }
+
+            BiowareXP2.IPSafeAddItemProperty(
+                item,
+                ItemPropertyCustom(ItemPropertyType.DMG, -1, targetDamage),
+                0.0f,
+                AddItemPropertyPolicy.ReplaceExisting,
+                false,
+                false);
 
             return true;
         }
@@ -230,6 +323,26 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             return true;
         }
 
+        private static bool HasTargetWeaponDelay(uint item)
+        {
+            var targetDelayCost = GetTargetDelayCost(item);
+            if (!targetDelayCost.HasValue)
+                return false;
+
+            var delayPropertyCount = 0;
+            var hasTargetDelay = false;
+            for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
+            {
+                if (GetItemPropertyType(ip) != ItemPropertyType.Delay)
+                    continue;
+
+                delayPropertyCount++;
+                hasTargetDelay |= GetItemPropertyCostTableValue(ip) == targetDelayCost.Value;
+            }
+
+            return delayPropertyCount == 1 && hasTargetDelay;
+        }
+
         private static int? GetTargetDelayCost(uint item)
         {
             var resref = GetResRef(item);
@@ -241,6 +354,77 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
 
             var baseItem = GetBaseItemType(item);
             return WeaponDelay.GetWeaponDelay(baseItem);
+        }
+
+        private static bool TryGetWeaponDamageScale(BaseItem baseItem, string resref, out WeaponDamageScale scale)
+        {
+            if (!string.IsNullOrWhiteSpace(resref) &&
+                TrainingSaberDamageResrefs.Contains(resref))
+            {
+                scale = TrainingSaberDamageScale;
+                return true;
+            }
+
+            foreach (var candidate in WeaponDamageScales)
+            {
+                if (!candidate.BaseItems.Contains(baseItem))
+                    continue;
+
+                scale = candidate;
+                return true;
+            }
+
+            scale = null;
+            return false;
+        }
+
+        private static int CalculateScaledWeaponDamage(int damage, IReadOnlyList<int> oldDamage, IReadOnlyList<int> newDamage)
+        {
+            if (damage <= oldDamage[0])
+            {
+                return InterpolateWeaponDamage(
+                    damage,
+                    oldDamage[0],
+                    oldDamage[1],
+                    newDamage[0],
+                    newDamage[1]);
+            }
+
+            for (var index = 0; index < oldDamage.Count - 1; index++)
+            {
+                if (damage > oldDamage[index + 1])
+                    continue;
+
+                return InterpolateWeaponDamage(
+                    damage,
+                    oldDamage[index],
+                    oldDamage[index + 1],
+                    newDamage[index],
+                    newDamage[index + 1]);
+            }
+
+            var last = oldDamage.Count - 1;
+            return InterpolateWeaponDamage(
+                damage,
+                oldDamage[last - 1],
+                oldDamage[last],
+                newDamage[last - 1],
+                newDamage[last]);
+        }
+
+        private static int InterpolateWeaponDamage(
+            int damage,
+            int oldLow,
+            int oldHigh,
+            int newLow,
+            int newHigh)
+        {
+            var oldRange = oldHigh - oldLow;
+            if (oldRange == 0)
+                return Math.Max(1, newLow);
+
+            var scaled = newLow + (damage - oldLow) * (newHigh - newLow) / (double)oldRange;
+            return Math.Max(1, (int)Math.Round(scaled, MidpointRounding.AwayFromZero));
         }
 
         private static bool MigrateEnhancementItem(uint item)
@@ -339,8 +523,20 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
 
         private static bool NormalizeDamageTypePropertiesWithoutDmg(
             uint item,
+            BaseItem baseItem,
             List<(ItemProperty Property, int SubType)> damageTypeProperties)
         {
+            if (ShouldRemoveWeaponDamageType(baseItem) &&
+                damageTypeProperties.Count > 0)
+            {
+                foreach (var property in damageTypeProperties)
+                {
+                    RemoveItemProperty(item, property.Property);
+                }
+
+                return true;
+            }
+
             if (damageTypeProperties.Count <= 1 &&
                 damageTypeProperties.All(x => TryGetCharacterDamageType(x.SubType, out var damageType) && !damageType.IsPhysicalDamageType()))
             {
@@ -369,10 +565,17 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
         }
 
         private static bool ShouldMigrate(
+            BaseItem baseItem,
             List<(ItemProperty Property, int SubType, int Value)> damageProperties,
             List<(ItemProperty Property, int SubType)> damageTypeProperties,
             CombatDamageType damageType)
         {
+            if (ShouldRemoveWeaponDamageType(baseItem) &&
+                damageTypeProperties.Count > 0)
+            {
+                return true;
+            }
+
             if (damageProperties.Count != 1 ||
                 damageProperties.Any(x => x.SubType != -1 && x.SubType != 0))
                 return true;
@@ -383,6 +586,11 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             return damageTypeProperties.Count != 1 ||
                    !TryGetCharacterDamageType(damageTypeProperties[0].SubType, out var existingDamageType) ||
                    existingDamageType != damageType;
+        }
+
+        private static bool ShouldRemoveWeaponDamageType(BaseItem baseItem)
+        {
+            return SWLOR.Game.Server.Service.Item.VibroknifeBaseItemTypes.Contains(baseItem);
         }
 
         private static CombatDamageType ResolveDamageType(
@@ -446,5 +654,10 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             damageType = (CombatDamageType)damageTypeId;
             return damageType.IsCharacterDamageType();
         }
+
+        private sealed record WeaponDamageScale(
+            IReadOnlyCollection<BaseItem> BaseItems,
+            IReadOnlyList<int> OldDamage,
+            IReadOnlyList<int> NewDamage);
     }
 }

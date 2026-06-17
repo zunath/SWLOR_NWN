@@ -100,7 +100,7 @@ public class CombatAttackDelayTests
     [Test]
     public void LegacySlingPistolDelay_UsesPistolDelay()
     {
-        WeaponDelay.GetWeaponDelay(BaseItem.Sling).Should().Be(37);
+        WeaponDelay.GetWeaponDelay(BaseItem.Sling).Should().Be(31);
     }
 
     [Test]
@@ -186,14 +186,18 @@ public class CombatAttackDelayTests
         serverMigrationSource.Should().Contain("SerializedItemWeaponDamageTypeMigration.MigrateSerializedObject");
         weaponDelayMigrationSource.Should().Contain("ItemPropertyType.Delay");
         weaponDelayMigrationSource.Should().Contain("WeaponDelay.GetWeaponDelay(baseItem)");
-        weaponDelayMigrationSource.Should().Contain("[\"t_knife\"] = 32");
-        weaponDelayMigrationSource.Should().Contain("[\"t_shuriken\"] = 32");
+        weaponDelayMigrationSource.Should().Contain("BuildWeaponBaseItemTypes");
+        weaponDelayMigrationSource.Should().Contain("StaffBaseItemTypes");
+        weaponDelayMigrationSource.Should().Contain("[\"t_knife\"] = 25");
+        weaponDelayMigrationSource.Should().Contain("[\"t_shuriken\"] = 25");
+        weaponDelayMigrationSource.Should().Contain("[\"t_rifle\"] = 41");
+        weaponDelayMigrationSource.Should().Contain("[\"t_twinblade\"] = 39");
         weaponDelayMigrationSource.Should().Contain("GetHasInventory(obj)");
         weaponDelayMigrationSource.Should().Contain("GetItemInSlot((InventorySlot)index, creature)");
     }
 
     [Test]
-    public void ModuleNaturalWeaponDelayProperties_AreNormalized()
+    public void ModuleWeaponDelayProperties_AreNormalized()
     {
         var root = FindRepositoryRoot();
         var moduleRoot = Path.Combine(root.FullName, "Module");
@@ -204,7 +208,7 @@ public class CombatAttackDelayTests
         foreach (var file in files)
         {
             using var document = JsonDocument.Parse(File.ReadAllText(file));
-            InspectNaturalWeaponDelays(document.RootElement, Path.GetRelativePath(root.FullName, file), string.Empty, findings);
+            InspectWeaponDelays(document.RootElement, Path.GetRelativePath(root.FullName, file), string.Empty, findings);
         }
 
         findings.Should().BeEmpty(string.Join("\n", findings.Take(25)));
@@ -220,15 +224,38 @@ public class CombatAttackDelayTests
         return directory!;
     }
 
-    private static readonly HashSet<int> NaturalWeaponBaseItems = new()
-    {
-        (int)BaseItem.CreatureSlashWeapon,
-        (int)BaseItem.CreaturePierceWeapon,
-        (int)BaseItem.CreatureBludgeonWeapon,
-        (int)BaseItem.CreatureSlashPierceWeapon
-    };
+    private static readonly IReadOnlyDictionary<int, int> WeaponDelayCostByBaseItem = BuildWeaponDelayCostByBaseItem();
 
-    private static void InspectNaturalWeaponDelays(
+    private static IReadOnlyDictionary<int, int> BuildWeaponDelayCostByBaseItem()
+    {
+        var delays = new Dictionary<int, int>();
+        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.VibrobladeBaseItemTypes, 27);
+        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.KatarBaseItemTypes, 25);
+        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.TwinBladeBaseItemTypes, 39);
+        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.VibroknifeBaseItemTypes, 25);
+        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.StaffBaseItemTypes, 35);
+        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.RifleBaseItemTypes, 41);
+        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.HeavyVibrobladeBaseItemTypes, 41);
+        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.PistolBaseItemTypes, 31);
+        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.LightsaberBaseItemTypes, 28);
+        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.SpearBaseItemTypes, 37);
+        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.ThrowingWeaponBaseItemTypes, 25);
+        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.SaberstaffBaseItemTypes, 39);
+        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.CreatureBaseItemTypes, 29);
+
+        return delays;
+    }
+
+    private static void AddWeaponDelays(
+        Dictionary<int, int> delays,
+        IEnumerable<BaseItem> baseItems,
+        int delayCost)
+    {
+        foreach (var baseItem in baseItems)
+            delays[(int)baseItem] = delayCost;
+    }
+
+    private static void InspectWeaponDelays(
         JsonElement element,
         string file,
         string path,
@@ -238,17 +265,17 @@ public class CombatAttackDelayTests
         {
             case JsonValueKind.Object:
                 if (TryGetWrappedInt(element, "BaseItem", out var baseItem) &&
-                    NaturalWeaponBaseItems.Contains(baseItem) &&
+                    WeaponDelayCostByBaseItem.TryGetValue(baseItem, out var expectedDelayCost) &&
                     TryGetWrappedValue(element, "PropertiesList", out var propertiesList))
                 {
                     var delayCosts = GetDelayCostValues(propertiesList).ToList();
                     if (delayCosts.Count == 0)
                     {
-                        findings.Add($"{file}:{path} missing natural weapon Delay");
+                        findings.Add($"{file}:{path} missing weapon Delay");
                     }
-                    else if (delayCosts.Any(x => x != 29))
+                    else if (delayCosts.Any(x => x != expectedDelayCost))
                     {
-                        findings.Add($"{file}:{path} natural weapon Delay [{string.Join(", ", delayCosts)}] should be 29");
+                        findings.Add($"{file}:{path} weapon Delay [{string.Join(", ", delayCosts)}] should be {expectedDelayCost}");
                     }
                 }
 
@@ -257,7 +284,7 @@ public class CombatAttackDelayTests
                     if (property.Name == "__struct_id")
                         continue;
 
-                    InspectNaturalWeaponDelays(
+                    InspectWeaponDelays(
                         property.Value,
                         file,
                         string.IsNullOrWhiteSpace(path) ? property.Name : $"{path}.{property.Name}",
@@ -268,7 +295,7 @@ public class CombatAttackDelayTests
                 var index = 0;
                 foreach (var item in element.EnumerateArray())
                 {
-                    InspectNaturalWeaponDelays(item, file, $"{path}[{index}]", findings);
+                    InspectWeaponDelays(item, file, $"{path}[{index}]", findings);
                     index++;
                 }
                 break;

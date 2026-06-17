@@ -87,7 +87,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
             ResistanceType statusResistanceType,
             VisualEffect targetVisualEffect = VisualEffect.None,
             float maxRange = 0f,
-            int enmityBonus = 0)
+            int enmityBonus = 0,
+            Action<uint, uint> afterSuccessfulHit = null)
         {
             var ability = builder
                 .Create(feat, profile.PlayerPerkType)
@@ -121,6 +122,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                     statusResistanceType: statusResistanceType,
                     targetVisualEffect: targetVisualEffect,
                     enmityBonus: enmityBonus,
+                    afterSuccessfulHit: hitTarget => afterSuccessfulHit?.Invoke(activator, hitTarget),
                     useNPCStatScaling: ShouldUseNPCStatScaling(activator));
             });
         }

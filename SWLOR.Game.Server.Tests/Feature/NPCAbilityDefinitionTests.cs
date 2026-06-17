@@ -105,6 +105,19 @@ public class NPCAbilityDefinitionTests
         }
     }
 
+    [Test]
+    public void ForceSunder_AppliesBeamFromCasterAfterSuccessfulHit()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText(
+            (root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "NPC" / "ForceSunderAbilityDefinition.cs").FullName);
+        var normalizedSource = source.Replace("\r\n", "\n");
+
+        source.Should().Contain("afterSuccessfulHit: ApplyForceSunderBeam");
+        source.Should().Contain("EffectBeam(VisualEffect.Vfx_Beam_Drain, activator, BodyNode.Hand)");
+        normalizedSource.Should().NotContain("ResistanceType.Disruption,\n                VisualEffect.Vfx_Beam_Drain,");
+    }
+
     private static Dictionary<FeatType, AbilityDetail> BuildNPCAbilities()
     {
         var definitionType = typeof(IAbilityListDefinition);

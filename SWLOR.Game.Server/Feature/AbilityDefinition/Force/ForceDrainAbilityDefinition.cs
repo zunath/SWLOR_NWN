@@ -153,7 +153,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void ApplyDrainVisual(uint activator, uint target)
         {
-            var drainBeam = EffectBeam(VisualEffect.Vfx_Beam_Drain, activator, BodyNode.Hand, true);
+            var drainBeam = EffectBeam(VisualEffect.Vfx_Beam_Drain, activator, BodyNode.Hand);
             AssignCommand(activator, () => ApplyEffectToObject(DurationType.Temporary, drainBeam, target, 2.0f));
         }
 

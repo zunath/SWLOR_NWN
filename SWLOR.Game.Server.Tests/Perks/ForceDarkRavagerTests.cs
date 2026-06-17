@@ -132,7 +132,12 @@ public class ForceDarkRavagerTests
         forceLightning.Should().NotContain("damageType: CombatDamageType.Electrical");
         forceLightning.Should().Contain("VisualEffect.Vfx_Beam_Silent_Lightning");
         forceLightning.Should().Contain("VisualEffect.Vfx_Imp_Lightning_S");
+        forceLightning.Should().NotContain("EffectBeam(VisualEffect.Vfx_Beam_Silent_Lightning, activator, BodyNode.Hand, true");
         forceLightning.Should().NotContain("VisualEffect.Vfx_Com_Hit_Electrical");
+
+        var forceDrain = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Force" / "ForceDrainAbilityDefinition.cs").FullName);
+        forceDrain.Should().Contain("VisualEffect.Vfx_Beam_Drain");
+        forceDrain.Should().NotContain("EffectBeam(VisualEffect.Vfx_Beam_Drain, activator, BodyNode.Hand, true");
     }
 
     [Test]

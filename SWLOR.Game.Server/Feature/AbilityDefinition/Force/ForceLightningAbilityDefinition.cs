@@ -144,7 +144,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void ApplyLightningHitEffects(uint activator, uint target)
         {
-            var lightningBeam = EffectBeam(VisualEffect.Vfx_Beam_Silent_Lightning, activator, BodyNode.Hand, true);
+            var lightningBeam = EffectBeam(VisualEffect.Vfx_Beam_Silent_Lightning, activator, BodyNode.Hand);
             var lightningBurst = EffectVisualEffect(VisualEffect.Vfx_Imp_Lightning_S);
 
             AssignCommand(activator, () =>

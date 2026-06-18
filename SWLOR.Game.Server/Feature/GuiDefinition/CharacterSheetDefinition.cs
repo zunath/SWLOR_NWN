@@ -427,6 +427,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         AddActionButton(actions, "Settings", model => model.OnClickSettings());
                         AddActionButton(actions, "HoloCom", model => model.OnClickHoloCom(), model => model.IsHolocomEnabled);
                         AddActionButton(actions, "Key Items", model => model.OnClickKeyItems());
+                        AddActionButton(actions, "Guide", model => model.OnClickGuide());
                     });
                 })
                     .SetWidth(128f);

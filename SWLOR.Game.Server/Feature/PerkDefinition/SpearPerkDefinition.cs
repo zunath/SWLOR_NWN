@@ -356,13 +356,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.InterruptionStrike1)
-                .Description("Your target's ability activation is interrupted. Additionally, the target is inflicted with Foggy Mind, increasing activation times by 2 seconds for 30 seconds.")
+                .Description("Interrupts your target's ability activation and inflicts Foggy Mind for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Spear, 12)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.InterruptionStrike2)
-                .Description("Your target's ability activation is interrupted. Additionally, the target is inflicted with Foggy Mind, increasing activation times by 2 seconds for 30 seconds.")
+                .Description("Deals weapon DMG + 20, interrupts your target's ability activation, and inflicts Foggy Mind for 30 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Spear, 28);
         }

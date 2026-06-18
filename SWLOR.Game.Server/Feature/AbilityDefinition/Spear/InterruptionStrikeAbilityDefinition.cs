@@ -9,6 +9,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
 {
     public class InterruptionStrikeAbilityDefinition : SpearActiveAbilityDefinitionBase, IAbilityListDefinition
     {
+        private const int InterruptionStrike1Damage = 0;
+        private const int InterruptionStrike2Damage = 20;
+        private const int FoggyMindDurationSeconds = 30;
+        private const int FoggyMindActivationDelaySeconds = 2;
+
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
@@ -21,11 +26,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
                     .HasRecastDelay(RecastGroup.InterruptionStrike, 30f)
                     .UsesAnimation(Animation.DoubleThrust),
                 SkillType.Spear,
-                0,
-                30,
+                InterruptionStrike1Damage,
+                FoggyMindDurationSeconds,
                 typeof(FoggyMindStatusEffect),
                 5,
-                FoggyMind(2));
+                FoggyMind(FoggyMindActivationDelaySeconds));
             ConfigureCurrentAttackTargetInterrupt(
                 builder
                     .Create(FeatType.InterruptionStrike2, PerkType.InterruptionStrike)
@@ -34,11 +39,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
                     .HasRecastDelay(RecastGroup.InterruptionStrike, 30f)
                     .UsesAnimation(Animation.DoubleThrust),
                 SkillType.Spear,
-                0,
-                30,
+                InterruptionStrike2Damage,
+                FoggyMindDurationSeconds,
                 typeof(FoggyMindStatusEffect),
                 8,
-                FoggyMind(2));
+                FoggyMind(FoggyMindActivationDelaySeconds));
 
             return builder.Build();
         }

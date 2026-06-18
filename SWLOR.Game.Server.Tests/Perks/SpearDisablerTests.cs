@@ -33,6 +33,12 @@ public class SpearDisablerTests
 
         var disruptionField = new DisruptionFieldAbilityDefinition().BuildAbilities()[FeatType.DisruptionField1];
         AssertAbility(disruptionField, "Disruption Field", 1, RecastGroup.DisruptionField, 180f, 0f, 10, true, false, false, true, AbilityActivationType.Casted);
+        disruptionField.Targeting.Should().NotBeNull();
+        disruptionField.Targeting!.Spell.Should().Be(Spell.DisruptionField1);
+        disruptionField.Targeting.Shape.Should().Be(AbilityTargetingShapeType.Sphere);
+        disruptionField.Targeting.SizeX.Should().Be(5f);
+        disruptionField.Targeting.SizeY.Should().Be(0f);
+        disruptionField.Targeting.Flags.Should().HaveFlag(AbilityTargetingFlags.HarmsEnemies);
 
         var totalForceDenial = new TotalForceDenialAbilityDefinition().BuildAbilities()[FeatType.TotalForceDenial1];
         AssertAbility(totalForceDenial, "Total Force Denial", 1, RecastGroup.TotalForceDenial, 300f, 2f, 14, true, false, false, true, AbilityActivationType.Casted);
@@ -63,6 +69,30 @@ public class SpearDisablerTests
 
         var forcebane = new ForcebaneStatusEffect();
         forcebane.StatGroup.Stats[StatType.FPRestorePercentAdjustment].Should().Be(-75);
+    }
+
+    [Test]
+    public void InterruptionStrikePerks_MatchCombatBible()
+    {
+        var perks = BuildSpearDisablerPerksWithout2daLookup();
+        var interruptionStrike = perks[PerkType.InterruptionStrike];
+
+        AssertPerkLevel(
+            interruptionStrike,
+            "Interruption Strike",
+            1,
+            3,
+            12,
+            FeatType.InterruptionStrike1,
+            "Interrupts your target's ability activation and inflicts Foggy Mind for 30 seconds.");
+        AssertPerkLevel(
+            interruptionStrike,
+            "Interruption Strike",
+            2,
+            4,
+            28,
+            FeatType.InterruptionStrike2,
+            "Deals weapon DMG + 20, interrupts your target's ability activation, and inflicts Foggy Mind for 30 seconds.");
     }
 
     [Test]
@@ -104,6 +134,31 @@ public class SpearDisablerTests
             abilityRow["TargetSizeY"].Should().Be(targetSizeY);
             abilityRow["TargetFlags"].Should().Be(targetFlags);
         }
+    }
+
+    [Test]
+    public void InterruptionStrikeSource_RankTwoAddsBibleDamage()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Spear" / "InterruptionStrikeAbilityDefinition.cs").FullName);
+
+        source.Should().Contain("InterruptionStrike1Damage = 0");
+        source.Should().Contain("InterruptionStrike2Damage = 20");
+        source.Should().Contain("FoggyMindDurationSeconds = 30");
+        source.Should().Contain("FoggyMindActivationDelaySeconds = 2");
+    }
+
+    [Test]
+    public void DisruptionFieldSource_DeclaresAreaVisualEffects()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Spear" / "DisruptionFieldAbilityDefinition.cs").FullName);
+
+        source.Should().Contain("DisruptionFieldMarkerVisualEffect = VisualEffect.Vfx_Dur_Aura_Pulse_Cyan_Black");
+        source.Should().Contain("DisruptionFieldPulseVisualEffect = VisualEffect.Vfx_Fnf_Gas_Explosion_Mind");
+        source.Should().Contain("DurationType.Temporary");
+        source.Should().Contain("EffectVisualEffect(DisruptionFieldMarkerVisualEffect, false, 2f)");
+        source.Should().Contain("EffectVisualEffect(DisruptionFieldPulseVisualEffect)");
     }
 
     private static void AssertPerkLevel(

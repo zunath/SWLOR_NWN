@@ -6,7 +6,6 @@ using SWLOR.Game.Server.Service.AIService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.Associate;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
 namespace SWLOR.Game.Server.Service
@@ -16,7 +15,6 @@ namespace SWLOR.Game.Server.Service
         private const float AggroRadius = 8.5f;
         private const float ReturnHomeRadius = 15f;
         private const float CombatLeashRadius = 45f;
-        private const float ActiveCombatLeashRadius = 15f;
         private const float CombatLeashGraceSeconds = 8f;
         private const float LeashEvadeMovementRateFactor = 3.0f;
         private const int ProximityEnmityAmount = 1;
@@ -564,10 +562,6 @@ namespace SWLOR.Game.Server.Service
             var leashRadius = GetCombatLeashRadius(creature, target);
             var creatureOutsideLeashRadius = IsOutsideHomeRadius(creature, homeLocation, leashRadius);
 
-            if (IsNearActiveCombatTarget(creature, target) ||
-                IsNearHostilePlayerOrCompanion(creature))
-                return false;
-
             if (!GetIsObjectValid(target))
                 return creatureOutsideLeashRadius;
 
@@ -604,52 +598,6 @@ namespace SWLOR.Game.Server.Service
             }
 
             return false;
-        }
-
-        private static bool IsNearActiveCombatTarget(uint creature, uint target)
-        {
-            if (IsWithinCombatEngagementRange(creature, target))
-                return true;
-
-            var targetMaster = GetMaster(target);
-            return GetIsObjectValid(targetMaster) &&
-                   GetIsPC(targetMaster) &&
-                   IsWithinCombatEngagementRange(creature, targetMaster);
-        }
-
-        private static bool IsNearHostilePlayerOrCompanion(uint creature)
-        {
-            for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())
-            {
-                if (GetIsDM(player) ||
-                    GetArea(player) != GetArea(creature) ||
-                    !GetIsEnemy(player, creature))
-                {
-                    continue;
-                }
-
-                if (IsWithinCombatEngagementRange(creature, player))
-                    return true;
-
-                var companion = GetAssociate(AssociateType.Henchman, player);
-                if (IsWithinCombatEngagementRange(creature, companion))
-                    return true;
-            }
-
-            return false;
-        }
-
-        private static bool IsWithinCombatEngagementRange(uint creature, uint target)
-        {
-            return GetIsObjectValid(creature) &&
-                   GetIsObjectValid(target) &&
-                   GetArea(creature) == GetArea(target) &&
-                   GetDistanceBetween(creature, target) <= GetActiveCombatLeashRadius(creature, target);
-        }
-
-        private static float GetActiveCombatLeashRadius(uint creature, uint target)
-        {
-            return ActiveCombatLeashRadius + GetHitDistance(creature) + GetHitDistance(target);
         }
 
         private static float GetCombatLeashRadius(uint creature, uint target)

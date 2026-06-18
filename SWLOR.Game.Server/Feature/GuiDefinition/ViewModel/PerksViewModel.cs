@@ -26,6 +26,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private int _pages;
         private bool _initialLoadDone;
 
+        private enum PerkSortOrder
+        {
+            AlphabeticalAscending = 0,
+            AlphabeticalDescending = 1,
+            SkillLevelAscending = 2,
+            SkillLevelDescending = 3
+        }
+
         public GuiBindingList<GuiComboEntry> PageNumbers
         {
             get => Get<GuiBindingList<GuiComboEntry>>();
@@ -33,6 +41,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         }
 
         public GuiBindingList<GuiComboEntry> Categories
+        {
+            get => Get<GuiBindingList<GuiComboEntry>>();
+            set => Set(value);
+        }
+
+        public GuiBindingList<GuiComboEntry> SortOptions
         {
             get => Get<GuiBindingList<GuiComboEntry>>();
             set => Set(value);
@@ -73,8 +87,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set
             {
                 Set(value);
-                SelectedPerkIndex = -1;
-                LoadPerks();
+                ResetPerkList();
             }
         }
 
@@ -84,8 +97,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set
             {
                 Set(value);
-                SelectedPerkIndex = -1;
-                LoadPerks();
+                ResetPerkList();
+            }
+        }
+
+        public int SelectedSortOrderId
+        {
+            get => Get<int>();
+            set
+            {
+                Set(value);
+                ResetPerkList();
             }
         }
 
@@ -198,6 +220,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             PerkButtonTexts = new GuiBindingList<string>();
             PerkDetailSelected = new GuiBindingList<bool>();
             SelectedRequirements = new GuiBindingList<string>();
+            SortOptions = BuildSortOptions();
         }
 
         protected override void Initialize(GuiPayloadBase initialPayload)
@@ -207,6 +230,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _initialLoadDone = false;
             SelectedPerkCategoryId = 0;
             SearchText = string.Empty;
+            SelectedSortOrderId = (int)PerkSortOrder.AlphabeticalAscending;
             BuyText = "Buy Upgrade";
             SelectedPage = 1;
             IsPerkSelected = false;
@@ -219,7 +243,32 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             WatchOnClient(model => model.SelectedPerkCategoryId);
             WatchOnClient(model => model.SearchText);
+            WatchOnClient(model => model.SelectedSortOrderId);
             WatchOnClient(model => model.SelectedPage);
+        }
+
+        private static GuiBindingList<GuiComboEntry> BuildSortOptions()
+        {
+            return new GuiBindingList<GuiComboEntry>
+            {
+                new("Alphabetical (A-Z)", (int)PerkSortOrder.AlphabeticalAscending),
+                new("Alphabetical (Z-A)", (int)PerkSortOrder.AlphabeticalDescending),
+                new("Skill Level (Asc)", (int)PerkSortOrder.SkillLevelAscending),
+                new("Skill Level (Desc)", (int)PerkSortOrder.SkillLevelDescending)
+            };
+        }
+
+        private void ResetPerkList()
+        {
+            SelectedPerkIndex = -1;
+
+            if (SelectedPage != 1)
+            {
+                SelectedPage = 1;
+                return;
+            }
+
+            LoadPerks();
         }
 
         private void LoadCategories()
@@ -272,6 +321,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             var playerId = GetObjectUUID(Player);
             var dbPlayer = DB.Get<Player>(playerId);
+            var dbBeast = IsInBeastPerksMode
+                ? DB.Get<Beast>(dbPlayer.ActiveBeastId)
+                : null;
 
             _filteredPerks.Clear();
 
@@ -295,7 +347,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     .ToDictionary(x => x.Key, y => y.Value);
             }
 
-            _pages = perkList.Count / ItemsPerPage + (perkList.Count % ItemsPerPage == 0 ? 0 : 1);
+            var sortedPerks = SortPerks(perkList, dbPlayer, dbBeast).ToList();
+
+            _pages = sortedPerks.Count / ItemsPerPage + (sortedPerks.Count % ItemsPerPage == 0 ? 0 : 1);
 
             for (var x = 1; x <= _pages; x++)
             {
@@ -303,35 +357,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             // Paginate the results
-            perkList = perkList
+            var pagedPerks = sortedPerks
                 .Skip((SelectedPage - 1) * ItemsPerPage)
-                .Take(ItemsPerPage)
-                .ToDictionary(x => x.Key, y => y.Value);
+                .Take(ItemsPerPage);
 
-            foreach (var (type, detail) in perkList)
+            foreach (var (type, detail) in pagedPerks)
             {
-                int rank;
-
-                if (IsInMyPerksMode)
-                {
-                    rank = dbPlayer.Perks.ContainsKey(type)
-                        ? dbPlayer.Perks[type]
-                        : 0;
-                }
-                else
-                {
-                    var dbBeast = DB.Get<Beast>(dbPlayer.ActiveBeastId);
-                    if (dbBeast == null)
-                    {
-                        rank = 0;
-                    }
-                    else
-                    {
-                        rank = dbBeast.Perks.ContainsKey(type)
-                            ? dbBeast.Perks[type]
-                            : 0;
-                    }
-                }
+                var rank = GetCurrentPerkRank(dbPlayer, dbBeast, type);
 
                 var nextUpgrade = detail.PerkLevels.ContainsKey(rank + 1)
                     ? detail.PerkLevels[rank + 1]
@@ -362,6 +394,60 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             PerkButtonTexts = perkButtonTexts;
             PerkDetailSelected = perkDetailSelected;
             PageNumbers = pageNumbers;
+        }
+
+        private IEnumerable<KeyValuePair<PerkType, PerkDetail>> SortPerks(
+            IEnumerable<KeyValuePair<PerkType, PerkDetail>> perks,
+            Player dbPlayer,
+            Beast dbBeast)
+        {
+            var sortOrder = (PerkSortOrder)SelectedSortOrderId;
+
+            return sortOrder switch
+            {
+                PerkSortOrder.AlphabeticalDescending => perks
+                    .OrderByDescending(x => x.Value.Name, StringComparer.OrdinalIgnoreCase),
+                PerkSortOrder.SkillLevelAscending => perks
+                    .OrderBy(x => GetNextRequiredSkillLevel(x.Value, GetCurrentPerkRank(dbPlayer, dbBeast, x.Key)))
+                    .ThenBy(x => x.Value.Name, StringComparer.OrdinalIgnoreCase),
+                PerkSortOrder.SkillLevelDescending => perks
+                    .OrderByDescending(x => GetNextRequiredSkillLevel(x.Value, GetCurrentPerkRank(dbPlayer, dbBeast, x.Key)))
+                    .ThenBy(x => x.Value.Name, StringComparer.OrdinalIgnoreCase),
+                _ => perks.OrderBy(x => x.Value.Name, StringComparer.OrdinalIgnoreCase)
+            };
+        }
+
+        private int GetCurrentPerkRank(Player dbPlayer, Beast dbBeast, PerkType perkType)
+        {
+            if (IsInMyPerksMode)
+            {
+                return dbPlayer.Perks.ContainsKey(perkType)
+                    ? dbPlayer.Perks[perkType]
+                    : 0;
+            }
+
+            if (dbBeast == null)
+                return 0;
+
+            return dbBeast.Perks.ContainsKey(perkType)
+                ? dbBeast.Perks[perkType]
+                : 0;
+        }
+
+        private static int GetNextRequiredSkillLevel(PerkDetail detail, int rank)
+        {
+            var nextUpgrade = detail.PerkLevels.ContainsKey(rank + 1)
+                ? detail.PerkLevels[rank + 1]
+                : null;
+
+            if (nextUpgrade == null)
+                return 0;
+
+            return nextUpgrade.Requirements
+                .OfType<PerkRequirementSkill>()
+                .Select(x => x.RequiredRank)
+                .DefaultIfEmpty(0)
+                .Max();
         }
 
         private string BuildSelectedPerkDetailText(PerkDetail detail, PerkLevel currentUpgrade, PerkLevel nextUpgrade)

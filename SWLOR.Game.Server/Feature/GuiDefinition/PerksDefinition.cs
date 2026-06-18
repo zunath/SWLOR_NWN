@@ -42,6 +42,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .BindSelectedIndex(model => model.SelectedPerkCategoryId)
                             .SetWidth(300f)
                             .BindOptions(model => model.Categories);
+
+                        row.AddComboBox()
+                            .BindSelectedIndex(model => model.SelectedSortOrderId)
+                            .SetWidth(180f)
+                            .BindOptions(model => model.SortOptions);
                         row.AddSpacer();
                     });
 

@@ -3636,7 +3636,25 @@ namespace SWLOR.Game.Server.Service.StatService
         /// Percent critical damage adjustment applied to Rifle critical hits.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        RifleCriticalDamagePercentAdjustment = 620
+        RifleCriticalDamagePercentAdjustment = 620,
+
+        /// <summary>
+        /// Primary PerkType value whose Twin Blade ability can consume Reversal Cut.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        TwinBladeDuelistReversalCutTriggerPrimaryPerkType = 621,
+
+        /// <summary>
+        /// Secondary PerkType value whose Twin Blade ability can consume Reversal Cut.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        TwinBladeDuelistReversalCutTriggerSecondaryPerkType = 622,
+
+        /// <summary>
+        /// Tertiary PerkType value whose Twin Blade ability can consume Reversal Cut.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        TwinBladeDuelistReversalCutTriggerTertiaryPerkType = 623
     }
 
     public class StatTypeAttribute : Attribute

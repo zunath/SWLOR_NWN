@@ -351,6 +351,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(3)
                 .RequirementSkill(SkillType.TwinBlade, 38)
                 .IncreasesStat(StatType.TwinBladeDuelistReversalCut, 1)
+                .IncreasesStat(StatType.TwinBladeDuelistReversalCutTriggerPrimaryPerkType, (int)PerkType.SplitGuardStrike)
+                .IncreasesStat(StatType.TwinBladeDuelistReversalCutTriggerSecondaryPerkType, (int)PerkType.FeintingCut)
+                .IncreasesStat(StatType.TwinBladeDuelistReversalCutTriggerTertiaryPerkType, (int)PerkType.BindingCross)
                 .IncreasesStat(StatType.TwinBladeDuelistReversalCutDamageBonus, 40)
                 .IncreasesStat(StatType.TwinBladeDuelistReversalCutDazedDurationSeconds, 3)
                 .IncreasesStat(StatType.TwinBladeDuelistReversalCutWindowSeconds, 8);

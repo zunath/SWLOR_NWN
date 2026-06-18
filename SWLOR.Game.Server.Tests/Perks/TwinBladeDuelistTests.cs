@@ -81,6 +81,51 @@ public class TwinBladeDuelistTests
     }
 
     [Test]
+    public void ReversalCutReady_RefreshesFromNonTemporaryStatValues()
+    {
+        var root = FindRepositoryRoot();
+        var combatSource = File.ReadAllText((root / "SWLOR.Game.Server" / "Service" / "Combat.cs").FullName);
+        var statSource = File.ReadAllText((root / "SWLOR.Game.Server" / "Service" / "Stat.cs").FullName);
+        var impactBonus = ExtractMethod(combatSource, "public static int GetAbilityImpactBaseDamageBonus(").Replace("\r\n", "\n");
+        var duelistImpactRiders = ExtractMethod(combatSource, "private static void ApplyTwinBladeDuelistImpactRiders(").Replace("\r\n", "\n");
+        var reversalCutTrigger = ExtractMethod(combatSource, "private static bool AbilityMatchesReversalCutTrigger(");
+        var reversalCutReady = ExtractMethod(combatSource, "private static void ApplyReversalCutReady(").Replace("\r\n", "\n");
+        var nonTemporaryStatAdjustment = ExtractMethod(statSource, "public static int GetStatAdjustmentExcludingTemporaryModifiers(");
+        var perks = BuildTwinBladeDuelistPerksWithout2daLookup();
+        var reversalCut = perks[PerkType.ReversalCut].PerkLevels[1];
+
+        reversalCutReady.Should().Contain(
+            "Stat.GetStatAdjustmentExcludingTemporaryModifiers(\n                defender,\n                StatType.TwinBladeDuelistReversalCutDamageBonus)");
+        reversalCutReady.Should().Contain(
+            "Stat.GetStatAdjustmentExcludingTemporaryModifiers(\n                defender,\n                StatType.TwinBladeDuelistReversalCutDazedDurationSeconds)");
+        reversalCutReady.Should().NotContain(
+            "Stat.GetStatAdjustment(defender, StatType.TwinBladeDuelistReversalCutDamageBonus)");
+        reversalCutReady.Should().NotContain(
+            "Stat.GetStatAdjustment(defender, StatType.TwinBladeDuelistReversalCutDazedDurationSeconds)");
+
+        nonTemporaryStatAdjustment.Should().Contain("StatusEffect.GetCreatureStatusEffects(creature).StatGroup.Stats[stat]");
+        nonTemporaryStatAdjustment.Should().Contain("Perk.GetStatBonus(creature, stat)");
+        nonTemporaryStatAdjustment.Should().NotContain("TemporaryStatModifier.GetStatAdjustment");
+
+        reversalCut.StatBonuses
+            .Should()
+            .ContainSingle(x => x.Stat == StatType.TwinBladeDuelistReversalCutTriggerPrimaryPerkType && x.Calculate(0) == (int)PerkType.SplitGuardStrike);
+        reversalCut.StatBonuses
+            .Should()
+            .ContainSingle(x => x.Stat == StatType.TwinBladeDuelistReversalCutTriggerSecondaryPerkType && x.Calculate(0) == (int)PerkType.FeintingCut);
+        reversalCut.StatBonuses
+            .Should()
+            .ContainSingle(x => x.Stat == StatType.TwinBladeDuelistReversalCutTriggerTertiaryPerkType && x.Calculate(0) == (int)PerkType.BindingCross);
+
+        impactBonus.Should().Contain("AbilityMatchesReversalCutTrigger(activator, ability)");
+        duelistImpactRiders.Should().Contain("AbilityMatchesReversalCutTrigger(activator, ability)");
+        reversalCutTrigger.Should().Contain("AbilityMatchesAnyPerkTypeStat(");
+        reversalCutTrigger.Should().Contain("StatType.TwinBladeDuelistReversalCutTriggerPrimaryPerkType");
+        reversalCutTrigger.Should().Contain("StatType.TwinBladeDuelistReversalCutTriggerSecondaryPerkType");
+        reversalCutTrigger.Should().Contain("StatType.TwinBladeDuelistReversalCutTriggerTertiaryPerkType");
+    }
+
+    [Test]
     public void TwinBladeDuelistFeatAndAbilityIcons_AreUniqueAndPresent()
     {
         var root = FindRepositoryRoot();
@@ -245,6 +290,32 @@ public class TwinBladeDuelistTests
         return (Dictionary<PerkType, PerkDetail>)typeof(PerkBuilder)
             .GetField("_perks", BindingFlags.Instance | BindingFlags.NonPublic)!
             .GetValue(builder)!;
+    }
+
+    private static string ExtractMethod(string source, string signature)
+    {
+        var signatureIndex = source.IndexOf(signature, StringComparison.Ordinal);
+        signatureIndex.Should().BeGreaterThanOrEqualTo(0);
+
+        var openBraceIndex = source.IndexOf('{', signatureIndex);
+        openBraceIndex.Should().BeGreaterThanOrEqualTo(0);
+
+        var depth = 0;
+        for (var index = openBraceIndex; index < source.Length; index++)
+        {
+            if (source[index] == '{')
+            {
+                depth++;
+            }
+            else if (source[index] == '}')
+            {
+                depth--;
+                if (depth == 0)
+                    return source.Substring(signatureIndex, index - signatureIndex + 1);
+            }
+        }
+
+        throw new InvalidOperationException($"Could not extract method '{signature}'.");
     }
 
     private static Dictionary<int, Dictionary<string, string>> Read2da(PathInfo path)

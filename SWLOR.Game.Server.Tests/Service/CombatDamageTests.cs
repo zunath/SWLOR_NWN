@@ -661,10 +661,10 @@ public class CombatDamageTests
     }
 
     [Test]
-    public void ModuleVibroknifeItems_DoNotUseNwnBaseDescriptionOrWeaponDamageType()
+    public void WeaponBaseItems_UseStatDescriptionStrRefs()
     {
         var root = FindRepositoryRoot();
-        var vibroknifeBaseItems = BuildVibroknifeBaseItemIds();
+        var expectedDescriptions = BuildWeaponBaseItemStatDescriptionStrRefs();
         var baseItemLines = File.ReadAllLines(Path.Combine(
             root.FullName,
             "SWLOR_Haks",
@@ -673,17 +673,24 @@ public class CombatDamageTests
         var header = Split2daColumns(baseItemLines.First(line => line.Contains("InvSlotWidth")));
         var descriptionIndex = Array.IndexOf(header, "Description");
         descriptionIndex.Should().BeGreaterThanOrEqualTo(0);
+
         var baseItemDescriptions = baseItemLines
             .Select(Split2daColumns)
             .Where(columns => columns.Length > descriptionIndex + 1 &&
                               int.TryParse(columns[0], out var row) &&
-                              vibroknifeBaseItems.Contains(row))
+                              expectedDescriptions.ContainsKey(row))
             .ToDictionary(columns => int.Parse(columns[0]), columns => columns[descriptionIndex + 1]);
 
-        baseItemDescriptions.Keys.Should().BeEquivalentTo(vibroknifeBaseItems);
-        baseItemDescriptions.Values.Should().OnlyContain(
-            description => description == "****",
-            "vibroknife-family base items otherwise show the NWN base description block");
+        baseItemDescriptions.Should().BeEquivalentTo(
+            expectedDescriptions,
+            "weapon base items should show SWLOR stat text instead of vanilla NWN descriptions or Bad Strref");
+    }
+
+    [Test]
+    public void ModuleVibroknifeItems_DoNotUseWeaponDamageTypeOrEmbeddedNwnBaseDescription()
+    {
+        var root = FindRepositoryRoot();
+        var vibroknifeBaseItems = BuildVibroknifeBaseItemIds();
 
         var offenders = new List<string>();
         foreach (var file in Directory.EnumerateFiles(Path.Combine(root.FullName, "Module"), "*.json", SearchOption.AllDirectories))
@@ -1306,6 +1313,40 @@ public class CombatDamageTests
             .SelectMany(x => x)
             .Select(x => (int)x)
             .ToHashSet();
+    }
+
+    private static Dictionary<int, string> BuildWeaponBaseItemStatDescriptionStrRefs()
+    {
+        const string PerceptionMightDescription = "16860217";
+        const string AgilityPerceptionDescription = "16860218";
+        var descriptions = new Dictionary<int, string>();
+
+        AddBaseItemDescription(descriptions, SWLOR.Game.Server.Service.Item.VibrobladeBaseItemTypes, PerceptionMightDescription);
+        AddBaseItemDescription(descriptions, SWLOR.Game.Server.Service.Item.KatarBaseItemTypes, PerceptionMightDescription);
+        AddBaseItemDescription(descriptions, SWLOR.Game.Server.Service.Item.TwinBladeBaseItemTypes, PerceptionMightDescription);
+        AddBaseItemDescription(descriptions, SWLOR.Game.Server.Service.Item.VibroknifeBaseItemTypes, PerceptionMightDescription);
+        AddBaseItemDescription(descriptions, SWLOR.Game.Server.Service.Item.StaffBaseItemTypes, PerceptionMightDescription);
+        AddBaseItemDescription(descriptions, SWLOR.Game.Server.Service.Item.RifleBaseItemTypes, AgilityPerceptionDescription);
+        AddBaseItemDescription(descriptions, SWLOR.Game.Server.Service.Item.HeavyVibrobladeBaseItemTypes, PerceptionMightDescription);
+        AddBaseItemDescription(descriptions, SWLOR.Game.Server.Service.Item.PistolBaseItemTypes, AgilityPerceptionDescription);
+        AddBaseItemDescription(descriptions, SWLOR.Game.Server.Service.Item.LightsaberBaseItemTypes, PerceptionMightDescription);
+        AddBaseItemDescription(descriptions, SWLOR.Game.Server.Service.Item.SpearBaseItemTypes, PerceptionMightDescription);
+        AddBaseItemDescription(descriptions, SWLOR.Game.Server.Service.Item.ThrowingWeaponBaseItemTypes, AgilityPerceptionDescription);
+        AddBaseItemDescription(descriptions, SWLOR.Game.Server.Service.Item.SaberstaffBaseItemTypes, PerceptionMightDescription);
+        AddBaseItemDescription(descriptions, SWLOR.Game.Server.Service.Item.CreatureBaseItemTypes, PerceptionMightDescription);
+
+        return descriptions;
+    }
+
+    private static void AddBaseItemDescription(
+        IDictionary<int, string> descriptions,
+        IEnumerable<BaseItem> baseItems,
+        string description)
+    {
+        foreach (var baseItem in baseItems)
+        {
+            descriptions[(int)baseItem] = description;
+        }
     }
 
     private static HashSet<int> BuildVibroknifeBaseItemIds()

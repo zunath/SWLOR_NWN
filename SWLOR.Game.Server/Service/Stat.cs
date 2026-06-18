@@ -1712,11 +1712,18 @@ namespace SWLOR.Game.Server.Service
 
         public static int GetStatAdjustment(uint creature, StatType stat)
         {
-            var statusAdjustment = StatusEffect.GetCreatureStatusEffects(creature).StatGroup.Stats[stat];
-            var perkAdjustment = Perk.GetStatBonus(creature, stat);
+            var persistentAdjustment = GetStatAdjustmentExcludingTemporaryModifiers(creature, stat);
             var temporaryAdjustment = TemporaryStatModifier.GetStatAdjustment(creature, stat);
 
-            return statusAdjustment + perkAdjustment + temporaryAdjustment;
+            return persistentAdjustment + temporaryAdjustment;
+        }
+
+        public static int GetStatAdjustmentExcludingTemporaryModifiers(uint creature, StatType stat)
+        {
+            var statusAdjustment = StatusEffect.GetCreatureStatusEffects(creature).StatGroup.Stats[stat];
+            var perkAdjustment = Perk.GetStatBonus(creature, stat);
+
+            return statusAdjustment + perkAdjustment;
         }
 
         public static int ApplyHealingReceivedAdjustment(uint creature, int amount)

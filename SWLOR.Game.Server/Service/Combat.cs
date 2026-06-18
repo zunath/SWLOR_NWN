@@ -1338,7 +1338,9 @@ namespace SWLOR.Game.Server.Service
             if (window <= 0)
                 return;
 
-            var damageBonus = Stat.GetStatAdjustment(defender, StatType.TwinBladeDuelistReversalCutDamageBonus);
+            var damageBonus = Stat.GetStatAdjustmentExcludingTemporaryModifiers(
+                defender,
+                StatType.TwinBladeDuelistReversalCutDamageBonus);
             if (damageBonus > 0)
             {
                 TemporaryStatModifier.Replace(
@@ -1349,7 +1351,9 @@ namespace SWLOR.Game.Server.Service
                     StatType.TwinBladeDuelistReversalCut);
             }
 
-            var dazedDuration = Stat.GetStatAdjustment(defender, StatType.TwinBladeDuelistReversalCutDazedDurationSeconds);
+            var dazedDuration = Stat.GetStatAdjustmentExcludingTemporaryModifiers(
+                defender,
+                StatType.TwinBladeDuelistReversalCutDazedDurationSeconds);
             if (dazedDuration > 0)
             {
                 TemporaryStatModifier.Replace(
@@ -2720,7 +2724,8 @@ namespace SWLOR.Game.Server.Service
                 case SkillType.Saberstaff when ability.IsHostileAbility:
                     bonus += Stat.GetStatAdjustment(activator, StatType.SaberstaffConduitFlareDamageBonus);
                     break;
-                case SkillType.TwinBlade when ability.IsHostileAbility:
+                case SkillType.TwinBlade when ability.IsHostileAbility &&
+                    AbilityMatchesReversalCutTrigger(activator, ability):
                     bonus += TemporaryStatModifier.Consume(
                         activator,
                         StatType.TwinBladeDuelistReversalCutDamageBonus,
@@ -2814,7 +2819,7 @@ namespace SWLOR.Game.Server.Service
                     ApplyThrowingDeadeyeImpactRiders(activator, target, ability);
                     break;
                 case SkillType.TwinBlade:
-                    ApplyTwinBladeDuelistImpactRiders(activator, target);
+                    ApplyTwinBladeDuelistImpactRiders(activator, target, ability);
                     break;
                 case SkillType.Vibroknife:
                     ApplyVibroknifeShadowImpactRiders(activator, target, ability);
@@ -3363,8 +3368,13 @@ namespace SWLOR.Game.Server.Service
             StatusEffect.ApplyStatusEffect(activator, target, typeof(MarkingTossStatusEffect), 12f, CombatDamageType.Physical);
         }
 
-        private static void ApplyTwinBladeDuelistImpactRiders(uint activator, uint target)
+        private static void ApplyTwinBladeDuelistImpactRiders(uint activator, uint target, AbilityDetail ability)
         {
+            if (!AbilityMatchesReversalCutTrigger(activator, ability))
+            {
+                return;
+            }
+
             var duration = TemporaryStatModifier.Consume(
                 activator,
                 StatType.TwinBladeDuelistReversalCutDazedDurationSeconds,
@@ -4921,6 +4931,16 @@ namespace SWLOR.Game.Server.Service
                        StatType.HeavyVibrobladeDefenseAbilityCrushingBlowTriggerQuaternaryPerkType,
                        StatType.HeavyVibrobladeDefenseAbilityCrushingBlowTriggerQuinaryPerkType,
                        StatType.HeavyVibrobladeDefenseAbilityCrushingBlowTriggerSenaryPerkType);
+        }
+
+        private static bool AbilityMatchesReversalCutTrigger(uint creature, AbilityDetail ability)
+        {
+            return AbilityMatchesAnyPerkTypeStat(
+                creature,
+                ability,
+                StatType.TwinBladeDuelistReversalCutTriggerPrimaryPerkType,
+                StatType.TwinBladeDuelistReversalCutTriggerSecondaryPerkType,
+                StatType.TwinBladeDuelistReversalCutTriggerTertiaryPerkType);
         }
 
         private static bool AbilityMatchesAnyPerkTypeStat(

@@ -124,6 +124,19 @@ public class StatusEffectIconTests
     }
 
     [Test]
+    public void GameplayIconManifest_CombatAbilityCategoriesMatchGameplayIntent()
+    {
+        var root = FindRepositoryRoot();
+        var abilityRows = ReadGameplayIconManifest(root)
+            .Where(row => row.Type == "Ability")
+            .ToDictionary(row => row.Key, StringComparer.OrdinalIgnoreCase);
+
+        abilityRows["DuelistsChallenge1"].SemanticCategory.Should().Be("Self");
+        abilityRows["ShelterCircle1"].SemanticCategory.Should().Be("Beneficial");
+        abilityRows["SweepingGuard1"].SemanticCategory.Should().Be("Harmful");
+    }
+
+    [Test]
     public void GameplayIconManifest_CoversCustomFeatSpellIcons()
     {
         var root = FindRepositoryRoot();

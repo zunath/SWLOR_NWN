@@ -46,12 +46,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-        public GuiBindingList<GuiComboEntry> SortOptions
-        {
-            get => Get<GuiBindingList<GuiComboEntry>>();
-            set => Set(value);
-        }
-
         public int SelectedPage
         {
             get => Get<int>();
@@ -220,7 +214,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             PerkButtonTexts = new GuiBindingList<string>();
             PerkDetailSelected = new GuiBindingList<bool>();
             SelectedRequirements = new GuiBindingList<string>();
-            SortOptions = BuildSortOptions();
         }
 
         protected override void Initialize(GuiPayloadBase initialPayload)
@@ -245,17 +238,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             WatchOnClient(model => model.SearchText);
             WatchOnClient(model => model.SelectedSortOrderId);
             WatchOnClient(model => model.SelectedPage);
-        }
-
-        private static GuiBindingList<GuiComboEntry> BuildSortOptions()
-        {
-            return new GuiBindingList<GuiComboEntry>
-            {
-                new("Alphabetical (A-Z)", (int)PerkSortOrder.AlphabeticalAscending),
-                new("Alphabetical (Z-A)", (int)PerkSortOrder.AlphabeticalDescending),
-                new("Skill Level (Asc)", (int)PerkSortOrder.SkillLevelAscending),
-                new("Skill Level (Desc)", (int)PerkSortOrder.SkillLevelDescending)
-            };
         }
 
         private void ResetPerkList()

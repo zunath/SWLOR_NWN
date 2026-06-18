@@ -46,7 +46,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         row.AddComboBox()
                             .BindSelectedIndex(model => model.SelectedSortOrderId)
                             .SetWidth(180f)
-                            .BindOptions(model => model.SortOptions);
+                            .AddOption("Alphabetical (A-Z)", 0)
+                            .AddOption("Alphabetical (Z-A)", 1)
+                            .AddOption("Skill Level (Asc)", 2)
+                            .AddOption("Skill Level (Desc)", 3);
                         row.AddSpacer();
                     });
 

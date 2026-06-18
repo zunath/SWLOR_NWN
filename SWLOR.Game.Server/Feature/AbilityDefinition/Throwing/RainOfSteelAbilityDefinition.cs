@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
 {
@@ -58,7 +59,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
                 typeof(BleedStatusEffect),
                 CombatImpactAreaShape.Sphere,
                 0f,
-                Radius);
+                Radius,
+                targetVisualEffect: VisualEffect.Vfx_Com_Blood_Spark_Medium,
+                areaVisualEffect: VisualEffect.Vfx_Fnf_Swinging_Blade);
         }
     }
 }

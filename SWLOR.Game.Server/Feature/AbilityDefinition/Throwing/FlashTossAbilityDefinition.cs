@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
 {
@@ -62,12 +63,36 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
 
         private static void FlashToss1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.Throwing, 6, 6, typeof(BlindStatusEffect), CombatImpactAreaShape.Sphere, 0.25f, 5f);
+            Ability.ApplyTelegraphedCombatImpact(
+                activator,
+                target,
+                targetLocation,
+                SkillType.Throwing,
+                6,
+                6,
+                typeof(BlindStatusEffect),
+                CombatImpactAreaShape.Sphere,
+                0.25f,
+                5f,
+                targetVisualEffect: VisualEffect.Vfx_Imp_Sonic,
+                areaVisualEffect: VisualEffect.Vfx_Fnf_Sound_Burst);
         }
 
         private static void FlashToss2ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.Throwing, 22, 10, typeof(BlindStatusEffect), CombatImpactAreaShape.Sphere, 0.25f, 5f);
+            Ability.ApplyTelegraphedCombatImpact(
+                activator,
+                target,
+                targetLocation,
+                SkillType.Throwing,
+                22,
+                10,
+                typeof(BlindStatusEffect),
+                CombatImpactAreaShape.Sphere,
+                0.25f,
+                5f,
+                targetVisualEffect: VisualEffect.Vfx_Imp_Sonic,
+                areaVisualEffect: VisualEffect.Vfx_Fnf_Sound_Burst);
         }
     }
 }

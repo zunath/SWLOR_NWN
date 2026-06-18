@@ -2937,12 +2937,21 @@ namespace SWLOR.Game.Server.Service
             if (duration <= 0 || damage <= 0 || pulse <= 0)
                 return;
 
-            StatusEffect.ApplyStatusEffect(
+            var applied = StatusEffect.ApplyStatusEffect(
                 activator,
                 target,
                 new SaturationTossStatusEffect(damage, pulse),
                 duration,
                 CombatDamageType.Fire);
+            if (!applied)
+                return;
+
+            ApplyEffectAtLocation(
+                DurationType.Temporary,
+                EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Fire),
+                GetLocation(target),
+                duration);
+            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Flame_S), target);
         }
 
         private static void ApplyHeavyVibrobladeDefenseImpactRiders(

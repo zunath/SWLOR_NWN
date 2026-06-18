@@ -173,25 +173,25 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ExplosiveToss1)
-                .Description("Your next attack damages up to 3 creatures within 3 meters of your target for weapon DMG + 8.")
+                .Description("Your next attack deals weapon DMG + 8 as fire damage to up to 3 creatures within 3 meters of your target.")
                 .Price(3)
                 .RequirementSkill(SkillType.Throwing, 2)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ExplosiveToss2)
-                .Description("Your next attack damages up to 3 creatures within 3 meters of your target for weapon DMG + 16.")
+                .Description("Your next attack deals weapon DMG + 16 as fire damage to up to 3 creatures within 3 meters of your target.")
                 .Price(4)
                 .RequirementSkill(SkillType.Throwing, 18)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ExplosiveToss3)
-                .Description("Your next attack damages up to 3 creatures within 3 meters of your target for weapon DMG + 26.")
+                .Description("Your next attack deals weapon DMG + 26 as fire damage to up to 3 creatures within 3 meters of your target.")
                 .Price(3)
                 .RequirementSkill(SkillType.Throwing, 28)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ExplosiveToss4)
-                .Description("Your next attack damages up to 3 creatures within 3 meters of your target for weapon DMG + 38 and inflicts Exposed for 15 seconds.")
+                .Description("Your next attack deals weapon DMG + 38 as fire damage to up to 3 creatures within 3 meters of your target and inflicts Exposed for 15 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Throwing, 42);
         }
@@ -215,7 +215,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.FireburstToss1)
-                .Description("Deals weapon DMG + 20 to enemies in the target area and inflicts Exposed for 12 seconds.")
+                .Description("Deals weapon DMG + 20 as fire damage to enemies in the target area and inflicts Exposed for 12 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Throwing, 25);
         }

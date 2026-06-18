@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
 {
@@ -42,7 +43,20 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
 
         private static void FireburstToss1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.Throwing, 20, 12, typeof(ExposedStatusEffect), CombatImpactAreaShape.Sphere, 0.25f, 5f, damageType: CombatDamageType.Fire);
+            Ability.ApplyTelegraphedCombatImpact(
+                activator,
+                target,
+                targetLocation,
+                SkillType.Throwing,
+                20,
+                12,
+                typeof(ExposedStatusEffect),
+                CombatImpactAreaShape.Sphere,
+                0.25f,
+                5f,
+                damageType: CombatDamageType.Fire,
+                targetVisualEffect: VisualEffect.Vfx_Com_Hit_Fire,
+                areaVisualEffect: VisualEffect.Vfx_Fnf_Gas_Explosion_Fire);
         }
     }
 }

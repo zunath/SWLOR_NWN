@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
 {
@@ -110,6 +111,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
                 Radius,
                 maxTargets: 3,
                 damageType: CombatDamageType.Fire,
+                targetVisualEffect: VisualEffect.Vfx_Com_Hit_Fire,
+                areaVisualEffect: VisualEffect.Vfx_Fnf_Gas_Explosion_Fire,
                 afterSuccessfulHit: hitTarget => ApplyBleedIfUnlocked(activator, hitTarget, bleedDuration));
         }
 

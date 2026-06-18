@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Text.Json;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Throwing;
@@ -14,6 +15,8 @@ namespace SWLOR.Game.Server.Tests.Perks;
 
 public class ThrowingBombardierTests
 {
+    private const int CustomTlkOffset = 16777216;
+
     [Test]
     public void ThrowingBombardierAbilities_MatchCombatBible()
     {
@@ -51,6 +54,81 @@ public class ThrowingBombardierTests
     }
 
     [Test]
+    public void ThrowingBombardierPerks_DescribeFireDamage()
+    {
+        var perks = BuildThrowingBombardierPerksWithout2daLookup();
+
+        AssertPerkLevel(
+            perks[PerkType.ExplosiveToss],
+            "Explosive Toss",
+            1,
+            3,
+            2,
+            FeatType.ExplosiveToss1,
+            "Your next attack deals weapon DMG + 8 as fire damage to up to 3 creatures within 3 meters of your target.");
+        AssertPerkLevel(
+            perks[PerkType.ExplosiveToss],
+            "Explosive Toss",
+            2,
+            4,
+            18,
+            FeatType.ExplosiveToss2,
+            "Your next attack deals weapon DMG + 16 as fire damage to up to 3 creatures within 3 meters of your target.");
+        AssertPerkLevel(
+            perks[PerkType.ExplosiveToss],
+            "Explosive Toss",
+            3,
+            3,
+            28,
+            FeatType.ExplosiveToss3,
+            "Your next attack deals weapon DMG + 26 as fire damage to up to 3 creatures within 3 meters of your target.");
+        AssertPerkLevel(
+            perks[PerkType.ExplosiveToss],
+            "Explosive Toss",
+            4,
+            4,
+            42,
+            FeatType.ExplosiveToss4,
+            "Your next attack deals weapon DMG + 38 as fire damage to up to 3 creatures within 3 meters of your target and inflicts Exposed for 15 seconds.");
+        AssertPerkLevel(
+            perks[PerkType.FireburstToss],
+            "Fireburst Toss",
+            1,
+            3,
+            25,
+            FeatType.FireburstToss1,
+            "Deals weapon DMG + 20 as fire damage to enemies in the target area and inflicts Exposed for 12 seconds.");
+    }
+
+    [Test]
+    public void ThrowingBombardierFeatAndAbilityDescriptions_MentionFireDamage()
+    {
+        var root = FindRepositoryRoot();
+        var featRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "feat.2da");
+        var abilityRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "spells.2da");
+        var tlkEntries = ReadTlkEntries(root / "SWLOR_Haks" / "swlor2_tlk" / "swlor2_tlk.tlk.json");
+        var descriptions = new[]
+        {
+            (FeatType.ExplosiveToss1, "Your next attack deals weapon DMG + 8 as fire damage to up to 3 creatures within 3 meters of your target."),
+            (FeatType.ExplosiveToss2, "Your next attack deals weapon DMG + 16 as fire damage to up to 3 creatures within 3 meters of your target."),
+            (FeatType.ExplosiveToss3, "Your next attack deals weapon DMG + 26 as fire damage to up to 3 creatures within 3 meters of your target."),
+            (FeatType.ExplosiveToss4, "Your next attack deals weapon DMG + 38 as fire damage to up to 3 creatures within 3 meters of your target and inflicts Exposed for 15 seconds."),
+            (FeatType.FireburstToss1, "Deals weapon DMG + 20 as fire damage to enemies in the target area and inflicts Exposed for 12 seconds.")
+        };
+
+        foreach (var (featType, expectedDescription) in descriptions)
+        {
+            var featRow = featRows[(int)featType];
+            var featDescriptionId = int.Parse(featRow["DESCRIPTION"]) - CustomTlkOffset;
+            tlkEntries[featDescriptionId].Should().Be(expectedDescription);
+
+            var abilityRow = abilityRows[int.Parse(featRow["SPELLID"])];
+            var abilityDescriptionId = int.Parse(abilityRow["SpellDesc"]) - CustomTlkOffset;
+            tlkEntries[abilityDescriptionId].Should().Be(expectedDescription);
+        }
+    }
+
+    [Test]
     public void ThrowingBombardierSources_IncludeBibleStatValues()
     {
         var root = FindRepositoryRoot();
@@ -63,6 +141,26 @@ public class ThrowingBombardierTests
         source.Should().Contain("StatType.CriticalAbilityKnockdownPerkType, (int)PerkType.ExplosiveToss");
         source.Should().Contain("StatType.CriticalAbilityKnockdownDurationSeconds, 2");
         source.Should().NotContain("EquipmentPredicates.HasThrowing");
+
+        var explosiveToss = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Throwing" / "ExplosiveTossAbilityDefinition.cs").FullName);
+        explosiveToss.Should().Contain("targetVisualEffect: VisualEffect.Vfx_Com_Hit_Fire");
+        explosiveToss.Should().Contain("areaVisualEffect: VisualEffect.Vfx_Fnf_Gas_Explosion_Fire");
+
+        var fireburstToss = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Throwing" / "FireburstTossAbilityDefinition.cs").FullName);
+        fireburstToss.Should().Contain("targetVisualEffect: VisualEffect.Vfx_Com_Hit_Fire");
+        fireburstToss.Should().Contain("areaVisualEffect: VisualEffect.Vfx_Fnf_Gas_Explosion_Fire");
+
+        var flashToss = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Throwing" / "FlashTossAbilityDefinition.cs").FullName);
+        flashToss.Should().Contain("targetVisualEffect: VisualEffect.Vfx_Imp_Sonic");
+        flashToss.Should().Contain("areaVisualEffect: VisualEffect.Vfx_Fnf_Sound_Burst");
+
+        var rainOfSteel = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Throwing" / "RainOfSteelAbilityDefinition.cs").FullName);
+        rainOfSteel.Should().Contain("targetVisualEffect: VisualEffect.Vfx_Com_Blood_Spark_Medium");
+        rainOfSteel.Should().Contain("areaVisualEffect: VisualEffect.Vfx_Fnf_Swinging_Blade");
+
+        var combat = File.ReadAllText((root / "SWLOR.Game.Server" / "Service" / "Combat.cs").FullName);
+        combat.Should().Contain("EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Fire)");
+        combat.Should().Contain("EffectVisualEffect(VisualEffect.Vfx_Imp_Flame_S)");
     }
     [Test]
     public void ThrowingBombardierFeatAndAbilityIcons_AreUniqueAndPresent()
@@ -289,6 +387,17 @@ public class ThrowingBombardierTests
         }
 
         return result;
+    }
+
+    private static Dictionary<int, string> ReadTlkEntries(PathInfo path)
+    {
+        using var tlk = JsonDocument.Parse(File.ReadAllText(path.FullName));
+        return tlk.RootElement
+            .GetProperty("entries")
+            .EnumerateArray()
+            .ToDictionary(
+                entry => entry.GetProperty("id").GetInt32(),
+                entry => entry.GetProperty("text").GetString() ?? string.Empty);
     }
 
     private static PathInfo FindRepositoryRoot()

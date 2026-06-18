@@ -71,6 +71,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             CombatDamageType damageType = CombatDamageType.Physical,
             VisualEffect targetVisualEffect = VisualEffect.None,
             VisualEffect areaVisualEffect = VisualEffect.None,
+            bool alwaysApplyAreaVisualEffect = false,
             Action<uint> afterSuccessfulHit = null)
         {
             Ability.ApplyTelegraphedCombatImpact(
@@ -87,6 +88,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 damageType: damageType,
                 targetVisualEffect: targetVisualEffect,
                 areaVisualEffect: areaVisualEffect,
+                alwaysApplyAreaVisualEffect: alwaysApplyAreaVisualEffect,
                 afterSuccessfulHit: afterSuccessfulHit);
         }
 

@@ -9,6 +9,7 @@ using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
 {
@@ -19,6 +20,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
         private const int InitialDamage = 20;
         private const int PulseDamage = 8;
         private const int MaximumMarkStacks = 3;
+        private const VisualEffect AreaVisualEffect = VisualEffect.Vfx_Fnf_Swinging_Blade;
+        private const VisualEffect TargetVisualEffect = VisualEffect.Vfx_Com_Blood_Spark_Medium;
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
@@ -55,6 +58,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
                 SkillType.TwinBlade,
                 InitialDamage,
                 Radius,
+                targetVisualEffect: TargetVisualEffect,
+                areaVisualEffect: AreaVisualEffect,
+                alwaysApplyAreaVisualEffect: true,
                 afterSuccessfulHit: ApplyTempestMark);
 
             CombatAreaPulses.SchedulePulses(
@@ -73,6 +79,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
                         SkillType.TwinBlade,
                         PulseDamage,
                         Radius,
+                        targetVisualEffect: TargetVisualEffect,
+                        areaVisualEffect: AreaVisualEffect,
+                        alwaysApplyAreaVisualEffect: true,
                         afterSuccessfulHit: ApplyTempestMark);
                     var summary = Ability.EndAbilityImpact(activator);
                     Combat.ApplyAbilityImpactEffects(activator, summary);

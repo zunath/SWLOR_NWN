@@ -280,10 +280,11 @@ public class AIModelTests
             "SWLOR.Game.Server",
             "Service",
             "AI.cs")).Replace("\r\n", "\n");
+        var rangeStartIndex = aiSource.IndexOf("static bool IsInAggroRange", StringComparison.Ordinal);
         var rangeBody = aiSource.Substring(
-            aiSource.IndexOf("private static bool IsInAggroRange", StringComparison.Ordinal),
+            rangeStartIndex,
             aiSource.IndexOf("private static void TryAcquireAggro", StringComparison.Ordinal) -
-            aiSource.IndexOf("private static bool IsInAggroRange", StringComparison.Ordinal));
+            rangeStartIndex);
 
         rangeBody.Should().Contain("LineOfSightObject(target, creature)");
     }
@@ -309,32 +310,85 @@ public class AIModelTests
     }
 
     [Test]
-    public void CreatureAggroExit_KeepsActiveCombatUntilLeash()
+    public void CreatureAggroExit_RemovesProximityEnmityBeforeResumingCombat()
     {
         var aiSource = ReadSource("SWLOR.Game.Server", "Service", "AI.cs").Replace("\r\n", "\n");
+        var removeStartIndex = aiSource.IndexOf("private static void RemoveProximityEnmity", StringComparison.Ordinal);
         var removeBody = aiSource.Substring(
-            aiSource.IndexOf("private static void RemoveProximityEnmity", StringComparison.Ordinal),
-            aiSource.IndexOf("private static bool ShouldKeepCombatProximityEnmity", StringComparison.Ordinal) -
-            aiSource.IndexOf("private static void RemoveProximityEnmity", StringComparison.Ordinal));
-        var keepBody = aiSource.Substring(
-            aiSource.IndexOf("private static bool ShouldKeepCombatProximityEnmity", StringComparison.Ordinal),
-            aiSource.IndexOf("private static bool IsAIEnabled", StringComparison.Ordinal) -
-            aiSource.IndexOf("private static bool ShouldKeepCombatProximityEnmity", StringComparison.Ordinal));
+            removeStartIndex,
+            aiSource.IndexOf("private static bool IsAIEnabled", StringComparison.Ordinal) - removeStartIndex);
 
-        var keepIndex = removeBody.IndexOf("ShouldKeepCombatProximityEnmity(target, enemy)", StringComparison.Ordinal);
         var leashEvadeIndex = removeBody.IndexOf("TryStartLeashEvade(enemy, target)", StringComparison.Ordinal);
         var removeIndex = removeBody.IndexOf("Enmity.RemoveProximityEnmity(target, enemy)", StringComparison.Ordinal);
+        var nextTargetIndex = removeBody.IndexOf("var nextTarget = Enmity.GetHighestEnmityTarget(enemy);", StringComparison.Ordinal);
+        var resumeIndex = removeBody.IndexOf("Enmity.AttackHighestEnmityTarget(enemy);", StringComparison.Ordinal);
+        var clearStateIndex = removeBody.IndexOf("NPCAI.ClearState(enemy);", StringComparison.Ordinal);
+        var fastReturnIndex = removeBody.IndexOf("TryReturnHomeAfterCombat(enemy)", StringComparison.Ordinal);
+        var clearActionsIndex = removeBody.IndexOf("ClearAllActions()", StringComparison.Ordinal);
 
         leashEvadeIndex.Should().BeGreaterThanOrEqualTo(0);
         leashEvadeIndex.Should().BeLessThan(removeIndex);
-        keepIndex.Should().BeGreaterThanOrEqualTo(0);
-        keepIndex.Should().BeLessThan(removeIndex);
-        keepBody.Should().Contain("Enmity.GetHighestEnmityTarget(enemy) != target");
-        keepBody.Should().Contain("ShouldLeashCombatTarget(enemy, target, homeLocation)");
-        keepBody.Should().Contain("Activity.IsBusy(enemy)");
-        keepBody.Should().Contain("GetIsInCombat(enemy)");
-        keepBody.Should().Contain("GetAttackTarget(enemy) == target");
-        keepBody.Should().Contain("currentAction == ActionType.MoveToPoint");
+        removeIndex.Should().BeLessThan(nextTargetIndex);
+        nextTargetIndex.Should().BeLessThan(resumeIndex);
+        resumeIndex.Should().BeLessThan(clearStateIndex);
+        fastReturnIndex.Should().BeGreaterThan(clearStateIndex);
+        fastReturnIndex.Should().BeLessThan(clearActionsIndex);
+        aiSource.Should().NotContain("ShouldKeepCombatProximityEnmity");
+        removeBody.Should().NotContain("GetIsInCombat(enemy)");
+    }
+
+    [Test]
+    public void CreatureSpawn_UsesExistingCreatureEventScriptsWithoutBaseNwnCombatScripts()
+    {
+        var spawnSource = ReadSource("SWLOR.Game.Server", "Service", "Spawn.cs").Replace("\r\n", "\n");
+        var aiSource = ReadSource("SWLOR.Game.Server", "Service", "AI.cs").Replace("\r\n", "\n");
+        var enmitySource = ReadSource("SWLOR.Game.Server", "Service", "Enmity.cs").Replace("\r\n", "\n");
+        var attackedScript = ReadSource("Module", "nss", "nw_c2_default5.nss").Replace("\r\n", "\n");
+        var damagedScript = ReadSource("Module", "nss", "nw_c2_default6.nss").Replace("\r\n", "\n");
+        var disturbedScript = ReadSource("Module", "nss", "nw_c2_default8.nss").Replace("\r\n", "\n");
+        var spawnScript = ReadSource("Module", "nss", "nw_c2_default9.nss").Replace("\r\n", "\n");
+        var spellCastScript = ReadSource("Module", "nss", "nw_c2_defaultb.nss").Replace("\r\n", "\n");
+        var adjustBody = spawnSource.Substring(
+            spawnSource.IndexOf("private static void AdjustScripts", StringComparison.Ordinal),
+            spawnSource.IndexOf("private static void AdjustStats", StringComparison.Ordinal) -
+            spawnSource.IndexOf("private static void AdjustScripts", StringComparison.Ordinal));
+
+        adjustBody.Should().Contain("SetEventScript(spawn, EventScript.Creature_OnBlockedByDoor, \"x2_def_onblocked\")");
+        adjustBody.Should().Contain("SetEventScript(spawn, EventScript.Creature_OnEndCombatRound, \"x2_def_endcombat\")");
+        adjustBody.Should().Contain("SetEventScript(spawn, EventScript.Creature_OnDamaged, \"x2_def_ondamage\")");
+        adjustBody.Should().Contain("SetEventScript(spawn, EventScript.Creature_OnDeath, \"x2_def_ondeath\")");
+        adjustBody.Should().Contain("SetEventScript(spawn, EventScript.Creature_OnDisturbed, \"x2_def_ondisturb\")");
+        adjustBody.Should().Contain("SetEventScript(spawn, EventScript.Creature_OnHeartbeat, \"x2_def_heartbeat\")");
+        adjustBody.Should().Contain("SetEventScript(spawn, EventScript.Creature_OnNotice, \"x2_def_percept\")");
+        adjustBody.Should().Contain("SetEventScript(spawn, EventScript.Creature_OnMeleeAttacked, \"x2_def_attacked\")");
+        adjustBody.Should().Contain("SetEventScript(spawn, EventScript.Creature_OnRested, \"x2_def_rested\")");
+        adjustBody.Should().Contain("SetEventScript(spawn, EventScript.Creature_OnSpawnIn, \"x2_def_spawn\")");
+        adjustBody.Should().Contain("SetEventScript(spawn, EventScript.Creature_OnSpellCastAt, \"x2_def_spellcast\")");
+        adjustBody.Should().Contain("SetEventScript(spawn, EventScript.Creature_OnUserDefined, \"x2_def_userdef\")");
+        adjustBody.Should().Contain("ExecuteScript(\"x2_def_spawn\", spawn)");
+        attackedScript.Should().Contain("ExecuteScript(\"crea_attack_bef\", OBJECT_SELF)");
+        attackedScript.Should().Contain("ExecuteScript(\"crea_attack_aft\", OBJECT_SELF)");
+        damagedScript.Should().Contain("ExecuteScript(\"crea_damaged_bef\", OBJECT_SELF)");
+        damagedScript.Should().Contain("ExecuteScript(\"crea_damaged_aft\", OBJECT_SELF)");
+        disturbedScript.Should().Contain("ExecuteScript(\"crea_disturb_bef\", OBJECT_SELF)");
+        disturbedScript.Should().Contain("ExecuteScript(\"crea_disturb_aft\", OBJECT_SELF)");
+        spawnScript.Should().Contain("#include \"x0_i0_walkway\"");
+        spawnScript.Should().Contain("ExecuteScript(\"crea_spawn_bef\", OBJECT_SELF)");
+        spawnScript.Should().Contain("WalkWayPoints();");
+        spawnScript.Should().Contain("ExecuteScript(\"crea_spawn_aft\", OBJECT_SELF)");
+        spellCastScript.Should().Contain("ExecuteScript(\"crea_splcast_bef\", OBJECT_SELF)");
+        spellCastScript.Should().Contain("ExecuteScript(\"crea_splcast_aft\", OBJECT_SELF)");
+        string.Join("\n", attackedScript, damagedScript, disturbedScript, spawnScript, spellCastScript)
+            .Should()
+            .NotContain("DetermineCombatRound")
+            .And.NotContain("SetListeningPatterns")
+            .And.NotContain("SetSummonHelpIfAttacked")
+            .And.NotContain("NW_I_WAS_ATTACKED")
+            .And.NotContain("NW_ATTACK_MY_TARGET");
+        aiSource.Should().Contain("[NWNEventHandler(ScriptName.OnCreatureAttackAfter)]");
+        aiSource.Should().Contain("[NWNEventHandler(ScriptName.OnCreatureSpawnAfter)]");
+        enmitySource.Should().Contain("[NWNEventHandler(ScriptName.OnCreatureAttackBefore)]");
+        enmitySource.Should().Contain("[NWNEventHandler(ScriptName.OnCreatureDamagedBefore)]");
     }
 
     [Test]
@@ -387,6 +441,8 @@ public class AIModelTests
             npcAiSource.IndexOf("private static bool IsOnCooldown", fallbackIndex, StringComparison.Ordinal) -
             fallbackIndex);
 
+        attackHighestBody.Should().Contain("ShouldRemoveStaleProximityTarget(creature, target)");
+        attackHighestBody.Should().Contain("RemoveProximityEnmity(target, creature);");
         attackHighestBody.Should().Contain("IssueAttackCommand(creature, target);");
         issueBody.Should().Contain("ClearAllActions(true);");
         issueBody.Should().Contain("ActionMoveToObject(target, true, MeleeAttackMoveRange);");
@@ -529,7 +585,7 @@ public class AIModelTests
     }
 
     [Test]
-    public void CombatLeash_RequiresPersistentCandidateBeforeStartingEvade()
+    public void CombatLeash_StartsEvadeImmediatelyWhenTargetLeavesLeash()
     {
         var aiSource = ReadSource("SWLOR.Game.Server", "Service", "AI.cs").Replace("\r\n", "\n");
         var processFlagsBody = aiSource.Substring(
@@ -544,39 +600,37 @@ public class AIModelTests
             aiSource.IndexOf("private static bool TryStartLeashEvade", StringComparison.Ordinal),
             aiSource.IndexOf("private static uint GetHighestOrEventTarget", StringComparison.Ordinal) -
             aiSource.IndexOf("private static bool TryStartLeashEvade", StringComparison.Ordinal));
-        var graceBody = aiSource.Substring(
-            aiSource.IndexOf("private static bool HasCombatLeashGraceExpired", StringComparison.Ordinal),
-            aiSource.IndexOf("private static void ClearCombatLeashCandidate", StringComparison.Ordinal) -
-            aiSource.IndexOf("private static bool HasCombatLeashGraceExpired", StringComparison.Ordinal));
-        var clearBody = aiSource.Substring(
-            aiSource.IndexOf("private static void ClearCombatLeashCandidate", StringComparison.Ordinal),
-            aiSource.IndexOf("public static bool IsLeashEvading", StringComparison.Ordinal) -
-            aiSource.IndexOf("private static void ClearCombatLeashCandidate", StringComparison.Ordinal));
 
-        var combatLeashGraceSeconds = ReadConstFloat(
-            "CombatLeashGraceSeconds",
-            "SWLOR.Game.Server",
-            "Service",
-            "AI.cs");
         var leashCheckIndex = processFlagsBody.IndexOf(
             "ShouldStartCombatLeashEvade(self, highestEnmityTarget, homeLocation)",
             StringComparison.Ordinal);
         var startEvadeIndex = processFlagsBody.IndexOf("StartLeashEvade(self, homeLocation)", StringComparison.Ordinal);
-        var clearIdleIndex = processFlagsBody.IndexOf("ClearCombatLeashCandidate(self)", StringComparison.Ordinal);
 
-        combatLeashGraceSeconds.Should().BeGreaterThan(0f);
         processFlagsBody.Should().Contain("var hasCombatState = GetIsInCombat(self) || GetIsObjectValid(highestEnmityTarget);");
         leashCheckIndex.Should().BeGreaterThanOrEqualTo(0);
         startEvadeIndex.Should().BeGreaterThan(leashCheckIndex);
-        clearIdleIndex.Should().BeGreaterThan(startEvadeIndex);
-        startBody.Should().Contain("ShouldLeashCombatTarget(creature, target, homeLocation)");
-        startBody.Should().Contain("ClearCombatLeashCandidate(creature)");
-        startBody.Should().Contain("HasCombatLeashGraceExpired(creature)");
+        startBody.Should().Contain("return ShouldLeashCombatTarget(creature, target, homeLocation);");
+        startBody.Should().NotContain("HasCombatLeashGraceExpired");
+        startBody.Should().NotContain("ClearCombatLeashCandidate");
         tryStartBody.Should().Contain("ShouldStartCombatLeashEvade(creature, target, homeLocation)");
-        graceBody.Should().Contain("_combatLeashCandidateTimes.TryGetValue(creature, out var firstDetectedAt)");
-        graceBody.Should().Contain("_combatLeashCandidateTimes[creature] = now");
-        graceBody.Should().Contain("CombatLeashGraceSeconds");
-        clearBody.Should().Contain("_combatLeashCandidateTimes.Remove(creature)");
+        aiSource.Should().NotContain("CombatLeashGraceSeconds");
+        aiSource.Should().NotContain("_combatLeashCandidateTimes");
+        aiSource.Should().NotContain("HasCombatLeashGraceExpired");
+        aiSource.Should().NotContain("ClearCombatLeashCandidate");
+    }
+
+    [Test]
+    public void CombatLeash_ProximityClearStartsFastReturnHome()
+    {
+        var aiSource = ReadSource("SWLOR.Game.Server", "Service", "AI.cs").Replace("\r\n", "\n");
+        var returnBody = aiSource.Substring(
+            aiSource.IndexOf("private static bool TryReturnHomeAfterCombat", StringComparison.Ordinal),
+            aiSource.IndexOf("private static uint GetHighestOrEventTarget", StringComparison.Ordinal) -
+            aiSource.IndexOf("private static bool TryReturnHomeAfterCombat", StringComparison.Ordinal));
+
+        returnBody.Should().Contain("GetAIFlag(enemy).HasFlag(AIFlag.ReturnHome)");
+        returnBody.Should().Contain("IsOutsideHomeRadius(enemy, homeLocation)");
+        returnBody.Should().Contain("StartLeashEvade(enemy, homeLocation)");
     }
 
     [Test]

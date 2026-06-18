@@ -135,6 +135,32 @@ public class EnmityTests
     }
 
     [Test]
+    public void HasOnlyProximityEnmity_MatchesTrackedProximityContribution()
+    {
+        const uint enemy = 100;
+        const uint proximityOnlyTarget = 1;
+        const uint combatTarget = 2;
+        const uint untrackedTarget = 3;
+
+        EnemyEnmityTables()[enemy] = new Dictionary<uint, int>
+        {
+            [proximityOnlyTarget] = 1,
+            [combatTarget] = 5,
+            [untrackedTarget] = 3
+        };
+        ProximityEnmityAmounts()[enemy] = new Dictionary<uint, int>
+        {
+            [proximityOnlyTarget] = 1,
+            [combatTarget] = 2
+        };
+
+        HasOnlyProximityEnmity(proximityOnlyTarget, enemy).Should().BeTrue();
+        HasOnlyProximityEnmity(combatTarget, enemy).Should().BeFalse();
+        HasOnlyProximityEnmity(untrackedTarget, enemy).Should().BeFalse();
+        HasOnlyProximityEnmity(999, enemy).Should().BeFalse();
+    }
+
+    [Test]
     public void ShouldIssueAttackCommand_ReissuesWhenTargetIsStaleButNoAttackActionIsRunning()
     {
         ShouldIssueAttackCommand(1, 1, ActionType.Invalid, false, commandIssuedAt: DateTime.UtcNow.AddSeconds(-7))
@@ -364,5 +390,12 @@ public class EnmityTests
                 hasRecentAttack,
                 recoverySeconds
             })!;
+    }
+
+    private static bool HasOnlyProximityEnmity(uint creature, uint enemy)
+    {
+        return (bool)typeof(Enmity)
+            .GetMethod("HasOnlyProximityEnmity", BindingFlags.Static | BindingFlags.NonPublic)!
+            .Invoke(null, new object[] { creature, enemy })!;
     }
 }

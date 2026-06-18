@@ -458,6 +458,11 @@ namespace SWLOR.Game.Server.Service
         public static void AttackHighestEnmityTarget(uint creature)
         {
             var target = GetHighestEnmityTarget(creature);
+            while (GetIsObjectValid(target) && ShouldRemoveStaleProximityTarget(creature, target))
+            {
+                RemoveProximityEnmity(target, creature);
+                target = GetHighestEnmityTarget(creature);
+            }
 
             if (!GetIsObjectValid(target) ||
                 GetArea(creature) != GetArea(target))
@@ -563,6 +568,22 @@ namespace SWLOR.Game.Server.Service
             return !Combat.IsRangedDamageSkill(skillType);
         }
 
+        private static bool ShouldRemoveStaleProximityTarget(uint enemy, uint target)
+        {
+            return HasOnlyProximityEnmity(target, enemy) &&
+                   !AI.IsInAggroRange(enemy, target);
+        }
+
+        private static bool HasOnlyProximityEnmity(uint creature, uint enemy)
+        {
+            var rawAmount = GetRawEnmityAmount(creature, enemy);
+            if (rawAmount <= 0)
+                return false;
+
+            var proximityAmount = GetProximityEnmityAmount(creature, enemy);
+            return proximityAmount >= rawAmount;
+        }
+
         private static bool ShouldRecoverStaleAttack(
             uint creature,
             uint attackTarget,
@@ -645,6 +666,14 @@ namespace SWLOR.Game.Server.Service
         private static int GetRawEnmityAmount(uint creature, uint enemy)
         {
             return _enemyEnmityTables.TryGetValue(enemy, out var table) &&
+                   table.TryGetValue(creature, out var amount)
+                ? amount
+                : 0;
+        }
+
+        private static int GetProximityEnmityAmount(uint creature, uint enemy)
+        {
+            return _proximityEnmityAmounts.TryGetValue(enemy, out var table) &&
                    table.TryGetValue(creature, out var amount)
                 ? amount
                 : 0;

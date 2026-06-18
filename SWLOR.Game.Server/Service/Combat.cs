@@ -5488,6 +5488,8 @@ namespace SWLOR.Game.Server.Service
         public static int GetMiscDMGBonus(uint attacker, BaseItem weaponType)
         {
             var bonus = GetPowerAttackDMGBonus(attacker);
+            var weaponMightMultiplier = Stat.GetStatAdjustment(attacker, StatType.WeaponMightModifierDamageMultiplier);
+            bonus += Math.Max(0, GetAbilityModifier(AbilityType.Might, attacker)) * weaponMightMultiplier;
 
             if (Item.StaffBaseItemTypes.Contains(weaponType))
             {

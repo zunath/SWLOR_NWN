@@ -36,7 +36,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
-                .RequirementStamina(8);
+                .RequirementStamina(5);
         }
 
         private static void GroundQuake2(AbilityBuilder builder)
@@ -64,8 +64,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
                 target,
                 targetLocation,
                 SkillType.Staff,
-                18,
-                2,
+                8,
+                1,
                 typeof(KnockdownStatusEffect),
                 CombatImpactAreaShape.Sphere,
                 0.25f,

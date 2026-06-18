@@ -26,7 +26,7 @@ public class StaffSentinelTests
         AssertAbility(sentinelStance, "Sentinel Stance", 1, RecastGroup.SentinelStance, 180f, 2f, null, false, false, false, false, AbilityActivationType.Casted);
 
         var lineBreaker = new LineBreakerAbilityDefinition().BuildAbilities()[FeatType.LineBreaker1];
-        AssertAbility(lineBreaker, "Line Breaker", 1, RecastGroup.LineBreaker, 60f, 0f, 8, true, false, false, true, AbilityActivationType.Casted);
+        AssertAbility(lineBreaker, "Line Breaker", 1, RecastGroup.LineBreaker, 60f, 0f, 4, true, false, false, true, AbilityActivationType.Casted);
 
         var sweepingGuard = new SweepingGuardAbilityDefinition().BuildAbilities()[FeatType.SweepingGuard1];
         AssertAbility(sweepingGuard, "Sweeping Guard", 1, RecastGroup.SweepingGuard, 90f, 0f, 10, true, false, false, true, AbilityActivationType.Casted);
@@ -73,6 +73,25 @@ public class StaffSentinelTests
         unmovingCenter.StatGroup.Stats[StatType.EnmityPercentAdjustment].Should().Be(30);
         unmovingCenter.StatGroup.Stats[StatType.PhysicalDefensePercentAdjustment].Should().Be(0);
         unmovingCenter.StatGroup.Stats[StatType.ForceDefensePercentAdjustment].Should().Be(0);
+    }
+
+    [Test]
+    public void FlurryStyle_IsUniversalHaste()
+    {
+        var perks = BuildStaffSentinelPerksWithout2daLookup();
+        var flurryStyle = perks[PerkType.FlurryStyle];
+
+        AssertPerkLevel(flurryStyle, "Flurry Style", 1, 2, 25, FeatType.FlurryStyleTrait, "Grants +10% Haste.", StatType.AttackDelayReductionPercent);
+        AssertStatBonus(flurryStyle.PerkLevels[1], StatType.AttackDelayReductionPercent, 10);
+    }
+
+    [Test]
+    public void LineBreaker_IsLowLevelControlLine()
+    {
+        var perks = BuildStaffSentinelPerksWithout2daLookup();
+        var lineBreaker = perks[PerkType.LineBreaker];
+
+        AssertPerkLevel(lineBreaker, "Line Breaker", 1, 3, 2, FeatType.LineBreaker1, "Deals weapon DMG + 6 to enemies in a line. Inflicts Disoriented for 8 seconds.");
     }
 
     [Test]

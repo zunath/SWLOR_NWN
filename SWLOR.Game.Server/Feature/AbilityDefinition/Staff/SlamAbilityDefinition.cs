@@ -20,10 +20,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
                     .Level(1)
                     .HasRecastDelay(RecastGroup.Slam, 30f),
                 SkillType.Staff,
-                8,
-                8,
+                4,
+                6,
                 typeof(BlindStatusEffect),
-                3);
+                2);
             ConfigureWeapon(
                 builder
                     .Create(FeatType.Slam2, PerkType.Slam)

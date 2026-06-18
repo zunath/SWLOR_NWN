@@ -39,12 +39,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
                 .IsHostileAbility()
                 .IsAreaAbility()
                 .BreaksStealth()
-                .RequirementStamina(8);
+                .RequirementStamina(4);
         }
 
         private static void LineBreaker1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.Staff, 18, 12, typeof(DisorientedStatusEffect), CombatImpactAreaShape.Line, 0.25f, 8f, 2.5f);
+            Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.Staff, 6, 8, typeof(DisorientedStatusEffect), CombatImpactAreaShape.Line, 0.25f, 8f, 2.5f);
         }
     }
 }

@@ -19,7 +19,7 @@ public class StaffCrusherTests
     public void StaffCrusherAbilities_MatchCombatBible()
     {
         var slam = new SlamAbilityDefinition().BuildAbilities();
-        AssertAbility(slam[FeatType.Slam1], "Slam I", 1, RecastGroup.Slam, 30f, 0f, 3, true, false, true, false, AbilityActivationType.Weapon);
+        AssertAbility(slam[FeatType.Slam1], "Slam I", 1, RecastGroup.Slam, 30f, 0f, 2, true, false, true, false, AbilityActivationType.Weapon);
         AssertAbility(slam[FeatType.Slam2], "Slam II", 2, RecastGroup.Slam, 30f, 0f, 5, true, false, true, false, AbilityActivationType.Weapon);
         AssertAbility(slam[FeatType.Slam3], "Slam III", 3, RecastGroup.Slam, 30f, 0f, 8, true, false, true, false, AbilityActivationType.Weapon);
 
@@ -32,7 +32,7 @@ public class StaffCrusherTests
         AssertAbility(ribBreaker[FeatType.RibBreaker3], "Rib Breaker III", 3, RecastGroup.RibBreaker, 45f, 0f, 10, true, true, true, false, AbilityActivationType.Casted);
 
         var groundQuake = new GroundQuakeAbilityDefinition().BuildAbilities();
-        AssertAbility(groundQuake[FeatType.GroundQuake1], "Ground Quake I", 1, RecastGroup.GroundQuake, 60f, 0f, 8, true, false, false, true, AbilityActivationType.Casted);
+        AssertAbility(groundQuake[FeatType.GroundQuake1], "Ground Quake I", 1, RecastGroup.GroundQuake, 60f, 0f, 5, true, false, false, true, AbilityActivationType.Casted);
         AssertAbility(groundQuake[FeatType.GroundQuake2], "Ground Quake II", 2, RecastGroup.GroundQuake, 60f, 0f, 10, true, false, false, true, AbilityActivationType.Casted);
 
         var bonecrusher = new BonecrusherAbilityDefinition().BuildAbilities()[FeatType.Bonecrusher1];
@@ -77,9 +77,39 @@ public class StaffCrusherTests
         Stat.GetStatTypeCategory(StatType.StaffCriticalRatePercentAdjustment).Should().Be(StatTypeCategory.BeneficialWhenPositive);
         Stat.GetStatTypeCategory(StatType.StaffCriticalTargetDefensePercentAdjustment).Should().Be(StatTypeCategory.BeneficialWhenNegative);
         Stat.GetStatTypeCategory(StatType.StaffCriticalTargetDefenseDurationSeconds).Should().Be(StatTypeCategory.NonBeneficial);
+        Stat.GetStatTypeCategory(StatType.WeaponMightModifierDamageMultiplier).Should().Be(StatTypeCategory.BeneficialWhenPositive);
 
         var worldbreaker = new WorldbreakerStatusEffect();
         worldbreaker.StatGroup.Stats[StatType.DamageDealtPercentAdjustment].Should().Be(-10);
+    }
+
+    [Test]
+    public void CrushingStyle_IsUniversalWeaponStyle()
+    {
+        var perks = BuildStaffCrusherPerksWithout2daLookup();
+        var crushingStyle = perks[PerkType.CrushingStyle];
+
+        AssertPerkLevel(
+            crushingStyle,
+            "Crushing Style",
+            1,
+            3,
+            25,
+            FeatType.CrushingStyleTrait,
+            "Gains +1 weapon DMG for every 2 Might over 10 with all weapons and +10% critical chance.",
+            StatType.WeaponMightModifierDamageMultiplier,
+            StatType.CriticalRatePercentAdjustment);
+        AssertStatBonus(crushingStyle.PerkLevels[1], StatType.WeaponMightModifierDamageMultiplier, 1);
+        AssertStatBonus(crushingStyle.PerkLevels[1], StatType.CriticalRatePercentAdjustment, 10);
+    }
+
+    [Test]
+    public void EarlyCrusherActives_MatchLowLevelTuning()
+    {
+        var perks = BuildStaffCrusherPerksWithout2daLookup();
+
+        AssertPerkLevel(perks[PerkType.Slam], "Slam", 1, 3, 2, FeatType.Slam1, "Deals weapon DMG + 4 and inflicts Blind for 6 seconds.");
+        AssertPerkLevel(perks[PerkType.GroundQuake], "Ground Quake", 1, 3, 8, FeatType.GroundQuake1, "Deals weapon DMG + 8 to nearby enemies. Inflicts Knockdown for 1 second.");
     }
 
     [Test]
@@ -135,9 +165,11 @@ public class StaffCrusherTests
         perkSource.Should().Contain("StatType.StaffCriticalTargetDefensePercentAdjustment, -10");
         perkSource.Should().Contain("StatType.StaffCriticalDamagePercentAdjustment, 20");
         perkSource.Should().Contain("StatType.StaffCriticalRatePercentAdjustment, 10");
+        perkSource.Should().Contain("StatType.WeaponMightModifierDamageMultiplier, 1");
+        perkSource.Should().Contain("StatType.CriticalRatePercentAdjustment, 10");
 
         var slam = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Staff" / "SlamAbilityDefinition.cs").FullName).Replace("\r\n", "\n");
-        slam.Should().Contain("SkillType.Staff,\n                8,\n                8,");
+        slam.Should().Contain("SkillType.Staff,\n                4,\n                6,");
         slam.Should().Contain("SkillType.Staff,\n                20,\n                10,");
         slam.Should().Contain("SkillType.Staff,\n                32,\n                12,");
 
@@ -149,7 +181,7 @@ public class StaffCrusherTests
         ribBreaker.Should().Contain("new WeakenedStatusEffect(20)");
 
         var groundQuake = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Staff" / "GroundQuakeAbilityDefinition.cs").FullName).Replace("\r\n", "\n");
-        groundQuake.Should().Contain("SkillType.Staff,\n                18,\n                2,\n                typeof(KnockdownStatusEffect)");
+        groundQuake.Should().Contain("SkillType.Staff,\n                8,\n                1,\n                typeof(KnockdownStatusEffect)");
         groundQuake.Should().Contain("SkillType.Staff,\n                28,\n                3,\n                typeof(KnockdownStatusEffect)");
         groundQuake.Should().Contain("centerOnActivator: true");
         groundQuake.Should().Contain("areaVisualEffect: VisualEffect.Vfx_Fnf_Screen_Shake");
@@ -259,6 +291,17 @@ public class StaffCrusherTests
 
         requirement.Type.Should().Be(skill);
         requirement.RequiredRank.Should().Be(rank);
+    }
+
+    private static void AssertStatBonus(PerkLevel level, StatType statType, int value)
+    {
+        level.StatBonuses
+            .Should()
+            .ContainSingle(x => x.Stat == statType)
+            .Which
+            .Calculate(0)
+            .Should()
+            .Be(value);
     }
 
     private static Dictionary<PerkType, PerkDetail> BuildStaffCrusherPerksWithout2daLookup()

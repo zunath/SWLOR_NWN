@@ -179,8 +179,11 @@ public class CombatDamageTests
         combatSource.Should().Contain("SkillType.Staff => Stat.GetStatAdjustment(attacker, StatType.StaffCriticalDamagePercentAdjustment)");
         combatSource.Should().Contain("SkillType.Rifle => Stat.GetStatAdjustment(attacker, StatType.RifleCriticalDamagePercentAdjustment)");
         combatSource.Should().Contain("SkillType.Staff => Stat.GetStatAdjustment(attacker, StatType.StaffCriticalRatePercentAdjustment)");
+        combatSource.Should().Contain("StatType.WeaponMightModifierDamageMultiplier");
         abilitySource.Should().Contain("Combat.ApplyCriticalDamageModifier(activator, calculatedDamage, criticalRating, skillType)");
         damageRollSource.Should().Contain("Combat.ApplyCriticalDamageModifier(attacker.m_idSelf, damage, effectiveCritical, skillType)");
+        damageRollSource.Should().Contain("ApplyMightModifierDamageBonus(attacker, weapon, damageProfile)");
+        damageRollSource.Should().Contain("StatType.WeaponMightModifierDamageMultiplier");
         attackRollSource.Should().Contain("Combat.GetSkillCriticalRatePercentAdjustment(attacker.m_idSelf, skillType)");
     }
 

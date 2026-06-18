@@ -65,9 +65,9 @@ The first implementation pass closed a few narrow, concrete gaps:
 - Added first-pass runtime hooks for the new active statuses in `Stat`, `Combat`, and `StatusEffect`: attack/defense/accuracy/evasion modifiers, Invincible damage prevention, Marked for Death damage bonus, Duelist's Challenge damage exposure, haste stance handling, and several on-hit stance effects.
 - Added discovered status effect definitions and migrated combat ability/status application, combat stat hooks, damage hooks, and status data lookup to the status service.
 - Added the remaining scoped passive combat perk definitions for Rapid Shot, Bulwark, Alacrity, and Crushing Style.
-- Wired runtime hooks for Rapid Shot attack delay reduction, Bulwark shield deflection, Alacrity shield-deflect stamina recovery, and Crushing Style staff damage/critical bonuses.
+- Wired runtime hooks for Rapid Shot attack delay reduction, Bulwark shield deflection, Alacrity shield-deflect stamina recovery, and Crushing Style weapon damage/critical bonuses.
 - Tightened the audit so blank spreadsheet note rows and non-combat crafting/research/gathering tabs are excluded from combat-upgrade blocker counts.
-- Added the missing Flurry Style staff perk and wired its staff attack-delay reduction behavior.
+- Added the missing Flurry Style perk and wired its Haste behavior.
 - Updated the audit refresh to parse the live Bible spreadsheet's pre-table metadata rows and fail loudly if no scoped manifest rows are available.
 - Added local workbook refresh support to `tools\UpdateCombatUpgradeAudit.ps1`, regenerated `CombatUpgradeBiblePerkManifest.csv` from `design\bible\SWLOR Design Bible - Combat Upgrade.xlsx`, and regenerated `CombatUpgradePerkAudit.csv` from that manifest.
 - Implemented the Leadership aura slice: Rallying Standard, Coordinated Focus, Charge Order, Watchful Presence, Steady Formation, and Field Recovery now use the existing aura toggle/range system with specific rank status effects and SOC-capped scaling.

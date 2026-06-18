@@ -85,11 +85,11 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.CrushingStyleTrait)
-                .Description("You gain bonus damage with staves equal to your MGT modifier and +10% critical chance.")
-                .IncreasesStat(StatType.StaffMightModifierDamageMultiplier, 1)
-                .IncreasesStat(StatType.StaffCriticalRatePercentAdjustment, 10)
+                .Description("Gains +1 weapon DMG for every 2 Might over 10 with all weapons and +10% critical chance.")
+                .IncreasesStat(StatType.WeaponMightModifierDamageMultiplier, 1)
+                .IncreasesStat(StatType.CriticalRatePercentAdjustment, 10)
                 .Price(3)
-                .RequirementSkill(SkillType.Staff, 2);
+                .RequirementSkill(SkillType.Staff, 25);
         }
 
         private void CrushingMastery()
@@ -137,10 +137,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.FlurryStyleTrait)
-                .Description("Staff attack delay is reduced by 10%.")
-                .IncreasesStat(StatType.AttackDelayReductionPercent, creature => EquipmentPredicates.HasMainHandStaff(creature) ? 10 : 0)
+                .Description("Grants +10% Haste.")
+                .IncreasesStat(StatType.AttackDelayReductionPercent, 10)
                 .Price(2)
-                .RequirementSkill(SkillType.Staff, 2);
+                .RequirementSkill(SkillType.Staff, 25);
         }
 
         private void FlowingDefense()
@@ -165,9 +165,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.GroundQuake1)
-                .Description("Deals weapon DMG + 18 to nearby enemies. Inflicts Knockdown for 2 seconds.")
+                .Description("Deals weapon DMG + 8 to nearby enemies. Inflicts Knockdown for 1 second.")
                 .Price(3)
-                .RequirementSkill(SkillType.Staff, 25)
+                .RequirementSkill(SkillType.Staff, 8)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.GroundQuake2)
@@ -234,9 +234,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.LineBreaker1)
-                .Description("Deals weapon DMG + 18 to enemies in a line. Inflicts Disoriented for 12 seconds.")
+                .Description("Deals weapon DMG + 6 to enemies in a line. Inflicts Disoriented for 8 seconds.")
                 .Price(3)
-                .RequirementSkill(SkillType.Staff, 25);
+                .RequirementSkill(SkillType.Staff, 2);
         }
 
         private void PatientSentinel()
@@ -339,9 +339,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Slam1)
-                .Description("Deals weapon DMG + 8 and inflicts Blind for 8 seconds.")
+                .Description("Deals weapon DMG + 4 and inflicts Blind for 6 seconds.")
                 .Price(3)
-                .RequirementSkill(SkillType.Staff, 8)
+                .RequirementSkill(SkillType.Staff, 2)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Slam2)

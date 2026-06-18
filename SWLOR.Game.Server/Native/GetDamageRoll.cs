@@ -113,6 +113,7 @@ namespace SWLOR.Game.Server.Native
 
                 // Apply combat mode bonuses
                 damageProfile = ApplyCombatModeBonus(attacker, damageProfile);
+                damageProfile = ApplyMightModifierDamageBonus(attacker, weapon, damageProfile);
 
                 var critical = bCritical == 1
                     ? Combat.StandardCriticalRating
@@ -399,6 +400,27 @@ namespace SWLOR.Game.Server.Native
                 default:
                     return damageProfile;
             }
+        }
+
+        private static WeaponDamageProfile ApplyMightModifierDamageBonus(CNWSCreature attacker, CNWSItem weapon, WeaponDamageProfile damageProfile)
+        {
+            if (attacker == null)
+                return damageProfile;
+
+            var mightModifier = Math.Max(0, Stat.GetStatValueNative(attacker, AbilityType.Might));
+            if (mightModifier <= 0)
+                return damageProfile;
+
+            var multiplier = Stat.GetStatAdjustment(attacker.m_idSelf, StatType.WeaponMightModifierDamageMultiplier);
+            if (weapon != null && Item.StaffBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem))
+            {
+                multiplier += Stat.GetStatAdjustment(attacker.m_idSelf, StatType.StaffMightModifierDamageMultiplier);
+            }
+
+            if (multiplier <= 0)
+                return damageProfile;
+
+            return new WeaponDamageProfile(damageProfile.DamageType, damageProfile.Damage + mightModifier * multiplier);
         }
 
         private static int CalculateTargetSpecificDamage(void* pTarget, CNWSCreature attacker,

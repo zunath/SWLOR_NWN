@@ -3654,7 +3654,13 @@ namespace SWLOR.Game.Server.Service.StatService
         /// Tertiary PerkType value whose Twin Blade ability can consume Reversal Cut.
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
-        TwinBladeDuelistReversalCutTriggerTertiaryPerkType = 623
+        TwinBladeDuelistReversalCutTriggerTertiaryPerkType = 623,
+
+        /// <summary>
+        /// Multiplier for the attacker's positive Might modifier added as weapon damage bonus.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        WeaponMightModifierDamageMultiplier = 624
     }
 
     public class StatTypeAttribute : Attribute

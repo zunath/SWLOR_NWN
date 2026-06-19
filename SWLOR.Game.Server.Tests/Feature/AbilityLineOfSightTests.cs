@@ -63,6 +63,60 @@ public class AbilityLineOfSightTests
         impactIndex.Should().BeLessThan(recastIndex);
     }
 
+    [Test]
+    public void HostileAreaAbilityValidation_RejectsBlockedAreaTargetsBeforeRecast()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "Ability.cs")).Replace("\r\n", "\n");
+        var validationBody = source.Substring(
+            source.IndexOf("public static bool CanUseAbility", StringComparison.Ordinal),
+            source.IndexOf("private static bool HasAbilityLineOfSight", StringComparison.Ordinal) -
+            source.IndexOf("public static bool CanUseAbility", StringComparison.Ordinal));
+        var areaValidationBody = source.Substring(
+            source.IndexOf("private static string ValidateHostileAreaLineOfSight", StringComparison.Ordinal),
+            source.IndexOf("private static bool TryGetCombatImpactShape", StringComparison.Ordinal) -
+            source.IndexOf("private static string ValidateHostileAreaLineOfSight", StringComparison.Ordinal));
+
+        var areaValidationIndex = validationBody.IndexOf(
+            "ValidateHostileAreaLineOfSight(activator, target, targetLocation, ability)",
+            StringComparison.Ordinal);
+        var recastIndex = validationBody.IndexOf("Recast.IsOnRecastDelay", StringComparison.Ordinal);
+
+        areaValidationIndex.Should().BeGreaterThanOrEqualTo(0);
+        recastIndex.Should().BeGreaterThanOrEqualTo(0);
+        areaValidationIndex.Should().BeLessThan(recastIndex);
+        areaValidationBody.Should().Contain("AbilityTargetingFlags.HarmsEnemies");
+        areaValidationBody.Should().Contain("AbilityTargetingFlags.OriginOnSelf");
+        areaValidationBody.Should().Contain("creatures.Any(creature => HasAbilityLineOfSight(activator, creature))");
+        areaValidationBody.Should().Contain("You cannot see any enemies in the target area.");
+    }
+
+    [Test]
+    public void HostileAreaImpact_FiltersBlockedTargetsAtImpactTime()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "Ability.cs")).Replace("\r\n", "\n");
+        var shapeImpactBody = source.Substring(
+            source.IndexOf("private static void ApplyCombatImpactInShape", StringComparison.Ordinal),
+            source.IndexOf("private static ApplyTelegraphEffect BuildTelegraphedCombatImpactAction", StringComparison.Ordinal) -
+            source.IndexOf("private static void ApplyCombatImpactInShape", StringComparison.Ordinal));
+        var telegraphActionBody = source.Substring(
+            source.IndexOf("private static ApplyTelegraphEffect BuildTelegraphedCombatImpactAction", StringComparison.Ordinal),
+            source.IndexOf("private static int ApplyCombatImpactToCreatures", StringComparison.Ordinal) -
+            source.IndexOf("private static ApplyTelegraphEffect BuildTelegraphedCombatImpactAction", StringComparison.Ordinal));
+
+        shapeImpactBody.Should().Contain(".Where(creature => HasAbilityLineOfSight(activator, creature))");
+        telegraphActionBody.Should().Contain("HasAbilityLineOfSight(creator, creature)");
+    }
+
     private static DirectoryInfo FindRepositoryRoot()
     {
         var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);

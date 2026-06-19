@@ -373,6 +373,13 @@ namespace SWLOR.Game.Server.Service
                 return false;
             }
 
+            var areaLineOfSightError = ValidateHostileAreaLineOfSight(activator, target, targetLocation, ability);
+            if (!string.IsNullOrWhiteSpace(areaLineOfSightError))
+            {
+                SendMessageToPC(activator, areaLineOfSightError);
+                return false;
+            }
+
             // Check if ability is on a recast timer still.
             var (isOnRecast, timeToWait) = Recast.IsOnRecastDelay(activator, ability.RecastGroup);
             if (isOnRecast)
@@ -388,6 +395,60 @@ namespace SWLOR.Game.Server.Service
         {
             return LineOfSightObject(activator, target) &&
                    LineOfSightVector(GetPosition(activator), GetPosition(target));
+        }
+
+        private static string ValidateHostileAreaLineOfSight(
+            uint activator,
+            uint target,
+            Location targetLocation,
+            AbilityDetail ability)
+        {
+            var targeting = ability.Targeting;
+            if (targeting == null ||
+                !targeting.Flags.HasFlag(AbilityTargetingFlags.HarmsEnemies) ||
+                !TryGetCombatImpactShape(targeting.Shape, out var shape))
+            {
+                return string.Empty;
+            }
+
+            var creatures = GetHostileCreaturesInCombatImpactShape(
+                    activator,
+                    target,
+                    targetLocation,
+                    shape,
+                    targeting.ResolveSizeX(activator, true),
+                    targeting.ResolveSizeY(),
+                    targeting.Flags.HasFlag(AbilityTargetingFlags.OriginOnSelf))
+                .ToList();
+
+            if (creatures.Count <= 0 ||
+                creatures.Any(creature => HasAbilityLineOfSight(activator, creature)))
+            {
+                return string.Empty;
+            }
+
+            return "You cannot see any enemies in the target area.";
+        }
+
+        private static bool TryGetCombatImpactShape(AbilityTargetingShapeType targetingShape, out CombatImpactAreaShape shape)
+        {
+            switch (targetingShape)
+            {
+                case AbilityTargetingShapeType.Sphere:
+                case AbilityTargetingShapeType.HSphere:
+                    shape = CombatImpactAreaShape.Sphere;
+                    return true;
+                case AbilityTargetingShapeType.Rect:
+                    shape = CombatImpactAreaShape.Line;
+                    return true;
+                case AbilityTargetingShapeType.Cone:
+                    shape = CombatImpactAreaShape.Cone;
+                    return true;
+                case AbilityTargetingShapeType.None:
+                default:
+                    shape = default;
+                    return false;
+            }
         }
 
         /// <summary>
@@ -950,7 +1011,8 @@ namespace SWLOR.Game.Server.Service
                 var creatures = new List<uint>();
                 while (GetIsObjectValid(creature))
                 {
-                    creatures.Add(creature);
+                    if (HasAbilityLineOfSight(activator, creature))
+                        creatures.Add(creature);
 
                     creature = GetNextObjectInShape(Shape.Sphere, 5.0f, center, true);
                 }
@@ -1219,33 +1281,19 @@ namespace SWLOR.Game.Server.Service
         {
             RecordAbilityImpactShape(activator, skillType, true);
 
-            var creatures = new List<uint>();
-            var origin = shape == CombatImpactAreaShape.Sphere
-                ? Location(GetArea(activator), GetAreaImpactPosition(activator, target, targetLocation, centerOnActivator), 0f)
-                : GetLocation(activator);
-            var maxDistance = GetCombatImpactShapeSearchRadius(shape, lengthOrRadius, width);
+            var origin = GetCombatImpactShapeOrigin(activator, target, targetLocation, shape, centerOnActivator);
+            var creatures = GetHostileCreaturesInCombatImpactShape(
+                    activator,
+                    target,
+                    targetLocation,
+                    shape,
+                    lengthOrRadius,
+                    width,
+                    centerOnActivator)
+                .Where(creature => HasAbilityLineOfSight(activator, creature))
+                .ToList();
 
-            var rotation = GetImpactRotationRadians(activator, target, targetLocation);
-            var originPosition = GetPositionFromLocation(origin);
-            var candidates = GetAliveCreaturesInArea(GetAreaFromLocation(origin))
-                .Select(creature => new
-                {
-                    Creature = creature,
-                    Position = GetPosition(creature)
-                })
-                .Where(candidate => GetHorizontalDistance(candidate.Position, originPosition) <= maxDistance)
-                .OrderBy(candidate => GetHorizontalDistance(candidate.Position, originPosition));
-
-            foreach (var candidate in candidates)
-            {
-                if (IsPositionInCombatImpactShape(candidate.Position, originPosition, rotation, shape, lengthOrRadius, width))
-                {
-                    creatures.Add(candidate.Creature);
-                }
-            }
-
-            var hasHostileCreatures = creatures.Any(creature => GetIsObjectValid(creature) && GetIsReactionTypeHostile(creature, activator));
-            if (alwaysApplyAreaVisualEffect || hasHostileCreatures)
+            if (alwaysApplyAreaVisualEffect || creatures.Count > 0)
             {
                 if (areaVisualEffect != VisualEffect.None)
                 {
@@ -1319,7 +1367,10 @@ namespace SWLOR.Game.Server.Service
                     return;
 
                 var hostileCreatures = creatures
-                    .Where(creature => GetIsObjectValid(creature) && GetIsReactionTypeHostile(creature, creator))
+                    .Where(creature =>
+                        GetIsObjectValid(creature) &&
+                        GetIsReactionTypeHostile(creature, creator) &&
+                        HasAbilityLineOfSight(creator, creature))
                     .ToList();
 
                 if (maxTargets > 0)
@@ -1495,6 +1546,50 @@ namespace SWLOR.Game.Server.Service
                 return DegreesToRadians(GetFacing(activator));
 
             return (float)Math.Atan2(delta.Y, delta.X);
+        }
+
+        private static Location GetCombatImpactShapeOrigin(
+            uint activator,
+            uint target,
+            Location targetLocation,
+            CombatImpactAreaShape shape,
+            bool centerOnActivator)
+        {
+            return shape == CombatImpactAreaShape.Sphere
+                ? Location(GetArea(activator), GetAreaImpactPosition(activator, target, targetLocation, centerOnActivator), 0f)
+                : GetLocation(activator);
+        }
+
+        private static IEnumerable<uint> GetHostileCreaturesInCombatImpactShape(
+            uint activator,
+            uint target,
+            Location targetLocation,
+            CombatImpactAreaShape shape,
+            float lengthOrRadius,
+            float width,
+            bool centerOnActivator)
+        {
+            var origin = GetCombatImpactShapeOrigin(activator, target, targetLocation, shape, centerOnActivator);
+            var maxDistance = GetCombatImpactShapeSearchRadius(shape, lengthOrRadius, width);
+            var rotation = GetImpactRotationRadians(activator, target, targetLocation);
+            var originPosition = GetPositionFromLocation(origin);
+            var candidates = GetAliveCreaturesInArea(GetAreaFromLocation(origin))
+                .Select(creature => new
+                {
+                    Creature = creature,
+                    Position = GetPosition(creature)
+                })
+                .Where(candidate => GetHorizontalDistance(candidate.Position, originPosition) <= maxDistance)
+                .OrderBy(candidate => GetHorizontalDistance(candidate.Position, originPosition));
+
+            foreach (var candidate in candidates)
+            {
+                if (GetIsReactionTypeHostile(candidate.Creature, activator) &&
+                    IsPositionInCombatImpactShape(candidate.Position, originPosition, rotation, shape, lengthOrRadius, width))
+                {
+                    yield return candidate.Creature;
+                }
+            }
         }
 
         private static float DegreesToRadians(float degrees)

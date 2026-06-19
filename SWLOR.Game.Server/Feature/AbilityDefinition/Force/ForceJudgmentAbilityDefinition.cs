@@ -96,6 +96,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .CombatImpactDamageAbility(AbilityType.Willpower)
                 .UsesImpactAnimation(Animation.CastOutAnimation)
                 .DisplaysVisualEffectWhenActivating()
+                .PlaysSoundOnImpact("ksfx_use_force")
                 .HasMaxRange(15f)
                 .RequiresTarget()
                 .HasImpactAction((activator, target, _, targetLocation) =>

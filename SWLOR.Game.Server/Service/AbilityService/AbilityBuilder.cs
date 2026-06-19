@@ -130,6 +130,20 @@ namespace SWLOR.Game.Server.Service.AbilityService
             return this;
         }
 
+        public AbilityBuilder PlaysSoundWhenActivating(string soundResref)
+        {
+            _activeAbility.ActivationSound = soundResref;
+
+            return this;
+        }
+
+        public AbilityBuilder PlaysSoundOnImpact(string soundResref)
+        {
+            _activeAbility.ImpactSound = soundResref;
+
+            return this;
+        }
+
         /// <summary>
         /// Indicates this ability runs an action immediately after validation but before any delays or impacts.
         /// This can be used to disable an active effect, like an aura, if a player uses the ability a second time.

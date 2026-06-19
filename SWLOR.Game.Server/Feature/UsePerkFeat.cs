@@ -212,6 +212,17 @@ namespace SWLOR.Game.Server.Feature
             }
         }
 
+        private static void PlayAbilitySound(uint activator, string soundResref)
+        {
+            if (!GetIsObjectValid(activator) ||
+                string.IsNullOrWhiteSpace(soundResref))
+            {
+                return;
+            }
+
+            AssignCommand(activator, () => PlaySound(soundResref));
+        }
+
         private static void ExecuteAbilityImpact(
             uint activator,
             uint target,
@@ -219,6 +230,7 @@ namespace SWLOR.Game.Server.Feature
             AbilityDetail ability,
             Location targetLocation)
         {
+            PlayAbilitySound(activator, ability.ImpactSound);
             Ability.BeginAbilityImpact(activator, ability);
             ability.ImpactAction?.Invoke(activator, target, ability.AbilityLevel, targetLocation);
             var summary = Ability.EndAbilityImpact(activator);
@@ -279,6 +291,8 @@ namespace SWLOR.Game.Server.Feature
                 {
                     BiowarePosition.TurnToFaceLocation(targetLocation, activator);
                 }
+
+                PlayAbilitySound(activator, ability.ActivationSound);
 
                 // Display a casting visual effect if one has been specified.
                 if (ability.ActivationVisualEffect != VisualEffect.None)

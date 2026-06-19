@@ -33,6 +33,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .Level(1)
                 .HasActivationDelay(0f)
                 .UsesAnimation(Animation.CastOutAnimation)
+                .PlaysSoundOnImpact("ksfx_frc_buff")
                 .HasRecastDelay(RecastGroup.Capstone, CapstoneAbility.RecastDelaySeconds)
                 .SkillType(SkillType.Force)
                 .IsSingleTargetAbility()

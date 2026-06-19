@@ -58,6 +58,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .SkillType(SkillType.Devices)
                 .CombatImpactDamageAbility(AbilityType.Perception)
                 .UsesImpactAnimation(Animation.CastOutAnimation)
+                .PlaysSoundOnImpact("ksfx_beam")
                 .HasMaxRange(DeviceAbilityRange.Standard)
                 .IsSingleTargetAbility()
                 .RequiresTarget()

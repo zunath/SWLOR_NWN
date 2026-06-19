@@ -36,6 +36,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .SkillType(SkillType.Devices)
                 .CombatImpactDamageAbility(AbilityType.Perception)
                 .UsesImpactAnimation(Animation.CastOutAnimation)
+                .PlaysSoundOnImpact("ksfx_cold_ray")
                 .IsAreaAbility()
                 .HasImpactAction(CryoSprayer1ImpactAction)
                 .HasTargetingCone(

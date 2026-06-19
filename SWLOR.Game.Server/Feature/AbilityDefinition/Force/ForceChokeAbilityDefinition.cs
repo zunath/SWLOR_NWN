@@ -66,6 +66,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .SkillType(SkillType.Force)
                 .CombatImpactDamageAbility(AbilityType.Willpower)
                 .UsesImpactAnimation(Animation.CastOutAnimation)
+                .PlaysSoundOnImpact("ksfx_frc_choke")
                 .IsSingleTargetAbility()
                 .HasMaxRange(15f)
                 .RequiresTarget()

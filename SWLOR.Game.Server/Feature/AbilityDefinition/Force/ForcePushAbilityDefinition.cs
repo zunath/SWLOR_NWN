@@ -44,6 +44,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .CombatImpactDamageAbility(AbilityType.Willpower)
                 .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating()
+                .PlaysSoundOnImpact("ksfx_frc_push")
                 .IsSingleTargetAbility()
                 .HasMaxRange(8f)
                 .RequiresTarget()
@@ -66,6 +67,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .CombatImpactDamageAbility(AbilityType.Willpower)
                 .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating()
+                .PlaysSoundOnImpact("ksfx_frc_wave")
                 .IsAreaAbility()
                 .HasTargetingLine(
                     Spell.ForcePush2,
@@ -91,6 +93,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .CombatImpactDamageAbility(AbilityType.Willpower)
                 .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating()
+                .PlaysSoundOnImpact("ksfx_frc_wave")
                 .IsAreaAbility()
                 .HasImpactAction(ForcePush3ImpactAction)
                 .IsCastedAbility()

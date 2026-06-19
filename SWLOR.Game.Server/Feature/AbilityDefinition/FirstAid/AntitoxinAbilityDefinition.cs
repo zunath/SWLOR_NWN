@@ -34,6 +34,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .Level(1)
                 .HasActivationDelay(1f)
                 .UsesAnimation(Animation.FireForgetSalute)
+                .PlaysSoundOnImpact("ksfx_frc_buff")
                 .HasRecastDelay(RecastGroup.Antitoxin, 45f)
                 .SkillType(SkillType.FirstAid)
                 .IsSingleTargetAbility()

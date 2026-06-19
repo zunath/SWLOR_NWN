@@ -36,6 +36,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .SkillType(SkillType.Force)
                 .CombatImpactDamageAbility(AbilityType.Willpower)
                 .UsesImpactAnimation(Animation.CastOutAnimation)
+                .PlaysSoundOnImpact("ksfx_frc_night")
                 .IsAreaAbility()
                 .HasImpactAction(EclipseOfResolve1ImpactAction)
                 .HasTargetingSphere(

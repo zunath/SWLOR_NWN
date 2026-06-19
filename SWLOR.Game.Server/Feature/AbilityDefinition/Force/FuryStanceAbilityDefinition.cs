@@ -28,6 +28,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .Level(1)
                 .HasRecastDelay(RecastGroup.FuryStance, 60f)
                 .UsesAnimation(Animation.CastOutAnimation)
+                .PlaysSoundOnImpact("ksfx_frc_buff")
                 .SkillType(SkillType.Force)
                 .RequirementFP(5);
 
@@ -42,6 +43,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .Level(2)
                 .HasRecastDelay(RecastGroup.FuryStance, 60f)
                 .UsesAnimation(Animation.CastOutAnimation)
+                .PlaysSoundOnImpact("ksfx_frc_buff")
                 .SkillType(SkillType.Force)
                 .RequirementFP(8);
 

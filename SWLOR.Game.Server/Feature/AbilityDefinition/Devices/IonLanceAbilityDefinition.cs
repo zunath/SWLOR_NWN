@@ -63,6 +63,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .SkillType(SkillType.Devices)
                 .CombatImpactDamageAbility(AbilityType.Perception)
                 .UsesImpactAnimation(Animation.CastOutAnimation)
+                .PlaysSoundOnImpact("ksfx_ion_ray")
                 .IsAreaAbility()
                 .HasTargetingLine(
                     spell,

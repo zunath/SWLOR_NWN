@@ -59,6 +59,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .SkillType(SkillType.Force)
                 .CombatImpactDamageAbility(AbilityType.Willpower)
                 .DisplaysVisualEffectWhenActivating(VisualEffect.None)
+                .PlaysSoundOnImpact("ksfx_gravity")
                 .IsSingleTargetAbility()
                 .HasMaxRange(15f)
                 .RequiresTarget()

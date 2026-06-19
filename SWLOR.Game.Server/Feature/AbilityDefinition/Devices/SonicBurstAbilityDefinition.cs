@@ -38,6 +38,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .SkillType(SkillType.Devices)
                 .CombatImpactDamageAbility(AbilityType.Perception)
                 .UsesImpactAnimation(Animation.CastOutAnimation)
+                .PlaysSoundOnImpact("ksfx_sonic_wave")
                 .IsAreaAbility()
                 .HasImpactAction(SonicBurst1ImpactAction)
                 .HasTargetingSphere(
@@ -61,6 +62,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .SkillType(SkillType.Devices)
                 .CombatImpactDamageAbility(AbilityType.Perception)
                 .UsesImpactAnimation(Animation.CastOutAnimation)
+                .PlaysSoundOnImpact("ksfx_sonic_wave")
                 .IsAreaAbility()
                 .HasImpactAction(SonicBurst2ImpactAction)
                 .HasTargetingSphere(
@@ -84,6 +86,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .SkillType(SkillType.Devices)
                 .CombatImpactDamageAbility(AbilityType.Perception)
                 .UsesImpactAnimation(Animation.CastOutAnimation)
+                .PlaysSoundOnImpact("ksfx_sonic_wave")
                 .IsAreaAbility()
                 .HasImpactAction(SonicBurst3ImpactAction)
                 .HasTargetingSphere(

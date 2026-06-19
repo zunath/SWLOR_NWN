@@ -40,6 +40,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .SkillType(SkillType.Devices)
                 .CombatImpactDamageAbility(AbilityType.Perception)
                 .UsesImpactAnimation(Animation.CastOutAnimation)
+                .PlaysSoundOnImpact("ksfx_flame_spr")
                 .IsAreaAbility()
                 .HasImpactAction(Flamethrower1ImpactAction)
                 .HasTargetingCone(
@@ -64,6 +65,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .SkillType(SkillType.Devices)
                 .CombatImpactDamageAbility(AbilityType.Perception)
                 .UsesImpactAnimation(Animation.CastOutAnimation)
+                .PlaysSoundOnImpact("ksfx_flame_spr")
                 .IsAreaAbility()
                 .HasImpactAction(Flamethrower2ImpactAction)
                 .HasTargetingCone(
@@ -88,6 +90,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .SkillType(SkillType.Devices)
                 .CombatImpactDamageAbility(AbilityType.Perception)
                 .UsesImpactAnimation(Animation.CastOutAnimation)
+                .PlaysSoundOnImpact("ksfx_flame_spr")
                 .IsAreaAbility()
                 .HasImpactAction(Flamethrower3ImpactAction)
                 .HasTargetingCone(

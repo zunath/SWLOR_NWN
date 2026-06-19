@@ -23,6 +23,8 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public AbilityCustomValidationAction CustomValidation { get; set; }
         public List<IAbilityActivationRequirement> Requirements { get; set; }
         public VisualEffect ActivationVisualEffect { get; set; }
+        public string ActivationSound { get; set; }
+        public string ImpactSound { get; set; }
         public RecastGroup RecastGroup { get; set; }
         public AbilityActivationType ActivationType { get; set; }
         public PerkType EffectiveLevelPerkType { get; set; }
@@ -47,6 +49,8 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public AbilityDetail()
         {
             ActivationVisualEffect = VisualEffect.None;
+            ActivationSound = string.Empty;
+            ImpactSound = string.Empty;
             AnimationType = Animation.Invalid;
             ImpactAnimationType = Animation.Invalid;
             Requirements = new List<IAbilityActivationRequirement>();

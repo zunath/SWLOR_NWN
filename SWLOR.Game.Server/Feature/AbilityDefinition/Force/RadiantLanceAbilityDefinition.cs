@@ -64,6 +64,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .CombatImpactDamageAbility(AbilityType.Willpower)
                 .UsesImpactAnimation(Animation.CastOutAnimation)
                 .DisplaysVisualEffectWhenActivating()
+                .PlaysSoundOnImpact("ksfx_beam")
                 .IsAreaAbility()
                 .HasTargetingLine(
                     spell,

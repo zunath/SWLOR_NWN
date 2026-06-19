@@ -62,7 +62,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                     foreach (var hostile in CombatAreaPulses.GetHostileCreatures(activator, pulseLocation, FieldRadius))
                     {
                         StatusEffect.ApplyStatusEffect(activator, hostile, typeof(PacificationFieldStatusEffect), PulseIntervalSeconds + 0.2f);
-                        StatusEffect.ApplyStatusEffect(activator, hostile, typeof(DazedStatusEffect), 2f);
+                        StatusEffect.ApplyStatusEffect(activator, hostile, new DazedStatusEffect(grantsTemporaryImmunity: false), 2f);
                         Ability.ApplyHostileAbilityEnmity(activator, hostile);
                         ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Dazed_S), hostile);
                     }

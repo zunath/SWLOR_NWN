@@ -62,6 +62,21 @@ public class RiflePacificationTests
         var stasisVolley = new StasisVolleyStatusEffect();
         stasisVolley.StatGroup.Stats[StatType.AttackPercentAdjustment].Should().Be(-10);
     }
+
+    [Test]
+    public void PacificationFieldDazePulses_DoNotCreateTemporaryDazeImmunity()
+    {
+        var root = FindRepositoryRoot();
+        var pacificationField = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Rifle" / "PacificationFieldAbilityDefinition.cs").FullName);
+        var dazed = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "StatusEffectDefinition" / "DazedStatusEffect.cs").FullName);
+
+        pacificationField.Should().Contain("new DazedStatusEffect(grantsTemporaryImmunity: false)");
+        pacificationField.Should().NotContain("typeof(DazedStatusEffect), 2f");
+        dazed.Should().Contain("public DazedStatusEffect()");
+        dazed.Should().Contain("Ability.ApplyTemporaryImmunity(creature, duration, ImmunityType.Dazed);");
+        dazed.Should().Contain("return new DazedStatusEffect(_grantsTemporaryImmunity);");
+    }
+
     [Test]
     public void RiflePacificationFeatAndAbilityIcons_AreUniqueAndPresent()
     {
@@ -80,7 +95,7 @@ public class RiflePacificationTests
             (FeatType.CripplingShot3, "ife_cripshot3", "M", "0x02", "1", "****", "****", "****", "****"),
             (FeatType.TranqCone2, "ife_tranqcone2", "M", "0x3E", "1", "cone", "10", "7", "17"),
             (FeatType.PacificationField1, "ife_pacfld1", "M", "0x3E", "1", "sphere", "5", "****", "1"),
-            (FeatType.StasisVolley1, "ife_stasvol1", "M", "0x3E", "1", "cone", "5", "5", "17")
+            (FeatType.StasisVolley1, "ife_stasvol1", "M", "0x3E", "1", "cone", "20", "20", "17")
         };
         var seenIcons = new HashSet<string>();
 

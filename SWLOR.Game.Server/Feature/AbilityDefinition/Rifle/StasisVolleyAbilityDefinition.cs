@@ -36,8 +36,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 .HasImpactAction(StasisVolley1ImpactAction)
                 .HasTargetingCone(
                     Spell.StasisVolley1,
-                    5f,
-                    5f,
+                    20f,
+                    20f,
                     AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf)
                 .IsCastedAbility()
                 .IsHostileAbility()
@@ -57,8 +57,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 typeof(StasisVolleyStatusEffect),
                 CombatImpactAreaShape.Cone,
                 0.25f,
-                5f,
-                5f,
+                20f,
+                20f,
                 afterSuccessfulHit: affectedEnemy =>
                     StatusEffect.ApplyStatusEffect(
                         activator,

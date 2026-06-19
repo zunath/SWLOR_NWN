@@ -7,11 +7,23 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
     public sealed class DazedStatusEffect : StatusEffectBase
     {
+        private readonly bool _grantsTemporaryImmunity;
+
         public override string Name => "Dazed";
         public override EffectIconType Icon => EffectIconType.DazedStatusEffect;
         public override StatusEffectCategory Categories => StatusEffectCategory.Debuff | StatusEffectCategory.Control;
         public override StatusEffectCleanseType CleanseTypes => StatusEffectCleanseType.Purify | StatusEffectCleanseType.SoothePet;
         public override ResistanceType ResistanceType => ResistanceType.Mind;
+
+        public DazedStatusEffect()
+            : this(true)
+        {
+        }
+
+        public DazedStatusEffect(bool grantsTemporaryImmunity)
+        {
+            _grantsTemporaryImmunity = grantsTemporaryImmunity;
+        }
 
         protected override void Apply(uint creature, int durationTicks)
         {
@@ -27,7 +39,16 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         {
             var effect = TagNativeEffect(EffectDazed());
             ApplyEffectToObject(DurationType.Temporary, effect, creature, duration);
-            Ability.ApplyTemporaryImmunity(creature, duration, ImmunityType.Dazed);
+
+            if (_grantsTemporaryImmunity)
+            {
+                Ability.ApplyTemporaryImmunity(creature, duration, ImmunityType.Dazed);
+            }
+        }
+
+        public override IStatusEffect Clone()
+        {
+            return new DazedStatusEffect(_grantsTemporaryImmunity);
         }
     }
 }

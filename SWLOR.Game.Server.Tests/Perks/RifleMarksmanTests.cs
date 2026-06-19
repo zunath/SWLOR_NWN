@@ -34,7 +34,7 @@ public class RifleMarksmanTests
         AssertAbility(sniperStance, "Sniper Stance", 1, RecastGroup.SniperStance, 180f, 2f, null, false, false, false, false, AbilityActivationType.Casted);
 
         var suppressiveLine = new SuppressiveLineAbilityDefinition().BuildAbilities()[FeatType.SuppressiveLine1];
-        AssertAbility(suppressiveLine, "Suppressive Line", 1, RecastGroup.SuppressiveLine, 60f, 0f, 8, true, false, false, true, AbilityActivationType.Casted);
+        AssertAbility(suppressiveLine, "Suppressive Line", 1, RecastGroup.SuppressiveLine, 60f, 0f, 8, true, false, false, true, AbilityActivationType.Casted, 20f);
 
         var headshot = new HeadshotAbilityDefinition().BuildAbilities()[FeatType.Headshot1];
         AssertAbility(headshot, "Headshot", 1, RecastGroup.Headshot, 120f, 1.5f, 14, true, true, true, false, AbilityActivationType.Casted, 30f);
@@ -105,6 +105,11 @@ public class RifleMarksmanTests
         var piercingRound = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Rifle" / "PiercingRoundAbilityDefinition.cs").FullName);
         piercingRound.Split("effectDamageType: DamageType.Piercing").Length.Should().Be(4);
 
+        var suppressiveLine = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Rifle" / "SuppressiveLineAbilityDefinition.cs").FullName);
+        suppressiveLine.Should().Contain("CombatAreaPulses.SchedulePulses(");
+        suppressiveLine.Should().Contain("PulseDamage = 6");
+        suppressiveLine.Should().Contain("LineLength = 20f");
+
         var steadyAim2 = perks[PerkType.SteadyAim].PerkLevels[2];
         steadyAim2.Description.Should().Be("Rifle combat abilities gain +15% accuracy and +5% critical chance. Aimed Shot cooldowns are reduced by 5 seconds.");
         steadyAim2.StatBonuses.Should().ContainSingle(x =>
@@ -128,7 +133,7 @@ public class RifleMarksmanTests
             (FeatType.SniperStance1, "ife_snipstnc1", "P", "0x01", "0", "****", "****", "****", "****"),
             (FeatType.AimedShot2, "ife_aimshot2", "M", "0x02", "1", "****", "****", "****", "****"),
             (FeatType.PiercingRound2, "ife_piercrnd2", "M", "0x02", "1", "****", "****", "****", "****"),
-            (FeatType.SuppressiveLine1, "ife_spprssvline1", "M", "0x3E", "1", "rectangle", "8", "2.5", "17"),
+            (FeatType.SuppressiveLine1, "ife_spprssvline1", "M", "0x3E", "1", "rectangle", "20", "3", "17"),
             (FeatType.AimedShot3, "ife_aimshot3", "M", "0x02", "1", "****", "****", "****", "****"),
             (FeatType.PiercingRound3, "ife_piercrnd3", "M", "0x02", "1", "****", "****", "****", "****"),
             (FeatType.Headshot1, "ife_head1", "M", "0x02", "1", "****", "****", "****", "****"),

@@ -397,7 +397,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SuppressiveLine1)
-                .Description("Deals weapon DMG + 22 to enemies in a line. Inflicts Disoriented for 12 seconds.")
+                .Description("Channel for up to 6s. Deals weapon DMG + 6 to enemies in a 20m line every 2 seconds. Refreshes Disoriented for 4 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Rifle, 25);
         }

@@ -15,17 +15,19 @@ namespace SWLOR.Game.Server.Tests.Perks;
 
 public class LineAbilityTargetingTests
 {
-    [TestCase(FeatType.CoveringStrike1, Spell.CoveringStrike1, typeof(CoveringStrikeAbilityDefinition))]
-    [TestCase(FeatType.Earthshatter1, Spell.Earthshatter1, typeof(EarthshatterAbilityDefinition))]
-    [TestCase(FeatType.ForcePush2, Spell.ForcePush2, typeof(ForcePushAbilityDefinition))]
-    [TestCase(FeatType.LineBreaker1, Spell.LineBreaker1, typeof(LineBreakerAbilityDefinition))]
-    [TestCase(FeatType.SuppressiveLine1, Spell.SuppressiveLine1, typeof(SuppressiveLineAbilityDefinition))]
-    [TestCase(FeatType.GuardiansChallenge2, Spell.GuardiansChallenge2, typeof(GuardiansChallengeAbilityDefinition))]
-    [TestCase(FeatType.IonLance1, Spell.IonLance1, typeof(IonLanceAbilityDefinition))]
+    [TestCase(FeatType.CoveringStrike1, Spell.CoveringStrike1, typeof(CoveringStrikeAbilityDefinition), 8f, 2.5f)]
+    [TestCase(FeatType.Earthshatter1, Spell.Earthshatter1, typeof(EarthshatterAbilityDefinition), 8f, 2.5f)]
+    [TestCase(FeatType.ForcePush2, Spell.ForcePush2, typeof(ForcePushAbilityDefinition), 8f, 2.5f)]
+    [TestCase(FeatType.LineBreaker1, Spell.LineBreaker1, typeof(LineBreakerAbilityDefinition), 8f, 2.5f)]
+    [TestCase(FeatType.SuppressiveLine1, Spell.SuppressiveLine1, typeof(SuppressiveLineAbilityDefinition), 20f, 3f)]
+    [TestCase(FeatType.GuardiansChallenge2, Spell.GuardiansChallenge2, typeof(GuardiansChallengeAbilityDefinition), 8f, 2.5f)]
+    [TestCase(FeatType.IonLance1, Spell.IonLance1, typeof(IonLanceAbilityDefinition), 8f, 2.5f)]
     public void OriginLineAbilities_DeclareForwardLengthAndWidthTargeting(
         FeatType feat,
         Spell spell,
-        Type definitionType)
+        Type definitionType,
+        float expectedLength,
+        float expectedWidth)
     {
         var definition = (IAbilityListDefinition)Activator.CreateInstance(definitionType)!;
         var ability = definition.BuildAbilities()[feat];
@@ -33,8 +35,8 @@ public class LineAbilityTargetingTests
         ability.Targeting.Should().NotBeNull();
         ability.Targeting!.Spell.Should().Be(spell);
         ability.Targeting.Shape.Should().Be(AbilityTargetingShapeType.Rect);
-        ability.Targeting.SizeX.Should().Be(8f);
-        ability.Targeting.SizeY.Should().Be(2.5f);
+        ability.Targeting.SizeX.Should().Be(expectedLength);
+        ability.Targeting.SizeY.Should().Be(expectedWidth);
         ability.Targeting.Flags.Should().Be(
             AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf);
     }

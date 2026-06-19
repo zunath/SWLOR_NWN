@@ -377,14 +377,8 @@ namespace SWLOR.Game.Server.Service
 
             if (IsLeashEvading(self))
             {
-                if (IsOutsideHomeRadius(self, homeLocation))
-                {
+                if (!TryEndLeashEvadeAtHome(self, homeLocation))
                     ContinueLeashEvadeReturn(self, homeLocation);
-                }
-                else
-                {
-                    EndLeashEvade(self);
-                }
 
                 return;
             }
@@ -627,11 +621,46 @@ namespace SWLOR.Game.Server.Service
         private static void ContinueLeashEvadeReturn(uint creature, Location homeLocation)
         {
             ApplyLeashEvadeMovementRate(creature);
+
+            if (GetCurrentAction(creature) == ActionType.MoveToPoint)
+                return;
+
             AssignCommand(creature, () =>
             {
                 ClearAllActions(true);
                 ActionForceMoveToLocation(homeLocation, true, 60f);
+                ActionDoCommand(() => CompleteLeashEvadeReturn(creature, homeLocation));
             });
+        }
+
+        private static bool TryEndLeashEvadeAtHome(uint creature, Location homeLocation)
+        {
+            if (!IsLeashEvading(creature) ||
+                IsOutsideHomeRadius(creature, homeLocation))
+            {
+                return false;
+            }
+
+            EndLeashEvade(creature);
+            return true;
+        }
+
+        private static void CompleteLeashEvadeReturn(uint creature, Location homeLocation)
+        {
+            if (!IsLeashEvading(creature))
+                return;
+
+            if (IsOutsideHomeRadius(creature, homeLocation))
+            {
+                if (!GetIsObjectValid(GetAreaFromLocation(homeLocation)))
+                    return;
+
+                ActionJumpToLocation(homeLocation);
+                ActionDoCommand(() => EndLeashEvade(creature));
+                return;
+            }
+
+            EndLeashEvade(creature);
         }
 
         private static void EndLeashEvade(uint creature)

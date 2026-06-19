@@ -654,7 +654,7 @@ public class AIModelTests
         startEvadeIndex.Should().BeGreaterThan(leashCheckIndex);
         startEvadeIndex.Should().BeLessThan(idleEffectGuardIndex);
         processFlagsBody.Should().Contain("ContinueLeashEvadeReturn(self, homeLocation)");
-        processFlagsBody.Should().Contain("EndLeashEvade(self)");
+        processFlagsBody.Should().Contain("TryEndLeashEvadeAtHome(self, homeLocation)");
     }
 
     [Test]
@@ -677,7 +677,7 @@ public class AIModelTests
     }
 
     [Test]
-    public void CombatLeash_EvadeUsesPlotProtectionAndRestoresPreviousPlotState()
+    public void CombatLeash_EvadeUsesPlotProtectionAndEndsWhenReturnedHome()
     {
         var aiSource = ReadSource("SWLOR.Game.Server", "Service", "AI.cs").Replace("\r\n", "\n");
         var evadeMovementRate = ReadConstFloat(
@@ -691,8 +691,16 @@ public class AIModelTests
             aiSource.IndexOf("private static void StartLeashEvade", StringComparison.Ordinal));
         var continueBody = aiSource.Substring(
             aiSource.IndexOf("private static void ContinueLeashEvadeReturn", StringComparison.Ordinal),
-            aiSource.IndexOf("private static void EndLeashEvade", StringComparison.Ordinal) -
+            aiSource.IndexOf("private static bool TryEndLeashEvadeAtHome", StringComparison.Ordinal) -
             aiSource.IndexOf("private static void ContinueLeashEvadeReturn", StringComparison.Ordinal));
+        var tryEndBody = aiSource.Substring(
+            aiSource.IndexOf("private static bool TryEndLeashEvadeAtHome", StringComparison.Ordinal),
+            aiSource.IndexOf("private static void CompleteLeashEvadeReturn", StringComparison.Ordinal) -
+            aiSource.IndexOf("private static bool TryEndLeashEvadeAtHome", StringComparison.Ordinal));
+        var completeBody = aiSource.Substring(
+            aiSource.IndexOf("private static void CompleteLeashEvadeReturn", StringComparison.Ordinal),
+            aiSource.IndexOf("private static void EndLeashEvade", StringComparison.Ordinal) -
+            aiSource.IndexOf("private static void CompleteLeashEvadeReturn", StringComparison.Ordinal));
         var endBody = aiSource.Substring(
             aiSource.IndexOf("private static void EndLeashEvade", StringComparison.Ordinal),
             aiSource.IndexOf("private static void RemoveEnemySourcedStatusEffects", StringComparison.Ordinal) -
@@ -709,8 +717,15 @@ public class AIModelTests
         startBody.Should().Contain("ApplyLeashEvadeMovementRate(creature)");
         startBody.Should().Contain("DelayCommand(0.2f");
         continueBody.Should().Contain("ApplyLeashEvadeMovementRate(creature)");
+        continueBody.Should().Contain("GetCurrentAction(creature) == ActionType.MoveToPoint");
         continueBody.Should().Contain("ClearAllActions(true)");
         continueBody.Should().Contain("ActionForceMoveToLocation(homeLocation, true, 60f)");
+        continueBody.Should().Contain("ActionDoCommand(() => CompleteLeashEvadeReturn(creature, homeLocation))");
+        tryEndBody.Should().Contain("IsOutsideHomeRadius(creature, homeLocation)");
+        tryEndBody.Should().Contain("EndLeashEvade(creature)");
+        completeBody.Should().Contain("IsOutsideHomeRadius(creature, homeLocation)");
+        completeBody.Should().Contain("ActionJumpToLocation(homeLocation)");
+        completeBody.Should().Contain("ActionDoCommand(() => EndLeashEvade(creature))");
         endBody.Should().Contain("SetCurrentHitPoints(creature, GetMaxHitPoints(creature))");
         endBody.Should().Contain("SetPlotFlag(creature, GetLocalBool(creature, LeashEvadeRestorePlotFlagVariable))");
         endBody.Should().Contain("DeleteLocalBool(creature, LeashEvadeRestorePlotFlagVariable)");

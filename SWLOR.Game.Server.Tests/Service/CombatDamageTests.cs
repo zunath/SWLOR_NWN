@@ -177,7 +177,8 @@ public class CombatDamageTests
         var attackRollSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Native", "ResolveAttackRoll.cs"));
 
         combatSource.Should().Contain("SkillType.Staff => Stat.GetStatAdjustment(attacker, StatType.StaffCriticalDamagePercentAdjustment)");
-        combatSource.Should().Contain("SkillType.Rifle => Stat.GetStatAdjustment(attacker, StatType.RifleCriticalDamagePercentAdjustment)");
+        combatSource.Should().Contain("IsRangedWeaponSkill(skillType)");
+        combatSource.Should().Contain("StatType.RangedCriticalDamagePercentAdjustment");
         combatSource.Should().Contain("SkillType.Staff => Stat.GetStatAdjustment(attacker, StatType.StaffCriticalRatePercentAdjustment)");
         combatSource.Should().Contain("StatType.WeaponMightModifierDamageMultiplier");
         abilitySource.Should().Contain("Combat.ApplyCriticalDamageModifier(activator, calculatedDamage, criticalRating, skillType)");
@@ -185,6 +186,15 @@ public class CombatDamageTests
         damageRollSource.Should().Contain("ApplyMightModifierDamageBonus(attacker, weapon, damageProfile)");
         damageRollSource.Should().Contain("StatType.WeaponMightModifierDamageMultiplier");
         attackRollSource.Should().Contain("Combat.GetSkillCriticalRatePercentAdjustment(attacker.m_idSelf, skillType)");
+    }
+
+    [Test]
+    public void RangedWeaponSkillScope_ExcludesDevices()
+    {
+        Combat.IsRangedWeaponSkill(SkillType.Pistol).Should().BeTrue();
+        Combat.IsRangedWeaponSkill(SkillType.Rifle).Should().BeTrue();
+        Combat.IsRangedWeaponSkill(SkillType.Throwing).Should().BeTrue();
+        Combat.IsRangedWeaponSkill(SkillType.Devices).Should().BeFalse();
     }
 
     [Test]

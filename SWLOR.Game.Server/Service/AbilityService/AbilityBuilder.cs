@@ -93,6 +93,15 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public AbilityBuilder UsesImpactAnimation(Animation animation)
         {
             _activeAbility.ImpactAnimationType = animation;
+            _activeAbility.SuppressesImpactAnimation = false;
+
+            return this;
+        }
+
+        public AbilityBuilder SuppressImpactAnimation()
+        {
+            _activeAbility.ImpactAnimationType = Animation.Invalid;
+            _activeAbility.SuppressesImpactAnimation = true;
 
             return this;
         }

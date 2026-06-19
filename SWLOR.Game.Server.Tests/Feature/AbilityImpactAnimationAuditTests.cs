@@ -67,7 +67,8 @@ public class AbilityImpactAnimationAuditTests
                ability.ImpactAction != null &&
                ability.ActivationType == AbilityActivationType.Casted &&
                ability.AnimationType == Animation.Invalid &&
-               ability.ImpactAnimationType == Animation.Invalid;
+               ability.ImpactAnimationType == Animation.Invalid &&
+               !ability.SuppressesImpactAnimation;
     }
 
     private static bool UsesCastedActionWithoutAnimation(AbilityDetail ability)
@@ -75,7 +76,8 @@ public class AbilityImpactAnimationAuditTests
         return ability.ActivationType == AbilityActivationType.Casted &&
                (ability.ActivationAction != null || ability.ImpactAction != null) &&
                ability.AnimationType == Animation.Invalid &&
-               ability.ImpactAnimationType == Animation.Invalid;
+               ability.ImpactAnimationType == Animation.Invalid &&
+               !ability.SuppressesImpactAnimation;
     }
 
     private static bool UsesCombatImpact(string source)

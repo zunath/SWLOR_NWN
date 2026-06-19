@@ -40,6 +40,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public bool IsAreaAbility { get; set; }
         public bool IsSingleTargetAbility { get; set; }
         public bool TriggersDarkForceConversion { get; set; }
+        public bool SuppressesImpactAnimation { get; set; }
         public AbilityTargetingDetail Targeting { get; set; }
         public List<Type> StatusEffectTypesRemovedOnPerkRefund { get; set; }
 
@@ -60,6 +61,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
             IsAreaAbility = false;
             IsSingleTargetAbility = false;
             TriggersDarkForceConversion = false;
+            SuppressesImpactAnimation = false;
             StatusEffectTypesRemovedOnPerkRefund = new List<Type>();
         }
     }

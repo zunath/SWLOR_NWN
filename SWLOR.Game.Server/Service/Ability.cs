@@ -1584,6 +1584,9 @@ namespace SWLOR.Game.Server.Service
         private static void PlayCombatImpactAnimation(uint activator, Animation impactAnimation)
         {
             var trackedAbility = GetTrackedAbilityImpact(activator)?.Ability;
+            if (trackedAbility?.SuppressesImpactAnimation == true)
+                return;
+
             var animation = impactAnimation == Animation.Invalid
                 ? trackedAbility?.ImpactAnimationType ?? Animation.Invalid
                 : impactAnimation;

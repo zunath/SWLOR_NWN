@@ -308,8 +308,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ScopeCalibrationTrait)
-                .Description("Rifle critical hits deal +15% damage.")
-                .IncreasesStat(StatType.RifleCriticalDamagePercentAdjustment, 15)
+                .Description("Ranged critical hits deal +15% damage.")
+                .IncreasesStat(StatType.RangedCriticalDamagePercentAdjustment, 15)
                 .Price(3)
                 .RequirementSkill(SkillType.Rifle, 20);
         }
@@ -379,13 +379,11 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Rifle, 2)
 
                 .AddPerkLevel()
-                .Description("Aimed Shot cooldowns are reduced by 5 seconds and gain an additional +10% accuracy.")
+                .Description("Rifle combat abilities gain +15% accuracy and +5% critical chance. Aimed Shot cooldowns are reduced by 5 seconds.")
                 .IncreasesStat(StatType.AbilityHitChancePercentAdjustmentSkillType, (int)SkillType.Rifle)
-                .IncreasesStat(StatType.AbilityHitChancePercentAdjustment, 5)
+                .IncreasesStat(StatType.AbilityHitChancePercentAdjustment, 15)
                 .IncreasesStat(StatType.AbilityCriticalRatePercentAdjustmentSkillType, (int)SkillType.Rifle)
                 .IncreasesStat(StatType.AbilityCriticalRatePercentAdjustment, 5)
-                .IncreasesStat(StatType.AbilityHitChancePercentAdjustmentPerkType, (int)PerkType.AimedShot)
-                .IncreasesStat(StatType.TargetedAbilityHitChancePercentAdjustment, 10)
                 .IncreasesStat(StatType.AbilityRecastDelayFlatAdjustmentPerkType, (int)PerkType.AimedShot)
                 .IncreasesStat(StatType.AbilityRecastDelayFlatAdjustment, -5)
                 .Price(2)

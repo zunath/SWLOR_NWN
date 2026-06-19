@@ -19,6 +19,7 @@ public class RangedAbilityImpactAnimationTests
             .Where(pair => pair.Value.IsHostileAbility)
             .Where(pair => pair.Value.ImpactAction != null)
             .Where(pair => pair.Value.ImpactAnimationType == Animation.Invalid)
+            .Where(pair => !pair.Value.SuppressesImpactAnimation)
             .Select(pair => $"{pair.Key}: {pair.Value.Name}")
             .ToList();
 
@@ -31,11 +32,14 @@ public class RangedAbilityImpactAnimationTests
         var quickDraw = new QuickDrawAbilityDefinition().BuildAbilities()[FeatType.QuickDraw1];
         var doubleShot = new DoubleShotAbilityDefinition().BuildAbilities()[FeatType.DoubleShot1];
         var aimedShot = new AimedShotAbilityDefinition().BuildAbilities()[FeatType.AimedShot1];
+        var piercingRound = new PiercingRoundAbilityDefinition().BuildAbilities()[FeatType.PiercingRound1];
         var explosiveToss = new ExplosiveTossAbilityDefinition().BuildAbilities()[FeatType.ExplosiveToss1];
 
         quickDraw.ImpactAnimationType.Should().Be(Animation.QuickDraw);
         doubleShot.ImpactAnimationType.Should().Be(Animation.DoubleShot);
         aimedShot.ImpactAnimationType.Should().Be(Animation.PointPistol);
+        piercingRound.ImpactAnimationType.Should().Be(Animation.Invalid);
+        piercingRound.SuppressesImpactAnimation.Should().BeTrue();
         explosiveToss.ImpactAnimationType.Should().Be(Animation.ThrowGrenade);
     }
 

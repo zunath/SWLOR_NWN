@@ -3633,10 +3633,10 @@ namespace SWLOR.Game.Server.Service.StatService
         StaffCriticalTargetDefenseDurationSeconds = 619,
 
         /// <summary>
-        /// Percent critical damage adjustment applied to Rifle critical hits.
+        /// Percent critical damage adjustment applied to ranged weapon skill critical hits.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        RifleCriticalDamagePercentAdjustment = 620,
+        RangedCriticalDamagePercentAdjustment = 620,
 
         /// <summary>
         /// Primary PerkType value whose Twin Blade ability can consume Reversal Cut.

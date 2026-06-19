@@ -27,6 +27,8 @@ public class RifleMarksmanTests
         AssertAbility(piercingRound[FeatType.PiercingRound1], "Piercing Round I", 1, RecastGroup.PiercingRound, 45f, 0f, 5, true, true, true, false, AbilityActivationType.Casted, 30f);
         AssertAbility(piercingRound[FeatType.PiercingRound2], "Piercing Round II", 2, RecastGroup.PiercingRound, 45f, 0f, 7, true, true, true, false, AbilityActivationType.Casted, 30f);
         AssertAbility(piercingRound[FeatType.PiercingRound3], "Piercing Round III", 3, RecastGroup.PiercingRound, 45f, 0f, 8, true, true, true, false, AbilityActivationType.Casted, 30f);
+        piercingRound.Values.Should().OnlyContain(ability => ability.ImpactAnimationType == Animation.Invalid);
+        piercingRound.Values.Should().OnlyContain(ability => ability.SuppressesImpactAnimation);
 
         var sniperStance = new SniperStanceAbilityDefinition().BuildAbilities()[FeatType.SniperStance1];
         AssertAbility(sniperStance, "Sniper Stance", 1, RecastGroup.SniperStance, 180f, 2f, null, false, false, false, false, AbilityActivationType.Casted);
@@ -81,22 +83,35 @@ public class RifleMarksmanTests
         combat.Should().Contain("ApplyCriticalDamageModifier");
         combat.Should().Contain("isAbilityDamage && damageType.IsPhysicalDamageType()");
         combat.Should().Contain("StatType.PhysicalAbilityDamageTakenPercentAdjustment");
-        combat.Should().Contain("SkillType.Rifle => Stat.GetStatAdjustment(attacker, StatType.RifleCriticalDamagePercentAdjustment)");
-        perkSource.Should().Contain("StatType.RifleCriticalDamagePercentAdjustment, 15");
+        combat.Should().Contain("IsRangedWeaponSkill(skillType)");
+        combat.Should().Contain("StatType.RangedCriticalDamagePercentAdjustment");
+        perkSource.Should().Contain("StatType.RangedCriticalDamagePercentAdjustment, 15");
         perkSource.Should().NotContain("EquipmentPredicates.HasRifle");
         perks[PerkType.ScopeCalibration].PerkLevels[1].StatBonuses
             .Should()
-            .ContainSingle(x => x.Stat == StatType.RifleCriticalDamagePercentAdjustment)
+            .ContainSingle(x => x.Stat == StatType.RangedCriticalDamagePercentAdjustment)
             .Which
             .Calculate(0)
             .Should()
             .Be(15);
+        Stat.GetStatTypeCategory(StatType.RangedCriticalDamagePercentAdjustment).Should().Be(StatTypeCategory.BeneficialWhenPositive);
 
         var ability = File.ReadAllText((root / "SWLOR.Game.Server" / "Service" / "Ability.cs").FullName);
         ability.Should().Contain("Combat.ApplyCriticalDamageModifier");
 
         var oneShot = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Rifle" / "OneShotAbilityDefinition.cs").FullName);
         oneShot.Should().Contain("SkillType.Rifle, 50, 45, typeof(MarkedStatusEffect), false");
+
+        var piercingRound = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Rifle" / "PiercingRoundAbilityDefinition.cs").FullName);
+        piercingRound.Split("effectDamageType: DamageType.Piercing").Length.Should().Be(4);
+
+        var steadyAim2 = perks[PerkType.SteadyAim].PerkLevels[2];
+        steadyAim2.Description.Should().Be("Rifle combat abilities gain +15% accuracy and +5% critical chance. Aimed Shot cooldowns are reduced by 5 seconds.");
+        steadyAim2.StatBonuses.Should().ContainSingle(x =>
+            x.Stat == StatType.AbilityHitChancePercentAdjustment &&
+            x.Calculate(0) == 15);
+        steadyAim2.StatBonuses.Select(x => x.Stat).Should().NotContain(StatType.AbilityHitChancePercentAdjustmentPerkType);
+        steadyAim2.StatBonuses.Select(x => x.Stat).Should().NotContain(StatType.TargetedAbilityHitChancePercentAdjustment);
     }
 
     [Test]

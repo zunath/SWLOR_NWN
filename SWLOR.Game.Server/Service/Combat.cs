@@ -383,10 +383,12 @@ namespace SWLOR.Game.Server.Service
 
         private static int GetSkillCriticalDamagePercentAdjustment(uint attacker, SkillType skillType)
         {
+            if (IsRangedWeaponSkill(skillType))
+                return Stat.GetStatAdjustment(attacker, StatType.RangedCriticalDamagePercentAdjustment);
+
             return skillType switch
             {
                 SkillType.Staff => Stat.GetStatAdjustment(attacker, StatType.StaffCriticalDamagePercentAdjustment),
-                SkillType.Rifle => Stat.GetStatAdjustment(attacker, StatType.RifleCriticalDamagePercentAdjustment),
                 _ => 0
             };
         }
@@ -2523,6 +2525,13 @@ namespace SWLOR.Game.Server.Service
                    skillType == SkillType.Rifle ||
                    skillType == SkillType.Throwing ||
                    skillType == SkillType.Devices;
+        }
+
+        public static bool IsRangedWeaponSkill(SkillType skillType)
+        {
+            return skillType == SkillType.Pistol ||
+                   skillType == SkillType.Rifle ||
+                   skillType == SkillType.Throwing;
         }
 
         private static int GetStatusSourceStatAdjustment(uint creature, uint source, StatType statType)

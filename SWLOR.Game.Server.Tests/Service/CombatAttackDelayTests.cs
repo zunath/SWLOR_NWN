@@ -73,6 +73,19 @@ public class CombatAttackDelayTests
     }
 
     [Test]
+    public void CalculateAttackDelayMilliseconds_NegativeHasteIncreasesDelay()
+    {
+        var unmodifiedDelay = Combat.CalculateAttackDelayMilliseconds(210, 0, 0, 0);
+        var slowedDelay = Combat.CalculateAttackDelayMilliseconds(210, 0, -10, 0);
+
+        unmodifiedDelay.Should().Be(3500);
+        slowedDelay.Should().Be(3850);
+        Combat.CalculateEffectiveAttackDelay(slowedDelay)
+            .Should()
+            .BeGreaterThan(Combat.CalculateEffectiveAttackDelay(unmodifiedDelay));
+    }
+
+    [Test]
     public void NaturalWeaponDelay_UsesFastestWeaponDelayAndBenefitsFromHaste()
     {
         var naturalWeaponTypes = new[]

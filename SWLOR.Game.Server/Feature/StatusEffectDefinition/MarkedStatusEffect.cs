@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         public MarkedStatusEffect()
         {
-            StatGroup.Stats[StatType.PhysicalAbilityDamageTakenPercentAdjustment] = 8;
+            StatGroup.Stats[StatType.PhysicalAbilityDamageTakenPercentAdjustment] = 10;
         }
     }
 }

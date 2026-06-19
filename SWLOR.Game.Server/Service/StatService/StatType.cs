@@ -165,7 +165,7 @@ namespace SWLOR.Game.Server.Service.StatService
         DamageTakenFlatAdjustment = 26,
 
         /// <summary>
-        /// Percent reduction to attack delay. Total reduction is capped by combat delay logic.
+        /// Percent reduction to attack delay. Negative values increase attack delay. Total adjustment is capped by combat delay logic.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
         AttackDelayReductionPercent = 27,
@@ -3660,7 +3660,19 @@ namespace SWLOR.Game.Server.Service.StatService
         /// Multiplier for the attacker's positive Might modifier added as weapon damage bonus.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        WeaponMightModifierDamageMultiplier = 624
+        WeaponMightModifierDamageMultiplier = 624,
+
+        /// <summary>
+        /// Flat damage added to ranged weapon attacks and ranged combat abilities.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        RangedAttackDamageFlatAdjustment = 625,
+
+        /// <summary>
+        /// Percent of target Defense ignored by ranged weapon attacks and ranged combat abilities.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        RangedAttackDefenseIgnorePercentAdjustment = 626
     }
 
     public class StatTypeAttribute : Attribute

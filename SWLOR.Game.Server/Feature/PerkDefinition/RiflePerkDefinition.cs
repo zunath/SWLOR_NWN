@@ -87,11 +87,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.BreachRoundTrait)
-                .Description("Aimed Shot ignores 25% of the target's Defense and deals +35 DMG.")
-                .IncreasesStat(StatType.AbilityDefenseIgnorePercentAdjustmentPerkType, (int)PerkType.AimedShot)
-                .IncreasesStat(StatType.AbilityDefenseIgnorePercentAdjustment, 25)
-                .IncreasesStat(StatType.AbilityDamageFlatAdjustmentPerkType, (int)PerkType.AimedShot)
-                .IncreasesStat(StatType.AbilityDamageFlatAdjustment, 35)
+                .Description("Ranged weapon attacks, including combat abilities, ignore 8% of the target's Defense and deal +6 DMG.")
+                .IncreasesStat(StatType.RangedAttackDefenseIgnorePercentAdjustment, 8)
+                .IncreasesStat(StatType.RangedAttackDamageFlatAdjustment, 6)
                 .Price(4)
                 .RequirementSkill(SkillType.Rifle, 35);
         }
@@ -117,19 +115,19 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.CripplingShot1)
-                .Description("Your next attack deals weapon DMG + 12 and inflicts Disoriented for 12 seconds.")
+                .Description("Deals weapon DMG + 12 and inflicts Disoriented for 12 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Rifle, 8)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.CripplingShot2)
-                .Description("Your next attack deals weapon DMG + 22 and inflicts Disoriented for 15 seconds.")
+                .Description("Deals weapon DMG + 22 and inflicts Disoriented for 15 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Rifle, 20)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.CripplingShot3)
-                .Description("Your next attack deals weapon DMG + 34 and inflicts Disoriented for 20 seconds.")
+                .Description("Deals weapon DMG + 34 and inflicts Disoriented for 20 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Rifle, 35);
         }
@@ -228,7 +226,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.OneShot1)
-                .Description("Deals weapon DMG + 50. On hit, the target is Marked for 45 seconds and takes 8% more physical ability damage.")
+                .Description("Deals weapon DMG + 70. On hit, the target is Marked for 45 seconds and takes 10% more physical ability damage.")
                 .Price(4)
                 .RequirementSkill(SkillType.Rifle, 50);
         }

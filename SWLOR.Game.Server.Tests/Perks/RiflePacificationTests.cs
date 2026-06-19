@@ -24,9 +24,9 @@ public class RiflePacificationTests
         AssertAbility(tranquilizerShot[FeatType.TranquilizerShot2], "Tranquilizer Shot II", 2, RecastGroup.TranquilizerShot, 60f, 0f, 6, true, false, true, false, AbilityActivationType.Weapon);
 
         var cripplingShot = new CripplingShotAbilityDefinition().BuildAbilities();
-        AssertAbility(cripplingShot[FeatType.CripplingShot1], "Crippling Shot I", 1, RecastGroup.CripplingShot, 30f, 0f, 4, true, false, true, false, AbilityActivationType.Weapon);
-        AssertAbility(cripplingShot[FeatType.CripplingShot2], "Crippling Shot II", 2, RecastGroup.CripplingShot, 30f, 0f, 6, true, false, true, false, AbilityActivationType.Weapon);
-        AssertAbility(cripplingShot[FeatType.CripplingShot3], "Crippling Shot III", 3, RecastGroup.CripplingShot, 30f, 0f, 8, true, false, true, false, AbilityActivationType.Weapon);
+        AssertAbility(cripplingShot[FeatType.CripplingShot1], "Crippling Shot I", 1, RecastGroup.CripplingShot, 30f, 0f, 4, true, true, true, false, AbilityActivationType.Casted, 30f);
+        AssertAbility(cripplingShot[FeatType.CripplingShot2], "Crippling Shot II", 2, RecastGroup.CripplingShot, 30f, 0f, 6, true, true, true, false, AbilityActivationType.Casted, 30f);
+        AssertAbility(cripplingShot[FeatType.CripplingShot3], "Crippling Shot III", 3, RecastGroup.CripplingShot, 30f, 0f, 8, true, true, true, false, AbilityActivationType.Casted, 30f);
 
         var spotterStance = new SpotterStanceAbilityDefinition().BuildAbilities()[FeatType.SpotterStance1];
         AssertAbility(spotterStance, "Spotter Stance", 1, RecastGroup.SpotterStance, 180f, 2f, null, false, false, false, false, AbilityActivationType.Casted);
@@ -72,12 +72,12 @@ public class RiflePacificationTests
         var feats = new[]
         {
             (FeatType.TranquilizerShot1, "ife_trnqlzrshot1", "P", "0x01", "0", "****", "****", "****", "****"),
-            (FeatType.CripplingShot1, "ife_cripshot1", "P", "0x01", "0", "****", "****", "****", "****"),
+            (FeatType.CripplingShot1, "ife_cripshot1", "M", "0x02", "1", "****", "****", "****", "****"),
             (FeatType.SpotterStance1, "ife_spotstnc1", "P", "0x01", "0", "****", "****", "****", "****"),
             (FeatType.TranquilizerShot2, "ife_trnqlzrshot2", "P", "0x01", "0", "****", "****", "****", "****"),
-            (FeatType.CripplingShot2, "ife_cripshot2", "P", "0x01", "0", "****", "****", "****", "****"),
+            (FeatType.CripplingShot2, "ife_cripshot2", "M", "0x02", "1", "****", "****", "****", "****"),
             (FeatType.TranqCone1, "ife_tranqcone1", "M", "0x3E", "1", "cone", "8", "6", "17"),
-            (FeatType.CripplingShot3, "ife_cripshot3", "P", "0x01", "0", "****", "****", "****", "****"),
+            (FeatType.CripplingShot3, "ife_cripshot3", "M", "0x02", "1", "****", "****", "****", "****"),
             (FeatType.TranqCone2, "ife_tranqcone2", "M", "0x3E", "1", "cone", "10", "7", "17"),
             (FeatType.PacificationField1, "ife_pacfld1", "M", "0x3E", "1", "sphere", "5", "****", "1"),
             (FeatType.StasisVolley1, "ife_stasvol1", "M", "0x3E", "1", "cone", "5", "5", "17")

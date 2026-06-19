@@ -67,7 +67,7 @@ public class RifleMarksmanTests
         killZone.StatGroup.Stats[StatType.AttackPercentAdjustment].Should().Be(0);
 
         var oneShotMarked = new MarkedStatusEffect();
-        oneShotMarked.StatGroup.Stats[StatType.PhysicalAbilityDamageTakenPercentAdjustment].Should().Be(8);
+        oneShotMarked.StatGroup.Stats[StatType.PhysicalAbilityDamageTakenPercentAdjustment].Should().Be(10);
         Stat.GetStatTypeCategory(StatType.PhysicalAbilityDamageTakenPercentAdjustment).Should().Be(StatTypeCategory.BeneficialWhenNegative);
     }
 
@@ -85,7 +85,11 @@ public class RifleMarksmanTests
         combat.Should().Contain("StatType.PhysicalAbilityDamageTakenPercentAdjustment");
         combat.Should().Contain("IsRangedWeaponSkill(skillType)");
         combat.Should().Contain("StatType.RangedCriticalDamagePercentAdjustment");
+        combat.Should().Contain("StatType.RangedAttackDamageFlatAdjustment");
+        combat.Should().Contain("StatType.RangedAttackDefenseIgnorePercentAdjustment");
         perkSource.Should().Contain("StatType.RangedCriticalDamagePercentAdjustment, 15");
+        perkSource.Should().Contain("StatType.RangedAttackDamageFlatAdjustment, 6");
+        perkSource.Should().Contain("StatType.RangedAttackDefenseIgnorePercentAdjustment, 8");
         perkSource.Should().NotContain("EquipmentPredicates.HasRifle");
         perks[PerkType.ScopeCalibration].PerkLevels[1].StatBonuses
             .Should()
@@ -95,12 +99,21 @@ public class RifleMarksmanTests
             .Should()
             .Be(15);
         Stat.GetStatTypeCategory(StatType.RangedCriticalDamagePercentAdjustment).Should().Be(StatTypeCategory.BeneficialWhenPositive);
+        perks[PerkType.BreachRound].PerkLevels[1].Description.Should()
+            .Be("Ranged weapon attacks, including combat abilities, ignore 8% of the target's Defense and deal +6 DMG.");
+        perks[PerkType.BreachRound].PerkLevels[1].StatBonuses.Select(x => x.Stat).Should().BeEquivalentTo(new[]
+        {
+            StatType.RangedAttackDefenseIgnorePercentAdjustment,
+            StatType.RangedAttackDamageFlatAdjustment
+        });
+        Stat.GetStatTypeCategory(StatType.RangedAttackDamageFlatAdjustment).Should().Be(StatTypeCategory.BeneficialWhenPositive);
+        Stat.GetStatTypeCategory(StatType.RangedAttackDefenseIgnorePercentAdjustment).Should().Be(StatTypeCategory.BeneficialWhenPositive);
 
         var ability = File.ReadAllText((root / "SWLOR.Game.Server" / "Service" / "Ability.cs").FullName);
         ability.Should().Contain("Combat.ApplyCriticalDamageModifier");
 
         var oneShot = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Rifle" / "OneShotAbilityDefinition.cs").FullName);
-        oneShot.Should().Contain("SkillType.Rifle, 50, 45, typeof(MarkedStatusEffect), false");
+        oneShot.Should().Contain("SkillType.Rifle, 70, 45, typeof(MarkedStatusEffect), false");
 
         var piercingRound = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Rifle" / "PiercingRoundAbilityDefinition.cs").FullName);
         piercingRound.Split("effectDamageType: DamageType.Piercing").Length.Should().Be(4);

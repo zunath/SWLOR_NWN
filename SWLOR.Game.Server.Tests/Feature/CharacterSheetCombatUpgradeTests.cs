@@ -40,6 +40,22 @@ public class CharacterSheetCombatUpgradeTests
     }
 
     [Test]
+    public void CharacterSheet_DisplaysConditionalRangedEvasionAdjustment()
+    {
+        var root = FindRepositoryRoot();
+        var viewModel = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "GuiDefinition",
+            "ViewModel",
+            "CharacterSheetViewModel.cs"));
+
+        viewModel.Should().Contain("AddStat(\"Ranged Evasion\", FormatPercent(Stat.GetStatAdjustment(_target, StatType.RangedEvasionPercentAdjustment))");
+        viewModel.Should().Contain("Negative values slow attacks.");
+    }
+
+    [Test]
     public void PlayerDamageRefresh_RunsDamageTakenEffectsBeforeRefreshingSheet()
     {
         var root = FindRepositoryRoot();

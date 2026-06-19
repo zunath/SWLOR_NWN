@@ -45,7 +45,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
 
         private static void OneShot1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Rifle, 50, 45, typeof(MarkedStatusEffect), false);
+            Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Rifle, 70, 45, typeof(MarkedStatusEffect), false);
         }
     }
 }

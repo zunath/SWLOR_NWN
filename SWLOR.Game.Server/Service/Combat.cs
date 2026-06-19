@@ -402,6 +402,25 @@ namespace SWLOR.Game.Server.Service
             };
         }
 
+        public static int GetRangedAttackDamageFlatAdjustment(uint attacker, SkillType skillType)
+        {
+            return IsRangedWeaponSkill(skillType)
+                ? Stat.GetStatAdjustment(attacker, StatType.RangedAttackDamageFlatAdjustment)
+                : 0;
+        }
+
+        public static int GetRangedAttackDefenseIgnorePercentAdjustment(uint attacker, SkillType skillType)
+        {
+            return IsRangedWeaponSkill(skillType)
+                ? Stat.GetStatAdjustment(attacker, StatType.RangedAttackDefenseIgnorePercentAdjustment)
+                : 0;
+        }
+
+        public static int ApplyRangedAttackDefenseIgnore(uint attacker, int defense, SkillType skillType)
+        {
+            return ApplyDefenseIgnore(defense, GetRangedAttackDefenseIgnorePercentAdjustment(attacker, skillType));
+        }
+
         public static int ApplyDamageTakenModifiers(
             uint defender,
             int damage,
@@ -4338,14 +4357,18 @@ namespace SWLOR.Game.Server.Service
                 GetPerkTypeGroup(perkType));
         }
 
-        public static int GetAbilityDamageFlatAdjustment(uint creature, PerkType perkType)
+        public static int GetAbilityDamageFlatAdjustment(uint creature, PerkType perkType, SkillType skillType)
         {
-            return GetTargetedAbilityAdjustment(
+            var adjustment = GetTargetedAbilityAdjustment(
                 creature,
                 perkType,
                 StatType.AbilityDamageFlatAdjustmentPerkType,
                 StatType.AbilityDamageFlatAdjustmentSecondaryPerkType,
                 StatType.AbilityDamageFlatAdjustment);
+
+            adjustment += GetRangedAttackDamageFlatAdjustment(creature, skillType);
+
+            return adjustment;
         }
 
         public static int GetAbilityStaminaCostFlatAdjustment(uint creature, PerkType perkType)
@@ -4481,6 +4504,7 @@ namespace SWLOR.Game.Server.Service
                 StatType.AbilityDefenseIgnorePercentAdjustmentPerkType,
                 StatType.AbilityDefenseIgnorePercentAdjustmentSecondaryPerkType,
                 StatType.AbilityDefenseIgnorePercentAdjustment);
+            adjustment += GetRangedAttackDefenseIgnorePercentAdjustment(creature, skillType);
 
             var exposedOrSunderedSkillType = GetSkillTypeFromStat(
                 Stat.GetStatAdjustment(creature, StatType.AbilityDefenseIgnoreExposedOrSunderedSkillType));
@@ -5663,7 +5687,14 @@ namespace SWLOR.Game.Server.Service
 
         private static int ApplyAttackDelayReduction(int delayMilliseconds, int reductionPercentage)
         {
-            return ApplyPercentReduction(delayMilliseconds, reductionPercentage);
+            if (delayMilliseconds <= 0 || reductionPercentage == 0)
+                return delayMilliseconds;
+
+            if (reductionPercentage > 0)
+                return ApplyPercentReduction(delayMilliseconds, reductionPercentage);
+
+            var increaseAmount = (int)(delayMilliseconds * (Math.Abs(reductionPercentage) / 100f));
+            return delayMilliseconds + increaseAmount;
         }
 
         private static int ApplyPercentReduction(int value, int reductionPercentage)
@@ -5711,7 +5742,7 @@ namespace SWLOR.Game.Server.Service
 
             var totalReduction = Stat.GetStatAdjustment(attacker, StatType.AttackDelayReductionPercent);
 
-            return Math.Min(totalReduction, 50);
+            return Math.Clamp(totalReduction, -50, 50);
         }
 
         public static int CalculateOffhandAttackDelayReduction(uint attacker)

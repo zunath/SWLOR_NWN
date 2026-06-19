@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -54,6 +55,22 @@ public class StanceStatusEffectTests
     public void NonStanceToggleStatusEffects_DoNotUseStanceSourceType()
     {
         new BlazingSpikesStatusEffect().SourceType.Should().Be(StatusEffectSourceType.Normal);
+    }
+
+    [Test]
+    public void SpotterStance_AggregatesCombatStatAdjustments()
+    {
+        AddActiveEffect(Player, new SpotterStanceStatusEffect());
+
+        Stat.GetStatAdjustmentExcludingTemporaryModifiers(Player, StatType.AccuracyPercentAdjustment)
+            .Should()
+            .Be(15);
+        Stat.GetStatAdjustmentExcludingTemporaryModifiers(Player, StatType.RangedEvasionPercentAdjustment)
+            .Should()
+            .Be(15);
+        Stat.GetStatAdjustmentExcludingTemporaryModifiers(Player, StatType.AttackDelayReductionPercent)
+            .Should()
+            .Be(-10);
     }
 
     [Test]

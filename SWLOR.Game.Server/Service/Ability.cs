@@ -2039,7 +2039,7 @@ namespace SWLOR.Game.Server.Service
             var damage = baseDamage +
                 Combat.GetCombatImpactWeaponDamage(activator, skillType) +
                 Combat.GetAbilityDamageBonus(activator, skillType) +
-                Combat.GetAbilityDamageFlatAdjustment(activator, perkType) +
+                Combat.GetAbilityDamageFlatAdjustment(activator, perkType, skillType) +
                 idleBonuses.DamageBonus;
             if (trackedImpact != null)
             {
@@ -2215,7 +2215,7 @@ namespace SWLOR.Game.Server.Service
             var damage = baseDamage +
                 Combat.GetCombatImpactWeaponDamage(activator, skillType) +
                 (int)Math.Ceiling(scalingRank * 0.15f) +
-                Combat.GetAbilityDamageFlatAdjustment(activator, perkType) +
+                Combat.GetAbilityDamageFlatAdjustment(activator, perkType, skillType) +
                 idleBonuses.DamageBonus;
             if (trackedImpact != null)
             {

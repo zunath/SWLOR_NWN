@@ -463,6 +463,8 @@ namespace SWLOR.Game.Server.Native
             var damagePower = attacker.CalculateDamagePower(target, bOffHand);
             var defense = Stat.GetDefenseNative(target, damageType, defenderAbility);
             defense = Combat.ApplyStatusSourceDefenseModifiers(attacker.m_idSelf, target.m_idSelf, defense);
+            defense = Combat.ApplyRangedAttackDefenseIgnore(attacker.m_idSelf, defense, skillType);
+            var attackDamage = damageProfile.Damage + Combat.GetRangedAttackDamageFlatAdjustment(attacker.m_idSelf, skillType);
 
             Log.Write(LogGroup.Attack, $"DAMAGE: attacker damage attribute: {damageProfile.Damage} defender defense attribute: {defense}, defender racial type {target.m_pStats.m_nRace}");
 
@@ -471,7 +473,7 @@ namespace SWLOR.Game.Server.Native
             var damageRoll = Combat.CalculateDamageWithCriticalMitigation(
                 target.m_idSelf,
                 attackerAttack,
-                damageProfile.Damage,
+                attackDamage,
                 attackerStat,
                 defense,
                 defenderStat,

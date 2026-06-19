@@ -179,10 +179,15 @@ public class CombatDamageTests
         combatSource.Should().Contain("SkillType.Staff => Stat.GetStatAdjustment(attacker, StatType.StaffCriticalDamagePercentAdjustment)");
         combatSource.Should().Contain("IsRangedWeaponSkill(skillType)");
         combatSource.Should().Contain("StatType.RangedCriticalDamagePercentAdjustment");
+        combatSource.Should().Contain("StatType.RangedAttackDamageFlatAdjustment");
+        combatSource.Should().Contain("StatType.RangedAttackDefenseIgnorePercentAdjustment");
         combatSource.Should().Contain("SkillType.Staff => Stat.GetStatAdjustment(attacker, StatType.StaffCriticalRatePercentAdjustment)");
         combatSource.Should().Contain("StatType.WeaponMightModifierDamageMultiplier");
         abilitySource.Should().Contain("Combat.ApplyCriticalDamageModifier(activator, calculatedDamage, criticalRating, skillType)");
+        abilitySource.Should().Contain("Combat.GetAbilityDamageFlatAdjustment(activator, perkType, skillType)");
         damageRollSource.Should().Contain("Combat.ApplyCriticalDamageModifier(attacker.m_idSelf, damage, effectiveCritical, skillType)");
+        damageRollSource.Should().Contain("Combat.GetRangedAttackDamageFlatAdjustment(attacker.m_idSelf, skillType)");
+        damageRollSource.Should().Contain("Combat.ApplyRangedAttackDefenseIgnore(attacker.m_idSelf, defense, skillType)");
         damageRollSource.Should().Contain("ApplyMightModifierDamageBonus(attacker, weapon, damageProfile)");
         damageRollSource.Should().Contain("StatType.WeaponMightModifierDamageMultiplier");
         attackRollSource.Should().Contain("Combat.GetSkillCriticalRatePercentAdjustment(attacker.m_idSelf, skillType)");
@@ -195,6 +200,8 @@ public class CombatDamageTests
         Combat.IsRangedWeaponSkill(SkillType.Rifle).Should().BeTrue();
         Combat.IsRangedWeaponSkill(SkillType.Throwing).Should().BeTrue();
         Combat.IsRangedWeaponSkill(SkillType.Devices).Should().BeFalse();
+        Stat.GetStatTypeCategory(StatType.RangedAttackDamageFlatAdjustment).Should().Be(StatTypeCategory.BeneficialWhenPositive);
+        Stat.GetStatTypeCategory(StatType.RangedAttackDefenseIgnorePercentAdjustment).Should().Be(StatTypeCategory.BeneficialWhenPositive);
     }
 
     [Test]

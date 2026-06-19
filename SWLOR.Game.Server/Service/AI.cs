@@ -20,6 +20,7 @@ namespace SWLOR.Game.Server.Service
         private const string LeashEvadeActiveVariable = "AI_LEASH_EVADE_ACTIVE";
         private const string LeashEvadeRestorePlotFlagVariable = "AI_LEASH_EVADE_RESTORE_PLOT_FLAG";
         private const string LeashEvadeRestoreMovementRateVariable = "AI_LEASH_EVADE_RESTORE_MOVEMENT_RATE";
+        private const string LeashEvadeReturnQueuedVariable = "AI_LEASH_EVADE_RETURN_QUEUED";
         private static readonly Dictionary<uint, HashSet<uint>> _creatureAllies = new();
 
         [NWNEventHandler(ScriptName.OnModuleCacheAfter)]
@@ -622,8 +623,15 @@ namespace SWLOR.Game.Server.Service
         {
             ApplyLeashEvadeMovementRate(creature);
 
-            if (GetCurrentAction(creature) == ActionType.MoveToPoint)
-                return;
+            if (GetLocalBool(creature, LeashEvadeReturnQueuedVariable))
+            {
+                if (GetCurrentAction(creature) == ActionType.MoveToPoint)
+                    return;
+
+                DeleteLocalBool(creature, LeashEvadeReturnQueuedVariable);
+            }
+
+            SetLocalBool(creature, LeashEvadeReturnQueuedVariable, true);
 
             AssignCommand(creature, () =>
             {
@@ -647,6 +655,8 @@ namespace SWLOR.Game.Server.Service
 
         private static void CompleteLeashEvadeReturn(uint creature, Location homeLocation)
         {
+            DeleteLocalBool(creature, LeashEvadeReturnQueuedVariable);
+
             if (!IsLeashEvading(creature))
                 return;
 
@@ -672,6 +682,7 @@ namespace SWLOR.Game.Server.Service
             SetPlotFlag(creature, GetLocalBool(creature, LeashEvadeRestorePlotFlagVariable));
             DeleteLocalBool(creature, LeashEvadeRestorePlotFlagVariable);
             DeleteLocalBool(creature, LeashEvadeActiveVariable);
+            DeleteLocalBool(creature, LeashEvadeReturnQueuedVariable);
             RestoreLeashEvadeMovementRate(creature);
         }
 

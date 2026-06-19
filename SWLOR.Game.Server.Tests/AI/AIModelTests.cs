@@ -717,12 +717,26 @@ public class AIModelTests
         startBody.Should().Contain("ApplyLeashEvadeMovementRate(creature)");
         startBody.Should().Contain("DelayCommand(0.2f");
         continueBody.Should().Contain("ApplyLeashEvadeMovementRate(creature)");
+        continueBody.Should().Contain("GetLocalBool(creature, LeashEvadeReturnQueuedVariable)");
         continueBody.Should().Contain("GetCurrentAction(creature) == ActionType.MoveToPoint");
+        continueBody.Should().Contain("DeleteLocalBool(creature, LeashEvadeReturnQueuedVariable)");
+        continueBody.Should().Contain("SetLocalBool(creature, LeashEvadeReturnQueuedVariable, true)");
         continueBody.Should().Contain("ClearAllActions(true)");
         continueBody.Should().Contain("ActionForceMoveToLocation(homeLocation, true, 60f)");
         continueBody.Should().Contain("ActionDoCommand(() => CompleteLeashEvadeReturn(creature, homeLocation))");
+        var queuedCheckIndex = continueBody.IndexOf("GetLocalBool(creature, LeashEvadeReturnQueuedVariable)", StringComparison.Ordinal);
+        var moveGuardIndex = continueBody.IndexOf("GetCurrentAction(creature) == ActionType.MoveToPoint", StringComparison.Ordinal);
+        var queuedDeleteIndex = continueBody.IndexOf("DeleteLocalBool(creature, LeashEvadeReturnQueuedVariable)", StringComparison.Ordinal);
+        var queuedSetIndex = continueBody.IndexOf("SetLocalBool(creature, LeashEvadeReturnQueuedVariable, true)", StringComparison.Ordinal);
+        var clearActionsIndex = continueBody.IndexOf("ClearAllActions(true)", StringComparison.Ordinal);
+
+        moveGuardIndex.Should().BeGreaterThan(queuedCheckIndex);
+        queuedDeleteIndex.Should().BeGreaterThan(moveGuardIndex);
+        queuedSetIndex.Should().BeGreaterThan(queuedDeleteIndex);
+        clearActionsIndex.Should().BeGreaterThan(queuedSetIndex);
         tryEndBody.Should().Contain("IsOutsideHomeRadius(creature, homeLocation)");
         tryEndBody.Should().Contain("EndLeashEvade(creature)");
+        completeBody.Should().Contain("DeleteLocalBool(creature, LeashEvadeReturnQueuedVariable)");
         completeBody.Should().Contain("IsOutsideHomeRadius(creature, homeLocation)");
         completeBody.Should().Contain("ActionJumpToLocation(homeLocation)");
         completeBody.Should().Contain("ActionDoCommand(() => EndLeashEvade(creature))");
@@ -730,6 +744,7 @@ public class AIModelTests
         endBody.Should().Contain("SetPlotFlag(creature, GetLocalBool(creature, LeashEvadeRestorePlotFlagVariable))");
         endBody.Should().Contain("DeleteLocalBool(creature, LeashEvadeRestorePlotFlagVariable)");
         endBody.Should().Contain("DeleteLocalBool(creature, LeashEvadeActiveVariable)");
+        endBody.Should().Contain("DeleteLocalBool(creature, LeashEvadeReturnQueuedVariable)");
         endBody.Should().Contain("RestoreLeashEvadeMovementRate(creature)");
         endBody.Should().Contain("CreaturePlugin.SetMovementRate(creature, MovementRate.DMFast)");
         endBody.Should().Contain("Stat.ApplyCreatureMovementRate(creature)");

@@ -146,7 +146,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (!GetIsObjectValid(target) || targetStatus == null)
                 return;
 
-            TargetName = GetName(target);
+            TargetName = PlayerName.GetDisplayName(Player, target);
 
             Bar1Color = _shieldColor;
             Bar2Color = _hullColor;

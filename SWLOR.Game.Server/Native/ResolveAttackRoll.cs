@@ -272,7 +272,7 @@ namespace SWLOR.Game.Server.Native
                             {
                                 Log.Write(LogGroup.Attack, $"Immune to critical hits");
                                 // Immune!
-                                var defenderName = (defender.GetFirstName().GetSimple() + " " + defender.GetLastName().GetSimple()).Trim();
+                                var defenderName = PlayerName.GetDisplayName(attacker.m_idSelf, defender.m_idSelf);
                                 attacker.SendFeedbackString(new CExoString($"{defenderName} is immune to critical hits!"));
                                 pAttackData.m_nAttackResult = AttackResultRegularHit;
                             }
@@ -317,13 +317,20 @@ namespace SWLOR.Game.Server.Native
                 attacker.ResolveDefensiveEffects(defender, isHit ? 1 : 0);
 
                 Log.Write(LogGroup.Attack, $"Building combat log message");
-                var message = BuildAttackFeedbackMessage(
+                var attackerMessage = BuildAttackFeedbackMessage(
+                    attacker.m_idSelf,
                     attacker,
                     defender,
                     pAttackData.m_nAttackResult,
                     hitRate);
-                attacker.SendFeedbackString(new CExoString(message));
-                defender.SendFeedbackString(new CExoString(message));
+                var defenderMessage = BuildAttackFeedbackMessage(
+                    defender.m_idSelf,
+                    attacker,
+                    defender,
+                    pAttackData.m_nAttackResult,
+                    hitRate);
+                attacker.SendFeedbackString(new CExoString(attackerMessage));
+                defender.SendFeedbackString(new CExoString(defenderMessage));
 
                 Log.Write(LogGroup.Attack, $"Setting pAttackData results");
                 pAttackData.m_nToHitMod = DefaultToHitMod;
@@ -336,6 +343,7 @@ namespace SWLOR.Game.Server.Native
         }
 
         private static string BuildAttackFeedbackMessage(
+            uint observer,
             CNWSCreature attacker,
             CNWSCreature defender,
             int attackResultType,
@@ -345,6 +353,7 @@ namespace SWLOR.Game.Server.Native
                 UsePerkFeat.TryGetQueuedWeaponAbility(attacker.m_idSelf, out var queuedAbility))
             {
                 return Combat.BuildAbilityCombatLogMessage(
+                    observer,
                     attacker.m_idSelf,
                     defender.m_idSelf,
                     queuedAbility.Name,
@@ -353,6 +362,7 @@ namespace SWLOR.Game.Server.Native
             }
 
             return Combat.BuildCombatLogMessageNative(
+                observer,
                 attacker,
                 defender,
                 attackResultType,
@@ -431,16 +441,21 @@ namespace SWLOR.Game.Server.Native
             }
 
             var feedbackString = deflected ? "*success*" : "*failure*";
-            var attackerName = ColorToken.GetNameColorNative(attacker);
-            var defenderName = ColorToken.GetNameColorNative(defender);
             var deflectionName = source == DeflectionSource.Shield ? "shield deflect" : "deflect";
-            feedbackString = ColorToken.Combat($"{defenderName} attempts to {deflectionName} {attackerName}'s attack: {feedbackString}");
 
-            attacker.SendFeedbackString(new CExoString(feedbackString));
-            defender.SendFeedbackString(new CExoString(feedbackString));
+            attacker.SendFeedbackString(new CExoString(BuildDeflectionFeedback(attacker.m_idSelf, attacker, defender, deflectionName, feedbackString)));
+            defender.SendFeedbackString(new CExoString(BuildDeflectionFeedback(defender.m_idSelf, attacker, defender, deflectionName, feedbackString)));
             Log.Write(LogGroup.Attack, $"Deflect roll: {deflectRoll}, Chance: {deflectChance}, Hit: {!deflected}");
 
             return deflected;
+        }
+
+        private static string BuildDeflectionFeedback(uint observer, CNWSCreature attacker, CNWSCreature defender, string deflectionName, string feedbackString)
+        {
+            var attackerName = PlayerName.GetColoredDisplayName(observer, attacker.m_idSelf);
+            var defenderName = PlayerName.GetColoredDisplayName(observer, defender.m_idSelf);
+
+            return ColorToken.Combat($"{defenderName} attempts to {deflectionName} {attackerName}'s attack: {feedbackString}");
         }
 
         private static (DeflectionSource Source, int Chance) GetDeflectionChance(CNWSCreature defender)

@@ -36,6 +36,8 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             AlwaysWalk();
             AssociateCommands();
             Follow();
+            SetKnownName();
+            ForgetKnownName();
             ChangeDescription();
             OrderCompanion();
             ResetWindows();
@@ -411,6 +413,69 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     {
                         ActionMoveToObject(target, true);
                     });
+                });
+        }
+
+        private void SetKnownName()
+        {
+            _builder.Create("name")
+                .Description("Sets the name you personally recognize a targeted player character by.")
+                .Permissions(AuthorizationLevel.All)
+                .Validate((user, args) =>
+                {
+                    var name = PlayerName.SanitizeKnownName(string.Join(" ", args));
+                    return PlayerName.ValidateKnownName(name);
+                })
+                .RequiresTarget(ObjectType.Creature)
+                .Action((user, target, location, args) =>
+                {
+                    if (!GetIsObjectValid(target) || !GetIsPC(target) || GetIsDM(target))
+                    {
+                        SendMessageToPC(user, ColorToken.Red("You may only name player characters."));
+                        return;
+                    }
+
+                    if (target == user)
+                    {
+                        SendMessageToPC(user, ColorToken.Red("You already know your own name."));
+                        return;
+                    }
+
+                    var name = PlayerName.SanitizeKnownName(string.Join(" ", args));
+                    var validationError = PlayerName.ValidateKnownName(name);
+                    if (!string.IsNullOrWhiteSpace(validationError))
+                    {
+                        SendMessageToPC(user, ColorToken.Red(validationError));
+                        return;
+                    }
+
+                    PlayerName.SetKnownName(user, target, name);
+                    SendMessageToPC(user, ColorToken.Green($"You will now recognize this character as '{name}'."));
+                });
+        }
+
+        private void ForgetKnownName()
+        {
+            _builder.Create("forgetname")
+                .Description("Forgets the custom name you set for a targeted player character.")
+                .Permissions(AuthorizationLevel.All)
+                .RequiresTarget(ObjectType.Creature)
+                .Action((user, target, location, args) =>
+                {
+                    if (!GetIsObjectValid(target) || !GetIsPC(target) || GetIsDM(target))
+                    {
+                        SendMessageToPC(user, ColorToken.Red("You may only forget names for player characters."));
+                        return;
+                    }
+
+                    if (target == user)
+                    {
+                        SendMessageToPC(user, ColorToken.Red("You cannot forget your own name."));
+                        return;
+                    }
+
+                    PlayerName.ForgetKnownName(user, target);
+                    SendMessageToPC(user, ColorToken.Green("You no longer have a custom name set for this character."));
                 });
         }
 

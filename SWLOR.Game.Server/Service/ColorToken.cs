@@ -245,7 +245,12 @@ namespace SWLOR.Game.Server.Service
         public static string GetNamePCColor(uint oPC)
         {
             var name = GetName(oPC);
-            return TokenStart(153, 255, 255) + name + TokenEnd();
+            return GetPCColor(name);
+        }
+
+        public static string GetPCColor(string name)
+        {
+            return Custom(name, 153, 255, 255);
         }
 
         ///////////////////////////////////////////////////////////////////////////////
@@ -257,7 +262,12 @@ namespace SWLOR.Game.Server.Service
         public static string GetNameNPCColor(uint oNPC)
         {
             var name = GetName(oNPC);
-            return TokenStart(204, 153, 204) + name + TokenEnd();
+            return GetNPCColor(name);
+        }
+
+        public static string GetNPCColor(string name)
+        {
+            return Custom(name, 204, 153, 204);
         }
 
         ///////////////////////////////////////////////////////////////////////////////

@@ -51,7 +51,9 @@ namespace SWLOR.Game.Server.Service
                 if (dbHostilePlayer != null && dbHostilePlayer.Settings.IsSubdualModeEnabled)
                 {
                     SendMessageToPC(player, "You have been subdued.");
-                    Messaging.SendMessageNearbyToPlayers(player, $"{GetName(player)} has been subdued by {GetName(hostile)}.");
+                    Messaging.SendMessageNearbyToPlayers(
+                        player,
+                        receiver => $"{PlayerName.GetDisplayName(receiver, player)} has been subdued by {PlayerName.GetDisplayName(receiver, hostile)}.");
                     ApplyEffectToObject(DurationType.Instant, EffectResurrection(), player);
                     DelayCommand(0.1f, () => Ability.ReapplyAuraEffectsForCreature(player));
                     StatusEffect.ApplyStatusEffect(player, player, typeof(KnockdownStatusEffect), 60f);

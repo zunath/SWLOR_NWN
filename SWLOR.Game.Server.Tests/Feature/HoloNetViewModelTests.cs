@@ -39,10 +39,11 @@ public class HoloNetViewModelTests
             "HoloNetViewModel.cs"));
 
         var failedEnqueueIndex = source.IndexOf("if (!await BackgroundJob.EnqueueDiscordWebhook", StringComparison.Ordinal);
+        failedEnqueueIndex.Should().BeGreaterThanOrEqualTo(0, "the failed enqueue branch should exist");
+
         var refundIndex = source.IndexOf("GiveGoldToCreature(Player, BroadcastPrice)", failedEnqueueIndex, StringComparison.Ordinal);
         var returnIndex = source.IndexOf("return;", failedEnqueueIndex, StringComparison.Ordinal);
 
-        failedEnqueueIndex.Should().BeGreaterThanOrEqualTo(0);
         refundIndex.Should().BeGreaterThan(failedEnqueueIndex);
         refundIndex.Should().BeLessThan(returnIndex);
     }

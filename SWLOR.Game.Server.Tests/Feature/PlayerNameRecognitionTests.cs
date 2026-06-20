@@ -20,6 +20,25 @@ public class PlayerNameRecognitionTests
     }
 
     [Test]
+    public void PlayerNameOverrides_ApplyImmediatelyOnEnterBeforeDelayedRetry()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "PlayerName.cs"));
+        var method = ExtractMethod(source, "public static void ApplyNameOverridesOnEnter()");
+
+        var immediateCallIndex = method.IndexOf("ApplyNameOverridesForPlayer(player);", StringComparison.Ordinal);
+        var delayedRetryIndex = method.IndexOf("DelayCommand(1.0f, () => ApplyNameOverridesForPlayer(player));", StringComparison.Ordinal);
+
+        immediateCallIndex.Should().BeGreaterThanOrEqualTo(0);
+        delayedRetryIndex.Should().BeGreaterThanOrEqualTo(0);
+        immediateCallIndex.Should().BeLessThan(delayedRetryIndex);
+    }
+
+    [Test]
     public void KnownNameStorage_UsesIndexedObserverFieldAndGeneratedEntityId()
     {
         var root = FindRepositoryRoot();

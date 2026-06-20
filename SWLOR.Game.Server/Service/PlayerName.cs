@@ -24,6 +24,7 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsPC(player) || GetIsDM(player))
                 return;
 
+            ApplyNameOverridesForPlayer(player);
             DelayCommand(1.0f, () => ApplyNameOverridesForPlayer(player));
         }
 

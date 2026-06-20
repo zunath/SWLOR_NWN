@@ -717,6 +717,7 @@ namespace SWLOR.Game.Server.Service
                 AI.SetAIFlag(deserialized, AIFlag.ReturnHome);
                 AdjustScripts(deserialized);
                 AdjustStats(deserialized);
+                Stat.LoadNPCStats(deserialized);
 
                 return deserialized;
             }
@@ -751,6 +752,10 @@ namespace SWLOR.Game.Server.Service
                 }
                 AdjustScripts(spawn);
                 AdjustStats(spawn);
+                if (spawnObject.Type == ObjectType.Creature)
+                {
+                    Stat.LoadNPCStats(spawn);
+                }
 
                 foreach (var animator in spawnObject.Animators)
                 {

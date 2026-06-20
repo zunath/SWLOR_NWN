@@ -2069,7 +2069,11 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public static void LoadNPCStats()
         {
-            var self = OBJECT_SELF;
+            LoadNPCStats(OBJECT_SELF);
+        }
+
+        public static void LoadNPCStats(uint self)
+        {
             var skin = GetItemInSlot(InventorySlot.CreatureArmor, self);
 
             var maxHP = 0;

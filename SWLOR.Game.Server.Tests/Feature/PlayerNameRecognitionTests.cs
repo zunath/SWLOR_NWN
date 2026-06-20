@@ -48,7 +48,7 @@ public class PlayerNameRecognitionTests
     }
 
     [Test]
-    public void KnownNameMigration_ReadsHistoricalIdsWithoutUsingEntityCache()
+    public void KnownNameStorage_DoesNotRunLegacyKeyMigration()
     {
         var root = FindRepositoryRoot();
         var source = File.ReadAllText(Path.Combine(
@@ -56,17 +56,11 @@ public class PlayerNameRecognitionTests
             "SWLOR.Game.Server",
             "Service",
             "PlayerName.cs"));
-        var migrationMethod = ExtractMethod(source, "private static PlayerKnownName MigrateLegacyKnownNames(");
-        var legacyIdMethod = ExtractMethod(source, "private static string[] BuildLegacyKnownNameIds(string observerId)");
-        var readMethod = ExtractMethod(source, "private static PlayerKnownName ReadKnownNames(string id)");
 
-        legacyIdMethod.Should().Contain("observerId");
-        legacyIdMethod.Should().Contain("LegacyKnownNameIdPrefix + observerId");
-        legacyIdMethod.Should().Contain("LegacyScopedKnownNameIdPrefix + observerId");
-        migrationMethod.Should().Contain("ReadKnownNames(legacyKnownNameId)");
-        migrationMethod.Should().Contain("DB.Delete<PlayerKnownName>(legacyKnownNameId)");
-        readMethod.Should().Contain("DB.GetRawJson<PlayerKnownName>(id)");
-        readMethod.Should().NotContain("DB.Get<PlayerKnownName>(id)");
+        source.Should().NotContain("MigrateLegacyKnownNames");
+        source.Should().NotContain("LegacyKnownNameIdPrefix");
+        source.Should().NotContain("LegacyScopedKnownNameIdPrefix");
+        source.Should().NotContain("DB.GetRawJson<PlayerKnownName>");
     }
 
     [Test]

@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.ChatCommandService;
 using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -450,6 +451,13 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     }
 
                     PlayerName.SetKnownName(user, target, name);
+                    Log.WriteStructured(
+                        LogGroup.Chat,
+                        "Player identity name change: Action={Action} ObserverPlayerId={ObserverPlayerId} TargetPlayerId={TargetPlayerId} Name={Name}",
+                        "name-set",
+                        GetObjectUUID(user),
+                        GetObjectUUID(target),
+                        name);
                     SendMessageToPC(user, ColorToken.Green($"You will now recognize this character as '{name}'."));
                 });
         }
@@ -475,6 +483,12 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     }
 
                     PlayerName.ForgetKnownName(user, target);
+                    Log.WriteStructured(
+                        LogGroup.Chat,
+                        "Player identity name change: Action={Action} ObserverPlayerId={ObserverPlayerId} TargetPlayerId={TargetPlayerId}",
+                        "name-forget",
+                        GetObjectUUID(user),
+                        GetObjectUUID(target));
                     SendMessageToPC(user, ColorToken.Green("You no longer have a custom name set for this character."));
                 });
         }

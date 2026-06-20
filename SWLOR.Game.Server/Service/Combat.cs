@@ -5343,15 +5343,6 @@ namespace SWLOR.Game.Server.Service
         /// <param name="chanceToHit">The percent chance to hit</param>
         /// <returns></returns>
         public static string BuildCombatLogMessage(
-            uint attacker,
-            uint defender,
-            int attackResultType,
-            int chanceToHit)
-        {
-            return BuildCombatLogMessage(attacker, attacker, defender, attackResultType, chanceToHit);
-        }
-
-        public static string BuildCombatLogMessage(
             uint observer,
             uint attacker,
             uint defender,

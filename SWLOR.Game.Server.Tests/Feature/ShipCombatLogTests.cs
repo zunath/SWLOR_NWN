@@ -1,0 +1,64 @@
+using FluentAssertions;
+using NUnit.Framework;
+
+namespace SWLOR.Game.Server.Tests.Feature;
+
+public class ShipCombatLogTests
+{
+    [Test]
+    public void ShipCombatLogs_AreRenderedPerReceiver()
+    {
+        var root = FindRepositoryRoot();
+        var shipModuleDirectory = new DirectoryInfo(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "ShipModuleDefinition"));
+
+        foreach (var file in shipModuleDirectory.GetFiles("*.cs"))
+        {
+            var source = File.ReadAllText(file.FullName);
+
+            source.Should().NotContain(
+                "var combatLogMessage = Combat.BuildCombatLogMessage",
+                $"{file.Name} should not broadcast one observer's combat-log text to every nearby player");
+            source.Should().NotContain(
+                "SendMessageNearbyToPlayers(target, combatLogMessage",
+                $"{file.Name} should render combat logs for each receiver");
+            source.Should().NotContain(
+                "SendMessageNearbyToPlayers(nearbyTarget, combatLogMessage",
+                $"{file.Name} should render combat logs for each receiver");
+        }
+    }
+
+    [Test]
+    public void CombatLogBuilder_RequiresExplicitObserver()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "Combat.cs"));
+
+        source.Should().NotContain("return BuildCombatLogMessage(attacker, attacker, defender");
+        source.Should().Contain("public static string BuildCombatLogMessage(");
+        source.Should().Contain("uint observer");
+        source.Should().NotContain("public static string BuildCombatLogMessage(\r\n            uint attacker,\r\n            uint defender,");
+        source.Should().NotContain("public static string BuildCombatLogMessage(\n            uint attacker,\n            uint defender,");
+    }
+
+    private static DirectoryInfo FindRepositoryRoot()
+    {
+        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
+        while (directory != null)
+        {
+            if (File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln")))
+                return directory;
+
+            directory = directory.Parent;
+        }
+
+        throw new DirectoryNotFoundException("Could not locate the SWLOR_NWN repository root.");
+    }
+}

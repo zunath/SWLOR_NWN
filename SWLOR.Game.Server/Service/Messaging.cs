@@ -19,6 +19,9 @@ namespace SWLOR.Game.Server.Service
 
         public static void SendMessageNearbyToPlayers(uint sender, BuildMessageDelegate buildMessage, float range = 10f)
         {
+            if (buildMessage == null)
+                throw new ArgumentNullException(nameof(buildMessage));
+
             SendMessageToPC(sender, buildMessage(sender));
 
             int nth = 1;

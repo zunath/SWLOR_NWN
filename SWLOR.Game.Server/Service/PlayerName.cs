@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Newtonsoft.Json;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Entity;
@@ -14,8 +13,6 @@ namespace SWLOR.Game.Server.Service
     {
         private const int MaxKnownNameLength = 64;
         private const string UnknownName = "Someone";
-        private const string LegacyKnownNameIdPrefix = "PlayerKnownName:";
-        private const string LegacyScopedKnownNameIdPrefix = "KnownName:";
         private static readonly string UnknownNamePrefix = ColorToken.TokenStart(127, 127, 127);
         private static readonly string UnknownNameSuffix = ColorToken.TokenEnd();
 
@@ -121,7 +118,6 @@ namespace SWLOR.Game.Server.Service
         {
             var observerId = GetObjectUUID(observer);
             var dbKnownNames = FindKnownNames(observerId);
-            dbKnownNames = MigrateLegacyKnownNames(observerId, dbKnownNames);
 
             if (dbKnownNames == null && createIfMissing)
             {
@@ -141,83 +137,6 @@ namespace SWLOR.Game.Server.Service
             return DB.Search(new DBQuery<PlayerKnownName>()
                     .AddFieldSearch(nameof(PlayerKnownName.ObserverPlayerId), observerId, false))
                 .FirstOrDefault();
-        }
-
-        private static string[] BuildLegacyKnownNameIds(string observerId)
-        {
-            return new[]
-            {
-                observerId,
-                LegacyKnownNameIdPrefix + observerId,
-                LegacyScopedKnownNameIdPrefix + observerId
-            };
-        }
-
-        private static PlayerKnownName MigrateLegacyKnownNames(
-            string observerId,
-            PlayerKnownName dbKnownNames)
-        {
-            var legacyKnownNameIds = BuildLegacyKnownNameIds(observerId);
-            var wasMigrated = false;
-
-            foreach (var legacyKnownNameId in legacyKnownNameIds)
-            {
-                var dbLegacyKnownNames = ReadKnownNames(legacyKnownNameId);
-                dbKnownNames = MergeLegacyKnownNames(dbKnownNames, observerId, dbLegacyKnownNames, ref wasMigrated);
-            }
-
-            if (wasMigrated)
-            {
-                DB.Set(dbKnownNames);
-
-                foreach (var legacyKnownNameId in legacyKnownNameIds)
-                {
-                    DB.Delete<PlayerKnownName>(legacyKnownNameId);
-                }
-            }
-
-            return dbKnownNames;
-        }
-
-        private static PlayerKnownName ReadKnownNames(string id)
-        {
-            var data = DB.GetRawJson<PlayerKnownName>(id);
-            return string.IsNullOrWhiteSpace(data)
-                ? null
-                : JsonConvert.DeserializeObject<PlayerKnownName>(data);
-        }
-
-        private static PlayerKnownName MergeLegacyKnownNames(
-            PlayerKnownName dbKnownNames,
-            string observerId,
-            PlayerKnownName dbLegacyKnownNames,
-            ref bool wasMigrated)
-        {
-            if (dbLegacyKnownNames == null)
-                return dbKnownNames;
-
-            if (dbKnownNames == null)
-                dbKnownNames = new PlayerKnownName(observerId);
-
-            dbKnownNames.ObserverPlayerId = observerId;
-
-            if (dbKnownNames.KnownNames == null)
-                dbKnownNames.KnownNames = new Dictionary<string, string>();
-
-            if (dbLegacyKnownNames.KnownNames != null)
-            {
-                foreach (var (targetId, knownName) in dbLegacyKnownNames.KnownNames)
-                {
-                    if (!dbKnownNames.KnownNames.ContainsKey(targetId))
-                    {
-                        dbKnownNames.KnownNames[targetId] = knownName;
-                    }
-                }
-            }
-
-            wasMigrated = true;
-
-            return dbKnownNames;
         }
 
         private static void ApplyNameOverridesForPlayer(uint player)

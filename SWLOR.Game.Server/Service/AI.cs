@@ -686,6 +686,11 @@ namespace SWLOR.Game.Server.Service
             RestoreLeashEvadeMovementRate(creature);
         }
 
+        public static bool TryStartCombatLeashEvade(uint creature, uint target)
+        {
+            return TryStartLeashEvade(creature, target);
+        }
+
         private static bool TryStartLeashEvade(uint creature, uint target)
         {
             var homeLocation = GetLocalLocation(creature, "HOME_LOCATION");

@@ -153,6 +153,11 @@ namespace SWLOR.Game.Server.Native
                 if (bTargetActive)
                 {
                     var pTarget = pGameObject.AsNWSObject();
+                    if (TryCancelAttackForCombatLeash(pCreature, pNode, oidAttackTarget))
+                    {
+                        return ACTION_FAILED;
+                    }
+
                     var vTargetPosition = pTarget.m_vPosition;
                     var pTargetArea = pTarget.GetArea();
 
@@ -474,6 +479,11 @@ namespace SWLOR.Game.Server.Native
 
                                             // This is just in case we've changed targets in mid round... we want to be sure
                                             // that we're still locked on to the proper target
+                                            if (TryCancelAttackForCombatLeash(pCreature, pNode, oidTarget))
+                                            {
+                                                return ACTION_FAILED;
+                                            }
+
                                             pCreature.SetLockOrientationToObject(oidTarget);
 
                                             // Process the attack (delay already checked at function start)
@@ -597,6 +607,15 @@ namespace SWLOR.Game.Server.Native
             });
         }
 
+        private static bool TryCancelAttackForCombatLeash(CNWSCreature pCreature, CNWSObjectActionNode pNode, uint target)
+        {
+            if (!AI.TryStartCombatLeashEvade(pCreature.m_idSelf, target))
+                return false;
+
+            _creatureAttackDelays.Remove(pCreature.m_idSelf);
+            pCreature.ChangeAttackTarget(pNode, OBJECT_INVALID);
+            return true;
+        }
 
         private static float MagnitudeSquared(Vector v)
         {

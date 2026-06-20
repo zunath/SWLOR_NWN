@@ -156,6 +156,12 @@ namespace SWLOR.Game.Server.Service.AIService
             RefreshActionCache(creature, profile, state);
             var context = new AIContext(creature, trigger, eventTarget, profile, state, allies);
 
+            if (GetIsObjectValid(context.CurrentEnmityTarget) &&
+                AI.TryStartCombatLeashEvade(creature, context.CurrentEnmityTarget))
+            {
+                return false;
+            }
+
             if (GetIsObjectValid(context.CurrentEnmityTarget) && state.CombatStartedTime == default)
                 state.CombatStartedTime = DateTime.UtcNow;
 
@@ -523,11 +529,7 @@ namespace SWLOR.Game.Server.Service.AIService
             if (!GetIsObjectValid(target))
                 return;
 
-            AssignCommand(creature, () =>
-            {
-                ClearAllActions(true);
-                ActionAttack(target);
-            });
+            Enmity.IssueAttackCommand(creature, target);
         }
 
         private static bool IsOnCooldown(AIContext context, AIActionDefinition action)

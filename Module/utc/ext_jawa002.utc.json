@@ -153,7 +153,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 46
+    "value": 54
   },
   "DecayTime": {
     "type": "dword",
@@ -354,6 +354,13 @@
           "type": "word",
           "value": 1850
         }
+      },
+      {
+        "__struct_id": 3,
+        "Feat": {
+          "type": "word",
+          "value": 1851
+        }
       }
     ]
   },
@@ -378,7 +385,7 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 46
+    "value": 54
   },
   "Int": {
     "type": "byte",
@@ -412,7 +419,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 46
+    "value": 54
   },
   "NaturalAC": {
     "type": "byte",

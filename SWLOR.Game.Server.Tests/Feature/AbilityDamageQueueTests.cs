@@ -63,6 +63,41 @@ public class AbilityDamageQueueTests
     }
 
     [Test]
+    public void TwinFangFlurryTriggeredDamageDuringTrackedAbilityImpact_QueuesWithAbilityDamageEffects()
+    {
+        var root = FindRepositoryRoot();
+        var abilitySource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "Ability.cs")).Replace("\r\n", "\n");
+        var combatSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "Combat.cs")).Replace("\r\n", "\n");
+        var queueMethod = abilitySource.Substring(
+            abilitySource.IndexOf("public static bool TryQueueTrackedDamageEffect", StringComparison.Ordinal),
+            abilitySource.IndexOf("private static TrackedAbilityImpact GetTrackedAbilityImpact", StringComparison.Ordinal) -
+            abilitySource.IndexOf("public static bool TryQueueTrackedDamageEffect", StringComparison.Ordinal));
+        var triggeredDamage = combatSource.Substring(
+            combatSource.IndexOf("public static void ApplyTriggeredDamage", StringComparison.Ordinal),
+            combatSource.IndexOf("private static void ApplyGuardiansResolve", StringComparison.Ordinal) -
+            combatSource.IndexOf("public static void ApplyTriggeredDamage", StringComparison.Ordinal));
+        var damageRiders = combatSource.Substring(
+            combatSource.IndexOf("private static void ApplyAbilityDamageRiders", StringComparison.Ordinal),
+            combatSource.IndexOf("private static void ApplyRicochetDamage", StringComparison.Ordinal) -
+            combatSource.IndexOf("private static void ApplyAbilityDamageRiders", StringComparison.Ordinal));
+
+        queueMethod.Should().Contain("GetTrackedAbilityImpact(activator)");
+        queueMethod.Should().Contain("trackedImpact.QueueDamageEffect(target, damage, damageType);");
+        damageRiders.Should().Contain("StatType.KatarVenomCurrentSecondStrikeDamageBonus");
+        damageRiders.Should().Contain("ApplyTriggeredDamage(activator, target, bonus, damageType);");
+        triggeredDamage.Should().Contain("Ability.TryQueueTrackedDamageEffect(activator, target, damage, effectDamageType)");
+        triggeredDamage.Should().Contain("AssignCommand(");
+    }
+
+    [Test]
     public void DelayedTelegraphedImpacts_PreserveQueuedDefenseIgnoreBonus()
     {
         var root = FindRepositoryRoot();

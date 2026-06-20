@@ -833,6 +833,7 @@ namespace SWLOR.Game.Server.Service
             ApplyPredatorsMarkEffects(attacker, defender, skillType);
             ApplyDamageDealtForceErosionEffect(attacker, defender, deliveryType);
             ApplyBleedingTargetStaminaRestore(attacker, defender);
+            ApplyToxicRushDamageDealtEffects(attacker, defender, deliveryType);
             ApplyHeavyVibrobladeDefenseDamageRecovery(attacker, damage);
 
             var hpRestorePercent = Stat.GetStatAdjustment(attacker, StatType.DamageDealtHPPercentRestore);
@@ -3159,64 +3160,43 @@ namespace SWLOR.Game.Server.Service
 
         private static void ApplyKatarVenomCurrentImpactRiders(uint activator, uint target)
         {
-            ApplyToxicRush(activator, target);
-
             if (StatusEffect.HasStatusEffect(target, typeof(PoisonStatusEffect)))
             {
                 SpreadPoisonFromTarget(activator, target);
             }
         }
 
-        private static void ApplyToxicRush(uint activator, uint target)
+        private static void ApplyToxicRushDamageDealtEffects(
+            uint attacker,
+            uint defender,
+            CombatDamageDeliveryType deliveryType)
         {
-            if (!StatusEffect.HasStatusEffect(target, typeof(PoisonStatusEffect)))
+            if (deliveryType == CombatDamageDeliveryType.DamageOverTime)
                 return;
 
-            var haste = Stat.GetStatAdjustment(activator, StatType.KatarToxicRushHastePercentPerStack);
-            var attack = Stat.GetStatAdjustment(activator, StatType.KatarToxicRushAttackPercentPerStack);
-            var maxStacks = Stat.GetStatAdjustment(activator, StatType.KatarToxicRushMaximumStacks);
-            var duration = Stat.GetStatAdjustment(activator, StatType.KatarToxicRushDurationSeconds);
-            if (maxStacks <= 0 || duration <= 0)
+            if (!GetIsObjectValid(attacker) ||
+                !GetIsObjectValid(defender) ||
+                !StatusEffect.HasStatusEffect(defender, typeof(PoisonStatusEffect)))
                 return;
 
-            var stacksGained = 0;
-            if (haste > 0)
-            {
-                stacksGained = Math.Max(
-                    stacksGained,
-                    TemporaryStatModifier.AddCapped(
-                        activator,
-                        StatType.AttackDelayReductionPercent,
-                        haste,
-                        duration,
-                        haste * maxStacks,
-                        StatType.KatarToxicRushHastePercentPerStack,
-                        1));
-            }
+            var haste = Stat.GetStatAdjustment(attacker, StatType.KatarToxicRushHastePercentPerStack);
+            var attack = Stat.GetStatAdjustment(attacker, StatType.KatarToxicRushAttackPercentPerStack);
+            var maxStacks = Stat.GetStatAdjustment(attacker, StatType.KatarToxicRushMaximumStacks);
+            var duration = Stat.GetStatAdjustment(attacker, StatType.KatarToxicRushDurationSeconds);
+            if (maxStacks <= 0 || duration <= 0 || (haste <= 0 && attack <= 0))
+                return;
 
-            if (attack > 0)
-            {
-                stacksGained = Math.Max(
-                    stacksGained,
-                    TemporaryStatModifier.AddCapped(
-                        activator,
-                        StatType.AttackPercentAdjustment,
-                        attack,
-                        duration,
-                        attack * maxStacks,
-                        StatType.KatarToxicRushAttackPercentPerStack,
-                        1));
-            }
+            var currentStacks = StatusEffect.GetStatusEffect<ToxicRushStatusEffect>(attacker)?.Stacks ?? 0;
+            var stacks = Math.Min(maxStacks, currentStacks + 1);
+            StatusEffect.ApplyStatusEffect(
+                attacker,
+                attacker,
+                new ToxicRushStatusEffect(stacks, haste, attack),
+                duration);
 
-            var currentHasteStacks = haste > 0
-                ? TemporaryStatModifier.GetStatAdjustment(activator, StatType.AttackDelayReductionPercent, StatType.KatarToxicRushHastePercentPerStack) / haste
-                : 0;
-            var currentAttackStacks = attack > 0
-                ? TemporaryStatModifier.GetStatAdjustment(activator, StatType.AttackPercentAdjustment, StatType.KatarToxicRushAttackPercentPerStack) / attack
-                : 0;
-            if (Math.Max(currentHasteStacks, currentAttackStacks) >= maxStacks)
+            if (stacks >= maxStacks)
             {
-                Stat.RestoreStamina(activator, 2);
+                Stat.RestoreStamina(attacker, 2);
             }
         }
 
@@ -3516,12 +3496,17 @@ namespace SWLOR.Game.Server.Service
             if (damage <= 0)
                 return;
 
-            AssignCommand(
-                activator,
-                () => ApplyEffectToObject(
-                    DurationType.Instant,
-                    EffectDamage(damage, damageType.GetNWScriptDamageType()),
-                    target));
+            var effectDamageType = damageType.GetNWScriptDamageType();
+            if (!Ability.TryQueueTrackedDamageEffect(activator, target, damage, effectDamageType))
+            {
+                AssignCommand(
+                    activator,
+                    () => ApplyEffectToObject(
+                        DurationType.Instant,
+                        EffectDamage(damage, effectDamageType),
+                        target));
+            }
+
             ApplyDamageDealtEffects(activator, target, damage, skillType, damageType, CombatDamageDeliveryType.Triggered);
             StatusEffect.NotifyDamageStatusEffects(activator, target, damage, damageType, CombatDamageDeliveryType.Triggered);
         }

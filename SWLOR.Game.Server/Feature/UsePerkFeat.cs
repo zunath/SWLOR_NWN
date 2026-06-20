@@ -169,7 +169,9 @@ namespace SWLOR.Game.Server.Feature
                 if (Ability.CanUseAbility(activator, target, feat, effectivePerkLevel, targetLocation))
                 {
                     if(ability.DisplaysActivationMessage)
-                        Messaging.SendMessageNearbyToPlayers(activator, $"{GetName(activator)} queues {ability.Name} for the next attack.");
+                        Messaging.SendMessageNearbyToPlayers(
+                            activator,
+                            receiver => $"{PlayerName.GetDisplayName(receiver, activator)} queues {ability.Name} for the next attack.");
                     QueueWeaponAbility(activator, target, ability, feat);
                     return true;
                 }
@@ -182,12 +184,16 @@ namespace SWLOR.Game.Server.Feature
                     if (GetIsObjectValid(target) && target != activator)
                     {
                         if (ability.DisplaysActivationMessage)
-                            Messaging.SendMessageNearbyToPlayers(activator, $"{GetName(activator)} readies {ability.Name} on {GetName(target)}.");
+                            Messaging.SendMessageNearbyToPlayers(
+                                activator,
+                                receiver => $"{PlayerName.GetDisplayName(receiver, activator)} readies {ability.Name} on {PlayerName.GetDisplayName(receiver, target)}.");
                     }
                     else
                     {
                         if (ability.DisplaysActivationMessage)
-                            Messaging.SendMessageNearbyToPlayers(activator, $"{GetName(activator)} readies {ability.Name}.");
+                            Messaging.SendMessageNearbyToPlayers(
+                                activator,
+                                receiver => $"{PlayerName.GetDisplayName(receiver, activator)} readies {ability.Name}.");
                     }
 
                     ActivateAbility(activator, target, feat, ability, targetLocation);
@@ -333,7 +339,9 @@ namespace SWLOR.Game.Server.Feature
                     RemoveEffectByTag(activator, "ACTIVATION_VFX");
                     CancelActivationTargetingTelegraph(activationTelegraphId);
                     PlayerPlugin.StopGuiTimingBar(activator, string.Empty);
-                    Messaging.SendMessageNearbyToPlayers(activator, $"{GetName(activator)}'s ability has been interrupted.");
+                    Messaging.SendMessageNearbyToPlayers(
+                        activator,
+                        receiver => $"{PlayerName.GetDisplayName(receiver, activator)}'s ability has been interrupted.");
                     SetLocalInt(activator, activationId, (int)ActivationStatus.Interrupted);
                     return;
                 }
@@ -480,7 +488,9 @@ namespace SWLOR.Game.Server.Feature
             SendMessageToPC(target, $"Your weapon ability {abilityDetail.Name} is no longer queued.");
 
             if (sendMessage)
-                Messaging.SendMessageNearbyToPlayers(target, $"{GetName(target)} no longer has weapon ability {abilityDetail.Name} readied.");
+                Messaging.SendMessageNearbyToPlayers(
+                    target,
+                    receiver => $"{PlayerName.GetDisplayName(receiver, target)} no longer has weapon ability {abilityDetail.Name} readied.");
         }
 
         public static bool HasQueuedWeaponAbility(uint activator)

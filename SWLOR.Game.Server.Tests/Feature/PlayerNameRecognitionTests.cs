@@ -83,6 +83,27 @@ public class PlayerNameRecognitionTests
     }
 
     [Test]
+    public void KnownNameStorage_CachesObserverRecordsDuringScriptContext()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "PlayerName.cs"));
+        var staticConstructor = ExtractMethod(source, "static PlayerName()");
+        var findMethod = ExtractMethod(source, "private static PlayerKnownName FindKnownNames(string observerId)");
+        var getMethod = ExtractMethod(source, "private static PlayerKnownName GetKnownNames(uint observer, bool createIfMissing)");
+
+        source.Should().Contain("private static readonly Dictionary<string, PlayerKnownName> KnownNamesByObserverId");
+        staticConstructor.Should().Contain("ServerManager.OnScriptContextEnd += KnownNamesByObserverId.Clear;");
+        findMethod.Should().Contain("KnownNamesByObserverId.TryGetValue(observerId, out var dbKnownNames)");
+        findMethod.Should().Contain("DB.Search(new DBQuery<PlayerKnownName>()");
+        findMethod.Should().Contain("KnownNamesByObserverId[observerId] = dbKnownNames;");
+        getMethod.Should().Contain("KnownNamesByObserverId[observerId] = dbKnownNames;");
+    }
+
+    [Test]
     public void UnknownNames_UseGrayColorTokens()
     {
         var root = FindRepositoryRoot();

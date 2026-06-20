@@ -101,12 +101,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-        public GuiBindingList<string> ItemSellerNames
-        {
-            get => Get<GuiBindingList<string>>();
-            set => Set(value);
-        }
-
         public GuiBindingList<bool> ItemBuyEnabled
         {
             get => Get<GuiBindingList<bool>>();
@@ -186,7 +180,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var itemIconResrefs = new GuiBindingList<string>();
             var itemNames = new GuiBindingList<string>();
             var itemPriceNames = new GuiBindingList<string>();
-            var itemSellerNames = new GuiBindingList<string>();
             var itemBuyEnabled = new GuiBindingList<bool>();
 
             foreach (var record in results)
@@ -196,14 +189,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 itemIconResrefs.Add(record.IconResref);
                 itemNames.Add($"{record.Quantity}x {record.Name}");
                 itemPriceNames.Add($"{record.Price} cr");
-                itemSellerNames.Add(record.SellerName);
                 itemBuyEnabled.Add(credits >= record.Price);
             }
 
             ItemIconResrefs = itemIconResrefs;
             ItemNames = itemNames;
             ItemPriceNames = itemPriceNames;
-            ItemSellerNames = itemSellerNames;
             ItemBuyEnabled = itemBuyEnabled;
         }
 
@@ -343,7 +334,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 ItemIconResrefs.RemoveAt(index);
                 ItemNames.RemoveAt(index);
                 ItemPriceNames.RemoveAt(index);
-                ItemSellerNames.RemoveAt(index);
                 ItemBuyEnabled.RemoveAt(index);
 
                 // Remove the item from the database.

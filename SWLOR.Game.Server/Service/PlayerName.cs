@@ -13,8 +13,14 @@ namespace SWLOR.Game.Server.Service
     {
         private const int MaxKnownNameLength = 64;
         private const string UnknownName = "Someone";
+        private static readonly Dictionary<string, PlayerKnownName> KnownNamesByObserverId = new();
         private static readonly string UnknownNamePrefix = ColorToken.TokenStart(127, 127, 127);
         private static readonly string UnknownNameSuffix = ColorToken.TokenEnd();
+
+        static PlayerName()
+        {
+            ServerManager.OnScriptContextEnd += KnownNamesByObserverId.Clear;
+        }
 
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         public static void ApplyNameOverridesOnEnter()
@@ -130,14 +136,21 @@ namespace SWLOR.Game.Server.Service
                 dbKnownNames.KnownNames = new Dictionary<string, string>();
             }
 
+            KnownNamesByObserverId[observerId] = dbKnownNames;
             return dbKnownNames;
         }
 
         private static PlayerKnownName FindKnownNames(string observerId)
         {
-            return DB.Search(new DBQuery<PlayerKnownName>()
+            if (KnownNamesByObserverId.TryGetValue(observerId, out var dbKnownNames))
+                return dbKnownNames;
+
+            dbKnownNames = DB.Search(new DBQuery<PlayerKnownName>()
                     .AddFieldSearch(nameof(PlayerKnownName.ObserverPlayerId), observerId, false))
                 .FirstOrDefault();
+
+            KnownNamesByObserverId[observerId] = dbKnownNames;
+            return dbKnownNames;
         }
 
         private static void ApplyNameOverridesForPlayer(uint player)

@@ -89,10 +89,12 @@ namespace SWLOR.Game.Server.Service.ChatCommandService
         /// Indicates the chat command is an emote and should be categorized under that instead of
         /// the general purpose chat commands.
         /// </summary>
+        /// <param name="category">The category to put the emote under.</param>
         /// <returns>A configured ChatCommandBuilder.</returns>
-        public ChatCommandBuilder IsEmote()
+        public ChatCommandBuilder IsEmote(EmoteCategoryType category)
         {
             _currentDetail.IsEmote = true;
+            _currentDetail.EmoteCategory = category;
 
             return this;
         }

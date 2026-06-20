@@ -26,6 +26,27 @@ public class HoloNetViewModelTests
         deductionIndex.Should().BeLessThan(enqueueIndex);
     }
 
+    [Test]
+    public void BroadcastRefundsCreditsWhenWebhookQueueFails()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "GuiDefinition",
+            "ViewModel",
+            "HoloNetViewModel.cs"));
+
+        var failedEnqueueIndex = source.IndexOf("if (!await BackgroundJob.EnqueueDiscordWebhook", StringComparison.Ordinal);
+        var refundIndex = source.IndexOf("GiveGoldToCreature(Player, BroadcastPrice)", failedEnqueueIndex, StringComparison.Ordinal);
+        var returnIndex = source.IndexOf("return;", failedEnqueueIndex, StringComparison.Ordinal);
+
+        failedEnqueueIndex.Should().BeGreaterThanOrEqualTo(0);
+        refundIndex.Should().BeGreaterThan(failedEnqueueIndex);
+        refundIndex.Should().BeLessThan(returnIndex);
+    }
+
     private static DirectoryInfo FindRepositoryRoot()
     {
         var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);

@@ -59,6 +59,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 if (!await BackgroundJob.EnqueueDiscordWebhook(url, "HoloNet Broadcast", message, 3447003))
                 {
+                    AssignCommand(Player, () => GiveGoldToCreature(Player, BroadcastPrice));
                     SendMessageToPC(Player, ColorToken.Red("ERROR: Unable to queue HoloNet broadcast. Please notify a DM."));
                     return;
                 }

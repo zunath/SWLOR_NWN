@@ -304,7 +304,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             // Otherwise look for players by their names.
             else
             {
-                var knownPlayerIds = PlayerNameService.SearchKnownPlayerIdsByName(Player, SearchText, 25);
+                var knownPlayerIds = PlayerNameService.SearchKnownPlayerIdsByName(Player, SearchText, int.MaxValue);
                 if (knownPlayerIds.Count <= 0)
                 {
                     dbPlayers = Enumerable.Empty<Player>();

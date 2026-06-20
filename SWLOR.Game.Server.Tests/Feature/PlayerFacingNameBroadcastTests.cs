@@ -81,7 +81,7 @@ public class PlayerFacingNameBroadcastTests
             "GuiDefinition",
             "ViewModel",
             "PropertyPermissionsViewModel.cs"));
-        propertyPermissionsSource.Should().Contain("PlayerNameService.SearchKnownPlayerIdsByName");
+        propertyPermissionsSource.Should().Contain("PlayerNameService.SearchKnownPlayerIdsByName(Player, SearchText, int.MaxValue)");
         propertyPermissionsSource.Should().Contain("PlayerNameService.GetDisplayNameByPlayerId");
         propertyPermissionsSource.Should().NotContain("nameof(Entity.Player.Name)");
 
@@ -93,6 +93,8 @@ public class PlayerFacingNameBroadcastTests
             "ViewModel",
             "ElectionViewModel.cs"));
         electionSource.Should().Contain("PlayerName.GetDisplayNameByPlayerId(Player, candidate.Id, candidate.Name)");
+        electionSource.Should().Contain("PlayerName.GetDisplayNameByPlayerId(Player, selectedCandidateId, dbCandidate.Name)");
+        electionSource.Should().NotContain("Your vote for {dbCandidate.Name} has been cast.");
 
         var citySource = File.ReadAllText(Path.Combine(
             root.FullName,

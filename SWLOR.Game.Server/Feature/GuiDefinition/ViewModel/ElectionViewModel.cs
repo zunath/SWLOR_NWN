@@ -239,7 +239,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         VoterPlayerId = playerId
                     };
 
-                    SendMessageToPC(Player, $"Your vote for {dbCandidate.Name} has been cast.");
+                    var candidateName = PlayerName.GetDisplayNameByPlayerId(Player, selectedCandidateId, dbCandidate.Name);
+                    SendMessageToPC(Player, $"Your vote for {candidateName} has been cast.");
                     Gui.TogglePlayerWindow(Player, GuiWindowType.Election);
                 }
 

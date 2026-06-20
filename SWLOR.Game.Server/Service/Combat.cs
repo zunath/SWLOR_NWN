@@ -1776,6 +1776,11 @@ namespace SWLOR.Game.Server.Service
                 guardChance,
                 duration,
                 StatType.LowHPGuard);
+
+            if (GetIsPC(defender))
+                FloatingTextStringOnCreature(ColorToken.Combat("Guardian Reflexes"), defender, false);
+
+            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Ac_Bonus), defender);
         }
 
         private static void TrackRecentDamageTarget(uint attacker, uint defender)
@@ -2096,7 +2101,26 @@ namespace SWLOR.Game.Server.Service
             if (retaliationDamage <= 0)
                 return;
 
-            AssignCommand(defender, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(retaliationDamage), attacker));
+            var skillType = GetEquippedWeaponSkillType(defender);
+            var scalingAbility = GetGuardRetaliationDamageAbility(defender, skillType);
+            retaliationDamage = AbilityEffectScaling.ScaleDirectEffect(
+                retaliationDamage,
+                GetAbilityScore(defender, scalingAbility),
+                source: defender);
+
+            ApplyTriggeredDamage(defender, attacker, retaliationDamage, CombatDamageType.Physical, skillType);
+        }
+
+        private static AbilityType GetGuardRetaliationDamageAbility(uint defender, SkillType skillType)
+        {
+            var weapon = GetRelevantSkillWeapon(defender, skillType);
+            if (!GetIsObjectValid(weapon))
+                return AbilityType.Might;
+
+            var ability = GetWeaponDamageAbilityType(defender, GetBaseItemType(weapon));
+            return ability == AbilityType.Invalid
+                ? AbilityType.Might
+                : ability;
         }
 
         private static void ApplyGuardedHitEnmity(uint attacker, uint defender, int damage)

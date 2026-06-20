@@ -331,6 +331,25 @@ public class CombatDamageTests
     }
 
     [Test]
+    public void GuardRetaliationDamage_IsScaledAndAppliedAsPhysicalTriggeredDamage()
+    {
+        var root = FindRepositoryRoot();
+        var combatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"))
+            .Replace("\r\n", "\n");
+
+        var retaliation = ExtractMethod(combatSource, "private static void ApplyGuardedHitRetaliation");
+        retaliation.Should().Contain("StatType.GuardRetaliationDamage");
+        retaliation.Should().Contain("AbilityEffectScaling.ScaleDirectEffect");
+        retaliation.Should().Contain("GetAbilityScore(defender, scalingAbility)");
+        retaliation.Should().Contain("ApplyTriggeredDamage(defender, attacker, retaliationDamage, CombatDamageType.Physical, skillType);");
+        retaliation.Should().NotContain("EffectDamage(retaliationDamage");
+
+        var scalingAbility = ExtractMethod(combatSource, "private static AbilityType GetGuardRetaliationDamageAbility");
+        scalingAbility.Should().Contain("GetRelevantSkillWeapon(defender, skillType)");
+        scalingAbility.Should().Contain("GetWeaponDamageAbilityType(defender, GetBaseItemType(weapon))");
+    }
+
+    [Test]
     public void CombatImpactDamageScaling_IsDeclaredByAbilityImplementationsNotSkillType()
     {
         var root = FindRepositoryRoot();
@@ -521,6 +540,19 @@ public class CombatDamageTests
         abilitySource.Should().NotContain("PerkType.CriticalWard");
         damageRollSource.Should().NotContain("PerkType.CriticalWard");
         resolveAttackRollSource.Should().NotContain("PerkType.CriticalWard");
+    }
+
+    [Test]
+    public void LowHPGuardTrigger_SendsActivationFeedback()
+    {
+        var root = FindRepositoryRoot();
+        var combatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
+        var lowHPGuardTrigger = ExtractMethod(combatSource, "private static void ApplyLowHPGuardEffect(");
+
+        lowHPGuardTrigger.Should().Contain("TemporaryStatModifier.Replace(");
+        lowHPGuardTrigger.Should().Contain("StatType.LowHPGuard");
+        lowHPGuardTrigger.Should().Contain("FloatingTextStringOnCreature(ColorToken.Combat(\"Guardian Reflexes\"), defender, false);");
+        lowHPGuardTrigger.Should().Contain("ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Ac_Bonus), defender);");
     }
 
     [Test]

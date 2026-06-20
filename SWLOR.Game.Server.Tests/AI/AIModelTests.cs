@@ -420,6 +420,10 @@ public class AIModelTests
     {
         var enmitySource = ReadSource("SWLOR.Game.Server", "Service", "Enmity.cs").Replace("\r\n", "\n");
         var npcAiSource = ReadSource("SWLOR.Game.Server", "Service", "AIService", "NPCAI.cs").Replace("\r\n", "\n");
+        var processTriggerBody = npcAiSource.Substring(
+            npcAiSource.IndexOf("public static bool ProcessTrigger", StringComparison.Ordinal),
+            npcAiSource.IndexOf("private static AIState GetState", StringComparison.Ordinal) -
+            npcAiSource.IndexOf("public static bool ProcessTrigger", StringComparison.Ordinal));
         var attackHighestIndex = enmitySource.IndexOf("public static void AttackHighestEnmityTarget", StringComparison.Ordinal);
         var executeActionIndex = npcAiSource.IndexOf("private static void ExecuteAction", StringComparison.Ordinal);
         var attackActionIndex = npcAiSource.IndexOf("case AIActionType.AttackHighestEnmity:", executeActionIndex, StringComparison.Ordinal);
@@ -441,15 +445,57 @@ public class AIModelTests
             npcAiSource.IndexOf("private static bool IsOnCooldown", fallbackIndex, StringComparison.Ordinal) -
             fallbackIndex);
 
+        processTriggerBody.Should().Contain("AI.TryStartCombatLeashEvade(creature, context.CurrentEnmityTarget)");
+        processTriggerBody.IndexOf("AI.TryStartCombatLeashEvade(creature, context.CurrentEnmityTarget)", StringComparison.Ordinal)
+            .Should()
+            .BeLessThan(processTriggerBody.IndexOf("SelectAction(context)", StringComparison.Ordinal));
         attackHighestBody.Should().Contain("ShouldRemoveStaleProximityTarget(creature, target)");
         attackHighestBody.Should().Contain("RemoveProximityEnmity(target, creature);");
+        attackHighestBody.Should().Contain("AI.TryStartCombatLeashEvade(creature, target)");
         attackHighestBody.Should().Contain("IssueAttackCommand(creature, target);");
+        issueBody.Should().Contain("AI.TryStartCombatLeashEvade(creature, target)");
+        issueBody.Should().Contain("ActionDoCommand(() =>");
+        issueBody.IndexOf("ActionDoCommand(() =>", StringComparison.Ordinal)
+            .Should()
+            .BeGreaterThan(issueBody.IndexOf("ActionMoveToObject(target, true, MeleeAttackMoveRange);", StringComparison.Ordinal));
+        issueBody.IndexOf("ActionAttack(target);", StringComparison.Ordinal)
+            .Should()
+            .BeGreaterThan(issueBody.LastIndexOf("AI.TryStartCombatLeashEvade(creature, target)", StringComparison.Ordinal));
         issueBody.Should().Contain("ClearAllActions(true);");
         issueBody.Should().Contain("ActionMoveToObject(target, true, MeleeAttackMoveRange);");
         attackActionBody.Should().Contain("Enmity.AttackHighestEnmityTarget(context.Self);");
         attackActionBody.Should().NotContain("ClearAllActions");
         attackActionBody.Should().NotContain("ActionAttack");
-        fallbackBody.Should().Contain("ClearAllActions(true);");
+        fallbackBody.Should().Contain("Enmity.IssueAttackCommand(creature, target);");
+        fallbackBody.Should().NotContain("ActionAttack");
+    }
+
+    [Test]
+    public void NativeAttackAction_CancelsLeashedCreaturesBeforePathingOrResolvingAttack()
+    {
+        var source = ReadSource("SWLOR.Game.Server", "Native", "OnAIActionAttackObject.cs").Replace("\r\n", "\n");
+        var activeTargetBody = source.Substring(
+            source.IndexOf("if (bTargetActive)", StringComparison.Ordinal),
+            source.IndexOf("if (pCreature.m_pcCombatRound == null)", StringComparison.Ordinal) -
+            source.IndexOf("if (bTargetActive)", StringComparison.Ordinal));
+        var pendingAttackIndex = source.IndexOf("case CNWSCOMBATROUND_TYPE_ATTACK:", StringComparison.Ordinal);
+        var pendingAttackBody = source.Substring(
+            pendingAttackIndex,
+            source.IndexOf("case CNWSCOMBATROUND_TYPE_PARRY:", pendingAttackIndex, StringComparison.Ordinal) -
+            pendingAttackIndex);
+
+        source.Should().Contain("private static bool TryCancelAttackForCombatLeash");
+        source.Should().Contain("AI.TryStartCombatLeashEvade(pCreature.m_idSelf, target)");
+        source.Should().Contain("_creatureAttackDelays.Remove(pCreature.m_idSelf);");
+        source.Should().Contain("pCreature.ChangeAttackTarget(pNode, OBJECT_INVALID);");
+        activeTargetBody.Should().Contain("TryCancelAttackForCombatLeash(pCreature, pNode, oidAttackTarget)");
+        activeTargetBody.IndexOf("TryCancelAttackForCombatLeash(pCreature, pNode, oidAttackTarget)", StringComparison.Ordinal)
+            .Should()
+            .BeLessThan(activeTargetBody.IndexOf("pCreature.AddActionToFront", StringComparison.Ordinal));
+        pendingAttackBody.Should().Contain("TryCancelAttackForCombatLeash(pCreature, pNode, oidTarget)");
+        pendingAttackBody.IndexOf("TryCancelAttackForCombatLeash(pCreature, pNode, oidTarget)", StringComparison.Ordinal)
+            .Should()
+            .BeLessThan(pendingAttackBody.IndexOf("pCreature.ResolveAttack(oidTarget, nAttacks, nTimeAnimation);", StringComparison.Ordinal));
     }
 
     [Test]
@@ -784,6 +830,10 @@ public class AIModelTests
         damagedBody.Should().Contain("TryStartLeashEvade(creature, GetHighestOrEventTarget(creature, GetLastDamager(creature)))");
         roundEndBody.Should().Contain("TryStartLeashEvade(creature, Enmity.GetHighestEnmityTarget(creature))");
         modifyBody.Should().Contain("if (AI.IsLeashEvading(enemy))");
+        modifyBody.Should().Contain("if (AI.TryStartCombatLeashEvade(enemy, creature))");
+        modifyBody.IndexOf("if (AI.TryStartCombatLeashEvade(enemy, creature))", StringComparison.Ordinal)
+            .Should()
+            .BeLessThan(modifyBody.IndexOf("var enemyList = _creatureToEnemies.ContainsKey(creature)", StringComparison.Ordinal));
     }
 
     [Test]

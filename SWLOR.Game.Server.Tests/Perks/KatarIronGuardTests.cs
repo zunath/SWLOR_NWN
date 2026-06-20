@@ -119,6 +119,29 @@ public class KatarIronGuardTests
     }
 
     [Test]
+    public void GuardianReflexes_GrantsLowHPGuardWindow()
+    {
+        var perk = BuildKatarIronGuardPerksWithout2daLookup()[PerkType.GuardianReflexes];
+
+        AssertPerkLevel(
+            perk,
+            "Guardian Reflexes",
+            1,
+            4,
+            48,
+            FeatType.GuardianReflexesTrait,
+            "When reduced below 30% HP, gain +25% guard chance for 30 seconds. This can only trigger once every 3 minutes.",
+            StatType.LowHPGuardThresholdPercent,
+            StatType.LowHPGuard,
+            StatType.LowHPGuardDurationSeconds,
+            StatType.LowHPGuardCooldownSeconds);
+        AssertPerpetualStatBonus(perk.PerkLevels[1], StatType.LowHPGuardThresholdPercent, 30);
+        AssertPerpetualStatBonus(perk.PerkLevels[1], StatType.LowHPGuard, 25);
+        AssertPerpetualStatBonus(perk.PerkLevels[1], StatType.LowHPGuardDurationSeconds, 30);
+        AssertPerpetualStatBonus(perk.PerkLevels[1], StatType.LowHPGuardCooldownSeconds, 180);
+    }
+
+    [Test]
     public void KatarIronGuardFeatAndAbilityIcons_AreUniqueAndPresent()
     {
         var root = FindRepositoryRoot();

@@ -174,6 +174,9 @@ namespace SWLOR.Game.Server.Service
             // Value is zero, no action necessary.
             if (amount == 0) return;
 
+            if (AI.TryStartCombatLeashEvade(enemy, creature))
+                return;
+
             // Retrieve the creature's list of associated enemies.
             var enemyList = _creatureToEnemies.ContainsKey(creature) ? _creatureToEnemies[creature] : new List<uint>();
 
@@ -468,6 +471,9 @@ namespace SWLOR.Game.Server.Service
                 GetArea(creature) != GetArea(target))
                 return;
 
+            if (AI.TryStartCombatLeashEvade(creature, target))
+                return;
+
             // Same target - no need to switch.
             var attackTarget = GetAttackTarget(creature);
             var currentAction = GetCurrentAction(creature);
@@ -511,16 +517,28 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
+            if (AI.TryStartCombatLeashEvade(creature, target))
+                return;
+
             _attackCommandTimes[creature] = DateTime.UtcNow;
             AssignCommand(creature, () =>
             {
+                if (AI.TryStartCombatLeashEvade(creature, target))
+                    return;
+
                 if (clearActions)
                     ClearAllActions(true);
 
                 if (ShouldMoveIntoAttackRange(creature, target))
                     ActionMoveToObject(target, true, MeleeAttackMoveRange);
 
-                ActionAttack(target);
+                ActionDoCommand(() =>
+                {
+                    if (AI.TryStartCombatLeashEvade(creature, target))
+                        return;
+
+                    ActionAttack(target);
+                });
             });
         }
 

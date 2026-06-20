@@ -557,19 +557,22 @@ namespace SWLOR.Game.Server.Service
 
             if (statusEffect.SendsApplicationMessage)
             {
-                var name = GetName(creature);
-                var effectName = statusEffect.Name;
-                var applicationMessage = $"{name} receives the effect of {effectName}";
-                if (GetIsObjectValid(source) && source != creature)
+                Messaging.SendMessageNearbyToPlayers(creature, receiver =>
                 {
-                    var sourceName = GetName(source);
-                    if (!string.IsNullOrWhiteSpace(sourceName))
+                    var name = PlayerName.GetDisplayName(receiver, creature);
+                    var effectName = statusEffect.Name;
+                    var applicationMessage = $"{name} receives the effect of {effectName}";
+                    if (GetIsObjectValid(source) && source != creature)
                     {
-                        applicationMessage = $"{applicationMessage} from {sourceName}";
+                        var sourceName = PlayerName.GetDisplayName(receiver, source);
+                        if (!string.IsNullOrWhiteSpace(sourceName))
+                        {
+                            applicationMessage = $"{applicationMessage} from {sourceName}";
+                        }
                     }
-                }
 
-                Messaging.SendMessageNearbyToPlayers(creature, applicationMessage);
+                    return applicationMessage;
+                });
             }
 
             return true;
@@ -1302,10 +1305,9 @@ namespace SWLOR.Game.Server.Service
         {
             if (sendsWornOffMessage && statusEffect.SendsWornOffMessage)
             {
-                var name = GetName(creature);
                 var effectName = statusEffect.Name;
                 Messaging.SendMessageNearbyToPlayers(creature,
-                    $"{name}'s {effectName} effect has worn off.");
+                    receiver => $"{PlayerName.GetDisplayName(receiver, creature)}'s {effectName} effect has worn off.");
             }
 
             if (removeNativeEffect)

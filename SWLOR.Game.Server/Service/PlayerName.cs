@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.Service
     public static class PlayerName
     {
         private const int MaxKnownNameLength = 64;
-        private const string UnknownName = "Someone";
+        public const string UnknownName = "Someone";
         private static readonly Dictionary<string, PlayerKnownName> KnownNamesByObserverId = new();
         private static readonly string UnknownNamePrefix = ColorToken.TokenStart(127, 127, 127);
         private static readonly string UnknownNameSuffix = ColorToken.TokenEnd();
@@ -37,6 +37,55 @@ namespace SWLOR.Game.Server.Service
         public static string GetDisplayName(uint observer, uint target)
         {
             return ResolveDisplayName(observer, target, out _);
+        }
+
+        public static string GetDisplayNameByPlayerId(uint observer, string targetPlayerId, string fallbackName)
+        {
+            if (string.IsNullOrWhiteSpace(targetPlayerId))
+                return UnknownName;
+
+            if (!GetIsObjectValid(observer) ||
+                !GetIsPC(observer) ||
+                GetIsDM(observer) ||
+                GetIsDMPossessed(observer) ||
+                GetObjectUUID(observer) == targetPlayerId)
+            {
+                return string.IsNullOrWhiteSpace(fallbackName)
+                    ? UnknownName
+                    : fallbackName;
+            }
+
+            if (TryGetKnownName(observer, targetPlayerId, out var knownName))
+                return knownName;
+
+            return UnknownName;
+        }
+
+        public static List<string> SearchKnownPlayerIdsByName(uint observer, string searchText, int maxResults)
+        {
+            if (!GetIsObjectValid(observer) ||
+                !GetIsPC(observer) ||
+                GetIsDM(observer) ||
+                string.IsNullOrWhiteSpace(searchText) ||
+                maxResults <= 0)
+            {
+                return new List<string>();
+            }
+
+            var sanitizedSearch = SanitizeKnownName(searchText).ToLower();
+            if (string.IsNullOrWhiteSpace(sanitizedSearch))
+                return new List<string>();
+
+            var dbKnownNames = GetKnownNames(observer, false);
+            if (dbKnownNames?.KnownNames == null)
+                return new List<string>();
+
+            return dbKnownNames.KnownNames
+                .Where(x => !string.IsNullOrWhiteSpace(x.Value) &&
+                            x.Value.ToLower().Contains(sanitizedSearch))
+                .Select(x => x.Key)
+                .Take(maxResults)
+                .ToList();
         }
 
         public static string GetColoredDisplayName(uint observer, uint target)
@@ -221,8 +270,13 @@ namespace SWLOR.Game.Server.Service
 
         private static bool TryGetKnownName(uint observer, uint target, out string knownName)
         {
-            knownName = string.Empty;
             var targetId = GetObjectUUID(target);
+            return TryGetKnownName(observer, targetId, out knownName);
+        }
+
+        private static bool TryGetKnownName(uint observer, string targetId, out string knownName)
+        {
+            knownName = string.Empty;
             var dbKnownNames = GetKnownNames(observer, false);
 
             return dbKnownNames?.KnownNames != null &&

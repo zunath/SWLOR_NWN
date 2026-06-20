@@ -1,5 +1,6 @@
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Service.LogService;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -53,13 +54,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     return;
                 }
 
-                var authorName = $"{GetName(Player)} ({GetPCPlayerName(Player)}) [{GetPCPublicCDKey(Player)}]";
-                if (!await BackgroundJob.EnqueueDiscordWebhook(url, authorName, message, 3447003))
+                var auditAuthorName = $"{GetName(Player)} ({GetPCPlayerName(Player)}) [{GetPCPublicCDKey(Player)}]";
+                if (!await BackgroundJob.EnqueueDiscordWebhook(url, "HoloNet Broadcast", message, 3447003))
                 {
                     SendMessageToPC(Player, ColorToken.Red("ERROR: Unable to queue HoloNet broadcast. Please notify a DM."));
                     return;
                 }
 
+                Log.Write(LogGroup.Chat, $"{auditAuthorName} submitted HoloNet broadcast: {message}");
                 AssignCommand(Player, () => TakeGoldFromCreature(BroadcastPrice, Player, true));
 
                 SendMessageToPC(Player, "HoloNet message broadcasted!");
@@ -67,7 +69,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 for (var onlinePlayer = GetFirstPC(); GetIsObjectValid(onlinePlayer); onlinePlayer = GetNextPC())
                 {
-                    SendMessageToPC(onlinePlayer, ColorToken.Custom(authorName + " broadcasts a new HoloNet message: ", 0, 180, 255) + ColorToken.White(message));
+                    var displayName = PlayerName.GetDisplayName(onlinePlayer, Player);
+                    SendMessageToPC(onlinePlayer, ColorToken.Custom(displayName + " broadcasts a new HoloNet message: ", 0, 180, 255) + ColorToken.White(message));
                 }
             });
         };

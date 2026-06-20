@@ -300,7 +300,9 @@ namespace SWLOR.Game.Server.Service
             PlayerPlugin.StartGuiTimingBar(player, fishingDelay, "finish_fishing");
 
             Activity.SetBusy(player, ActivityStatusType.Fishing);
-            Messaging.SendMessageNearbyToPlayers(player, $"{GetName(player)} casts a line into the water.");
+            Messaging.SendMessageNearbyToPlayers(
+                player,
+                receiver => $"{PlayerName.GetDisplayName(receiver, player)} casts a line into the water.");
 
             BiowarePosition.TurnToFaceObject(fishingPoint, player);
             CheckPosition(player, position, attemptId);

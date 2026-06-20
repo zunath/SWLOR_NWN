@@ -5758,8 +5758,9 @@ namespace SWLOR.Game.Server.Service
                 if (GetEffectType(effect) != EffectTypeScript.Paralyze)
                     continue;
 
-                var creatureName = GetName(attacker);
-                Messaging.SendMessageNearbyToPlayers(attacker, $"{creatureName} is paralyzed and cannot act!");
+                Messaging.SendMessageNearbyToPlayers(
+                    attacker,
+                    receiver => $"{PlayerName.GetDisplayName(receiver, attacker)} is paralyzed and cannot act!");
                 return true;
             }
 

@@ -59,6 +59,9 @@ public class PlayerNameChatCommandTests
 
         source.Should().Contain("PlayerName.ValidateKnownName(name)");
         source.Should().Contain("SendMessageToPC(user, ColorToken.Red(validationError));");
+        source.Should().Contain("PlayerName.ValidateKnownNameAssignment(user, target, name)");
+        source.Should().NotContain("catch (ArgumentException ex)");
+        source.Should().NotContain("ColorToken.Red(ex.Message)");
 
         source.Should().Contain("if (!GetIsObjectValid(target) || !GetIsPC(target) || GetIsDM(target))");
         source.Should().Contain("You may only name player characters.");

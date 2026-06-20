@@ -223,6 +223,9 @@ namespace SWLOR.Game.Server.Service
                 if (!GetIsPC(otherPlayer))
                     continue;
 
+                if (otherPlayer == player)
+                    continue;
+
                 if (GetIsDM(otherPlayer))
                 {
                     ApplyTrueNameOverride(otherPlayer, player);

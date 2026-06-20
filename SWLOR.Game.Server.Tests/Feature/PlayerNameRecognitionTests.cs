@@ -1,4 +1,6 @@
 using FluentAssertions;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using NUnit.Framework;
 
 namespace SWLOR.Game.Server.Tests.Feature;
@@ -62,6 +64,20 @@ public class PlayerNameRecognitionTests
 
         dmObserverMethod.Should().Contain("ApplyTrueNameOverride(dm, player);");
         trueNameMethod.Should().Contain("RenamePlugin.SetPCNameOverride(target, GetName(target), string.Empty, string.Empty, PlayerNameOverrideType.Default, observer);");
+    }
+
+    [Test]
+    public void PlayerNameOverrides_SkipRedundantSelfIteration()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "PlayerName.cs"));
+        var playerMethod = ExtractMethod(source, "private static void ApplyNameOverridesForPlayer(uint player)");
+
+        playerMethod.Should().MatchRegex(@"if\s*\(\s*otherPlayer\s*==\s*player\s*\)\s*continue;");
     }
 
     [Test]
@@ -152,22 +168,14 @@ public class PlayerNameRecognitionTests
         var start = source.IndexOf(signature, StringComparison.Ordinal);
         start.Should().BeGreaterThanOrEqualTo(0);
 
-        var brace = source.IndexOf('{', start);
-        brace.Should().BeGreaterThanOrEqualTo(0);
+        var root = CSharpSyntaxTree.ParseText(source).GetRoot();
+        var method = root
+            .DescendantNodes()
+            .OfType<BaseMethodDeclarationSyntax>()
+            .FirstOrDefault(node => node.SpanStart <= start && node.Span.End > start);
 
-        var depth = 0;
-        for (var index = brace; index < source.Length; index++)
-        {
-            if (source[index] == '{')
-                depth++;
-            else if (source[index] == '}')
-                depth--;
-
-            if (depth == 0)
-                return source.Substring(start, index - start + 1);
-        }
-
-        throw new InvalidOperationException($"Could not extract method: {signature}");
+        method.Should().NotBeNull($"method '{signature}' should be parsed by Roslyn");
+        return method!.ToFullString();
     }
 
     private static DirectoryInfo FindRepositoryRoot()

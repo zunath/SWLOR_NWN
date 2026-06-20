@@ -43,6 +43,29 @@ public class PlayerNameChatCommandTests
         source.Should().Contain("Name={Name}");
     }
 
+    [Test]
+    public void NameCommands_DefinePlayerTargetSelfTargetAndInvalidNameGuardrails()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "ChatCommandDefinition",
+            "CharacterChatCommand.cs"));
+
+        source.Should().Contain("PlayerName.ValidateKnownName(name)");
+        source.Should().Contain("SendMessageToPC(user, ColorToken.Red(validationError));");
+
+        source.Should().Contain("if (!GetIsObjectValid(target) || !GetIsPC(target) || GetIsDM(target))");
+        source.Should().Contain("You may only name player characters.");
+        source.Should().Contain("You may only forget names for player characters.");
+
+        source.Should().Contain("if (target == user)");
+        source.Should().Contain("You already know your own name.");
+        source.Should().Contain("You cannot forget your own name.");
+    }
+
     private static DirectoryInfo FindRepositoryRoot()
     {
         var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);

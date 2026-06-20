@@ -44,8 +44,9 @@ public class ShipCombatLogTests
         source.Should().NotContain("return BuildCombatLogMessage(attacker, attacker, defender");
         source.Should().Contain("public static string BuildCombatLogMessage(");
         source.Should().Contain("uint observer");
-        source.Should().NotContain("public static string BuildCombatLogMessage(\r\n            uint attacker,\r\n            uint defender,");
-        source.Should().NotContain("public static string BuildCombatLogMessage(\n            uint attacker,\n            uint defender,");
+        source.Should().MatchRegex(
+            @"public\s+static\s+string\s+BuildCombatLogMessage\s*\(\s*uint\s+observer\s*,\s*uint\s+attacker\s*,\s*uint\s+defender\s*,",
+            "BuildCombatLogMessage should receive the observer before attacker and defender");
     }
 
     private static DirectoryInfo FindRepositoryRoot()

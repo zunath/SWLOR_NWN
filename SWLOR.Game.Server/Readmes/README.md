@@ -57,6 +57,9 @@ Combat-upgrade implementation scope, acceptance criteria, generated audit artifa
 ### [CombatUpgradeMigration.md](CombatUpgradeMigration.md)
 Migration notes for forced rebuild, perk refunds/removals, defense/resistance data movement, and item-property cleanup.
 
+### [PlayerRecognitionAndDisguisesPlan.md](PlayerRecognitionAndDisguisesPlan.md)
+Plan for observer-specific known names, long-running-world migration, combat-log considerations, and a follow-up disguise system.
+
 ### [Services.md](Services.md)
 Comprehensive documentation of the Service layer, which handles the core business logic and game mechanics. This includes:
 

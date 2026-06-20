@@ -314,7 +314,7 @@ namespace SWLOR.Game.Server.Feature
         {
             var race = GetRacialType(player);
             var item = CreateItemOnObject("survival_knife", player);
-            SetName(item, GetName(player) + "'s Survival Knife");
+            SetName(item, "Survival Knife");
             SetItemCursedFlag(item, true);
 
             item = CreateItemOnObject("fresh_bread", player);

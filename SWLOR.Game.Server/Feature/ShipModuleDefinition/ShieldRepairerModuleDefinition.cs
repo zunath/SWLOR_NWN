@@ -65,7 +65,9 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     var recovery = baseRecovery + (moduleBonus + activatorShipStatus.Industrial) * 2;
                     Space.RestoreShield(target, targetShipStatus, recovery);
 
-                    Messaging.SendMessageNearbyToPlayers(activator, $"{GetName(activator)} restores {recovery} shield HP to {GetName(target)}'s ship.");
+                    Messaging.SendMessageNearbyToPlayers(
+                        activator,
+                        receiver => $"{PlayerName.GetDisplayName(receiver, activator)} restores {recovery} shield HP to {PlayerName.GetDisplayName(receiver, target)}'s ship.");
                     CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Piloting);
                 });
         }

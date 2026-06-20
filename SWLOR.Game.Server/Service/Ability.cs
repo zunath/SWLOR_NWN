@@ -1882,13 +1882,16 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsObjectValid(activator) || !GetIsObjectValid(target) || ability == null)
                 return;
 
-            var combatLogMessage = Combat.BuildAbilityCombatLogMessage(
-                activator,
+            Messaging.SendMessageNearbyToPlayers(
                 target,
-                ability.Name,
-                attackResultType,
-                hitRate);
-            Messaging.SendMessageNearbyToPlayers(target, combatLogMessage, 60f);
+                receiver => Combat.BuildAbilityCombatLogMessage(
+                    receiver,
+                    activator,
+                    target,
+                    ability.Name,
+                    attackResultType,
+                    hitRate),
+                60f);
         }
 
         private static void SendCombatImpactNoTargetsMessage(
@@ -1898,10 +1901,13 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsObjectValid(activator) || ability == null)
                 return;
 
-            var combatLogMessage = Combat.BuildAbilityNoTargetCombatLogMessage(
+            Messaging.SendMessageNearbyToPlayers(
                 activator,
-                ability.Name);
-            Messaging.SendMessageNearbyToPlayers(activator, combatLogMessage, 60f);
+                receiver => Combat.BuildAbilityNoTargetCombatLogMessage(
+                    receiver,
+                    activator,
+                    ability.Name),
+                60f);
         }
 
         private static int ApplyDamagePercentAdjustment(

@@ -114,13 +114,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                                     template.AddCell(cell =>
                                     {
-                                        cell.AddLabel()
-                                            .BindText(model => model.ItemSellerNames)
-                                            .BindTooltip(model => model.ItemSellerNames);
-                                    });
-
-                                    template.AddCell(cell =>
-                                    {
                                         cell.SetWidth(40f);
                                         cell.SetIsVariable(false);
                                         cell.AddButton()

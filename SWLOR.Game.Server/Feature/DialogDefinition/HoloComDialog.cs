@@ -29,7 +29,8 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             if (HoloCom.IsInCall(player))
             {
                 var activeCallTarget = HoloCom.GetTargetForActiveCall(player);
-                page.AddResponse($"End current call with {GetName(activeCallTarget)}", () =>
+                var activeCallTargetName = PlayerName.GetDisplayName(player, activeCallTarget);
+                page.AddResponse($"End current call with {activeCallTargetName}", () =>
                 {
                     HoloCom.SetIsInCall(player, activeCallTarget, false);
                     EndConversation();
@@ -39,7 +40,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             if (HoloCom.IsCallReceiver(player) && !HoloCom.IsInCall(player))
             {
                 var callSender = HoloCom.GetCallSender(player);
-                var callerName = GetName(callSender);
+                var callerName = PlayerName.GetDisplayName(player, callSender);
                 page.AddResponse($"Answer incoming call from {callerName}", () =>
                 {
                     HoloCom.SetIsInCall(player, callSender, true);
@@ -63,7 +64,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 var callReceiver = HoloCom.GetCallReceiver(player);
                 if (GetIsObjectValid(callReceiver))
                 {
-                    var receiverName = GetName(callReceiver);
+                    var receiverName = PlayerName.GetDisplayName(player, callReceiver);
                     page.AddResponse($"Cancel outgoing call to {receiverName}", () =>
                     {
                         // Notify the receiver that the call attempt has ended
@@ -98,7 +99,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 if (GetIsDM(pc) || pc == player || GetIsDMPossessed(pc) || Space.IsPlayerInSpaceMode(pc))
                     continue;
 
-                var message = $"Call {GetName(pc)}";
+                var message = $"Call {PlayerName.GetDisplayName(player, pc)}";
                 if (HoloCom.IsInCall(pc))
                 {
                     message += ColorToken.Red(" (LINE BUSY)");
@@ -137,7 +138,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
             if (!HoloCom.IsCallSender(sender)) return;
 
-            var receiverName = GetName(receiver);
+            var receiverName = PlayerName.GetDisplayName(sender, receiver);
             SendMessageToPC(sender, "You wait for " + receiverName + " to answer their HoloCom.");
 
             HoloCom.SetIsCallSender(sender);

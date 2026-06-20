@@ -112,6 +112,8 @@ namespace SWLOR.Game.Server.Service
                 var senderLocation = GetLocation(sender);
                 var holoSender = CopyObject(sender, BiowareVector.MoveLocation(receiverLocation, GetFacing(receiver), 2.0f, 180));
                 var holoReceiver = CopyObject(receiver, BiowareVector.MoveLocation(senderLocation, GetFacing(sender), 2.0f, 180));
+                SetName(holoSender, "HoloCom Hologram");
+                SetName(holoReceiver, "HoloCom Hologram");
 
                 ApplyEffectToObject(DurationType.Instant, EffectHeal(GetMaxHitPoints(holoSender)), holoSender);
                 ApplyEffectToObject(DurationType.Instant, EffectHeal(GetMaxHitPoints(holoReceiver)), holoReceiver);

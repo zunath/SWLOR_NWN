@@ -83,7 +83,9 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     }
 
                     Enmity.ModifyEnmityOnAll(activator, 100 + repairAmount);
-                    Messaging.SendMessageNearbyToPlayers(activator, $"{GetName(activator)} begins restoring {recovery} armor HP to nearby ships.");
+                    Messaging.SendMessageNearbyToPlayers(
+                        activator,
+                        receiver => $"{PlayerName.GetDisplayName(receiver, activator)} begins restoring {recovery} armor HP to nearby ships.");
                     CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Piloting);
                 });
         }

@@ -76,13 +76,11 @@ namespace SWLOR.Game.Server.Service
             if (string.IsNullOrWhiteSpace(url))
                 return;
 
-            var mayorName = GetPlayerName(city.OwnerPlayerId);
             var level = city.Upgrades.ContainsKey(PropertyUpgradeType.CityLevel)
                 ? city.Upgrades[PropertyUpgradeType.CityLevel]
                 : 1;
             var description =
                 $"**City**: {SanitizeDiscordText(city.CustomName)}\n" +
-                $"**Mayor**: {SanitizeDiscordText(mayorName)}\n" +
                 $"**City Level**: {GetCityLevelName(level)} (Lvl. {level})\n\n" +
                 SanitizeDiscordText(details);
 
@@ -107,17 +105,6 @@ namespace SWLOR.Game.Server.Service
             {
                 Log.Write(LogGroup.Error, $"Failed to queue property broadcast '{title}' for city '{city.CustomName}' ({city.Id}): {ex}");
             }
-        }
-
-        private static string GetPlayerName(string playerId)
-        {
-            if (string.IsNullOrWhiteSpace(playerId))
-                return "Unknown";
-
-            var dbPlayer = DB.Get<Player>(playerId);
-            return string.IsNullOrWhiteSpace(dbPlayer?.Name)
-                ? "Unknown"
-                : dbPlayer.Name;
         }
 
         private static string FormatUtcDate(DateTime date)
@@ -751,7 +738,6 @@ namespace SWLOR.Game.Server.Service
                             city,
                             "New Mayor Elected",
                             $"The mayoral election has concluded and a new mayor has been elected.\n" +
-                            $"**New Mayor**: {SanitizeDiscordText(GetPlayerName(winnerPlayerId))}\n" +
                             $"**Candidates**: {election.CandidatePlayerIds.Count:N0}\n" +
                             $"**Total Votes Cast**: {orderedVotes.Sum(x => x.Value):N0}");
                     }
@@ -824,7 +810,6 @@ namespace SWLOR.Game.Server.Service
                                 city,
                                 "New Mayor Elected",
                                 $"The mayoral election has concluded. A single candidate ran unopposed and has become mayor.\n" +
-                                $"**New Mayor**: {SanitizeDiscordText(GetPlayerName(winnerPlayerId))}\n" +
                                 $"**Next Election Opens**: {FormatUtcDate(city.Dates[PropertyDateType.ElectionStart].AddDays(ElectionRegistrationDays).AddDays(21))}");
                         }
 
@@ -1429,7 +1414,7 @@ namespace SWLOR.Game.Server.Service
         public static WorldProperty CreateApartment(uint player, PropertyLayoutType layout)
         {
             var playerId = GetObjectUUID(player);
-            var propertyName = $"{GetName(player)}'s Apartment";
+            var propertyName = "Apartment";
             return CreateProperty(player, playerId, propertyName, PropertyType.Apartment, layout, OBJECT_INVALID, property =>
             {
                 property.Dates[PropertyDateType.Lease] = DateTime.UtcNow.AddDays(7);
@@ -1475,7 +1460,7 @@ namespace SWLOR.Game.Server.Service
             var npcLandingResref = GetResRef(npcLandingArea);
 
             var playerId = GetObjectUUID(player);
-            var propertyName = $"{GetName(player)}'s Starship";
+            var propertyName = "Starship";
 
             return CreateProperty(player, playerId, propertyName, PropertyType.Starship, layout, OBJECT_INVALID, property =>
             {
@@ -1522,7 +1507,7 @@ namespace SWLOR.Game.Server.Service
         {
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
-            var propertyName = $"{GetName(player)}'s City";
+            var propertyName = "Player City";
             var now = DateTime.UtcNow;
             var city = CreateProperty(player, playerId, propertyName, PropertyType.City, PropertyLayoutType.City, area, property =>
             {
@@ -1568,7 +1553,6 @@ namespace SWLOR.Game.Server.Service
                 city,
                 "New Player City Founded",
                 $"A new player city has been founded.\n" +
-                $"**Founding Mayor**: {SanitizeDiscordText(dbPlayer.Name)}\n" +
                 $"**First Upkeep Check**: {FormatUtcDate(city.Dates[PropertyDateType.Upkeep])}\n" +
                 $"**First Election Opens**: {FormatUtcDate(city.Dates[PropertyDateType.ElectionStart])}\n" +
                 $"**Citizen Requirement Grace Ends**: {FormatUtcDate(city.Dates[PropertyDateType.BelowRequiredCitizens])}");
@@ -1595,7 +1579,7 @@ namespace SWLOR.Game.Server.Service
             Location location)
         {
             var layoutDetail = GetLayoutByType(layout);
-            var propertyName = $"{GetName(player)}'s {layoutDetail.Name}";
+            var propertyName = layoutDetail.Name;
             var city = DB.Get<WorldProperty>(parentCityId);
 
             // Hierarchy goes:

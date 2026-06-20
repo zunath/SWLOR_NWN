@@ -92,5 +92,19 @@ namespace SWLOR.Game.Server.Service
 
             _loggers[group].Information(details);
         }
+
+        public static void WriteStructured(LogGroup group, string messageTemplate, params object[] propertyValues)
+        {
+            var settings = ApplicationSettings.Get();
+            var logDetail = _logGroups[group];
+
+            if (logDetail.Environment != ServerEnvironmentType.All &&
+                !logDetail.Environment.HasFlag(settings.ServerEnvironment))
+            {
+                return;
+            }
+
+            _loggers[group].Information(messageTemplate, propertyValues);
+        }
     }
 }

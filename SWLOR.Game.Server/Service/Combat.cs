@@ -2015,20 +2015,25 @@ namespace SWLOR.Game.Server.Service
 
         private static void SendGuardedHitFeedback(uint defender, uint attacker, int preventedDamage)
         {
-            var defenderName = GetIsPC(defender) ? ColorToken.GetNamePCColor(defender) : ColorToken.GetNameNPCColor(defender);
-            var attackerName = GetIsPC(attacker) ? ColorToken.GetNamePCColor(attacker) : ColorToken.GetNameNPCColor(attacker);
-            var feedback = ColorToken.Combat($"{defenderName} guards against {attackerName}'s attack, preventing {preventedDamage} damage.");
-
             if (GetIsPC(defender))
             {
+                var feedback = BuildGuardedHitFeedback(defender, defender, attacker, preventedDamage);
                 SendMessageToPC(defender, feedback);
                 FloatingTextStringOnCreature(ColorToken.Combat($"Guard (-{preventedDamage})"), defender, false);
             }
 
             if (GetIsPC(attacker))
             {
+                var feedback = BuildGuardedHitFeedback(attacker, defender, attacker, preventedDamage);
                 SendMessageToPC(attacker, feedback);
             }
+        }
+
+        private static string BuildGuardedHitFeedback(uint observer, uint defender, uint attacker, int preventedDamage)
+        {
+            var defenderName = PlayerName.GetColoredDisplayName(observer, defender);
+            var attackerName = PlayerName.GetColoredDisplayName(observer, attacker);
+            return ColorToken.Combat($"{defenderName} guards against {attackerName}'s attack, preventing {preventedDamage} damage.");
         }
 
         public static void SendIncomingCriticalHitDowngradeFeedback(uint attacker, uint defender)
@@ -2036,10 +2041,9 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsObjectValid(defender))
                 return;
 
-            var feedback = BuildIncomingCriticalHitDowngradeCombatLogMessage(attacker, defender);
-
             if (GetIsPC(defender))
             {
+                var feedback = BuildIncomingCriticalHitDowngradeCombatLogMessage(defender, attacker, defender);
                 SendMessageToPC(defender, feedback);
                 FloatingTextStringOnCreature(ColorToken.Combat("Critical Ward"), defender, false);
             }
@@ -2048,18 +2052,19 @@ namespace SWLOR.Game.Server.Service
                 attacker != defender &&
                 GetIsPC(attacker))
             {
+                var feedback = BuildIncomingCriticalHitDowngradeCombatLogMessage(attacker, attacker, defender);
                 SendMessageToPC(attacker, feedback);
             }
         }
 
-        private static string BuildIncomingCriticalHitDowngradeCombatLogMessage(uint attacker, uint defender)
+        private static string BuildIncomingCriticalHitDowngradeCombatLogMessage(uint observer, uint attacker, uint defender)
         {
-            var defenderName = GetIsPC(defender) ? ColorToken.GetNamePCColor(defender) : ColorToken.GetNameNPCColor(defender);
+            var defenderName = PlayerName.GetColoredDisplayName(observer, defender);
 
             if (!GetIsObjectValid(attacker) || attacker == defender)
                 return ColorToken.Combat($"{defenderName}'s Critical Ward negates the critical hit.");
 
-            var attackerName = GetIsPC(attacker) ? ColorToken.GetNamePCColor(attacker) : ColorToken.GetNameNPCColor(attacker);
+            var attackerName = PlayerName.GetColoredDisplayName(observer, attacker);
             return ColorToken.Combat($"{defenderName}'s Critical Ward negates {attackerName}'s critical hit.");
         }
 
@@ -5338,6 +5343,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="chanceToHit">The percent chance to hit</param>
         /// <returns></returns>
         public static string BuildCombatLogMessage(
+            uint observer,
             uint attacker,
             uint defender,
             int attackResultType,
@@ -5359,13 +5365,14 @@ namespace SWLOR.Game.Server.Service
                     break;
             }
 
-            var attackerName = GetIsPC(attacker) ? ColorToken.GetNamePCColor(attacker) : ColorToken.GetNameNPCColor(attacker);
-            var defenderName = GetIsPC(defender) ? ColorToken.GetNamePCColor(defender) : ColorToken.GetNameNPCColor(defender);
+            var attackerName = PlayerName.GetColoredDisplayName(observer, attacker);
+            var defenderName = PlayerName.GetColoredDisplayName(observer, defender);
 
             return ColorToken.Combat($"{attackerName} attacks {defenderName}{type} : ({chanceToHit}% chance to hit)");
         }
 
         public static string BuildAbilityCombatLogMessage(
+            uint observer,
             uint attacker,
             uint defender,
             string abilityName,
@@ -5391,20 +5398,21 @@ namespace SWLOR.Game.Server.Service
             if (string.IsNullOrWhiteSpace(abilityName))
                 abilityName = "an ability";
 
-            var attackerName = GetIsPC(attacker) ? ColorToken.GetNamePCColor(attacker) : ColorToken.GetNameNPCColor(attacker);
-            var defenderName = GetIsPC(defender) ? ColorToken.GetNamePCColor(defender) : ColorToken.GetNameNPCColor(defender);
+            var attackerName = PlayerName.GetColoredDisplayName(observer, attacker);
+            var defenderName = PlayerName.GetColoredDisplayName(observer, defender);
 
             return ColorToken.Combat($"{attackerName} uses {abilityName} on {defenderName}{type} : ({chanceToHit}% chance to hit)");
         }
 
         public static string BuildAbilityNoTargetCombatLogMessage(
+            uint observer,
             uint attacker,
             string abilityName)
         {
             if (string.IsNullOrWhiteSpace(abilityName))
                 abilityName = "an ability";
 
-            var attackerName = GetIsPC(attacker) ? ColorToken.GetNamePCColor(attacker) : ColorToken.GetNameNPCColor(attacker);
+            var attackerName = PlayerName.GetColoredDisplayName(observer, attacker);
 
             return ColorToken.Combat($"{attackerName} uses {abilityName}, but it hits no targets.");
         }
@@ -5418,8 +5426,10 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            var feedback = BuildTemporaryHitPointDamageCombatLogMessage(attacker, defender, damage);
-            Messaging.SendMessageNearbyToPlayers(defender, feedback, 60f);
+            Messaging.SendMessageNearbyToPlayers(
+                defender,
+                receiver => BuildTemporaryHitPointDamageCombatLogMessage(receiver, attacker, defender, damage),
+                60f);
         }
 
         private static bool HasTemporaryHitPoints(uint creature)
@@ -5433,14 +5443,14 @@ namespace SWLOR.Game.Server.Service
             return false;
         }
 
-        private static string BuildTemporaryHitPointDamageCombatLogMessage(uint attacker, uint defender, int damage)
+        private static string BuildTemporaryHitPointDamageCombatLogMessage(uint observer, uint attacker, uint defender, int damage)
         {
-            var defenderName = GetIsPC(defender) ? ColorToken.GetNamePCColor(defender) : ColorToken.GetNameNPCColor(defender);
+            var defenderName = PlayerName.GetColoredDisplayName(observer, defender);
 
             if (!GetIsObjectValid(attacker) || attacker == defender)
                 return ColorToken.Combat($"{defenderName}'s temporary HP absorbs {damage} damage.");
 
-            var attackerName = GetIsPC(attacker) ? ColorToken.GetNamePCColor(attacker) : ColorToken.GetNameNPCColor(attacker);
+            var attackerName = PlayerName.GetColoredDisplayName(observer, attacker);
             return ColorToken.Combat($"{attackerName} deals {damage} damage against {defenderName}'s temporary HP.");
         }
 
@@ -5453,6 +5463,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="chanceToHit">The percent chance to hit</param>
         /// <returns></returns>
         public static string BuildCombatLogMessageNative(
+            uint observer,
             CNWSCreature attacker,
             CNWSCreature defender,
             int attackResultType,
@@ -5477,8 +5488,8 @@ namespace SWLOR.Game.Server.Service
                     break;
             }
 
-            var attackerName = ColorToken.GetNameColorNative(attacker);
-            var defenderName = ColorToken.GetNameColorNative(defender);
+            var attackerName = PlayerName.GetColoredDisplayName(observer, attacker.m_idSelf);
+            var defenderName = PlayerName.GetColoredDisplayName(observer, defender.m_idSelf);
 
             return ColorToken.Combat($"{attackerName} attacks {defenderName}{type} : ({chanceToHit}% chance to hit)");
         }
@@ -5721,8 +5732,9 @@ namespace SWLOR.Game.Server.Service
                 if (GetEffectType(effect) != EffectTypeScript.Paralyze)
                     continue;
 
-                var creatureName = GetName(attacker);
-                Messaging.SendMessageNearbyToPlayers(attacker, $"{creatureName} is paralyzed and cannot act!");
+                Messaging.SendMessageNearbyToPlayers(
+                    attacker,
+                    receiver => $"{PlayerName.GetDisplayName(receiver, attacker)} is paralyzed and cannot act!");
                 return true;
             }
 

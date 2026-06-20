@@ -108,7 +108,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             foreach (var candidate in candidates)
             {
                 _candidatePlayerIds.Add(candidate.Id);
-                candidateNames.Add(candidate.Name);
+                candidateNames.Add(PlayerName.GetDisplayNameByPlayerId(Player, candidate.Id, candidate.Name));
                 if (selectedCandidateId == candidate.Id)
                 {
                     candidateToggles.Add(true);
@@ -239,7 +239,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         VoterPlayerId = playerId
                     };
 
-                    SendMessageToPC(Player, $"Your vote for {dbCandidate.Name} has been cast.");
+                    var candidateName = PlayerName.GetDisplayNameByPlayerId(Player, selectedCandidateId, dbCandidate.Name);
+                    SendMessageToPC(Player, $"Your vote for {candidateName} has been cast.");
                     Gui.TogglePlayerWindow(Player, GuiWindowType.Election);
                 }
 

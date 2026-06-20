@@ -773,6 +773,7 @@ namespace SWLOR.Game.Server.Service
             var chair = GetNearestObjectByTag("pilot_chair", player);
             var location = GetLocation(player);
             var copy = CopyObject(player, location, OBJECT_INVALID, "spaceship_copy");
+            SetName(copy, "Pilot");
             ChangeToStandardFaction(copy, StandardFaction.Defender);
             TakeGoldFromCreature(GetGold(copy), copy, true);
 
@@ -1657,7 +1658,9 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Notify nearby players of damage taken by target.
-            Messaging.SendMessageNearbyToPlayers(attacker, $"{GetName(attacker)} deals {amount} damage to {GetName(target)}.");
+            Messaging.SendMessageNearbyToPlayers(
+                attacker,
+                receiver => $"{PlayerName.GetDisplayName(receiver, attacker)} deals {amount} damage to {PlayerName.GetDisplayName(receiver, target)}.");
 
             if(GetIsPC(attacker))
                 ExecuteScript("pc_target_upd", attacker);
@@ -1724,7 +1727,9 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Notify nearby players of damage taken by target.
-            Messaging.SendMessageNearbyToPlayers(attacker, $"{GetName(attacker)} deals {amount} damage directly to hull of {GetName(target)}.");
+            Messaging.SendMessageNearbyToPlayers(
+                attacker,
+                receiver => $"{PlayerName.GetDisplayName(receiver, attacker)} deals {amount} damage directly to hull of {PlayerName.GetDisplayName(receiver, target)}.");
 
             if (GetIsPC(attacker))
                 ExecuteScript("pc_target_upd", attacker);

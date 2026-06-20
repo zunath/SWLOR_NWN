@@ -600,7 +600,7 @@ namespace SWLOR.Game.Server.Service
             var skin = GetItemInSlot(InventorySlot.CreatureArmor, droid);
 
             SetName(droid, string.IsNullOrWhiteSpace(details.CustomName)
-                ? $"{GetName(player)}'s Droid"
+                ? "Droid"
                 : details.CustomName);
 
             // Raw stats

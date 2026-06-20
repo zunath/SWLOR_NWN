@@ -693,7 +693,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 maxSTM = 0;
 
             STM = $"{currentSTM} / {maxSTM}";
-            Name = GetName(_target);
+            Name = PlayerName.GetDisplayName(Player, _target);
             Might = GetAbilityScore(_target, AbilityType.Might);
             Perception = GetAbilityScore(_target, AbilityType.Perception);
             Vitality = GetAbilityScore(_target, AbilityType.Vitality);

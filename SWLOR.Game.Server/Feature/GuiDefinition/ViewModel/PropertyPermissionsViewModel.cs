@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.PropertyService;
+using PlayerNameService = SWLOR.Game.Server.Service.PlayerName;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -181,7 +182,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var permissionEnabled = new GuiBindingList<bool>();
             var grantPermissionEnabled = new GuiBindingList<bool>();
 
-            PlayerName = dbPlayer.Name;
+            PlayerName = PlayerNameService.GetDisplayNameByPlayerId(Player, targetPlayerId, dbPlayer.Name);
 
             string ownerPlayerId;
             if (_isCategory)
@@ -303,24 +304,32 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             // Otherwise look for players by their names.
             else
             {
-                var query = new DBQuery<Player>()
-                    .AddFieldSearch(nameof(Entity.Player.Name), SearchText, true)
-                    .AddFieldSearch(nameof(Entity.Player.IsDeleted), false)
-                    .AddPaging(25, 0);
-
-                // Searches within City properties require that the players be a citizen.
-                if (!string.IsNullOrWhiteSpace(_cityId))
+                var knownPlayerIds = PlayerNameService.SearchKnownPlayerIdsByName(Player, SearchText, int.MaxValue);
+                if (knownPlayerIds.Count <= 0)
                 {
-                    query.AddFieldSearch(nameof(Entity.Player.CitizenPropertyId), _cityId, false);
+                    dbPlayers = Enumerable.Empty<Player>();
                 }
+                else
+                {
+                    var query = new DBQuery<Player>()
+                        .AddFieldSearch(nameof(Entity.Player.Id), knownPlayerIds)
+                        .AddFieldSearch(nameof(Entity.Player.IsDeleted), false)
+                        .AddPaging(25, 0);
 
-                dbPlayers = DB.Search(query);
+                    // Searches within City properties require that the players be a citizen.
+                    if (!string.IsNullOrWhiteSpace(_cityId))
+                    {
+                        query.AddFieldSearch(nameof(Entity.Player.CitizenPropertyId), _cityId, false);
+                    }
+
+                    dbPlayers = DB.Search(query);
+                }
             }
 
             foreach (var player in dbPlayers)
             {
                 _playerIds.Add(player.Id);
-                playerNames.Add(player.Name);
+                playerNames.Add(PlayerNameService.GetDisplayNameByPlayerId(Player, player.Id, player.Name));
                 playerToggles.Add(false);
             }
 

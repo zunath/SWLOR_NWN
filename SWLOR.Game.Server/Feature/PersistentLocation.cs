@@ -1,6 +1,7 @@
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.LogService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature
@@ -108,7 +109,14 @@ namespace SWLOR.Game.Server.Feature
 
             var locationArea = Area.GetAreaByResref(dbPlayer.LocationAreaResref);
             if (!GetIsObjectValid(locationArea))
+            {
+                Log.WriteStructured(
+                    LogGroup.Server,
+                    "Persistent location area resolution failed: PlayerId={PlayerId} AreaResref={AreaResref}",
+                    playerId,
+                    dbPlayer.LocationAreaResref);
                 return;
+            }
 
             var position = Vector3(dbPlayer.LocationX, dbPlayer.LocationY, dbPlayer.LocationZ);
 

@@ -41,6 +41,8 @@ public class PropertyOnDemandLoadingTests
 
         loadBody.Should().Contain("var locationArea = Area.GetAreaByResref(dbPlayer.LocationAreaResref);");
         loadBody.Should().Contain("if (!GetIsObjectValid(locationArea))");
+        loadBody.Should().Contain("Log.WriteStructured(");
+        loadBody.Should().Contain("Persistent location area resolution failed");
         loadBody.Should().Contain("return;");
     }
 
@@ -64,6 +66,11 @@ public class PropertyOnDemandLoadingTests
         enterBuildingBody.IndexOf("if (interiorIds.Count != 1)", StringComparison.Ordinal)
             .Should()
             .BeLessThan(enterBuildingBody.IndexOf("var interiorId = interiorIds.Single();", StringComparison.Ordinal));
+        resolveBody.Should().Contain("var detail = _propertyTypes[property.PropertyType];");
+        resolveBody.Should().Contain("if (detail.SpawnType != PropertySpawnType.Instance)");
+        resolveBody.IndexOf("if (detail.SpawnType != PropertySpawnType.Instance)", StringComparison.Ordinal)
+            .Should()
+            .BeLessThan(resolveBody.IndexOf("AddPropertyLoadWaiter(player, propertyId);", StringComparison.Ordinal));
         resolveBody.Should().Contain("QueuePropertyLoad(propertyId, PropertyLoadPriority.PlayerRequest)");
         resolveBody.Should().Contain("SendPropertyLoadingMessage(player)");
         source.Should().Contain("This property is still loading. Please try again shortly.");
@@ -93,12 +100,15 @@ public class PropertyOnDemandLoadingTests
             "Property.cs")).Replace("\r\n", "\n");
         var stateBody = ExtractMethod(source, "public static PropertyLoadState GetPropertyLoadState(string propertyId)");
 
-        stateBody.Should().Contain("state == PropertyLoadState.Loaded");
+        stateBody.Should().Contain("if (state != PropertyLoadState.Loaded)");
+        stateBody.IndexOf("if (state != PropertyLoadState.Loaded)", StringComparison.Ordinal)
+            .Should()
+            .BeLessThan(stateBody.IndexOf("var dbProperty = DB.Get<WorldProperty>(propertyId);", StringComparison.Ordinal));
         stateBody.Should().Contain("if (dbProperty == null)");
         stateBody.Should().Contain("SetPropertyLoadState(propertyId, PropertyLoadState.Failed);");
         stateBody.Should().Contain("_propertyLoadFailures[propertyId] = \"Property does not exist in the database.\";");
         stateBody.Should().Contain("return PropertyLoadState.Failed;");
-        stateBody.Should().Contain("!GetIsObjectValid(registeredInstance.Area)");
+        stateBody.Should().Contain("GetIsObjectValid(registeredInstance.Area)");
         stateBody.Should().Contain("return PropertyLoadState.Unloaded;");
         stateBody.Should().Contain("_propertyInstances.TryGetValue(propertyId, out var existingInstance)");
         stateBody.Should().Contain("GetIsObjectValid(existingInstance.Area)");
@@ -196,13 +206,38 @@ public class PropertyOnDemandLoadingTests
             "ViewModel",
             "PropertyDiagnosticsViewModel.cs")).Replace("\r\n", "\n");
 
-        source.Should().Contain("private bool IsAdminAuthorized()");
+        source.Should().Contain("private bool IsAdminAuthorized(string action)");
         source.Should().Contain("Authorization.GetAuthorizationLevel(Player) == AuthorizationLevel.Admin");
+        source.Should().Contain("Property diagnostics authorization denied");
+        source.Should().Contain("Property diagnostics admin action");
 
         AssertActionStartsWithAdminCheck(source, "public Action OnRefresh() => () =>", "LoadDiagnostics(\"Refreshed property diagnostics.\");");
         AssertActionStartsWithAdminCheck(source, "public Action OnRetryLoad() => () =>", "Property.RetryPropertyLoad(diagnostic.PropertyId);");
         AssertActionStartsWithAdminCheck(source, "public Action OnAbortQueue() => () =>", "Property.AbortQueuedPropertyLoad(diagnostic.PropertyId);");
         AssertActionStartsWithAdminCheck(source, "public Action OnNotifyWaiters() => () =>", "Property.NotifyPropertyLoadWaitersForStaff(diagnostic.PropertyId);");
+    }
+
+    [Test]
+    public void PropertyDiagnostics_SelectPropertyBoundsChecksNuiIndex()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "GuiDefinition",
+            "ViewModel",
+            "PropertyDiagnosticsViewModel.cs")).Replace("\r\n", "\n");
+        var selectBody = ExtractMethod(source, "public Action OnSelectProperty() => () =>");
+
+        selectBody.Should().Contain("var index = NuiGetEventArrayIndex();");
+        selectBody.Should().Contain("if (index < 0 || index >= PropertySelections.Count)");
+        selectBody.IndexOf("if (index < 0 || index >= PropertySelections.Count)", StringComparison.Ordinal)
+            .Should()
+            .BeLessThan(selectBody.IndexOf("PropertySelections[_selectedPropertyIndex] = false;", StringComparison.Ordinal));
+        selectBody.IndexOf("if (index < 0 || index >= PropertySelections.Count)", StringComparison.Ordinal)
+            .Should()
+            .BeLessThan(selectBody.IndexOf("_selectedPropertyIndex = index;", StringComparison.Ordinal));
     }
 
     [Test]
@@ -385,8 +420,12 @@ public class PropertyOnDemandLoadingTests
 
         pageBody.Should().Contain("Property.GetPropertyLoadState(dockPoint.PropertyId)");
         pageBody.Should().Contain("starportLoadState != PropertyLoadState.Loaded");
+        pageBody.Should().Contain("Player starport docking denied");
+        pageBody.Should().Contain("load-state");
         pageBody.Should().Contain("Property.TryGetLoadedInstance(dockPoint.PropertyId, out var starportInstance)");
+        pageBody.Should().Contain("instance-unavailable");
         pageBody.Should().Contain("!GetLocalBool(starportInstance.Area, \"BUILDING_EXIT_SET\")");
+        pageBody.Should().Contain("building-exit-not-ready");
         pageBody.Should().Contain("This starport is still loading. Please try again shortly.");
     }
 
@@ -502,9 +541,9 @@ public class PropertyOnDemandLoadingTests
     {
         var body = ExtractMethod(source, signature);
 
-        body.Should().Contain("if (!IsAdminAuthorized())");
+        body.Should().Contain("if (!IsAdminAuthorized(");
         body.Should().Contain("return;");
-        body.IndexOf("if (!IsAdminAuthorized())", StringComparison.Ordinal)
+        body.IndexOf("if (!IsAdminAuthorized(", StringComparison.Ordinal)
             .Should()
             .BeLessThan(body.IndexOf(protectedOperation, StringComparison.Ordinal));
     }

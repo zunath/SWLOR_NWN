@@ -466,6 +466,13 @@ namespace SWLOR.Game.Server.Service
 
             if (_propertyLoadStates.TryGetValue(propertyId, out var state))
             {
+                if (state != PropertyLoadState.Loaded)
+                    return state;
+
+                if (_propertyInstances.TryGetValue(propertyId, out var registeredInstance) &&
+                    GetIsObjectValid(registeredInstance.Area))
+                    return state;
+
                 var dbProperty = DB.Get<WorldProperty>(propertyId);
                 if (dbProperty == null)
                 {
@@ -476,16 +483,11 @@ namespace SWLOR.Game.Server.Service
                     return PropertyLoadState.Failed;
                 }
 
-                if (state == PropertyLoadState.Loaded)
+                if (_propertyTypes[dbProperty.PropertyType].SpawnType == PropertySpawnType.Instance)
                 {
-                    if (_propertyTypes[dbProperty.PropertyType].SpawnType == PropertySpawnType.Instance &&
-                        (!_propertyInstances.TryGetValue(propertyId, out var registeredInstance) ||
-                         !GetIsObjectValid(registeredInstance.Area)))
-                    {
-                        _propertyInstances.Remove(propertyId);
-                        _completedInstanceSpawnActions.Remove(propertyId);
-                        return PropertyLoadState.Unloaded;
-                    }
+                    _propertyInstances.Remove(propertyId);
+                    _completedInstanceSpawnActions.Remove(propertyId);
+                    return PropertyLoadState.Unloaded;
                 }
 
                 return state;
@@ -777,6 +779,13 @@ namespace SWLOR.Game.Server.Service
 
             var property = DB.Get<WorldProperty>(propertyId);
             if (property == null)
+            {
+                SendPropertyLoadFailedMessage(player);
+                return false;
+            }
+
+            var detail = _propertyTypes[property.PropertyType];
+            if (detail.SpawnType != PropertySpawnType.Instance)
             {
                 SendPropertyLoadFailedMessage(player);
                 return false;

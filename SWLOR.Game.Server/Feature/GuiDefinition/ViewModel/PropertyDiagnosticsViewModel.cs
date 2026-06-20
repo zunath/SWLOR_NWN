@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
+using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PropertyService;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
@@ -54,10 +55,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _selectedPropertyIndex = -1;
             IsPropertySelected = false;
 
-            if (Authorization.GetAuthorizationLevel(Player) != AuthorizationLevel.Admin)
+            if (!IsAdminAuthorized("initialize"))
             {
-                StatusText = "Admin authorization required.";
-                StatusColor = GuiColor.Red;
                 PropertyRows = new GuiBindingList<string>();
                 PropertyTooltips = new GuiBindingList<string>();
                 PropertySelections = new GuiBindingList<bool>();
@@ -136,22 +135,46 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 : _diagnostics[_selectedPropertyIndex];
         }
 
-        private bool IsAdminAuthorized()
+        private bool IsAdminAuthorized(string action)
         {
             if (Authorization.GetAuthorizationLevel(Player) == AuthorizationLevel.Admin)
                 return true;
+
+            Log.WriteStructured(
+                LogGroup.Property,
+                "Property diagnostics authorization denied: Action={Action} PlayerId={PlayerId}",
+                action,
+                GetObjectUUID(Player));
 
             StatusText = "Admin authorization required.";
             StatusColor = GuiColor.Red;
             return false;
         }
 
+        private void LogAdminAction(string action, string propertyId = "", string result = "")
+        {
+            Log.WriteStructured(
+                LogGroup.Property,
+                "Property diagnostics admin action: Action={Action} PlayerId={PlayerId} PropertyId={PropertyId} Result={Result}",
+                action,
+                GetObjectUUID(Player),
+                propertyId,
+                result);
+        }
+
         public Action OnSelectProperty() => () =>
         {
-            if (_selectedPropertyIndex > -1)
-                PropertySelections[_selectedPropertyIndex] = false;
+            var index = NuiGetEventArrayIndex();
+            if (index < 0 || index >= PropertySelections.Count)
+                return;
 
-            _selectedPropertyIndex = NuiGetEventArrayIndex();
+            if (_selectedPropertyIndex > -1 &&
+                _selectedPropertyIndex < PropertySelections.Count)
+            {
+                PropertySelections[_selectedPropertyIndex] = false;
+            }
+
+            _selectedPropertyIndex = index;
             PropertySelections[_selectedPropertyIndex] = true;
             IsPropertySelected = true;
 
@@ -164,15 +187,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnRefresh() => () =>
         {
-            if (!IsAdminAuthorized())
+            if (!IsAdminAuthorized("refresh"))
                 return;
 
             LoadDiagnostics("Refreshed property diagnostics.");
+            LogAdminAction("refresh", result: "success");
         };
 
         public Action OnRetryLoad() => () =>
         {
-            if (!IsAdminAuthorized())
+            if (!IsAdminAuthorized("retry-load"))
                 return;
 
             var diagnostic = GetSelectedDiagnostic();
@@ -180,6 +204,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
 
             var result = Property.RetryPropertyLoad(diagnostic.PropertyId);
+            LogAdminAction("retry-load", diagnostic.PropertyId, result ? "queued" : "rejected");
             LoadDiagnostics(result
                 ? "Load retry queued."
                 : "Unable to queue load retry.");
@@ -188,7 +213,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnAbortQueue() => () =>
         {
-            if (!IsAdminAuthorized())
+            if (!IsAdminAuthorized("abort-queue"))
                 return;
 
             var diagnostic = GetSelectedDiagnostic();
@@ -196,6 +221,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
 
             var result = Property.AbortQueuedPropertyLoad(diagnostic.PropertyId);
+            LogAdminAction("abort-queue", diagnostic.PropertyId, result ? "aborted" : "rejected");
             LoadDiagnostics(result
                 ? "Queued load aborted."
                 : "Unable to abort this property load.");
@@ -204,7 +230,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnNotifyWaiters() => () =>
         {
-            if (!IsAdminAuthorized())
+            if (!IsAdminAuthorized("notify-waiters"))
                 return;
 
             var diagnostic = GetSelectedDiagnostic();
@@ -212,6 +238,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
 
             Property.NotifyPropertyLoadWaitersForStaff(diagnostic.PropertyId);
+            LogAdminAction("notify-waiters", diagnostic.PropertyId, "sent");
             LoadDiagnostics("Waiters notified.");
         };
     }

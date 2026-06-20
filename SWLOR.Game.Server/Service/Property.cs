@@ -3180,7 +3180,14 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            var interiorId = building.ChildPropertyIds[PropertyChildType.Interior].Single();
+            var interiorIds = building.ChildPropertyIds[PropertyChildType.Interior];
+            if (interiorIds.Count != 1)
+            {
+                SendMessageToPC(player, "This building is not ready yet. Please try again shortly.");
+                return;
+            }
+
+            var interiorId = interiorIds.Single();
             var interior = DB.Get<WorldProperty>(interiorId);
             if (interior == null)
             {

@@ -170,6 +170,10 @@ namespace SWLOR.Game.Server.Service.PropertyService
                 if (string.IsNullOrWhiteSpace(interiorId))
                     return;
 
+                // The dock point needs to be unregistered from the space service so it no longer displays in the list
+                // of docking points.
+                Space.RemoveLandingPointByPropertyId(interiorId);
+
                 var dbInterior = DB.Get<WorldProperty>(interiorId);
                 if (dbInterior == null)
                     return;
@@ -189,10 +193,6 @@ namespace SWLOR.Game.Server.Service.PropertyService
                         Log.Write(LogGroup.Property, $"Starship '{dbStarship.CustomName}' ({dbStarship.Id}) has been relocated to the last NPC dock it visited because the starport '{dbInterior.CustomName}' ({dbInterior.Id}) has been retrieved.");
                     }
                 }
-
-                // The dock point needs to be unregistered from the space service so it no longer displays in the list
-                // of docking points.
-                Space.RemoveLandingPointByPropertyId(interiorId);
 
                 var dbCity = DB.Get<WorldProperty>(property.ParentPropertyId);
                 if (dbCity == null)

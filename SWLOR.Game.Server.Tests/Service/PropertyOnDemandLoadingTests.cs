@@ -1,5 +1,6 @@
 using FluentAssertions;
 using NUnit.Framework;
+using System.Text.RegularExpressions;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -22,6 +23,9 @@ public class PropertyOnDemandLoadingTests
         source.Should().Contain("[PropertyType(\"Bank\", true, PropertyPublicType.AlwaysPublic, PropertySpawnType.Instance, PropertyLoadType.Startup)]");
         source.Should().Contain("[PropertyType(\"Starport\", false, PropertyPublicType.AlwaysPublic, PropertySpawnType.Instance, PropertyLoadType.Startup)]");
         source.Should().Contain("[PropertyType(\"House\", true, PropertyPublicType.Adjustable, PropertySpawnType.Instance, PropertyLoadType.Startup)]");
+        Regex.Matches(source, @"PropertyLoadType\.OnDemand")
+            .Should()
+            .HaveCount(2);
     }
 
     [Test]
@@ -55,6 +59,11 @@ public class PropertyOnDemandLoadingTests
 
         enterPropertyBody.Should().Contain("TryResolveEnterableInstance(player, property.Id, out var instance)");
         enterBuildingBody.Should().Contain("TryResolveEnterableInstance(player, interior.Id, out var instance)");
+        enterBuildingBody.Should().Contain("var interiorIds = building.ChildPropertyIds[PropertyChildType.Interior];");
+        enterBuildingBody.Should().Contain("if (interiorIds.Count != 1)");
+        enterBuildingBody.IndexOf("if (interiorIds.Count != 1)", StringComparison.Ordinal)
+            .Should()
+            .BeLessThan(enterBuildingBody.IndexOf("var interiorId = interiorIds.Single();", StringComparison.Ordinal));
         resolveBody.Should().Contain("QueuePropertyLoad(propertyId, PropertyLoadPriority.PlayerRequest)");
         resolveBody.Should().Contain("SendPropertyLoadingMessage(player)");
         source.Should().Contain("This property is still loading. Please try again shortly.");
@@ -67,7 +76,7 @@ public class PropertyOnDemandLoadingTests
         var serverRoot = Path.Combine(root.FullName, "SWLOR.Game.Server");
         var offenders = Directory
             .GetFiles(serverRoot, "*.cs", SearchOption.AllDirectories)
-            .Where(path => File.ReadAllText(path).Contains("Property.GetRegisteredInstance(", StringComparison.Ordinal))
+            .Where(path => Regex.IsMatch(File.ReadAllText(path), @"\bGetRegisteredInstance\s*\("))
             .ToList();
 
         offenders.Should().BeEmpty();
@@ -173,6 +182,27 @@ public class PropertyOnDemandLoadingTests
         viewModelSource.Should().Contain("Children: {diagnostic.SpawnedChildCount} / {diagnostic.ExpectedChildCount}");
         viewModelSource.Should().Contain("Area Valid: {diagnostic.IsLoadedAreaValid}");
         viewModelSource.Should().Contain("Phase: {diagnostic.LastPhase}");
+    }
+
+    [Test]
+    public void PropertyDiagnostics_ActionsRequireAdminAuthorization()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "GuiDefinition",
+            "ViewModel",
+            "PropertyDiagnosticsViewModel.cs")).Replace("\r\n", "\n");
+
+        source.Should().Contain("private bool IsAdminAuthorized()");
+        source.Should().Contain("Authorization.GetAuthorizationLevel(Player) == AuthorizationLevel.Admin");
+
+        AssertActionStartsWithAdminCheck(source, "public Action OnRefresh() => () =>", "LoadDiagnostics(\"Refreshed property diagnostics.\");");
+        AssertActionStartsWithAdminCheck(source, "public Action OnRetryLoad() => () =>", "Property.RetryPropertyLoad(diagnostic.PropertyId);");
+        AssertActionStartsWithAdminCheck(source, "public Action OnAbortQueue() => () =>", "Property.AbortQueuedPropertyLoad(diagnostic.PropertyId);");
+        AssertActionStartsWithAdminCheck(source, "public Action OnNotifyWaiters() => () =>", "Property.NotifyPropertyLoadWaitersForStaff(diagnostic.PropertyId);");
     }
 
     [Test]
@@ -361,6 +391,31 @@ public class PropertyOnDemandLoadingTests
     }
 
     [Test]
+    public void ShipManagement_DoesNotLabelUnloadedDockInstanceAsInSpace()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "GuiDefinition",
+            "ViewModel",
+            "ShipManagementViewModel.cs")).Replace("\r\n", "\n");
+        var loadBody = ExtractMethod(source, "private void LoadShip()");
+        var locationBody = ExtractMethod(source, "private uint GetShipLocation(WorldProperty property, out bool isDockInstanceLoading)");
+
+        loadBody.Should().Contain("var currentLocation = GetShipLocation(property, out var isDockInstanceLoading);");
+        loadBody.Should().Contain("var isInSpace = property.Positions.ContainsKey(PropertyLocationType.CurrentPosition);");
+        loadBody.Should().Contain("ShipLocation = isInSpace");
+        loadBody.Should().Contain("\"Docked (loading...)\"");
+        loadBody.Should().NotContain("ShipLocation = currentLocation == OBJECT_INVALID ? \"In Space\" : GetName(currentLocation);");
+
+        locationBody.Should().Contain("isDockInstanceLoading = false;");
+        locationBody.Should().Contain("Property.TryGetLoadedInstance(landingLocation.InstancePropertyId, out var instance)");
+        locationBody.Should().Contain("isDockInstanceLoading = true;");
+    }
+
+    [Test]
     public void PlayerStarportDockpoints_AreRemovedByPropertyId()
     {
         var root = FindRepositoryRoot();
@@ -385,6 +440,9 @@ public class PropertyOnDemandLoadingTests
         removeBody.Should().Contain("x.Value.PropertyId == propertyId");
         retrieveBody.Should().Contain("if (dbInterior == null)");
         retrieveBody.Should().Contain("Space.RemoveLandingPointByPropertyId(interiorId);");
+        retrieveBody.IndexOf("Space.RemoveLandingPointByPropertyId(interiorId);", StringComparison.Ordinal)
+            .Should()
+            .BeLessThan(retrieveBody.IndexOf("if (dbInterior == null)", StringComparison.Ordinal));
         retrieveBody.Should().Contain("if (!Property.TryGetLoadedInstance(interiorId, out var instance))");
     }
 
@@ -438,6 +496,17 @@ public class PropertyOnDemandLoadingTests
         }
 
         throw new InvalidOperationException($"Could not extract method '{signature}'.");
+    }
+
+    private static void AssertActionStartsWithAdminCheck(string source, string signature, string protectedOperation)
+    {
+        var body = ExtractMethod(source, signature);
+
+        body.Should().Contain("if (!IsAdminAuthorized())");
+        body.Should().Contain("return;");
+        body.IndexOf("if (!IsAdminAuthorized())", StringComparison.Ordinal)
+            .Should()
+            .BeLessThan(body.IndexOf(protectedOperation, StringComparison.Ordinal));
     }
 
     private static DirectoryInfo FindRepositoryRoot()

@@ -820,8 +820,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), playerId, false)
                     .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), ship.PropertyId, false);
                 var permission = DB.Search(permissionQuery).Single();
-                var currentLocation = GetShipLocation(property);
+                var currentLocation = GetShipLocation(property, out var isDockInstanceLoading);
                 var isAtCurrentLocation = currentLocation == GetArea(Player);
+                var isInSpace = property.Positions.ContainsKey(PropertyLocationType.CurrentPosition);
                 var gold = GetGold(Player);
                 var repairPrice = CalculateRepairBill(ship);
 
@@ -1230,7 +1231,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 IsNameEnabled = permission.Permissions[PropertyPermissionType.RenameProperty] && isAtCurrentLocation;
                 IsRefitEnabled = permission.Permissions[PropertyPermissionType.RefitShip] && isAtCurrentLocation;
                 IsPermissionsEnabled = permission.GrantPermissions.Any(x => x.Value) && isAtCurrentLocation;
-                ShipLocation = currentLocation == OBJECT_INVALID ? "In Space" : GetName(currentLocation);
+                ShipLocation = isInSpace
+                    ? "In Space"
+                    : isDockInstanceLoading
+                        ? "Docked (loading...)"
+                        : GetName(currentLocation);
                 IsRepairEnabled = (ship.Status.Shield < ship.Status.MaxShield ||
                                   ship.Status.Hull < ship.Status.MaxHull) &&
                                   gold >= repairPrice &&
@@ -1241,29 +1246,35 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ToggleRegisterButtons();
         }
 
-        private uint GetShipLocation(WorldProperty property)
+        private uint GetShipLocation(WorldProperty property, out bool isDockInstanceLoading)
         {
+            isDockInstanceLoading = false;
+
             if (property.Positions.ContainsKey(PropertyLocationType.CurrentPosition))
             {
                 return OBJECT_INVALID;
             }
-            else
+
+            var landingLocation = property.Positions[PropertyLocationType.DockPosition];
+            uint area;
+            if (string.IsNullOrWhiteSpace(landingLocation.AreaResref))
             {
-                var landingLocation = property.Positions[PropertyLocationType.DockPosition];
-                uint area;
-                if (string.IsNullOrWhiteSpace(landingLocation.AreaResref))
+                if (Property.TryGetLoadedInstance(landingLocation.InstancePropertyId, out var instance))
                 {
-                    area = Property.TryGetLoadedInstance(landingLocation.InstancePropertyId, out var instance)
-                        ? instance.Area
-                        : OBJECT_INVALID;
+                    area = instance.Area;
                 }
                 else
                 {
-                    area = Area.GetAreaByResref(landingLocation.AreaResref);
+                    isDockInstanceLoading = true;
+                    area = OBJECT_INVALID;
                 }
-
-                return area;
             }
+            else
+            {
+                area = Area.GetAreaByResref(landingLocation.AreaResref);
+            }
+
+            return area;
         }
 
         private void ToggleRegisterButtons()
@@ -1276,7 +1287,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var shipId = _shipIds[SelectedShipIndex];
                 var dbShip = DB.Get<PlayerShip>(shipId);
                 var dbProperty = DB.Get<WorldProperty>(dbShip.PropertyId);
-                var shipLocation = GetShipLocation(dbProperty);
+                var shipLocation = GetShipLocation(dbProperty, out _);
                 IsUnregisterEnabled = shipLocation == GetArea(Player) && playerId == dbProperty.OwnerPlayerId;
             }
             else

@@ -136,6 +136,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 : _diagnostics[_selectedPropertyIndex];
         }
 
+        private bool IsAdminAuthorized()
+        {
+            if (Authorization.GetAuthorizationLevel(Player) == AuthorizationLevel.Admin)
+                return true;
+
+            StatusText = "Admin authorization required.";
+            StatusColor = GuiColor.Red;
+            return false;
+        }
+
         public Action OnSelectProperty() => () =>
         {
             if (_selectedPropertyIndex > -1)
@@ -154,11 +164,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnRefresh() => () =>
         {
+            if (!IsAdminAuthorized())
+                return;
+
             LoadDiagnostics("Refreshed property diagnostics.");
         };
 
         public Action OnRetryLoad() => () =>
         {
+            if (!IsAdminAuthorized())
+                return;
+
             var diagnostic = GetSelectedDiagnostic();
             if (diagnostic == null)
                 return;
@@ -172,6 +188,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnAbortQueue() => () =>
         {
+            if (!IsAdminAuthorized())
+                return;
+
             var diagnostic = GetSelectedDiagnostic();
             if (diagnostic == null)
                 return;
@@ -185,6 +204,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnNotifyWaiters() => () =>
         {
+            if (!IsAdminAuthorized())
+                return;
+
             var diagnostic = GetSelectedDiagnostic();
             if (diagnostic == null)
                 return;

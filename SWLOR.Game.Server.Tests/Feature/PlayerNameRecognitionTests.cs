@@ -155,18 +155,62 @@ public class PlayerNameRecognitionTests
             "Service",
             "PlayerName.cs"));
         var setMethod = ExtractMethod(source, "public static void SetKnownName(uint observer, uint target, string name)");
-        var validationMethod = ExtractMethod(source, "private static void ValidateKnownNameTarget(uint observer, uint target)");
+        var assignmentValidationMethod = ExtractMethod(source, "public static string ValidateKnownNameAssignment(uint observer, uint target, string name)");
+        var validationMethod = ExtractMethod(source, "private static string ValidateKnownNameTarget(uint observer, uint target)");
 
-        var validationIndex = setMethod.IndexOf("ValidateKnownNameTarget(observer, target);", StringComparison.Ordinal);
+        var validationIndex = setMethod.IndexOf("ValidateKnownNameAssignment(observer, target, sanitizedName);", StringComparison.Ordinal);
         var targetIdIndex = setMethod.IndexOf("var targetId = GetObjectUUID(target);", StringComparison.Ordinal);
 
         validationIndex.Should().BeGreaterThanOrEqualTo(0);
         targetIdIndex.Should().BeGreaterThanOrEqualTo(0);
         validationIndex.Should().BeLessThan(targetIdIndex);
 
+        assignmentValidationMethod.Should().Contain("var targetValidationError = ValidateKnownNameTarget(observer, target);");
         validationMethod.Should().Contain("!GetIsObjectValid(target) || !GetIsPC(target) || GetIsDM(target)");
         validationMethod.Should().Contain("target == observer");
-        setMethod.Should().Contain("string.IsNullOrWhiteSpace(targetId)");
+        assignmentValidationMethod.Should().Contain("string.IsNullOrWhiteSpace(targetId)");
+    }
+
+    [Test]
+    public void KnownNameStorage_RejectsDuplicateAliasesPerObserver()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "PlayerName.cs"));
+        var setMethod = ExtractMethod(source, "public static void SetKnownName(uint observer, uint target, string name)");
+        var assignmentValidationMethod = ExtractMethod(source, "public static string ValidateKnownNameAssignment(uint observer, uint target, string name)");
+        var uniquenessMethod = ExtractMethod(source, "private static string ValidateKnownNameIsUnique(");
+
+        setMethod.Should().Contain("ValidateKnownNameAssignment(observer, target, sanitizedName);");
+        assignmentValidationMethod.Should().Contain("return ValidateKnownNameIsUnique(dbKnownNames, targetId, sanitizedName);");
+        uniquenessMethod.Should().Contain("entry.Key != targetId");
+        uniquenessMethod.Should().Contain("StringComparison.OrdinalIgnoreCase");
+        uniquenessMethod.Should().Contain("You already use that name for another character.");
+    }
+
+    [Test]
+    public void PlayerTells_BlockAmbiguousDisplayNames()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "PlayerName.cs"));
+        var tellMethod = ExtractMethod(source, "public static void PreventAmbiguousTellTargets()");
+        var countMethod = ExtractMethod(source, "private static int CountDisplayNameMatches(uint observer, string displayName)");
+
+        tellMethod.Should().Contain("ChatChannel.PlayerTell");
+        tellMethod.Should().Contain("CountDisplayNameMatches(sender, displayName) <= 1");
+        tellMethod.Should().Contain("ChatPlugin.SkipMessage();");
+        tellMethod.Should().Contain("Use /name on the intended player before sending tells.");
+
+        countMethod.Should().Contain("GetDisplayName(observer, player)");
+        countMethod.Should().Contain("StringComparison.OrdinalIgnoreCase");
+        countMethod.Should().Contain("player == observer");
     }
 
     [Test]

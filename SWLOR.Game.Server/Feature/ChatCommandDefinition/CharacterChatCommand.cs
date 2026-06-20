@@ -450,7 +450,15 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                         return;
                     }
 
+                    validationError = PlayerName.ValidateKnownNameAssignment(user, target, name);
+                    if (!string.IsNullOrWhiteSpace(validationError))
+                    {
+                        SendMessageToPC(user, ColorToken.Red(validationError));
+                        return;
+                    }
+
                     PlayerName.SetKnownName(user, target, name);
+
                     Log.WriteStructured(
                         LogGroup.PlayerName,
                         "Player identity name change: Action={Action} ObserverPlayerId={ObserverPlayerId} TargetPlayerId={TargetPlayerId} Name={Name}",

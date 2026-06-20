@@ -41,6 +41,37 @@ namespace SWLOR.Game.Server.Service
             DelayCommand(1.0f, () => ApplyNameOverridesForPlayer(player));
         }
 
+        [NWNEventHandler(ScriptName.OnNWNXChat)]
+        public static void PreventAmbiguousTellTargets()
+        {
+            if (ChatPlugin.GetChannel() != ChatChannel.PlayerTell)
+                return;
+
+            var sender = ChatPlugin.GetSender();
+            var target = ChatPlugin.GetTarget();
+
+            if (!GetIsObjectValid(sender) ||
+                !GetIsObjectValid(target) ||
+                !GetIsPC(sender) ||
+                !GetIsPC(target) ||
+                GetIsDM(sender) ||
+                GetIsDM(target) ||
+                GetIsDMPossessed(sender))
+            {
+                return;
+            }
+
+            var displayName = GetDisplayName(sender, target);
+            if (string.IsNullOrWhiteSpace(displayName) ||
+                CountDisplayNameMatches(sender, displayName) <= 1)
+            {
+                return;
+            }
+
+            ChatPlugin.SkipMessage();
+            SendMessageToPC(sender, ColorToken.Red($"'{displayName}' is ambiguous. Use /name on the intended player before sending tells."));
+        }
+
         public static string GetDisplayName(uint observer, uint target)
         {
             return ResolveDisplayName(observer, target, out _);
@@ -143,34 +174,67 @@ namespace SWLOR.Game.Server.Service
             return string.Empty;
         }
 
+        public static string ValidateKnownNameAssignment(uint observer, uint target, string name)
+        {
+            var sanitizedName = SanitizeKnownName(name);
+            var targetValidationError = ValidateKnownNameTarget(observer, target);
+            if (!string.IsNullOrWhiteSpace(targetValidationError))
+                return targetValidationError;
+
+            var validationError = ValidateKnownName(sanitizedName);
+            if (!string.IsNullOrWhiteSpace(validationError))
+                return validationError;
+
+            var targetId = GetObjectUUID(target);
+            if (string.IsNullOrWhiteSpace(targetId))
+                return "Unable to identify that player.";
+
+            var dbKnownNames = GetKnownNames(observer, false);
+            return ValidateKnownNameIsUnique(dbKnownNames, targetId, sanitizedName);
+        }
+
         public static void SetKnownName(uint observer, uint target, string name)
         {
-            ValidateKnownNameTarget(observer, target);
-
             var sanitizedName = SanitizeKnownName(name);
-            var validationError = ValidateKnownName(sanitizedName);
+            var validationError = ValidateKnownNameAssignment(observer, target, sanitizedName);
 
             if (!string.IsNullOrWhiteSpace(validationError))
                 throw new ArgumentException(validationError);
 
             var targetId = GetObjectUUID(target);
-            if (string.IsNullOrWhiteSpace(targetId))
-                throw new ArgumentException("Target player ID is required.", nameof(target));
 
             var dbKnownNames = GetKnownNames(observer, true);
+
             dbKnownNames.KnownNames[targetId] = sanitizedName;
             DB.Set(dbKnownNames);
 
             ApplyNameOverride(observer, target);
         }
 
-        private static void ValidateKnownNameTarget(uint observer, uint target)
+        private static string ValidateKnownNameTarget(uint observer, uint target)
         {
             if (!GetIsObjectValid(target) || !GetIsPC(target) || GetIsDM(target))
-                throw new ArgumentException("Known names may only target player characters.", nameof(target));
+                return "Known names may only target player characters.";
 
             if (target == observer)
-                throw new ArgumentException("Known names cannot target the observer.", nameof(target));
+                return "Known names cannot target the observer.";
+
+            return string.Empty;
+        }
+
+        private static string ValidateKnownNameIsUnique(PlayerKnownName dbKnownNames, string targetId, string sanitizedName)
+        {
+            if (dbKnownNames?.KnownNames == null)
+                return string.Empty;
+
+            var isDuplicate = dbKnownNames.KnownNames.Any(entry =>
+                entry.Key != targetId &&
+                string.Equals(SanitizeKnownName(entry.Value), sanitizedName, StringComparison.OrdinalIgnoreCase));
+
+            if (isDuplicate)
+                return "You already use that name for another character.";
+
+            return string.Empty;
         }
 
         public static void ForgetKnownName(uint observer, uint target)
@@ -340,6 +404,26 @@ namespace SWLOR.Game.Server.Service
             return dbKnownNames?.KnownNames != null &&
                    dbKnownNames.KnownNames.TryGetValue(targetId, out knownName) &&
                    !string.IsNullOrWhiteSpace(knownName);
+        }
+
+        private static int CountDisplayNameMatches(uint observer, string displayName)
+        {
+            var count = 0;
+
+            for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())
+            {
+                if (!GetIsPC(player) ||
+                    GetIsDM(player) ||
+                    player == observer)
+                {
+                    continue;
+                }
+
+                if (string.Equals(GetDisplayName(observer, player), displayName, StringComparison.OrdinalIgnoreCase))
+                    count++;
+            }
+
+            return count;
         }
     }
 }

@@ -47,6 +47,15 @@ public class ShipCombatLogTests
         source.Should().MatchRegex(
             @"public\s+static\s+string\s+BuildCombatLogMessage\s*\(\s*uint\s+observer\s*,\s*uint\s+attacker\s*,\s*uint\s+defender\s*,",
             "BuildCombatLogMessage should receive the observer before attacker and defender");
+        source.Should().NotMatchRegex(
+            @"public\s+static\s+string\s+BuildAbilityCombatLogMessage\s*\(\s*uint\s+attacker\s*,\s*uint\s+defender\s*,",
+            "ability combat logs should require an explicit observer");
+        source.Should().NotMatchRegex(
+            @"public\s+static\s+string\s+BuildAbilityNoTargetCombatLogMessage\s*\(\s*uint\s+attacker\s*,\s*string\s+abilityName",
+            "no-target ability combat logs should require an explicit observer");
+        source.Should().NotMatchRegex(
+            @"public\s+static\s+string\s+BuildCombatLogMessageNative\s*\(\s*CNWSCreature\s+attacker\s*,\s*CNWSCreature\s+defender",
+            "native combat logs should require an explicit observer");
     }
 
     private static DirectoryInfo FindRepositoryRoot()

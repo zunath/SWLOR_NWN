@@ -146,6 +146,30 @@ public class PlayerNameRecognitionTests
     }
 
     [Test]
+    public void KnownNameStorage_ValidatesTargetsBeforePersisting()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "PlayerName.cs"));
+        var setMethod = ExtractMethod(source, "public static void SetKnownName(uint observer, uint target, string name)");
+        var validationMethod = ExtractMethod(source, "private static void ValidateKnownNameTarget(uint observer, uint target)");
+
+        var validationIndex = setMethod.IndexOf("ValidateKnownNameTarget(observer, target);", StringComparison.Ordinal);
+        var targetIdIndex = setMethod.IndexOf("var targetId = GetObjectUUID(target);", StringComparison.Ordinal);
+
+        validationIndex.Should().BeGreaterThanOrEqualTo(0);
+        targetIdIndex.Should().BeGreaterThanOrEqualTo(0);
+        validationIndex.Should().BeLessThan(targetIdIndex);
+
+        validationMethod.Should().Contain("!GetIsObjectValid(target) || !GetIsPC(target) || GetIsDM(target)");
+        validationMethod.Should().Contain("target == observer");
+        setMethod.Should().Contain("string.IsNullOrWhiteSpace(targetId)");
+    }
+
+    [Test]
     public void UnknownNames_UseGrayColorTokens()
     {
         var root = FindRepositoryRoot();

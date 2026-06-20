@@ -145,6 +145,8 @@ namespace SWLOR.Game.Server.Service
 
         public static void SetKnownName(uint observer, uint target, string name)
         {
+            ValidateKnownNameTarget(observer, target);
+
             var sanitizedName = SanitizeKnownName(name);
             var validationError = ValidateKnownName(sanitizedName);
 
@@ -152,11 +154,23 @@ namespace SWLOR.Game.Server.Service
                 throw new ArgumentException(validationError);
 
             var targetId = GetObjectUUID(target);
+            if (string.IsNullOrWhiteSpace(targetId))
+                throw new ArgumentException("Target player ID is required.", nameof(target));
+
             var dbKnownNames = GetKnownNames(observer, true);
             dbKnownNames.KnownNames[targetId] = sanitizedName;
             DB.Set(dbKnownNames);
 
             ApplyNameOverride(observer, target);
+        }
+
+        private static void ValidateKnownNameTarget(uint observer, uint target)
+        {
+            if (!GetIsObjectValid(target) || !GetIsPC(target) || GetIsDM(target))
+                throw new ArgumentException("Known names may only target player characters.", nameof(target));
+
+            if (target == observer)
+                throw new ArgumentException("Known names cannot target the observer.", nameof(target));
         }
 
         public static void ForgetKnownName(uint observer, uint target)

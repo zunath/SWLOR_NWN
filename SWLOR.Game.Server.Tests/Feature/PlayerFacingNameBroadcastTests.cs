@@ -180,6 +180,8 @@ public class PlayerFacingNameBroadcastTests
 
     private static int FindClosingParenthesis(string source, int openParenIndex)
     {
+        // This lightweight parser intentionally does not support C# raw string literals.
+        // If SendMessageNearbyToPlayers invocations start using """ raw strings, parsing may be incorrect.
         var depth = 0;
         var inString = false;
         var inVerbatimString = false;

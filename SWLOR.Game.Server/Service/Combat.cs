@@ -5372,16 +5372,6 @@ namespace SWLOR.Game.Server.Service
         }
 
         public static string BuildAbilityCombatLogMessage(
-            uint attacker,
-            uint defender,
-            string abilityName,
-            int attackResultType,
-            int chanceToHit)
-        {
-            return BuildAbilityCombatLogMessage(attacker, attacker, defender, abilityName, attackResultType, chanceToHit);
-        }
-
-        public static string BuildAbilityCombatLogMessage(
             uint observer,
             uint attacker,
             uint defender,
@@ -5412,13 +5402,6 @@ namespace SWLOR.Game.Server.Service
             var defenderName = PlayerName.GetColoredDisplayName(observer, defender);
 
             return ColorToken.Combat($"{attackerName} uses {abilityName} on {defenderName}{type} : ({chanceToHit}% chance to hit)");
-        }
-
-        public static string BuildAbilityNoTargetCombatLogMessage(
-            uint attacker,
-            string abilityName)
-        {
-            return BuildAbilityNoTargetCombatLogMessage(attacker, attacker, abilityName);
         }
 
         public static string BuildAbilityNoTargetCombatLogMessage(
@@ -5479,15 +5462,6 @@ namespace SWLOR.Game.Server.Service
         /// <param name="attackResultType">The type of result. 1, 7 = Hit, 3 = Critical, 4 = Miss</param>
         /// <param name="chanceToHit">The percent chance to hit</param>
         /// <returns></returns>
-        public static string BuildCombatLogMessageNative(
-            CNWSCreature attacker,
-            CNWSCreature defender,
-            int attackResultType,
-            int chanceToHit)
-        {
-            return BuildCombatLogMessageNative(attacker.m_idSelf, attacker, defender, attackResultType, chanceToHit);
-        }
-
         public static string BuildCombatLogMessageNative(
             uint observer,
             CNWSCreature attacker,

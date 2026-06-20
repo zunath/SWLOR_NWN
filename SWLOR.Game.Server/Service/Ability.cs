@@ -133,6 +133,16 @@ namespace SWLOR.Game.Server.Service
             return impact.Summary;
         }
 
+        public static bool TryQueueTrackedDamageEffect(uint activator, uint target, int damage, DamageType damageType)
+        {
+            var trackedImpact = GetTrackedAbilityImpact(activator);
+            if (trackedImpact == null)
+                return false;
+
+            trackedImpact.QueueDamageEffect(target, damage, damageType);
+            return true;
+        }
+
         private static TrackedAbilityImpact GetTrackedAbilityImpact(uint activator)
         {
             return _trackedAbilityImpacts.TryGetValue(activator, out var impact)

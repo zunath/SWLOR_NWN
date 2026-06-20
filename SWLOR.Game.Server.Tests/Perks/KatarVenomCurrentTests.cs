@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Tests.Perks;
@@ -51,10 +52,38 @@ public class KatarVenomCurrentTests
         var toxicRush = new ToxicRushStatusEffect();
         toxicRush.StatGroup.Stats[StatType.AttackDelayReductionPercent].Should().Be(20);
         toxicRush.StatGroup.Stats[StatType.AttackPercentAdjustment].Should().Be(15);
+        toxicRush.Categories.Should().Be(StatusEffectCategory.Buff);
+        toxicRush.PersistsOnLogout.Should().BeFalse();
+        toxicRush.SendsApplicationMessage.Should().BeFalse();
+        toxicRush.SendsWornOffMessage.Should().BeFalse();
+
+        var toxicRushStack = new ToxicRushStatusEffect(3, 4, 3);
+        toxicRushStack.Stacks.Should().Be(3);
+        toxicRushStack.StatGroup.Stats[StatType.AttackDelayReductionPercent].Should().Be(12);
+        toxicRushStack.StatGroup.Stats[StatType.AttackPercentAdjustment].Should().Be(9);
+        ((ToxicRushStatusEffect)toxicRushStack.Clone()).Stacks.Should().Be(3);
 
         var disoriented = new DisorientedStatusEffect();
         disoriented.StatGroup.Stats[StatType.AccuracyPercentAdjustment].Should().Be(-15);
         disoriented.StatGroup.Stats[StatType.EvasionPercentAdjustment].Should().Be(-15);
+    }
+
+    [Test]
+    public void ToxicRush_UsesVisibleStatusEffectFromDamageDealtHook()
+    {
+        var root = FindRepositoryRoot();
+        var combatSource = File.ReadAllText((root / "SWLOR.Game.Server" / "Service" / "Combat.cs").FullName);
+        var damageDealtEffects = ExtractMethod(combatSource, "public static void ApplyDamageDealtEffects(");
+        var toxicRushEffects = ExtractMethod(combatSource, "private static void ApplyToxicRushDamageDealtEffects(");
+        var venomCurrentImpactRiders = ExtractMethod(combatSource, "private static void ApplyKatarVenomCurrentImpactRiders(");
+
+        damageDealtEffects.Should().Contain("ApplyToxicRushDamageDealtEffects(attacker, defender, deliveryType);");
+        toxicRushEffects.Should().Contain("deliveryType == CombatDamageDeliveryType.DamageOverTime");
+        toxicRushEffects.Should().Contain("StatusEffect.GetStatusEffect<ToxicRushStatusEffect>(attacker)?.Stacks");
+        toxicRushEffects.Should().Contain("new ToxicRushStatusEffect(stacks, haste, attack)");
+        toxicRushEffects.Should().Contain("StatusEffect.ApplyStatusEffect(");
+        toxicRushEffects.Should().NotContain("TemporaryStatModifier");
+        venomCurrentImpactRiders.Should().NotContain("ApplyToxicRush");
     }
 
     [Test]
@@ -266,6 +295,32 @@ public class KatarVenomCurrentTests
         }
 
         throw new DirectoryNotFoundException("Could not locate the SWLOR_NWN repository root.");
+    }
+
+    private static string ExtractMethod(string source, string signature)
+    {
+        var signatureIndex = source.IndexOf(signature, StringComparison.Ordinal);
+        signatureIndex.Should().BeGreaterThanOrEqualTo(0);
+
+        var openBraceIndex = source.IndexOf('{', signatureIndex);
+        openBraceIndex.Should().BeGreaterThanOrEqualTo(0);
+
+        var depth = 0;
+        for (var index = openBraceIndex; index < source.Length; index++)
+        {
+            if (source[index] == '{')
+            {
+                depth++;
+            }
+            else if (source[index] == '}')
+            {
+                depth--;
+                if (depth == 0)
+                    return source.Substring(signatureIndex, index - signatureIndex + 1);
+            }
+        }
+
+        throw new InvalidOperationException($"Could not extract method '{signature}'.");
     }
 
     private sealed record PathInfo(string FullName)

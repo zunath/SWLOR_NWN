@@ -105,6 +105,16 @@ public class PlayerFacingNameBroadcastTests
             "ManageCityViewModel.cs"));
         citySource.Should().Contain("PlayerName.GetDisplayNameByPlayerId(Player, citizen.Id, citizen.Name)");
 
+        var citizenshipSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "GuiDefinition",
+            "ViewModel",
+            "ManageCitizenshipViewModel.cs"));
+        citizenshipSource.Should().Contain("PlayerName.GetDisplayNameByPlayerId(Player, dbCity.OwnerPlayerId, dbMayorPlayer.Name)");
+        citizenshipSource.Should().NotContain("Mayor: {dbMayorPlayer.Name}");
+
         var propertySource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -117,6 +127,30 @@ public class PlayerFacingNameBroadcastTests
         propertySource.Should().NotContain("**Mayor**:");
         propertySource.Should().NotContain("**New Mayor**:");
         propertySource.Should().NotContain("**Founding Mayor**:");
+    }
+
+    [Test]
+    public void CopiedPlayerObjects_UseGenericDisplaySafeNames()
+    {
+        var root = FindRepositoryRoot();
+
+        var holoComSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "HoloCom.cs"));
+        holoComSource.Should().Contain("var holoSender = CopyObject(sender");
+        holoComSource.Should().Contain("var holoReceiver = CopyObject(receiver");
+        holoComSource.Should().Contain("SetName(holoSender, \"HoloCom Hologram\");");
+        holoComSource.Should().Contain("SetName(holoReceiver, \"HoloCom Hologram\");");
+
+        var spaceSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "Space.cs"));
+        spaceSource.Should().Contain("var copy = CopyObject(player");
+        spaceSource.Should().Contain("SetName(copy, \"Pilot\");");
     }
 
     private static List<(int StartIndex, string Text)> ExtractInvocations(string source, string methodName)

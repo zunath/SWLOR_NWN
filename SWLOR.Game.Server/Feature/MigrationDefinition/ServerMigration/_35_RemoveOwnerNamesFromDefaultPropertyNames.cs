@@ -21,19 +21,14 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
 
             foreach (var property in properties)
             {
-                if (string.IsNullOrWhiteSpace(property.OwnerPlayerId) ||
-                    string.IsNullOrWhiteSpace(property.CustomName))
-                    continue;
-
-                var owner = DB.Get<Player>(property.OwnerPlayerId);
-                if (string.IsNullOrWhiteSpace(owner?.Name))
+                if (string.IsNullOrWhiteSpace(property.CustomName))
                     continue;
 
                 var oldDefaultName = GetOldDefaultPropertyName(property);
                 var newDefaultName = GetNewDefaultPropertyName(property);
                 if (string.IsNullOrWhiteSpace(oldDefaultName) ||
                     string.IsNullOrWhiteSpace(newDefaultName) ||
-                    property.CustomName != $"{owner.Name}'s {oldDefaultName}")
+                    !HasOwnerPrefixedDefaultName(property.CustomName, oldDefaultName))
                     continue;
 
                 property.CustomName = newDefaultName;
@@ -42,6 +37,13 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
             }
 
             Log.Write(LogGroup.Migration, $"Removed owner names from {migratedCount} default property names.");
+        }
+
+        private static bool HasOwnerPrefixedDefaultName(string propertyName, string oldDefaultName)
+        {
+            var defaultSuffix = $"'s {oldDefaultName}";
+            return propertyName.Length > defaultSuffix.Length &&
+                   propertyName.EndsWith(defaultSuffix, StringComparison.Ordinal);
         }
 
         private static string GetOldDefaultPropertyName(WorldProperty property)

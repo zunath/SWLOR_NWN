@@ -773,6 +773,7 @@ namespace SWLOR.Game.Server.Service
             var chair = GetNearestObjectByTag("pilot_chair", player);
             var location = GetLocation(player);
             var copy = CopyObject(player, location, OBJECT_INVALID, "spaceship_copy");
+            SetName(copy, "Pilot");
             ChangeToStandardFaction(copy, StandardFaction.Defender);
             TakeGoldFromCreature(GetGold(copy), copy, true);
 

@@ -25,6 +25,28 @@ public class PropertyNameMigrationTests
         getLayoutName.Should().NotContain("catch");
     }
 
+    [Test]
+    public void RemoveOwnerNamesMigration_MatchesDefaultSuffixWithoutCurrentOwnerName()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "MigrationDefinition",
+            "ServerMigration",
+            "_35_RemoveOwnerNamesFromDefaultPropertyNames.cs"));
+        var migration = ExtractMethod(source, "public void Migrate()");
+        var suffixMatcher = ExtractMethod(source, "private static bool HasOwnerPrefixedDefaultName(string propertyName, string oldDefaultName)");
+
+        migration.Should().NotContain("DB.Get<Player>(property.OwnerPlayerId)");
+        migration.Should().NotContain("owner.Name");
+        migration.Should().Contain("!HasOwnerPrefixedDefaultName(property.CustomName, oldDefaultName)");
+
+        suffixMatcher.Should().Contain("\"'s {oldDefaultName}\"");
+        suffixMatcher.Should().Contain("propertyName.EndsWith(defaultSuffix, StringComparison.Ordinal)");
+    }
+
     private static string ExtractMethod(string source, string signature)
     {
         var methodIndex = source.IndexOf(signature, StringComparison.Ordinal);

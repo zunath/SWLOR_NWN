@@ -1776,6 +1776,11 @@ namespace SWLOR.Game.Server.Service
                 guardChance,
                 duration,
                 StatType.LowHPGuard);
+
+            if (GetIsPC(defender))
+                FloatingTextStringOnCreature(ColorToken.Combat("Guardian Reflexes"), defender, false);
+
+            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Ac_Bonus), defender);
         }
 
         private static void TrackRecentDamageTarget(uint attacker, uint defender)

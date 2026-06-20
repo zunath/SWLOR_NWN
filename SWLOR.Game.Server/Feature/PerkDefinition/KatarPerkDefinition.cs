@@ -179,10 +179,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.GuardianReflexesTrait)
-                .Description("When reduced below 35% HP, gain +25% guard chance for 12 seconds. This can only trigger once every 3 minutes.")
-                .IncreasesStat(StatType.LowHPGuardThresholdPercent, 35)
+                .Description("When reduced below 30% HP, gain +25% guard chance for 30 seconds. This can only trigger once every 3 minutes.")
+                .IncreasesStat(StatType.LowHPGuardThresholdPercent, 30)
                 .IncreasesStat(StatType.LowHPGuard, 25)
-                .IncreasesStat(StatType.LowHPGuardDurationSeconds, 12)
+                .IncreasesStat(StatType.LowHPGuardDurationSeconds, 30)
                 .IncreasesStat(StatType.LowHPGuardCooldownSeconds, 180)
                 .Price(4)
                 .RequirementSkill(SkillType.Katar, 48);

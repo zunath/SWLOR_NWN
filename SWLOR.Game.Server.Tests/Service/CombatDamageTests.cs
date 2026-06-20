@@ -524,6 +524,19 @@ public class CombatDamageTests
     }
 
     [Test]
+    public void LowHPGuardTrigger_SendsActivationFeedback()
+    {
+        var root = FindRepositoryRoot();
+        var combatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
+        var lowHPGuardTrigger = ExtractMethod(combatSource, "private static void ApplyLowHPGuardEffect(");
+
+        lowHPGuardTrigger.Should().Contain("TemporaryStatModifier.Replace(");
+        lowHPGuardTrigger.Should().Contain("StatType.LowHPGuard");
+        lowHPGuardTrigger.Should().Contain("FloatingTextStringOnCreature(ColorToken.Combat(\"Guardian Reflexes\"), defender, false);");
+        lowHPGuardTrigger.Should().Contain("ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Ac_Bonus), defender);");
+    }
+
+    [Test]
     public void NormalDamageMitigation_IsCappedSeparatelyFromExplicitImmunity()
     {
         var root = FindRepositoryRoot();

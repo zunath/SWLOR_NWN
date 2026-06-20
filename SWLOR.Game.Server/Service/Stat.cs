@@ -3,6 +3,7 @@ using System.Linq;
 using NWN.Native.API;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Extension;
+using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.SkillService;
@@ -1455,11 +1456,14 @@ namespace SWLOR.Game.Server.Service
             var fpRestore = GetStatAdjustment(creatureId, StatType.DeflectionFPRestore);
             var staminaRestorePercent = GetStatAdjustment(creatureId, StatType.DeflectionStaminaRestorePercent);
             var staminaRestoreCooldown = GetStatAdjustment(creatureId, StatType.DeflectionStaminaRestoreCooldownSeconds);
+            var fpRestoreCooldown = GetStatAdjustment(creatureId, StatType.DeflectionFPRestoreCooldownSeconds);
             var evasionBoost = GetStatAdjustment(creatureId, StatType.DeflectionEvasionPercentAdjustment);
             var evasionEnmityBoost = GetStatAdjustment(creatureId, StatType.DeflectionEvasionEnmityPercentAdjustment);
             var enmityBoost = GetStatAdjustment(creatureId, StatType.DeflectionEnmityPercentAdjustment);
             var defenseBoost = GetStatAdjustment(creatureId, StatType.DeflectionDefensePercentAdjustment);
             var forceDefenseBoost = GetStatAdjustment(creatureId, StatType.DeflectionForceDefensePercentAdjustment);
+            var recastReductionGroup = GetRecastGroupFromStat(GetStatAdjustment(creatureId, StatType.DeflectionRecastReductionGroup));
+            var recastReductionSeconds = GetStatAdjustment(creatureId, StatType.DeflectionRecastReductionSeconds);
             var nextAbilityDamagePerkType = GetStatAdjustment(creatureId, StatType.DeflectionNextAbilityDamageBonusPerkType);
             var nextAbilityDamageBonus = GetStatAdjustment(creatureId, StatType.DeflectionNextAbilityDamageBonus);
             var nextAbilityDamageDuration = GetStatAdjustment(creatureId, StatType.DeflectionNextAbilityDamageBonusDurationSeconds);
@@ -1472,6 +1476,11 @@ namespace SWLOR.Game.Server.Service
             var nextSkillAbilityDamageWindow = GetStatAdjustment(creatureId, StatType.DeflectionNextSkillAbilityDamageBonusWindowSeconds);
             var nextSkillAbilityCriticalWindow = GetStatAdjustment(creatureId, StatType.DeflectionNextSkillAbilityCriticalRateWindowSeconds);
             var nextSkillAbilityNoDelayWindow = GetStatAdjustment(creatureId, StatType.DeflectionNextSkillAbilityNoDelayWindowSeconds);
+            var nextAutoAttackCriticalRateSkillType = GetSkillTypeFromStat(GetStatAdjustment(
+                creatureId,
+                StatType.DeflectionNextAutoAttackCriticalRateSkillType));
+            var nextAutoAttackCriticalRate = GetStatAdjustment(creatureId, StatType.DeflectionNextAutoAttackCriticalRatePercentAdjustment);
+            var nextAutoAttackCriticalRateWindow = GetStatAdjustment(creatureId, StatType.DeflectionNextAutoAttackCriticalRateWindowSeconds);
 
             if (staminaRestore > 0 &&
                 Combat.TryUseStatTrigger(creatureId, StatType.DeflectionStaminaRestore, staminaRestoreCooldown))
@@ -1479,7 +1488,8 @@ namespace SWLOR.Game.Server.Service
                 RestoreStamina(creatureId, staminaRestore);
             }
 
-            if (fpRestore > 0)
+            if (fpRestore > 0 &&
+                Combat.TryUseStatTrigger(creatureId, StatType.DeflectionFPRestore, fpRestoreCooldown))
             {
                 RestoreFP(creatureId, fpRestore);
             }
@@ -1532,6 +1542,11 @@ namespace SWLOR.Game.Server.Service
                     StatType.DeflectionDefensePercentAdjustment);
             }
 
+            if (recastReductionGroup != RecastGroup.Invalid && recastReductionSeconds > 0)
+            {
+                Recast.ReduceRecastDelay(creatureId, recastReductionGroup, recastReductionSeconds);
+            }
+
             Combat.GrantNextAbilityDamageBonus(
                 creatureId,
                 nextAbilityDamagePerkType,
@@ -1545,6 +1560,12 @@ namespace SWLOR.Game.Server.Service
                 nextSkillAbilityCriticalRate,
                 Math.Max(nextSkillAbilityDamageWindow, nextSkillAbilityCriticalWindow));
 
+            Combat.GrantNextAutoAttackCriticalRateBonus(
+                creatureId,
+                nextAutoAttackCriticalRateSkillType,
+                nextAutoAttackCriticalRate,
+                nextAutoAttackCriticalRateWindow);
+
             if (nextSkillAbilityNoDelay > 0)
             {
                 Combat.GrantNextAbilityNoDelay(
@@ -1552,6 +1573,13 @@ namespace SWLOR.Game.Server.Service
                     nextSkillAbilitySkillType,
                     nextSkillAbilityNoDelayWindow);
             }
+        }
+
+        private static RecastGroup GetRecastGroupFromStat(int value)
+        {
+            return value > 0 && Enum.IsDefined(typeof(RecastGroup), value)
+                ? (RecastGroup)value
+                : RecastGroup.Invalid;
         }
 
         private static int GetAttackDeflectionChanceCap(uint creature)

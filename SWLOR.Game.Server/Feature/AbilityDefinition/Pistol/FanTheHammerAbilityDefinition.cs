@@ -60,12 +60,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
 
         private static void FanTheHammer1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.Pistol, 12, 0, null, CombatImpactAreaShape.Cone, 0.25f, 5f, 5f, maxTargets: 3);
+            Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.Pistol, 12, 0, null, CombatImpactAreaShape.Cone, 0.25f, 7f, 6f, maxTargets: 3);
         }
 
         private static void FanTheHammer2ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.Pistol, 20, 0, null, CombatImpactAreaShape.Cone, 0.25f, 5f, 5f, maxTargets: 5);
+            Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.Pistol, 20, 0, null, CombatImpactAreaShape.Cone, 0.25f, 8f, 7f, maxTargets: 5);
         }
     }
 }

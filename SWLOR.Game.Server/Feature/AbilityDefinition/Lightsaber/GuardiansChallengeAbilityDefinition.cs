@@ -5,11 +5,14 @@ using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
 {
     public class GuardiansChallengeAbilityDefinition : IAbilityListDefinition
     {
+        private const VisualEffect ChallengeVisualEffect = VisualEffect.Vfx_Fnf_Howl_Odd;
+
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
@@ -30,6 +33,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 .UsesAnimation(Animation.FireForgetTaunt)
                 .HasRecastDelay(RecastGroup.GuardiansChallenge, 90f)
                 .HasImpactAction(GuardiansChallenge1ImpactAction)
+                .HasTargetingCone(
+                    Spell.GuardiansChallenge1,
+                    5f,
+                    5f,
+                    AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf)
                 .IsAreaAbility()
                 .IsCastedAbility()
                 .IsHostileAbility()
@@ -39,7 +47,20 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
 
         private static void GuardiansChallenge1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.Lightsaber, 35, 0, null, CombatImpactAreaShape.Cone, 0.25f, 5f, 5f);
+            Ability.ApplyTelegraphedCombatImpact(
+                activator,
+                target,
+                targetLocation,
+                SkillType.Lightsaber,
+                35,
+                0,
+                null,
+                CombatImpactAreaShape.Cone,
+                0.25f,
+                5f,
+                5f,
+                targetVisualEffect: ChallengeVisualEffect,
+                areaVisualEffect: ChallengeVisualEffect);
         }
 
         private static void GuardiansChallenge2(AbilityBuilder builder)
@@ -77,7 +98,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 CombatImpactAreaShape.Line,
                 0.25f,
                 8f,
-                2.5f);
+                2.5f,
+                targetVisualEffect: ChallengeVisualEffect,
+                areaVisualEffect: ChallengeVisualEffect);
         }
     }
 }

@@ -11,6 +11,8 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public TauntingDeflectionStatusEffect()
         {
             StatGroup.Stats[StatType.AttackDeflection] = 10;
+            StatGroup.Stats[StatType.DeflectionFPRestore] = 2;
+            StatGroup.Stats[StatType.DeflectionEnmityPercentAdjustment] = 20;
         }
 
     }

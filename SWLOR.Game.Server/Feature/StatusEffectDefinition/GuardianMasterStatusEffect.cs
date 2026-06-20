@@ -10,6 +10,8 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public override EffectIconType Icon => EffectIconType.GuardianMasterStatusEffect;
         public GuardianMasterStatusEffect()
         {
+            StatGroup.Stats[StatType.DeflectionFPRestore] = 4;
+            StatGroup.Stats[StatType.DeflectionEnmityPercentAdjustment] = 50;
             StatGroup.Stats[StatType.AttackDeflectionChanceCap] = 10;
         }
 

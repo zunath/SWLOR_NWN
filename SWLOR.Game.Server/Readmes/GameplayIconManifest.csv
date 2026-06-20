@@ -168,7 +168,7 @@
 "Ability","FocusStim1","FocusStim1","Beneficial","1","ife_focstm1","SWLOR_Haks\swlor2_2da\feat.2da"
 "Ability","FocusStim2","FocusStim2","Beneficial","2","ife_focstm2","SWLOR_Haks\swlor2_2da\feat.2da"
 "Ability","ForceBondedBeast1","ForceBondedBeast1","Harmful","1","ife_forcebnddbs1","SWLOR_Haks\swlor2_2da\feat.2da"
-"Ability","ForceCapacitor1","ForceCapacitor1","Harmful","1","ife_forcecap1","SWLOR_Haks\swlor2_2da\feat.2da"
+"Ability","ForceCapacitor1","ForceCapacitor1","Self","1","ife_forcecap1","SWLOR_Haks\swlor2_2da\feat.2da"
 "Ability","ForceChoke1","ForceChoke1","Control","1","ife_forcechk1","SWLOR_Haks\swlor2_2da\feat.2da"
 "Ability","ForceChoke2","ForceChoke2","Control","2","ife_forcechk2","SWLOR_Haks\swlor2_2da\feat.2da"
 "Ability","ForceChoke3","ForceChoke3","Control","3","ife_forcechk3","SWLOR_Haks\swlor2_2da\feat.2da"

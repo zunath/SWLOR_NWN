@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
 {
@@ -19,6 +20,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
         private const int PulseDamage = 8;
         private const int FPRestorePerTarget = 1;
         private const int MaximumFPRestorePerPulse = 5;
+        private const VisualEffect AreaVisualEffect = VisualEffect.Vfx_Fnf_Swinging_Blade;
+        private const VisualEffect TargetVisualEffect = VisualEffect.Vfx_Com_Blood_Spark_Medium;
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
@@ -55,7 +58,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                 SkillType.Saberstaff,
                 InitialDamage,
                 Radius,
-                damageType: CombatDamageType.Force);
+                damageType: CombatDamageType.Force,
+                targetVisualEffect: TargetVisualEffect,
+                areaVisualEffect: AreaVisualEffect,
+                alwaysApplyAreaVisualEffect: true);
 
             CombatAreaPulses.SchedulePulses(
                 activator,
@@ -73,7 +79,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                         SkillType.Saberstaff,
                         PulseDamage,
                         Radius,
-                        damageType: CombatDamageType.Force);
+                        damageType: CombatDamageType.Force,
+                        targetVisualEffect: TargetVisualEffect,
+                        areaVisualEffect: AreaVisualEffect,
+                        alwaysApplyAreaVisualEffect: true);
                     var summary = Ability.EndAbilityImpact(activator);
                     Combat.ApplyAbilityImpactEffects(activator, summary);
 

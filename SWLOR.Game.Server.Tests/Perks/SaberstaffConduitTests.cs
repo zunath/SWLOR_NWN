@@ -1,6 +1,8 @@
 using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid;
+using SWLOR.Game.Server.Feature.AbilityDefinition.Force;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff;
 using SWLOR.Game.Server.Feature.PerkDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
@@ -91,6 +93,30 @@ public class SaberstaffConduitTests
     }
 
     [Test]
+    public void ForceCapacitorResourceRestore_IsPinnedToSaberstaffStaminaAndForceFPCosts()
+    {
+        var forceCapacitor = new ForceCapacitorStatusEffect();
+        var staminaCostFpRestoreSkillType = InvokeCombatPrivateStatic<SkillType>(
+            "GetSkillTypeFromStat",
+            forceCapacitor.StatGroup.Stats[StatType.AbilityStaminaCostFPRestorePercentSkillType]);
+        var fpCostStaminaRestoreSkillType = InvokeCombatPrivateStatic<SkillType>(
+            "GetSkillTypeFromStat",
+            forceCapacitor.StatGroup.Stats[StatType.AbilityFPCostStaminaRestorePercentSkillType]);
+
+        staminaCostFpRestoreSkillType.Should().Be(SkillType.Saberstaff);
+        fpCostStaminaRestoreSkillType.Should().Be(SkillType.Force);
+
+        var medKit = new MedKitAbilityDefinition().BuildAbilities()[FeatType.MedKit1];
+        AssertResourceRestoreRouting(medKit, staminaCostFpRestoreSkillType, fpCostStaminaRestoreSkillType, false, false);
+
+        var benevolence = new BenevolenceAbilityDefinition().BuildAbilities()[FeatType.Benevolence1];
+        AssertResourceRestoreRouting(benevolence, staminaCostFpRestoreSkillType, fpCostStaminaRestoreSkillType, false, true);
+
+        var focusedArc = new FocusedArcAbilityDefinition().BuildAbilities()[FeatType.FocusedArc1];
+        AssertResourceRestoreRouting(focusedArc, staminaCostFpRestoreSkillType, fpCostStaminaRestoreSkillType, true, false);
+    }
+
+    [Test]
     public void SaberstaffCooldownDurationStats_AreNonBeneficialMetadata()
     {
         Stat.GetStatTypeCategory(StatType.AutoAttackFPRestoreCooldownSeconds)
@@ -138,6 +164,7 @@ public class SaberstaffConduitTests
             abilityRow["Range"].Should().Be(range);
             abilityRow["TargetType"].Should().Be(targetType);
             abilityRow["HostileSetting"].Should().Be(hostileSetting);
+            featRow["HostileFeat"].Should().Be(hostileSetting == "1" ? "1" : "****");
             abilityRow["TargetShape"].Should().Be(targetShape);
             abilityRow["TargetSizeX"].Should().Be(targetSizeX);
             abilityRow["TargetSizeY"].Should().Be(targetSizeY);
@@ -237,6 +264,28 @@ public class SaberstaffConduitTests
         return (T)typeof(Combat)
             .GetMethod(methodName, BindingFlags.Static | BindingFlags.NonPublic)!
             .Invoke(null, args)!;
+    }
+
+    private static void AssertResourceRestoreRouting(
+        AbilityDetail ability,
+        SkillType staminaCostFpRestoreSkillType,
+        SkillType fpCostStaminaRestoreSkillType,
+        bool restoresFpFromStaminaCost,
+        bool restoresStaminaFromFpCost)
+    {
+        var hasStaminaCost = ability.Requirements.OfType<AbilityRequirementStamina>().Any();
+        var hasFpCost = ability.Requirements.OfType<AbilityRequirementFP>().Any();
+        var matchesStaminaCostFpRestore = InvokeCombatPrivateStatic<bool>(
+            "SkillTypeMatches",
+            ability.SkillType,
+            staminaCostFpRestoreSkillType);
+        var matchesFpCostStaminaRestore = InvokeCombatPrivateStatic<bool>(
+            "SkillTypeMatches",
+            ability.SkillType,
+            fpCostStaminaRestoreSkillType);
+
+        (hasStaminaCost && matchesStaminaCostFpRestore).Should().Be(restoresFpFromStaminaCost);
+        (hasFpCost && matchesFpCostStaminaRestore).Should().Be(restoresStaminaFromFpCost);
     }
 
     private static Dictionary<PerkType, PerkDetail> BuildSaberstaffConduitPerksWithout2daLookup()

@@ -124,8 +124,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.DuelistsDistanceTrait)
-                .Description("Deal +12% pistol damage to enemies within 8 meters that are not targeting you.")
-                .IncreasesStat(StatType.DamageToNearbyNonTargetingTargetPercentAdjustment, 12)
+                .Description("Ranged weapon attacks deal +8% damage to targets within 8 meters.")
+                .IncreasesStat(StatType.RangedDamageToNearbyTargetPercentAdjustment, 8)
                 .Price(3)
                 .RequirementSkill(SkillType.Pistol, 40);
         }
@@ -137,11 +137,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.EvasiveReloadTrait)
-                .Description("Using Snap Roll or Ricochet Shot reduces Disarming Shot cooldowns by 10 seconds.")
-                .IncreasesStat(StatType.AbilityUsedRecastReductionTriggerGroup, (int)RecastGroup.SnapRoll)
-                .IncreasesStat(StatType.AbilityUsedRecastReductionSecondaryTriggerGroup, (int)RecastGroup.RicochetShot)
-                .IncreasesStat(StatType.AbilityUsedRecastReductionTargetGroup, (int)RecastGroup.DisarmingShot)
-                .IncreasesStat(StatType.AbilityUsedRecastReductionSeconds, 10)
+                .Description("Successfully evading an attack restores 3 STM. This can trigger once every 12 seconds.")
+                .IncreasesStat(StatType.AvoidedAttackStaminaRestoreChance, 100)
+                .IncreasesStat(StatType.AvoidedAttackStaminaRestore, 3)
+                .IncreasesStat(StatType.AvoidedAttackStaminaRestoreCooldownSeconds, 12)
                 .Price(2)
                 .RequirementSkill(SkillType.Pistol, 32);
         }
@@ -257,11 +256,11 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.LowShotTrait)
-                .Description("Skirmisher close-range abilities also inflict Disoriented for 12 seconds and deal +20 DMG to disoriented targets.")
+                .Description("Skirmisher close-range abilities also inflict Disoriented for 12 seconds. Pistol attacks deal +20 DMG to targets affected by Disoriented, Knockdown, or Tranquilized.")
                 .Price(3)
                 .RequirementSkill(SkillType.Pistol, 30)
                 .IncreasesStat(StatType.PistolSkirmisherDisorientedDurationSeconds, 12)
-                .IncreasesStat(StatType.PistolSkirmisherDisorientedTargetDamageBonus, 20);
+                .IncreasesStat(StatType.PistolDamageToDisorientedKnockdownOrTranquilizedTargetBonus, 20);
         }
 
         private void MobileFootwork()
@@ -370,7 +369,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.RicochetShotTrait)
-                .Description("Skirmisher precision shots can bounce to up to three nearby enemies for +12 DMG and Blind for 6 seconds. This can trigger once every 12 seconds.")
+                .Description("Skirmisher precision shots can bounce to up to three nearby enemies for +12 DMG. This can trigger once every 12 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Pistol, 25)
                 .IncreasesStat(StatType.PistolSkirmisherRicochetDamageBonus, 12)
@@ -417,7 +416,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SmokeRound1)
-                .Description("Enemies in the target area are inflicted with Blind for 12 seconds. You reduce enmity against affected enemies.")
+                .Description("Enemies in the target area suffer -20% Accuracy for 12 seconds. You gain +15% Evasion for 12 seconds and reduce enmity against affected enemies.")
                 .Price(3)
                 .RequirementSkill(SkillType.Pistol, 45);
         }

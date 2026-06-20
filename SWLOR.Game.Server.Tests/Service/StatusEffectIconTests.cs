@@ -132,6 +132,7 @@ public class StatusEffectIconTests
             .ToDictionary(row => row.Key, StringComparer.OrdinalIgnoreCase);
 
         abilityRows["DuelistsChallenge1"].SemanticCategory.Should().Be("Self");
+        abilityRows["ForceCapacitor1"].SemanticCategory.Should().Be("Self");
         abilityRows["ShelterCircle1"].SemanticCategory.Should().Be("Beneficial");
         abilityRows["SweepingGuard1"].SemanticCategory.Should().Be("Harmful");
     }

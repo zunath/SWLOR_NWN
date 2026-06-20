@@ -627,10 +627,10 @@ namespace SWLOR.Game.Server.Service.StatService
         DamageToPoisonedTargetFlatBonus = 105,
 
         /// <summary>
-        /// Percent damage adjustment against nearby targets whose current attack target is not the attacker.
+        /// Percent damage adjustment for ranged weapon attacks against nearby targets.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        DamageToNearbyNonTargetingTargetPercentAdjustment = 106,
+        RangedDamageToNearbyTargetPercentAdjustment = 106,
 
         /// <summary>
         /// Flat FP restored by auto-attacks, subject to AutoAttackFPRestoreCooldownSeconds.
@@ -3021,10 +3021,10 @@ namespace SWLOR.Game.Server.Service.StatService
         LightsaberOffenseSurgeStrikeDamageBonus = 517,
 
         /// <summary>
-        /// Damage added to Skirmisher close-range abilities against disoriented targets.
+        /// Damage added to Pistol attacks against Disoriented, Knockdown, or Tranquilized targets.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        PistolSkirmisherDisorientedTargetDamageBonus = 518,
+        PistolDamageToDisorientedKnockdownOrTranquilizedTargetBonus = 518,
 
         /// <summary>
         /// Duration in seconds for Disoriented from Skirmisher close-range abilities.
@@ -3672,7 +3672,61 @@ namespace SWLOR.Game.Server.Service.StatService
         /// Percent of target Defense ignored by ranged weapon attacks and ranged combat abilities.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        RangedAttackDefenseIgnorePercentAdjustment = 626
+        RangedAttackDefenseIgnorePercentAdjustment = 626,
+
+        /// <summary>
+        /// Cooldown in seconds for DeflectionFPRestore.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        DeflectionFPRestoreCooldownSeconds = 627,
+
+        /// <summary>
+        /// RecastGroup id reduced when the creature successfully deflects an attack.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        DeflectionRecastReductionGroup = 628,
+
+        /// <summary>
+        /// Seconds removed from DeflectionRecastReductionGroup when the creature successfully deflects an attack.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        DeflectionRecastReductionSeconds = 629,
+
+        /// <summary>
+        /// SkillType id whose next auto-attack receives a critical chance bonus after deflecting an attack.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        DeflectionNextAutoAttackCriticalRateSkillType = 630,
+
+        /// <summary>
+        /// Critical chance bonus for the next matching auto-attack after deflecting an attack.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        DeflectionNextAutoAttackCriticalRatePercentAdjustment = 631,
+
+        /// <summary>
+        /// Duration in seconds for DeflectionNextAutoAttackCriticalRatePercentAdjustment.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        DeflectionNextAutoAttackCriticalRateWindowSeconds = 632,
+
+        /// <summary>
+        /// Internal temporary SkillType value consumed by the next matching auto-attack critical chance bonus.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        NextAutoAttackCriticalRateSkillType = 633,
+
+        /// <summary>
+        /// Internal temporary critical chance bonus consumed by the next matching auto-attack.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        NextAutoAttackCriticalRatePercentAdjustment = 634,
+
+        /// <summary>
+        /// Cooldown in seconds for AvoidedAttackStaminaRestore.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        AvoidedAttackStaminaRestoreCooldownSeconds = 635
     }
 
     public class StatTypeAttribute : Attribute

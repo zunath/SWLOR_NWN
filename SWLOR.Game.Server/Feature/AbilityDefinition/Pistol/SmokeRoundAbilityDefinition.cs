@@ -13,6 +13,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
     {
         private const SkillType Skill = SkillType.Pistol;
         private const int EnmityReductionPercent = 10;
+        private const int StatusDurationSeconds = 12;
+        private const int EvasionBonusPercent = 15;
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
@@ -50,14 +52,20 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 targetLocation,
                 Skill,
                 0,
-                12,
-                typeof(BlindStatusEffect),
+                StatusDurationSeconds,
+                typeof(SmokeRoundStatusEffect),
                 CombatImpactAreaShape.Sphere,
                 0.25f,
                 5f,
                 areaVisualEffect: VisualEffect.Vfx_Fnf_Smoke_Puff,
                 afterSuccessfulHit: affectedEnemy => Enmity.ReduceEnmity(activator, affectedEnemy, EnmityReductionPercent),
                 alwaysApplyAreaVisualEffect: true);
+
+            StatusEffect.ApplyStatusEffect(
+                activator,
+                activator,
+                new SmokeRoundCoverStatusEffect(EvasionBonusPercent),
+                StatusDurationSeconds);
         }
     }
 }

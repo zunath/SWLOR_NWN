@@ -9,6 +9,7 @@ using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Tests.Perks;
@@ -45,9 +46,12 @@ public class PistolSkirmisherTests
     {
         var snapRoll1 = new SnapRollStatusEffect();
         snapRoll1.StatGroup.Stats[StatType.EvasionPercentAdjustment].Should().Be(25);
+        snapRoll1.Categories.Should().Be(StatusEffectCategory.Buff);
+        snapRoll1.PersistsOnLogout.Should().BeFalse();
 
         var snapRoll2 = new SnapRollStatusEffect(35);
         snapRoll2.StatGroup.Stats[StatType.EvasionPercentAdjustment].Should().Be(35);
+        snapRoll2.Clone().StatGroup.Stats[StatType.EvasionPercentAdjustment].Should().Be(35);
 
         var skirmisherStance = new SkirmisherStanceStatusEffect();
         skirmisherStance.StatGroup.Stats[StatType.EvasionPercentAdjustment].Should().Be(15);
@@ -63,6 +67,16 @@ public class PistolSkirmisherTests
 
         var lastWord = new LastWordStatusEffect();
         lastWord.StatGroup.Stats[StatType.PhysicalAndForceAbilityHitChancePercentAdjustment].Should().Be(-10);
+
+        var smokeRound = new SmokeRoundStatusEffect();
+        smokeRound.StatGroup.Stats[StatType.AccuracyPercentAdjustment].Should().Be(-20);
+        smokeRound.Categories.Should().Be(StatusEffectCategory.Debuff);
+        smokeRound.ResistanceType.Should().Be(ResistanceType.Trauma);
+
+        var smokeCover = new SmokeRoundCoverStatusEffect();
+        smokeCover.StatGroup.Stats[StatType.EvasionPercentAdjustment].Should().Be(15);
+        smokeCover.Categories.Should().Be(StatusEffectCategory.Buff);
+        smokeCover.PersistsOnLogout.Should().BeFalse();
     }
 
     [Test]
@@ -105,6 +119,31 @@ public class PistolSkirmisherTests
             abilityRow["TargetSizeY"].Should().Be(targetSizeY);
             abilityRow["TargetFlags"].Should().Be(targetFlags);
         }
+    }
+
+    [Test]
+    public void PistolSkirmisherSources_ApplyRecommendedStatDrivenEffects()
+    {
+        var root = FindRepositoryRoot();
+        var combat = File.ReadAllText((root / "SWLOR.Game.Server" / "Service" / "Combat.cs").FullName);
+        var perks = BuildPistolSkirmisherPerksWithout2daLookup();
+
+        combat.Should().Contain("StatusEffect.ApplyStatusEffect(");
+        combat.Should().Contain("new SnapRollStatusEffect(evasion)");
+        combat.Should().Contain("TryUseStatTrigger(creature, StatType.AvoidedAttackStaminaRestore, staminaRestoreCooldown)");
+        combat.Should().Contain("StatType.RangedDamageToNearbyTargetPercentAdjustment");
+        combat.Should().Contain("StatType.PistolDamageToDisorientedKnockdownOrTranquilizedTargetBonus");
+        combat.Should().Contain("typeof(TranquilizedStatusEffect)");
+        combat.Should().NotContain("StatusEffect.ApplyStatusEffect(activator, ricochetTarget, typeof(BlindStatusEffect)");
+        combat.Should().NotContain("ApplyAbilityUsedRecastReduction(activator, RecastGroup.SnapRoll);");
+        combat.Should().NotContain("ApplyAbilityUsedRecastReduction(activator, RecastGroup.RicochetShot);");
+
+        perks[PerkType.EvasiveReload].PerkLevels[1].StatBonuses.Select(x => x.Stat).Should().BeEquivalentTo(new[]
+        {
+            StatType.AvoidedAttackStaminaRestoreChance,
+            StatType.AvoidedAttackStaminaRestore,
+            StatType.AvoidedAttackStaminaRestoreCooldownSeconds
+        });
     }
 
     private static void AssertPerkLevel(

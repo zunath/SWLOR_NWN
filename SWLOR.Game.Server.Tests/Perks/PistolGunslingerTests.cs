@@ -136,10 +136,10 @@ public class PistolGunslingerTests
             (FeatType.GunfighterStance1, "ife_gunfstnc1", "P", "0x01", "0", "****", "****", "****", "****"),
             (FeatType.QuickDraw2, "ife_qckdrw2", "M", "0x02", "1", "****", "****", "****", "****"),
             (FeatType.DoubleShot2, "ife_dblshot2", "M", "0x02", "1", "****", "****", "****", "****"),
-            (FeatType.FanTheHammer1, "ife_fanhamr1", "M", "0x3E", "1", "cone", "5", "5", "17"),
+            (FeatType.FanTheHammer1, "ife_fanhamr1", "M", "0x3E", "1", "cone", "7", "6", "17"),
             (FeatType.QuickDraw3, "ife_qckdrw3", "M", "0x02", "1", "****", "****", "****", "****"),
             (FeatType.DoubleShot3, "ife_dblshot3", "M", "0x02", "1", "****", "****", "****", "****"),
-            (FeatType.FanTheHammer2, "ife_fanhamr2", "M", "0x3E", "1", "cone", "5", "5", "17"),
+            (FeatType.FanTheHammer2, "ife_fanhamr2", "M", "0x3E", "1", "cone", "8", "7", "17"),
             (FeatType.QuickDraw4, "ife_qckdrw4", "M", "0x02", "1", "****", "****", "****", "****"),
             (FeatType.GunslingerFocus1, "ife_gunsfoc1", "P", "0x01", "0", "****", "****", "****", "****"),
             (FeatType.DeadMansHand1, "ife_deadmanhand1", "M", "0x02", "1", "sphere", "5", "****", "1")
@@ -192,9 +192,9 @@ public class PistolGunslingerTests
         doubleShot.Should().Contain("ApplyDoubleShot(activator, target, targetLocation, 24);");
 
         var fanTheHammer = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Pistol" / "FanTheHammerAbilityDefinition.cs").FullName);
-        fanTheHammer.Should().Contain("SkillType.Pistol, 12, 0, null");
+        fanTheHammer.Should().Contain("SkillType.Pistol, 12, 0, null, CombatImpactAreaShape.Cone, 0.25f, 7f, 6f");
         fanTheHammer.Should().Contain("maxTargets: 3");
-        fanTheHammer.Should().Contain("SkillType.Pistol, 20, 0, null");
+        fanTheHammer.Should().Contain("SkillType.Pistol, 20, 0, null, CombatImpactAreaShape.Cone, 0.25f, 8f, 7f");
         fanTheHammer.Should().Contain("maxTargets: 5");
 
         var gunslingerFocus = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "StatusEffectDefinition" / "GunslingerFocusStatusEffect.cs").FullName);

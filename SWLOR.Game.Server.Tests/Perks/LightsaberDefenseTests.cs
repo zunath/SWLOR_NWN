@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber;
 using SWLOR.Game.Server.Feature.PerkDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
@@ -19,6 +20,8 @@ public class LightsaberDefenseTests
     {
         var tauntingDeflection = new TauntingDeflectionStatusEffect();
         tauntingDeflection.StatGroup.Stats[StatType.AttackDeflection].Should().Be(10);
+        tauntingDeflection.StatGroup.Stats[StatType.DeflectionFPRestore].Should().Be(2);
+        tauntingDeflection.StatGroup.Stats[StatType.DeflectionEnmityPercentAdjustment].Should().Be(20);
 
         var deflectingAura = new DeflectingAuraStatusEffect();
         deflectingAura.StatGroup.Stats[StatType.AttackDeflection].Should().Be(15);
@@ -34,6 +37,8 @@ public class LightsaberDefenseTests
         var guardianMaster = new GuardianMasterStatusEffect();
         guardianMaster.Name.Should().Be("Guardian Master");
         guardianMaster.StatGroup.Stats[StatType.AttackDeflection].Should().Be(0);
+        guardianMaster.StatGroup.Stats[StatType.DeflectionFPRestore].Should().Be(4);
+        guardianMaster.StatGroup.Stats[StatType.DeflectionEnmityPercentAdjustment].Should().Be(50);
         guardianMaster.StatGroup.Stats[StatType.AttackDeflectionChanceCap].Should().Be(10);
     }
 
@@ -46,7 +51,38 @@ public class LightsaberDefenseTests
         source.Should().Contain("StatType.AttackDeflection, 8");
         source.Should().Contain("StatType.AttackDeflection, 14");
         source.Should().Contain("StatType.AttackDeflection, 20");
+        source.Should().Contain("StatType.DeflectionNextAutoAttackCriticalRateSkillType, (int)SkillType.Lightsaber");
+        source.Should().Contain("StatType.DeflectionNextAutoAttackCriticalRatePercentAdjustment, 20");
+        source.Should().Contain("StatType.DeflectionNextAutoAttackCriticalRateWindowSeconds, 15");
+        source.Should().NotContain("StatType.DeflectionNextSkillAbilityCriticalRatePercentAdjustment, 20");
         source.Should().NotContain("StatType.AttackDeflection, creature => EquipmentPredicates.HasMainHandLightsaber(creature)");
+
+        var deflectionRiposte = BuildLightsaberDefensePerksWithout2daLookup()[PerkType.DeflectionRiposte];
+        AssertStatBonus(deflectionRiposte.PerkLevels[1], StatType.DeflectionNextAutoAttackCriticalRateSkillType, (int)SkillType.Lightsaber);
+        AssertStatBonus(deflectionRiposte.PerkLevels[1], StatType.DeflectionNextAutoAttackCriticalRatePercentAdjustment, 20);
+        AssertStatBonus(deflectionRiposte.PerkLevels[1], StatType.DeflectionNextAutoAttackCriticalRateWindowSeconds, 15);
+        Stat.GetStatTypeCategory(StatType.DeflectionNextAutoAttackCriticalRateSkillType).Should().Be(StatTypeCategory.NonBeneficial);
+        Stat.GetStatTypeCategory(StatType.DeflectionNextAutoAttackCriticalRatePercentAdjustment).Should().Be(StatTypeCategory.BeneficialWhenPositive);
+        Stat.GetStatTypeCategory(StatType.DeflectionNextAutoAttackCriticalRateWindowSeconds).Should().Be(StatTypeCategory.NonBeneficial);
+        Stat.GetStatTypeCategory(StatType.NextAutoAttackCriticalRateSkillType).Should().Be(StatTypeCategory.NonBeneficial);
+        Stat.GetStatTypeCategory(StatType.NextAutoAttackCriticalRatePercentAdjustment).Should().Be(StatTypeCategory.BeneficialWhenPositive);
+    }
+
+    [Test]
+    public void DeflectionRiposte_GrantsAutoAttackCriticalRateBonus()
+    {
+        var root = FindSourceRepositoryRoot();
+        var statSource = File.ReadAllText((root / "SWLOR.Game.Server" / "Service" / "Stat.cs").FullName);
+        var combatSource = File.ReadAllText((root / "SWLOR.Game.Server" / "Service" / "Combat.cs").FullName);
+        var attackRollSource = File.ReadAllText((root / "SWLOR.Game.Server" / "Native" / "ResolveAttackRoll.cs").FullName);
+
+        statSource.Should().Contain("StatType.DeflectionNextAutoAttackCriticalRateSkillType");
+        statSource.Should().Contain("StatType.DeflectionNextAutoAttackCriticalRatePercentAdjustment");
+        statSource.Should().Contain("Combat.GrantNextAutoAttackCriticalRateBonus(");
+        combatSource.Should().Contain("public static int ConsumeNextAutoAttackCriticalRateBonus(uint creature, SkillType skillType)");
+        combatSource.Should().Contain("StatType.NextAutoAttackCriticalRateSkillType");
+        combatSource.Should().Contain("StatType.NextAutoAttackCriticalRatePercentAdjustment");
+        attackRollSource.Should().Contain("criticalModifier += Combat.ConsumeNextAutoAttackCriticalRateBonus(attacker.m_idSelf, weaponSkillType);");
     }
 
     [Test]
@@ -96,6 +132,50 @@ public class LightsaberDefenseTests
             spellRow["TargetSizeY"].Should().Be(targetSizeY);
             spellRow["TargetFlags"].Should().Be(targetFlags);
         }
+    }
+
+    [Test]
+    public void LightsaberDefenseAreaAbilities_DeclareTargetingAndImpactVisuals()
+    {
+        var challengeAbilities = new GuardiansChallengeAbilityDefinition().BuildAbilities();
+        var challenge1 = challengeAbilities[FeatType.GuardiansChallenge1];
+        var challenge2 = challengeAbilities[FeatType.GuardiansChallenge2];
+        var punishingStrike = new PunishingStrikeAbilityDefinition().BuildAbilities()[FeatType.PunishingStrike1];
+
+        challenge1.Targeting.Should().NotBeNull();
+        challenge1.Targeting!.Spell.Should().Be(Spell.GuardiansChallenge1);
+        challenge1.Targeting.Shape.Should().Be(AbilityTargetingShapeType.Cone);
+        challenge1.Targeting.SizeX.Should().Be(5f);
+        challenge1.Targeting.SizeY.Should().Be(5f);
+        challenge1.Targeting.Flags.Should().Be(AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf);
+
+        challenge2.Targeting.Should().NotBeNull();
+        challenge2.Targeting!.Spell.Should().Be(Spell.GuardiansChallenge2);
+        challenge2.Targeting.Shape.Should().Be(AbilityTargetingShapeType.Rect);
+        challenge2.Targeting.SizeX.Should().Be(8f);
+        challenge2.Targeting.SizeY.Should().Be(2.5f);
+        challenge2.Targeting.Flags.Should().Be(AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf);
+
+        punishingStrike.Targeting.Should().NotBeNull();
+        punishingStrike.Targeting!.Spell.Should().Be(Spell.PunishingStrike1);
+        punishingStrike.Targeting.Shape.Should().Be(AbilityTargetingShapeType.Sphere);
+        punishingStrike.Targeting.SizeX.Should().Be(5f);
+        punishingStrike.Targeting.SizeY.Should().Be(0f);
+        punishingStrike.Targeting.Flags.Should().Be(AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf);
+
+        var root = FindSourceRepositoryRoot();
+        var challengeSource = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Lightsaber" / "GuardiansChallengeAbilityDefinition.cs").FullName);
+        var punishingSource = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Lightsaber" / "PunishingStrikeAbilityDefinition.cs").FullName);
+
+        challengeSource.Should().Contain("targetVisualEffect: ChallengeVisualEffect");
+        challengeSource.Should().Contain("areaVisualEffect: ChallengeVisualEffect");
+        challengeSource.Should().Contain("ChallengeVisualEffect = VisualEffect.Vfx_Fnf_Howl_Odd");
+        punishingSource.Should().Contain("Ability.ApplyTelegraphedCombatImpact(");
+        punishingSource.Should().Contain("centerOnActivator: true");
+        punishingSource.Should().Contain("AreaVisualEffect = VisualEffect.Vfx_Fnf_Swinging_Blade");
+        punishingSource.Should().Contain("TargetVisualEffect = VisualEffect.Vfx_Com_Blood_Spark_Medium");
+        punishingSource.Should().Contain("targetVisualEffect: TargetVisualEffect");
+        punishingSource.Should().Contain("areaVisualEffect: AreaVisualEffect");
     }
 
     private static void AssertPerkLevel(
@@ -201,6 +281,17 @@ public class LightsaberDefenseTests
             .GetValue(requirement)
             .Should()
             .Be(characterType);
+    }
+
+    private static void AssertStatBonus(PerkLevel level, StatType statType, int expectedValue)
+    {
+        level.StatBonuses
+            .Should()
+            .ContainSingle(x => x.Stat == statType)
+            .Which
+            .Calculate(0)
+            .Should()
+            .Be(expectedValue);
     }
 
     private static Dictionary<PerkType, PerkDetail> BuildLightsaberDefensePerksWithout2daLookup()

@@ -239,6 +239,7 @@ namespace SWLOR.Game.Server.Native
                         var criticalStat = attackerStats.GetDEXStat();
                         var criticalRoll = Random.D100(1);
                         var criticalModifier = CalculateCriticalRateModifier(attacker, weaponSkillType);
+                        criticalModifier += Combat.ConsumeNextAutoAttackCriticalRateBonus(attacker.m_idSelf, weaponSkillType);
                         criticalModifier += Combat.PrepareOpeningAutoAttack(attacker.m_idSelf, weaponSkillType);
                         criticalModifier += Combat.GetSideAttackCriticalRateAdjustment(attacker.m_idSelf, defender.m_idSelf, weaponSkillType);
                         var criticalSkillRank = GetCriticalSkillRank(attacker, weapon);

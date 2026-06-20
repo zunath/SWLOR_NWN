@@ -33,6 +33,7 @@ public class LightsaberOffenseTests
 
         var brutalAssault = new BrutalAssaultAbilityDefinition().BuildAbilities()[FeatType.BrutalAssault1];
         AssertAbility(brutalAssault, "Brutal Assault", 1, RecastGroup.BrutalAssault, 300f, 2f, 7, null, false, false, false, true, AbilityActivationType.Casted);
+        brutalAssault.AnimationType.Should().Be(Animation.FollowMe);
 
         var saberStorm = new SaberStormAbilityDefinition().BuildAbilities()[FeatType.SaberStorm1];
         AssertAbility(saberStorm, "Saber Storm", 1, RecastGroup.Capstone, 345f, 2f, 15, null, true, false, false, true, AbilityActivationType.Casted);

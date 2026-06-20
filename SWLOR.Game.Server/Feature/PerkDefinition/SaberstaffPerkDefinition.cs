@@ -1,4 +1,5 @@
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
@@ -402,8 +403,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SpinningDeflectionTrait)
-                .Description("Gain +8 Attack Deflection. After deflecting an attack, your next Circle Slash deals +8 DMG.")
+                .Description("Gain +8 Attack Deflection. After deflecting an attack, reduce Circle Slash's cooldown by 1 second and your next Circle Slash deals +8 DMG.")
                 .IncreasesStat(StatType.AttackDeflection, 8)
+                .IncreasesStat(StatType.DeflectionRecastReductionGroup, (int)RecastGroup.CircleSlash)
+                .IncreasesStat(StatType.DeflectionRecastReductionSeconds, 1)
                 .IncreasesStat(StatType.DeflectionNextAbilityDamageBonusPerkType, (int)PerkType.CircleSlash)
                 .IncreasesStat(StatType.DeflectionNextAbilityDamageBonus, 8)
                 .IncreasesStat(StatType.DeflectionNextAbilityDamageBonusDurationSeconds, 8)
@@ -412,12 +415,15 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementCharacterType(CharacterType.ForceSensitive)
 
                 .AddPerkLevel()
-                .Description("Gain +16 Attack Deflection total. Deflecting an attack restores 4 FP.")
+                .Description("Gain +16 Attack Deflection total. After deflecting an attack, reduce Circle Slash's cooldown by 1 second and your next Circle Slash deals +8 DMG. Deflecting an attack restores 4 FP once every 6 seconds.")
                 .IncreasesStat(StatType.AttackDeflection, 16)
+                .IncreasesStat(StatType.DeflectionRecastReductionGroup, (int)RecastGroup.CircleSlash)
+                .IncreasesStat(StatType.DeflectionRecastReductionSeconds, 1)
                 .IncreasesStat(StatType.DeflectionNextAbilityDamageBonusPerkType, (int)PerkType.CircleSlash)
                 .IncreasesStat(StatType.DeflectionNextAbilityDamageBonus, 8)
                 .IncreasesStat(StatType.DeflectionNextAbilityDamageBonusDurationSeconds, 8)
                 .IncreasesStat(StatType.DeflectionFPRestore, 4)
+                .IncreasesStat(StatType.DeflectionFPRestoreCooldownSeconds, 6)
                 .Price(2)
                 .RequirementSkill(SkillType.Saberstaff, 40)
                 .RequirementCharacterType(CharacterType.ForceSensitive);

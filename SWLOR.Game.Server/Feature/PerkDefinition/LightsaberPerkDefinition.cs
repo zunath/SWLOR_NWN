@@ -176,10 +176,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.DeflectionRiposteTrait)
-                .Description("When you deflect an attack, your next attack receives +20% critical chance. Effect wears off after 15 seconds.")
-                .IncreasesStat(StatType.DeflectionNextSkillAbilitySkillType, (int)SkillType.Lightsaber)
-                .IncreasesStat(StatType.DeflectionNextSkillAbilityCriticalRatePercentAdjustment, 20)
-                .IncreasesStat(StatType.DeflectionNextSkillAbilityCriticalRateWindowSeconds, 15)
+                .Description("When you deflect an attack, your next Lightsaber auto-attack receives +20% critical chance. Effect wears off after 15 seconds.")
+                .IncreasesStat(StatType.DeflectionNextAutoAttackCriticalRateSkillType, (int)SkillType.Lightsaber)
+                .IncreasesStat(StatType.DeflectionNextAutoAttackCriticalRatePercentAdjustment, 20)
+                .IncreasesStat(StatType.DeflectionNextAutoAttackCriticalRateWindowSeconds, 15)
                 .Price(3)
                 .RequirementSkill(SkillType.Lightsaber, 12)
                 .RequirementCharacterType(CharacterType.ForceSensitive);

@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                         5f,
                         AbilityTargetingFlags.HelpsAllies | AbilityTargetingFlags.OriginOnSelf)
                     .HasRecastDelay(RecastGroup.BrutalAssault, 300f)
-                    .UsesAnimation(Animation.DoubleStrike),
+                    .UsesAnimation(Animation.FollowMe),
                 typeof(BrutalAssaultStatusEffect),
                 60f,
                 7,

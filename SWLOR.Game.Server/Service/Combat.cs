@@ -1913,7 +1913,11 @@ namespace SWLOR.Game.Server.Service
 
             var chance = Stat.GetStatAdjustment(creature, StatType.AvoidedAttackStaminaRestoreChance);
             var staminaRestore = Stat.GetStatAdjustment(creature, StatType.AvoidedAttackStaminaRestore);
-            if (chance > 0 && staminaRestore > 0 && Random.D100(1) <= chance)
+            var staminaRestoreCooldown = Stat.GetStatAdjustment(creature, StatType.AvoidedAttackStaminaRestoreCooldownSeconds);
+            if (chance > 0 &&
+                staminaRestore > 0 &&
+                Random.D100(1) <= chance &&
+                TryUseStatTrigger(creature, StatType.AvoidedAttackStaminaRestore, staminaRestoreCooldown))
             {
                 Stat.RestoreStamina(creature, staminaRestore);
             }
@@ -2370,8 +2374,20 @@ namespace SWLOR.Game.Server.Service
             if (skillType == SkillType.Throwing)
                 adjustment += Stat.GetStatAdjustment(defender, StatType.ThrowingDamageTakenPercentAdjustment);
 
-            if (skillType == SkillType.Pistol && IsNearbyTargetNotTargetingAttacker(attacker, defender, 8f))
-                adjustment += Stat.GetStatAdjustment(attacker, StatType.DamageToNearbyNonTargetingTargetPercentAdjustment);
+            if (IsRangedWeaponSkill(skillType) && IsNearbyTargetWithinDistance(attacker, defender, 8f))
+                adjustment += Stat.GetStatAdjustment(attacker, StatType.RangedDamageToNearbyTargetPercentAdjustment);
+
+            if (skillType == SkillType.Pistol &&
+                StatusEffect.HasStatusEffect(
+                    defender,
+                    typeof(DisorientedStatusEffect),
+                    typeof(KnockdownStatusEffect),
+                    typeof(TranquilizedStatusEffect)))
+            {
+                damage += Stat.GetStatAdjustment(
+                    attacker,
+                    StatType.PistolDamageToDisorientedKnockdownOrTranquilizedTargetBonus);
+            }
 
             if (isAbilityDamage &&
                 skillType == SkillType.Staff &&
@@ -2531,16 +2547,12 @@ namespace SWLOR.Game.Server.Service
                 : Math.Max(1, accuracy + (int)Math.Ceiling(accuracy * (adjustment / 100f)));
         }
 
-        private static bool IsNearbyTargetNotTargetingAttacker(uint attacker, uint defender, float distance)
+        private static bool IsNearbyTargetWithinDistance(uint attacker, uint defender, float distance)
         {
-            if (!GetIsObjectValid(attacker) ||
-                !GetIsObjectValid(defender) ||
-                GetArea(attacker) != GetArea(defender) ||
-                GetDistanceBetween(attacker, defender) > distance)
-                return false;
-
-            var target = GetAttackTarget(defender);
-            return GetIsObjectValid(target) && target != attacker;
+            return GetIsObjectValid(attacker) &&
+                   GetIsObjectValid(defender) &&
+                   GetArea(attacker) == GetArea(defender) &&
+                   GetDistanceBetween(attacker, defender) <= distance;
         }
 
         public static bool IsRangedDamageSkill(SkillType skillType)
@@ -2737,13 +2749,6 @@ namespace SWLOR.Game.Server.Service
                         bonus += Stat.GetStatAdjustment(activator, StatType.LightsaberOffenseDebuffedTargetDamageBonus);
                     }
                     break;
-                case SkillType.Pistol:
-                    if (GetIsObjectValid(target) &&
-                        StatusEffect.HasStatusEffect(target, typeof(DisorientedStatusEffect)))
-                    {
-                        bonus += Stat.GetStatAdjustment(activator, StatType.PistolSkirmisherDisorientedTargetDamageBonus);
-                    }
-                    break;
                 case SkillType.Vibroknife when ability.IsHostileAbility:
                     var toxicCoatingRank = Stat.GetStatAdjustment(activator, StatType.VibroknifeSaboteurToxicCoatingRank);
                     if (toxicCoatingRank > 0)
@@ -2891,8 +2896,7 @@ namespace SWLOR.Game.Server.Service
                         damageType,
                         StatType.PistolSkirmisherRicochetDamageBonus,
                         StatType.PistolSkirmisherRicochetMaximumTargets,
-                        StatType.PistolSkirmisherRicochetCooldownSeconds,
-                        ricochetTarget => StatusEffect.ApplyStatusEffect(activator, ricochetTarget, typeof(BlindStatusEffect), 6f, ResistanceType.Trauma));
+                        StatType.PistolSkirmisherRicochetCooldownSeconds);
                     break;
                 case SkillType.Throwing:
                     if (ability.IsSingleTargetAbility)
@@ -2920,8 +2924,7 @@ namespace SWLOR.Game.Server.Service
             CombatDamageType damageType,
             StatType damageStatType,
             StatType maximumTargetsStatType,
-            StatType cooldownStatType = StatType.Invalid,
-            Action<uint> afterDamage = null)
+            StatType cooldownStatType = StatType.Invalid)
         {
             var bonus = Stat.GetStatAdjustment(activator, damageStatType);
             var maximumTargets = Stat.GetStatAdjustment(activator, maximumTargetsStatType);
@@ -2941,7 +2944,6 @@ namespace SWLOR.Game.Server.Service
                     continue;
 
                 ApplyTriggeredDamage(activator, nearby, bonus, damageType);
-                afterDamage?.Invoke(nearby);
             }
         }
 
@@ -3593,12 +3595,11 @@ namespace SWLOR.Game.Server.Service
             var evasion = Stat.GetStatAdjustment(activator, StatType.PistolSkirmisherEvasiveAbilityEvasionPercent);
             if (evasion != 0)
             {
-                TemporaryStatModifier.Replace(
+                StatusEffect.ApplyStatusEffect(
                     activator,
-                    StatType.EvasionPercentAdjustment,
-                    evasion,
-                    duration,
-                    StatType.PistolSkirmisherEvasiveAbilityEvasionPercent);
+                    activator,
+                    new SnapRollStatusEffect(evasion),
+                    duration);
             }
 
             var nextDamage = Stat.GetStatAdjustment(activator, StatType.PistolSkirmisherEvasiveAbilityNextAttackDamageBonus);
@@ -4156,6 +4157,30 @@ namespace SWLOR.Game.Server.Service
             return true;
         }
 
+        public static int ConsumeNextAutoAttackCriticalRateBonus(uint creature, SkillType skillType)
+        {
+            if (skillType == SkillType.Invalid)
+                return 0;
+
+            var storedSkillType = GetSkillTypeFromStat(TemporaryStatModifier.GetStatAdjustment(
+                creature,
+                StatType.NextAutoAttackCriticalRateSkillType,
+                StatType.NextAutoAttackCriticalRateSkillType));
+            if (!SkillTypeMatches(skillType, storedSkillType))
+                return 0;
+
+            var criticalRate = TemporaryStatModifier.Consume(
+                creature,
+                StatType.NextAutoAttackCriticalRatePercentAdjustment,
+                StatType.NextAutoAttackCriticalRateSkillType);
+            TemporaryStatModifier.Consume(
+                creature,
+                StatType.NextAutoAttackCriticalRateSkillType,
+                StatType.NextAutoAttackCriticalRateSkillType);
+
+            return criticalRate;
+        }
+
         public static void GrantNextAutoAttackNoDelay(uint creature, SkillType skillType, int durationSeconds)
         {
             if (!GetIsObjectValid(creature) || skillType == SkillType.Invalid || durationSeconds <= 0)
@@ -4167,6 +4192,32 @@ namespace SWLOR.Game.Server.Service
                 (int)skillType,
                 durationSeconds,
                 StatType.NextAutoAttackNoDelaySkillType);
+        }
+
+        public static void GrantNextAutoAttackCriticalRateBonus(
+            uint creature,
+            SkillType skillType,
+            int criticalRatePercentAdjustment,
+            int durationSeconds)
+        {
+            if (!GetIsObjectValid(creature) ||
+                skillType == SkillType.Invalid ||
+                criticalRatePercentAdjustment == 0 ||
+                durationSeconds <= 0)
+                return;
+
+            TemporaryStatModifier.Replace(
+                creature,
+                StatType.NextAutoAttackCriticalRateSkillType,
+                (int)skillType,
+                durationSeconds,
+                StatType.NextAutoAttackCriticalRateSkillType);
+            TemporaryStatModifier.Replace(
+                creature,
+                StatType.NextAutoAttackCriticalRatePercentAdjustment,
+                criticalRatePercentAdjustment,
+                durationSeconds,
+                StatType.NextAutoAttackCriticalRateSkillType);
         }
 
         public static void GrantNextAbilityNoDelay(uint creature, int skillTypeValue, int durationSeconds)
@@ -4557,11 +4608,16 @@ namespace SWLOR.Game.Server.Service
 
         private static void ApplyAbilityUsedRecastReduction(uint activator, AbilityDetail ability)
         {
+            ApplyAbilityUsedRecastReduction(activator, ability?.RecastGroup ?? RecastGroup.Invalid);
+        }
+
+        private static void ApplyAbilityUsedRecastReduction(uint activator, RecastGroup activatedRecastGroup)
+        {
             var triggerGroup = GetRecastGroupFromStat(Stat.GetStatAdjustment(activator, StatType.AbilityUsedRecastReductionTriggerGroup));
             var secondaryTriggerGroup = GetRecastGroupFromStat(Stat.GetStatAdjustment(activator, StatType.AbilityUsedRecastReductionSecondaryTriggerGroup));
-            if (ability.RecastGroup == RecastGroup.Invalid ||
-                ability.RecastGroup != triggerGroup &&
-                ability.RecastGroup != secondaryTriggerGroup)
+            if (activatedRecastGroup == RecastGroup.Invalid ||
+                activatedRecastGroup != triggerGroup &&
+                activatedRecastGroup != secondaryTriggerGroup)
                 return;
 
             var targetGroup = GetRecastGroupFromStat(Stat.GetStatAdjustment(activator, StatType.AbilityUsedRecastReductionTargetGroup));

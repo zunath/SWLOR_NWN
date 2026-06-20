@@ -19,7 +19,9 @@ public class CombatUpgradeMigrationCoverageTests
         var combatMigration = File.ReadAllText(Path.Combine(serverMigrations, "_22_CombatSystemReplacement.cs"));
 
         previousMigration.Should().Contain("public int Version => 21;");
+        previousMigration.Should().Contain("MigrationExecutionType.PostCacheLoad");
         combatMigration.Should().Contain("public int Version => 22;");
+        combatMigration.Should().Contain("MigrationExecutionType.PostDatabaseLoad");
         combatMigration.Should().Contain("dbPlayer.RebuildComplete = false;");
         combatMigration.Should().NotContain("ClearLoggedOutPlayerEffects");
         combatMigration.Should().Contain("WeaponBlueprintPerkMigration.CollapsePlayerPerks");

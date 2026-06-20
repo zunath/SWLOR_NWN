@@ -1,0 +1,459 @@
+using FluentAssertions;
+using NUnit.Framework;
+
+namespace SWLOR.Game.Server.Tests.Service;
+
+public class PropertyOnDemandLoadingTests
+{
+    [Test]
+    public void PropertyTypes_DeclareOnDemandOnlyForPrivatePlayerInstances()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "PropertyService",
+            "PropertyType.cs"));
+
+        source.Should().Contain("[PropertyType(\"Apartment\", true, PropertyPublicType.AlwaysPrivate, PropertySpawnType.Instance, PropertyLoadType.OnDemand)]");
+        source.Should().Contain("[PropertyType(\"Starship\", true, PropertyPublicType.AlwaysPrivate, PropertySpawnType.Instance, PropertyLoadType.OnDemand)]");
+        source.Should().Contain("[PropertyType(\"City Hall\", false, PropertyPublicType.AlwaysPublic, PropertySpawnType.Instance, PropertyLoadType.Startup)]");
+        source.Should().Contain("[PropertyType(\"Bank\", true, PropertyPublicType.AlwaysPublic, PropertySpawnType.Instance, PropertyLoadType.Startup)]");
+        source.Should().Contain("[PropertyType(\"Starport\", false, PropertyPublicType.AlwaysPublic, PropertySpawnType.Instance, PropertyLoadType.Startup)]");
+        source.Should().Contain("[PropertyType(\"House\", true, PropertyPublicType.Adjustable, PropertySpawnType.Instance, PropertyLoadType.Startup)]");
+    }
+
+    [Test]
+    public void PersistentLocation_DoesNotJumpToInvalidInstanceArea()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "PersistentLocation.cs")).Replace("\r\n", "\n");
+        var loadBody = ExtractMethod(source, "public static void LoadLocation(uint player)");
+
+        loadBody.Should().Contain("var locationArea = Area.GetAreaByResref(dbPlayer.LocationAreaResref);");
+        loadBody.Should().Contain("if (!GetIsObjectValid(locationArea))");
+        loadBody.Should().Contain("return;");
+    }
+
+    [Test]
+    public void PropertyEntry_GatesThroughLoadStateBeforeJumping()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "Property.cs")).Replace("\r\n", "\n");
+        var enterPropertyBody = ExtractMethod(source, "public static void EnterProperty(uint player, string propertyId)");
+        var enterBuildingBody = ExtractMethod(source, "public static void EnterBuilding()");
+        var resolveBody = ExtractMethod(source, "public static bool TryResolveEnterableInstance(uint player, string propertyId, out PropertyInstance instance)");
+
+        enterPropertyBody.Should().Contain("TryResolveEnterableInstance(player, property.Id, out var instance)");
+        enterBuildingBody.Should().Contain("TryResolveEnterableInstance(player, interior.Id, out var instance)");
+        resolveBody.Should().Contain("QueuePropertyLoad(propertyId, PropertyLoadPriority.PlayerRequest)");
+        resolveBody.Should().Contain("SendPropertyLoadingMessage(player)");
+        source.Should().Contain("This property is still loading. Please try again shortly.");
+    }
+
+    [Test]
+    public void RegisteredInstances_AreNotReadDirectlyOutsidePropertyService()
+    {
+        var root = FindRepositoryRoot();
+        var serverRoot = Path.Combine(root.FullName, "SWLOR.Game.Server");
+        var offenders = Directory
+            .GetFiles(serverRoot, "*.cs", SearchOption.AllDirectories)
+            .Where(path => File.ReadAllText(path).Contains("Property.GetRegisteredInstance(", StringComparison.Ordinal))
+            .ToList();
+
+        offenders.Should().BeEmpty();
+    }
+
+    [Test]
+    public void LoadedState_WithMissingInstance_IsTreatedAsUnloaded()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "Property.cs")).Replace("\r\n", "\n");
+        var stateBody = ExtractMethod(source, "public static PropertyLoadState GetPropertyLoadState(string propertyId)");
+
+        stateBody.Should().Contain("state == PropertyLoadState.Loaded");
+        stateBody.Should().Contain("if (dbProperty == null)");
+        stateBody.Should().Contain("SetPropertyLoadState(propertyId, PropertyLoadState.Failed);");
+        stateBody.Should().Contain("_propertyLoadFailures[propertyId] = \"Property does not exist in the database.\";");
+        stateBody.Should().Contain("return PropertyLoadState.Failed;");
+        stateBody.Should().Contain("!GetIsObjectValid(registeredInstance.Area)");
+        stateBody.Should().Contain("return PropertyLoadState.Unloaded;");
+        stateBody.Should().Contain("_propertyInstances.TryGetValue(propertyId, out var existingInstance)");
+        stateBody.Should().Contain("GetIsObjectValid(existingInstance.Area)");
+        stateBody.Should().Contain("_completedInstanceSpawnActions.Remove(propertyId);");
+    }
+
+    [Test]
+    public void StaffNotify_DoesNotClearWaitersWhileLoadIsInProgress()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "Property.cs")).Replace("\r\n", "\n");
+        var staffNotifyBody = ExtractMethod(source, "public static void NotifyPropertyLoadWaitersForStaff(string propertyId)");
+        var nonTerminalBody = ExtractMethod(source, "private static void NotifyPropertyLoadWaitersWithoutClearing(string propertyId, string message)");
+
+        staffNotifyBody.Should().Contain("state == PropertyLoadState.Loaded");
+        staffNotifyBody.Should().Contain("state == PropertyLoadState.Failed");
+        staffNotifyBody.Should().Contain("NotifyPropertyLoadWaitersWithoutClearing(");
+        nonTerminalBody.Should().NotContain("_propertyLoadWaiters.Remove(propertyId)");
+    }
+
+    [Test]
+    public void LoadFailures_RecordOperationalContextForStaffDiagnostics()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "Property.cs")).Replace("\r\n", "\n");
+        var failBody = ExtractMethod(source, "private static void FailPropertyLoad(PropertyLoadJob job, string failure)");
+
+        failBody.Should().Contain("Type: {property?.PropertyType.ToString() ?? \"Unknown\"}");
+        failBody.Should().Contain("Layout: {property?.Layout.ToString() ?? \"Unknown\"}");
+        failBody.Should().Contain("Phase: {job.Phase}");
+        failBody.Should().Contain("StructureId: {structureId}");
+        failBody.Should().Contain("Error: {failure}");
+    }
+
+    [Test]
+    public void PropertyDiagnostics_ExposeOperationalFieldsForRuntimeRepair()
+    {
+        var root = FindRepositoryRoot();
+        var propertySource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "Property.cs")).Replace("\r\n", "\n");
+        var diagnosticSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "PropertyService",
+            "PropertyLoadDiagnostic.cs"));
+        var viewModelSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "GuiDefinition",
+            "ViewModel",
+            "PropertyDiagnosticsViewModel.cs"));
+        var diagnosticsBody = ExtractMethod(propertySource, "public static List<PropertyLoadDiagnostic> GetPropertyLoadDiagnostics()");
+
+        diagnosticSource.Should().Contain("public string OwnerPlayerId { get; set; }");
+        diagnosticSource.Should().Contain("public string QueuePriority { get; set; }");
+        diagnosticSource.Should().Contain("public int SpawnedChildCount { get; set; }");
+        diagnosticSource.Should().Contain("public int ExpectedChildCount { get; set; }");
+        diagnosticSource.Should().Contain("public bool IsLoadedAreaValid { get; set; }");
+        diagnosticSource.Should().Contain("public string LastPhase { get; set; }");
+        diagnosticsBody.Should().Contain("OwnerPlayerId = property.OwnerPlayerId");
+        diagnosticsBody.Should().Contain("QueuePriority = job?.Priority.ToString() ?? string.Empty");
+        diagnosticsBody.Should().Contain("SpawnedChildCount = spawnedChildCount");
+        diagnosticsBody.Should().Contain("ExpectedChildCount = expectedChildCount");
+        diagnosticsBody.Should().Contain("IsLoadedAreaValid = isLoadedAreaValid");
+        diagnosticsBody.Should().Contain("LastPhase = job?.Phase.ToString() ?? state.ToString()");
+        viewModelSource.Should().Contain("Owner: {diagnostic.OwnerPlayerId}");
+        viewModelSource.Should().Contain("Priority: {diagnostic.QueuePriority}");
+        viewModelSource.Should().Contain("Children: {diagnostic.SpawnedChildCount} / {diagnostic.ExpectedChildCount}");
+        viewModelSource.Should().Contain("Area Valid: {diagnostic.IsLoadedAreaValid}");
+        viewModelSource.Should().Contain("Phase: {diagnostic.LastPhase}");
+    }
+
+    [Test]
+    public void CompletedInteriorLoad_RequeuesExteriorStructure()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "Property.cs")).Replace("\r\n", "\n");
+        var completeBody = ExtractMethod(source, "private static void CompletePropertyLoad(PropertyLoadJob job)");
+        var queueBody = ExtractMethod(source, "private static bool QueueExteriorStructuresForInterior(string interiorPropertyId)");
+
+        completeBody.Should().Contain("QueueExteriorStructuresForInterior(job.PropertyId);");
+        queueBody.Should().Contain("interior.ParentPropertyId");
+        queueBody.Should().Contain("QueueStartupWorldProperty(structure);");
+        queueBody.Should().Contain("return true;");
+    }
+
+    [Test]
+    public void StartupWorldStructureDependencies_QueueUnloadedInstances()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "Property.cs")).Replace("\r\n", "\n");
+        var resolveBody = ExtractMethod(source, "private static bool TryResolveWorldStructureArea(WorldProperty property, out uint area, out bool dependencyFailed)");
+
+        resolveBody.Should().Contain("if (state == PropertyLoadState.Unloaded)");
+        resolveBody.Should().Contain("QueuePropertyLoad(parent.Id, PropertyLoadPriority.Startup);");
+        resolveBody.Should().Contain("if (interiorState == PropertyLoadState.Unloaded)");
+        resolveBody.Should().Contain("QueuePropertyLoad(interiorId, PropertyLoadPriority.Startup);");
+    }
+
+    [Test]
+    public void LoadProperties_ResetsScheduledProcessorFlagBeforeQueueingStartupLoads()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "Property.cs")).Replace("\r\n", "\n");
+        var loadBody = ExtractMethod(source, "private static void LoadProperties()");
+
+        loadBody.Should().Contain("_propertyLoadProcessorScheduled = false;");
+        loadBody.IndexOf("_propertyLoadProcessorScheduled = false;", StringComparison.Ordinal)
+            .Should()
+            .BeLessThan(loadBody.IndexOf("QueuePropertyLoad(property.Id, PropertyLoadPriority.Startup)", StringComparison.Ordinal));
+    }
+
+    [Test]
+    public void RetryLoadedProperty_RequeuesExteriorStructureForRuntimeRepair()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "Property.cs")).Replace("\r\n", "\n");
+        var retryBody = ExtractMethod(source, "public static bool RetryPropertyLoad(string propertyId)");
+
+        retryBody.Should().Contain("if (state == PropertyLoadState.Loaded)");
+        retryBody.Should().Contain("return QueueExteriorStructuresForInterior(propertyId);");
+    }
+
+    [Test]
+    public void QueueStartupWorldProperty_AlwaysEnsuresProcessorWhenAlreadyPending()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "Property.cs")).Replace("\r\n", "\n");
+        var queueBody = ExtractMethod(source, "private static void QueueStartupWorldProperty(WorldProperty property)");
+
+        queueBody.Should().Contain("if (!_pendingStartupWorldPropertyIds.Contains(property.Id))");
+        queueBody.Should().Contain("_pendingStartupWorldPropertyIds.Add(property.Id);");
+        queueBody.Should().Contain("EnsurePropertyLoadProcessor();");
+    }
+
+    [Test]
+    public void StartupWorldStructureBatch_HandlesSpawnFailuresWithoutStoppingQueue()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "Property.cs")).Replace("\r\n", "\n");
+        var processBody = ExtractMethod(source, "private static int ProcessStartupWorldProperties(int budget)");
+
+        processBody.Should().Contain("try");
+        processBody.Should().Contain("TryResolveWorldStructureArea(property, out area, out dependencyFailed);");
+        processBody.Should().Contain("failed while resolving dependencies");
+        processBody.Should().Contain("SpawnIntoWorld(property, area);");
+        processBody.Should().Contain("catch (Exception ex)");
+        processBody.Should().Contain("failed to spawn");
+        processBody.Should().Contain("_pendingStartupWorldPropertyIds.RemoveAt(0);");
+        processBody.Should().Contain("consumed++;");
+    }
+
+    [Test]
+    public void ExistingWorldStructure_ReplaysStructureChangedAction()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "Property.cs")).Replace("\r\n", "\n");
+        var spawnBody = ExtractMethod(source, "private static void SpawnIntoWorld(WorldProperty property, uint area)");
+
+        spawnBody.Should().Contain("_structurePropertyIdToPlaceable.TryGetValue(property.Id, out var existingPlaceable)");
+        spawnBody.Should().Contain("RunStructureChangedEvent(property.StructureType, StructureChangeType.PositionChanged, property, existingPlaceable);");
+    }
+
+    [Test]
+    public void InstanceSpawnAction_IsTrackedSeparatelyFromAreaRegistration()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "Property.cs")).Replace("\r\n", "\n");
+        var processBody = ExtractMethod(source, "private static int ProcessPropertyLoadJob(PropertyLoadJob job, int budget)");
+        var spawnBody = ExtractMethod(source, "private static void SpawnIntoWorld(WorldProperty property, uint area)");
+        var deleteBody = ExtractMethod(source, "public static void DeleteProperty(WorldProperty property)");
+        var loadBody = ExtractMethod(source, "private static void LoadProperties()");
+
+        source.Should().Contain("private static readonly HashSet<string> _completedInstanceSpawnActions = new();");
+        processBody.Should().Contain("if (!_completedInstanceSpawnActions.Contains(job.PropertyId))");
+        processBody.Should().Contain("if (!GetIsObjectValid(targetArea))");
+        processBody.Should().Contain("Unable to create property area from resref");
+        processBody.Should().Contain("layout.OnSpawnAction?.Invoke(targetArea);");
+        processBody.Should().Contain("_completedInstanceSpawnActions.Add(job.PropertyId);");
+        spawnBody.Should().Contain("if (!GetIsObjectValid(targetArea))");
+        spawnBody.Should().Contain("Unable to create property area from resref");
+        spawnBody.Should().Contain("if (!_completedInstanceSpawnActions.Contains(property.Id))");
+        spawnBody.Should().Contain("layout.OnSpawnAction?.Invoke(existingInstance.Area);");
+        deleteBody.Should().Contain("_completedInstanceSpawnActions.Remove(property.Id);");
+        loadBody.Should().Contain("_completedInstanceSpawnActions.Clear();");
+    }
+
+    [Test]
+    public void EmergencyExit_OnlyRunsAfterDestinationResolves()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "DialogDefinition",
+            "PropertyExitDialog.cs")).Replace("\r\n", "\n");
+        var returnBody = ExtractMethod(source, "private bool ReturnToLastDockedPosition(uint player, PropertyLocation propertyLocation)");
+        var pageBody = ExtractMethod(source, "private void MainPageInit(DialogPage page)");
+
+        returnBody.Should().Contain("return false;");
+        returnBody.Should().Contain("return true;");
+        pageBody.Should().Contain("if (ReturnToLastDockedPosition(player, propertyLocation))");
+        pageBody.Should().Contain("Space.PerformEmergencyExit(area);");
+    }
+
+    [Test]
+    public void PlayerStarportDocking_RequiresLoadedStarport()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "DialogDefinition",
+            "StarportDockDialog.cs")).Replace("\r\n", "\n");
+        var pageBody = ExtractMethod(source, "private void MainPageInit(DialogPage page)");
+
+        pageBody.Should().Contain("Property.GetPropertyLoadState(dockPoint.PropertyId)");
+        pageBody.Should().Contain("starportLoadState != PropertyLoadState.Loaded");
+        pageBody.Should().Contain("Property.TryGetLoadedInstance(dockPoint.PropertyId, out var starportInstance)");
+        pageBody.Should().Contain("!GetLocalBool(starportInstance.Area, \"BUILDING_EXIT_SET\")");
+        pageBody.Should().Contain("This starport is still loading. Please try again shortly.");
+    }
+
+    [Test]
+    public void PlayerStarportDockpoints_AreRemovedByPropertyId()
+    {
+        var root = FindRepositoryRoot();
+        var spaceSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "Space.cs")).Replace("\r\n", "\n");
+        var structureSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "PropertyService",
+            "StructureChangedAction.cs")).Replace("\r\n", "\n");
+        var registerBody = ExtractMethod(spaceSource, "public static void RegisterLandingPoint(uint waypoint, uint area, bool isNPC, string propertyId)");
+        var removeBody = ExtractMethod(spaceSource, "public static void RemoveLandingPointByPropertyId(string propertyId)");
+        var retrieveBody = ExtractMethod(structureSource, "private static Action<WorldProperty, uint> RetrieveStarport()");
+
+        registerBody.Should().Contain("RemoveLandingPointByPropertyId(propertyId);");
+        registerBody.Should().Contain("if (_dockPoints[planet].ContainsKey(dockPointId))");
+        registerBody.Should().Contain("DeleteLocalString(waypoint, \"STARSHIP_DOCKPOINT_ID\");");
+        removeBody.Should().Contain("x.Value.PropertyId == propertyId");
+        retrieveBody.Should().Contain("if (dbInterior == null)");
+        retrieveBody.Should().Contain("Space.RemoveLandingPointByPropertyId(interiorId);");
+        retrieveBody.Should().Contain("if (!Property.TryGetLoadedInstance(interiorId, out var instance))");
+    }
+
+    [Test]
+    public void PropertyDiagnostics_AreNotExposedAsChatCommands()
+    {
+        var root = FindRepositoryRoot();
+        var adminChatSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "ChatCommandDefinition",
+            "AdminChatCommand.cs"));
+        var staffDefinitionSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "GuiDefinition",
+            "ManageStaffDefinition.cs"));
+        var staffViewModelSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "GuiDefinition",
+            "ViewModel",
+            "ManageDMsViewModel.cs"));
+
+        adminChatSource.Should().NotContain("PropertyDiagnostics");
+        staffDefinitionSource.Should().Contain("OnClickPropertyDiagnostics");
+        staffViewModelSource.Should().Contain("GuiWindowType.PropertyDiagnostics");
+    }
+
+    private static string ExtractMethod(string source, string signature)
+    {
+        var start = source.IndexOf(signature, StringComparison.Ordinal);
+        start.Should().BeGreaterThanOrEqualTo(0, $"signature '{signature}' should exist");
+
+        var bodyStart = source.IndexOf('{', start);
+        bodyStart.Should().BeGreaterThanOrEqualTo(0, $"signature '{signature}' should have a body");
+
+        var depth = 0;
+        for (var i = bodyStart; i < source.Length; i++)
+        {
+            if (source[i] == '{')
+                depth++;
+            else if (source[i] == '}')
+                depth--;
+
+            if (depth == 0)
+                return source.Substring(start, i - start + 1);
+        }
+
+        throw new InvalidOperationException($"Could not extract method '{signature}'.");
+    }
+
+    private static DirectoryInfo FindRepositoryRoot()
+    {
+        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
+        while (directory != null)
+        {
+            if (File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln")) &&
+                Directory.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server")))
+            {
+                return directory;
+            }
+
+            directory = directory.Parent;
+        }
+
+        throw new DirectoryNotFoundException("Could not locate the SWLOR_NWN repository root.");
+    }
+}

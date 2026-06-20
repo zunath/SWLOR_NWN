@@ -671,9 +671,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 _spaceLocation = Location(spaceArea, spacePosition, spacePropertyLocation.Orientation);
 
                 var landingPropertyLocation = dbProperty.Positions[PropertyLocationType.DockPosition];
-                var landingArea = string.IsNullOrWhiteSpace(landingPropertyLocation.AreaResref)
-                    ? Property.GetRegisteredInstance(landingPropertyLocation.InstancePropertyId).Area
-                    : Area.GetAreaByResref(landingPropertyLocation.AreaResref);
+                uint landingArea;
+                if (string.IsNullOrWhiteSpace(landingPropertyLocation.AreaResref))
+                {
+                    landingArea = Property.TryGetLoadedInstance(landingPropertyLocation.InstancePropertyId, out var landingInstance)
+                        ? landingInstance.Area
+                        : OBJECT_INVALID;
+                }
+                else
+                {
+                    landingArea = Area.GetAreaByResref(landingPropertyLocation.AreaResref);
+                }
+
                 var landingPosition = Vector3(landingPropertyLocation.X, landingPropertyLocation.Y, landingPropertyLocation.Z);
                 _landingLocation = Location(landingArea, landingPosition, landingPropertyLocation.Orientation);
 
@@ -1241,9 +1250,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             else
             {
                 var landingLocation = property.Positions[PropertyLocationType.DockPosition];
-                var area = string.IsNullOrWhiteSpace(landingLocation.AreaResref)
-                    ? Property.GetRegisteredInstance(landingLocation.InstancePropertyId).Area
-                    : Area.GetAreaByResref(landingLocation.AreaResref);
+                uint area;
+                if (string.IsNullOrWhiteSpace(landingLocation.AreaResref))
+                {
+                    area = Property.TryGetLoadedInstance(landingLocation.InstancePropertyId, out var instance)
+                        ? instance.Area
+                        : OBJECT_INVALID;
+                }
+                else
+                {
+                    area = Area.GetAreaByResref(landingLocation.AreaResref);
+                }
 
                 return area;
             }
@@ -1355,9 +1372,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 };
                 DB.Set(ship);
 
-                var instance = Property.GetRegisteredInstance(property.Id);
-                SetName(instance.Area, "{PC} " + property.CustomName);
-
                 // Update the UI with the new ship details.
                 ShipCountRegistered = $"Ships: {dbPlayerShips.Count + 1} / {Space.MaxRegisteredShips}";
                 _shipIds.Add(ship.Id);
@@ -1431,12 +1445,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var shipId = _shipIds[SelectedShipIndex];
             var dbShip = DB.Get<PlayerShip>(shipId);
             var dbProperty = DB.Get<WorldProperty>(dbShip.PropertyId);
-            var instance = Property.GetRegisteredInstance(dbShip.PropertyId);
 
             dbProperty.CustomName = ShipName;
             DB.Set(dbProperty);
 
-            SetName(instance.Area, "{PC} " + ShipName);
+            if (Property.TryGetLoadedInstance(dbShip.PropertyId, out var instance))
+                SetName(instance.Area, "{PC} " + ShipName);
 
             ShipNames[SelectedShipIndex] = ShipName;
         };
@@ -1826,7 +1840,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var shipId = _shipIds[SelectedShipIndex];
             var dbShip = DB.Get<PlayerShip>(shipId);
             var shipDetail = Space.GetShipDetailByItemTag(dbShip.Status.ItemTag);
-            var instance = Property.GetRegisteredInstance(dbShip.PropertyId);
+            if (!Property.TryResolveEnterableInstance(Player, dbShip.PropertyId, out var instance))
+                return;
+
             var entrance = Property.GetEntrancePosition(shipDetail.Layout);
             var location = Location(instance.Area, Vector3(entrance.X, entrance.Y, entrance.Z), entrance.W);
 

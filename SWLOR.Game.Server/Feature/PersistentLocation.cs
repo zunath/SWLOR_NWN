@@ -107,6 +107,9 @@ namespace SWLOR.Game.Server.Feature
             if (string.IsNullOrWhiteSpace(dbPlayer.LocationAreaResref)) return;
 
             var locationArea = Area.GetAreaByResref(dbPlayer.LocationAreaResref);
+            if (!GetIsObjectValid(locationArea))
+                return;
+
             var position = Vector3(dbPlayer.LocationX, dbPlayer.LocationY, dbPlayer.LocationZ);
 
             var location = Location(locationArea, position, dbPlayer.LocationOrientation);

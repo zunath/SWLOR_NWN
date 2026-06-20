@@ -39,12 +39,10 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnModuleLoad)]
         public static void RemoveInstancesFromCache()
         {
-            var propertyLayouts = Property.GetAllLayoutsByPropertyType(PropertyType.Apartment);
-            foreach (var type in propertyLayouts)
+            foreach (var areaResref in Property.GetAllInstanceAreaResrefs())
             {
-                var layout = Property.GetLayoutByType(type);
-                if (AreasByResref.ContainsKey(layout.AreaInstanceResref))
-                    AreasByResref.Remove(layout.AreaInstanceResref);
+                if (AreasByResref.ContainsKey(areaResref))
+                    AreasByResref.Remove(areaResref);
             }
         }
 

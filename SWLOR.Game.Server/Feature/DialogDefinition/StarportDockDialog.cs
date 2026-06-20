@@ -82,7 +82,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             {
                 var dockName = dockPoint.IsNPC
                     ? $"[NPC] {dockPoint.Name}"
-                    : $"[PC] {GetName(Property.GetRegisteredInstance(dockPoint.PropertyId).Area)}";
+                    : $"[PC] {DB.Get<WorldProperty>(dockPoint.PropertyId)?.CustomName ?? "Unknown Starport"}";
 
                 page.AddResponse(dockName, () =>
                 {
@@ -100,6 +100,23 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                         if (dbStarport == null)
                         {
                             SendMessageToPC(player, ColorToken.Red("This starport is no longer available for docking."));
+                            return;
+                        }
+
+                        var starportLoadState = Property.GetPropertyLoadState(dockPoint.PropertyId);
+                        if (starportLoadState != PropertyLoadState.Loaded)
+                        {
+                            var message = starportLoadState == PropertyLoadState.Failed
+                                ? "This starport could not be loaded. Please notify staff."
+                                : "This starport is still loading. Please try again shortly.";
+                            SendMessageToPC(player, ColorToken.Red(message));
+                            return;
+                        }
+
+                        if (!Property.TryGetLoadedInstance(dockPoint.PropertyId, out var starportInstance) ||
+                            !GetLocalBool(starportInstance.Area, "BUILDING_EXIT_SET"))
+                        {
+                            SendMessageToPC(player, ColorToken.Red("This starport is still loading. Please try again shortly."));
                             return;
                         }
                     }

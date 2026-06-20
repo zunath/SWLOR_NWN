@@ -331,6 +331,25 @@ public class CombatDamageTests
     }
 
     [Test]
+    public void GuardRetaliationDamage_IsScaledAndAppliedAsPhysicalTriggeredDamage()
+    {
+        var root = FindRepositoryRoot();
+        var combatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"))
+            .Replace("\r\n", "\n");
+
+        var retaliation = ExtractMethod(combatSource, "private static void ApplyGuardedHitRetaliation");
+        retaliation.Should().Contain("StatType.GuardRetaliationDamage");
+        retaliation.Should().Contain("AbilityEffectScaling.ScaleDirectEffect");
+        retaliation.Should().Contain("GetAbilityScore(defender, scalingAbility)");
+        retaliation.Should().Contain("ApplyTriggeredDamage(defender, attacker, retaliationDamage, CombatDamageType.Physical, skillType);");
+        retaliation.Should().NotContain("EffectDamage(retaliationDamage");
+
+        var scalingAbility = ExtractMethod(combatSource, "private static AbilityType GetGuardRetaliationDamageAbility");
+        scalingAbility.Should().Contain("GetRelevantSkillWeapon(defender, skillType)");
+        scalingAbility.Should().Contain("GetWeaponDamageAbilityType(defender, GetBaseItemType(weapon))");
+    }
+
+    [Test]
     public void CombatImpactDamageScaling_IsDeclaredByAbilityImplementationsNotSkillType()
     {
         var root = FindRepositoryRoot();

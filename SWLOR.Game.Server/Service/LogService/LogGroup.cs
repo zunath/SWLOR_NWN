@@ -12,6 +12,8 @@ namespace SWLOR.Game.Server.Service.LogService
         Error,
         [LogGroup("Chat", ServerEnvironmentType.All)]
         Chat,
+        [LogGroup("PlayerName", ServerEnvironmentType.All)]
+        PlayerName,
         [LogGroup("DM", ServerEnvironmentType.All)]
         DM,
         [LogGroup("DMAuthorization", ServerEnvironmentType.All)]

@@ -376,21 +376,18 @@ namespace SWLOR.Game.Server.Service
                     }
                 }
 
-                var originalSender = sender;
-                // temp set sender to hologram owner for holocoms
-                if (GetIsObjectValid(HoloCom.GetHoloGramOwner(sender)))
-                {
-                    sender = HoloCom.GetHoloGramOwner(sender);
-                }
+                var speaker = GetEffectiveChatSpeaker(sender);
+                finalMessage.Append(PlayerName.GetColoredDisplayName(receiver, speaker));
+                finalMessage.Append(": ");
 
-                var language = Language.GetActiveLanguage(sender);
+                var language = Language.GetActiveLanguage(speaker);
 
                 // Wookiees cannot speak any other language (but they can understand them).
                 // Swap their language if they attempt to speak in any other language.
-                var race = GetRacialType(sender);
+                var race = GetRacialType(speaker);
                 if (race == RacialType.Wookiee && language != SkillType.Shyriiwook)
                 {
-                    Language.SetActiveLanguage(sender, SkillType.Shyriiwook);
+                    Language.SetActiveLanguage(speaker, SkillType.Shyriiwook);
                     language = SkillType.Shyriiwook;
                 }
 
@@ -417,7 +414,7 @@ namespace SWLOR.Game.Server.Service
 
                     if (component.IsTranslatable && language != SkillType.Basic)
                     {
-                        text = Language.TranslateSnippetForListener(sender, receiver, language, component.Text);
+                        text = Language.TranslateSnippetForListener(speaker, receiver, language, component.Text);
                     }
 
                     if (component.IsOOC)
@@ -464,18 +461,8 @@ namespace SWLOR.Game.Server.Service
                     finalMessage.Append(text);
                 }
 
-                // Dispatch the final message - method depends on the original chat channel.
-                // - Shout and party is sent as DMTalk. We do this to get around the restriction that
-                //   the PC needs to be in the same area for the normal talk channel.
-                //   We could use the native channels for these but the [shout] or [party chat] labels look silly.
-                // - Talk and whisper are sent as-is.
-
-                var finalChannel = channel;
-
-                if (channel == ChatChannel.PlayerShout || channel == ChatChannel.PlayerParty)
-                {
-                    finalChannel = ChatChannel.DMTalk;
-                }
+                // Send as a direct server message so the engine does not prepend the sender's true character name.
+                var finalChannel = ChatChannel.ServerMessage;
 
                 // There are a couple of color overrides we want to use here.
                 // - One for holonet (shout).
@@ -492,11 +479,16 @@ namespace SWLOR.Game.Server.Service
                     finalMessageColored = ColorToken.Orange(finalMessageColored);
                 }
 
-                // set back to original sender, if it was changed by holocom connection
-                sender = originalSender;
-
                 ChatPlugin.SendMessage(finalChannel, finalMessageColored, sender, receiver);
             }
+        }
+
+        private static uint GetEffectiveChatSpeaker(uint sender)
+        {
+            var hologramOwner = HoloCom.GetHoloGramOwner(sender);
+            return GetIsObjectValid(hologramOwner)
+                ? hologramOwner
+                : sender;
         }
 
 

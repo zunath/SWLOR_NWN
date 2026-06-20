@@ -452,7 +452,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 
                     PlayerName.SetKnownName(user, target, name);
                     Log.WriteStructured(
-                        LogGroup.Chat,
+                        LogGroup.PlayerName,
                         "Player identity name change: Action={Action} ObserverPlayerId={ObserverPlayerId} TargetPlayerId={TargetPlayerId} Name={Name}",
                         "name-set",
                         GetObjectUUID(user),
@@ -484,7 +484,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 
                     PlayerName.ForgetKnownName(user, target);
                     Log.WriteStructured(
-                        LogGroup.Chat,
+                        LogGroup.PlayerName,
                         "Player identity name change: Action={Action} ObserverPlayerId={ObserverPlayerId} TargetPlayerId={TargetPlayerId}",
                         "name-forget",
                         GetObjectUUID(user),

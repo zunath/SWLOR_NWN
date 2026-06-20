@@ -36,11 +36,14 @@ public class PlayerNameChatCommandTests
         source.Should().Contain("PlayerName.SetKnownName(user, target, name);");
         source.Should().Contain("PlayerName.ForgetKnownName(user, target);");
         source.Should().Contain("Log.WriteStructured(");
+        source.Should().Contain("LogGroup.PlayerName");
         source.Should().Contain("\"name-set\"");
         source.Should().Contain("\"name-forget\"");
         source.Should().Contain("ObserverPlayerId={ObserverPlayerId}");
         source.Should().Contain("TargetPlayerId={TargetPlayerId}");
         source.Should().Contain("Name={Name}");
+        source.Should().NotContain("LogGroup.Chat,\r\n                        \"Player identity name change");
+        source.Should().NotContain("LogGroup.Chat,\n                        \"Player identity name change");
     }
 
     [Test]

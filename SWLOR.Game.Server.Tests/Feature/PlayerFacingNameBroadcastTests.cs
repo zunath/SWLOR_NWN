@@ -21,11 +21,13 @@ public class PlayerFacingNameBroadcastTests
 
         foreach (var path in paths)
         {
-            var rawNameBroadcastLines = File.ReadAllLines(path)
-                .Where(line => line.Contains("Messaging.SendMessageNearbyToPlayers") && line.Contains("GetName("))
+            var source = File.ReadAllText(path);
+            var rawNameBroadcastInvocations = ExtractInvocations(source, "Messaging.SendMessageNearbyToPlayers")
+                .Where(invocation => invocation.Text.Contains("GetName("))
+                .Select(invocation => $"{Path.GetFileName(path)}:{GetLineNumber(source, invocation.StartIndex)}")
                 .ToList();
 
-            rawNameBroadcastLines.Should().BeEmpty($"{Path.GetFileName(path)} should render player-facing broadcast names per receiver");
+            rawNameBroadcastInvocations.Should().BeEmpty($"{Path.GetFileName(path)} should render player-facing broadcast names per receiver");
         }
     }
 
@@ -113,6 +115,160 @@ public class PlayerFacingNameBroadcastTests
         propertySource.Should().NotContain("**Mayor**:");
         propertySource.Should().NotContain("**New Mayor**:");
         propertySource.Should().NotContain("**Founding Mayor**:");
+    }
+
+    private static List<(int StartIndex, string Text)> ExtractInvocations(string source, string methodName)
+    {
+        var invocations = new List<(int StartIndex, string Text)>();
+        var searchIndex = 0;
+
+        while (searchIndex < source.Length)
+        {
+            var methodIndex = source.IndexOf(methodName, searchIndex, StringComparison.Ordinal);
+            if (methodIndex < 0)
+                break;
+
+            var openParenIndex = source.IndexOf('(', methodIndex + methodName.Length);
+            if (openParenIndex < 0)
+                break;
+
+            var closeParenIndex = FindClosingParenthesis(source, openParenIndex);
+            closeParenIndex.Should().BeGreaterThan(openParenIndex, $"the {methodName} invocation should be parseable");
+
+            invocations.Add((methodIndex, source.Substring(methodIndex, closeParenIndex - methodIndex + 1)));
+            searchIndex = closeParenIndex + 1;
+        }
+
+        return invocations;
+    }
+
+    private static int FindClosingParenthesis(string source, int openParenIndex)
+    {
+        var depth = 0;
+        var inString = false;
+        var inVerbatimString = false;
+        var inChar = false;
+        var inLineComment = false;
+        var inBlockComment = false;
+
+        for (var index = openParenIndex; index < source.Length; index++)
+        {
+            var character = source[index];
+            var nextCharacter = index + 1 < source.Length ? source[index + 1] : '\0';
+
+            if (inLineComment)
+            {
+                if (character == '\n')
+                    inLineComment = false;
+
+                continue;
+            }
+
+            if (inBlockComment)
+            {
+                if (character == '*' && nextCharacter == '/')
+                {
+                    inBlockComment = false;
+                    index++;
+                }
+
+                continue;
+            }
+
+            if (inString)
+            {
+                if (inVerbatimString)
+                {
+                    if (character == '"' && nextCharacter == '"')
+                    {
+                        index++;
+                        continue;
+                    }
+
+                    if (character == '"')
+                        inString = false;
+
+                    continue;
+                }
+
+                if (character == '\\')
+                {
+                    index++;
+                    continue;
+                }
+
+                if (character == '"')
+                    inString = false;
+
+                continue;
+            }
+
+            if (inChar)
+            {
+                if (character == '\\')
+                {
+                    index++;
+                    continue;
+                }
+
+                if (character == '\'')
+                    inChar = false;
+
+                continue;
+            }
+
+            if (character == '/' && nextCharacter == '/')
+            {
+                inLineComment = true;
+                index++;
+                continue;
+            }
+
+            if (character == '/' && nextCharacter == '*')
+            {
+                inBlockComment = true;
+                index++;
+                continue;
+            }
+
+            if (character == '"')
+            {
+                var previousCharacter = index > 0 ? source[index - 1] : '\0';
+                var twoCharactersBack = index > 1 ? source[index - 2] : '\0';
+
+                inString = true;
+                inVerbatimString =
+                    previousCharacter == '@' ||
+                    previousCharacter == '$' && twoCharactersBack == '@';
+                continue;
+            }
+
+            if (character == '\'')
+            {
+                inChar = true;
+                continue;
+            }
+
+            if (character == '(')
+            {
+                depth++;
+                continue;
+            }
+
+            if (character != ')')
+                continue;
+
+            depth--;
+            if (depth == 0)
+                return index;
+        }
+
+        return -1;
+    }
+
+    private static int GetLineNumber(string source, int index)
+    {
+        return source.Take(index).Count(character => character == '\n') + 1;
     }
 
     private static DirectoryInfo FindRepositoryRoot()

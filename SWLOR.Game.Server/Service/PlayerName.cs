@@ -27,8 +27,15 @@ namespace SWLOR.Game.Server.Service
         {
             var player = GetEnteringObject();
 
-            if (!GetIsPC(player) || GetIsDM(player))
+            if (!GetIsPC(player))
                 return;
+
+            if (GetIsDM(player))
+            {
+                ApplyNameOverridesForDMObserver(player);
+                DelayCommand(1.0f, () => ApplyNameOverridesForDMObserver(player));
+                return;
+            }
 
             ApplyNameOverridesForPlayer(player);
             DelayCommand(1.0f, () => ApplyNameOverridesForPlayer(player));
@@ -213,12 +220,46 @@ namespace SWLOR.Game.Server.Service
 
             for (var otherPlayer = GetFirstPC(); GetIsObjectValid(otherPlayer); otherPlayer = GetNextPC())
             {
-                if (!GetIsPC(otherPlayer) || GetIsDM(otherPlayer))
+                if (!GetIsPC(otherPlayer))
                     continue;
+
+                if (GetIsDM(otherPlayer))
+                {
+                    ApplyTrueNameOverride(otherPlayer, player);
+                    continue;
+                }
 
                 ApplyNameOverride(player, otherPlayer);
                 ApplyNameOverride(otherPlayer, player);
             }
+        }
+
+        private static void ApplyNameOverridesForDMObserver(uint dm)
+        {
+            if (!GetIsObjectValid(dm) || !GetIsPC(dm) || !GetIsDM(dm))
+                return;
+
+            for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())
+            {
+                if (!GetIsPC(player) || GetIsDM(player))
+                    continue;
+
+                ApplyTrueNameOverride(dm, player);
+            }
+        }
+
+        private static void ApplyTrueNameOverride(uint observer, uint target)
+        {
+            if (!GetIsObjectValid(observer) ||
+                !GetIsObjectValid(target) ||
+                !GetIsPC(observer) ||
+                !GetIsPC(target) ||
+                GetIsDM(target))
+            {
+                return;
+            }
+
+            RenamePlugin.SetPCNameOverride(target, GetName(target), string.Empty, string.Empty, PlayerNameOverrideType.Default, observer);
         }
 
         private static void ApplyNameOverride(uint observer, uint target)

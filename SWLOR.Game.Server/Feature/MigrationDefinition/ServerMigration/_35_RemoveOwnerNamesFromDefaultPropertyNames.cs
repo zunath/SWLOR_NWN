@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
     public class _35_RemoveOwnerNamesFromDefaultPropertyNames : ServerMigrationBase, IServerMigration
     {
         public int Version => 35;
-        public MigrationExecutionType ExecutionType => MigrationExecutionType.PostDatabaseLoad;
+        public MigrationExecutionType ExecutionType => MigrationExecutionType.PostCacheLoad;
 
         public void Migrate()
         {
@@ -79,14 +79,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
             if (layout == PropertyLayoutType.Invalid)
                 return string.Empty;
 
-            try
-            {
-                return Property.GetLayoutByType(layout).Name;
-            }
-            catch
-            {
-                return string.Empty;
-            }
+            return Property.GetLayoutByType(layout).Name;
         }
     }
 }

@@ -39,6 +39,32 @@ public class PlayerNameRecognitionTests
     }
 
     [Test]
+    public void PlayerNameOverrides_PreserveTrueNamesForDMObservers()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "PlayerName.cs"));
+        var enterMethod = ExtractMethod(source, "public static void ApplyNameOverridesOnEnter()");
+        var playerMethod = ExtractMethod(source, "private static void ApplyNameOverridesForPlayer(uint player)");
+        var dmObserverMethod = ExtractMethod(source, "private static void ApplyNameOverridesForDMObserver(uint dm)");
+        var trueNameMethod = ExtractMethod(source, "private static void ApplyTrueNameOverride(uint observer, uint target)");
+
+        enterMethod.Should().Contain("if (GetIsDM(player))");
+        enterMethod.Should().Contain("ApplyNameOverridesForDMObserver(player);");
+        enterMethod.Should().Contain("DelayCommand(1.0f, () => ApplyNameOverridesForDMObserver(player));");
+
+        playerMethod.Should().Contain("if (GetIsDM(otherPlayer))");
+        playerMethod.Should().Contain("ApplyTrueNameOverride(otherPlayer, player);");
+        playerMethod.Should().NotContain("!GetIsPC(otherPlayer) || GetIsDM(otherPlayer)");
+
+        dmObserverMethod.Should().Contain("ApplyTrueNameOverride(dm, player);");
+        trueNameMethod.Should().Contain("RenamePlugin.SetPCNameOverride(target, GetName(target), string.Empty, string.Empty, PlayerNameOverrideType.Default, observer);");
+    }
+
+    [Test]
     public void KnownNameStorage_UsesIndexedObserverFieldAndGeneratedEntityId()
     {
         var root = FindRepositoryRoot();

@@ -55,6 +55,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 }
 
                 var auditAuthorName = $"{GetName(Player)} ({GetPCPlayerName(Player)}) [{GetPCPublicCDKey(Player)}]";
+                AssignCommand(Player, () => TakeGoldFromCreature(BroadcastPrice, Player, true));
+
                 if (!await BackgroundJob.EnqueueDiscordWebhook(url, "HoloNet Broadcast", message, 3447003))
                 {
                     SendMessageToPC(Player, ColorToken.Red("ERROR: Unable to queue HoloNet broadcast. Please notify a DM."));
@@ -62,7 +64,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 }
 
                 Log.Write(LogGroup.Chat, $"{auditAuthorName} submitted HoloNet broadcast: {message}");
-                AssignCommand(Player, () => TakeGoldFromCreature(BroadcastPrice, Player, true));
 
                 SendMessageToPC(Player, "HoloNet message broadcasted!");
                 Gui.TogglePlayerWindow(Player, GuiWindowType.HoloNet);

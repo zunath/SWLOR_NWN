@@ -136,28 +136,28 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Tame")
 
                 .AddPerkLevel()
-                .Description("Enables you to tame & train creatures between levels 0 and 10. Also grants 'Call Beast' ability. Taming chance increases by 1% per SOC, capped at 95%.")
+                .Description("Enables you to tame & train creatures between levels 0 and 10. Also grants 'Call Beast' ability. Taming chance increases by 3% per SOC, capped at 75%.")
                 .Price(3)
                 .GrantsFeat(FeatType.Tame)
                 .GrantsFeat(FeatType.CallBeast)
 
                 .AddPerkLevel()
-                .Description("Enables you to tame & train creatures between levels 0 and 20. Taming chance increases by 1% per SOC, capped at 95%.")
+                .Description("Enables you to tame & train creatures between levels 0 and 20. Taming chance increases by 3% per SOC, capped at 75%.")
                 .Price(3)
                 .RequirementSkill(SkillType.BeastMastery, 10)
 
                 .AddPerkLevel()
-                .Description("Enables you to tame & train creatures between levels 0 and 30. Taming chance increases by 1% per SOC, capped at 95%.")
+                .Description("Enables you to tame & train creatures between levels 0 and 30. Taming chance increases by 3% per SOC, capped at 75%.")
                 .Price(4)
                 .RequirementSkill(SkillType.BeastMastery, 20)
 
                 .AddPerkLevel()
-                .Description("Enables you to tame & train creatures between levels 0 and 40. Taming chance increases by 1% per SOC, capped at 95%.")
+                .Description("Enables you to tame & train creatures between levels 0 and 40. Taming chance increases by 3% per SOC, capped at 75%.")
                 .Price(5)
                 .RequirementSkill(SkillType.BeastMastery, 30)
 
                 .AddPerkLevel()
-                .Description("Enables you to tame & train creatures between levels 0 and 50. Taming chance increases by 1% per SOC, capped at 95%.")
+                .Description("Enables you to tame & train creatures between levels 0 and 50. Taming chance increases by 3% per SOC, capped at 75%.")
                 .Price(5)
                 .RequirementSkill(SkillType.BeastMastery, 40);
         }

@@ -86,6 +86,19 @@ public class BeastmasterCombatUpgradeTests
     }
 
     [Test]
+    public void TameChance_ScalesSocialByThreePercentAndCapsAtSeventyFive()
+    {
+        var baseline = TameAbilityDefinition.CalculateTameChance(
+            beastMasterySkillRank: 20,
+            npcLevel: 20,
+            social: 0);
+
+        baseline.Should().Be(40);
+        TameAbilityDefinition.CalculateTameChance(20, 20, 10).Should().Be(baseline + 30);
+        TameAbilityDefinition.CalculateTameChance(20, 20, 25).Should().Be(75);
+    }
+
+    [Test]
     public void BeastmasterSources_IncludeBibleBehavior()
     {
         var root = FindRepositoryRoot();

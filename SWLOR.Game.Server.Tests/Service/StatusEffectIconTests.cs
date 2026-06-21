@@ -399,11 +399,11 @@ public class StatusEffectIconTests
         foreach (var line in lines.Skip(2))
         {
             var parts = line.Split((char[])null!, StringSplitOptions.RemoveEmptyEntries);
-            if (parts.Length < headers.Length + 1 || !int.TryParse(parts[0], out var rowNumber))
+            if (parts.Length == 0 || !int.TryParse(parts[0], out var rowNumber))
                 continue;
 
             var row = new Dictionary<string, string>();
-            for (var index = 0; index < headers.Length; index++)
+            for (var index = 0; index < headers.Length && index + 1 < parts.Length; index++)
             {
                 row[headers[index]] = parts[index + 1];
             }

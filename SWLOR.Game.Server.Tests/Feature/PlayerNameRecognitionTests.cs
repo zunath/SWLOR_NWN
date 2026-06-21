@@ -188,6 +188,11 @@ public class PlayerNameRecognitionTests
         inputValidationMethod.Should().Contain("ContainsColorToken(name)");
         inputValidationMethod.Should().Contain("\"Names may not contain color codes.\"");
         inputValidationMethod.Should().Contain("ValidateKnownName(SanitizeKnownName(name))");
+        var colorTokenValidationIndex = inputValidationMethod.IndexOf("ContainsColorToken(name)", StringComparison.Ordinal);
+        var sanitizeValidationIndex = inputValidationMethod.IndexOf("SanitizeKnownName(name)", StringComparison.Ordinal);
+        colorTokenValidationIndex.Should().BeGreaterThanOrEqualTo(0);
+        sanitizeValidationIndex.Should().BeGreaterThanOrEqualTo(0);
+        colorTokenValidationIndex.Should().BeLessThan(sanitizeValidationIndex);
         source.Should().Contain("private static bool ContainsColorToken(string name)");
         source.Should().Contain("UtilPlugin.StripColors(name)");
 

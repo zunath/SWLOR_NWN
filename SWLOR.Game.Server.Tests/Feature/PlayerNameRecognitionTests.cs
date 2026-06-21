@@ -64,6 +64,7 @@ public class PlayerNameRecognitionTests
 
         dmObserverMethod.Should().Contain("ApplyTrueNameOverride(dm, player);");
         trueNameMethod.Should().Contain("BuildStaffDisplayName(target)");
+        trueNameMethod.Should().Contain("PlayerPlugin.SetCreatureNameOverride(observer, target, BuildCreatureNameOverrideWithDescriptor(trueName, descriptor));");
     }
 
     [Test]
@@ -285,6 +286,8 @@ public class PlayerNameRecognitionTests
         source.Should().Contain("PlayerDescriptor.GetUnknownDisplayName(target)");
         source.Should().Contain("private static string BuildDisplayNameWithDescriptor(string primaryName, string descriptor)");
         source.Should().Contain("private static string BuildColoredDisplayNameWithDescriptor(string primaryName, string descriptor)");
+        source.Should().Contain("private static string BuildCreatureNameOverride(uint observer, uint target, bool isUnknown)");
+        source.Should().Contain("private static string BuildCreatureNameOverrideWithDescriptor(string primaryName, string descriptor)");
         source.Should().Contain("private static bool ShouldShowDescriptorForNamedPlayers(uint observer)");
         source.Should().Contain("ShowDescriptorsForNamedPlayersByObserverId");
         ExtractMethod(descriptorSource, "public static void SetUnknownDisplayName(uint player, string name)")
@@ -293,6 +296,8 @@ public class PlayerNameRecognitionTests
         var nameOverrideMethod = ExtractMethod(source, "private static void ApplyNameOverride(uint observer, uint target)");
         nameOverrideMethod.Should().Contain("UnknownNamePrefix");
         nameOverrideMethod.Should().Contain("UnknownNameSuffix");
+        nameOverrideMethod.Should().Contain("RenamePlugin.SetPCNameOverride(target, displayName, prefix, suffix, PlayerNameOverrideType.Default, observer);");
+        nameOverrideMethod.Should().Contain("PlayerPlugin.SetCreatureNameOverride(observer, target, BuildCreatureNameOverride(observer, target, isUnknown));");
 
         var resolveDisplayMethod = ExtractMethod(source, "private static string ResolveDisplayName(uint observer, uint target, out bool isUnknown)");
         resolveDisplayMethod.Should().Contain("ShouldShowDescriptorForNamedPlayers(observer)");
@@ -304,6 +309,23 @@ public class PlayerNameRecognitionTests
         staffDisplayMethod.Should().Contain("PlayerDescriptor.GetUnknownDisplayName(target)");
         staffDisplayMethod.Should().Contain("return $\"{trueName} [{ColorToken.Gray(unknownDisplayName)}]\";");
         staffDisplayMethod.Should().Contain("ColorToken.Gray(unknownDisplayName)");
+
+        var displayWithDescriptorMethod = ExtractMethod(source, "private static string BuildDisplayNameWithDescriptor(string primaryName, string descriptor)");
+        displayWithDescriptorMethod.Should().Contain("return $\"{primaryName} [{ColorToken.Gray(descriptor)}]\";");
+        displayWithDescriptorMethod.Should().NotContain("\\n");
+
+        var coloredDisplayWithDescriptorMethod = ExtractMethod(source, "private static string BuildColoredDisplayNameWithDescriptor(string primaryName, string descriptor)");
+        coloredDisplayWithDescriptorMethod.Should().Contain("return $\"{ColorToken.GetPCColor(primaryName)} [{ColorToken.Gray(descriptor)}]\";");
+        coloredDisplayWithDescriptorMethod.Should().NotContain("\\n");
+
+        var creatureNameOverrideMethod = ExtractMethod(source, "private static string BuildCreatureNameOverride(uint observer, uint target, bool isUnknown)");
+        creatureNameOverrideMethod.Should().Contain("if (isUnknown)");
+        creatureNameOverrideMethod.Should().Contain("GetIsDMPossessed(observer)");
+        creatureNameOverrideMethod.Should().Contain("TryGetKnownName(observer, target, out var knownName)");
+        creatureNameOverrideMethod.Should().Contain("ShouldShowDescriptorForNamedPlayers(observer)");
+
+        var creatureNameOverrideWithDescriptorMethod = ExtractMethod(source, "private static string BuildCreatureNameOverrideWithDescriptor(string primaryName, string descriptor)");
+        creatureNameOverrideWithDescriptorMethod.Should().Contain("return $\"{primaryName}\\n{ColorToken.Gray(descriptor)}\";");
     }
 
     [Test]
@@ -389,6 +411,14 @@ public class PlayerNameRecognitionTests
         var initializationMethod = ExtractMethod(initializationSource, "public static void InitializePlayer()");
         initializationMethod.Should().Contain("if (PlayerDescriptor.EnsureUnknownDisplayName(player))");
         initializationMethod.Should().Contain("PlayerName.RefreshNameOverridesForPlayer(player);");
+        var versionGateIndex = initializationMethod.IndexOf("if (dbPlayer.Version >= 1 || dbPlayer.Version == -1)", StringComparison.Ordinal);
+        var firstDescriptorEnsureIndex = initializationMethod.IndexOf("if (PlayerDescriptor.EnsureUnknownDisplayName(player))", StringComparison.Ordinal);
+        var firstRefreshIndex = initializationMethod.IndexOf("PlayerName.RefreshNameOverridesForPlayer(player);", firstDescriptorEnsureIndex, StringComparison.Ordinal);
+        var firstReturnIndex = initializationMethod.IndexOf("return;", versionGateIndex, StringComparison.Ordinal);
+        versionGateIndex.Should().BeGreaterThanOrEqualTo(0);
+        firstDescriptorEnsureIndex.Should().BeGreaterThan(versionGateIndex);
+        firstDescriptorEnsureIndex.Should().BeLessThan(firstReturnIndex);
+        firstRefreshIndex.Should().BeLessThan(firstReturnIndex);
 
         var racialAppearanceMethod = ExtractMethod(initializationSource, "private static void AssignRacialAppearance(uint player, Player dbPlayer)");
         racialAppearanceMethod.Should().Contain("Race.GetDefaultAppearance(GetRacialType(player), GetGender(player))");

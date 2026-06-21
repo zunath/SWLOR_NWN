@@ -436,7 +436,11 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
+            var trueName = GetName(target);
+            var descriptor = PlayerDescriptor.GetUnknownDisplayName(target);
+
             RenamePlugin.SetPCNameOverride(target, BuildStaffDisplayName(target), string.Empty, string.Empty, PlayerNameOverrideType.Default, observer);
+            PlayerPlugin.SetCreatureNameOverride(observer, target, BuildCreatureNameOverrideWithDescriptor(trueName, descriptor));
         }
 
         private static void ApplyNameOverride(uint observer, uint target)
@@ -456,6 +460,7 @@ namespace SWLOR.Game.Server.Service
             var suffix = isUnknown ? UnknownNameSuffix : string.Empty;
 
             RenamePlugin.SetPCNameOverride(target, displayName, prefix, suffix, PlayerNameOverrideType.Default, observer);
+            PlayerPlugin.SetCreatureNameOverride(observer, target, BuildCreatureNameOverride(observer, target, isUnknown));
         }
 
         private static string BuildStaffDisplayName(uint target)
@@ -464,6 +469,30 @@ namespace SWLOR.Game.Server.Service
             var unknownDisplayName = PlayerDescriptor.GetUnknownDisplayName(target);
 
             return $"{trueName} [{ColorToken.Gray(unknownDisplayName)}]";
+        }
+
+        private static string BuildCreatureNameOverride(uint observer, uint target, bool isUnknown)
+        {
+            if (isUnknown)
+                return string.Empty;
+
+            var descriptor = PlayerDescriptor.GetUnknownDisplayName(target);
+
+            if (GetIsDMPossessed(observer))
+                return BuildCreatureNameOverrideWithDescriptor(GetName(target), descriptor);
+
+            if (TryGetKnownName(observer, target, out var knownName) &&
+                ShouldShowDescriptorForNamedPlayers(observer))
+            {
+                return BuildCreatureNameOverrideWithDescriptor(knownName, descriptor);
+            }
+
+            return string.Empty;
+        }
+
+        private static string BuildCreatureNameOverrideWithDescriptor(string primaryName, string descriptor)
+        {
+            return $"{primaryName}\n{ColorToken.Gray(descriptor)}";
         }
 
         private static string ResolveDisplayName(uint observer, uint target, out bool isUnknown)

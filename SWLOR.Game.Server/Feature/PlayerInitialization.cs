@@ -30,6 +30,9 @@ namespace SWLOR.Game.Server.Feature
             // Already been initialized. Don't do it again.
             if (dbPlayer.Version >= 1 || dbPlayer.Version == -1) // Note: -1 signifies legacy characters. The Migration service handles upgrading legacy characters.
             {
+                if (PlayerDescriptor.EnsureUnknownDisplayName(player))
+                    PlayerName.RefreshNameOverridesForPlayer(player);
+
                 InitializeSavingThrows(player);
                 ExecuteScript(ScriptName.OnCharacterInitAfter, OBJECT_SELF);
                 return;

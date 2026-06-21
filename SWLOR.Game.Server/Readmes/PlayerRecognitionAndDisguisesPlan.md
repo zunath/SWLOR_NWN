@@ -88,8 +88,8 @@ Recommended rollout behavior:
 
 - Other player characters display as a generated gray descriptor by default, such as `Wise Ewok` or `Muscular Human`.
 - Players use `/name <name>` to record who their character recognizes.
-- Players can target themselves with `/name <description>` to replace their generated unknown descriptor while remaining visually marked as unknown.
-- Players can hide descriptors in Settings only for observer-assigned names on targets they have personally named. Self-assigned `/name <description>` unknown descriptors cannot be hidden and always remain visually marked as unknown; unnamed characters and staff views always include the descriptor.
+- Self-targeting `/name <description>` replaces the generated unknown descriptor while keeping the character visually marked as unknown.
+- Descriptor hiding in Settings applies only to observer-assigned names on targets the player has personally named. Self-assigned `/name <description>` unknown descriptors cannot be hidden and always remain visually marked as unknown; unnamed characters and staff views always include the descriptor.
 - Players use `/forgetname` to remove a remembered name.
 - No legacy visibility cutoff is used.
 - No large pairwise migration is required to seed existing relationships.

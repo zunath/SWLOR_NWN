@@ -47,7 +47,8 @@ This step creates the core infrastructure needed for both ordinary known names a
 - Apply name overrides when players enter, relog, and encounter other online PCs.
 - Preserve true-name display for self and DMs.
 - Show unnamed players as the gray unknown-facing descriptor only. Once an observer names a target, show the observer's assigned name plus the gray descriptor in brackets by default, for example `Joe Blow [A Seedy Individual]`. Non-DM players can hide descriptors for named targets in Settings, leaving only the assigned name; staff always see the descriptor.
-- Show staff the true character name plus the unknown-facing descriptor, with the descriptor still wrapped as unknown/gray text. If the player has not self-assigned a description, staff see the default unknown label, for example `Joe Smith [Someone]`.
+- Generate a stable unknown-facing descriptor for players who have not self-assigned one, using persisted original appearance/species plus base stats. If species or stats cannot be resolved, use a generic humanoid descriptor.
+- Show staff the true character name plus the unknown-facing descriptor, with the descriptor still wrapped as unknown/gray text.
 - Preserve true names in staff tools, audit logs, abuse reports, crash logs, diagnostics, and database records.
 - Add a central display-name resolver for SWLOR-authored UI and messages.
 - Update high-value player-facing surfaces to use observer-specific display names.
@@ -85,10 +86,10 @@ SWLOR will launch with a clean recognition state.
 
 Recommended rollout behavior:
 
-- Other player characters display as `Someone` by default.
+- Other player characters display as a generated gray descriptor by default, such as `Wise Ewok` or `Muscular Human`.
 - Players use `/name <name>` to record who their character recognizes.
-- Players can target themselves with `/name <description>` to replace their default unknown `Someone` text while remaining visually marked as unknown.
-- Players can hide descriptors after they personally name a character, but unnamed characters and staff views always include the descriptor.
+- Players can target themselves with `/name <description>` to replace their generated unknown descriptor while remaining visually marked as unknown.
+- Players can hide descriptors in Settings only for observer-assigned names on targets they have personally named. Self-assigned `/name <description>` unknown descriptors cannot be hidden and always remain visually marked as unknown; unnamed characters and staff views always include the descriptor.
 - Players use `/forgetname` to remove a remembered name.
 - No legacy visibility cutoff is used.
 - No large pairwise migration is required to seed existing relationships.

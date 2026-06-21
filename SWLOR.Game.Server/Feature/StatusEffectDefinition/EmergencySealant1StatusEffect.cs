@@ -14,7 +14,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         protected override void Tick(uint creature)
         {
-            AbilityEffectScaling.ApplyScaledHeal(Source, creature, 2);
+            AbilityEffectScaling.ApplyScaledHeal(Source, creature, 4);
         }
     }
 }

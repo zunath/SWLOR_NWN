@@ -144,7 +144,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             {
                 HealPercent(activator, friendly, SkillType.FirstAid, percent);
                 FirstAidTreatmentAdjustments.ApplyTraumaMedicRiders(activator, friendly);
-                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_M), friendly);
+                FirstAidTreatmentAdjustments.ApplyMedicalVisualEffect(friendly);
                 applied = true;
             }
 
@@ -169,7 +169,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             amount = Stat.ApplyHealingReceivedAdjustment(target, amount);
 
             ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), target);
-            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_M), target);
+            FirstAidTreatmentAdjustments.ApplyMedicalVisualEffect(target);
         }
 
         private static int PercentOf(int value, int percent)

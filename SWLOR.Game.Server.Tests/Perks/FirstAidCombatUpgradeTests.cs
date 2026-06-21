@@ -170,10 +170,45 @@ public class FirstAidCombatUpgradeTests
         var koltoMistStatus = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "StatusEffectDefinition" / "KoltoMistHealingStatusEffect.cs").FullName);
         koltoMistStatus.Should().Contain("FirstAidTreatmentAdjustments.ApplyMedicalScaledHeal(Source, creature, _totalPercent / _tickCount);");
 
+        var treatmentAdjustments = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "FirstAid" / "FirstAidTreatmentAdjustments.cs").FullName);
+        treatmentAdjustments.Should().Contain("if (!removedAilment)");
+        treatmentAdjustments.Should().Contain("StatusEffect.ApplyStatusEffect(source, target, typeof(EmergencySealant1StatusEffect), 12f);");
+        treatmentAdjustments.IndexOf("if (!removedAilment)", StringComparison.Ordinal)
+            .Should()
+            .BeLessThan(treatmentAdjustments.IndexOf("StatusEffect.ApplyStatusEffect(source, target, typeof(EmergencySealant1StatusEffect), 12f);", StringComparison.Ordinal));
+
+        var emergencySealantStatus = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "StatusEffectDefinition" / "EmergencySealant1StatusEffect.cs").FullName);
+        emergencySealantStatus.Should().Contain("AbilityEffectScaling.ApplyScaledHeal(Source, creature, 4);");
+
         var cocktail = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "FirstAid" / "EmergencyCocktailAbilityDefinition.cs").FullName);
         cocktail.Should().Contain("AbilityEffectScaling.ApplyTemporaryHPPercent(activator, friendly, 12, duration)");
         cocktail.Should().Contain("CapstoneAbility.ActiveDurationSeconds");
         cocktail.Should().Contain("new[] { typeof(PoisonStatusEffect), typeof(ToxinStatusEffect) }");
+    }
+
+    [Test]
+    public void FirstAidHealingVisuals_DoNotPlayStockHealSound()
+    {
+        var root = FindRepositoryRoot();
+        var firstAidDirectory = new DirectoryInfo((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "FirstAid").FullName);
+
+        foreach (var sourcePath in firstAidDirectory.GetFiles("*.cs"))
+        {
+            var source = File.ReadAllText(sourcePath.FullName);
+            source.Should().NotContain("VisualEffect.Vfx_Imp_Healing_M)");
+            source.Should().NotContain("VisualEffect.Vfx_Imp_Healing_M,");
+        }
+
+        var treatmentAdjustments = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "FirstAid" / "FirstAidTreatmentAdjustments.cs").FullName);
+        treatmentAdjustments.Should().Contain("VisualEffect.Vfx_Imp_Healing_M_Silent");
+
+        var visualEffectEnum = File.ReadAllText((root / "SWLOR.NWN.API" / "NWScript" / "Enum" / "VisualEffect" / "VisualEffect.cs").FullName);
+        visualEffectEnum.Should().Contain("Vfx_Imp_Healing_M_Silent = 842");
+
+        var visualEffects = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "visualeffects.2da");
+        visualEffects[842]["Label"].Should().Be("VFX_IMP_HEALING_M_SILENT");
+        visualEffects[842]["Imp_HeadCon_Node"].Should().Be("vim_heal04");
+        visualEffects[842]["SoundImpact"].Should().Be("****");
     }
 
     [Test]

@@ -79,7 +79,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 ApplyTemporaryHP(activator, friendly, 10, duration);
                 StatusEffect.ApplyStatusEffect(activator, friendly, typeof(PainSuppressant1StatusEffect), duration);
                 FirstAidTreatmentAdjustments.ApplyCombatPharmacologyStimRiders(activator, friendly);
-                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_M), friendly);
+                FirstAidTreatmentAdjustments.ApplyMedicalVisualEffect(friendly);
             }
         }
 
@@ -91,7 +91,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 ApplyTemporaryHP(activator, friendly, 15, duration);
                 StatusEffect.ApplyStatusEffect(activator, friendly, typeof(PainSuppressant2StatusEffect), duration);
                 FirstAidTreatmentAdjustments.ApplyCombatPharmacologyStimRiders(activator, friendly);
-                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_M), friendly);
+                FirstAidTreatmentAdjustments.ApplyMedicalVisualEffect(friendly);
             }
         }
 

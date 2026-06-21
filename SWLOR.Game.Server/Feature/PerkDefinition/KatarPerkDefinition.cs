@@ -115,7 +115,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.CurrentOverload1)
-                .Description("Deals weapon DMG + 35. If the target is Poisoned or Disoriented, consume one effect to deal +25 DMG and inflict Stunned for 3 seconds.")
+                .Description("Deals weapon DMG + 35 electrical DMG. If the target is Poisoned or Disoriented, consume one effect to deal +25 additional electrical DMG and inflict Stunned for 3 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Katar, 42);
         }
@@ -235,7 +235,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.NeuralShock1)
-                .Description("Deals weapon DMG + 20. If the target is Disoriented, they become Dazed for 3 seconds.")
+                .Description("Deals weapon DMG + 20 electrical DMG. If the target is Disoriented, they become Dazed for 3 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Katar, 30);
         }
@@ -318,19 +318,19 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.StaticPalm1)
-                .Description("Your next attack deals weapon DMG + 8 and inflicts Disoriented for 8 seconds.")
+                .Description("Your next attack deals weapon DMG + 8 electrical DMG and inflicts Disoriented for 8 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Katar, 8)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.StaticPalm2)
-                .Description("Your next attack deals weapon DMG + 18 and inflicts Disoriented for 12 seconds.")
+                .Description("Your next attack deals weapon DMG + 18 electrical DMG and inflicts Disoriented for 12 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Katar, 20)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.StaticPalm3)
-                .Description("Your next attack deals weapon DMG + 28 and inflicts Disoriented for 15 seconds. Poisoned targets also become Dazed for 3 seconds.")
+                .Description("Your next attack deals weapon DMG + 28 electrical DMG and inflicts Disoriented for 15 seconds. Poisoned targets also become Dazed for 3 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Katar, 38);
         }
@@ -342,19 +342,19 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.StrikingCobra1)
-                .Description("Your next attack deals weapon DMG + 8 and inflicts Poison for 30 seconds.")
+                .Description("Your next attack deals weapon DMG + 8 poison DMG and inflicts Poison for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Katar, 2)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.StrikingCobra2)
-                .Description("Your next attack deals weapon DMG + 18 and inflicts Poison for 60 seconds.")
+                .Description("Your next attack deals weapon DMG + 18 poison DMG and inflicts Poison for 60 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Katar, 18)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.StrikingCobra3)
-                .Description("Your next attack deals weapon DMG + 28 and inflicts Poison for 60 seconds.")
+                .Description("Your next attack deals weapon DMG + 28 poison DMG and inflicts Poison for 60 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Katar, 35);
         }
@@ -466,4 +466,3 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         }
     }
 }
-

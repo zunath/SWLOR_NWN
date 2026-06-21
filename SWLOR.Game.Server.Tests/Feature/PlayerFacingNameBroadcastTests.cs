@@ -70,8 +70,8 @@ public class PlayerFacingNameBroadcastTests
             "SWLOR.Game.Server",
             "Service",
             "Communication.cs"));
-        communicationSource.Should().Contain("PlayerName.GetColoredDisplayName(receiver, speaker)");
         communicationSource.Should().Contain("var speaker = GetEffectiveChatSpeaker(sender);");
+        communicationSource.Should().NotContain("finalMessage.Append(PlayerName.GetColoredDisplayName");
         communicationSource.Should().Contain("var finalChannel = channel;");
         communicationSource.Should().Contain("finalChannel = ChatChannel.DMTalk;");
         communicationSource.Should().NotContain("var finalChannel = ChatChannel.ServerMessage;");

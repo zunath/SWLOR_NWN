@@ -16,6 +16,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
 {
     public sealed class EmergencyTriageAbilityDefinition : IAbilityListDefinition
     {
+        private const float RangeMeters = 15f;
+
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
@@ -37,6 +39,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .HasRecastDelay(RecastGroup.EmergencyTriage, 45f)
                 .SkillType(SkillType.FirstAid)
                 .IsSingleTargetAbility()
+                .HasMaxRange(RangeMeters)
                 .RequiresTarget()
                 .HasCustomValidation((activator, target, _, _) =>
                     AbilityTargeting.ValidateFriendlyTarget(activator, target))

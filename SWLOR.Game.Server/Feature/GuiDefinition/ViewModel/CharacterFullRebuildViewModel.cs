@@ -364,6 +364,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 DB.Set(dbPlayer);
             }
 
+            void ResetSkillPointPool()
+            {
+                var playerId = GetObjectUUID(Player);
+                var dbPlayer = DB.Get<Player>(playerId);
+
+                dbPlayer.UnallocatedSP = Skill.GetTotalSkillPoints(dbPlayer);
+
+                DB.Set(dbPlayer);
+            }
+
             void ResetStats()
             {
                 var playerId = GetObjectUUID(Player);
@@ -402,6 +412,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 UnequipAllItems();
                 RefundAllPerks();
+                ResetSkillPointPool();
                 RefundAllSkills();
                 ResetStats();
 

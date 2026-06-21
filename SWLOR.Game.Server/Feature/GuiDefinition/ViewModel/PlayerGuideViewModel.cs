@@ -292,9 +292,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     new[]
                     {
                         new ArticleBlock("Skills",
-                            "Skills gain XP individually. Skill ranks create Skill Points for perks until you have earned 400 total SP. Languages do not count toward this 400-rank limit."),
+                            "Skills gain XP individually. Skill ranks create Skill Points for perks until you have earned 400 SP from skill ranks. Languages do not count toward this 400-rank limit."),
                         new ArticleBlock("Ability Points (AP)",
-                            "Every 10 total SP grants 1 Ability Point, up to 40 AP. Spend AP from the Character Sheet to improve attributes such as Might, Perception, Vitality, Willpower, Agility, and Social."),
+                            "Every 10 earned SP grants 1 Ability Point, up to 40 AP. Spend AP from the Character Sheet to improve attributes such as Might, Perception, Vitality, Willpower, Agility, and Social."),
                         new ArticleBlock("Perks",
                             "Perk ranks cost SP. Perks can require certain progress before you buy the next rank, and they can grant active abilities, passive bonuses, or other effects."),
                         new ArticleBlock("Skill Decay",
@@ -310,8 +310,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     },
                     new[]
                     {
-                        new QuestionAnswer("How do skills work?", "Skill XP raises individual skills. Skill ranks create SP until 400 total SP; languages do not count toward that limit."),
-                        new QuestionAnswer("How do I use AP?", "Earn 1 AP every 10 total SP, then spend AP from the Character Sheet to improve attributes."),
+                        new QuestionAnswer("How do skills work?", "Skill XP raises individual skills. Skill ranks create earned SP until 400; languages do not count toward that limit."),
+                        new QuestionAnswer("How do I use AP?", "Earn 1 AP every 10 earned SP, then spend AP from the Character Sheet to improve attributes."),
                         new QuestionAnswer("What does skill decay mean?", "At 400 skill ranks, gaining another eligible rank can lower another unlocked eligible skill by 1 rank."),
                         new QuestionAnswer("How do perk refunds work?", "Manual refunds return all SP paid for the selected perk, consume a token, and start a 1 hour wait."),
                         new QuestionAnswer("Why did I get no skill XP?", "XP debt may have used the entire XP reward, or you may be at the 400-rank limit with no available skill that can decay."),
@@ -332,7 +332,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new ArticleBlock("Skill Limit",
                             "A character can earn up to 400 total ranks from skills that count toward the skill limit. Languages do not count toward this limit."),
                         new ArticleBlock("SP and AP",
-                            "When a skill that counts toward the limit ranks up, you gain 1 unallocated SP and 1 total SP until Total SP reaches 400. Every 10 total SP grants 1 unallocated AP, up to 40 AP."),
+                            "When a skill that counts toward the limit ranks up, you gain 1 unallocated SP and 1 earned SP until earned SP reaches 400. Every 10 earned SP grants 1 unallocated AP, up to 40 AP. Your displayed total SP also includes the 10 starting SP."),
                         new ArticleBlock("XP Adjustments",
                             "Skill XP can be adjusted before it is applied. Your Social attribute adds 2.5 percent skill XP per Social point. Some effects, event rewards, or active companions such as beasts and droids can also change the final amount."),
                         new ArticleBlock("XP Debt",
@@ -341,7 +341,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     new[]
                     {
                         new QuestionAnswer("What is the skill limit?", "400 total ranks from skills that count toward the limit. Languages do not count."),
-                        new QuestionAnswer("How do I get AP?", "Every 10 total SP grants 1 unallocated AP, up to 40."),
+                        new QuestionAnswer("How do I get AP?", "Every 10 earned SP grants 1 unallocated AP, up to 40."),
                         new QuestionAnswer("Why did XP go to debt?", "XP debt is paid down before skill XP is applied.")
                     },
                     new[] { "Attributes", "XP Debt", "Skill Decay", "Perks", "Training Store", "Crafting", "Useful Windows" }),
@@ -497,7 +497,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     },
                     new[]
                     {
-                        new QuestionAnswer("How do I get AP?", "Every 10 total SP grants 1 AP, up to 40."),
+                        new QuestionAnswer("How do I get AP?", "Every 10 earned SP grants 1 AP, up to 40."),
                         new QuestionAnswer("What helps XP gain?", "Social improves XP gain."),
                         new QuestionAnswer("What helps stamina?", "Agility increases maximum stamina.")
                     },
@@ -543,7 +543,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new ArticleBlock("Medical Registration",
                             "Registering at a medical facility chooses where you return after respawning. If you have no registered facility, you return to the default respawn point."),
                         new ArticleBlock("XP Debt From Death",
-                            "Death debt scales with your total SP. Medical Center upgrades and Social above 10 reduce that debt, up to an 80 percent total reduction."),
+                            "Death debt scales with your earned SP. Medical Center upgrades and Social above 10 reduce that debt, up to an 80 percent total reduction."),
                         new ArticleBlock("Subdual",
                             "If another player defeats you while using subdual, you are subdued instead of going through normal respawn. Subdual briefly knocks you down and applies a short subdual penalty."),
                         new ArticleBlock("Resting",

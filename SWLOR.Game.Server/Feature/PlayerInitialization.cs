@@ -178,7 +178,7 @@ namespace SWLOR.Game.Server.Feature
         /// <param name="dbPlayer">The player entity.</param>
         private static void AdjustStats(uint player, Player dbPlayer)
         {
-            dbPlayer.UnallocatedSP = 10;
+            dbPlayer.UnallocatedSP = Skill.StartingSkillPoints;
             dbPlayer.Version = Migration.GetLatestPlayerVersion();
             dbPlayer.Name = GetName(player);
             dbPlayer.BAB = 1;

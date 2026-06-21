@@ -79,6 +79,7 @@ public class CombatUpgradeMigrationCoverageTests
         resistanceMigration.Should().Contain("CombatReadinessMigration.MigratePlayer(player);");
         obsoleteItemMigration.Should().Contain("public override int Version => 15;");
         obsoleteItemMigration.Should().Contain("ObsoleteItemMigration.RemoveObsoleteItemsFromObject(player);");
+        obsoleteItemMigration.Should().Contain("PlayerInitialization.ResetFeatsToBaseline(player);");
     }
 
     [Test]

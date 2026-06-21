@@ -40,8 +40,7 @@ namespace SWLOR.Game.Server.Feature
             InitializeSavingThrows(player);
             InitializeSkills(player);
             RemoveNWNSpells(player);
-            ClearFeats(player);
-            GrantBasicFeats(player);
+            ResetFeatsToBaseline(player);
             InitializeHotBar(player);
             AdjustStats(player, dbPlayer);
             AdjustAlignment(player);
@@ -148,10 +147,16 @@ namespace SWLOR.Game.Server.Feature
         public static void ClearFeats(uint player)
         {
             var numberOfFeats = CreaturePlugin.GetFeatCount(player);
-            for (var currentFeat = numberOfFeats; currentFeat >= 0; currentFeat--)
+            for (var currentFeat = numberOfFeats - 1; currentFeat >= 0; currentFeat--)
             {
-                CreaturePlugin.RemoveFeat(player, CreaturePlugin.GetFeatByIndex(player, currentFeat - 1));
+                CreaturePlugin.RemoveFeat(player, CreaturePlugin.GetFeatByIndex(player, currentFeat));
             }
+        }
+
+        public static void ResetFeatsToBaseline(uint player)
+        {
+            ClearFeats(player);
+            GrantBasicFeats(player);
         }
 
         public static void GrantBasicFeats(uint player)

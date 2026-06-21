@@ -374,6 +374,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 DB.Set(dbPlayer);
             }
 
+            void ResetFeats()
+            {
+                PlayerInitialization.ResetFeatsToBaseline(Player);
+            }
+
             void ResetStats()
             {
                 var playerId = GetObjectUUID(Player);
@@ -412,6 +417,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 UnequipAllItems();
                 RefundAllPerks();
+                ResetFeats();
                 ResetSkillPointPool();
                 RefundAllSkills();
                 ResetStats();

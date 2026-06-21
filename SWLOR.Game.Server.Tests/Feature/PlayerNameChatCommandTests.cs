@@ -34,10 +34,12 @@ public class PlayerNameChatCommandTests
             "CharacterChatCommand.cs"));
 
         source.Should().Contain("PlayerName.SetKnownName(user, target, name);");
+        source.Should().Contain("PlayerName.SetUnknownDisplayName(user, name);");
         source.Should().Contain("PlayerName.ForgetKnownName(user, target);");
         source.Should().Contain("Log.WriteStructured(");
         source.Should().Contain("LogGroup.PlayerName");
         source.Should().Contain("\"name-set\"");
+        source.Should().Contain("\"unknown-name-set\"");
         source.Should().Contain("\"name-forget\"");
         source.Should().Contain("ObserverPlayerId={ObserverPlayerId}");
         source.Should().Contain("TargetPlayerId={TargetPlayerId}");
@@ -57,9 +59,10 @@ public class PlayerNameChatCommandTests
             "ChatCommandDefinition",
             "CharacterChatCommand.cs"));
 
-        source.Should().Contain("PlayerName.ValidateKnownName(name)");
+        source.Should().Contain("PlayerName.ValidateKnownNameInput(rawName)");
         source.Should().Contain("SendMessageToPC(user, ColorToken.Red(validationError));");
         source.Should().Contain("PlayerName.ValidateKnownNameAssignment(user, target, name)");
+        source.Should().Contain("PlayerName.SetUnknownDisplayName(user, name);");
         source.Should().NotContain("catch (ArgumentException ex)");
         source.Should().NotContain("ColorToken.Red(ex.Message)");
 
@@ -68,7 +71,8 @@ public class PlayerNameChatCommandTests
         source.Should().Contain("You may only forget names for player characters.");
 
         source.Should().Contain("if (target == user)");
-        source.Should().Contain("You already know your own name.");
+        source.Should().Contain("Players who have not named you will now see you as");
+        source.Should().NotContain("You already know your own name.");
         source.Should().Contain("You cannot forget your own name.");
     }
 

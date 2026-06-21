@@ -63,7 +63,7 @@ public class PlayerNameRecognitionTests
         playerMethod.Should().NotContain("!GetIsPC(otherPlayer) || GetIsDM(otherPlayer)");
 
         dmObserverMethod.Should().Contain("ApplyTrueNameOverride(dm, player);");
-        trueNameMethod.Should().Contain("RenamePlugin.SetPCNameOverride(target, GetName(target), string.Empty, string.Empty, PlayerNameOverrideType.Default, observer);");
+        trueNameMethod.Should().Contain("BuildStaffDisplayName(target)");
     }
 
     [Test]
@@ -158,7 +158,7 @@ public class PlayerNameRecognitionTests
         var assignmentValidationMethod = ExtractMethod(source, "public static string ValidateKnownNameAssignment(uint observer, uint target, string name)");
         var validationMethod = ExtractMethod(source, "private static string ValidateKnownNameTarget(uint observer, uint target)");
 
-        var validationIndex = setMethod.IndexOf("ValidateKnownNameAssignment(observer, target, sanitizedName);", StringComparison.Ordinal);
+        var validationIndex = setMethod.IndexOf("ValidateKnownNameAssignment(observer, target, name);", StringComparison.Ordinal);
         var targetIdIndex = setMethod.IndexOf("var targetId = GetObjectUUID(target);", StringComparison.Ordinal);
 
         validationIndex.Should().BeGreaterThanOrEqualTo(0);
@@ -169,6 +169,31 @@ public class PlayerNameRecognitionTests
         validationMethod.Should().Contain("!GetIsObjectValid(target) || !GetIsPC(target) || GetIsDM(target)");
         validationMethod.Should().Contain("target == observer");
         assignmentValidationMethod.Should().Contain("string.IsNullOrWhiteSpace(targetId)");
+    }
+
+    [Test]
+    public void KnownNameStorage_RejectsColorTokensBeforeSanitizing()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "PlayerName.cs"));
+        var inputValidationMethod = ExtractMethod(source, "public static string ValidateKnownNameInput(string name)");
+        var assignmentValidationMethod = ExtractMethod(source, "public static string ValidateKnownNameAssignment(uint observer, uint target, string name)");
+        var setMethod = ExtractMethod(source, "public static void SetKnownName(uint observer, uint target, string name)");
+        var unknownDisplayMethod = ExtractMethod(source, "public static void SetUnknownDisplayName(uint player, string name)");
+
+        inputValidationMethod.Should().Contain("ContainsColorToken(name)");
+        inputValidationMethod.Should().Contain("\"Names may not contain color codes.\"");
+        inputValidationMethod.Should().Contain("ValidateKnownName(SanitizeKnownName(name))");
+        source.Should().Contain("private static bool ContainsColorToken(string name)");
+        source.Should().Contain("UtilPlugin.StripColors(name)");
+
+        assignmentValidationMethod.Should().Contain("ValidateKnownNameInput(name)");
+        setMethod.Should().Contain("ValidateKnownNameAssignment(observer, target, name);");
+        unknownDisplayMethod.Should().Contain("ValidateKnownNameInput(name)");
     }
 
     [Test]
@@ -184,7 +209,7 @@ public class PlayerNameRecognitionTests
         var assignmentValidationMethod = ExtractMethod(source, "public static string ValidateKnownNameAssignment(uint observer, uint target, string name)");
         var uniquenessMethod = ExtractMethod(source, "private static string ValidateKnownNameIsUnique(");
 
-        setMethod.Should().Contain("ValidateKnownNameAssignment(observer, target, sanitizedName);");
+        setMethod.Should().Contain("ValidateKnownNameAssignment(observer, target, name);");
         assignmentValidationMethod.Should().Contain("return ValidateKnownNameIsUnique(dbKnownNames, targetId, sanitizedName);");
         uniquenessMethod.Should().Contain("entry.Key != targetId");
         uniquenessMethod.Should().Contain("StringComparison.OrdinalIgnoreCase");
@@ -222,13 +247,37 @@ public class PlayerNameRecognitionTests
             "SWLOR.Game.Server",
             "Service",
             "PlayerName.cs"));
+        var playerSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Entity",
+            "Player.cs"));
 
         var coloredDisplayMethod = ExtractMethod(source, "public static string GetColoredDisplayName(uint observer, uint target)");
+        var playerIdDisplayMethod = ExtractMethod(source, "public static string GetDisplayNameByPlayerId(uint observer, string targetPlayerId, string fallbackName)");
         coloredDisplayMethod.Should().Contain("ColorToken.Gray(displayName)");
+        coloredDisplayMethod.Should().Contain("BuildColoredDisplayNameWithDescriptor(knownName, GetUnknownDisplayName(target))");
+        playerIdDisplayMethod.Should().Contain("BuildDisplayNameWithDescriptor(knownName, GetUnknownDisplayNameByPlayerId(targetPlayerId))");
+        playerIdDisplayMethod.Should().Contain("BuildDisplayNameWithDescriptor(fallbackDisplayName, GetUnknownDisplayNameByPlayerId(targetPlayerId))");
+
+        playerSource.Should().Contain("public string UnknownDisplayName { get; set; }");
+        source.Should().Contain("public static void SetUnknownDisplayName(uint player, string name)");
+        source.Should().Contain("GetUnknownDisplayName(target)");
+        source.Should().Contain("private static string BuildDisplayNameWithDescriptor(string primaryName, string descriptor)");
+        source.Should().Contain("private static string BuildColoredDisplayNameWithDescriptor(string primaryName, string descriptor)");
 
         var nameOverrideMethod = ExtractMethod(source, "private static void ApplyNameOverride(uint observer, uint target)");
         nameOverrideMethod.Should().Contain("UnknownNamePrefix");
         nameOverrideMethod.Should().Contain("UnknownNameSuffix");
+
+        var resolveDisplayMethod = ExtractMethod(source, "private static string ResolveDisplayName(uint observer, uint target, out bool isUnknown)");
+        resolveDisplayMethod.Should().Contain("BuildDisplayNameWithDescriptor(knownName, GetUnknownDisplayName(target))");
+
+        var staffDisplayMethod = ExtractMethod(source, "private static string BuildStaffDisplayName(uint target)");
+        staffDisplayMethod.Should().Contain("GetName(target)");
+        staffDisplayMethod.Should().Contain("GetUnknownDisplayName(target)");
+        staffDisplayMethod.Should().Contain("return $\"{trueName} [{ColorToken.Gray(unknownDisplayName)}]\";");
+        staffDisplayMethod.Should().Contain("ColorToken.Gray(unknownDisplayName)");
     }
 
     private static string ExtractMethod(string source, string signature)

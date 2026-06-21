@@ -420,12 +420,12 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
         private void SetKnownName()
         {
             _builder.Create("name")
-                .Description("Sets the name you personally recognize a targeted player character by.")
+                .Description("Sets the name you personally recognize a targeted player character by, or the unknown description others see when used on yourself.")
                 .Permissions(AuthorizationLevel.All)
                 .Validate((user, args) =>
                 {
-                    var name = PlayerName.SanitizeKnownName(string.Join(" ", args));
-                    return PlayerName.ValidateKnownName(name);
+                    var rawName = string.Join(" ", args);
+                    return PlayerName.ValidateKnownNameInput(rawName);
                 })
                 .RequiresTarget(ObjectType.Creature)
                 .Action((user, target, location, args) =>
@@ -436,17 +436,27 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                         return;
                     }
 
-                    if (target == user)
-                    {
-                        SendMessageToPC(user, ColorToken.Red("You already know your own name."));
-                        return;
-                    }
-
-                    var name = PlayerName.SanitizeKnownName(string.Join(" ", args));
-                    var validationError = PlayerName.ValidateKnownName(name);
+                    var rawName = string.Join(" ", args);
+                    var validationError = PlayerName.ValidateKnownNameInput(rawName);
                     if (!string.IsNullOrWhiteSpace(validationError))
                     {
                         SendMessageToPC(user, ColorToken.Red(validationError));
+                        return;
+                    }
+
+                    var name = PlayerName.SanitizeKnownName(rawName);
+                    if (target == user)
+                    {
+                        PlayerName.SetUnknownDisplayName(user, name);
+
+                        Log.WriteStructured(
+                            LogGroup.PlayerName,
+                            "Player identity name change: Action={Action} ObserverPlayerId={ObserverPlayerId} TargetPlayerId={TargetPlayerId} Name={Name}",
+                            "unknown-name-set",
+                            GetObjectUUID(user),
+                            GetObjectUUID(target),
+                            name);
+                        SendMessageToPC(user, ColorToken.Green($"Players who have not named you will now see you as '{name}'."));
                         return;
                     }
 

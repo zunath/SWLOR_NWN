@@ -447,7 +447,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     var name = PlayerName.SanitizeKnownName(rawName);
                     if (target == user)
                     {
-                        PlayerName.SetUnknownDisplayName(user, name);
+                        PlayerDescriptor.SetUnknownDisplayName(user, name);
 
                         Log.WriteStructured(
                             LogGroup.PlayerName,

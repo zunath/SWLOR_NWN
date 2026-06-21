@@ -259,6 +259,7 @@ Likely code areas:
 - `SWLOR.NWN.API` for the NWNX Rename wrapper.
 - `SWLOR.Game.Server/Entity` for known-name and disguise persistence.
 - `SWLOR.Game.Server/Service` for player recognition and display-name resolution.
+- `SWLOR.Game.Server/Service/PlayerDescriptor.cs` for unknown descriptor generation, persistence, and fallback lookup.
 - `SWLOR.Game.Server/Feature/ChatCommandDefinition` for `/name`.
 - `SWLOR.Game.Server/Feature/GuiDefinition` for target, inspect, and management UI surfaces.
 - `SWLOR.Game.Server/Docker/swlor.env` for Rename plugin settings. The running server image must include `NWNX_Rename`; this feature should fail deployment verification if that plugin is unavailable.

@@ -34,7 +34,7 @@ public class PlayerNameChatCommandTests
             "CharacterChatCommand.cs"));
 
         source.Should().Contain("PlayerName.SetKnownName(user, target, name);");
-        source.Should().Contain("PlayerName.SetUnknownDisplayName(user, name);");
+        source.Should().Contain("PlayerDescriptor.SetUnknownDisplayName(user, name);");
         source.Should().Contain("PlayerName.ForgetKnownName(user, target);");
         source.Should().Contain("Log.WriteStructured(");
         source.Should().Contain("LogGroup.PlayerName");
@@ -62,7 +62,7 @@ public class PlayerNameChatCommandTests
         source.Should().Contain("PlayerName.ValidateKnownNameInput(rawName)");
         source.Should().Contain("SendMessageToPC(user, ColorToken.Red(validationError));");
         source.Should().Contain("PlayerName.ValidateKnownNameAssignment(user, target, name)");
-        source.Should().Contain("PlayerName.SetUnknownDisplayName(user, name);");
+        source.Should().Contain("PlayerDescriptor.SetUnknownDisplayName(user, name);");
         source.Should().NotContain("catch (ArgumentException ex)");
         source.Should().NotContain("ColorToken.Red(ex.Message)");
 

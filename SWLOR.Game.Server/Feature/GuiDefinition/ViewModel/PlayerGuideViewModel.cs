@@ -308,7 +308,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new ArticleBlock("Crafting and Training",
                             "Recipes, crafting devices, research terminals, refineries, the Training Store, and the Character Sheet windows are the main places to turn earned progress into gear, tokens, and character choices."),
                         new ArticleBlock("Recognizing Players",
-                            "Other player characters may appear as Someone until you remember them. Type /name <name>, then click the player character when the target cursor appears. Use /forgetname and click the character to clear that personal name. To change how unnamed players see you, use /name <description> on yourself. Names and descriptions are limited to 64 characters and cannot include color codes.")
+                            "Other player characters may appear with a gray descriptor until you remember them. Type /name <name>, then click the player character when the target cursor appears. Use /forgetname and click the character to clear that personal name. To change how unnamed players see you, use /name <description> on yourself. Names and descriptions are limited to 64 characters and cannot include color codes.")
                     },
                     new[]
                     {
@@ -319,7 +319,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new QuestionAnswer("Why did I get no skill XP?", "XP debt may have used the entire XP reward, or you may be at the 400-rank limit with no available skill that can decay."),
                         new QuestionAnswer("Where do I go after death?", "Respawning returns you to your registered medical facility and adds XP debt."),
                         new QuestionAnswer("What should I open first?", "Press B for this guide and C for the Character Sheet."),
-                        new QuestionAnswer("How do I use /name?", "Type /name <name>, then click the player character when the target cursor appears. Target yourself to change the gray description shown to players who have not named you. Names and descriptions are limited to 64 characters and cannot include color codes. Name the intended player before sending tells if several characters appear as Someone.")
+                        new QuestionAnswer("How do I use /name?", "Type /name <name>, then click the player character when the target cursor appears. Target yourself to change the gray description shown to players who have not named you. Names and descriptions are limited to 64 characters and cannot include color codes. Name the intended player before sending tells if several characters share the same descriptor.")
                     },
                     new[] { "Communication", "Skills", "Attributes", "Perks", "Skill Decay", "Perk Refunds", "XP Debt", "Death & Recovery", "Combat Basics", "Crafting", "Training Store", "Useful Windows" }),
 
@@ -341,7 +341,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new ArticleBlock("Notes",
                             "Notes are private player notes. You can keep up to 25 notes, and each note can hold up to 1000 characters."),
                         new ArticleBlock("Names",
-                            "Unrecognized player characters can appear as Someone until you personally set a known name. Type /name <name>, then click the player character when the target cursor appears. Use /forgetname and click the character to forget that personal name. Target yourself with /name <description> to set the gray text others see before they name you. Names and descriptions are limited to 64 characters and cannot include color codes."),
+                            "Unrecognized player characters appear with a gray descriptor until you personally set a known name. Type /name <name>, then click the player character when the target cursor appears. Use /forgetname and click the character to forget that personal name. Target yourself with /name <description> to set the gray text others see before they name you. Names and descriptions are limited to 64 characters and cannot include color codes."),
                         new ArticleBlock("Emotes and Languages",
                             "Speech can include emote text, and your emote style can be toggled between regular and novel formatting. Speaking or hearing non-Basic languages uses language skill; hearing a non-Basic language you do not fully know can grant language XP over time.")
                     },

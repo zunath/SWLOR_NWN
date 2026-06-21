@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.Service
     public static class PlayerName
     {
         private const int MaxKnownNameLength = 64;
-        public const string UnknownName = "Someone";
+        public const string UnknownName = PlayerDescriptor.DefaultUnknownDisplayName;
         private static readonly Dictionary<string, PlayerKnownName> KnownNamesByObserverId = new();
         private static readonly Dictionary<string, bool> ShowDescriptorsForNamedPlayersByObserverId = new();
         private static readonly string UnknownNamePrefix = ColorToken.TokenStart(127, 127, 127);
@@ -31,6 +31,8 @@ namespace SWLOR.Game.Server.Service
 
             if (!GetIsPC(player))
                 return;
+
+            PlayerDescriptor.EnsureUnknownDisplayName(player);
 
             if (GetIsDM(player))
             {
@@ -96,15 +98,15 @@ namespace SWLOR.Game.Server.Service
 
             if (GetIsDM(observer) || GetIsDMPossessed(observer))
             {
-                return BuildDisplayNameWithDescriptor(fallbackDisplayName, GetUnknownDisplayNameByPlayerId(targetPlayerId));
+                return BuildDisplayNameWithDescriptor(fallbackDisplayName, PlayerDescriptor.GetUnknownDisplayNameByPlayerId(targetPlayerId));
             }
 
             if (TryGetKnownName(observer, targetPlayerId, out var knownName))
                 return ShouldShowDescriptorForNamedPlayers(observer)
-                    ? BuildDisplayNameWithDescriptor(knownName, GetUnknownDisplayNameByPlayerId(targetPlayerId))
+                    ? BuildDisplayNameWithDescriptor(knownName, PlayerDescriptor.GetUnknownDisplayNameByPlayerId(targetPlayerId))
                     : knownName;
 
-            return GetUnknownDisplayNameByPlayerId(targetPlayerId);
+            return PlayerDescriptor.GetUnknownDisplayNameByPlayerId(targetPlayerId);
         }
 
         /// <summary>
@@ -168,14 +170,14 @@ namespace SWLOR.Game.Server.Service
             var displayName = ResolveDisplayName(observer, target, out var isUnknown);
             if (!isUnknown && CanUseKnownName(observer, target) && TryGetKnownName(observer, target, out var knownName))
                 return ShouldShowDescriptorForNamedPlayers(observer)
-                    ? BuildColoredDisplayNameWithDescriptor(knownName, GetUnknownDisplayName(target))
+                    ? BuildColoredDisplayNameWithDescriptor(knownName, PlayerDescriptor.GetUnknownDisplayName(target))
                     : ColorToken.GetPCColor(knownName);
 
             if (!isUnknown &&
                 GetIsObjectValid(observer) &&
                 (GetIsDM(observer) || GetIsDMPossessed(observer)))
             {
-                return BuildColoredDisplayNameWithDescriptor(GetName(target), GetUnknownDisplayName(target));
+                return BuildColoredDisplayNameWithDescriptor(GetName(target), PlayerDescriptor.GetUnknownDisplayName(target));
             }
 
             return isUnknown
@@ -265,26 +267,6 @@ namespace SWLOR.Game.Server.Service
             ApplyNameOverride(observer, target);
         }
 
-        public static void SetUnknownDisplayName(uint player, string name)
-        {
-            if (!GetIsObjectValid(player) || !GetIsPC(player) || GetIsDM(player))
-                throw new ArgumentException("Unknown display names may only be set for player characters.");
-
-            var validationError = ValidateKnownNameInput(name);
-            if (!string.IsNullOrWhiteSpace(validationError))
-                throw new ArgumentException(validationError);
-
-            var sanitizedName = SanitizeKnownName(name);
-            var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
-            dbPlayer.UnknownDisplayName = string.Equals(sanitizedName, UnknownName, StringComparison.OrdinalIgnoreCase)
-                ? string.Empty
-                : sanitizedName;
-            DB.Set(dbPlayer);
-
-            ApplyNameOverridesForPlayer(player);
-        }
-
         private static string ValidateKnownNameTarget(uint observer, uint target)
         {
             if (!GetIsObjectValid(target) || !GetIsPC(target) || GetIsDM(target))
@@ -363,6 +345,11 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
+        public static void RefreshNameOverridesForPlayer(uint player)
+        {
+            ApplyNameOverridesForPlayer(player);
+        }
+
         private static PlayerKnownName GetKnownNames(uint observer, bool createIfMissing)
         {
             var observerId = GetObjectUUID(observer);
@@ -400,7 +387,7 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsObjectValid(player) || !GetIsPC(player) || GetIsDM(player))
                 return;
 
-            var unknownDisplayName = GetUnknownDisplayName(player);
+            var unknownDisplayName = PlayerDescriptor.GetUnknownDisplayName(player);
             RenamePlugin.SetPCNameOverride(player, unknownDisplayName, UnknownNamePrefix, UnknownNameSuffix, PlayerNameOverrideType.Default);
             RenamePlugin.SetPCNameOverride(player, GetName(player), string.Empty, string.Empty, PlayerNameOverrideType.Default, player);
             RenamePlugin.SetPCNameOverride(player, unknownDisplayName, UnknownNamePrefix, UnknownNameSuffix, PlayerNameOverrideType.Obfuscate);
@@ -474,7 +461,7 @@ namespace SWLOR.Game.Server.Service
         private static string BuildStaffDisplayName(uint target)
         {
             var trueName = GetName(target);
-            var unknownDisplayName = GetUnknownDisplayName(target);
+            var unknownDisplayName = PlayerDescriptor.GetUnknownDisplayName(target);
 
             return $"{trueName} [{ColorToken.Gray(unknownDisplayName)}]";
         }
@@ -496,18 +483,18 @@ namespace SWLOR.Game.Server.Service
             }
 
             if (GetIsDM(observer) || GetIsDMPossessed(observer))
-                return BuildDisplayNameWithDescriptor(GetName(target), GetUnknownDisplayName(target));
+                return BuildDisplayNameWithDescriptor(GetName(target), PlayerDescriptor.GetUnknownDisplayName(target));
 
             if (!GetIsPC(observer))
                 return GetName(target);
 
             if (TryGetKnownName(observer, target, out var knownName))
                 return ShouldShowDescriptorForNamedPlayers(observer)
-                    ? BuildDisplayNameWithDescriptor(knownName, GetUnknownDisplayName(target))
+                    ? BuildDisplayNameWithDescriptor(knownName, PlayerDescriptor.GetUnknownDisplayName(target))
                     : knownName;
 
             isUnknown = true;
-            return GetUnknownDisplayName(target);
+            return PlayerDescriptor.GetUnknownDisplayName(target);
         }
 
         private static string BuildDisplayNameWithDescriptor(string primaryName, string descriptor)
@@ -550,39 +537,6 @@ namespace SWLOR.Game.Server.Service
             setting = dbPlayer?.Settings?.ShowDescriptorsForNamedPlayers ?? true;
             ShowDescriptorsForNamedPlayersByObserverId[observerId] = setting;
             return setting;
-        }
-
-        private static string GetUnknownDisplayName(uint target)
-        {
-            var assignedDisplayName = GetAssignedUnknownDisplayName(target);
-            return string.IsNullOrWhiteSpace(assignedDisplayName)
-                ? UnknownName
-                : assignedDisplayName;
-        }
-
-        private static string GetUnknownDisplayNameByPlayerId(string targetPlayerId)
-        {
-            var assignedDisplayName = GetAssignedUnknownDisplayNameByPlayerId(targetPlayerId);
-            return string.IsNullOrWhiteSpace(assignedDisplayName)
-                ? UnknownName
-                : assignedDisplayName;
-        }
-
-        private static string GetAssignedUnknownDisplayName(uint target)
-        {
-            if (!GetIsObjectValid(target) || !GetIsPC(target) || GetIsDM(target))
-                return string.Empty;
-
-            return GetAssignedUnknownDisplayNameByPlayerId(GetObjectUUID(target));
-        }
-
-        private static string GetAssignedUnknownDisplayNameByPlayerId(string targetPlayerId)
-        {
-            if (string.IsNullOrWhiteSpace(targetPlayerId))
-                return string.Empty;
-
-            var dbPlayer = DB.Get<Player>(targetPlayerId);
-            return SanitizeKnownName(dbPlayer?.UnknownDisplayName);
         }
 
         private static bool TryGetKnownName(uint observer, uint target, out string knownName)

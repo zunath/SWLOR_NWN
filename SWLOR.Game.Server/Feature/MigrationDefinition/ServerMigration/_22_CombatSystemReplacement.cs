@@ -12,6 +12,7 @@ using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.CraftService;
+using AppearanceType = SWLOR.NWN.API.NWScript.Enum.AppearanceType;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
 {
@@ -505,9 +506,14 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
                 RemoveInvalidEnumDictionaryKeys<RecipeType>(jObject["CraftedRecipes"] as JObject);
                 RemoveInvalidSkillDictionaryKeys(jObject);
 
+                var hasOriginalAppearanceType = jObject[nameof(Player.OriginalAppearanceType)] != null;
                 var dbPlayer = jObject.ToObject<Player>();
+                if (!hasOriginalAppearanceType)
+                    dbPlayer.OriginalAppearanceType = AppearanceType.Invalid;
+
                 EnsureDefinedPlayerSkills(dbPlayer);
                 CombatReadinessMigration.ResetCombatReadiness(dbPlayer);
+                EnsureUnknownDisplayName(dbPlayer);
                 dbPlayer.RebuildComplete = false;
 
                 refundAmount += CleanPerks(
@@ -530,6 +536,21 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
             }
 
             progress.Finish($"{playerCount} players migrated.");
+        }
+
+        private static void EnsureUnknownDisplayName(Player dbPlayer)
+        {
+            if (dbPlayer == null ||
+                !string.IsNullOrWhiteSpace(PlayerName.SanitizeKnownName(dbPlayer.UnknownDisplayName)))
+            {
+                return;
+            }
+
+            var generatedDisplayName = PlayerDescriptor.GenerateUnknownDisplayName(dbPlayer);
+            if (string.IsNullOrWhiteSpace(generatedDisplayName))
+                return;
+
+            dbPlayer.UnknownDisplayName = generatedDisplayName;
         }
 
         private static void MigrateBeasts()

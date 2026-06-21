@@ -53,6 +53,9 @@ namespace SWLOR.Game.Server.Feature
 
             DB.Set(dbPlayer);
 
+            if (PlayerDescriptor.EnsureUnknownDisplayName(player))
+                PlayerName.RefreshNameOverridesForPlayer(player);
+
             ExecuteScript(ScriptName.OnCharacterInitAfter, OBJECT_SELF);
         }
 
@@ -304,11 +307,13 @@ namespace SWLOR.Game.Server.Feature
         /// <param name="dbPlayer">The database entity</param>
         private static void AssignRacialAppearance(uint player, Player dbPlayer)
         {
+            var raceAppearance = Race.GetDefaultAppearance(GetRacialType(player), GetGender(player));
+
             DelayCommand(0.1f, () =>
             {
                 Race.SetDefaultRaceAppearance(player);
             });
-            dbPlayer.OriginalAppearanceType = GetAppearanceType(player);
+            dbPlayer.OriginalAppearanceType = raceAppearance.AppearanceType;
         }
 
         /// <summary>

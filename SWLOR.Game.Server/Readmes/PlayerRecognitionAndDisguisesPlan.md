@@ -46,7 +46,7 @@ This step creates the core infrastructure needed for both ordinary known names a
 - Add a separate forget command, such as `/forgetname`, to remove a personal override without reserving words that could be valid character names.
 - Apply name overrides when players enter, relog, and encounter other online PCs.
 - Preserve true-name display for self and DMs.
-- Show unnamed players as the gray unknown-facing descriptor only. Once an observer names a target, show the observer's assigned name plus the gray descriptor in brackets, for example `Joe Blow [A Seedy Individual]`.
+- Show unnamed players as the gray unknown-facing descriptor only. Once an observer names a target, show the observer's assigned name plus the gray descriptor in brackets by default, for example `Joe Blow [A Seedy Individual]`. Non-DM players can hide descriptors for named targets in Settings, leaving only the assigned name; staff always see the descriptor.
 - Show staff the true character name plus the unknown-facing descriptor, with the descriptor still wrapped as unknown/gray text. If the player has not self-assigned a description, staff see the default unknown label, for example `Joe Smith [Someone]`.
 - Preserve true names in staff tools, audit logs, abuse reports, crash logs, diagnostics, and database records.
 - Add a central display-name resolver for SWLOR-authored UI and messages.
@@ -88,6 +88,7 @@ Recommended rollout behavior:
 - Other player characters display as `Someone` by default.
 - Players use `/name <name>` to record who their character recognizes.
 - Players can target themselves with `/name <description>` to replace their default unknown `Someone` text while remaining visually marked as unknown.
+- Players can hide descriptors after they personally name a character, but unnamed characters and staff views always include the descriptor.
 - Players use `/forgetname` to remove a remembered name.
 - No legacy visibility cutoff is used.
 - No large pairwise migration is required to seed existing relationships.

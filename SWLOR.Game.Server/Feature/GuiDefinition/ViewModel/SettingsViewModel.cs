@@ -47,6 +47,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public bool ShowDescriptorsForNamedPlayers
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
         public bool IsGeneralSelected
         {
             get => Get<bool>();
@@ -126,6 +132,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             WatchOnClient(model => model.DisplayHolonetChannel);
             WatchOnClient(model => model.SubdualMode);
             WatchOnClient(model => model.DisplayServerResetReminders);
+            WatchOnClient(model => model.ShowDescriptorsForNamedPlayers);
             WatchOnClient(model => model.SelectedColor);
         }
 
@@ -140,6 +147,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             DisplayHolonetChannel = dbPlayer.Settings.IsHolonetEnabled;
             SubdualMode = dbPlayer.Settings.IsSubdualModeEnabled;
             DisplayServerResetReminders = dbPlayer.Settings.DisplayServerResetReminders;
+            ShowDescriptorsForNamedPlayers = dbPlayer.Settings.ShowDescriptorsForNamedPlayers ?? true;
         }
 
         private void LoadChatView()
@@ -246,6 +254,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             dbPlayer.Settings.IsHolonetEnabled = DisplayHolonetChannel;
             dbPlayer.Settings.IsSubdualModeEnabled = SubdualMode;
             dbPlayer.Settings.DisplayServerResetReminders = DisplayServerResetReminders;
+            if (!GetIsDM(Player) && !GetIsDMPossessed(Player))
+                dbPlayer.Settings.ShowDescriptorsForNamedPlayers = ShowDescriptorsForNamedPlayers;
 
             // System Colors - OOC
             var systemColor = ChatColors[0];
@@ -271,6 +281,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             // Post-save actions
             UpdateHolonetSetting();
+            PlayerName.RefreshNameOverridesForObserver(Player);
 
             SendMessageToPC(Player, ColorToken.Green("Settings updated."));
         };

@@ -261,28 +261,74 @@ public class PlayerNameRecognitionTests
         var coloredDisplayMethod = ExtractMethod(source, "public static string GetColoredDisplayName(uint observer, uint target)");
         var playerIdDisplayMethod = ExtractMethod(source, "public static string GetDisplayNameByPlayerId(uint observer, string targetPlayerId, string fallbackName)");
         coloredDisplayMethod.Should().Contain("ColorToken.Gray(displayName)");
+        coloredDisplayMethod.Should().Contain("ShouldShowDescriptorForNamedPlayers(observer)");
         coloredDisplayMethod.Should().Contain("BuildColoredDisplayNameWithDescriptor(knownName, GetUnknownDisplayName(target))");
-        playerIdDisplayMethod.Should().Contain("BuildDisplayNameWithDescriptor(knownName, GetUnknownDisplayNameByPlayerId(targetPlayerId))");
+        coloredDisplayMethod.Should().Contain("ColorToken.GetPCColor(knownName)");
+        playerIdDisplayMethod.Should().Contain("ShouldShowDescriptorForNamedPlayers(observer)");
         playerIdDisplayMethod.Should().Contain("BuildDisplayNameWithDescriptor(fallbackDisplayName, GetUnknownDisplayNameByPlayerId(targetPlayerId))");
+        playerIdDisplayMethod.Should().Contain(": knownName");
 
         playerSource.Should().Contain("public string UnknownDisplayName { get; set; }");
+        playerSource.Should().Contain("public bool? ShowDescriptorsForNamedPlayers { get; set; }");
+        playerSource.Should().Contain("ShowDescriptorsForNamedPlayers = true;");
         source.Should().Contain("public static void SetUnknownDisplayName(uint player, string name)");
         source.Should().Contain("GetUnknownDisplayName(target)");
         source.Should().Contain("private static string BuildDisplayNameWithDescriptor(string primaryName, string descriptor)");
         source.Should().Contain("private static string BuildColoredDisplayNameWithDescriptor(string primaryName, string descriptor)");
+        source.Should().Contain("private static bool ShouldShowDescriptorForNamedPlayers(uint observer)");
+        source.Should().Contain("ShowDescriptorsForNamedPlayersByObserverId");
 
         var nameOverrideMethod = ExtractMethod(source, "private static void ApplyNameOverride(uint observer, uint target)");
         nameOverrideMethod.Should().Contain("UnknownNamePrefix");
         nameOverrideMethod.Should().Contain("UnknownNameSuffix");
 
         var resolveDisplayMethod = ExtractMethod(source, "private static string ResolveDisplayName(uint observer, uint target, out bool isUnknown)");
+        resolveDisplayMethod.Should().Contain("ShouldShowDescriptorForNamedPlayers(observer)");
         resolveDisplayMethod.Should().Contain("BuildDisplayNameWithDescriptor(knownName, GetUnknownDisplayName(target))");
+        resolveDisplayMethod.Should().Contain(": knownName");
 
         var staffDisplayMethod = ExtractMethod(source, "private static string BuildStaffDisplayName(uint target)");
         staffDisplayMethod.Should().Contain("GetName(target)");
         staffDisplayMethod.Should().Contain("GetUnknownDisplayName(target)");
         staffDisplayMethod.Should().Contain("return $\"{trueName} [{ColorToken.Gray(unknownDisplayName)}]\";");
         staffDisplayMethod.Should().Contain("ColorToken.Gray(unknownDisplayName)");
+    }
+
+    [Test]
+    public void Settings_CanHideDescriptorsForNamedTargetsForPlayersOnly()
+    {
+        var root = FindRepositoryRoot();
+        var definitionSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "GuiDefinition",
+            "SettingsDefinition.cs"));
+        var viewModelSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "GuiDefinition",
+            "ViewModel",
+            "SettingsViewModel.cs"));
+        var playerNameSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "PlayerName.cs"));
+
+        definitionSource.Should().Contain("Show Descriptors");
+        definitionSource.Should().Contain("BindIsChecked(model => model.ShowDescriptorsForNamedPlayers)");
+
+        viewModelSource.Should().Contain("public bool ShowDescriptorsForNamedPlayers");
+        viewModelSource.Should().Contain("ShowDescriptorsForNamedPlayers = dbPlayer.Settings.ShowDescriptorsForNamedPlayers ?? true;");
+        viewModelSource.Should().Contain("dbPlayer.Settings.ShowDescriptorsForNamedPlayers = ShowDescriptorsForNamedPlayers;");
+        viewModelSource.Should().Contain("PlayerName.RefreshNameOverridesForObserver(Player);");
+
+        playerNameSource.Should().Contain("public static void RefreshNameOverridesForObserver(uint observer)");
+        playerNameSource.Should().Contain("ShowDescriptorsForNamedPlayersByObserverId.Remove(observerId);");
+        playerNameSource.Should().Contain("GetIsDM(observer) ||");
+        playerNameSource.Should().Contain("GetIsDMPossessed(observer)");
     }
 
     private static string ExtractMethod(string source, string signature)

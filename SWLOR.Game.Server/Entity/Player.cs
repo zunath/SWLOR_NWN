@@ -224,6 +224,7 @@ namespace SWLOR.Game.Server.Entity
         public bool ShowCloak { get; set; }
         public bool IsSubdualModeEnabled { get; set; }
         public bool DisplayServerResetReminders { get; set; }
+        public bool? ShowDescriptorsForNamedPlayers { get; set; }
         public Dictionary<SkillType, PlayerColor> LanguageChatColors { get; set; }
         public PlayerColor OOCChatColor { get; set; }
         public PlayerColor EmoteChatColor { get; set; }
@@ -236,6 +237,7 @@ namespace SWLOR.Game.Server.Entity
             IsHolonetEnabled = true;
             IsSubdualModeEnabled = false;
             DisplayServerResetReminders = true;
+            ShowDescriptorsForNamedPlayers = true;
 
             LanguageChatColors = new Dictionary<SkillType, PlayerColor>();
         }

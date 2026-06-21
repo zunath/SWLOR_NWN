@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using FluentAssertions;
 using NUnit.Framework;
 
@@ -299,6 +300,37 @@ public class CombatUpgradeMigrationCoverageTests
         serverMigration.Should().Contain("StoredItemDataMigration.Migrate();");
         serverMigration.Should().Contain("PlayerRemovedPerks");
         serverMigration.Should().Contain("PlayerTrimmedPerks");
+        foreach (var removedLeadershipPerk in new[]
+                 {
+                     "PerkType.Dedication",
+                     "PerkType.SoldiersSpeed",
+                     "PerkType.SoldiersStrike",
+                     "PerkType.Charge",
+                     "PerkType.SoldiersPrecision",
+                     "PerkType.ShockingShout",
+                     "PerkType.Rejuvenation",
+                     "PerkType.FrenziedShout",
+                     "PerkType.ShoutRange",
+                 })
+        {
+            serverMigration.Should().Contain(removedLeadershipPerk);
+        }
+
+        foreach (var removedBlueprintPerk in new[]
+                 {
+                     "PerkType.WeaponBlueprints",
+                     "PerkType.ArmorBlueprints",
+                     "PerkType.AccessoryBlueprints",
+                     "PerkType.FurnitureBlueprints",
+                     "PerkType.StructureBlueprints",
+                     "PerkType.StarshipBlueprints",
+                     "PerkType.EnhancementBlueprints",
+                     "PerkType.DroidEquipmentBlueprints",
+                 })
+        {
+            serverMigration.Should().Contain(removedBlueprintPerk);
+        }
+
         serverMigration.Should().Contain("BeastRemovedPerks");
         serverMigration.Should().Contain("BeastTrimmedPerks");
         serverMigration.Should().Contain("ObsoleteRecastGroups");
@@ -321,6 +353,24 @@ public class CombatUpgradeMigrationCoverageTests
         obsoleteItemMigration.Should().Contain("SyncDroidInstructionProperties");
         obsoleteItemMigration.Should().Contain("id_concgren3");
         obsoleteItemMigration.Should().Contain("id_tranqshot3");
+    }
+
+    [Test]
+    public void RemovedPerkMigration_CoversEveryPerkWithoutCurrentDefinition()
+    {
+        var root = FindRepositoryRoot();
+        var currentPerks = GetCurrentPerkDefinitions(root);
+        var cleanupPerks = GetMigrationCleanupPerks(root);
+        var enumPerks = GetPerkTypeEnumNames(root);
+
+        var missingCleanup = enumPerks
+            .Except(currentPerks)
+            .Except(cleanupPerks)
+            .OrderBy(perk => perk)
+            .ToList();
+
+        missingCleanup.Should().BeEmpty(
+            "persisted perk keys without current definitions must be removed or trimmed by the consolidated migration");
     }
 
     [Test]
@@ -391,6 +441,80 @@ public class CombatUpgradeMigrationCoverageTests
         source.Should().Contain("HighPowerModules");
         source.Should().Contain("LowPowerModules");
         source.Should().Contain("ConfigurationModules");
+    }
+
+    private static HashSet<string> GetPerkTypeEnumNames(DirectoryInfo root)
+    {
+        var source = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "PerkService",
+            "PerkType.cs"));
+
+        return Regex.Matches(source, @"^\s*(\w+)\s*=\s*\d+", RegexOptions.Multiline)
+            .Select(match => match.Groups[1].Value)
+            .Where(perk => perk != "Invalid")
+            .ToHashSet();
+    }
+
+    private static HashSet<string> GetCurrentPerkDefinitions(DirectoryInfo root)
+    {
+        var perkDefinitionRoot = Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "PerkDefinition");
+        var currentPerks = new HashSet<string>();
+        foreach (var path in Directory.EnumerateFiles(perkDefinitionRoot, "*.cs", SearchOption.AllDirectories))
+        {
+            var source = File.ReadAllText(path);
+            foreach (Match match in Regex.Matches(
+                         source,
+                         @"\.Create\(\s*PerkCategoryType\.\w+\s*,\s*PerkType\.(\w+)"))
+            {
+                currentPerks.Add(match.Groups[1].Value);
+            }
+
+            foreach (Match match in Regex.Matches(
+                         source,
+                         @"Create\w*Perk\(\s*PerkType\.(\w+)"))
+            {
+                currentPerks.Add(match.Groups[1].Value);
+            }
+        }
+
+        return currentPerks;
+    }
+
+    private static HashSet<string> GetMigrationCleanupPerks(DirectoryInfo root)
+    {
+        var source = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "MigrationDefinition",
+            "ServerMigration",
+            "_22_CombatSystemReplacement.cs"));
+
+        var cleanupPerks = new HashSet<string>();
+        foreach (var dictionaryName in new[]
+                 {
+                     "PlayerRemovedPerks",
+                     "PlayerTrimmedPerks",
+                     "BeastRemovedPerks",
+                     "BeastTrimmedPerks",
+                 })
+        {
+            var dictionary = Regex.Match(
+                source,
+                $@"{dictionaryName}\s*=\s*new\(\)\s*{{(?<body>.*?)^\s*}};",
+                RegexOptions.Singleline | RegexOptions.Multiline);
+            dictionary.Success.Should().BeTrue($"{dictionaryName} must remain discoverable by migration coverage tests");
+
+            foreach (Match match in Regex.Matches(dictionary.Groups["body"].Value, @"PerkType\.(\w+)"))
+            {
+                cleanupPerks.Add(match.Groups[1].Value);
+            }
+        }
+
+        return cleanupPerks;
     }
 
     private static DirectoryInfo FindRepositoryRoot()

@@ -67,6 +67,24 @@ public class PerkRefundStatusEffectCleanupTests
         rebuildViewModelSource.Should().Contain("Perk.RemoveStatusEffectsOnPerkRefund(Player, type);");
     }
 
+    [Test]
+    public void CharacterFullRebuild_RemovesUndefinedPerksWithoutLookingUpDetails()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "GuiDefinition",
+            "ViewModel",
+            "CharacterFullRebuildViewModel.cs"));
+
+        source.Should().Contain("var allPerks = Perk.GetAllPerks();");
+        source.Should().Contain("if (!allPerks.TryGetValue(type, out var perkDetail))");
+        source.Should().Contain("dbPlayer.Perks.Remove(type);");
+        source.Should().Contain("Removed undefined perk during full rebuild");
+    }
+
     private static DirectoryInfo FindRepositoryRoot()
     {
         var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);

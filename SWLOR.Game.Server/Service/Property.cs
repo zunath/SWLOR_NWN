@@ -494,6 +494,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     _propertyInstances.Remove(propertyId);
                     _completedInstanceSpawnActions.Remove(propertyId);
+                    SetPropertyLoadState(propertyId, PropertyLoadState.Unloaded);
                     return PropertyLoadState.Unloaded;
                 }
 

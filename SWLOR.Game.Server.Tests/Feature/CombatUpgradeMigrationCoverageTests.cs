@@ -1,11 +1,18 @@
+using System.Reflection;
 using System.Text.RegularExpressions;
 using FluentAssertions;
+using Newtonsoft.Json.Linq;
 using NUnit.Framework;
+using SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
+using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Service.PlayerMarketService;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
 public class CombatUpgradeMigrationCoverageTests
 {
+    private const string PerkTypeEnumMemberPattern = @"^\s*([A-Za-z_]\w*)\s*(?:=\s*-?\d+)?\s*,?\s*(?://.*)?$";
+
     [Test]
     public void CombatUpgradeServerMigration_ForcesFullRebuildWithoutTokenFlow()
     {
@@ -272,6 +279,58 @@ public class CombatUpgradeMigrationCoverageTests
     }
 
     [Test]
+    public void ResistanceMigration_MergesLegacyElementalValuesIntoDefaultTargets()
+    {
+        var moveLegacyElementalDefense = typeof(_22_CombatSystemReplacement)
+            .GetMethod("MoveLegacyElementalDefense", BindingFlags.NonPublic | BindingFlags.Static)!;
+        var normalizeLegacyElementalResistance = typeof(_22_CombatSystemReplacement)
+            .GetMethod("NormalizeLegacyElementalResistance", BindingFlags.NonPublic | BindingFlags.Static)!;
+
+        var defenses = JObject.Parse("""{ "Fire": 14 }""");
+        var resistances = JObject.Parse("""{ "Fire": 0 }""");
+
+        ((bool)moveLegacyElementalDefense.Invoke(
+            null,
+            new object[] { defenses, resistances, CombatDamageType.Fire, ResistanceType.Fire })!)
+            .Should()
+            .BeTrue();
+        resistances["Fire"]!.Value<int>().Should().Be(14);
+        defenses.ContainsKey("Fire").Should().BeFalse();
+
+        resistances = JObject.Parse("""{ "Fire": 0, "3": -12 }""");
+
+        ((bool)normalizeLegacyElementalResistance.Invoke(
+            null,
+            new object[] { resistances, CombatDamageType.Fire, ResistanceType.Fire })!)
+            .Should()
+            .BeTrue();
+        resistances["Fire"]!.Value<int>().Should().Be(-12);
+        resistances.ContainsKey("3").Should().BeFalse();
+    }
+
+    [Test]
+    public void StoredItemMigration_MapsLegacyNumericWeaponCategories()
+    {
+        var migrationType = typeof(_22_CombatSystemReplacement)
+            .Assembly
+            .GetType("SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration.StoredItemDataMigration")!;
+        var tryMapWeaponCategory = migrationType.GetMethod(
+            "TryMapWeaponCategory",
+            BindingFlags.NonPublic | BindingFlags.Static,
+            null,
+            new[] { typeof(JToken), typeof(MarketCategoryType).MakeByRefType() },
+            null)!;
+
+        object[] vibroknifeArgs = { new JValue(2), MarketCategoryType.Invalid };
+        ((bool)tryMapWeaponCategory.Invoke(null, vibroknifeArgs)!).Should().BeTrue();
+        vibroknifeArgs[1].Should().Be(MarketCategoryType.Vibroknife);
+
+        object[] spearArgs = { new JValue(4), MarketCategoryType.Invalid };
+        ((bool)tryMapWeaponCategory.Invoke(null, spearArgs)!).Should().BeTrue();
+        spearArgs[1].Should().Be(MarketCategoryType.Spear);
+    }
+
+    [Test]
     public void ObsoleteBiblePerkMigration_CoversPlayersBeastsStoredItemsDroidsAndShips()
     {
         var root = FindRepositoryRoot();
@@ -375,6 +434,22 @@ public class CombatUpgradeMigrationCoverageTests
     }
 
     [Test]
+    public void RemovedPerkCoverage_ReadsExplicitAndImplicitEnumMembers()
+    {
+        const string source = """
+            Invalid = 0,
+            ExplicitPerk = 42,
+            ImplicitPerk,
+            FinalImplicit
+            """;
+
+        Regex.Matches(source, PerkTypeEnumMemberPattern, RegexOptions.Multiline)
+            .Select(match => match.Groups[1].Value)
+            .Should()
+            .Equal("Invalid", "ExplicitPerk", "ImplicitPerk", "FinalImplicit");
+    }
+
+    [Test]
     public void SharedItemMigrationServices_RecurseThroughEquippedItemsInventoryAndNestedDroidItems()
     {
         var root = FindRepositoryRoot();
@@ -453,7 +528,7 @@ public class CombatUpgradeMigrationCoverageTests
             "PerkService",
             "PerkType.cs"));
 
-        return Regex.Matches(source, @"^\s*(\w+)\s*=\s*\d+", RegexOptions.Multiline)
+        return Regex.Matches(source, PerkTypeEnumMemberPattern, RegexOptions.Multiline)
             .Select(match => match.Groups[1].Value)
             .Where(perk => perk != "Invalid")
             .ToHashSet();

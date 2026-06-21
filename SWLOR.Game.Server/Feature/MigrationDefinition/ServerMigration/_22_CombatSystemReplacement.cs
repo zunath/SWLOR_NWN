@@ -736,23 +736,16 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
             ResistanceType resistanceType)
         {
             var migrated = false;
+            var targetKey = resistanceType.ToString();
+            var legacyNameKey = legacyType.ToString();
+            var legacyNumericKey = ((int)legacyType).ToString();
             var legacyToken = GetToken(defenses, legacyType.ToString(), (int)legacyType);
-            var resistanceToken = resistances[resistanceType.ToString()] ??
-                                  resistances[legacyType.ToString()] ??
-                                  resistances[((int)legacyType).ToString()];
 
-            if (resistances[resistanceType.ToString()] == null && resistanceToken != null)
-            {
-                resistances[resistanceType.ToString()] = resistanceToken.DeepClone();
-                migrated = true;
-            }
-            else if (resistanceToken == null && legacyToken != null)
-            {
-                resistances[resistanceType.ToString()] = legacyToken.DeepClone();
-                migrated = true;
-            }
+            migrated |= MergeResistanceValue(resistances, targetKey, resistances[legacyNameKey]);
+            migrated |= MergeResistanceValue(resistances, targetKey, resistances[legacyNumericKey]);
+            migrated |= MergeResistanceValue(resistances, targetKey, legacyToken);
 
-            foreach (var key in new[] { legacyType.ToString(), ((int)legacyType).ToString() })
+            foreach (var key in new[] { legacyNameKey, legacyNumericKey })
             {
                 if (defenses.Remove(key))
                     migrated = true;
@@ -769,13 +762,9 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
             var migrated = false;
             var key = resistanceType.ToString();
             var legacyNumericKey = ((int)legacyType).ToString();
-            var token = resistances[key] ?? resistances[legacyType.ToString()] ?? resistances[legacyNumericKey];
 
-            if (resistances[key] == null && token != null)
-            {
-                resistances[key] = token.DeepClone();
-                migrated = true;
-            }
+            migrated |= MergeResistanceValue(resistances, key, resistances[legacyType.ToString()]);
+            migrated |= MergeResistanceValue(resistances, key, resistances[legacyNumericKey]);
 
             if (resistances.Remove(legacyNumericKey))
                 migrated = true;
@@ -871,17 +860,43 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
             if (sourceToken == null)
                 return false;
 
-            if (resistances[targetKey] == null)
-            {
-                resistances[targetKey] = sourceToken.DeepClone();
-            }
-            else
-            {
-                resistances[targetKey] = Math.Max(GetInt(sourceToken), GetInt(resistances[targetKey]));
-            }
+            MergeResistanceValue(resistances, targetKey, sourceToken);
 
             resistances.Remove(sourceKey);
             return true;
+        }
+
+        private static bool MergeResistanceValue(JObject resistances, string targetKey, JToken sourceToken)
+        {
+            if (sourceToken == null)
+                return false;
+
+            var sourceValue = GetInt(sourceToken);
+            var targetToken = resistances[targetKey];
+            if (targetToken == null)
+            {
+                resistances[targetKey] = sourceToken.DeepClone();
+                return true;
+            }
+
+            var targetValue = GetInt(targetToken);
+            var mergedValue = MergeResistanceValues(targetValue, sourceValue);
+            if (targetValue == mergedValue)
+                return false;
+
+            resistances[targetKey] = mergedValue;
+            return true;
+        }
+
+        private static int MergeResistanceValues(int targetValue, int sourceValue)
+        {
+            if (targetValue == 0)
+                return sourceValue;
+
+            if (sourceValue == 0)
+                return targetValue;
+
+            return Math.Max(targetValue, sourceValue);
         }
 
         private static bool MigratePurities(JObject entity)

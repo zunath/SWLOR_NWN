@@ -166,10 +166,23 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
         {
             category = MarketCategoryType.Invalid;
 
-            if (categoryToken == null || categoryToken.Type != JTokenType.String)
+            if (categoryToken == null)
                 return false;
 
-            switch (categoryToken.Value<string>())
+            if (categoryToken.Type == JTokenType.Integer)
+                return TryMapWeaponCategory(categoryToken.Value<int>().ToString(), out category);
+
+            if (categoryToken.Type != JTokenType.String)
+                return false;
+
+            return TryMapWeaponCategory(categoryToken.Value<string>(), out category);
+        }
+
+        private static bool TryMapWeaponCategory(string categoryNameOrId, out MarketCategoryType category)
+        {
+            category = MarketCategoryType.Invalid;
+
+            switch (categoryNameOrId)
             {
                 case "2":
                 case "Fin. Vibroblade":

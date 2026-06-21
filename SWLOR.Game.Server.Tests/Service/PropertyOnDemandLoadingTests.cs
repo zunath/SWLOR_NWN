@@ -129,6 +129,10 @@ public class PropertyOnDemandLoadingTests
         stateBody.Should().Contain("_propertyLoadFailures[propertyId] = \"Property does not exist in the database.\";");
         stateBody.Should().Contain("return PropertyLoadState.Failed;");
         stateBody.Should().Contain("GetIsObjectValid(registeredInstance.Area)");
+        stateBody.Should().Contain("SetPropertyLoadState(propertyId, PropertyLoadState.Unloaded);");
+        stateBody.IndexOf("SetPropertyLoadState(propertyId, PropertyLoadState.Unloaded);", StringComparison.Ordinal)
+            .Should()
+            .BeLessThan(stateBody.IndexOf("return PropertyLoadState.Unloaded;", StringComparison.Ordinal));
         stateBody.Should().Contain("return PropertyLoadState.Unloaded;");
         stateBody.Should().Contain("_propertyInstances.TryGetValue(propertyId, out var existingInstance)");
         stateBody.Should().Contain("GetIsObjectValid(existingInstance.Area)");

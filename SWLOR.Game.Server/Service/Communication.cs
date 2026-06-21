@@ -375,7 +375,6 @@ namespace SWLOR.Game.Server.Service
                         finalMessage.Append(" } ");
                     }
                 }
-
                 var speaker = GetEffectiveChatSpeaker(sender);
                 var language = Language.GetActiveLanguage(speaker);
 
@@ -458,18 +457,6 @@ namespace SWLOR.Game.Server.Service
                     finalMessage.Append(text);
                 }
 
-                // Dispatch the final message - method depends on the original chat channel.
-                // - Shout and party are sent as DMTalk. This avoids native labels and area restrictions.
-                // - Talk and whisper are sent as-is.
-                // The sender label is rendered by the chat channel; PC names are masked by PlayerName
-                // rename overrides instead of being manually inserted into the message body.
-                var finalChannel = channel;
-
-                if (channel == ChatChannel.PlayerShout || channel == ChatChannel.PlayerParty)
-                {
-                    finalChannel = ChatChannel.DMTalk;
-                }
-
                 // There are a couple of color overrides we want to use here.
                 // - One for holonet (shout).
                 // - One for comms (party chat).
@@ -485,7 +472,17 @@ namespace SWLOR.Game.Server.Service
                     finalMessageColored = ColorToken.Orange(finalMessageColored);
                 }
 
-                ChatPlugin.SendMessage(finalChannel, finalMessageColored, sender, receiver);
+                var finalChannel = channel;
+
+                if (channel == ChatChannel.PlayerShout || channel == ChatChannel.PlayerParty)
+                {
+                    finalChannel = ChatChannel.PlayerTalk;
+                }
+
+                PlayerName.SendChatMessageWithChatNameOverride(
+                    receiver,
+                    speaker,
+                    () => ChatPlugin.SendMessage(finalChannel, finalMessageColored, speaker, receiver));
             }
         }
 

@@ -69,6 +69,10 @@ namespace SWLOR.Game.Server.Service
             if (string.IsNullOrWhiteSpace(displayName) ||
                 CountDisplayNameMatches(sender, displayName) <= 1)
             {
+                ApplyChatNameOverride(target, sender);
+                ApplyChatNameOverride(sender, target);
+                DelayCommand(0.1f, () => RestoreNameOverride(target, sender));
+                DelayCommand(0.1f, () => RestoreNameOverride(sender, target));
                 return;
             }
 
@@ -79,6 +83,25 @@ namespace SWLOR.Game.Server.Service
         public static string GetDisplayName(uint observer, uint target)
         {
             return ResolveDisplayName(observer, target, out _);
+        }
+
+        public static string GetChatDisplayName(uint observer, uint target)
+        {
+            return ResolveChatDisplayName(observer, target, out _);
+        }
+
+        public static void SendChatMessageWithChatNameOverride(uint observer, uint target, Action sendMessage)
+        {
+            ApplyChatNameOverride(observer, target);
+
+            try
+            {
+                sendMessage();
+            }
+            finally
+            {
+                RestoreNameOverride(observer, target);
+            }
         }
 
         public static string GetDisplayNameByPlayerId(uint observer, string targetPlayerId, string fallbackName)
@@ -180,6 +203,17 @@ namespace SWLOR.Game.Server.Service
                 return BuildColoredDisplayNameWithDescriptor(GetName(target), PlayerDescriptor.GetUnknownDisplayName(target));
             }
 
+            return isUnknown
+                ? ColorToken.Gray(displayName)
+                : ColorToken.GetPCColor(displayName);
+        }
+
+        public static string GetColoredChatDisplayName(uint observer, uint target)
+        {
+            if (!GetIsPC(target) || GetIsDM(target))
+                return ColorToken.GetNameNPCColor(target);
+
+            var displayName = ResolveChatDisplayName(observer, target, out var isUnknown);
             return isUnknown
                 ? ColorToken.Gray(displayName)
                 : ColorToken.GetPCColor(displayName);
@@ -436,11 +470,7 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            var trueName = GetName(target);
-            var descriptor = PlayerDescriptor.GetUnknownDisplayName(target);
-
             RenamePlugin.SetPCNameOverride(target, BuildStaffDisplayName(target), string.Empty, string.Empty, PlayerNameOverrideType.Default, observer);
-            PlayerPlugin.SetCreatureNameOverride(observer, target, BuildCreatureNameOverrideWithDescriptor(trueName, descriptor));
         }
 
         private static void ApplyNameOverride(uint observer, uint target)
@@ -460,7 +490,6 @@ namespace SWLOR.Game.Server.Service
             var suffix = isUnknown ? UnknownNameSuffix : string.Empty;
 
             RenamePlugin.SetPCNameOverride(target, displayName, prefix, suffix, PlayerNameOverrideType.Default, observer);
-            PlayerPlugin.SetCreatureNameOverride(observer, target, BuildCreatureNameOverride(observer, target, isUnknown));
         }
 
         private static string BuildStaffDisplayName(uint target)
@@ -471,28 +500,68 @@ namespace SWLOR.Game.Server.Service
             return $"{trueName} [{ColorToken.Gray(unknownDisplayName)}]";
         }
 
-        private static string BuildCreatureNameOverride(uint observer, uint target, bool isUnknown)
+        private static bool CanApplyChatNameOverride(uint observer, uint target)
         {
-            if (isUnknown)
-                return string.Empty;
-
-            var descriptor = PlayerDescriptor.GetUnknownDisplayName(target);
-
-            if (GetIsDMPossessed(observer))
-                return BuildCreatureNameOverrideWithDescriptor(GetName(target), descriptor);
-
-            if (TryGetKnownName(observer, target, out var knownName) &&
-                ShouldShowDescriptorForNamedPlayers(observer))
-            {
-                return BuildCreatureNameOverrideWithDescriptor(knownName, descriptor);
-            }
-
-            return string.Empty;
+            return GetIsObjectValid(observer) &&
+                   GetIsObjectValid(target) &&
+                   GetIsPC(observer) &&
+                   GetIsPC(target) &&
+                   !GetIsDM(target);
         }
 
-        private static string BuildCreatureNameOverrideWithDescriptor(string primaryName, string descriptor)
+        private static void ApplyChatNameOverride(uint observer, uint target)
         {
-            return $"{primaryName}\n{ColorToken.Gray(descriptor)}";
+            if (!CanApplyChatNameOverride(observer, target))
+                return;
+
+            var displayName = ResolveChatDisplayName(observer, target, out var isUnknown);
+            var prefix = isUnknown ? UnknownNamePrefix : string.Empty;
+            var suffix = isUnknown ? UnknownNameSuffix : string.Empty;
+
+            RenamePlugin.SetPCNameOverride(target, displayName, prefix, suffix, PlayerNameOverrideType.Default, observer);
+        }
+
+        private static void RestoreNameOverride(uint observer, uint target)
+        {
+            if (!CanApplyChatNameOverride(observer, target))
+                return;
+
+            if (observer == target)
+            {
+                RenamePlugin.SetPCNameOverride(target, GetName(target), string.Empty, string.Empty, PlayerNameOverrideType.Default, observer);
+                return;
+            }
+
+            if (GetIsDM(observer) || GetIsDMPossessed(observer))
+                ApplyTrueNameOverride(observer, target);
+            else
+                ApplyNameOverride(observer, target);
+        }
+
+        private static string ResolveChatDisplayName(uint observer, uint target, out bool isUnknown)
+        {
+            isUnknown = false;
+
+            if (!GetIsObjectValid(target))
+                return string.Empty;
+
+            if (!GetIsPC(target) || GetIsDM(target))
+                return GetName(target);
+
+            if (!GetIsObjectValid(observer) ||
+                observer == target ||
+                GetIsDM(observer) ||
+                GetIsDMPossessed(observer) ||
+                !GetIsPC(observer))
+            {
+                return GetName(target);
+            }
+
+            if (TryGetKnownName(observer, target, out var knownName))
+                return knownName;
+
+            isUnknown = true;
+            return PlayerDescriptor.GetUnknownDisplayName(target);
         }
 
         private static string ResolveDisplayName(uint observer, uint target, out bool isUnknown)

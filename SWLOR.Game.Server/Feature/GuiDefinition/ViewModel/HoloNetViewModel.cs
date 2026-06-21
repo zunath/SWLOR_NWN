@@ -71,7 +71,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 for (var onlinePlayer = GetFirstPC(); GetIsObjectValid(onlinePlayer); onlinePlayer = GetNextPC())
                 {
-                    var displayName = PlayerName.GetDisplayName(onlinePlayer, Player);
+                    var displayName = PlayerName.GetChatDisplayName(onlinePlayer, Player);
                     SendMessageToPC(onlinePlayer, ColorToken.Custom(displayName + " broadcasts a new HoloNet message: ", 0, 180, 255) + ColorToken.White(message));
                 }
             });

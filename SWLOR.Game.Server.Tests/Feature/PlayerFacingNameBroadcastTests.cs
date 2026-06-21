@@ -61,7 +61,7 @@ public class PlayerFacingNameBroadcastTests
             "GuiDefinition",
             "ViewModel",
             "HoloNetViewModel.cs"));
-        holoNetSource.Should().Contain("PlayerName.GetDisplayName(onlinePlayer, Player)");
+        holoNetSource.Should().Contain("PlayerName.GetChatDisplayName(onlinePlayer, Player)");
         holoNetSource.Should().Contain("\"HoloNet Broadcast\"");
         holoNetSource.Should().NotContain("authorName + \" broadcasts a new HoloNet message");
 
@@ -71,10 +71,25 @@ public class PlayerFacingNameBroadcastTests
             "Service",
             "Communication.cs"));
         communicationSource.Should().Contain("var speaker = GetEffectiveChatSpeaker(sender);");
+        communicationSource.Should().Contain("PlayerName.SendChatMessageWithChatNameOverride(");
         communicationSource.Should().NotContain("finalMessage.Append(PlayerName.GetColoredDisplayName");
-        communicationSource.Should().Contain("var finalChannel = channel;");
-        communicationSource.Should().Contain("finalChannel = ChatChannel.DMTalk;");
+        communicationSource.Should().Contain("var recipients = new List<uint> { sender };");
+        communicationSource.Should().Contain("recipients.AddRange(allPlayers.Where(player => GetLocalBool(player, \"DISPLAY_HOLONET\")))");
+        communicationSource.Should().Contain("recipients.AddRange(allDMs);");
+        communicationSource.Should().Contain("for (var member = GetFirstFactionMember(sender); GetIsObjectValid(member); member = GetNextFactionMember(sender))");
+        communicationSource.Should().Contain("recipients.Add(member);");
+        communicationSource.Should().Contain("distanceCheck = 20.0f;");
+        communicationSource.Should().Contain("var distance = GetDistanceBetween(sender, target);");
+        communicationSource.Should().Contain("else if (channel == ChatChannel.PlayerWhisper)");
+        communicationSource.Should().NotContain("finalMessage.Append(\"[Whisper] \");");
+        communicationSource.Should().Contain("finalChannel = ChatChannel.PlayerTalk;");
+        communicationSource.Should().Contain("ChatPlugin.SendMessage(finalChannel, finalMessageColored, speaker, receiver)");
+        communicationSource.Should().NotContain("PlayerName.SendWithChatNameOverride");
+        communicationSource.Should().NotContain("ChatPlugin.SendMessage(ChatChannel.PlayerDM");
+        communicationSource.Should().NotContain("ChatChannel.PlayerDM, finalMessageColored");
+        communicationSource.Should().NotContain("finalChannel = ChatChannel.DMTalk;");
         communicationSource.Should().NotContain("var finalChannel = ChatChannel.ServerMessage;");
+        communicationSource.Should().NotContain("finalSender = GetModule();");
 
         var statusEffectSource = File.ReadAllText(Path.Combine(
             root.FullName,

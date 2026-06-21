@@ -64,7 +64,7 @@ public class PlayerNameRecognitionTests
 
         dmObserverMethod.Should().Contain("ApplyTrueNameOverride(dm, player);");
         trueNameMethod.Should().Contain("BuildStaffDisplayName(target)");
-        trueNameMethod.Should().Contain("PlayerPlugin.SetCreatureNameOverride(observer, target, BuildCreatureNameOverrideWithDescriptor(trueName, descriptor));");
+        trueNameMethod.Should().NotContain("PlayerPlugin.SetCreatureNameOverride");
     }
 
     [Test]
@@ -241,6 +241,10 @@ public class PlayerNameRecognitionTests
 
         tellMethod.Should().Contain("ChatChannel.PlayerTell");
         tellMethod.Should().Contain("CountDisplayNameMatches(sender, displayName) <= 1");
+        tellMethod.Should().Contain("ApplyChatNameOverride(target, sender);");
+        tellMethod.Should().Contain("ApplyChatNameOverride(sender, target);");
+        tellMethod.Should().Contain("DelayCommand(0.1f, () => RestoreNameOverride(target, sender));");
+        tellMethod.Should().Contain("DelayCommand(0.1f, () => RestoreNameOverride(sender, target));");
         tellMethod.Should().Contain("ChatPlugin.SkipMessage();");
         tellMethod.Should().Contain("Use /name on the intended player before sending tells.");
 
@@ -270,11 +274,15 @@ public class PlayerNameRecognitionTests
             "Player.cs"));
 
         var coloredDisplayMethod = ExtractMethod(source, "public static string GetColoredDisplayName(uint observer, uint target)");
+        var coloredChatDisplayMethod = ExtractMethod(source, "public static string GetColoredChatDisplayName(uint observer, uint target)");
         var playerIdDisplayMethod = ExtractMethod(source, "public static string GetDisplayNameByPlayerId(uint observer, string targetPlayerId, string fallbackName)");
         coloredDisplayMethod.Should().Contain("ColorToken.Gray(displayName)");
         coloredDisplayMethod.Should().Contain("ShouldShowDescriptorForNamedPlayers(observer)");
         coloredDisplayMethod.Should().Contain("BuildColoredDisplayNameWithDescriptor(knownName, PlayerDescriptor.GetUnknownDisplayName(target))");
         coloredDisplayMethod.Should().Contain("ColorToken.GetPCColor(knownName)");
+        coloredChatDisplayMethod.Should().Contain("ResolveChatDisplayName(observer, target, out var isUnknown)");
+        coloredChatDisplayMethod.Should().NotContain("ShouldShowDescriptorForNamedPlayers(observer)");
+        coloredChatDisplayMethod.Should().NotContain("BuildColoredDisplayNameWithDescriptor");
         playerIdDisplayMethod.Should().Contain("ShouldShowDescriptorForNamedPlayers(observer)");
         playerIdDisplayMethod.Should().Contain("BuildDisplayNameWithDescriptor(fallbackDisplayName, PlayerDescriptor.GetUnknownDisplayNameByPlayerId(targetPlayerId))");
         playerIdDisplayMethod.Should().Contain(": knownName");
@@ -284,12 +292,15 @@ public class PlayerNameRecognitionTests
         playerSource.Should().Contain("ShowDescriptorsForNamedPlayers = true;");
         descriptorSource.Should().Contain("public static void SetUnknownDisplayName(uint player, string name)");
         source.Should().Contain("PlayerDescriptor.GetUnknownDisplayName(target)");
+        source.Should().Contain("public static void SendChatMessageWithChatNameOverride(uint observer, uint target, Action sendMessage)");
         source.Should().Contain("private static string BuildDisplayNameWithDescriptor(string primaryName, string descriptor)");
         source.Should().Contain("private static string BuildColoredDisplayNameWithDescriptor(string primaryName, string descriptor)");
-        source.Should().Contain("private static string BuildCreatureNameOverride(uint observer, uint target, bool isUnknown)");
-        source.Should().Contain("private static string BuildCreatureNameOverrideWithDescriptor(string primaryName, string descriptor)");
+        source.Should().Contain("private static string ResolveChatDisplayName(uint observer, uint target, out bool isUnknown)");
         source.Should().Contain("private static bool ShouldShowDescriptorForNamedPlayers(uint observer)");
         source.Should().Contain("ShowDescriptorsForNamedPlayersByObserverId");
+        source.Should().NotContain("SendWithChatNameOverride");
+        source.Should().NotContain("SetCreatureNameOverride");
+        source.Should().NotContain("BuildCreatureNameOverride");
         ExtractMethod(descriptorSource, "public static void SetUnknownDisplayName(uint player, string name)")
             .Should().Contain("dbPlayer.UnknownDisplayName = sanitizedName;");
 
@@ -297,12 +308,20 @@ public class PlayerNameRecognitionTests
         nameOverrideMethod.Should().Contain("UnknownNamePrefix");
         nameOverrideMethod.Should().Contain("UnknownNameSuffix");
         nameOverrideMethod.Should().Contain("RenamePlugin.SetPCNameOverride(target, displayName, prefix, suffix, PlayerNameOverrideType.Default, observer);");
-        nameOverrideMethod.Should().Contain("PlayerPlugin.SetCreatureNameOverride(observer, target, BuildCreatureNameOverride(observer, target, isUnknown));");
+        nameOverrideMethod.Should().NotContain("SetCreatureNameOverride");
 
         var resolveDisplayMethod = ExtractMethod(source, "private static string ResolveDisplayName(uint observer, uint target, out bool isUnknown)");
         resolveDisplayMethod.Should().Contain("ShouldShowDescriptorForNamedPlayers(observer)");
         resolveDisplayMethod.Should().Contain("BuildDisplayNameWithDescriptor(knownName, PlayerDescriptor.GetUnknownDisplayName(target))");
         resolveDisplayMethod.Should().Contain(": knownName");
+
+        var resolveChatDisplayMethod = ExtractMethod(source, "private static string ResolveChatDisplayName(uint observer, uint target, out bool isUnknown)");
+        resolveChatDisplayMethod.Should().Contain("GetIsDM(observer)");
+        resolveChatDisplayMethod.Should().Contain("TryGetKnownName(observer, target, out var knownName)");
+        resolveChatDisplayMethod.Should().Contain("return knownName;");
+        resolveChatDisplayMethod.Should().Contain("return PlayerDescriptor.GetUnknownDisplayName(target);");
+        resolveChatDisplayMethod.Should().NotContain("BuildDisplayNameWithDescriptor");
+        resolveChatDisplayMethod.Should().NotContain("ShouldShowDescriptorForNamedPlayers(observer)");
 
         var staffDisplayMethod = ExtractMethod(source, "private static string BuildStaffDisplayName(uint target)");
         staffDisplayMethod.Should().Contain("GetName(target)");
@@ -317,15 +336,6 @@ public class PlayerNameRecognitionTests
         var coloredDisplayWithDescriptorMethod = ExtractMethod(source, "private static string BuildColoredDisplayNameWithDescriptor(string primaryName, string descriptor)");
         coloredDisplayWithDescriptorMethod.Should().Contain("return $\"{ColorToken.GetPCColor(primaryName)} [{ColorToken.Gray(descriptor)}]\";");
         coloredDisplayWithDescriptorMethod.Should().NotContain("\\n");
-
-        var creatureNameOverrideMethod = ExtractMethod(source, "private static string BuildCreatureNameOverride(uint observer, uint target, bool isUnknown)");
-        creatureNameOverrideMethod.Should().Contain("if (isUnknown)");
-        creatureNameOverrideMethod.Should().Contain("GetIsDMPossessed(observer)");
-        creatureNameOverrideMethod.Should().Contain("TryGetKnownName(observer, target, out var knownName)");
-        creatureNameOverrideMethod.Should().Contain("ShouldShowDescriptorForNamedPlayers(observer)");
-
-        var creatureNameOverrideWithDescriptorMethod = ExtractMethod(source, "private static string BuildCreatureNameOverrideWithDescriptor(string primaryName, string descriptor)");
-        creatureNameOverrideWithDescriptorMethod.Should().Contain("return $\"{primaryName}\\n{ColorToken.Gray(descriptor)}\";");
     }
 
     [Test]

@@ -23,7 +23,31 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public GuiBindingList<string> EmoteNamesCol1
+        {
+            get => Get<GuiBindingList<string>>();
+            set => Set(value);
+        }
+
+        public GuiBindingList<string> EmoteNamesCol2
+        {
+            get => Get<GuiBindingList<string>>();
+            set => Set(value);
+        }
+
         public GuiBindingList<string> EmoteDescriptions
+        {
+            get => Get<GuiBindingList<string>>();
+            set => Set(value);
+        }
+
+        public GuiBindingList<string> EmoteDescriptionsCol1
+        {
+            get => Get<GuiBindingList<string>>();
+            set => Set(value);
+        }
+
+        public GuiBindingList<string> EmoteDescriptionsCol2
         {
             get => Get<GuiBindingList<string>>();
             set => Set(value);
@@ -94,11 +118,49 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             get => Get<bool>();
             set => Set(value);
         }
+        
+        public bool IsHorizontalLayoutToggled
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public bool IsVerticalLayoutToggled
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public bool IsHorizontalLayoutVisible
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public bool IsVerticalLayoutVisible
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
 
         private List<Animation> EmoteAnimations { get; set; }
+        private List<Animation> EmoteAnimationsCol1 { get; set; }
+        private List<Animation> EmoteAnimationsCol2 { get; set; }
         private List<EmoteCategoryType> EmoteCategories { get; set; }
 
         public GuiBindingList<bool> IsEmoteLoopingAnimations
+        {
+            get => Get<GuiBindingList<bool>>();
+            set => Set(value);
+        }
+
+        public GuiBindingList<bool> IsEmoteLoopingAnimationsCol1
+        {
+            get => Get<GuiBindingList<bool>>();
+            set => Set(value);
+        }
+
+        public GuiBindingList<bool> IsEmoteLoopingAnimationsCol2
         {
             get => Get<GuiBindingList<bool>>();
             set => Set(value);
@@ -147,6 +209,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             SelectedCategoryIndex = 0;
             IsCategoryAllToggled = true;
 
+            var layout = (EmoteLayoutType)GetLocalInt(Player, "EMOTE_GUI_LAYOUT");
+            OnSelectLayout((int)layout)();
+
             SelectedEmoteIndex = -1;
             FilterEmotes();
         }
@@ -179,12 +244,52 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsEmoteLoopingAnimations = isEmoteLoopingAnimations;
             EmoteAnimations = emoteAnimations;
             EmoteCategories = emoteCategories;
+
+            // Dividi in due colonne per il layout verticale
+            var emoteNamesCol1 = new GuiBindingList<string>();
+            var emoteDescriptionsCol1 = new GuiBindingList<string>();
+            var isEmoteLoopingCol1 = new GuiBindingList<bool>();
+            var emoteAnimationsCol1 = new List<Animation>();
+
+            var emoteNamesCol2 = new GuiBindingList<string>();
+            var emoteDescriptionsCol2 = new GuiBindingList<string>();
+            var isEmoteLoopingCol2 = new GuiBindingList<bool>();
+            var emoteAnimationsCol2 = new List<Animation>();
+
+            for (var i = 0; i < EmoteNames.Count; i++)
+            {
+                if (i % 2 == 0)
+                {
+                    emoteNamesCol1.Add(EmoteNames[i]);
+                    emoteDescriptionsCol1.Add(EmoteDescriptions[i]);
+                    isEmoteLoopingCol1.Add(IsEmoteLoopingAnimations[i]);
+                    emoteAnimationsCol1.Add(EmoteAnimations[i]);
+                }
+                else
+                {
+                    emoteNamesCol2.Add(EmoteNames[i]);
+                    emoteDescriptionsCol2.Add(EmoteDescriptions[i]);
+                    isEmoteLoopingCol2.Add(IsEmoteLoopingAnimations[i]);
+                    emoteAnimationsCol2.Add(EmoteAnimations[i]);
+                }
+            }
+
+            EmoteNamesCol1 = emoteNamesCol1;
+            EmoteDescriptionsCol1 = emoteDescriptionsCol1;
+            IsEmoteLoopingAnimationsCol1 = isEmoteLoopingCol1;
+            EmoteAnimationsCol1 = emoteAnimationsCol1;
+
+            EmoteNamesCol2 = emoteNamesCol2;
+            EmoteDescriptionsCol2 = emoteDescriptionsCol2;
+            IsEmoteLoopingAnimationsCol2 = isEmoteLoopingCol2;
+            EmoteAnimationsCol2 = emoteAnimationsCol2;
         }
 
         public Action OnSelectEmote() => () =>
         {
             var index = NuiGetEventArrayIndex();
             SelectedEmoteIndex = index;
+            
             AssignCommand(Player, () => ClearAllActions());
             if (IsEmoteLoopingAnimations[SelectedEmoteIndex])
             {
@@ -195,7 +300,36 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 AssignCommand(Player, () => ActionPlayAnimation((Animation) EmoteAnimations[SelectedEmoteIndex]));
             }
+        };
 
+        public Action OnSelectEmoteCol1() => () =>
+        {
+            var index = NuiGetEventArrayIndex();
+            AssignCommand(Player, () => ClearAllActions());
+            if (IsEmoteLoopingAnimationsCol1[index])
+            {
+                var duration = 9999.9f;
+                AssignCommand(Player, () => ActionPlayAnimation((Animation)EmoteAnimationsCol1[index], 1f, duration));
+            }
+            else
+            {
+                AssignCommand(Player, () => ActionPlayAnimation((Animation)EmoteAnimationsCol1[index]));
+            }
+        };
+
+        public Action OnSelectEmoteCol2() => () =>
+        {
+            var index = NuiGetEventArrayIndex();
+            AssignCommand(Player, () => ClearAllActions());
+            if (IsEmoteLoopingAnimationsCol2[index])
+            {
+                var duration = 9999.9f;
+                AssignCommand(Player, () => ActionPlayAnimation((Animation)EmoteAnimationsCol2[index], 1f, duration));
+            }
+            else
+            {
+                AssignCommand(Player, () => ActionPlayAnimation((Animation)EmoteAnimationsCol2[index]));
+            }
         };
 
         public Action OnSelectCategory(int index) => () =>
@@ -208,6 +342,26 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsCategoryFeelingsToggled = index == 5;
 
             SelectedCategoryIndex = index;
+        };
+
+        public Action OnSelectLayout(int layoutIndex) => () =>
+        {
+            var layout = (EmoteLayoutType)layoutIndex;
+            IsHorizontalLayoutToggled = layout == EmoteLayoutType.Horizontal;
+            IsVerticalLayoutToggled = layout == EmoteLayoutType.Vertical;
+            IsHorizontalLayoutVisible = IsHorizontalLayoutToggled;
+            IsVerticalLayoutVisible = IsVerticalLayoutToggled;
+
+            SetLocalInt(Player, "EMOTE_GUI_LAYOUT", layoutIndex);
+
+            if (layout == EmoteLayoutType.Horizontal)
+            {
+                ChangePartialView("EMOTE_LAYOUT_GROUP", "GRID_VIEW");
+            }
+            else
+            {
+                ChangePartialView("EMOTE_LAYOUT_GROUP", "COL_VIEW");
+            }
         };
 
         public Action OnClickReset() => () =>

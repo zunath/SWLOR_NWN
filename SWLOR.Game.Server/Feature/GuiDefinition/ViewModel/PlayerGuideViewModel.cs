@@ -287,7 +287,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 new(
                     "Common Questions",
                     "Core",
-                    "Start here for skills, AP, perks, decay, refunds, XP debt, death, combat, crafting, and windows.",
+                    "Start here for skills, AP, perks, decay, refunds, XP debt, death, combat, crafting, names, and windows.",
                     "Skills, AP, death",
                     new[]
                     {
@@ -306,7 +306,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new ArticleBlock("Death and Resting",
                             "If you die, you can wait for another player to revive you or respawn to your registered medical facility. Resting restores HP, FP, and STM over time, but cannot be used in combat, near enemies, or outside dungeon safe-rest areas."),
                         new ArticleBlock("Crafting and Training",
-                            "Recipes, crafting devices, research terminals, refineries, the Training Store, and the Character Sheet windows are the main places to turn earned progress into gear, tokens, and character choices.")
+                            "Recipes, crafting devices, research terminals, refineries, the Training Store, and the Character Sheet windows are the main places to turn earned progress into gear, tokens, and character choices."),
+                        new ArticleBlock("Recognizing Players",
+                            "Other player characters may appear as Someone until you remember them. Type /name <name>, then click the player character when the target cursor appears. Use /forgetname and click the character to clear that personal name.")
                     },
                     new[]
                     {
@@ -316,9 +318,42 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new QuestionAnswer("How do perk refunds work?", "Manual refunds return all SP paid for the selected perk, consume a token, and start a 1 hour wait."),
                         new QuestionAnswer("Why did I get no skill XP?", "XP debt may have used the entire XP reward, or you may be at the 400-rank limit with no available skill that can decay."),
                         new QuestionAnswer("Where do I go after death?", "Respawning returns you to your registered medical facility and adds XP debt."),
-                        new QuestionAnswer("What should I open first?", "Press B for this guide and C for the Character Sheet.")
+                        new QuestionAnswer("What should I open first?", "Press B for this guide and C for the Character Sheet."),
+                        new QuestionAnswer("How do I use /name?", "Type /name <name>, then click the player character when the target cursor appears. Name the intended player before sending tells if several characters appear as Someone.")
                     },
-                    new[] { "Skills", "Attributes", "Perks", "Skill Decay", "Perk Refunds", "XP Debt", "Death & Recovery", "Combat Basics", "Crafting", "Training Store", "Useful Windows" }),
+                    new[] { "Communication", "Skills", "Attributes", "Perks", "Skill Decay", "Perk Refunds", "XP Debt", "Death & Recovery", "Combat Basics", "Crafting", "Training Store", "Useful Windows" }),
+
+                new(
+                    "Communication",
+                    "Social",
+                    "Talk ranges, comms, HoloNet, HoloNet broadcasts, notes, settings, descriptions, names, emotes, and languages.",
+                    "Chat and tools",
+                    new[]
+                    {
+                        new ArticleBlock("Talk, Whisper, and Comms",
+                            "Normal talk reaches players within 20 meters. Whisper reaches 4 meters. Party chat works as comms for party members and can also be heard by nearby players within 20 meters."),
+                        new ArticleBlock("HoloNet Chat",
+                            "Shout sends an in-character HoloNet message to online players who display the HoloNet channel. Out-of-character messages cannot be sent over HoloNet, and HoloNet chat has a 5 minute wait between sends."),
+                        new ArticleBlock("HoloNet Broadcast Window",
+                            "The HoloNet broadcast window sends a longer broadcast, costs 2500 credits, and is limited to 600 characters."),
+                        new ArticleBlock("Settings",
+                            "Settings control achievement notifications, whether you display the HoloNet channel, subdual mode, reset reminders, chat colors, emote colors, and language colors. Settings also links to your character description."),
+                        new ArticleBlock("Notes",
+                            "Notes are private player notes. You can keep up to 25 notes, and each note can hold up to 1000 characters."),
+                        new ArticleBlock("Names",
+                            "Unrecognized player characters can appear as Someone until you personally set a known name. Type /name <name>, then click the player character when the target cursor appears. Use /forgetname and click the character to forget that personal name."),
+                        new ArticleBlock("Emotes and Languages",
+                            "Speech can include emote text, and your emote style can be toggled between regular and novel formatting. Speaking or hearing non-Basic languages uses language skill; hearing a non-Basic language you do not fully know can grant language XP over time.")
+                    },
+                    new[]
+                    {
+                        new QuestionAnswer("How far does talk carry?", "Talk reaches 20 meters. Whisper reaches 4 meters."),
+                        new QuestionAnswer("What is party chat here?", "Party chat acts as comms for your party and can be overheard nearby."),
+                        new QuestionAnswer("How do I stop seeing HoloNet?", "Open Settings and turn off the HoloNet channel display."),
+                        new QuestionAnswer("How do I name another player?", "Type /name <name>, then click that player character when the target cursor appears. Use /forgetname and click them again to clear it."),
+                        new QuestionAnswer("How do languages improve?", "Listening to partially understood non-Basic speech can grant language XP over time.")
+                    },
+                    new[] { "Common Questions", "Useful Windows", "Skills", "Quests & Key Items", "Death & Recovery" }),
 
                 new(
                     "Skills",
@@ -766,37 +801,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new QuestionAnswer("What lowers repair cost?", "Starport upgrades and Social can reduce the bill.")
                     },
                     new[] { "Housing & Markets", "Perks", "Combat Basics", "Useful Windows" }),
-
-                new(
-                    "Communication",
-                    "Social",
-                    "Talk ranges, comms, HoloNet, HoloNet broadcasts, notes, settings, descriptions, names, emotes, and languages.",
-                    "Chat and tools",
-                    new[]
-                    {
-                        new ArticleBlock("Talk, Whisper, and Comms",
-                            "Normal talk reaches players within 20 meters. Whisper reaches 4 meters. Party chat works as comms for party members and can also be heard by nearby players within 20 meters."),
-                        new ArticleBlock("HoloNet Chat",
-                            "Shout sends an in-character HoloNet message to online players who display the HoloNet channel. Out-of-character messages cannot be sent over HoloNet, and HoloNet chat has a 5 minute wait between sends."),
-                        new ArticleBlock("HoloNet Broadcast Window",
-                            "The HoloNet broadcast window sends a longer broadcast, costs 2500 credits, and is limited to 600 characters."),
-                        new ArticleBlock("Settings",
-                            "Settings control achievement notifications, whether you display the HoloNet channel, subdual mode, reset reminders, chat colors, emote colors, and language colors. Settings also links to your character description."),
-                        new ArticleBlock("Notes",
-                            "Notes are private player notes. You can keep up to 25 notes, and each note can hold up to 1000 characters."),
-                        new ArticleBlock("Names",
-                            "Unrecognized player characters can appear as unknown until you personally set a known name. Use the targeted name tools to remember or forget what you call another player character."),
-                        new ArticleBlock("Emotes and Languages",
-                            "Speech can include emote text, and your emote style can be toggled between regular and novel formatting. Speaking or hearing non-Basic languages uses language skill; hearing a non-Basic language you do not fully know can grant language XP over time.")
-                    },
-                    new[]
-                    {
-                        new QuestionAnswer("How far does talk carry?", "Talk reaches 20 meters. Whisper reaches 4 meters."),
-                        new QuestionAnswer("What is party chat here?", "Party chat acts as comms for your party and can be overheard nearby."),
-                        new QuestionAnswer("How do I stop seeing HoloNet?", "Open Settings and turn off the HoloNet channel display."),
-                        new QuestionAnswer("How do languages improve?", "Listening to partially understood non-Basic speech can grant language XP over time.")
-                    },
-                    new[] { "Useful Windows", "Skills", "Quests & Key Items", "Death & Recovery" }),
 
                 new(
                     "Useful Windows",

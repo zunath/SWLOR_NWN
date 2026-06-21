@@ -105,7 +105,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.EmergencySealantTrait)
-                .Description("Trauma Medic healing and treatment abilities also stop one Bleed or Burn effect and restore HP equal to 2% of maximum HP plus WIL scaling every 3 seconds for 12 seconds.")
+                .Description("Trauma Medic healing and treatment abilities also stop one Bleed or Burn effect. If an effect is removed this way, the target restores HP equal to 4% of maximum HP plus WIL scaling every 3 seconds for 12 seconds.")
                 .IncreasesStat(StatType.TraumaMedicEmergencySealant, 1)
                 .Price(3)
                 .RequirementSkill(SkillType.FirstAid, 12);

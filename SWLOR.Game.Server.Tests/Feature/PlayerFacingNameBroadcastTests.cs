@@ -72,9 +72,9 @@ public class PlayerFacingNameBroadcastTests
             "Communication.cs"));
         communicationSource.Should().Contain("PlayerName.GetColoredDisplayName(receiver, speaker)");
         communicationSource.Should().Contain("var speaker = GetEffectiveChatSpeaker(sender);");
-        communicationSource.Should().Contain("var finalChannel = ChatChannel.ServerMessage;");
-        communicationSource.Should().NotContain("var finalChannel = channel;");
-        communicationSource.Should().NotContain("finalChannel = ChatChannel.DMTalk;");
+        communicationSource.Should().Contain("var finalChannel = channel;");
+        communicationSource.Should().Contain("finalChannel = ChatChannel.DMTalk;");
+        communicationSource.Should().NotContain("var finalChannel = ChatChannel.ServerMessage;");
 
         var statusEffectSource = File.ReadAllText(Path.Combine(
             root.FullName,

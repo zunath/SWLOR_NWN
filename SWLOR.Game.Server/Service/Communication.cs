@@ -461,8 +461,15 @@ namespace SWLOR.Game.Server.Service
                     finalMessage.Append(text);
                 }
 
-                // Send as a direct server message so the engine does not prepend the sender's true character name.
-                var finalChannel = ChatChannel.ServerMessage;
+                // Dispatch the final message - method depends on the original chat channel.
+                // - Shout and party are sent as DMTalk. This avoids native labels and area restrictions.
+                // - Talk and whisper are sent as-is.
+                var finalChannel = channel;
+
+                if (channel == ChatChannel.PlayerShout || channel == ChatChannel.PlayerParty)
+                {
+                    finalChannel = ChatChannel.DMTalk;
+                }
 
                 // There are a couple of color overrides we want to use here.
                 // - One for holonet (shout).

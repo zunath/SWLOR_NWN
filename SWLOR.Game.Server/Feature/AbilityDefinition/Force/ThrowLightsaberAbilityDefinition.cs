@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using SWLOR.Game.Server.Core.Bioware;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
@@ -64,7 +65,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasRecastDelay(RecastGroup.ThrowLightsaber, 18f)
                 .SkillType(SkillType.Force)
                 .CombatImpactDamageAbility(AbilityType.Willpower)
-                .UsesImpactAnimation(Animation.CastOutAnimation)
+                .UsesImpactAnimation(Animation.SaberThrow)
                 .DisplaysVisualEffectWhenActivating()
                 .IsAreaAbility()
                 .HasTargetingLine(
@@ -91,6 +92,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             int baseDamage,
             int maxTargets)
         {
+            PlayThrowLightsaberAnimation(activator, target, targetLocation);
+
             foreach (var hitTarget in GetPathTargets(activator, target, targetLocation, maxTargets))
             {
                 Ability.ApplyCombatImpact(
@@ -108,6 +111,20 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                     baseDamageAdjustment: GetEquippedWeaponDamageAdjustment(activator),
                     playImpactAnimation: false);
             }
+        }
+
+        private static void PlayThrowLightsaberAnimation(uint activator, uint target, Location targetLocation)
+        {
+            if (GetIsObjectValid(target) && target != activator)
+            {
+                BiowarePosition.TurnToFaceObject(target, activator);
+            }
+            else if (GetIsObjectValid(GetAreaFromLocation(targetLocation)))
+            {
+                BiowarePosition.TurnToFaceLocation(targetLocation, activator);
+            }
+
+            AssignCommand(activator, () => ActionPlayAnimation(Animation.SaberThrow, 2));
         }
 
         private static IEnumerable<uint> GetPathTargets(

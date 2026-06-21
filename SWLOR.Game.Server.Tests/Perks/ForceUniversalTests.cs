@@ -49,6 +49,22 @@ public class ForceUniversalTests
     }
 
     [Test]
+    public void ThrowLightsaber_UsesLegacySaberThrowAnimation()
+    {
+        var abilities = new ThrowLightsaberAbilityDefinition().BuildAbilities();
+
+        abilities[FeatType.ThrowLightsaber1].ImpactAnimationType.Should().Be(Animation.SaberThrow);
+        abilities[FeatType.ThrowLightsaber2].ImpactAnimationType.Should().Be(Animation.SaberThrow);
+        abilities[FeatType.ThrowLightsaber3].ImpactAnimationType.Should().Be(Animation.SaberThrow);
+
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Force" / "ThrowLightsaberAbilityDefinition.cs").FullName);
+
+        source.Should().Contain("ActionPlayAnimation(Animation.SaberThrow, 2)");
+        source.Should().NotContain("Animation.CastOutAnimation");
+    }
+
+    [Test]
     public void ForceUniversalFeatAndAbilityIcons_AreUniqueAndPresent()
     {
         var root = FindRepositoryRoot();

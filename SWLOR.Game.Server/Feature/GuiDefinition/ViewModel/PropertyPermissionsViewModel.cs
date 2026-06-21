@@ -182,7 +182,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var permissionEnabled = new GuiBindingList<bool>();
             var grantPermissionEnabled = new GuiBindingList<bool>();
 
-            PlayerName = PlayerNameService.GetDisplayNameByPlayerId(Player, targetPlayerId, dbPlayer.Name);
+            PlayerName = PlayerNameService.GetKnownNameOrFallbackByPlayerId(Player, targetPlayerId, dbPlayer.Name);
 
             string ownerPlayerId;
             if (_isCategory)
@@ -301,35 +301,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     .AddFieldSearch(nameof(Entity.Player.IsDeleted), false);
                 dbPlayers = DB.Search(query);
             }
-            // Otherwise look for players by their names.
+            // Otherwise look for players by their permission-management names.
             else
             {
-                var knownPlayerIds = PlayerNameService.SearchKnownPlayerIdsByName(Player, SearchText, int.MaxValue);
-                if (knownPlayerIds.Count <= 0)
-                {
-                    dbPlayers = Enumerable.Empty<Player>();
-                }
-                else
-                {
-                    var query = new DBQuery<Player>()
-                        .AddFieldSearch(nameof(Entity.Player.Id), knownPlayerIds)
-                        .AddFieldSearch(nameof(Entity.Player.IsDeleted), false)
-                        .AddPaging(25, 0);
-
-                    // Searches within City properties require that the players be a citizen.
-                    if (!string.IsNullOrWhiteSpace(_cityId))
-                    {
-                        query.AddFieldSearch(nameof(Entity.Player.CitizenPropertyId), _cityId, false);
-                    }
-
-                    dbPlayers = DB.Search(query);
-                }
+                dbPlayers = SearchPlayersByPermissionName();
             }
 
             foreach (var player in dbPlayers)
             {
                 _playerIds.Add(player.Id);
-                playerNames.Add(PlayerNameService.GetDisplayNameByPlayerId(Player, player.Id, player.Name));
+                playerNames.Add(PlayerNameService.GetKnownNameOrFallbackByPlayerId(Player, player.Id, player.Name));
                 playerToggles.Add(false);
             }
 
@@ -340,6 +321,59 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             PermissionNames.Clear();
             PermissionDescriptions.Clear();
             PlayerName = string.Empty;
+        }
+
+        private List<Player> SearchPlayersByPermissionName()
+        {
+            var sanitizedSearch = PlayerNameService.SanitizeKnownName(SearchText);
+            if (string.IsNullOrWhiteSpace(sanitizedSearch))
+                return new List<Player>();
+
+            var playersById = new Dictionary<string, Player>();
+            var knownPlayerIds = PlayerNameService.SearchKnownPlayerIdsByName(Player, SearchText, int.MaxValue);
+            foreach (var player in SearchPlayersByIds(knownPlayerIds))
+            {
+                playersById[player.Id] = player;
+            }
+
+            var canonicalQuery = BuildEligiblePlayerQuery()
+                .AddFieldSearch(nameof(Entity.Player.Name), sanitizedSearch, true)
+                .AddPaging(25, 0);
+            foreach (var player in DB.Search(canonicalQuery))
+            {
+                playersById[player.Id] = player;
+            }
+
+            return playersById.Values
+                .OrderBy(player => PlayerNameService.GetKnownNameOrFallbackByPlayerId(Player, player.Id, player.Name))
+                .Take(25)
+                .ToList();
+        }
+
+        private IEnumerable<Player> SearchPlayersByIds(List<string> playerIds)
+        {
+            if (playerIds.Count <= 0)
+                return Enumerable.Empty<Player>();
+
+            var query = BuildEligiblePlayerQuery()
+                .AddFieldSearch(nameof(Entity.Player.Id), playerIds)
+                .AddPaging(playerIds.Count, 0);
+
+            return DB.Search(query);
+        }
+
+        private DBQuery<Player> BuildEligiblePlayerQuery()
+        {
+            var query = new DBQuery<Player>()
+                .AddFieldSearch(nameof(Entity.Player.IsDeleted), false);
+
+            // Searches within City properties require that the players be a citizen.
+            if (!string.IsNullOrWhiteSpace(_cityId))
+            {
+                query.AddFieldSearch(nameof(Entity.Player.CitizenPropertyId), _cityId, false);
+            }
+
+            return query;
         }
 
         public Action OnClickSearch() => Search;

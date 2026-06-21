@@ -99,6 +99,32 @@ namespace SWLOR.Game.Server.Service
             return UnknownName;
         }
 
+        /// <summary>
+        /// Returns the observer's known name when present, otherwise the fallback name.
+        /// Use for operational permission management surfaces that target persisted character records.
+        /// </summary>
+        public static string GetKnownNameOrFallbackByPlayerId(uint observer, string targetPlayerId, string fallbackName)
+        {
+            if (string.IsNullOrWhiteSpace(targetPlayerId))
+                return string.IsNullOrWhiteSpace(fallbackName)
+                    ? UnknownName
+                    : fallbackName;
+
+            if (GetIsObjectValid(observer) &&
+                GetIsPC(observer) &&
+                !GetIsDM(observer) &&
+                !GetIsDMPossessed(observer) &&
+                GetObjectUUID(observer) != targetPlayerId &&
+                TryGetKnownName(observer, targetPlayerId, out var knownName))
+            {
+                return knownName;
+            }
+
+            return string.IsNullOrWhiteSpace(fallbackName)
+                ? UnknownName
+                : fallbackName;
+        }
+
         public static List<string> SearchKnownPlayerIdsByName(uint observer, string searchText, int maxResults)
         {
             if (!GetIsObjectValid(observer) ||

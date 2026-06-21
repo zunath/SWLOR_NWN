@@ -55,7 +55,7 @@ namespace SWLOR.Game.Server.Service
 
         private static readonly Dictionary<PropertyType, List<StructureType>> _structureTypesByPropertyType = new();
         private const int PropertyBroadcastColor = 5763719;
-        private const int PropertyLoadBatchSize = 8;
+        private const int PropertyLoadBatchSize = 5;
         private static readonly TimeSpan PropertyLoadBatchDelay = TimeSpan.FromSeconds(0.2d);
 
         private enum PropertyLoadPriority
@@ -663,7 +663,9 @@ namespace SWLOR.Game.Server.Service
 
             var detail = _propertyTypes[property.PropertyType];
             return detail.SpawnType == PropertySpawnType.Instance &&
-                   detail.LoadType == PropertyLoadType.OnDemand;
+                   (detail.LoadType == PropertyLoadType.OnDemand ||
+                    detail.PublicSetting == PropertyPublicType.Adjustable &&
+                    !property.IsPubliclyAccessible);
         }
 
         private static bool IsPropertyStartupLoaded(WorldProperty property)
@@ -673,7 +675,8 @@ namespace SWLOR.Game.Server.Service
 
             var detail = _propertyTypes[property.PropertyType];
             return detail.SpawnType == PropertySpawnType.Instance &&
-                   detail.LoadType == PropertyLoadType.Startup;
+                   detail.LoadType == PropertyLoadType.Startup &&
+                   !IsPropertyOnDemand(property);
         }
 
         private static void AddPropertyLoadWaiter(uint player, string propertyId)
@@ -992,7 +995,7 @@ namespace SWLOR.Game.Server.Service
                     job.Area = _propertyInstances[job.PropertyId].Area;
                     job.Structures = GetPropertyStructures(job.PropertyId);
                     job.Phase = PropertyLoadJobPhase.SpawnStructures;
-                    return 1;
+                    return Math.Max(budget, 1);
                 }
 
                 var consumed = SpawnPropertyStructures(job, budget);
@@ -1238,10 +1241,11 @@ namespace SWLOR.Game.Server.Service
                 return false;
             }
 
-            if (interiorState == PropertyLoadState.Unloaded)
+            if (interiorState == PropertyLoadState.Unloaded && !IsPropertyOnDemand(interior))
                 QueuePropertyLoad(interiorId, PropertyLoadPriority.Startup);
 
-            return TryGetLoadedInstance(interiorId, out _);
+            return IsPropertyOnDemand(interior) ||
+                   TryGetLoadedInstance(interiorId, out _);
         }
 
         /// <summary>

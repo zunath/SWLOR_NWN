@@ -29,6 +29,23 @@ public class PropertyOnDemandLoadingTests
     }
 
     [Test]
+    public void PrivateAdjustableInstanceProperties_LoadOnDemand()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "Property.cs")).Replace("\r\n", "\n");
+        var onDemandBody = ExtractMethod(source, "private static bool IsPropertyOnDemand(WorldProperty property)");
+        var startupBody = ExtractMethod(source, "private static bool IsPropertyStartupLoaded(WorldProperty property)");
+
+        onDemandBody.Should().Contain("detail.PublicSetting == PropertyPublicType.Adjustable");
+        onDemandBody.Should().Contain("!property.IsPubliclyAccessible");
+        startupBody.Should().Contain("!IsPropertyOnDemand(property)");
+    }
+
+    [Test]
     public void PersistentLocation_DoesNotJumpToInvalidInstanceArea()
     {
         var root = FindRepositoryRoot();
@@ -271,8 +288,9 @@ public class PropertyOnDemandLoadingTests
 
         resolveBody.Should().Contain("if (state == PropertyLoadState.Unloaded)");
         resolveBody.Should().Contain("QueuePropertyLoad(parent.Id, PropertyLoadPriority.Startup);");
-        resolveBody.Should().Contain("if (interiorState == PropertyLoadState.Unloaded)");
+        resolveBody.Should().Contain("if (interiorState == PropertyLoadState.Unloaded && !IsPropertyOnDemand(interior))");
         resolveBody.Should().Contain("QueuePropertyLoad(interiorId, PropertyLoadPriority.Startup);");
+        resolveBody.Should().Contain("return IsPropertyOnDemand(interior) ||");
     }
 
     [Test]
@@ -385,6 +403,25 @@ public class PropertyOnDemandLoadingTests
         spawnBody.Should().Contain("layout.OnSpawnAction?.Invoke(existingInstance.Area);");
         deleteBody.Should().Contain("_completedInstanceSpawnActions.Remove(property.Id);");
         loadBody.Should().Contain("_completedInstanceSpawnActions.Clear();");
+    }
+
+    [Test]
+    public void PropertyLoadBatch_StaggersAreaCreationAcrossScheduledPasses()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "Property.cs")).Replace("\r\n", "\n");
+        var processBody = ExtractMethod(source, "private static int ProcessPropertyLoadJob(PropertyLoadJob job, int budget)");
+
+        source.Should().Contain("private const int PropertyLoadBatchSize = 5;");
+        processBody.Should().Contain("job.Phase = PropertyLoadJobPhase.SpawnStructures;");
+        processBody.Should().Contain("return Math.Max(budget, 1);");
+        processBody.IndexOf("job.Phase = PropertyLoadJobPhase.SpawnStructures;", StringComparison.Ordinal)
+            .Should()
+            .BeLessThan(processBody.IndexOf("return Math.Max(budget, 1);", StringComparison.Ordinal));
     }
 
     [Test]

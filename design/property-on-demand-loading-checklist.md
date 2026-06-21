@@ -6,8 +6,8 @@ Reduce server boot time and resource usage by avoiding boot-time loading of priv
 
 ## Agreed Decisions
 
-- Apartments and starships are the only property types that should load on demand in the first implementation.
-- Public properties and public building interiors should still load at boot time, but their loading should be batched.
+- Apartments, starships, and private adjustable building interiors should load on demand.
+- Public and publicly accessible building interiors should still load at boot time, but their loading should be batched.
 - All property entry paths must be gated by load state. A property is enterable only when it is fully loaded.
 - A property area may exist before loading is complete, but it must not be considered usable until all required child structures and hooks are complete.
 - If a player tries to enter a property that is loading, show an error telling them to try again shortly.
@@ -72,7 +72,8 @@ Do not make raw dictionary access create areas implicitly.
 - Load area-backed city properties.
 - Queue startup-loaded instance properties in batches.
 - Queue startup world structures only after their parent area/interior is loaded.
-- Skip apartment and starship instance properties at boot.
+- Skip apartment, starship, and private adjustable instance properties at boot.
+- Still spawn exterior structures for private adjustable buildings so the door can request the interior load.
 - Skip child structures whose parent is an unloaded apartment or starship.
 - Remove all property instance template resrefs from the persistent area cache, not only apartment templates.
 - Log loaded counts separately:
@@ -84,7 +85,7 @@ Do not make raw dictionary access create areas implicitly.
 
 ## On-Demand Loading Checklist
 
-- Trigger on first entry attempt for apartments and starships.
+- Trigger on first entry attempt for apartments, starships, and private adjustable building interiors.
 - If state is `Unloaded`, queue a high-priority load and tell the player to try again shortly.
 - If state is `Queued` or `Loading`, attach the player to the waiter list and tell them to try again shortly.
 - If state is `Loaded`, continue through normal permission and jump logic.
@@ -208,6 +209,7 @@ Unit or feature tests should cover:
 
 - Apartments are skipped at boot.
 - Starships are skipped at boot.
+- Private adjustable building interiors are skipped at boot.
 - Public startup properties are queued and loaded.
 - Child structures under unloaded apartments/starships are not spawned at boot.
 - On-demand entry request queues a load and refuses immediate entry.

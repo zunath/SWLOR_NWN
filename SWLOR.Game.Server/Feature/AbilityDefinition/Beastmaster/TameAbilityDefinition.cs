@@ -16,12 +16,24 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
     {
         private readonly AbilityBuilder _builder = new();
 
+        private const int BaseTameChance = 40;
+        private const int SkillLevelDeltaChancePercent = 3;
+        private const int SocialChancePercentPerPoint = 3;
+        private const int MaximumTameChancePercent = 75;
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             Tame();
 
             return _builder.Build();
+        }
+
+        public static int CalculateTameChance(int beastMasterySkillRank, int npcLevel, int social)
+        {
+            var baseChance = BaseTameChance + (beastMasterySkillRank - npcLevel) * SkillLevelDeltaChancePercent;
+            var socialChance = System.Math.Max(0, social) * SocialChancePercentPerPoint;
+
+            return System.Math.Clamp(baseChance + socialChance, 0, MaximumTameChancePercent);
         }
 
         private void Tame()
@@ -93,11 +105,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                     var skill = dbPlayer.Skills[SkillType.BeastMastery].Rank;
                     var npcStats = Stat.GetNPCStats(target);
                     var social = GetAbilityScore(activator, AbilityType.Social);
-                    var baseChance = 40 + (skill - npcStats.Level) * 3;
-                    var chance = baseChance + social;
-
-                    if (chance > 95)
-                        chance = 95;
+                    var chance = CalculateTameChance(skill, npcStats.Level, social);
 
                     if (Random.D100(1) > chance)
                     {

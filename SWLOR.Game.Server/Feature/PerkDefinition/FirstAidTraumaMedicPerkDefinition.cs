@@ -105,7 +105,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.EmergencySealantTrait)
-                .Description("Trauma Medic healing and treatment abilities also stop one Bleed or Burn effect and restore HP equal to 2% of maximum HP plus WIL scaling every 3 seconds for 12 seconds.")
+                .Description("Trauma Medic healing and treatment abilities also stop one Bleed or Burn effect. If an effect is removed this way, the target restores HP equal to 4% of maximum HP plus WIL scaling every 3 seconds for 12 seconds.")
                 .IncreasesStat(StatType.TraumaMedicEmergencySealant, 1)
                 .Price(3)
                 .RequirementSkill(SkillType.FirstAid, 12);
@@ -117,13 +117,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Kolto Mist")
 
                 .AddPerkLevel()
-                .Description("Restores HP over time to nearby allies within 3m for 12 seconds. Total healing equals 7% of each target's maximum HP plus WIL scaling. Consumes medical supplies.")
+                .Description("Applies a 12-second healing mist to allies within 3m of a target location up to 15m away. Total healing equals 7% of each target's maximum HP plus WIL scaling. Consumes medical supplies.")
                 .Price(3)
                 .RequirementSkill(SkillType.FirstAid, 15)
                 .GrantsFeat(FeatType.KoltoMist1)
 
                 .AddPerkLevel()
-                .Description("Restores HP over time to nearby allies within 3m for 12 seconds. Total healing equals 12% of each target's maximum HP plus WIL scaling. Consumes medical supplies.")
+                .Description("Applies a 12-second healing mist to allies within 3m of a target location up to 15m away. Total healing equals 12% of each target's maximum HP plus WIL scaling. Consumes medical supplies.")
                 .Price(4)
                 .RequirementSkill(SkillType.FirstAid, 30)
                 .GrantsFeat(FeatType.KoltoMist2);
@@ -171,7 +171,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Emergency Triage")
 
                 .AddPerkLevel()
-                .Description("Restores 18% of the target's maximum HP plus WIL scaling instantly. Healing is doubled if the target is below 35% HP. Consumes extra medical supplies.")
+                .Description("Restores 18% of the target's maximum HP plus WIL scaling instantly. Can target allies up to 15m away. Healing is doubled if the target is below 35% HP. Consumes extra medical supplies.")
                 .Price(4)
                 .RequirementSkill(SkillType.FirstAid, 45)
                 .GrantsFeat(FeatType.EmergencyTriage1);

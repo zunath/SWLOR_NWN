@@ -96,7 +96,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             return amount;
         }
 
-        private static bool MigrateObject(uint obj)
+        public static bool MigrateObject(uint obj)
         {
             if (!GetIsObjectValid(obj))
                 return false;

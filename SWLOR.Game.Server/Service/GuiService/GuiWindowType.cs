@@ -61,6 +61,7 @@ namespace SWLOR.Game.Server.Service.GuiService
         Dice = 56,
         GuildTasks = 57,
         PlayerGuide = 58,
+        PropertyDiagnostics = 59,
 
         DebugEnmity = 900,
         ChangePortrait = 9999

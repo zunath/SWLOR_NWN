@@ -307,10 +307,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var playerId = GetObjectUUID(Player);
                 var dbPlayer = DB.Get<Player>(playerId);
                 var pcPerks = dbPlayer.Perks.ToDictionary(x => x.Key, y => y.Value);
+                var allPerks = Perk.GetAllPerks();
 
                 foreach (var (type, level) in pcPerks)
                 {
-                    var perkDetail = Perk.GetPerkDetails(type);
+                    if (!allPerks.TryGetValue(type, out var perkDetail))
+                    {
+                        dbPlayer.Perks.Remove(type);
+                        Log.Write(LogGroup.PerkRefund, $"REFUND - {playerId} - Removed undefined perk during full rebuild Date {DateTime.UtcNow} - Level {level} - PerkID {type}");
+                        continue;
+                    }
+
                     var refundAmount = perkDetail.PerkLevels
                         .Where(x => x.Key <= level)
                         .Sum(x => x.Value.Price);
@@ -357,6 +364,21 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 DB.Set(dbPlayer);
             }
 
+            void ResetSkillPointPool()
+            {
+                var playerId = GetObjectUUID(Player);
+                var dbPlayer = DB.Get<Player>(playerId);
+
+                dbPlayer.UnallocatedSP = Skill.GetTotalSkillPoints(dbPlayer);
+
+                DB.Set(dbPlayer);
+            }
+
+            void ResetFeats()
+            {
+                PlayerInitialization.ResetFeatsToBaseline(Player);
+            }
+
             void ResetStats()
             {
                 var playerId = GetObjectUUID(Player);
@@ -395,6 +417,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 UnequipAllItems();
                 RefundAllPerks();
+                ResetFeats();
+                ResetSkillPointPool();
                 RefundAllSkills();
                 ResetStats();
 

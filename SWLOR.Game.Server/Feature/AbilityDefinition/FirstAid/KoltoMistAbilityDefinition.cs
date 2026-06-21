@@ -13,6 +13,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
 {
     public sealed class KoltoMistAbilityDefinition : IAbilityListDefinition
     {
+        private const float HealRadiusMeters = 3f;
+        private const float RangeMeters = 15f;
+
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
@@ -35,11 +38,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .HasRecastDelay(RecastGroup.KoltoMist, 30f)
                 .SkillType(SkillType.FirstAid)
                 .IsAreaAbility()
+                .HasMaxRange(RangeMeters)
+                .HasCustomValidation(ValidateTargetingRange)
                 .HasImpactAction(KoltoMist1ImpactAction)
                 .HasTargetingSphere(
                     Spell.KoltoMist1,
-                    3f,
-                    AbilityTargetingFlags.HelpsAllies | AbilityTargetingFlags.OriginOnSelf)
+                    HealRadiusMeters,
+                    AbilityTargetingFlags.HelpsAllies)
                 .IsCastedAbility()
                 .BreaksStealth()
                 .RequirementStamina(6)
@@ -58,11 +63,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .HasRecastDelay(RecastGroup.KoltoMist, 30f)
                 .SkillType(SkillType.FirstAid)
                 .IsAreaAbility()
+                .HasMaxRange(RangeMeters)
+                .HasCustomValidation(ValidateTargetingRange)
                 .HasImpactAction(KoltoMist2ImpactAction)
                 .HasTargetingSphere(
                     Spell.KoltoMist2,
-                    3f,
-                    AbilityTargetingFlags.HelpsAllies | AbilityTargetingFlags.OriginOnSelf)
+                    HealRadiusMeters,
+                    AbilityTargetingFlags.HelpsAllies)
                 .IsCastedAbility()
                 .BreaksStealth()
                 .RequirementStamina(7)
@@ -71,17 +78,28 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
 
         private static void KoltoMist1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            ApplyKoltoMist(activator, 7f);
+            ApplyKoltoMist(activator, target, targetLocation, 7f);
         }
 
         private static void KoltoMist2ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            ApplyKoltoMist(activator, 12f);
+            ApplyKoltoMist(activator, target, targetLocation, 12f);
         }
 
-        private static void ApplyKoltoMist(uint activator, float totalPercent)
+        private static string ValidateTargetingRange(uint activator, uint target, int effectivePerkLevel, Location targetLocation)
         {
-            foreach (var friendly in AbilityTargeting.GetFriendlyTargetsNearLocation(activator, GetLocation(activator), 3f))
+            var location = AbilityTargeting.ResolveImpactLocation(activator, target, targetLocation);
+            if (GetDistanceBetweenLocations(GetLocation(activator), location) <= RangeMeters)
+                return string.Empty;
+
+            return $"You are out of range. This ability has a range of {RangeMeters} meters.";
+        }
+
+        private static void ApplyKoltoMist(uint activator, uint target, Location targetLocation, float totalPercent)
+        {
+            var location = AbilityTargeting.ResolveImpactLocation(activator, target, targetLocation);
+
+            foreach (var friendly in AbilityTargeting.GetFriendlyTargetsNearLocation(activator, location, HealRadiusMeters))
             {
                 StatusEffect.ApplyStatusEffect(
                     activator,
@@ -89,7 +107,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                     new KoltoMistHealingStatusEffect(totalPercent, 4),
                     12f);
                 FirstAidTreatmentAdjustments.ApplyTraumaMedicRiders(activator, friendly);
-                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_M), friendly);
+                FirstAidTreatmentAdjustments.ApplyMedicalVisualEffect(friendly);
             }
         }
     }

@@ -13,6 +13,7 @@ namespace SWLOR.Game.Server.Service
 {
     public static class Migration
     {
+        private const int ConsoleProgressMigrationVersion = 22;
         private static int _currentMigrationVersion;
         private static int _newMigrationVersion;
         private static readonly Dictionary<int, IServerMigration> _serverMigrationsPostDatabase = new();
@@ -80,7 +81,7 @@ namespace SWLOR.Game.Server.Service
         private static void RunMigrations(MigrationExecutionType executionType)
         {
             var sw = new Stopwatch();
-            var migrations = GetMigrations(executionType);
+            var migrations = GetMigrations(executionType).ToList();
             var newVersion = 0;
 
             foreach (var migration in migrations)
@@ -88,10 +89,19 @@ namespace SWLOR.Game.Server.Service
                 sw.Reset();
                 try
                 {
+                    if (migration.Version >= ConsoleProgressMigrationVersion)
+                    {
+                        Log.Write(
+                            LogGroup.Migration,
+                            $"Starting server migration ({executionType}) #{migration.Version}.",
+                            true);
+                    }
+
                     sw.Start();
                     migration.Migrate();
                     newVersion = migration.Version;
                     sw.Stop();
+
                     Log.Write(LogGroup.Migration, $"Server migration ({executionType}) #{migration.Version} completed successfully. (Took {sw.ElapsedMilliseconds}ms)", true);
                 }
                 catch (Exception ex)

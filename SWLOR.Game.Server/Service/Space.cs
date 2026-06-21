@@ -112,11 +112,6 @@ namespace SWLOR.Game.Server.Service
         public static void RegisterLandingPoint(uint waypoint, uint area, bool isNPC, string propertyId)
         {
             var dockPointId = GetLocalString(waypoint, "STARSHIP_DOCKPOINT_ID");
-            if (!string.IsNullOrWhiteSpace(dockPointId))
-            {
-                return;
-            }
-
             var planet = Planet.GetPlanetType(area);
 
             // Only waypoints in recognized planets are tracked.
@@ -125,6 +120,17 @@ namespace SWLOR.Game.Server.Service
 
             if (!_dockPoints.ContainsKey(planet))
                 _dockPoints[planet] = new Dictionary<string, ShipDockPoint>();
+
+            if (!string.IsNullOrWhiteSpace(dockPointId))
+            {
+                if (_dockPoints[planet].ContainsKey(dockPointId))
+                    return;
+
+                DeleteLocalString(waypoint, "STARSHIP_DOCKPOINT_ID");
+            }
+
+            if (!isNPC && !string.IsNullOrWhiteSpace(propertyId))
+                RemoveLandingPointByPropertyId(propertyId);
 
             dockPointId = Guid.NewGuid().ToString();
             var dockPoint = new ShipDockPoint
@@ -159,6 +165,29 @@ namespace SWLOR.Game.Server.Service
                 _dockPoints[planet].ContainsKey(dockPointId))
             {
                 _dockPoints[planet].Remove(dockPointId);
+            }
+        }
+
+        /// <summary>
+        /// Removes a player starport landing point by its property Id.
+        /// </summary>
+        /// <param name="propertyId">The property Id to remove.</param>
+        public static void RemoveLandingPointByPropertyId(string propertyId)
+        {
+            if (string.IsNullOrWhiteSpace(propertyId))
+                return;
+
+            foreach (var planet in _dockPoints.Keys.ToList())
+            {
+                var dockPointIds = _dockPoints[planet]
+                    .Where(x => x.Value.PropertyId == propertyId)
+                    .Select(x => x.Key)
+                    .ToList();
+
+                foreach (var dockPointId in dockPointIds)
+                {
+                    _dockPoints[planet].Remove(dockPointId);
+                }
             }
         }
 
@@ -1638,10 +1667,12 @@ namespace SWLOR.Game.Server.Service
                     var targetPlayerId = GetObjectUUID(target);
                     var dbTargetPlayer = DB.Get<Player>(targetPlayerId);
                     var dbPlayerShip = DB.Get<PlayerShip>(dbTargetPlayer.ActiveShipId);
-                    var instance = Property.GetRegisteredInstance(dbPlayerShip.PropertyId);
-                    var location = Location(instance.Area, Vector3.Zero, 0.0f);
 
-                    ApplyEffectAtLocation(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_ShakeScreen), location);
+                    if (Property.TryGetLoadedInstance(dbPlayerShip.PropertyId, out var instance))
+                    {
+                        var location = Location(instance.Area, Vector3.Zero, 0.0f);
+                        ApplyEffectAtLocation(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_ShakeScreen), location);
+                    }
 
                     dbPlayerShip.Status.Shield = targetShipStatus.Shield;
                     dbPlayerShip.Status.Hull = targetShipStatus.Hull;
@@ -1707,10 +1738,12 @@ namespace SWLOR.Game.Server.Service
                     var targetPlayerId = GetObjectUUID(target);
                     var dbTargetPlayer = DB.Get<Player>(targetPlayerId);
                     var dbPlayerShip = DB.Get<PlayerShip>(dbTargetPlayer.ActiveShipId);
-                    var instance = Property.GetRegisteredInstance(dbPlayerShip.PropertyId);
-                    var location = Location(instance.Area, Vector3.Zero, 0.0f);
 
-                    ApplyEffectAtLocation(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_ShakeScreen), location);
+                    if (Property.TryGetLoadedInstance(dbPlayerShip.PropertyId, out var instance))
+                    {
+                        var location = Location(instance.Area, Vector3.Zero, 0.0f);
+                        ApplyEffectAtLocation(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_ShakeScreen), location);
+                    }
 
                     dbPlayerShip.Status.Shield = targetShipStatus.Shield;
                     dbPlayerShip.Status.Hull = targetShipStatus.Hull;
@@ -1766,7 +1799,6 @@ namespace SWLOR.Game.Server.Service
                 var dbPlayer = DB.Get<Player>(playerId);
                 var dbPlayerShip = DB.Get<PlayerShip>(dbPlayer.ActiveShipId);
                 var dbProperty = DB.Get<WorldProperty>(dbPlayerShip.PropertyId);
-                var instance = Property.GetRegisteredInstance(dbPlayerShip.PropertyId);
 
                 // Give a chance to drop each installed module.
                 foreach (var (_, shipModule) in dbPlayerShip.Status.HighPowerModules)
@@ -1843,12 +1875,15 @@ namespace SWLOR.Game.Server.Service
                 DB.Set(dbPlayer);
 
                 // Murder everyone inside the ship's instance.
-                foreach (var player in instance.Players)
+                if (Property.TryGetLoadedInstance(dbPlayerShip.PropertyId, out var instance))
                 {
-                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Fnf_Fireball), player);
-                    ApplyEffectToObject(DurationType.Instant, EffectDeath(), player);
+                    foreach (var player in instance.Players)
+                    {
+                        ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Fnf_Fireball), player);
+                        ApplyEffectToObject(DurationType.Instant, EffectDeath(), player);
 
-                    FloatingTextStringOnCreature(ColorToken.Red("The ship has exploded!"), player, false);
+                        FloatingTextStringOnCreature(ColorToken.Red("The ship has exploded!"), player, false);
+                    }
                 }
 
                 DestroyPilotClone(creature);

@@ -18,11 +18,26 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             return builder.Build();
         }
 
-        private void ReturnToLastDockedPosition(uint player, PropertyLocation propertyLocation)
+        private bool ReturnToLastDockedPosition(uint player, PropertyLocation propertyLocation)
         {
-            var returningArea = string.IsNullOrWhiteSpace(propertyLocation.AreaResref)
-                ? Property.GetRegisteredInstance(propertyLocation.InstancePropertyId).Area
-                : Area.GetAreaByResref(propertyLocation.AreaResref);
+            uint returningArea;
+            if (string.IsNullOrWhiteSpace(propertyLocation.AreaResref))
+            {
+                if (!Property.TryResolveEnterableInstance(player, propertyLocation.InstancePropertyId, out var instance))
+                    return false;
+
+                returningArea = instance.Area;
+            }
+            else
+            {
+                returningArea = Area.GetAreaByResref(propertyLocation.AreaResref);
+            }
+
+            if (!GetIsObjectValid(returningArea))
+            {
+                SendMessageToPC(player, "The destination is not available. Please try again shortly.");
+                return false;
+            }
 
             var location = Location(
                 returningArea,
@@ -30,6 +45,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 propertyLocation.Orientation);
 
             AssignCommand(player, () => ActionJumpToLocation(location));
+            return true;
         }
 
         private void MainPageInit(DialogPage page)
@@ -51,9 +67,10 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 page.AddResponse(ColorToken.Red("Emergency Exit"), () =>
                 {
                     var propertyLocation = property.Positions[PropertyLocationType.DockPosition];
-                    ReturnToLastDockedPosition(player, propertyLocation);
-
-                    Space.PerformEmergencyExit(area);
+                    if (ReturnToLastDockedPosition(player, propertyLocation))
+                    {
+                        Space.PerformEmergencyExit(area);
+                    }
                 });
             }
             // The existence of a "Last Docked" position means this is a starship currently docked at a starport.

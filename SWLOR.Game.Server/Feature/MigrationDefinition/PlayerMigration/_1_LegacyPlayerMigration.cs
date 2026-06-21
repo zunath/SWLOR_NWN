@@ -59,8 +59,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration
 
         private void ResetFeats(uint player)
         {
-            PlayerInitialization.ClearFeats(player);
-            PlayerInitialization.GrantBasicFeats(player);
+            PlayerInitialization.ResetFeatsToBaseline(player);
         }
 
         private void ResetNWNSkills(uint player)

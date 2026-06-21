@@ -82,7 +82,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             {
                 var dockName = dockPoint.IsNPC
                     ? $"[NPC] {dockPoint.Name}"
-                    : $"[PC] {GetName(Property.GetRegisteredInstance(dockPoint.PropertyId).Area)}";
+                    : $"[PC] {DB.Get<WorldProperty>(dockPoint.PropertyId)?.CustomName ?? "Unknown Starport"}";
 
                 page.AddResponse(dockName, () =>
                 {
@@ -100,6 +100,50 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                         if (dbStarport == null)
                         {
                             SendMessageToPC(player, ColorToken.Red("This starport is no longer available for docking."));
+                            return;
+                        }
+
+                        var starportLoadState = Property.GetPropertyLoadState(dockPoint.PropertyId);
+                        if (starportLoadState != PropertyLoadState.Loaded)
+                        {
+                            Log.WriteStructured(
+                                LogGroup.Property,
+                                "Player starport docking denied: Reason={Reason} PlayerId={PlayerId} PropertyId={PropertyId} LoadState={LoadState}",
+                                "load-state",
+                                playerId,
+                                dockPoint.PropertyId,
+                                starportLoadState);
+
+                            var message = starportLoadState == PropertyLoadState.Failed
+                                ? "This starport could not be loaded. Please notify staff."
+                                : "This starport is still loading. Please try again shortly.";
+                            SendMessageToPC(player, ColorToken.Red(message));
+                            return;
+                        }
+
+                        if (!Property.TryGetLoadedInstance(dockPoint.PropertyId, out var starportInstance))
+                        {
+                            Log.WriteStructured(
+                                LogGroup.Property,
+                                "Player starport docking denied: Reason={Reason} PlayerId={PlayerId} PropertyId={PropertyId}",
+                                "instance-unavailable",
+                                playerId,
+                                dockPoint.PropertyId);
+
+                            SendMessageToPC(player, ColorToken.Red("This starport is still loading. Please try again shortly."));
+                            return;
+                        }
+
+                        if (!GetLocalBool(starportInstance.Area, "BUILDING_EXIT_SET"))
+                        {
+                            Log.WriteStructured(
+                                LogGroup.Property,
+                                "Player starport docking denied: Reason={Reason} PlayerId={PlayerId} PropertyId={PropertyId}",
+                                "building-exit-not-ready",
+                                playerId,
+                                dockPoint.PropertyId);
+
+                            SendMessageToPC(player, ColorToken.Red("This starport is still loading. Please try again shortly."));
                             return;
                         }
                     }

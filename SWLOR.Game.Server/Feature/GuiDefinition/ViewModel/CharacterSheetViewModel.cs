@@ -95,6 +95,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public bool ShowSkillRanks
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
         public bool ShowAPOrLevel
         {
             get => Get<bool>();
@@ -251,6 +257,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         }
 
         public string SP
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string SkillRanks
         {
             get => Get<string>();
             set => Set(value);
@@ -1106,7 +1118,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var playerId = GetObjectUUID(_target);
                 var dbPlayer = DB.Get<Player>(playerId);
 
-                SP = $"{dbPlayer.TotalSPAcquired} / {Skill.SkillCap} ({dbPlayer.UnallocatedSP})";
+                SkillRanks = $"{Skill.GetTotalContributingSkillRanks(dbPlayer)} / {Skill.SkillCap}";
+                SP = $"{Skill.GetTotalSkillPoints(dbPlayer)} / {Skill.TotalSkillPointCap} ({dbPlayer.UnallocatedSP})";
                 APOrLevel = $"{dbPlayer.TotalAPAcquired} / {Skill.APCap} ({dbPlayer.UnallocatedAP})";
             }
             else if (BeastMastery.IsPlayerBeast(_target))
@@ -1152,6 +1165,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _target = GetIsObjectValid(initialPayload.Target) ? initialPayload.Target : Player;
             IsPlayerMode = initialPayload.IsPlayerMode;
             ShowSP = IsPlayerMode || BeastMastery.IsPlayerBeast(_target);
+            ShowSkillRanks = GetIsPC(_target);
             ShowAPOrLevel = ShowSP;
             SelectedTabId = AttributesTabId;
 
@@ -1173,7 +1187,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var playerId = GetObjectUUID(_target);
             var dbPlayer = DB.Get<Player>(playerId);
 
-            SP = $"{dbPlayer.TotalSPAcquired} / {Skill.SkillCap} ({dbPlayer.UnallocatedSP})";
+            SkillRanks = $"{Skill.GetTotalContributingSkillRanks(dbPlayer)} / {Skill.SkillCap}";
+            SP = $"{Skill.GetTotalSkillPoints(dbPlayer)} / {Skill.TotalSkillPointCap} ({dbPlayer.UnallocatedSP})";
             APOrLevel = $"{dbPlayer.TotalAPAcquired} / {Skill.APCap} ({dbPlayer.UnallocatedAP})";
 
             RefreshStats();

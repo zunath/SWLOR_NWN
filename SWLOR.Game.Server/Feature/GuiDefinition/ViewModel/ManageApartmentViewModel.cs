@@ -396,8 +396,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 DB.Set(apartment);
 
-                var instance = Property.GetRegisteredInstance(apartment.Id);
-                SetName(instance.Area, "{PC} " + CustomName);
+                if (Property.TryGetLoadedInstance(apartment.Id, out var instance))
+                    SetName(instance.Area, "{PC} " + CustomName);
 
                 Instruction = $"Saved successfully.";
                 InstructionColor = GuiColor.Green;

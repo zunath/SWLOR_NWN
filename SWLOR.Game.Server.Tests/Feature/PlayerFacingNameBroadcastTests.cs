@@ -70,11 +70,11 @@ public class PlayerFacingNameBroadcastTests
             "SWLOR.Game.Server",
             "Service",
             "Communication.cs"));
-        communicationSource.Should().Contain("PlayerName.GetColoredDisplayName(receiver, speaker)");
         communicationSource.Should().Contain("var speaker = GetEffectiveChatSpeaker(sender);");
-        communicationSource.Should().Contain("var finalChannel = ChatChannel.ServerMessage;");
-        communicationSource.Should().NotContain("var finalChannel = channel;");
-        communicationSource.Should().NotContain("finalChannel = ChatChannel.DMTalk;");
+        communicationSource.Should().NotContain("finalMessage.Append(PlayerName.GetColoredDisplayName");
+        communicationSource.Should().Contain("var finalChannel = channel;");
+        communicationSource.Should().Contain("finalChannel = ChatChannel.DMTalk;");
+        communicationSource.Should().NotContain("var finalChannel = ChatChannel.ServerMessage;");
 
         var statusEffectSource = File.ReadAllText(Path.Combine(
             root.FullName,
@@ -93,8 +93,12 @@ public class PlayerFacingNameBroadcastTests
             "ViewModel",
             "PropertyPermissionsViewModel.cs"));
         propertyPermissionsSource.Should().Contain("PlayerNameService.SearchKnownPlayerIdsByName(Player, SearchText, int.MaxValue)");
-        propertyPermissionsSource.Should().Contain("PlayerNameService.GetDisplayNameByPlayerId");
-        propertyPermissionsSource.Should().NotContain("nameof(Entity.Player.Name)");
+        propertyPermissionsSource.Should().Contain("PlayerNameService.GetKnownNameOrFallbackByPlayerId");
+        propertyPermissionsSource.Should().Contain("AddFieldSearch(nameof(Entity.Player.Name), sanitizedSearch, true)");
+        propertyPermissionsSource.Should().NotContain("PlayerNameService.GetDisplayNameByPlayerId");
+
+        var agentsSource = File.ReadAllText(Path.Combine(root.FullName, "AGENTS.md"));
+        agentsSource.Should().Contain("Property and ship permission management is a narrow exception");
 
         var electionSource = File.ReadAllText(Path.Combine(
             root.FullName,

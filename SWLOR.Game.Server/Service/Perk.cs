@@ -51,6 +51,7 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<PerkType, Dictionary<int, FeatType[]>> _currentActiveAbilityFeatsByPerkLevel = new();
         private static readonly Dictionary<PerkType, Dictionary<int, HashSet<FeatType>>> _currentActiveAbilityFeatSetsByPerkLevel = new();
         private static readonly Dictionary<PerkType, FeatType[]> _allActiveAbilityFeatsByPerk = new();
+        private static readonly Dictionary<PerkType, RecastGroup> _activeAbilityRecastGroupByPerk = new();
         private static readonly HashSet<(PerkType PerkType, FeatType Feat)> _activeAbilityFeatsByPerk = new();
         private static readonly HashSet<FeatType> _emptyFeatSet = new();
         private static bool _perkFeatCacheLoaded;
@@ -310,6 +311,7 @@ namespace SWLOR.Game.Server.Service
             _currentActiveAbilityFeatsByPerkLevel.Clear();
             _currentActiveAbilityFeatSetsByPerkLevel.Clear();
             _allActiveAbilityFeatsByPerk.Clear();
+            _activeAbilityRecastGroupByPerk.Clear();
             _activeAbilityFeatsByPerk.Clear();
 
             var abilityDetails = Ability.GetAllAbilityDetails();
@@ -325,7 +327,13 @@ namespace SWLOR.Game.Server.Service
                     continue;
 
                 var activeAbilityFeatsByLevel = BuildActiveAbilityFeatsByLevel(perkType, perkDetail, abilityDetails);
+                var activeAbilityRecastGroup = FindActiveAbilityRecastGroup(activeAbilityFeatsByLevel, abilityDetails);
                 var allActiveAbilityFeats = new List<FeatType>();
+
+                if (activeAbilityRecastGroup != RecastGroup.Invalid)
+                {
+                    _activeAbilityRecastGroupByPerk[perkType] = activeAbilityRecastGroup;
+                }
 
                 foreach (var (_, activeAbilityFeats) in activeAbilityFeatsByLevel.OrderBy(x => x.Key))
                 {
@@ -372,6 +380,25 @@ namespace SWLOR.Game.Server.Service
             }
 
             return result;
+        }
+
+        private static RecastGroup FindActiveAbilityRecastGroup(
+            IReadOnlyDictionary<int, List<FeatType>> activeAbilityFeatsByLevel,
+            IReadOnlyDictionary<FeatType, AbilityDetail> abilityDetails)
+        {
+            foreach (var (_, activeAbilityFeats) in activeAbilityFeatsByLevel.OrderBy(x => x.Key))
+            {
+                foreach (var feat in activeAbilityFeats)
+                {
+                    var recastGroup = abilityDetails[feat].RecastGroup;
+                    if (recastGroup != RecastGroup.Invalid)
+                    {
+                        return recastGroup;
+                    }
+                }
+            }
+
+            return RecastGroup.Invalid;
         }
 
         private static bool IsActiveAbilityFeatForPerk(
@@ -877,6 +904,14 @@ namespace SWLOR.Game.Server.Service
             return _allActiveAbilityFeatsByPerk.TryGetValue(perkType, out var feats)
                 ? feats
                 : Array.Empty<FeatType>();
+        }
+
+        public static RecastGroup GetActiveAbilityRecastGroup(PerkType perkType)
+        {
+            EnsurePerkFeatCacheLoaded();
+            return _activeAbilityRecastGroupByPerk.TryGetValue(perkType, out var recastGroup)
+                ? recastGroup
+                : RecastGroup.Invalid;
         }
 
         public static void SyncGrantedFeats(uint creature, PerkType perkType, int perkLevel, bool addByLevel)

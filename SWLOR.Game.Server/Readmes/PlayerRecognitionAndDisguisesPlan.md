@@ -22,8 +22,9 @@ The implementation should be light-touch, player-friendly, and auditable. It sho
 
 NWN.Xenomech uses NWNX Rename to apply per-observer PC name overrides:
 
-- `/name` targets another PC and stores the observer's personal name for that target.
+- `/name` targets another PC and stores the observer's personal name for that target. When used on yourself, it sets the gray unknown description shown to players who have not personally named you.
 - Stored names are keyed by observer player id and target player id.
+- Stored names and unknown descriptions are limited to 64 characters and reject player-entered color tokens. The service owns gray unknown-name styling.
 - On player enter, the service applies default unknown names, self true-name visibility, and saved name overrides between online players.
 - NWNX Rename settings are enabled for module character list and player list behavior.
 
@@ -40,10 +41,14 @@ This step creates the core infrastructure needed for both ordinary known names a
 - Add an NWNX Rename wrapper to `SWLOR.NWN.API`.
 - Add Rename plugin environment settings to the SWLOR Docker configuration.
 - Add persistent per-player known-name storage.
-- Add a player-facing command for targeted naming, such as `/name <name>`.
+- Add a player-facing command for targeted naming, such as `/name <name>`. Self-targeting this command updates the character's unknown display description, not the character's true name.
+- Validate `/name` input before persistence: reject empty input, reject values longer than 64 characters, and reject player-entered color tokens instead of silently stripping them.
 - Add a separate forget command, such as `/forgetname`, to remove a personal override without reserving words that could be valid character names.
 - Apply name overrides when players enter, relog, and encounter other online PCs.
 - Preserve true-name display for self and DMs.
+- Show unnamed players as the gray unknown-facing descriptor only. Once an observer names a target, show the observer's assigned name plus the gray descriptor in brackets by default, for example `Joe Blow [A Seedy Individual]`. Non-DM players can hide descriptors for named targets in Settings, leaving only the assigned name; staff always see the descriptor.
+- Generate a stable unknown-facing descriptor for players who have not self-assigned one, using persisted original appearance/species plus base stats. If species or stats cannot be resolved, use a generic humanoid descriptor.
+- Show staff the true character name plus the unknown-facing descriptor, with the descriptor still wrapped as unknown/gray text.
 - Preserve true names in staff tools, audit logs, abuse reports, crash logs, diagnostics, and database records.
 - Add a central display-name resolver for SWLOR-authored UI and messages.
 - Update high-value player-facing surfaces to use observer-specific display names.
@@ -60,7 +65,7 @@ Suggested shape:
 - Stored display name.
 - Created and updated timestamps if the existing persistence style supports them cleanly.
 
-The first version only needs one remembered name per observer-target pair.
+The first version only needs one remembered name per observer-target pair. Separately, each player can store one self-assigned unknown display description for use when an observer has not named them.
 
 ### Name Application
 
@@ -81,8 +86,10 @@ SWLOR will launch with a clean recognition state.
 
 Recommended rollout behavior:
 
-- Other player characters display as `Someone` by default.
+- Other player characters display as a generated gray descriptor by default, such as `Wise Ewok` or `Muscular Human`.
 - Players use `/name <name>` to record who their character recognizes.
+- Self-targeting `/name <description>` replaces the generated unknown descriptor while keeping the character visually marked as unknown.
+- Descriptor hiding in Settings applies only to observer-assigned names on targets the player has personally named. Self-assigned `/name <description>` unknown descriptors cannot be hidden and always remain visually marked as unknown; unnamed characters and staff views always include the descriptor.
 - Players use `/forgetname` to remove a remembered name.
 - No legacy visibility cutoff is used.
 - No large pairwise migration is required to seed existing relationships.
@@ -252,6 +259,7 @@ Likely code areas:
 - `SWLOR.NWN.API` for the NWNX Rename wrapper.
 - `SWLOR.Game.Server/Entity` for known-name and disguise persistence.
 - `SWLOR.Game.Server/Service` for player recognition and display-name resolution.
+- `SWLOR.Game.Server/Service/PlayerDescriptor.cs` for unknown descriptor generation, persistence, and fallback lookup.
 - `SWLOR.Game.Server/Feature/ChatCommandDefinition` for `/name`.
 - `SWLOR.Game.Server/Feature/GuiDefinition` for target, inspect, and management UI surfaces.
 - `SWLOR.Game.Server/Docker/swlor.env` for Rename plugin settings. The running server image must include `NWNX_Rename`; this feature should fail deployment verification if that plugin is unavailable.

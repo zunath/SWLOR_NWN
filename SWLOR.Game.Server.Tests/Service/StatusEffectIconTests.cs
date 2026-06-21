@@ -25,7 +25,7 @@ public class StatusEffectIconTests
     public void PainSuppressantCustomIconRows_DoNotReplaceFoodOrDash()
     {
         var root = FindRepositoryRoot();
-        var rows = Read2da(new FileInfo(Path.Combine(
+        var rows = Test2daHelper.Read2da(new FileInfo(Path.Combine(
             root.FullName,
             "SWLOR_Haks",
             "swlor2_2da",
@@ -48,7 +48,7 @@ public class StatusEffectIconTests
         var manifestRows = ReadGameplayIconManifest(root)
             .Where(row => row.Type == "StatusEffect")
             .ToArray();
-        var effectIconRows = Read2da(new FileInfo(Path.Combine(
+        var effectIconRows = Test2daHelper.Read2da(new FileInfo(Path.Combine(
             root.FullName,
             "SWLOR_Haks",
             "swlor2_2da",
@@ -189,7 +189,7 @@ public class StatusEffectIconTests
 
         foreach (var file in files)
         {
-            var rows = Read2da(new FileInfo(Path.Combine(
+            var rows = Test2daHelper.Read2da(new FileInfo(Path.Combine(
                 root.FullName,
                 "SWLOR_Haks",
                 "swlor2_2da",
@@ -213,7 +213,7 @@ public class StatusEffectIconTests
     public void CurrentCustomFeatRows_RetainFeat2daLabels()
     {
         var root = FindRepositoryRoot();
-        var rows = Read2da(new FileInfo(Path.Combine(
+        var rows = Test2daHelper.Read2da(new FileInfo(Path.Combine(
             root.FullName,
             "SWLOR_Haks",
             "swlor2_2da",
@@ -387,36 +387,9 @@ public class StatusEffectIconTests
         return rows;
     }
 
-    private static Dictionary<int, Dictionary<string, string>> Read2da(FileInfo file)
-    {
-        var lines = File.ReadAllLines(file.FullName)
-            .Where(line => !string.IsNullOrWhiteSpace(line))
-            .ToList();
-
-        var headers = lines[1].Split((char[])null!, StringSplitOptions.RemoveEmptyEntries);
-        var rows = new Dictionary<int, Dictionary<string, string>>();
-
-        foreach (var line in lines.Skip(2))
-        {
-            var parts = line.Split((char[])null!, StringSplitOptions.RemoveEmptyEntries);
-            if (parts.Length < headers.Length + 1 || !int.TryParse(parts[0], out var rowNumber))
-                continue;
-
-            var row = new Dictionary<string, string>();
-            for (var index = 0; index < headers.Length; index++)
-            {
-                row[headers[index]] = parts[index + 1];
-            }
-
-            rows[rowNumber] = row;
-        }
-
-        return rows;
-    }
-
     private static Dictionary<string, Dictionary<string, string>> Read2daByLabel(FileInfo file)
     {
-        var rows = Read2da(file);
+        var rows = Test2daHelper.Read2da(file);
         var result = new Dictionary<string, Dictionary<string, string>>(StringComparer.OrdinalIgnoreCase);
 
         foreach (var row in rows.Values.Where(HasLabel))
@@ -438,12 +411,12 @@ public class StatusEffectIconTests
         const int customSpellStart = 1000;
         var iconRoot = Path.Combine(root.FullName, "SWLOR_Haks", "swlor2_tga");
         var icons = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-        var featRows = Read2da(new FileInfo(Path.Combine(
+        var featRows = Test2daHelper.Read2da(new FileInfo(Path.Combine(
             root.FullName,
             "SWLOR_Haks",
             "swlor2_2da",
             "feat.2da")));
-        var spellRows = Read2da(new FileInfo(Path.Combine(
+        var spellRows = Test2daHelper.Read2da(new FileInfo(Path.Combine(
             root.FullName,
             "SWLOR_Haks",
             "swlor2_2da",

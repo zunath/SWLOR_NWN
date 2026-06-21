@@ -30,6 +30,9 @@ namespace SWLOR.Game.Server.Feature
             // Already been initialized. Don't do it again.
             if (dbPlayer.Version >= 1 || dbPlayer.Version == -1) // Note: -1 signifies legacy characters. The Migration service handles upgrading legacy characters.
             {
+                if (PlayerDescriptor.EnsureUnknownDisplayName(player))
+                    PlayerName.RefreshNameOverridesForPlayer(player);
+
                 InitializeSavingThrows(player);
                 ExecuteScript(ScriptName.OnCharacterInitAfter, OBJECT_SELF);
                 return;
@@ -40,8 +43,7 @@ namespace SWLOR.Game.Server.Feature
             InitializeSavingThrows(player);
             InitializeSkills(player);
             RemoveNWNSpells(player);
-            ClearFeats(player);
-            GrantBasicFeats(player);
+            ResetFeatsToBaseline(player);
             InitializeHotBar(player);
             AdjustStats(player, dbPlayer);
             AdjustAlignment(player);
@@ -53,6 +55,9 @@ namespace SWLOR.Game.Server.Feature
             Stat.ApplyCreatureMovementRate(player);
 
             DB.Set(dbPlayer);
+
+            if (PlayerDescriptor.EnsureUnknownDisplayName(player))
+                PlayerName.RefreshNameOverridesForPlayer(player);
 
             ExecuteScript(ScriptName.OnCharacterInitAfter, OBJECT_SELF);
         }
@@ -148,10 +153,16 @@ namespace SWLOR.Game.Server.Feature
         public static void ClearFeats(uint player)
         {
             var numberOfFeats = CreaturePlugin.GetFeatCount(player);
-            for (var currentFeat = numberOfFeats; currentFeat >= 0; currentFeat--)
+            for (var currentFeat = numberOfFeats - 1; currentFeat >= 0; currentFeat--)
             {
-                CreaturePlugin.RemoveFeat(player, CreaturePlugin.GetFeatByIndex(player, currentFeat - 1));
+                CreaturePlugin.RemoveFeat(player, CreaturePlugin.GetFeatByIndex(player, currentFeat));
             }
+        }
+
+        public static void ResetFeatsToBaseline(uint player)
+        {
+            ClearFeats(player);
+            GrantBasicFeats(player);
         }
 
         public static void GrantBasicFeats(uint player)
@@ -178,7 +189,7 @@ namespace SWLOR.Game.Server.Feature
         /// <param name="dbPlayer">The player entity.</param>
         private static void AdjustStats(uint player, Player dbPlayer)
         {
-            dbPlayer.UnallocatedSP = 10;
+            dbPlayer.UnallocatedSP = Skill.StartingSkillPoints;
             dbPlayer.Version = Migration.GetLatestPlayerVersion();
             dbPlayer.Name = GetName(player);
             dbPlayer.BAB = 1;
@@ -299,11 +310,13 @@ namespace SWLOR.Game.Server.Feature
         /// <param name="dbPlayer">The database entity</param>
         private static void AssignRacialAppearance(uint player, Player dbPlayer)
         {
+            var raceAppearance = Race.GetDefaultAppearance(GetRacialType(player), GetGender(player));
+
             DelayCommand(0.1f, () =>
             {
                 Race.SetDefaultRaceAppearance(player);
             });
-            dbPlayer.OriginalAppearanceType = GetAppearanceType(player);
+            dbPlayer.OriginalAppearanceType = raceAppearance.AppearanceType;
         }
 
         /// <summary>

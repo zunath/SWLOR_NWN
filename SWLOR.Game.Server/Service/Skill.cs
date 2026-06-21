@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
@@ -13,15 +14,64 @@ namespace SWLOR.Game.Server.Service
 {
     public static partial class Skill
     {
+        private static readonly Lazy<HashSet<SkillType>> _skillCapContributingSkillTypes = new(() =>
+            Enum.GetValues(typeof(SkillType))
+                .Cast<SkillType>()
+                .Where(x => x.GetAttribute<SkillType, SkillAttribute>().ContributesToSkillCap)
+                .ToHashSet());
+
         /// <summary>
         /// This is the maximum number of skill points a single character can have at any time.
         /// </summary>
         public const int SkillCap = 400;
 
         /// <summary>
+        /// The base amount of SP available to every player before earned skill ranks are counted.
+        /// </summary>
+        public const int StartingSkillPoints = 10;
+
+        /// <summary>
+        /// Maximum spendable player SP, including the starting SP pool.
+        /// </summary>
+        public const int TotalSkillPointCap = SkillCap + StartingSkillPoints;
+
+        /// <summary>
         /// This is the maximum number of AP a single character can earn in total. This must be evenly divisible into SkillCap.
         /// </summary>
         public static int APCap { get; } = SkillCap / 10;
+
+        public static int GetTotalSkillPoints(Player dbPlayer)
+        {
+            var earnedSP = dbPlayer.TotalSPAcquired;
+            if (earnedSP < 0)
+                earnedSP = 0;
+
+            if (earnedSP > SkillCap)
+                earnedSP = SkillCap;
+
+            return StartingSkillPoints + earnedSP;
+        }
+
+        public static int GetTotalContributingSkillRanks(Player dbPlayer)
+        {
+            var total = 0;
+            foreach (var (skillType, skill) in dbPlayer.Skills)
+            {
+                if (!IsSkillCapContributingSkill(skillType))
+                    continue;
+
+                total += Math.Max(0, skill.Rank);
+            }
+
+            return total;
+        }
+
+        private static bool IsSkillCapContributingSkill(SkillType skillType)
+        {
+            return _allSkillsContributingToCap.Count > 0
+                ? _allSkillsContributingToCap.ContainsKey(skillType)
+                : _skillCapContributingSkillTypes.Value.Contains(skillType);
+        }
 
         /// <summary>
         /// Gives XP towards a specific skill to a player.

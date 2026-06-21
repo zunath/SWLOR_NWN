@@ -67,6 +67,42 @@ public class PerkRefundStatusEffectCleanupTests
         rebuildViewModelSource.Should().Contain("Perk.RemoveStatusEffectsOnPerkRefund(Player, type);");
     }
 
+    [Test]
+    public void CharacterFullRebuild_RemovesUndefinedPerksWithoutLookingUpDetails()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "GuiDefinition",
+            "ViewModel",
+            "CharacterFullRebuildViewModel.cs"));
+
+        source.Should().Contain("var allPerks = Perk.GetAllPerks();");
+        source.Should().Contain("if (!allPerks.TryGetValue(type, out var perkDetail))");
+        source.Should().Contain("dbPlayer.Perks.Remove(type);");
+        source.Should().Contain("Removed undefined perk during full rebuild");
+        source.Should().Contain("PlayerInitialization.ResetFeatsToBaseline(Player);");
+    }
+
+    [Test]
+    public void PlayerInitialization_ClearsFeatListBeforeRestoringBaselineFeats()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "PlayerInitialization.cs"));
+
+        source.Should().Contain("for (var currentFeat = numberOfFeats - 1; currentFeat >= 0; currentFeat--)");
+        source.Should().Contain("CreaturePlugin.RemoveFeat(player, CreaturePlugin.GetFeatByIndex(player, currentFeat));");
+        source.Should().Contain("public static void ResetFeatsToBaseline(uint player)");
+        source.Should().Contain("ClearFeats(player);");
+        source.Should().Contain("GrantBasicFeats(player);");
+    }
+
     private static DirectoryInfo FindRepositoryRoot()
     {
         var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);

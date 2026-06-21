@@ -178,6 +178,19 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             return result.RemovedItems;
         }
 
+        public static bool RemoveObsoleteItemsFromObject(
+            uint obj,
+            out int removedCount,
+            out int migratedDroidPerkCount)
+        {
+            var result = new MigrationResult();
+            RemoveObsoleteItemsFromObject(obj, result);
+            removedCount = result.RemovedItems;
+            migratedDroidPerkCount = result.MigratedDroidPerks;
+
+            return result.Changed;
+        }
+
         private static void RemoveObsoleteItemsFromObject(uint obj, MigrationResult result)
         {
             if (!GetIsObjectValid(obj))

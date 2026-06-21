@@ -56,8 +56,8 @@ public class FirstAidCombatUpgradeTests
         AssertAbility(treatmentKit[FeatType.TreatmentKit3], "Treatment Kit III", 3, RecastGroup.TreatmentKit, 18f, 1f, 5, null, 0, false, true);
 
         var koltoMist = new KoltoMistAbilityDefinition().BuildAbilities();
-        AssertAbility(koltoMist[FeatType.KoltoMist1], "Kolto Mist I", 1, RecastGroup.KoltoMist, 30f, 1.5f, 6, "med_supplies", 1, true, false);
-        AssertAbility(koltoMist[FeatType.KoltoMist2], "Kolto Mist II", 2, RecastGroup.KoltoMist, 30f, 1.5f, 7, "med_supplies", 1, true, false);
+        AssertAbility(koltoMist[FeatType.KoltoMist1], "Kolto Mist I", 1, RecastGroup.KoltoMist, 30f, 1.5f, 6, "med_supplies", 1, true, false, maxRange: 15f, expectsCustomValidation: true);
+        AssertAbility(koltoMist[FeatType.KoltoMist2], "Kolto Mist II", 2, RecastGroup.KoltoMist, 30f, 1.5f, 7, "med_supplies", 1, true, false, maxRange: 15f, expectsCustomValidation: true);
 
         var resuscitation = new ResuscitationAbilityDefinition().BuildAbilities();
         AssertAbility(resuscitation[FeatType.Resuscitation1], "Resuscitation I", 1, RecastGroup.Resuscitation, 180f, 4f, 10, "med_supplies", 1, false, true);
@@ -67,7 +67,7 @@ public class FirstAidCombatUpgradeTests
         AssertAbility(infusion[FeatType.Infusion1], "Infusion I", 1, RecastGroup.Infusion, 45f, 1f, 6, "med_supplies", 1, false, true);
         AssertAbility(infusion[FeatType.Infusion2], "Infusion II", 2, RecastGroup.Infusion, 45f, 1f, 8, "med_supplies", 1, false, true);
 
-        AssertAbility(new EmergencyTriageAbilityDefinition().BuildAbilities()[FeatType.EmergencyTriage1], "Emergency Triage", 1, RecastGroup.EmergencyTriage, 45f, 0f, 8, "med_supplies", 2, false, true);
+        AssertAbility(new EmergencyTriageAbilityDefinition().BuildAbilities()[FeatType.EmergencyTriage1], "Emergency Triage", 1, RecastGroup.EmergencyTriage, 45f, 0f, 8, "med_supplies", 2, false, true, maxRange: 15f);
 
         var adrenal = new AdrenalStimAbilityDefinition().BuildAbilities();
         AssertAbility(adrenal[FeatType.AdrenalStim1], "Adrenal Stim I", 1, RecastGroup.AdrenalStim, 120f, 1f, null, "stim_pack", 1, false, true, true);
@@ -170,10 +170,45 @@ public class FirstAidCombatUpgradeTests
         var koltoMistStatus = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "StatusEffectDefinition" / "KoltoMistHealingStatusEffect.cs").FullName);
         koltoMistStatus.Should().Contain("FirstAidTreatmentAdjustments.ApplyMedicalScaledHeal(Source, creature, _totalPercent / _tickCount);");
 
+        var treatmentAdjustments = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "FirstAid" / "FirstAidTreatmentAdjustments.cs").FullName);
+        treatmentAdjustments.Should().Contain("if (!removedAilment)");
+        treatmentAdjustments.Should().Contain("StatusEffect.ApplyStatusEffect(source, target, typeof(EmergencySealant1StatusEffect), 12f);");
+        treatmentAdjustments.IndexOf("if (!removedAilment)", StringComparison.Ordinal)
+            .Should()
+            .BeLessThan(treatmentAdjustments.IndexOf("StatusEffect.ApplyStatusEffect(source, target, typeof(EmergencySealant1StatusEffect), 12f);", StringComparison.Ordinal));
+
+        var emergencySealantStatus = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "StatusEffectDefinition" / "EmergencySealant1StatusEffect.cs").FullName);
+        emergencySealantStatus.Should().Contain("AbilityEffectScaling.ApplyScaledHeal(Source, creature, 4);");
+
         var cocktail = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "FirstAid" / "EmergencyCocktailAbilityDefinition.cs").FullName);
         cocktail.Should().Contain("AbilityEffectScaling.ApplyTemporaryHPPercent(activator, friendly, 12, duration)");
         cocktail.Should().Contain("CapstoneAbility.ActiveDurationSeconds");
         cocktail.Should().Contain("new[] { typeof(PoisonStatusEffect), typeof(ToxinStatusEffect) }");
+    }
+
+    [Test]
+    public void FirstAidHealingVisuals_DoNotPlayStockHealSound()
+    {
+        var root = FindRepositoryRoot();
+        var firstAidDirectory = new DirectoryInfo((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "FirstAid").FullName);
+
+        foreach (var sourcePath in firstAidDirectory.GetFiles("*.cs"))
+        {
+            var source = File.ReadAllText(sourcePath.FullName);
+            source.Should().NotContain("VisualEffect.Vfx_Imp_Healing_M)");
+            source.Should().NotContain("VisualEffect.Vfx_Imp_Healing_M,");
+        }
+
+        var treatmentAdjustments = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "FirstAid" / "FirstAidTreatmentAdjustments.cs").FullName);
+        treatmentAdjustments.Should().Contain("VisualEffect.Vfx_Imp_Healing_M_Silent");
+
+        var visualEffectEnum = File.ReadAllText((root / "SWLOR.NWN.API" / "NWScript" / "Enum" / "VisualEffect" / "VisualEffect.cs").FullName);
+        visualEffectEnum.Should().Contain("Vfx_Imp_Healing_M_Silent = 842");
+
+        var visualEffects = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "visualeffects.2da");
+        visualEffects[842]["Label"].Should().Be("VFX_IMP_HEALING_M_SILENT");
+        visualEffects[842]["Imp_HeadCon_Node"].Should().Be("vim_heal04");
+        visualEffects[842]["SoundImpact"].Should().Be("****");
     }
 
     [Test]
@@ -186,12 +221,12 @@ public class FirstAidCombatUpgradeTests
         {
             (FeatType.MedKit1, "ife_mdkt1", "M", "0x03", "0", "****", "****", "****", "****", "****"),
             (FeatType.TreatmentKit1, "ife_trtmntkt1", "M", "0x03", "0", "****", "****", "****", "****", "****"),
-            (FeatType.KoltoMist1, "ife_kltmst1", "P", "0x01", "0", "sphere", "3", "****", "17", "1"),
+            (FeatType.KoltoMist1, "ife_kltmst1", "M", "0x3E", "0", "sphere", "3", "****", "1", "****"),
             (FeatType.Resuscitation1, "ife_rsscttn1", "M", "0x03", "0", "****", "****", "****", "****", "****"),
             (FeatType.TreatmentKit2, "ife_trtmntkt2", "M", "0x03", "0", "****", "****", "****", "****", "****"),
             (FeatType.MedKit2, "ife_mdkt2", "M", "0x03", "0", "****", "****", "****", "****", "****"),
             (FeatType.Infusion1, "ife_nfsn1", "M", "0x03", "0", "****", "****", "****", "****", "****"),
-            (FeatType.KoltoMist2, "ife_kltmst2", "P", "0x01", "0", "sphere", "3", "****", "17", "1"),
+            (FeatType.KoltoMist2, "ife_kltmst2", "M", "0x3E", "0", "sphere", "3", "****", "1", "****"),
             (FeatType.Resuscitation2, "ife_rsscttn2", "M", "0x03", "0", "****", "****", "****", "****", "****"),
             (FeatType.MedKit3, "ife_mdkt3", "M", "0x03", "0", "****", "****", "****", "****", "****"),
             (FeatType.TreatmentKit3, "ife_trtmntkt3", "M", "0x03", "0", "****", "****", "****", "****", "****"),
@@ -250,16 +285,16 @@ public class FirstAidCombatUpgradeTests
         {
             (FeatType.MedKit1, "Restores 10% of the target's maximum HP plus WIL scaling to a single target. Consumes medical supplies."),
             (FeatType.TreatmentKit1, "Removes Bleed and Poison from a single target. Consumes medical supplies."),
-            (FeatType.KoltoMist1, "Restores HP over time to nearby allies within 3m for 12 seconds. Total healing equals 7% of each target's maximum HP plus WIL scaling. Consumes medical supplies."),
+            (FeatType.KoltoMist1, "Applies a 12-second healing mist to allies within 3m of a target location up to 15m away. Total healing equals 7% of each target's maximum HP plus WIL scaling. Consumes medical supplies."),
             (FeatType.Resuscitation1, "Revives an unconscious target with 1 HP. Consumes medical supplies."),
             (FeatType.TreatmentKit2, "Removes Bleed, Poison, Toxin, Burn, Shock, and Disease from a single target. Consumes medical supplies."),
             (FeatType.MedKit2, "Restores 20% of the target's maximum HP plus WIL scaling to a single target. Consumes medical supplies."),
             (FeatType.Infusion1, "Grants a single target regeneration, healing 3% of maximum HP plus WIL scaling every 3 seconds for 15 seconds. Consumes medical supplies."),
-            (FeatType.KoltoMist2, "Restores HP over time to nearby allies within 3m for 12 seconds. Total healing equals 12% of each target's maximum HP plus WIL scaling. Consumes medical supplies."),
+            (FeatType.KoltoMist2, "Applies a 12-second healing mist to allies within 3m of a target location up to 15m away. Total healing equals 12% of each target's maximum HP plus WIL scaling. Consumes medical supplies."),
             (FeatType.Resuscitation2, "Revives an unconscious target with 20% HP plus WIL scaling. Consumes medical supplies."),
             (FeatType.MedKit3, "Restores 28% of the target's maximum HP plus WIL scaling to a single target. Consumes medical supplies."),
             (FeatType.TreatmentKit3, "Removes Bleed, Poison, Toxin, Burn, Shock, and Disease from a single target and grants 50% Fire Resistance, 50% Poison Resistance, 50% Electrical Resistance, 50% Ice Resistance, and 50% Trauma Resistance for 8 seconds."),
-            (FeatType.EmergencyTriage1, "Restores 18% of the target's maximum HP plus WIL scaling instantly. Healing is doubled if the target is below 35% HP. Consumes extra medical supplies."),
+            (FeatType.EmergencyTriage1, "Restores 18% of the target's maximum HP plus WIL scaling instantly. Can target allies up to 15m away. Healing is doubled if the target is below 35% HP. Consumes extra medical supplies."),
             (FeatType.Infusion2, "Grants a single target regeneration, healing 5% of maximum HP plus WIL scaling every 3 seconds for 15 seconds. Consumes medical supplies."),
             (FeatType.MedKit4, "Restores 36% of the target's maximum HP plus WIL scaling to a single target. Consumes medical supplies."),
             (FeatType.AdrenalStim1, "Restores 10% of maximum STM and restores 1 STM every 3 seconds for 12 seconds. Consumes a stim pack."),
@@ -341,7 +376,9 @@ public class FirstAidCombatUpgradeTests
         int itemQuantity,
         bool isArea,
         bool requiresTarget,
-        bool expectsStimPreserve = false)
+        bool expectsStimPreserve = false,
+        float maxRange = 5f,
+        bool expectsCustomValidation = false)
     {
         ability.Name.Should().Be(name);
         ability.AbilityLevel.Should().Be(level);
@@ -349,6 +386,7 @@ public class FirstAidCombatUpgradeTests
         ability.RecastGroup.Should().Be(recastGroup);
         ability.RecastDelay(0).Should().Be(recastSeconds);
         ability.ActivationDelay(0, 0, level).Should().Be(activationSeconds);
+        ability.MaxRange.Should().Be(maxRange);
         ability.ActivationType.Should().Be(AbilityActivationType.Casted);
         ability.IsHostileAbility.Should().BeFalse();
         ability.RequiresTarget.Should().Be(requiresTarget);
@@ -356,7 +394,7 @@ public class FirstAidCombatUpgradeTests
         ability.IsSingleTargetAbility.Should().Be(!isArea);
         ability.BreaksStealth.Should().BeTrue();
 
-        if (requiresTarget)
+        if (requiresTarget || expectsCustomValidation)
             ability.CustomValidation.Should().NotBeNull();
         else
             ability.CustomValidation.Should().BeNull();

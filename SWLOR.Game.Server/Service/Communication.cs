@@ -377,9 +377,6 @@ namespace SWLOR.Game.Server.Service
                 }
 
                 var speaker = GetEffectiveChatSpeaker(sender);
-                finalMessage.Append(PlayerName.GetColoredDisplayName(receiver, speaker));
-                finalMessage.Append(": ");
-
                 var language = Language.GetActiveLanguage(speaker);
 
                 // Wookiees cannot speak any other language (but they can understand them).
@@ -461,8 +458,17 @@ namespace SWLOR.Game.Server.Service
                     finalMessage.Append(text);
                 }
 
-                // Send as a direct server message so the engine does not prepend the sender's true character name.
-                var finalChannel = ChatChannel.ServerMessage;
+                // Dispatch the final message - method depends on the original chat channel.
+                // - Shout and party are sent as DMTalk. This avoids native labels and area restrictions.
+                // - Talk and whisper are sent as-is.
+                // The sender label is rendered by the chat channel; PC names are masked by PlayerName
+                // rename overrides instead of being manually inserted into the message body.
+                var finalChannel = channel;
+
+                if (channel == ChatChannel.PlayerShout || channel == ChatChannel.PlayerParty)
+                {
+                    finalChannel = ChatChannel.DMTalk;
+                }
 
                 // There are a couple of color overrides we want to use here.
                 // - One for holonet (shout).

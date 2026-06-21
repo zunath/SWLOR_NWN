@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             amount = Stat.ApplyHealingReceivedAdjustment(target, amount);
 
             ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), target);
-            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_M), target);
+            ApplyMedicalVisualEffect(target);
         }
 
         public static void ApplyActivatedMedicalScaledHeal(
@@ -38,7 +38,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             amount = Stat.ApplyHealingReceivedAdjustment(target, amount);
 
             ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), target);
-            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_M), target);
+            ApplyMedicalVisualEffect(target);
+        }
+
+        public static void ApplyMedicalVisualEffect(uint target)
+        {
+            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_M_Silent), target);
         }
 
         public static int ApplyMedicalHealingBonus(uint source, int amount)
@@ -83,14 +88,20 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             if (Stat.GetStatAdjustment(source, StatType.TraumaMedicEmergencySealant) <= 0)
                 return;
 
+            var removedAilment = false;
             if (StatusEffect.HasStatusEffect(target, typeof(BleedStatusEffect)))
             {
                 StatusEffect.RemoveStatusEffect(target, typeof(BleedStatusEffect), false);
+                removedAilment = true;
             }
-            else
+            else if (StatusEffect.HasStatusEffect(target, typeof(BurnStatusEffect)))
             {
                 StatusEffect.RemoveStatusEffect(target, typeof(BurnStatusEffect), false);
+                removedAilment = true;
             }
+
+            if (!removedAilment)
+                return;
 
             StatusEffect.ApplyStatusEffect(source, target, typeof(EmergencySealant1StatusEffect), 12f);
         }

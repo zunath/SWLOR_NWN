@@ -475,7 +475,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                         foreach (var propertyId in instancePropertyIds)
                         {
-                            var instance = Property.GetRegisteredInstance(propertyId);
+                            if (!Property.TryGetLoadedInstance(propertyId, out var instance))
+                                continue;
+
                             var layout = Property.GetLayoutByType(instance.LayoutType);
 
                             if (layout.OnCityUpgradeAction != null)

@@ -5,14 +5,7 @@ This note tracks player migration work for `feature/combat-upgrade`. Keep it cur
 ## Current Migration Hook
 
 - Server migration: `SWLOR.Game.Server/Feature/MigrationDefinition/ServerMigration/_22_CombatSystemReplacement.cs`
-- Server migration: `SWLOR.Game.Server/Feature/MigrationDefinition/ServerMigration/_23_UpdateSerializedItemRequirements.cs`
-- Server migration: `SWLOR.Game.Server/Feature/MigrationDefinition/ServerMigration/_28_SplitDefensesAndResistances.cs`
-- Server migration: `SWLOR.Game.Server/Feature/MigrationDefinition/ServerMigration/_29_AddBeastResistancePurities.cs`
-- Server migration: `SWLOR.Game.Server/Feature/MigrationDefinition/ServerMigration/_30_RemoveBeastSavingThrowPurities.cs`
-- Server migration: `SWLOR.Game.Server/Feature/MigrationDefinition/ServerMigration/_31_MigrateResistanceItemProperties.cs`
-- Server migration: `SWLOR.Game.Server/Feature/MigrationDefinition/ServerMigration/_32_SpaceResistanceTypeIds.cs`
-- Server migration: `SWLOR.Game.Server/Feature/MigrationDefinition/ServerMigration/_33_MoveBeastElementalPuritiesToResistances.cs`
-- Server migration: `SWLOR.Game.Server/Feature/MigrationDefinition/ServerMigration/_34_RemoveObsoleteBiblePerks.cs`
+- Stored item helper: `SWLOR.Game.Server/Feature/MigrationDefinition/ServerMigration/StoredItemDataMigration.cs`
 - Player migration: `SWLOR.Game.Server/Feature/MigrationDefinition/PlayerMigration/_14_MigrateResistanceItemProperties.cs`
 - Player migration: `SWLOR.Game.Server/Feature/MigrationDefinition/PlayerMigration/_15_RemoveObsoleteCombatInstructionDiscs.cs`
 - Server execution type: `PostDatabaseLoad`

@@ -76,6 +76,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         {
                             row.AddSpacer();
 
+                            row.AddCheckBox()
+                                .SetText("Show Descriptors")
+                                .SetTooltip("Shows another player's unknown descriptor beside the name you assigned to them.")
+                                .BindIsChecked(model => model.ShowDescriptorsForNamedPlayers);
+
+                            row.AddSpacer();
+                        })
+                            .SetHeight(30f);
+
+                        col.AddRow(row =>
+                        {
+                            row.AddSpacer();
+
                             row.AddButton()
                                 .SetText("Change Description")
                                 .SetTooltip("Modify your publicly-viewable description which displays when you are examined.")

@@ -287,14 +287,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 new(
                     "Common Questions",
                     "Core",
-                    "Start here for skills, AP, perks, decay, refunds, XP debt, death, combat, crafting, and windows.",
+                    "Start here for skills, AP, perks, decay, refunds, XP debt, death, combat, crafting, names, and windows.",
                     "Skills, AP, death",
                     new[]
                     {
                         new ArticleBlock("Skills",
-                            "Skills gain XP individually. Skill ranks create Skill Points for perks until you have earned 400 total SP. Languages do not count toward this 400-rank limit."),
+                            "Skills gain XP individually. Skill ranks create Skill Points for perks until you have earned 400 SP from skill ranks. Languages do not count toward this 400-rank limit."),
                         new ArticleBlock("Ability Points (AP)",
-                            "Every 10 total SP grants 1 Ability Point, up to 40 AP. Spend AP from the Character Sheet to improve attributes such as Might, Perception, Vitality, Willpower, Agility, and Social."),
+                            "Every 10 earned SP grants 1 Ability Point, up to 40 AP. Spend AP from the Character Sheet to improve attributes such as Might, Perception, Vitality, Willpower, Agility, and Social."),
                         new ArticleBlock("Perks",
                             "Perk ranks cost SP. Perks can require certain progress before you buy the next rank, and they can grant active abilities, passive bonuses, or other effects."),
                         new ArticleBlock("Skill Decay",
@@ -306,19 +306,54 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new ArticleBlock("Death and Resting",
                             "If you die, you can wait for another player to revive you or respawn to your registered medical facility. Resting restores HP, FP, and STM over time, but cannot be used in combat, near enemies, or outside dungeon safe-rest areas."),
                         new ArticleBlock("Crafting and Training",
-                            "Recipes, crafting devices, research terminals, refineries, the Training Store, and the Character Sheet windows are the main places to turn earned progress into gear, tokens, and character choices.")
+                            "Recipes, crafting devices, research terminals, refineries, the Training Store, and the Character Sheet windows are the main places to turn earned progress into gear, tokens, and character choices."),
+                        new ArticleBlock("Recognizing Players",
+                            "Other player characters may appear with a gray descriptor until you remember them. Type /name <name>, then click the player character when the target cursor appears. Use /forgetname and click the character to clear that personal name. To change how unnamed players see you, use /name <description> on yourself. Names and descriptions are limited to 64 characters and cannot include color codes.")
                     },
                     new[]
                     {
-                        new QuestionAnswer("How do skills work?", "Skill XP raises individual skills. Skill ranks create SP until 400 total SP; languages do not count toward that limit."),
-                        new QuestionAnswer("How do I use AP?", "Earn 1 AP every 10 total SP, then spend AP from the Character Sheet to improve attributes."),
+                        new QuestionAnswer("How do skills work?", "Skill XP raises individual skills. Skill ranks create earned SP until 400; languages do not count toward that limit."),
+                        new QuestionAnswer("How do I use AP?", "Earn 1 AP every 10 earned SP, then spend AP from the Character Sheet to improve attributes."),
                         new QuestionAnswer("What does skill decay mean?", "At 400 skill ranks, gaining another eligible rank can lower another unlocked eligible skill by 1 rank."),
                         new QuestionAnswer("How do perk refunds work?", "Manual refunds return all SP paid for the selected perk, consume a token, and start a 1 hour wait."),
                         new QuestionAnswer("Why did I get no skill XP?", "XP debt may have used the entire XP reward, or you may be at the 400-rank limit with no available skill that can decay."),
                         new QuestionAnswer("Where do I go after death?", "Respawning returns you to your registered medical facility and adds XP debt."),
-                        new QuestionAnswer("What should I open first?", "Press B for this guide and C for the Character Sheet.")
+                        new QuestionAnswer("What should I open first?", "Press B for this guide and C for the Character Sheet."),
+                        new QuestionAnswer("How do I use /name?", "Type /name <name>, then click the player character when the target cursor appears. Target yourself to change the gray description shown to players who have not named you. Names and descriptions are limited to 64 characters and cannot include color codes. Name the intended player before sending tells if several characters share the same descriptor.")
                     },
-                    new[] { "Skills", "Attributes", "Perks", "Skill Decay", "Perk Refunds", "XP Debt", "Death & Recovery", "Combat Basics", "Crafting", "Training Store", "Useful Windows" }),
+                    new[] { "Communication", "Skills", "Attributes", "Perks", "Skill Decay", "Perk Refunds", "XP Debt", "Death & Recovery", "Combat Basics", "Crafting", "Training Store", "Useful Windows" }),
+
+                new(
+                    "Communication",
+                    "Social",
+                    "Talk ranges, comms, HoloNet, HoloNet broadcasts, notes, settings, descriptions, names, emotes, and languages.",
+                    "Chat and tools",
+                    new[]
+                    {
+                        new ArticleBlock("Talk, Whisper, and Comms",
+                            "Normal talk reaches players within 20 meters. Whisper reaches 4 meters. Party chat works as comms for party members and can also be heard by nearby players within 20 meters."),
+                        new ArticleBlock("HoloNet Chat",
+                            "Shout sends an in-character HoloNet message to online players who display the HoloNet channel. Out-of-character messages cannot be sent over HoloNet, and HoloNet chat has a 5 minute wait between sends."),
+                        new ArticleBlock("HoloNet Broadcast Window",
+                            "The HoloNet broadcast window sends a longer broadcast, costs 2500 credits, and is limited to 600 characters."),
+                        new ArticleBlock("Settings",
+                            "Settings control achievement notifications, whether you display the HoloNet channel, subdual mode, reset reminders, chat colors, emote colors, and language colors. Settings also links to your character description."),
+                        new ArticleBlock("Notes",
+                            "Notes are private player notes. You can keep up to 25 notes, and each note can hold up to 1000 characters."),
+                        new ArticleBlock("Names",
+                            "Unrecognized player characters appear with a gray descriptor until you personally set a known name. Type /name <name>, then click the player character when the target cursor appears. Use /forgetname and click the character to forget that personal name. Target yourself with /name <description> to set the gray text others see before they name you. Names and descriptions are limited to 64 characters and cannot include color codes."),
+                        new ArticleBlock("Emotes and Languages",
+                            "Speech can include emote text, and your emote style can be toggled between regular and novel formatting. Speaking or hearing non-Basic languages uses language skill; hearing a non-Basic language you do not fully know can grant language XP over time.")
+                    },
+                    new[]
+                    {
+                        new QuestionAnswer("How far does talk carry?", "Talk reaches 20 meters. Whisper reaches 4 meters."),
+                        new QuestionAnswer("What is party chat here?", "Party chat acts as comms for your party and can be overheard nearby."),
+                        new QuestionAnswer("How do I stop seeing HoloNet?", "Open Settings and turn off the HoloNet channel display."),
+                        new QuestionAnswer("How do I name another player?", "Type /name <name>, then click that player character when the target cursor appears. Use /forgetname and click them again to clear it. Target yourself with /name to set your unnamed description. Names and descriptions are limited to 64 characters and cannot include color codes."),
+                        new QuestionAnswer("How do languages improve?", "Listening to partially understood non-Basic speech can grant language XP over time.")
+                    },
+                    new[] { "Common Questions", "Useful Windows", "Skills", "Quests & Key Items", "Death & Recovery" }),
 
                 new(
                     "Skills",
@@ -332,7 +367,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new ArticleBlock("Skill Limit",
                             "A character can earn up to 400 total ranks from skills that count toward the skill limit. Languages do not count toward this limit."),
                         new ArticleBlock("SP and AP",
-                            "When a skill that counts toward the limit ranks up, you gain 1 unallocated SP and 1 total SP until Total SP reaches 400. Every 10 total SP grants 1 unallocated AP, up to 40 AP."),
+                            "When a skill that counts toward the limit ranks up, you gain 1 unallocated SP and 1 earned SP until earned SP reaches 400. Every 10 earned SP grants 1 unallocated AP, up to 40 AP. Your displayed total SP also includes the 10 starting SP."),
                         new ArticleBlock("XP Adjustments",
                             "Skill XP can be adjusted before it is applied. Your Social attribute adds 2.5 percent skill XP per Social point. Some effects, event rewards, or active companions such as beasts and droids can also change the final amount."),
                         new ArticleBlock("XP Debt",
@@ -341,7 +376,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     new[]
                     {
                         new QuestionAnswer("What is the skill limit?", "400 total ranks from skills that count toward the limit. Languages do not count."),
-                        new QuestionAnswer("How do I get AP?", "Every 10 total SP grants 1 unallocated AP, up to 40."),
+                        new QuestionAnswer("How do I get AP?", "Every 10 earned SP grants 1 unallocated AP, up to 40."),
                         new QuestionAnswer("Why did XP go to debt?", "XP debt is paid down before skill XP is applied.")
                     },
                     new[] { "Attributes", "XP Debt", "Skill Decay", "Perks", "Training Store", "Crafting", "Useful Windows" }),
@@ -497,7 +532,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     },
                     new[]
                     {
-                        new QuestionAnswer("How do I get AP?", "Every 10 total SP grants 1 AP, up to 40."),
+                        new QuestionAnswer("How do I get AP?", "Every 10 earned SP grants 1 AP, up to 40."),
                         new QuestionAnswer("What helps XP gain?", "Social improves XP gain."),
                         new QuestionAnswer("What helps stamina?", "Agility increases maximum stamina.")
                     },
@@ -543,7 +578,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new ArticleBlock("Medical Registration",
                             "Registering at a medical facility chooses where you return after respawning. If you have no registered facility, you return to the default respawn point."),
                         new ArticleBlock("XP Debt From Death",
-                            "Death debt scales with your total SP. Medical Center upgrades and Social above 10 reduce that debt, up to an 80 percent total reduction."),
+                            "Death debt scales with your earned SP. Medical Center upgrades and Social above 10 reduce that debt, up to an 80 percent total reduction."),
                         new ArticleBlock("Subdual",
                             "If another player defeats you while using subdual, you are subdued instead of going through normal respawn. Subdual briefly knocks you down and applies a short subdual penalty."),
                         new ArticleBlock("Resting",
@@ -766,37 +801,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new QuestionAnswer("What lowers repair cost?", "Starport upgrades and Social can reduce the bill.")
                     },
                     new[] { "Housing & Markets", "Perks", "Combat Basics", "Useful Windows" }),
-
-                new(
-                    "Communication",
-                    "Social",
-                    "Talk ranges, comms, HoloNet, HoloNet broadcasts, notes, settings, descriptions, names, emotes, and languages.",
-                    "Chat and tools",
-                    new[]
-                    {
-                        new ArticleBlock("Talk, Whisper, and Comms",
-                            "Normal talk reaches players within 20 meters. Whisper reaches 4 meters. Party chat works as comms for party members and can also be heard by nearby players within 20 meters."),
-                        new ArticleBlock("HoloNet Chat",
-                            "Shout sends an in-character HoloNet message to online players who display the HoloNet channel. Out-of-character messages cannot be sent over HoloNet, and HoloNet chat has a 5 minute wait between sends."),
-                        new ArticleBlock("HoloNet Broadcast Window",
-                            "The HoloNet broadcast window sends a longer broadcast, costs 2500 credits, and is limited to 600 characters."),
-                        new ArticleBlock("Settings",
-                            "Settings control achievement notifications, whether you display the HoloNet channel, subdual mode, reset reminders, chat colors, emote colors, and language colors. Settings also links to your character description."),
-                        new ArticleBlock("Notes",
-                            "Notes are private player notes. You can keep up to 25 notes, and each note can hold up to 1000 characters."),
-                        new ArticleBlock("Names",
-                            "Unrecognized player characters can appear as unknown until you personally set a known name. Use the targeted name tools to remember or forget what you call another player character."),
-                        new ArticleBlock("Emotes and Languages",
-                            "Speech can include emote text, and your emote style can be toggled between regular and novel formatting. Speaking or hearing non-Basic languages uses language skill; hearing a non-Basic language you do not fully know can grant language XP over time.")
-                    },
-                    new[]
-                    {
-                        new QuestionAnswer("How far does talk carry?", "Talk reaches 20 meters. Whisper reaches 4 meters."),
-                        new QuestionAnswer("What is party chat here?", "Party chat acts as comms for your party and can be overheard nearby."),
-                        new QuestionAnswer("How do I stop seeing HoloNet?", "Open Settings and turn off the HoloNet channel display."),
-                        new QuestionAnswer("How do languages improve?", "Listening to partially understood non-Basic speech can grant language XP over time.")
-                    },
-                    new[] { "Useful Windows", "Skills", "Quests & Key Items", "Death & Recovery" }),
 
                 new(
                     "Useful Windows",

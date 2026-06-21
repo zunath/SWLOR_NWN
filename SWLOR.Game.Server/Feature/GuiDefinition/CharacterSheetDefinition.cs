@@ -1,6 +1,7 @@
 using System.Linq.Expressions;
 using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 
@@ -114,6 +115,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         AddBoundValueRow(resourceCol, "HP", model => model.HP, "Health. At 0, you die.", null, 36f, GuiColor.HPColor);
                         AddBoundValueRow(resourceCol, "FP", model => model.FP, "Force ability resource.", null, 36f, GuiColor.FPColor);
                         AddBoundValueRow(resourceCol, "STM", model => model.STM, "Non-Force ability resource.", null, 36f, GuiColor.STMColor);
+                        AddBoundValueRow(resourceCol, "Ranks", model => model.SkillRanks, $"Skill ranks contributing to the {Skill.SkillCap}-rank limit.", null, 36f, null, model => model.ShowSkillRanks);
                         AddBoundValueRow(resourceCol, "SP", model => model.SP, "Perk purchase points.", null, 36f, null, model => model.ShowSP);
                         AddBoundValueRow(resourceCol, model => model.APOrLevelLabel, model => model.APOrLevel, null, model => model.APOrLevelTooltip, 36f, null, model => model.ShowAPOrLevel);
                     });

@@ -62,6 +62,7 @@ namespace SWLOR.Game.Server.Entity
             Resistances = Resistance.CreateDefaultResistanceValues();
 
             ActiveShipId = Guid.Empty.ToString();
+            UnknownDisplayName = string.Empty;
             IsUsingDualPistolMode = false;
             EmoteStyle = EmoteStyle.Regular;
             MovementRate = 1.0f;
@@ -137,6 +138,7 @@ namespace SWLOR.Game.Server.Entity
         public EmoteStyle EmoteStyle { get; set; }
         public string SerializedHotBar { get; set; }
         public string ActiveShipId { get; set; }
+        public string UnknownDisplayName { get; set; }
         public AppearanceType OriginalAppearanceType { get; set; }
         public float MovementRate { get; set; }
         public int CombatReadiness { get; set; }
@@ -222,6 +224,7 @@ namespace SWLOR.Game.Server.Entity
         public bool ShowCloak { get; set; }
         public bool IsSubdualModeEnabled { get; set; }
         public bool DisplayServerResetReminders { get; set; }
+        public bool? ShowDescriptorsForNamedPlayers { get; set; }
         public Dictionary<SkillType, PlayerColor> LanguageChatColors { get; set; }
         public PlayerColor OOCChatColor { get; set; }
         public PlayerColor EmoteChatColor { get; set; }
@@ -234,6 +237,7 @@ namespace SWLOR.Game.Server.Entity
             IsHolonetEnabled = true;
             IsSubdualModeEnabled = false;
             DisplayServerResetReminders = true;
+            ShowDescriptorsForNamedPlayers = true;
 
             LanguageChatColors = new Dictionary<SkillType, PlayerColor>();
         }

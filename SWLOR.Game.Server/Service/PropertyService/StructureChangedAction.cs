@@ -109,7 +109,8 @@ namespace SWLOR.Game.Server.Service.PropertyService
                 return;
 
             var instancePropertyId = dbBuilding.ChildPropertyIds[PropertyChildType.Interior].Single();
-            var instance = Property.GetRegisteredInstance(instancePropertyId);
+            if (!Property.TryGetLoadedInstance(instancePropertyId, out var instance))
+                return;
 
             SetLocalLocation(instance.Area, "BUILDING_EXIT_LOCATION", location);
             SetLocalBool(instance.Area, "BUILDING_EXIT_SET", true);
@@ -134,8 +135,8 @@ namespace SWLOR.Game.Server.Service.PropertyService
                 interior.CustomName = property.CustomName;
                 DB.Set(interior);
 
-                var instance = Property.GetRegisteredInstance(interiorId);
-                SetName(instance.Area, "{PC} " + property.CustomName);
+                if (Property.TryGetLoadedInstance(interiorId, out var instance))
+                    SetName(instance.Area, "{PC} " + property.CustomName);
             }
         }
 
@@ -169,7 +170,14 @@ namespace SWLOR.Game.Server.Service.PropertyService
                 if (string.IsNullOrWhiteSpace(interiorId))
                     return;
 
+                // The dock point needs to be unregistered from the space service so it no longer displays in the list
+                // of docking points.
+                Space.RemoveLandingPointByPropertyId(interiorId);
+
                 var dbInterior = DB.Get<WorldProperty>(interiorId);
+                if (dbInterior == null)
+                    return;
+
                 if (dbInterior.ChildPropertyIds.ContainsKey(PropertyChildType.Starship))
                 {
                     foreach (var starshipId in dbInterior.ChildPropertyIds[PropertyChildType.Starship])
@@ -186,11 +194,15 @@ namespace SWLOR.Game.Server.Service.PropertyService
                     }
                 }
 
-                // The dock point needs to be unregistered from the space service so it no longer displays in the list
-                // of docking points.
                 var dbCity = DB.Get<WorldProperty>(property.ParentPropertyId);
+                if (dbCity == null)
+                    return;
+
                 var cityArea = Area.GetAreaByResref(dbCity.ParentPropertyId);
-                var instance = Property.GetRegisteredInstance(interiorId);
+
+                if (!Property.TryGetLoadedInstance(interiorId, out var instance))
+                    return;
+
                 var dockPoint = GetLandingWaypoint(instance.Area);
 
                 Space.RemoveLandingPoint(dockPoint, cityArea);

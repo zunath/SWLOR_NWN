@@ -63,7 +63,8 @@ public class PlayerNameRecognitionTests
         playerMethod.Should().NotContain("!GetIsPC(otherPlayer) || GetIsDM(otherPlayer)");
 
         dmObserverMethod.Should().Contain("ApplyTrueNameOverride(dm, player);");
-        trueNameMethod.Should().Contain("RenamePlugin.SetPCNameOverride(target, GetName(target), string.Empty, string.Empty, PlayerNameOverrideType.Default, observer);");
+        trueNameMethod.Should().Contain("BuildStaffDisplayName(target)");
+        trueNameMethod.Should().Contain("PlayerPlugin.SetCreatureNameOverride(observer, target, BuildCreatureNameOverrideWithDescriptor(trueName, descriptor));");
     }
 
     [Test]
@@ -158,7 +159,7 @@ public class PlayerNameRecognitionTests
         var assignmentValidationMethod = ExtractMethod(source, "public static string ValidateKnownNameAssignment(uint observer, uint target, string name)");
         var validationMethod = ExtractMethod(source, "private static string ValidateKnownNameTarget(uint observer, uint target)");
 
-        var validationIndex = setMethod.IndexOf("ValidateKnownNameAssignment(observer, target, sanitizedName);", StringComparison.Ordinal);
+        var validationIndex = setMethod.IndexOf("ValidateKnownNameAssignment(observer, target, name);", StringComparison.Ordinal);
         var targetIdIndex = setMethod.IndexOf("var targetId = GetObjectUUID(target);", StringComparison.Ordinal);
 
         validationIndex.Should().BeGreaterThanOrEqualTo(0);
@@ -169,6 +170,41 @@ public class PlayerNameRecognitionTests
         validationMethod.Should().Contain("!GetIsObjectValid(target) || !GetIsPC(target) || GetIsDM(target)");
         validationMethod.Should().Contain("target == observer");
         assignmentValidationMethod.Should().Contain("string.IsNullOrWhiteSpace(targetId)");
+    }
+
+    [Test]
+    public void KnownNameStorage_RejectsColorTokensBeforeSanitizing()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "PlayerName.cs"));
+        var descriptorSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "PlayerDescriptor.cs"));
+        var inputValidationMethod = ExtractMethod(source, "public static string ValidateKnownNameInput(string name)");
+        var assignmentValidationMethod = ExtractMethod(source, "public static string ValidateKnownNameAssignment(uint observer, uint target, string name)");
+        var setMethod = ExtractMethod(source, "public static void SetKnownName(uint observer, uint target, string name)");
+        var unknownDisplayMethod = ExtractMethod(descriptorSource, "public static void SetUnknownDisplayName(uint player, string name)");
+
+        inputValidationMethod.Should().Contain("ContainsColorToken(name)");
+        inputValidationMethod.Should().Contain("\"Names may not contain color codes.\"");
+        inputValidationMethod.Should().Contain("ValidateKnownName(SanitizeKnownName(name))");
+        var colorTokenValidationIndex = inputValidationMethod.IndexOf("ContainsColorToken(name)", StringComparison.Ordinal);
+        var sanitizeValidationIndex = inputValidationMethod.IndexOf("SanitizeKnownName(name)", StringComparison.Ordinal);
+        colorTokenValidationIndex.Should().BeGreaterThanOrEqualTo(0);
+        sanitizeValidationIndex.Should().BeGreaterThanOrEqualTo(0);
+        colorTokenValidationIndex.Should().BeLessThan(sanitizeValidationIndex);
+        source.Should().Contain("private static bool ContainsColorToken(string name)");
+        source.Should().Contain("UtilPlugin.StripColors(name)");
+
+        assignmentValidationMethod.Should().Contain("ValidateKnownNameInput(name)");
+        setMethod.Should().Contain("ValidateKnownNameAssignment(observer, target, name);");
+        unknownDisplayMethod.Should().Contain("PlayerName.ValidateKnownNameInput(name)");
     }
 
     [Test]
@@ -184,7 +220,7 @@ public class PlayerNameRecognitionTests
         var assignmentValidationMethod = ExtractMethod(source, "public static string ValidateKnownNameAssignment(uint observer, uint target, string name)");
         var uniquenessMethod = ExtractMethod(source, "private static string ValidateKnownNameIsUnique(");
 
-        setMethod.Should().Contain("ValidateKnownNameAssignment(observer, target, sanitizedName);");
+        setMethod.Should().Contain("ValidateKnownNameAssignment(observer, target, name);");
         assignmentValidationMethod.Should().Contain("return ValidateKnownNameIsUnique(dbKnownNames, targetId, sanitizedName);");
         uniquenessMethod.Should().Contain("entry.Key != targetId");
         uniquenessMethod.Should().Contain("StringComparison.OrdinalIgnoreCase");
@@ -222,13 +258,213 @@ public class PlayerNameRecognitionTests
             "SWLOR.Game.Server",
             "Service",
             "PlayerName.cs"));
+        var descriptorSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "PlayerDescriptor.cs"));
+        var playerSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Entity",
+            "Player.cs"));
 
         var coloredDisplayMethod = ExtractMethod(source, "public static string GetColoredDisplayName(uint observer, uint target)");
+        var playerIdDisplayMethod = ExtractMethod(source, "public static string GetDisplayNameByPlayerId(uint observer, string targetPlayerId, string fallbackName)");
         coloredDisplayMethod.Should().Contain("ColorToken.Gray(displayName)");
+        coloredDisplayMethod.Should().Contain("ShouldShowDescriptorForNamedPlayers(observer)");
+        coloredDisplayMethod.Should().Contain("BuildColoredDisplayNameWithDescriptor(knownName, PlayerDescriptor.GetUnknownDisplayName(target))");
+        coloredDisplayMethod.Should().Contain("ColorToken.GetPCColor(knownName)");
+        playerIdDisplayMethod.Should().Contain("ShouldShowDescriptorForNamedPlayers(observer)");
+        playerIdDisplayMethod.Should().Contain("BuildDisplayNameWithDescriptor(fallbackDisplayName, PlayerDescriptor.GetUnknownDisplayNameByPlayerId(targetPlayerId))");
+        playerIdDisplayMethod.Should().Contain(": knownName");
+
+        playerSource.Should().Contain("public string UnknownDisplayName { get; set; }");
+        playerSource.Should().Contain("public bool? ShowDescriptorsForNamedPlayers { get; set; }");
+        playerSource.Should().Contain("ShowDescriptorsForNamedPlayers = true;");
+        descriptorSource.Should().Contain("public static void SetUnknownDisplayName(uint player, string name)");
+        source.Should().Contain("PlayerDescriptor.GetUnknownDisplayName(target)");
+        source.Should().Contain("private static string BuildDisplayNameWithDescriptor(string primaryName, string descriptor)");
+        source.Should().Contain("private static string BuildColoredDisplayNameWithDescriptor(string primaryName, string descriptor)");
+        source.Should().Contain("private static string BuildCreatureNameOverride(uint observer, uint target, bool isUnknown)");
+        source.Should().Contain("private static string BuildCreatureNameOverrideWithDescriptor(string primaryName, string descriptor)");
+        source.Should().Contain("private static bool ShouldShowDescriptorForNamedPlayers(uint observer)");
+        source.Should().Contain("ShowDescriptorsForNamedPlayersByObserverId");
+        ExtractMethod(descriptorSource, "public static void SetUnknownDisplayName(uint player, string name)")
+            .Should().Contain("dbPlayer.UnknownDisplayName = sanitizedName;");
 
         var nameOverrideMethod = ExtractMethod(source, "private static void ApplyNameOverride(uint observer, uint target)");
         nameOverrideMethod.Should().Contain("UnknownNamePrefix");
         nameOverrideMethod.Should().Contain("UnknownNameSuffix");
+        nameOverrideMethod.Should().Contain("RenamePlugin.SetPCNameOverride(target, displayName, prefix, suffix, PlayerNameOverrideType.Default, observer);");
+        nameOverrideMethod.Should().Contain("PlayerPlugin.SetCreatureNameOverride(observer, target, BuildCreatureNameOverride(observer, target, isUnknown));");
+
+        var resolveDisplayMethod = ExtractMethod(source, "private static string ResolveDisplayName(uint observer, uint target, out bool isUnknown)");
+        resolveDisplayMethod.Should().Contain("ShouldShowDescriptorForNamedPlayers(observer)");
+        resolveDisplayMethod.Should().Contain("BuildDisplayNameWithDescriptor(knownName, PlayerDescriptor.GetUnknownDisplayName(target))");
+        resolveDisplayMethod.Should().Contain(": knownName");
+
+        var staffDisplayMethod = ExtractMethod(source, "private static string BuildStaffDisplayName(uint target)");
+        staffDisplayMethod.Should().Contain("GetName(target)");
+        staffDisplayMethod.Should().Contain("PlayerDescriptor.GetUnknownDisplayName(target)");
+        staffDisplayMethod.Should().Contain("return $\"{trueName} [{ColorToken.Gray(unknownDisplayName)}]\";");
+        staffDisplayMethod.Should().Contain("ColorToken.Gray(unknownDisplayName)");
+
+        var displayWithDescriptorMethod = ExtractMethod(source, "private static string BuildDisplayNameWithDescriptor(string primaryName, string descriptor)");
+        displayWithDescriptorMethod.Should().Contain("return $\"{primaryName} [{ColorToken.Gray(descriptor)}]\";");
+        displayWithDescriptorMethod.Should().NotContain("\\n");
+
+        var coloredDisplayWithDescriptorMethod = ExtractMethod(source, "private static string BuildColoredDisplayNameWithDescriptor(string primaryName, string descriptor)");
+        coloredDisplayWithDescriptorMethod.Should().Contain("return $\"{ColorToken.GetPCColor(primaryName)} [{ColorToken.Gray(descriptor)}]\";");
+        coloredDisplayWithDescriptorMethod.Should().NotContain("\\n");
+
+        var creatureNameOverrideMethod = ExtractMethod(source, "private static string BuildCreatureNameOverride(uint observer, uint target, bool isUnknown)");
+        creatureNameOverrideMethod.Should().Contain("if (isUnknown)");
+        creatureNameOverrideMethod.Should().Contain("GetIsDMPossessed(observer)");
+        creatureNameOverrideMethod.Should().Contain("TryGetKnownName(observer, target, out var knownName)");
+        creatureNameOverrideMethod.Should().Contain("ShouldShowDescriptorForNamedPlayers(observer)");
+
+        var creatureNameOverrideWithDescriptorMethod = ExtractMethod(source, "private static string BuildCreatureNameOverrideWithDescriptor(string primaryName, string descriptor)");
+        creatureNameOverrideWithDescriptorMethod.Should().Contain("return $\"{primaryName}\\n{ColorToken.Gray(descriptor)}\";");
+    }
+
+    [Test]
+    public void UnknownNames_GenerateStableDescriptorsFromAppearanceAndBaseStats()
+    {
+        var root = FindRepositoryRoot();
+        var playerNameSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "PlayerName.cs"));
+        var source = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "PlayerDescriptor.cs"));
+
+        playerNameSource.Should().Contain("public const string UnknownName = PlayerDescriptor.DefaultUnknownDisplayName;");
+        playerNameSource.Should().NotContain("private const int GenericDescriptorChancePercent");
+        playerNameSource.Should().NotContain("public static string GenerateUnknownDisplayName(Player dbPlayer)");
+        source.Should().Contain("private const int GenericDescriptorChancePercent = 25;");
+        source.Should().Contain("private const string Appearance2DA = \"appearance\";");
+        source.Should().Contain("private const string HumanoidSpeciesName = \"Humanoid\";");
+        source.Should().Contain("private static readonly HashSet<AppearanceType> DescriptorSpeciesAppearanceTypes");
+        source.Should().Contain("private static readonly Dictionary<AbilityType, string[]> StatDescriptorAdjectives");
+        source.Should().Contain("private static readonly string[] GenericDescriptorAdjectives");
+        source.Should().NotContain("GeneratedUnknownDisplayName");
+
+        source.Should().Contain("public static bool EnsureUnknownDisplayName(uint player)");
+        source.Should().NotContain("public static bool EnsureUnknownDisplayName(Player dbPlayer)");
+
+        var generateMethod = ExtractMethod(source, "public static string GenerateUnknownDisplayName(Player dbPlayer)");
+        generateMethod.Should().Contain("ResolveDescriptorAdjective(dbPlayer)");
+        generateMethod.Should().Contain("ResolveSpeciesName(dbPlayer?.OriginalAppearanceType ?? AppearanceType.Invalid)");
+        generateMethod.Should().Contain("PlayerName.SanitizeKnownName($\"{adjective} {species}\")");
+
+        var abilityMethod = ExtractMethod(source, "private static bool TryResolveDescriptorAbility(Player dbPlayer, string seed, out AbilityType ability)");
+        abilityMethod.Should().Contain("dbPlayer.BaseStats.TryGetValue(abilityType, out var value)");
+        abilityMethod.Should().Contain("highestAbilities[GetStableIndex(seed, \"descriptor-ability\", highestAbilities.Count)]");
+
+        var speciesMethod = ExtractMethod(source, "private static string ResolveSpeciesName(AppearanceType appearanceType)");
+        speciesMethod.Should().Contain("!DescriptorSpeciesAppearanceTypes.Contains(appearanceType)");
+        speciesMethod.Should().Contain("Get2DAString(Appearance2DA, AppearanceLabelColumn, (int)appearanceType)");
+        speciesMethod.Should().Contain("DynamicAppearanceLabelPrefix");
+        speciesMethod.Should().Contain("HumanoidSpeciesName");
+    }
+
+    [Test]
+    public void UnknownNames_AreGeneratedDuringMigrationAndLoginInitialization()
+    {
+        var root = FindRepositoryRoot();
+        var migrationSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "MigrationDefinition",
+            "ServerMigration",
+            "_22_CombatSystemReplacement.cs"));
+        var initializationSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "PlayerInitialization.cs"));
+        var playerNameSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "PlayerName.cs"));
+        var appearanceSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR_Haks",
+            "swlor2_2da",
+            "appearance.2da"));
+
+        migrationSource.Should().Contain("EnsureUnknownDisplayName(dbPlayer);");
+        migrationSource.Should().Contain("var hasOriginalAppearanceType = jObject[nameof(Player.OriginalAppearanceType)] != null;");
+        migrationSource.Should().Contain("dbPlayer.OriginalAppearanceType = AppearanceType.Invalid;");
+        var migrationEnsureMethod = ExtractMethod(migrationSource, "private static void EnsureUnknownDisplayName(Player dbPlayer)");
+        migrationEnsureMethod.Should().Contain("PlayerName.SanitizeKnownName(dbPlayer.UnknownDisplayName)");
+        migrationEnsureMethod.Should().Contain("PlayerDescriptor.GenerateUnknownDisplayName(dbPlayer)");
+        migrationEnsureMethod.Should().Contain("dbPlayer.UnknownDisplayName = generatedDisplayName;");
+
+        var initializationMethod = ExtractMethod(initializationSource, "public static void InitializePlayer()");
+        initializationMethod.Should().Contain("if (PlayerDescriptor.EnsureUnknownDisplayName(player))");
+        initializationMethod.Should().Contain("PlayerName.RefreshNameOverridesForPlayer(player);");
+        var versionGateIndex = initializationMethod.IndexOf("if (dbPlayer.Version >= 1 || dbPlayer.Version == -1)", StringComparison.Ordinal);
+        var firstDescriptorEnsureIndex = initializationMethod.IndexOf("if (PlayerDescriptor.EnsureUnknownDisplayName(player))", StringComparison.Ordinal);
+        var firstRefreshIndex = initializationMethod.IndexOf("PlayerName.RefreshNameOverridesForPlayer(player);", firstDescriptorEnsureIndex, StringComparison.Ordinal);
+        var firstReturnIndex = initializationMethod.IndexOf("return;", versionGateIndex, StringComparison.Ordinal);
+        versionGateIndex.Should().BeGreaterThanOrEqualTo(0);
+        firstDescriptorEnsureIndex.Should().BeGreaterThan(versionGateIndex);
+        firstDescriptorEnsureIndex.Should().BeLessThan(firstReturnIndex);
+        firstRefreshIndex.Should().BeLessThan(firstReturnIndex);
+
+        var racialAppearanceMethod = ExtractMethod(initializationSource, "private static void AssignRacialAppearance(uint player, Player dbPlayer)");
+        racialAppearanceMethod.Should().Contain("Race.GetDefaultAppearance(GetRacialType(player), GetGender(player))");
+        racialAppearanceMethod.Should().Contain("dbPlayer.OriginalAppearanceType = raceAppearance.AppearanceType;");
+
+        playerNameSource.Should().Contain("public static void RefreshNameOverridesForPlayer(uint player)");
+        playerNameSource.Should().NotContain("public static bool EnsureUnknownDisplayName(uint player)");
+        appearanceSource.Should().Contain("\"(Dynamic) Wookiee\"");
+        appearanceSource.Should().NotContain("\"(Dynamic) Wookie\"");
+    }
+
+    [Test]
+    public void Settings_CanHideDescriptorsForNamedTargetsForPlayersOnly()
+    {
+        var root = FindRepositoryRoot();
+        var definitionSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "GuiDefinition",
+            "SettingsDefinition.cs"));
+        var viewModelSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "GuiDefinition",
+            "ViewModel",
+            "SettingsViewModel.cs"));
+        var playerNameSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "PlayerName.cs"));
+
+        definitionSource.Should().Contain("Show Descriptors");
+        definitionSource.Should().Contain("BindIsChecked(model => model.ShowDescriptorsForNamedPlayers)");
+
+        viewModelSource.Should().Contain("public bool ShowDescriptorsForNamedPlayers");
+        viewModelSource.Should().Contain("ShowDescriptorsForNamedPlayers = dbPlayer.Settings.ShowDescriptorsForNamedPlayers ?? true;");
+        viewModelSource.Should().Contain("dbPlayer.Settings.ShowDescriptorsForNamedPlayers = ShowDescriptorsForNamedPlayers;");
+        viewModelSource.Should().Contain("PlayerName.RefreshNameOverridesForObserver(Player);");
+
+        playerNameSource.Should().Contain("public static void RefreshNameOverridesForObserver(uint observer)");
+        playerNameSource.Should().Contain("ShowDescriptorsForNamedPlayersByObserverId.Remove(observerId);");
+        playerNameSource.Should().Contain("GetIsDM(observer) ||");
+        playerNameSource.Should().Contain("GetIsDMPossessed(observer)");
     }
 
     private static string ExtractMethod(string source, string signature)

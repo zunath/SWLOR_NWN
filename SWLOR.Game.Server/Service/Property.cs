@@ -42,7 +42,13 @@ namespace SWLOR.Game.Server.Service
         private static readonly ApplicationSettings _appSettings = ApplicationSettings.Get();
         private static readonly List<PropertyLoadJob> _propertyLoadJobs = new();
         private static readonly List<string> _pendingStartupWorldPropertyIds = new();
+        private static readonly HashSet<string> _startupPropertyLoadIds = new();
+        private static readonly HashSet<string> _completedStartupPropertyLoadIds = new();
+        private static readonly HashSet<string> _failedStartupPropertyLoadIds = new();
         private static bool _propertyLoadProcessorScheduled;
+        private static int _lastStartupPropertyLoadProgressLoaded = -1;
+        private static int _lastStartupPropertyLoadProgressRemaining = -1;
+        private static int _lastStartupPropertyLoadProgressFailed = -1;
 
         private static readonly Dictionary<int, int> _citizensRequired = new()
         {
@@ -56,6 +62,7 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<PropertyType, List<StructureType>> _structureTypesByPropertyType = new();
         private const int PropertyBroadcastColor = 5763719;
         private const int PropertyLoadBatchSize = 5;
+        private const int PropertyLoadProgressReportInterval = 25;
         private static readonly TimeSpan PropertyLoadBatchDelay = TimeSpan.FromSeconds(0.2d);
 
         private enum PropertyLoadPriority
@@ -750,7 +757,6 @@ namespace SWLOR.Game.Server.Service
         private static void SendPropertyLoadingMessage(uint player)
         {
             SendMessageToPC(player, "This property is still loading. Please try again shortly.");
-            FloatingTextStringOnCreature("This property is still loading. Please try again shortly.", player, false);
         }
 
         private static void SendPropertyLoadFailedMessage(uint player)
@@ -833,6 +839,8 @@ namespace SWLOR.Game.Server.Service
             if (state == PropertyLoadState.Failed && priority != PropertyLoadPriority.StaffRequest)
                 return false;
 
+            TrackStartupPropertyLoadQueued(propertyId, priority);
+
             var existing = _propertyLoadJobs.FirstOrDefault(x => x.PropertyId == propertyId);
             if (existing != null)
             {
@@ -844,6 +852,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             _propertyLoadFailures.Remove(propertyId);
+            _failedStartupPropertyLoadIds.Remove(propertyId);
             SetPropertyLoadState(propertyId, PropertyLoadState.Queued);
             _propertyLoadJobs.Add(new PropertyLoadJob
             {
@@ -902,8 +911,75 @@ namespace SWLOR.Game.Server.Service
             _propertyLoadJobs.Remove(job);
             SetPropertyLoadState(propertyId, PropertyLoadState.Failed);
             _propertyLoadFailures[propertyId] = "Load aborted by staff before it started.";
+            TrackStartupPropertyLoadFailed(propertyId);
             NotifyPropertyLoadWaiters(propertyId, false);
+            LogStartupPropertyLoadProgress();
             return true;
+        }
+
+        private static void ResetStartupPropertyLoadProgress()
+        {
+            _startupPropertyLoadIds.Clear();
+            _completedStartupPropertyLoadIds.Clear();
+            _failedStartupPropertyLoadIds.Clear();
+            _lastStartupPropertyLoadProgressLoaded = -1;
+            _lastStartupPropertyLoadProgressRemaining = -1;
+            _lastStartupPropertyLoadProgressFailed = -1;
+        }
+
+        private static void TrackStartupPropertyLoadQueued(string propertyId, PropertyLoadPriority priority)
+        {
+            if (priority == PropertyLoadPriority.Startup)
+                _startupPropertyLoadIds.Add(propertyId);
+        }
+
+        private static void TrackStartupPropertyLoadCompleted(string propertyId)
+        {
+            if (!_startupPropertyLoadIds.Contains(propertyId))
+                return;
+
+            _completedStartupPropertyLoadIds.Add(propertyId);
+            _failedStartupPropertyLoadIds.Remove(propertyId);
+        }
+
+        private static void TrackStartupPropertyLoadFailed(string propertyId)
+        {
+            if (!_startupPropertyLoadIds.Contains(propertyId))
+                return;
+
+            _failedStartupPropertyLoadIds.Add(propertyId);
+            _completedStartupPropertyLoadIds.Remove(propertyId);
+        }
+
+        private static void LogStartupPropertyLoadProgress(bool force = false)
+        {
+            var total = _startupPropertyLoadIds.Count;
+            if (total <= 0)
+                return;
+
+            var loaded = _completedStartupPropertyLoadIds.Count;
+            var failed = _failedStartupPropertyLoadIds.Count;
+            var remaining = Math.Max(total - loaded - failed, 0);
+            var isMilestone = loaded == 0 ||
+                              remaining == 0 ||
+                              failed != _lastStartupPropertyLoadProgressFailed ||
+                              loaded % PropertyLoadProgressReportInterval == 0;
+
+            if (!force && !isMilestone)
+                return;
+
+            if (loaded == _lastStartupPropertyLoadProgressLoaded &&
+                remaining == _lastStartupPropertyLoadProgressRemaining &&
+                failed == _lastStartupPropertyLoadProgressFailed)
+            {
+                return;
+            }
+
+            _lastStartupPropertyLoadProgressLoaded = loaded;
+            _lastStartupPropertyLoadProgressRemaining = remaining;
+            _lastStartupPropertyLoadProgressFailed = failed;
+
+            Log.Write(LogGroup.Property, $"Startup instance property load progress: {loaded} loaded, {remaining} remaining, {failed} failed ({total} total).", true);
         }
 
         private static void EnsurePropertyLoadProcessor()
@@ -1040,10 +1116,12 @@ namespace SWLOR.Game.Server.Service
             _propertyLoadJobs.Remove(job);
             _propertyLoadFailures.Remove(job.PropertyId);
             SetPropertyLoadState(job.PropertyId, PropertyLoadState.Loaded);
+            TrackStartupPropertyLoadCompleted(job.PropertyId);
             QueueExteriorStructuresForInterior(job.PropertyId);
             NotifyPropertyLoadWaiters(job.PropertyId, true);
+            LogStartupPropertyLoadProgress();
 
-            Log.Write(LogGroup.Property, $"Property '{job.Property.CustomName}' ({job.PropertyId}) loaded on {job.Priority} queue.", true);
+            Log.Write(LogGroup.Property, $"Property '{job.Property.CustomName}' ({job.PropertyId}) loaded on {job.Priority} queue.");
         }
 
         private static bool QueueExteriorStructuresForInterior(string interiorPropertyId)
@@ -1095,7 +1173,9 @@ namespace SWLOR.Game.Server.Service
                 $"StructureId: {structureId}; " +
                 $"Error: {failure}";
             _propertyLoadFailures[job.PropertyId] = failureDetail;
+            TrackStartupPropertyLoadFailed(job.PropertyId);
             NotifyPropertyLoadWaiters(job.PropertyId, false);
+            LogStartupPropertyLoadProgress();
 
             Log.Write(LogGroup.Error, $"Property failed to load. {failureDetail}");
         }
@@ -2039,6 +2119,7 @@ namespace SWLOR.Game.Server.Service
             _propertyLoadFailures.Clear();
             _propertyLoadWaiters.Clear();
             _completedInstanceSpawnActions.Clear();
+            ResetStartupPropertyLoadProgress();
             _propertyLoadProcessorScheduled = false;
 
             var instanceTypes = _propertyTypes
@@ -2114,6 +2195,7 @@ namespace SWLOR.Game.Server.Service
             Log.Write(LogGroup.Property, $"Deferred {instanceProperties.Count(IsPropertyOnDemand)} on-demand instanced properties.", true);
             Log.Write(LogGroup.Property, $"Queued {_pendingStartupWorldPropertyIds.Count} startup world properties.", true);
             Log.Write(LogGroup.Property, $"Loaded {areaProperties.Count} area properties.", true);
+            LogStartupPropertyLoadProgress(true);
         }
 
         /// <summary>

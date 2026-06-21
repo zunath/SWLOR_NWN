@@ -75,6 +75,7 @@ public class PropertyOnDemandLoadingTests
         var enterPropertyBody = ExtractMethod(source, "public static void EnterProperty(uint player, string propertyId)");
         var enterBuildingBody = ExtractMethod(source, "public static void EnterBuilding()");
         var resolveBody = ExtractMethod(source, "public static bool TryResolveEnterableInstance(uint player, string propertyId, out PropertyInstance instance)");
+        var loadingMessageBody = ExtractMethod(source, "private static void SendPropertyLoadingMessage(uint player)");
 
         enterPropertyBody.Should().Contain("TryResolveEnterableInstance(player, property.Id, out var instance)");
         enterBuildingBody.Should().Contain("TryResolveEnterableInstance(player, interior.Id, out var instance)");
@@ -90,6 +91,8 @@ public class PropertyOnDemandLoadingTests
             .BeLessThan(resolveBody.IndexOf("AddPropertyLoadWaiter(player, propertyId);", StringComparison.Ordinal));
         resolveBody.Should().Contain("QueuePropertyLoad(propertyId, PropertyLoadPriority.PlayerRequest)");
         resolveBody.Should().Contain("SendPropertyLoadingMessage(player)");
+        loadingMessageBody.Should().Contain("SendMessageToPC(player, \"This property is still loading. Please try again shortly.\");");
+        loadingMessageBody.Should().NotContain("FloatingTextStringOnCreature");
         source.Should().Contain("This property is still loading. Please try again shortly.");
     }
 
@@ -422,6 +425,39 @@ public class PropertyOnDemandLoadingTests
         processBody.IndexOf("job.Phase = PropertyLoadJobPhase.SpawnStructures;", StringComparison.Ordinal)
             .Should()
             .BeLessThan(processBody.IndexOf("return Math.Max(budget, 1);", StringComparison.Ordinal));
+    }
+
+    [Test]
+    public void StartupPropertyLoadProgress_ReplacesPerPropertyConsoleSpam()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "Property.cs")).Replace("\r\n", "\n");
+        var queueBody = ExtractMethod(source, "private static bool QueuePropertyLoad(string propertyId, PropertyLoadPriority priority)");
+        var completeBody = ExtractMethod(source, "private static void CompletePropertyLoad(PropertyLoadJob job)");
+        var failBody = ExtractMethod(source, "private static void FailPropertyLoad(PropertyLoadJob job, string failure)");
+        var abortBody = ExtractMethod(source, "public static bool AbortQueuedPropertyLoad(string propertyId)");
+        var progressBody = ExtractMethod(source, "private static void LogStartupPropertyLoadProgress(bool force = false)");
+        var loadBody = ExtractMethod(source, "private static void LoadProperties()");
+
+        source.Should().Contain("private const int PropertyLoadProgressReportInterval = 25;");
+        queueBody.Should().Contain("TrackStartupPropertyLoadQueued(propertyId, priority);");
+        completeBody.Should().Contain("TrackStartupPropertyLoadCompleted(job.PropertyId);");
+        completeBody.Should().Contain("LogStartupPropertyLoadProgress();");
+        completeBody.Should().Contain("Log.Write(LogGroup.Property, $\"Property '{job.Property.CustomName}' ({job.PropertyId}) loaded on {job.Priority} queue.\");");
+        completeBody.Should().NotContain("loaded on {job.Priority} queue.\", true)");
+        completeBody.Should().NotContain("printToConsole");
+        failBody.Should().Contain("TrackStartupPropertyLoadFailed(job.PropertyId);");
+        abortBody.Should().Contain("TrackStartupPropertyLoadFailed(propertyId);");
+        progressBody.Should().Contain("remaining");
+        progressBody.Should().Contain("PropertyLoadProgressReportInterval");
+        progressBody.Should().Contain("Log.Write(LogGroup.Property");
+        progressBody.Should().Contain("true");
+        loadBody.Should().Contain("ResetStartupPropertyLoadProgress();");
+        loadBody.Should().Contain("LogStartupPropertyLoadProgress(true);");
     }
 
     [Test]

@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CurrencyService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
@@ -443,7 +444,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 selectedDetails += "Description: \n" + detail.Description + "\n";
             }
 
-            selectedDetails += $"[{categoryDetail.Name}]\n\n";
+            selectedDetails += $"[{categoryDetail.Name}]\n";
+
+            var recastGroupText = BuildRecastGroupText(detail);
+            if (!string.IsNullOrWhiteSpace(recastGroupText))
+            {
+                selectedDetails += recastGroupText + "\n";
+            }
+
+            selectedDetails += "\n";
 
             if (currentUpgrade != null)
             {
@@ -458,6 +467,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             return selectedDetails;
+        }
+
+        private static string BuildRecastGroupText(PerkDetail detail)
+        {
+            var recastGroup = Perk.GetActiveAbilityRecastGroup(detail.Type);
+            if (recastGroup == RecastGroup.Invalid ||
+                !Recast.IsRecastGroupVisible(recastGroup))
+            {
+                return string.Empty;
+            }
+
+            return $"Recast Group: {Recast.GetRecastGroupDisplayName(recastGroup)}";
         }
 
         private (bool, GuiBindingList<string>, GuiBindingList<GuiColor>) BuildRequirements(PerkLevel nextUpgrade)

@@ -12,6 +12,8 @@ namespace SWLOR.Game.Server.Service
     {
         // Recast Group Descriptions
         private static readonly Dictionary<RecastGroup, string> _recastDescriptions = new Dictionary<RecastGroup, string>();
+        private static readonly Dictionary<RecastGroup, string> _recastNames = new Dictionary<RecastGroup, string>();
+        private static readonly HashSet<RecastGroup> _visibleRecastGroups = new HashSet<RecastGroup>();
 
         [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public static void CacheRecastGroups()
@@ -24,10 +26,20 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         private static void CacheRecastGroupNames()
         {
+            _recastDescriptions.Clear();
+            _recastNames.Clear();
+            _visibleRecastGroups.Clear();
+
             foreach (var recast in Enum.GetValues(typeof(RecastGroup)).Cast<RecastGroup>())
             {
                 var attr = recast.GetAttribute<RecastGroup, RecastGroupAttribute>();
                 _recastDescriptions[recast] = attr.ShortName;
+                _recastNames[recast] = attr.Name;
+
+                if (attr.IsVisible)
+                {
+                    _visibleRecastGroups.Add(recast);
+                }
             }
         }
 
@@ -44,6 +56,28 @@ namespace SWLOR.Game.Server.Service
             return _recastDescriptions[recastGroup];
         }
 
+        /// <summary>
+        /// Retrieves the full human-readable name of a recast group.
+        /// </summary>
+        /// <param name="recastGroup">The recast group to retrieve.</param>
+        /// <returns>The full name of a recast group.</returns>
+        public static string GetRecastGroupDisplayName(RecastGroup recastGroup)
+        {
+            if (!_recastNames.ContainsKey(recastGroup))
+                throw new KeyNotFoundException($"Recast group {recastGroup} has not been registered. Did you forget the Description attribute?");
+
+            return _recastNames[recastGroup];
+        }
+
+        /// <summary>
+        /// Returns true if a recast group should be shown on player-facing UI.
+        /// </summary>
+        /// <param name="recastGroup">The recast group to check.</param>
+        /// <returns>true if the recast group is visible, false otherwise.</returns>
+        public static bool IsRecastGroupVisible(RecastGroup recastGroup)
+        {
+            return _visibleRecastGroups.Contains(recastGroup);
+        }
 
         /// <summary>
         /// Returns true if a recast delay has not expired yet.

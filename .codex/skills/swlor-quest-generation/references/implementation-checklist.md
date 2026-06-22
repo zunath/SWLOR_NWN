@@ -7,9 +7,12 @@ For each quest, capture:
 - Quest: `quest_id`, display name, required `repeatable` mode (`one-time`/`false`/`no`, `repeatable`/`true`/`yes`, or a named cadence such as `daily` that needs custom gating), guild/rank if any, prerequisite quest IDs, prerequisite key items.
 - Giver: NPC name, UTC template resref, tag, dialogue resref or C# dialog class, target area resref, coordinates, facing.
 - Objectives: kill group, collect item resref, quantity, producer requirement, trigger/placeable objective if any.
-- Text: offer, acceptance, in-progress reminder, turn-in, completion, completed/repeat text, journal text for each state.
+- Text: not eligible, offer, acceptance, in-progress reminder, turn-in, completion, completed/repeat text, player replies, journal text for each state.
+- Creative brief: NPC role, NPC voice, local pressure, stakes, lore anchors, why this NPC asks the player, and how the reward is justified in-world.
 - Rewards: XP, credits, items, key items, GP, faction standing/points, selectable vs automatic.
 - Placement: fixed NPC placement, enemy spawn table, enemy spawn coordinates or area random count.
+
+If a field is missing and cannot be resolved by searching the repo, ask one question at a time and include a recommended answer.
 
 ## Code Surfaces
 
@@ -66,6 +69,19 @@ Create or verify one path for each relevant player state:
 - Completed non-repeatable: acknowledge completion, no new accept action.
 - Completed repeatable: show repeat offer with repeatable rewards clearly implied.
 
+## Dialogue Quality Pass
+
+Read `dialogue-and-content-standards.md` before writing quest text. Then verify:
+
+- The NPC's role and local pressure shape the conversation.
+- The opening is not a default generic greeting unless the NPC's role demands it.
+- The offer, accept response, reminder, and completion lines have different sentence shapes.
+- Player replies offer intentful choices, not only generic accept/decline buttons.
+- Local nouns match existing repo content: area names, NPC names, enemy groups, item names, guilds, key items, and prior quest events.
+- Prerequisite failure text explains the nearest useful next step.
+- Journal text stays clear and objective-oriented while dialogue carries personality.
+- Rewards are explained as pay, access, proof, trust, hazard compensation, guild credit, or another in-world reason.
+
 ## Journal Text Rules
 
 - State 1 should tell the player what to do immediately after accepting.
@@ -117,3 +133,6 @@ Pop-Location
 - Quest giver UTC exists but no placed creature exists in the target area's `Creature List`.
 - Placed creature has a dialogue resref but the `.dlg.json` file does not exist.
 - Repeatable quest accidentally grants a permanent key item on every completion.
+- Dialogue uses a static generated pattern across multiple NPCs.
+- Prerequisite gates exist mechanically but have no player-facing explanation.
+- Reward amounts or item rewards drift from nearby quest/guild scale without an explicit reason.

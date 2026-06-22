@@ -1130,7 +1130,8 @@ namespace SWLOR.Game.Server.Service
             DamageType? effectDamageType = null,
             bool playImpactAnimation = true,
             bool alwaysApplyAreaVisualEffect = false,
-            AbilityType combatImpactDamageAbility = AbilityType.Invalid)
+            AbilityType combatImpactDamageAbility = AbilityType.Invalid,
+            bool sendsNoTargetMessage = true)
         {
             RecordAbilityImpactShape(activator, skillType, true);
 
@@ -1167,7 +1168,8 @@ namespace SWLOR.Game.Server.Service
                     awardsCombatPoints,
                     effectDamageType,
                     alwaysApplyAreaVisualEffect,
-                    combatImpactDamageAbility);
+                    combatImpactDamageAbility,
+                    sendsNoTargetMessage);
                 if (playImpactAnimation)
                     PlayCombatImpactAnimation(activator, impactAnimation);
 
@@ -1213,7 +1215,8 @@ namespace SWLOR.Game.Server.Service
                 awardsCombatPoints,
                 effectDamageType,
                 alwaysApplyAreaVisualEffect,
-                combatImpactDamageAbility);
+                combatImpactDamageAbility,
+                sendsNoTargetMessage);
 
             switch (shape)
             {
@@ -1287,7 +1290,8 @@ namespace SWLOR.Game.Server.Service
             bool awardsCombatPoints,
             DamageType? effectDamageType,
             bool alwaysApplyAreaVisualEffect,
-            AbilityType combatImpactDamageAbility)
+            AbilityType combatImpactDamageAbility,
+            bool sendsNoTargetMessage)
         {
             RecordAbilityImpactShape(activator, skillType, true);
 
@@ -1335,7 +1339,8 @@ namespace SWLOR.Game.Server.Service
                 useNPCStatScaling: useNPCStatScaling,
                 awardsCombatPoints: awardsCombatPoints,
                 effectDamageType: effectDamageType,
-                combatImpactDamageAbility: combatImpactDamageAbility);
+                combatImpactDamageAbility: combatImpactDamageAbility,
+                sendsNoTargetMessage: sendsNoTargetMessage);
         }
 
         private static ApplyTelegraphEffect BuildTelegraphedCombatImpactAction(
@@ -1369,7 +1374,8 @@ namespace SWLOR.Game.Server.Service
             bool awardsCombatPoints,
             DamageType? effectDamageType,
             bool alwaysApplyAreaVisualEffect,
-            AbilityType combatImpactDamageAbility)
+            AbilityType combatImpactDamageAbility,
+            bool sendsNoTargetMessage)
         {
             return (creator, creatures) =>
             {
@@ -1399,7 +1405,8 @@ namespace SWLOR.Game.Server.Service
                         ApplyEffectAtLocation(DurationType.Instant, EffectVisualEffect(areaVisualEffect), areaVisualLocation);
                     }
 
-                    SendCombatImpactNoTargetsMessage(creator, ability);
+                    if (sendsNoTargetMessage)
+                        SendCombatImpactNoTargetsMessage(creator, ability);
                     return;
                 }
 
@@ -1443,7 +1450,8 @@ namespace SWLOR.Game.Server.Service
                     useNPCStatScaling: useNPCStatScaling,
                     awardsCombatPoints: awardsCombatPoints,
                     effectDamageType: effectDamageType,
-                    combatImpactDamageAbility: combatImpactDamageAbility);
+                    combatImpactDamageAbility: combatImpactDamageAbility,
+                    sendsNoTargetMessage: sendsNoTargetMessage);
 
                 if (ability != null)
                 {
@@ -1478,7 +1486,8 @@ namespace SWLOR.Game.Server.Service
             bool useNPCStatScaling = false,
             bool awardsCombatPoints = true,
             DamageType? effectDamageType = null,
-            AbilityType combatImpactDamageAbility = AbilityType.Invalid)
+            AbilityType combatImpactDamageAbility = AbilityType.Invalid,
+            bool sendsNoTargetMessage = true)
         {
             var totalDamage = 0;
             var affectedCount = 0;
@@ -1520,7 +1529,7 @@ namespace SWLOR.Game.Server.Service
                 affectedCount++;
             }
 
-            if (affectedCount <= 0)
+            if (affectedCount <= 0 && sendsNoTargetMessage)
             {
                 SendCombatImpactNoTargetsMessage(activator, trackedAbility);
             }

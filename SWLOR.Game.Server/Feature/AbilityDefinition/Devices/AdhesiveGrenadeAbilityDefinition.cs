@@ -105,10 +105,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             int slowDuration,
             int immobilizeDuration)
         {
+            var impactLocation = AbilityTargeting.ResolveImpactLocation(activator, target, targetLocation);
+            ApplyEffectAtLocation(
+                DurationType.Instant,
+                EffectVisualEffect(VisualEffect.Vfx_Fnf_Gas_Explosion_Grease),
+                impactLocation);
+
             Ability.ApplyTelegraphedCombatImpact(
                 activator,
                 target,
-                targetLocation,
+                impactLocation,
                 SkillType.Devices,
                 0,
                 slowDuration,
@@ -118,11 +124,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 DeviceAbilityEffects.ApplyGrenadeRadiusBonus(activator, 4f),
                 0f,
                 Array.Empty<Type>(),
-                centerOnActivator: !GetIsObjectValid(target),
                 statusEffectFactory: () => new AdhesiveGrenadeStatusEffect(
                     DeviceAbilityEffects.ApplyGrenadeControlPotencyBonus(activator, AdhesiveSlowPenaltyPercent)),
                 damageType: CombatDamageType.Physical,
-                targetVisualEffect: VisualEffect.Vfx_Com_Chunk_Red_Small,
+                targetVisualEffect: VisualEffect.Vfx_Imp_Slow,
                 areaVisualEffect: VisualEffect.None,
                 afterSuccessfulHit: hitTarget => StatusEffect.ApplyStatusEffect(
                     activator,

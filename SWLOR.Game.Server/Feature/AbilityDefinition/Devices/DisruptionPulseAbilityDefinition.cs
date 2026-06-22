@@ -38,7 +38,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .HasTargetingSphere(
                     Spell.DisruptionPulse1,
                     RadiusMeters,
-                    AbilityTargetingFlags.HarmsEnemies)
+                    AbilityTargetingFlags.HarmsEnemies,
+                    DeviceAbilityEffects.ApplyGrenadeRadiusBonus)
                 .HasImpactAction(ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
@@ -52,6 +53,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
             var impactLocation = AbilityTargeting.ResolveImpactLocation(activator, target, targetLocation);
+            var radius = DeviceAbilityEffects.ApplyGrenadeRadiusBonus(activator, RadiusMeters);
             Ability.ApplyTelegraphedCombatImpact(
                 activator,
                 target,
@@ -62,14 +64,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 typeof(DisruptionPulseStatusEffect),
                 CombatImpactAreaShape.Sphere,
                 0.4f,
-                RadiusMeters,
+                radius,
                 0f,
                 Array.Empty<Type>(),
                 damageType: CombatDamageType.Electrical,
                 statusResistanceType: ResistanceType.Disruption,
                 targetVisualEffect: VisualEffect.Vfx_Com_Hit_Electrical,
                 areaVisualEffect: VisualEffect.Vfx_Fnf_Electric_Explosion,
-                afterImpactAction: _ => DeviceAbilityEffects.ApplyDiagnosticSweep(activator, impactLocation, RadiusMeters));
+                afterImpactAction: _ => DeviceAbilityEffects.ApplyDiagnosticSweep(activator, impactLocation, radius),
+                alwaysApplyAreaVisualEffect: true);
         }
 
         private static string ValidateTargetingRange(uint activator, uint target, int effectivePerkLevel, Location targetLocation)

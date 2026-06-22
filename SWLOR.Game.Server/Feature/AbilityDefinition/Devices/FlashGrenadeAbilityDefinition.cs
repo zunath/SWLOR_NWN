@@ -52,10 +52,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 
         private static void FlashGrenade1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
+            var impactLocation = AbilityTargeting.ResolveImpactLocation(activator, target, targetLocation);
+            ApplyEffectAtLocation(
+                DurationType.Instant,
+                EffectVisualEffect(VisualEffect.Vfx_Fnf_Sound_Burst),
+                impactLocation);
+
             Ability.ApplyTelegraphedCombatImpact(
                 activator,
                 target,
-                targetLocation,
+                impactLocation,
                 SkillType.Devices,
                 0,
                 20,
@@ -68,7 +74,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 statusEffectFactory: () => new FlashGrenade1StatusEffect(GetFlashPenalty(activator, 8)),
                 damageType: CombatDamageType.Force,
                 targetVisualEffect: VisualEffect.Vfx_Imp_Sonic,
-                areaVisualEffect: VisualEffect.Vfx_Fnf_Sound_Burst);
+                areaVisualEffect: VisualEffect.None);
         }
 
         private static int GetFlashPenalty(uint activator, int basePenalty)

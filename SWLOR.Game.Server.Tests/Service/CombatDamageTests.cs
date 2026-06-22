@@ -222,6 +222,14 @@ public class CombatDamageTests
         usePerkFeatSource.Should().Contain("var abilityId = GetLocalString(activator, ActiveAbilityIdName);");
         usePerkFeatSource.Should().Contain("if (string.IsNullOrWhiteSpace(abilityId))");
         usePerkFeatSource.Should().Contain("ability = Ability.GetAbilityDetail(activeWeaponAbility);");
+        usePerkFeatSource.Should().Contain("SuppressQueuedAbilityFeedback(activator);");
+        usePerkFeatSource.Should().Contain("FeedbackPlugin.SetFeedbackMessageHidden(FeedbackMessageTypes.CombatWeaponNotEffective, true, player);");
+        usePerkFeatSource.Should().Contain("DequeueWeaponAbility(activator, ability.DisplaysActivationMessage, abilityId);");
+        usePerkFeatSource.Should().Contain("if (!string.IsNullOrWhiteSpace(expectedAbilityId) && abilityId != expectedAbilityId)");
+        usePerkFeatSource.Should().Contain("if (!Ability.IsFeatRegistered(featType))");
+        usePerkFeatSource.Should().Contain("DelayCommand(0.2f, () => RestoreQueuedAbilityFeedbackIfNoQueuedAbility(activator));");
+        usePerkFeatSource.Should().Contain("private static void RestoreQueuedAbilityFeedbackIfNoQueuedAbility(uint player)");
+        usePerkFeatSource.Should().Contain("FeedbackPlugin.SetFeedbackMessageHidden(FeedbackMessageTypes.CombatWeaponNotEffective, wasHidden, player);");
         usePerkFeatSource.Should().Contain("if (ability.ActivationType == AbilityActivationType.Weapon)");
         usePerkFeatSource.Should().Contain("ability = null;");
         usePerkFeatSource.Should().Contain("return false;");

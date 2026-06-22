@@ -1,6 +1,7 @@
 using System.Numerics;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Bioware;
+using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.ActivityService;
@@ -30,6 +31,8 @@ namespace SWLOR.Game.Server.Feature
         private const string ActiveAbilityIdName = "ACTIVE_ABILITY_ID";
         private const string ActiveAbilityFeatIdName = "ACTIVE_ABILITY_FEAT_ID";
         private const string ActiveAbilityEffectivePerkLevelName = "ACTIVE_ABILITY_EFFECTIVE_PERK_LEVEL";
+        private const string ActiveAbilityWeaponIneffectiveFeedbackSuppressedName = "ACTIVE_ABILITY_WEAPON_INEFFECTIVE_FEEDBACK_SUPPRESSED";
+        private const string ActiveAbilityWeaponIneffectiveFeedbackWasHiddenName = "ACTIVE_ABILITY_WEAPON_INEFFECTIVE_FEEDBACK_WAS_HIDDEN";
 
         private static uint GetResumeAttackTarget(uint activator, uint target, AbilityDetail ability)
         {
@@ -446,10 +449,13 @@ namespace SWLOR.Game.Server.Feature
             var abilityId = Guid.NewGuid().ToString();
             var resumeAttackTarget = GetResumeAttackTarget(activator, target, ability);
 
+            RestoreQueuedAbilityFeedback(activator);
+
             // Assign local variables which will be picked up on the next weapon OnHit event by this player.
             SetLocalString(activator, ActiveAbilityIdName, abilityId);
             SetLocalInt(activator, ActiveAbilityFeatIdName, (int)feat);
             SetLocalInt(activator, ActiveAbilityEffectivePerkLevelName, ability.AbilityLevel);
+            SuppressQueuedAbilityFeedback(activator);
 
             ApplyRequirementEffects(activator, ability);
 
@@ -459,25 +465,39 @@ namespace SWLOR.Game.Server.Feature
             // Activator must attack within 30 seconds after queueing or else it wears off.
             DelayCommand(30.0f, () =>
             {
-                DequeueWeaponAbility(activator, ability.DisplaysActivationMessage);
+                DequeueWeaponAbility(activator, ability.DisplaysActivationMessage, abilityId);
             });
 
             // Weapon abilities are queued for the next hit, so AI users need to resume attacking.
             ResumeAttackAfterDelay(activator, resumeAttackTarget, 0.1f);
         }
 
-        public static void DequeueWeaponAbility(uint target, bool sendMessage = true)
+        public static void DequeueWeaponAbility(uint target, bool sendMessage = true, string expectedAbilityId = null)
         {
             var abilityId = GetLocalString(target, ActiveAbilityIdName);
             if (string.IsNullOrWhiteSpace(abilityId))
                 return;
 
-            var featId = GetLocalInt(target, ActiveAbilityFeatIdName);
-            if (featId == 0)
+            if (!string.IsNullOrWhiteSpace(expectedAbilityId) && abilityId != expectedAbilityId)
                 return;
 
+            var featId = GetLocalInt(target, ActiveAbilityFeatIdName);
+            if (featId == 0)
+            {
+                ClearQueuedAbility(target);
+                return;
+            }
+
             var featType = (FeatType)featId;
+            if (!Ability.IsFeatRegistered(featType))
+            {
+                ClearQueuedAbility(target);
+                return;
+            }
+
             var abilityDetail = Ability.GetAbilityDetail(featType);
+
+            RestoreQueuedAbilityFeedback(target);
 
             // Remove the local variables.
             DeleteLocalString(target, ActiveAbilityIdName);
@@ -653,7 +673,11 @@ namespace SWLOR.Game.Server.Feature
             var activeWeaponAbility = (FeatType)GetLocalInt(activator, ActiveAbilityFeatIdName);
             var activeAbilityEffectivePerkLevel = GetLocalInt(activator, ActiveAbilityEffectivePerkLevelName);
 
-            if (!Ability.IsFeatRegistered(activeWeaponAbility)) return;
+            if (!Ability.IsFeatRegistered(activeWeaponAbility))
+            {
+                ClearQueuedAbility(activator);
+                return;
+            }
 
             var abilityDetail = Ability.GetAbilityDetail(activeWeaponAbility);
             HandleStealthBreaking(activator, abilityDetail);
@@ -666,6 +690,7 @@ namespace SWLOR.Game.Server.Feature
             DeleteLocalString(activator, ActiveAbilityIdName);
             DeleteLocalInt(activator, ActiveAbilityFeatIdName);
             DeleteLocalInt(activator, ActiveAbilityEffectivePerkLevelName);
+            DelayCommand(0.2f, () => RestoreQueuedAbilityFeedbackIfNoQueuedAbility(activator));
         }
 
         /// <summary>
@@ -704,9 +729,43 @@ namespace SWLOR.Game.Server.Feature
         /// <param name="player">The player to clear</param>
         private static void ClearQueuedAbility(uint player)
         {
+            RestoreQueuedAbilityFeedback(player);
             DeleteLocalString(player, ActiveAbilityIdName);
             DeleteLocalInt(player, ActiveAbilityFeatIdName);
             DeleteLocalInt(player, ActiveAbilityEffectivePerkLevelName);
+        }
+
+        private static void SuppressQueuedAbilityFeedback(uint player)
+        {
+            if (!GetIsPC(player))
+                return;
+
+            var wasHidden = FeedbackPlugin.GetFeedbackMessageHidden(FeedbackMessageTypes.CombatWeaponNotEffective, player);
+            SetLocalInt(player, ActiveAbilityWeaponIneffectiveFeedbackSuppressedName, 1);
+            SetLocalInt(player, ActiveAbilityWeaponIneffectiveFeedbackWasHiddenName, wasHidden ? 1 : 0);
+            FeedbackPlugin.SetFeedbackMessageHidden(FeedbackMessageTypes.CombatWeaponNotEffective, true, player);
+        }
+
+        private static void RestoreQueuedAbilityFeedback(uint player)
+        {
+            if (!GetIsPC(player))
+                return;
+
+            if (GetLocalInt(player, ActiveAbilityWeaponIneffectiveFeedbackSuppressedName) == 0)
+                return;
+
+            var wasHidden = GetLocalInt(player, ActiveAbilityWeaponIneffectiveFeedbackWasHiddenName) != 0;
+            FeedbackPlugin.SetFeedbackMessageHidden(FeedbackMessageTypes.CombatWeaponNotEffective, wasHidden, player);
+            DeleteLocalInt(player, ActiveAbilityWeaponIneffectiveFeedbackSuppressedName);
+            DeleteLocalInt(player, ActiveAbilityWeaponIneffectiveFeedbackWasHiddenName);
+        }
+
+        private static void RestoreQueuedAbilityFeedbackIfNoQueuedAbility(uint player)
+        {
+            if (!string.IsNullOrWhiteSpace(GetLocalString(player, ActiveAbilityIdName)))
+                return;
+
+            RestoreQueuedAbilityFeedback(player);
         }
     }
 }

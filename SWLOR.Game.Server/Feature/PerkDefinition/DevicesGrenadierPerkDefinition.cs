@@ -169,7 +169,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Cluster Grenade")
 
                 .AddPerkLevel()
-                .Description("Throws three small grenades at nearby enemies, each dealing 18 fire DMG plus PER scaling in a small blast. Consumes explosives.")
+                .Description("Throws three adjacent small grenades around the target point, each dealing 18 fire DMG plus PER scaling in a small blast. Overlapping blasts can hit the same enemy. Consumes explosives.")
                 .Price(4)
                 .RequirementSkill(SkillType.Devices, 30)
                 .RequirementCharacterType(CharacterType.Standard)

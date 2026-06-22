@@ -117,13 +117,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Kolto Mist")
 
                 .AddPerkLevel()
-                .Description("Applies a 12-second healing mist to allies within 3m of a target location up to 15m away. Total healing equals 7% of each target's maximum HP plus WIL scaling. Consumes medical supplies.")
+                .Description("Deploys a 12-second healing mist cloud at a target location up to 15m away. Allies within 3m heal for 1% of maximum HP plus WIL scaling every 3 seconds. Consumes medical supplies.")
                 .Price(3)
                 .RequirementSkill(SkillType.FirstAid, 15)
                 .GrantsFeat(FeatType.KoltoMist1)
 
                 .AddPerkLevel()
-                .Description("Applies a 12-second healing mist to allies within 3m of a target location up to 15m away. Total healing equals 12% of each target's maximum HP plus WIL scaling. Consumes medical supplies.")
+                .Description("Deploys a 12-second healing mist cloud at a target location up to 15m away. Allies within 3m heal for 2% of maximum HP plus WIL scaling every 3 seconds. Consumes medical supplies.")
                 .Price(4)
                 .RequirementSkill(SkillType.FirstAid, 30)
                 .GrantsFeat(FeatType.KoltoMist2);

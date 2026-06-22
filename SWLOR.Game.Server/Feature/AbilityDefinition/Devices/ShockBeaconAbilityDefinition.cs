@@ -41,8 +41,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .HasImpactAction(ShockBeacon1ImpactAction)
                 .HasTargetingSphere(
                     Spell.ShockBeacon1,
-                    10f,
-                    AbilityTargetingFlags.HarmsEnemies)
+                    5f,
+                    AbilityTargetingFlags.HarmsEnemies,
+                    DeviceAbilityEffects.ApplyBeaconPulseRangeBonus)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
@@ -63,8 +64,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .HasImpactAction(ShockBeacon2ImpactAction)
                 .HasTargetingSphere(
                     Spell.ShockBeacon2,
-                    12f,
-                    AbilityTargetingFlags.HarmsEnemies)
+                    5f,
+                    AbilityTargetingFlags.HarmsEnemies,
+                    DeviceAbilityEffects.ApplyBeaconPulseRangeBonus)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
@@ -80,12 +82,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 10,
                 6,
                 typeof(ShockStatusEffect),
-                10f,
+                5f,
                 15f,
                 CombatDamageType.Electrical,
                 VisualEffect.Vfx_Com_Hit_Electrical,
                 VisualEffect.Vfx_Fnf_Electric_Explosion,
-                markerVisualEffect: VisualEffect.Vfx_Dur_Aura_Pulse_Cyan_Blue);
+                markerVisualEffect: VisualEffect.Vfx_Dur_Aura_Pulse_Cyan_Blue,
+                markerVisualEffectScale: 2f);
         }
 
         private static void ShockBeacon2ImpactAction(uint activator, uint target, int level, Location targetLocation)
@@ -97,12 +100,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 14,
                 6,
                 typeof(ShockStatusEffect),
-                12f,
+                5f,
                 18f,
                 CombatDamageType.Electrical,
                 VisualEffect.Vfx_Com_Hit_Electrical,
                 VisualEffect.Vfx_Fnf_Electric_Explosion,
-                markerVisualEffect: VisualEffect.Vfx_Dur_Aura_Pulse_Cyan_Blue);
+                markerVisualEffect: VisualEffect.Vfx_Dur_Aura_Pulse_Cyan_Blue,
+                markerVisualEffectScale: 2f);
         }
 
     }

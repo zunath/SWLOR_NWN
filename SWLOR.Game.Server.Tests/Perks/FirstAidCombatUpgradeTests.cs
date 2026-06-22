@@ -164,11 +164,25 @@ public class FirstAidCombatUpgradeTests
         pain.Should().NotContain("HealPercent(activator, friendly");
 
         var koltoMist = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "FirstAid" / "KoltoMistAbilityDefinition.cs").FullName);
-        koltoMist.Should().Contain("new KoltoMistHealingStatusEffect(totalPercent, 4)");
+        koltoMist.Should().Contain("private const float Rank1HealPercentPerTick = 1f;");
+        koltoMist.Should().Contain("private const float Rank2HealPercentPerTick = 2f;");
+        koltoMist.Should().Contain("VisualEffect.Vfx_Dur_Aura_Poison");
+        koltoMist.Should().Contain("GetIsObjectValid(activator)");
+        koltoMist.Should().Contain("GetCurrentHitPoints(activator) <= 0");
+        koltoMist.Should().Contain("GetIsObjectValid(GetAreaFromLocation(location))");
+        koltoMist.Should().Contain("ApplyKoltoMistPulse(activator, location, percentPerTick);");
+        koltoMist.Should().Contain("FirstAidTreatmentAdjustments.ApplyMedicalScaledHeal(activator, friendly, percentPerTick);");
+        koltoMist.Should().Contain("StatusEffect.ApplyStatusEffect(");
+        koltoMist.Should().Contain("typeof(KoltoMistHealingStatusEffect)");
+        koltoMist.Should().Contain("StatusRefreshDurationSeconds");
+        koltoMist.Should().NotContain("new KoltoMistHealingStatusEffect(totalPercent, 4)");
         koltoMist.Should().NotContain("HealPercent(");
 
         var koltoMistStatus = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "StatusEffectDefinition" / "KoltoMistHealingStatusEffect.cs").FullName);
-        koltoMistStatus.Should().Contain("FirstAidTreatmentAdjustments.ApplyMedicalScaledHeal(Source, creature, _totalPercent / _tickCount);");
+        koltoMistStatus.Should().Contain("StatusEffectActivationType.Passive");
+        koltoMistStatus.Should().Contain("public override bool SendsApplicationMessage => false;");
+        koltoMistStatus.Should().Contain("public override bool SendsWornOffMessage => false;");
+        koltoMistStatus.Should().NotContain("protected override void Tick");
 
         var treatmentAdjustments = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "FirstAid" / "FirstAidTreatmentAdjustments.cs").FullName);
         treatmentAdjustments.Should().Contain("if (!removedAilment)");
@@ -285,12 +299,12 @@ public class FirstAidCombatUpgradeTests
         {
             (FeatType.MedKit1, "Restores 10% of the target's maximum HP plus WIL scaling to a single target. Consumes medical supplies."),
             (FeatType.TreatmentKit1, "Removes Bleed and Poison from a single target. Consumes medical supplies."),
-            (FeatType.KoltoMist1, "Applies a 12-second healing mist to allies within 3m of a target location up to 15m away. Total healing equals 7% of each target's maximum HP plus WIL scaling. Consumes medical supplies."),
+            (FeatType.KoltoMist1, "Deploys a 12-second healing mist cloud at a target location up to 15m away. Allies within 3m heal for 1% of maximum HP plus WIL scaling every 3 seconds. Consumes medical supplies."),
             (FeatType.Resuscitation1, "Revives an unconscious target with 1 HP. Consumes medical supplies."),
             (FeatType.TreatmentKit2, "Removes Bleed, Poison, Toxin, Burn, Shock, and Disease from a single target. Consumes medical supplies."),
             (FeatType.MedKit2, "Restores 20% of the target's maximum HP plus WIL scaling to a single target. Consumes medical supplies."),
             (FeatType.Infusion1, "Grants a single target regeneration, healing 3% of maximum HP plus WIL scaling every 3 seconds for 15 seconds. Consumes medical supplies."),
-            (FeatType.KoltoMist2, "Applies a 12-second healing mist to allies within 3m of a target location up to 15m away. Total healing equals 12% of each target's maximum HP plus WIL scaling. Consumes medical supplies."),
+            (FeatType.KoltoMist2, "Deploys a 12-second healing mist cloud at a target location up to 15m away. Allies within 3m heal for 2% of maximum HP plus WIL scaling every 3 seconds. Consumes medical supplies."),
             (FeatType.Resuscitation2, "Revives an unconscious target with 20% HP plus WIL scaling. Consumes medical supplies."),
             (FeatType.MedKit3, "Restores 28% of the target's maximum HP plus WIL scaling to a single target. Consumes medical supplies."),
             (FeatType.TreatmentKit3, "Removes Bleed, Poison, Toxin, Burn, Shock, and Disease from a single target and grants 50% Fire Resistance, 50% Poison Resistance, 50% Electrical Resistance, 50% Ice Resistance, and 50% Trauma Resistance for 8 seconds."),

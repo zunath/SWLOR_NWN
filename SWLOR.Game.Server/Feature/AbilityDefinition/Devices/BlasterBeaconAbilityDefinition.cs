@@ -35,7 +35,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .Name("Blaster Beacon I")
                 .Level(1)
                 .HasActivationDelay(1.5f)
-                .HasRecastDelay(RecastGroup.BlasterBeacon, 45f)
+                .HasRecastDelay(RecastGroup.BlasterBeacon, 90f)
                 .SkillType(SkillType.Devices)
                 .UsesAnimation(Animation.CastOutAnimation)
                 .IsAreaAbility()
@@ -43,7 +43,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .HasTargetingSphere(
                     Spell.BlasterBeacon1,
                     12f,
-                    AbilityTargetingFlags.HarmsEnemies)
+                    AbilityTargetingFlags.HarmsEnemies,
+                    DeviceAbilityEffects.ApplyBeaconPulseRangeBonus)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
@@ -57,7 +58,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .Name("Blaster Beacon II")
                 .Level(2)
                 .HasActivationDelay(1.5f)
-                .HasRecastDelay(RecastGroup.BlasterBeacon, 45f)
+                .HasRecastDelay(RecastGroup.BlasterBeacon, 90f)
                 .SkillType(SkillType.Devices)
                 .UsesAnimation(Animation.CastOutAnimation)
                 .IsAreaAbility()
@@ -65,7 +66,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .HasTargetingSphere(
                     Spell.BlasterBeacon2,
                     12f,
-                    AbilityTargetingFlags.HarmsEnemies)
+                    AbilityTargetingFlags.HarmsEnemies,
+                    DeviceAbilityEffects.ApplyBeaconPulseRangeBonus)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
@@ -79,7 +81,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .Name("Blaster Beacon III")
                 .Level(3)
                 .HasActivationDelay(1.5f)
-                .HasRecastDelay(RecastGroup.BlasterBeacon, 45f)
+                .HasRecastDelay(RecastGroup.BlasterBeacon, 90f)
                 .SkillType(SkillType.Devices)
                 .UsesAnimation(Animation.CastOutAnimation)
                 .IsAreaAbility()
@@ -87,7 +89,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .HasTargetingSphere(
                     Spell.BlasterBeacon3,
                     14f,
-                    AbilityTargetingFlags.HarmsEnemies)
+                    AbilityTargetingFlags.HarmsEnemies,
+                    DeviceAbilityEffects.ApplyBeaconPulseRangeBonus)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
@@ -100,14 +103,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 activator,
                 AbilityTargeting.ResolveImpactLocation(activator, target, targetLocation),
                 SkillType.Devices,
-                10,
+                3,
                 0,
                 null,
                 12f,
                 18f,
                 CombatDamageType.Physical,
-                VisualEffect.Vfx_Com_Chunk_Red_Small,
-                markerVisualEffect: VisualEffect.Vfx_Dur_Aura_Pulse_Red_White);
+                VisualEffect.Vfx_Imp_Flame_S,
+                markerVisualEffect: VisualEffect.Vfx_Dur_Aura_Pulse_Red_White,
+                markerVisualEffectScale: 4.8f);
         }
 
         private static void BlasterBeacon2ImpactAction(uint activator, uint target, int level, Location targetLocation)
@@ -116,14 +120,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 activator,
                 AbilityTargeting.ResolveImpactLocation(activator, target, targetLocation),
                 SkillType.Devices,
-                14,
+                6,
                 0,
                 null,
                 12f,
                 21f,
                 CombatDamageType.Physical,
-                VisualEffect.Vfx_Com_Chunk_Red_Small,
-                markerVisualEffect: VisualEffect.Vfx_Dur_Aura_Pulse_Red_White);
+                VisualEffect.Vfx_Imp_Flame_S,
+                markerVisualEffect: VisualEffect.Vfx_Dur_Aura_Pulse_Red_White,
+                markerVisualEffectScale: 4.8f);
         }
 
         private static void BlasterBeacon3ImpactAction(uint activator, uint target, int level, Location targetLocation)
@@ -132,14 +137,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 activator,
                 AbilityTargeting.ResolveImpactLocation(activator, target, targetLocation),
                 SkillType.Devices,
-                18,
+                10,
                 0,
                 null,
                 14f,
                 24f,
                 CombatDamageType.Physical,
-                VisualEffect.Vfx_Com_Chunk_Red_Small,
-                markerVisualEffect: VisualEffect.Vfx_Dur_Aura_Pulse_Red_White);
+                VisualEffect.Vfx_Imp_Flame_S,
+                markerVisualEffect: VisualEffect.Vfx_Dur_Aura_Pulse_Red_White,
+                markerVisualEffectScale: 5.6f);
         }
 
     }

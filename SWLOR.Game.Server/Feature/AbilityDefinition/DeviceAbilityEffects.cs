@@ -40,7 +40,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 VisualEffect areaVisualEffect,
                 VisualEffect markerVisualEffect,
                 float markerVisualEffectScale,
-                bool isAreaPulse)
+                bool isAreaPulse,
+                bool appliesBeaconPulseBonuses)
             {
                 Activator = activator;
                 Location = location;
@@ -56,6 +57,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 MarkerVisualEffect = markerVisualEffect;
                 MarkerVisualEffectScale = markerVisualEffectScale;
                 IsAreaPulse = isAreaPulse;
+                AppliesBeaconPulseBonuses = appliesBeaconPulseBonuses;
                 MarkerObject = OBJECT_INVALID;
             }
 
@@ -73,6 +75,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             public VisualEffect MarkerVisualEffect { get; }
             public float MarkerVisualEffectScale { get; }
             public bool IsAreaPulse { get; }
+            public bool AppliesBeaconPulseBonuses { get; }
             public uint MarkerObject { get; set; }
         }
 
@@ -192,6 +195,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 Stat.GetStatAdjustment(activator, StatType.GrenadeRadiusBonusTenths));
         }
 
+        public static float ApplyBeaconPulseRangeBonus(uint activator, float baseRadius)
+        {
+            return baseRadius + Stat.GetStatAdjustment(activator, StatType.BeaconPulseRangeBonusMeters);
+        }
+
         public static float CalculateGrenadeRadius(float baseRadius, int radiusBonusTenths)
         {
             return baseRadius + radiusBonusTenths / 10f;
@@ -285,7 +293,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 areaVisualEffect,
                 markerVisualEffect,
                 markerVisualEffectScale,
-                false));
+                false,
+                true));
         }
 
         public static void ScheduleAreaHostilePulses(
@@ -301,7 +310,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             VisualEffect targetVisualEffect,
             VisualEffect areaVisualEffect = VisualEffect.None,
             VisualEffect markerVisualEffect = VisualEffect.None,
-            float markerVisualEffectScale = 1f)
+            float markerVisualEffectScale = 1f,
+            bool appliesBeaconPulseBonuses = false)
         {
             TrackFieldEngineerPulseEmitter(new FieldEngineerPulseEmitter(
                 activator,
@@ -317,7 +327,41 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 areaVisualEffect,
                 markerVisualEffect,
                 markerVisualEffectScale,
-                true));
+                true,
+                appliesBeaconPulseBonuses));
+        }
+
+        public static void CreateTemporaryFieldEngineerMarker(
+            Location location,
+            VisualEffect markerVisualEffect,
+            float markerVisualEffectScale,
+            float durationSeconds)
+        {
+            if (markerVisualEffect == VisualEffect.None ||
+                durationSeconds <= 0f ||
+                !GetIsObjectValid(GetAreaFromLocation(location)))
+            {
+                return;
+            }
+
+            var marker = CreateObject(
+                ObjectType.Placeable,
+                FieldEngineerPulseMarkerResref,
+                location,
+                false,
+                FieldEngineerPulseMarkerTag);
+            if (!GetIsObjectValid(marker))
+                return;
+
+            SetPlotFlag(marker, true);
+            ApplyEffectToObject(
+                DurationType.Permanent,
+                EffectVisualEffect(
+                    markerVisualEffect,
+                    false,
+                    Math.Max(FieldEngineerVisualMinimumDurationSeconds, markerVisualEffectScale)),
+                marker);
+            DestroyObject(marker, durationSeconds);
         }
 
         public static bool ExtendActiveFieldEngineerPulses(uint activator, float seconds)
@@ -421,7 +465,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
         private static void ApplySingleHostilePulse(FieldEngineerPulseEmitter emitter)
         {
-            var radius = emitter.Radius + Stat.GetStatAdjustment(emitter.Activator, StatType.BeaconPulseRangeBonusMeters);
+            var radius = ApplyBeaconPulseRangeBonus(emitter.Activator, emitter.Radius);
             ApplyDiagnosticSweep(emitter.Activator, emitter.Location, radius);
 
             var target = GetNearestHostileCreature(emitter.Activator, emitter.Location, radius);
@@ -449,15 +493,31 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 damageType: emitter.DamageType,
                 targetVisualEffect: emitter.TargetVisualEffect,
                 damagePercentAdjustment: damagePercentAdjustment,
-                hitChancePercentAdjustment: Stat.GetStatAdjustment(emitter.Activator, StatType.BeaconPulseAccuracyPercentAdjustment),
-                criticalRatePercentAdjustment: Stat.GetStatAdjustment(emitter.Activator, StatType.BeaconPulseCriticalRatePercentAdjustment),
                 playImpactAnimation: false,
-                combatImpactDamageAbility: AbilityType.Perception);
+                combatImpactDamageAbility: AbilityType.Perception,
+                resolvesHit: false,
+                canCritical: false);
         }
 
         private static void ApplyAreaHostilePulse(FieldEngineerPulseEmitter emitter)
         {
-            ApplyDiagnosticSweep(emitter.Activator, emitter.Location, emitter.Radius);
+            var radius = emitter.Radius;
+            Func<uint, int> damagePercentAdjustment = null;
+            var resolvesHit = true;
+            var canCritical = true;
+
+            if (emitter.AppliesBeaconPulseBonuses)
+            {
+                radius = ApplyBeaconPulseRangeBonus(emitter.Activator, radius);
+                var damageBonus = Stat.GetStatAdjustment(emitter.Activator, StatType.BeaconPulseDamagePercentAdjustment);
+                damagePercentAdjustment = damageBonus == 0
+                    ? null
+                    : new Func<uint, int>(_ => damageBonus);
+                resolvesHit = false;
+                canCritical = false;
+            }
+
+            ApplyDiagnosticSweep(emitter.Activator, emitter.Location, radius);
 
             Ability.ApplyTelegraphedCombatImpact(
                 emitter.Activator,
@@ -469,14 +529,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 emitter.StatusEffect,
                 CombatImpactAreaShape.Sphere,
                 0f,
-                emitter.Radius,
+                radius,
                 0f,
                 Array.Empty<Type>(),
                 damageType: emitter.DamageType,
                 targetVisualEffect: emitter.TargetVisualEffect,
                 areaVisualEffect: emitter.AreaVisualEffect,
+                damagePercentAdjustment: damagePercentAdjustment,
                 playImpactAnimation: false,
-                combatImpactDamageAbility: AbilityType.Perception);
+                combatImpactDamageAbility: AbilityType.Perception,
+                resolvesHit: resolvesHit,
+                canCritical: canCritical);
         }
 
         private static void ApplyFieldEngineerPulseEmitterVisual(FieldEngineerPulseEmitter emitter)

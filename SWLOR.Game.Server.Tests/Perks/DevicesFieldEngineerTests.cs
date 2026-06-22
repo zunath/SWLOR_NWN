@@ -1,7 +1,10 @@
 using System.Reflection;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Devices;
 using SWLOR.Game.Server.Feature.PerkDefinition;
 using SWLOR.Game.Server.Service.AbilityService;
@@ -20,53 +23,54 @@ public class DevicesFieldEngineerTests
         var perks = BuildDevicesFieldEngineerPerksWithout2daLookup();
 
         AssertPerkLevel(perks[PerkType.BlasterBeacon], "Blaster Beacon", 1, 3, null, FeatType.BlasterBeacon1,
-            "Plants a targeting beacon for 18 seconds. Every 3 seconds, one hostile target within 12m is hit by an automated ranged energy pulse for 10 energy DMG plus PER scaling.");
+            "Plants a visible 12m targeting sphere for 18 seconds. Every 3 seconds, one hostile target inside is hit by an automated ranged energy pulse for 3 energy DMG plus PER scaling.");
         AssertPerkLevel(perks[PerkType.BeaconTargeting], "Beacon Targeting", 1, 3, 5, FeatType.BeaconTargetingTrait,
-            "Beacon pulses gain +5% Accuracy and +5% critical chance.",
-            (StatType.BeaconPulseAccuracyPercentAdjustment, 5),
-            (StatType.BeaconPulseCriticalRatePercentAdjustment, 5));
+            "Beacon pulses gain +4% damage and +1m pulse range.",
+            (StatType.BeaconPulseDamagePercentAdjustment, 4),
+            (StatType.BeaconPulseRangeBonusMeters, 1));
         AssertPerkLevel(perks[PerkType.IncendiaryField], "Incendiary Field", 1, 3, 8, FeatType.IncendiaryField1,
             "Deploys a visible fire field for 12 seconds. Enemies inside take 8 fire DMG plus PER scaling every 3 seconds.");
         AssertPerkLevel(perks[PerkType.RemoteCharge], "Remote Charge", 1, 3, 12, FeatType.RemoteCharge1,
-            "Arms a visible charge at your target location that detonates after 3 seconds for 30 fire DMG plus PER scaling.");
+            "Arms a visible charge at your target location that detonates after 3 seconds in a 5m sphere for 30 fire DMG plus PER scaling.");
         AssertPerkLevel(perks[PerkType.BlasterBeacon], "Blaster Beacon", 2, 3, 15, FeatType.BlasterBeacon2,
-            "Plants a targeting beacon for 21 seconds. Every 3 seconds, one hostile target within 12m is hit by an automated ranged energy pulse for 14 energy DMG plus PER scaling.");
+            "Plants a visible 12m targeting sphere for 21 seconds. Every 3 seconds, one hostile target inside is hit by an automated ranged energy pulse for 6 energy DMG plus PER scaling.");
         AssertPerkLevel(perks[PerkType.SignalJammer], "Signal Jammer", 1, 4, 18, FeatType.SignalJammer1,
             "Deploys a signal jammer for 12 seconds. Hostile targets within 5m suffer -6% physical and Force ability Accuracy and cannot benefit from Haste while inside.");
         AssertPerkLevel(perks[PerkType.ShockBeacon], "Shock Beacon", 1, 4, 22, FeatType.ShockBeacon1,
-            "Plants a shock beacon for 15 seconds. Every 3 seconds, one hostile target within 10m is hit for 10 electrical DMG plus PER scaling and suffers Shock.");
+            "Plants a visible 5m shock sphere for 15 seconds. Every 3 seconds, one hostile target inside is hit for 10 electrical DMG plus PER scaling and suffers Shock.");
         AssertPerkLevel(perks[PerkType.IncendiaryField], "Incendiary Field", 2, 4, 25, FeatType.IncendiaryField2,
             "Deploys a visible fire field for 15 seconds. Enemies inside take 12 fire DMG plus PER scaling every 3 seconds.");
         AssertPerkLevel(perks[PerkType.RemoteCharge], "Remote Charge", 2, 4, 28, FeatType.RemoteCharge2,
-            "Arms a visible charge that detonates after 3 seconds for 42 fire DMG plus PER scaling and knock down.");
+            "Arms a visible charge that detonates after 3 seconds in a 5m sphere for 42 fire DMG plus PER scaling and knocks down for 3 seconds.");
         AssertPerkLevel(perks[PerkType.BlasterBeacon], "Blaster Beacon", 3, 4, 30, FeatType.BlasterBeacon3,
-            "Plants a targeting beacon for 24 seconds. Every 3 seconds, one hostile target within 14m is hit by an automated ranged energy pulse for 18 energy DMG plus PER scaling.");
+            "Plants a visible 14m targeting sphere for 24 seconds. Every 3 seconds, one hostile target inside is hit by an automated ranged energy pulse for 10 energy DMG plus PER scaling.");
         AssertPerkLevel(perks[PerkType.DiagnosticSweep], "Diagnostic Sweep", 1, 5, 35, FeatType.DiagnosticSweepTrait,
             "Field Engineer beacons, fields, charges, and jammers reveal hidden enemies in their affected area and reduce Evasion by 4% for 10 seconds.",
             (StatType.FieldEngineerAreaRevealHidden, 1),
             (StatType.FieldEngineerAreaEvasionPenaltyPercent, 4),
             (StatType.FieldEngineerAreaEvasionPenaltyDurationSeconds, 10));
         AssertPerkLevel(perks[PerkType.ShockBeacon], "Shock Beacon", 2, 5, 38, FeatType.ShockBeacon2,
-            "Plants a shock beacon for 18 seconds. Every 3 seconds, one hostile target within 12m is hit for 14 electrical DMG plus PER scaling and suffers Shock.");
+            "Plants a visible 5m shock sphere for 18 seconds. Every 3 seconds, one hostile target inside is hit for 14 electrical DMG plus PER scaling and suffers Shock.");
         AssertPerkLevel(perks[PerkType.BeaconTargeting], "Beacon Targeting", 2, 5, 42, null,
-            "Beacon pulses gain +12% Accuracy, +12% critical chance, +8% damage, and +2m pulse range.",
-            (StatType.BeaconPulseAccuracyPercentAdjustment, 12),
-            (StatType.BeaconPulseCriticalRatePercentAdjustment, 12),
+            "Beacon pulses gain +8% damage and +2m pulse range.",
             (StatType.BeaconPulseDamagePercentAdjustment, 8),
             (StatType.BeaconPulseRangeBonusMeters, 2));
         AssertPerkLevel(perks[PerkType.IncendiaryField], "Incendiary Field", 3, 5, 45, FeatType.IncendiaryField3,
             "Deploys a visible fire field for 18 seconds. Enemies inside take 16 fire DMG plus PER scaling every 3 seconds.");
         AssertPerkLevel(perks[PerkType.KillzoneBeacon], "Killzone Beacon", 1, 5, 50, FeatType.KillzoneBeacon1,
-            "Plants a killzone beacon for 45 seconds. Every 3 seconds, it triggers one 16 physical DMG plus PER scaling pulse and one 16 electrical DMG plus PER scaling shock pulse against hostile targets within 12m.");
+            "Plants a visible 12m killzone sphere for 45 seconds. Every 3 seconds, all hostile targets inside are hit by one 16 physical DMG plus PER scaling pulse and one 16 electrical DMG plus PER scaling shock pulse.");
     }
 
     [Test]
     public void DevicesFieldEngineerAbilities_MatchCombatBible()
     {
         var blasterBeacon = new BlasterBeaconAbilityDefinition().BuildAbilities();
-        AssertAbility(blasterBeacon[FeatType.BlasterBeacon1], "Blaster Beacon I", 1, RecastGroup.BlasterBeacon, 45f, 1.5f, 3, true, true, false, false);
-        AssertAbility(blasterBeacon[FeatType.BlasterBeacon2], "Blaster Beacon II", 2, RecastGroup.BlasterBeacon, 45f, 1.5f, 4, true, true, false, false);
-        AssertAbility(blasterBeacon[FeatType.BlasterBeacon3], "Blaster Beacon III", 3, RecastGroup.BlasterBeacon, 45f, 1.5f, 6, true, true, false, false);
+        AssertAbility(blasterBeacon[FeatType.BlasterBeacon1], "Blaster Beacon I", 1, RecastGroup.BlasterBeacon, 90f, 1.5f, 3, true, true, false, false);
+        AssertAbility(blasterBeacon[FeatType.BlasterBeacon2], "Blaster Beacon II", 2, RecastGroup.BlasterBeacon, 90f, 1.5f, 4, true, true, false, false);
+        AssertAbility(blasterBeacon[FeatType.BlasterBeacon3], "Blaster Beacon III", 3, RecastGroup.BlasterBeacon, 90f, 1.5f, 6, true, true, false, false);
+        AssertBeaconTargetingResolver(blasterBeacon[FeatType.BlasterBeacon1]);
+        AssertBeaconTargetingResolver(blasterBeacon[FeatType.BlasterBeacon2]);
+        AssertBeaconTargetingResolver(blasterBeacon[FeatType.BlasterBeacon3]);
 
         var incendiaryField = new IncendiaryFieldAbilityDefinition().BuildAbilities();
         AssertAbility(incendiaryField[FeatType.IncendiaryField1], "Incendiary Field I", 1, RecastGroup.IncendiaryField, 60f, 1.5f, 4, true, true, false, false);
@@ -83,9 +87,12 @@ public class DevicesFieldEngineerTests
         var shockBeacon = new ShockBeaconAbilityDefinition().BuildAbilities();
         AssertAbility(shockBeacon[FeatType.ShockBeacon1], "Shock Beacon I", 1, RecastGroup.ShockBeacon, 75f, 1.5f, 5, true, true, false, false);
         AssertAbility(shockBeacon[FeatType.ShockBeacon2], "Shock Beacon II", 2, RecastGroup.ShockBeacon, 75f, 1.5f, 6, true, true, false, false);
+        AssertBeaconTargetingResolver(shockBeacon[FeatType.ShockBeacon1]);
+        AssertBeaconTargetingResolver(shockBeacon[FeatType.ShockBeacon2]);
 
         var killzoneBeacon = new KillzoneBeaconAbilityDefinition().BuildAbilities();
         AssertAbility(killzoneBeacon[FeatType.KillzoneBeacon1], "Killzone Beacon", 1, RecastGroup.Capstone, 345f, 2f, 15, true, true, false, false);
+        AssertBeaconTargetingResolver(killzoneBeacon[FeatType.KillzoneBeacon1]);
     }
 
     [Test]
@@ -93,10 +100,13 @@ public class DevicesFieldEngineerTests
     {
         var root = FindRepositoryRoot();
         var effects = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "DeviceAbilityEffects.cs").FullName);
-        effects.Should().Contain("BeaconPulseAccuracyPercentAdjustment");
-        effects.Should().Contain("BeaconPulseCriticalRatePercentAdjustment");
         effects.Should().Contain("BeaconPulseDamagePercentAdjustment");
         effects.Should().Contain("BeaconPulseRangeBonusMeters");
+        effects.Should().Contain("ApplyBeaconPulseRangeBonus");
+        effects.Should().Contain("resolvesHit: false");
+        effects.Should().Contain("canCritical: false");
+        effects.Should().NotContain("BeaconPulseAccuracyPercentAdjustment");
+        effects.Should().NotContain("BeaconPulseCriticalRatePercentAdjustment");
         effects.Should().Contain("ApplyDiagnosticSweep");
         effects.Should().Contain("FieldEngineerAreaRevealHidden");
         effects.Should().Contain("FieldEngineerAreaEvasionPenaltyPercent");
@@ -105,6 +115,8 @@ public class DevicesFieldEngineerTests
         effects.Should().Contain("CreateObject(");
         effects.Should().Contain("ObjectType.Placeable");
         effects.Should().Contain("DestroyObject(emitter.MarkerObject)");
+        effects.Should().Contain("CreateTemporaryFieldEngineerMarker");
+        effects.Should().Contain("appliesBeaconPulseBonuses");
 
         var signalJammer = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Devices" / "SignalJammerAbilityDefinition.cs").FullName);
         signalJammer.Should().Contain("typeof(SignalJammerStatusEffect)");
@@ -113,11 +125,14 @@ public class DevicesFieldEngineerTests
         var remoteCharge = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Devices" / "RemoteChargeAbilityDefinition.cs").FullName);
         remoteCharge.Should().Contain("DetonateRemoteCharge(activator, target, targetLocation, 30, null)");
         remoteCharge.Should().Contain("DetonateRemoteCharge(activator, target, targetLocation, 42, typeof(KnockdownStatusEffect))");
+        remoteCharge.Should().Contain("CreateTemporaryFieldEngineerMarker");
+        remoteCharge.Should().Contain("VisualEffect.Vfx_Dur_Aura_Pulse_Red_Orange");
         remoteCharge.Should().Contain("ApplyDiagnosticSweep");
         remoteCharge.Should().Contain("CombatImpactAreaShape.Sphere");
         remoteCharge.Should().Contain("3f");
         remoteCharge.Should().Contain("CombatDamageType.Fire");
         remoteCharge.Should().Contain("typeof(KnockdownStatusEffect)");
+        remoteCharge.Should().Contain("alwaysApplyAreaVisualEffect: true");
 
         var incendiaryField = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Devices" / "IncendiaryFieldAbilityDefinition.cs").FullName);
         incendiaryField.Should().Contain("IncendiaryFieldTargetVisualEffect = VisualEffect.Vfx_Imp_Flame_S");
@@ -127,11 +142,26 @@ public class DevicesFieldEngineerTests
 
         var killzoneBeacon = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Devices" / "KillzoneBeaconAbilityDefinition.cs").FullName);
         killzoneBeacon.Should().Contain("16");
+        killzoneBeacon.Should().Contain("ScheduleAreaHostilePulses");
         killzoneBeacon.Should().Contain("CombatDamageType.Physical");
         killzoneBeacon.Should().Contain("CombatDamageType.Electrical");
         killzoneBeacon.Should().Contain("typeof(ShockStatusEffect)");
         killzoneBeacon.Should().Contain("CapstoneAbility.ActiveDurationSeconds");
         killzoneBeacon.Should().Contain("markerVisualEffect: VisualEffect.Vfx_Dur_Aura_Pulse_Red_Blue");
+        killzoneBeacon.Should().Contain("markerVisualEffectScale: 4.8f");
+        killzoneBeacon.Should().Contain("VisualEffect.Vfx_Imp_Lightning_M");
+        killzoneBeacon.Should().Contain("VisualEffect.Vfx_Imp_Mirv_Electric");
+        killzoneBeacon.Should().Contain("appliesBeaconPulseBonuses: true");
+
+        var blasterBeacon = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Devices" / "BlasterBeaconAbilityDefinition.cs").FullName);
+        blasterBeacon.Should().Contain("VisualEffect.Vfx_Imp_Flame_S");
+        blasterBeacon.Should().Contain("DeviceAbilityEffects.ApplyBeaconPulseRangeBonus");
+        blasterBeacon.Should().Contain("markerVisualEffectScale: 4.8f");
+        blasterBeacon.Should().Contain("markerVisualEffectScale: 5.6f");
+
+        var shockBeacon = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Devices" / "ShockBeaconAbilityDefinition.cs").FullName);
+        shockBeacon.Should().Contain("DeviceAbilityEffects.ApplyBeaconPulseRangeBonus");
+        shockBeacon.Should().Contain("markerVisualEffectScale: 2f");
     }
 
     [Test]
@@ -161,11 +191,11 @@ public class DevicesFieldEngineerTests
             (FeatType.RemoteCharge1, "ife_rmtchrg1", "M", "0x3E", "1", "sphere", "5", "****", "1", "****"),
             (FeatType.BlasterBeacon2, "ife_blstrbcn2", "M", "0x3E", "1", "sphere", "12", "****", "1", "****"),
             (FeatType.SignalJammer1, "ife_sgnljam1", "M", "0x3E", "1", "sphere", "5", "****", "1", "****"),
-            (FeatType.ShockBeacon1, "ife_shokbcn1", "M", "0x3E", "1", "sphere", "10", "****", "1", "****"),
+            (FeatType.ShockBeacon1, "ife_shokbcn1", "M", "0x3E", "1", "sphere", "5", "****", "1", "****"),
             (FeatType.IncendiaryField2, "ife_ncndryfld2", "M", "0x3E", "1", "sphere", "5", "****", "1", "****"),
             (FeatType.RemoteCharge2, "ife_rmtchrg2", "M", "0x3E", "1", "sphere", "5", "****", "1", "****"),
             (FeatType.BlasterBeacon3, "ife_blstrbcn3", "M", "0x3E", "1", "sphere", "14", "****", "1", "****"),
-            (FeatType.ShockBeacon2, "ife_shokbcn2", "M", "0x3E", "1", "sphere", "12", "****", "1", "****"),
+            (FeatType.ShockBeacon2, "ife_shokbcn2", "M", "0x3E", "1", "sphere", "5", "****", "1", "****"),
             (FeatType.IncendiaryField3, "ife_ncndryfld3", "M", "0x3E", "1", "sphere", "5", "****", "1", "****"),
             (FeatType.KillzoneBeacon1, "ife_kllznbcn1", "M", "0x3E", "1", "sphere", "12", "****", "1", "****")
         };
@@ -190,6 +220,38 @@ public class DevicesFieldEngineerTests
             spellRow["TargetSizeY"].Should().Be(targetSizeY);
             spellRow["TargetFlags"].Should().Be(targetFlags);
             featRow["TARGETSELF"].Should().Be(targetSelf);
+        }
+    }
+
+    [Test]
+    public void DevicesFieldEngineerFeatAndAbilityDescriptions_MatchCombatBible()
+    {
+        var root = FindRepositoryRoot();
+        var featRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "feat.2da");
+        var abilityRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "spells.2da");
+        var tlkEntries = ReadTlkEntries(root / "SWLOR_Haks" / "swlor2_tlk" / "swlor2_tlk.tlk.json");
+        const int CustomTlkOffset = 16777216;
+        var descriptions = new[]
+        {
+            (FeatType.BlasterBeacon1, "Plants a visible 12m targeting sphere for 18 seconds. Every 3 seconds, one hostile target inside is hit by an automated ranged energy pulse for 3 energy DMG plus PER scaling."),
+            (FeatType.BlasterBeacon2, "Plants a visible 12m targeting sphere for 21 seconds. Every 3 seconds, one hostile target inside is hit by an automated ranged energy pulse for 6 energy DMG plus PER scaling."),
+            (FeatType.BlasterBeacon3, "Plants a visible 14m targeting sphere for 24 seconds. Every 3 seconds, one hostile target inside is hit by an automated ranged energy pulse for 10 energy DMG plus PER scaling."),
+            (FeatType.RemoteCharge1, "Arms a visible charge at your target location that detonates after 3 seconds in a 5m sphere for 30 fire DMG plus PER scaling."),
+            (FeatType.RemoteCharge2, "Arms a visible charge that detonates after 3 seconds in a 5m sphere for 42 fire DMG plus PER scaling and knocks down for 3 seconds."),
+            (FeatType.ShockBeacon1, "Plants a visible 5m shock sphere for 15 seconds. Every 3 seconds, one hostile target inside is hit for 10 electrical DMG plus PER scaling and suffers Shock."),
+            (FeatType.ShockBeacon2, "Plants a visible 5m shock sphere for 18 seconds. Every 3 seconds, one hostile target inside is hit for 14 electrical DMG plus PER scaling and suffers Shock."),
+            (FeatType.KillzoneBeacon1, "Plants a visible 12m killzone sphere for 45 seconds. Every 3 seconds, all hostile targets inside are hit by one 16 physical DMG plus PER scaling pulse and one 16 electrical DMG plus PER scaling shock pulse.")
+        };
+
+        foreach (var (featType, expectedDescription) in descriptions)
+        {
+            var featRow = featRows[(int)featType];
+            var featDescriptionId = int.Parse(featRow["DESCRIPTION"]) - CustomTlkOffset;
+            tlkEntries[featDescriptionId].Should().Be(expectedDescription);
+
+            var abilityRow = abilityRows[int.Parse(featRow["SPELLID"])];
+            var abilityDescriptionId = int.Parse(abilityRow["SpellDesc"]) - CustomTlkOffset;
+            tlkEntries[abilityDescriptionId].Should().Be(expectedDescription);
         }
     }
 
@@ -270,6 +332,15 @@ public class DevicesFieldEngineerTests
             .Should()
             .Be(staminaCost);
         ability.Requirements.OfType<AbilityRequirementFP>().Should().BeEmpty();
+    }
+
+    private static void AssertBeaconTargetingResolver(AbilityDetail ability)
+    {
+        ability.Targeting.Should().NotBeNull();
+        ability.Targeting.SizeResolver.Should().NotBeNull();
+        var expectedResolver = (AbilityTargetingSizeResolver)DeviceAbilityEffects.ApplyBeaconPulseRangeBonus;
+
+        Assert.That(ability.Targeting.SizeResolver!.Method, Is.EqualTo(expectedResolver.Method));
     }
 
     private static void AssertSkillRequirement(PerkLevel level, SkillType skill, int rank)
@@ -367,6 +438,12 @@ public class DevicesFieldEngineerTests
         return result;
     }
 
+    private static Dictionary<int, string> ReadTlkEntries(PathInfo path)
+    {
+        var tlk = JsonSerializer.Deserialize<TlkFile>(File.ReadAllText(path.FullName))!;
+        return tlk.Entries.ToDictionary(entry => entry.Id, entry => entry.Text);
+    }
+
     private static PathInfo FindRepositoryRoot()
     {
         var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
@@ -392,4 +469,10 @@ public class DevicesFieldEngineerTests
             return new PathInfo(Path.Combine(path.FullName, child));
         }
     }
+
+    private sealed record TlkFile([property: JsonPropertyName("entries")] TlkEntry[] Entries);
+
+    private sealed record TlkEntry(
+        [property: JsonPropertyName("id")] int Id,
+        [property: JsonPropertyName("text")] string Text);
 }

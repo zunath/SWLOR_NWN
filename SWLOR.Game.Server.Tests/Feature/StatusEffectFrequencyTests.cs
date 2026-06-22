@@ -51,7 +51,6 @@ public class StatusEffectFrequencyTests
         yield return Frequency(nameof(ForceBondedBeast1StatusEffect), new ForceBondedBeast1StatusEffect().Frequency, 3f);
         yield return Frequency(nameof(ForceConvergenceStatusEffect), new ForceConvergenceStatusEffect().Frequency, 2f);
         yield return Frequency(nameof(ForceErosionStatusEffect), new ForceErosionStatusEffect().Frequency, 1f);
-        yield return Frequency(nameof(KoltoMistHealingStatusEffect), new KoltoMistHealingStatusEffect().Frequency, 3f);
         yield return Frequency(nameof(PowerSurgeStatusEffect), new PowerSurgeStatusEffect().Frequency, 4f);
         yield return Frequency(nameof(RegenerativeHealingStatusEffect), new RegenerativeHealingStatusEffect().Frequency, 3f);
         yield return Frequency(nameof(SaturationTossStatusEffect), new SaturationTossStatusEffect().Frequency, 4f);

@@ -279,6 +279,31 @@ public class CombatUpgradeMigrationCoverageTests
     }
 
     [Test]
+    public void WeaponDamageMigration_CollapsesConflictingBlueprintElementalDamageBonuses()
+    {
+        var root = FindRepositoryRoot();
+        var migrationSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "MigrationDefinition",
+            "SerializedItemWeaponDamageTypeMigration.cs"));
+        var migrationNotes = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Readmes",
+            "CombatUpgradeMigration.md"));
+
+        migrationSource.Should().Contain("BlueprintRecipeIdVariable = \"BLUEPRINT_RECIPE_ID\"");
+        migrationSource.Should().Contain("ItemPropertyType.Blueprint");
+        migrationSource.Should().Contain("SelectBlueprintDamageEnhancements(selectedEnhancements)");
+        migrationSource.Should().Contain("DamageType.IsElementalDamageType()");
+        migrationSource.Should().Contain("SWLOR.Game.Server.Service.Random.Next(elementalDamageTypes.Count)");
+        migrationSource.Should().Contain("damageEnhancement.DamageType == selectedElementalDamageType");
+        migrationNotes.Should().Contain("randomly keeps one elemental type");
+    }
+
+    [Test]
     public void ResistanceMigration_MergesLegacyElementalValuesIntoDefaultTargets()
     {
         var moveLegacyElementalDefense = typeof(_22_CombatSystemReplacement)

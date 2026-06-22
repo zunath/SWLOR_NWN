@@ -14,6 +14,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
 {
     internal static class SerializedItemWeaponDamageTypeMigration
     {
+        private const string BlueprintRecipeIdVariable = "BLUEPRINT_RECIPE_ID";
         private static readonly HashSet<BaseItem> WeaponBaseItemTypes = BuildWeaponBaseItemTypes();
 
         private static readonly WeaponDamageScale[] WeaponDamageScales =
@@ -431,6 +432,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
         {
             var damageEnhancements = new List<(ItemProperty Property, int SubType, int Value, int Index)>();
             var damageTypeProperties = new List<(ItemProperty Property, int SubType, int Index)>();
+            var isBlueprint = GetLocalInt(item, BlueprintRecipeIdVariable) > 0;
             var index = 0;
 
             for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
@@ -447,6 +449,10 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
                 else if (type == ItemPropertyType.WeaponDamageType)
                 {
                     damageTypeProperties.Add((ip, GetItemPropertySubType(ip), index));
+                }
+                else if (type == ItemPropertyType.Blueprint)
+                {
+                    isBlueprint = true;
                 }
 
                 index++;
@@ -465,10 +471,20 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
                 RemoveItemProperty(item, property.Property);
             }
 
-            foreach (var property in damageEnhancements.OrderBy(x => x.Index))
+            var selectedEnhancements = damageEnhancements
+                .OrderBy(x => x.Index)
+                .Select(x => new EnhancementDamageProperty(
+                    x.Value,
+                    x.Index,
+                    ResolveEnhancementDamageType(x, damageTypeProperties)))
+                .ToList();
+
+            if (isBlueprint)
+                selectedEnhancements = SelectBlueprintDamageEnhancements(selectedEnhancements);
+
+            foreach (var property in selectedEnhancements)
             {
-                var damageType = ResolveEnhancementDamageType(property, damageTypeProperties);
-                var amount = damageType.IsPhysicalDamageType()
+                var amount = property.DamageType.IsPhysicalDamageType()
                     ? ConvertRawEnhancementDamage(item, property.Value)
                     : property.Value;
 
@@ -480,11 +496,11 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
                     false,
                     false);
 
-                if (!damageType.IsPhysicalDamageType())
+                if (!property.DamageType.IsPhysicalDamageType())
                 {
                     BiowareXP2.IPSafeAddItemProperty(
                         item,
-                        ItemPropertyCustom(ItemPropertyType.WeaponDamageType, (int)damageType, 0),
+                        ItemPropertyCustom(ItemPropertyType.WeaponDamageType, (int)property.DamageType, 0),
                         0.0f,
                         AddItemPropertyPolicy.IgnoreExisting,
                         false,
@@ -493,6 +509,29 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             }
 
             return true;
+        }
+
+        private static List<EnhancementDamageProperty> SelectBlueprintDamageEnhancements(
+            List<EnhancementDamageProperty> damageEnhancements)
+        {
+            var elementalDamageEnhancements = damageEnhancements
+                .Where(damageEnhancement => damageEnhancement.DamageType.IsElementalDamageType())
+                .ToList();
+            var elementalDamageTypes = elementalDamageEnhancements
+                .Select(damageEnhancement => damageEnhancement.DamageType)
+                .Distinct()
+                .ToList();
+
+            if (elementalDamageTypes.Count <= 1)
+                return damageEnhancements;
+
+            var selectedElementalDamageType = elementalDamageTypes[
+                SWLOR.Game.Server.Service.Random.Next(elementalDamageTypes.Count)];
+            return damageEnhancements
+                .Where(damageEnhancement =>
+                    !damageEnhancement.DamageType.IsElementalDamageType() ||
+                    damageEnhancement.DamageType == selectedElementalDamageType)
+                .ToList();
         }
 
         private static CombatDamageType ResolveEnhancementDamageType(
@@ -659,5 +698,10 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             IReadOnlyCollection<BaseItem> BaseItems,
             IReadOnlyList<int> OldDamage,
             IReadOnlyList<int> NewDamage);
+
+        private sealed record EnhancementDamageProperty(
+            int Value,
+            int Index,
+            CombatDamageType DamageType);
     }
 }

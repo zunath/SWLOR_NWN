@@ -15,6 +15,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
     {
         private const float HealRadiusMeters = 3f;
         private const float RangeMeters = 15f;
+        private const float DurationSeconds = 12f;
+        private const float TickIntervalSeconds = 3f;
+        private const float StatusRefreshDurationSeconds = TickIntervalSeconds + 0.2f;
+        private const float Rank1HealPercentPerTick = 1f;
+        private const float Rank2HealPercentPerTick = 2f;
+        private const float CloudVisualEffectScale = 1f;
+        private const VisualEffect CloudBurstVisualEffect = VisualEffect.Vfx_Fnf_Gas_Explosion_Nature;
+        private const VisualEffect CloudVisualEffect = VisualEffect.Vfx_Dur_Aura_Poison;
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
@@ -33,7 +41,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .Name("Kolto Mist I")
                 .Level(1)
                 .HasActivationDelay(1.5f)
-                .UsesAnimation(Animation.CastOutAnimation)
+                .UsesAnimation(Animation.ThrowGrenade)
                 .PlaysSoundOnImpact("ksfx_healing")
                 .HasRecastDelay(RecastGroup.KoltoMist, 30f)
                 .SkillType(SkillType.FirstAid)
@@ -58,7 +66,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .Name("Kolto Mist II")
                 .Level(2)
                 .HasActivationDelay(1.5f)
-                .UsesAnimation(Animation.CastOutAnimation)
+                .UsesAnimation(Animation.ThrowGrenade)
                 .PlaysSoundOnImpact("ksfx_healing")
                 .HasRecastDelay(RecastGroup.KoltoMist, 30f)
                 .SkillType(SkillType.FirstAid)
@@ -78,12 +86,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
 
         private static void KoltoMist1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            ApplyKoltoMist(activator, target, targetLocation, 7f);
+            ApplyKoltoMist(activator, target, targetLocation, Rank1HealPercentPerTick);
         }
 
         private static void KoltoMist2ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            ApplyKoltoMist(activator, target, targetLocation, 12f);
+            ApplyKoltoMist(activator, target, targetLocation, Rank2HealPercentPerTick);
         }
 
         private static string ValidateTargetingRange(uint activator, uint target, int effectivePerkLevel, Location targetLocation)
@@ -95,19 +103,44 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             return $"You are out of range. This ability has a range of {RangeMeters} meters.";
         }
 
-        private static void ApplyKoltoMist(uint activator, uint target, Location targetLocation, float totalPercent)
+        private static void ApplyKoltoMist(uint activator, uint target, Location targetLocation, float percentPerTick)
         {
             var location = AbilityTargeting.ResolveImpactLocation(activator, target, targetLocation);
 
+            ApplyEffectAtLocation(DurationType.Instant, EffectVisualEffect(CloudBurstVisualEffect), location);
+            ApplyEffectAtLocation(
+                DurationType.Temporary,
+                EffectVisualEffect(CloudVisualEffect, false, CloudVisualEffectScale),
+                location,
+                DurationSeconds);
+
+            for (var elapsed = TickIntervalSeconds; elapsed <= DurationSeconds + 0.01f; elapsed += TickIntervalSeconds)
+            {
+                var pulseDelay = elapsed;
+                DelayCommand(pulseDelay, () =>
+                {
+                    if (!GetIsObjectValid(activator) || GetCurrentHitPoints(activator) <= 0)
+                        return;
+
+                    if (!GetIsObjectValid(GetAreaFromLocation(location)))
+                        return;
+
+                    ApplyKoltoMistPulse(activator, location, percentPerTick);
+                });
+            }
+        }
+
+        private static void ApplyKoltoMistPulse(uint activator, Location location, float percentPerTick)
+        {
             foreach (var friendly in AbilityTargeting.GetFriendlyTargetsNearLocation(activator, location, HealRadiusMeters))
             {
+                FirstAidTreatmentAdjustments.ApplyMedicalScaledHeal(activator, friendly, percentPerTick);
+                FirstAidTreatmentAdjustments.ApplyTraumaMedicRiders(activator, friendly);
                 StatusEffect.ApplyStatusEffect(
                     activator,
                     friendly,
-                    new KoltoMistHealingStatusEffect(totalPercent, 4),
-                    12f);
-                FirstAidTreatmentAdjustments.ApplyTraumaMedicRiders(activator, friendly);
-                FirstAidTreatmentAdjustments.ApplyMedicalVisualEffect(friendly);
+                    typeof(KoltoMistHealingStatusEffect),
+                    StatusRefreshDurationSeconds);
             }
         }
     }

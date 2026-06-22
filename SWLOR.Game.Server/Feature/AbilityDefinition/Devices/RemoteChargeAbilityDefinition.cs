@@ -86,13 +86,19 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         private static void DetonateRemoteCharge(uint activator, uint target, Location targetLocation, int baseDamage, Type statusEffect)
         {
             var impactLocation = AbilityTargeting.ResolveImpactLocation(activator, target, targetLocation);
+            DeviceAbilityEffects.CreateTemporaryFieldEngineerMarker(
+                impactLocation,
+                VisualEffect.Vfx_Dur_Aura_Pulse_Red_Orange,
+                2f,
+                3f);
+
             Ability.ApplyTelegraphedCombatImpact(
                 activator,
                 OBJECT_INVALID,
                 impactLocation,
                 SkillType.Devices,
                 baseDamage,
-                12,
+                3,
                 statusEffect,
                 CombatImpactAreaShape.Sphere,
                 3f,
@@ -102,7 +108,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 damageType: CombatDamageType.Fire,
                 targetVisualEffect: VisualEffect.Vfx_Com_Hit_Fire,
                 areaVisualEffect: VisualEffect.Fnf_Fireball,
-                afterImpactAction: _ => DeviceAbilityEffects.ApplyDiagnosticSweep(activator, impactLocation, 5f));
+                afterImpactAction: _ => DeviceAbilityEffects.ApplyDiagnosticSweep(activator, impactLocation, 5f),
+                alwaysApplyAreaVisualEffect: true);
         }
     }
 }

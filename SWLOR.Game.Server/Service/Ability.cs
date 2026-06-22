@@ -1009,7 +1009,9 @@ namespace SWLOR.Game.Server.Service
             bool awardsCombatPoints = true,
             DamageType? effectDamageType = null,
             bool playImpactAnimation = true,
-            AbilityType combatImpactDamageAbility = AbilityType.Invalid)
+            AbilityType combatImpactDamageAbility = AbilityType.Invalid,
+            bool resolvesHit = true,
+            bool canCritical = true)
         {
             var totalDamage = 0;
             RecordAbilityImpactShape(activator, skillType, isArea);
@@ -1057,7 +1059,9 @@ namespace SWLOR.Game.Server.Service
                     useNPCStatScaling: useNPCStatScaling,
                     awardsCombatPoints: awardsCombatPoints,
                     effectDamageType: effectDamageType,
-                    combatImpactDamageAbility: combatImpactDamageAbility);
+                    combatImpactDamageAbility: combatImpactDamageAbility,
+                    resolvesHit: resolvesHit,
+                    canCritical: canCritical);
             }
             else if (GetIsObjectValid(target))
             {
@@ -1083,7 +1087,9 @@ namespace SWLOR.Game.Server.Service
                     useNPCStatScaling: useNPCStatScaling,
                     awardsCombatPoints: awardsCombatPoints,
                     effectDamageType: effectDamageType,
-                    combatImpactDamageAbility: combatImpactDamageAbility);
+                    combatImpactDamageAbility: combatImpactDamageAbility,
+                    resolvesHit: resolvesHit,
+                    canCritical: canCritical);
             }
 
             if (playImpactAnimation)
@@ -1131,7 +1137,9 @@ namespace SWLOR.Game.Server.Service
             bool playImpactAnimation = true,
             bool alwaysApplyAreaVisualEffect = false,
             AbilityType combatImpactDamageAbility = AbilityType.Invalid,
-            bool sendsNoTargetMessage = true)
+            bool sendsNoTargetMessage = true,
+            bool resolvesHit = true,
+            bool canCritical = true)
         {
             RecordAbilityImpactShape(activator, skillType, true);
 
@@ -1169,7 +1177,9 @@ namespace SWLOR.Game.Server.Service
                     effectDamageType,
                     alwaysApplyAreaVisualEffect,
                     combatImpactDamageAbility,
-                    sendsNoTargetMessage);
+                    sendsNoTargetMessage,
+                    resolvesHit,
+                    canCritical);
                 if (playImpactAnimation)
                     PlayCombatImpactAnimation(activator, impactAnimation);
 
@@ -1216,7 +1226,9 @@ namespace SWLOR.Game.Server.Service
                 effectDamageType,
                 alwaysApplyAreaVisualEffect,
                 combatImpactDamageAbility,
-                sendsNoTargetMessage);
+                sendsNoTargetMessage,
+                resolvesHit,
+                canCritical);
 
             switch (shape)
             {
@@ -1291,7 +1303,9 @@ namespace SWLOR.Game.Server.Service
             DamageType? effectDamageType,
             bool alwaysApplyAreaVisualEffect,
             AbilityType combatImpactDamageAbility,
-            bool sendsNoTargetMessage)
+            bool sendsNoTargetMessage,
+            bool resolvesHit,
+            bool canCritical)
         {
             RecordAbilityImpactShape(activator, skillType, true);
 
@@ -1340,7 +1354,9 @@ namespace SWLOR.Game.Server.Service
                 awardsCombatPoints: awardsCombatPoints,
                 effectDamageType: effectDamageType,
                 combatImpactDamageAbility: combatImpactDamageAbility,
-                sendsNoTargetMessage: sendsNoTargetMessage);
+                sendsNoTargetMessage: sendsNoTargetMessage,
+                resolvesHit: resolvesHit,
+                canCritical: canCritical);
         }
 
         private static ApplyTelegraphEffect BuildTelegraphedCombatImpactAction(
@@ -1375,7 +1391,9 @@ namespace SWLOR.Game.Server.Service
             DamageType? effectDamageType,
             bool alwaysApplyAreaVisualEffect,
             AbilityType combatImpactDamageAbility,
-            bool sendsNoTargetMessage)
+            bool sendsNoTargetMessage,
+            bool resolvesHit,
+            bool canCritical)
         {
             return (creator, creatures) =>
             {
@@ -1451,7 +1469,9 @@ namespace SWLOR.Game.Server.Service
                     awardsCombatPoints: awardsCombatPoints,
                     effectDamageType: effectDamageType,
                     combatImpactDamageAbility: combatImpactDamageAbility,
-                    sendsNoTargetMessage: sendsNoTargetMessage);
+                    sendsNoTargetMessage: sendsNoTargetMessage,
+                    resolvesHit: resolvesHit,
+                    canCritical: canCritical);
 
                 if (ability != null)
                 {
@@ -1487,7 +1507,9 @@ namespace SWLOR.Game.Server.Service
             bool awardsCombatPoints = true,
             DamageType? effectDamageType = null,
             AbilityType combatImpactDamageAbility = AbilityType.Invalid,
-            bool sendsNoTargetMessage = true)
+            bool sendsNoTargetMessage = true,
+            bool resolvesHit = true,
+            bool canCritical = true)
         {
             var totalDamage = 0;
             var affectedCount = 0;
@@ -1525,7 +1547,9 @@ namespace SWLOR.Game.Server.Service
                     useNPCStatScaling,
                     awardsCombatPoints,
                     effectDamageType,
-                    combatImpactDamageAbility);
+                    combatImpactDamageAbility,
+                    resolvesHit,
+                    canCritical);
                 affectedCount++;
             }
 
@@ -1830,7 +1854,9 @@ namespace SWLOR.Game.Server.Service
             bool useNPCStatScaling = false,
             bool awardsCombatPoints = true,
             DamageType? effectDamageType = null,
-            AbilityType combatImpactDamageAbility = AbilityType.Invalid)
+            AbilityType combatImpactDamageAbility = AbilityType.Invalid,
+            bool resolvesHit = true,
+            bool canCritical = true)
         {
             var trackedImpact = GetTrackedAbilityImpact(activator);
             var perkType = trackedImpact?.Ability?.EffectiveLevelPerkType ?? PerkType.Invalid;
@@ -1841,7 +1867,7 @@ namespace SWLOR.Game.Server.Service
             var skillLevelOverride = usesNPCStatScaling
                 ? GetNPCAbilityScalingRank(activator, skillType, damageType, damageAbility)
                 : -1;
-            var shouldResolveHit = ShouldResolveCombatImpactHit(trackedImpact);
+            var shouldResolveHit = resolvesHit && ShouldResolveCombatImpactHit(trackedImpact);
             var hitRate = 100;
             if (shouldResolveHit &&
                 !Combat.TryResolveAbilityHit(activator, target, skillType, perkType, out hitRate, hitChancePercentAdjustment, skillLevelOverride, damageAbility))
@@ -1863,8 +1889,8 @@ namespace SWLOR.Game.Server.Service
                 trackedImpact?.Ability,
                 skillType);
             var damage = usesNPCStatScaling
-                ? CalculateNPCCombatImpactDamage(activator, target, skillType, adjustedBaseDamage, damageType, criticalRatePercentAdjustment, damageAbility)
-                : CalculateCombatImpactDamage(activator, target, skillType, adjustedBaseDamage, damageType, criticalRatePercentAdjustment, damageAbility);
+                ? CalculateNPCCombatImpactDamage(activator, target, skillType, adjustedBaseDamage, damageType, criticalRatePercentAdjustment, damageAbility, canCritical)
+                : CalculateCombatImpactDamage(activator, target, skillType, adjustedBaseDamage, damageType, criticalRatePercentAdjustment, damageAbility, canCritical);
             damage = ApplyDamagePercentAdjustment(target, damage, damagePercentAdjustment);
             damage = ApplyDarkForceTargetLowHPDamageModifier(activator, target, damage);
             return ApplyHostileCombatImpact(
@@ -2052,7 +2078,8 @@ namespace SWLOR.Game.Server.Service
             int baseDamage,
             CombatDamageType damageType,
             int criticalRatePercentAdjustment = 0,
-            AbilityType combatImpactDamageAbility = AbilityType.Invalid)
+            AbilityType combatImpactDamageAbility = AbilityType.Invalid,
+            bool canCritical = true)
         {
             if (baseDamage <= 0)
                 return 0;
@@ -2082,12 +2109,14 @@ namespace SWLOR.Game.Server.Service
                 Combat.GetAbilityDefenseIgnorePercentAdjustment(activator, perkType, skillType, target) +
                 (trackedImpact?.NextAbilityDefenseIgnorePercentAdjustment ?? 0);
             defense = Combat.ApplyDefenseIgnore(defense, defenseIgnorePercent);
-            var criticalRating = Combat.CalculateAbilityCriticalRating(
-                activator,
-                skillType,
-                IsTrackedAbilityArea(activator),
-                (trackedImpact?.NextAbilityCriticalRatePercentAdjustment ?? 0) + criticalRatePercentAdjustment,
-                target);
+            var criticalRating = canCritical
+                ? Combat.CalculateAbilityCriticalRating(
+                    activator,
+                    skillType,
+                    IsTrackedAbilityArea(activator),
+                    (trackedImpact?.NextAbilityCriticalRatePercentAdjustment ?? 0) + criticalRatePercentAdjustment,
+                    target)
+                : 0;
             var damageRoll = Combat.CalculateDamageWithCriticalMitigation(
                 target,
                 attack,
@@ -2227,7 +2256,8 @@ namespace SWLOR.Game.Server.Service
             int baseDamage,
             CombatDamageType damageType,
             int criticalRatePercentAdjustment = 0,
-            AbilityType combatImpactDamageAbility = AbilityType.Invalid)
+            AbilityType combatImpactDamageAbility = AbilityType.Invalid,
+            bool canCritical = true)
         {
             if (baseDamage <= 0)
                 return 0;
@@ -2265,12 +2295,14 @@ namespace SWLOR.Game.Server.Service
                 Combat.GetAbilityDefenseIgnorePercentAdjustment(activator, perkType, skillType, target) +
                 (trackedImpact?.NextAbilityDefenseIgnorePercentAdjustment ?? 0);
             defense = Combat.ApplyDefenseIgnore(defense, defenseIgnorePercent);
-            var criticalRating = Combat.CalculateAbilityCriticalRating(
-                activator,
-                skillType,
-                IsTrackedAbilityArea(activator),
-                (trackedImpact?.NextAbilityCriticalRatePercentAdjustment ?? 0) + criticalRatePercentAdjustment,
-                target);
+            var criticalRating = canCritical
+                ? Combat.CalculateAbilityCriticalRating(
+                    activator,
+                    skillType,
+                    IsTrackedAbilityArea(activator),
+                    (trackedImpact?.NextAbilityCriticalRatePercentAdjustment ?? 0) + criticalRatePercentAdjustment,
+                    target)
+                : 0;
             var damageRoll = Combat.CalculateDamageWithCriticalMitigation(
                 target,
                 attack,

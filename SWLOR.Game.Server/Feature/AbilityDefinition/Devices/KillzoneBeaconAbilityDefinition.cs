@@ -41,7 +41,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .HasTargetingSphere(
                     Spell.KillzoneBeacon1,
                     12f,
-                    AbilityTargetingFlags.HarmsEnemies)
+                    AbilityTargetingFlags.HarmsEnemies,
+                    DeviceAbilityEffects.ApplyBeaconPulseRangeBonus)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
@@ -52,7 +53,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             var location = AbilityTargeting.ResolveImpactLocation(activator, target, targetLocation);
 
-            DeviceAbilityEffects.ScheduleSingleHostilePulses(
+            DeviceAbilityEffects.ScheduleAreaHostilePulses(
                 activator,
                 location,
                 SkillType.Devices,
@@ -63,9 +64,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 CapstoneAbility.ActiveDurationSeconds,
                 CombatDamageType.Physical,
                 VisualEffect.Vfx_Com_Chunk_Red_Small,
-                markerVisualEffect: VisualEffect.Vfx_Dur_Aura_Pulse_Red_Blue);
+                markerVisualEffect: VisualEffect.Vfx_Dur_Aura_Pulse_Red_Blue,
+                markerVisualEffectScale: 4.8f,
+                appliesBeaconPulseBonuses: true);
 
-            DeviceAbilityEffects.ScheduleSingleHostilePulses(
+            DeviceAbilityEffects.ScheduleAreaHostilePulses(
                 activator,
                 location,
                 SkillType.Devices,
@@ -75,8 +78,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 12f,
                 CapstoneAbility.ActiveDurationSeconds,
                 CombatDamageType.Electrical,
-                VisualEffect.Vfx_Com_Hit_Electrical,
-                VisualEffect.Vfx_Fnf_Electric_Explosion);
+                VisualEffect.Vfx_Imp_Lightning_M,
+                VisualEffect.Vfx_Imp_Mirv_Electric,
+                appliesBeaconPulseBonuses: true);
         }
 
     }

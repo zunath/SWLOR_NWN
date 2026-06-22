@@ -115,6 +115,18 @@ public class DevicesFieldSupportAndAssaultGadgetsTests
     }
 
     [Test]
+    public void EmergencyBunker_RendersVisibleAreaMarker()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Devices" / "EmergencyBunkerAbilityDefinition.cs").FullName)
+            .Replace("\r\n", "\n");
+
+        source.Should().Contain("EmergencyBunkerAreaMarkerVisualEffect = VisualEffect.Vfx_Dur_Aura_Pulse_Blue_White");
+        source.Should().Contain("EmergencyBunkerAreaMarkerVisualEffectScale = 2f");
+        source.Should().Contain("EmergencyBunkerAreaMarkerVisualEffect,\n                EmergencyBunkerAreaMarkerVisualEffectScale");
+    }
+
+    [Test]
     public void DevicesFieldSupportAndAssaultGadgetsFeatAndSpellIcons_AreUniqueAndPresent()
     {
         var root = FindRepositoryRoot();

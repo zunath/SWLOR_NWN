@@ -17,6 +17,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 {
     public sealed class EmergencyBunkerAbilityDefinition : IAbilityListDefinition
     {
+        private const VisualEffect EmergencyBunkerAreaMarkerVisualEffect = VisualEffect.Vfx_Dur_Aura_Pulse_Blue_White;
+        private const float EmergencyBunkerAreaMarkerVisualEffectScale = 2f;
+
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
@@ -59,7 +62,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 duration,
                 typeof(EmergencyBunker1StatusEffect),
                 VisualEffect.Vfx_Imp_Ac_Bonus,
-                (friendly, remainingDuration) => ApplyBunkerTemporaryHP(activator, friendly, remainingDuration));
+                (friendly, remainingDuration) => ApplyBunkerTemporaryHP(activator, friendly, remainingDuration),
+                EmergencyBunkerAreaMarkerVisualEffect,
+                EmergencyBunkerAreaMarkerVisualEffectScale);
         }
 
         private static void ApplyBunkerTemporaryHP(uint activator, uint target, float durationSeconds)

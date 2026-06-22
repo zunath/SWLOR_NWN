@@ -33,6 +33,7 @@ public class ForceUniversalTests
 
         AssertUniversalForcePower(perks[PerkType.ForcePush]);
         AssertUniversalForcePower(perks[PerkType.ForceLeap]);
+        perks.Keys.Should().NotContain(PerkType.FuryStance);
     }
 
     [Test]
@@ -213,7 +214,6 @@ public class ForceUniversalTests
             "ForcePush",
             "ThrowLightsaber",
             "ForceLeap",
-            "FuryStance",
             "Precognition",
             "ForceConvergence"
         };

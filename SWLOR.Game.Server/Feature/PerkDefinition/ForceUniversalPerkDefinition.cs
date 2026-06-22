@@ -17,7 +17,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             ForcePush();
             ThrowLightsaber();
             ForceLeap();
-            FuryStance();
             Precognition();
             ForceConvergence();
 
@@ -96,26 +95,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Force, 30)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ForceLeap2);
-        }
-
-        private void FuryStance()
-        {
-            _builder.Create(PerkCategoryType.ForceUniversal, PerkType.FuryStance)
-                .Name("Fury Stance")
-
-                .AddPerkLevel()
-                .Description("While active, gain +8% weapon and force damage and +10% critical damage, but take 5% more damage and suffer -5% Defense and Force Defense. Only one stance may be active.")
-                .Price(3)
-                .RequirementSkill(SkillType.Force, 12)
-                .RequirementCharacterType(CharacterType.ForceSensitive)
-                .GrantsFeat(FeatType.FuryStance1)
-
-                .AddPerkLevel()
-                .Description("While active, gain +12% weapon and force damage and +15% critical damage, but take 5% more damage and suffer -5% Defense and Force Defense. Only one stance may be active.")
-                .Price(4)
-                .RequirementSkill(SkillType.Force, 42)
-                .RequirementCharacterType(CharacterType.ForceSensitive)
-                .GrantsFeat(FeatType.FuryStance2);
         }
 
         private void Precognition()

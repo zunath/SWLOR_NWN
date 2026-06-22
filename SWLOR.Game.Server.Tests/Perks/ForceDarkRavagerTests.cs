@@ -26,6 +26,8 @@ public class ForceDarkRavagerTests
             "Deals 10 force DMG plus WIL scaling to one target, then arcs to up to two nearby enemies for 50% damage. Affected targets suffer Shock for 6 seconds.");
         AssertPerkLevel(perks[PerkType.ForceDrain], "Force Drain", 1, 3, 12, FeatType.ForceDrain1,
             "Deals 14 force DMG plus WIL scaling to one target and heals you for 30% of damage dealt. If the target is below 50% HP, healing increases to 40%.");
+        AssertPerkLevel(perks[PerkType.FuryStance], "Fury Stance", 1, 3, 12, FeatType.FuryStance1,
+            "While active, gain +8% weapon and force damage and +10% critical damage, but take 5% more damage and suffer -5% Defense and Force Defense. Only one stance may be active.");
         AssertPerkLevel(perks[PerkType.ForceSpark], "Force Spark", 2, 3, 18, FeatType.ForceSpark2,
             "Deals 30 force DMG plus WIL scaling to one target and reduces Evasion by 6% for 20 seconds.");
         AssertPerkLevel(perks[PerkType.ForceLightning], "Force Lightning", 2, 4, 22, FeatType.ForceLightning2,
@@ -42,6 +44,8 @@ public class ForceDarkRavagerTests
             "Deals 36 force DMG plus WIL scaling to one target and heals you for 40% of damage dealt. If the target is below 50% HP, healing increases to 50%.");
         AssertPerkLevel(perks[PerkType.ForceSpark], "Force Spark", 3, 4, 42, FeatType.ForceSpark3,
             "Deals 44 force DMG plus WIL scaling to one target and reduces Evasion by 8% for 20 seconds.");
+        AssertPerkLevel(perks[PerkType.FuryStance], "Fury Stance", 2, 4, 42, FeatType.FuryStance2,
+            "While active, gain +12% weapon and force damage and +15% critical damage, but take 5% more damage and suffer -5% Defense and Force Defense. Only one stance may be active.");
         AssertPerkLevel(perks[PerkType.HungerOfTheDark], "Hunger of the Dark", 1, 5, 50, FeatType.HungerOfTheDark1,
             "For 45 seconds, Dark damage you deal heals you for 12% of damage dealt and defeated enemies restore 3 FP.");
 
@@ -195,6 +199,10 @@ public class ForceDarkRavagerTests
     {
         perk.Name.Should().Be(name);
         perk.Category.Should().Be(PerkCategoryType.ForceDark);
+        perk.ForceAffinityType.Should().Be(ForceAffinityType.Dark);
+        perk.StatBonuses.Should().ContainSingle(x =>
+            x.Stat == StatType.ForceAffinity &&
+            x.Calculate(0) == (int)ForceAffinityType.Dark);
 
         var perkLevel = perk.PerkLevels[level];
         perkLevel.Price.Should().Be(price);
@@ -312,6 +320,7 @@ public class ForceDarkRavagerTests
             "ForceDrain",
             "ForceLightning",
             "ForceSpark",
+            "FuryStance",
             "HungerOfTheDark",
             "CruelMomentum",
             "UnstablePressure"

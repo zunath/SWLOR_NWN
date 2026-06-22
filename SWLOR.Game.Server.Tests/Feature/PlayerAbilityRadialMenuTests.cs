@@ -7,6 +7,14 @@ namespace SWLOR.Game.Server.Tests.Feature;
 
 public class PlayerAbilityRadialMenuTests
 {
+    private static readonly HashSet<FeatType> ManualHotbarFeats =
+    [
+        FeatType.PurifyingWave1,
+        FeatType.RadiantLance1,
+        FeatType.RadiantLance2,
+        FeatType.RadiantLance3
+    ];
+
     [Test]
     public void CustomPlayerAbilityFeats_AreLinkedAndAvailableOnFighterMenu()
     {
@@ -35,15 +43,20 @@ public class PlayerAbilityRadialMenuTests
             spellRows[spellId]["Label"].Should().Be(featLabel, $"{feat} spell row should use the feat.2da label");
             spellRows[spellId]["FeatID"].Should().Be(featId.ToString(), $"{feat} spell row should point back to its feat");
 
-            var classFeatRow = classFeatRows.Values
+            var classFeatEntry = classFeatRows
                 .Should()
-                .ContainSingle(row => row["FeatIndex"] == featId.ToString(), $"{feat} must be available to the fighter class radial menu")
+                .ContainSingle(row => row.Value["FeatIndex"] == featId.ToString(), $"{feat} must be available to the fighter class radial menu")
                 .Which;
+            var classFeatRow = classFeatEntry.Value;
 
             classFeatRow["FeatLabel"].Should().Be(featLabel);
             classFeatRow["List"].Should().Be("1");
             classFeatRow["GrantedOnLevel"].Should().Be("99");
             classFeatRow["OnMenu"].Should().Be("1");
+            if (ManualHotbarFeats.Contains(feat))
+            {
+                classFeatEntry.Key.Should().BeLessThan(1024, $"{feat} must be within the class feat rows scanned for manual hotbar selection");
+            }
         }
     }
 

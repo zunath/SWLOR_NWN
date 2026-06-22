@@ -68,7 +68,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 centerOnActivator: !GetIsObjectValid(target),
                 damageType: CombatDamageType.Ice,
                 targetVisualEffect: VisualEffect.Vfx_Com_Hit_Frost,
-                areaVisualEffect: VisualEffect.Vfx_Fnf_Howl_Mind,
+                areaVisualEffect: VisualEffect.Vfx_Fnf_Icestorm,
                 damagePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetDamageAdjustment(activator),
                 baseDamageAdjustment: DeviceAbilityEffects.GetAssaultGadgetBaseDamageAdjustment(activator),
                 afterSuccessfulHit: _ => DeviceAbilityEffects.ApplyTacticalUplink(activator),

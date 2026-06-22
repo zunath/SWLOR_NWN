@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
 {
@@ -28,7 +29,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
                 .HasRecastDelay(RecastGroup.Rampart, 180f)
                 .HasImpactAction((activator, target, level, targetLocation) =>
                 {
-                    ApplyStatusToNearbyParty(activator, typeof(RampartStatusEffect), 60f, true);
+                    ApplyStatusToNearbyParty(
+                        activator,
+                        typeof(RampartStatusEffect),
+                        60f,
+                        true,
+                        VisualEffect.Vfx_Imp_Ac_Bonus);
                 })
                 .SkillType(SkillType.HeavyVibroblade)
                 .IsCastedAbility()

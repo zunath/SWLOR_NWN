@@ -86,9 +86,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 targetVisualEffect: VisualEffect.Vfx_Com_Hit_Electrical,
                 damagePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetDamageAdjustment(activator),
                 baseDamageAdjustment: DeviceAbilityEffects.GetAssaultGadgetBaseDamageAdjustment(activator),
-                afterSuccessfulHit: _ => DeviceAbilityEffects.ApplyTacticalUplink(activator),
+                afterSuccessfulHit: hitTarget => ApplyArcProjectorHitEffects(activator, hitTarget),
                 hitChancePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetAccuracyAdjustment(activator),
                 criticalRatePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetCriticalRateAdjustment(activator));
+        }
+
+        private static void ApplyArcProjectorHitEffects(uint activator, uint target)
+        {
+            DeviceAbilityEffects.ApplyElectricArcVisual(activator, target);
+            DeviceAbilityEffects.ApplyTacticalUplink(activator);
         }
     }
 }

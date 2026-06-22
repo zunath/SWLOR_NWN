@@ -273,7 +273,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
             { PerkType.PulseRelay, new[] { 3, 3 } },
 
             { PerkType.Decoy, new[] { 3 } },
-            { PerkType.EdgeOfDarkness, new[] { 3 } },
+            { LegacyPerkType(388), new[] { 3 } },
             { PerkType.WhirlwindAssault, new[] { 3, 3 } },
 
             { PerkType.WeaponBlueprints, new[] { 2, 3, 4, 5, 6 } },

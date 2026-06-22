@@ -111,7 +111,30 @@ public class DevicesFieldSupportAndAssaultGadgetsTests
 
         source.Should().Contain("CombatImpactAreaShape.Line,\n                0f,");
         source.Should().Contain("damageType: CombatDamageType.Electrical");
-        source.Should().Contain("afterSuccessfulHit: _ => DeviceAbilityEffects.ApplyTacticalUplink(activator)");
+        source.Should().Contain("afterSuccessfulHit: hitTarget => ApplyIonLanceHitEffects(activator, hitTarget)");
+    }
+
+    [Test]
+    public void AssaultGadgets_RenderDamageTypeVisuals()
+    {
+        var root = FindRepositoryRoot();
+        var arcProjector = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Devices" / "ArcProjectorAbilityDefinition.cs").FullName)
+            .Replace("\r\n", "\n");
+        var ionLance = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Devices" / "IonLanceAbilityDefinition.cs").FullName)
+            .Replace("\r\n", "\n");
+        var railDart = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Devices" / "RailDartAbilityDefinition.cs").FullName)
+            .Replace("\r\n", "\n");
+        var cryoSprayer = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Devices" / "CryoSprayerAbilityDefinition.cs").FullName)
+            .Replace("\r\n", "\n");
+        var deviceEffects = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "DeviceAbilityEffects.cs").FullName)
+            .Replace("\r\n", "\n");
+
+        deviceEffects.Should().Contain("EffectBeam(VisualEffect.Vfx_Beam_Silent_Lightning, activator, BodyNode.Hand)");
+        deviceEffects.Should().Contain("EffectVisualEffect(VisualEffect.Vfx_Imp_Lightning_S)");
+        arcProjector.Should().Contain("DeviceAbilityEffects.ApplyElectricArcVisual(activator, target)");
+        ionLance.Should().Contain("DeviceAbilityEffects.ApplyElectricArcVisual(activator, target)");
+        railDart.Should().Contain("targetVisualEffect: VisualEffect.Vfx_Imp_Wallspike");
+        cryoSprayer.Should().Contain("areaVisualEffect: VisualEffect.Vfx_Fnf_Icestorm");
     }
 
     [Test]

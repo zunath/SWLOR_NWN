@@ -149,8 +149,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
         WhirlwindAssault = 102,
         [RecastGroup("Soul Burst", "Soul Burst", true)]
         SoulBurst = 103,
-        [RecastGroup("Edge of Darkness", "E. Darkness", true)]
-        EdgeOfDarkness = 105,
+        // ID 105 is free.
         [RecastGroup("Sacrificial Blade", "Sacrif. Blade", true)]
         SacrificialBlade = 106,
         [RecastGroup("Guard Counter", "Guard Counter", true)]

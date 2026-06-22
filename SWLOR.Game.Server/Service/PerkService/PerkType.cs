@@ -364,7 +364,7 @@ namespace SWLOR.Game.Server.Service.PerkService
         DuelistsDistance = 385,
         DuelistStance = 386,
         Earthshatter = 387,
-        EdgeOfDarkness = 388,
+        // ID 388 is free.
         EdgeRhythm = 389,
         // ID 390 is free.
         EnergizedForms = 391,

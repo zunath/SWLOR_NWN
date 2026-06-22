@@ -9,11 +9,26 @@ using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
 public class HeavyVibrobladeDefenseTests
 {
+    [Test]
+    public void HeavyVibrobladeDefenseAbilities_MatchCombatBible()
+    {
+        var earthshatter = new EarthshatterAbilityDefinition().BuildAbilities();
+        AssertAbility(earthshatter[FeatType.Earthshatter1], "Earthshatter I", 1, RecastGroup.Earthshatter, 90f, 0f, 12, true, false, false, true, AbilityActivationType.Casted);
+        AssertAbility(earthshatter[FeatType.Earthshatter2], "Earthshatter II", 2, RecastGroup.Earthshatter, 90f, 0f, 12, true, false, false, true, AbilityActivationType.Casted);
+
+        var flash = new FlashAbilityDefinition().BuildAbilities()[FeatType.Flash1];
+        AssertAbility(flash, "Flash", 1, RecastGroup.Flash, 90f, 0f, 8, true, false, false, true, AbilityActivationType.Casted);
+
+        var rampart = new RampartAbilityDefinition().BuildAbilities()[FeatType.Rampart1];
+        AssertAbility(rampart, "Rampart", 1, RecastGroup.Rampart, 180f, 0f, 12, false, false, false, true, AbilityActivationType.Casted);
+    }
+
     [Test]
     public void HeavyVibrobladeDefenseStatusEffects_MatchCombatBible()
     {
@@ -121,6 +136,7 @@ public class HeavyVibrobladeDefenseTests
         AssertAbilityPerk(new AbsoluteDefenseAbilityDefinition().BuildAbilities()[FeatType.AbsoluteDefense1], PerkType.AbsoluteDefense);
         AssertAbilityPerk(new FlashAbilityDefinition().BuildAbilities()[FeatType.Flash1], PerkType.Flash);
         AssertAbilityPerk(new EarthshatterAbilityDefinition().BuildAbilities()[FeatType.Earthshatter1], PerkType.Earthshatter);
+        AssertAbilityPerk(new EarthshatterAbilityDefinition().BuildAbilities()[FeatType.Earthshatter2], PerkType.Earthshatter);
         AssertAbilityPerk(new SacrificialBladeAbilityDefinition().BuildAbilities()[FeatType.SacrificialBlade1], PerkType.SacrificialBlade);
     }
 
@@ -250,6 +266,7 @@ public class HeavyVibrobladeDefenseTests
             (FeatType.FortressStrike2, "ife_fortstrk2", "0x01", "0", "****", "****", "****", "****"),
             (FeatType.Rampart1, "ife_ramp1", "0x01", "0", "sphere", "5", "****", "17"),
             (FeatType.Earthshatter1, "ife_earth1", "0x3E", "1", "rectangle", "8", "2.5", "17"),
+            (FeatType.Earthshatter2, "ife_edgedark1", "0x3E", "1", "rectangle", "8", "2.5", "17"),
             (FeatType.FortressStrike3, "ife_fortstrk3", "0x01", "0", "****", "****", "****", "****"),
             (FeatType.AbsoluteDefense1, "ife_absdef1", "0x01", "0", "****", "****", "****", "****")
         };
@@ -326,6 +343,21 @@ public class HeavyVibrobladeDefenseTests
         {
             AssertStatBonus(level, statTypes[index], (int)perkTypes[index]);
         }
+    }
+
+    [Test]
+    public void HeavyVibrobladeDefenseVisualEffects_AreVisibleAndThematic()
+    {
+        var root = FindRepositoryRoot();
+        var baseSource = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "HeavyVibroblade" / "HeavyVibrobladeActiveAbilityDefinitionBase.cs").FullName);
+        var flashSource = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "HeavyVibroblade" / "FlashAbilityDefinition.cs").FullName);
+        var rampartSource = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "HeavyVibroblade" / "RampartAbilityDefinition.cs").FullName);
+
+        baseSource.Should().Contain("VisualEffect.Vfx_Imp_Negative_Energy");
+        baseSource.Should().NotContain("VisualEffect.Vfx_Imp_Healing_M");
+        flashSource.Should().Contain("targetVisualEffect: VisualEffect.Vfx_Imp_Dazed_S");
+        flashSource.Should().Contain("areaVisualEffect: VisualEffect.Vfx_Fnf_Sound_Burst");
+        rampartSource.Should().Contain("VisualEffect.Vfx_Imp_Ac_Bonus");
     }
 
     private static void AssertAbilityPerk(

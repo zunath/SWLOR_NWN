@@ -86,20 +86,20 @@ public class RiflePacificationTests
 
         var feats = new[]
         {
-            (FeatType.TranquilizerShot1, "ife_trnqlzrshot1", "P", "0x01", "0", "****", "****", "****", "****"),
-            (FeatType.CripplingShot1, "ife_cripshot1", "M", "0x02", "1", "****", "****", "****", "****"),
-            (FeatType.SpotterStance1, "ife_spotstnc1", "P", "0x01", "0", "****", "****", "****", "****"),
-            (FeatType.TranquilizerShot2, "ife_trnqlzrshot2", "P", "0x01", "0", "****", "****", "****", "****"),
-            (FeatType.CripplingShot2, "ife_cripshot2", "M", "0x02", "1", "****", "****", "****", "****"),
-            (FeatType.TranqCone1, "ife_tranqcone1", "M", "0x3E", "1", "cone", "8", "6", "17"),
-            (FeatType.CripplingShot3, "ife_cripshot3", "M", "0x02", "1", "****", "****", "****", "****"),
-            (FeatType.TranqCone2, "ife_tranqcone2", "M", "0x3E", "1", "cone", "10", "7", "17"),
-            (FeatType.PacificationField1, "ife_pacfld1", "M", "0x3E", "1", "sphere", "5", "****", "1"),
-            (FeatType.StasisVolley1, "ife_stasvol1", "M", "0x3E", "1", "cone", "20", "20", "17")
+            (FeatType.TranquilizerShot1, "ife_trnqlzrshot1", "P", "0x01", "0", "****", "****", "****", "****", "1", "****"),
+            (FeatType.CripplingShot1, "ife_cripshot1", "M", "0x02", "1", "****", "****", "****", "****", "****", "1"),
+            (FeatType.SpotterStance1, "ife_spotstnc1", "P", "0x01", "0", "****", "****", "****", "****", "1", "****"),
+            (FeatType.TranquilizerShot2, "ife_trnqlzrshot2", "P", "0x01", "0", "****", "****", "****", "****", "1", "****"),
+            (FeatType.CripplingShot2, "ife_cripshot2", "M", "0x02", "1", "****", "****", "****", "****", "****", "1"),
+            (FeatType.TranqCone1, "ife_tranqcone1", "M", "0x3E", "1", "cone", "8", "6", "17", "****", "1"),
+            (FeatType.CripplingShot3, "ife_cripshot3", "M", "0x02", "1", "****", "****", "****", "****", "****", "1"),
+            (FeatType.TranqCone2, "ife_tranqcone2", "M", "0x3E", "1", "cone", "10", "7", "17", "****", "1"),
+            (FeatType.PacificationField1, "ife_pacfld1", "M", "0x3E", "1", "sphere", "5", "****", "1", "****", "1"),
+            (FeatType.StasisVolley1, "ife_stasvol1", "M", "0x3E", "1", "cone", "20", "20", "17", "****", "1")
         };
         var seenIcons = new HashSet<string>();
 
-        foreach (var (featType, expectedIcon, range, targetType, hostileSetting, targetShape, targetSizeX, targetSizeY, targetFlags) in feats)
+        foreach (var (featType, expectedIcon, range, targetType, hostileSetting, targetShape, targetSizeX, targetSizeY, targetFlags, targetSelf, hostileFeat) in feats)
         {
             var featRow = featRows[(int)featType];
             var abilityRow = abilityRows[int.Parse(featRow["SPELLID"])];
@@ -117,6 +117,8 @@ public class RiflePacificationTests
             abilityRow["TargetSizeX"].Should().Be(targetSizeX);
             abilityRow["TargetSizeY"].Should().Be(targetSizeY);
             abilityRow["TargetFlags"].Should().Be(targetFlags);
+            featRow["TARGETSELF"].Should().Be(targetSelf);
+            featRow["HostileFeat"].Should().Be(hostileFeat);
         }
     }
 

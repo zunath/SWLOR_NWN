@@ -98,9 +98,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 areaVisualEffect: VisualEffect.None,
                 damagePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetDamageAdjustment(activator),
                 baseDamageAdjustment: DeviceAbilityEffects.GetAssaultGadgetBaseDamageAdjustment(activator),
-                afterSuccessfulHit: _ => DeviceAbilityEffects.ApplyTacticalUplink(activator),
+                afterSuccessfulHit: hitTarget => ApplyIonLanceHitEffects(activator, hitTarget),
                 hitChancePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetAccuracyAdjustment(activator),
                 criticalRatePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetCriticalRateAdjustment(activator));
+        }
+
+        private static void ApplyIonLanceHitEffects(uint activator, uint target)
+        {
+            DeviceAbilityEffects.ApplyElectricArcVisual(activator, target);
+            DeviceAbilityEffects.ApplyTacticalUplink(activator);
         }
     }
 }

@@ -16,22 +16,38 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
             var builder = new AbilityBuilder();
 
             Earthshatter1(builder);
+            Earthshatter2(builder);
 
             return builder.Build();
         }
 
         private static void Earthshatter1(AbilityBuilder builder)
         {
+            BuildEarthshatter(builder, FeatType.Earthshatter1, Spell.Earthshatter1, "Earthshatter I", 1);
+        }
+
+        private static void Earthshatter2(AbilityBuilder builder)
+        {
+            BuildEarthshatter(builder, FeatType.Earthshatter2, Spell.Earthshatter2, "Earthshatter II", 2);
+        }
+
+        private static void BuildEarthshatter(
+            AbilityBuilder builder,
+            FeatType feat,
+            Spell spell,
+            string name,
+            int level)
+        {
             builder
-                .Create(FeatType.Earthshatter1, PerkType.Earthshatter)
-                .Name("Earthshatter I")
-                .Level(1)
+                .Create(feat, PerkType.Earthshatter)
+                .Name(name)
+                .Level(level)
                 .HasActivationDelay(0f)
                 .UsesAnimation(Animation.DoubleThrust)
                 .HasRecastDelay(RecastGroup.Earthshatter, 90f)
-                .HasImpactAction(Earthshatter1ImpactAction)
+                .HasImpactAction(EarthshatterImpactAction)
                 .HasTargetingLine(
-                    Spell.Earthshatter1,
+                    spell,
                     8f,
                     2.5f,
                     AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf)
@@ -43,7 +59,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
                 .RequirementStamina(12);
         }
 
-        private static void Earthshatter1ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        private static void EarthshatterImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
             Ability.ApplyTelegraphedCombatImpact(
                 activator,

@@ -1001,7 +1001,7 @@ namespace SWLOR.NWN.API.NWScript.Enum
         DuelistsChallenge1 = 1073,
         DuelistStance1 = 1074,
         Earthshatter1 = 1075,
-        EdgeOfDarkness1 = 1076,
+        Earthshatter2 = 1076,
         EnfeeblingStrike1 = 1077,
         EnfeeblingStrike2 = 1078,
         EnfeeblingStrike3 = 1079,

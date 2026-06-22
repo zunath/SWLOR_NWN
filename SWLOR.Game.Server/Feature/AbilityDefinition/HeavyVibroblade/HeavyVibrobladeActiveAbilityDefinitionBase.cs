@@ -43,7 +43,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
             amount = Ability.ApplyCombatReadinessToActivatedAbilityMagnitude(target, amount);
             amount = Stat.ApplyHealingReceivedAdjustment(target, amount);
             ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), target);
-            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_M), target);
+            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Negative_Energy), target);
         }
 
         protected static void SacrificeHitPoints(uint activator, int percent)
@@ -69,11 +69,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
             Combat.ApplyHitPointSpendAbilityEffects(activator);
         }
 
-        protected static void ApplyStatusToNearbyParty(uint activator, Type type, float duration, bool includeSelf)
+        protected static void ApplyStatusToNearbyParty(
+            uint activator,
+            Type type,
+            float duration,
+            bool includeSelf,
+            VisualEffect visualEffect = VisualEffect.None)
         {
             if (includeSelf)
             {
                 StatusEffect.ApplyStatusEffect(activator, activator, type, duration);
+                ApplyVisualEffect(activator, visualEffect);
             }
 
             var location = GetLocation(activator);
@@ -84,10 +90,19 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
                 if (creature != activator && Party.IsInParty(activator, creature))
                 {
                     StatusEffect.ApplyStatusEffect(activator, creature, type, duration);
+                    ApplyVisualEffect(creature, visualEffect);
                 }
 
                 creature = GetNextObjectInShape(Shape.Sphere, 5f, location, true);
             }
+        }
+
+        private static void ApplyVisualEffect(uint target, VisualEffect visualEffect)
+        {
+            if (visualEffect == VisualEffect.None)
+                return;
+
+            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(visualEffect), target);
         }
 
         protected static void ApplyImmunityToNearbyParty(uint activator, ImmunityType immunity, float duration, bool includeSelf)

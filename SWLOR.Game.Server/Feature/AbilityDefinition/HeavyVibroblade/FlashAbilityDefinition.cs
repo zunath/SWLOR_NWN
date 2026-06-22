@@ -1,9 +1,10 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.Game.Server.Service;
+using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
 {
@@ -29,7 +30,22 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
                 .HasRecastDelay(RecastGroup.Flash, 90f)
                 .HasImpactAction((activator, target, level, targetLocation) =>
                 {
-                    Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.HeavyVibroblade, 0, 30, typeof(FlashStatusEffect), CombatImpactAreaShape.Sphere, 0.25f, 5f, centerOnActivator: true, statusEffectFactory: () => new FlashStatusEffect(20), enmityBonus: 650);
+                    Ability.ApplyTelegraphedCombatImpact(
+                        activator,
+                        target,
+                        targetLocation,
+                        SkillType.HeavyVibroblade,
+                        0,
+                        30,
+                        typeof(FlashStatusEffect),
+                        CombatImpactAreaShape.Sphere,
+                        0.25f,
+                        5f,
+                        centerOnActivator: true,
+                        statusEffectFactory: () => new FlashStatusEffect(20),
+                        targetVisualEffect: VisualEffect.Vfx_Imp_Dazed_S,
+                        areaVisualEffect: VisualEffect.Vfx_Fnf_Sound_Burst,
+                        enmityBonus: 650);
                 })
                 .SkillType(SkillType.HeavyVibroblade)
                 .IsCastedAbility()

@@ -111,6 +111,21 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             }
         }
 
+        public static void ApplyElectricArcVisual(uint activator, uint target)
+        {
+            if (!GetIsObjectValid(activator) || !GetIsObjectValid(target))
+                return;
+
+            var electricArc = EffectBeam(VisualEffect.Vfx_Beam_Silent_Lightning, activator, BodyNode.Hand);
+            var electricBurst = EffectVisualEffect(VisualEffect.Vfx_Imp_Lightning_S);
+
+            AssignCommand(activator, () =>
+            {
+                ApplyEffectToObject(DurationType.Temporary, electricArc, target, 1.5f);
+                ApplyEffectToObject(DurationType.Instant, electricBurst, target);
+            });
+        }
+
         public static void ApplyDiagnosticSweep(uint activator, Location location, float radius)
         {
             var revealsHidden = Stat.GetStatAdjustment(activator, StatType.FieldEngineerAreaRevealHidden) > 0;

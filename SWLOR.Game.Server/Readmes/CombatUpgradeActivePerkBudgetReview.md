@@ -47,7 +47,7 @@ Armor is not a combat-upgrade perk tree and should stay out of this budget. Espi
 | Force | Dark Ravager | 9 | 6 | Saber Rend moved to Universal; Devouring Strike; Force Body |
 | Force | Light Consular | 9 | 5 | Mind Trick moved to Universal; Clarity; Comprehend Speech; Force Mend |
 | Force | Light Guardian | 10 | 4 | Force Push and Force Leap moved to Universal; Courageous Resolve; Soothing Guard; Reflective Barrier; Bastion of Light |
-| Heavy Vibroblade | Defense | 11 | 6 | Anger Strike; Blood Weapon; Crushing Blow; Earthshatter II (formerly Edge of Darkness); Guardian's Resolve |
+| Heavy Vibroblade | Defense | 11 | 6 | Anger Strike; Blood Weapon; Crushing Blow; Earthshatter II; Guardian's Resolve |
 | Heavy Vibroblade | Offense | 10 | 6 | Bloodlust; Essence Hunter; Soul Ascension; Soul Sacrifice |
 | Katar | Iron Guard | 9 | 6 | Breaker Reversal; Covering Claws; Iron Elbows |
 | Katar | Venom Current | 9 | 6 | Venom Splash; Twin Fang Flurry; Toxic Rush |

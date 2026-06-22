@@ -208,7 +208,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementSkill(SkillType.HeavyVibroblade, 35)
 
                 .AddPerkLevel()
-                .Description("Earthshatter deals +15 DMG to affected enemies and generates extra enmity.")
+                .GrantsFeat(FeatType.Earthshatter2)
+                .Description("You deal weapon DMG + 35 to all enemies within the area of effect (line) from you. Inflicts Force Disruption on each target which disables the use of force abilities for 12 seconds and generates extra enmity.")
                 .IncreasesStat(StatType.EarthshatterDamageBonus, 15)
                 .IncreasesStat(StatType.EarthshatterEnmityBonus, 350)
                 .Price(3)

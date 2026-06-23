@@ -219,7 +219,6 @@ namespace SWLOR.Game.Server.Entity
     {
         public int? BattleThemeId { get; set; }
         public bool DisplayAchievementNotification { get; set; }
-        public bool IsHolonetEnabled { get; set; }
         public bool ShowHelmet { get; set; }
         public bool ShowCloak { get; set; }
         public bool IsSubdualModeEnabled { get; set; }
@@ -234,7 +233,6 @@ namespace SWLOR.Game.Server.Entity
             DisplayAchievementNotification = true;
             ShowHelmet = true;
             ShowCloak = true;
-            IsHolonetEnabled = true;
             IsSubdualModeEnabled = false;
             DisplayServerResetReminders = true;
             ShowDescriptorsForNamedPlayers = true;

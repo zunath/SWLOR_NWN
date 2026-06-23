@@ -326,18 +326,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 new(
                     "Communication",
                     "Social",
-                    "Talk ranges, comms, HoloNet, HoloNet broadcasts, notes, settings, descriptions, names, emotes, and languages.",
+                    "Talk ranges, comms, disabled Shout, HoloNet broadcasts, notes, settings, descriptions, names, emotes, and languages.",
                     "Chat and tools",
                     new[]
                     {
                         new ArticleBlock("Talk, Whisper, and Comms",
                             "Normal talk reaches players within 20 meters. Whisper reaches 4 meters. Party chat works as comms for party members and can also be heard by nearby players within 20 meters."),
-                        new ArticleBlock("HoloNet Chat",
-                            "Shout sends an in-character HoloNet message to online players who display the HoloNet channel. Out-of-character messages cannot be sent over HoloNet, and HoloNet chat has a 5 minute wait between sends."),
+                        new ArticleBlock("Disabled Shout Channel",
+                            "The Shout chat channel is disabled for players. DMs can still use Shout for server-wide messages."),
                         new ArticleBlock("HoloNet Broadcast Window",
                             "The HoloNet broadcast window sends a longer broadcast, costs 2500 credits, and is limited to 600 characters."),
                         new ArticleBlock("Settings",
-                            "Settings control achievement notifications, whether you display the HoloNet channel, subdual mode, reset reminders, chat colors, emote colors, and language colors. Settings also links to your character description."),
+                            "Settings control achievement notifications, subdual mode, reset reminders, chat colors, emote colors, and language colors. Settings also links to your character description."),
                         new ArticleBlock("Notes",
                             "Notes are private player notes. You can keep up to 25 notes, and each note can hold up to 1000 characters."),
                         new ArticleBlock("Names",
@@ -349,7 +349,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     {
                         new QuestionAnswer("How far does talk carry?", "Talk reaches 20 meters. Whisper reaches 4 meters."),
                         new QuestionAnswer("What is party chat here?", "Party chat acts as comms for your party and can be overheard nearby."),
-                        new QuestionAnswer("How do I stop seeing HoloNet?", "Open Settings and turn off the HoloNet channel display."),
+                        new QuestionAnswer("Why can't I use Shout?", "The player Shout channel is disabled. Use Comms for in-character radio-style communication."),
                         new QuestionAnswer("How do I name another player?", "Type /name <name>, then click that player character when the target cursor appears. Use /forgetname and click them again to clear it. Target yourself with /name to set your unnamed description. Names and descriptions are limited to 64 characters and cannot include color codes."),
                         new QuestionAnswer("How do languages improve?", "Listening to partially understood non-Basic speech can grant language XP over time.")
                     },
@@ -822,7 +822,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new ArticleBlock("Quests and Progress",
                             "Quests shows active quest objectives. Key Items shows permanent unlocks and progress records. Achievements shows long-term account progress."),
                         new ArticleBlock("Social Windows",
-                            "Notes stores private notes. Settings controls notifications, HoloNet display, subdual mode, reset reminders, chat colors, and description access. HoloCom opens your HoloCom options when available.")
+                            "Notes stores private notes. Settings controls notifications, subdual mode, reset reminders, chat colors, and description access. HoloCom opens your HoloCom options when available.")
                     },
                     new[]
                     {

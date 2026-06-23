@@ -81,8 +81,7 @@ namespace SWLOR.Game.Server.Feature
             var isInCharacterChat =
                 channel == ChatChannel.PlayerTalk ||
                 channel == ChatChannel.PlayerWhisper ||
-                channel == ChatChannel.PlayerParty ||
-                channel == ChatChannel.PlayerShout;
+                channel == ChatChannel.PlayerParty;
 
             // Don't care about other chat channels.
             if (!isInCharacterChat) return;

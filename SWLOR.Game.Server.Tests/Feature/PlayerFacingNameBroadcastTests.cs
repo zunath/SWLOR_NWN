@@ -1,5 +1,6 @@
 using FluentAssertions;
 using NUnit.Framework;
+using System.Text.Json;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -70,26 +71,231 @@ public class PlayerFacingNameBroadcastTests
             "SWLOR.Game.Server",
             "Service",
             "Communication.cs"));
+        var normalizedCommunicationSource = communicationSource.Replace("\r\n", "\n");
         communicationSource.Should().Contain("var speaker = GetEffectiveChatSpeaker(sender);");
         communicationSource.Should().Contain("PlayerName.SendChatMessageWithChatNameOverride(");
         communicationSource.Should().NotContain("finalMessage.Append(PlayerName.GetColoredDisplayName");
+        communicationSource.Should().Contain("public const string EventCommsAreaVariable = \"COMMS_EVENT_AREA\";");
+        communicationSource.Should().Contain("private const string DisabledChannelMessage = \"This chat channel is disabled.\";");
+        communicationSource.Should().Contain("private const string CommsOutOfRangeMessage = \"Your Comms message could not reach one or more out-of-range receivers.\";");
+        communicationSource.Should().Contain("var handledChat =");
+        communicationSource.Should().NotContain("var inCharacterChat =");
+        communicationSource.Should().Contain("if (channel == ChatChannel.PlayerShout && (GetIsDM(sender) || GetIsDMPossessed(sender)))");
+        communicationSource.Should().Contain("SendMessageToPC(sender, ColorToken.Red(DisabledChannelMessage));");
         communicationSource.Should().Contain("var recipients = new List<uint> { sender };");
-        communicationSource.Should().Contain("recipients.AddRange(allPlayers.Where(player => GetLocalBool(player, \"DISPLAY_HOLONET\")))");
+        communicationSource.Should().NotContain("recipients.AddRange(allPlayers.Where(player => GetLocalBool(player, \"DISPLAY_HOLONET\")))");
+        communicationSource.Should().NotContain("LoadHolonetSetting");
+        communicationSource.Should().NotContain("\"DISPLAY_HOLONET\"");
         communicationSource.Should().Contain("recipients.AddRange(allDMs);");
+        communicationSource.Should().NotContain("var allPlayers = new List<uint>();");
+        communicationSource.Should().NotContain("foreach (var player in allPlayers)");
+        communicationSource.Should().NotContain("if (sender != player && IsCommsReceiverInRange(sender, player))");
+        communicationSource.Should().NotContain("recipients.Add(player);");
         communicationSource.Should().Contain("for (var member = GetFirstFactionMember(sender); GetIsObjectValid(member); member = GetNextFactionMember(sender))");
+        communicationSource.Should().Contain("if (IsCommsReceiverInRange(sender, member))");
         communicationSource.Should().Contain("recipients.Add(member);");
+        communicationSource.Should().Contain("else if (GetIsPC(member) &&");
+        communicationSource.Should().Contain("outOfRangeCommsPartyMembers++;");
+        communicationSource.Should().Contain("Nearby non-party listeners can still overhear it.");
+        normalizedCommunicationSource.Should().Contain("recipients.AddRange(allDMs);\n\n                needsAreaCheck = true;\n                distanceCheck = 20.0f;");
+        communicationSource.Should().NotContain("AddSameStarshipCommsRecipients");
+        communicationSource.Should().Contain("SendMessageToPC(sender, ColorToken.Red(CommsOutOfRangeMessage));");
+        communicationSource.Should().NotContain("SendCommsOutOfRangeMessage(sender);");
+        communicationSource.Should().NotContain("ChatPlugin.SendMessage(ChatChannel.ServerMessage, ColorToken.Red(CommsOutOfRangeMessage), sender, sender);");
+        communicationSource.Should().Contain("private static bool IsCommsReceiverInRange(uint sender, uint receiver)");
+        communicationSource.Should().Contain("private static bool IsSpaceCommsArea(uint area)");
+        communicationSource.Should().Contain("private static bool IsEventCommsArea(uint area)");
+        communicationSource.Should().Contain("return IsEventCommsArea(receiverArea);");
+        communicationSource.Should().Contain("return ResolveCommsPlanet(receiverArea) == senderPlanet;");
+        communicationSource.Should().Contain("return senderArea == receiverArea;");
+        communicationSource.Should().Contain("Property.GetPropertyId(area)");
+        communicationSource.Should().Contain("property.PropertyType == PropertyType.Starship");
+        communicationSource.Should().Contain("PropertyLocationType.CurrentPosition");
+        communicationSource.Should().Contain("PropertyLocationType.DockPosition");
+        communicationSource.Should().Contain("DB.Get<PlayerShip>(dbPlayer.ActiveShipId)");
         communicationSource.Should().Contain("distanceCheck = 20.0f;");
         communicationSource.Should().Contain("var distance = GetDistanceBetween(sender, target);");
         communicationSource.Should().Contain("else if (channel == ChatChannel.PlayerWhisper)");
         communicationSource.Should().NotContain("finalMessage.Append(\"[Whisper] \");");
-        communicationSource.Should().Contain("finalChannel = ChatChannel.PlayerTalk;");
-        communicationSource.Should().Contain("ChatPlugin.SendMessage(finalChannel, finalMessageColored, speaker, receiver)");
+        communicationSource.Should().NotContain("finalMessage.Append(\"[Holonet] \");");
+        communicationSource.Should().Contain("SendProcessedChatMessage(channel, receiver, speaker, finalMessageColored);");
+        communicationSource.Should().Contain("private static void SendProcessedChatMessage(");
+        communicationSource.Should().NotContain("SendMessageToPC(receiver");
+        communicationSource.Should().Contain("var finalChannel = channel == ChatChannel.PlayerParty");
+        communicationSource.Should().Contain("? ChatChannel.DMTalk");
+        communicationSource.Should().Contain("ChatPlugin.SendMessage(finalChannel, message, speaker, receiver)");
         communicationSource.Should().NotContain("PlayerName.SendWithChatNameOverride");
         communicationSource.Should().NotContain("ChatPlugin.SendMessage(ChatChannel.PlayerDM");
         communicationSource.Should().NotContain("ChatChannel.PlayerDM, finalMessageColored");
-        communicationSource.Should().NotContain("finalChannel = ChatChannel.DMTalk;");
         communicationSource.Should().NotContain("var finalChannel = ChatChannel.ServerMessage;");
         communicationSource.Should().NotContain("finalSender = GetModule();");
+
+        var planetSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "Planet.cs"));
+        planetSource.Should().Contain("private const string PlanetTypeIdVariable = \"PLANET_TYPE_ID\";");
+        planetSource.Should().Contain("if (_planets.Count <= 0)");
+        planetSource.Should().Contain("CachePlanets();");
+        planetSource.Should().Contain("if (_planets.ContainsKey(planetType))");
+        planetSource.Should().Contain("areaName.StartsWith(detail.Prefix)");
+        planetSource.Should().Contain("GetPlanetTypeByAreaResref(string areaResref)");
+        planetSource.Should().Contain("ResolvePlanetTypeByAreaResref(GetResRef(area))");
+        planetSource.Should().Contain("if (GetLocalBool(area, \"SPACE\") || areaName.StartsWith(\"Space -\"))");
+        planetSource.Should().Contain("private static readonly HashSet<string> _spaceAreaResrefs");
+        planetSource.Should().Contain("\"viscaraorbit\"");
+        planetSource.Should().Contain("if (_spaceAreaResrefs.Contains(areaResref))");
+        planetSource.Should().Contain("[\"veles\"] = PlanetType.Viscara");
+        planetSource.Should().Contain("[\"veles_exterior\"] = PlanetType.Viscara");
+        planetSource.Should().Contain("[\"viscara\"] = PlanetType.Viscara");
+        planetSource.Should().Contain("[\"viscarawildlands\"] = PlanetType.Viscara");
+        planetSource.Should().Contain("SetLocalInt(area, PlanetTypeIdVariable, (int)planetType);");
+        planetSource.Should().Contain("SetLocalInt(area, PlanetTypeIdVariable, (int)resolvedPlanetType);");
+
+        var planetTypeSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Enumeration",
+            "PlanetType.cs"));
+        planetTypeSource.Should().Contain("\"Viscara - \"");
+        planetTypeSource.Should().Contain("\"CZ-220 - \"");
+
+        var planetTypeIdsByPrefix = new Dictionary<string, int>
+        {
+            ["Viscara - "] = 1,
+            ["Tatooine - "] = 2,
+            ["Mon Cala - "] = 4,
+            ["Hutlar - "] = 8,
+            ["CZ-220 - "] = 16,
+            ["Korriban - "] = 32,
+            ["Dathomir - "] = 64,
+            ["Dantooine - "] = 128
+        };
+        var planetAreaFiles = Directory.GetFiles(Path.Combine(root.FullName, "Module", "are"), "*.are.json")
+            .Select(path => new
+            {
+                Path = path,
+                Resref = Path.GetFileNameWithoutExtension(Path.GetFileNameWithoutExtension(path)),
+                AreaName = GetAreaDisplayName(path)
+            })
+            .Where(area => planetTypeIdsByPrefix.Keys.Any(prefix => area.AreaName.StartsWith(prefix, StringComparison.Ordinal)))
+            .ToList();
+
+        planetAreaFiles.Should().Contain(area => area.Resref == "viscarawildlands");
+        planetAreaFiles.Should().Contain(area => area.Resref == "veles_exterior");
+
+        foreach (var planetArea in planetAreaFiles)
+        {
+            var planet = planetTypeIdsByPrefix.First(entry =>
+                planetArea.AreaName.StartsWith(entry.Key, StringComparison.Ordinal));
+            var gitPath = Path.Combine(root.FullName, "Module", "git", planetArea.Resref + ".git.json");
+
+            File.Exists(gitPath).Should().BeTrue($"{planetArea.Resref} should have a matching GIT area instance file");
+            GitLocalInt(gitPath, "PLANET_TYPE_ID").Should().Be(
+                planet.Value,
+                $"{planetArea.Resref} should have an explicit planet id for Comms planet range checks");
+        }
+
+        var chatCommandSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "ChatCommand.cs"));
+        chatCommandSource.Should().Contain("ChatPlugin.GetChannel() == ChatChannel.PlayerShout");
+        chatCommandSource.Should().Contain("!GetIsDM(sender)");
+        chatCommandSource.Should().Contain("!GetIsDMPossessed(sender)");
+
+        var eventAreaDirectory = Path.Combine(root.FullName, "Module", "are");
+        var eventAreaFiles = Directory.GetFiles(eventAreaDirectory, "*.are.json")
+            .Where(path =>
+            {
+                var areaResref = Path.GetFileNameWithoutExtension(Path.GetFileNameWithoutExtension(path));
+                return areaResref.StartsWith("vrotr") ||
+                       areaResref.StartsWith("ka_") ||
+                       areaResref.StartsWith("na_ka_") ||
+                       areaResref == "republicshipevnt";
+            })
+            .ToList();
+
+        eventAreaFiles.Should().NotBeEmpty();
+        foreach (var eventAreaFile in eventAreaFiles)
+        {
+            var areaResref = Path.GetFileNameWithoutExtension(Path.GetFileNameWithoutExtension(eventAreaFile));
+            var eventGitFile = Path.Combine(root.FullName, "Module", "git", areaResref + ".git.json");
+
+            File.Exists(eventGitFile).Should().BeTrue($"{areaResref} should have a matching GIT area instance file");
+            File.ReadAllText(eventAreaFile).Should().NotContain("\"COMMS_EVENT_AREA\"");
+            File.ReadAllText(eventGitFile).Should().Contain("\"COMMS_EVENT_AREA\"");
+        }
+
+        var tlkOverrideSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "TlkOverrides.cs"));
+        tlkOverrideSource.Should().Contain("SetTlkOverride(66751, \"Disabled\");");
+        tlkOverrideSource.Should().Contain("SetTlkOverride(66755, \"Comms\");");
+
+        var settingsDefinitionSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "GuiDefinition",
+            "SettingsDefinition.cs"));
+        settingsDefinitionSource.Should().NotContain("Show Holonet");
+        settingsDefinitionSource.Should().NotContain("Holonet (aka Shout)");
+        settingsDefinitionSource.Should().NotContain("DisplayHolonetChannel");
+
+        var settingsViewModelSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "GuiDefinition",
+            "ViewModel",
+            "SettingsViewModel.cs"));
+        settingsViewModelSource.Should().NotContain("DisplayHolonetChannel");
+        settingsViewModelSource.Should().NotContain("UpdateHolonetSetting");
+        settingsViewModelSource.Should().NotContain("\"DISPLAY_HOLONET\"");
+
+        var playerEntitySource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Entity",
+            "Player.cs"));
+        playerEntitySource.Should().NotContain("IsHolonetEnabled");
+
+        var playerOverviewSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Admin",
+            "Shared",
+            "Components",
+            "PlayerOverview.razor"));
+        playerOverviewSource.Should().NotContain("Holonet Enabled");
+        playerOverviewSource.Should().NotContain("IsHolonetEnabled");
+
+        var playerGuideSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "GuiDefinition",
+            "ViewModel",
+            "PlayerGuideViewModel.cs"));
+        playerGuideSource.Should().Contain("\"Disabled Shout Channel\"");
+        playerGuideSource.Should().Contain("The Shout chat channel is disabled for players.");
+        playerGuideSource.Should().Contain("\"HoloNet Broadcast Window\"");
+        playerGuideSource.Should().NotContain("\"HoloNet Chat\"");
+        playerGuideSource.Should().NotContain("Shout sends an in-character HoloNet message");
+        playerGuideSource.Should().NotContain("HoloNet channel display");
+        playerGuideSource.Should().NotContain("HoloNet display");
+
+        var roleplayXpSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "RoleplayXP.cs"));
+        roleplayXpSource.Should().Contain("channel == ChatChannel.PlayerParty;");
+        roleplayXpSource.Should().NotContain("channel == ChatChannel.PlayerShout");
 
         var statusEffectSource = File.ReadAllText(Path.Combine(
             root.FullName,
@@ -337,6 +543,51 @@ public class PlayerFacingNameBroadcastTests
     private static int GetLineNumber(string source, int index)
     {
         return source.Take(index).Count(character => character == '\n') + 1;
+    }
+
+    private static string GetAreaDisplayName(string areaPath)
+    {
+        using var document = JsonDocument.Parse(File.ReadAllText(areaPath));
+        return document.RootElement
+            .GetProperty("Name")
+            .GetProperty("value")
+            .GetProperty("0")
+            .GetString() ?? string.Empty;
+    }
+
+    private static int? GitLocalInt(string gitPath, string variableName)
+    {
+        using var document = JsonDocument.Parse(File.ReadAllText(gitPath));
+        var areaProperties = document.RootElement
+            .GetProperty("AreaProperties")
+            .GetProperty("value");
+
+        if (!areaProperties.TryGetProperty("VarTable", out var varTable) ||
+            !varTable.TryGetProperty("value", out var variables))
+        {
+            return null;
+        }
+
+        foreach (var variable in variables.EnumerateArray())
+        {
+            if (!variable.TryGetProperty("Name", out var name) ||
+                name.GetProperty("value").GetString() != variableName)
+            {
+                continue;
+            }
+
+            if (!variable.TryGetProperty("Type", out var type) ||
+                type.GetProperty("value").GetInt32() != 1 ||
+                !variable.TryGetProperty("Value", out var value) ||
+                value.GetProperty("type").GetString() != "int")
+            {
+                return null;
+            }
+
+            return value.GetProperty("value").GetInt32();
+        }
+
+        return null;
     }
 
     private static DirectoryInfo FindRepositoryRoot()

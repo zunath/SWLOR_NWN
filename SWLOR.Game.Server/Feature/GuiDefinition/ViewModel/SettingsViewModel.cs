@@ -23,12 +23,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-        public bool DisplayHolonetChannel
-        {
-            get => Get<bool>();
-            set => Set(value);
-        }
-
         public bool SubdualMode
         {
             get => Get<bool>();
@@ -129,7 +123,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ChangePartialView(SettingsView, GeneralPartial);
 
             WatchOnClient(model => model.DisplayAchievementNotification);
-            WatchOnClient(model => model.DisplayHolonetChannel);
             WatchOnClient(model => model.SubdualMode);
             WatchOnClient(model => model.DisplayServerResetReminders);
             WatchOnClient(model => model.ShowDescriptorsForNamedPlayers);
@@ -144,7 +137,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsForceSensitive = dbPlayer.CharacterType == CharacterType.ForceSensitive;
 
             DisplayAchievementNotification = dbPlayer.Settings.DisplayAchievementNotification;
-            DisplayHolonetChannel = dbPlayer.Settings.IsHolonetEnabled;
             SubdualMode = dbPlayer.Settings.IsSubdualModeEnabled;
             DisplayServerResetReminders = dbPlayer.Settings.DisplayServerResetReminders;
             ShowDescriptorsForNamedPlayers = dbPlayer.Settings.ShowDescriptorsForNamedPlayers ?? true;
@@ -251,7 +243,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var dbPlayer = DB.Get<Player>(playerId);
 
             dbPlayer.Settings.DisplayAchievementNotification = DisplayAchievementNotification;
-            dbPlayer.Settings.IsHolonetEnabled = DisplayHolonetChannel;
             dbPlayer.Settings.IsSubdualModeEnabled = SubdualMode;
             dbPlayer.Settings.DisplayServerResetReminders = DisplayServerResetReminders;
             if (!GetIsDM(Player) && !GetIsDMPossessed(Player))
@@ -279,8 +270,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             Gui.TogglePlayerWindow(Player, GuiWindowType.Settings);
 
-            // Post-save actions
-            UpdateHolonetSetting();
             PlayerName.RefreshNameOverridesForObserver(Player);
 
             SendMessageToPC(Player, ColorToken.Green("Settings updated."));
@@ -295,11 +284,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             Gui.TogglePlayerWindow(Player, GuiWindowType.ChangeDescription);
         };
-
-        private void UpdateHolonetSetting()
-        {
-            SetLocalBool(Player, "DISPLAY_HOLONET", DisplayHolonetChannel);
-        }
 
         public Action OnClickGeneral() => () =>
         {

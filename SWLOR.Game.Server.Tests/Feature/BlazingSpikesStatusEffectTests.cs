@@ -15,6 +15,8 @@ public class BlazingSpikesStatusEffectTests
         source.Should().Contain("CombatDamageDeliveryType deliveryType");
         source.Should().Contain("deliveryType != CombatDamageDeliveryType.Direct");
         source.Should().Contain("!damageType.IsPhysicalDamageType()");
+        source.Should().Contain("Combat.ApplyTriggeredDamage(defender, attacker, reflectedDamage, CombatDamageType.Fire);");
+        source.Should().NotContain("EffectDamage(reflectedDamage");
     }
 
     [Test]

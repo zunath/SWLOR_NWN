@@ -59,8 +59,9 @@ public class VibroknifeShadowTests
 
         markedForDeath.Should().Contain("Combat.ApplyTriggeredDamage(Source, defender, DamageBonus, damageType);");
         markedForDeath.Should().NotContain("EffectDamage(DamageBonus)");
-        combat.Should().Contain("public static void ApplyTriggeredDamage");
+        combat.Should().Contain("public static int ApplyTriggeredDamage");
         combat.Should().NotContain("ApplyRiderDamage");
+        combat.Should().Contain("damage = ApplyDamageTakenModifiers(target, damage, activator, damageType);");
         combat.Should().Contain("ApplyDamageDealtEffects(activator, target, damage, skillType, damageType, CombatDamageDeliveryType.Triggered);");
         combat.Should().Contain("StatusEffect.NotifyDamageStatusEffects(activator, target, damage, damageType, CombatDamageDeliveryType.Triggered);");
     }

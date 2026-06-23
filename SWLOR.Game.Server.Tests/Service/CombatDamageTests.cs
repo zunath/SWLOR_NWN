@@ -331,9 +331,9 @@ public class CombatDamageTests
         var combatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
         var abilitySource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Ability.cs"));
 
-        combatSource.Should().MatchRegex(
-            @"AssignCommand\(\s*defender,\s*\(\) => ApplyEffectToObject\(\s*DurationType\.Instant,\s*EffectDamage\(reflectedDamage, damageType\.GetNWScriptDamageType\(\)\),\s*attacker\)\);");
-        combatSource.Should().Contain("AssignCommand(attacker, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(cycleDamage), target));");
+        combatSource.Should().Contain("ApplyTriggeredDamage(defender, attacker, reflectedDamage, damageType);");
+        combatSource.Should().Contain("var appliedDamage = ApplyTriggeredDamage(");
+        combatSource.Should().Contain("Enmity.ModifyEnmity(attacker, target, appliedDamage);");
         abilitySource.Should().Contain("Combat.ApplyDamageReflectionEffects(activator, target, damage, damageType);");
         abilitySource.Should().NotContain("Combat.ApplyDamageReflectionEffects(activator, target, calculatedDamage, damageType);");
     }
@@ -490,6 +490,17 @@ public class CombatDamageTests
     }
 
     [Test]
+    public void MeleeDamageTakenPoisonDamage_UsesTriggeredDamagePath()
+    {
+        var root = FindRepositoryRoot();
+        var combatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
+        var poisonRetaliation = ExtractMethod(combatSource, "private static void ApplyMeleeDamageTakenPoisonDamage");
+
+        poisonRetaliation.Should().Contain("ApplyTriggeredDamage(defender, attacker, damage, CombatDamageType.Poison);");
+        poisonRetaliation.Should().NotContain("EffectDamage(damage, CombatDamageType.Poison.GetNWScriptDamageType())");
+    }
+
+    [Test]
     public void DamageDealtForceErosion_OnlyAppliesFromDirectDamage()
     {
         var root = FindRepositoryRoot();
@@ -497,10 +508,12 @@ public class CombatDamageTests
         var forceDotSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "StatusEffectDefinition", "ForceDamageOverTimeStatusEffectBase.cs"));
 
         combatSource.Should().Contain("CombatDamageDeliveryType deliveryType = CombatDamageDeliveryType.Direct");
+        combatSource.Should().Contain("var appliesDirectDamageEffects = deliveryType == CombatDamageDeliveryType.Direct;");
+        combatSource.Should().Contain("if (!appliesDirectDamageEffects)");
         combatSource.Should().Contain("ApplyDamageDealtForceErosionEffect(attacker, defender, deliveryType);");
         combatSource.Should().Contain("if (deliveryType != CombatDamageDeliveryType.Direct)");
         combatSource.Should().Contain("ApplyDamageDealtEffects(activator, target, damage, skillType, damageType, CombatDamageDeliveryType.Triggered);");
-        combatSource.Should().MatchRegex(@"ApplyDamageDealtEffects\(\s*attacker,\s*target,\s*cycleDamage,\s*skillType,\s*CombatDamageType\.Physical,\s*CombatDamageDeliveryType\.Triggered\);");
+        combatSource.Should().MatchRegex(@"ApplyTriggeredDamage\(\s*attacker,\s*target,\s*cycleDamage,\s*CombatDamageType\.Physical,\s*skillType\);");
         combatSource.Should().NotContain("ApplyDamageDealtEffects(attacker, target, cycleDamage, skillType);");
         forceDotSource.Should().Contain("CombatDamageDeliveryType.DamageOverTime");
         forceDotSource.Should().NotContain("Combat.ApplyDamageDealtEffects(Source, creature, damage, SkillType.Force, CombatDamageType.Force);");

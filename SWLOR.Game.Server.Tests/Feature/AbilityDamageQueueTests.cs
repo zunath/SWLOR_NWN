@@ -81,9 +81,9 @@ public class AbilityDamageQueueTests
             abilitySource.IndexOf("private static TrackedAbilityImpact GetTrackedAbilityImpact", StringComparison.Ordinal) -
             abilitySource.IndexOf("public static bool TryQueueTrackedDamageEffect", StringComparison.Ordinal));
         var triggeredDamage = combatSource.Substring(
-            combatSource.IndexOf("public static void ApplyTriggeredDamage", StringComparison.Ordinal),
+            combatSource.IndexOf("public static int ApplyTriggeredDamage", StringComparison.Ordinal),
             combatSource.IndexOf("private static void ApplyGuardiansResolve", StringComparison.Ordinal) -
-            combatSource.IndexOf("public static void ApplyTriggeredDamage", StringComparison.Ordinal));
+            combatSource.IndexOf("public static int ApplyTriggeredDamage", StringComparison.Ordinal));
         var damageRiders = combatSource.Substring(
             combatSource.IndexOf("private static void ApplyAbilityDamageRiders", StringComparison.Ordinal),
             combatSource.IndexOf("private static void ApplyRicochetDamage", StringComparison.Ordinal) -

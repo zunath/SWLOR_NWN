@@ -244,11 +244,13 @@ namespace SWLOR.Game.Server.Service
             return StatusEffect.GetCreatureStatusEffects(enemy)
                 .GetAllEffects()
                 .Where(effect => effect.Source == source)
-                .Sum(effect =>
+                .Select(effect =>
                 {
                     effect.StatGroup.Stats.TryGetValue(StatType.EnmityToStatusSourcePercentAdjustment, out var adjustment);
                     return adjustment;
-                });
+                })
+                .DefaultIfEmpty(0)
+                .Max();
         }
 
         /// <summary>

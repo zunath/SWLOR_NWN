@@ -158,6 +158,9 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
             CombatDamageType damageType,
             CombatDamageDeliveryType deliveryType)
         {
+            if (deliveryType != CombatDamageDeliveryType.Direct)
+                return;
+
             OnDamageDealt(attacker, defender, damage, damageType);
         }
         public void OnDamageDealtEffect(
@@ -178,6 +181,9 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
             CombatDamageType damageType,
             CombatDamageDeliveryType deliveryType)
         {
+            if (deliveryType != CombatDamageDeliveryType.Direct)
+                return;
+
             OnDamageTaken(defender, attacker, damage, damageType);
         }
         public void OnDamageTakenEffect(

@@ -52,9 +52,9 @@ public class StanceStatusEffectTests
     }
 
     [Test]
-    public void NonStanceToggleStatusEffects_DoNotUseStanceSourceType()
+    public void BlazingSpikes_UsesExclusiveStanceSourceType()
     {
-        new BlazingSpikesStatusEffect().SourceType.Should().Be(StatusEffectSourceType.Normal);
+        new BlazingSpikesStatusEffect().SourceType.Should().Be(StatusEffectSourceType.Stance);
     }
 
     [Test]

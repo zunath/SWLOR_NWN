@@ -519,16 +519,7 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             var reflectedDamage = Math.Max(1, (int)Math.Ceiling(damage * (adjustment / 100f)));
-            reflectedDamage = Resistance.ApplyResistanceToDamage(attacker, damageType, reflectedDamage);
-            if (reflectedDamage <= 0)
-                return;
-
-            AssignCommand(
-                defender,
-                () => ApplyEffectToObject(
-                    DurationType.Instant,
-                    EffectDamage(reflectedDamage, damageType.GetNWScriptDamageType()),
-                    attacker));
+            ApplyTriggeredDamage(defender, attacker, reflectedDamage, damageType);
         }
 
         public static int ApplyDamageOverTimeTakenModifiers(
@@ -805,15 +796,16 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsObjectValid(target))
                 return;
 
-            AssignCommand(attacker, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(cycleDamage), target));
-            ApplyDamageDealtEffects(
+            var appliedDamage = ApplyTriggeredDamage(
                 attacker,
                 target,
                 cycleDamage,
-                skillType,
                 CombatDamageType.Physical,
-                CombatDamageDeliveryType.Triggered);
-            Enmity.ModifyEnmity(attacker, target, cycleDamage);
+                skillType);
+            if (appliedDamage <= 0)
+                return;
+
+            Enmity.ModifyEnmity(attacker, target, appliedDamage);
         }
 
         public static void ApplyDamageDealtEffects(
@@ -829,6 +821,11 @@ namespace SWLOR.Game.Server.Service
 
             TrackCombatActivity(attacker);
             TrackRecentDamageTarget(attacker, defender);
+
+            var appliesDirectDamageEffects = deliveryType == CombatDamageDeliveryType.Direct;
+            if (!appliesDirectDamageEffects)
+                return;
+
             ApplySideAttackDamageEffects(attacker, defender, skillType, damage);
             ApplyPredatorsMarkEffects(attacker, defender, skillType);
             ApplyDamageDealtForceErosionEffect(attacker, defender, deliveryType);
@@ -1984,16 +1981,10 @@ namespace SWLOR.Game.Server.Service
                     source: defender);
             }
 
-            damage = Resistance.ApplyResistanceToDamage(attacker, CombatDamageType.Poison, damage);
-            if (damage <= 0)
+            var appliedDamage = ApplyTriggeredDamage(defender, attacker, damage, CombatDamageType.Poison);
+            if (appliedDamage <= 0)
                 return;
 
-            AssignCommand(
-                defender,
-                () => ApplyEffectToObject(
-                    DurationType.Instant,
-                    EffectDamage(damage, CombatDamageType.Poison.GetNWScriptDamageType()),
-                    attacker));
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Poison_S), attacker);
         }
 
@@ -3482,7 +3473,7 @@ namespace SWLOR.Game.Server.Service
             StatusEffect.ApplyStatusEffect(activator, target, typeof(ExposedStatusEffect), duration, CombatDamageType.Physical);
         }
 
-        public static void ApplyTriggeredDamage(
+        public static int ApplyTriggeredDamage(
             uint activator,
             uint target,
             int damage,
@@ -3490,11 +3481,15 @@ namespace SWLOR.Game.Server.Service
             SkillType skillType = SkillType.Invalid)
         {
             if (damage <= 0)
-                return;
+                return 0;
 
             damage = Resistance.ApplyResistanceToDamage(target, damageType, damage);
             if (damage <= 0)
-                return;
+                return 0;
+
+            damage = ApplyDamageTakenModifiers(target, damage, activator, damageType);
+            if (damage <= 0)
+                return 0;
 
             var effectDamageType = damageType.GetNWScriptDamageType();
             if (!Ability.TryQueueTrackedDamageEffect(activator, target, damage, effectDamageType))
@@ -3509,6 +3504,7 @@ namespace SWLOR.Game.Server.Service
 
             ApplyDamageDealtEffects(activator, target, damage, skillType, damageType, CombatDamageDeliveryType.Triggered);
             StatusEffect.NotifyDamageStatusEffects(activator, target, damage, damageType, CombatDamageDeliveryType.Triggered);
+            return damage;
         }
 
         private static void ApplyGuardiansResolve(uint activator)

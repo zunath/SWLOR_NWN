@@ -9,6 +9,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     {
         public override string Name => "Blazing Spikes";
         public override EffectIconType Icon => EffectIconType.BlazingSpikesStatusEffect;
+        public override StatusEffectSourceType SourceType => StatusEffectSourceType.Stance;
 
         protected override void OnDamageTaken(
             uint defender,
@@ -25,11 +26,10 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
             var percent = Math.Min(40, 10 + Math.Max(0, GetAbilityScore(defender, AbilityType.Might)));
             var reflectedDamage = (int)Math.Floor(damage * (percent / 100f));
-            reflectedDamage = Resistance.ApplyResistanceToDamage(attacker, CombatDamageType.Fire, reflectedDamage);
             if (reflectedDamage <= 0)
                 return;
 
-            AssignCommand(defender, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(reflectedDamage, DamageType.Fire), attacker));
+            Combat.ApplyTriggeredDamage(defender, attacker, reflectedDamage, CombatDamageType.Fire);
         }
     }
 }

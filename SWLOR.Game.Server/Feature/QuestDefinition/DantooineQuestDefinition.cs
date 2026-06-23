@@ -16,6 +16,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             BlueMilkQuest();
             CullVoritorLizardThreat();
             HarvestingHerbs();
+            FieldTinctures();
             FetchPetTreat();
             CollectHerbsForLibrarian();
             HiddenCave();
@@ -98,6 +99,24 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                .AddXPReward(600)
                .AddGoldReward(300);
+        }
+        private void FieldTinctures()
+        {
+            _builder.Create("field_tinctures", "Field Tinctures")
+               .PrerequisiteQuest("harvest_herbs")
+
+               .AddState()
+               .SetStateJournalText("Healer Elara has enough Starwort for the clinic, but she needs stabilizers to keep field tinctures viable. Collect three Wild Innards from Gizka and one sample of Thune Blood from a Thune, then return to her in the Dantooine Colony.")
+               .AddCollectItemObjective("wild_innards", 3)
+               .AddCollectItemObjective("thune_blood", 1)
+
+               .AddState()
+               .SetStateJournalText("Deliver the Wild Innards and Thune Blood to Healer Elara in the Dantooine Colony.")
+
+               .AddXPReward(2200)
+               .AddGoldReward(1500)
+               .AddItemReward("med_supplies", 5)
+               .AddItemReward("stim_pack", 3);
         }
         private void FetchPetTreat()
         {

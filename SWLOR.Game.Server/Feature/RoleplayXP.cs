@@ -11,7 +11,11 @@ namespace SWLOR.Game.Server.Feature
 {
     public class RoleplayXP
     {
+        private const string RPTickVariable = "RP_SYSTEM_TICKS";
         private const string RPTimestampVariable = "RP_SYSTEM_LAST_MESSAGE_TIMESTAMP";
+        private const int RPRequiredTicks = 300;
+        private const int OOCPenaltyTicks = 50;
+        private const int MaxOOCPenaltyTicks = 300;
 
         /// <summary>
         /// Once every 30 minutes, the RP system will check all players and distribute RP XP if applicable.
@@ -19,18 +23,17 @@ namespace SWLOR.Game.Server.Feature
         [NWNEventHandler(ScriptName.OnPlayerHeartbeat)]
         public static void DistributeRoleplayXP()
         {
-            const string TrackerVariableName = "RP_SYSTEM_TICKS";
             var player = OBJECT_SELF;
-            var ticks = GetLocalInt(player, TrackerVariableName) + 1;
+            var ticks = GetLocalInt(player, RPTickVariable) + 1;
 
             // Is it time to process RP points?
-            if (ticks >= 300) // 300 ticks * 6 seconds per HB = 1800 seconds = 30 minutes
+            if (ticks >= RPRequiredTicks) // 300 ticks * 6 seconds per HB = 1800 seconds = 30 minutes
             {
                 ProcessPlayerRoleplayXP(player);
                 ticks = 0;
             }
 
-            SetLocalInt(player, TrackerVariableName, ticks);
+            SetLocalInt(player, RPTickVariable, ticks);
         }
 
         /// <summary>
@@ -86,19 +89,22 @@ namespace SWLOR.Game.Server.Feature
             // Don't care about other chat channels.
             if (!isInCharacterChat) return;
 
+            var playerID = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Player>(playerID) ?? new Player(playerID);
+
+            // Is this an OOC message?
+            if (IsOOCMessage(message))
+            {
+                RefreshRPMessageTimestamp(player, now);
+                ApplyOOCMessagePenalty(player, dbPlayer);
+                return;
+            }
+
             // Is the message too short?
             if (message.Length <= 3) return;
 
-            // Is this an OOC message?
-            var startingText = message.Substring(0, 2);
-            if (startingText == "//" || startingText == "((") return;
-
-            var playerID = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerID);
-
             // Spam prevention
-            var timestampString = GetLocalString(player, RPTimestampVariable);
-            SetLocalString(player, RPTimestampVariable, now.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture));
+            var timestampString = RefreshRPMessageTimestamp(player, now);
 
             // If there was a timestamp then we'll check for spam and prevent it from counting towards
             // the RP XP points.
@@ -118,6 +124,49 @@ namespace SWLOR.Game.Server.Feature
 
             dbPlayer.RoleplayProgress.RPPoints++;
             DB.Set(dbPlayer);
+        }
+
+        private static string RefreshRPMessageTimestamp(uint player, DateTime now)
+        {
+            var timestampString = GetLocalString(player, RPTimestampVariable);
+            SetLocalString(player, RPTimestampVariable, now.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture));
+            return timestampString;
+        }
+
+        private static bool IsOOCMessage(string message)
+        {
+            var trimmedMessage = message.TrimStart();
+            if (trimmedMessage.Length <= 0)
+                return false;
+
+            return
+                trimmedMessage.StartsWith("//", StringComparison.Ordinal) ||
+                trimmedMessage.StartsWith("((", StringComparison.Ordinal) ||
+                trimmedMessage.StartsWith("[[", StringComparison.Ordinal) ||
+                trimmedMessage.StartsWith("{{", StringComparison.Ordinal) ||
+                trimmedMessage.StartsWith("OOC:", StringComparison.OrdinalIgnoreCase) ||
+                trimmedMessage.StartsWith("[OOC]", StringComparison.OrdinalIgnoreCase) ||
+                trimmedMessage.StartsWith("(OOC)", StringComparison.OrdinalIgnoreCase);
+        }
+
+        private static void ApplyOOCMessagePenalty(uint player, Player dbPlayer)
+        {
+            dbPlayer.RoleplayProgress.OOCMessageCount++;
+            dbPlayer.RoleplayProgress.RPPoints = 0;
+            DB.Set(dbPlayer);
+
+            var penaltyTicks = GetOOCMessagePenaltyTicks(dbPlayer.RoleplayProgress.OOCMessageCount);
+            SetLocalInt(player, RPTickVariable, -penaltyTicks);
+        }
+
+        private static int GetOOCMessagePenaltyTicks(ulong oocMessageCount)
+        {
+            if (oocMessageCount <= 1)
+                return 0;
+
+            var penaltySteps = oocMessageCount - 1;
+            var penaltyTicks = penaltySteps * OOCPenaltyTicks;
+            return (int)Math.Min((ulong)MaxOOCPenaltyTicks, penaltyTicks);
         }
 
         /// <summary>

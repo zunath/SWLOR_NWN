@@ -196,6 +196,7 @@ namespace SWLOR.Game.Server.Entity
         public int RPPoints { get; set; }
         public ulong TotalRPExpGained { get; set; }
         public ulong SpamMessageCount { get; set; }
+        public ulong OOCMessageCount { get; set; }
     }
 
     public class PlayerSkill

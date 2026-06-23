@@ -29,6 +29,8 @@ When the concept is underspecified, grill the request one dependency at a time. 
 
 2. Inventory existing content.
    - Search for matching area, NPC, quest ID, item resref, NPC group, key item, and dialogue resref.
+   - Search existing `AddCollectItemObjective(...)` usage for each proposed collect item. Avoid reusing the same item in a new non-guild quest unless there is a clear gameplay or story reason, such as a quest-chain callback, a deliberate repeatable resource loop, tutorial reinforcement, faction supply pressure, or a different acquisition route.
+   - If duplicate item use is justified, write the reason into the working notes, quest dialogue, journal context, or intake `duplicate_item_reason` field. If the reason is weak, pick a different item or objective.
    - Reuse existing templates, groups, items, and reward scale when they fit.
    - Keep quest IDs lower snake case and unique across all `QuestBuilder.Create(...)` calls.
    - Read at least one nearby quest definition and one nearby `.dlg.json` conversation for the same planet, faction, or hub before writing new dialogue.
@@ -39,6 +41,7 @@ When the concept is underspecified, grill the request one dependency at a time. 
    - Use `QuestBuilder` states in order. State 1 is the accepted state; final state is the turn-in/completion state.
    - Consume the intake `repeatable` field deterministically: omit `.IsRepeatable()` for one-time/false/no quests, add `.IsRepeatable()` for repeatable/true/yes quests, and stop to design a custom gate if a daily/cooldown cadence is requested because `QuestBuilder` has no built-in daily helper.
    - Use built-in objectives before custom code: `AddKillObjective(...)` and `AddCollectItemObjective(...)`.
+   - For collect objectives, prefer items that are not already used by nearby non-guild quests unless the quest explicitly benefits from repetition.
    - Use built-in rewards before custom code: credits, XP, item, key item, GP, faction standing, faction points.
    - Use `PrerequisiteQuest(...)` and `PrerequisiteKeyItem(...)` for acceptance gates. Add custom prerequisites only when the builder lacks the needed gate.
    - Match rewards to nearby quests of similar difficulty, objective count, and repeatability. Do not add repeatable permanent key item rewards unless the current system already models that exact pattern.

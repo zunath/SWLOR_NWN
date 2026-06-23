@@ -6,13 +6,15 @@ For each quest, capture:
 
 - Quest: `quest_id`, display name, required `repeatable` mode (`one-time`/`false`/`no`, `repeatable`/`true`/`yes`, or a named cadence such as `daily` that needs custom gating), guild/rank if any, prerequisite quest IDs, prerequisite key items.
 - Giver: NPC name, UTC template resref, tag, dialogue resref or C# dialog class, target area resref, coordinates, facing.
-- Objectives: kill group, collect item resref, quantity, producer requirement, trigger/placeable objective if any.
+- Objectives: kill group, collect item resref, quantity, producer requirement, trigger/placeable objective if any, and duplicate item justification when a proposed collect item already appears in a non-guild quest.
 - Text: not eligible, offer, acceptance, in-progress reminder, turn-in, completion, completed/repeat text, player replies, journal text for each state.
 - Creative brief: NPC role, NPC voice, local pressure, stakes, lore anchors, why this NPC asks the player, and how the reward is justified in-world.
 - Rewards: XP, credits, items, key items, GP, faction standing/points, selectable vs automatic.
 - Placement: fixed NPC placement, enemy spawn table, enemy spawn coordinates or area random count.
 
 If a field is missing and cannot be resolved by searching the repo, ask one question at a time and include a recommended answer.
+
+Before accepting a collect objective, search `SWLOR.Game.Server/Feature/QuestDefinition` for existing `AddCollectItemObjective(...)` usage of the same item resref. Avoid duplicating items across non-guild quests unless the repetition is intentional and justified by gameplay or story. Good reasons include quest-chain continuity, tutorial reinforcement, a deliberate repeatable resource sink, faction or local supply pressure, or a different acquisition route. Weak reasons like "the item already exists" or "it is nearby" should trigger a different item or objective.
 
 ## Code Surfaces
 
@@ -78,6 +80,7 @@ Read `dialogue-and-content-standards.md` before writing quest text. Then verify:
 - The offer, accept response, reminder, and completion lines have different sentence shapes.
 - Player replies offer intentful choices, not only generic accept/decline buttons.
 - Local nouns match existing repo content: area names, NPC names, enemy groups, item names, guilds, key items, and prior quest events.
+- Reused collect items have an explicit reason in dialogue, journal text, or implementation notes.
 - Prerequisite failure text explains the nearest useful next step.
 - Journal text stays clear and objective-oriented while dialogue carries personality.
 - Rewards are explained as pay, access, proof, trust, hazard compensation, guild credit, or another in-world reason.
@@ -136,3 +139,4 @@ Pop-Location
 - Dialogue uses a static generated pattern across multiple NPCs.
 - Prerequisite gates exist mechanically but have no player-facing explanation.
 - Reward amounts or item rewards drift from nearby quest/guild scale without an explicit reason.
+- A new non-guild collect quest reuses items from existing non-guild quests without a clear gameplay or story reason.

@@ -48,6 +48,13 @@ Standards for gameplay icon color, uniqueness, rank display, and audit/generatio
 - **Conditional numeric rank badge requirements**
 - **Generator and audit enforcement expectations**
 
+### [VisualEffectSelection.md](VisualEffectSelection.md)
+Guidance and generated reference data for choosing NWN visual effects for perks, abilities, status effects, and scripted gameplay feedback. This includes:
+
+- **Group selection rules** for beam, combat, duration, eyes, fire-and-forget, and impact VFX
+- **Ability implementation patterns** for activation, target, area, marker, and beam visuals
+- **VisualEffectReference.csv** with C# enum names, NWScript constants, visual tags, colors, locations, source pages, and screenshot URLs
+
 ### [CombatUpgradeImplementationStatus.md](CombatUpgradeImplementationStatus.md)
 Current combat-upgrade status, latest audit results, verification notes, and remaining release-validation work.
 

@@ -48,6 +48,11 @@
 
 - After adding or changing an ability icon referenced by `SWLOR_Haks/swlor2_2da/feat.2da` or `SWLOR_Haks/swlor2_2da/spells.2da`, run `powershell -ExecutionPolicy Bypass -File tools/GenerateCooldownIcons.ps1 -Force` to regenerate the `pr0_` through `pr5_` cooldown icon variants. This script must use ImageMagick output; do not replace it with a custom TGA writer.
 
+## Ability VFX
+
+- Before choosing or changing perk, ability, status-effect, trap, or scripted creature VFX, consult `SWLOR.Game.Server/Readmes/VisualEffectSelection.md` and `SWLOR.Game.Server/Readmes/VisualEffectReference.csv`. Pick VFX by gameplay moment, visual group, colors, location, and screenshot reference rather than by constant name alone.
+- Use the CSV `CSharpEnum` value in C# code. Use `BEAM` entries with `EffectBeam`, `FNF` entries for location/area bursts, `IMP` or `COM` entries for target impact feedback, `DUR` entries for persistent auras or field markers, and `EYES` entries only when the eye/head cue is the intended player-facing signal.
+
 ## Ability Damage
 
 - When an ability applies `EffectDamage` with `ApplyEffectToObject`, wrap that call in `AssignCommand(source, () => ApplyEffectToObject(...))` using the damage source as the command object so the damage appears in the player's combat log.

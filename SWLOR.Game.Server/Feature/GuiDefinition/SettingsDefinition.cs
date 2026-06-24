@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             _builder.CreateWindow(GuiWindowType.Settings)
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
-                .SetInitialGeometry(0, 0, 339f, 340f)
+                .SetInitialGeometry(0, 0, 375f, 340f)
                 .SetTitle("Settings")
 
                 .DefinePartialView(SettingsViewModel.GeneralPartial, view =>
@@ -21,70 +21,102 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     {
                         col.AddRow(row =>
                         {
-                            row.AddSpacer();
+                            row.AddSpacer()
+                                .SetWidth(28f);
 
                             row.AddCheckBox()
                                 .SetText("Show Achievements")
                                 .SetTooltip("Shows or hides achievement notification window. You will still continue to acquire achievements even if this setting is disabled.")
+                                .SetWidth(230f)
                                 .BindIsChecked(model => model.DisplayAchievementNotification);
-
-                            row.AddSpacer();
                         })
                         .SetHeight(30f);
 
                         col.AddRow(row =>
                         {
-                            row.AddSpacer();
+                            row.AddSpacer()
+                                .SetWidth(28f);
 
                             row.AddCheckBox()
                                 .SetText("Subdual Mode")
                                 .SetTooltip("Toggles Subdual Mode. If turned on, when you kill an opponent they will be brought to 1 hit point and be knocked down for a minute instead of dying.")
+                                .SetWidth(230f)
                                 .BindIsChecked(model => model.SubdualMode);
-
-                            row.AddSpacer();
                         })
                             .SetHeight(30f);
 
 
                         col.AddRow(row =>
                         {
-                            row.AddSpacer();
+                            row.AddSpacer()
+                                .SetWidth(28f);
 
                             row.AddCheckBox()
                                 .SetText("Reset Reminders")
                                 .SetTooltip("If enabled, you will receive periodic reminders about automatic server resets.")
+                                .SetWidth(230f)
                                 .BindIsChecked(model => model.DisplayServerResetReminders);
-
-                            row.AddSpacer();
                         })
                             .SetHeight(30f);
 
                         col.AddRow(row =>
                         {
-                            row.AddSpacer();
-
-                            row.AddCheckBox()
-                                .SetText("Show Descriptors")
-                                .SetTooltip("Shows another player's unknown descriptor beside the name you assigned to them.")
-                                .BindIsChecked(model => model.ShowDescriptorsForNamedPlayers);
-
-                            row.AddSpacer();
-                        })
-                            .SetHeight(30f);
-
-                        col.AddRow(row =>
-                        {
-                            row.AddSpacer();
+                            row.AddSpacer()
+                                .SetWidth(28f);
 
                             row.AddButton()
                                 .SetText("Change Description")
                                 .SetTooltip("Modify your publicly-viewable description which displays when you are examined.")
                                 .BindOnClicked(model => model.OnClickChangeDescription())
+                                .SetWidth(230f)
                                 .SetHeight(32f);
-
-                            row.AddSpacer();
                         });
 
+                    });
+                })
+
+                .DefinePartialView(SettingsViewModel.IdentityPartial, view =>
+                {
+                    view.AddColumn(col =>
+                    {
+                        col.AddRow(row =>
+                        {
+                            row.AddSpacer()
+                                .SetWidth(28f);
+
+                            row.AddCheckBox()
+                                .SetText("Show My Descriptor")
+                                .SetTooltip("Shows your unknown descriptor beside your own character name.")
+                                .SetWidth(230f)
+                                .BindIsChecked(model => model.ShowOwnDescriptor);
+                        })
+                            .SetHeight(30f);
+
+                        col.AddRow(row =>
+                        {
+                            row.AddSpacer()
+                                .SetWidth(28f);
+
+                            row.AddCheckBox()
+                                .SetText("Show Others' Descriptor")
+                                .SetTooltip("Shows another player's unknown descriptor beside the name you assigned to them.")
+                                .SetWidth(230f)
+                                .BindIsChecked(model => model.ShowDescriptorsForNamedPlayers);
+                        })
+                            .SetHeight(30f);
+
+                        col.AddRow(row =>
+                        {
+                            row.AddSpacer()
+                                .SetWidth(28f);
+
+                            row.AddCheckBox()
+                                .SetText("Hide My Account Name")
+                                .SetTooltip("Hides your account/community name from player-facing lists. This is enabled by default.")
+                                .SetWidth(230f)
+                                .BindIsChecked(model => model.ScrambleAccountName);
+                        })
+                            .SetHeight(30f);
                     });
                 })
 
@@ -185,6 +217,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .SetHeight(32f)
                             .BindOnClicked(model => model.OnClickGeneral())
                             .BindIsToggled(model => model.IsGeneralSelected);
+
+                        row.AddToggleButton()
+                            .SetText("Identity")
+                            .SetHeight(32f)
+                            .BindOnClicked(model => model.OnClickIdentity())
+                            .BindIsToggled(model => model.IsIdentitySelected);
 
                         row.AddToggleButton()
                             .SetText("Chat")

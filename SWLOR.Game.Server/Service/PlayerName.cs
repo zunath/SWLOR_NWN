@@ -422,9 +422,19 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             var unknownDisplayName = PlayerDescriptor.GetUnknownDisplayName(player);
+            var ownDisplayName = ShouldShowOwnDescriptor(player)
+                ? BuildDisplayNameWithDescriptor(GetName(player), unknownDisplayName)
+                : GetName(player);
+            var shouldScrambleAccountName = ShouldScrambleAccountName(player);
+
+            if (!shouldScrambleAccountName)
+                RenamePlugin.ClearPCNameOverride(player);
+
             RenamePlugin.SetPCNameOverride(player, unknownDisplayName, UnknownNamePrefix, UnknownNameSuffix, PlayerNameOverrideType.Default);
-            RenamePlugin.SetPCNameOverride(player, GetName(player), string.Empty, string.Empty, PlayerNameOverrideType.Default, player);
-            RenamePlugin.SetPCNameOverride(player, unknownDisplayName, UnknownNamePrefix, UnknownNameSuffix, PlayerNameOverrideType.Obfuscate);
+            RenamePlugin.SetPCNameOverride(player, ownDisplayName, string.Empty, string.Empty, PlayerNameOverrideType.Default, player);
+
+            if (shouldScrambleAccountName)
+                RenamePlugin.SetPCNameOverride(player, unknownDisplayName, UnknownNamePrefix, UnknownNameSuffix, PlayerNameOverrideType.Obfuscate);
 
             for (var otherPlayer = GetFirstPC(); GetIsObjectValid(otherPlayer); otherPlayer = GetNextPC())
             {
@@ -528,7 +538,11 @@ namespace SWLOR.Game.Server.Service
 
             if (observer == target)
             {
-                RenamePlugin.SetPCNameOverride(target, GetName(target), string.Empty, string.Empty, PlayerNameOverrideType.Default, observer);
+                var ownDisplayName = ShouldShowOwnDescriptor(target)
+                    ? BuildDisplayNameWithDescriptor(GetName(target), PlayerDescriptor.GetUnknownDisplayName(target))
+                    : GetName(target);
+
+                RenamePlugin.SetPCNameOverride(target, ownDisplayName, string.Empty, string.Empty, PlayerNameOverrideType.Default, observer);
                 return;
             }
 
@@ -635,6 +649,42 @@ namespace SWLOR.Game.Server.Service
             setting = dbPlayer?.Settings?.ShowDescriptorsForNamedPlayers ?? true;
             ShowDescriptorsForNamedPlayersByObserverId[observerId] = setting;
             return setting;
+        }
+
+        private static bool ShouldShowOwnDescriptor(uint player)
+        {
+            if (!GetIsObjectValid(player) ||
+                !GetIsPC(player) ||
+                GetIsDM(player) ||
+                GetIsDMPossessed(player))
+            {
+                return false;
+            }
+
+            var playerId = GetObjectUUID(player);
+            if (string.IsNullOrWhiteSpace(playerId))
+                return true;
+
+            var dbPlayer = DB.Get<Player>(playerId);
+            return dbPlayer?.Settings?.ShowOwnDescriptor ?? true;
+        }
+
+        private static bool ShouldScrambleAccountName(uint player)
+        {
+            if (!GetIsObjectValid(player) ||
+                !GetIsPC(player) ||
+                GetIsDM(player) ||
+                GetIsDMPossessed(player))
+            {
+                return false;
+            }
+
+            var playerId = GetObjectUUID(player);
+            if (string.IsNullOrWhiteSpace(playerId))
+                return true;
+
+            var dbPlayer = DB.Get<Player>(playerId);
+            return dbPlayer?.Settings?.ScrambleAccountName ?? true;
         }
 
         private static bool TryGetKnownName(uint observer, uint target, out string knownName)

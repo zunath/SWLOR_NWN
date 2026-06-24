@@ -13,6 +13,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public const string SettingsView = "SETTINGS_VIEW";
 
         public const string GeneralPartial = "GENERAL_VIEW";
+        public const string IdentityPartial = "IDENTITY_VIEW";
         public const string ChatPartial = "CHAT_VIEW";
 
         private const int NumberOfSystemColors = 2; // OOC, Emotes
@@ -47,7 +48,25 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public bool ShowOwnDescriptor
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public bool ScrambleAccountName
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
         public bool IsGeneralSelected
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public bool IsIdentitySelected
         {
             get => Get<bool>();
             set => Set(value);
@@ -113,12 +132,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             SelectedIndex = -1;
             SelectedColor = new GuiColor(0, 0, 0);
             IsGeneralSelected = true;
+            IsIdentitySelected = false;
             IsChatSelected = false;
             CurrentRed = 0;
             CurrentGreen = 0;
             CurrentBlue = 0;
 
             LoadGeneralView();
+            LoadIdentityView();
 
             ChangePartialView(SettingsView, GeneralPartial);
 
@@ -126,6 +147,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             WatchOnClient(model => model.SubdualMode);
             WatchOnClient(model => model.DisplayServerResetReminders);
             WatchOnClient(model => model.ShowDescriptorsForNamedPlayers);
+            WatchOnClient(model => model.ShowOwnDescriptor);
+            WatchOnClient(model => model.ScrambleAccountName);
             WatchOnClient(model => model.SelectedColor);
         }
 
@@ -139,7 +162,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             DisplayAchievementNotification = dbPlayer.Settings.DisplayAchievementNotification;
             SubdualMode = dbPlayer.Settings.IsSubdualModeEnabled;
             DisplayServerResetReminders = dbPlayer.Settings.DisplayServerResetReminders;
+        }
+
+        private void LoadIdentityView()
+        {
+            var playerId = GetObjectUUID(Player);
+            var dbPlayer = DB.Get<Player>(playerId);
+
             ShowDescriptorsForNamedPlayers = dbPlayer.Settings.ShowDescriptorsForNamedPlayers ?? true;
+            ShowOwnDescriptor = dbPlayer.Settings.ShowOwnDescriptor ?? true;
+            ScrambleAccountName = dbPlayer.Settings.ScrambleAccountName ?? true;
         }
 
         private void LoadChatView()
@@ -246,7 +278,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             dbPlayer.Settings.IsSubdualModeEnabled = SubdualMode;
             dbPlayer.Settings.DisplayServerResetReminders = DisplayServerResetReminders;
             if (!GetIsDM(Player) && !GetIsDMPossessed(Player))
+            {
                 dbPlayer.Settings.ShowDescriptorsForNamedPlayers = ShowDescriptorsForNamedPlayers;
+                dbPlayer.Settings.ShowOwnDescriptor = ShowOwnDescriptor;
+                dbPlayer.Settings.ScrambleAccountName = ScrambleAccountName;
+            }
+
+            if (ChatColors == null || ChatColors.Count < NumberOfSystemColors)
+                LoadChatView();
 
             // System Colors - OOC
             var systemColor = ChatColors[0];
@@ -271,6 +310,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Gui.TogglePlayerWindow(Player, GuiWindowType.Settings);
 
             PlayerName.RefreshNameOverridesForObserver(Player);
+            PlayerName.RefreshNameOverridesForPlayer(Player);
 
             SendMessageToPC(Player, ColorToken.Green("Settings updated."));
         };
@@ -288,14 +328,25 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public Action OnClickGeneral() => () =>
         {
             IsGeneralSelected = true;
+            IsIdentitySelected = false;
             IsChatSelected = false;
             ChangePartialView(SettingsView, GeneralPartial);
             LoadGeneralView();
         };
 
+        public Action OnClickIdentity() => () =>
+        {
+            IsGeneralSelected = false;
+            IsIdentitySelected = true;
+            IsChatSelected = false;
+            ChangePartialView(SettingsView, IdentityPartial);
+            LoadIdentityView();
+        };
+
         public Action OnClickChat() => () =>
         {
             IsGeneralSelected = false;
+            IsIdentitySelected = false;
             IsChatSelected = true;
             ChangePartialView(SettingsView, ChatPartial);
             LoadChatView();

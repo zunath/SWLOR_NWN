@@ -8,7 +8,7 @@ namespace SWLOR.Game.Server.Tests.Feature;
 public class PlayerNameRecognitionTests
 {
     [Test]
-    public void PlayerNameOverrides_ObfuscateCommunityNameOnEnter()
+    public void PlayerNameOverrides_ObfuscateCommunityNameWhenEnabled()
     {
         var root = FindRepositoryRoot();
         var source = File.ReadAllText(Path.Combine(
@@ -18,6 +18,10 @@ public class PlayerNameRecognitionTests
             "PlayerName.cs"));
         var method = ExtractMethod(source, "private static void ApplyNameOverridesForPlayer(uint player)");
 
+        method.Should().Contain("var shouldScrambleAccountName = ShouldScrambleAccountName(player);");
+        method.Should().Contain("if (!shouldScrambleAccountName)");
+        method.Should().Contain("RenamePlugin.ClearPCNameOverride(player);");
+        method.Should().Contain("if (shouldScrambleAccountName)");
         method.Should().Contain("PlayerNameOverrideType.Obfuscate");
     }
 
@@ -289,7 +293,11 @@ public class PlayerNameRecognitionTests
 
         playerSource.Should().Contain("public string UnknownDisplayName { get; set; }");
         playerSource.Should().Contain("public bool? ShowDescriptorsForNamedPlayers { get; set; }");
+        playerSource.Should().Contain("public bool? ShowOwnDescriptor { get; set; }");
+        playerSource.Should().Contain("public bool? ScrambleAccountName { get; set; }");
         playerSource.Should().Contain("ShowDescriptorsForNamedPlayers = true;");
+        playerSource.Should().Contain("ShowOwnDescriptor = true;");
+        playerSource.Should().Contain("ScrambleAccountName = true;");
         descriptorSource.Should().Contain("public static void SetUnknownDisplayName(uint player, string name)");
         source.Should().Contain("PlayerDescriptor.GetUnknownDisplayName(target)");
         source.Should().Contain("public static void SendChatMessageWithChatNameOverride(uint observer, uint target, Action sendMessage)");
@@ -309,6 +317,11 @@ public class PlayerNameRecognitionTests
         nameOverrideMethod.Should().Contain("UnknownNameSuffix");
         nameOverrideMethod.Should().Contain("RenamePlugin.SetPCNameOverride(target, displayName, prefix, suffix, PlayerNameOverrideType.Default, observer);");
         nameOverrideMethod.Should().NotContain("SetCreatureNameOverride");
+
+        var applyPlayerMethod = ExtractMethod(source, "private static void ApplyNameOverridesForPlayer(uint player)");
+        applyPlayerMethod.Should().Contain("var ownDisplayName = ShouldShowOwnDescriptor(player)");
+        applyPlayerMethod.Should().Contain("BuildDisplayNameWithDescriptor(GetName(player), unknownDisplayName)");
+        applyPlayerMethod.Should().Contain("RenamePlugin.SetPCNameOverride(player, ownDisplayName, string.Empty, string.Empty, PlayerNameOverrideType.Default, player);");
 
         var resolveDisplayMethod = ExtractMethod(source, "private static string ResolveDisplayName(uint observer, uint target, out bool isUnknown)");
         resolveDisplayMethod.Should().Contain("ShouldShowDescriptorForNamedPlayers(observer)");
@@ -441,7 +454,7 @@ public class PlayerNameRecognitionTests
     }
 
     [Test]
-    public void Settings_CanHideDescriptorsForNamedTargetsForPlayersOnly()
+    public void Settings_ControlIdentityNameplateAndAccountPrivacyForPlayersOnly()
     {
         var root = FindRepositoryRoot();
         var definitionSource = File.ReadAllText(Path.Combine(
@@ -463,16 +476,33 @@ public class PlayerNameRecognitionTests
             "Service",
             "PlayerName.cs"));
 
-        definitionSource.Should().Contain("Show Descriptors");
+        definitionSource.Should().Contain("Identity");
+        definitionSource.Should().NotContain("Nameplates");
+        definitionSource.Should().Contain("Show My Descriptor");
+        definitionSource.Should().Contain("BindIsChecked(model => model.ShowOwnDescriptor)");
+        definitionSource.Should().Contain("Show Others' Descriptor");
         definitionSource.Should().Contain("BindIsChecked(model => model.ShowDescriptorsForNamedPlayers)");
+        definitionSource.Should().NotContain(".SetText(\"Account\")");
+        definitionSource.Should().Contain("Hide My Account Name");
+        definitionSource.Should().Contain("BindIsChecked(model => model.ScrambleAccountName)");
 
         viewModelSource.Should().Contain("public bool ShowDescriptorsForNamedPlayers");
+        viewModelSource.Should().Contain("public bool ShowOwnDescriptor");
+        viewModelSource.Should().Contain("public bool ScrambleAccountName");
+        viewModelSource.Should().Contain("public bool IsIdentitySelected");
         viewModelSource.Should().Contain("ShowDescriptorsForNamedPlayers = dbPlayer.Settings.ShowDescriptorsForNamedPlayers ?? true;");
+        viewModelSource.Should().Contain("ShowOwnDescriptor = dbPlayer.Settings.ShowOwnDescriptor ?? true;");
+        viewModelSource.Should().Contain("ScrambleAccountName = dbPlayer.Settings.ScrambleAccountName ?? true;");
         viewModelSource.Should().Contain("dbPlayer.Settings.ShowDescriptorsForNamedPlayers = ShowDescriptorsForNamedPlayers;");
+        viewModelSource.Should().Contain("dbPlayer.Settings.ShowOwnDescriptor = ShowOwnDescriptor;");
+        viewModelSource.Should().Contain("dbPlayer.Settings.ScrambleAccountName = ScrambleAccountName;");
         viewModelSource.Should().Contain("PlayerName.RefreshNameOverridesForObserver(Player);");
+        viewModelSource.Should().Contain("PlayerName.RefreshNameOverridesForPlayer(Player);");
 
         playerNameSource.Should().Contain("public static void RefreshNameOverridesForObserver(uint observer)");
         playerNameSource.Should().Contain("ShowDescriptorsForNamedPlayersByObserverId.Remove(observerId);");
+        playerNameSource.Should().Contain("private static bool ShouldShowOwnDescriptor(uint player)");
+        playerNameSource.Should().Contain("private static bool ShouldScrambleAccountName(uint player)");
         playerNameSource.Should().Contain("GetIsDM(observer) ||");
         playerNameSource.Should().Contain("GetIsDMPossessed(observer)");
     }

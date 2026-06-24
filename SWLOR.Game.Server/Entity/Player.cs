@@ -225,6 +225,8 @@ namespace SWLOR.Game.Server.Entity
         public bool IsSubdualModeEnabled { get; set; }
         public bool DisplayServerResetReminders { get; set; }
         public bool? ShowDescriptorsForNamedPlayers { get; set; }
+        public bool? ShowOwnDescriptor { get; set; }
+        public bool? ScrambleAccountName { get; set; }
         public Dictionary<SkillType, PlayerColor> LanguageChatColors { get; set; }
         public PlayerColor OOCChatColor { get; set; }
         public PlayerColor EmoteChatColor { get; set; }
@@ -237,6 +239,8 @@ namespace SWLOR.Game.Server.Entity
             IsSubdualModeEnabled = false;
             DisplayServerResetReminders = true;
             ShowDescriptorsForNamedPlayers = true;
+            ShowOwnDescriptor = true;
+            ScrambleAccountName = true;
 
             LanguageChatColors = new Dictionary<SkillType, PlayerColor>();
         }

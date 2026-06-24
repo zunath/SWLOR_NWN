@@ -459,12 +459,14 @@ public class AIModelTests
         issueBody.Should().Contain("ActionDoCommand(() =>");
         issueBody.IndexOf("ActionDoCommand(() =>", StringComparison.Ordinal)
             .Should()
-            .BeGreaterThan(issueBody.IndexOf("ActionMoveToObject(target, true, MeleeAttackMoveRange);", StringComparison.Ordinal));
+            .BeGreaterThan(issueBody.IndexOf("ActionMoveToObject(target, true, GetAttackMoveRange(creature));", StringComparison.Ordinal));
         issueBody.IndexOf("ActionAttack(target);", StringComparison.Ordinal)
             .Should()
             .BeGreaterThan(issueBody.LastIndexOf("AI.TryStartCombatLeashEvade(creature, target)", StringComparison.Ordinal));
         issueBody.Should().Contain("ClearAllActions(true);");
-        issueBody.Should().Contain("ActionMoveToObject(target, true, MeleeAttackMoveRange);");
+        issueBody.Should().Contain("ActionMoveToObject(target, true, GetAttackMoveRange(creature));");
+        enmitySource.Should().Contain("CreaturePlugin.GetPreferredAttackDistance(creature)");
+        enmitySource.Should().Contain("private static float GetAttackMoveRange(SkillType skillType, float preferredAttackDistance)");
         attackActionBody.Should().Contain("Enmity.AttackHighestEnmityTarget(context.Self);");
         attackActionBody.Should().NotContain("ClearAllActions");
         attackActionBody.Should().NotContain("ActionAttack");

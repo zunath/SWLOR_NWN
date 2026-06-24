@@ -2,6 +2,7 @@ using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
 using static SWLOR.NWN.API.NWScript.NWScript;
 
@@ -314,6 +315,41 @@ public class EnmityTests
             .BeTrue();
     }
 
+    [Test]
+    public void GetAttackMoveRange_UsesPreferredDistanceForRangedWeaponSkills()
+    {
+        GetAttackMoveRange(SkillType.Rifle, 10f).Should().Be(10f);
+        GetAttackMoveRange(SkillType.Pistol, 12f).Should().Be(12f);
+        GetAttackMoveRange(SkillType.Throwing, 8f).Should().Be(8f);
+    }
+
+    [Test]
+    public void GetAttackMoveRange_FallsBackToMeleeRangeWhenRangedPreferredDistanceIsMissing()
+    {
+        GetAttackMoveRange(SkillType.Rifle, 0f).Should().Be(1.5f);
+    }
+
+    [Test]
+    public void GetAttackMoveRange_KeepsMeleeEnemiesAtCloseRange()
+    {
+        GetAttackMoveRange(SkillType.Lightsaber, 10f).Should().Be(1.5f);
+        GetAttackMoveRange(SkillType.Katar, 10f).Should().Be(1.5f);
+    }
+
+    [Test]
+    public void ShouldMoveIntoAttackRange_UsesPreferredRangeForRangedEnemies()
+    {
+        ShouldMoveIntoAttackRange(10.25f, SkillType.Rifle, 10f).Should().BeFalse();
+        ShouldMoveIntoAttackRange(10.26f, SkillType.Rifle, 10f).Should().BeTrue();
+    }
+
+    [Test]
+    public void ShouldMoveIntoAttackRange_PreservesMeleeMovementThreshold()
+    {
+        ShouldMoveIntoAttackRange(2.25f, SkillType.Lightsaber, 1.5f).Should().BeFalse();
+        ShouldMoveIntoAttackRange(2.26f, SkillType.Lightsaber, 1.5f).Should().BeTrue();
+    }
+
     private static Dictionary<uint, Dictionary<uint, int>> EnemyEnmityTables()
     {
         return GetField<Dictionary<uint, Dictionary<uint, int>>>("_enemyEnmityTables");
@@ -390,6 +426,26 @@ public class EnmityTests
                 hasRecentAttack,
                 recoverySeconds
             })!;
+    }
+
+    private static float GetAttackMoveRange(SkillType skillType, float preferredAttackDistance)
+    {
+        return (float)typeof(Enmity)
+            .GetMethods(BindingFlags.Static | BindingFlags.NonPublic)
+            .Single(method =>
+                method.Name == "GetAttackMoveRange" &&
+                method.GetParameters().Length == 2)
+            .Invoke(null, new object[] { skillType, preferredAttackDistance })!;
+    }
+
+    private static bool ShouldMoveIntoAttackRange(float distance, SkillType skillType, float moveRange)
+    {
+        return (bool)typeof(Enmity)
+            .GetMethods(BindingFlags.Static | BindingFlags.NonPublic)
+            .Single(method =>
+                method.Name == "ShouldMoveIntoAttackRange" &&
+                method.GetParameters().Length == 3)
+            .Invoke(null, new object[] { distance, skillType, moveRange })!;
     }
 
     private static bool HasOnlyProximityEnmity(uint creature, uint enemy)

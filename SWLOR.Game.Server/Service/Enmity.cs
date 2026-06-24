@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service.LogService;
+using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -20,6 +21,7 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<uint, Dictionary<uint, int>> _proximityEnmityAmounts = new();
         private static readonly Dictionary<uint, DateTime> _attackCommandTimes = new();
         private const float MinimumStaleAttackRecoverySeconds = 6f;
+        private const float AttackMoveRangeTolerance = 0.25f;
         private const float MeleeAttackMoveThreshold = 2.25f;
         private const float MeleeAttackMoveRange = 1.5f;
 
@@ -532,7 +534,7 @@ namespace SWLOR.Game.Server.Service
                     ClearAllActions(true);
 
                 if (ShouldMoveIntoAttackRange(creature, target))
-                    ActionMoveToObject(target, true, MeleeAttackMoveRange);
+                    ActionMoveToObject(target, true, GetAttackMoveRange(creature));
 
                 ActionDoCommand(() =>
                 {
@@ -578,14 +580,38 @@ namespace SWLOR.Game.Server.Service
         private static bool ShouldMoveIntoAttackRange(uint creature, uint target)
         {
             if (GetIsPC(creature) ||
-                !GetIsObjectValid(target) ||
-                GetDistanceBetween(creature, target) <= MeleeAttackMoveThreshold)
+                !GetIsObjectValid(target))
             {
                 return false;
             }
 
             var skillType = Combat.GetEquippedWeaponSkillType(creature);
-            return !Combat.IsRangedDamageSkill(skillType);
+            var moveRange = GetAttackMoveRange(skillType, CreaturePlugin.GetPreferredAttackDistance(creature));
+
+            return ShouldMoveIntoAttackRange(GetDistanceBetween(creature, target), skillType, moveRange);
+        }
+
+        private static bool ShouldMoveIntoAttackRange(float distance, SkillType skillType, float moveRange)
+        {
+            var threshold = Combat.IsRangedDamageSkill(skillType)
+                ? moveRange + AttackMoveRangeTolerance
+                : MeleeAttackMoveThreshold;
+
+            return distance > threshold;
+        }
+
+        private static float GetAttackMoveRange(uint creature)
+        {
+            var skillType = Combat.GetEquippedWeaponSkillType(creature);
+            return GetAttackMoveRange(skillType, CreaturePlugin.GetPreferredAttackDistance(creature));
+        }
+
+        private static float GetAttackMoveRange(SkillType skillType, float preferredAttackDistance)
+        {
+            if (!Combat.IsRangedDamageSkill(skillType))
+                return MeleeAttackMoveRange;
+
+            return Math.Max(MeleeAttackMoveRange, preferredAttackDistance);
         }
 
         private static bool ShouldRemoveStaleProximityTarget(uint enemy, uint target)

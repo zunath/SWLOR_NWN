@@ -83,7 +83,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 false,
                 Array.Empty<Type>(),
                 damageType: CombatDamageType.Force,
-                targetVisualEffect: VisualEffect.Vfx_Imp_Pulse_Negative);
+                afterSuccessfulHit: ApplyResolveDebuffVisual);
         }
 
         private static void WeakenResolve2ImpactAction(uint activator, uint target, int level, Location targetLocation)
@@ -99,7 +99,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 false,
                 Array.Empty<Type>(),
                 damageType: CombatDamageType.Force,
-                targetVisualEffect: VisualEffect.Vfx_Imp_Pulse_Negative);
+                afterSuccessfulHit: ApplyResolveDebuffVisual);
+        }
+
+        private static void ApplyResolveDebuffVisual(uint target)
+        {
+            ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Pulse_Red_Black), target, 1.0f);
         }
 
     }

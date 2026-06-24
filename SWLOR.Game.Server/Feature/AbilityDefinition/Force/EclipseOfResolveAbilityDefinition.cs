@@ -66,8 +66,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 Array.Empty<Type>(),
                 centerOnActivator: true,
                 damageType: CombatDamageType.Force,
-                targetVisualEffect: VisualEffect.Vfx_Imp_Pulse_Negative,
-                areaVisualEffect: VisualEffect.Vfx_Fnf_Howl_Mind);
+                afterSuccessfulHit: ApplyResolveDebuffVisual);
+        }
+
+        private static void ApplyResolveDebuffVisual(uint target)
+        {
+            ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Pulse_Red_Black), target, 1.0f);
         }
 
     }

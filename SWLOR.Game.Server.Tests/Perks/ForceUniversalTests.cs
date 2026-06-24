@@ -60,6 +60,20 @@ public class ForceUniversalTests
     }
 
     [Test]
+    public void ForcePush_UsesOnlyKotorImpactSfx()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Force" / "ForcePushAbilityDefinition.cs").FullName);
+
+        source.Should().Contain(".DisplaysVisualEffectWhenActivating(VisualEffect.None)");
+        source.Should().Contain(".PlaysSoundOnImpact(\"ksfx_frc_push\")");
+        source.Should().Contain(".PlaysSoundOnImpact(\"ksfx_frc_wave\")");
+        source.Should().Contain("targetVisualEffect: VisualEffect.Vfx_Fnf_Sound_Burst_Silent");
+        source.Should().NotContain(".DisplaysVisualEffectWhenActivating()");
+        source.Should().NotContain("VisualEffect.Vfx_Imp_Pulse_Negative");
+    }
+
+    [Test]
     public void ThrowLightsaber_UsesLegacySaberThrowAnimation()
     {
         var abilities = new ThrowLightsaberAbilityDefinition().BuildAbilities();

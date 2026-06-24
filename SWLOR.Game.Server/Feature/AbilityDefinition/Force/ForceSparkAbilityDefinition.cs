@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .SkillType(SkillType.Force)
                 .CombatImpactDamageAbility(AbilityType.Willpower)
                 .UsesImpactAnimation(Animation.CastOutAnimation)
-                .PlaysSoundOnImpact("ksfx_use_force")
+                .PlaysSoundOnImpact("ksfx_frc_lightn")
                 .IsSingleTargetAbility()
                 .HasMaxRange(15f)
                 .RequiresTarget()
@@ -61,7 +61,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .SkillType(SkillType.Force)
                 .CombatImpactDamageAbility(AbilityType.Willpower)
                 .UsesImpactAnimation(Animation.CastOutAnimation)
-                .PlaysSoundOnImpact("ksfx_use_force")
+                .PlaysSoundOnImpact("ksfx_frc_lightn")
                 .IsSingleTargetAbility()
                 .HasMaxRange(15f)
                 .RequiresTarget()
@@ -84,7 +84,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .SkillType(SkillType.Force)
                 .CombatImpactDamageAbility(AbilityType.Willpower)
                 .UsesImpactAnimation(Animation.CastOutAnimation)
-                .PlaysSoundOnImpact("ksfx_use_force")
+                .PlaysSoundOnImpact("ksfx_frc_lightn")
                 .IsSingleTargetAbility()
                 .HasMaxRange(15f)
                 .RequiresTarget()
@@ -109,8 +109,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 false,
                 Array.Empty<Type>(),
                 damageType: CombatDamageType.Force,
-                targetVisualEffect: VisualEffect.Vfx_Imp_Pulse_Negative,
-                afterSuccessfulHit: hitTarget => ForcePressureEffects.ApplyUnstablePressure(activator, hitTarget));
+                afterSuccessfulHit: hitTarget => ApplyForceSparkHitEffects(activator, hitTarget));
         }
 
         private static void ForceSpark2ImpactAction(uint activator, uint target, int level, Location targetLocation)
@@ -126,8 +125,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 false,
                 Array.Empty<Type>(),
                 damageType: CombatDamageType.Force,
-                targetVisualEffect: VisualEffect.Vfx_Imp_Pulse_Negative,
-                afterSuccessfulHit: hitTarget => ForcePressureEffects.ApplyUnstablePressure(activator, hitTarget));
+                afterSuccessfulHit: hitTarget => ApplyForceSparkHitEffects(activator, hitTarget));
         }
 
         private static void ForceSpark3ImpactAction(uint activator, uint target, int level, Location targetLocation)
@@ -143,8 +141,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 false,
                 Array.Empty<Type>(),
                 damageType: CombatDamageType.Force,
-                targetVisualEffect: VisualEffect.Vfx_Imp_Pulse_Negative,
-                afterSuccessfulHit: hitTarget => ForcePressureEffects.ApplyUnstablePressure(activator, hitTarget));
+                afterSuccessfulHit: hitTarget => ApplyForceSparkHitEffects(activator, hitTarget));
+        }
+
+        private static void ApplyForceSparkHitEffects(uint activator, uint target)
+        {
+            AssignCommand(activator, () =>
+                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Mirv_Electric), target));
+            ForcePressureEffects.ApplyUnstablePressure(activator, target);
         }
 
     }

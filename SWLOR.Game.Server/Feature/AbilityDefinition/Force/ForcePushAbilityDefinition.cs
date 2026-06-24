@@ -20,6 +20,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         private const int ForcePush1HobbleDurationSeconds = 3;
         private const int ForcePush2HobbleDurationSeconds = 3;
         private const int ForcePush3HobbleDurationSeconds = 4;
+        private const float ForcePush1ConeLengthMeters = 5f;
+        private const float ForcePush2ConeLengthMeters = 8f;
+        private const float ForcePush3ConeLengthMeters = 10f;
+        private const float ForcePushConeWidthMeters = 5f;
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
@@ -43,11 +47,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .SkillType(SkillType.Force)
                 .CombatImpactDamageAbility(AbilityType.Willpower)
                 .UsesAnimation(Animation.LoopingConjure1)
-                .DisplaysVisualEffectWhenActivating()
+                .DisplaysVisualEffectWhenActivating(VisualEffect.None)
                 .PlaysSoundOnImpact("ksfx_frc_push")
-                .IsSingleTargetAbility()
-                .HasMaxRange(8f)
-                .RequiresTarget()
+                .IsAreaAbility()
+                .HasTargetingCone(
+                    Spell.ForcePush1,
+                    ForcePush1ConeLengthMeters,
+                    ForcePushConeWidthMeters,
+                    AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf)
                 .HasImpactAction(ForcePush1ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
@@ -66,13 +73,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .SkillType(SkillType.Force)
                 .CombatImpactDamageAbility(AbilityType.Willpower)
                 .UsesAnimation(Animation.LoopingConjure1)
-                .DisplaysVisualEffectWhenActivating()
+                .DisplaysVisualEffectWhenActivating(VisualEffect.None)
                 .PlaysSoundOnImpact("ksfx_frc_wave")
                 .IsAreaAbility()
-                .HasTargetingLine(
+                .HasTargetingCone(
                     Spell.ForcePush2,
-                    8f,
-                    2.5f,
+                    ForcePush2ConeLengthMeters,
+                    ForcePushConeWidthMeters,
                     AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf)
                 .HasImpactAction(ForcePush2ImpactAction)
                 .IsCastedAbility()
@@ -92,9 +99,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .SkillType(SkillType.Force)
                 .CombatImpactDamageAbility(AbilityType.Willpower)
                 .UsesAnimation(Animation.LoopingConjure1)
-                .DisplaysVisualEffectWhenActivating()
+                .DisplaysVisualEffectWhenActivating(VisualEffect.None)
                 .PlaysSoundOnImpact("ksfx_frc_wave")
                 .IsAreaAbility()
+                .HasTargetingCone(
+                    Spell.ForcePush3,
+                    ForcePush3ConeLengthMeters,
+                    ForcePushConeWidthMeters,
+                    AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf)
                 .HasImpactAction(ForcePush3ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
@@ -104,7 +116,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void ForcePush1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            Ability.ApplyCombatImpact(
+            Ability.ApplyTelegraphedCombatImpact(
                 activator,
                 target,
                 targetLocation,
@@ -112,9 +124,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 0,
                 KnockdownDurationSeconds,
                 typeof(KnockdownStatusEffect),
-                false,
+                CombatImpactAreaShape.Cone,
+                0f,
+                ForcePush1ConeLengthMeters,
+                ForcePushConeWidthMeters,
+                centerOnActivator: !GetIsObjectValid(target),
                 damageType: CombatDamageType.Force,
-                targetVisualEffect: VisualEffect.Vfx_Imp_Pulse_Negative,
+                targetVisualEffect: VisualEffect.Vfx_Fnf_Sound_Burst_Silent,
+                areaVisualEffect: VisualEffect.None,
+                maxTargets: 1,
                 afterSuccessfulHit: hitTarget => ApplyHobble(activator, hitTarget, ForcePush1HobbleDurationSeconds),
                 playImpactAnimation: false);
             LightGuardianPowerSupport.ApplyDeflectivePresence(activator);
@@ -130,13 +148,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 0,
                 KnockdownDurationSeconds,
                 typeof(KnockdownStatusEffect),
-                CombatImpactAreaShape.Line,
+                CombatImpactAreaShape.Cone,
                 0f,
-                8f,
-                2.5f,
+                ForcePush2ConeLengthMeters,
+                ForcePushConeWidthMeters,
                 centerOnActivator: !GetIsObjectValid(target),
                 damageType: CombatDamageType.Force,
-                targetVisualEffect: VisualEffect.Vfx_Imp_Pulse_Negative,
+                targetVisualEffect: VisualEffect.Vfx_Fnf_Sound_Burst_Silent,
                 areaVisualEffect: VisualEffect.None,
                 maxTargets: 2,
                 afterSuccessfulHit: hitTarget => ApplyHobble(activator, hitTarget, ForcePush2HobbleDurationSeconds),
@@ -156,11 +174,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 typeof(KnockdownStatusEffect),
                 CombatImpactAreaShape.Cone,
                 0f,
-                6f,
-                5f,
+                ForcePush3ConeLengthMeters,
+                ForcePushConeWidthMeters,
                 centerOnActivator: !GetIsObjectValid(target),
                 damageType: CombatDamageType.Force,
-                targetVisualEffect: VisualEffect.Vfx_Imp_Pulse_Negative,
+                targetVisualEffect: VisualEffect.Vfx_Fnf_Sound_Burst_Silent,
                 areaVisualEffect: VisualEffect.None,
                 maxTargets: 3,
                 afterSuccessfulHit: hitTarget => ApplyHobble(activator, hitTarget, ForcePush3HobbleDurationSeconds),

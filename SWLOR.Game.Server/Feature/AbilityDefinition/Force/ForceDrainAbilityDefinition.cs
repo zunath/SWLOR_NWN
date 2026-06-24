@@ -129,8 +129,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 null,
                 false,
                 Array.Empty<Type>(),
-                damageType: CombatDamageType.Force,
-                targetVisualEffect: VisualEffect.Vfx_Imp_Pulse_Negative);
+                damageType: CombatDamageType.Force);
 
             if (damage <= 0)
                 return;
@@ -144,7 +143,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             healAmount = Ability.ApplyCombatReadinessToActivatedAbilityMagnitude(activator, healAmount);
             healAmount = Stat.ApplyHealingReceivedAdjustment(activator, healAmount);
             ApplyEffectToObject(DurationType.Instant, EffectHeal(healAmount), activator);
-            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Evil_Help), activator);
+            ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Pulse_Red_Black), activator, 1.0f);
         }
 
         private static bool IsBelowHalfHP(uint target)

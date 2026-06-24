@@ -147,6 +147,23 @@ public class ForceDarkManipulatorTests
         forceChoke.Should().Contain("AssignCommand(target, () => ActionPlayAnimation(Animation.ForceChoke))");
         forceChoke.Should().NotContain(".UsesImpactAnimation(Animation.ForceChoke)");
 
+        var weakenResolve = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Force" / "WeakenResolveAbilityDefinition.cs").FullName);
+        weakenResolve.Should().Contain(".PlaysSoundOnImpact(\"ksfx_frc_mind\")");
+        weakenResolve.Should().Contain("VisualEffect.Vfx_Dur_Aura_Pulse_Red_Black");
+        weakenResolve.Should().NotContain("VisualEffect.Vfx_Imp_Pulse_Negative");
+
+        var eclipse = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Force" / "EclipseOfResolveAbilityDefinition.cs").FullName);
+        eclipse.Should().Contain(".PlaysSoundOnImpact(\"ksfx_frc_night\")");
+        eclipse.Should().Contain("VisualEffect.Vfx_Dur_Aura_Pulse_Red_Black");
+        eclipse.Should().NotContain("VisualEffect.Vfx_Imp_Pulse_Negative");
+        eclipse.Should().NotContain("VisualEffect.Vfx_Fnf_Howl_Mind");
+
+        var iconManifest = File.ReadAllText((root / "SWLOR.Game.Server" / "Readmes" / "GameplayIconManifest.csv").FullName);
+        iconManifest.Should().Contain("\"Ability\",\"WeakenResolve1\",\"WeakenResolve1\",\"Harmful\"");
+        iconManifest.Should().Contain("\"Ability\",\"WeakenResolve2\",\"WeakenResolve2\",\"Harmful\"");
+        iconManifest.Should().NotContain("\"Ability\",\"WeakenResolve1\",\"WeakenResolve1\",\"Beneficial\"");
+        iconManifest.Should().NotContain("\"Ability\",\"WeakenResolve2\",\"WeakenResolve2\",\"Beneficial\"");
+
         var immobilized = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "StatusEffectDefinition" / "ImmobilizedStatusEffect.cs").FullName);
         immobilized.Should().Contain("Enmity.AttackHighestEnmityTarget(creature)");
 

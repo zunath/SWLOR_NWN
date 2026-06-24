@@ -139,9 +139,18 @@ public class ForceDarkRavagerTests
         forceLightning.Should().NotContain("EffectBeam(VisualEffect.Vfx_Beam_Silent_Lightning, activator, BodyNode.Hand, true");
         forceLightning.Should().NotContain("VisualEffect.Vfx_Com_Hit_Electrical");
 
+        var forceSpark = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Force" / "ForceSparkAbilityDefinition.cs").FullName);
+        forceSpark.Should().Contain(".PlaysSoundOnImpact(\"ksfx_frc_lightn\")");
+        forceSpark.Should().Contain("VisualEffect.Vfx_Imp_Mirv_Electric");
+        forceSpark.Should().NotContain("ksfx_use_force");
+        forceSpark.Should().NotContain("VisualEffect.Vfx_Imp_Pulse_Negative");
+
         var forceDrain = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Force" / "ForceDrainAbilityDefinition.cs").FullName);
         forceDrain.Should().Contain("VisualEffect.Vfx_Beam_Drain");
+        forceDrain.Should().Contain("VisualEffect.Vfx_Dur_Aura_Pulse_Red_Black");
         forceDrain.Should().NotContain("EffectBeam(VisualEffect.Vfx_Beam_Drain, activator, BodyNode.Hand, true");
+        forceDrain.Should().NotContain("VisualEffect.Vfx_Imp_Pulse_Negative");
+        forceDrain.Should().NotContain("VisualEffect.Vfx_Imp_Evil_Help");
     }
 
     [Test]

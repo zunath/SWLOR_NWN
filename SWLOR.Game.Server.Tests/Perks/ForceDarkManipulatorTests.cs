@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Text.Json;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Enumeration;
@@ -15,6 +16,38 @@ namespace SWLOR.Game.Server.Tests.Perks;
 
 public class ForceDarkManipulatorTests
 {
+    private const int CustomTlkOffset = 16777216;
+
+    [Test]
+    public void ForceDarkManipulatorPerks_MatchCombatBible()
+    {
+        var perks = BuildForceDarkManipulatorPerksWithout2daLookup();
+        AssertPerkLevel(
+            perks[PerkType.CreepingTerror],
+            "Creeping Terror",
+            1,
+            2,
+            2,
+            FeatType.CreepingTerror1,
+            "Creates a visible 5m field within 15m for 12 seconds. Enemies inside are Hobbled and take 10 force DMG plus WIL scaling every 3 seconds.");
+        AssertPerkLevel(
+            perks[PerkType.CreepingTerror],
+            "Creeping Terror",
+            2,
+            3,
+            15,
+            FeatType.CreepingTerror2,
+            "Creates a visible 5m field within 15m for 15 seconds. Enemies inside are Hobbled and take 14 force DMG plus WIL scaling every 3 seconds.");
+        AssertPerkLevel(
+            perks[PerkType.CreepingTerror],
+            "Creeping Terror",
+            3,
+            4,
+            38,
+            FeatType.CreepingTerror3,
+            "Creates a visible 8m field within 15m for 18 seconds. Enemies inside are Hobbled and take 18 force DMG plus WIL scaling every 3 seconds.");
+    }
+
     [Test]
     public void ForceDarkManipulatorAbilities_MatchCombatBible()
     {
@@ -85,7 +118,7 @@ public class ForceDarkManipulatorTests
         creepingTerror.Should().Contain("AbilityTargeting.ResolveImpactLocation(activator, target, targetLocation)");
         creepingTerror.Should().Contain("GetDistanceBetweenLocations(GetLocation(activator), location) <= FieldRange");
         creepingTerror.Should().Contain("var scaledPulseDamage = AbilityEffectScaling.ScaleDirectEffect");
-        creepingTerror.Should().Contain("ApplyCreepingTerrorPulse(activator, pulseLocation, scaledPulseDamage)");
+        creepingTerror.Should().Contain("ApplyCreepingTerrorPulse(activator, pulseLocation, scaledPulseDamage, radius)");
         creepingTerror.Should().Contain("ApplyCreepingTerrorDamage");
         creepingTerror.Should().Contain("Ability.ApplyHostileCombatImpact");
         creepingTerror.Should().Contain("statusEffect: typeof(HobbleStatusEffect)");
@@ -95,10 +128,15 @@ public class ForceDarkManipulatorTests
         creepingTerror.Should().Contain("CreepingTerror2Damage = 14");
         creepingTerror.Should().Contain("CreepingTerror3Damage = 18");
         creepingTerror.Should().Contain("HobbleRefreshDurationSeconds");
+        creepingTerror.Should().Contain("LargeFieldRadius = 8f");
+        creepingTerror.Should().Contain("EffectAreaOfEffect(areaOfEffect)");
+        creepingTerror.Should().Contain("AreaOfEffect.CreepingTerrorTentacles");
+        creepingTerror.Should().Contain("AreaOfEffect.CreepingTerrorLargeTentacles");
         creepingTerror.Should().NotContain("StatusEffect.ApplyStatusEffect(activator, hostile, typeof(HobbleStatusEffect)");
         creepingTerror.Should().NotContain("AssignCommand(");
         creepingTerror.Should().NotContain("EffectDamage(damage, CombatDamageType.Force.GetNWScriptDamageType())");
-        creepingTerror.Should().Contain("Vfx_Dur_Tentacle");
+        creepingTerror.Should().NotContain("Vfx_Fnf_Howl_Mind");
+        creepingTerror.Should().NotContain("Vfx_Imp_Pulse_Negative");
         creepingTerror.Should().NotContain("ApplyForceDamageOverTime");
         creepingTerror.Should().NotContain("ApplyCombatImpact");
         creepingTerror.Should().NotContain("ApplyTelegraphedCombatImpact");
@@ -136,7 +174,7 @@ public class ForceDarkManipulatorTests
             (FeatType.NightmareField1, "ife_nghtmrfld1", "P", "0x01", "1", "sphere", "5", "****", "17"),
             (FeatType.WeakenResolve2, "ife_wknres2", "M", "0x02", "1", "****", "****", "****", "****"),
             (FeatType.ForceChoke1, "ife_forcechk1", "M", "0x02", "1", "****", "****", "****", "****"),
-            (FeatType.CreepingTerror3, "ife_crpngtrrr3", "M", "0x3E", "1", "sphere", "5", "****", "1"),
+            (FeatType.CreepingTerror3, "ife_crpngtrrr3", "M", "0x3E", "1", "sphere", "8", "****", "1"),
             (FeatType.ForceChoke4, "ife_forcechk4", "M", "0x02", "1", "sphere", "5", "****", "1"),
             (FeatType.EclipseOfResolve1, "ife_eclres1", "P", "0x01", "1", "sphere", "5", "****", "17")
         };
@@ -167,6 +205,47 @@ public class ForceDarkManipulatorTests
             abilityRow["TargetSizeY"].Should().Be(targetSizeY);
             abilityRow["TargetFlags"].Should().Be(targetFlags);
         }
+    }
+
+    [Test]
+    public void CreepingTerrorFeatAndAbilityDescriptions_MatchImplementedValues()
+    {
+        var root = FindRepositoryRoot();
+        var featRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "feat.2da");
+        var abilityRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "spells.2da");
+        var tlkEntries = ReadTlkEntries(root / "SWLOR_Haks" / "swlor2_tlk" / "swlor2_tlk.tlk.json");
+        var descriptions = new[]
+        {
+            (FeatType.CreepingTerror1, "Creates a visible 5m field of grasping dark energy within 15m for 12 seconds. Enemies inside are Hobbled and take 10 force DMG plus WIL scaling every 3 seconds."),
+            (FeatType.CreepingTerror2, "Creates a visible 5m field of grasping dark energy within 15m for 15 seconds. Enemies inside are Hobbled and take 14 force DMG plus WIL scaling every 3 seconds."),
+            (FeatType.CreepingTerror3, "Creates a visible 8m field of grasping dark energy within 15m for 18 seconds. Enemies inside are Hobbled and take 18 force DMG plus WIL scaling every 3 seconds.")
+        };
+
+        foreach (var (featType, expectedDescription) in descriptions)
+        {
+            var featRow = featRows[(int)featType];
+            var featDescriptionId = int.Parse(featRow["DESCRIPTION"]) - CustomTlkOffset;
+            tlkEntries[featDescriptionId].Should().Be(expectedDescription);
+
+            var abilityRow = abilityRows[int.Parse(featRow["SPELLID"])];
+            var abilityDescriptionId = int.Parse(abilityRow["SpellDesc"]) - CustomTlkOffset;
+            tlkEntries[abilityDescriptionId].Should().Be(expectedDescription);
+        }
+    }
+
+    [Test]
+    public void CreepingTerrorPersistentVfx_IsVisualOnlyTentacleField()
+    {
+        var root = FindRepositoryRoot();
+        var persistentVfx = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "vfx_persistent.2da");
+        AssertCreepingTerrorTentacleField(
+            persistentVfx[(int)AreaOfEffect.CreepingTerrorTentacles],
+            "AOE_CREEPING_TERROR_TENTACLES",
+            "5");
+        AssertCreepingTerrorTentacleField(
+            persistentVfx[(int)AreaOfEffect.CreepingTerrorLargeTentacles],
+            "AOE_CREEPING_TERROR_TENTACLES_L",
+            "8");
     }
 
     private static void AssertPerkLevel(
@@ -272,6 +351,23 @@ public class ForceDarkManipulatorTests
         perk.StatBonuses.Select(x => x.Stat).Should().NotContain(StatType.ForceAffinity);
     }
 
+    private static void AssertCreepingTerrorTentacleField(
+        IReadOnlyDictionary<string, string> row,
+        string label,
+        string radius)
+    {
+        row["LABEL"].Should().Be(label);
+        row["SHAPE"].Should().Be("C");
+        row["RADIUS"].Should().Be(radius);
+        row["ONENTER"].Should().Be("****");
+        row["ONEXIT"].Should().Be("****");
+        row["HEARTBEAT"].Should().Be("****");
+        row["MODEL01"].Should().Be("vps_tentacle");
+        row["MODEL02"].Should().Be("vps_tentacle");
+        row["MODEL03"].Should().Be("vps_tentacle");
+        row["SoundDuration"].Should().Be("****");
+    }
+
     private static Dictionary<PerkType, PerkDetail> BuildForceDarkManipulatorPerksWithout2daLookup()
     {
         var definition = new ForceDarkManipulatorPerkDefinition();
@@ -325,6 +421,17 @@ public class ForceDarkManipulatorTests
         }
 
         return result;
+    }
+
+    private static Dictionary<int, string> ReadTlkEntries(PathInfo path)
+    {
+        using var tlk = JsonDocument.Parse(File.ReadAllText(path.FullName));
+        return tlk.RootElement
+            .GetProperty("entries")
+            .EnumerateArray()
+            .ToDictionary(
+                entry => entry.GetProperty("id").GetInt32(),
+                entry => entry.GetProperty("text").GetString() ?? string.Empty);
     }
 
     private static PathInfo FindRepositoryRoot()

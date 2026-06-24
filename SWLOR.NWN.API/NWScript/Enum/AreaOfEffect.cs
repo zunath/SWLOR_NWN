@@ -65,5 +65,7 @@ namespace SWLOR.NWN.API.NWScript.Enum
         AuraDefault = 100,
         AuraUpgrade1 = 101,
         AuraUpgrade2 = 102,
+        CreepingTerrorTentacles = 122,
+        CreepingTerrorLargeTentacles = 123,
     }
 }

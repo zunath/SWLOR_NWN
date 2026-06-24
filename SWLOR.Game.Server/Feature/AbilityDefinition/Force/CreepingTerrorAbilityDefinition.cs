@@ -7,13 +7,13 @@ using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 {
     public sealed class CreepingTerrorAbilityDefinition : IAbilityListDefinition
     {
-        private const float FieldRadius = 5f;
+        private const float StandardFieldRadius = 5f;
+        private const float LargeFieldRadius = 8f;
         private const float FieldRange = 15f;
         private const float PulseIntervalSeconds = 3f;
         private const int HobbleRefreshDurationSeconds = 4;
@@ -23,9 +23,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         private const float CreepingTerror1DurationSeconds = 12f;
         private const float CreepingTerror2DurationSeconds = 15f;
         private const float CreepingTerror3DurationSeconds = 18f;
-        private const VisualEffect FieldVisualEffect = VisualEffect.Vfx_Dur_Tentacle;
-        private const VisualEffect PulseAreaVisualEffect = VisualEffect.Vfx_Fnf_Howl_Mind;
-        private const VisualEffect TargetVisualEffect = VisualEffect.Vfx_Imp_Pulse_Negative;
+        private const AreaOfEffect StandardFieldAreaOfEffect = AreaOfEffect.CreepingTerrorTentacles;
+        private const AreaOfEffect LargeFieldAreaOfEffect = AreaOfEffect.CreepingTerrorLargeTentacles;
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
@@ -56,7 +55,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasImpactAction(CreepingTerror1ImpactAction)
                 .HasTargetingSphere(
                     Spell.CreepingTerror1,
-                    FieldRadius,
+                    StandardFieldRadius,
                     AbilityTargetingFlags.HarmsEnemies)
                 .IsCastedAbility()
                 .IsHostileAbility()
@@ -83,7 +82,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasImpactAction(CreepingTerror2ImpactAction)
                 .HasTargetingSphere(
                     Spell.CreepingTerror2,
-                    FieldRadius,
+                    StandardFieldRadius,
                     AbilityTargetingFlags.HarmsEnemies)
                 .IsCastedAbility()
                 .IsHostileAbility()
@@ -110,7 +109,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasImpactAction(CreepingTerror3ImpactAction)
                 .HasTargetingSphere(
                     Spell.CreepingTerror3,
-                    FieldRadius,
+                    LargeFieldRadius,
                     AbilityTargetingFlags.HarmsEnemies)
                 .IsCastedAbility()
                 .IsHostileAbility()
@@ -121,17 +120,41 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void CreepingTerror1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            CreateCreepingTerrorField(activator, target, targetLocation, FeatType.CreepingTerror1, CreepingTerror1Damage, CreepingTerror1DurationSeconds);
+            CreateCreepingTerrorField(
+                activator,
+                target,
+                targetLocation,
+                FeatType.CreepingTerror1,
+                CreepingTerror1Damage,
+                CreepingTerror1DurationSeconds,
+                StandardFieldRadius,
+                StandardFieldAreaOfEffect);
         }
 
         private static void CreepingTerror2ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            CreateCreepingTerrorField(activator, target, targetLocation, FeatType.CreepingTerror2, CreepingTerror2Damage, CreepingTerror2DurationSeconds);
+            CreateCreepingTerrorField(
+                activator,
+                target,
+                targetLocation,
+                FeatType.CreepingTerror2,
+                CreepingTerror2Damage,
+                CreepingTerror2DurationSeconds,
+                StandardFieldRadius,
+                StandardFieldAreaOfEffect);
         }
 
         private static void CreepingTerror3ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            CreateCreepingTerrorField(activator, target, targetLocation, FeatType.CreepingTerror3, CreepingTerror3Damage, CreepingTerror3DurationSeconds);
+            CreateCreepingTerrorField(
+                activator,
+                target,
+                targetLocation,
+                FeatType.CreepingTerror3,
+                CreepingTerror3Damage,
+                CreepingTerror3DurationSeconds,
+                LargeFieldRadius,
+                LargeFieldAreaOfEffect);
         }
 
         private static string ValidateTargetingRange(uint activator, uint target, int effectivePerkLevel, Location targetLocation)
@@ -149,14 +172,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             Location targetLocation,
             FeatType featType,
             int baseDamage,
-            float durationSeconds)
+            float durationSeconds,
+            float radius,
+            AreaOfEffect areaOfEffect)
         {
             var location = AbilityTargeting.ResolveImpactLocation(activator, target, targetLocation);
             var scaledPulseDamage = AbilityEffectScaling.ScaleDirectEffect(
                 baseDamage,
                 GetAbilityScore(activator, AbilityType.Willpower),
                 source: activator);
-            ApplyEffectAtLocation(DurationType.Temporary, EffectVisualEffect(FieldVisualEffect), location, durationSeconds);
+            ApplyEffectAtLocation(DurationType.Temporary, EffectAreaOfEffect(areaOfEffect), location, durationSeconds);
 
             CombatAreaPulses.SchedulePulses(
                 activator,
@@ -168,17 +193,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 {
                     var ability = Ability.GetAbilityDetail(featType);
                     Ability.BeginAbilityImpact(activator, ability);
-                    ApplyCreepingTerrorPulse(activator, pulseLocation, scaledPulseDamage);
+                    ApplyCreepingTerrorPulse(activator, pulseLocation, scaledPulseDamage, radius);
                     var summary = Ability.EndAbilityImpact(activator);
                     Combat.ApplyAbilityImpactEffects(activator, summary);
                 });
         }
 
-        private static void ApplyCreepingTerrorPulse(uint activator, Location location, int scaledPulseDamage)
+        private static void ApplyCreepingTerrorPulse(uint activator, Location location, int scaledPulseDamage, float radius)
         {
-            ApplyEffectAtLocation(DurationType.Instant, EffectVisualEffect(PulseAreaVisualEffect), location);
-
-            foreach (var hostile in CombatAreaPulses.GetHostileCreatures(activator, location, FieldRadius))
+            foreach (var hostile in CombatAreaPulses.GetHostileCreatures(activator, location, radius))
             {
                 ApplyCreepingTerrorDamage(activator, hostile, scaledPulseDamage);
             }
@@ -201,7 +224,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 CombatDamageType.Force,
                 statusEffect: typeof(HobbleStatusEffect),
                 duration: HobbleRefreshDurationSeconds,
-                targetVisualEffect: TargetVisualEffect,
                 awardsCombatPoints: false);
         }
     }

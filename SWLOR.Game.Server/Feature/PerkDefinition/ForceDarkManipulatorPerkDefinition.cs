@@ -45,7 +45,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.CreepingTerror2)
 
                 .AddPerkLevel()
-                .Description("Creates a visible 5m field within 15m for 18 seconds. Enemies inside are Hobbled and take 18 force DMG plus WIL scaling every 3 seconds.")
+                .Description("Creates a visible 8m field within 15m for 18 seconds. Enemies inside are Hobbled and take 18 force DMG plus WIL scaling every 3 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Force, 38)
                 .RequirementCharacterType(CharacterType.ForceSensitive)

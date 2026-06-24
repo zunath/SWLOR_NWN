@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
 {
@@ -19,6 +20,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
         private const float CascadeFailureConeLength = 5f;
         private const float CascadeFailureConeWidth = 5f;
         private const float CascadeFailureVulnerableDurationSeconds = 12f;
+        private const string IncapacitateImpactSound = "ksfx_stun_ray";
+        private const VisualEffect IncapacitateAreaVisualEffect = VisualEffect.Vfx_Fnf_Pwstun;
+        private const VisualEffect IncapacitateTargetVisualEffect = VisualEffect.Vfx_Imp_Stun;
+        private const VisualEffect CascadeFailureTargetVisualEffect = VisualEffect.Vfx_Imp_Dazed_S;
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
@@ -32,9 +37,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                     Spell.Incapacitate1,
                     IncapacitateRadius,
                     AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf)
+                .AddActivationTargetingCone(
+                    CascadeFailureConeLength,
+                    CascadeFailureConeWidth,
+                    AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf,
+                    CascadeFailureConeLengthResolver)
                 .HasActivationDelay(2f)
                 .HasRecastDelay(RecastGroup.Incapacitate, 120f)
                 .UsesAnimation(Animation.Backstab)
+                .PlaysSoundOnImpact(IncapacitateImpactSound)
                 .HasImpactAction(Incapacitate1ImpactAction)
                 .IsAreaAbility()
                 .IsCastedAbility()
@@ -54,7 +65,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                 typeof(IncapacitateStatusEffect),
                 IncapacitateDurationSeconds,
                 true,
-                0);
+                0,
+                IncapacitateTargetVisualEffect,
+                IncapacitateAreaVisualEffect);
 
             if (Stat.GetStatAdjustment(activator, StatType.VibroknifeSaboteurCascadeFailure) <= 0)
                 return;
@@ -86,7 +99,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                     typeof(VulnerableStatusEffect),
                     CascadeFailureVulnerableDurationSeconds,
                     CombatDamageType.Physical);
+
+                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(CascadeFailureTargetVisualEffect), creature);
             }
+        }
+
+        private static float CascadeFailureConeLengthResolver(uint creature, float baseSize)
+        {
+            return Stat.GetStatAdjustment(creature, StatType.VibroknifeSaboteurCascadeFailure) > 0
+                ? baseSize
+                : 0f;
         }
 
         private static float GetImpactRotationRadians(uint activator, uint target, Location targetLocation)

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Numerics;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Bioware;
@@ -278,7 +279,7 @@ namespace SWLOR.Game.Server.Feature
             }
 
             // Handles displaying animation and visual effects.
-            string ProcessAnimationAndVisualEffects(float delay)
+            List<string> ProcessAnimationAndVisualEffects(float delay)
             {
                 // Force out of stealth
                 if (GetActionMode(activator, ActionMode.Stealth))
@@ -321,11 +322,11 @@ namespace SWLOR.Game.Server.Feature
                     AssignCommand(activator, () => ActionPlayAnimation(ability.AnimationType, 1.0f, animationLength));
                 }
 
-                return DisplayActivationTargetingTelegraph(activator, target, targetLocation, ability, delay);
+                return DisplayActivationTargetingTelegraphs(activator, target, targetLocation, ability, delay);
             }
 
             // Recursive function which checks if player has moved since starting the casting.
-            void CheckForActivationInterruption(string activationId, Vector3 originalPosition, string activationTelegraphId)
+            void CheckForActivationInterruption(string activationId, Vector3 originalPosition, List<string> activationTelegraphIds)
             {
                 if (!GetIsPC(activator)) return;
 
@@ -340,7 +341,7 @@ namespace SWLOR.Game.Server.Feature
                     currentPosition.Z != originalPosition.Z)
                 {
                     RemoveEffectByTag(activator, "ACTIVATION_VFX");
-                    CancelActivationTargetingTelegraph(activationTelegraphId);
+                    CancelActivationTargetingTelegraphs(activationTelegraphIds);
                     PlayerPlugin.StopGuiTimingBar(activator, string.Empty);
                     Messaging.SendMessageNearbyToPlayers(
                         activator,
@@ -349,16 +350,16 @@ namespace SWLOR.Game.Server.Feature
                     return;
                 }
 
-                DelayCommand(0.5f, () => CheckForActivationInterruption(activationId, originalPosition, activationTelegraphId));
+                DelayCommand(0.5f, () => CheckForActivationInterruption(activationId, originalPosition, activationTelegraphIds));
             }
 
             // This method is called after the delay of the ability has finished.
-            void CompleteActivation(string activationId, float abilityRecastDelay, uint resumeAttackTarget, string activationTelegraphId)
+            void CompleteActivation(string activationId, float abilityRecastDelay, uint resumeAttackTarget, List<string> activationTelegraphIds)
             {
                 void CancelActivation(bool resumeAttack)
                 {
                     DeleteLocalInt(activator, activationId);
-                    CancelActivationTargetingTelegraph(activationTelegraphId);
+                    CancelActivationTargetingTelegraphs(activationTelegraphIds);
 
                     if (resumeAttack)
                         ResumeAttack(activator, resumeAttackTarget);
@@ -407,9 +408,9 @@ namespace SWLOR.Game.Server.Feature
             var recastDelay = ability.RecastDelay?.Invoke(activator) ?? 0f;
             var position = GetPosition(activator);
             var resumeAttackTarget = GetResumeAttackTarget(activator, target, ability);
-            var activationTelegraphId = ProcessAnimationAndVisualEffects(activationDelay);
+            var activationTelegraphIds = ProcessAnimationAndVisualEffects(activationDelay);
             SetLocalInt(activator, activationId, (int)ActivationStatus.Started);
-            CheckForActivationInterruption(activationId, position, activationTelegraphId);
+            CheckForActivationInterruption(activationId, position, activationTelegraphIds);
 
             var executeImpact = ability.ActivationAction == null
                 ? true
@@ -418,7 +419,7 @@ namespace SWLOR.Game.Server.Feature
             if (executeImpact != true)
             {
                 DeleteLocalInt(activator, activationId);
-                CancelActivationTargetingTelegraph(activationTelegraphId);
+                CancelActivationTargetingTelegraphs(activationTelegraphIds);
                 ResumeAttack(activator, resumeAttackTarget);
                 return;
             }
@@ -432,7 +433,7 @@ namespace SWLOR.Game.Server.Feature
             }
 
             Activity.SetBusy(activator, ActivityStatusType.AbilityActivation);
-            DelayCommand(activationDelay, () => CompleteActivation(activationId, recastDelay, resumeAttackTarget, activationTelegraphId));
+            DelayCommand(activationDelay, () => CompleteActivation(activationId, recastDelay, resumeAttackTarget, activationTelegraphIds));
         }
 
         /// <summary>
@@ -548,36 +549,79 @@ namespace SWLOR.Game.Server.Feature
             return false;
         }
 
-        private static string DisplayActivationTargetingTelegraph(
+        private static List<string> DisplayActivationTargetingTelegraphs(
             uint activator,
             uint target,
             Location targetLocation,
             AbilityDetail ability,
             float activationDelay)
         {
-            if (activationDelay <= 0f || ability.Targeting == null)
-                return string.Empty;
+            var telegraphIds = new List<string>();
 
-            var targeting = ability.Targeting;
+            if (activationDelay <= 0f)
+                return telegraphIds;
+
+            AddActivationTargetingTelegraph(
+                telegraphIds,
+                activator,
+                target,
+                targetLocation,
+                ability,
+                ability.Targeting,
+                activationDelay);
+
+            foreach (var targeting in ability.AdditionalActivationTargeting)
+            {
+                AddActivationTargetingTelegraph(
+                    telegraphIds,
+                    activator,
+                    target,
+                    targetLocation,
+                    ability,
+                    targeting,
+                    activationDelay);
+            }
+
+            return telegraphIds;
+        }
+
+        private static void AddActivationTargetingTelegraph(
+            List<string> telegraphIds,
+            uint activator,
+            uint target,
+            Location targetLocation,
+            AbilityDetail ability,
+            AbilityTargetingDetail targeting,
+            float activationDelay)
+        {
+            if (targeting == null)
+                return;
+
             var sizeX = targeting.ResolveSizeX(activator, true);
             var sizeY = targeting.ResolveSizeY();
+
+            if (sizeX <= 0f || sizeY < 0f)
+                return;
+
             var position = ResolveActivationTargetingPosition(activator, target, targetLocation, targeting);
             var rotation = ResolveActivationTargetingRotation(activator, target, targetLocation);
             var isHostile = ability.IsHostileAbility || targeting.Flags.HasFlag(AbilityTargetingFlags.HarmsEnemies);
+            var telegraphId = string.Empty;
 
             switch (targeting.Shape)
             {
                 case AbilityTargetingShapeType.Sphere:
                 case AbilityTargetingShapeType.HSphere:
-                    return Telegraph.CreateSphereTelegraph(
+                    telegraphId = Telegraph.CreateSphereTelegraph(
                         activator,
                         position,
                         sizeX,
                         activationDelay,
                         isHostile,
                         null);
+                    break;
                 case AbilityTargetingShapeType.Rect:
-                    return Telegraph.CreateLineTelegraph(
+                    telegraphId = Telegraph.CreateLineTelegraph(
                         activator,
                         position,
                         rotation,
@@ -586,8 +630,9 @@ namespace SWLOR.Game.Server.Feature
                         activationDelay,
                         isHostile,
                         null);
+                    break;
                 case AbilityTargetingShapeType.Cone:
-                    return Telegraph.CreateConeTelegraph(
+                    telegraphId = Telegraph.CreateConeTelegraph(
                         activator,
                         position,
                         rotation,
@@ -596,16 +641,25 @@ namespace SWLOR.Game.Server.Feature
                         activationDelay,
                         isHostile,
                         null);
+                    break;
                 case AbilityTargetingShapeType.None:
                 default:
-                    return string.Empty;
+                    return;
             }
+
+            if (!string.IsNullOrWhiteSpace(telegraphId))
+                telegraphIds.Add(telegraphId);
         }
 
-        private static void CancelActivationTargetingTelegraph(string telegraphId)
+        private static void CancelActivationTargetingTelegraphs(List<string> telegraphIds)
         {
-            if (!string.IsNullOrWhiteSpace(telegraphId))
+            foreach (var telegraphId in telegraphIds)
+            {
+                if (string.IsNullOrWhiteSpace(telegraphId))
+                    continue;
+
                 Telegraph.CancelTelegraph(telegraphId);
+            }
         }
 
         private static Vector3 ResolveActivationTargetingPosition(

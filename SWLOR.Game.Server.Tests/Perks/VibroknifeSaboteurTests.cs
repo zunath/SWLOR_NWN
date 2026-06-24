@@ -140,15 +140,31 @@ public class VibroknifeSaboteurTests
     public void CascadeFailure_AddsVisibleConeAndVulnerableOverlayToIncapacitate()
     {
         var root = FindRepositoryRoot();
+        var ability = new IncapacitateAbilityDefinition().BuildAbilities()[FeatType.Incapacitate1];
         var source = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Vibroknife" / "IncapacitateAbilityDefinition.cs").FullName)
             .Replace("\r\n", "\n");
 
+        var additionalTargeting = ability.AdditionalActivationTargeting
+            .Should()
+            .ContainSingle()
+            .Which;
+        additionalTargeting.Shape.Should().Be(AbilityTargetingShapeType.Cone);
+        additionalTargeting.SizeX.Should().Be(5f);
+        additionalTargeting.SizeY.Should().Be(5f);
+        additionalTargeting.UpdatesClientTargeting.Should().BeFalse();
+
         source.Should().Contain("Stat.GetStatAdjustment(activator, StatType.VibroknifeSaboteurCascadeFailure)");
+        source.Should().Contain(".AddActivationTargetingCone(");
+        source.Should().Contain("CascadeFailureConeLengthResolver");
         source.Should().Contain("Telegraph.CreateConeTelegraph(");
         source.Should().Contain("private const float CascadeFailureConeLength = 5f;");
         source.Should().Contain("private const float CascadeFailureConeWidth = 5f;");
         source.Should().Contain("private const float CascadeFailureVulnerableDurationSeconds = 12f;");
         source.Should().Contain("typeof(VulnerableStatusEffect)");
+        source.Should().Contain("PlaysSoundOnImpact(IncapacitateImpactSound)");
+        source.Should().Contain("VisualEffect.Vfx_Fnf_Pwstun");
+        source.Should().Contain("VisualEffect.Vfx_Imp_Stun");
+        source.Should().Contain("VisualEffect.Vfx_Imp_Dazed_S");
     }
 
     private static void AssertPerkLevel(

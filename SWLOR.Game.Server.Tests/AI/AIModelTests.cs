@@ -402,9 +402,9 @@ public class AIModelTests
             source.IndexOf("private static void ResumeAttackAfterDelay", StringComparison.Ordinal) -
             source.IndexOf("private static void ResumeAttack(", StringComparison.Ordinal));
         var animationBody = source.Substring(
-            source.IndexOf("string ProcessAnimationAndVisualEffects", StringComparison.Ordinal),
+            source.IndexOf("ProcessAnimationAndVisualEffects", StringComparison.Ordinal),
             source.IndexOf("void CheckForActivationInterruption", StringComparison.Ordinal) -
-            source.IndexOf("string ProcessAnimationAndVisualEffects", StringComparison.Ordinal));
+            source.IndexOf("ProcessAnimationAndVisualEffects", StringComparison.Ordinal));
         var completeBody = source.Substring(
             source.IndexOf("void CompleteActivation", StringComparison.Ordinal),
             source.IndexOf("// Begin the main process", StringComparison.Ordinal) -

@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
+using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition
 {
@@ -387,15 +388,28 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             Type type,
             float duration,
             bool centerOnActivator,
-            int fpDrainPercent)
+            int fpDrainPercent,
+            VisualEffect targetVisualEffect = VisualEffect.None,
+            VisualEffect areaVisualEffect = VisualEffect.None)
         {
             var location = GetAreaStatusLocation(activator, target, targetLocation, centerOnActivator);
+
+            if (areaVisualEffect != VisualEffect.None)
+            {
+                ApplyEffectAtLocation(DurationType.Instant, EffectVisualEffect(areaVisualEffect), location);
+            }
+
             var creature = GetFirstObjectInShape(Shape.Sphere, 5f, location, true);
 
             while (GetIsObjectValid(creature))
             {
                 if (GetIsReactionTypeHostile(creature, activator))
                 {
+                    if (targetVisualEffect != VisualEffect.None)
+                    {
+                        ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(targetVisualEffect), creature);
+                    }
+
                     StatusEffect.ApplyStatusEffect(activator, creature, type, duration, CombatDamageType.Physical);
                     Ability.ApplyHostileAbilityEnmity(activator, creature);
                     if (fpDrainPercent > 0)

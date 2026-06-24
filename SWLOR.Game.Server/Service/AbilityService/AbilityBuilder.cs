@@ -419,6 +419,19 @@ namespace SWLOR.Game.Server.Service.AbilityService
                 false);
         }
 
+        public AbilityBuilder AddActivationTargetingSphere(
+            float radius,
+            AbilityTargetingFlags flags,
+            AbilityTargetingSizeResolver sizeResolver = null)
+        {
+            return AddActivationTargeting(
+                AbilityTargetingShapeType.Sphere,
+                radius,
+                0f,
+                flags,
+                sizeResolver);
+        }
+
         public AbilityBuilder HasTargetingLine(
             Spell spell,
             float length,
@@ -449,6 +462,20 @@ namespace SWLOR.Game.Server.Service.AbilityService
                 flags,
                 sizeResolver,
                 false);
+        }
+
+        public AbilityBuilder AddActivationTargetingLine(
+            float length,
+            float width,
+            AbilityTargetingFlags flags,
+            AbilityTargetingSizeResolver sizeResolver = null)
+        {
+            return AddActivationTargeting(
+                AbilityTargetingShapeType.Rect,
+                length,
+                width,
+                flags,
+                sizeResolver);
         }
 
         public AbilityBuilder HasTargetingCone(
@@ -483,6 +510,20 @@ namespace SWLOR.Game.Server.Service.AbilityService
                 false);
         }
 
+        public AbilityBuilder AddActivationTargetingCone(
+            float length,
+            float width,
+            AbilityTargetingFlags flags,
+            AbilityTargetingSizeResolver sizeResolver = null)
+        {
+            return AddActivationTargeting(
+                AbilityTargetingShapeType.Cone,
+                length,
+                width,
+                flags,
+                sizeResolver);
+        }
+
         public AbilityBuilder HasTargeting(
             Spell spell,
             AbilityTargetingShapeType shape,
@@ -500,6 +541,26 @@ namespace SWLOR.Game.Server.Service.AbilityService
                 flags,
                 sizeResolver,
                 updatesClientTargeting);
+
+            return this;
+        }
+
+        public AbilityBuilder AddActivationTargeting(
+            AbilityTargetingShapeType shape,
+            float sizeX,
+            float sizeY,
+            AbilityTargetingFlags flags,
+            AbilityTargetingSizeResolver sizeResolver = null)
+        {
+            _activeAbility.AdditionalActivationTargeting.Add(
+                new AbilityTargetingDetail(
+                    Spell.Invalid,
+                    shape,
+                    sizeX,
+                    sizeY,
+                    flags,
+                    sizeResolver,
+                    false));
 
             return this;
         }

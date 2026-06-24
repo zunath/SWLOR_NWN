@@ -1029,12 +1029,10 @@ namespace SWLOR.Game.Server.Service
                     creature = GetNextObjectInShape(Shape.Sphere, 5.0f, center, true);
                 }
 
-                if (creatures.Any(creature => GetIsObjectValid(creature) && GetIsReactionTypeHostile(creature, activator)))
+                if (areaVisualEffect != VisualEffect.None &&
+                    GetIsObjectValid(GetAreaFromLocation(center)))
                 {
-                    if (areaVisualEffect != VisualEffect.None)
-                    {
-                        ApplyEffectAtLocation(DurationType.Instant, EffectVisualEffect(areaVisualEffect), center);
-                    }
+                    ApplyEffectAtLocation(DurationType.Instant, EffectVisualEffect(areaVisualEffect), center);
                 }
 
                 totalDamage = ApplyCombatImpactToCreatures(
@@ -1135,7 +1133,7 @@ namespace SWLOR.Game.Server.Service
             bool awardsCombatPoints = true,
             DamageType? effectDamageType = null,
             bool playImpactAnimation = true,
-            bool alwaysApplyAreaVisualEffect = false,
+            bool alwaysApplyAreaVisualEffect = true,
             AbilityType combatImpactDamageAbility = AbilityType.Invalid,
             bool sendsNoTargetMessage = true,
             bool resolvesHit = true,

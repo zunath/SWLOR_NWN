@@ -73,14 +73,34 @@ public class StaffCrusherTests
 
         Stat.GetStatTypeCategory(StatType.CriticalTargetDefensePercentAdjustment).Should().Be(StatTypeCategory.BeneficialWhenNegative);
         Stat.GetStatTypeCategory(StatType.CriticalTargetDefenseDurationSeconds).Should().Be(StatTypeCategory.NonBeneficial);
-        Stat.GetStatTypeCategory(StatType.StaffCriticalDamagePercentAdjustment).Should().Be(StatTypeCategory.BeneficialWhenPositive);
-        Stat.GetStatTypeCategory(StatType.StaffCriticalRatePercentAdjustment).Should().Be(StatTypeCategory.BeneficialWhenPositive);
-        Stat.GetStatTypeCategory(StatType.StaffCriticalTargetDefensePercentAdjustment).Should().Be(StatTypeCategory.BeneficialWhenNegative);
-        Stat.GetStatTypeCategory(StatType.StaffCriticalTargetDefenseDurationSeconds).Should().Be(StatTypeCategory.NonBeneficial);
+        Stat.GetStatTypeCategory(StatType.CriticalDamagePercentAdjustment).Should().Be(StatTypeCategory.BeneficialWhenPositive);
+        Stat.GetStatTypeCategory(StatType.CriticalRatePercentAdjustment).Should().Be(StatTypeCategory.BeneficialWhenPositive);
         Stat.GetStatTypeCategory(StatType.WeaponMightModifierDamageMultiplier).Should().Be(StatTypeCategory.BeneficialWhenPositive);
 
         var worldbreaker = new WorldbreakerStatusEffect();
         worldbreaker.StatGroup.Stats[StatType.DamageDealtPercentAdjustment].Should().Be(-10);
+    }
+
+    [Test]
+    public void BreakPosture_IsUniversalCriticalExposure()
+    {
+        var perks = BuildStaffCrusherPerksWithout2daLookup();
+        var breakPosture = perks[PerkType.BreakPosture];
+
+        AssertPerkLevel(
+            breakPosture,
+            "Break Posture",
+            1,
+            2,
+            40,
+            FeatType.BreakPostureTrait,
+            "Critical hits with any weapon inflict Exposed, reducing Defense by 10% for 10 seconds.",
+            StatType.CriticalTargetDefensePercentAdjustment,
+            StatType.CriticalTargetDefenseDurationSeconds);
+        AssertStatBonus(breakPosture.PerkLevels[1], StatType.CriticalTargetDefensePercentAdjustment, -10);
+        AssertStatBonus(breakPosture.PerkLevels[1], StatType.CriticalTargetDefenseDurationSeconds, 10);
+        breakPosture.PerkLevels[1].StatBonuses.Select(x => x.Stat).Should().NotContain(StatType.StaffCriticalTargetDefensePercentAdjustment);
+        breakPosture.PerkLevels[1].StatBonuses.Select(x => x.Stat).Should().NotContain(StatType.StaffCriticalTargetDefenseDurationSeconds);
     }
 
     [Test]
@@ -101,6 +121,74 @@ public class StaffCrusherTests
             StatType.CriticalRatePercentAdjustment);
         AssertStatBonus(crushingStyle.PerkLevels[1], StatType.WeaponMightModifierDamageMultiplier, 1);
         AssertStatBonus(crushingStyle.PerkLevels[1], StatType.CriticalRatePercentAdjustment, 10);
+    }
+
+    [Test]
+    public void CrushingMastery_IsUniversalWeaponMastery()
+    {
+        var perks = BuildStaffCrusherPerksWithout2daLookup();
+        var crushingMastery = perks[PerkType.CrushingMastery];
+
+        AssertPerkLevel(
+            crushingMastery,
+            "Crushing Mastery",
+            1,
+            3,
+            12,
+            FeatType.CrushingMasteryTrait,
+            "Critical hits with any weapon deal +10% damage and restore 2 STM. This can only trigger once every 6 seconds.",
+            StatType.CriticalDamagePercentAdjustment,
+            StatType.CriticalStaminaRestore,
+            StatType.CriticalStaminaRestoreCooldownSeconds);
+        AssertStatBonus(crushingMastery.PerkLevels[1], StatType.CriticalDamagePercentAdjustment, 10);
+        AssertStatBonus(crushingMastery.PerkLevels[1], StatType.CriticalStaminaRestore, 2);
+        AssertStatBonus(crushingMastery.PerkLevels[1], StatType.CriticalStaminaRestoreCooldownSeconds, 6);
+
+        AssertPerkLevel(
+            crushingMastery,
+            "Crushing Mastery",
+            2,
+            2,
+            32,
+            null,
+            "Bonus damage with all weapons increases to 2x your MGT modifier and critical chance increases by an additional 10%. Critical hits with any weapon still deal +10% damage and restore 2 STM once every 6 seconds.",
+            StatType.CriticalDamagePercentAdjustment,
+            StatType.CriticalStaminaRestore,
+            StatType.CriticalStaminaRestoreCooldownSeconds,
+            StatType.WeaponMightModifierDamageMultiplier,
+            StatType.CriticalRatePercentAdjustment);
+        AssertStatBonus(crushingMastery.PerkLevels[2], StatType.CriticalDamagePercentAdjustment, 10);
+        AssertStatBonus(crushingMastery.PerkLevels[2], StatType.CriticalStaminaRestore, 2);
+        AssertStatBonus(crushingMastery.PerkLevels[2], StatType.CriticalStaminaRestoreCooldownSeconds, 6);
+        AssertStatBonus(crushingMastery.PerkLevels[2], StatType.WeaponMightModifierDamageMultiplier, 1);
+        AssertStatBonus(crushingMastery.PerkLevels[2], StatType.CriticalRatePercentAdjustment, 10);
+
+        AssertPerkLevel(
+            crushingMastery,
+            "Crushing Mastery",
+            3,
+            4,
+            48,
+            null,
+            "Critical hits with any weapon deal +20% damage and restore 4 STM once every 6 seconds. Bonus damage with all weapons remains 2x your MGT modifier and the additional +10% critical chance remains.",
+            StatType.CriticalDamagePercentAdjustment,
+            StatType.CriticalStaminaRestore,
+            StatType.CriticalStaminaRestoreCooldownSeconds,
+            StatType.WeaponMightModifierDamageMultiplier,
+            StatType.CriticalRatePercentAdjustment);
+        AssertStatBonus(crushingMastery.PerkLevels[3], StatType.CriticalDamagePercentAdjustment, 20);
+        AssertStatBonus(crushingMastery.PerkLevels[3], StatType.CriticalStaminaRestore, 4);
+        AssertStatBonus(crushingMastery.PerkLevels[3], StatType.CriticalStaminaRestoreCooldownSeconds, 6);
+        AssertStatBonus(crushingMastery.PerkLevels[3], StatType.WeaponMightModifierDamageMultiplier, 1);
+        AssertStatBonus(crushingMastery.PerkLevels[3], StatType.CriticalRatePercentAdjustment, 10);
+
+        foreach (var perkLevel in crushingMastery.PerkLevels.Values)
+        {
+            perkLevel.StatBonuses.Select(x => x.Stat).Should().NotContain(StatType.StaffCriticalDamagePercentAdjustment);
+            perkLevel.StatBonuses.Select(x => x.Stat).Should().NotContain(StatType.StaffMightModifierDamageMultiplier);
+            perkLevel.StatBonuses.Select(x => x.Stat).Should().NotContain(StatType.StaffCriticalRatePercentAdjustment);
+            perkLevel.StatBonuses.Select(x => x.Stat).Should().NotContain(StatType.CriticalStaminaRestoreSkillType);
+        }
     }
 
     [Test]
@@ -162,11 +250,17 @@ public class StaffCrusherTests
         var root = FindRepositoryRoot();
         var perkSource = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "PerkDefinition" / "StaffPerkDefinition.cs").FullName);
 
-        perkSource.Should().Contain("StatType.StaffCriticalTargetDefensePercentAdjustment, -10");
-        perkSource.Should().Contain("StatType.StaffCriticalDamagePercentAdjustment, 20");
-        perkSource.Should().Contain("StatType.StaffCriticalRatePercentAdjustment, 10");
-        perkSource.Should().Contain("StatType.WeaponMightModifierDamageMultiplier, 1");
+        perkSource.Should().Contain("StatType.CriticalTargetDefensePercentAdjustment, -10");
+        perkSource.Should().Contain("StatType.CriticalTargetDefenseDurationSeconds, 10");
+        perkSource.Should().Contain("StatType.CriticalDamagePercentAdjustment, 20");
         perkSource.Should().Contain("StatType.CriticalRatePercentAdjustment, 10");
+        perkSource.Should().Contain("StatType.WeaponMightModifierDamageMultiplier, 1");
+        perkSource.Should().NotContain("StatType.StaffCriticalTargetDefensePercentAdjustment");
+        perkSource.Should().NotContain("StatType.StaffCriticalTargetDefenseDurationSeconds");
+        perkSource.Should().NotContain("StatType.StaffCriticalDamagePercentAdjustment");
+        perkSource.Should().NotContain("StatType.StaffMightModifierDamageMultiplier");
+        perkSource.Should().NotContain("StatType.StaffCriticalRatePercentAdjustment");
+        perkSource.Should().NotContain("StatType.CriticalStaminaRestoreSkillType");
 
         var slam = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Staff" / "SlamAbilityDefinition.cs").FullName).Replace("\r\n", "\n");
         slam.Should().Contain("SkillType.Staff,\n                4,\n                6,");

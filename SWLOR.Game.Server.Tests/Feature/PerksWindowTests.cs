@@ -1,5 +1,9 @@
+using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
+using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.SkillService;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -76,6 +80,38 @@ public class PerksWindowTests
         recastIndex.Should().BeLessThan(currentUpgradeIndex);
     }
 
+    [Test]
+    public void SkillLevelSort_UnlearnedPerksUseFirstRequiredSkillLevel()
+    {
+        var detail = BuildPerkDetail((1, 10), (2, 20), (3, 30));
+
+        GetRequiredSkillLevelSortOrder(detail, 0).Should().Be(10);
+    }
+
+    [Test]
+    public void SkillLevelSort_InProgressPerksUseNextRequiredSkillLevel()
+    {
+        var detail = BuildPerkDetail((1, 10), (2, 20), (3, 30));
+
+        GetRequiredSkillLevelSortOrder(detail, 1).Should().Be(20);
+    }
+
+    [Test]
+    public void SkillLevelSort_MaxedPerksUseLastLearnedSkillRequirement()
+    {
+        var detail = BuildPerkDetail((1, 10), (2, 20), (3, 30));
+
+        GetRequiredSkillLevelSortOrder(detail, 3).Should().Be(30);
+    }
+
+    [Test]
+    public void SkillLevelSort_MaxedPerksWalkBackToLastSkillRequirement()
+    {
+        var detail = BuildPerkDetail((1, 10), (2, 0), (3, 0));
+
+        GetRequiredSkillLevelSortOrder(detail, 3).Should().Be(10);
+    }
+
     private static DirectoryInfo FindRepositoryRoot()
     {
         var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
@@ -90,5 +126,32 @@ public class PerksWindowTests
         }
 
         throw new DirectoryNotFoundException("Could not locate the SWLOR_NWN repository root.");
+    }
+
+    private static PerkDetail BuildPerkDetail(params (int Level, int SkillRank)[] levels)
+    {
+        var detail = new PerkDetail();
+
+        foreach (var (level, skillRank) in levels)
+        {
+            var perkLevel = new PerkLevel();
+            if (skillRank > 0)
+            {
+                perkLevel.Requirements.Add(new PerkRequirementSkill(SkillType.Leadership, skillRank));
+            }
+
+            detail.PerkLevels[level] = perkLevel;
+        }
+
+        return detail;
+    }
+
+    private static int GetRequiredSkillLevelSortOrder(PerkDetail detail, int rank)
+    {
+        return (int)typeof(PerksViewModel)
+            .GetMethod(
+                "GetRequiredSkillLevelSortOrder",
+                BindingFlags.Static | BindingFlags.NonPublic)!
+            .Invoke(null, new object[] { detail, rank })!;
     }
 }

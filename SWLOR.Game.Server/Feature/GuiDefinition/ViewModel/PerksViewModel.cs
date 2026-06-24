@@ -391,10 +391,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 PerkSortOrder.AlphabeticalDescending => perks
                     .OrderByDescending(x => x.Value.Name, StringComparer.OrdinalIgnoreCase),
                 PerkSortOrder.SkillLevelAscending => perks
-                    .OrderBy(x => GetNextRequiredSkillLevel(x.Value, GetCurrentPerkRank(dbPlayer, dbBeast, x.Key)))
+                    .OrderBy(x => GetRequiredSkillLevelSortOrder(x.Value, GetCurrentPerkRank(dbPlayer, dbBeast, x.Key)))
                     .ThenBy(x => x.Value.Name, StringComparer.OrdinalIgnoreCase),
                 PerkSortOrder.SkillLevelDescending => perks
-                    .OrderByDescending(x => GetNextRequiredSkillLevel(x.Value, GetCurrentPerkRank(dbPlayer, dbBeast, x.Key)))
+                    .OrderByDescending(x => GetRequiredSkillLevelSortOrder(x.Value, GetCurrentPerkRank(dbPlayer, dbBeast, x.Key)))
                     .ThenBy(x => x.Value.Name, StringComparer.OrdinalIgnoreCase),
                 _ => perks.OrderBy(x => x.Value.Name, StringComparer.OrdinalIgnoreCase)
             };
@@ -417,16 +417,21 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 : 0;
         }
 
-        private static int GetNextRequiredSkillLevel(PerkDetail detail, int rank)
+        private static int GetRequiredSkillLevelSortOrder(PerkDetail detail, int rank)
         {
-            var nextUpgrade = detail.PerkLevels.ContainsKey(rank + 1)
-                ? detail.PerkLevels[rank + 1]
-                : null;
+            if (detail.PerkLevels.TryGetValue(rank + 1, out var nextUpgrade))
+                return GetRequiredSkillLevel(nextUpgrade);
 
-            if (nextUpgrade == null)
-                return 0;
+            return detail.PerkLevels
+                .Where(x => x.Key <= rank)
+                .OrderByDescending(x => x.Key)
+                .Select(x => GetRequiredSkillLevel(x.Value))
+                .FirstOrDefault(x => x > 0);
+        }
 
-            return nextUpgrade.Requirements
+        private static int GetRequiredSkillLevel(PerkLevel level)
+        {
+            return level.Requirements
                 .OfType<PerkRequirementSkill>()
                 .Select(x => x.RequiredRank)
                 .DefaultIfEmpty(0)

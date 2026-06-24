@@ -35,6 +35,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Plants a visible 12m targeting sphere for 18 seconds. Every 3 seconds, one hostile target inside is hit by an automated ranged energy pulse for 3 energy DMG plus PER scaling.")
                 .Price(3)
                 .RequirementCharacterType(CharacterType.Standard)
+                .DroidAISlots(1)
                 .GrantsFeat(FeatType.BlasterBeacon1)
 
                 .AddPerkLevel()
@@ -42,6 +43,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(3)
                 .RequirementSkill(SkillType.Devices, 15)
                 .RequirementCharacterType(CharacterType.Standard)
+                .DroidAISlots(2)
                 .GrantsFeat(FeatType.BlasterBeacon2)
 
                 .AddPerkLevel()
@@ -49,6 +51,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(4)
                 .RequirementSkill(SkillType.Devices, 30)
                 .RequirementCharacterType(CharacterType.Standard)
+                .DroidAISlots(3)
                 .GrantsFeat(FeatType.BlasterBeacon3);
         }
 
@@ -85,6 +88,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(3)
                 .RequirementSkill(SkillType.Devices, 8)
                 .RequirementCharacterType(CharacterType.Standard)
+                .DroidAISlots(1)
                 .GrantsFeat(FeatType.IncendiaryField1)
 
                 .AddPerkLevel()
@@ -92,6 +96,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(4)
                 .RequirementSkill(SkillType.Devices, 25)
                 .RequirementCharacterType(CharacterType.Standard)
+                .DroidAISlots(2)
                 .GrantsFeat(FeatType.IncendiaryField2)
 
                 .AddPerkLevel()
@@ -99,6 +104,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(5)
                 .RequirementSkill(SkillType.Devices, 45)
                 .RequirementCharacterType(CharacterType.Standard)
+                .DroidAISlots(3)
                 .GrantsFeat(FeatType.IncendiaryField3);
         }
 
@@ -112,6 +118,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(4)
                 .RequirementSkill(SkillType.Devices, 18)
                 .RequirementCharacterType(CharacterType.Standard)
+                .DroidAISlots(1)
                 .GrantsFeat(FeatType.SignalJammer1);
         }
 
@@ -125,6 +132,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(3)
                 .RequirementSkill(SkillType.Devices, 12)
                 .RequirementCharacterType(CharacterType.Standard)
+                .DroidAISlots(1)
                 .GrantsFeat(FeatType.RemoteCharge1)
 
                 .AddPerkLevel()
@@ -132,6 +140,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(4)
                 .RequirementSkill(SkillType.Devices, 28)
                 .RequirementCharacterType(CharacterType.Standard)
+                .DroidAISlots(2)
                 .GrantsFeat(FeatType.RemoteCharge2);
         }
 
@@ -145,6 +154,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(4)
                 .RequirementSkill(SkillType.Devices, 22)
                 .RequirementCharacterType(CharacterType.Standard)
+                .DroidAISlots(1)
                 .GrantsFeat(FeatType.ShockBeacon1)
 
                 .AddPerkLevel()
@@ -152,6 +162,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(5)
                 .RequirementSkill(SkillType.Devices, 38)
                 .RequirementCharacterType(CharacterType.Standard)
+                .DroidAISlots(2)
                 .GrantsFeat(FeatType.ShockBeacon2);
         }
 
@@ -181,6 +192,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(5)
                 .RequirementSkill(SkillType.Devices, 50)
                 .RequirementCharacterType(CharacterType.Standard)
+                .DroidAISlots(1)
                 .GrantsFeat(FeatType.KillzoneBeacon1);
         }
 

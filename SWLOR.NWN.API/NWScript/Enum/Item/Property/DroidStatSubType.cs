@@ -22,6 +22,7 @@ namespace SWLOR.NWN.API.NWScript.Enum.Item.Property
         ResistanceMobility = 17,
         ResistanceTrauma = 18,
         ResistanceDisruption = 19,
+        Armor = 20,
 
         Vibroblade = 115,
         Vibroknife = 116,

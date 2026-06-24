@@ -30,6 +30,7 @@ namespace SWLOR.Game.Server.Service.DroidService
         public int Pistol { get; set; }
         public int Rifle { get; set; }
         public int Throwing { get; set; }
+        public int Armor { get; set; }
         public Dictionary<ResistanceType, int> Resistances { get; set; }
 
         public DroidPartItemPropertyDetails()

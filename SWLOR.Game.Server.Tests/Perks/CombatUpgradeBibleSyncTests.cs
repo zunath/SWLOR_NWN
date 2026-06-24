@@ -217,6 +217,7 @@ public class CombatUpgradeBibleSyncTests
             "Feature",
             "MigrationDefinition",
             "ObsoleteItemMigration.cs"));
+        var migrationMaxLevels = ReadCurrentDroidInstructionMaxLevels(migrationSource);
         var perks = BuildPerksWithout2daLookup()
             .ToDictionary(x => x.Type, x => x.Detail);
         var expectedInstructions = GetExpectedDroidInstructions(perks)
@@ -224,7 +225,17 @@ public class CombatUpgradeBibleSyncTests
         var templatesByPerkLevel = templates
             .GroupBy(x => (x.Perk, x.Level))
             .ToDictionary(x => x.Key, x => x.ToArray());
+        var templateMaxLevels = templates
+            .GroupBy(x => x.Perk)
+            .ToDictionary(x => x.Key, x => x.Max(y => y.Level));
         var failures = new List<string>();
+
+        foreach (var expectedInstruction in expectedInstructions.Values.OrderBy(x => x.Perk).ThenBy(x => x.Level))
+        {
+            var aiSlots = perks[expectedInstruction.Perk].PerkLevels[expectedInstruction.Level].DroidAISlots;
+            if (aiSlots <= 0)
+                failures.Add($"{expectedInstruction.Perk} level {expectedInstruction.Level} is droid-selectable but has no AI slot cost.");
+        }
 
         foreach (var duplicate in recipes.Values
                      .GroupBy(x => x.Resref, StringComparer.OrdinalIgnoreCase)
@@ -283,13 +294,78 @@ public class CombatUpgradeBibleSyncTests
         foreach (var group in templates.GroupBy(x => x.Perk).OrderBy(x => x.Key))
         {
             var maxLevel = group.Max(x => x.Level);
-            if (!migrationSource.Contains($"{{ PerkType.{group.Key}, {maxLevel} }}", StringComparison.Ordinal))
+            if (!migrationMaxLevels.TryGetValue(group.Key, out var migrationMaxLevel))
+            {
                 failures.Add($"Obsolete item migration missing current droid max level for {group.Key}={maxLevel}.");
+                continue;
+            }
+
+            if (migrationMaxLevel != maxLevel)
+                failures.Add($"Obsolete item migration has current droid max level {group.Key}={migrationMaxLevel}, expected {maxLevel}.");
+        }
+
+        foreach (var (perkType, maxLevel) in migrationMaxLevels.OrderBy(x => x.Key))
+        {
+            if (!templateMaxLevels.TryGetValue(perkType, out var templateMaxLevel))
+            {
+                failures.Add($"Obsolete item migration permits droid instruction perk {perkType} level {maxLevel}, but no current UTI exists.");
+                continue;
+            }
+
+            if (templateMaxLevel != maxLevel)
+                continue;
+
+            if (!perks.TryGetValue(perkType, out var perk))
+            {
+                failures.Add($"Obsolete item migration permits missing perk {perkType}.");
+                continue;
+            }
+
+            for (var level = 1; level <= maxLevel; level++)
+            {
+                if (!perk.PerkLevels.TryGetValue(level, out var perkLevel))
+                {
+                    failures.Add($"Obsolete item migration permits missing {perkType} level {level}.");
+                    continue;
+                }
+
+                if (!expectedInstructions.ContainsKey((perkType, level)))
+                    failures.Add($"Obsolete item migration permits non-droid-selectable {perkType} level {level}.");
+
+                if (perkLevel.DroidAISlots <= 0)
+                    failures.Add($"Obsolete item migration permits {perkType} level {level}, but it has no AI slot cost.");
+            }
         }
 
         migrationSource.Should().Contain("\"id_concgren3\"");
         migrationSource.Should().Contain("\"id_tranqshot3\"");
         failures.Should().BeEmpty(string.Join(Environment.NewLine, failures));
+    }
+
+    private static IReadOnlyDictionary<PerkType, int> ReadCurrentDroidInstructionMaxLevels(string source)
+    {
+        var block = Regex.Match(
+            source,
+            @"CurrentDroidInstructionMaxLevels\s*=\s*new\(\)\s*\{(?<body>.*?)\};",
+            RegexOptions.Singleline);
+        if (!block.Success)
+            Assert.Fail("Could not find CurrentDroidInstructionMaxLevels in obsolete item migration.");
+
+        var result = new Dictionary<PerkType, int>();
+        foreach (Match match in Regex.Matches(
+                     block.Groups["body"].Value,
+                     @"\{\s*PerkType\.([A-Za-z0-9_]+)\s*,\s*(\d+)\s*\}",
+                     RegexOptions.None))
+        {
+            var perkName = match.Groups[1].Value;
+            if (!Enum.TryParse(perkName, out PerkType perkType))
+                Assert.Fail($"CurrentDroidInstructionMaxLevels references unknown perk {perkName}.");
+
+            if (!result.TryAdd(perkType, int.Parse(match.Groups[2].Value, CultureInfo.InvariantCulture)))
+                Assert.Fail($"CurrentDroidInstructionMaxLevels contains duplicate perk {perkName}.");
+        }
+
+        return result;
     }
 
     private static IReadOnlyCollection<ExpectedDroidInstruction> GetExpectedDroidInstructions(

@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using FluentAssertions;
@@ -6,6 +7,8 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PlayerMarketService;
+using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -110,6 +113,9 @@ public class CombatUpgradeMigrationCoverageTests
 
         serverMigration.Should().Contain("StoredItemDataMigration.Migrate();");
         migration.Should().Contain("EquipmentRequirementMigration.MigrateObject(obj)");
+        var droidBoostMigration = migration[
+            migration.IndexOf("private static class DroidBoostStoredItemMigration", StringComparison.Ordinal)..];
+        droidBoostMigration.Should().Contain("wasMigrated = EquipmentRequirementMigration.MigrateObject(obj)");
         AssertMigrationCalls(migration,
             "MigrateInventoryItems(progress);",
             "MigrateMarketItems(progress);",
@@ -356,6 +362,105 @@ public class CombatUpgradeMigrationCoverageTests
     }
 
     [Test]
+    public void DroidCpuTemplates_UseArmorAndConcreteWeaponSkillStats()
+    {
+        var root = FindRepositoryRoot();
+        var cpuFiles = Directory
+            .EnumerateFiles(Path.Combine(root.FullName, "Module", "uti"), "d_*cpu*.uti.json")
+            .OrderBy(x => x)
+            .ToArray();
+        var legacyWeaponGroups = new[]
+        {
+            12,
+            13,
+            14,
+            15
+        };
+        var concreteWeaponSkills = new[]
+        {
+            (int)DroidStatSubType.Vibroblade,
+            (int)DroidStatSubType.Vibroknife,
+            (int)DroidStatSubType.Lightsaber,
+            (int)DroidStatSubType.HeavyVibroblade,
+            (int)DroidStatSubType.Spear,
+            (int)DroidStatSubType.TwinBlade,
+            (int)DroidStatSubType.Saberstaff,
+            (int)DroidStatSubType.Katar,
+            (int)DroidStatSubType.Staff,
+            (int)DroidStatSubType.Pistol,
+            (int)DroidStatSubType.Rifle,
+            (int)DroidStatSubType.Throwing
+        };
+
+        cpuFiles.Should().NotBeEmpty("droid CPU item templates are the live crafted CPU data");
+        var generatorCpuRows = File.ReadLines(Path.Combine(
+                root.FullName,
+                "SWLOR.CLI",
+                "InputFiles",
+                "droid_item_list.tsv"))
+            .Select(line => line.Split('\t'))
+            .Where(row => row.Length > 2 && row[2].Equals("CPU", StringComparison.OrdinalIgnoreCase))
+            .ToDictionary(row => row[1], row => row, StringComparer.OrdinalIgnoreCase);
+        generatorCpuRows.Should().HaveCount(cpuFiles.Length, "the droid item generator should be able to reproduce every live CPU template");
+
+        foreach (var file in cpuFiles)
+        {
+            var templateName = Path.GetFileName(file);
+            var template = JObject.Parse(File.ReadAllText(file));
+            var templateResref = template["TemplateResRef"]!["value"]!.Value<string>()!;
+            var stats = template["PropertiesList"]!["value"]!
+                .Children<JObject>()
+                .Where(prop => GetJsonFieldValue(prop, "PropertyName") == (int)ItemPropertyType.DroidStat)
+                .GroupBy(prop => GetJsonFieldValue(prop, "Subtype"))
+                .ToDictionary(
+                    group => group.Key,
+                    group => group.Select(prop => GetJsonFieldValue(prop, "CostValue")).ToArray());
+            var tier = stats[(int)DroidStatSubType.Tier].Single();
+
+            stats.Should().ContainKey((int)DroidStatSubType.Armor, $"{templateName} should grant droids armor equipment rank");
+            stats[(int)DroidStatSubType.Armor].Should().ContainSingle()
+                .Which.Should().Be(GetTierArmorSkillRank(tier), $"{templateName} armor rank should follow CPU tier");
+            stats.Keys.Should().Contain(key => concreteWeaponSkills.Contains(key), $"{templateName} should grant concrete weapon skill ranks");
+
+            foreach (var legacyWeaponGroup in legacyWeaponGroups)
+            {
+                stats.Should().NotContainKey(legacyWeaponGroup, $"{templateName} should not use legacy droid weapon group stat IDs");
+            }
+
+            generatorCpuRows.Should().ContainKey(templateResref, $"{templateName} should be reproducible from the droid item generator input");
+            var row = generatorCpuRows[templateResref];
+            row.Length.Should().BeGreaterThanOrEqualTo(18, $"{templateResref} should define every CPU generator column");
+            row[0].Should().Be(template["LocalizedName"]!["value"]!["0"]!.Value<string>());
+            GetTsvInt(row, 3).Should().Be(tier, $"{templateResref} generator tier should match the template");
+            GetTsvInt(row, 4).Should().Be(stats[(int)DroidStatSubType.AISlots].Single(), $"{templateResref} generator AI slots should match the template");
+            GetTsvInt(row, 6).Should().Be(stats[(int)DroidStatSubType.HP].Single(), $"{templateResref} generator HP should match the template");
+            GetTsvInt(row, 7).Should().Be(stats[(int)DroidStatSubType.STM].Single(), $"{templateResref} generator STM should match the template");
+            GetTsvInt(row, 8).Should().Be(stats[(int)DroidStatSubType.MGT].Single(), $"{templateResref} generator MGT should match the template");
+            GetTsvInt(row, 9).Should().Be(stats[(int)DroidStatSubType.PER].Single(), $"{templateResref} generator PER should match the template");
+            GetTsvInt(row, 10).Should().Be(stats[(int)DroidStatSubType.VIT].Single(), $"{templateResref} generator VIT should match the template");
+            GetTsvInt(row, 11).Should().Be(stats[(int)DroidStatSubType.WIL].Single(), $"{templateResref} generator WIL should match the template");
+            GetTsvInt(row, 12).Should().Be(stats[(int)DroidStatSubType.AGI].Single(), $"{templateResref} generator AGI should match the template");
+            GetTsvInt(row, 13).Should().Be(stats[(int)DroidStatSubType.SOC].Single(), $"{templateResref} generator SOC should match the template");
+            GetTsvInt(row, 14).Should().Be(GetWeaponGroupRank(stats, 115, 116, 117), $"{templateResref} generator one-handed rank should match concrete skills");
+            GetTsvInt(row, 15).Should().Be(GetWeaponGroupRank(stats, 118, 119, 120, 121), $"{templateResref} generator two-handed rank should match concrete skills");
+            GetTsvInt(row, 16).Should().Be(GetWeaponGroupRank(stats, 122, 123), $"{templateResref} generator martial rank should match concrete skills");
+            GetTsvInt(row, 17).Should().Be(GetWeaponGroupRank(stats, 124, 125, 126), $"{templateResref} generator ranged rank should match concrete skills");
+        }
+
+        var migration = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "MigrationDefinition",
+            "ServerMigration",
+            "StoredItemDataMigration.cs"));
+        migration.Should().Contain("DroidStatSubType.Armor");
+        migration.Should().Contain("DroidPartItemPropertySubType.CPU");
+        migration.Should().Contain("Droid.DroidControlItemResref");
+        migration.Should().Contain("GetTierArmorSkillRank");
+    }
+
+    [Test]
     public void ObsoleteBiblePerkMigration_CoversPlayersBeastsStoredItemsDroidsAndShips()
     {
         var root = FindRepositoryRoot();
@@ -542,6 +647,49 @@ public class CombatUpgradeMigrationCoverageTests
         source.Should().Contain("HighPowerModules");
         source.Should().Contain("LowPowerModules");
         source.Should().Contain("ConfigurationModules");
+    }
+
+    private static int GetJsonFieldValue(JObject obj, string field)
+    {
+        return obj[field]?["value"]?.Value<int>() ?? 0;
+    }
+
+    private static int GetTierArmorSkillRank(int tier)
+    {
+        return tier switch
+        {
+            1 => 5,
+            2 => 15,
+            3 => 25,
+            4 => 35,
+            5 => 45,
+            _ => 0
+        };
+    }
+
+    private static int GetTsvInt(IReadOnlyList<string> row, int index)
+    {
+        return string.IsNullOrWhiteSpace(row[index])
+            ? 0
+            : int.Parse(row[index], CultureInfo.InvariantCulture);
+    }
+
+    private static int GetWeaponGroupRank(
+        IReadOnlyDictionary<int, int[]> stats,
+        params int[] subTypes)
+    {
+        var ranks = subTypes
+            .Select(subType => stats.TryGetValue(subType, out var values) ? values.Single() : 0)
+            .Where(rank => rank > 0)
+            .Distinct()
+            .ToArray();
+
+        if (ranks.Length > 1)
+            Assert.Fail($"Concrete droid weapon skill ranks differ within a generator group: {string.Join(", ", ranks)}.");
+
+        return ranks.Length == 0
+            ? 0
+            : ranks[0];
     }
 
     private static HashSet<string> GetPerkTypeEnumNames(DirectoryInfo root)

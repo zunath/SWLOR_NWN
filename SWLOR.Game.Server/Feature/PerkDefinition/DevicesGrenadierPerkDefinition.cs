@@ -44,6 +44,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Deals 18 fire DMG plus PER scaling to enemies in a 3m blast. Consumes explosives.")
                 .Price(2)
                 .RequirementCharacterType(CharacterType.Standard)
+                .DroidAISlots(1)
                 .GrantsFeat(FeatType.FragGrenade1)
 
                 .AddPerkLevel()
@@ -51,6 +52,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(3)
                 .RequirementSkill(SkillType.Devices, 15)
                 .RequirementCharacterType(CharacterType.Standard)
+                .DroidAISlots(2)
                 .GrantsFeat(FeatType.FragGrenade2)
 
                 .AddPerkLevel()
@@ -58,6 +60,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(5)
                 .RequirementSkill(SkillType.Devices, 40)
                 .RequirementCharacterType(CharacterType.Standard)
+                .DroidAISlots(3)
                 .GrantsFeat(FeatType.FragGrenade3);
         }
 
@@ -100,6 +103,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(3)
                 .RequirementSkill(SkillType.Devices, 8)
                 .RequirementCharacterType(CharacterType.Standard)
+                .DroidAISlots(1)
                 .GrantsFeat(FeatType.ConcussionGrenade1)
 
                 .AddPerkLevel()
@@ -107,6 +111,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(4)
                 .RequirementSkill(SkillType.Devices, 28)
                 .RequirementCharacterType(CharacterType.Standard)
+                .DroidAISlots(2)
                 .GrantsFeat(FeatType.ConcussionGrenade2);
         }
 
@@ -120,6 +125,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(3)
                 .RequirementSkill(SkillType.Devices, 12)
                 .RequirementCharacterType(CharacterType.Standard)
+                .DroidAISlots(1)
                 .GrantsFeat(FeatType.FlashGrenade1);
         }
 
@@ -133,6 +139,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(3)
                 .RequirementSkill(SkillType.Devices, 18)
                 .RequirementCharacterType(CharacterType.Standard)
+                .DroidAISlots(1)
                 .GrantsFeat(FeatType.IonGrenade1)
 
                 .AddPerkLevel()
@@ -140,6 +147,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(4)
                 .RequirementSkill(SkillType.Devices, 38)
                 .RequirementCharacterType(CharacterType.Standard)
+                .DroidAISlots(2)
                 .GrantsFeat(FeatType.IonGrenade2);
         }
 
@@ -153,6 +161,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(4)
                 .RequirementSkill(SkillType.Devices, 25)
                 .RequirementCharacterType(CharacterType.Standard)
+                .DroidAISlots(1)
                 .GrantsFeat(FeatType.AdhesiveGrenade1)
 
                 .AddPerkLevel()
@@ -160,6 +169,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(4)
                 .RequirementSkill(SkillType.Devices, 42)
                 .RequirementCharacterType(CharacterType.Standard)
+                .DroidAISlots(2)
                 .GrantsFeat(FeatType.AdhesiveGrenade2);
         }
 
@@ -173,6 +183,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(4)
                 .RequirementSkill(SkillType.Devices, 30)
                 .RequirementCharacterType(CharacterType.Standard)
+                .DroidAISlots(1)
                 .GrantsFeat(FeatType.ClusterGrenade1);
         }
 
@@ -186,6 +197,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(4)
                 .RequirementSkill(SkillType.Devices, 35)
                 .RequirementCharacterType(CharacterType.Standard)
+                .DroidAISlots(1)
                 .GrantsFeat(FeatType.DisruptionPulse1);
         }
 
@@ -199,6 +211,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(5)
                 .RequirementSkill(SkillType.Devices, 50)
                 .RequirementCharacterType(CharacterType.Standard)
+                .DroidAISlots(1)
                 .GrantsFeat(FeatType.ThermalDetonator1);
         }
 

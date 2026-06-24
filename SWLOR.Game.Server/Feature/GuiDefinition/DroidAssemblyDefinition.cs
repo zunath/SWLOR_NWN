@@ -315,6 +315,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             col2.AddRow(row2 =>
                             {
                                 row2.AddLabel()
+                                    .BindText(model => model.Armor);
+                            });
+                            col2.AddRow(row2 =>
+                            {
+                                row2.AddLabel()
                                     .BindText(model => model.Might);
                             });
                             col2.AddRow(row2 =>

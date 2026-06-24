@@ -15,6 +15,7 @@ using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
 {
@@ -998,6 +999,9 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
                 wasMigrated |= MigrateBlueprintRecipeLocalVariable(item);
                 wasMigrated |= MigrateConstructedDroidLocalVariable(item);
                 var replacements = new List<(ItemProperty Property, ItemPropertyType Type, int Value, int[] SubTypes)>();
+                var tier = 0;
+                var hasArmorStat = false;
+                var isDroidCpu = false;
 
                 for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
                 {
@@ -1005,15 +1009,25 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
                     var subType = GetItemPropertySubType(ip);
                     var value = GetItemPropertyCostTableValue(ip);
 
-                    if (propertyType == ItemPropertyType.DroidStat &&
-                        LegacyDroidStatMap.TryGetValue(subType, out var droidStatSubTypes))
+                    if (propertyType == ItemPropertyType.DroidStat)
                     {
-                        replacements.Add((ip, propertyType, value, droidStatSubTypes));
+                        if (subType == (int)DroidStatSubType.Tier)
+                            tier = value;
+                        else if (subType == (int)DroidStatSubType.Armor)
+                            hasArmorStat = true;
+
+                        if (LegacyDroidStatMap.TryGetValue(subType, out var droidStatSubTypes))
+                            replacements.Add((ip, propertyType, value, droidStatSubTypes));
                     }
                     else if (propertyType == ItemPropertyType.DroidEnhancement &&
                              LegacyDroidEnhancementMap.TryGetValue(subType, out var enhancementSubTypes))
                     {
                         replacements.Add((ip, propertyType, value, enhancementSubTypes));
+                    }
+                    else if (propertyType == ItemPropertyType.DroidPart &&
+                             subType == (int)DroidPartItemPropertySubType.CPU)
+                    {
+                        isDroidCpu = true;
                     }
                 }
 
@@ -1030,7 +1044,41 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
                     }
                 }
 
-                return wasMigrated || replacements.Count > 0;
+                var isConstructedDroidController =
+                    GetResRef(item) == Droid.DroidControlItemResref &&
+                    !string.IsNullOrWhiteSpace(GetLocalString(item, "CONSTRUCTED_DROID"));
+                var addedArmorStat = AddArmorSkillRankIfNeeded(item, isDroidCpu || isConstructedDroidController, hasArmorStat, tier);
+
+                return wasMigrated || replacements.Count > 0 || addedArmorStat;
+            }
+
+            private static bool AddArmorSkillRankIfNeeded(uint item, bool isDroidStatSource, bool hasArmorStat, int tier)
+            {
+                if (!isDroidStatSource || hasArmorStat)
+                    return false;
+
+                var armorRank = GetTierArmorSkillRank(tier);
+                if (armorRank <= 0)
+                    return false;
+
+                AddItemProperty(
+                    DurationType.Permanent,
+                    ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.Armor, armorRank),
+                    item);
+                return true;
+            }
+
+            private static int GetTierArmorSkillRank(int tier)
+            {
+                return tier switch
+                {
+                    1 => 5,
+                    2 => 15,
+                    3 => 25,
+                    4 => 35,
+                    5 => 45,
+                    _ => 0
+                };
             }
 
             private static bool MigrateConstructedDroidLocalVariable(uint item)
@@ -1102,7 +1150,8 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
                 if (!GetIsObjectValid(obj))
                     return false;
 
-                var wasMigrated = MigrateObject(obj);
+                var wasMigrated = EquipmentRequirementMigration.MigrateObject(obj);
+                wasMigrated |= MigrateObject(obj);
                 if (wasMigrated)
                     migratedSerializedObject = ObjectPlugin.Serialize(obj);
 

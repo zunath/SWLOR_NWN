@@ -34,24 +34,28 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Restores 10% of the target's maximum HP plus WIL scaling to a single target. Consumes medical supplies.")
                 .Price(2)
+                .DroidAISlots(1)
                 .GrantsFeat(FeatType.MedKit1)
 
                 .AddPerkLevel()
                 .Description("Restores 20% of the target's maximum HP plus WIL scaling to a single target. Consumes medical supplies.")
                 .Price(4)
                 .RequirementSkill(SkillType.FirstAid, 25)
+                .DroidAISlots(2)
                 .GrantsFeat(FeatType.MedKit2)
 
                 .AddPerkLevel()
                 .Description("Restores 28% of the target's maximum HP plus WIL scaling to a single target. Consumes medical supplies.")
                 .Price(4)
                 .RequirementSkill(SkillType.FirstAid, 40)
+                .DroidAISlots(3)
                 .GrantsFeat(FeatType.MedKit3)
 
                 .AddPerkLevel()
                 .Description("Restores 36% of the target's maximum HP plus WIL scaling to a single target. Consumes medical supplies.")
                 .Price(5)
                 .RequirementSkill(SkillType.FirstAid, 50)
+                .DroidAISlots(4)
                 .GrantsFeat(FeatType.MedKit4);
         }
 
@@ -64,18 +68,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Removes Bleed and Poison from a single target. Consumes medical supplies.")
                 .Price(2)
                 .RequirementSkill(SkillType.FirstAid, 5)
+                .DroidAISlots(1)
                 .GrantsFeat(FeatType.TreatmentKit1)
 
                 .AddPerkLevel()
                 .Description("Removes Bleed, Poison, Toxin, Burn, Shock, and Disease from a single target. Consumes medical supplies.")
                 .Price(2)
                 .RequirementSkill(SkillType.FirstAid, 22)
+                .DroidAISlots(2)
                 .GrantsFeat(FeatType.TreatmentKit2)
 
                 .AddPerkLevel()
                 .Description("Removes Bleed, Poison, Toxin, Burn, Shock, and Disease from a single target and grants 50% Fire Resistance, 50% Poison Resistance, 50% Electrical Resistance, 50% Ice Resistance, and 50% Trauma Resistance for 8 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.FirstAid, 42)
+                .DroidAISlots(3)
                 .GrantsFeat(FeatType.TreatmentKit3);
         }
 
@@ -120,12 +127,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Deploys a 12-second healing mist cloud at a target location up to 15m away. Allies within 3m heal for 1% of maximum HP plus WIL scaling every 3 seconds. Consumes medical supplies.")
                 .Price(3)
                 .RequirementSkill(SkillType.FirstAid, 15)
+                .DroidAISlots(1)
                 .GrantsFeat(FeatType.KoltoMist1)
 
                 .AddPerkLevel()
                 .Description("Deploys a 12-second healing mist cloud at a target location up to 15m away. Allies within 3m heal for 2% of maximum HP plus WIL scaling every 3 seconds. Consumes medical supplies.")
                 .Price(4)
                 .RequirementSkill(SkillType.FirstAid, 30)
+                .DroidAISlots(2)
                 .GrantsFeat(FeatType.KoltoMist2);
         }
 
@@ -138,12 +147,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Revives an unconscious target with 1 HP. Consumes medical supplies.")
                 .Price(3)
                 .RequirementSkill(SkillType.FirstAid, 18)
+                .DroidAISlots(1)
                 .GrantsFeat(FeatType.Resuscitation1)
 
                 .AddPerkLevel()
                 .Description("Revives an unconscious target with 20% HP plus WIL scaling. Consumes medical supplies.")
                 .Price(3)
                 .RequirementSkill(SkillType.FirstAid, 35)
+                .DroidAISlots(2)
                 .GrantsFeat(FeatType.Resuscitation2);
         }
 
@@ -156,12 +167,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Grants a single target regeneration, healing 3% of maximum HP plus WIL scaling every 3 seconds for 15 seconds. Consumes medical supplies.")
                 .Price(3)
                 .RequirementSkill(SkillType.FirstAid, 28)
+                .DroidAISlots(1)
                 .GrantsFeat(FeatType.Infusion1)
 
                 .AddPerkLevel()
                 .Description("Grants a single target regeneration, healing 5% of maximum HP plus WIL scaling every 3 seconds for 15 seconds. Consumes medical supplies.")
                 .Price(3)
                 .RequirementSkill(SkillType.FirstAid, 48)
+                .DroidAISlots(2)
                 .GrantsFeat(FeatType.Infusion2);
         }
 
@@ -174,6 +187,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Restores 18% of the target's maximum HP plus WIL scaling instantly. Can target allies up to 15m away. Healing is doubled if the target is below 35% HP. Consumes extra medical supplies.")
                 .Price(4)
                 .RequirementSkill(SkillType.FirstAid, 45)
+                .DroidAISlots(1)
                 .GrantsFeat(FeatType.EmergencyTriage1);
         }
 

@@ -45,6 +45,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private int _pistol;
         private int _rifle;
         private int _throwing;
+        private int _armor;
         private int _fireResistance;
         private int _poisonResistance;
         private int _electricalResistance;
@@ -228,6 +229,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public string Armor
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
         public string FireResistance
         {
             get => Get<string>();
@@ -343,6 +350,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _pistol = 0;
             _rifle = 0;
             _throwing = 0;
+            _armor = 0;
             _fireResistance = 0;
             _poisonResistance = 0;
             _electricalResistance = 0;
@@ -434,6 +442,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Pistol = $"Pistol: {_pistol}";
             Rifle = $"Rifle: {_rifle}";
             Throwing = $"Throwing: {_throwing}";
+            Armor = $"Armor: {_armor}";
             FireResistance = $"Fire RES: {_fireResistance}";
             PoisonResistance = $"Poison RES: {_poisonResistance}";
             ElectricalResistance = $"Elec. RES: {_electricalResistance}";
@@ -561,6 +570,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _pistol += part.Pistol;
             _rifle += part.Rifle;
             _throwing += part.Throwing;
+            _armor += part.Armor;
             AdjustResistances(part.Resistances, 1);
 
             RefreshStats();
@@ -616,6 +626,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _pistol -= part.Pistol;
             _rifle -= part.Rifle;
             _throwing -= part.Throwing;
+            _armor -= part.Armor;
             AdjustResistances(part.Resistances, -1);
 
             RefreshStats();
@@ -914,6 +925,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var ipPistol = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.Pistol, _pistol);
                 var ipRifle = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.Rifle, _rifle);
                 var ipThrowing = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.Throwing, _throwing);
+                var ipArmor = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.Armor, _armor);
                 var ipFireResistance = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.ResistanceFire, _fireResistance);
                 var ipPoisonResistance = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.ResistancePoison, _poisonResistance);
                 var ipElectricalResistance = ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.ResistanceElectrical, _electricalResistance);
@@ -946,6 +958,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 BiowareXP2.IPSafeAddItemProperty(controller, ipPistol, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
                 BiowareXP2.IPSafeAddItemProperty(controller, ipRifle, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
                 BiowareXP2.IPSafeAddItemProperty(controller, ipThrowing, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+                BiowareXP2.IPSafeAddItemProperty(controller, ipArmor, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
                 BiowareXP2.IPSafeAddItemProperty(controller, ipFireResistance, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
                 BiowareXP2.IPSafeAddItemProperty(controller, ipPoisonResistance, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
                 BiowareXP2.IPSafeAddItemProperty(controller, ipElectricalResistance, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);

@@ -34,18 +34,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Restores 10% of maximum STM and restores 1 STM every 3 seconds for 12 seconds. Consumes a stim pack.")
                 .Price(2)
+                .DroidAISlots(1)
                 .GrantsFeat(FeatType.AdrenalStim1)
 
                 .AddPerkLevel()
                 .Description("Restores 18% of maximum STM and restores 1 STM every 3 seconds for 12 seconds. Consumes a stim pack.")
                 .Price(3)
                 .RequirementSkill(SkillType.FirstAid, 12)
+                .DroidAISlots(2)
                 .GrantsFeat(FeatType.AdrenalStim2)
 
                 .AddPerkLevel()
                 .Description("Restores 25% of maximum STM and restores 1 STM every 3 seconds for 12 seconds. Consumes a stim pack.")
                 .Price(4)
                 .RequirementSkill(SkillType.FirstAid, 30)
+                .DroidAISlots(3)
                 .GrantsFeat(FeatType.AdrenalStim3);
         }
 
@@ -58,18 +61,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Reduces physical and force damage taken by 5% for 3 minutes. Consumes a stim pack.")
                 .Price(2)
                 .RequirementSkill(SkillType.FirstAid, 5)
+                .DroidAISlots(1)
                 .GrantsFeat(FeatType.Shielding1)
 
                 .AddPerkLevel()
                 .Description("Reduces physical and force damage taken by 8% for 3 minutes. Consumes a stim pack.")
                 .Price(4)
                 .RequirementSkill(SkillType.FirstAid, 25)
+                .DroidAISlots(2)
                 .GrantsFeat(FeatType.Shielding2)
 
                 .AddPerkLevel()
                 .Description("Reduces physical and force damage taken by 11% for 3 minutes. Consumes a stim pack.")
                 .Price(4)
                 .RequirementSkill(SkillType.FirstAid, 42)
+                .DroidAISlots(3)
                 .GrantsFeat(FeatType.Shielding3);
         }
 
@@ -101,12 +107,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Grants temporary HP equal to 10% of the target's maximum HP plus WIL scaling and 10% damage reduction for 18 seconds. Consumes a stim pack.")
                 .Price(3)
                 .RequirementSkill(SkillType.FirstAid, 15)
+                .DroidAISlots(1)
                 .GrantsFeat(FeatType.PainSuppressant1)
 
                 .AddPerkLevel()
                 .Description("Grants temporary HP equal to 15% of the target's maximum HP plus WIL scaling and 15% damage reduction for 18 seconds. Consumes a stim pack.")
                 .Price(3)
                 .RequirementSkill(SkillType.FirstAid, 35)
+                .DroidAISlots(2)
                 .GrantsFeat(FeatType.PainSuppressant2);
         }
 
@@ -119,6 +127,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Grants 50% Poison Resistance and 50% Disease Resistance for 2 minutes and removes one Poison or Toxin effect. Consumes a stim pack.")
                 .Price(3)
                 .RequirementSkill(SkillType.FirstAid, 18)
+                .DroidAISlots(1)
                 .GrantsFeat(FeatType.Antitoxin1);
         }
 
@@ -156,12 +165,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Increases physical and Force ability Accuracy by 5% for 2 minutes. Consumes a stim pack.")
                 .Price(3)
                 .RequirementSkill(SkillType.FirstAid, 28)
+                .DroidAISlots(1)
                 .GrantsFeat(FeatType.FocusStim1)
 
                 .AddPerkLevel()
                 .Description("Increases physical and Force ability Accuracy by 8% for 2 minutes. Consumes a stim pack.")
                 .Price(4)
                 .RequirementSkill(SkillType.FirstAid, 45)
+                .DroidAISlots(2)
                 .GrantsFeat(FeatType.FocusStim2);
         }
 
@@ -174,6 +185,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Restores 25% of maximum STM, removes one Poison or Toxin effect, then for 45 seconds restores 1 STM every 3 seconds, grants temporary HP equal to 12% of maximum HP plus WIL scaling, reduces damage taken by 12%, and grants 50% Poison Resistance and 50% Disease Resistance.")
                 .Price(5)
                 .RequirementSkill(SkillType.FirstAid, 50)
+                .DroidAISlots(1)
                 .GrantsFeat(FeatType.EmergencyCocktail1);
         }
 

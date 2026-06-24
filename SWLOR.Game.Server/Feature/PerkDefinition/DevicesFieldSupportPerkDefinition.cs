@@ -36,6 +36,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Grants one ally 35 temporary HP plus 6% of the target's maximum HP for 45 seconds.")
                 .Price(3)
                 .RequirementCharacterType(CharacterType.Standard)
+                .DroidAISlots(1)
                 .GrantsFeat(FeatType.DeflectorShield1)
 
                 .AddPerkLevel()
@@ -43,6 +44,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(3)
                 .RequirementSkill(SkillType.Devices, 15)
                 .RequirementCharacterType(CharacterType.Standard)
+                .DroidAISlots(2)
                 .GrantsFeat(FeatType.DeflectorShield2)
 
                 .AddPerkLevel()
@@ -50,6 +52,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(4)
                 .RequirementSkill(SkillType.Devices, 30)
                 .RequirementCharacterType(CharacterType.Standard)
+                .DroidAISlots(3)
                 .GrantsFeat(FeatType.DeflectorShield3);
         }
 
@@ -63,6 +66,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(3)
                 .RequirementSkill(SkillType.Devices, 8)
                 .RequirementCharacterType(CharacterType.Standard)
+                .DroidAISlots(1)
                 .GrantsFeat(FeatType.WeaponJam1);
         }
 
@@ -76,6 +80,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(3)
                 .RequirementSkill(SkillType.Devices, 12)
                 .RequirementCharacterType(CharacterType.Standard)
+                .DroidAISlots(1)
                 .GrantsFeat(FeatType.PowerCell1)
 
                 .AddPerkLevel()
@@ -83,6 +88,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(4)
                 .RequirementSkill(SkillType.Devices, 25)
                 .RequirementCharacterType(CharacterType.Standard)
+                .DroidAISlots(2)
                 .GrantsFeat(FeatType.PowerCell2)
 
                 .AddPerkLevel()
@@ -90,6 +96,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(5)
                 .RequirementSkill(SkillType.Devices, 48)
                 .RequirementCharacterType(CharacterType.Standard)
+                .DroidAISlots(3)
                 .GrantsFeat(FeatType.PowerCell3);
         }
 
@@ -177,6 +184,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(5)
                 .RequirementSkill(SkillType.Devices, 42)
                 .RequirementCharacterType(CharacterType.Standard)
+                .DroidAISlots(1)
                 .GrantsFeat(FeatType.GroupDeflector1);
         }
 
@@ -190,6 +198,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(5)
                 .RequirementSkill(SkillType.Devices, 50)
                 .RequirementCharacterType(CharacterType.Standard)
+                .DroidAISlots(1)
                 .GrantsFeat(FeatType.EmergencyBunker1);
         }
 

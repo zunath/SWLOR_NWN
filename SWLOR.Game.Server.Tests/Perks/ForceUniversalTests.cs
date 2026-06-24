@@ -20,11 +20,11 @@ public class ForceUniversalTests
         var perks = BuildForceUniversalPerksWithout2daLookup();
 
         AssertPerkLevel(perks[PerkType.ForcePush], "Force Push", 1, 2, 5, FeatType.ForcePush1,
-            "Deals 8 force DMG to one target, knocks down for 2 seconds, and slows movement for 3 seconds.");
+            "Deals 8 force DMG to one target in a 5m cone, knocks down for 2 seconds, and slows movement for 3 seconds.");
         AssertPerkLevel(perks[PerkType.ForcePush], "Force Push", 2, 3, 28, FeatType.ForcePush2,
-            "Deals 12 force DMG to the selected target and up to 1 additional target in a line, knocks down for 2 seconds, and slows movement for 3 seconds.");
+            "Deals 12 force DMG to up to 2 targets in an 8m cone, knocks down for 2 seconds, and slows movement for 3 seconds.");
         AssertPerkLevel(perks[PerkType.ForcePush], "Force Push", 3, 4, 48, FeatType.ForcePush3,
-            "Deals 18 force DMG to the selected target and up to 2 additional targets in a cone, knocks down for 2 seconds, and slows movement for 4 seconds.");
+            "Deals 18 force DMG to up to 3 targets in a 10m cone, knocks down for 2 seconds, and slows movement for 4 seconds.");
 
         AssertPerkLevel(perks[PerkType.ForceLeap], "Force Leap", 1, 3, 10, FeatType.ForceLeap1,
             "Leap to a hostile target up to 15m away, dealing 10 force DMG plus WIL scaling and interrupting activation.");
@@ -40,13 +40,23 @@ public class ForceUniversalTests
     public void ForceUniversalAbilities_MatchCombatBible()
     {
         var forcePush = new ForcePushAbilityDefinition().BuildAbilities();
-        AssertAbility(forcePush[FeatType.ForcePush1], "Force Push I", 1, RecastGroup.ForcePush, 24f, 0f, 2, true, true, true, false, AbilityActivationType.Casted, 8f);
+        AssertAbility(forcePush[FeatType.ForcePush1], "Force Push I", 1, RecastGroup.ForcePush, 24f, 0f, 2, true, false, false, true, AbilityActivationType.Casted, 5f);
         AssertAbility(forcePush[FeatType.ForcePush2], "Force Push II", 2, RecastGroup.ForcePush, 24f, 0f, 3, true, false, false, true, AbilityActivationType.Casted, 5f);
         AssertAbility(forcePush[FeatType.ForcePush3], "Force Push III", 3, RecastGroup.ForcePush, 24f, 0f, 4, true, false, false, true, AbilityActivationType.Casted, 5f);
 
         var forceLeap = new ForceLeapAbilityDefinition().BuildAbilities();
         AssertAbility(forceLeap[FeatType.ForceLeap1], "Force Leap I", 1, RecastGroup.ForceLeap, 30f, 0f, 3, true, true, true, false, AbilityActivationType.Casted, 15f);
         AssertAbility(forceLeap[FeatType.ForceLeap2], "Force Leap II", 2, RecastGroup.ForceLeap, 30f, 0f, 4, true, true, true, false, AbilityActivationType.Casted, 18f);
+    }
+
+    [Test]
+    public void ForcePush_UsesScalingConeTargeting()
+    {
+        var forcePush = new ForcePushAbilityDefinition().BuildAbilities();
+
+        AssertForcePushConeTargeting(forcePush[FeatType.ForcePush1], Spell.ForcePush1, 5f);
+        AssertForcePushConeTargeting(forcePush[FeatType.ForcePush2], Spell.ForcePush2, 8f);
+        AssertForcePushConeTargeting(forcePush[FeatType.ForcePush3], Spell.ForcePush3, 10f);
     }
 
     [Test]
@@ -66,6 +76,23 @@ public class ForceUniversalTests
     }
 
     [Test]
+    public void ForceLeap_UsesLegacyLeapAnimationBeforeJump()
+    {
+        var abilities = new ForceLeapAbilityDefinition().BuildAbilities();
+
+        abilities[FeatType.ForceLeap1].ImpactAnimationType.Should().Be(Animation.Invalid);
+        abilities[FeatType.ForceLeap2].ImpactAnimationType.Should().Be(Animation.Invalid);
+
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Force" / "ForceLeapAbilityDefinition.cs").FullName);
+
+        source.Should().Contain("ActionPlayAnimation(Animation.ForceLeap, LeapAnimationSpeed, LeapAnimationDurationSeconds)");
+        source.Should().Contain("ActionJumpToObject(target)");
+        source.Should().NotContain("UsesImpactAnimation(Animation.ForceLeap)");
+        source.Should().NotContain("VisualEffect.Vfx_Fnf_Summon_Monster_1");
+    }
+
+    [Test]
     public void ForceUniversalFeatAndAbilityIcons_AreUniqueAndPresent()
     {
         var root = FindRepositoryRoot();
@@ -74,11 +101,11 @@ public class ForceUniversalTests
 
         var feats = new[]
         {
-            (FeatType.ForcePush1, "ife_forcepsh1", "M", "0x02", "1", "****", "****", "****", "****"),
+            (FeatType.ForcePush1, "ife_forcepsh1", "M", "0x3E", "1", "cone", "5", "5", "17"),
             (FeatType.ForceLeap1, "ife_forcelp1", "M", "0x02", "1", "****", "****", "****", "****"),
-            (FeatType.ForcePush2, "ife_forcepsh2", "M", "0x3E", "1", "rectangle", "8", "2.5", "17"),
+            (FeatType.ForcePush2, "ife_forcepsh2", "M", "0x3E", "1", "cone", "8", "5", "17"),
             (FeatType.ForceLeap2, "ife_forcelp2", "M", "0x02", "1", "****", "****", "****", "****"),
-            (FeatType.ForcePush3, "ife_forcepsh3", "M", "0x3E", "1", "cone", "6", "5", "17")
+            (FeatType.ForcePush3, "ife_forcepsh3", "M", "0x3E", "1", "cone", "10", "5", "17")
         };
         var seenIcons = new HashSet<string>();
 
@@ -171,6 +198,17 @@ public class ForceUniversalTests
             .Should()
             .Be(fpCost);
         ability.Requirements.OfType<AbilityRequirementStamina>().Should().BeEmpty();
+    }
+
+    private static void AssertForcePushConeTargeting(AbilityDetail ability, Spell spell, float length)
+    {
+        ability.Targeting.Should().NotBeNull();
+        ability.Targeting!.Spell.Should().Be(spell);
+        ability.Targeting.Shape.Should().Be(AbilityTargetingShapeType.Cone);
+        ability.Targeting.SizeX.Should().Be(length);
+        ability.Targeting.SizeY.Should().Be(5f);
+        ability.Targeting.Flags.Should().Be(
+            AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf);
     }
 
     private static void AssertSkillRequirement(PerkLevel level, SkillType skill, int rank)

@@ -16,6 +16,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 {
     public sealed class ForceLeapAbilityDefinition : IAbilityListDefinition
     {
+        private const float LeapAnimationSpeed = 2.0f;
+        private const float LeapAnimationDurationSeconds = 1.0f;
+
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
@@ -36,7 +39,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasRecastDelay(RecastGroup.ForceLeap, 30f)
                 .SkillType(SkillType.Force)
                 .CombatImpactDamageAbility(AbilityType.Willpower)
-                .UsesImpactAnimation(Animation.ForceLeap)
                 .PlaysSoundOnImpact("ksfx_frc_speed")
                 .IsSingleTargetAbility()
                 .HasMaxRange(15f)
@@ -58,7 +60,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasRecastDelay(RecastGroup.ForceLeap, 30f)
                 .SkillType(SkillType.Force)
                 .CombatImpactDamageAbility(AbilityType.Willpower)
-                .UsesImpactAnimation(Animation.ForceLeap)
                 .PlaysSoundOnImpact("ksfx_frc_speed")
                 .IsSingleTargetAbility()
                 .HasMaxRange(18f)
@@ -112,8 +113,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 return;
 
             AssignCommand(target, () => ClearAllActions());
-            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Fnf_Summon_Monster_1), activator);
-            AssignCommand(activator, () => ActionJumpToObject(target));
+            AssignCommand(activator, () =>
+            {
+                ClearAllActions();
+                ActionPlayAnimation(Animation.ForceLeap, LeapAnimationSpeed, LeapAnimationDurationSeconds);
+                ActionJumpToObject(target);
+            });
         }
     }
 }

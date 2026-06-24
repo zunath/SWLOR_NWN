@@ -67,6 +67,16 @@ public class VibroknifeShadowTests
     }
 
     [Test]
+    public void BackstabAbilities_PlayBladeSoundOnImpact()
+    {
+        var backstab = new BackstabAbilityDefinition().BuildAbilities();
+
+        backstab[FeatType.Backstab1].ImpactSound.Should().Be("cb_sw_blade1");
+        backstab[FeatType.Backstab2].ImpactSound.Should().Be("cb_sw_blade1");
+        backstab[FeatType.Backstab3].ImpactSound.Should().Be("cb_sw_blade1");
+    }
+
+    [Test]
     public void VibroknifeShadowFeatAndAbilityIcons_AreUniqueAndPresent()
     {
         var root = FindRepositoryRoot();

@@ -21,6 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                     .Level(1)
                     .HasRecastDelay(RecastGroup.Backstab, 60f)
                     .UsesAnimation(Animation.Backstab)
+                    .PlaysSoundOnImpact("cb_sw_blade1")
                     .HasCustomValidation(ValidateBehindTarget),
                 SkillType.Vibroknife,
                 20,
@@ -32,6 +33,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                     .Level(2)
                     .HasRecastDelay(RecastGroup.Backstab, 60f)
                     .UsesAnimation(Animation.Backstab)
+                    .PlaysSoundOnImpact("cb_sw_blade1")
                     .HasCustomValidation(ValidateBehindTarget),
                 SkillType.Vibroknife,
                 40,
@@ -43,6 +45,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                     .Level(3)
                     .HasRecastDelay(RecastGroup.Backstab, 60f)
                     .UsesAnimation(Animation.Backstab)
+                    .PlaysSoundOnImpact("cb_sw_blade1")
                     .HasCustomValidation(ValidateBehindTarget),
                 SkillType.Vibroknife,
                 60,

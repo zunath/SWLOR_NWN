@@ -1,5 +1,6 @@
 using FluentAssertions;
 using NUnit.Framework;
+using System.Text.Json;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Spear;
 using SWLOR.Game.Server.Feature.PerkDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
@@ -96,6 +97,22 @@ public class SpearDisablerTests
     }
 
     [Test]
+    public void DisruptionFieldPerk_DeclaresVisibleRange()
+    {
+        var perks = BuildSpearDisablerPerksWithout2daLookup();
+        var disruptionField = perks[PerkType.DisruptionField];
+
+        AssertPerkLevel(
+            disruptionField,
+            "Disruption Field",
+            1,
+            3,
+            25,
+            FeatType.DisruptionField1,
+            "Forms a visible 5m disruption field at a targeted location. Enemies within the sphere lose 5% FP per second for 20 seconds.");
+    }
+
+    [Test]
     public void SpearDisablerFeatAndAbilityIcons_AreUniqueAndPresent()
     {
         var root = FindRepositoryRoot();
@@ -154,11 +171,30 @@ public class SpearDisablerTests
         var root = FindRepositoryRoot();
         var source = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Spear" / "DisruptionFieldAbilityDefinition.cs").FullName);
 
-        source.Should().Contain("DisruptionFieldMarkerVisualEffect = VisualEffect.Vfx_Dur_Aura_Pulse_Cyan_Black");
+        source.Should().Contain("DisruptionFieldMarkerVisualEffect = VisualEffect.Vfx_Dur_Aura_Cyan");
         source.Should().Contain("DisruptionFieldPulseVisualEffect = VisualEffect.Vfx_Fnf_Gas_Explosion_Mind");
         source.Should().Contain("DurationType.Temporary");
         source.Should().Contain("EffectVisualEffect(DisruptionFieldMarkerVisualEffect, false, 2f)");
         source.Should().Contain("EffectVisualEffect(DisruptionFieldPulseVisualEffect)");
+    }
+
+    [Test]
+    public void DisruptionFieldFeatAndAbilityDescriptions_DeclareVisibleRange()
+    {
+        var root = FindRepositoryRoot();
+        var featRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "feat.2da");
+        var abilityRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "spells.2da");
+        var tlkEntries = ReadTlkEntries(root / "SWLOR_Haks" / "swlor2_tlk" / "swlor2_tlk.tlk.json");
+        const int CustomTlkOffset = 16777216;
+        const string ExpectedDescription = "Forms a visible 5m disruption field at a targeted location. Enemies within the sphere lose 5% FP per second for 20 seconds.";
+
+        var featRow = featRows[(int)FeatType.DisruptionField1];
+        var featDescriptionId = int.Parse(featRow["DESCRIPTION"]) - CustomTlkOffset;
+        tlkEntries[featDescriptionId].Should().Be(ExpectedDescription);
+
+        var abilityRow = abilityRows[int.Parse(featRow["SPELLID"])];
+        var abilityDescriptionId = int.Parse(abilityRow["SpellDesc"]) - CustomTlkOffset;
+        tlkEntries[abilityDescriptionId].Should().Be(ExpectedDescription);
     }
 
     private static void AssertPerkLevel(
@@ -308,6 +344,17 @@ public class SpearDisablerTests
         }
 
         return result;
+    }
+
+    private static Dictionary<int, string> ReadTlkEntries(PathInfo path)
+    {
+        using var tlk = JsonDocument.Parse(File.ReadAllText(path.FullName));
+        return tlk.RootElement
+            .GetProperty("entries")
+            .EnumerateArray()
+            .ToDictionary(
+                entry => entry.GetProperty("id").GetInt32(),
+                entry => entry.GetProperty("text").GetString() ?? string.Empty);
     }
 
     private static PathInfo FindRepositoryRoot()

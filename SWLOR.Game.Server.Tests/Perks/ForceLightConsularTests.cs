@@ -79,6 +79,20 @@ public class ForceLightConsularTests
     }
 
     [Test]
+    public void ForceSanctuary_UsesSingleAllyPulseAndPersistentAreaVisual()
+    {
+        var root = FindSourceRepositoryRoot();
+        var source = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Force" / "ForceSanctuaryAbilityDefinition.cs").FullName);
+
+        source.Should().Contain("private const VisualEffect AllyPulseVisualEffect = VisualEffect.Vfx_Imp_Holy_Aid;");
+        source.Should().Contain("private const VisualEffect AreaMarkerVisualEffect = VisualEffect.Dur_Sanctuary;");
+        source.Should().Contain("areaMarkerVisualEffect: AreaMarkerVisualEffect");
+        source.Should().Contain("areaMarkerVisualEffectScale: AreaMarkerVisualEffectScale");
+        source.Should().Contain("VisualEffect.None");
+        source.Should().NotContain("VisualEffect.Vfx_Imp_Healing_M");
+    }
+
+    [Test]
     public void MindTrick_UsesConfusionAndStatContest()
     {
         var mindTrick = new MindTrickAbilityDefinition().BuildAbilities();

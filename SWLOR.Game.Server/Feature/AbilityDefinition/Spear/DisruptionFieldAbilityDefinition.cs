@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
         private const float PulseIntervalSeconds = 1f;
         private const float Radius = 5f;
         private const int FPDrainPercent = 5;
-        private const VisualEffect DisruptionFieldMarkerVisualEffect = VisualEffect.Vfx_Dur_Aura_Pulse_Cyan_Black;
+        private const VisualEffect DisruptionFieldMarkerVisualEffect = VisualEffect.Vfx_Dur_Aura_Cyan;
         private const VisualEffect DisruptionFieldPulseVisualEffect = VisualEffect.Vfx_Fnf_Gas_Explosion_Mind;
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()

@@ -34,7 +34,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             ConfigureForceJudgment(
                 builder,
                 FeatType.ForceJudgment1,
-                Spell.Invalid,
+                Spell.ForceJudgment1,
                 "Force Judgment I",
                 1,
                 14,

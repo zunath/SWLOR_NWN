@@ -13,6 +13,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 {
     public sealed class ForceSanctuaryAbilityDefinition : IAbilityListDefinition
     {
+        private const float RadiusMeters = 4f;
+        private const float DurationSeconds = 18f;
+        private const VisualEffect AllyPulseVisualEffect = VisualEffect.Vfx_Imp_Holy_Aid;
+        private const VisualEffect AreaMarkerVisualEffect = VisualEffect.Dur_Sanctuary;
+        private const float AreaMarkerVisualEffectScale = 2f;
+
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
@@ -37,7 +43,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasImpactAction(ForceSanctuary1ImpactAction)
                 .HasTargetingSphere(
                     Spell.ForceSanctuary1,
-                    4f,
+                    RadiusMeters,
                     AbilityTargetingFlags.HelpsAllies)
                 .IsCastedAbility()
                 .BreaksStealth()
@@ -51,19 +57,21 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             AbilityAreaEffects.ScheduleFriendlyZoneStatus(
                 activator,
                 location,
-                4f,
-                18f,
+                RadiusMeters,
+                DurationSeconds,
                 typeof(ForceSanctuary1StatusEffect),
-                VisualEffect.Vfx_Imp_Holy_Aid);
+                AllyPulseVisualEffect,
+                areaMarkerVisualEffect: AreaMarkerVisualEffect,
+                areaMarkerVisualEffectScale: AreaMarkerVisualEffectScale);
 
             AbilityAreaEffects.ScheduleFriendlyZoneHealing(
                 activator,
                 location,
-                4f,
-                18f,
+                RadiusMeters,
+                DurationSeconds,
                 2f,
                 null,
-                VisualEffect.Vfx_Imp_Healing_M,
+                VisualEffect.None,
                 onHealed: (friendly, targetWasBelowHalfHP) =>
                     ForceControlHealingEffects.ApplyRestorativeControlPower(
                         activator,

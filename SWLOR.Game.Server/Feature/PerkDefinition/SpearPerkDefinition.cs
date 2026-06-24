@@ -151,7 +151,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.DisruptionField1)
-                .Description("Forms a disruption field at a targeted location. All enemies within the area of effect (sphere) lose 5% of FP per second. Field lasts for 20 seconds")
+                .Description("Forms a visible 5m disruption field at a targeted location. Enemies within the sphere lose 5% FP per second for 20 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Spear, 25);
         }

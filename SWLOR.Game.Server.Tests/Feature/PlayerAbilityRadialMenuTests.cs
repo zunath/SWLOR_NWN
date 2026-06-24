@@ -9,6 +9,9 @@ public class PlayerAbilityRadialMenuTests
 {
     private static readonly HashSet<FeatType> ManualHotbarFeats =
     [
+        FeatType.ForceJudgment1,
+        FeatType.ForceJudgment2,
+        FeatType.ForceJudgment3,
         FeatType.PurifyingWave1,
         FeatType.RadiantLance1,
         FeatType.RadiantLance2,

@@ -33,32 +33,6 @@ public class AbilityBuilderTests
     }
 
     [Test]
-    public void SuppressImpactAnimation_ClearsExplicitImpactAnimation()
-    {
-        var abilities = new AbilityBuilder()
-            .Create(FeatType.Invalid, PerkType.Invalid)
-            .UsesImpactAnimation(Animation.PointPistol)
-            .SuppressImpactAnimation()
-            .Build();
-
-        abilities[FeatType.Invalid].ImpactAnimationType.Should().Be(Animation.Invalid);
-        abilities[FeatType.Invalid].SuppressesImpactAnimation.Should().BeTrue();
-    }
-
-    [Test]
-    public void UsesImpactAnimation_ClearsImpactAnimationSuppression()
-    {
-        var abilities = new AbilityBuilder()
-            .Create(FeatType.Invalid, PerkType.Invalid)
-            .SuppressImpactAnimation()
-            .UsesImpactAnimation(Animation.QuickDraw)
-            .Build();
-
-        abilities[FeatType.Invalid].ImpactAnimationType.Should().Be(Animation.QuickDraw);
-        abilities[FeatType.Invalid].SuppressesImpactAnimation.Should().BeFalse();
-    }
-
-    [Test]
     public void SkillType_LeavesImpactAnimationUnset()
     {
         var abilities = new AbilityBuilder()

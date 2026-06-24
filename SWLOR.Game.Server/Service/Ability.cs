@@ -1726,20 +1726,12 @@ namespace SWLOR.Game.Server.Service
         private static void PlayCombatImpactAnimation(uint activator, Animation impactAnimation)
         {
             var trackedAbility = GetTrackedAbilityImpact(activator)?.Ability;
-            if (trackedAbility?.SuppressesImpactAnimation == true)
-                return;
-
             var animation = impactAnimation == Animation.Invalid
                 ? trackedAbility?.ImpactAnimationType ?? Animation.Invalid
                 : impactAnimation;
 
             if (animation == Animation.Invalid)
-            {
-                if (trackedAbility?.ActivationType != AbilityActivationType.Weapon)
-                    return;
-
-                animation = Animation.DoubleStrike;
-            }
+                return;
 
             AssignCommand(activator, () => ActionPlayAnimation(animation));
         }

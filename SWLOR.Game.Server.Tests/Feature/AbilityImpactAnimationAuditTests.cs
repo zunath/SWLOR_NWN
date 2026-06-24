@@ -11,13 +11,15 @@ public class AbilityImpactAnimationAuditTests
     [Test]
     public void CastedActionAbilities_DeclareUsageAnimation()
     {
+        var root = FindRepositoryRoot();
         var missingAnimations = new List<string>();
 
         foreach (var (definitionType, abilities) in BuildAbilityDefinitions())
         {
+            var source = ReadDefinitionSource(root, definitionType);
             foreach (var (feat, ability) in abilities)
             {
-                if (!UsesCastedActionWithoutAnimation(ability))
+                if (!UsesCastedActionWithoutOwnedAnimation(ability, source))
                     continue;
 
                 missingAnimations.Add($"{definitionType.Name}/{feat} {ability.Name}");
@@ -25,12 +27,12 @@ public class AbilityImpactAnimationAuditTests
         }
 
         missingAnimations.Should().BeEmpty(
-            "casted abilities with activation or impact work should declare a relevant usage animation. Missing: {0}",
+            "casted abilities with activation or impact work should own their animation path through builder metadata or manual ActionPlayAnimation. Missing: {0}",
             string.Join(", ", missingAnimations));
     }
 
     [Test]
-    public void CastedImpactAbilities_DoNotFallBackToDefaultWeaponAnimation()
+    public void CombatImpactAnimation_DoesNotUseSharedDefaultAnimation()
     {
         var root = FindRepositoryRoot();
         var abilityServiceSource = File.ReadAllText(Path.Combine(
@@ -38,52 +40,24 @@ public class AbilityImpactAnimationAuditTests
             "SWLOR.Game.Server",
             "Service",
             "Ability.cs"));
-        var castedImpactAbilitiesWithoutAnimation = new List<string>();
 
-        foreach (var (definitionType, abilities) in BuildAbilityDefinitions())
-        {
-            foreach (var (feat, ability) in abilities)
-            {
-                if (!UsesCastedCombatImpactWithoutExplicitAnimation(ability))
-                    continue;
-
-                var source = ReadDefinitionSource(root, definitionType);
-                if (UsesCombatImpact(source))
-                    castedImpactAbilitiesWithoutAnimation.Add($"{definitionType.Name}/{feat} {ability.Name}");
-            }
-        }
-
-        castedImpactAbilitiesWithoutAnimation.Should().BeEmpty(
-            "casted combat-impact abilities should declare the animation they play instead of inheriting a weapon fallback. Missing: {0}",
-            string.Join(", ", castedImpactAbilitiesWithoutAnimation));
-        abilityServiceSource.Should().Contain(
-            "trackedAbility?.ActivationType != AbilityActivationType.Weapon",
-            "casted combat-impact abilities must not inherit the legacy weapon swing fallback");
+        abilityServiceSource.Should().NotContain(
+            "Animation.DoubleStrike",
+            "shared combat-impact helpers should never choose a default animation for an ability");
     }
 
-    private static bool UsesCastedCombatImpactWithoutExplicitAnimation(AbilityDetail ability)
-    {
-        return ability.IsHostileAbility &&
-               ability.ImpactAction != null &&
-               ability.ActivationType == AbilityActivationType.Casted &&
-               ability.AnimationType == Animation.Invalid &&
-               ability.ImpactAnimationType == Animation.Invalid &&
-               !ability.SuppressesImpactAnimation;
-    }
-
-    private static bool UsesCastedActionWithoutAnimation(AbilityDetail ability)
+    private static bool UsesCastedActionWithoutOwnedAnimation(AbilityDetail ability, string source)
     {
         return ability.ActivationType == AbilityActivationType.Casted &&
                (ability.ActivationAction != null || ability.ImpactAction != null) &&
                ability.AnimationType == Animation.Invalid &&
                ability.ImpactAnimationType == Animation.Invalid &&
-               !ability.SuppressesImpactAnimation;
+               !UsesManualAnimation(source);
     }
 
-    private static bool UsesCombatImpact(string source)
+    private static bool UsesManualAnimation(string source)
     {
-        return source.Contains("Ability.ApplyCombatImpact", StringComparison.Ordinal) ||
-               source.Contains("Ability.ApplyTelegraphedCombatImpact", StringComparison.Ordinal);
+        return source.Contains("ActionPlayAnimation(", StringComparison.Ordinal);
     }
 
     private static IEnumerable<(Type DefinitionType, Dictionary<FeatType, AbilityDetail> Abilities)> BuildAbilityDefinitions()

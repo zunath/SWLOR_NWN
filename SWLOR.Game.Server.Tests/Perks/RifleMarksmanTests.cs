@@ -27,8 +27,7 @@ public class RifleMarksmanTests
         AssertAbility(piercingRound[FeatType.PiercingRound1], "Piercing Round I", 1, RecastGroup.PiercingRound, 45f, 0f, 5, true, true, true, false, AbilityActivationType.Casted, 30f);
         AssertAbility(piercingRound[FeatType.PiercingRound2], "Piercing Round II", 2, RecastGroup.PiercingRound, 45f, 0f, 7, true, true, true, false, AbilityActivationType.Casted, 30f);
         AssertAbility(piercingRound[FeatType.PiercingRound3], "Piercing Round III", 3, RecastGroup.PiercingRound, 45f, 0f, 8, true, true, true, false, AbilityActivationType.Casted, 30f);
-        piercingRound.Values.Should().OnlyContain(ability => ability.ImpactAnimationType == Animation.Invalid);
-        piercingRound.Values.Should().OnlyContain(ability => ability.SuppressesImpactAnimation);
+        piercingRound.Values.Should().OnlyContain(ability => ability.ImpactAnimationType == Animation.PointPistol);
 
         var sniperStance = new SniperStanceAbilityDefinition().BuildAbilities()[FeatType.SniperStance1];
         AssertAbility(sniperStance, "Sniper Stance", 1, RecastGroup.SniperStance, 180f, 2f, null, false, false, false, false, AbilityActivationType.Casted);

@@ -11,7 +11,6 @@ using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 {
@@ -123,7 +122,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             {
                 SWLOR.Game.Server.Feature.AbilityDefinition.AbilityEffectScaling.ApplyTemporaryHPPercent(activator, friendly, 6, 30f);
                 LightGuardianPowerSupport.ApplyTemporaryHPPowerRiders(activator, friendly, 30f);
-                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_M), friendly);
             }
         }
 
@@ -133,7 +131,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             {
                 SWLOR.Game.Server.Feature.AbilityDefinition.AbilityEffectScaling.ApplyTemporaryHPPercent(activator, friendly, 9, 30f);
                 LightGuardianPowerSupport.ApplyTemporaryHPPowerRiders(activator, friendly, 30f);
-                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_M), friendly);
             }
         }
 
@@ -143,7 +140,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             {
                 SWLOR.Game.Server.Feature.AbilityDefinition.AbilityEffectScaling.ApplyTemporaryHPPercent(activator, friendly, 12, 30f);
                 LightGuardianPowerSupport.ApplyTemporaryHPPowerRiders(activator, friendly, 30f);
-                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_M), friendly);
             }
         }
 
@@ -153,7 +149,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             {
                 SWLOR.Game.Server.Feature.AbilityDefinition.AbilityEffectScaling.ApplyTemporaryHPPercent(activator, friendly, 15, 30f);
                 LightGuardianPowerSupport.ApplyTemporaryHPPowerRiders(activator, friendly, 30f);
-                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_M), friendly);
             }
         }
     }

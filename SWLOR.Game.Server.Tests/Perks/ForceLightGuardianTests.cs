@@ -23,6 +23,11 @@ public class ForceLightGuardianTests
         AssertAbility(guardianWard[FeatType.GuardianWard2], "Guardian Ward II", 2, RecastGroup.GuardianWard, 18f, 1f, 3, false, true, true, false, AbilityActivationType.Casted, 15f);
         AssertAbility(guardianWard[FeatType.GuardianWard3], "Guardian Ward III", 3, RecastGroup.GuardianWard, 18f, 1f, 4, false, true, true, false, AbilityActivationType.Casted, 15f);
         AssertAbility(guardianWard[FeatType.GuardianWard4], "Guardian Ward IV", 4, RecastGroup.GuardianWard, 18f, 1f, 6, false, true, true, false, AbilityActivationType.Casted, 15f);
+        guardianWard.Values.Select(x => x.ImpactSound).Should().OnlyContain(x => x == "ksfx_frc_armor");
+
+        var root = FindRepositoryRoot();
+        var guardianWardSource = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Force" / "GuardianWardAbilityDefinition.cs").FullName);
+        guardianWardSource.Should().NotContain("Vfx_Imp_Healing_M");
 
         var forceIntercept = new ForceInterceptAbilityDefinition().BuildAbilities()[FeatType.ForceIntercept1];
         AssertAbility(forceIntercept, "Force Intercept", 1, RecastGroup.ForceIntercept, 45f, 0f, 5, false, true, true, false, AbilityActivationType.Casted, 15f);

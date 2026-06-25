@@ -158,6 +158,7 @@ public class FirstAidCombatUpgradeTests
         var treatmentKit = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "FirstAid" / "TreatmentKitAbilityDefinition.cs").FullName);
         treatmentKit.Should().Contain("StatusEffectCleanseType.TreatmentKit2");
         treatmentKit.Should().Contain("RemoveCleanseableStatusEffects(friendly, StatusEffectCleanseType.TreatmentKit2, false)");
+        treatmentKit.Should().Contain("CombatPoint.AddCombatPointToAllTagged(activator, SkillType.FirstAid);");
 
         var pain = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "FirstAid" / "PainSuppressantAbilityDefinition.cs").FullName);
         pain.Should().Contain("AbilityEffectScaling.ApplyTemporaryHPPercent(activator, target, percent, durationSeconds)");

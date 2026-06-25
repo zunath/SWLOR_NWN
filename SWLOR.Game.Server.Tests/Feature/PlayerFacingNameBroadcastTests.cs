@@ -82,6 +82,12 @@ public class PlayerFacingNameBroadcastTests
         communicationSource.Should().NotContain("var inCharacterChat =");
         communicationSource.Should().Contain("if (channel == ChatChannel.PlayerShout && (GetIsDM(sender) || GetIsDMPossessed(sender)))");
         communicationSource.Should().Contain("SendMessageToPC(sender, ColorToken.Red(DisabledChannelMessage));");
+        communicationSource.Should().Contain("private static bool IsChatCommandMessage(string message)");
+        var chatCommandEarlyOutIndex = communicationSource.IndexOf("if (IsChatCommandMessage(message))", StringComparison.Ordinal);
+        var disabledChannelMessageIndex = communicationSource.IndexOf("SendMessageToPC(sender, ColorToken.Red(DisabledChannelMessage));", StringComparison.Ordinal);
+        chatCommandEarlyOutIndex.Should().BeGreaterThanOrEqualTo(0);
+        disabledChannelMessageIndex.Should().BeGreaterThanOrEqualTo(0);
+        chatCommandEarlyOutIndex.Should().BeLessThan(disabledChannelMessageIndex, "slash chat commands must bypass disabled-channel handling");
         communicationSource.Should().Contain("var recipients = new List<uint> { sender };");
         communicationSource.Should().NotContain("recipients.AddRange(allPlayers.Where(player => GetLocalBool(player, \"DISPLAY_HOLONET\")))");
         communicationSource.Should().NotContain("LoadHolonetSetting");
@@ -202,9 +208,7 @@ public class PlayerFacingNameBroadcastTests
             "SWLOR.Game.Server",
             "Service",
             "ChatCommand.cs"));
-        chatCommandSource.Should().Contain("ChatPlugin.GetChannel() == ChatChannel.PlayerShout");
-        chatCommandSource.Should().Contain("!GetIsDM(sender)");
-        chatCommandSource.Should().Contain("!GetIsDMPossessed(sender)");
+        chatCommandSource.Should().NotContain("ChatPlugin.GetChannel() == ChatChannel.PlayerShout");
 
         var eventAreaDirectory = Path.Combine(root.FullName, "Module", "are");
         var eventAreaFiles = Directory.GetFiles(eventAreaDirectory, "*.are.json")

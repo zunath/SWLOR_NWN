@@ -599,6 +599,7 @@ namespace SWLOR.Game.Server.Service
             if (type == ObjectType.Creature)
             {
                 var originalSpawnScript = GetEventScript(spawn, EventScript.Creature_OnSpawnIn);
+                ObjectPlugin.SetConversationPrivate(spawn, true);
 
                 SetEventScript(spawn, EventScript.Creature_OnBlockedByDoor, "x2_def_onblocked");
                 SetEventScript(spawn, EventScript.Creature_OnEndCombatRound, "x2_def_endcombat");

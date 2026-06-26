@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "2": "Le fusil Outland, qui peut emporter jusqu'� huit cartouches, repose sur une technologie certes primitive mais �prouv�e, ne n�cessitant qu'un minimum d'entretien et surtout aucun appareil moderne et co�teux.\n\nMunitions : Cellules d'�nergie standard"
+      "2": "The Blaster Carbine can hold up to eight cartridges. It relies on primitive but proven technology, requiring little maintenance and no expensive modern equipment.\n\nAmmunition: Standard energy cells"
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "2": "Le fusil Outland, qui peut emporter jusqu'� huit cartouches, repose sur une technologie certes primitive mais �prouv�e, ne n�cessitant qu'un minimum d'entretien et surtout aucun appareil moderne et co�teux.\n\nMunitions : Cellules d'�nergie standard"
+      "2": "The Blaster Carbine can hold up to eight cartridges. It relies on primitive but proven technology, requiring little maintenance and no expensive modern equipment.\n\nAmmunition: Standard energy cells"
     }
   },
   "Identified": {
@@ -43,8 +43,8 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Carabine blaster",
-      "2": "Fusil Outland"
+      "0": "Blaster Carbine",
+      "2": "Blaster Carbine"
     }
   },
   "ModelPart1": {

@@ -119,7 +119,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Véhicule - fonceur"
+            "2": "Vehicle - Speeder"
           }
         },
         "Looping": {
@@ -240,7 +240,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Véhicule - fonceur"
+            "2": "Vehicle - Speeder"
           }
         },
         "Looping": {
@@ -361,7 +361,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Véhicule - fonceur"
+            "2": "Vehicle - Speeder"
           }
         },
         "Looping": {
@@ -482,7 +482,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Véhicule - fonceur"
+            "2": "Vehicle - Speeder"
           }
         },
         "Looping": {
@@ -603,7 +603,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Véhicule - fonceur"
+            "2": "Vehicle - Speeder"
           }
         },
         "Looping": {
@@ -724,7 +724,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Véhicule - fonceur"
+            "2": "Vehicle - Speeder"
           }
         },
         "Looping": {
@@ -845,7 +845,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Véhicule - fonceur"
+            "2": "Vehicle - Speeder"
           }
         },
         "Looping": {
@@ -1170,7 +1170,7 @@
           "id": 14759,
           "type": "cexolocstring",
           "value": {
-            "2": "depart_speeder"
+            "2": "Speeder Departure"
           }
         },
         "OnClick": {
@@ -1393,7 +1393,7 @@
           "id": 14759,
           "type": "cexolocstring",
           "value": {
-            "2": "arrive_speeder"
+            "2": "Speeder Arrival"
           }
         },
         "OnClick": {
@@ -1616,7 +1616,7 @@
           "id": 14759,
           "type": "cexolocstring",
           "value": {
-            "2": "face_nord_ouest"
+            "2": "Northwest Face"
           }
         },
         "OnClick": {
@@ -1819,7 +1819,7 @@
           "id": 14759,
           "type": "cexolocstring",
           "value": {
-            "2": "face_est"
+            "2": "East Face"
           }
         },
         "OnClick": {
@@ -2022,7 +2022,7 @@
           "id": 14759,
           "type": "cexolocstring",
           "value": {
-            "2": "face_nord"
+            "2": "North Face"
           }
         },
         "OnClick": {
@@ -2225,7 +2225,7 @@
           "id": 14759,
           "type": "cexolocstring",
           "value": {
-            "2": "face_nord_est"
+            "2": "Northeast Face"
           }
         },
         "OnClick": {
@@ -2428,7 +2428,7 @@
           "id": 14759,
           "type": "cexolocstring",
           "value": {
-            "2": "atterir_speeder"
+            "2": "Speeder Landing"
           }
         },
         "OnClick": {
@@ -2646,7 +2646,7 @@
           "id": 14759,
           "type": "cexolocstring",
           "value": {
-            "2": "face_nord_est"
+            "2": "Northeast Face"
           }
         },
         "OnClick": {
@@ -2864,7 +2864,7 @@
           "id": 14759,
           "type": "cexolocstring",
           "value": {
-            "2": "jump_speeder"
+            "2": "Speeder Jump"
           }
         },
         "OnClick": {
@@ -3067,7 +3067,7 @@
           "id": 14759,
           "type": "cexolocstring",
           "value": {
-            "2": "face_nord"
+            "2": "North Face"
           }
         },
         "OnClick": {
@@ -3270,7 +3270,7 @@
           "id": 14759,
           "type": "cexolocstring",
           "value": {
-            "2": "cuts_dist_1"
+            "2": "Cutscene Distance 1"
           }
         },
         "OnClick": {
@@ -3491,7 +3491,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "2": "landspeeder_02"
+            "2": "Landspeeder 02"
           }
         },
         "MapNote": {
@@ -3554,7 +3554,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "2": "landspeeder_03"
+            "2": "Landspeeder 03"
           }
         },
         "MapNote": {
@@ -3617,7 +3617,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "2": "landspeeder_04"
+            "2": "Landspeeder 04"
           }
         },
         "MapNote": {
@@ -3680,7 +3680,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "2": "landspeeder_05"
+            "2": "Landspeeder 05"
           }
         },
         "MapNote": {
@@ -3743,7 +3743,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "2": "landspeeder_06"
+            "2": "Landspeeder 06"
           }
         },
         "MapNote": {
@@ -3806,7 +3806,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "2": "landspeeder_07"
+            "2": "Landspeeder 07"
           }
         },
         "MapNote": {
@@ -3869,7 +3869,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "2": "landspeeder_08"
+            "2": "Landspeeder 08"
           }
         },
         "MapNote": {
@@ -3932,13 +3932,13 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "2": "landspeeder_09"
+            "2": "Landspeeder 09"
           }
         },
         "MapNote": {
           "type": "cexolocstring",
           "value": {
-            "2": "Sortie"
+            "2": "Exit"
           }
         },
         "MapNoteEnabled": {

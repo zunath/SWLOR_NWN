@@ -21866,7 +21866,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Vêtements légers"
+                  "2": "Light Clothing"
                 }
               },
               "Metal1Color": {
@@ -23033,7 +23033,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Astromech Droid",
-            "2": "Droïde Astromec douteux"
+            "2": "Suspicious Astromech Droid"
           }
         },
         "fortbonus": {
@@ -23657,7 +23657,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Revêtement de droïde agricole type-1"
+                  "2": "Type-1 Agricultural Droid Plating"
                 }
               },
               "Metal1Color": {
@@ -23839,7 +23839,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Mouse Droid",
-            "2": "Droïde souris MSE-6"
+            "2": "MSE-6 Mouse Droid"
           }
         },
         "fortbonus": {
@@ -24831,7 +24831,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Astromech Droid",
-            "2": "Unité droïde R5D4"
+            "2": "R5D4 Droid Unit"
           }
         },
         "fortbonus": {
@@ -25823,7 +25823,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Astromech Droid",
-            "2": "Unité droïde R5D4"
+            "2": "R5D4 Droid Unit"
           }
         },
         "fortbonus": {
@@ -26686,7 +26686,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Revêtement de droïde agricole type-1"
+                  "2": "Type-1 Agricultural Droid Plating"
                 }
               },
               "Metal1Color": {
@@ -26868,7 +26868,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Agricultural Droid",
-            "2": "Droïde agricole"
+            "2": "Agricultural Droid"
           }
         },
         "fortbonus": {
@@ -39191,7 +39191,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Porte métallique coulissante rayée"
+            "2": "Scratched Sliding Metal Door"
           }
         },
         "OnClick": {
@@ -39409,7 +39409,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Door",
-            "2": "Porte métallique coulissante vers le bas bleu"
+            "2": "Blue Downward Sliding Metal Door"
           }
         },
         "OnClick": {
@@ -39627,7 +39627,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Door",
-            "2": "Porte métallique coulissante vers le bas bleu"
+            "2": "Blue Downward Sliding Metal Door"
           }
         },
         "OnClick": {
@@ -39845,7 +39845,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Door",
-            "2": "Rideau de toile foncé"
+            "2": "Door"
           }
         },
         "OnClick": {
@@ -40286,8 +40286,8 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Vaporateur d'humiditéW",
-            "2": "Vaporateur d'humidité"
+            "0": "Moisture Vaporator",
+            "2": "Moisture Vaporator"
           }
         },
         "OnClick": {
@@ -40514,8 +40514,8 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Vaporateur d'humiditéW",
-            "2": "Vaporateur d'humidité"
+            "0": "Moisture Vaporator",
+            "2": "Moisture Vaporator"
           }
         },
         "OnClick": {
@@ -40742,8 +40742,8 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Vaporateur d'humiditéW",
-            "2": "Vaporateur d'humidité"
+            "0": "Moisture Vaporator",
+            "2": "Moisture Vaporator"
           }
         },
         "OnClick": {
@@ -40970,7 +40970,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaporateur d'humidité"
+            "2": "Moisture Vaporator"
           }
         },
         "OnClick": {
@@ -41197,7 +41197,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaporateur d'humidité"
+            "2": "Moisture Vaporator"
           }
         },
         "OnClick": {
@@ -41424,7 +41424,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaporateur d'humidité"
+            "2": "Moisture Vaporator"
           }
         },
         "OnClick": {
@@ -41651,7 +41651,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaporateur d'humidité"
+            "2": "Moisture Vaporator"
           }
         },
         "OnClick": {
@@ -41878,8 +41878,8 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Vaporateur d'humiditéW",
-            "2": "Vaporateur d'humidité"
+            "0": "Moisture Vaporator",
+            "2": "Moisture Vaporator"
           }
         },
         "OnClick": {
@@ -49981,8 +49981,8 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Eolienne",
-            "2": "Eolienne"
+            "0": "Wind Turbine",
+            "2": "Wind Turbine"
           }
         },
         "OnClick": {
@@ -53584,7 +53584,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaporateur d'humidité"
+            "2": "Moisture Vaporator"
           }
         },
         "OnClick": {
@@ -53811,7 +53811,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaporateur d'humidité"
+            "2": "Moisture Vaporator"
           }
         },
         "OnClick": {
@@ -54038,7 +54038,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaporateur d'humidité"
+            "2": "Moisture Vaporator"
           }
         },
         "OnClick": {
@@ -54265,7 +54265,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaporateur d'humidité"
+            "2": "Moisture Vaporator"
           }
         },
         "OnClick": {
@@ -54492,7 +54492,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaporateur d'humidité"
+            "2": "Moisture Vaporator"
           }
         },
         "OnClick": {
@@ -54719,7 +54719,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaporateur d'humidité"
+            "2": "Moisture Vaporator"
           }
         },
         "OnClick": {
@@ -54946,7 +54946,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaporateur d'humidité"
+            "2": "Moisture Vaporator"
           }
         },
         "OnClick": {
@@ -55173,7 +55173,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Landspeeder rouge"
+            "2": "Red Landspeeder"
           }
         },
         "OnClick": {
@@ -63743,8 +63743,8 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Eolienne",
-            "2": "Eolienne"
+            "0": "Wind Turbine",
+            "2": "Wind Turbine"
           }
         },
         "OnClick": {
@@ -102671,7 +102671,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Trafic aérien et terrestre"
+            "2": "Air and Ground Traffic"
           }
         },
         "Looping": {
@@ -102806,7 +102806,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Trafic aérien et terrestre"
+            "2": "Air and Ground Traffic"
           }
         },
         "Looping": {
@@ -102934,7 +102934,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Véhicule - Fonceur"
+            "2": "Vehicle - Speeder"
           }
         },
         "Looping": {
@@ -103055,7 +103055,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Véhicule - Pod Racer"
+            "2": "Vehicle - Pod Racer"
           }
         },
         "Looping": {
@@ -103190,7 +103190,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Droïd - Déplacement droïde sonde"
+            "2": "Droid - Probe Droid Movement"
           }
         },
         "Looping": {
@@ -298734,14 +298734,14 @@
           "id": 14815,
           "type": "cexolocstring",
           "value": {
-            "0": "Droid Shop",
-            "2": "Aux droïdes de Lara",
-            "256": "<Placez votre texte ici>",
-            "258": "<Placez votre texte ici>",
-            "260": "<Placez votre texte ici>",
-            "4": "<Placez votre texte ici>",
-            "6": "<Placez votre texte ici>",
-            "8": "<Placez votre texte ici>"
+            "0": "Lara's Droid Shop",
+            "2": "Lara's Droid Shop",
+            "256": "Lara's Droid Shop",
+            "258": "Lara's Droid Shop",
+            "260": "Lara's Droid Shop",
+            "4": "Lara's Droid Shop",
+            "6": "Lara's Droid Shop",
+            "8": "Lara's Droid Shop"
           }
         },
         "MapNoteEnabled": {
@@ -298807,12 +298807,12 @@
           "type": "cexolocstring",
           "value": {
             "0": "Medical Center",
-            "2": "Centre Médical",
-            "256": "<Placez votre texte ici>",
-            "258": "<Placez votre texte ici>",
-            "260": "<Placez votre texte ici>",
-            "4": "<Placez votre texte ici>",
-            "8": "<Placez votre texte ici>"
+            "2": "Medical Center",
+            "256": "Medical Center",
+            "258": "Medical Center",
+            "260": "Medical Center",
+            "4": "Medical Center",
+            "8": "Medical Center"
           }
         },
         "MapNoteEnabled": {
@@ -298875,13 +298875,13 @@
           "id": 14815,
           "type": "cexolocstring",
           "value": {
-            "0": "Bounty Hunter Guild",
-            "2": "Guilde des Chasseurs de Prime",
-            "256": "<Placez votre texte ici>",
-            "258": "<Placez votre texte ici>",
-            "260": "<Placez votre texte ici>",
-            "4": "<Placez votre texte ici>",
-            "8": "<Placez votre texte ici>"
+            "0": "Bounty Hunters Guild",
+            "2": "Bounty Hunters Guild",
+            "256": "Bounty Hunters Guild",
+            "258": "Bounty Hunters Guild",
+            "260": "Bounty Hunters Guild",
+            "4": "Bounty Hunters Guild",
+            "8": "Bounty Hunters Guild"
           }
         },
         "MapNoteEnabled": {

@@ -707,7 +707,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Musician",
-            "2": "Musicien Bith"
+            "2": "Bith Musician"
           }
         },
         "fortbonus": {
@@ -854,13 +854,13 @@
               "DescIdentified": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Tape à l'oeil, ce costumede scène est généralement le préféré des grands musiciens Bith."
+                  "2": "Flashy and eye-catching, this stage costume is generally favored by renowned Bith musicians."
                 }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Tape à l'oeil, ce costumede scène est généralement le préféré des grands musiciens Bith."
+                  "2": "Flashy and eye-catching, this stage costume is generally favored by renowned Bith musicians."
                 }
               },
               "Identified": {
@@ -878,7 +878,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Tenue de scène Bith colorée"
+                  "2": "Colorful Bith Stage Outfit"
                 }
               },
               "Metal1Color": {
@@ -2347,7 +2347,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Musician",
-            "2": "Musicien Bith"
+            "2": "Bith Musician"
           }
         },
         "fortbonus": {
@@ -6817,7 +6817,7 @@
         "FirstName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Barman"
+            "2": "Bartender"
           }
         },
         "fortbonus": {
@@ -8025,7 +8025,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Client",
-            "2": "Client de la cantina"
+            "2": "Client"
           }
         },
         "fortbonus": {
@@ -10553,7 +10553,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Shop Keeper",
-            "2": "Eor"
+            "2": "Shop Keeper"
           }
         },
         "fortbonus": {
@@ -11335,7 +11335,7 @@
                 "type": "cexolocstring",
                 "value": {
                   "0": "Vet Tatooine",
-                  "2": "Vêtements légers"
+                  "2": "Light Clothing"
                 }
               },
               "Metal1Color": {

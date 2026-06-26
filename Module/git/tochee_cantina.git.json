@@ -382,7 +382,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Armure de chasseur de prime"
+                  "2": "Bounty Hunter Armor"
                 }
               },
               "Metal1Color": {
@@ -662,7 +662,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Bounty hunter",
-            "2": "Chasseur de primes"
+            "2": "Bounty Hunter"
           }
         },
         "fortbonus": {
@@ -1816,7 +1816,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Vêtements voyants"
+                  "2": "Flashy Clothes"
                 }
               },
               "Metal1Color": {
@@ -2834,8 +2834,8 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Tenue de danse",
-                  "2": "Tenue de danse Twi'lek"
+                  "0": "Dance Outfit",
+                  "2": "Twi'lek Dance Outfit"
                 }
               },
               "Metal1Color": {
@@ -4871,8 +4871,8 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Tenue de danse",
-                  "2": "Tenue de danse Twi'lek"
+                  "0": "Dance Outfit",
+                  "2": "Twi'lek Dance Outfit"
                 }
               },
               "Metal1Color": {
@@ -5890,8 +5890,8 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Tenue de danse",
-                  "2": "Tenue de danse Twi'lek"
+                  "0": "Dance Outfit",
+                  "2": "Twi'lek Dance Outfit"
                 }
               },
               "Metal1Color": {
@@ -6909,8 +6909,8 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Tenue de danse",
-                  "2": "Tenue de danse Twi'lek"
+                  "0": "Dance Outfit",
+                  "2": "Twi'lek Dance Outfit"
                 }
               },
               "Metal1Color": {
@@ -7148,7 +7148,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Dancer",
-            "2": "Danseuse"
+            "2": "Dancer"
           }
         },
         "fortbonus": {
@@ -7929,7 +7929,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Vêtements de ville"
+                  "2": "Civilian Clothes"
                 }
               },
               "Metal1Color": {
@@ -8958,7 +8958,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Combinaison de Skyracer"
+                  "2": "Skyracer Suit"
                 }
               },
               "Metal1Color": {
@@ -9224,7 +9224,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Skyracer Pilot",
-            "2": "Pilote de Skyracer"
+            "2": "Skyracer Pilot"
           }
         },
         "fortbonus": {
@@ -10016,7 +10016,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Combinaison de Skyracer"
+                  "2": "Skyracer Suit"
                 }
               },
               "Metal1Color": {
@@ -10268,7 +10268,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Skyracer Pilot",
-            "2": "Pilote de Skyracer"
+            "2": "Skyracer Pilot"
           }
         },
         "fortbonus": {
@@ -11049,7 +11049,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Combinaison de Skyracer"
+                  "2": "Skyracer Suit"
                 }
               },
               "Metal1Color": {
@@ -12078,7 +12078,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Combinaison de Skyracer"
+                  "2": "Skyracer Suit"
                 }
               },
               "Metal1Color": {
@@ -12344,7 +12344,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Skyracer Pilot",
-            "2": "Pilote de Skyracer"
+            "2": "Skyracer Pilot"
           }
         },
         "fortbonus": {
@@ -13138,7 +13138,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Armure légère Trandoschan"
+                  "2": "Light Trandoshan Armor"
                 }
               },
               "Metal1Color": {
@@ -13345,7 +13345,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Cellule d'énergie pistolet blaster"
+                  "2": "Blaster Pistol Energy Cell"
                 }
               },
               "ModelPart1": {
@@ -13574,7 +13574,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Bouncer",
-            "2": "Videur"
+            "2": "Bouncer"
           }
         },
         "fortbonus": {
@@ -13651,7 +13651,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Cellule d'énergie pistolet blaster"
+                  "2": "Blaster Pistol Energy Cell"
                 }
               },
               "ModelPart1": {
@@ -13915,13 +13915,13 @@
               "DescIdentified": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Le SE-14, parfois connu sous le nom de Pistolet de Combat SR, est un pistolet blaster basique produit par BlasTech.\nUne SE-14 en cours d'utilisation.\n\nLe pistolet blaster SE-14 se compose globalement d'un tube doté d'une poignée, avec une petite cellule d'énergie située sous le canon.\n\nCette arme a été utilisée par les droïdes de combat de l'Armée Séparatiste durant la Guerre des Clones, et a été appelé \"le Pistolet Blaster Séparatiste\". Probablement gêné par la situation délicate de produire des armes pour un ennemi de la République Galactique, BlasTech a longtemps nié que cette arme venait de leurs usines.\n\nAprès la chute de la République et l'avènement de l'Empire Galactique, BlasTech a été contractée par les Impériaux afin de produire cette arme comme une arme de poing semi-automatique de secours, modèle connu sous le nom SE-14R. Une autre version améliorée, le SE-14C, a été dévoilée par la suite.\n\nLes contrebandiers et les criminels sont connus pour utiliser le SE-14 sous ses diverses déclinaisons."
+                  "2": "The SE-14, sometimes known as the SR Combat Pistol, is a basic blaster pistol produced by BlasTech.\n\nThe SE-14 blaster pistol is built around a compact barrel and grip, with a small energy cell located beneath the barrel.\n\nThis weapon was used by Separatist battle droids during the Clone Wars and was sometimes called the Separatist Blaster Pistol. BlasTech long denied that the weapon came from its factories, likely due to the sensitive issue of producing arms for an enemy of the Galactic Republic.\n\nAfter the fall of the Republic and the rise of the Galactic Empire, BlasTech was contracted by the Imperials to produce the SE-14R as a semi-automatic backup sidearm. An upgraded SE-14C model was later released.\n\nSmugglers and criminals are known to use the SE-14 in its various forms."
                 }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Le SE-14, parfois connu sous le nom de Pistolet de Combat SR, est un pistolet blaster basique produit par BlasTech.\nUne SE-14 en cours d'utilisation.\n\nLe pistolet blaster SE-14 se compose globalement d'un tube doté d'une poignée, avec une petite cellule d'énergie située sous le canon.\n\nCette arme a été utilisée par les droïdes de combat de l'Armée Séparatiste durant la Guerre des Clones, et a été appelé \"le Pistolet Blaster Séparatiste\". Probablement gêné par la situation délicate de produire des armes pour un ennemi de la République Galactique, BlasTech a longtemps nié que cette arme venait de leurs usines.\n\nAprès la chute de la République et l'avènement de l'Empire Galactique, BlasTech a été contractée par les Impériaux afin de produire cette arme comme une arme de poing semi-automatique de secours, modèle connu sous le nom SE-14R. Une autre version améliorée, le SE-14C, a été dévoilée par la suite.\n\nLes contrebandiers et les criminels sont connus pour utiliser le SE-14 sous ses diverses déclinaisons."
+                  "2": "The SE-14, sometimes known as the SR Combat Pistol, is a basic blaster pistol produced by BlasTech.\n\nThe SE-14 blaster pistol is built around a compact barrel and grip, with a small energy cell located beneath the barrel.\n\nThis weapon was used by Separatist battle droids during the Clone Wars and was sometimes called the Separatist Blaster Pistol. BlasTech long denied that the weapon came from its factories, likely due to the sensitive issue of producing arms for an enemy of the Galactic Republic.\n\nAfter the fall of the Republic and the rise of the Galactic Empire, BlasTech was contracted by the Imperials to produce the SE-14R as a semi-automatic backup sidearm. An upgraded SE-14C model was later released.\n\nSmugglers and criminals are known to use the SE-14 in its various forms."
                 }
               },
               "Identified": {
@@ -13931,7 +13931,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Pistolet SE-14"
+                  "2": "SE-14 Pistol"
                 }
               },
               "ModelPart1": {
@@ -23518,7 +23518,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "tosche_cantina_station"
+            "2": "Tosche Cantina Station"
           }
         },
         "OnClick": {
@@ -23735,7 +23735,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Rideau de toile de jute foncé"
+            "2": "Dark Burlap Curtain"
           }
         },
         "OnClick": {
@@ -23952,7 +23952,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Porte métallique coulissante vers le bas"
+            "2": "Downward Sliding Metal Door"
           }
         },
         "OnClick": {
@@ -24401,7 +24401,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Chaine suspendue"
+            "2": "Hanging Chain"
           }
         },
         "OnClick": {
@@ -24628,7 +24628,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Chaine suspendue"
+            "2": "Hanging Chain"
           }
         },
         "OnClick": {
@@ -24855,7 +24855,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Comptoir SF vert"
+            "2": "Green SF Counter"
           }
         },
         "OnClick": {
@@ -25083,7 +25083,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Red couch",
-            "2": "Canapé, riche rouge"
+            "2": "Red couch"
           }
         },
         "OnClick": {
@@ -25311,7 +25311,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Red couch",
-            "2": "Canapé, riche rouge"
+            "2": "Red couch"
           }
         },
         "OnClick": {
@@ -25538,7 +25538,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Plan de travail éclairé"
+            "2": "Lit Workbench"
           }
         },
         "OnClick": {
@@ -25765,7 +25765,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Table SF ronde, marron"
+            "2": "Round Brown SF Table"
           }
         },
         "OnClick": {
@@ -25992,7 +25992,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Moniteur kaki clair"
+            "2": "Light Khaki Monitor"
           }
         },
         "OnClick": {
@@ -26219,7 +26219,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Moniteur kaki clair"
+            "2": "Light Khaki Monitor"
           }
         },
         "OnClick": {
@@ -26446,7 +26446,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Moniteur course swop"
+            "2": "Swoop Race Monitor"
           }
         },
         "OnClick": {
@@ -26673,7 +26673,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Moniteur course swop"
+            "2": "Swoop Race Monitor"
           }
         },
         "OnClick": {
@@ -26900,7 +26900,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Comptoir SF vert"
+            "2": "Green SF Counter"
           }
         },
         "OnClick": {
@@ -27128,7 +27128,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Lights",
-            "2": "Applique murale longue blanche"
+            "2": "Lights"
           }
         },
         "OnClick": {
@@ -27356,7 +27356,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Lights",
-            "2": "Applique murale longue blanche"
+            "2": "Lights"
           }
         },
         "OnClick": {
@@ -27584,7 +27584,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Lights",
-            "2": "Applique murale longue blanche"
+            "2": "Lights"
           }
         },
         "OnClick": {
@@ -27812,7 +27812,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Lights",
-            "2": "Applique murale longue blanche"
+            "2": "Lights"
           }
         },
         "OnClick": {
@@ -28040,7 +28040,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Lights",
-            "2": "Applique murale longue blanche"
+            "2": "Lights"
           }
         },
         "OnClick": {
@@ -28268,7 +28268,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Lights",
-            "2": "Applique murale longue blanche"
+            "2": "Lights"
           }
         },
         "OnClick": {
@@ -28495,7 +28495,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Canette ouverte"
+            "2": "Open Can"
           }
         },
         "OnClick": {
@@ -28722,7 +28722,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Canette ouverte"
+            "2": "Open Can"
           }
         },
         "OnClick": {
@@ -28949,7 +28949,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Canette ouverte"
+            "2": "Open Can"
           }
         },
         "OnClick": {
@@ -29176,7 +29176,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Canette ouverte"
+            "2": "Open Can"
           }
         },
         "OnClick": {
@@ -29403,7 +29403,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Pot a café"
+            "2": "Coffee Pot"
           }
         },
         "OnClick": {
@@ -29630,7 +29630,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Verre exotique"
+            "2": "Exotic Glass"
           }
         },
         "OnClick": {
@@ -29857,7 +29857,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Verre exotique 2"
+            "2": "Exotic Glass 2"
           }
         },
         "OnClick": {
@@ -30084,7 +30084,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Table SF ronde, marron"
+            "2": "Round Brown SF Table"
           }
         },
         "OnClick": {
@@ -30311,8 +30311,8 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fauteuil SF rouge sale",
-            "2": "Fauteuil SF rouge sale"
+            "0": "Dirty Red SF Armchair",
+            "2": "Dirty Red SF Armchair"
           }
         },
         "OnClick": {
@@ -30539,8 +30539,8 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fauteuil SF rouge sale",
-            "2": "Fauteuil SF rouge sale"
+            "0": "Dirty Red SF Armchair",
+            "2": "Dirty Red SF Armchair"
           }
         },
         "OnClick": {
@@ -30767,8 +30767,8 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fauteuil SF rouge sale",
-            "2": "Fauteuil SF rouge sale"
+            "0": "Dirty Red SF Armchair",
+            "2": "Dirty Red SF Armchair"
           }
         },
         "OnClick": {
@@ -30995,8 +30995,8 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Moniteur kaki clair",
-            "2": "Moniteur kaki clair"
+            "0": "Light Khaki Monitor",
+            "2": "Light Khaki Monitor"
           }
         },
         "OnClick": {
@@ -31223,7 +31223,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Table SF ronde, marron"
+            "2": "Round Brown SF Table"
           }
         },
         "OnClick": {
@@ -31450,8 +31450,8 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fauteuil SF rouge sale",
-            "2": "Fauteuil SF rouge sale"
+            "0": "Dirty Red SF Armchair",
+            "2": "Dirty Red SF Armchair"
           }
         },
         "OnClick": {
@@ -31678,8 +31678,8 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fauteuil SF rouge sale",
-            "2": "Fauteuil SF rouge sale"
+            "0": "Dirty Red SF Armchair",
+            "2": "Dirty Red SF Armchair"
           }
         },
         "OnClick": {
@@ -31906,8 +31906,8 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fauteuil SF rouge sale",
-            "2": "Fauteuil SF rouge sale"
+            "0": "Dirty Red SF Armchair",
+            "2": "Dirty Red SF Armchair"
           }
         },
         "OnClick": {
@@ -32134,8 +32134,8 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fauteuil SF rouge sale",
-            "2": "Fauteuil SF rouge sale"
+            "0": "Dirty Red SF Armchair",
+            "2": "Dirty Red SF Armchair"
           }
         },
         "OnClick": {
@@ -32362,7 +32362,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Table SF ronde, marron"
+            "2": "Round Brown SF Table"
           }
         },
         "OnClick": {
@@ -32589,8 +32589,8 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fauteuil SF rouge sale",
-            "2": "Fauteuil SF rouge sale"
+            "0": "Dirty Red SF Armchair",
+            "2": "Dirty Red SF Armchair"
           }
         },
         "OnClick": {
@@ -32817,8 +32817,8 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fauteuil SF rouge sale",
-            "2": "Fauteuil SF rouge sale"
+            "0": "Dirty Red SF Armchair",
+            "2": "Dirty Red SF Armchair"
           }
         },
         "OnClick": {
@@ -33045,8 +33045,8 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fauteuil SF rouge sale",
-            "2": "Fauteuil SF rouge sale"
+            "0": "Dirty Red SF Armchair",
+            "2": "Dirty Red SF Armchair"
           }
         },
         "OnClick": {
@@ -33273,8 +33273,8 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fauteuil SF rouge sale",
-            "2": "Fauteuil SF rouge sale"
+            "0": "Dirty Red SF Armchair",
+            "2": "Dirty Red SF Armchair"
           }
         },
         "OnClick": {
@@ -33502,7 +33502,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Red couch",
-            "2": "Canapé, riche rouge"
+            "2": "Red couch"
           }
         },
         "OnClick": {
@@ -33729,7 +33729,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Table SF ronde, marron"
+            "2": "Round Brown SF Table"
           }
         },
         "OnClick": {
@@ -33956,7 +33956,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Table SF ronde, marron"
+            "2": "Round Brown SF Table"
           }
         },
         "OnClick": {
@@ -34184,7 +34184,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Red couch",
-            "2": "Canapé, riche rouge"
+            "2": "Red couch"
           }
         },
         "OnClick": {
@@ -34412,7 +34412,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Red couch",
-            "2": "Canapé, riche rouge"
+            "2": "Red couch"
           }
         },
         "OnClick": {
@@ -34639,7 +34639,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Chaine suspendue"
+            "2": "Hanging Chain"
           }
         },
         "OnClick": {
@@ -34867,7 +34867,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Lights",
-            "2": "Applique murale longue blanche"
+            "2": "Lights"
           }
         },
         "OnClick": {
@@ -35095,7 +35095,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Lights",
-            "2": "Applique murale longue blanche"
+            "2": "Lights"
           }
         },
         "OnClick": {
@@ -35323,7 +35323,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Lights",
-            "2": "Applique murale longue blanche"
+            "2": "Lights"
           }
         },
         "OnClick": {
@@ -35551,7 +35551,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Lights",
-            "2": "Applique murale longue blanche"
+            "2": "Lights"
           }
         },
         "OnClick": {
@@ -35779,7 +35779,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Lights",
-            "2": "Applique murale longue blanche"
+            "2": "Lights"
           }
         },
         "OnClick": {
@@ -36007,7 +36007,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Lights",
-            "2": "Applique murale longue blanche"
+            "2": "Lights"
           }
         },
         "OnClick": {
@@ -36235,7 +36235,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Lights",
-            "2": "Applique murale longue blanche"
+            "2": "Lights"
           }
         },
         "OnClick": {
@@ -36463,7 +36463,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Lights",
-            "2": "Applique murale longue blanche"
+            "2": "Lights"
           }
         },
         "OnClick": {
@@ -36691,7 +36691,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Lights",
-            "2": "Applique murale longue blanche"
+            "2": "Lights"
           }
         },
         "OnClick": {
@@ -36919,7 +36919,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Lights",
-            "2": "Applique murale longue blanche"
+            "2": "Lights"
           }
         },
         "OnClick": {
@@ -37147,7 +37147,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Lights",
-            "2": "Applique murale longue blanche"
+            "2": "Lights"
           }
         },
         "OnClick": {
@@ -37375,7 +37375,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Lights",
-            "2": "Applique murale longue blanche"
+            "2": "Lights"
           }
         },
         "OnClick": {
@@ -37603,7 +37603,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Lights",
-            "2": "Applique murale longue blanche"
+            "2": "Lights"
           }
         },
         "OnClick": {
@@ -38280,7 +38280,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Place assise"
+            "2": "Seat"
           }
         },
         "OnClick": {
@@ -38507,7 +38507,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Place assise"
+            "2": "Seat"
           }
         },
         "OnClick": {
@@ -38734,7 +38734,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Place assise"
+            "2": "Seat"
           }
         },
         "OnClick": {
@@ -38961,7 +38961,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Place assise"
+            "2": "Seat"
           }
         },
         "OnClick": {
@@ -39188,7 +39188,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Place assise"
+            "2": "Seat"
           }
         },
         "OnClick": {
@@ -39415,7 +39415,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Place assise"
+            "2": "Seat"
           }
         },
         "OnClick": {
@@ -39642,7 +39642,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Place assise"
+            "2": "Seat"
           }
         },
         "OnClick": {
@@ -39869,7 +39869,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Place assise"
+            "2": "Seat"
           }
         },
         "OnClick": {
@@ -40096,7 +40096,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Place assise"
+            "2": "Seat"
           }
         },
         "OnClick": {
@@ -40323,7 +40323,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Place assise"
+            "2": "Seat"
           }
         },
         "OnClick": {
@@ -40550,8 +40550,8 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fauteuil SF rouge sale",
-            "2": "Fauteuil SF rouge sale"
+            "0": "Dirty Red SF Armchair",
+            "2": "Dirty Red SF Armchair"
           }
         },
         "OnClick": {
@@ -40778,8 +40778,8 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fauteuil SF rouge sale",
-            "2": "Fauteuil SF rouge sale"
+            "0": "Dirty Red SF Armchair",
+            "2": "Dirty Red SF Armchair"
           }
         },
         "OnClick": {
@@ -41007,7 +41007,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Lights",
-            "2": "Applique murale longue blanche"
+            "2": "Lights"
           }
         },
         "OnClick": {
@@ -41235,7 +41235,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Lights",
-            "2": "Applique murale longue blanche"
+            "2": "Lights"
           }
         },
         "OnClick": {
@@ -41463,7 +41463,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Lights",
-            "2": "Applique murale longue blanche"
+            "2": "Lights"
           }
         },
         "OnClick": {
@@ -41691,7 +41691,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Lights",
-            "2": "Applique murale longue blanche"
+            "2": "Lights"
           }
         },
         "OnClick": {
@@ -41919,7 +41919,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Lights",
-            "2": "Applique murale longue blanche"
+            "2": "Lights"
           }
         },
         "OnClick": {
@@ -42147,7 +42147,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Lights",
-            "2": "Applique murale longue blanche"
+            "2": "Lights"
           }
         },
         "OnClick": {
@@ -42375,7 +42375,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Lights",
-            "2": "Applique murale longue blanche"
+            "2": "Lights"
           }
         },
         "OnClick": {
@@ -42603,7 +42603,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Lights",
-            "2": "Applique murale longue blanche"
+            "2": "Lights"
           }
         },
         "OnClick": {
@@ -42831,7 +42831,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Lights",
-            "2": "Applique murale longue blanche"
+            "2": "Lights"
           }
         },
         "OnClick": {
@@ -43056,7 +43056,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Console d'ordinateur"
+            "2": "Computer Console"
           }
         },
         "OnClick": {
@@ -43283,7 +43283,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Console murale, kaki"
+            "2": "Khaki Wall Console"
           }
         },
         "OnClick": {
@@ -43510,7 +43510,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Moniteur kaki clair"
+            "2": "Light Khaki Monitor"
           }
         },
         "OnClick": {
@@ -44021,7 +44021,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Véhicule - Pod Racer"
+            "2": "Vehicle - Pod Racer"
           }
         },
         "Looping": {
@@ -44156,7 +44156,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Véhicule - Pod Racer"
+            "2": "Vehicle - Pod Racer"
           }
         },
         "Looping": {
@@ -44291,7 +44291,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Véhicule - Pod Racer"
+            "2": "Vehicle - Pod Racer"
           }
         },
         "Looping": {
@@ -44426,7 +44426,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Applaudissements foule"
+            "2": "Crowd Applause"
           }
         },
         "Looping": {
@@ -44547,7 +44547,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Applaudissements foule"
+            "2": "Crowd Applause"
           }
         },
         "Looping": {
@@ -44668,7 +44668,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Applaudissements foule"
+            "2": "Crowd Applause"
           }
         },
         "Looping": {
@@ -44789,7 +44789,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Rodien"
+            "2": "Rodian"
           }
         },
         "Looping": {
@@ -45253,7 +45253,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Barman générique"
+            "2": "Generic Bartender"
           }
         },
         "MarkDown": {
@@ -45336,7 +45336,7 @@
                     "LocalizedName": {
                       "type": "cexolocstring",
                       "value": {
-                        "2": "Verre de lait bleu"
+                        "2": "Glass of Blue Milk"
                       }
                     },
                     "ModelPart1": {
@@ -45473,7 +45473,7 @@
                     "LocalizedName": {
                       "type": "cexolocstring",
                       "value": {
-                        "2": "Verre de Tatooine Sunburn"
+                        "2": "Glass of Tatooine Sunburn"
                       }
                     },
                     "ModelPart1": {
@@ -45610,7 +45610,7 @@
                     "LocalizedName": {
                       "type": "cexolocstring",
                       "value": {
-                        "2": "Verre de vin corellien"
+                        "2": "Glass of Corellian Wine"
                       }
                     },
                     "ModelPart1": {
@@ -45755,7 +45755,7 @@
                     "LocalizedName": {
                       "type": "cexolocstring",
                       "value": {
-                        "2": "Crème d'Infâme"
+                        "2": "Cream of Infamy"
                       }
                     },
                     "ModelPart1": {
@@ -46061,7 +46061,7 @@
                     "LocalizedName": {
                       "type": "cexolocstring",
                       "value": {
-                        "2": "Lait bleu"
+                        "2": "Blue Milk"
                       }
                     },
                     "ModelPart1": {
@@ -46520,7 +46520,7 @@
                     "LocalizedName": {
                       "type": "cexolocstring",
                       "value": {
-                        "2": "Vin épicé de Zeltronian"
+                        "2": "Zeltronian Spiced Wine"
                       }
                     },
                     "ModelPart1": {
@@ -46675,7 +46675,7 @@
                     "LocalizedName": {
                       "type": "cexolocstring",
                       "value": {
-                        "2": "Whisky Corellien"
+                        "2": "Corellian Whiskey"
                       }
                     },
                     "ModelPart1": {
@@ -46839,7 +46839,7 @@
                     "LocalizedName": {
                       "type": "cexolocstring",
                       "value": {
-                        "2": "Capsule remplie d'eau"
+                        "2": "Water-Filled Capsule"
                       }
                     },
                     "ModelPart1": {
@@ -46976,7 +46976,7 @@
                     "LocalizedName": {
                       "type": "cexolocstring",
                       "value": {
-                        "2": "Ragoût de Bantha"
+                        "2": "Bantha Stew"
                       }
                     },
                     "ModelPart1": {
@@ -47113,7 +47113,7 @@
                     "LocalizedName": {
                       "type": "cexolocstring",
                       "value": {
-                        "2": "Boite de cigares"
+                        "2": "Box of Cigars"
                       }
                     },
                     "ModelPart1": {
@@ -47252,7 +47252,7 @@
                     "LocalizedName": {
                       "type": "cexolocstring",
                       "value": {
-                        "2": "Paquet de cigarette"
+                        "2": "Cigarette Pack"
                       }
                     },
                     "ModelPart1": {

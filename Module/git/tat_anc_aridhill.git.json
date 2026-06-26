@@ -1069,7 +1069,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Bloc rocheux 1"
+            "2": "Rock Formation 1"
           }
         },
         "OnClick": {
@@ -3212,7 +3212,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Faune 03"
+            "2": "Wildlife 03"
           }
         },
         "Looping": {

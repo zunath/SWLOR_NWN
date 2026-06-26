@@ -96,7 +96,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "What do you want?",
-            "2": "Que voulez-vous ? "
+            "2": "What do you want?"
           }
         }
       },
@@ -177,7 +177,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Explorers found you almost dead and brought you here. It's a miracle that you're still alive, but I'm glad!",
-            "2": "Des explorateurs vous ont trouvé presque mort et vous ont amené ici.  C'est un miracle que vous soyez encore vivant, mais je m'en réjouis ! "
+            "2": "Explorers found you near death and brought you here. It's a miracle you are still alive, but I'm glad you made it."
           }
         }
       },
@@ -254,7 +254,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "I can, but alas, care is expensive, especially in this part of the Galaxy!",
-            "2": "Je le peux, mais hélas, les soins coûtent cher, surtout dans cette partie de la Galaxie ! "
+            "2": "I can, but medical care is expensive, especially in this part of the galaxy."
           }
         }
       },
@@ -315,8 +315,8 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "*Examine your wounds.*",
-            "2": "*Examine vos blessures* "
+            "0": "[Examines your wounds.]",
+            "2": "[Examines your wounds.]"
           }
         }
       },
@@ -397,7 +397,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Around 50 credits.",
-            "2": "Environ 50 Crédits. "
+            "2": "Around 50 credits."
           }
         }
       }
@@ -452,7 +452,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Nothing, I'm just passing!",
-            "2": "Rien, je ne fais que passer ! "
+            "2": "Nothing, I'm just passing!"
           }
         }
       },
@@ -510,7 +510,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "I'm hurt, can you heal me?",
-            "2": "Je suis blessé, pouvez-vous me soigner ? "
+            "2": "I'm hurt, can you heal me?"
           }
         }
       },
@@ -552,7 +552,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "That's way too much. No.",
-            "2": "Dans ce cas, cela ne m'intéresse pas !   "
+            "2": "That's way too much. No."
           }
         }
       },
@@ -610,7 +610,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "How much does it cost ?",
-            "2": "Combien cela coûte-t-il ? "
+            "2": "How much does it cost ?"
           }
         }
       },
@@ -709,7 +709,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Very well. Go for it!",
-            "2": "Très bien, allez-y ! "
+            "2": "Very well. Go for it!"
           }
         }
       }

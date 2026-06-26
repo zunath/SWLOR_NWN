@@ -1071,7 +1071,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "DANGER! TRIBAL ZONE!",
-            "2": "DANGER ! ZONE TRIBALE !"
+            "2": "DANGER! TRIBAL ZONE!"
           }
         },
         "OnClick": {
@@ -1299,7 +1299,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "DANGER!",
-            "2": "DANGER ! ZONE TRIBALE !"
+            "2": "DANGER! TRIBAL ZONE!"
           }
         },
         "OnClick": {

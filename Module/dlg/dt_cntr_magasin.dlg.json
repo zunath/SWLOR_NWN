@@ -92,7 +92,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "New around here?",
-            "2": "Salut ! Nouveau dans le coin ? "
+            "2": "New around here?"
           }
         }
       },
@@ -169,7 +169,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Do you have things to sell or buy?",
-            "2": "Vous avez des choses à vendres ou à acheter ?  "
+            "2": "Do you have things to sell or buy?"
           }
         }
       },
@@ -246,7 +246,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Do you have things to sell or buy?",
-            "2": "Vous avez des choses à vendres ou à acheter ?  "
+            "2": "Do you have things to sell or buy?"
           }
         }
       }
@@ -321,7 +321,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "No, not really.",
-            "2": "Non. Pas vraiment. "
+            "2": "No, not really."
           }
         }
       },
@@ -394,7 +394,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Yes.",
-            "2": "Oui. "
+            "2": "Yes."
           }
         }
       },
@@ -436,7 +436,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "No, not today ...",
-            "2": "Non, pas aujourd'hui ... "
+            "2": "No, not today ..."
           }
         }
       },
@@ -478,7 +478,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Yes, show what you have!",
-            "2": "Oui, faites-voir ce que vous avez ! "
+            "2": "Yes, show what you have!"
           }
         }
       },
@@ -520,7 +520,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "No, not today ...",
-            "2": "Non, pas aujourd'hui ... "
+            "2": "No, not today ..."
           }
         }
       },
@@ -562,7 +562,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Yes, show what you have!",
-            "2": "Oui, faites-voir ce que vous avez ! "
+            "2": "Yes, show what you have!"
           }
         }
       }

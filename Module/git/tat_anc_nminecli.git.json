@@ -1725,7 +1725,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Ecran géant"
+            "2": "Giant Screen"
           }
         },
         "OnClick": {

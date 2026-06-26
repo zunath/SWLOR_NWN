@@ -3546,7 +3546,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Tas de ferraille"
+            "2": "Scrap Pile"
           }
         },
         "OnClick": {
@@ -3771,7 +3771,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vieilles pièces détachées de droïd"
+            "2": "Old Droid Spare Parts"
           }
         },
         "OnClick": {

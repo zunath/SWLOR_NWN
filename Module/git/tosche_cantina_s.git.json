@@ -371,7 +371,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Vêtements de ville"
+                  "2": "Civilian Clothes"
                 }
               },
               "Metal1Color": {
@@ -546,7 +546,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Cellule d'énergie pistolet blaster"
+                  "2": "Blaster Pistol Energy Cell"
                 }
               },
               "ModelPart1": {
@@ -753,8 +753,8 @@
         "FirstName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Contrebandier",
-            "2": "Contrebandier"
+            "0": "Smuggler",
+            "2": "Smuggler"
           }
         },
         "fortbonus": {
@@ -1825,7 +1825,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Astromech Droid",
-            "2": "Droïde Astromec"
+            "2": "Astromech Droid"
           }
         },
         "fortbonus": {
@@ -2541,7 +2541,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Vêtements de ville"
+                  "2": "Civilian Clothes"
                 }
               },
               "Metal1Color": {
@@ -2716,7 +2716,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Cellule d'énergie pistolet blaster"
+                  "2": "Blaster Pistol Energy Cell"
                 }
               },
               "ModelPart1": {
@@ -2924,7 +2924,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Smuggler",
-            "2": "Contrebandier"
+            "2": "Smuggler"
           }
         },
         "fortbonus": {
@@ -7528,7 +7528,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Canon laser"
+            "2": "Laser Cannon"
           }
         },
         "OnClick": {
@@ -30079,7 +30079,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Droïd - Astromecano"
+            "2": "Droid - Astromech"
           }
         },
         "Looping": {
@@ -30461,7 +30461,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Informatique - ambiance sonore"
+            "2": "Computer - Ambient Sound"
           }
         },
         "Looping": {

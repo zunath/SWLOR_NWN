@@ -27,7 +27,7 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
-                "value": "Barman générique"
+                "value": "Generic Bartender"
               },
               "RESREF": {
                 "type": "resref",
@@ -335,7 +335,7 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
-                "value": "Vente du centre médical d'Anchorhead"
+                "value": "Anchorhead Medical Center Store"
               },
               "RESREF": {
                 "type": "resref",

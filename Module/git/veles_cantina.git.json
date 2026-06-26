@@ -65449,7 +65449,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Ithorien"
+            "2": "Ithorian"
           }
         },
         "Looping": {
@@ -65854,7 +65854,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Rodien"
+            "2": "Rodian"
           }
         },
         "Looping": {
@@ -66173,7 +66173,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Alarme 04"
+            "2": "Alarm 04"
           }
         },
         "Looping": {
@@ -66294,7 +66294,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Informatique - ambiance sonore"
+            "2": "Computer - Ambient Sound"
           }
         },
         "Looping": {
@@ -66415,7 +66415,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Informatique - ambiance sonore"
+            "2": "Computer - Ambient Sound"
           }
         },
         "Looping": {
@@ -66671,7 +66671,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Alarme 04"
+            "2": "Alarm 04"
           }
         },
         "Looping": {

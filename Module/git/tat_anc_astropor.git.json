@@ -30114,7 +30114,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Door",
-            "2": "Porte m�tallique coulissante vers le bas bleu"
+            "2": "Door"
           }
         },
         "OnClick": {
@@ -30333,7 +30333,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "anchor_astro_milice"
+            "2": "Anchorhead Spaceport Militia"
           }
         },
         "OnClick": {
@@ -30771,7 +30771,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Console d'ordinateur"
+            "2": "Computer Console"
           }
         },
         "OnClick": {
@@ -30996,7 +30996,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Console d'ordinateur"
+            "2": "Computer Console"
           }
         },
         "OnClick": {
@@ -31673,7 +31673,7 @@
           "id": 84566,
           "type": "cexolocstring",
           "value": {
-            "2": "Caisse"
+            "2": "Crate"
           }
         },
         "OnClick": {
@@ -31900,7 +31900,7 @@
           "id": 84566,
           "type": "cexolocstring",
           "value": {
-            "2": "Caisse"
+            "2": "Crate"
           }
         },
         "OnClick": {
@@ -32127,7 +32127,7 @@
           "id": 84566,
           "type": "cexolocstring",
           "value": {
-            "2": "Caisse"
+            "2": "Crate"
           }
         },
         "OnClick": {
@@ -32354,7 +32354,7 @@
           "id": 84566,
           "type": "cexolocstring",
           "value": {
-            "2": "Caisse"
+            "2": "Crate"
           }
         },
         "OnClick": {
@@ -32581,7 +32581,7 @@
           "id": 84566,
           "type": "cexolocstring",
           "value": {
-            "2": "Caisse"
+            "2": "Crate"
           }
         },
         "OnClick": {
@@ -32808,7 +32808,7 @@
           "id": 84566,
           "type": "cexolocstring",
           "value": {
-            "2": "Caisse"
+            "2": "Crate"
           }
         },
         "OnClick": {
@@ -33035,7 +33035,7 @@
           "id": 84566,
           "type": "cexolocstring",
           "value": {
-            "2": "Caisse"
+            "2": "Crate"
           }
         },
         "OnClick": {
@@ -33487,7 +33487,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Sol crade detritus 2, grand Static"
+            "2": "Dirty Debris Floor 2, Large Static"
           }
         },
         "OnClick": {
@@ -34391,7 +34391,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaporateur d'humidit�"
+            "2": "Moisture Vaporator"
           }
         },
         "OnClick": {
@@ -34618,7 +34618,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaporateur d'humidit�"
+            "2": "Moisture Vaporator"
           }
         },
         "OnClick": {
@@ -34845,7 +34845,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaporateur d'humidit�"
+            "2": "Moisture Vaporator"
           }
         },
         "OnClick": {
@@ -35072,7 +35072,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Landspeeder endommag�"
+            "2": "Damaged Landspeeder"
           }
         },
         "OnClick": {
@@ -35299,7 +35299,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Poteau indicateur, Commerce"
+            "2": "Trade Signpost"
           }
         },
         "OnClick": {
@@ -54725,7 +54725,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaisseau - Moteur"
+            "2": "Starship - Engine"
           }
         },
         "Looping": {
@@ -54846,7 +54846,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaisseau - Jets de vapeur"
+            "2": "Starship - Steam Jets"
           }
         },
         "Looping": {
@@ -54974,7 +54974,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaisseau - Jets de vapeur"
+            "2": "Starship - Steam Jets"
           }
         },
         "Looping": {
@@ -55102,7 +55102,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Alarme 05"
+            "2": "Alarm 05"
           }
         },
         "Looping": {
@@ -55223,7 +55223,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaisseau - Atterrissage"
+            "2": "Starship - Landing"
           }
         },
         "Looping": {
@@ -55344,7 +55344,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaisseau - D�colage"
+            "2": "Starship - Takeoff"
           }
         },
         "Looping": {
@@ -55465,7 +55465,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Trafic a�rien et terrestre"
+            "2": "Air and Ground Traffic"
           }
         },
         "Looping": {
@@ -55600,7 +55600,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Trafic a�rien et terrestre"
+            "2": "Air and Ground Traffic"
           }
         },
         "Looping": {
@@ -55742,7 +55742,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Bourdonnements �lectriques"
+            "2": "Electrical Humming"
           }
         },
         "Looping": {
@@ -55905,7 +55905,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Industries - Divers"
+            "2": "Industrial - Miscellaneous"
           }
         },
         "Looping": {
@@ -56280,7 +56280,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaisseau - Jets de vapeur"
+            "2": "Starship - Steam Jets"
           }
         },
         "Looping": {
@@ -56408,7 +56408,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaisseau - Jets de vapeur"
+            "2": "Starship - Steam Jets"
           }
         },
         "Looping": {
@@ -56536,7 +56536,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaisseau - Moteur"
+            "2": "Starship - Engine"
           }
         },
         "Looping": {
@@ -56657,7 +56657,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaisseau - Moteur"
+            "2": "Starship - Engine"
           }
         },
         "Looping": {
@@ -56778,7 +56778,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaisseau - Moteur"
+            "2": "Starship - Engine"
           }
         },
         "Looping": {
@@ -57854,7 +57854,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaisseau - Jets de vapeur"
+            "2": "Starship - Steam Jets"
           }
         },
         "Looping": {
@@ -57982,7 +57982,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaisseau - Jets de vapeur"
+            "2": "Starship - Steam Jets"
           }
         },
         "Looping": {
@@ -58110,7 +58110,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaisseau - Moteur"
+            "2": "Starship - Engine"
           }
         },
         "Looping": {
@@ -58231,7 +58231,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaisseau - Moteur"
+            "2": "Starship - Engine"
           }
         },
         "Looping": {
@@ -58352,7 +58352,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaisseau - Moteur"
+            "2": "Starship - Engine"
           }
         },
         "Looping": {
@@ -58473,7 +58473,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaisseau - Moteur"
+            "2": "Starship - Engine"
           }
         },
         "Looping": {
@@ -58594,7 +58594,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaisseau - Moteur"
+            "2": "Starship - Engine"
           }
         },
         "Looping": {
@@ -65885,7 +65885,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "2": "c2_contact"
+            "2": "C2 Contact"
           }
         },
         "MapNote": {
@@ -65948,7 +65948,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Go-Corp Transportation",
-            "2": "Gare de la Go-Corp"
+            "2": "Go-Corp Station"
           }
         },
         "MapNote": {
@@ -65956,7 +65956,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Go-Corp Transportation",
-            "2": "Gare de la Go-Corp"
+            "2": "Go-Corp Station"
           }
         },
         "MapNoteEnabled": {

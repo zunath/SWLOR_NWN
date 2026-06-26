@@ -204587,7 +204587,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Comptoir noir"
+            "2": "Black Counter"
           }
         },
         "OnClick": {
@@ -205493,8 +205493,8 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Etagère Cantina",
-            "2": "Bar"
+            "0": "Cantina Shelf",
+            "2": "Cantina Shelf"
           }
         },
         "OnClick": {
@@ -205719,7 +205719,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Cuve d'expérimentation"
+            "2": "Experimentation Tank"
           }
         },
         "OnClick": {
@@ -205946,8 +205946,8 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Cantina bar",
-            "2": "Bar"
+            "0": "Cantina Shelf",
+            "2": "Cantina Shelf"
           }
         },
         "OnClick": {
@@ -206174,8 +206174,8 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Cantina bar",
-            "2": "Bar"
+            "0": "Cantina Shelf",
+            "2": "Cantina Shelf"
           }
         },
         "OnClick": {
@@ -206402,8 +206402,8 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Cantina bar",
-            "2": "Bar"
+            "0": "Cantina Shelf",
+            "2": "Cantina Shelf"
           }
         },
         "OnClick": {
@@ -206630,8 +206630,8 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Cantina bar",
-            "2": "Bar"
+            "0": "Cantina Shelf",
+            "2": "Cantina Shelf"
           }
         },
         "OnClick": {
@@ -206858,8 +206858,8 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Cantina bar",
-            "2": "Bar"
+            "0": "Cantina Shelf",
+            "2": "Cantina Shelf"
           }
         },
         "OnClick": {
@@ -207311,8 +207311,8 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Cantina bar",
-            "2": "Bar"
+            "0": "Cantina Shelf",
+            "2": "Cantina Shelf"
           }
         },
         "OnClick": {
@@ -207766,8 +207766,8 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Cantina bar",
-            "2": "Bar"
+            "0": "Cantina Shelf",
+            "2": "Cantina Shelf"
           }
         },
         "OnClick": {
@@ -208448,8 +208448,8 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Cantina bar",
-            "2": "Bar"
+            "0": "Cantina Shelf",
+            "2": "Cantina Shelf"
           }
         },
         "OnClick": {
@@ -208711,8 +208711,8 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Cantina bar",
-            "2": "Bar"
+            "0": "Cantina Shelf",
+            "2": "Cantina Shelf"
           }
         },
         "OnClick": {
@@ -208939,8 +208939,8 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Cantina bar",
-            "2": "Bar"
+            "0": "Cantina Shelf",
+            "2": "Cantina Shelf"
           }
         },
         "OnClick": {
@@ -209167,8 +209167,8 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Cantina bar",
-            "2": "Bar"
+            "0": "Cantina Shelf",
+            "2": "Cantina Shelf"
           }
         },
         "OnClick": {
@@ -209618,8 +209618,8 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Etagère Cantina",
-            "2": "Bar"
+            "0": "Cantina Shelf",
+            "2": "Cantina Shelf"
           }
         },
         "OnClick": {

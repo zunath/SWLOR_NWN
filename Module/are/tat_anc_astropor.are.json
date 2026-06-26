@@ -87,8 +87,8 @@
   "Name": {
     "type": "cexolocstring",
     "value": {
-      "0": "Tatooine - Anchorhead - Astroport",
-      "2": "Anchorhead - Astroport"
+      "0": "Tatooine - Anchorhead - Spaceport",
+      "2": "Tatooine - Anchorhead - Spaceport"
     }
   },
   "NoRest": {

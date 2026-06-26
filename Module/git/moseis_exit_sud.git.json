@@ -6427,7 +6427,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Porte métallique coulissante rayée"
+            "2": "Scratched Sliding Metal Door"
           }
         },
         "OnClick": {
@@ -10476,7 +10476,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaporateur d'humidité"
+            "2": "Moisture Vaporator"
           }
         },
         "OnClick": {
@@ -13203,7 +13203,7 @@
           "id": 14759,
           "type": "cexolocstring",
           "value": {
-            "2": "Trigger de route commerciale empire (Tatooine) "
+            "2": "Empire Trade Route Trigger (Tatooine)"
           }
         },
         "OnClick": {

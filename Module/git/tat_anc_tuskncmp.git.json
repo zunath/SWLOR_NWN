@@ -163,7 +163,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Rideau de toile de jute foncé"
+            "2": "Dark Burlap Curtain"
           }
         },
         "OnClick": {
@@ -3802,7 +3802,7 @@
           "id": 14817,
           "type": "cexolocstring",
           "value": {
-            "2": "q1_entrance_tusken"
+            "2": "Tusken Entrance"
           }
         },
         "MapNote": {

@@ -27,7 +27,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             var rightHandType = GetBaseItemType(weapon);
 
             if (!Item.OneHandedMeleeItemTypes.Contains(rightHandType) &&
-                !Item.TwoHandedMeleeItemTypes.Contains(rightHandType))
+                !Item.TwoHandedMeleeItemTypes.Contains(rightHandType) &&
+                !Item.SaberstaffBaseItemTypes.Contains(rightHandType))
             {
                 return "A melee weapon must be equipped in your right hand to use this ability.";
             }

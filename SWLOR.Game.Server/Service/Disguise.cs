@@ -1,0 +1,579 @@
+using System.Collections.Generic;
+using System.Linq;
+using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
+using SWLOR.Game.Server.Service.DBService;
+using SWLOR.Game.Server.Service.DisguiseService;
+using SWLOR.Game.Server.Service.LogService;
+using SWLOR.NWN.API.NWNX;
+using SWLOR.NWN.API.NWScript.Enum;
+
+namespace SWLOR.Game.Server.Service
+{
+    public static class Disguise
+    {
+        public const string IdentityKeyPrefix = "disguise:";
+        public const int WipeCreditCost = 100000;
+        public const int WipeRoleplayXPCost = 25000;
+        public const int ActivationDelayMinutes = 30;
+
+        public const int MaxPrivateNameLength = 32;
+        private const int DisguiseQueryPageSize = 50;
+        private static readonly TimeSpan ActivationDelay = TimeSpan.FromMinutes(ActivationDelayMinutes);
+
+        [NWNEventHandler(ScriptName.OnModuleEnter)]
+        public static void ApplyActiveDisguiseOnEnter()
+        {
+            var player = GetEnteringObject();
+            if (!GetIsPC(player) || GetIsDM(player))
+                return;
+
+            var activeDisguise = GetActiveDisguise(player);
+            if (activeDisguise == null)
+                return;
+
+            ApplyAppearance(player, activeDisguise);
+        }
+
+        public static string BuildIdentityKey(string disguiseId)
+        {
+            return $"{IdentityKeyPrefix}{disguiseId}";
+        }
+
+        public static bool IsDisguiseIdentityKey(string identityKey)
+        {
+            return !string.IsNullOrWhiteSpace(identityKey) &&
+                   identityKey.StartsWith(IdentityKeyPrefix, StringComparison.OrdinalIgnoreCase);
+        }
+
+        public static string GetIdentityKey(uint player)
+        {
+            var activeDisguise = GetActiveDisguise(player);
+            return activeDisguise == null
+                ? GetObjectUUID(player)
+                : BuildIdentityKey(activeDisguise.Id);
+        }
+
+        public static string GetDisplayDescriptor(uint player)
+        {
+            var activeDisguise = GetActiveDisguise(player);
+            return activeDisguise == null
+                ? PlayerDescriptor.GetUnknownDisplayName(player)
+                : string.IsNullOrWhiteSpace(activeDisguise.Descriptor)
+                    ? PlayerDescriptor.GetUnknownDisplayName(player)
+                    : activeDisguise.Descriptor;
+        }
+
+        public static bool ShouldScrambleAccountName(uint player)
+        {
+            var activeDisguise = GetActiveDisguise(player);
+            if (activeDisguise != null)
+                return activeDisguise.ScrambleAccountId;
+
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Player>(playerId);
+            return dbPlayer?.Settings?.ScrambleAccountName ?? true;
+        }
+
+        public static PlayerDisguise GetActiveDisguise(uint player)
+        {
+            if (!GetIsObjectValid(player) || !GetIsPC(player) || GetIsDM(player))
+                return null;
+
+            var playerId = GetObjectUUID(player);
+            if (string.IsNullOrWhiteSpace(playerId))
+                return null;
+
+            var dbPlayer = DB.Get<Player>(playerId);
+            return GetActiveDisguise(dbPlayer);
+        }
+
+        public static PlayerDisguise GetActiveDisguise(Player dbPlayer)
+        {
+            if (dbPlayer == null ||
+                string.IsNullOrWhiteSpace(dbPlayer.ActiveDisguiseId))
+            {
+                return null;
+            }
+
+            var disguise = DB.Get<PlayerDisguise>(dbPlayer.ActiveDisguiseId);
+            if (disguise == null ||
+                disguise.IsRetired ||
+                disguise.PlayerId != dbPlayer.Id)
+            {
+                return null;
+            }
+
+            return disguise;
+        }
+
+        public static List<PlayerDisguise> GetDisguises(string playerId, bool retired)
+        {
+            var results = new List<PlayerDisguise>();
+            var offset = 0;
+
+            while (true)
+            {
+                var page = DB.Search(new DBQuery<PlayerDisguise>()
+                        .AddFieldSearch(nameof(PlayerDisguise.PlayerId), playerId, false)
+                        .AddFieldSearch(nameof(PlayerDisguise.IsRetired), retired)
+                        .AddPaging(DisguiseQueryPageSize, offset))
+                    .ToList();
+
+                results.AddRange(page);
+
+                if (page.Count < DisguiseQueryPageSize)
+                    break;
+
+                offset += DisguiseQueryPageSize;
+            }
+
+            return results
+                .OrderBy(disguise => disguise.PrivateName)
+                .ToList();
+        }
+
+        public static int GetDisguiseSlotLimit(Player dbPlayer)
+        {
+            return dbPlayer?.DisguiseSlotLimit > 0
+                ? dbPlayer.DisguiseSlotLimit
+                : Player.DefaultDisguiseSlotLimit;
+        }
+
+        public static int CountUsedSlots(string playerId)
+        {
+            return (int)DB.SearchCount(new DBQuery<PlayerDisguise>()
+                .AddFieldSearch(nameof(PlayerDisguise.PlayerId), playerId, false));
+        }
+
+        public static PlayerDisguise CreateDisguise(uint player)
+        {
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Player>(playerId);
+            var usedSlots = CountUsedSlots(playerId);
+            var slotLimit = GetDisguiseSlotLimit(dbPlayer);
+
+            if (usedSlots >= slotLimit)
+                return null;
+
+            var portraitInternalId = ResolvePortraitInternalId(player);
+            var disguise = new PlayerDisguise
+            {
+                PlayerId = playerId,
+                PrivateName = $"Disguise #{usedSlots + 1}",
+                Descriptor = PlayerDescriptor.GetUnknownDisplayName(player),
+                PortraitInternalId = portraitInternalId,
+                SoundSetId = GetSoundset(player),
+                ScrambleAccountId = true
+            };
+
+            DB.Set(disguise);
+            return disguise;
+        }
+
+        public static SaveDisguiseResult SaveDisguise(
+            uint player,
+            string disguiseId,
+            string privateName,
+            string descriptor,
+            int portraitInternalId,
+            int soundSetId,
+            bool scrambleAccountId)
+        {
+            var playerId = GetObjectUUID(player);
+            var disguise = DB.Get<PlayerDisguise>(disguiseId);
+            if (disguise == null || disguise.PlayerId != playerId)
+                return SaveDisguiseResult.Failure("Unable to locate that disguise.");
+
+            if (disguise.IsRetired)
+                return SaveDisguiseResult.Failure("Retired disguises cannot be edited.");
+
+            var privateNameError = ValidatePrivateName(privateName);
+            if (!string.IsNullOrWhiteSpace(privateNameError))
+                return SaveDisguiseResult.Failure(privateNameError);
+
+            var descriptorError = PlayerName.ValidateKnownNameInput(descriptor);
+            if (!string.IsNullOrWhiteSpace(descriptorError))
+                return SaveDisguiseResult.Failure(descriptorError);
+
+            portraitInternalId = Math.Clamp(portraitInternalId, 1, GetMaxPortraitCount());
+
+            disguise.PrivateName = PlayerName.SanitizeKnownName(privateName);
+            disguise.Descriptor = PlayerName.SanitizeKnownName(descriptor);
+            disguise.PortraitInternalId = portraitInternalId;
+            disguise.SoundSetId = soundSetId;
+            disguise.ScrambleAccountId = scrambleAccountId;
+            DB.Set(disguise);
+
+            if (IsActiveDisguise(player, disguise.Id))
+            {
+                ApplyAppearance(player, disguise);
+                RefreshDisguiseDisplay(player);
+            }
+
+            return SaveDisguiseResult.Success();
+        }
+
+        public static ActivateDisguiseResult Activate(uint player, string disguiseId)
+        {
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Player>(playerId);
+            var disguise = DB.Get<PlayerDisguise>(disguiseId);
+
+            if (dbPlayer == null ||
+                disguise == null ||
+                disguise.PlayerId != playerId ||
+                disguise.IsRetired)
+            {
+                return ActivateDisguiseResult.Failure("Unable to activate that disguise.");
+            }
+
+            var delayError = ValidateActivationDelay(playerId);
+            if (!string.IsNullOrWhiteSpace(delayError))
+                return ActivateDisguiseResult.Failure(delayError);
+
+            if (GetActiveDisguise(dbPlayer) == null)
+            {
+                dbPlayer.PreDisguisePortraitId = GetPortraitId(player);
+                dbPlayer.PreDisguiseSoundSetId = GetSoundset(player);
+            }
+
+            dbPlayer.ActiveDisguiseId = disguise.Id;
+            disguise.DateLastActivated = DateTime.UtcNow;
+            DB.Set(disguise);
+            DB.Set(dbPlayer);
+
+            ApplyAppearance(player, disguise);
+            RefreshDisguiseDisplay(player);
+            return ActivateDisguiseResult.Success();
+        }
+
+        public static bool Deactivate(uint player)
+        {
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Player>(playerId);
+            if (dbPlayer == null ||
+                string.IsNullOrWhiteSpace(dbPlayer.ActiveDisguiseId))
+            {
+                return false;
+            }
+
+            if (dbPlayer.PreDisguisePortraitId >= 0)
+                SetPortraitId(player, dbPlayer.PreDisguisePortraitId);
+
+            if (dbPlayer.PreDisguiseSoundSetId >= 0)
+                SetSoundset(player, dbPlayer.PreDisguiseSoundSetId);
+
+            dbPlayer.ActiveDisguiseId = string.Empty;
+            dbPlayer.PreDisguisePortraitId = -1;
+            dbPlayer.PreDisguiseSoundSetId = -1;
+            DB.Set(dbPlayer);
+
+            RefreshDisguiseDisplay(player);
+            return true;
+        }
+
+        public static bool Retire(uint player, string disguiseId)
+        {
+            var playerId = GetObjectUUID(player);
+            var disguise = DB.Get<PlayerDisguise>(disguiseId);
+            if (disguise == null ||
+                disguise.PlayerId != playerId ||
+                disguise.IsRetired)
+            {
+                return false;
+            }
+
+            if (IsActiveDisguise(player, disguiseId))
+                Deactivate(player);
+
+            disguise.IsRetired = true;
+            disguise.DateRetired = DateTime.UtcNow;
+            DB.Set(disguise);
+
+            Log.WriteStructured(
+                LogGroup.PlayerName,
+                "Disguise retired: PlayerId={PlayerId} PlayerName={PlayerName} DisguiseId={DisguiseId} PrivateName={PrivateName} Descriptor={Descriptor}",
+                playerId,
+                GetName(player),
+                disguise.Id,
+                disguise.PrivateName,
+                disguise.Descriptor);
+
+            return true;
+        }
+
+        public static bool Unretire(uint player, string disguiseId)
+        {
+            var playerId = GetObjectUUID(player);
+            var disguise = DB.Get<PlayerDisguise>(disguiseId);
+            if (disguise == null ||
+                disguise.PlayerId != playerId ||
+                !disguise.IsRetired)
+            {
+                return false;
+            }
+
+            disguise.IsRetired = false;
+            disguise.DateRetired = null;
+            DB.Set(disguise);
+
+            Log.WriteStructured(
+                LogGroup.PlayerName,
+                "Disguise restored: PlayerId={PlayerId} PlayerName={PlayerName} DisguiseId={DisguiseId} PrivateName={PrivateName} Descriptor={Descriptor}",
+                playerId,
+                GetName(player),
+                disguise.Id,
+                disguise.PrivateName,
+                disguise.Descriptor);
+
+            return true;
+        }
+
+        public static DeleteRetiredDisguiseResult DeleteRetiredDisguise(
+            uint player,
+            string disguiseId,
+            DisguisePaymentMethod paymentMethod)
+        {
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Player>(playerId);
+            var disguise = DB.Get<PlayerDisguise>(disguiseId);
+
+            if (disguise == null)
+                return DeleteRetiredDisguiseResult.NotFound;
+
+            if (disguise.PlayerId != playerId)
+                return DeleteRetiredDisguiseResult.NotOwner;
+
+            if (!disguise.IsRetired)
+                return DeleteRetiredDisguiseResult.NotRetired;
+
+            if (dbPlayer != null && dbPlayer.ActiveDisguiseId == disguise.Id)
+                return DeleteRetiredDisguiseResult.IsActive;
+
+            var amount = 0;
+            switch (paymentMethod)
+            {
+                case DisguisePaymentMethod.Credits:
+                    amount = WipeCreditCost;
+                    if (GetGold(player) < amount)
+                        return DeleteRetiredDisguiseResult.InsufficientCredits;
+
+                    TakeGoldFromCreature(amount, player, true);
+                    break;
+                case DisguisePaymentMethod.RoleplayXP:
+                    amount = WipeRoleplayXPCost;
+                    if (dbPlayer == null || dbPlayer.UnallocatedXP < amount)
+                        return DeleteRetiredDisguiseResult.InsufficientRoleplayXP;
+
+                    dbPlayer.UnallocatedXP -= amount;
+                    DB.Set(dbPlayer);
+                    Gui.PublishRefreshEvent(player, new RPXPRefreshEvent());
+                    break;
+                default:
+                    return DeleteRetiredDisguiseResult.InvalidPaymentMethod;
+            }
+
+            var identityKey = BuildIdentityKey(disguise.Id);
+            var removedKnownNames = PlayerName.DeleteKnownNameReferences(identityKey);
+
+            Log.WriteStructured(
+                LogGroup.PlayerName,
+                "Retired disguise deleted: PlayerId={PlayerId} PlayerName={PlayerName} PublicCDKey={PublicCDKey} DisguiseId={DisguiseId} PrivateName={PrivateName} Descriptor={Descriptor} PaymentMethod={PaymentMethod} PaymentAmount={PaymentAmount} RemovedKnownNameReferences={RemovedKnownNameReferences}",
+                playerId,
+                GetName(player),
+                GetPCPublicCDKey(player),
+                disguise.Id,
+                disguise.PrivateName,
+                disguise.Descriptor,
+                paymentMethod.ToString(),
+                amount,
+                removedKnownNames);
+
+            DB.Delete<PlayerDisguise>(disguise.Id);
+            return DeleteRetiredDisguiseResult.Success;
+        }
+
+        public static int ResetActivationCooldowns(uint player)
+        {
+            var playerId = GetObjectUUID(player);
+            var resetCount = 0;
+            var offset = 0;
+
+            while (true)
+            {
+                var page = DB.Search(new DBQuery<PlayerDisguise>()
+                        .AddFieldSearch(nameof(PlayerDisguise.PlayerId), playerId, false)
+                        .AddPaging(DisguiseQueryPageSize, offset))
+                    .ToList();
+
+                foreach (var disguise in page)
+                {
+                    if (!disguise.DateLastActivated.HasValue)
+                        continue;
+
+                    disguise.DateLastActivated = null;
+                    DB.Set(disguise);
+                    resetCount++;
+                }
+
+                if (page.Count < DisguiseQueryPageSize)
+                    break;
+
+                offset += DisguiseQueryPageSize;
+            }
+
+            return resetCount;
+        }
+
+        public static string GetPortraitResref(PlayerDisguise disguise)
+        {
+            if (disguise == null)
+                return string.Empty;
+
+            try
+            {
+                return Cache.GetPortraitResrefByInternalId(disguise.PortraitInternalId) + "l";
+            }
+            catch (KeyNotFoundException)
+            {
+                return string.Empty;
+            }
+        }
+
+        public static string GetSoundSetName(int soundSetId)
+        {
+            var soundSets = Cache.GetSoundSets();
+            return soundSets.TryGetValue(soundSetId, out var label)
+                ? label
+                : "Unknown";
+        }
+
+        private static string ValidatePrivateName(string privateName)
+        {
+            if (string.IsNullOrWhiteSpace(privateName))
+                return "Please enter a private disguise name.";
+
+            if (privateName.Length > MaxPrivateNameLength)
+                return $"Private disguise names may be no longer than {MaxPrivateNameLength} characters.";
+
+            if (privateName != UtilPlugin.StripColors(privateName))
+                return "Private disguise names may not contain color codes.";
+
+            return string.Empty;
+        }
+
+        private static bool IsActiveDisguise(uint player, string disguiseId)
+        {
+            var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
+            return dbPlayer != null &&
+                   !string.IsNullOrWhiteSpace(disguiseId) &&
+                   dbPlayer.ActiveDisguiseId == disguiseId;
+        }
+
+        private static string ValidateActivationDelay(string playerId)
+        {
+            var latestActivation = GetLatestActivationDate(playerId);
+            if (!latestActivation.HasValue)
+                return string.Empty;
+
+            var remaining = ActivationDelay - (DateTime.UtcNow - latestActivation.Value);
+            if (remaining <= TimeSpan.Zero)
+                return string.Empty;
+
+            return $"There is a {ActivationDelayMinutes}-minute delay between disguise activations. You must wait {FormatRemainingDelay(remaining)} before activating another disguise. Deactivation is available immediately.";
+        }
+
+        private static DateTime? GetLatestActivationDate(string playerId)
+        {
+            DateTime? latestActivation = null;
+            var offset = 0;
+
+            while (true)
+            {
+                var page = DB.Search(new DBQuery<PlayerDisguise>()
+                        .AddFieldSearch(nameof(PlayerDisguise.PlayerId), playerId, false)
+                        .AddPaging(DisguiseQueryPageSize, offset))
+                    .ToList();
+
+                foreach (var disguise in page)
+                {
+                    if (!disguise.DateLastActivated.HasValue)
+                        continue;
+
+                    if (!latestActivation.HasValue ||
+                        disguise.DateLastActivated.Value > latestActivation.Value)
+                    {
+                        latestActivation = disguise.DateLastActivated.Value;
+                    }
+                }
+
+                if (page.Count < DisguiseQueryPageSize)
+                    break;
+
+                offset += DisguiseQueryPageSize;
+            }
+
+            return latestActivation;
+        }
+
+        private static string FormatRemainingDelay(TimeSpan remaining)
+        {
+            var minutes = (int)Math.Ceiling(remaining.TotalMinutes);
+            return minutes <= 1
+                ? "less than 1 minute"
+                : $"{minutes} minutes";
+        }
+
+        private static int ResolvePortraitInternalId(uint player)
+        {
+            var resref = GetPortraitResRef(player);
+            var internalId = Cache.GetPortraitInternalIdByResref(resref);
+            if (internalId > 0)
+                return internalId;
+
+            var portraitId = GetPortraitId(player);
+            try
+            {
+                internalId = Cache.GetPortraitInternalId(portraitId);
+                return internalId > 0
+                    ? internalId
+                    : 1;
+            }
+            catch (KeyNotFoundException)
+            {
+                return 1;
+            }
+        }
+
+        private static void ApplyAppearance(uint player, PlayerDisguise disguise)
+        {
+            if (disguise.PortraitInternalId > 0)
+            {
+                try
+                {
+                    SetPortraitId(player, Cache.GetPortraitByInternalId(disguise.PortraitInternalId));
+                }
+                catch (KeyNotFoundException)
+                {
+                    // Ignore invalid legacy portrait ids; the disguise descriptor still applies.
+                }
+            }
+
+            if (disguise.SoundSetId >= 0)
+                SetSoundset(player, disguise.SoundSetId);
+        }
+
+        private static void RefreshDisguiseDisplay(uint player)
+        {
+            PlayerName.RefreshNameOverridesForPlayer(player);
+            Gui.PublishRefreshEvent(player, new DisguiseChangedRefreshEvent());
+        }
+
+        private static int GetMaxPortraitCount()
+        {
+            return Math.Max(1, Cache.PortraitCount);
+        }
+    }
+}

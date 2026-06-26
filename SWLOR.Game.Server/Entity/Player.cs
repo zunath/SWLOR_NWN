@@ -21,6 +21,7 @@ namespace SWLOR.Game.Server.Entity
     public class Player: EntityBase
     {
         public const int DefaultOutfitSlotLimit = 25;
+        public const int DefaultDisguiseSlotLimit = 1;
         public const int DefaultMarketListingLimit = 25;
 
         public Player()
@@ -89,7 +90,11 @@ namespace SWLOR.Game.Server.Entity
             CPBonus = new Dictionary<SkillType, int>();
             Currencies = new Dictionary<CurrencyType, int>();
             OutfitSlotLimit = DefaultOutfitSlotLimit;
+            DisguiseSlotLimit = DefaultDisguiseSlotLimit;
             MarketListingLimit = DefaultMarketListingLimit;
+            ActiveDisguiseId = string.Empty;
+            PreDisguisePortraitId = -1;
+            PreDisguiseSoundSetId = -1;
         }
 
 
@@ -144,6 +149,7 @@ namespace SWLOR.Game.Server.Entity
         public int CombatReadiness { get; set; }
         public int MarketTill { get; set; }
         public int OutfitSlotLimit { get; set; }
+        public int DisguiseSlotLimit { get; set; }
         public int MarketListingLimit { get; set; }
         [Indexed]
         public string CitizenPropertyId { get; set; }
@@ -153,6 +159,9 @@ namespace SWLOR.Game.Server.Entity
         public int Evasion { get; set; }
         public bool RebuildComplete { get; set; }
         public string ActiveBeastId { get; set; }
+        public string ActiveDisguiseId { get; set; }
+        public int PreDisguisePortraitId { get; set; }
+        public int PreDisguiseSoundSetId { get; set; }
 
         public PlayerSettings Settings { get; set; }
         public Dictionary<SkillType, int> Control { get; set; }

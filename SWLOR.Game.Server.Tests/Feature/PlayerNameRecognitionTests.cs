@@ -18,7 +18,7 @@ public class PlayerNameRecognitionTests
             "PlayerName.cs"));
         var method = ExtractMethod(source, "private static void ApplyNameOverridesForPlayer(uint player)");
 
-        method.Should().Contain("var shouldScrambleAccountName = ShouldScrambleAccountName(player);");
+        method.Should().Contain("var shouldScrambleAccountName = Disguise.ShouldScrambleAccountName(player);");
         method.Should().Contain("if (!shouldScrambleAccountName)");
         method.Should().Contain("RenamePlugin.ClearPCNameOverride(player);");
         method.Should().Contain("if (shouldScrambleAccountName)");
@@ -164,7 +164,7 @@ public class PlayerNameRecognitionTests
         var validationMethod = ExtractMethod(source, "private static string ValidateKnownNameTarget(uint observer, uint target)");
 
         var validationIndex = setMethod.IndexOf("ValidateKnownNameAssignment(observer, target, name);", StringComparison.Ordinal);
-        var targetIdIndex = setMethod.IndexOf("var targetId = GetObjectUUID(target);", StringComparison.Ordinal);
+        var targetIdIndex = setMethod.IndexOf("var targetId = Disguise.GetIdentityKey(target);", StringComparison.Ordinal);
 
         validationIndex.Should().BeGreaterThanOrEqualTo(0);
         targetIdIndex.Should().BeGreaterThanOrEqualTo(0);
@@ -195,6 +195,9 @@ public class PlayerNameRecognitionTests
         var setMethod = ExtractMethod(source, "public static void SetKnownName(uint observer, uint target, string name)");
         var unknownDisplayMethod = ExtractMethod(descriptorSource, "public static void SetUnknownDisplayName(uint player, string name)");
 
+        source.Should().Contain("public const int MaxKnownNameLength = 64;");
+        source.Should().Contain("if (name.Length > MaxKnownNameLength)");
+        source.Should().Contain("Names may be no longer than {MaxKnownNameLength} characters.");
         inputValidationMethod.Should().Contain("ContainsColorToken(name)");
         inputValidationMethod.Should().Contain("\"Names may not contain color codes.\"");
         inputValidationMethod.Should().Contain("ValidateKnownName(SanitizeKnownName(name))");
@@ -282,7 +285,7 @@ public class PlayerNameRecognitionTests
         var playerIdDisplayMethod = ExtractMethod(source, "public static string GetDisplayNameByPlayerId(uint observer, string targetPlayerId, string fallbackName)");
         coloredDisplayMethod.Should().Contain("ColorToken.Gray(displayName)");
         coloredDisplayMethod.Should().Contain("ShouldShowDescriptorForNamedPlayers(observer)");
-        coloredDisplayMethod.Should().Contain("BuildColoredDisplayNameWithDescriptor(knownName, PlayerDescriptor.GetUnknownDisplayName(target))");
+        coloredDisplayMethod.Should().Contain("BuildColoredDisplayNameWithDescriptor(knownName, Disguise.GetDisplayDescriptor(target))");
         coloredDisplayMethod.Should().Contain("ColorToken.GetPCColor(knownName)");
         coloredChatDisplayMethod.Should().Contain("ResolveChatDisplayName(observer, target, out var isUnknown)");
         coloredChatDisplayMethod.Should().NotContain("ShouldShowDescriptorForNamedPlayers(observer)");
@@ -299,7 +302,7 @@ public class PlayerNameRecognitionTests
         playerSource.Should().Contain("ShowOwnDescriptor = true;");
         playerSource.Should().Contain("ScrambleAccountName = true;");
         descriptorSource.Should().Contain("public static void SetUnknownDisplayName(uint player, string name)");
-        source.Should().Contain("PlayerDescriptor.GetUnknownDisplayName(target)");
+        source.Should().Contain("Disguise.GetDisplayDescriptor(target)");
         source.Should().Contain("public static void SendChatMessageWithChatNameOverride(uint observer, uint target, Action sendMessage)");
         source.Should().Contain("private static string BuildDisplayNameWithDescriptor(string primaryName, string descriptor)");
         source.Should().Contain("private static string BuildColoredDisplayNameWithDescriptor(string primaryName, string descriptor)");
@@ -325,20 +328,20 @@ public class PlayerNameRecognitionTests
 
         var resolveDisplayMethod = ExtractMethod(source, "private static string ResolveDisplayName(uint observer, uint target, out bool isUnknown)");
         resolveDisplayMethod.Should().Contain("ShouldShowDescriptorForNamedPlayers(observer)");
-        resolveDisplayMethod.Should().Contain("BuildDisplayNameWithDescriptor(knownName, PlayerDescriptor.GetUnknownDisplayName(target))");
+        resolveDisplayMethod.Should().Contain("BuildDisplayNameWithDescriptor(knownName, Disguise.GetDisplayDescriptor(target))");
         resolveDisplayMethod.Should().Contain(": knownName");
 
         var resolveChatDisplayMethod = ExtractMethod(source, "private static string ResolveChatDisplayName(uint observer, uint target, out bool isUnknown)");
         resolveChatDisplayMethod.Should().Contain("GetIsDM(observer)");
         resolveChatDisplayMethod.Should().Contain("TryGetKnownName(observer, target, out var knownName)");
         resolveChatDisplayMethod.Should().Contain("return knownName;");
-        resolveChatDisplayMethod.Should().Contain("return PlayerDescriptor.GetUnknownDisplayName(target);");
+        resolveChatDisplayMethod.Should().Contain("return Disguise.GetDisplayDescriptor(target);");
         resolveChatDisplayMethod.Should().NotContain("BuildDisplayNameWithDescriptor");
         resolveChatDisplayMethod.Should().NotContain("ShouldShowDescriptorForNamedPlayers(observer)");
 
         var staffDisplayMethod = ExtractMethod(source, "private static string BuildStaffDisplayName(uint target)");
         staffDisplayMethod.Should().Contain("GetName(target)");
-        staffDisplayMethod.Should().Contain("PlayerDescriptor.GetUnknownDisplayName(target)");
+        staffDisplayMethod.Should().Contain("Disguise.GetDisplayDescriptor(target)");
         staffDisplayMethod.Should().Contain("return $\"{trueName} [{ColorToken.Gray(unknownDisplayName)}]\";");
         staffDisplayMethod.Should().Contain("ColorToken.Gray(unknownDisplayName)");
 
@@ -502,9 +505,394 @@ public class PlayerNameRecognitionTests
         playerNameSource.Should().Contain("public static void RefreshNameOverridesForObserver(uint observer)");
         playerNameSource.Should().Contain("ShowDescriptorsForNamedPlayersByObserverId.Remove(observerId);");
         playerNameSource.Should().Contain("private static bool ShouldShowOwnDescriptor(uint player)");
-        playerNameSource.Should().Contain("private static bool ShouldScrambleAccountName(uint player)");
+        playerNameSource.Should().Contain("Disguise.ShouldScrambleAccountName(player)");
         playerNameSource.Should().Contain("GetIsDM(observer) ||");
         playerNameSource.Should().Contain("GetIsDMPossessed(observer)");
+    }
+
+    [Test]
+    public void Disguises_UseDisguiseIdentityKeysAndHardDeleteRetiredIdentities()
+    {
+        var root = FindRepositoryRoot();
+        var disguiseSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "Disguise.cs"));
+        var activateResultSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "DisguiseService",
+            "ActivateDisguiseResult.cs"));
+        var entitySource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Entity",
+            "PlayerDisguise.cs"));
+        var playerSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Entity",
+            "Player.cs"));
+        var viewModelSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "GuiDefinition",
+            "ViewModel",
+            "DisguiseViewModel.cs"));
+        var cacheSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "Cache.cs"));
+        var dialogSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "DialogDefinition",
+            "IdentityBrokerDialog.cs"));
+        var characterSheetDefinitionSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "GuiDefinition",
+            "CharacterSheetDefinition.cs"));
+        var characterSheetViewModelSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "GuiDefinition",
+            "ViewModel",
+            "CharacterSheetViewModel.cs"));
+        var dmChatCommandSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "ChatCommandDefinition",
+            "DMChatCommand.cs"));
+
+        disguiseSource.Should().Contain("public const string IdentityKeyPrefix = \"disguise:\";");
+        disguiseSource.Should().Contain("BuildIdentityKey(activeDisguise.Id)");
+        disguiseSource.Should().Contain("PlayerName.DeleteKnownNameReferences(identityKey)");
+        disguiseSource.Should().Contain("DB.Delete<PlayerDisguise>(disguise.Id)");
+        disguiseSource.Should().Contain("public const int ActivationDelayMinutes = 30;");
+        disguiseSource.Should().Contain("private static readonly TimeSpan ActivationDelay = TimeSpan.FromMinutes(ActivationDelayMinutes);");
+        disguiseSource.Should().Contain("public static ActivateDisguiseResult Activate");
+        disguiseSource.Should().Contain("ValidateActivationDelay(playerId)");
+        disguiseSource.Should().Contain("GetLatestActivationDate(playerId)");
+        disguiseSource.Should().Contain("There is a {ActivationDelayMinutes}-minute delay between disguise activations.");
+        disguiseSource.Should().Contain("Deactivation is available immediately.");
+        disguiseSource.Should().Contain("DateLastActivated = DateTime.UtcNow");
+        disguiseSource.Should().Contain("public static int ResetActivationCooldowns(uint player)");
+        disguiseSource.Should().Contain("disguise.DateLastActivated = null;");
+        disguiseSource.Should().Contain("public static bool Unretire");
+        disguiseSource.Should().Contain("disguise.DateRetired = null;");
+        disguiseSource.Should().Contain("TakeGoldFromCreature(amount, player, true)");
+        disguiseSource.Should().Contain("dbPlayer.UnallocatedXP -= amount");
+        disguiseSource.Should().Contain("new RPXPRefreshEvent()");
+        disguiseSource.Should().Contain("new DisguiseChangedRefreshEvent()");
+        dmChatCommandSource.Should().Contain(".Description(\"Resets a player's ability and disguise cooldowns.\")");
+        dmChatCommandSource.Should().Contain("AbilityCooldownVisual.ClearAllRecastDelays(target);");
+        dmChatCommandSource.Should().Contain("Disguise.ResetActivationCooldowns(target);");
+
+        activateResultSource.Should().Contain("public bool IsSuccessful");
+        activateResultSource.Should().Contain("public string ErrorMessage");
+        activateResultSource.Should().Contain("public static ActivateDisguiseResult Success()");
+        activateResultSource.Should().Contain("public static ActivateDisguiseResult Failure(string errorMessage)");
+
+        entitySource.Should().Contain("[Indexed]");
+        entitySource.Should().Contain("public string PlayerId { get; set; }");
+        entitySource.Should().Contain("public bool IsRetired { get; set; }");
+        entitySource.Should().Contain("public bool ScrambleAccountId { get; set; }");
+        playerSource.Should().Contain("public const int DefaultDisguiseSlotLimit = 1;");
+        playerSource.Should().Contain("DisguiseSlotLimit = DefaultDisguiseSlotLimit;");
+
+        viewModelSource.Should().Contain("public bool IsAvailableSelected");
+        viewModelSource.Should().Contain("public bool IsRetiredSelected");
+        viewModelSource.Should().Contain("public bool ShowEmptyState");
+        viewModelSource.Should().Contain("public string EmptyStateTitle");
+        viewModelSource.Should().Contain("public string EmptyStateText");
+        viewModelSource.Should().Contain("public bool ScrambleAccountId");
+        viewModelSource.Should().Contain("public bool ShowUnretireButton");
+        viewModelSource.Should().NotContain("public bool ShowDetailActionRow");
+        viewModelSource.Should().Contain("public const string DetailPartialElement");
+        viewModelSource.Should().Contain("public const string PortraitPartialElement");
+        viewModelSource.Should().Contain("public const string ActionPartialElement");
+        viewModelSource.Should().Contain("public const string ActionAvailablePartial");
+        viewModelSource.Should().Contain("public const string ActionRetiredPartial");
+        viewModelSource.Should().Contain("public const string ActionEditPartial");
+        viewModelSource.Should().Contain("public const string ActionEmptyPartial");
+        disguiseSource.Should().Contain("PrivateName = $\"Disguise #{usedSlots + 1}\"");
+        disguiseSource.Should().Contain("public const int MaxPrivateNameLength = 32;");
+        disguiseSource.Should().Contain("privateName.Length > MaxPrivateNameLength");
+        disguiseSource.Should().Contain("Private disguise names may be no longer than {MaxPrivateNameLength} characters.");
+        disguiseSource.Should().Contain("Unable to locate that disguise.");
+        disguiseSource.Should().Contain("Retired disguises cannot be edited.");
+        disguiseSource.Should().Contain("Unable to activate that disguise.");
+        disguiseSource.Should().Contain("before activating another disguise.");
+        viewModelSource.Should().Contain("Creating a new disguise will consume one of your disguise slots. Retired disguises also occupy disguise slots until they are wiped. Are you sure?");
+        viewModelSource.Should().Contain("ActivateButtonText = IsSelectedDisguiseActive() ? \"Deactivate\" : \"Activate\";");
+        viewModelSource.Should().Contain("Disguise.Deactivate(Player)");
+        viewModelSource.Should().Contain("Deactivating this disguise immediately restores your normal identity. Deactivation does not trigger the 30-minute delay between disguise activations. Are you sure?");
+        viewModelSource.Should().Contain("Activating this disguise starts a 30-minute delay before you can activate another disguise. Deactivation has no delay. Are you sure?");
+        viewModelSource.Should().Contain("var selectedDisguiseId = _selectedDisguiseId;");
+        viewModelSource.Should().Contain("var result = Disguise.Activate(Player, selectedDisguiseId);");
+        viewModelSource.Should().Contain("private void ReloadAvailableDisguise(string selectedDisguiseId)");
+        viewModelSource.Should().Contain("LoadList(selectedDisguiseId);");
+        viewModelSource.Should().Contain("if (!result.IsSuccessful)");
+        viewModelSource.Should().Contain("FloatingTextStringOnCreature(result.ErrorMessage, Player, false);");
+        viewModelSource.Should().Contain("Disguise.Unretire(Player, _selectedDisguiseId)");
+        viewModelSource.Should().Contain("Restoring this disguise will move it back to your available disguises. Are you sure?");
+        viewModelSource.Should().Contain("public Action OnClickPreviewSoundSet()");
+        viewModelSource.Should().Contain("Cache.GetSoundSetPreviewSoundResref(_selectedSoundSetId)");
+        viewModelSource.Should().Contain("PlayerPlugin.PlaySound(Player, previewSoundResref, OBJECT_INVALID)");
+        viewModelSource.Should().NotContain("PlayVoiceChat(VoiceChat.Hello, Player)");
+        viewModelSource.Should().Contain("public int SelectedSoundSetIndex");
+        viewModelSource.Should().Contain("private readonly Dictionary<int, int> _soundSetIndexesById");
+        viewModelSource.Should().Contain("private readonly List<GuiBindingList<GuiComboEntry>> _soundSetOptionPages");
+        viewModelSource.Should().Contain("currentPage.Add(new GuiComboEntry(label, optionIndex));");
+        viewModelSource.Should().Contain("private const int SoundSetPageSize");
+        viewModelSource.Should().Contain("public GuiBindingList<GuiComboEntry> SoundSetPageNumbers");
+        viewModelSource.Should().Contain("public int SelectedSoundSetPageIndex");
+        viewModelSource.Should().Contain("private bool _suppressSoundSetPageChange");
+        viewModelSource.Should().Contain("private int _selectedSoundSetId");
+        viewModelSource.Should().Contain("SelectSoundSet(disguise.SoundSetId);");
+        viewModelSource.Should().Contain("private void LoadSoundSetPageOptions");
+        viewModelSource.Should().Contain("private void LoadSoundSetPageNumbers");
+        viewModelSource.Should().Contain("private int GetSelectedSoundSetIndexOnCurrentPage");
+        viewModelSource.Should().Contain("_soundSetPageIndex = absoluteIndex / SoundSetPageSize;");
+        viewModelSource.Should().Contain("SoundSetOptions = _soundSetOptionPages[_soundSetPageIndex];");
+        viewModelSource.Should().Contain("SoundSetPageNumbers = pageNumbers;");
+        viewModelSource.Should().Contain("WatchOnClient(model => model.SelectedSoundSetPageIndex)");
+        viewModelSource.Should().Contain("_soundSetIndexesById.TryGetValue");
+        viewModelSource.Should().Contain("private void SetSelectedSoundSetFromPageIndex");
+        viewModelSource.Should().Contain("public Action OnClickPreviousSoundSetPage()");
+        viewModelSource.Should().Contain("public Action OnClickNextSoundSetPage()");
+        viewModelSource.Should().Contain("private int SanitizeSoundSetIndex");
+        viewModelSource.Should().Contain("if (index < 0)");
+        viewModelSource.Should().Contain("LoadSoundSetPageOptions(GetSelectedSoundSetIndexOnCurrentPage(), true);");
+        viewModelSource.Should().Contain("selectedPageIndex = GetCurrentSoundSetPageSize() > 0 ? 0 : -1;");
+        viewModelSource.Should().Contain("private void RefreshSoundSetBindings");
+        viewModelSource.Should().NotContain("SetSoundset(Player, _soundSetIds[SelectedSoundSetIndex])");
+        viewModelSource.Should().Contain("DelayCommand(0.0f, () => PortraitInternalId = sanitizedValue)");
+        viewModelSource.Should().Contain("PortraitInternalId = _activePortraitInternalId.ToString();");
+        viewModelSource.Should().Contain("Disguise.GetDisguises(playerId, IsRetiredSelected)");
+        viewModelSource.Should().Contain("ConfigureEmptyState(_disguiseIds.Count > 0);");
+        viewModelSource.Should().Contain("EmptyStateTitle = \"No Disguise Selected\";");
+        viewModelSource.Should().Contain("EmptyStateTitle = \"No Retired Disguises\";");
+        viewModelSource.Should().Contain("EmptyStateTitle = \"No Available Disguises\";");
+        viewModelSource.Should().Contain("SelectDisguiseAtIndex(0);");
+        viewModelSource.Should().Contain("ChangePartialView(DetailPartialElement, HasSelection ? DetailSelectedPartial : DetailEmptyPartial)");
+        viewModelSource.Should().Contain("ChangePartialView(PortraitPartialElement, HasSelection ? PortraitSelectedPartial : PortraitEmptyPartial)");
+        viewModelSource.Should().Contain("ChangePartialView(ActionPartialElement, GetActionPartialName())");
+        viewModelSource.Should().Contain("private Action WithLayoutRestore(Action action)");
+        viewModelSource.Should().Contain("private void RestoreLayoutPartials()");
+        viewModelSource.Should().Contain("ChangePartialView(\"_window_\", \"%%WINDOW_MAIN%%\");");
+        viewModelSource.Should().Contain("DelayCommand(0.0f, ApplyLayoutPartials);");
+        viewModelSource.Should().Contain("private string GetActionPartialName()");
+        viewModelSource.Should().Contain("return ActionEditPartial;");
+        viewModelSource.Should().Contain("return ActionRetiredPartial;");
+        viewModelSource.Should().Contain("return IsAvailableSelected ? ActionAvailablePartial : ActionEmptyPartial;");
+
+        cacheSource.Should().Contain("private static Dictionary<int, string> SoundSetPreviewSoundResrefs");
+        cacheSource.Should().Contain("private static string ResolveSoundSetPreviewSoundResref(string soundSetResref)");
+        cacheSource.Should().Contain("public static string GetSoundSetPreviewSoundResref(int soundSetId)");
+        cacheSource.Should().Contain("[\"wookie\"] = \"p_zaalbar_bat1\"");
+        cacheSource.Should().Contain("return trimmedResref.Length <= 11");
+
+        var disguiseInitializeMethod = ExtractMethod(viewModelSource, "protected override void Initialize(GuiPayloadBase initialPayload)");
+        var portraitDefaultIndex = disguiseInitializeMethod.IndexOf("PortraitInternalId = \"1\";", StringComparison.Ordinal);
+        var portraitWatchIndex = disguiseInitializeMethod.IndexOf("WatchOnClient(model => model.PortraitInternalId);", StringComparison.Ordinal);
+        portraitDefaultIndex.Should().BeGreaterThanOrEqualTo(0);
+        portraitWatchIndex.Should().BeGreaterThanOrEqualTo(0);
+        portraitDefaultIndex.Should().BeLessThan(portraitWatchIndex);
+        ExtractMethod(viewModelSource, "private void ClearSelection()")
+            .Should().Contain("PortraitInternalId = \"1\";");
+        var newMethod = ExtractMethod(viewModelSource, "public Action OnClickNew()");
+        newMethod.Should().Contain("ShowModal(\"Creating a new disguise will consume one of your disguise slots. Retired disguises also occupy disguise slots until they are wiped. Are you sure?\"");
+        newMethod.Should().Contain("WithLayoutRestore(() =>");
+        newMethod.Should().Contain("RestoreLayoutPartials");
+        var activateOrDeactivateMethod = ExtractMethod(viewModelSource, "public Action OnClickActivateOrDeactivate()");
+        activateOrDeactivateMethod.Should().Contain("ShowModal(\"Deactivating this disguise immediately restores your normal identity. Deactivation does not trigger the 30-minute delay between disguise activations. Are you sure?\"");
+        activateOrDeactivateMethod.Should().Contain("ShowModal(\"Activating this disguise starts a 30-minute delay before you can activate another disguise. Deactivation has no delay. Are you sure?\"");
+        activateOrDeactivateMethod.Should().Contain("WithLayoutRestore(() =>");
+        activateOrDeactivateMethod.Should().Contain("RestoreLayoutPartials");
+        activateOrDeactivateMethod.Should().Contain("var selectedDisguiseId = _selectedDisguiseId;");
+        activateOrDeactivateMethod.Should().Contain("var result = Disguise.Activate(Player, selectedDisguiseId);");
+        activateOrDeactivateMethod.Should().Contain("ReloadAvailableDisguise(selectedDisguiseId);");
+        activateOrDeactivateMethod.Should().NotContain("LoadList(_selectedDisguiseId);");
+        var retireMethod = ExtractMethod(viewModelSource, "public Action OnClickRetire()");
+        retireMethod.Should().Contain("WithLayoutRestore(() =>");
+        retireMethod.Should().Contain("RestoreLayoutPartials");
+        var unretireMethod = ExtractMethod(viewModelSource, "public Action OnClickUnretire()");
+        unretireMethod.Should().Contain("ShowModal(\"Restoring this disguise will move it back to your available disguises. Are you sure?\"");
+        unretireMethod.Should().Contain("WithLayoutRestore(() =>");
+        unretireMethod.Should().Contain("RestoreLayoutPartials");
+
+        dialogSource.Should().Contain("Disguise.WipeCreditCost");
+        dialogSource.Should().Contain("Disguise.WipeRoleplayXPCost");
+        dialogSource.Should().Contain("DisguisePaymentMethod.Credits");
+        dialogSource.Should().Contain("DisguisePaymentMethod.RoleplayXP");
+        dialogSource.Should().Contain("Disguise.DeleteRetiredDisguise");
+        dialogSource.Should().Contain("starport registries, transit manifests, broker ledgers, and public ID mirrors");
+        dialogSource.Should().Contain("Authorize the Scrub");
+        dialogSource.Should().Contain("The identity is gone. Anyone chasing that name will find static.");
+
+        characterSheetDefinitionSource.Should().Contain("AddActionButton(actions, \"Disguises\", model => model.OnClickDisguises());");
+        characterSheetViewModelSource.Should().Contain("public Action OnClickDisguises()");
+        characterSheetViewModelSource.Should().Contain("Gui.TogglePlayerWindow(Player, GuiWindowType.Disguises)");
+        characterSheetViewModelSource.Should().Contain("IGuiRefreshable<DisguiseChangedRefreshEvent>");
+        var disguiseChangedRefreshMethod = ExtractMethod(characterSheetViewModelSource, "public void Refresh(DisguiseChangedRefreshEvent payload)");
+        disguiseChangedRefreshMethod.Should().Contain("RefreshPortrait();");
+        disguiseChangedRefreshMethod.Should().Contain("RefreshStats();");
+
+        var disguiseDefinitionSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "GuiDefinition",
+            "DisguiseDefinition.cs"));
+        disguiseDefinitionSource.Should().Contain("private const float ListRailWidth");
+        disguiseDefinitionSource.Should().Contain("private const float PortraitRailWidth");
+        disguiseDefinitionSource.Should().Contain("private const float DetailRailWidth");
+        disguiseDefinitionSource.Should().Contain("private const float DisguiseListHeight");
+        disguiseDefinitionSource.Should().Contain(".SetWidth(ListRailWidth)");
+        disguiseDefinitionSource.Should().Contain(".SetWidth(PortraitRailWidth)");
+        disguiseDefinitionSource.Should().Contain(".SetWidth(DetailRailWidth)");
+        disguiseDefinitionSource.Should().Contain(".SetWidth(FormFieldWidth)");
+        disguiseDefinitionSource.Should().Contain(".SetWidth(PortraitWidth)");
+        disguiseDefinitionSource.Should().Contain(".SetWidth(ActionButtonWidth)");
+        disguiseDefinitionSource.Should().Contain("Private Disguise Name");
+        disguiseDefinitionSource.Should().Contain("AddTextField(col, \"Private Disguise Name\", model => model.PrivateName, Disguise.MaxPrivateNameLength);");
+        disguiseDefinitionSource.Should().Contain("AddTextField(col, \"Public Descriptor\", model => model.Descriptor, PlayerName.MaxKnownNameLength);");
+        disguiseDefinitionSource.Should().NotContain("AddTextField(col, \"Private Disguise Name\", model => model.PrivateName, 32)");
+        disguiseDefinitionSource.Should().NotContain("AddTextField(col, \"Public Descriptor\", model => model.Descriptor, 64)");
+        disguiseDefinitionSource.Should().Contain(".SetText(\"Unretire\")");
+        disguiseDefinitionSource.Should().Contain("private static void AddActionBand");
+        disguiseDefinitionSource.Should().Contain("private static void AddAvailableActionBand");
+        disguiseDefinitionSource.Should().Contain("private static void AddRetiredActionBand");
+        disguiseDefinitionSource.Should().Contain("private static void AddEditActionBand");
+        disguiseDefinitionSource.Should().Contain("private static void AddEmptyActionBand");
+        disguiseDefinitionSource.Should().Contain("private static void AddAvailableDetailActions");
+        disguiseDefinitionSource.Should().Contain("private static void AddRetiredDetailActions");
+        disguiseDefinitionSource.Should().Contain("private static void AddEditDetailActions");
+        disguiseDefinitionSource.Should().NotContain("private static void AddDetailActions");
+        disguiseDefinitionSource.Should().NotContain("BindIsVisible(model => model.ShowDetailActionRow)");
+        disguiseDefinitionSource.Should().NotContain("BindIsVisible(model => model.ShowActivateButton)");
+        disguiseDefinitionSource.Should().NotContain("BindIsVisible(model => model.ShowUnretireButton)");
+        disguiseDefinitionSource.Should().Contain(".SetWidth(SoundSetFieldWidth)");
+        disguiseDefinitionSource.Should().Contain(".SetWidth(SoundSetPageButtonWidth)");
+        disguiseDefinitionSource.Should().Contain(".SetWidth(SoundSetPageComboWidth)");
+        disguiseDefinitionSource.Should().Contain("BindOptions(model => model.SoundSetPageNumbers)");
+        disguiseDefinitionSource.Should().Contain("BindSelectedIndex(model => model.SelectedSoundSetPageIndex)");
+        disguiseDefinitionSource.Should().NotContain("BindText(model => model.SoundSetPageText)");
+        disguiseDefinitionSource.Should().NotContain("BindIsEnabled(model => model.CanPreviousSoundSetPage)");
+        disguiseDefinitionSource.Should().NotContain("BindIsEnabled(model => model.CanNextSoundSetPage)");
+        disguiseDefinitionSource.Should().Contain("BindOnClicked(model => model.OnClickPreviousSoundSetPage())");
+        disguiseDefinitionSource.Should().Contain("BindOnClicked(model => model.OnClickNextSoundSetPage())");
+        disguiseDefinitionSource.Should().Contain(".DefinePartialView(DisguiseViewModel.DetailSelectedPartial, AddSelectedDetailArea)");
+        disguiseDefinitionSource.Should().Contain(".DefinePartialView(DisguiseViewModel.DetailEmptyPartial, AddEmptyDetailArea)");
+        disguiseDefinitionSource.Should().Contain(".DefinePartialView(DisguiseViewModel.PortraitSelectedPartial, AddSelectedPortraitRail)");
+        disguiseDefinitionSource.Should().Contain(".DefinePartialView(DisguiseViewModel.PortraitEmptyPartial, AddEmptyPortraitRail)");
+        disguiseDefinitionSource.Should().Contain(".DefinePartialView(DisguiseViewModel.ActionAvailablePartial, AddAvailableActionBand)");
+        disguiseDefinitionSource.Should().Contain(".DefinePartialView(DisguiseViewModel.ActionRetiredPartial, AddRetiredActionBand)");
+        disguiseDefinitionSource.Should().Contain(".DefinePartialView(DisguiseViewModel.ActionEditPartial, AddEditActionBand)");
+        disguiseDefinitionSource.Should().Contain(".DefinePartialView(DisguiseViewModel.ActionEmptyPartial, AddEmptyActionBand)");
+        disguiseDefinitionSource.Should().Contain("private static void AddEmptyState");
+        disguiseDefinitionSource.Should().Contain("BindText(model => model.EmptyStateTitle)");
+        disguiseDefinitionSource.Should().Contain("BindText(model => model.EmptyStateText)");
+        disguiseDefinitionSource.Should().Contain("private static void AddEmptyPortraitRail");
+        disguiseDefinitionSource.Should().NotContain(".BindIsVisible(model => model.ShowEmptyState)");
+        disguiseDefinitionSource.Should().Contain("Hide Account Name");
+        disguiseDefinitionSource.Should().NotContain("Account ID");
+        disguiseDefinitionSource.Should().NotContain(".SetText(\"Portrait\")");
+        disguiseDefinitionSource.Should().NotContain("MaxPortraitsText");
+        disguiseDefinitionSource.Should().NotContain(".SetText(\"Previous\")");
+        disguiseDefinitionSource.Should().NotContain(".SetText(\"Next\")");
+        disguiseDefinitionSource.Should().NotContain(".SetRowHeight(");
+
+        var mainContentMethod = ExtractMethod(disguiseDefinitionSource, "private static void AddMainContent");
+        var listRailIndex = mainContentMethod.IndexOf("row.AddColumn(AddListRail)", StringComparison.Ordinal);
+        var detailAreaIndex = mainContentMethod.IndexOf("row.AddPartialView(DisguiseViewModel.DetailPartialElement)", StringComparison.Ordinal);
+        var portraitRailIndex = mainContentMethod.IndexOf("row.AddPartialView(DisguiseViewModel.PortraitPartialElement)", StringComparison.Ordinal);
+        listRailIndex.Should().BeGreaterThanOrEqualTo(0);
+        detailAreaIndex.Should().BeGreaterThan(listRailIndex);
+        portraitRailIndex.Should().BeGreaterThan(detailAreaIndex);
+
+        var buildWindowMethod = ExtractMethod(disguiseDefinitionSource, "public GuiConstructedWindow BuildWindow()");
+        var mainContentCallIndex = buildWindowMethod.IndexOf("AddMainContent(root);", StringComparison.Ordinal);
+        var actionBandCallIndex = buildWindowMethod.IndexOf("AddActionBand(root);", StringComparison.Ordinal);
+        mainContentCallIndex.Should().BeGreaterThanOrEqualTo(0);
+        actionBandCallIndex.Should().BeGreaterThan(mainContentCallIndex);
+
+        var detailAreaMethod = ExtractMethod(disguiseDefinitionSource, "private static void AddSelectedDetailArea");
+        detailAreaMethod.Should().NotContain("AddPortraitField");
+        detailAreaMethod.Should().NotContain("AddDetailActions");
+
+        var actionBandMethod = ExtractMethod(disguiseDefinitionSource, "private static void AddActionBand");
+        actionBandMethod.Should().Contain(".SetWidth(ListRailWidth)");
+        actionBandMethod.Should().Contain("row.AddPartialView(DisguiseViewModel.ActionPartialElement)");
+        actionBandMethod.Should().Contain(".SetWidth(DetailRailWidth)");
+        actionBandMethod.Should().Contain(".SetWidth(PortraitRailWidth)");
+
+        var availableActionBandMethod = ExtractMethod(disguiseDefinitionSource, "private static void AddAvailableActionBand");
+        availableActionBandMethod.Should().Contain("group.AddColumn(AddAvailableDetailActions);");
+
+        var retiredActionBandMethod = ExtractMethod(disguiseDefinitionSource, "private static void AddRetiredActionBand");
+        retiredActionBandMethod.Should().Contain("group.AddColumn(AddRetiredDetailActions);");
+
+        var editActionBandMethod = ExtractMethod(disguiseDefinitionSource, "private static void AddEditActionBand");
+        editActionBandMethod.Should().Contain("group.AddColumn(AddEditDetailActions);");
+
+        var emptyActionBandMethod = ExtractMethod(disguiseDefinitionSource, "private static void AddEmptyActionBand");
+        emptyActionBandMethod.Should().Contain(".SetHeight(ButtonHeight)");
+
+        var availableActionsMethod = ExtractMethod(disguiseDefinitionSource, "private static void AddAvailableDetailActions");
+        availableActionsMethod.Should().Contain("ActivateButtonText");
+        availableActionsMethod.Should().Contain(".SetText(\"Edit\")");
+        availableActionsMethod.Should().Contain(".SetText(\"Retire\")");
+        availableActionsMethod.Should().NotContain("BindIsVisible");
+        availableActionsMethod.Should().NotContain("BindIsVisible(model => model.ShowEditButton)");
+        availableActionsMethod.Should().NotContain("BindIsVisible(model => model.ShowRetireButton)");
+        availableActionsMethod.Should().NotContain(".SetText(\"Unretire\")");
+        availableActionsMethod.Should().NotContain(".SetText(\"Save\")");
+        availableActionsMethod.Should().NotContain(".SetText(\"Cancel\")");
+
+        var retiredActionsMethod = ExtractMethod(disguiseDefinitionSource, "private static void AddRetiredDetailActions");
+        retiredActionsMethod.Should().Contain(".SetText(\"Unretire\")");
+        retiredActionsMethod.Should().NotContain("BindIsVisible");
+        retiredActionsMethod.Should().NotContain("ActivateButtonText");
+        retiredActionsMethod.Should().NotContain(".SetText(\"Edit\")");
+        retiredActionsMethod.Should().NotContain(".SetText(\"Retire\")");
+        retiredActionsMethod.Should().NotContain(".SetText(\"Save\")");
+        retiredActionsMethod.Should().NotContain(".SetText(\"Cancel\")");
+
+        var editActionsMethod = ExtractMethod(disguiseDefinitionSource, "private static void AddEditDetailActions");
+        editActionsMethod.Should().Contain(".SetText(\"Save\")");
+        editActionsMethod.Should().Contain(".SetText(\"Cancel\")");
+        editActionsMethod.Should().NotContain("BindIsVisible");
+        editActionsMethod.Should().NotContain("ActivateButtonText");
+        editActionsMethod.Should().NotContain(".SetText(\"Edit\")");
+        editActionsMethod.Should().NotContain(".SetText(\"Retire\")");
+        editActionsMethod.Should().NotContain(".SetText(\"Unretire\")");
+
+        var portraitRailMethod = ExtractMethod(disguiseDefinitionSource, "private static void AddSelectedPortraitRail");
+        var portraitImageIndex = portraitRailMethod.IndexOf(".BindResref(model => model.PortraitResref)", StringComparison.Ordinal);
+        var portraitFieldIndex = portraitRailMethod.IndexOf("AddPortraitField(col);", StringComparison.Ordinal);
+        portraitImageIndex.Should().BeGreaterThanOrEqualTo(0);
+        portraitFieldIndex.Should().BeGreaterThan(portraitImageIndex);
+
+        var portraitFieldMethod = ExtractMethod(disguiseDefinitionSource, "private static void AddPortraitField");
+        var previousArrowIndex = portraitFieldMethod.IndexOf(".SetText(\"<\")", StringComparison.Ordinal);
+        var portraitIdIndex = portraitFieldMethod.IndexOf(".BindValue(model => model.PortraitInternalId)", StringComparison.Ordinal);
+        var nextArrowIndex = portraitFieldMethod.IndexOf(".SetText(\">\")", StringComparison.Ordinal);
+        previousArrowIndex.Should().BeGreaterThanOrEqualTo(0);
+        portraitIdIndex.Should().BeGreaterThan(previousArrowIndex);
+        nextArrowIndex.Should().BeGreaterThan(portraitIdIndex);
+        portraitFieldMethod.Should().Contain(".BindIsVisible(model => model.IsEditMode)");
+        portraitFieldMethod.Should().Contain(".SetMargin(0f)");
     }
 
     private static string ExtractMethod(string source, string signature)

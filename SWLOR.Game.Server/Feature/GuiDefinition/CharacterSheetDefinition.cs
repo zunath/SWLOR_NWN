@@ -426,6 +426,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         AddActionButton(actions, "Achievements", model => model.OnClickAchievements());
                         AddActionButton(actions, "Notes", model => model.OnClickNotes());
                         AddActionButton(actions, "Appearance", model => model.OnClickAppearance());
+                        AddActionButton(actions, "Disguises", model => model.OnClickDisguises());
                         AddActionButton(actions, "Settings", model => model.OnClickSettings());
                         AddActionButton(actions, "HoloCom", model => model.OnClickHoloCom(), model => model.IsHolocomEnabled);
                         AddActionButton(actions, "Key Items", model => model.OnClickKeyItems());

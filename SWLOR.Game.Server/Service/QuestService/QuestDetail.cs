@@ -217,6 +217,8 @@ namespace SWLOR.Game.Server.Service.QuestService
             {
                 action.Invoke(player);
             }
+
+            Gui.PublishRefreshEvent(player, new QuestAbandonedRefreshEvent(QuestId));
         }
 
         /// <summary>

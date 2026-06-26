@@ -108,7 +108,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 .HasRecastDelay(RecastGroup.SaberStrike, 60f)
                 .RequirementStamina(3)
                 .IsWeaponAbility()
-                .UnaffectedByHeavyArmor()
                 .BreaksStealth()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
@@ -121,7 +120,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 .HasRecastDelay(RecastGroup.SaberStrike, 60f)
                 .RequirementStamina(5)
                 .IsWeaponAbility()
-                .UnaffectedByHeavyArmor()
                 .BreaksStealth()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
@@ -134,7 +132,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 .HasRecastDelay(RecastGroup.SaberStrike, 60f)
                 .RequirementStamina(8)
                 .IsWeaponAbility()
-                .UnaffectedByHeavyArmor()
                 .BreaksStealth()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);

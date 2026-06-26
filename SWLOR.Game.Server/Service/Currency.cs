@@ -88,6 +88,7 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// Takes a specific amount of a type of currency from a player.
+        /// If the balance is less than the amount, it is reduced to zero (never below zero).
         /// </summary>
         /// <param name="player">The player to take currency from</param>
         /// <param name="type">The type of currency to take</param>
@@ -105,7 +106,12 @@ namespace SWLOR.Game.Server.Service
             if (!dbPlayer.Currencies.ContainsKey(type))
                 dbPlayer.Currencies[type] = 0;
 
-            dbPlayer.Currencies[type] -= amount;
+            var balance = dbPlayer.Currencies[type];
+            var newBalance = Math.Max(0, balance - amount);
+            if (newBalance == balance)
+                return;
+
+            dbPlayer.Currencies[type] = newBalance;
 
             DB.Set(dbPlayer);
             Gui.PublishRefreshEvent(player, new CurrencyRefreshEvent());

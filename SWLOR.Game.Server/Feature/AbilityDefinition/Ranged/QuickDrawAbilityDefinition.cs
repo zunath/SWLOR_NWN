@@ -87,7 +87,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
                 .RequirementStamina(3)
                 .IsCastedAbility()
                 .IsHostileAbility()
-                .UnaffectedByHeavyArmor()
                 .BreaksStealth()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
@@ -102,7 +101,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
                 .RequirementStamina(4)
                 .IsCastedAbility()
                 .IsHostileAbility()
-                .UnaffectedByHeavyArmor()
                 .BreaksStealth()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
@@ -117,7 +115,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
                 .RequirementStamina(5)
                 .IsCastedAbility()
                 .IsHostileAbility()
-                .UnaffectedByHeavyArmor()
                 .BreaksStealth()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);

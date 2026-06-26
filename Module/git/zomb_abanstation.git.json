@@ -23766,7 +23766,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "Much of the initial logs on the pad involve general maintenance work, but there are more recent ones.\n\n<cÿÿ >Galactic Standard Rotations Ago: 103</c>\n<c ÿÿ>\"Always pretty boring with this work. Not enough traffic, in and out, aside from cargo. Part of me wishes I also knew more of what they're doing in this facility, but I suppose that's above my pay-grade. I get paid either way, though, so I don't much mind.\"</c>\n\n<cÿÿ >Galactic Standard Rotations Ago: 99</c>\n<c ÿÿ>\"Been hearing some stuff about people getting sick over the last couple days. Far more than usual. I hope it's not something with the food going bad. Glad I'm not one of the live-ins here. Heard the food isn't great here, anyways.\"</c>\n\n<cÿÿ >Galactic Standard Rotations Ago: 94</c>\n<c ÿÿ>\"I'm sorry! I'm sorry! I'm sorry! I had to do it! If I hadn't done it, those things would've gotten me, too! Please forgive me... I locked down the docking bay when I heard the screams from within. Oh stars... Those screams. Inhuman and enough to drive a man insane. I can still hear them in there. However, I only hear those things now. The screams of the other workers seems to have stopped. I suppose they're all dead. What's worse is that I tried getting out on one of the shuttles but there's some sort of tractor beam stopping escape. What the hells?! Why is there even a tractor beam installed in this facility, and why was it activated now of all times?!... Stars...\"</c>\n\n<cÿÿ >Galactic Standard Rotations Ago: 61</c>\n<c ÿÿ>\"Haven't made an entry in quite some time. The screams thankfully stopped a long time ago. Managed to survive this long on what little food I could find in these crates, but it's almost run out. There's probably more in the mess, but I'm not risking going in there to find out. At least I've had someone to talk to so as to keep my sanity in check. Nacks says hi, by the way. He wanted me to make sure I put that in here.\"</c>\n\n<cÿÿ >Galactic Standard Rotations Ago: 55</c>\n<c ÿÿ>\"Wastng away. Cant do this mch longr. So littl strenth left. Nacks said hed save us, thogh. Just ned a litle more teim.\"</c>\n\n<cÿÿ >Open Log. Active for 53 Galactic Standard Rotations</c>\n<c ÿÿ>\"nacs is usls ples don let m dddddddddddddddd</c>\n\nThe entries end there."
+            "0": "Much of the initial logs on the pad involve general maintenance work, but there are more recent ones.\n\n<cÃ¿Ã¿ >Galactic Standard Rotations Ago: 103</c>\n<c Ã¿Ã¿>\"Always pretty boring with this work. Not enough traffic, in and out, aside from cargo. Part of me wishes I also knew more of what they're doing in this facility, but I suppose that's above my pay-grade. I get paid either way, though, so I don't much mind.\"</c>\n\n<cÃ¿Ã¿ >Galactic Standard Rotations Ago: 99</c>\n<c Ã¿Ã¿>\"Been hearing some stuff about people getting sick over the last couple days. Far more than usual. I hope it's not something with the food going bad. Glad I'm not one of the live-ins here. Heard the food isn't great here, anyways.\"</c>\n\n<cÃ¿Ã¿ >Galactic Standard Rotations Ago: 94</c>\n<c Ã¿Ã¿>\"I'm sorry! I'm sorry! I'm sorry! I had to do it! If I hadn't done it, those things would've gotten me, too! Please forgive me... I locked down the docking bay when I heard the screams from within. Oh stars... Those screams. Inhuman and enough to drive a man insane. I can still hear them in there. However, I only hear those things now. The screams of the other workers seems to have stopped. I suppose they're all dead. What's worse is that I tried getting out on one of the shuttles but there's some sort of tractor beam stopping escape. What the hells?! Why is there even a tractor beam installed in this facility, and why was it activated now of all times?!... Stars...\"</c>\n\n<cÃ¿Ã¿ >Galactic Standard Rotations Ago: 61</c>\n<c Ã¿Ã¿>\"Haven't made an entry in quite some time. The screams thankfully stopped a long time ago. Managed to survive this long on what little food I could find in these crates, but it's almost run out. There's probably more in the mess, but I'm not risking going in there to find out. At least I've had someone to talk to so as to keep my sanity in check. Nacks says hi, by the way. He wanted me to make sure I put that in here.\"</c>\n\n<cÃ¿Ã¿ >Galactic Standard Rotations Ago: 55</c>\n<c Ã¿Ã¿>\"Wastng away. Cant do this mch longr. So littl strenth left. Nacks said hed save us, thogh. Just ned a litle more teim.\"</c>\n\n<cÃ¿Ã¿ >Open Log. Active for 53 Galactic Standard Rotations</c>\n<c Ã¿Ã¿>\"nacs is usls ples don let m dddddddddddddddd</c>\n\nThe entries end there."
           }
         },
         "DisarmDC": {
@@ -102842,7 +102842,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "Among the workload of tasks on the console, there are scattered log entries as well. There is only one that stands out, however. It appears it was meant to be sent out, publicly, but failed to transmit.\n\n<c ÿ >BEGIN VIDEO PLAYBACK</c>\n\n\n<c ÿÿ>The video opens with a man with full beard and somewhat long hair. He has bags under his eyes showing a likely lack of sleep, and carries a panicked look on his face as he speaks. \"I only have a moment to do this. I'm Warren Zarla, a low ranking researcher here. Something is happening here and I can't really explain what it is. People are just going crazy and attacking oth-...\" He's cut off by the sounds of horrifying screams in the distance, looking back quickly to check for something, then looks back at the screen. \"To whoever finds this message, please show it to appropriate authorities. I don't have much time left.\" He then looks more directly at the camera and forces a smile. \"Taryn... Daddy loves you very much. But I have to go now... I love you.\" The feed is then shut off.</c>\n\n<c ? >TRANSMISSION BLOCKED. TRY AGAIN? Y/N</c>\n"
+            "0": "Among the workload of tasks on the console, there are scattered log entries as well. There is only one that stands out, however. It appears it was meant to be sent out, publicly, but failed to transmit.\n\n<c Ã¿ >BEGIN VIDEO PLAYBACK</c>\n\n\n<c Ã¿Ã¿>The video opens with a man with full beard and somewhat long hair. He has bags under his eyes showing a likely lack of sleep, and carries a panicked look on his face as he speaks. \"I only have a moment to do this. I'm Warren Zarla, a low ranking researcher here. Something is happening here and I can't really explain what it is. People are just going crazy and attacking oth-...\" He's cut off by the sounds of horrifying screams in the distance, looking back quickly to check for something, then looks back at the screen. \"To whoever finds this message, please show it to appropriate authorities. I don't have much time left.\" He then looks more directly at the camera and forces a smile. \"Taryn... Daddy loves you very much. But I have to go now... I love you.\" The feed is then shut off.</c>\n\n<c ? >TRANSMISSION BLOCKED. TRY AGAIN? Y/N</c>\n"
           }
         },
         "DisarmDC": {
@@ -143256,7 +143256,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "There is just a series of words repeating over and over on the screen.\n\n<cÿ  >WE'RE ALL GOING TO DIE HERE. WE'RE ALL GOING TO DIE HERE. WE'RE ALL GOING TO DIE HERE. WE'RE ALL GOING TO DIE HERE. WE'RE ALL GOING TO DIE HERE. WE'RE ALL GOING TO DIE HERE. WE'RE ALL GOING TO DIE HERE. WE'RE ALL GOING TO DIE HERE. WE'RE ALL GOING TO DIE HERE. WE'RE ALL GOING TO DIE HERE. WE'RE ALL GOING TO DIE HERE. WE'RE ALL GOING TO DIE HERE. WE'RE ALL GOING TO DIE HERE. WE'RE ALL GOING TO DIE HERE. WE'RE ALL GOING TO DIE HERE. </c>"
+            "0": "There is just a series of words repeating over and over on the screen.\n\n<cÃ¿  >WE'RE ALL GOING TO DIE HERE. WE'RE ALL GOING TO DIE HERE. WE'RE ALL GOING TO DIE HERE. WE'RE ALL GOING TO DIE HERE. WE'RE ALL GOING TO DIE HERE. WE'RE ALL GOING TO DIE HERE. WE'RE ALL GOING TO DIE HERE. WE'RE ALL GOING TO DIE HERE. WE'RE ALL GOING TO DIE HERE. WE'RE ALL GOING TO DIE HERE. WE'RE ALL GOING TO DIE HERE. WE'RE ALL GOING TO DIE HERE. WE'RE ALL GOING TO DIE HERE. WE'RE ALL GOING TO DIE HERE. WE'RE ALL GOING TO DIE HERE. </c>"
           }
         },
         "DisarmDC": {
@@ -227911,7 +227911,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "Much of the datapad seems to just contain various simple games and porn vids. There is a single log entry, though.\n\n<cÿÿ >Galactic Standard Rotations Ago: 93</c>\n<c ÿÿ>\"Right. Just gonna log this down in case things go bad. It's been about a day since I heard those crazy screams from somewhere. No one is telling me anything as not even the guard has come to check on me since it happened. But lucky me, the force field has been on the fritz. If I can just slip the datapad in front of the scanner during one of the flickering periods, I should be able to get myself out of here. I need something to eat. But hey. Before I do that, I'm Greer Wills. I was put in here for a couple days due to trying to feel up one of the secretaries. Begged to not get terminated from my job as its the only one I've got. I guess I should be thankful to Czerka for just putting me in here as a lesson, and let me keep my job. But anyways, looks like it's about time. Gotta go!\"</c>\n\nThe log ends there."
+            "0": "Much of the datapad seems to just contain various simple games and porn vids. There is a single log entry, though.\n\n<cÃ¿Ã¿ >Galactic Standard Rotations Ago: 93</c>\n<c Ã¿Ã¿>\"Right. Just gonna log this down in case things go bad. It's been about a day since I heard those crazy screams from somewhere. No one is telling me anything as not even the guard has come to check on me since it happened. But lucky me, the force field has been on the fritz. If I can just slip the datapad in front of the scanner during one of the flickering periods, I should be able to get myself out of here. I need something to eat. But hey. Before I do that, I'm Greer Wills. I was put in here for a couple days due to trying to feel up one of the secretaries. Begged to not get terminated from my job as its the only one I've got. I guess I should be thankful to Czerka for just putting me in here as a lesson, and let me keep my job. But anyways, looks like it's about time. Gotta go!\"</c>\n\nThe log ends there."
           }
         },
         "DisarmDC": {
@@ -232206,7 +232206,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "Much of the datapad is just general logs on disciplinary action and reasoning for the brief stays by troublemakers.\n\n<cÿÿ >Galactic Standard Rotations Ago: 96</c>\n<c ÿÿ>\"Not surprised to see Greer in here. I mean, I'm surprised he wasn't just relieved of his job. But I suppose Czerka can be lenient at times in regards to that. I guess that's why we have this small detention area, anyways. But yeah. He's always made weird passes at the women here. I guess actually touching was what finally did him in. Just wish he had more than a few days in here.\"</c>\n\n<cÿÿ >Galactic Standard Rotations Ago: 94</c>\n<c ÿÿ>\"This is gonna be very quick. I heard weird screams from further in the facility. Inputting this to remind myself to make a report later. Anyways, time to go check it out.\"</c>"
+            "0": "Much of the datapad is just general logs on disciplinary action and reasoning for the brief stays by troublemakers.\n\n<cÃ¿Ã¿ >Galactic Standard Rotations Ago: 96</c>\n<c Ã¿Ã¿>\"Not surprised to see Greer in here. I mean, I'm surprised he wasn't just relieved of his job. But I suppose Czerka can be lenient at times in regards to that. I guess that's why we have this small detention area, anyways. But yeah. He's always made weird passes at the women here. I guess actually touching was what finally did him in. Just wish he had more than a few days in here.\"</c>\n\n<cÃ¿Ã¿ >Galactic Standard Rotations Ago: 94</c>\n<c Ã¿Ã¿>\"This is gonna be very quick. I heard weird screams from further in the facility. Inputting this to remind myself to make a report later. Anyways, time to go check it out.\"</c>"
           }
         },
         "DisarmDC": {
@@ -232433,7 +232433,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "There are plenty of older entries in this datapad, but most are more professional logs of visitors. There are very few personal logs.\n\n<cÿÿ >Galactic Standard Rotations Ago: 100</c>\n<c ÿÿ>\"Been seeing an odd upswing in people getting sick around the station. Haven't really been feeling it myself, but Verem had to go to the medbay because of how bad it was getting. Maybe one of the guys off station picked something up, or maybe there's a leak in some fuel pipe. Who knows? You'd think Czerka would pay to get something like that fixed, though.\"</c>\n\n<cÿÿ >Galactic Standard Rotations Ago: 94. Voice Log.</c>\n<c ÿÿ>Heavy breathing is heard from what sounds like a woman. \"Oh Stars... What was that?...\" A loud, horrifying scream is heard echoing from somewhere distant in the facility, immediately followed by more screams in a sort of symphony. The woman screams in panic, and others in the room can be heard babbling in their panic. \"What the-...? The door is locked down! What the hells! LET US OUT!\" Banging is heard on metal by multiple people as panic seems to spread in their voices. A door is heard sliding open from somewhere nearby and the woman along with the others start screaming in fear. The screams are immediately followed by the same horrific screams from earlier, except this time from very close by. One last scream can be heard from the woman before the recording cuts out.</c>\n\nNo further entries."
+            "0": "There are plenty of older entries in this datapad, but most are more professional logs of visitors. There are very few personal logs.\n\n<cÃ¿Ã¿ >Galactic Standard Rotations Ago: 100</c>\n<c Ã¿Ã¿>\"Been seeing an odd upswing in people getting sick around the station. Haven't really been feeling it myself, but Verem had to go to the medbay because of how bad it was getting. Maybe one of the guys off station picked something up, or maybe there's a leak in some fuel pipe. Who knows? You'd think Czerka would pay to get something like that fixed, though.\"</c>\n\n<cÃ¿Ã¿ >Galactic Standard Rotations Ago: 94. Voice Log.</c>\n<c Ã¿Ã¿>Heavy breathing is heard from what sounds like a woman. \"Oh Stars... What was that?...\" A loud, horrifying scream is heard echoing from somewhere distant in the facility, immediately followed by more screams in a sort of symphony. The woman screams in panic, and others in the room can be heard babbling in their panic. \"What the-...? The door is locked down! What the hells! LET US OUT!\" Banging is heard on metal by multiple people as panic seems to spread in their voices. A door is heard sliding open from somewhere nearby and the woman along with the others start screaming in fear. The screams are immediately followed by the same horrific screams from earlier, except this time from very close by. One last scream can be heard from the woman before the recording cuts out.</c>\n\nNo further entries."
           }
         },
         "DisarmDC": {
@@ -232885,7 +232885,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "This datapad mostly consists of general data regarding maintenance. There are a few personal entries, however.\n\n<cÿÿ >Galactic Standard Rotations Ago: 103</c>\n<c ÿÿ>\"I really don't write in this much. Not a lot goes on in this place, though. Eat, work, sleep, repeat. Phil is just covering my break at the moment. I just wish there was something more exciting that would happen in here. I mean, there are the science personnel that work up on the development level, but that's a restricted area to anyone else. Kinda feels like one of those old vids I watched as a kid. But this is real life. I dunno. I'm just rambling at least. I should get back to work, though.\"</c>\n\n<cÿÿ >Galactic Standard Rotations Ago: 95</c>\n<c ÿÿ>\"Been seeing people getting sick. Not sure what would be causing it, but I guess it's... something? I did wish for something exciting to happen. I mean, it's not exactly exciting, but at least something is actually /happening/ around here.\"</c>"
+            "0": "This datapad mostly consists of general data regarding maintenance. There are a few personal entries, however.\n\n<cÃ¿Ã¿ >Galactic Standard Rotations Ago: 103</c>\n<c Ã¿Ã¿>\"I really don't write in this much. Not a lot goes on in this place, though. Eat, work, sleep, repeat. Phil is just covering my break at the moment. I just wish there was something more exciting that would happen in here. I mean, there are the science personnel that work up on the development level, but that's a restricted area to anyone else. Kinda feels like one of those old vids I watched as a kid. But this is real life. I dunno. I'm just rambling at least. I should get back to work, though.\"</c>\n\n<cÃ¿Ã¿ >Galactic Standard Rotations Ago: 95</c>\n<c Ã¿Ã¿>\"Been seeing people getting sick. Not sure what would be causing it, but I guess it's... something? I did wish for something exciting to happen. I mean, it's not exactly exciting, but at least something is actually /happening/ around here.\"</c>"
           }
         },
         "DisarmDC": {
@@ -233112,7 +233112,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "Most of the entries are data and logs regarding generator maintenance, but there are a few personal logs.\n\n<cÿÿ >Galactic Standard Rotations Ago: 97</c>\n<c ÿÿ>\"So, I don't really care what anyone says about it being boring around here. I get enough excitement with my job. Maybe I just enjoy what I do, though. These old generators are always having issues, though. It's definitely my job to make sure things don't overload or something worse.\"</c>\n\n<cÿÿ >Galactic Standard Rotations Ago: 95</c>\n<c ÿÿ>\"Woke up this morning not feeling all that great, but what else is new? Plenty of others are getting sick from this bug going around. Not surprised I'm getting sick, too. People are saying I need to go to the medbay, but I gotta keep working on all this. It's just some sniffles and a cough, anyways. I'm fine.\"</c>\n\nThere are no newer entries."
+            "0": "Most of the entries are data and logs regarding generator maintenance, but there are a few personal logs.\n\n<cÃ¿Ã¿ >Galactic Standard Rotations Ago: 97</c>\n<c Ã¿Ã¿>\"So, I don't really care what anyone says about it being boring around here. I get enough excitement with my job. Maybe I just enjoy what I do, though. These old generators are always having issues, though. It's definitely my job to make sure things don't overload or something worse.\"</c>\n\n<cÃ¿Ã¿ >Galactic Standard Rotations Ago: 95</c>\n<c Ã¿Ã¿>\"Woke up this morning not feeling all that great, but what else is new? Plenty of others are getting sick from this bug going around. Not surprised I'm getting sick, too. People are saying I need to go to the medbay, but I gotta keep working on all this. It's just some sniffles and a cough, anyways. I'm fine.\"</c>\n\nThere are no newer entries."
           }
         },
         "DisarmDC": {
@@ -242817,7 +242817,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "The readout shows information regarding the lavatory lockdown.\n\n<cÿ  >LOCKDOWN IN EFFECT\n\nHULL BREACH DETECTED WITHIN LAVATORY</c>\n\nThe message repeats."
+            "0": "The readout shows information regarding the lavatory lockdown.\n\n<cÃ¿  >LOCKDOWN IN EFFECT\n\nHULL BREACH DETECTED WITHIN LAVATORY</c>\n\nThe message repeats."
           }
         },
         "DisarmDC": {
@@ -243044,7 +243044,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "The datapad is fairly damaged, but there is a part of a voice log that can be extracted from it.\n\n<c ÿÿ>\"Blasted hells! They're getting in!\" A man's voice is heard in a panicked tone as continual sounds of metal being banged on can be heard in the background. Another man's voice is heard from the side. \"I almost got this thing rigged up and we can get out past them!\" The first man then speaks again. \"Are you sure the explosion won't kill us along with /them/?!\" Mixed in with the banging on metal, there is a brief sound of a hand slapping a couple times on metal, before the other man speaks. \"Can't be sure, but trust me. We just gotta open the door and toss it at them.\" The first man speaks again in a hesitant tone. \"Alright. I'll get the door, then.\" Footsteps are heard before the sound of buttons being pressed. \"Th-...\"</c>\n\nThe rest of the recording appears to be corrupted."
+            "0": "The datapad is fairly damaged, but there is a part of a voice log that can be extracted from it.\n\n<c Ã¿Ã¿>\"Blasted hells! They're getting in!\" A man's voice is heard in a panicked tone as continual sounds of metal being banged on can be heard in the background. Another man's voice is heard from the side. \"I almost got this thing rigged up and we can get out past them!\" The first man then speaks again. \"Are you sure the explosion won't kill us along with /them/?!\" Mixed in with the banging on metal, there is a brief sound of a hand slapping a couple times on metal, before the other man speaks. \"Can't be sure, but trust me. We just gotta open the door and toss it at them.\" The first man speaks again in a hesitant tone. \"Alright. I'll get the door, then.\" Footsteps are heard before the sound of buttons being pressed. \"Th-...\"</c>\n\nThe rest of the recording appears to be corrupted."
           }
         },
         "DisarmDC": {
@@ -245260,7 +245260,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "The readout shows information regarding the lockdown.\n\n<cÿ  >MANUAL OVERRIDE | LOCKDOWN IN EFFECT</c>\n\nThe message repeats."
+            "0": "The readout shows information regarding the lockdown.\n\n<cÃ¿  >MANUAL OVERRIDE | LOCKDOWN IN EFFECT</c>\n\nThe message repeats."
           }
         },
         "DisarmDC": {
@@ -253402,6 +253402,69 @@
         "ZPosition": {
           "type": "float",
           "value": -5.7220458984375e-006
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Stuck â€” zomb_abanstation"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "STUCK_WAYPOINT"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_stuck"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 94.9217529296875
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 34.06367492675781
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -9.5367431640625e-007
         }
       }
     ]

@@ -37,7 +37,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
             _builder.Create(FeatType.StrongStyleSaberstaff, PerkType.StrongStyleSaberstaff)
                 .Name("Strong Style (Saberstaff)")
                 .IsCastedAbility()
-                .UnaffectedByHeavyArmor()
                 .HideActivationMessage()
                 .HasImpactAction((activator, target, level, location) =>
                 {

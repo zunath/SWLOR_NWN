@@ -20,6 +20,11 @@ namespace SWLOR.Game.Server.Service
 {
     public static class Item
     {
+        /// <summary>
+        /// NWN local bool: set to true on crafted output so collect objectives can require player-made items.
+        /// </summary>
+        public const string PlayerProducedItemVariable = "PLAYER_PRODUCED_ITEM";
+
         private static readonly Dictionary<string, ItemDetail> _items = new();
         private static readonly Dictionary<int, int[]> _2daCache = new();
         private static readonly Dictionary<BaseItem, AbilityType> _itemToDamageAbilityMapping = new();
@@ -1074,6 +1079,14 @@ namespace SWLOR.Game.Server.Service
                 SetItemStackSize(item, remaining);
                 return true;
             }
+        }
+
+        /// <summary>
+        /// Returns true if <see cref="PlayerProducedItemVariable"/> is set (e.g. crafting stamped the item).
+        /// </summary>
+        public static bool IsPlayerProducedItem(uint item)
+        {
+            return GetLocalBool(item, PlayerProducedItemVariable);
         }
 
         /// <summary>

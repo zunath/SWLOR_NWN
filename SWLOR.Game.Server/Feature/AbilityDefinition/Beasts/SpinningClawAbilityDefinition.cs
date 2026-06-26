@@ -76,7 +76,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 .HasRecastDelay(RecastGroup.SpinningClaw, 2 * 60f)
                 .RequirementStamina(4)
                 .IsCastedAbility()
-                .UnaffectedByHeavyArmor()
                 .HasImpactAction((activator, target, level, location) =>
                 {
                     ImpactAction(activator, target, 8);
@@ -90,7 +89,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 .HasRecastDelay(RecastGroup.SpinningClaw, 2 * 60f)
                 .RequirementStamina(5)
                 .IsCastedAbility()
-                .UnaffectedByHeavyArmor()
                 .HasImpactAction((activator, target, level, location) =>
                 {
                     ImpactAction(activator, target, 12);
@@ -104,7 +102,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 .HasRecastDelay(RecastGroup.SpinningClaw, 2 * 60f)
                 .RequirementStamina(6)
                 .IsCastedAbility()
-                .UnaffectedByHeavyArmor()
                 .HasImpactAction((activator, target, level, location) =>
                 {
                     ImpactAction(activator, target, 15);
@@ -118,7 +115,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 .HasRecastDelay(RecastGroup.SpinningClaw, 2 * 60f)
                 .RequirementStamina(7)
                 .IsCastedAbility()
-                .UnaffectedByHeavyArmor()
                 .HasImpactAction((activator, target, level, location) =>
                 {
                     ImpactAction(activator, target, 18);
@@ -132,7 +128,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 .HasRecastDelay(RecastGroup.SpinningClaw, 2 * 60f)
                 .RequirementStamina(8)
                 .IsCastedAbility()
-                .UnaffectedByHeavyArmor()
                 .HasImpactAction((activator, target, level, location) =>
                 {
                     ImpactAction(activator, target, 21);

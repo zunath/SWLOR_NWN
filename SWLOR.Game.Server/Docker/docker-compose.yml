@@ -34,6 +34,14 @@ services:
             - ${PWD-.}/logs:/nwn/data/bin/linux-x86/logs.0
         ports:
             - "5121:5121/udp"
+
+    background-services:
+        hostname: background-services
+        image: zunath/swlor-background-worker:latest
+        env_file: ${PWD-.}/swlor.env
+        depends_on:
+            - redis
+        restart: unless-stopped
             
     influxdb:
         hostname: influxdb

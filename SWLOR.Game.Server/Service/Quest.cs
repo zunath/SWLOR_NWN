@@ -383,6 +383,23 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
+            var questDetail = GetQuestById(questId);
+            var questState = questDetail.States[quest.CurrentState];
+            var collectItemObjective = questState.GetObjectives()
+                .OfType<CollectItemObjective>()
+                .FirstOrDefault(x => x.Resref == resref);
+
+            if (collectItemObjective != null)
+            {
+                var rejection = collectItemObjective.GetCollectTurnInRejectionMessage(player, item);
+                if (rejection != string.Empty)
+                {
+                    Item.ReturnItem(player, item);
+                    SendMessageToPC(player, rejection);
+                    return;
+                }
+            }
+
             var requiredAmount = dbPlayer.Quests[questId].ItemProgresses[resref];
             var stackSize = GetItemStackSize(item);
 

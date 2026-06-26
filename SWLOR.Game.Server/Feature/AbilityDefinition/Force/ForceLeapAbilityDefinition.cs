@@ -27,7 +27,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             var rightHandType = GetBaseItemType(weapon);
 
             if (!Item.OneHandedMeleeItemTypes.Contains(rightHandType) &&
-                !Item.TwoHandedMeleeItemTypes.Contains(rightHandType))
+                !Item.TwoHandedMeleeItemTypes.Contains(rightHandType) &&
+                !Item.SaberstaffBaseItemTypes.Contains(rightHandType))
             {
                 return "A melee weapon must be equipped in your right hand to use this ability.";
             }
@@ -127,7 +128,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasMaxRange(20f)
                 .IsCastedAbility()
                 .IsHostileAbility()
-                .UnaffectedByHeavyArmor()
                 .BreaksStealth()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
@@ -143,7 +143,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasMaxRange(20f)
                 .IsCastedAbility()
                 .IsHostileAbility()
-                .UnaffectedByHeavyArmor()
                 .BreaksStealth()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
@@ -159,7 +158,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasMaxRange(20f)
                 .IsCastedAbility()
                 .IsHostileAbility()
-                .UnaffectedByHeavyArmor()
                 .BreaksStealth()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);

@@ -1086,7 +1086,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Vêtements légers"
+                  "2": "VÃªtements lÃ©gers"
                 }
               },
               "Metal1Color": {
@@ -1402,7 +1402,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Crédits : 25"
+                  "0": "CrÃ©dits : 25"
                 }
               },
               "ModelPart1": {
@@ -2507,7 +2507,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Cuve à bacta vide"
+            "2": "Cuve Ã  bacta vide"
           }
         },
         "OnClick": {
@@ -2732,7 +2732,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Cuve d'expérimentation"
+            "2": "Cuve d'expÃ©rimentation"
           }
         },
         "OnClick": {
@@ -3634,7 +3634,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaporateur d'humidité"
+            "2": "Vaporateur d'humiditÃ©"
           }
         },
         "OnClick": {
@@ -4984,7 +4984,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Cuve d'expérimentation"
+            "2": "Cuve d'expÃ©rimentation"
           }
         },
         "OnClick": {
@@ -12200,7 +12200,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Etagère Cantina",
+            "0": "EtagÃ¨re Cantina",
             "2": "Comptoir noir"
           }
         },
@@ -12426,7 +12426,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Etagère Cantina",
+            "0": "EtagÃ¨re Cantina",
             "2": "Comptoir noir"
           }
         },
@@ -12652,7 +12652,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Etagère Cantina",
+            "0": "EtagÃ¨re Cantina",
             "2": "Comptoir noir"
           }
         },
@@ -12878,7 +12878,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Etagère Cantina",
+            "0": "EtagÃ¨re Cantina",
             "2": "Comptoir noir"
           }
         },
@@ -13104,7 +13104,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Etagère Cantina",
+            "0": "EtagÃ¨re Cantina",
             "2": "Comptoir noir"
           }
         },
@@ -13330,7 +13330,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Etagère Cantina",
+            "0": "EtagÃ¨re Cantina",
             "2": "Comptoir noir"
           }
         },
@@ -13556,7 +13556,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Etagère Cantina",
+            "0": "EtagÃ¨re Cantina",
             "2": "Comptoir noir"
           }
         },
@@ -96968,6 +96968,68 @@
   },
   "WaypointList": {
     "type": "list",
-    "value": []
+    "value": [
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Stuck Recovery"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "STUCK_WAYPOINT"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_stuck"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 22.79694175720215
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 15.99098682403565
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.2000000029802322
+        }
+      }
+    ]
   }
 }

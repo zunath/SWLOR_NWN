@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Entity;
@@ -11,6 +12,8 @@ namespace SWLOR.Game.Server.Feature
 {
     public static class ServerTasks
     {
+        private static readonly ApplicationSettings _appSettings = ApplicationSettings.Get();
+        private const int LifecycleNotificationColor = 15158332; // #E74C3C (red)
         // This determines what time the server will restart.
         // Restarts happen within a range of 30 seconds of this specified time. 
         // All times are in UTC.
@@ -33,6 +36,8 @@ namespace SWLOR.Game.Server.Feature
             // Current time is within 30 seconds of the specified restart time.
             if ((now > RestartTime) && (now < restartRange))
             {
+                SendServerLifecycleNotificationForShutdown("Automated restart has started. Server is shutting down now.");
+
                 for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())
                 {
                     ExportSingleCharacter(player);
@@ -40,7 +45,6 @@ namespace SWLOR.Game.Server.Feature
                 }
 
                 Log.Write(LogGroup.Server, "Server shutting down for automated restart.", true);
-                
                 DelayCommand(0.1f, () =>
                 {
                     AdministrationPlugin.ShutdownServer();
@@ -58,6 +62,57 @@ namespace SWLOR.Game.Server.Feature
             ConfigureServerSettings();
             ApplyBans();
             ScheduleRestartReminder();
+            _ = SendServerLifecycleNotification("Server boot process is complete. Server is fully online and available for play.");
+        }
+
+        [NWNEventHandler(ScriptName.OnModulePreload)]
+        public static void ProcessBootStart()
+        {
+            _ = SendServerLifecycleNotification("Server boot process has started. Please wait until it is fully online before joining.");
+        }
+
+
+        public static void SendServerLifecycleNotificationForShutdown(string message)
+        {
+            if (string.IsNullOrWhiteSpace(_appSettings.ServerNotificationWebhookUrl))
+                return;
+
+            try
+            {
+                var enqueueTask = SendServerLifecycleNotification(message);
+                var completedInTime = enqueueTask.Wait(TimeSpan.FromSeconds(2));
+                if (!completedInTime)
+                {
+                    Log.Write(LogGroup.Error, "SendServerLifecycleNotificationForShutdown: Timed out waiting for SendServerLifecycleNotification before shutdown.");
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Write(LogGroup.Error, $"SendServerLifecycleNotificationForShutdown: Unexpected error while waiting for SendServerLifecycleNotification before shutdown. {ex}");
+            }
+        }
+        public static async Task<bool> SendServerLifecycleNotification(string message)
+        {
+            var url = _appSettings.ServerNotificationWebhookUrl;
+            if (string.IsNullOrWhiteSpace(url)) return false;
+
+            var authorName = "SWLOR Server";
+
+            try
+            {
+                var enqueued = await BackgroundJob.EnqueueDiscordWebhook(url, authorName, message, LifecycleNotificationColor);
+                if (!enqueued)
+                {
+                    Log.Write(LogGroup.Error, $"SendServerLifecycleNotification: BackgroundJob.EnqueueDiscordWebhook returned false for message: {message}");
+                }
+
+                return enqueued;
+            }
+            catch (Exception ex)
+            {
+                Log.Write(LogGroup.Error, $"SendServerLifecycleNotification: BackgroundJob.EnqueueDiscordWebhook threw for message: {message}. {ex}");
+                return false;
+            }
         }
 
         private static void ConfigureServerSettings()

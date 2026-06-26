@@ -36,7 +36,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .SetStateJournalText("Selan Flembek, receptionist at CZ-220, has requested you complete three tasks around the base. \n\nSpeak to Avix Tatham, the mining coordinator, for information about retrieving ore from the mine.\n\nTalk to security officer Harlon Linth for information about trouble on the maintenance level.\n\nChat with the Crafting Terminal Droid Operator for details about supplies which need to be constructed.\n\nWhen you've obtained receipts from all three employees, return to Selan to collect your reward.")
 
                 .AddXPReward(1000)
-                .AddGoldReward(500)
+                .AddGoldReward(750)
                 .AddKeyItemReward(KeyItemType.CZ220ShuttlePass)
 
                 .OnCompleteAction((player, sourceObject) =>
@@ -65,7 +65,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .SetStateJournalText("Speak to the Crafting Terminal Droid operator for your reward.")
 
                 .AddXPReward(200)
-                .AddGoldReward(50)
+                .AddGoldReward(75)
                 .AddKeyItemReward(KeyItemType.CraftingTerminalDroidOperatorsWorkReceipt)
 
                 .OnAcceptAction((player, sourceObject) =>
@@ -93,7 +93,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .SetStateJournalText("Speak to the Crafting Terminal Droid operator for your reward.")
 
                 .AddXPReward(200)
-                .AddGoldReward(50)
+                .AddGoldReward(75)
                 .AddKeyItemReward(KeyItemType.CraftingTerminalDroidOperatorsWorkReceipt)
 
                 .OnAcceptAction((player, sourceObject) =>
@@ -121,7 +121,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .SetStateJournalText("Speak to the Crafting Terminal Droid operator for your reward.")
 
                 .AddXPReward(200)
-                .AddGoldReward(50)
+                .AddGoldReward(75)
                 .AddKeyItemReward(KeyItemType.CraftingTerminalDroidOperatorsWorkReceipt)
 
                 .OnAcceptAction((player, sourceObject) =>
@@ -146,7 +146,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .SetStateJournalText("You found a datapad in the room containing an experimental Colicoid. It contains research details on the creature. There's no name listed anywhere in the data but you assume it belongs to someone on CZ-220. Ask around on the main level and see if it's theirs.")
 
                 .AddXPReward(300)
-                .AddGoldReward(50)
+                .AddGoldReward(75)
 
                 .OnAcceptAction((player, sourceObject) =>
                 {
@@ -170,7 +170,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .SetStateJournalText("You've killed five Mynocks and obtained their teeth. Return to Halron Linth to collect your work receipt.")
 
                 .AddXPReward(200)
-                .AddGoldReward(100)
+                .AddGoldReward(150)
                 .AddKeyItemReward(KeyItemType.HalronLinthsWorkReceipt);
         }
 
@@ -195,7 +195,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .SetStateJournalText("Speak to Avix Tatham for your reward.")
 
                 .AddXPReward(200)
-                .AddGoldReward(50)
+                .AddGoldReward(75)
                 .AddKeyItemReward(KeyItemType.AvixTathamsWorkReceipt);
         }
 
@@ -212,7 +212,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .SetStateJournalText("Speak to Avix Tatham for your reward.")
 
                 .AddXPReward(300, false)
-                .AddGoldReward(400, false);
+                .AddGoldReward(600, false);
         }
         private static void TheMalfunctioningDroids(QuestBuilder builder)
         {
@@ -226,7 +226,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText("You've destroyed five malfunctioning droids. Return to Halron Linth for your reward.")
 
-                .AddGoldReward(100, false)
+                .AddGoldReward(150, false)
                 .AddXPReward(200);
         }
         private static void TheColicoidExperiment(QuestBuilder builder)
@@ -242,7 +242,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText("You made quick work of the rampaging Colicoid experiment. Return to Halron Linth to let him know the work is done.")
                 
-                .AddGoldReward(250, false)
+                .AddGoldReward(375, false)
                 .AddXPReward(600)
                 
                 .OnAcceptAction((player, sourceObject) =>
@@ -266,7 +266,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText("That's a lot of scrap metal. Hopefully, it's enough. See what 5CR4P has to beep about.")
 
-                .AddGoldReward(2500)
+                .AddGoldReward(3750)
                 .AddXPReward(2500)
                 .AddItemReward("recipe_fabcz220", 1);
         }

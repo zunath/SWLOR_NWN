@@ -87,7 +87,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
                 .HasRecastDelay(RecastGroup.DoubleShot, 60f)
                 .RequirementStamina(3)
                 .IsWeaponAbility()
-                .UnaffectedByHeavyArmor()
                 .BreaksStealth()
                 .HasCustomValidation(Validation)
                 .HasImpactAction((activator, target, level, targetLocation) =>
@@ -103,7 +102,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
                 .HasRecastDelay(RecastGroup.DoubleShot, 60f)
                 .RequirementStamina(5)
                 .IsWeaponAbility()
-                .UnaffectedByHeavyArmor()
                 .BreaksStealth()
                 .HasCustomValidation(Validation)
                 .HasImpactAction((activator, target, level, targetLocation) =>
@@ -119,7 +117,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
                 .HasRecastDelay(RecastGroup.DoubleShot, 60f)
                 .RequirementStamina(8)
                 .IsWeaponAbility()
-                .UnaffectedByHeavyArmor()
                 .BreaksStealth()
                 .HasCustomValidation(Validation)
                 .HasImpactAction((activator, target, level, targetLocation) =>

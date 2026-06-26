@@ -9368,7 +9368,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "Anchor Aye and Anchor Bee are identical twins that take pleasure in annoying and confusing anyone that meets them. On top of this, they are a few brain cells short of an actual conversation and tend to talk through one another and finish each other’s sentences. This can cause anyone to become irritated quite quickly, but they don't seem to mind. They just laugh it off and carry on with annoying one another."
+            "0": "Anchor Aye and Anchor Bee are identical twins that take pleasure in annoying and confusing anyone that meets them. On top of this, they are a few brain cells short of an actual conversation and tend to talk through one another and finish each otherÂ’s sentences. This can cause anyone to become irritated quite quickly, but they don't seem to mind. They just laugh it off and carry on with annoying one another."
           }
         },
         "Dex": {
@@ -11096,7 +11096,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "Anchor Aye and Anchor Bee are identical twins that take pleasure in annoying and confusing anyone that meets them. On top of this, they are a few brain cells short of an actual conversation and tend to talk through one another and finish each other’s sentences. This can cause anyone to become irritated quite quickly, but they don't seem to mind. They just laugh it off and carry on with annoying one another."
+            "0": "Anchor Aye and Anchor Bee are identical twins that take pleasure in annoying and confusing anyone that meets them. On top of this, they are a few brain cells short of an actual conversation and tend to talk through one another and finish each otherÂ’s sentences. This can cause anyone to become irritated quite quickly, but they don't seem to mind. They just laugh it off and carry on with annoying one another."
           }
         },
         "Dex": {
@@ -21505,7 +21505,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Vêtements légers"
+                  "2": "VÃªtements lÃ©gers"
                 }
               },
               "Metal1Color": {
@@ -22672,7 +22672,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Astromech Droid",
-            "2": "Droïde Astromec douteux"
+            "2": "DroÃ¯de Astromec douteux"
           }
         },
         "fortbonus": {
@@ -23296,7 +23296,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Revêtement de droïde agricole type-1"
+                  "2": "RevÃªtement de droÃ¯de agricole type-1"
                 }
               },
               "Metal1Color": {
@@ -23478,7 +23478,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Mouse Droid",
-            "2": "Droïde souris MSE-6"
+            "2": "DroÃ¯de souris MSE-6"
           }
         },
         "fortbonus": {
@@ -23560,7 +23560,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Pièces détachées de droïd"
+                  "0": "PiÃ¨ces dÃ©tachÃ©es de droÃ¯d"
                 }
               },
               "ModelPart1": {
@@ -24470,7 +24470,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Astromech Droid",
-            "2": "Unité droïde R5D4"
+            "2": "UnitÃ© droÃ¯de R5D4"
           }
         },
         "fortbonus": {
@@ -24552,7 +24552,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Pièces détachées de droïd"
+                  "0": "PiÃ¨ces dÃ©tachÃ©es de droÃ¯d"
                 }
               },
               "ModelPart1": {
@@ -25462,7 +25462,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Astromech Droid",
-            "2": "Unité droïde R5D4"
+            "2": "UnitÃ© droÃ¯de R5D4"
           }
         },
         "fortbonus": {
@@ -25544,7 +25544,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Pièces détachées de droïd"
+                  "0": "PiÃ¨ces dÃ©tachÃ©es de droÃ¯d"
                 }
               },
               "ModelPart1": {
@@ -26325,7 +26325,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Revêtement de droïde agricole type-1"
+                  "2": "RevÃªtement de droÃ¯de agricole type-1"
                 }
               },
               "Metal1Color": {
@@ -26507,7 +26507,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Agricultural Droid",
-            "2": "Droïde agricole"
+            "2": "DroÃ¯de agricole"
           }
         },
         "fortbonus": {
@@ -26589,7 +26589,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Pièces détachées de droïd"
+                  "0": "PiÃ¨ces dÃ©tachÃ©es de droÃ¯d"
                 }
               },
               "ModelPart1": {
@@ -38768,7 +38768,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Porte métallique coulissante rayée"
+            "2": "Porte mÃ©tallique coulissante rayÃ©e"
           }
         },
         "OnClick": {
@@ -38986,7 +38986,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Door",
-            "2": "Porte métallique coulissante vers le bas bleu"
+            "2": "Porte mÃ©tallique coulissante vers le bas bleu"
           }
         },
         "OnClick": {
@@ -39204,7 +39204,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Door",
-            "2": "Porte métallique coulissante vers le bas bleu"
+            "2": "Porte mÃ©tallique coulissante vers le bas bleu"
           }
         },
         "OnClick": {
@@ -39422,7 +39422,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Door",
-            "2": "Rideau de toile foncé"
+            "2": "Rideau de toile foncÃ©"
           }
         },
         "OnClick": {
@@ -39863,8 +39863,8 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Vaporateur d'humiditéW",
-            "2": "Vaporateur d'humidité"
+            "0": "Vaporateur d'humiditÃ©W",
+            "2": "Vaporateur d'humiditÃ©"
           }
         },
         "OnClick": {
@@ -40091,8 +40091,8 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Vaporateur d'humiditéW",
-            "2": "Vaporateur d'humidité"
+            "0": "Vaporateur d'humiditÃ©W",
+            "2": "Vaporateur d'humiditÃ©"
           }
         },
         "OnClick": {
@@ -40319,8 +40319,8 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Vaporateur d'humiditéW",
-            "2": "Vaporateur d'humidité"
+            "0": "Vaporateur d'humiditÃ©W",
+            "2": "Vaporateur d'humiditÃ©"
           }
         },
         "OnClick": {
@@ -40547,7 +40547,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaporateur d'humidité"
+            "2": "Vaporateur d'humiditÃ©"
           }
         },
         "OnClick": {
@@ -40774,7 +40774,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaporateur d'humidité"
+            "2": "Vaporateur d'humiditÃ©"
           }
         },
         "OnClick": {
@@ -41001,7 +41001,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaporateur d'humidité"
+            "2": "Vaporateur d'humiditÃ©"
           }
         },
         "OnClick": {
@@ -41228,7 +41228,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaporateur d'humidité"
+            "2": "Vaporateur d'humiditÃ©"
           }
         },
         "OnClick": {
@@ -41455,8 +41455,8 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Vaporateur d'humiditéW",
-            "2": "Vaporateur d'humidité"
+            "0": "Vaporateur d'humiditÃ©W",
+            "2": "Vaporateur d'humiditÃ©"
           }
         },
         "OnClick": {
@@ -53161,7 +53161,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaporateur d'humidité"
+            "2": "Vaporateur d'humiditÃ©"
           }
         },
         "OnClick": {
@@ -53388,7 +53388,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaporateur d'humidité"
+            "2": "Vaporateur d'humiditÃ©"
           }
         },
         "OnClick": {
@@ -53615,7 +53615,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaporateur d'humidité"
+            "2": "Vaporateur d'humiditÃ©"
           }
         },
         "OnClick": {
@@ -53842,7 +53842,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaporateur d'humidité"
+            "2": "Vaporateur d'humiditÃ©"
           }
         },
         "OnClick": {
@@ -54069,7 +54069,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaporateur d'humidité"
+            "2": "Vaporateur d'humiditÃ©"
           }
         },
         "OnClick": {
@@ -54296,7 +54296,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaporateur d'humidité"
+            "2": "Vaporateur d'humiditÃ©"
           }
         },
         "OnClick": {
@@ -54523,7 +54523,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaporateur d'humidité"
+            "2": "Vaporateur d'humiditÃ©"
           }
         },
         "OnClick": {
@@ -102248,7 +102248,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Trafic aérien et terrestre"
+            "2": "Trafic aÃ©rien et terrestre"
           }
         },
         "Looping": {
@@ -102383,7 +102383,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Trafic aérien et terrestre"
+            "2": "Trafic aÃ©rien et terrestre"
           }
         },
         "Looping": {
@@ -102511,7 +102511,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Véhicule - Fonceur"
+            "2": "VÃ©hicule - Fonceur"
           }
         },
         "Looping": {
@@ -102632,7 +102632,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Véhicule - Pod Racer"
+            "2": "VÃ©hicule - Pod Racer"
           }
         },
         "Looping": {
@@ -102767,7 +102767,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Droïd - Déplacement droïde sonde"
+            "2": "DroÃ¯d - DÃ©placement droÃ¯de sonde"
           }
         },
         "Looping": {
@@ -245443,7 +245443,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.13495844666911e-012
                     },
                     "XPosition": {
                       "type": "float",
@@ -245611,7 +245611,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.132988234481269e-012
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -245803,7 +245803,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.227613496967983e-012
+                      "value": 1.116121084443478e-012
                     },
                     "XPosition": {
                       "type": "float",
@@ -246026,7 +246026,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.116121084443478e-012
+                      "value": 1.227613496967983e-012
                     },
                     "XPosition": {
                       "type": "float",
@@ -246210,7 +246210,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.132988234481269e-012
                     },
                     "XPosition": {
                       "type": "float",
@@ -246608,7 +246608,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.13495844666911e-012
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -247109,7 +247109,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.401298464324817e-045
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -247259,7 +247259,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 1
+                            "value": 2
                           },
                           "Param1": {
                             "type": "byte",
@@ -247310,7 +247310,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.166466229163277e-012
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -249521,7 +249521,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.166466229163277e-012
                     },
                     "XPosition": {
                       "type": "float",
@@ -249680,7 +249680,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.401298464324817e-045
                     },
                     "XPosition": {
                       "type": "float",
@@ -251912,7 +251912,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.160193902755013e-012
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -252113,7 +252113,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.167987581651708e-012
+                      "value": 1.597480249330292e-043
                     },
                     "XPosition": {
                       "type": "float",
@@ -252716,7 +252716,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 3.87191097119433e-039
+                      "value": 6.177845685133319e-039
                     },
                     "XPosition": {
                       "type": "float",
@@ -252917,7 +252917,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.625506218616788e-043
                     },
                     "XPosition": {
                       "type": "float",
@@ -253118,7 +253118,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 3.85202934858249e-041
                     },
                     "XPosition": {
                       "type": "float",
@@ -253520,7 +253520,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 3.85202934858249e-041
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -253721,7 +253721,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.625506218616788e-043
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -253922,7 +253922,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 6.177845685133319e-039
+                      "value": 3.87191097119433e-039
                     },
                     "XPosition": {
                       "type": "float",
@@ -254474,7 +254474,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 2
+                            "value": 3
                           },
                           "Param1": {
                             "type": "byte",
@@ -254525,7 +254525,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.597480249330292e-043
+                      "value": 1.167987581651708e-012
                     },
                     "XPosition": {
                       "type": "float",
@@ -254684,7 +254684,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.160193902755013e-012
                     },
                     "XPosition": {
                       "type": "float",
@@ -256705,7 +256705,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.168010566737765e-012
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -256906,7 +256906,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.17775754426841e-012
+                      "value": 1.552784323740071e-033
                     },
                     "XPosition": {
                       "type": "float",
@@ -259267,7 +259267,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 3
+                            "value": 4
                           },
                           "Param1": {
                             "type": "byte",
@@ -260908,7 +260908,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.552784323740071e-033
+                      "value": 1.17775754426841e-012
                     },
                     "XPosition": {
                       "type": "float",
@@ -261067,7 +261067,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.168010566737765e-012
                     },
                     "XPosition": {
                       "type": "float",
@@ -263119,7 +263119,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.168010566737765e-012
+                      "value": 1.060320789260352e-038
                     },
                     "XPosition": {
                       "type": "float",
@@ -263269,7 +263269,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 4
+                            "value": 5
                           },
                           "Param1": {
                             "type": "byte",
@@ -263320,7 +263320,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.178473985063988e-012
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -263521,7 +263521,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 2.869859254937225e-041
                     },
                     "XPosition": {
                       "type": "float",
@@ -263722,7 +263722,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 3.85202934858249e-041
                     },
                     "XPosition": {
                       "type": "float",
@@ -264124,7 +264124,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.069068955443286e-038
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -264928,7 +264928,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.069068955443286e-038
                     },
                     "XPosition": {
                       "type": "float",
@@ -265330,7 +265330,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 3.85202934858249e-041
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -265531,7 +265531,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 2.869859254937225e-041
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -265732,7 +265732,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.178473985063988e-012
                     },
                     "XPosition": {
                       "type": "float",
@@ -265891,7 +265891,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.060320789260352e-038
+                      "value": 1.168010566737765e-012
                     },
                     "XPosition": {
                       "type": "float",
@@ -268162,7 +268162,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 5.805579537697717e-042
                     },
                     "XPosition": {
                       "type": "float",
@@ -268312,7 +268312,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 5
+                            "value": 6
                           },
                           "Param1": {
                             "type": "byte",
@@ -268363,7 +268363,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.877739942195255e-042
                     },
                     "XPosition": {
                       "type": "float",
@@ -268564,7 +268564,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.384482882752919e-042
                     },
                     "XPosition": {
                       "type": "float",
@@ -268765,7 +268765,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 4.28797330083394e-043
                     },
                     "XPosition": {
                       "type": "float",
@@ -268966,7 +268966,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.401298464324817e-045
                     },
                     "XPosition": {
                       "type": "float",
@@ -269167,7 +269167,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.443337418254562e-043
+                      "value": 1.401298464324817e-045
                     },
                     "XPosition": {
                       "type": "float",
@@ -269368,7 +269368,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.401298464324817e-045
                     },
                     "XPosition": {
                       "type": "float",
@@ -269569,7 +269569,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.401298464324817e-045
                     },
                     "XPosition": {
                       "type": "float",
@@ -269770,7 +269770,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 9.310899620236961e-039
                     },
                     "XPosition": {
                       "type": "float",
@@ -269971,7 +269971,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 7.241900882109933e-026
                     },
                     "XPosition": {
                       "type": "float",
@@ -270373,7 +270373,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.165901142990977e-012
                     },
                     "XPosition": {
                       "type": "float",
@@ -270775,7 +270775,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.165901142990977e-012
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -271093,7 +271093,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 7.241900882109933e-026
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -271252,7 +271252,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 9.310899620236961e-039
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -271411,7 +271411,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.401298464324817e-045
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -271570,7 +271570,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.401298464324817e-045
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -271729,7 +271729,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.401298464324817e-045
+                      "value": 1.443337418254562e-043
                     },
                     "XPosition": {
                       "type": "float",
@@ -271888,7 +271888,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.401298464324817e-045
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -272047,7 +272047,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 4.28797330083394e-043
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -272206,7 +272206,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.384482882752919e-042
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -272365,7 +272365,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.877739942195255e-042
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -272524,7 +272524,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 5.805579537697717e-042
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -308503,7 +308503,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Droid Shop",
-            "2": "Aux droïdes de Lara",
+            "2": "Aux droÃ¯des de Lara",
             "256": "<Placez votre texte ici>",
             "258": "<Placez votre texte ici>",
             "260": "<Placez votre texte ici>",
@@ -308575,7 +308575,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Medical Center",
-            "2": "Centre Médical",
+            "2": "Centre MÃ©dical",
             "256": "<Placez votre texte ici>",
             "258": "<Placez votre texte ici>",
             "260": "<Placez votre texte ici>",
@@ -309758,6 +309758,69 @@
         "YOrientation": {
           "type": "float",
           "value": -0.9891764521598816
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 156.8692626953125
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -5.222045729169622e-006
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Stuck â€” tat_anc_southdis"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "STUCK_WAYPOINT"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_stuck"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 103.3217010498047
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
         },
         "YPosition": {
           "type": "float",

@@ -155,10 +155,15 @@ public class FirstAidCombatUpgradeTests
         var medKit = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "FirstAid" / "MedKitAbilityDefinition.cs").FullName);
         medKit.Should().Contain("CombatPoint.AddCombatPointToAllTagged(activator, SkillType.FirstAid);");
 
-        var treatmentKit = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "FirstAid" / "TreatmentKitAbilityDefinition.cs").FullName);
+        var treatmentKit = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "FirstAid" / "TreatmentKitAbilityDefinition.cs").FullName)
+            .Replace("\r\n", "\n");
         treatmentKit.Should().Contain("StatusEffectCleanseType.TreatmentKit2");
         treatmentKit.Should().Contain("RemoveCleanseableStatusEffects(friendly, StatusEffectCleanseType.TreatmentKit2, false)");
-        treatmentKit.Should().Contain("CombatPoint.AddCombatPointToAllTagged(activator, SkillType.FirstAid);");
+        treatmentKit.Split("GrantFirstAidCombatPointIfApplied(activator, affectedCount);").Length.Should().Be(4);
+        treatmentKit.Should().Contain(
+            "if (affectedCount > 0)\n" +
+            "                CombatPoint.AddCombatPointToAllTagged(activator, SkillType.FirstAid);");
+        treatmentKit.Split("CombatPoint.AddCombatPointToAllTagged(activator, SkillType.FirstAid);").Length.Should().Be(2);
 
         var pain = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "FirstAid" / "PainSuppressantAbilityDefinition.cs").FullName);
         pain.Should().Contain("AbilityEffectScaling.ApplyTemporaryHPPercent(activator, target, percent, durationSeconds)");

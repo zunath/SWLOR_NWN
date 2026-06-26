@@ -198,6 +198,7 @@ namespace SWLOR.Game.Server.Service
                 return SaveDisguiseResult.Failure(descriptorError);
 
             portraitInternalId = Math.Clamp(portraitInternalId, 1, GetMaxPortraitCount());
+            soundSetId = ResolveSoundSetId(soundSetId);
 
             disguise.PrivateName = PlayerName.SanitizeKnownName(privateName);
             disguise.Descriptor = PlayerName.SanitizeKnownName(descriptor);
@@ -561,8 +562,9 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            if (disguise.SoundSetId >= 0)
-                SetSoundset(player, disguise.SoundSetId);
+            var soundSetId = ResolveSoundSetId(disguise.SoundSetId);
+            if (soundSetId >= 0)
+                SetSoundset(player, soundSetId);
         }
 
         private static void RefreshDisguiseDisplay(uint player)
@@ -574,6 +576,13 @@ namespace SWLOR.Game.Server.Service
         private static int GetMaxPortraitCount()
         {
             return Math.Max(1, Cache.PortraitCount);
+        }
+
+        private static int ResolveSoundSetId(int soundSetId)
+        {
+            return Cache.GetSoundSets().ContainsKey(soundSetId)
+                ? soundSetId
+                : -1;
         }
     }
 }

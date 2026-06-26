@@ -9098,7 +9098,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Trafic aérien et terrestre"
+            "2": "Air and Ground Traffic"
           }
         },
         "Looping": {
@@ -9233,7 +9233,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Trafic aérien et terrestre"
+            "2": "Air and Ground Traffic"
           }
         },
         "Looping": {

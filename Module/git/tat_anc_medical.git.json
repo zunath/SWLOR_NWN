@@ -362,7 +362,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Tenue médicale"
+                  "2": "Medical Outfit"
                 }
               },
               "Metal1Color": {
@@ -572,7 +572,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Medic",
-            "2": "Infirmière"
+            "2": "Nurse"
           }
         },
         "fortbonus": {
@@ -1570,7 +1570,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Citizen",
-            "2": "Malade"
+            "2": "Patient"
           }
         },
         "fortbonus": {
@@ -2351,7 +2351,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Vêtements légers"
+                  "2": "Light Clothing"
                 }
               },
               "Metal1Color": {
@@ -2589,7 +2589,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Farmer",
-            "2": "Fermier"
+            "2": "Farmer"
           }
         },
         "fortbonus": {
@@ -3370,7 +3370,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Vêtements de ville"
+                  "2": "Civilian Clothes"
                 }
               },
               "Metal1Color": {
@@ -3580,7 +3580,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Tatooine Citizen",
-            "2": "Habitant de Tatooine"
+            "2": "Tatooine Resident"
           }
         },
         "fortbonus": {
@@ -4398,7 +4398,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Tenue médicale"
+                  "2": "Medical Outfit"
                 }
               },
               "Metal1Color": {
@@ -4608,7 +4608,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Nurse",
-            "2": "Infirmière"
+            "2": "Nurse"
           }
         },
         "fortbonus": {
@@ -5392,7 +5392,7 @@
                 "type": "cexolocstring",
                 "value": {
                   "0": "Medical Outfit",
-                  "2": "Tenue médicale"
+                  "2": "Medical Outfit"
                 }
               },
               "Metal1Color": {
@@ -5602,7 +5602,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Medic",
-            "2": "Infirmière"
+            "2": "Nurse"
           }
         },
         "fortbonus": {
@@ -6383,7 +6383,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Vêtements légers"
+                  "2": "Light Clothing"
                 }
               },
               "Metal1Color": {
@@ -6593,7 +6593,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Tatooine Citizen",
-            "2": "Habitante de Tatooine"
+            "2": "Tatooine Resident"
           }
         },
         "fortbonus": {
@@ -7591,7 +7591,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Citizen",
-            "2": "Malade"
+            "2": "Patient"
           }
         },
         "fortbonus": {
@@ -8375,7 +8375,7 @@
                 "type": "cexolocstring",
                 "value": {
                   "0": "Medical Outfit",
-                  "2": "Tenue médicale"
+                  "2": "Medical Outfit"
                 }
               },
               "Metal1Color": {
@@ -8547,7 +8547,7 @@
                 "id": 90810,
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Peau d'humanoide blessé"
+                  "2": "Injured Humanoid Skin"
                 }
               },
               "ModelPart1": {
@@ -8713,7 +8713,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Medic",
-            "2": "Médecin"
+            "2": "Medic"
           }
         },
         "fortbonus": {
@@ -9496,7 +9496,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Tenue médicale"
+                  "2": "Medical Outfit"
                 }
               },
               "Metal1Color": {
@@ -9713,7 +9713,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Doctor Carson",
-            "2": "Docteur Velpo"
+            "2": "Doctor Velpo"
           }
         },
         "fortbonus": {
@@ -10496,7 +10496,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Tenue médicale"
+                  "2": "Medical Outfit"
                 }
               },
               "Metal1Color": {
@@ -10866,7 +10866,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Doctor",
-            "2": "Médecin"
+            "2": "Medic"
           }
         },
         "fortbonus": {
@@ -11649,7 +11649,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Tenue médicale"
+                  "2": "Medical Outfit"
                 }
               },
               "Metal1Color": {
@@ -11858,7 +11858,7 @@
         "FirstName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Infirmière"
+            "2": "Nurse"
           }
         },
         "fortbonus": {
@@ -12530,7 +12530,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Medical Droid",
-            "2": "Droïde protocolaire"
+            "2": "Protocol Droid"
           }
         },
         "fortbonus": {
@@ -14712,7 +14712,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Door",
-            "2": "Porte métallique coulissante"
+            "2": "Sliding Metal Door"
           }
         },
         "OnClick": {
@@ -14930,7 +14930,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Door",
-            "2": "Porte métallique coulissante vers le bas blanche"
+            "2": "Downward Sliding Metal Door"
           }
         },
         "OnClick": {
@@ -15148,7 +15148,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Door",
-            "2": "Porte vitrée"
+            "2": "Glass Door"
           }
         },
         "OnClick": {
@@ -15366,7 +15366,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Door",
-            "2": "Porte métallique coulissante"
+            "2": "Sliding Metal Door"
           }
         },
         "OnClick": {
@@ -15583,7 +15583,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Porte métallique coulissante"
+            "2": "Sliding Metal Door"
           }
         },
         "OnClick": {
@@ -15803,7 +15803,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Door",
-            "2": "Porte métallique coulissante"
+            "2": "Sliding Metal Door"
           }
         },
         "OnClick": {
@@ -16244,7 +16244,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Cuve à Bacta"
+            "0": "Bacta Tank"
           }
         },
         "OnClick": {
@@ -16472,7 +16472,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Chair",
-            "2": "Chaise"
+            "2": "Chair"
           }
         },
         "OnClick": {
@@ -16699,7 +16699,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Cuve à Bacta"
+            "0": "Bacta Tank"
           }
         },
         "OnClick": {
@@ -16927,7 +16927,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Chair",
-            "2": "Chaise"
+            "2": "Chair"
           }
         },
         "OnClick": {
@@ -17330,7 +17330,7 @@
           "id": 14640,
           "type": "cexolocstring",
           "value": {
-            "2": "Des mouches bourdonnent autour du cadavre fétide. Le corps est recroquevillé dans une position foetale comme si la victime avait eu très froid ou très mal."
+            "2": "Flies buzz around the fetid corpse. The body is curled into a fetal position, as if the victim had been very cold or in terrible pain."
           }
         },
         "DisarmDC": {
@@ -17381,7 +17381,7 @@
           "id": 14641,
           "type": "cexolocstring",
           "value": {
-            "2": "Bléssé grave"
+            "2": "Seriously Wounded"
           }
         },
         "OnClick": {
@@ -17608,7 +17608,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Cuve à Bacta"
+            "0": "Bacta Tank"
           }
         },
         "OnClick": {
@@ -18058,7 +18058,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Console d'ordinateur"
+            "2": "Computer Console"
           }
         },
         "OnClick": {
@@ -18283,7 +18283,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Cuve à bacta vide"
+            "2": "Empty Bacta Tank"
           }
         },
         "OnClick": {
@@ -19186,7 +19186,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Chair",
-            "2": "Chaise"
+            "2": "Chair"
           }
         },
         "OnClick": {
@@ -19413,7 +19413,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Cuve à Bacta"
+            "0": "Bacta Tank"
           }
         },
         "OnClick": {
@@ -19641,7 +19641,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Chair",
-            "2": "Chaise"
+            "2": "Chair"
           }
         },
         "OnClick": {
@@ -19869,7 +19869,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Chair",
-            "2": "Chaise"
+            "2": "Chair"
           }
         },
         "OnClick": {
@@ -20097,7 +20097,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Chair",
-            "2": "Chaise"
+            "2": "Chair"
           }
         },
         "OnClick": {
@@ -20325,7 +20325,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Chair",
-            "2": "Chaise"
+            "2": "Chair"
           }
         },
         "OnClick": {
@@ -20553,7 +20553,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Chair",
-            "2": "Chaise"
+            "2": "Chair"
           }
         },
         "OnClick": {
@@ -20781,7 +20781,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Chair",
-            "2": "Chaise"
+            "2": "Chair"
           }
         },
         "OnClick": {
@@ -21009,7 +21009,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Chair",
-            "2": "Chaise"
+            "2": "Chair"
           }
         },
         "OnClick": {
@@ -21237,7 +21237,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Chair",
-            "2": "Chaise"
+            "2": "Chair"
           }
         },
         "OnClick": {
@@ -21465,7 +21465,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Chair",
-            "2": "Chaise"
+            "2": "Chair"
           }
         },
         "OnClick": {
@@ -21693,7 +21693,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Chair",
-            "2": "Chaise"
+            "2": "Chair"
           }
         },
         "OnClick": {
@@ -21921,7 +21921,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Chair",
-            "2": "Chaise"
+            "2": "Chair"
           }
         },
         "OnClick": {
@@ -22149,7 +22149,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Chair",
-            "2": "Chaise"
+            "2": "Chair"
           }
         },
         "OnClick": {
@@ -22377,7 +22377,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Chair",
-            "2": "Chaise"
+            "2": "Chair"
           }
         },
         "OnClick": {
@@ -22832,7 +22832,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Chair",
-            "2": "Chaise"
+            "2": "Chair"
           }
         },
         "OnClick": {
@@ -25333,7 +25333,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Chair",
-            "2": "Chaise"
+            "2": "Chair"
           }
         },
         "OnClick": {
@@ -25561,7 +25561,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Chair",
-            "2": "Chaise"
+            "2": "Chair"
           }
         },
         "OnClick": {
@@ -25789,7 +25789,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Chair",
-            "2": "Chaise"
+            "2": "Chair"
           }
         },
         "OnClick": {
@@ -30759,7 +30759,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Cuve à Bacta"
+            "0": "Bacta Tank"
           }
         },
         "OnClick": {
@@ -30986,7 +30986,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Cuve à Bacta"
+            "0": "Bacta Tank"
           }
         },
         "OnClick": {
@@ -31211,8 +31211,8 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Etagère Cantina",
-            "2": "Comptoir noir"
+            "0": "Cantina Shelf",
+            "2": "Black Counter"
           }
         },
         "OnClick": {
@@ -31662,8 +31662,8 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Etagère Cantina",
-            "2": "Comptoir noir"
+            "0": "Cantina Shelf",
+            "2": "Black Counter"
           }
         },
         "OnClick": {
@@ -31888,8 +31888,8 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Etagère Cantina",
-            "2": "Comptoir noir"
+            "0": "Cantina Shelf",
+            "2": "Black Counter"
           }
         },
         "OnClick": {
@@ -32114,8 +32114,8 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Etagère Cantina",
-            "2": "Comptoir noir"
+            "0": "Cantina Shelf",
+            "2": "Black Counter"
           }
         },
         "OnClick": {
@@ -33925,7 +33925,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Cuve à Bacta"
+            "0": "Bacta Tank"
           }
         },
         "OnClick": {
@@ -34150,8 +34150,8 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Etagère Cantina",
-            "2": "Comptoir noir"
+            "0": "Cantina Shelf",
+            "2": "Black Counter"
           }
         },
         "OnClick": {
@@ -34376,8 +34376,8 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Etagère Cantina",
-            "2": "Comptoir noir"
+            "0": "Cantina Shelf",
+            "2": "Black Counter"
           }
         },
         "OnClick": {
@@ -34602,8 +34602,8 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Etagère Cantina",
-            "2": "Comptoir noir"
+            "0": "Cantina Shelf",
+            "2": "Black Counter"
           }
         },
         "OnClick": {
@@ -34828,8 +34828,8 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Etagère Cantina",
-            "2": "Comptoir noir"
+            "0": "Cantina Shelf",
+            "2": "Black Counter"
           }
         },
         "OnClick": {
@@ -35054,8 +35054,8 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Etagère Cantina",
-            "2": "Comptoir noir"
+            "0": "Cantina Shelf",
+            "2": "Black Counter"
           }
         },
         "OnClick": {
@@ -35280,8 +35280,8 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Etagère Cantina",
-            "2": "Comptoir noir"
+            "0": "Cantina Shelf",
+            "2": "Black Counter"
           }
         },
         "OnClick": {
@@ -42765,7 +42765,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Régulateur cardiac"
+            "2": "Cardiac Regulator"
           }
         },
         "Looping": {
@@ -42886,7 +42886,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Informatique - ambiance sonore"
+            "2": "Computer - Ambient Sound"
           }
         },
         "Looping": {
@@ -43958,7 +43958,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Portes - ouverture/fermeture"
+            "2": "Doors - Opening/Closing"
           }
         },
         "Looping": {
@@ -44086,7 +44086,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Régulateur cardiac"
+            "2": "Cardiac Regulator"
           }
         },
         "Looping": {
@@ -44207,7 +44207,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Régulateur cardiac"
+            "2": "Cardiac Regulator"
           }
         },
         "Looping": {
@@ -44317,7 +44317,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vente du centre médical d'Anchorhead"
+            "2": "Anchorhead Medical Center Store"
           }
         },
         "MarkDown": {
@@ -44571,7 +44571,7 @@
                     "LocalizedName": {
                       "type": "cexolocstring",
                       "value": {
-                        "2": "Gélule de traitement des maladies"
+                        "2": "Disease Treatment Capsule"
                       }
                     },
                     "ModelPart1": {
@@ -44848,7 +44848,7 @@
                       "type": "cexolocstring",
                       "value": {
                         "0": "Emulateur de carte ID",
-                        "2": "Kit de réanimation"
+                        "2": "Emulateur de carte ID"
                       }
                     },
                     "ModelPart1": {
@@ -45116,7 +45116,7 @@
           "id": 14759,
           "type": "cexolocstring",
           "value": {
-            "2": "open_door"
+            "2": "Open Door"
           }
         },
         "OnClick": {
@@ -45319,7 +45319,7 @@
           "id": 14759,
           "type": "cexolocstring",
           "value": {
-            "2": "open_door"
+            "2": "Open Door"
           }
         },
         "OnClick": {

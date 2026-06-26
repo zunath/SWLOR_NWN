@@ -163,7 +163,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Porte métallique coulissante rouillée"
+            "2": "Rusted Sliding Metal Door"
           }
         },
         "OnClick": {

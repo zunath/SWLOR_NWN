@@ -4845,7 +4845,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Navette de classe A-309"
+            "2": "A-309 Class Shuttle"
           }
         },
         "OnClick": {
@@ -5070,8 +5070,8 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Téléporteur",
-            "2": "Téléporteur"
+            "0": "Teleporter",
+            "2": "Teleporter"
           }
         },
         "OnClick": {
@@ -5296,8 +5296,8 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Téléporteur",
-            "2": "Téléporteur"
+            "0": "Teleporter",
+            "2": "Teleporter"
           }
         },
         "OnClick": {
@@ -5522,8 +5522,8 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Téléporteur",
-            "2": "Téléporteur"
+            "0": "Teleporter",
+            "2": "Teleporter"
           }
         },
         "OnClick": {
@@ -6225,7 +6225,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaporateur d'humidité"
+            "2": "Moisture Vaporator"
           }
         },
         "OnClick": {
@@ -6452,7 +6452,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaporateur d'humidité"
+            "2": "Moisture Vaporator"
           }
         },
         "OnClick": {
@@ -15679,7 +15679,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaporateur d'humidité"
+            "2": "Moisture Vaporator"
           }
         },
         "OnClick": {
@@ -17663,7 +17663,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Véhicule - Pod Racer"
+            "2": "Vehicle - Pod Racer"
           }
         },
         "Looping": {
@@ -17947,7 +17947,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Véhicule - Pod Racer"
+            "2": "Vehicle - Pod Racer"
           }
         },
         "Looping": {
@@ -18082,7 +18082,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Industries - Divers"
+            "2": "Industrial - Miscellaneous"
           }
         },
         "Looping": {

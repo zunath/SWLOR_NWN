@@ -1106,7 +1106,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Vêtements légers"
+                  "2": "Light Clothing"
                 }
               },
               "Metal1Color": {
@@ -2080,7 +2080,7 @@
           "id": 5349,
           "type": "cexolocstring",
           "value": {
-            "2": "Anchorhead : Bazar de Verpex vers qn"
+            "2": "Anchorhead: Verpex Bazaar to North District"
           }
         },
         "OnClick": {
@@ -2527,7 +2527,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Cuve à bacta vide"
+            "2": "Empty Bacta Tank"
           }
         },
         "OnClick": {
@@ -2752,7 +2752,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Cuve d'expérimentation"
+            "2": "Experimentation Tank"
           }
         },
         "OnClick": {
@@ -2977,7 +2977,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Console d'ordinateur"
+            "2": "Computer Console"
           }
         },
         "OnClick": {
@@ -3654,7 +3654,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaporateur d'humidité"
+            "2": "Moisture Vaporator"
           }
         },
         "OnClick": {
@@ -5004,7 +5004,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Cuve d'expérimentation"
+            "2": "Experimentation Tank"
           }
         },
         "OnClick": {
@@ -8158,7 +8158,7 @@
           "id": 83439,
           "type": "cexolocstring",
           "value": {
-            "2": "Coffre"
+            "2": "Chest"
           }
         },
         "OnClick": {
@@ -8385,7 +8385,7 @@
           "id": 84566,
           "type": "cexolocstring",
           "value": {
-            "2": "Caisse"
+            "2": "Crate"
           }
         },
         "OnClick": {
@@ -9060,7 +9060,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaisseau Cargo Ghtroc 720"
+            "2": "Ghtroc 720 Cargo Ship"
           }
         },
         "OnClick": {
@@ -9287,7 +9287,7 @@
           "id": 83439,
           "type": "cexolocstring",
           "value": {
-            "2": "Coffre"
+            "2": "Chest"
           }
         },
         "OnClick": {
@@ -9964,7 +9964,7 @@
           "id": 84566,
           "type": "cexolocstring",
           "value": {
-            "2": "Caisse"
+            "2": "Crate"
           }
         },
         "OnClick": {
@@ -10191,7 +10191,7 @@
           "id": 84566,
           "type": "cexolocstring",
           "value": {
-            "2": "Caisse"
+            "2": "Crate"
           }
         },
         "OnClick": {
@@ -10418,7 +10418,7 @@
           "id": 84566,
           "type": "cexolocstring",
           "value": {
-            "2": "Caisse"
+            "2": "Crate"
           }
         },
         "OnClick": {
@@ -11545,7 +11545,7 @@
           "id": 84566,
           "type": "cexolocstring",
           "value": {
-            "2": "Caisse"
+            "2": "Crate"
           }
         },
         "OnClick": {
@@ -12220,8 +12220,8 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Etagère Cantina",
-            "2": "Comptoir noir"
+            "0": "Cantina Shelf",
+            "2": "Black Counter"
           }
         },
         "OnClick": {
@@ -12446,8 +12446,8 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Etagère Cantina",
-            "2": "Comptoir noir"
+            "0": "Cantina Shelf",
+            "2": "Black Counter"
           }
         },
         "OnClick": {
@@ -12672,8 +12672,8 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Etagère Cantina",
-            "2": "Comptoir noir"
+            "0": "Cantina Shelf",
+            "2": "Black Counter"
           }
         },
         "OnClick": {
@@ -12898,8 +12898,8 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Etagère Cantina",
-            "2": "Comptoir noir"
+            "0": "Cantina Shelf",
+            "2": "Black Counter"
           }
         },
         "OnClick": {
@@ -13124,8 +13124,8 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Etagère Cantina",
-            "2": "Comptoir noir"
+            "0": "Cantina Shelf",
+            "2": "Black Counter"
           }
         },
         "OnClick": {
@@ -13350,8 +13350,8 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Etagère Cantina",
-            "2": "Comptoir noir"
+            "0": "Cantina Shelf",
+            "2": "Black Counter"
           }
         },
         "OnClick": {
@@ -13576,8 +13576,8 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Etagère Cantina",
-            "2": "Comptoir noir"
+            "0": "Cantina Shelf",
+            "2": "Black Counter"
           }
         },
         "OnClick": {

@@ -27,13 +27,13 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "2": "Un bric à brac d'alliages et de pièces de métaux"
+      "2": "A jumble of alloys and metal parts."
     }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "2": "Un bric à brac d'alliages et de pièces de métaux"
+      "2": "A jumble of alloys and metal parts."
     }
   },
   "Identified": {
@@ -43,7 +43,7 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "2": "Tas de feraille"
+      "2": "Scrap Pile"
     }
   },
   "ModelPart1": {

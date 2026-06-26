@@ -868,7 +868,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Guenilles Jawa"
+                      "value": "Jawa Rags"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -879,7 +879,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Guenilles Jawa ninja"
+                      "value": "Ninja Jawa Rags"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -890,7 +890,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Guenilles Tusken"
+                      "value": "Tusken Rags"
                     },
                     "RESREF": {
                       "type": "resref",

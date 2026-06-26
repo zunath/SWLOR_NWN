@@ -8897,13 +8897,13 @@
               "DescIdentified": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Tape à l'oeil, ce costumede scène est généralement le préféré des grands musiciens Bith."
+                  "2": "Flashy and eye-catching, this stage costume is generally favored by renowned Bith musicians."
                 }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Tape à l'oeil, ce costumede scène est généralement le préféré des grands musiciens Bith."
+                  "2": "Flashy and eye-catching, this stage costume is generally favored by renowned Bith musicians."
                 }
               },
               "Identified": {
@@ -8921,7 +8921,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Tenue de scène Bith colorée"
+                  "2": "Colorful Bith Stage Outfit"
                 }
               },
               "Metal1Color": {
@@ -9300,7 +9300,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Musician",
-            "2": "Musicien Bith"
+            "2": "Bith Musician"
           }
         },
         "fortbonus": {
@@ -10061,13 +10061,13 @@
               "DescIdentified": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Tape à l'oeil, ce costumede scène est généralement le préféré des grands musiciens Bith."
+                  "2": "Flashy and eye-catching, this stage costume is generally favored by renowned Bith musicians."
                 }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Tape à l'oeil, ce costumede scène est généralement le préféré des grands musiciens Bith."
+                  "2": "Flashy and eye-catching, this stage costume is generally favored by renowned Bith musicians."
                 }
               },
               "Identified": {
@@ -10085,7 +10085,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Tenue de scène Bith colorée"
+                  "2": "Colorful Bith Stage Outfit"
                 }
               },
               "Metal1Color": {
@@ -10464,7 +10464,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Musician",
-            "2": "Musicien Bith"
+            "2": "Bith Musician"
           }
         },
         "fortbonus": {
@@ -52901,8 +52901,8 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Vêtements légers",
-                  "2": "Vêtements légers"
+                  "0": "Light Clothing",
+                  "2": "Light Clothing"
                 }
               },
               "Metal1Color": {
@@ -53104,7 +53104,7 @@
         "FirstName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Barman"
+            "2": "Bartender"
           }
         },
         "fortbonus": {
@@ -98418,7 +98418,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Gamoréen"
+            "2": "Gamorrean"
           }
         },
         "Looping": {
@@ -98553,7 +98553,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Ithorien"
+            "2": "Ithorian"
           }
         },
         "Looping": {

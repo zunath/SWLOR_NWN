@@ -787,7 +787,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Haderach",
-            "2": "Client de la cantina"
+            "2": "Haderach"
           }
         },
         "fortbonus": {
@@ -1589,7 +1589,7 @@
                 "type": "cexolocstring",
                 "value": {
                   "0": "Vet Tatooine",
-                  "2": "V�tements l�gers"
+                  "2": "Vet Tatooine"
                 }
               },
               "Metal1Color": {
@@ -3925,7 +3925,7 @@
         "FirstName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Barman"
+            "2": "Bartender"
           }
         },
         "fortbonus": {
@@ -4908,7 +4908,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Shop Keeper",
-            "2": "Eor"
+            "2": "Shop Keeper"
           }
         },
         "fortbonus": {
@@ -6036,7 +6036,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Musician",
-            "2": "Musicien Bith"
+            "2": "Bith Musician"
           }
         },
         "fortbonus": {
@@ -6183,13 +6183,13 @@
               "DescIdentified": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Tape � l'oeil, ce costumede sc�ne est g�n�ralement le pr�f�r� des grands musiciens Bith."
+                  "2": "Flashy and eye-catching, this stage costume is generally favored by renowned Bith musicians."
                 }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Tape � l'oeil, ce costumede sc�ne est g�n�ralement le pr�f�r� des grands musiciens Bith."
+                  "2": "Flashy and eye-catching, this stage costume is generally favored by renowned Bith musicians."
                 }
               },
               "Identified": {
@@ -8999,7 +8999,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Musician",
-            "2": "Musicien Bith"
+            "2": "Bith Musician"
           }
         },
         "fortbonus": {
@@ -12666,7 +12666,7 @@
           "id": 5349,
           "type": "cexolocstring",
           "value": {
-            "2": "Anchorhead : Cantina vers qn"
+            "2": "Anchorhead: Cantina to North District"
           }
         },
         "OnClick": {
@@ -13575,7 +13575,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Comptoir noir"
+            "2": "Black Counter"
           }
         },
         "OnClick": {
@@ -13800,7 +13800,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Comptoir noir"
+            "2": "Black Counter"
           }
         },
         "OnClick": {
@@ -15830,7 +15830,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Chair",
-            "2": "Chaise"
+            "2": "Chair"
           }
         },
         "OnClick": {
@@ -16058,7 +16058,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Chair",
-            "2": "Chaise"
+            "2": "Chair"
           }
         },
         "OnClick": {
@@ -16286,7 +16286,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Chair",
-            "2": "Chaise"
+            "2": "Chair"
           }
         },
         "OnClick": {
@@ -16514,7 +16514,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Chair",
-            "2": "Chaise"
+            "2": "Chair"
           }
         },
         "OnClick": {
@@ -16742,7 +16742,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Chair",
-            "2": "Chaise"
+            "2": "Chair"
           }
         },
         "OnClick": {
@@ -16970,7 +16970,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Chair",
-            "2": "Chaise"
+            "2": "Chair"
           }
         },
         "OnClick": {
@@ -17198,7 +17198,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Chair",
-            "2": "Chaise"
+            "2": "Chair"
           }
         },
         "OnClick": {
@@ -17426,7 +17426,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Chair",
-            "2": "Chaise"
+            "2": "Chair"
           }
         },
         "OnClick": {
@@ -17654,7 +17654,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Chair",
-            "2": "Chaise"
+            "2": "Chair"
           }
         },
         "OnClick": {
@@ -17882,7 +17882,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Chair",
-            "2": "Chaise"
+            "2": "Chair"
           }
         },
         "OnClick": {
@@ -18110,7 +18110,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Chair",
-            "2": "Chaise"
+            "2": "Chair"
           }
         },
         "OnClick": {
@@ -18338,7 +18338,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Chair",
-            "2": "Chaise"
+            "2": "Chair"
           }
         },
         "OnClick": {
@@ -18566,7 +18566,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Chair",
-            "2": "Chaise"
+            "2": "Chair"
           }
         },
         "OnClick": {
@@ -18794,7 +18794,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Chair",
-            "2": "Chaise"
+            "2": "Chair"
           }
         },
         "OnClick": {
@@ -19022,7 +19022,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Chair",
-            "2": "Chaise"
+            "2": "Chair"
           }
         },
         "OnClick": {
@@ -19250,7 +19250,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Cantina bar",
-            "2": "Bar"
+            "2": "Cantina bar"
           }
         },
         "OnClick": {
@@ -19478,7 +19478,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Cantina bar",
-            "2": "Bar"
+            "2": "Cantina bar"
           }
         },
         "OnClick": {
@@ -19706,7 +19706,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Cantina bar",
-            "2": "Bar"
+            "2": "Cantina bar"
           }
         },
         "OnClick": {
@@ -19934,7 +19934,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Cantina bar",
-            "2": "Bar"
+            "2": "Cantina bar"
           }
         },
         "OnClick": {
@@ -20160,7 +20160,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Etag�re Cantina",
-            "2": "Bar"
+            "2": "Cantina bar"
           }
         },
         "OnClick": {
@@ -20386,7 +20386,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Etag�re Cantina",
-            "2": "Bar"
+            "2": "Cantina bar"
           }
         },
         "OnClick": {
@@ -20614,7 +20614,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Cantina bar",
-            "2": "Bar"
+            "2": "Cantina bar"
           }
         },
         "OnClick": {
@@ -20842,7 +20842,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Cantina bar",
-            "2": "Bar"
+            "2": "Cantina bar"
           }
         },
         "OnClick": {
@@ -21070,7 +21070,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Cantina bar",
-            "2": "Bar"
+            "2": "Cantina bar"
           }
         },
         "OnClick": {
@@ -21295,7 +21295,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Cuve d'exp�rimentation"
+            "2": "Experimentation Tank"
           }
         },
         "OnClick": {
@@ -21748,7 +21748,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Cantina bar",
-            "2": "Bar"
+            "2": "Cantina bar"
           }
         },
         "OnClick": {
@@ -22011,7 +22011,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Cantina bar",
-            "2": "Bar"
+            "2": "Cantina bar"
           }
         },
         "OnClick": {
@@ -22239,7 +22239,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Cantina bar",
-            "2": "Bar"
+            "2": "Cantina bar"
           }
         },
         "OnClick": {
@@ -22467,7 +22467,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Cantina bar",
-            "2": "Bar"
+            "2": "Cantina bar"
           }
         },
         "OnClick": {
@@ -22695,7 +22695,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Cantina bar",
-            "2": "Bar"
+            "2": "Cantina bar"
           }
         },
         "OnClick": {
@@ -24748,7 +24748,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Chair",
-            "2": "Chaise"
+            "2": "Chair"
           }
         },
         "OnClick": {
@@ -24978,7 +24978,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Chair",
-            "2": "Chaise"
+            "2": "Chair"
           }
         },
         "OnClick": {
@@ -25206,7 +25206,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Chair",
-            "2": "Chaise"
+            "2": "Chair"
           }
         },
         "OnClick": {
@@ -25434,7 +25434,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Chair",
-            "2": "Chaise"
+            "2": "Chair"
           }
         },
         "OnClick": {
@@ -30408,7 +30408,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Ithorien"
+            "2": "Ithorian"
           }
         },
         "Looping": {

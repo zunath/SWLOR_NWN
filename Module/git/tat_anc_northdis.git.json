@@ -371,7 +371,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Vêtements légers"
+                  "2": "Light Clothing"
                 }
               },
               "Metal1Color": {
@@ -1407,7 +1407,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Vêtements légers"
+                  "2": "Light Clothing"
                 }
               },
               "Metal1Color": {
@@ -2443,7 +2443,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Vêtements légers"
+                  "2": "Light Clothing"
                 }
               },
               "Metal1Color": {
@@ -3610,7 +3610,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Astromech Droid",
-            "2": "Droïde Astromec douteux"
+            "2": "Suspicious Astromech Droid"
           }
         },
         "fortbonus": {
@@ -4326,7 +4326,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Vêtements légers"
+                  "2": "Light Clothing"
                 }
               },
               "Metal1Color": {
@@ -5271,7 +5271,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Revêtement de droïde agricole type-1"
+                  "2": "Type-1 Agricultural Droid Plating"
                 }
               },
               "Metal1Color": {
@@ -5453,7 +5453,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Mouse Droid",
-            "2": "Droïde souris MSE-6"
+            "2": "MSE-6 Mouse Droid"
           }
         },
         "fortbonus": {
@@ -6445,7 +6445,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Astromech Droid",
-            "2": "Unité droïde R5D4"
+            "2": "R5D4 Droid Unit"
           }
         },
         "fortbonus": {
@@ -7437,7 +7437,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Astromech Droid",
-            "2": "Unité droïde R5D4"
+            "2": "R5D4 Droid Unit"
           }
         },
         "fortbonus": {
@@ -8300,7 +8300,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Revêtement de droïde agricole type-1"
+                  "2": "Type-1 Agricultural Droid Plating"
                 }
               },
               "Metal1Color": {
@@ -8482,7 +8482,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Agricultural Droid",
-            "2": "Droïde agricole"
+            "2": "Agricultural Droid"
           }
         },
         "fortbonus": {
@@ -44224,7 +44224,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Door",
-            "2": "Porte métallique coulissante oxydée"
+            "2": "Oxidized Sliding Metal Door"
           }
         },
         "OnClick": {
@@ -44444,7 +44444,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Door",
-            "2": "Porte métallique coulissante rouillée"
+            "2": "Rusted Sliding Metal Door"
           }
         },
         "OnClick": {
@@ -44664,7 +44664,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Door",
-            "2": "Rideau de toile clair"
+            "2": "Door"
           }
         },
         "OnClick": {
@@ -44882,7 +44882,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Door",
-            "2": "Porte métallique coulissante vers le bas bleu"
+            "2": "Blue Downward Sliding Metal Door"
           }
         },
         "OnClick": {
@@ -45102,7 +45102,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Door",
-            "2": "Porte métallique coulissante vers le bas bleu"
+            "2": "Blue Downward Sliding Metal Door"
           }
         },
         "OnClick": {
@@ -45322,7 +45322,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Door",
-            "2": "Porte métallique coulissante rayée"
+            "2": "Scratched Sliding Metal Door"
           }
         },
         "OnClick": {
@@ -45546,7 +45546,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaporateur d'humidité"
+            "2": "Moisture Vaporator"
           }
         },
         "OnClick": {
@@ -47123,7 +47123,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Sol crade detritus 2, grand Static"
+            "2": "Dirty Debris Floor 2, Large Static"
           }
         },
         "OnClick": {
@@ -47575,7 +47575,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Landspeeder Luke"
+            "2": "Luke's Landspeeder"
           }
         },
         "OnClick": {
@@ -51177,7 +51177,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Landspeeder bleu"
+            "2": "Blue Landspeeder"
           }
         },
         "OnClick": {
@@ -80003,7 +80003,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Trafic aérien et terrestre"
+            "2": "Air and Ground Traffic"
           }
         },
         "Looping": {
@@ -80138,7 +80138,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Trafic aérien et terrestre"
+            "2": "Air and Ground Traffic"
           }
         },
         "Looping": {
@@ -80266,7 +80266,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Véhicule - Fonceur"
+            "2": "Vehicle - Speeder"
           }
         },
         "Looping": {
@@ -80387,7 +80387,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Véhicule - Pod Racer"
+            "2": "Vehicle - Pod Racer"
           }
         },
         "Looping": {
@@ -80522,7 +80522,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Droïd - Déplacement droïde sonde"
+            "2": "Droid - Probe Droid Movement"
           }
         },
         "Looping": {
@@ -81378,7 +81378,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Ithorien"
+            "2": "Ithorian"
           }
         },
         "Looping": {
@@ -81506,7 +81506,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Trafic aérien et terrestre"
+            "2": "Air and Ground Traffic"
           }
         },
         "Looping": {
@@ -81662,7 +81662,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaisseau - Moteur"
+            "2": "Starship - Engine"
           }
         },
         "Looping": {
@@ -81783,7 +81783,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaisseau - Moteur"
+            "2": "Starship - Engine"
           }
         },
         "Looping": {
@@ -81904,7 +81904,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaisseau - Jets de vapeur"
+            "2": "Starship - Steam Jets"
           }
         },
         "Looping": {
@@ -82032,7 +82032,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaisseau - Jets de vapeur"
+            "2": "Starship - Steam Jets"
           }
         },
         "Looping": {
@@ -82160,7 +82160,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaisseau - Moteur"
+            "2": "Starship - Engine"
           }
         },
         "Looping": {
@@ -83028,7 +83028,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaisseau - Moteur"
+            "2": "Starship - Engine"
           }
         },
         "Looping": {
@@ -83149,7 +83149,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaisseau - Moteur"
+            "2": "Starship - Engine"
           }
         },
         "Looping": {
@@ -83270,7 +83270,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaisseau - Moteur"
+            "2": "Starship - Engine"
           }
         },
         "Looping": {
@@ -83391,7 +83391,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaisseau - Moteur"
+            "2": "Starship - Engine"
           }
         },
         "Looping": {
@@ -83512,7 +83512,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaisseau - Moteur"
+            "2": "Starship - Engine"
           }
         },
         "Looping": {
@@ -83633,7 +83633,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaisseau - Moteur"
+            "2": "Starship - Engine"
           }
         },
         "Looping": {
@@ -83754,7 +83754,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaisseau - Moteur"
+            "2": "Starship - Engine"
           }
         },
         "Looping": {
@@ -83875,7 +83875,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaisseau - Moteur"
+            "2": "Starship - Engine"
           }
         },
         "Looping": {
@@ -83985,7 +83985,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Magasin de Lenny"
+            "2": "Lenny's Shop"
           }
         },
         "MarkDown": {
@@ -84924,7 +84924,7 @@
           "id": 14760,
           "type": "cexolocstring",
           "value": {
-            "2": "Anchorhead : qn vers cantina"
+            "2": "Anchorhead: North District to Cantina"
           }
         },
         "OnClick": {
@@ -85187,7 +85187,7 @@
           "id": 14760,
           "type": "cexolocstring",
           "value": {
-            "2": "Anchorhead : qn vers Bazar de Verpex"
+            "2": "Anchorhead: North District to Verpex Bazaar"
           }
         },
         "OnClick": {
@@ -86017,7 +86017,7 @@
           "id": 14814,
           "type": "cexolocstring",
           "value": {
-            "0": "Note carte : Bazar de Verpex"
+            "0": "Map Note: Verpex Bazaar"
           }
         },
         "MapNote": {
@@ -86025,7 +86025,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Verpex Bazaar",
-            "2": "Bazard de Verpex"
+            "2": "Verpex Bazaar"
           }
         },
         "MapNoteEnabled": {
@@ -86083,8 +86083,8 @@
           "id": 14814,
           "type": "cexolocstring",
           "value": {
-            "0": "Note carte : Cantina",
-            "2": "Note carte"
+            "0": "Map Note: Cantina",
+            "2": "Map Note"
           }
         },
         "MapNote": {
@@ -86874,7 +86874,7 @@
           "id": 14814,
           "type": "cexolocstring",
           "value": {
-            "0": "Note carte : Comptoir de Chasse"
+            "0": "Map Note: Hunting Counter"
           }
         },
         "MapNote": {
@@ -86882,12 +86882,12 @@
           "type": "cexolocstring",
           "value": {
             "0": "Ash Club",
-            "2": "Club d'Ash",
-            "256": "<Placez votre texte ici>",
-            "258": "<Placez votre texte ici>",
-            "260": "<Placez votre texte ici>",
-            "4": "<Placez votre texte ici>",
-            "8": "<Placez votre texte ici>"
+            "2": "Ash's Club",
+            "256": "Ash Club",
+            "258": "Ash Club",
+            "260": "Ash Club",
+            "4": "Ash Club",
+            "8": "Ash Club"
           }
         },
         "MapNoteEnabled": {

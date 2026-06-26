@@ -152,7 +152,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "What will it be for you?",
-            "2": "Qu'est ce que ce sera pour vous ?"
+            "2": "What will it be for you?"
           }
         }
       },
@@ -214,7 +214,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Like you want !",
-            "2": "Comme vous voulez ! "
+            "2": "Like you want !"
           }
         }
       },
@@ -276,7 +276,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "The current record is held by <CUSTOM4000>.\nThe time to beat is <CUSTOM4001>.",
-            "2": "Le record actuel est tenu par <CUSTOM4000>.\nLe temps à battre est de <CUSTOM4001>. "
+            "2": "The current record is held by <CUSTOM4000>.\nThe time to beat is <CUSTOM4001>."
           }
         }
       },
@@ -337,8 +337,8 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "* You gauge to know if you are worthy of trust *",
-            "2": "* Vous jauge pour savoir si vous êtes digne de confiance* "
+            "0": "[The bartender sizes you up, deciding whether you are trustworthy.]",
+            "2": "[The bartender sizes you up, deciding whether you are trustworthy.]"
           }
         }
       },
@@ -400,7 +400,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Well, I explain the rules:\nThe Skyhopper is rented for the race.\nThere must be two participants minimum, six maximum.\nYou have to make three laps of circuits.\nThe first to arrive is the winner.\nHe wins <CUSTOM4003> credits. Bets are allowed.",
-            "2": "Bon, je vous explique les règles :  \nLe Skyhopper vous est loué pour la course. \nIl doit y avoir deux participants minimum, six au maximum.\nVous devez faire trois tours de circuits. \nLe premier arrivé est le vainqueur. \nIl remporte <CUSTOM4003> crédits.  Les paris sont autorisés. \n"
+            "2": "Here are the rules:\nThe Skyhopper is rented to you for the race.\nThere must be at least two participants and no more than six.\nYou must complete three laps.\nThe first pilot to finish wins.\nThe winner receives <CUSTOM4003> credits. Bets are allowed."
           }
         }
       },
@@ -476,8 +476,8 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "The registration is <CUSTOM4002> Credits. Once at least two participants are registered, come back to talk to me and the race will begin. So, does that tell you?",
-            "2": "L'inscription est de <CUSTOM4002> Crédits. Une fois que deux participants au moins sont inscrits, revenez me parler et la course commencera. Alors, ça vous dit ? "
+            "0": "The entry fee is <CUSTOM4002> credits. Once at least two participants have registered, come back and speak with me to start the race. Are you in?",
+            "2": "The entry fee is <CUSTOM4002> credits. Once at least two participants have registered, come back and speak with me to start the race. Are you in?"
           }
         }
       },
@@ -523,7 +523,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Perfect ! Here you are registered. Come back to see me whenever you want.",
-            "2": "Parfait ! Voilà vous êtes inscrit. Revenez me voir quand vous voulez."
+            "2": "Perfect. You are registered. Come back whenever you are ready."
           }
         }
       },
@@ -569,7 +569,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Sorry, but registrations are closed.",
-            "2": "Désolé, mais les inscriptions sont closes. "
+            "2": "Sorry, but registration is closed."
           }
         }
       },
@@ -615,7 +615,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Sorry, but a race is taking place!",
-            "2": "Désolé, mais une course est en train de se dérouler ! "
+            "2": "Sorry, but a race is already underway."
           }
         }
       },
@@ -692,7 +692,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Are you sure you do not want to wait for other participants?",
-            "2": "Vous êtes sûr que vous ne voulez pas attendre d'autres participants ? "
+            "2": "Are you sure you do not want to wait for more participants?"
           }
         }
       },
@@ -769,7 +769,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Very good, get ready!",
-            "2": "Très bien, préparez-vous ! "
+            "2": "Very good, get ready!"
           }
         }
       }
@@ -824,7 +824,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Nothing thanks.",
-            "2": "Rien, merci. "
+            "2": "Nothing thanks."
           }
         }
       },
@@ -882,7 +882,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "I want to unsubscribe!",
-            "2": "Je veux me désinscrire ! "
+            "2": "I want to unsubscribe!"
           }
         }
       },
@@ -1001,7 +1001,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "I want to see the record of the race, please!",
-            "2": "Je veux voir le record de la course, s'il vous plait ! "
+            "2": "I want to see the record of the race, please!"
           }
         }
       },
@@ -1150,7 +1150,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "It seems that there are Skyhopper races here, I would like to try!",
-            "2": "Il parait qu'il y a des courses de Skyhopper ici, j'aimerais bien essayer ! "
+            "2": "It seems that there are Skyhopper races here, I would like to try!"
           }
         }
       },
@@ -1326,7 +1326,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "No, another time, thank you!",
-            "2": "Non, une autre fois, merci ! "
+            "2": "No, another time, thank you!"
           }
         }
       },
@@ -1384,7 +1384,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Very good, you can register me!",
-            "2": "Très bien, vous pouvez m'inscrire ! "
+            "2": "Very good, you can register me!"
           }
         }
       },
@@ -1461,7 +1461,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "I would like to start the race!",
-            "2": "J'aimerai commencer la course ! "
+            "2": "I would like to start the race!"
           }
         }
       },
@@ -1503,7 +1503,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Yes, finally, I will wait a little longer!",
-            "2": "Oui, finalement, je vais attendre encore un peu ! "
+            "2": "Yes, finally, I will wait a little longer!"
           }
         }
       },
@@ -1561,7 +1561,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "No that will be good!",
-            "2": "Non, ça ira ! "
+            "2": "No that will be good!"
           }
         }
       },
@@ -1623,7 +1623,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "I finally changed my mind!",
-            "2": "J'ai changé d'avis finalement ! "
+            "2": "I finally changed my mind!"
           }
         }
       },
@@ -1665,7 +1665,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "We are ready!",
-            "2": "Nous sommes prêts ! "
+            "2": "We are ready!"
           }
         }
       },
@@ -1707,7 +1707,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Show me what you have to drink.",
-            "2": "Montrez-moi ce que vous avez à boire."
+            "2": "Show me what you have to drink."
           }
         }
       }

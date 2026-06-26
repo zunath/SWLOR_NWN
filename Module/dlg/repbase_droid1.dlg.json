@@ -64,7 +64,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "*The droid peers up at you and omits a series of quiet beeps* \n[They do this every day. The constant flirting. It's disgusting.]"
+            "0": "*The droid peers up at you and emits a series of quiet beeps* \n[They do this every day. The constant flirting. It's disgusting.]"
           }
         }
       }

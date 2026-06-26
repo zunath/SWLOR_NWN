@@ -399,7 +399,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Well, I explain the rules:\nThe Skyhopper is rented for the race.\nThere must be two participants minimum, six maximum.\nYou have to make three laps of circuits.\nThe first to arrive is the winner.\nHe wins <CUSTOM4003> credits. Bets are allowed.",
+            "0": "Here are the rules:\nThe Skyhopper is rented to you for the race.\nThere must be at least two participants and no more than six.\nYou must complete three laps.\nThe first pilot to finish wins.\nThe winner receives <CUSTOM4003> credits. Bets are allowed.",
             "2": "Here are the rules:\nThe Skyhopper is rented to you for the race.\nThere must be at least two participants and no more than six.\nYou must complete three laps.\nThe first pilot to finish wins.\nThe winner receives <CUSTOM4003> credits. Bets are allowed."
           }
         }
@@ -522,7 +522,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Perfect ! Here you are registered. Come back to see me whenever you want.",
+            "0": "Perfect. You are registered. Come back whenever you are ready.",
             "2": "Perfect. You are registered. Come back whenever you are ready."
           }
         }
@@ -568,7 +568,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Sorry, but registrations are closed.",
+            "0": "Sorry, but registration is closed.",
             "2": "Sorry, but registration is closed."
           }
         }
@@ -614,7 +614,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Sorry, but a race is taking place!",
+            "0": "Sorry, but a race is already underway.",
             "2": "Sorry, but a race is already underway."
           }
         }
@@ -691,7 +691,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Are you sure you do not want to wait for other participants?",
+            "0": "Are you sure you do not want to wait for more participants?",
             "2": "Are you sure you do not want to wait for more participants?"
           }
         }

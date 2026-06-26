@@ -663,7 +663,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
         private void ResetAbilityRecastTimers()
         {
             _builder.Create("resetcooldown", "resetcooldowns")
-                .Description("Resets a player's ability cooldowns.")
+                .Description("Resets a player's ability and disguise cooldowns.")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
                 .AvailableToAllOnTestEnvironment()
                 .RequiresTarget()
@@ -682,6 +682,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     dbPlayer.RecastTimes.Clear();
                     DB.Set(dbPlayer);
                     AbilityCooldownVisual.ClearAllRecastDelays(target);
+                    Disguise.ResetActivationCooldowns(target);
 
                     SendMessageToPC(user, $"You have reset all of {targetName}'s cooldowns.");
                     SendMessageToPC(target, "A DM has reset all of your cooldowns.");

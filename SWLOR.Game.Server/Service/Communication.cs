@@ -137,6 +137,11 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
+            if (IsChatCommandMessage(message))
+            {
+                return;
+            }
+
             // Echo the message back to the player.
             if (messageToDm)
             {
@@ -176,11 +181,6 @@ namespace SWLOR.Game.Server.Service
                     IsTranslatable = false
                 };
                 chatComponents.Add(component);
-            }
-            // Another early out - if this is a chat command, exit.
-            else if (message.Length >= 1 && message.Substring(0, 1) == "/")
-            {
-                return;
             }
             // Another early out - a completely empty message will just be skipped.
             else if (string.IsNullOrWhiteSpace(message.Trim()))
@@ -446,6 +446,13 @@ namespace SWLOR.Game.Server.Service
                 receiver,
                 speaker,
                 () => ChatPlugin.SendMessage(finalChannel, message, speaker, receiver));
+        }
+
+        private static bool IsChatCommandMessage(string message)
+        {
+            return message.Length >= 2 &&
+                   message[0] == '/' &&
+                   message[1] != '/';
         }
 
         private static bool IsCommsReceiverInRange(uint sender, uint receiver)

@@ -751,10 +751,6 @@
     "type": "list",
     "value": []
   },
-  "WaypointList": {
-    "type": "list",
-    "value": []
-  },
   "VarTable": {
     "type": "list",
     "value": [
@@ -774,5 +770,9 @@
         }
       }
     ]
+  },
+  "WaypointList": {
+    "type": "list",
+    "value": []
   }
 }

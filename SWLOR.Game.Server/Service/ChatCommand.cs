@@ -7,7 +7,6 @@ using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
-using ChatChannel = SWLOR.Game.Server.Core.NWNX.Enum.ChatChannel;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -48,13 +47,6 @@ namespace SWLOR.Game.Server.Service
         {
             var sender = OBJECT_SELF;
             var originalMessage = ChatPlugin.GetMessage().Trim();
-
-            if (ChatPlugin.GetChannel() == ChatChannel.PlayerShout &&
-                !GetIsDM(sender) &&
-                !GetIsDMPossessed(sender))
-            {
-                return;
-            }
 
             if (!CanHandleChat(sender, originalMessage))
             {

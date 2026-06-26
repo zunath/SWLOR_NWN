@@ -4283,6 +4283,25 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 63.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Marauder, Apprentice"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcswar2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 41.0
                     },
                     "FACTION": {
@@ -4397,6 +4416,25 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 26.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Soldier"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcstroop2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 66.0
                     },
                     "FACTION": {
@@ -4429,6 +4467,25 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "vnpcssorc4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 42.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Sorcerer, Apprentice"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcssorc2"
                     }
                   },
                   {
@@ -6106,6 +6163,25 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "hunter_guildmast"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 2.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Identity Broker"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "identitybroker"
                     }
                   },
                   {

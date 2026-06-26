@@ -17,6 +17,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class CharacterSheetViewModel: GuiViewModelBase<CharacterSheetViewModel, CharacterSheetPayload>,
         IGuiRefreshable<ChangePortraitRefreshEvent>,
+        IGuiRefreshable<DisguiseChangedRefreshEvent>,
         IGuiRefreshable<SkillXPRefreshEvent>,
         IGuiRefreshable<EquipItemRefreshEvent>,
         IGuiRefreshable<UnequipItemRefreshEvent>,
@@ -474,6 +475,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public Action OnClickSettings() => () =>
         {
             Gui.TogglePlayerWindow(Player, GuiWindowType.Settings);
+        };
+
+        public Action OnClickDisguises() => () =>
+        {
+            Gui.TogglePlayerWindow(Player, GuiWindowType.Disguises);
         };
 
         private static int GetPurchasedAttributeScore(Player dbPlayer, AbilityType ability)
@@ -1177,6 +1183,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public void Refresh(ChangePortraitRefreshEvent payload)
         {
             RefreshPortrait();
+        }
+
+        public void Refresh(DisguiseChangedRefreshEvent payload)
+        {
+            RefreshPortrait();
+            RefreshStats();
         }
 
         public void Refresh(SkillXPRefreshEvent payload)

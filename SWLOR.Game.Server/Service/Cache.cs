@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX.Enum;
@@ -21,6 +22,69 @@ namespace SWLOR.Game.Server.Service
         private static Dictionary<int, string> PortraitResrefByInternalId { get; } = new();
         private static Dictionary<string, int> PortraitInternalIdsByPortraitResref { get; } = new();
         private static Dictionary<int, string> SoundSets { get; set; } = new();
+        private static Dictionary<int, string> SoundSetPreviewSoundResrefs { get; set; } = new();
+        private static readonly ReadOnlyDictionary<string, string> CustomSoundSetPreviewSoundResrefs = new(
+            new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            {
+                ["c_spiker"] = "c_spiker_bat1",
+                ["c_viper"] = "c_viper_bat1",
+                ["c_slime"] = "c_slime_bat1",
+                ["c_treant"] = "c_treant_bat1",
+                ["c_hsecat"] = "c_hsecat_bat1",
+                ["c_monodrn"] = "c_monodrone_bat1",
+                ["c_horsexxx"] = "c_horsexxx_slct",
+                ["c_parai"] = "c_parai_bat1",
+                ["c_secundus"] = "c_secundus_bat1",
+                ["c_primus"] = "c_primus_bat1",
+                ["c_marut"] = "c_marut_bat1",
+                ["c_codi_mane"] = "codi_c_mane_bat1",
+                ["aliengen"] = "a_aliengen_bat",
+                ["aqualish"] = "a_aqua_bat",
+                ["assdroid"] = "c_drdasasin_bat1",
+                ["bantha"] = "c_bantha_bat1",
+                ["bith1"] = "n_bith_bat1",
+                ["chandra"] = "a_chandra_bat",
+                ["darkjedif"] = "n_darkjedif_bat1",
+                ["darkjedim"] = "n_darkjedim_bat1",
+                ["devaronian"] = "a_devar_bat",
+                ["droid"] = "cs_droid",
+                ["duro1"] = "n_duros_bat1",
+                ["duro2"] = "a_duro_bat",
+                ["gamorean"] = "c_gamorean_bat1",
+                ["gand"] = "a_gand_bat",
+                ["gran"] = "a_gran_bat",
+                ["hssiss"] = "c_hssiss_atk1",
+                ["hutt"] = "c_hutt_bat1",
+                ["ithorian"] = "a_ithor_bat",
+                ["kathhounda"] = "c_khounda_bat1",
+                ["kathhoundb"] = "c_khoundb_bat1",
+                ["malerodian"] = "n_rodian_bat1",
+                ["mandaloriana"] = "p_mand_bat2",
+                ["mandalorianb"] = "n_mndlorian_bat1",
+                ["medicaldroid"] = "c_drdmse3_idle",
+                ["nikto"] = "a_nikto_bat",
+                ["repsoldier"] = "n_repsold_bat1",
+                ["republicoff"] = "n_repoff_bat1",
+                ["rodianf"] = "a_rodfem_bat",
+                ["sithassassin"] = "a_sithass_bat",
+                ["sithf"] = "n_sithcomf_bat1",
+                ["sithmale"] = "n_sithcomm_bat1",
+                ["sithsoldier"] = "n_sithsoldr_bat1",
+                ["spaceship"] = "amb_trafnear_01",
+                ["sullustan"] = "a_sullust_bat",
+                ["tankdroid"] = "c_drdmse1_idle",
+                ["toughrodian"] = "a_rodtough_bat",
+                ["toughtwilek"] = "a_twitough_bat",
+                ["trandoshan"] = "a_trando_bat",
+                ["twilekfemale"] = "n_twilekf_bat1",
+                ["twilekmale"] = "n_twilekm_bat1",
+                ["twilekmaleb"] = "a_twimale_bat",
+                ["weequay"] = "a_weequay_bat",
+                ["wookie"] = "p_zaalbar_bat1",
+                ["hk47"] = "p_hk47_bat1",
+                ["c_catfacts"] = "c_catfacts_bat1",
+                ["vs_ntuskenx"] = "vs_ntuskenx_bat1"
+            });
 
         [NWNEventHandler(ScriptName.OnModuleContentChange)]
         public static void CacheItemNamesByResref()
@@ -125,6 +189,9 @@ namespace SWLOR.Game.Server.Service
         {
             const string SoundSets2DA = "soundset";
             var soundSetCount = Get2DARowCount(SoundSets2DA);
+            var soundSets = new Dictionary<int, string>();
+            var previewSoundResrefs = new Dictionary<int, string>();
+
             for (var row = 0; row < soundSetCount; row++)
             {
                 var strRef = Get2DAString(SoundSets2DA, "STRREF", row);
@@ -133,11 +200,29 @@ namespace SWLOR.Game.Server.Service
                 if (!string.IsNullOrWhiteSpace(strRef) &&
                     !string.IsNullOrWhiteSpace(resref))
                 {
-                    SoundSets.Add(row, GetStringByStrRef(Convert.ToInt32(strRef)));
+                    soundSets.Add(row, GetStringByStrRef(Convert.ToInt32(strRef)));
+                    previewSoundResrefs[row] = ResolveSoundSetPreviewSoundResref(resref);
                 }
             }
 
-            SoundSets = SoundSets.OrderBy(o => o.Value).ToDictionary(x => x.Key, y => y.Value);
+            SoundSets = soundSets.OrderBy(o => o.Value).ToDictionary(x => x.Key, y => y.Value);
+            SoundSetPreviewSoundResrefs = previewSoundResrefs;
+        }
+
+        private static string ResolveSoundSetPreviewSoundResref(string soundSetResref)
+        {
+            var trimmedResref = soundSetResref?.Trim();
+
+            if (string.IsNullOrWhiteSpace(trimmedResref) ||
+                trimmedResref == "****")
+                return string.Empty;
+
+            if (CustomSoundSetPreviewSoundResrefs.TryGetValue(trimmedResref, out var customPreviewSoundResref))
+                return customPreviewSoundResref;
+
+            return trimmedResref.Length <= 11
+                ? $"{trimmedResref}_bat1".ToLowerInvariant()
+                : string.Empty;
         }
 
         /// <summary>
@@ -183,6 +268,13 @@ namespace SWLOR.Game.Server.Service
         public static Dictionary<int, string> GetSoundSets()
         {
             return SoundSets.ToDictionary(x => x.Key, y => y.Value);
+        }
+
+        public static string GetSoundSetPreviewSoundResref(int soundSetId)
+        {
+            return SoundSetPreviewSoundResrefs.TryGetValue(soundSetId, out var previewSoundResref)
+                ? previewSoundResref
+                : string.Empty;
         }
     }
 }

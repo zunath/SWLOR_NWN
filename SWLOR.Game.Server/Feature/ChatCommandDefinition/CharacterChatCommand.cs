@@ -34,6 +34,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             LanguageCommand();
             ToggleEmoteStyle();
             Customize();
+            Disguises();
             AlwaysWalk();
             AssociateCommands();
             Follow();
@@ -177,6 +178,17 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     Gui.TogglePlayerWindow(user, GuiWindowType.Perks);
                 });
 
+        }
+
+        private void Disguises()
+        {
+            _builder.Create("disguise", "disguises")
+                .Description("Toggles the disguises menu.")
+                .Permissions(AuthorizationLevel.Player)
+                .Action((user, target, location, args) =>
+                {
+                    Gui.TogglePlayerWindow(user, GuiWindowType.Disguises);
+                });
         }
 
         private void LanguageCommand()

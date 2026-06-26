@@ -95,6 +95,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
 
         private static void TreatmentKit1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
+            var affectedCount = 0;
+
             foreach (var friendly in AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
                 foreach (var statusEffect in new[] { typeof(PoisonStatusEffect), typeof(BleedStatusEffect) })
@@ -102,28 +104,47 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
 
                 FirstAidTreatmentAdjustments.ApplyTraumaMedicRiders(activator, friendly);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Remove_Condition), friendly);
+                affectedCount++;
             }
+
+            GrantFirstAidCombatPointIfApplied(activator, affectedCount);
         }
 
         private static void TreatmentKit2ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
+            var affectedCount = 0;
+
             foreach (var friendly in AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
                 StatusEffect.RemoveCleanseableStatusEffects(friendly, StatusEffectCleanseType.TreatmentKit2, false);
                 FirstAidTreatmentAdjustments.ApplyTraumaMedicRiders(activator, friendly);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Remove_Condition), friendly);
+                affectedCount++;
             }
+
+            GrantFirstAidCombatPointIfApplied(activator, affectedCount);
         }
 
         private static void TreatmentKit3ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
+            var affectedCount = 0;
+
             foreach (var friendly in AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
                 StatusEffect.RemoveCleanseableStatusEffects(friendly, StatusEffectCleanseType.TreatmentKit2, false);
                 StatusEffect.ApplyStatusEffect(activator, friendly, typeof(AilmentResistance3StatusEffect), 8f);
                 FirstAidTreatmentAdjustments.ApplyTraumaMedicRiders(activator, friendly);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Remove_Condition), friendly);
+                affectedCount++;
             }
+
+            GrantFirstAidCombatPointIfApplied(activator, affectedCount);
+        }
+
+        private static void GrantFirstAidCombatPointIfApplied(uint activator, int affectedCount)
+        {
+            if (affectedCount > 0)
+                CombatPoint.AddCombatPointToAllTagged(activator, SkillType.FirstAid);
         }
 
 

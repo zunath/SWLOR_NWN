@@ -211,11 +211,12 @@ namespace SWLOR.Game.Server.Service
 
         private static string ResolveSoundSetPreviewSoundResref(string soundSetResref)
         {
-            if (string.IsNullOrWhiteSpace(soundSetResref) ||
-                soundSetResref == "****")
+            var trimmedResref = soundSetResref?.Trim();
+
+            if (string.IsNullOrWhiteSpace(trimmedResref) ||
+                trimmedResref == "****")
                 return string.Empty;
 
-            var trimmedResref = soundSetResref.Trim();
             if (CustomSoundSetPreviewSoundResrefs.TryGetValue(trimmedResref, out var customPreviewSoundResref))
                 return customPreviewSoundResref;
 

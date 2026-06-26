@@ -213,8 +213,8 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Like you want !",
-            "2": "Like you want !"
+            "0": "As you wish.",
+            "2": "As you wish."
           }
         }
       },
@@ -1560,8 +1560,8 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "No that will be good!",
-            "2": "No that will be good!"
+            "0": "No, that will be all.",
+            "2": "No, that will be all."
           }
         }
       },

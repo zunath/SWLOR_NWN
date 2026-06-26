@@ -44847,8 +44847,8 @@
                     "LocalizedName": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Emulateur de carte ID",
-                        "2": "Emulateur de carte ID"
+                        "0": "ID Card Emulator",
+                        "2": "ID Card Emulator"
                       }
                     },
                     "ModelPart1": {

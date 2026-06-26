@@ -60,8 +60,8 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hello there, unfortunately all GoCorp transport vechiles are currently going under maintenance. Please try again later.",
-            "2": "Welcome to the Go-Corp planetary transport counter. We are happy to have you as a customer. Which taxi route would you like to take?"
+            "0": "Hello there. Unfortunately, all GoCorp transport vehicles are currently undergoing maintenance. Please try again later.",
+            "2": "Hello there. Unfortunately, all GoCorp transport vehicles are currently undergoing maintenance. Please try again later."
           }
         }
       }

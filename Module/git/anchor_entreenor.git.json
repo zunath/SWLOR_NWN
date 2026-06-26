@@ -35305,13 +35305,13 @@
           "id": 14815,
           "type": "cexolocstring",
           "value": {
-            "0": "Towards the dunes",
+            "0": "To the Dune Desert",
             "2": "To the Dune Desert",
-            "256": "Anchorhead",
-            "258": "Anchorhead",
-            "260": "Anchorhead",
-            "4": "Anchorhead",
-            "8": "Anchorhead"
+            "256": "To the Dune Desert",
+            "258": "To the Dune Desert",
+            "260": "To the Dune Desert",
+            "4": "To the Dune Desert",
+            "8": "To the Dune Desert"
           }
         },
         "MapNoteEnabled": {
@@ -35443,13 +35443,13 @@
           "id": 14815,
           "type": "cexolocstring",
           "value": {
-            "0": "Towards the dunes",
+            "0": "To Motesta",
             "2": "To Motesta",
-            "256": "Anchorhead",
-            "258": "Anchorhead",
-            "260": "Anchorhead",
-            "4": "Anchorhead",
-            "8": "Anchorhead"
+            "256": "To Motesta",
+            "258": "To Motesta",
+            "260": "To Motesta",
+            "4": "To Motesta",
+            "8": "To Motesta"
           }
         },
         "MapNoteEnabled": {

@@ -298734,14 +298734,14 @@
           "id": 14815,
           "type": "cexolocstring",
           "value": {
-            "0": "Droid Shop",
+            "0": "Lara's Droid Shop",
             "2": "Lara's Droid Shop",
-            "256": "Medical Center",
-            "258": "Medical Center",
-            "260": "Medical Center",
-            "4": "Medical Center",
-            "6": "Droid Shop",
-            "8": "Medical Center"
+            "256": "Lara's Droid Shop",
+            "258": "Lara's Droid Shop",
+            "260": "Lara's Droid Shop",
+            "4": "Lara's Droid Shop",
+            "6": "Lara's Droid Shop",
+            "8": "Lara's Droid Shop"
           }
         },
         "MapNoteEnabled": {
@@ -298875,13 +298875,13 @@
           "id": 14815,
           "type": "cexolocstring",
           "value": {
-            "0": "Bounty Hunter Guild",
+            "0": "Bounty Hunters Guild",
             "2": "Bounty Hunters Guild",
-            "256": "Medical Center",
-            "258": "Medical Center",
-            "260": "Medical Center",
-            "4": "Medical Center",
-            "8": "Medical Center"
+            "256": "Bounty Hunters Guild",
+            "258": "Bounty Hunters Guild",
+            "260": "Bounty Hunters Guild",
+            "4": "Bounty Hunters Guild",
+            "8": "Bounty Hunters Guild"
           }
         },
         "MapNoteEnabled": {

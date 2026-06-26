@@ -6207,7 +6207,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Tenue de sc�ne Bith color�e"
+                  "2": "Colorful Bith Stage Costume"
                 }
               },
               "Metal1Color": {
@@ -20159,7 +20159,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Etag�re Cantina",
+            "0": "Cantina bar",
             "2": "Cantina bar"
           }
         },
@@ -20385,7 +20385,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Etag�re Cantina",
+            "0": "Cantina bar",
             "2": "Cantina bar"
           }
         },

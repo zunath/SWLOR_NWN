@@ -726,7 +726,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new ArticleBlock("Abandoning Quests",
                             "You can abandon active quests from the Quest window. Abandoning removes the active quest progress unless the quest keeps completed history."),
                         new ArticleBlock("Rewards",
-                            "Quests can grant credits, skill XP, items, key items, guild points, faction standing, or faction points."),
+                            "Quests can grant credits, skill XP, items, key items, or guild points."),
                         new ArticleBlock("Key Items",
                             "Key Items are permanent records of important unlocks, permissions, passes, maps, receipts, and other progress. Open Key Items from the Character Sheet."),
                         new ArticleBlock("Achievements",

@@ -305,8 +305,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                             "Earned skill XP pays down XP debt before the remainder can apply to a skill. If your debt uses all of the XP, that skill gains no XP from that reward."),
                         new ArticleBlock("Death and Resting",
                             "If you die, you can wait for another player to revive you or respawn to your registered medical facility. Resting restores HP, FP, and STM over time, but cannot be used in combat, near enemies, or outside dungeon safe-rest areas."),
-                        new ArticleBlock("Crafting and Training",
-                            "Recipes, crafting devices, research terminals, refineries, the Training Store, and the Character Sheet windows are the main places to turn earned progress into gear, tokens, and character choices."),
+                        new ArticleBlock("Crafting",
+                            "Crafting devices use recipes, materials, and optional blueprints or enhancements to make gear, food, and other items. During a craft, spend CP on actions; Progress must reach the goal before Durability reaches 0. Quality improves rewards and enhancement transfer chances. Research terminals improve blueprints, and refineries turn raw materials into refined materials."),
                         new ArticleBlock("Recognizing Players",
                             "Other player characters may appear with a gray descriptor until you remember them. Type /name <name>, then click the player character when the target cursor appears. Use /forgetname and click the character to clear that personal name. To change how unnamed players see you, use /name <description> on yourself. Names and descriptions are limited to 64 characters and cannot include color codes.")
                     },
@@ -343,7 +343,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new ArticleBlock("Names",
                             "Unrecognized player characters appear with a gray descriptor until you personally set a known name. Type /name <name>, then click the player character when the target cursor appears. Use /forgetname and click the character to forget that personal name. Target yourself with /name <description> to set the gray text others see before they name you. Names and descriptions are limited to 64 characters and cannot include color codes."),
                         new ArticleBlock("Emotes and Languages",
-                            "Speech can include emote text, and your emote style can be toggled between regular and novel formatting. Speaking or hearing non-Basic languages uses language skill; hearing a non-Basic language you do not fully know can grant language XP over time.")
+                            "Speech can include emote text, and /emotestyle toggles your emote style between regular and novel formatting. Speaking or hearing non-Basic languages uses language skill; hearing a non-Basic language you do not fully know can grant language XP over time.")
                     },
                     new[]
                     {

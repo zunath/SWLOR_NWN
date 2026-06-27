@@ -18,7 +18,7 @@ This note tracks player migration work for `feature/combat-upgrade`. Keep it cur
   - Updates stored item requirement properties to the combat-upgrade skill requirement model.
   - Splits persisted mitigation data so Physical/Force remain in `Player.Defenses` and elemental/status mitigation lives in `Player.Resistances`.
   - Moves legacy elemental defense entries into resistances, fills missing default keys, and removes Physical/Force from resistances.
-  - Adds and normalizes beast resistance purities, removes legacy beast saving throw purities, and moves beast elemental purities out of defenses.
+  - Adds and normalizes beast resistance purities, removes legacy beast saving throw purities, moves beast elemental purities out of defenses, clears learned beast perks, and returns beast SP to the level-based total.
   - Migrates live and serialized item properties for the new resistance, weapon damage, and weapon delay property model, including untyped `DMG`, separate `WeaponDamageType`, and normalized weapon `Delay` for held weapons and natural creature weapons.
   - Preserves Blueprint item elemental weapon-damage bonuses during item-property migration, but when a Blueprint has multiple elemental damage types, randomly keeps one elemental type and drops bonuses for the other elemental conflicts.
   - Stores Resistance item properties through SWLOR's `iprp_swlrescost.2da` cost table `54`. Negative gameplay vulnerability amounts are encoded as non-negative cost-table row ids `101` through `200` and decoded by runtime stat aggregation.

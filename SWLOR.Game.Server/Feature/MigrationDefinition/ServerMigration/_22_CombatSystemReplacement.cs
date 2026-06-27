@@ -573,12 +573,11 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
                 migrated |= MigratePurities(jObject);
 
                 var beast = jObject.ToObject<Beast>();
-                var refund = CleanPerks(beast.Perks, BeastRemovedPerks, BeastTrimmedPerks, out var perkChanged);
+                var refund = RefundBeastPerks(beast, out var perkChanged);
                 migrated |= perkChanged;
 
                 if (refund > 0)
                 {
-                    beast.UnallocatedSP += refund;
                     totalRefund += refund;
                     migrated = true;
                 }
@@ -1069,6 +1068,35 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
 
                 refund += CalculateRefund(trim.PricesByLevel, trim.MaxLevel + 1, purchasedLevel);
                 perks[perkType] = trim.MaxLevel;
+                changed = true;
+            }
+
+            return refund;
+        }
+
+        private static int RefundBeastPerks(Beast beast, out bool changed)
+        {
+            changed = false;
+            if (beast == null)
+                return 0;
+
+            var totalSkillPoints = Math.Clamp(beast.Level, 0, BeastMastery.MaxLevel);
+            var refund = Math.Max(0, totalSkillPoints - beast.UnallocatedSP);
+
+            if (beast.Perks == null)
+            {
+                beast.Perks = new Dictionary<PerkType, int>();
+                changed = true;
+            }
+            else if (beast.Perks.Count > 0)
+            {
+                beast.Perks.Clear();
+                changed = true;
+            }
+
+            if (beast.UnallocatedSP != totalSkillPoints)
+            {
+                beast.UnallocatedSP = totalSkillPoints;
                 changed = true;
             }
 

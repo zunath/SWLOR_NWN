@@ -4,8 +4,10 @@ using System.Text.RegularExpressions;
 using FluentAssertions;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
 using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.PlayerMarketService;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum.Item.Property;
@@ -39,6 +41,8 @@ public class CombatUpgradeMigrationCoverageTests
         combatMigration.Should().Contain("DroidBoostRecipeMigration.ExpandPlayerRecipeDictionaries");
         combatMigration.Should().Contain("CombatReadinessMigration.ResetCombatReadiness");
         combatMigration.Should().Contain("StoredItemDataMigration.Migrate();");
+        combatMigration.Should().Contain("RefundBeastPerks(beast, out var perkChanged)");
+        combatMigration.Should().NotContain("beast.UnallocatedSP += refund;");
         combatMigration.Should().Contain("Starting consolidated server migration.");
         combatMigration.Should().Contain("Current migration progress:");
         combatMigration.Should().Contain("new MigrationProgress(\"players\", playerCount)");
@@ -337,6 +341,32 @@ public class CombatUpgradeMigrationCoverageTests
             .BeTrue();
         resistances["Fire"]!.Value<int>().Should().Be(-12);
         resistances.ContainsKey("3").Should().BeFalse();
+    }
+
+    [Test]
+    public void BeastMigration_RefundsAllBeastPerksAndNormalizesSkillPoints()
+    {
+        var refundBeastPerks = typeof(_22_CombatSystemReplacement)
+            .GetMethod("RefundBeastPerks", BindingFlags.NonPublic | BindingFlags.Static)!;
+        var beast = new Beast
+        {
+            Level = 50,
+            UnallocatedSP = 35,
+            Perks =
+            {
+                [PerkType.EnduranceLink] = 3,
+                [PerkType.PoisonBreath] = 5
+            }
+        };
+
+        object[] args = { beast, false };
+
+        ((int)refundBeastPerks.Invoke(null, args)!)
+            .Should()
+            .Be(15);
+        ((bool)args[1]).Should().BeTrue();
+        beast.Perks.Should().BeEmpty();
+        beast.UnallocatedSP.Should().Be(50);
     }
 
     [Test]

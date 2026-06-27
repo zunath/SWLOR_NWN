@@ -156,16 +156,32 @@ public class AIModelTests
 
         AIScore.Ability(new AbilityDetail
         {
-            AbilityLevel = 4
-        })(context).Should().Be(AIScoreBand.Defensive + 4);
-
-        AIScore.Ability(new AbilityDetail
-        {
             IsHostileAbility = true,
             IsAreaAbility = true,
             AbilityLevel = 5,
             MaxRange = 12f
         }).Should().NotBeNull();
+    }
+
+    [Test]
+    public void AIScore_DefensiveAbilitiesRequireCombatEnmity()
+    {
+        const uint self = 100;
+        const uint target = 200;
+        var score = AIScore.Ability(new AbilityDetail
+        {
+            AbilityLevel = 4
+        });
+
+        score(CreateContext(self: self)).Should().Be(0);
+
+        EnemyEnmityTables()[self] = new Dictionary<uint, int>
+        {
+            [target] = 1
+        };
+        CreatureToEnemies()[target] = new List<uint> { self };
+
+        score(CreateContext(self: self)).Should().Be(AIScoreBand.Defensive + 4);
     }
 
     [Test]

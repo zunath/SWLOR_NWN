@@ -60,7 +60,9 @@ namespace SWLOR.Game.Server.Service.AIService
                 };
             }
 
-            return Fixed(AIScoreBand.Defensive + ability.AbilityLevel);
+            return context => context.CurrentEnmityTarget != OBJECT_INVALID
+                ? AIScoreBand.Defensive + ability.AbilityLevel
+                : 0;
         }
     }
 }

@@ -513,28 +513,29 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 new(
                     "Attributes",
                     "Character",
-                    "The current in-game attribute descriptions.",
+                    "Current attribute effects for AP choices and combat stats.",
                     "AP choices and effects",
                     new[]
                     {
                         new ArticleBlock("Might",
-                            "Improves damage dealt by melee weapons and increases carrying capacity. Especially useful for characters focusing on Vibroblade, Heavy Vibroblade, Spear, Twin Blade, Katar, Staff, Smithery, or Gathering."),
+                            "Improves melee weapon damage, maximum STM, natural STM regeneration, and carrying capacity."),
                         new ArticleBlock("Perception",
-                            "Improves damage dealt by ranged and finesse weapons and increases physical accuracy. Especially useful for characters focusing on Vibroknife, Lightsaber, Saberstaff, Katar, Pistol, Rifle, Fabrication, or Devices."),
+                            "Improves melee weapon accuracy, ranged and throwing weapon damage, and critical hit rate support."),
                         new ArticleBlock("Vitality",
-                            "Improves maximum hit points and reduces damage received. It also improves physical defense, natural HP/FP/STM regeneration, and rest recovery."),
+                            "Improves maximum HP, natural HP regeneration, physical defense, and resistance to incoming critical hits."),
                         new ArticleBlock("Willpower",
-                            "Improves force attack, force defense, maximum force points, and First Aid capabilities. It also improves Force abilities and ship combat modules."),
+                            "Improves Force attack, Force defense, maximum FP, natural FP regeneration, and Force ability effectiveness."),
                         new ArticleBlock("Agility",
-                            "Improves ranged, finesse, and throwing accuracy, evasion, maximum stamina, ship combat modules, and reduces critical hit chance against you."),
+                            "Improves ranged and throwing weapon accuracy and evasion."),
                         new ArticleBlock("Social",
                             "Improves XP gain and leadership capabilities. It also improves guild point acquisition, quest credit rewards, XP debt reduction on death, and reduces ship repair bills.")
                     },
                     new[]
                     {
                         new QuestionAnswer("How do I get AP?", "Every 10 earned SP grants 1 AP, up to 40."),
+                        new QuestionAnswer("What stats do weapons use?", "Melee weapons use Might for damage and Perception for accuracy. Ranged and throwing weapons use Perception for damage and Agility for accuracy."),
                         new QuestionAnswer("What helps XP gain?", "Social improves XP gain."),
-                        new QuestionAnswer("What helps stamina?", "Agility increases maximum stamina.")
+                        new QuestionAnswer("What helps stamina?", "Might increases maximum STM and natural STM regeneration.")
                     },
                     new[] { "Skills", "Abilities", "Perks", "Rebuilds", "Combat Basics", "Death & Recovery", "Common Questions" }),
 

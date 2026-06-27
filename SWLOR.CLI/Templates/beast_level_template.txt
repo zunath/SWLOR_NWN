@@ -18,11 +18,11 @@
 				.MaxEvasionBonus(%%MAXEVASIONBONUS%%)
 				.MaxDefenseBonus(CombatDamageType.Physical, %%MAXPHYSICALDEFENSE%%)
 				.MaxDefenseBonus(CombatDamageType.Force, %%MAXFORCEDEFENSE%%)
-				.MaxDefenseBonus(CombatDamageType.Fire, %%MAXFIREDEFENSE%%)
-				.MaxDefenseBonus(CombatDamageType.Poison, %%MAXPOISONDEFENSE%%)
-				.MaxDefenseBonus(CombatDamageType.Electrical, %%MAXELECTRICALDEFENSE%%)
-				.MaxDefenseBonus(CombatDamageType.Ice, %%MAXICEDEFENSE%%)
-				.MaxSavingThrowBonus(SavingThrow.Will, %%MAXWILL%%)
-				.MaxSavingThrowBonus(SavingThrow.Fortitude, %%MAXFORTITUDE%%)
-				.MaxSavingThrowBonus(SavingThrow.Reflex, %%MAXREFLEX%%);
+				.MaxResistanceBonus(ResistanceType.Fire, %%MAXFIREDEFENSE%%)
+				.MaxResistanceBonus(ResistanceType.Poison, %%MAXPOISONDEFENSE%%)
+				.MaxResistanceBonus(ResistanceType.Electrical, %%MAXELECTRICALDEFENSE%%)
+				.MaxResistanceBonus(ResistanceType.Ice, %%MAXICEDEFENSE%%)
+				.MaxResistanceBonus(ResistanceType.Mind, %%MAXWILL%%)
+				.MaxResistanceBonus(ResistanceType.Trauma, %%MAXFORTITUDE%%)
+				.MaxResistanceBonus(ResistanceType.Mobility, %%MAXREFLEX%%);
 		}

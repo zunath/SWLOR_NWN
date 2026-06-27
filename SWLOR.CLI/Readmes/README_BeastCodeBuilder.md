@@ -43,6 +43,7 @@ The tool expects a TSV file with the following key columns:
 - Column 27-30: Appearance, portrait, sound set, scaling
 - Column 31: Incubation flag
 - Columns 32-49: Mutation data
+- Columns 60-68: Optional third mutation data
 
 ## Output Structure
 ```

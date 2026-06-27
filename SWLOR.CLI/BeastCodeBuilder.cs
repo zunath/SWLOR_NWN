@@ -67,28 +67,7 @@ namespace SWLOR.CLI
                 var soundSetId = data[29].Trim();
                 var scaling = data[30].Trim() + "f";
 
-                var mutation1 = BuildMutation(
-                    data[32].Trim(),
-                    data[33].Trim(),
-                    data[34].Trim(),
-                    data[35].Trim(),
-                    data[36].Trim(),
-                    data[37].Trim(),
-                    data[38].Trim(),
-                    data[39].Trim(),
-                    data[40].Trim()
-                );
-                var mutation2 = BuildMutation(
-                    data[41].Trim(),
-                    data[42].Trim(),
-                    data[43].Trim(),
-                    data[44].Trim(),
-                    data[45].Trim(),
-                    data[46].Trim(),
-                    data[47].Trim(),
-                    data[48].Trim(),
-                    data[49].Trim()
-                );
+                var mutations = BuildMutations(data);
 
                 detail.Code = template
                     .Replace("%%BEASTNAME%%", name)
@@ -97,12 +76,12 @@ namespace SWLOR.CLI
                     .Replace("%%SOUNDSETID%%", soundSetId)
                     .Replace("%%PORTRAITID%%", portraitId)
                     .Replace("%%CLASSNAME%%", className)
+                    .Replace("%%NAMESPACE%%", detail.IsIncubation ? "IncubationBeastDefinition" : "TamableBeastDefinition")
                     .Replace("%%BEASTTYPE%%", beastType)
                     .Replace("%%ACCURACYSTAT%%", GetAbilityEnumName(accuracyStat))
                     .Replace("%%DAMAGESTAT%%", GetAbilityEnumName(damageStat))
                     .Replace("%%BEASTROLE%%", role)
-                    .Replace("%%MUTATION_TEMPLATE1%%", mutation1)
-                    .Replace("%%MUTATION_TEMPLATE2%%", mutation2);
+                    .Replace("%%MUTATION_TEMPLATES%%", mutations);
 
                 var level = Convert.ToInt32(data[2]);
                 if (!detail.Levels.ContainsKey(level))
@@ -295,6 +274,55 @@ namespace SWLOR.CLI
             }
 
             return output;
+        }
+
+        private string BuildMutations(string[] data)
+        {
+            var mutations = new List<string>();
+
+            mutations.Add(BuildMutation(
+                data[32].Trim(),
+                data[33].Trim(),
+                data[34].Trim(),
+                data[35].Trim(),
+                data[36].Trim(),
+                data[37].Trim(),
+                data[38].Trim(),
+                data[39].Trim(),
+                data[40].Trim()
+            ));
+
+            mutations.Add(BuildMutation(
+                data[41].Trim(),
+                data[42].Trim(),
+                data[43].Trim(),
+                data[44].Trim(),
+                data[45].Trim(),
+                data[46].Trim(),
+                data[47].Trim(),
+                data[48].Trim(),
+                data[49].Trim()
+            ));
+
+            // Optional third mutation block appended after the generated combat stats columns.
+            if (data.Length >= 69)
+            {
+                mutations.Add(BuildMutation(
+                    data[60].Trim(),
+                    data[61].Trim(),
+                    data[62].Trim(),
+                    data[63].Trim(),
+                    data[64].Trim(),
+                    data[65].Trim(),
+                    data[66].Trim(),
+                    data[67].Trim(),
+                    data[68].Trim()
+                ));
+            }
+
+            return string.Join(
+                Environment.NewLine + Environment.NewLine + "\t\t\t\t",
+                mutations.Where(mutation => !string.IsNullOrWhiteSpace(mutation)));
         }
         
         private void ClearOutputDirectory()

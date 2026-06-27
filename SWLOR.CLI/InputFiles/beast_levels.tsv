@@ -1709,7 +1709,7 @@ Fungal Shambler	Force	1	20	2	2	6	9	9	18	10	20	SOC	WIL	0	0	0	0	1	0	0	0	1	0	0	0	Fu
 Juvenile Rancor	Bruiser	1	50	6	6	19	12	18	11	6	6	VIT	MGT	1	0	0	1	0	0	0	0	0	0	0	0	JuvenileRancor	SWLORcrancorbull	3495	30	0.4	Y																			Bruiser0	8	30	37	25	55	19	4	0	1
 Juvenile Chirodactyl	Damage	1	30	5	5	20	11	20	10	6	6	VIT	MGT	1	1	0	0	0	0	0	0	0	0	0	0	JuvenileChirodactyl	WyvernAdult	1298	30	0.66	Y																			Damage0	8	31	39	24	62	19	5	0	0
 Stinging Swarm	Evasion	1	30	3	3	18	9	19	12	8	6	VIT	MGT	0	0	1	0	0	0	0	0	0	0	0	0	StingingSwarm	SWLORSwarmA3	2067	6	1	Y																			Evasion0	6	28	37	27	58	26	4	1	0
-Speckled Seer	Force	1	20	2	2	8	10	9	19	19	8	AGI	WIL	0	0	0	0	1	0	0	0	1	0	0	0	SpeckledSeer	Kyoht3hydromancerx	318	77	1	Y																			Force0	6	29	22	38	58	58	0	4	0
+Speckled Seer	Force	1	20	2	2	8	10	9	19	19	8	AGI	WIL	0	0	0	0	1	0	0	0	1	0	0	0	SpeckledSeer	JellyfishMediumCCP	318	77	1	Y																			Force0	6	29	22	38	58	58	0	4	0
 Tundra Ponderer	Tank	1	70	4	4	16	12	15	9	10	11	MGT	VIT	0	0	0	1	1	0	0	0	0	0	0	0	TundraPonderer	ElephantMammothProjectQDraygothTheAmethystDragon	174	8	0.66	Y																			Tank0	6	25	32	23	49	31	2	0	1
 Underbrush Scamp	Evasion	1	30	3	3	6	19	10	9	20	8	PER	AGI	0	0	1	0	0	0	0	0	0	0	0	0	UnderbrushScamp	FoxRedtailanimCCPhydromancerx	189	252	1	Y																			Evasion0	6	30	24	22	58	62	0	0	4
 Stoneclad Behemoth	Tank	1	70	4	4	20	10	18	9	8	6	MGT	VIT	0	0	0	1	1	0	0	0	0	0	0	0	StonecladBehemoth	EarthDrakeCCCPLUSHHYENAofDOOM	202	33	0.5	Y																			Tank0	6	28	37	23	61	25	4	0	0
@@ -1735,7 +1735,7 @@ Fungal Shambler	Force	2	36	2	3	6	10	9	18	10	20	SOC	WIL	0	0	2	0	3	1	1	1	3	0	0	0	F
 Juvenile Rancor	Bruiser	2	88	7	6	19	13	18	11	6	6	VIT	MGT	3	2	1	3	1	1	1	0	0	0	0	0	JuvenileRancor	SWLORcrancorbull	3495	30	0.4	Y																			Bruiser0	8	35	40	28	58	22	4	0	1
 Juvenile Chirodactyl	Damage	2	56	5	5	20	12	20	10	6	6	VIT	MGT	3	3	1	1	1	2	2	0	0	0	0	0	JuvenileChirodactyl	WyvernAdult	1298	30	0.66	Y																			Damage0	8	36	41	26	66	22	5	0	0
 Stinging Swarm	Evasion	2	66	3	3	18	10	19	12	8	6	VIT	MGT	0	2	3	2	2	1	1	1	1	0	0	0	StingingSwarm	SWLORSwarmA3	2067	6	1	Y																			Evasion0	6	30	40	30	61	30	4	1	0
-Speckled Seer	Force	2	40	2	3	8	11	9	19	19	8	AGI	WIL	0	0	2	0	3	1	1	1	3	0	0	0	SpeckledSeer	Kyoht3hydromancerx	318	77	1	Y																			Force0	6	32	23	42	60	61	0	4	0
+Speckled Seer	Force	2	40	2	3	8	11	9	19	19	8	AGI	WIL	0	0	2	0	3	1	1	1	3	0	0	0	SpeckledSeer	JellyfishMediumCCP	318	77	1	Y																			Force0	6	32	23	42	60	61	0	4	0
 Tundra Ponderer	Tank	2	132	4	4	16	13	15	9	10	11	MGT	VIT	0	0	1	3	3	2	2	2	2	0	0	0	TundraPonderer	ElephantMammothProjectQDraygothTheAmethystDragon	174	8	0.66	Y																			Tank0	6	27	35	27	51	34	2	0	1
 Underbrush Scamp	Evasion	2	42	3	3	6	20	10	9	20	8	PER	AGI	0	2	3	2	2	1	1	1	1	0	0	0	UnderbrushScamp	FoxRedtailanimCCPhydromancerx	189	252	1	Y																			Evasion0	6	32	27	26	62	66	0	0	4
 Stoneclad Behemoth	Tank	2	150	4	4	20	11	18	9	8	6	MGT	VIT	0	0	1	3	3	2	2	2	2	0	0	0	StonecladBehemoth	EarthDrakeCCCPLUSHHYENAofDOOM	202	33	0.5	Y																			Tank0	6	30	40	27	63	28	4	0	0
@@ -1761,7 +1761,7 @@ Fungal Shambler	Force	3	44	2	3	6	10	9	19	10	20	SOC	WIL	0	0	2	1	5	2	2	1	5	0	0	0	F
 Juvenile Rancor	Bruiser	3	107	7	7	19	13	18	12	6	6	VIT	MGT	5	2	2	5	2	1	1	1	1	0	0	0	JuvenileRancor	SWLORcrancorbull	3495	30	0.4	Y																			Bruiser0	8	38	43	30	61	24	4	0	1
 Juvenile Chirodactyl	Damage	3	69	6	5	20	12	20	11	6	6	VIT	MGT	5	5	2	1	2	2	2	0	0	0	0	0	JuvenileChirodactyl	WyvernAdult	1298	30	0.66	Y																			Damage0	8	39	42	29	69	24	5	0	0
 Stinging Swarm	Evasion	3	84	4	3	18	10	19	13	8	6	VIT	MGT	0	2	5	2	2	2	2	1	1	0	0	0	StingingSwarm	SWLORSwarmA3	2067	6	1	Y																			Evasion0	6	33	42	32	64	33	4	1	0
-Speckled Seer	Force	3	50	2	3	8	11	9	20	19	8	AGI	WIL	0	0	2	1	5	2	2	1	5	0	0	0	SpeckledSeer	Kyoht3hydromancerx	318	77	1	Y																			Force0	6	34	26	45	62	64	0	4	0
+Speckled Seer	Force	3	50	2	3	8	11	9	20	19	8	AGI	WIL	0	0	2	1	5	2	2	1	5	0	0	0	SpeckledSeer	JellyfishMediumCCP	318	77	1	Y																			Force0	6	34	26	45	62	64	0	4	0
 Tundra Ponderer	Tank	3	163	4	4	16	13	15	10	10	11	MGT	VIT	0	0	2	5	5	2	2	2	2	0	0	0	TundraPonderer	ElephantMammothProjectQDraygothTheAmethystDragon	174	8	0.66	Y																			Tank0	6	30	39	30	52	36	2	0	1
 Underbrush Scamp	Evasion	3	48	4	3	6	20	10	10	20	8	PER	AGI	0	2	5	2	2	2	2	1	1	0	0	0	UnderbrushScamp	FoxRedtailanimCCPhydromancerx	189	252	1	Y																			Evasion0	6	35	28	27	65	69	0	0	4
 Stoneclad Behemoth	Tank	3	190	4	4	20	11	18	10	8	6	MGT	VIT	0	0	2	5	5	2	2	2	2	0	0	0	StonecladBehemoth	EarthDrakeCCCPLUSHHYENAofDOOM	202	33	0.5	Y																			Tank0	6	33	43	30	64	30	4	0	0
@@ -1787,7 +1787,7 @@ Fungal Shambler	Force	4	52	2	4	6	10	10	19	11	20	SOC	WIL	0	0	3	1	6	2	2	2	6	0	0	0	
 Juvenile Rancor	Bruiser	4	126	8	7	19	13	19	12	7	6	VIT	MGT	6	3	2	6	2	2	2	1	1	0	0	0	JuvenileRancor	SWLORcrancorbull	3495	30	0.4	Y																			Bruiser0	8	41	45	31	63	26	4	0	1
 Juvenile Chirodactyl	Damage	4	82	6	6	20	12	21	11	7	6	VIT	MGT	6	6	2	2	2	3	3	0	0	0	0	0	JuvenileChirodactyl	WyvernAdult	1298	30	0.66	Y																			Damage0	8	42	44	30	72	26	5	0	1
 Stinging Swarm	Evasion	4	102	4	3	18	10	20	13	9	6	VIT	MGT	0	3	6	3	3	2	2	2	2	0	0	0	StingingSwarm	SWLORSwarmA3	2067	6	1	Y																			Evasion0	6	35	44	34	66	36	4	1	0
-Speckled Seer	Force	4	60	2	4	8	11	10	20	20	8	AGI	WIL	0	0	3	1	6	2	2	2	6	0	0	0	SpeckledSeer	Kyoht3hydromancerx	318	77	1	Y																			Force0	6	36	27	47	63	66	0	4	0
+Speckled Seer	Force	4	60	2	4	8	11	10	20	20	8	AGI	WIL	0	0	3	1	6	2	2	2	6	0	0	0	SpeckledSeer	JellyfishMediumCCP	318	77	1	Y																			Force0	6	36	27	47	63	66	0	4	0
 Tundra Ponderer	Tank	4	194	5	5	16	13	16	10	11	11	MGT	VIT	0	0	2	6	6	3	3	3	3	0	0	0	TundraPonderer	ElephantMammothProjectQDraygothTheAmethystDragon	174	8	0.66	Y																			Tank0	6	32	41	32	54	38	2	0	1
 Underbrush Scamp	Evasion	4	54	4	3	6	20	11	10	21	8	PER	AGI	0	3	6	3	3	2	2	2	2	0	0	0	UnderbrushScamp	FoxRedtailanimCCPhydromancerx	189	252	1	Y																			Evasion0	6	37	30	29	67	72	0	0	5
 Stoneclad Behemoth	Tank	4	230	5	5	20	11	19	10	9	6	MGT	VIT	0	0	2	6	6	3	3	3	3	0	0	0	StonecladBehemoth	EarthDrakeCCCPLUSHHYENAofDOOM	202	33	0.5	Y																			Tank0	6	35	45	32	66	32	4	0	0
@@ -1813,7 +1813,7 @@ Fungal Shambler	Force	5	60	2	5	7	10	10	19	11	20	SOC	WIL	1	1	4	1	7	3	3	2	7	0	1	0	
 Juvenile Rancor	Bruiser	5	145	9	7	20	13	19	12	7	6	VIT	MGT	7	4	3	7	3	2	2	1	1	0	0	0	JuvenileRancor	SWLORcrancorbull	3495	30	0.4	Y																			Bruiser0	8	45	48	34	65	28	4	1	1
 Juvenile Chirodactyl	Damage	5	95	7	6	21	12	21	11	7	6	VIT	MGT	7	7	3	2	3	4	4	1	1	0	0	1	JuvenileChirodactyl	WyvernAdult	1298	30	0.66	Y																			Damage0	8	46	46	32	74	28	5	0	1
 Stinging Swarm	Evasion	5	120	4	3	19	10	20	13	9	6	VIT	MGT	1	4	7	4	4	3	3	2	2	0	0	1	StingingSwarm	SWLORSwarmA3	2067	6	1	Y																			Evasion0	6	37	46	36	68	38	4	1	0
-Speckled Seer	Force	5	70	2	5	9	11	10	20	20	8	AGI	WIL	1	1	4	1	7	3	3	2	7	0	1	0	SpeckledSeer	Kyoht3hydromancerx	318	77	1	Y																			Force0	6	39	28	50	65	68	0	5	0
+Speckled Seer	Force	5	70	2	5	9	11	10	20	20	8	AGI	WIL	1	1	4	1	7	3	3	2	7	0	1	0	SpeckledSeer	JellyfishMediumCCP	318	77	1	Y																			Force0	6	39	28	50	65	68	0	5	0
 Tundra Ponderer	Tank	5	225	5	5	17	13	16	10	11	11	MGT	VIT	1	1	3	7	7	4	4	4	4	0	0	0	TundraPonderer	ElephantMammothProjectQDraygothTheAmethystDragon	174	8	0.66	Y																			Tank0	6	34	43	35	55	40	2	0	1
 Underbrush Scamp	Evasion	5	60	4	3	7	20	11	10	21	8	PER	AGI	1	4	7	4	4	3	3	2	2	0	0	1	UnderbrushScamp	FoxRedtailanimCCPhydromancerx	189	252	1	Y																			Evasion0	6	39	33	32	70	74	0	0	5
 Stoneclad Behemoth	Tank	5	270	5	5	21	11	19	10	9	6	MGT	VIT	1	1	3	7	7	4	4	4	4	0	0	0	StonecladBehemoth	EarthDrakeCCCPLUSHHYENAofDOOM	202	33	0.5	Y																			Tank0	6	37	48	35	67	34	4	0	0
@@ -1839,7 +1839,7 @@ Fungal Shambler	Force	6	68	3	6	7	11	10	19	11	20	SOC	WIL	1	1	5	1	8	4	4	2	8	0	1	0	
 Juvenile Rancor	Bruiser	6	164	10	8	20	14	19	12	7	6	VIT	MGT	8	5	4	8	4	2	2	1	1	0	0	0	JuvenileRancor	SWLORcrancorbull	3495	30	0.4	Y																			Bruiser0	8	48	50	36	67	30	4	1	1
 Juvenile Chirodactyl	Damage	6	108	7	6	21	13	21	11	7	6	VIT	MGT	8	8	4	2	4	5	5	1	1	0	0	1	JuvenileChirodactyl	WyvernAdult	1298	30	0.66	Y																			Damage0	8	49	47	35	77	30	5	0	1
 Stinging Swarm	Evasion	6	138	5	4	19	11	20	13	9	6	VIT	MGT	1	5	8	5	5	4	4	2	2	0	0	1	StingingSwarm	SWLORSwarmA3	2067	6	1	Y																			Evasion0	6	39	48	39	70	41	4	1	0
-Speckled Seer	Force	6	80	3	6	9	12	10	20	20	8	AGI	WIL	1	1	5	1	8	4	4	2	8	0	1	0	SpeckledSeer	Kyoht3hydromancerx	318	77	1	Y																			Force0	6	41	29	52	66	70	0	5	0
+Speckled Seer	Force	6	80	3	6	9	12	10	20	20	8	AGI	WIL	1	1	5	1	8	4	4	2	8	0	1	0	SpeckledSeer	JellyfishMediumCCP	318	77	1	Y																			Force0	6	41	29	52	66	70	0	5	0
 Tundra Ponderer	Tank	6	256	5	5	17	14	16	10	11	11	MGT	VIT	1	1	4	8	8	5	5	5	5	0	0	0	TundraPonderer	ElephantMammothProjectQDraygothTheAmethystDragon	174	8	0.66	Y																			Tank0	6	36	45	37	57	42	2	0	1
 Underbrush Scamp	Evasion	6	66	5	4	7	21	11	10	21	8	PER	AGI	1	5	8	5	5	4	4	2	2	0	0	1	UnderbrushScamp	FoxRedtailanimCCPhydromancerx	189	252	1	Y																			Evasion0	6	41	35	34	73	77	0	0	5
 Stoneclad Behemoth	Tank	6	310	5	5	21	12	19	10	9	6	MGT	VIT	1	1	4	8	8	5	5	5	5	0	0	0	StonecladBehemoth	EarthDrakeCCCPLUSHHYENAofDOOM	202	33	0.5	Y																			Tank0	6	39	50	37	69	36	4	0	0
@@ -1865,7 +1865,7 @@ Fungal Shambler	Force	7	76	3	6	7	11	10	20	11	20	SOC	WIL	1	1	6	1	9	4	4	3	9	1	1	1	
 Juvenile Rancor	Bruiser	7	183	10	8	20	14	19	13	7	6	VIT	MGT	9	6	4	9	4	3	3	1	1	0	0	0	JuvenileRancor	SWLORcrancorbull	3495	30	0.4	Y																			Bruiser0	8	51	52	37	70	32	4	1	1
 Juvenile Chirodactyl	Damage	7	121	7	6	21	13	21	12	7	6	VIT	MGT	9	9	4	3	4	6	6	1	1	0	0	1	JuvenileChirodactyl	WyvernAdult	1298	30	0.66	Y																			Damage0	8	52	49	36	79	32	5	0	1
 Stinging Swarm	Evasion	7	156	5	4	19	11	20	14	9	6	VIT	MGT	1	6	9	6	6	4	4	3	3	0	0	1	StingingSwarm	SWLORSwarmA3	2067	6	1	Y																			Evasion0	6	42	51	41	73	43	5	1	0
-Speckled Seer	Force	7	90	3	6	9	12	10	21	20	8	AGI	WIL	1	1	6	1	9	4	4	3	9	1	1	1	SpeckledSeer	Kyoht3hydromancerx	318	77	1	Y																			Force0	6	43	31	54	68	73	0	5	0
+Speckled Seer	Force	7	90	3	6	9	12	10	21	20	8	AGI	WIL	1	1	6	1	9	4	4	3	9	1	1	1	SpeckledSeer	JellyfishMediumCCP	318	77	1	Y																			Force0	6	43	31	54	68	73	0	5	0
 Tundra Ponderer	Tank	7	287	5	5	17	14	16	11	11	11	MGT	VIT	1	1	4	9	9	6	6	6	6	0	0	0	TundraPonderer	ElephantMammothProjectQDraygothTheAmethystDragon	174	8	0.66	Y																			Tank0	6	39	48	39	58	44	3	0	1
 Underbrush Scamp	Evasion	7	72	5	4	7	21	11	11	21	8	PER	AGI	1	6	9	6	6	4	4	3	3	0	0	1	UnderbrushScamp	FoxRedtailanimCCPhydromancerx	189	252	1	Y																			Evasion0	6	44	37	36	75	79	0	0	5
 Stoneclad Behemoth	Tank	7	350	5	5	21	12	19	11	9	6	MGT	VIT	1	1	4	9	9	6	6	6	6	0	0	0	StonecladBehemoth	EarthDrakeCCCPLUSHHYENAofDOOM	202	33	0.5	Y																			Tank0	6	42	52	39	70	38	4	0	0
@@ -1891,7 +1891,7 @@ Fungal Shambler	Force	8	84	3	7	7	11	10	20	11	20	SOC	WIL	1	1	7	2	11	5	5	3	11	1	1	
 Juvenile Rancor	Bruiser	8	202	11	8	20	14	19	13	7	6	VIT	MGT	11	7	5	11	5	3	3	2	2	0	0	0	JuvenileRancor	SWLORcrancorbull	3495	30	0.4	Y																			Bruiser0	8	55	55	40	72	34	4	1	2
 Juvenile Chirodactyl	Damage	8	134	8	6	21	13	21	12	7	6	VIT	MGT	11	11	5	3	5	7	7	1	1	0	0	1	JuvenileChirodactyl	WyvernAdult	1298	30	0.66	Y																			Damage0	8	56	50	38	82	34	5	0	1
 Stinging Swarm	Evasion	8	174	5	4	19	11	20	14	9	6	VIT	MGT	1	7	11	7	7	5	5	3	3	0	0	1	StingingSwarm	SWLORSwarmA3	2067	6	1	Y																			Evasion0	6	44	53	43	75	46	5	1	0
-Speckled Seer	Force	8	100	3	7	9	12	10	21	20	8	AGI	WIL	1	1	7	2	11	5	5	3	11	1	1	1	SpeckledSeer	Kyoht3hydromancerx	318	77	1	Y																			Force0	6	46	33	58	69	75	0	5	1
+Speckled Seer	Force	8	100	3	7	9	12	10	21	20	8	AGI	WIL	1	1	7	2	11	5	5	3	11	1	1	1	SpeckledSeer	JellyfishMediumCCP	318	77	1	Y																			Force0	6	46	33	58	69	75	0	5	1
 Tundra Ponderer	Tank	8	318	5	5	17	14	16	11	11	11	MGT	VIT	1	1	5	11	11	7	7	7	7	0	0	0	TundraPonderer	ElephantMammothProjectQDraygothTheAmethystDragon	174	8	0.66	Y																			Tank0	6	41	51	43	60	46	3	0	2
 Underbrush Scamp	Evasion	8	78	5	4	7	21	11	11	21	8	PER	AGI	1	7	11	7	7	5	5	3	3	0	0	1	UnderbrushScamp	FoxRedtailanimCCPhydromancerx	189	252	1	Y																			Evasion0	6	46	39	39	78	82	0	0	5
 Stoneclad Behemoth	Tank	8	390	5	5	21	12	19	11	9	6	MGT	VIT	1	1	5	11	11	7	7	7	7	0	0	0	StonecladBehemoth	EarthDrakeCCCPLUSHHYENAofDOOM	202	33	0.5	Y																			Tank0	6	44	55	43	72	40	4	0	1
@@ -1917,7 +1917,7 @@ Fungal Shambler	Force	9	92	3	8	7	11	10	20	11	21	SOC	WIL	1	1	7	2	12	6	6	4	12	1	1	
 Juvenile Rancor	Bruiser	9	221	12	8	20	14	19	13	7	7	VIT	MGT	12	7	6	12	6	4	4	2	2	0	0	0	JuvenileRancor	SWLORcrancorbull	3495	30	0.4	Y																			Bruiser0	8	58	57	42	74	36	4	1	2
 Juvenile Chirodactyl	Damage	9	147	8	7	21	13	21	12	7	7	VIT	MGT	12	12	6	4	6	7	7	1	1	0	0	1	JuvenileChirodactyl	WyvernAdult	1298	30	0.66	Y																			Damage0	8	59	52	41	85	36	5	1	1
 Stinging Swarm	Evasion	9	192	5	4	19	11	20	14	9	7	VIT	MGT	1	7	12	7	7	6	6	4	4	0	0	1	StingingSwarm	SWLORSwarmA3	2067	6	1	Y																			Evasion0	6	46	54	45	77	49	5	2	0
-Speckled Seer	Force	9	110	3	8	9	12	10	21	20	9	AGI	WIL	1	1	7	2	12	6	6	4	12	1	1	1	SpeckledSeer	Kyoht3hydromancerx	318	77	1	Y																			Force0	6	48	34	60	71	77	0	5	1
+Speckled Seer	Force	9	110	3	8	9	12	10	21	20	9	AGI	WIL	1	1	7	2	12	6	6	4	12	1	1	1	SpeckledSeer	JellyfishMediumCCP	318	77	1	Y																			Force0	6	48	34	60	71	77	0	5	1
 Tundra Ponderer	Tank	9	349	6	6	17	14	16	11	11	12	MGT	VIT	1	1	6	12	12	7	7	7	7	1	0	0	TundraPonderer	ElephantMammothProjectQDraygothTheAmethystDragon	174	8	0.66	Y																			Tank0	6	43	53	45	61	48	3	0	2
 Underbrush Scamp	Evasion	9	84	5	4	7	21	11	11	21	9	PER	AGI	1	7	12	7	7	6	6	4	4	0	0	1	UnderbrushScamp	FoxRedtailanimCCPhydromancerx	189	252	1	Y																			Evasion0	6	48	40	40	81	85	0	0	5
 Stoneclad Behemoth	Tank	9	430	6	6	21	12	19	11	9	7	MGT	VIT	1	1	6	12	12	7	7	7	7	1	0	0	StonecladBehemoth	EarthDrakeCCCPLUSHHYENAofDOOM	202	33	0.5	Y																			Tank0	6	46	57	45	73	42	4	0	1
@@ -1943,7 +1943,7 @@ Fungal Shambler	Force	10	100	3	8	7	12	10	20	11	21	SOC	WIL	1	1	8	2	13	6	6	4	13	1	
 Juvenile Rancor	Bruiser	10	240	12	9	20	15	19	13	7	7	VIT	MGT	13	8	6	13	6	4	4	2	2	0	0	0	JuvenileRancor	SWLORcrancorbull	3495	30	0.4	Y																			Bruiser10	13	61	60	43	76	38	4	1	2
 Juvenile Chirodactyl	Damage	10	160	9	7	21	14	21	12	7	7	VIT	MGT	13	13	6	4	6	8	8	1	1	0	0	1	JuvenileChirodactyl	WyvernAdult	1298	30	0.66	Y																			Damage10	16	62	54	42	87	38	5	1	1
 Stinging Swarm	Evasion	10	210	6	4	19	12	20	14	9	7	VIT	MGT	1	8	13	8	8	6	6	4	4	0	0	1	StingingSwarm	SWLORSwarmA3	2067	6	1	Y																			Evasion10	10	48	56	47	79	51	5	2	0
-Speckled Seer	Force	10	120	3	8	9	13	10	21	20	9	AGI	WIL	1	1	8	2	13	6	6	4	13	1	1	1	SpeckledSeer	Kyoht3hydromancerx	318	77	1	Y																			Force10	10	50	35	62	72	79	0	5	1
+Speckled Seer	Force	10	120	3	8	9	13	10	21	20	9	AGI	WIL	1	1	8	2	13	6	6	4	13	1	1	1	SpeckledSeer	JellyfishMediumCCP	318	77	1	Y																			Force10	10	50	35	62	72	79	0	5	1
 Tundra Ponderer	Tank	10	380	6	6	17	15	16	11	11	12	MGT	VIT	1	1	6	13	13	8	8	8	8	1	0	0	TundraPonderer	ElephantMammothProjectQDraygothTheAmethystDragon	174	8	0.66	Y																			Tank10	10	45	55	47	63	50	3	0	2
 Underbrush Scamp	Evasion	10	90	6	4	7	22	11	11	21	9	PER	AGI	1	8	13	8	8	6	6	4	4	0	0	1	UnderbrushScamp	FoxRedtailanimCCPhydromancerx	189	252	1	Y																			Evasion10	10	50	43	42	83	87	0	0	5
 Stoneclad Behemoth	Tank	10	470	6	6	21	13	19	11	9	7	MGT	VIT	1	1	6	13	13	8	8	8	8	1	0	0	StonecladBehemoth	EarthDrakeCCCPLUSHHYENAofDOOM	202	33	0.5	Y																			Tank10	10	48	60	47	75	44	4	0	1
@@ -1969,7 +1969,7 @@ Fungal Shambler	Force	11	108	3	9	7	12	11	20	12	21	SOC	WIL	1	1	9	2	14	7	7	4	14	1	
 Juvenile Rancor	Bruiser	11	259	13	9	20	15	20	13	8	7	VIT	MGT	14	9	7	14	7	4	4	2	2	0	0	0	JuvenileRancor	SWLORcrancorbull	3495	30	0.4	Y																			Bruiser10	13	65	62	46	79	40	4	1	2
 Juvenile Chirodactyl	Damage	11	173	9	7	21	14	22	12	8	7	VIT	MGT	14	14	7	4	7	9	9	1	1	0	0	1	JuvenileChirodactyl	WyvernAdult	1298	30	0.66	Y																			Damage10	16	66	55	44	90	40	5	1	1
 Stinging Swarm	Evasion	11	228	6	4	19	12	21	14	10	7	VIT	MGT	1	9	14	9	9	7	7	4	4	0	0	1	StingingSwarm	SWLORSwarmA3	2067	6	1	Y																			Evasion10	10	50	58	49	82	54	5	2	0
-Speckled Seer	Force	11	130	3	9	9	13	11	21	21	9	AGI	WIL	1	1	9	2	14	7	7	4	14	1	1	1	SpeckledSeer	Kyoht3hydromancerx	318	77	1	Y																			Force10	10	53	36	65	74	82	0	5	1
+Speckled Seer	Force	11	130	3	9	9	13	11	21	21	9	AGI	WIL	1	1	9	2	14	7	7	4	14	1	1	1	SpeckledSeer	JellyfishMediumCCP	318	77	1	Y																			Force10	10	53	36	65	74	82	0	5	1
 Tundra Ponderer	Tank	11	411	6	6	17	15	17	11	12	12	MGT	VIT	1	1	7	14	14	9	9	9	9	1	0	0	TundraPonderer	ElephantMammothProjectQDraygothTheAmethystDragon	174	8	0.66	Y																			Tank10	10	48	57	50	64	52	3	0	2
 Underbrush Scamp	Evasion	11	96	6	4	7	22	12	11	22	9	PER	AGI	1	9	14	9	9	7	7	4	4	0	0	1	UnderbrushScamp	FoxRedtailanimCCPhydromancerx	189	252	1	Y																			Evasion10	10	53	45	45	86	90	0	0	5
 Stoneclad Behemoth	Tank	11	510	6	6	21	13	20	11	10	7	MGT	VIT	1	1	7	14	14	9	9	9	9	1	0	0	StonecladBehemoth	EarthDrakeCCCPLUSHHYENAofDOOM	202	33	0.5	Y																			Tank10	10	51	62	50	76	46	4	0	1
@@ -1995,7 +1995,7 @@ Fungal Shambler	Force	12	116	3	10	7	12	11	21	12	21	SOC	WIL	1	1	10	2	15	7	7	5	15	
 Juvenile Rancor	Bruiser	12	278	14	9	20	15	20	14	8	7	VIT	MGT	15	10	7	15	7	5	5	2	2	0	0	0	JuvenileRancor	SWLORcrancorbull	3495	30	0.4	Y																			Bruiser10	13	68	64	47	81	42	4	1	2
 Juvenile Chirodactyl	Damage	12	186	9	7	21	14	22	13	8	7	VIT	MGT	15	15	7	5	7	10	10	1	1	0	0	1	JuvenileChirodactyl	WyvernAdult	1298	30	0.66	Y																			Damage10	16	69	57	46	93	42	5	1	2
 Stinging Swarm	Evasion	12	246	6	4	19	12	21	15	10	7	VIT	MGT	1	10	15	10	10	7	7	5	5	0	0	1	StingingSwarm	SWLORSwarmA3	2067	6	1	Y																			Evasion10	10	53	61	52	84	57	5	2	1
-Speckled Seer	Force	12	140	3	10	9	13	11	22	21	9	AGI	WIL	1	1	10	2	15	7	7	5	15	1	1	1	SpeckledSeer	Kyoht3hydromancerx	318	77	1	Y																			Force10	10	55	38	67	75	84	0	5	1
+Speckled Seer	Force	12	140	3	10	9	13	11	22	21	9	AGI	WIL	1	1	10	2	15	7	7	5	15	1	1	1	SpeckledSeer	JellyfishMediumCCP	318	77	1	Y																			Force10	10	55	38	67	75	84	0	5	1
 Tundra Ponderer	Tank	12	442	6	6	17	15	17	12	12	12	MGT	VIT	1	1	7	15	15	10	10	10	10	1	0	0	TundraPonderer	ElephantMammothProjectQDraygothTheAmethystDragon	174	8	0.66	Y																			Tank10	10	50	60	52	66	54	3	0	2
 Underbrush Scamp	Evasion	12	102	6	4	7	22	12	12	22	9	PER	AGI	1	10	15	10	10	7	7	5	5	0	0	1	UnderbrushScamp	FoxRedtailanimCCPhydromancerx	189	252	1	Y																			Evasion10	10	55	47	47	88	93	0	0	6
 Stoneclad Behemoth	Tank	12	550	6	6	21	13	20	12	10	7	MGT	VIT	1	1	7	15	15	10	10	10	10	1	0	0	StonecladBehemoth	EarthDrakeCCCPLUSHHYENAofDOOM	202	33	0.5	Y																			Tank10	10	53	64	52	78	48	4	0	1
@@ -2021,7 +2021,7 @@ Fungal Shambler	Force	13	124	3	10	8	12	11	21	12	21	SOC	WIL	1	1	11	3	17	8	8	5	17	
 Juvenile Rancor	Bruiser	13	297	14	10	21	15	20	14	8	7	VIT	MGT	17	11	8	17	8	5	5	3	3	0	0	0	JuvenileRancor	SWLORcrancorbull	3495	30	0.4	Y																			Bruiser10	13	71	67	49	83	45	4	1	2
 Juvenile Chirodactyl	Damage	13	199	10	7	22	14	22	13	8	7	VIT	MGT	17	17	8	5	8	11	11	1	1	1	0	1	JuvenileChirodactyl	WyvernAdult	1298	30	0.66	Y																			Damage10	16	72	58	48	95	45	5	1	2
 Stinging Swarm	Evasion	13	264	7	4	20	12	21	15	10	7	VIT	MGT	1	11	17	11	11	8	8	5	5	0	0	1	StingingSwarm	SWLORSwarmA3	2067	6	1	Y																			Evasion10	10	55	63	54	86	59	5	2	1
-Speckled Seer	Force	13	150	3	10	10	13	11	22	21	9	AGI	WIL	1	1	11	3	17	8	8	5	17	1	1	1	SpeckledSeer	Kyoht3hydromancerx	318	77	1	Y																			Force10	10	57	40	70	77	86	0	5	1
+Speckled Seer	Force	13	150	3	10	10	13	11	22	21	9	AGI	WIL	1	1	11	3	17	8	8	5	17	1	1	1	SpeckledSeer	JellyfishMediumCCP	318	77	1	Y																			Force10	10	57	40	70	77	86	0	5	1
 Tundra Ponderer	Tank	13	473	6	6	18	15	17	12	12	12	MGT	VIT	1	1	8	17	17	11	11	11	11	1	0	1	TundraPonderer	ElephantMammothProjectQDraygothTheAmethystDragon	174	8	0.66	Y																			Tank10	10	52	63	55	67	57	3	0	2
 Underbrush Scamp	Evasion	13	108	7	4	8	22	12	12	22	9	PER	AGI	1	11	17	11	11	8	8	5	5	0	0	1	UnderbrushScamp	FoxRedtailanimCCPhydromancerx	189	252	1	Y																			Evasion10	10	57	49	49	91	95	0	0	6
 Stoneclad Behemoth	Tank	13	590	6	6	22	13	20	12	10	7	MGT	VIT	1	1	8	17	17	11	11	11	11	1	0	1	StonecladBehemoth	EarthDrakeCCCPLUSHHYENAofDOOM	202	33	0.5	Y																			Tank10	10	55	67	55	79	51	4	0	1
@@ -2047,7 +2047,7 @@ Fungal Shambler	Force	14	132	3	11	8	13	11	21	12	21	SOC	WIL	1	1	11	3	18	9	9	6	18	
 Juvenile Rancor	Bruiser	14	316	15	10	21	16	20	14	8	7	VIT	MGT	18	11	9	18	9	6	6	3	3	0	0	0	JuvenileRancor	SWLORcrancorbull	3495	30	0.4	Y																			Bruiser10	13	75	70	52	85	47	5	2	2
 Juvenile Chirodactyl	Damage	14	212	10	8	22	15	22	13	8	7	VIT	MGT	18	18	9	6	9	11	11	1	1	1	0	1	JuvenileChirodactyl	WyvernAdult	1298	30	0.66	Y																			Damage10	16	76	61	50	98	47	6	1	2
 Stinging Swarm	Evasion	14	282	7	4	20	13	21	15	10	7	VIT	MGT	1	11	18	11	11	9	9	6	6	0	0	1	StingingSwarm	SWLORSwarmA3	2067	6	1	Y																			Evasion10	10	57	64	55	88	62	5	2	1
-Speckled Seer	Force	14	160	3	11	10	14	11	22	21	9	AGI	WIL	1	1	11	3	18	9	9	6	18	1	1	1	SpeckledSeer	Kyoht3hydromancerx	318	77	1	Y																			Force10	10	60	41	73	78	88	0	6	1
+Speckled Seer	Force	14	160	3	11	10	14	11	22	21	9	AGI	WIL	1	1	11	3	18	9	9	6	18	1	1	1	SpeckledSeer	JellyfishMediumCCP	318	77	1	Y																			Force10	10	60	41	73	78	88	0	6	1
 Tundra Ponderer	Tank	14	504	7	7	18	16	17	12	12	12	MGT	VIT	1	1	9	18	18	11	11	11	11	1	0	1	TundraPonderer	ElephantMammothProjectQDraygothTheAmethystDragon	174	8	0.66	Y																			Tank10	10	54	65	58	69	59	3	1	2
 Underbrush Scamp	Evasion	14	114	7	4	8	23	12	12	22	9	PER	AGI	1	11	18	11	11	9	9	6	6	0	0	1	UnderbrushScamp	FoxRedtailanimCCPhydromancerx	189	252	1	Y																			Evasion10	10	59	51	51	94	98	1	1	6
 Stoneclad Behemoth	Tank	14	630	7	7	22	14	20	12	10	7	MGT	VIT	1	1	9	18	18	11	11	11	11	1	0	1	StonecladBehemoth	EarthDrakeCCCPLUSHHYENAofDOOM	202	33	0.5	Y																			Tank10	10	57	70	58	81	53	5	1	1
@@ -2073,7 +2073,7 @@ Fungal Shambler	Force	15	140	3	12	8	13	11	21	12	21	SOC	WIL	2	2	12	3	19	9	9	6	19	
 Juvenile Rancor	Bruiser	15	335	16	10	21	16	20	14	8	7	VIT	MGT	19	12	9	19	9	6	6	3	3	0	0	0	JuvenileRancor	SWLORcrancorbull	3495	30	0.4	Y																			Bruiser10	13	78	72	53	88	49	5	2	2
 Juvenile Chirodactyl	Damage	15	225	11	8	22	15	22	13	8	7	VIT	MGT	19	19	9	6	9	12	12	2	2	1	0	2	JuvenileChirodactyl	WyvernAdult	1298	30	0.66	Y																			Damage10	16	79	62	52	100	49	6	1	2
 Stinging Swarm	Evasion	15	300	7	4	20	13	21	15	10	7	VIT	MGT	2	12	19	12	12	9	9	6	6	0	0	2	StingingSwarm	SWLORSwarmA3	2067	6	1	Y																			Evasion10	10	59	66	58	91	64	5	2	1
-Speckled Seer	Force	15	170	3	12	10	14	11	22	21	9	AGI	WIL	2	2	12	3	19	9	9	6	19	1	2	1	SpeckledSeer	Kyoht3hydromancerx	318	77	1	Y																			Force10	10	62	42	75	80	91	0	6	1
+Speckled Seer	Force	15	170	3	12	10	14	11	22	21	9	AGI	WIL	2	2	12	3	19	9	9	6	19	1	2	1	SpeckledSeer	JellyfishMediumCCP	318	77	1	Y																			Force10	10	62	42	75	80	91	0	6	1
 Tundra Ponderer	Tank	15	535	7	7	18	16	17	12	12	12	MGT	VIT	2	2	9	19	19	12	12	12	12	1	0	1	TundraPonderer	ElephantMammothProjectQDraygothTheAmethystDragon	174	8	0.66	Y																			Tank10	10	57	67	60	70	61	3	1	2
 Underbrush Scamp	Evasion	15	120	7	4	8	23	12	12	22	9	PER	AGI	2	12	19	12	12	9	9	6	6	0	0	2	UnderbrushScamp	FoxRedtailanimCCPhydromancerx	189	252	1	Y																			Evasion10	10	62	53	53	96	100	1	1	6
 Stoneclad Behemoth	Tank	15	670	7	7	22	14	20	12	10	7	MGT	VIT	2	2	9	19	19	12	12	12	12	1	0	1	StonecladBehemoth	EarthDrakeCCCPLUSHHYENAofDOOM	202	33	0.5	Y																			Tank10	10	60	72	60	82	55	5	1	1
@@ -2099,7 +2099,7 @@ Fungal Shambler	Force	16	148	4	13	8	13	11	22	12	21	SOC	WIL	2	2	13	3	20	10	10	7	2
 Juvenile Rancor	Bruiser	16	354	17	11	21	16	20	15	8	7	VIT	MGT	20	13	10	20	10	7	7	3	3	0	0	0	JuvenileRancor	SWLORcrancorbull	3495	30	0.4	Y																			Bruiser10	13	81	74	55	90	51	5	2	3
 Juvenile Chirodactyl	Damage	16	238	11	8	22	15	22	14	8	7	VIT	MGT	20	20	10	7	10	13	13	2	2	1	0	2	JuvenileChirodactyl	WyvernAdult	1298	30	0.66	Y																			Damage10	16	82	64	54	103	51	6	1	2
 Stinging Swarm	Evasion	16	318	8	5	20	13	21	16	10	7	VIT	MGT	2	13	20	13	13	10	10	7	7	0	0	2	StingingSwarm	SWLORSwarmA3	2067	6	1	Y																			Evasion10	10	62	68	60	93	67	5	2	1
-Speckled Seer	Force	16	180	4	13	10	14	11	23	21	9	AGI	WIL	2	2	13	3	20	10	10	7	20	1	2	1	SpeckledSeer	Kyoht3hydromancerx	318	77	1	Y																			Force10	10	64	43	77	81	93	0	6	2
+Speckled Seer	Force	16	180	4	13	10	14	11	23	21	9	AGI	WIL	2	2	13	3	20	10	10	7	20	1	2	1	SpeckledSeer	JellyfishMediumCCP	318	77	1	Y																			Force10	10	64	43	77	81	93	0	6	2
 Tundra Ponderer	Tank	16	566	7	7	18	16	17	13	12	12	MGT	VIT	2	2	10	20	20	13	13	13	13	1	0	1	TundraPonderer	ElephantMammothProjectQDraygothTheAmethystDragon	174	8	0.66	Y																			Tank10	10	59	69	62	72	63	3	1	3
 Underbrush Scamp	Evasion	16	126	8	5	8	23	12	13	22	9	PER	AGI	2	13	20	13	13	10	10	7	7	0	0	2	UnderbrushScamp	FoxRedtailanimCCPhydromancerx	189	252	1	Y																			Evasion10	10	64	55	55	99	103	1	1	6
 Stoneclad Behemoth	Tank	16	710	7	7	22	14	20	13	10	7	MGT	VIT	2	2	10	20	20	13	13	13	13	1	0	1	StonecladBehemoth	EarthDrakeCCCPLUSHHYENAofDOOM	202	33	0.5	Y																			Tank10	10	62	74	62	84	57	5	1	2
@@ -2125,7 +2125,7 @@ Fungal Shambler	Force	17	156	4	13	8	14	11	22	12	21	SOC	WIL	2	2	14	3	21	10	10	7	2
 Juvenile Rancor	Bruiser	17	373	17	11	21	17	20	15	8	7	VIT	MGT	21	14	10	21	10	7	7	3	3	0	0	0	JuvenileRancor	SWLORcrancorbull	3495	30	0.4	Y																			Bruiser10	13	85	76	57	92	53	5	2	3
 Juvenile Chirodactyl	Damage	17	251	11	8	22	16	22	14	8	7	VIT	MGT	21	21	10	7	10	14	14	2	2	1	0	2	JuvenileChirodactyl	WyvernAdult	1298	30	0.66	Y																			Damage10	16	86	65	55	106	53	6	1	2
 Stinging Swarm	Evasion	17	336	8	5	20	14	21	16	10	7	VIT	MGT	2	14	21	14	14	10	10	7	7	0	0	2	StingingSwarm	SWLORSwarmA3	2067	6	1	Y																			Evasion10	10	64	71	62	95	70	5	2	1
-Speckled Seer	Force	17	190	4	13	10	15	11	23	21	9	AGI	WIL	2	2	14	3	21	10	10	7	21	1	2	1	SpeckledSeer	Kyoht3hydromancerx	318	77	1	Y																			Force10	10	67	45	80	83	95	0	6	2
+Speckled Seer	Force	17	190	4	13	10	15	11	23	21	9	AGI	WIL	2	2	14	3	21	10	10	7	21	1	2	1	SpeckledSeer	JellyfishMediumCCP	318	77	1	Y																			Force10	10	67	45	80	83	95	0	6	2
 Tundra Ponderer	Tank	17	597	7	7	18	17	17	13	12	12	MGT	VIT	2	2	10	21	21	14	14	14	14	1	0	1	TundraPonderer	ElephantMammothProjectQDraygothTheAmethystDragon	174	8	0.66	Y																			Tank10	10	61	72	65	73	65	3	1	3
 Underbrush Scamp	Evasion	17	132	8	5	8	24	12	13	22	9	PER	AGI	2	14	21	14	14	10	10	7	7	0	0	2	UnderbrushScamp	FoxRedtailanimCCPhydromancerx	189	252	1	Y																			Evasion10	10	66	57	58	101	106	1	1	6
 Stoneclad Behemoth	Tank	17	750	7	7	22	15	20	13	10	7	MGT	VIT	2	2	10	21	21	14	14	14	14	1	0	1	StonecladBehemoth	EarthDrakeCCCPLUSHHYENAofDOOM	202	33	0.5	Y																			Tank10	10	64	76	65	85	59	5	1	2
@@ -2151,7 +2151,7 @@ Fungal Shambler	Force	18	164	4	14	8	14	12	22	13	21	SOC	WIL	2	2	15	4	23	11	11	7	2
 Juvenile Rancor	Bruiser	18	392	18	11	21	17	21	15	9	7	VIT	MGT	23	15	11	23	11	7	7	4	4	0	0	0	JuvenileRancor	SWLORcrancorbull	3495	30	0.4	Y																			Bruiser10	13	88	79	59	94	55	5	2	3
 Juvenile Chirodactyl	Damage	18	264	12	8	22	16	23	14	9	7	VIT	MGT	23	23	11	7	11	15	15	2	2	1	0	2	JuvenileChirodactyl	WyvernAdult	1298	30	0.66	Y																			Damage10	16	89	66	58	108	55	6	2	2
 Stinging Swarm	Evasion	18	354	8	5	20	14	22	16	11	7	VIT	MGT	2	15	23	15	15	11	11	7	7	0	0	2	StingingSwarm	SWLORSwarmA3	2067	6	1	Y																			Evasion10	10	66	73	65	97	72	5	3	1
-Speckled Seer	Force	18	200	4	14	10	15	12	23	22	9	AGI	WIL	2	2	15	4	23	11	11	7	23	1	2	1	SpeckledSeer	Kyoht3hydromancerx	318	77	1	Y																			Force10	10	69	47	83	85	97	0	6	2
+Speckled Seer	Force	18	200	4	14	10	15	12	23	22	9	AGI	WIL	2	2	15	4	23	11	11	7	23	1	2	1	SpeckledSeer	JellyfishMediumCCP	318	77	1	Y																			Force10	10	69	47	83	85	97	0	6	2
 Tundra Ponderer	Tank	18	628	7	7	18	17	18	13	13	12	MGT	VIT	2	2	11	23	23	15	15	15	15	1	0	1	TundraPonderer	ElephantMammothProjectQDraygothTheAmethystDragon	174	8	0.66	Y																			Tank10	10	63	75	68	74	67	3	1	3
 Underbrush Scamp	Evasion	18	138	8	5	8	24	13	13	23	9	PER	AGI	2	15	23	15	15	11	11	7	7	0	0	2	UnderbrushScamp	FoxRedtailanimCCPhydromancerx	189	252	1	Y																			Evasion10	10	68	59	60	104	108	1	1	6
 Stoneclad Behemoth	Tank	18	790	7	7	22	15	21	13	11	7	MGT	VIT	2	2	11	23	23	15	15	15	15	1	0	1	StonecladBehemoth	EarthDrakeCCCPLUSHHYENAofDOOM	202	33	0.5	Y																			Tank10	10	66	79	68	86	61	5	1	2
@@ -2177,7 +2177,7 @@ Fungal Shambler	Force	19	172	4	15	8	14	12	22	13	21	SOC	WIL	2	2	16	4	24	12	12	8	2
 Juvenile Rancor	Bruiser	19	411	19	11	21	17	21	15	9	7	VIT	MGT	24	16	12	24	12	8	8	4	4	0	0	0	JuvenileRancor	SWLORcrancorbull	3495	30	0.4	Y																			Bruiser10	13	91	82	61	97	57	5	2	3
 Juvenile Chirodactyl	Damage	19	277	12	9	22	16	23	14	9	7	VIT	MGT	24	24	12	8	12	16	16	2	2	1	0	2	JuvenileChirodactyl	WyvernAdult	1298	30	0.66	Y																			Damage10	16	92	69	60	111	57	6	2	3
 Stinging Swarm	Evasion	19	372	8	5	20	14	22	16	11	7	VIT	MGT	2	16	24	16	16	12	12	8	8	0	0	2	StingingSwarm	SWLORSwarmA3	2067	6	1	Y																			Evasion10	10	68	75	67	100	75	5	3	2
-Speckled Seer	Force	19	210	4	15	10	15	12	23	22	9	AGI	WIL	2	2	16	4	24	12	12	8	24	2	2	2	SpeckledSeer	Kyoht3hydromancerx	318	77	1	Y																			Force10	10	71	48	85	86	100	0	6	2
+Speckled Seer	Force	19	210	4	15	10	15	12	23	22	9	AGI	WIL	2	2	16	4	24	12	12	8	24	2	2	2	SpeckledSeer	JellyfishMediumCCP	318	77	1	Y																			Force10	10	71	48	85	86	100	0	6	2
 Tundra Ponderer	Tank	19	659	8	8	18	17	18	13	13	12	MGT	VIT	2	2	12	24	24	16	16	16	16	1	0	1	TundraPonderer	ElephantMammothProjectQDraygothTheAmethystDragon	174	8	0.66	Y																			Tank10	10	66	77	70	76	69	3	1	3
 Underbrush Scamp	Evasion	19	144	8	5	8	24	13	13	23	9	PER	AGI	2	16	24	16	16	12	12	8	8	0	0	2	UnderbrushScamp	FoxRedtailanimCCPhydromancerx	189	252	1	Y																			Evasion10	10	71	62	62	107	111	1	1	7
 Stoneclad Behemoth	Tank	19	830	8	8	22	15	21	13	11	7	MGT	VIT	2	2	12	24	24	16	16	16	16	1	0	1	StonecladBehemoth	EarthDrakeCCCPLUSHHYENAofDOOM	202	33	0.5	Y																			Tank10	10	69	82	70	88	63	5	1	2
@@ -2203,7 +2203,7 @@ Fungal Shambler	Force	20	180	4	15	8	14	12	22	13	21	SOC	WIL	2	2	16	4	25	12	12	8	2
 Juvenile Rancor	Bruiser	20	430	19	12	21	17	21	15	9	7	VIT	MGT	25	16	12	25	12	8	8	4	4	0	0	0	JuvenileRancor	SWLORcrancorbull	3495	30	0.4	Y																			Bruiser20	18	95	84	63	99	59	5	2	3
 Juvenile Chirodactyl	Damage	20	290	13	9	22	16	23	14	9	7	VIT	MGT	25	25	12	8	12	16	16	2	2	1	0	2	JuvenileChirodactyl	WyvernAdult	1298	30	0.66	Y																			Damage20	29	96	70	61	114	59	6	2	3
 Stinging Swarm	Evasion	20	390	9	5	20	14	22	16	11	7	VIT	MGT	2	16	25	16	16	12	12	8	8	0	0	2	StingingSwarm	SWLORSwarmA3	2067	6	1	Y																			Evasion20	15	70	76	68	102	78	5	3	2
-Speckled Seer	Force	20	220	4	15	10	15	12	23	22	9	AGI	WIL	2	2	16	4	25	12	12	8	25	2	2	2	SpeckledSeer	Kyoht3hydromancerx	318	77	1	Y																			Force20	15	74	49	88	88	102	0	6	2
+Speckled Seer	Force	20	220	4	15	10	15	12	23	22	9	AGI	WIL	2	2	16	4	25	12	12	8	25	2	2	2	SpeckledSeer	JellyfishMediumCCP	318	77	1	Y																			Force20	15	74	49	88	88	102	0	6	2
 Tundra Ponderer	Tank	20	690	8	8	18	17	18	13	13	12	MGT	VIT	2	2	12	25	25	16	16	16	16	1	0	1	TundraPonderer	ElephantMammothProjectQDraygothTheAmethystDragon	174	8	0.66	Y																			Tank20	15	68	79	73	77	71	3	1	3
 Underbrush Scamp	Evasion	20	150	9	5	8	24	13	13	23	9	PER	AGI	2	16	25	16	16	12	12	8	8	0	0	2	UnderbrushScamp	FoxRedtailanimCCPhydromancerx	189	252	1	Y																			Evasion20	15	73	63	64	109	114	1	1	7
 Stoneclad Behemoth	Tank	20	870	8	8	22	15	21	13	11	7	MGT	VIT	2	2	12	25	25	16	16	16	16	1	0	1	StonecladBehemoth	EarthDrakeCCCPLUSHHYENAofDOOM	202	33	0.5	Y																			Tank20	15	71	84	73	89	65	5	1	2
@@ -2229,7 +2229,7 @@ Fungal Shambler	Force	21	188	4	16	9	15	12	23	13	21	SOC	WIL	2	2	17	4	26	13	13	9	2
 Juvenile Rancor	Bruiser	21	449	20	12	22	18	21	16	9	7	VIT	MGT	26	17	13	26	13	9	9	4	4	0	0	0	JuvenileRancor	SWLORcrancorbull	3495	30	0.4	Y																			Bruiser20	18	98	86	65	101	61	5	2	3
 Juvenile Chirodactyl	Damage	21	303	13	9	23	17	23	15	9	7	VIT	MGT	26	26	13	9	13	17	17	2	2	1	0	2	JuvenileChirodactyl	WyvernAdult	1298	30	0.66	Y																			Damage20	29	99	72	64	116	61	6	2	3
 Stinging Swarm	Evasion	21	408	9	5	21	15	22	17	11	7	VIT	MGT	2	17	26	17	17	13	13	9	9	0	0	2	StingingSwarm	SWLORSwarmA3	2067	6	1	Y																			Evasion20	15	73	79	71	104	80	6	3	2
-Speckled Seer	Force	21	230	4	16	11	16	12	24	22	9	AGI	WIL	2	2	17	4	26	13	13	9	26	2	2	2	SpeckledSeer	Kyoht3hydromancerx	318	77	1	Y																			Force20	15	76	51	90	89	104	1	6	2
+Speckled Seer	Force	21	230	4	16	11	16	12	24	22	9	AGI	WIL	2	2	17	4	26	13	13	9	26	2	2	2	SpeckledSeer	JellyfishMediumCCP	318	77	1	Y																			Force20	15	76	51	90	89	104	1	6	2
 Tundra Ponderer	Tank	21	721	8	8	19	18	18	14	13	12	MGT	VIT	2	2	13	26	26	17	17	17	17	1	0	1	TundraPonderer	ElephantMammothProjectQDraygothTheAmethystDragon	174	8	0.66	Y																			Tank20	15	70	82	75	79	73	4	1	3
 Underbrush Scamp	Evasion	21	156	9	5	9	25	13	14	23	9	PER	AGI	2	17	26	17	17	13	13	9	9	0	0	2	UnderbrushScamp	FoxRedtailanimCCPhydromancerx	189	252	1	Y																			Evasion20	15	75	65	66	112	116	1	1	7
 Stoneclad Behemoth	Tank	21	910	8	8	23	16	21	14	11	7	MGT	VIT	2	2	13	26	26	17	17	17	17	1	0	1	StonecladBehemoth	EarthDrakeCCCPLUSHHYENAofDOOM	202	33	0.5	Y																			Tank20	15	73	86	75	91	67	5	1	2
@@ -2255,7 +2255,7 @@ Fungal Shambler	Force	22	196	4	17	9	15	12	23	13	21	SOC	WIL	2	2	18	4	27	13	13	9	2
 Juvenile Rancor	Bruiser	22	468	21	12	22	18	21	16	9	7	VIT	MGT	27	18	13	27	13	9	9	4	4	0	0	0	JuvenileRancor	SWLORcrancorbull	3495	30	0.4	Y																			Bruiser20	18	101	88	66	103	63	5	2	3
 Juvenile Chirodactyl	Damage	22	316	13	9	23	17	23	15	9	7	VIT	MGT	27	27	13	9	13	18	18	2	2	1	0	2	JuvenileChirodactyl	WyvernAdult	1298	30	0.66	Y																			Damage20	29	102	73	65	119	63	6	2	3
 Stinging Swarm	Evasion	22	426	9	5	21	15	22	17	11	7	VIT	MGT	2	18	27	18	18	13	13	9	9	0	0	2	StingingSwarm	SWLORSwarmA3	2067	6	1	Y																			Evasion20	15	75	81	73	106	83	6	3	2
-Speckled Seer	Force	22	240	4	17	11	16	12	24	22	9	AGI	WIL	2	2	18	4	27	13	13	9	27	2	2	2	SpeckledSeer	Kyoht3hydromancerx	318	77	1	Y																			Force20	15	78	52	92	91	106	1	6	2
+Speckled Seer	Force	22	240	4	17	11	16	12	24	22	9	AGI	WIL	2	2	18	4	27	13	13	9	27	2	2	2	SpeckledSeer	JellyfishMediumCCP	318	77	1	Y																			Force20	15	78	52	92	91	106	1	6	2
 Tundra Ponderer	Tank	22	752	8	8	19	18	18	14	13	12	MGT	VIT	2	2	13	27	27	18	18	18	18	1	0	1	TundraPonderer	ElephantMammothProjectQDraygothTheAmethystDragon	174	8	0.66	Y																			Tank20	15	72	84	77	80	75	4	1	3
 Underbrush Scamp	Evasion	22	162	9	5	9	25	13	14	23	9	PER	AGI	2	18	27	18	18	13	13	9	9	0	0	2	UnderbrushScamp	FoxRedtailanimCCPhydromancerx	189	252	1	Y																			Evasion20	15	77	67	68	114	119	1	1	7
 Stoneclad Behemoth	Tank	22	950	8	8	23	16	21	14	11	7	MGT	VIT	2	2	13	27	27	18	18	18	18	1	0	1	StonecladBehemoth	EarthDrakeCCCPLUSHHYENAofDOOM	202	33	0.5	Y																			Tank20	15	75	88	77	92	69	5	1	2
@@ -2281,7 +2281,7 @@ Fungal Shambler	Force	23	204	4	17	9	15	12	23	13	21	SOC	WIL	2	2	19	5	29	14	14	9	2
 Juvenile Rancor	Bruiser	23	487	21	13	22	18	21	16	9	7	VIT	MGT	29	19	14	29	14	9	9	5	5	0	0	0	JuvenileRancor	SWLORcrancorbull	3495	30	0.4	Y																			Bruiser20	18	105	91	69	106	65	5	3	4
 Juvenile Chirodactyl	Damage	23	329	14	9	23	17	23	15	9	7	VIT	MGT	29	29	14	9	14	19	19	2	2	1	0	2	JuvenileChirodactyl	WyvernAdult	1298	30	0.66	Y																			Damage20	29	106	74	67	122	65	6	2	3
 Stinging Swarm	Evasion	23	444	10	5	21	15	22	17	11	7	VIT	MGT	2	19	29	19	19	14	14	9	9	0	0	2	StingingSwarm	SWLORSwarmA3	2067	6	1	Y																			Evasion20	15	77	83	75	109	86	6	3	2
-Speckled Seer	Force	23	250	4	17	11	16	12	24	22	9	AGI	WIL	2	2	19	5	29	14	14	9	29	2	2	2	SpeckledSeer	Kyoht3hydromancerx	318	77	1	Y																			Force20	15	81	54	96	92	109	1	7	3
+Speckled Seer	Force	23	250	4	17	11	16	12	24	22	9	AGI	WIL	2	2	19	5	29	14	14	9	29	2	2	2	SpeckledSeer	JellyfishMediumCCP	318	77	1	Y																			Force20	15	81	54	96	92	109	1	7	3
 Tundra Ponderer	Tank	23	783	8	8	19	18	18	14	13	12	MGT	VIT	2	2	14	29	29	19	19	19	19	1	0	1	TundraPonderer	ElephantMammothProjectQDraygothTheAmethystDragon	174	8	0.66	Y																			Tank20	15	75	87	81	82	77	4	2	4
 Underbrush Scamp	Evasion	23	168	10	5	9	25	13	14	23	9	PER	AGI	2	19	29	19	19	14	14	9	9	0	0	2	UnderbrushScamp	FoxRedtailanimCCPhydromancerx	189	252	1	Y																			Evasion20	15	80	69	71	117	122	1	2	7
 Stoneclad Behemoth	Tank	23	990	8	8	23	16	21	14	11	7	MGT	VIT	2	2	14	29	29	19	19	19	19	1	0	1	StonecladBehemoth	EarthDrakeCCCPLUSHHYENAofDOOM	202	33	0.5	Y																			Tank20	15	78	91	81	94	71	5	2	3
@@ -2307,7 +2307,7 @@ Fungal Shambler	Force	24	212	4	18	9	15	12	23	13	21	SOC	WIL	2	2	20	5	30	15	15	10	
 Juvenile Rancor	Bruiser	24	506	22	13	22	18	21	16	9	7	VIT	MGT	30	20	15	30	15	10	10	5	5	0	0	0	JuvenileRancor	SWLORcrancorbull	3495	30	0.4	Y																			Bruiser20	18	108	94	71	108	67	5	3	4
 Juvenile Chirodactyl	Damage	24	342	14	10	23	17	23	15	9	7	VIT	MGT	30	30	15	10	15	20	20	2	2	1	0	2	JuvenileChirodactyl	WyvernAdult	1298	30	0.66	Y																			Damage20	29	109	77	70	124	67	6	2	3
 Stinging Swarm	Evasion	24	462	10	5	21	15	22	17	11	7	VIT	MGT	2	20	30	20	20	15	15	10	10	0	0	2	StingingSwarm	SWLORSwarmA3	2067	6	1	Y																			Evasion20	15	79	85	78	111	88	6	3	2
-Speckled Seer	Force	24	260	4	18	11	16	12	24	22	9	AGI	WIL	2	2	20	5	30	15	15	10	30	2	2	2	SpeckledSeer	Kyoht3hydromancerx	318	77	1	Y																			Force20	15	83	55	98	94	111	1	7	3
+Speckled Seer	Force	24	260	4	18	11	16	12	24	22	9	AGI	WIL	2	2	20	5	30	15	15	10	30	2	2	2	SpeckledSeer	JellyfishMediumCCP	318	77	1	Y																			Force20	15	83	55	98	94	111	1	7	3
 Tundra Ponderer	Tank	24	814	9	9	19	18	18	14	13	12	MGT	VIT	2	2	15	30	30	20	20	20	20	1	0	1	TundraPonderer	ElephantMammothProjectQDraygothTheAmethystDragon	174	8	0.66	Y																			Tank20	15	77	89	83	83	79	4	2	4
 Underbrush Scamp	Evasion	24	174	10	5	9	25	13	14	23	9	PER	AGI	2	20	30	20	20	15	15	10	10	0	0	2	UnderbrushScamp	FoxRedtailanimCCPhydromancerx	189	252	1	Y																			Evasion20	15	82	72	73	120	124	1	2	7
 Stoneclad Behemoth	Tank	24	1030	9	9	23	16	21	14	11	7	MGT	VIT	2	2	15	30	30	20	20	20	20	1	0	1	StonecladBehemoth	EarthDrakeCCCPLUSHHYENAofDOOM	202	33	0.5	Y																			Tank20	15	80	94	83	95	73	5	2	3
@@ -2333,7 +2333,7 @@ Fungal Shambler	Force	25	220	4	19	9	16	13	24	14	22	SOC	WIL	3	3	20	5	31	15	15	10	
 Juvenile Rancor	Bruiser	25	525	23	13	22	19	22	17	10	8	VIT	MGT	31	20	15	31	15	10	10	5	5	0	0	0	JuvenileRancor	SWLORcrancorbull	3495	30	0.4	Y																			Bruiser20	18	111	96	72	110	69	5	3	4
 Juvenile Chirodactyl	Damage	25	355	15	10	23	18	24	16	10	8	VIT	MGT	31	31	15	10	15	20	20	3	3	1	1	3	JuvenileChirodactyl	WyvernAdult	1298	30	0.66	Y																			Damage20	29	112	78	71	127	69	6	2	3
 Stinging Swarm	Evasion	25	480	10	5	21	16	23	18	12	8	VIT	MGT	3	20	31	20	20	15	15	10	10	1	1	3	StingingSwarm	SWLORSwarmA3	2067	6	1	Y																			Evasion20	15	82	86	79	113	91	6	3	2
-Speckled Seer	Force	25	270	4	19	11	17	13	25	23	10	AGI	WIL	3	3	20	5	31	15	15	10	31	2	3	2	SpeckledSeer	Kyoht3hydromancerx	318	77	1	Y																			Force20	15	85	56	100	95	113	1	7	3
+Speckled Seer	Force	25	270	4	19	11	17	13	25	23	10	AGI	WIL	3	3	20	5	31	15	15	10	31	2	3	2	SpeckledSeer	JellyfishMediumCCP	318	77	1	Y																			Force20	15	85	56	100	95	113	1	7	3
 Tundra Ponderer	Tank	25	845	9	9	19	19	19	15	14	13	MGT	VIT	3	3	15	31	31	20	20	20	20	2	1	1	TundraPonderer	ElephantMammothProjectQDraygothTheAmethystDragon	174	8	0.66	Y																			Tank20	15	79	91	85	85	81	4	2	4
 Underbrush Scamp	Evasion	25	180	10	5	9	26	14	15	24	10	PER	AGI	3	20	31	20	20	15	15	10	10	1	1	3	UnderbrushScamp	FoxRedtailanimCCPhydromancerx	189	252	1	Y																			Evasion20	15	84	73	74	122	127	1	2	7
 Stoneclad Behemoth	Tank	25	1070	9	9	23	17	22	15	12	8	MGT	VIT	3	3	15	31	31	20	20	20	20	2	1	1	StonecladBehemoth	EarthDrakeCCCPLUSHHYENAofDOOM	202	33	0.5	Y																			Tank20	15	82	96	85	97	75	5	2	3
@@ -2359,7 +2359,7 @@ Fungal Shambler	Force	26	228	5	20	9	16	13	24	14	22	SOC	WIL	3	3	21	5	32	16	16	11	
 Juvenile Rancor	Bruiser	26	544	24	14	22	19	22	17	10	8	VIT	MGT	32	21	16	32	16	11	11	5	5	0	0	0	JuvenileRancor	SWLORcrancorbull	3495	30	0.4	Y																			Bruiser20	18	114	98	75	112	71	5	3	4
 Juvenile Chirodactyl	Damage	26	368	15	10	23	18	24	16	10	8	VIT	MGT	32	32	16	11	16	21	21	3	3	1	1	3	JuvenileChirodactyl	WyvernAdult	1298	30	0.66	Y																			Damage20	29	115	80	73	129	71	6	2	3
 Stinging Swarm	Evasion	26	498	11	6	21	16	23	18	12	8	VIT	MGT	3	21	32	21	21	16	16	11	11	1	1	3	StingingSwarm	SWLORSwarmA3	2067	6	1	Y																			Evasion20	15	84	89	81	115	93	6	3	2
-Speckled Seer	Force	26	280	5	20	11	17	13	25	23	10	AGI	WIL	3	3	21	5	32	16	16	11	32	2	3	2	SpeckledSeer	Kyoht3hydromancerx	318	77	1	Y																			Force20	15	87	58	103	97	115	1	7	3
+Speckled Seer	Force	26	280	5	20	11	17	13	25	23	10	AGI	WIL	3	3	21	5	32	16	16	11	32	2	3	2	SpeckledSeer	JellyfishMediumCCP	318	77	1	Y																			Force20	15	87	58	103	97	115	1	7	3
 Tundra Ponderer	Tank	26	876	9	9	19	19	19	15	14	13	MGT	VIT	3	3	16	32	32	21	21	21	21	2	1	1	TundraPonderer	ElephantMammothProjectQDraygothTheAmethystDragon	174	8	0.66	Y																			Tank20	15	81	94	88	86	83	4	2	4
 Underbrush Scamp	Evasion	26	186	11	6	9	26	14	15	24	10	PER	AGI	3	21	32	21	21	16	16	11	11	1	1	3	UnderbrushScamp	FoxRedtailanimCCPhydromancerx	189	252	1	Y																			Evasion20	15	86	75	77	125	129	1	2	7
 Stoneclad Behemoth	Tank	26	1110	9	9	23	17	22	15	12	8	MGT	VIT	3	3	16	32	32	21	21	21	21	2	1	1	StonecladBehemoth	EarthDrakeCCCPLUSHHYENAofDOOM	202	33	0.5	Y																			Tank20	15	84	98	88	98	77	5	2	3
@@ -2385,7 +2385,7 @@ Fungal Shambler	Force	27	236	5	20	9	16	13	24	14	22	SOC	WIL	3	3	22	6	34	17	17	11	
 Juvenile Rancor	Bruiser	27	563	24	14	22	19	22	17	10	8	VIT	MGT	34	22	17	34	17	11	11	6	6	0	0	0	JuvenileRancor	SWLORcrancorbull	3495	30	0.4	Y																			Bruiser20	18	118	101	77	115	73	5	3	4
 Juvenile Chirodactyl	Damage	27	381	15	10	23	18	24	16	10	8	VIT	MGT	34	34	17	11	17	22	22	3	3	1	1	3	JuvenileChirodactyl	WyvernAdult	1298	30	0.66	Y																			Damage20	29	119	81	76	132	73	6	3	4
 Stinging Swarm	Evasion	27	516	11	6	21	16	23	18	12	8	VIT	MGT	3	22	34	22	22	17	17	11	11	1	1	3	StingingSwarm	SWLORSwarmA3	2067	6	1	Y																			Evasion20	15	86	91	84	118	96	6	4	3
-Speckled Seer	Force	27	290	5	20	11	17	13	25	23	10	AGI	WIL	3	3	22	6	34	17	17	11	34	2	3	2	SpeckledSeer	Kyoht3hydromancerx	318	77	1	Y																			Force20	15	90	60	106	98	118	1	7	3
+Speckled Seer	Force	27	290	5	20	11	17	13	25	23	10	AGI	WIL	3	3	22	6	34	17	17	11	34	2	3	2	SpeckledSeer	JellyfishMediumCCP	318	77	1	Y																			Force20	15	90	60	106	98	118	1	7	3
 Tundra Ponderer	Tank	27	907	9	9	19	19	19	15	14	13	MGT	VIT	3	3	17	34	34	22	22	22	22	2	1	1	TundraPonderer	ElephantMammothProjectQDraygothTheAmethystDragon	174	8	0.66	Y																			Tank20	15	84	97	91	88	85	4	2	4
 Underbrush Scamp	Evasion	27	192	11	6	9	26	14	15	24	10	PER	AGI	3	22	34	22	22	17	17	11	11	1	1	3	UnderbrushScamp	FoxRedtailanimCCPhydromancerx	189	252	1	Y																			Evasion20	15	89	77	79	128	132	1	2	8
 Stoneclad Behemoth	Tank	27	1150	9	9	23	17	22	15	12	8	MGT	VIT	3	3	17	34	34	22	22	22	22	2	1	1	StonecladBehemoth	EarthDrakeCCCPLUSHHYENAofDOOM	202	33	0.5	Y																			Tank20	15	87	101	91	100	79	5	2	3
@@ -2411,7 +2411,7 @@ Fungal Shambler	Force	28	244	5	21	9	16	13	24	14	22	SOC	WIL	3	3	23	6	35	17	17	11	
 Juvenile Rancor	Bruiser	28	582	25	14	22	19	22	17	10	8	VIT	MGT	35	23	17	35	17	11	11	6	6	0	0	0	JuvenileRancor	SWLORcrancorbull	3495	30	0.4	Y																			Bruiser20	18	121	104	78	117	75	6	3	4
 Juvenile Chirodactyl	Damage	28	394	16	10	23	18	24	16	10	8	VIT	MGT	35	35	17	11	17	23	23	3	3	1	1	3	JuvenileChirodactyl	WyvernAdult	1298	30	0.66	Y																			Damage20	29	122	83	77	135	75	7	3	4
 Stinging Swarm	Evasion	28	534	11	6	21	16	23	18	12	8	VIT	MGT	3	23	35	23	23	17	17	11	11	1	1	3	StingingSwarm	SWLORSwarmA3	2067	6	1	Y																			Evasion20	15	88	93	86	120	99	6	4	3
-Speckled Seer	Force	28	300	5	21	11	17	13	25	23	10	AGI	WIL	3	3	23	6	35	17	17	11	35	2	3	2	SpeckledSeer	Kyoht3hydromancerx	318	77	1	Y																			Force20	15	92	61	108	100	120	1	7	3
+Speckled Seer	Force	28	300	5	21	11	17	13	25	23	10	AGI	WIL	3	3	23	6	35	17	17	11	35	2	3	2	SpeckledSeer	JellyfishMediumCCP	318	77	1	Y																			Force20	15	92	61	108	100	120	1	7	3
 Tundra Ponderer	Tank	28	938	9	9	19	19	19	15	14	13	MGT	VIT	3	3	17	35	35	23	23	23	23	2	1	1	TundraPonderer	ElephantMammothProjectQDraygothTheAmethystDragon	174	8	0.66	Y																			Tank20	15	86	99	93	89	87	4	2	4
 Underbrush Scamp	Evasion	28	198	11	6	9	26	14	15	24	10	PER	AGI	3	23	35	23	23	17	17	11	11	1	1	3	UnderbrushScamp	FoxRedtailanimCCPhydromancerx	189	252	1	Y																			Evasion20	15	91	80	81	130	135	2	2	8
 Stoneclad Behemoth	Tank	28	1190	9	9	23	17	22	15	12	8	MGT	VIT	3	3	17	35	35	23	23	23	23	2	1	1	StonecladBehemoth	EarthDrakeCCCPLUSHHYENAofDOOM	202	33	0.5	Y																			Tank20	15	89	104	93	101	81	6	2	3
@@ -2437,7 +2437,7 @@ Fungal Shambler	Force	29	252	5	22	10	17	13	25	14	22	SOC	WIL	3	3	24	6	36	18	18	12
 Juvenile Rancor	Bruiser	29	601	26	14	23	20	22	18	10	8	VIT	MGT	36	24	18	36	18	12	12	6	6	0	0	0	JuvenileRancor	SWLORcrancorbull	3495	30	0.4	Y																			Bruiser20	18	124	106	81	119	77	6	3	4
 Juvenile Chirodactyl	Damage	29	407	16	11	24	19	24	17	10	8	VIT	MGT	36	36	18	12	18	24	24	3	3	1	1	3	JuvenileChirodactyl	WyvernAdult	1298	30	0.66	Y																			Damage20	29	125	85	79	137	77	7	3	4
 Stinging Swarm	Evasion	29	552	11	6	22	17	23	19	12	8	VIT	MGT	3	24	36	24	24	18	18	12	12	1	1	3	StingingSwarm	SWLORSwarmA3	2067	6	1	Y																			Evasion20	15	91	95	88	122	101	6	4	3
-Speckled Seer	Force	29	310	5	22	12	18	13	26	23	10	AGI	WIL	3	3	24	6	36	18	18	12	36	2	3	2	SpeckledSeer	Kyoht3hydromancerx	318	77	1	Y																			Force20	15	94	62	111	101	122	1	7	3
+Speckled Seer	Force	29	310	5	22	12	18	13	26	23	10	AGI	WIL	3	3	24	6	36	18	18	12	36	2	3	2	SpeckledSeer	JellyfishMediumCCP	318	77	1	Y																			Force20	15	94	62	111	101	122	1	7	3
 Tundra Ponderer	Tank	29	969	10	10	20	20	19	16	14	13	MGT	VIT	3	3	18	36	36	24	24	24	24	2	1	1	TundraPonderer	ElephantMammothProjectQDraygothTheAmethystDragon	174	8	0.66	Y																			Tank20	15	88	101	96	91	89	4	2	4
 Underbrush Scamp	Evasion	29	204	11	6	10	27	14	16	24	10	PER	AGI	3	24	36	24	24	18	18	12	12	1	1	3	UnderbrushScamp	FoxRedtailanimCCPhydromancerx	189	252	1	Y																			Evasion20	15	93	82	84	133	137	2	2	8
 Stoneclad Behemoth	Tank	29	1230	10	10	24	18	22	16	12	8	MGT	VIT	3	3	18	36	36	24	24	24	24	2	1	1	StonecladBehemoth	EarthDrakeCCCPLUSHHYENAofDOOM	202	33	0.5	Y																			Tank20	15	91	106	96	103	83	6	2	3
@@ -2463,7 +2463,7 @@ Fungal Shambler	Force	30	260	5	22	10	17	13	25	14	22	SOC	WIL	3	3	24	6	37	18	18	12
 Juvenile Rancor	Bruiser	30	620	26	15	23	20	22	18	10	8	VIT	MGT	37	24	18	37	18	12	12	6	6	0	0	0	JuvenileRancor	SWLORcrancorbull	3495	30	0.4	Y																			Bruiser30	22	128	108	82	121	79	6	3	4
 Juvenile Chirodactyl	Damage	30	420	17	11	24	19	24	17	10	8	VIT	MGT	37	37	18	12	18	24	24	3	3	1	1	3	JuvenileChirodactyl	WyvernAdult	1298	30	0.66	Y																			Damage30	37	129	86	81	140	79	7	3	4
 Stinging Swarm	Evasion	30	570	12	6	22	17	23	19	12	8	VIT	MGT	3	24	37	24	24	18	18	12	12	1	1	3	StingingSwarm	SWLORSwarmA3	2067	6	1	Y																			Evasion30	19	93	96	90	124	104	6	4	3
-Speckled Seer	Force	30	320	5	22	12	18	13	26	23	10	AGI	WIL	3	3	24	6	37	18	18	12	37	2	3	2	SpeckledSeer	Kyoht3hydromancerx	318	77	1	Y																			Force30	19	97	63	113	103	124	1	7	3
+Speckled Seer	Force	30	320	5	22	12	18	13	26	23	10	AGI	WIL	3	3	24	6	37	18	18	12	37	2	3	2	SpeckledSeer	JellyfishMediumCCP	318	77	1	Y																			Force30	19	97	63	113	103	124	1	7	3
 Tundra Ponderer	Tank	30	1000	10	10	20	20	19	16	14	13	MGT	VIT	3	3	18	37	37	24	24	24	24	2	1	1	TundraPonderer	ElephantMammothProjectQDraygothTheAmethystDragon	174	8	0.66	Y																			Tank30	19	90	103	98	92	91	4	2	4
 Underbrush Scamp	Evasion	30	210	12	6	10	27	14	16	24	10	PER	AGI	3	24	37	24	24	18	18	12	12	1	1	3	UnderbrushScamp	FoxRedtailanimCCPhydromancerx	189	252	1	Y																			Evasion30	19	95	83	85	135	140	2	2	8
 Stoneclad Behemoth	Tank	30	1270	10	10	24	18	22	16	12	8	MGT	VIT	3	3	18	37	37	24	24	24	24	2	1	1	StonecladBehemoth	EarthDrakeCCCPLUSHHYENAofDOOM	202	33	0.5	Y																			Tank30	19	93	108	98	104	85	6	2	3
@@ -2489,7 +2489,7 @@ Fungal Shambler	Force	31	268	5	23	10	17	13	25	14	22	SOC	WIL	3	3	25	6	38	19	19	13
 Juvenile Rancor	Bruiser	31	639	27	15	23	20	22	18	10	8	VIT	MGT	38	25	19	38	19	13	13	6	6	0	0	0	JuvenileRancor	SWLORcrancorbull	3495	30	0.4	Y																			Bruiser30	22	131	110	84	124	81	6	3	5
 Juvenile Chirodactyl	Damage	31	433	17	11	24	19	24	17	10	8	VIT	MGT	38	38	19	13	19	25	25	3	3	1	1	3	JuvenileChirodactyl	WyvernAdult	1298	30	0.66	Y																			Damage30	37	132	88	83	143	81	7	3	4
 Stinging Swarm	Evasion	31	588	12	6	22	17	23	19	12	8	VIT	MGT	3	25	38	25	25	19	19	13	13	1	1	3	StingingSwarm	SWLORSwarmA3	2067	6	1	Y																			Evasion30	19	95	99	92	127	107	6	4	3
-Speckled Seer	Force	31	330	5	23	12	18	13	26	23	10	AGI	WIL	3	3	25	6	38	19	19	13	38	3	3	3	SpeckledSeer	Kyoht3hydromancerx	318	77	1	Y																			Force30	19	99	65	115	104	127	1	7	4
+Speckled Seer	Force	31	330	5	23	12	18	13	26	23	10	AGI	WIL	3	3	25	6	38	19	19	13	38	3	3	3	SpeckledSeer	JellyfishMediumCCP	318	77	1	Y																			Force30	19	99	65	115	104	127	1	7	4
 Tundra Ponderer	Tank	31	1031	10	10	20	20	19	16	14	13	MGT	VIT	3	3	19	38	38	25	25	25	25	2	1	1	TundraPonderer	ElephantMammothProjectQDraygothTheAmethystDragon	174	8	0.66	Y																			Tank30	19	93	106	100	94	93	4	2	5
 Underbrush Scamp	Evasion	31	216	12	6	10	27	14	16	24	10	PER	AGI	3	25	38	25	25	19	19	13	13	1	1	3	UnderbrushScamp	FoxRedtailanimCCPhydromancerx	189	252	1	Y																			Evasion30	19	98	85	87	138	143	2	2	8
 Stoneclad Behemoth	Tank	31	1310	10	10	24	18	22	16	12	8	MGT	VIT	3	3	19	38	38	25	25	25	25	2	1	1	StonecladBehemoth	EarthDrakeCCCPLUSHHYENAofDOOM	202	33	0.5	Y																			Tank30	19	96	110	100	106	87	6	2	4
@@ -2515,7 +2515,7 @@ Fungal Shambler	Force	32	276	5	24	10	17	14	25	15	22	SOC	WIL	3	3	26	7	40	20	20	13
 Juvenile Rancor	Bruiser	32	658	28	15	23	20	23	18	11	8	VIT	MGT	40	26	20	40	20	13	13	7	7	0	0	0	JuvenileRancor	SWLORcrancorbull	3495	30	0.4	Y																			Bruiser30	22	134	113	87	126	83	6	4	5
 Juvenile Chirodactyl	Damage	32	446	17	11	24	19	25	17	11	8	VIT	MGT	40	40	20	13	20	26	26	3	3	1	1	3	JuvenileChirodactyl	WyvernAdult	1298	30	0.66	Y																			Damage30	37	135	89	85	145	83	7	3	4
 Stinging Swarm	Evasion	32	606	12	6	22	17	24	19	13	8	VIT	MGT	3	26	40	26	26	20	20	13	13	1	1	3	StingingSwarm	SWLORSwarmA3	2067	6	1	Y																			Evasion30	19	97	101	94	129	109	6	4	3
-Speckled Seer	Force	32	340	5	24	12	18	14	26	24	10	AGI	WIL	3	3	26	7	40	20	20	13	40	3	3	3	SpeckledSeer	Kyoht3hydromancerx	318	77	1	Y																			Force30	19	101	67	119	106	129	1	8	4
+Speckled Seer	Force	32	340	5	24	12	18	14	26	24	10	AGI	WIL	3	3	26	7	40	20	20	13	40	3	3	3	SpeckledSeer	JellyfishMediumCCP	318	77	1	Y																			Force30	19	101	67	119	106	129	1	8	4
 Tundra Ponderer	Tank	32	1062	10	10	20	20	20	16	15	13	MGT	VIT	3	3	20	40	40	26	26	26	26	2	1	1	TundraPonderer	ElephantMammothProjectQDraygothTheAmethystDragon	174	8	0.66	Y																			Tank30	19	95	109	104	95	95	4	3	5
 Underbrush Scamp	Evasion	32	222	12	6	10	27	15	16	25	10	PER	AGI	3	26	40	26	26	20	20	13	13	1	1	3	UnderbrushScamp	FoxRedtailanimCCPhydromancerx	189	252	1	Y																			Evasion30	19	100	87	90	141	145	2	3	8
 Stoneclad Behemoth	Tank	32	1350	10	10	24	18	23	16	13	8	MGT	VIT	3	3	20	40	40	26	26	26	26	2	1	1	StonecladBehemoth	EarthDrakeCCCPLUSHHYENAofDOOM	202	33	0.5	Y																			Tank30	19	98	113	104	107	89	6	3	4
@@ -2541,7 +2541,7 @@ Fungal Shambler	Force	33	284	5	24	10	18	14	25	15	22	SOC	WIL	3	3	27	7	41	20	20	13
 Juvenile Rancor	Bruiser	33	677	28	16	23	21	23	18	11	8	VIT	MGT	41	27	20	41	20	13	13	7	7	0	0	0	JuvenileRancor	SWLORcrancorbull	3495	30	0.4	Y																			Bruiser30	22	138	116	88	128	85	6	4	5
 Juvenile Chirodactyl	Damage	33	459	18	11	24	20	25	17	11	8	VIT	MGT	41	41	20	13	20	27	27	3	3	1	1	3	JuvenileChirodactyl	WyvernAdult	1298	30	0.66	Y																			Damage30	37	139	91	87	148	85	7	3	4
 Stinging Swarm	Evasion	33	624	13	6	22	18	24	19	13	8	VIT	MGT	3	27	41	27	27	20	20	13	13	1	1	3	StingingSwarm	SWLORSwarmA3	2067	6	1	Y																			Evasion30	19	99	103	97	131	112	6	4	3
-Speckled Seer	Force	33	350	5	24	12	19	14	26	24	10	AGI	WIL	3	3	27	7	41	20	20	13	41	3	3	3	SpeckledSeer	Kyoht3hydromancerx	318	77	1	Y																			Force30	19	104	68	121	108	131	1	8	4
+Speckled Seer	Force	33	350	5	24	12	19	14	26	24	10	AGI	WIL	3	3	27	7	41	20	20	13	41	3	3	3	SpeckledSeer	JellyfishMediumCCP	318	77	1	Y																			Force30	19	104	68	121	108	131	1	8	4
 Tundra Ponderer	Tank	33	1093	10	10	20	21	20	16	15	13	MGT	VIT	3	3	20	41	41	27	27	27	27	2	1	1	TundraPonderer	ElephantMammothProjectQDraygothTheAmethystDragon	174	8	0.66	Y																			Tank30	19	97	111	106	96	97	4	3	5
 Underbrush Scamp	Evasion	33	228	13	6	10	28	15	16	25	10	PER	AGI	3	27	41	27	27	20	20	13	13	1	1	3	UnderbrushScamp	FoxRedtailanimCCPhydromancerx	189	252	1	Y																			Evasion30	19	102	90	92	143	148	2	3	8
 Stoneclad Behemoth	Tank	33	1390	10	10	24	19	23	16	13	8	MGT	VIT	3	3	20	41	41	27	27	27	27	2	1	1	StonecladBehemoth	EarthDrakeCCCPLUSHHYENAofDOOM	202	33	0.5	Y																			Tank30	19	100	116	106	108	91	6	3	4
@@ -2567,7 +2567,7 @@ Fungal Shambler	Force	34	292	5	25	10	18	14	26	15	22	SOC	WIL	3	3	28	7	42	21	21	14
 Juvenile Rancor	Bruiser	34	696	29	16	23	21	23	19	11	8	VIT	MGT	42	28	21	42	21	14	14	7	7	0	0	0	JuvenileRancor	SWLORcrancorbull	3495	30	0.4	Y																			Bruiser30	22	141	118	90	130	87	6	4	5
 Juvenile Chirodactyl	Damage	34	472	18	12	24	20	25	18	11	8	VIT	MGT	42	42	21	14	21	28	28	3	3	1	1	3	JuvenileChirodactyl	WyvernAdult	1298	30	0.66	Y																			Damage30	37	142	93	89	151	87	7	3	5
 Stinging Swarm	Evasion	34	642	13	6	22	18	24	20	13	8	VIT	MGT	3	28	42	28	28	21	21	14	14	1	1	3	StingingSwarm	SWLORSwarmA3	2067	6	1	Y																			Evasion30	19	102	105	99	133	115	6	4	4
-Speckled Seer	Force	34	360	5	25	12	19	14	27	24	10	AGI	WIL	3	3	28	7	42	21	21	14	42	3	3	3	SpeckledSeer	Kyoht3hydromancerx	318	77	1	Y																			Force30	19	106	69	123	109	133	1	8	4
+Speckled Seer	Force	34	360	5	25	12	19	14	27	24	10	AGI	WIL	3	3	28	7	42	21	21	14	42	3	3	3	SpeckledSeer	JellyfishMediumCCP	318	77	1	Y																			Force30	19	106	69	123	109	133	1	8	4
 Tundra Ponderer	Tank	34	1124	11	11	20	21	20	17	15	13	MGT	VIT	3	3	21	42	42	28	28	28	28	2	1	1	TundraPonderer	ElephantMammothProjectQDraygothTheAmethystDragon	174	8	0.66	Y																			Tank30	19	99	113	108	98	99	4	3	5
 Underbrush Scamp	Evasion	34	234	13	6	10	28	15	17	25	10	PER	AGI	3	28	42	28	28	21	21	14	14	1	1	3	UnderbrushScamp	FoxRedtailanimCCPhydromancerx	189	252	1	Y																			Evasion30	19	104	92	94	146	151	2	3	9
 Stoneclad Behemoth	Tank	34	1430	11	11	24	19	23	17	13	8	MGT	VIT	3	3	21	42	42	28	28	28	28	2	1	1	StonecladBehemoth	EarthDrakeCCCPLUSHHYENAofDOOM	202	33	0.5	Y																			Tank30	19	102	118	108	110	93	6	3	4
@@ -2593,7 +2593,7 @@ Fungal Shambler	Force	35	300	5	26	10	18	14	26	15	22	SOC	WIL	4	4	29	7	43	21	21	14
 Juvenile Rancor	Bruiser	35	715	30	16	23	21	23	19	11	8	VIT	MGT	43	29	21	43	21	14	14	7	7	0	0	0	JuvenileRancor	SWLORcrancorbull	3495	30	0.4	Y																			Bruiser30	22	144	120	92	133	89	6	4	5
 Juvenile Chirodactyl	Damage	35	485	19	12	24	20	25	18	11	8	VIT	MGT	43	43	21	14	21	29	29	4	4	1	1	4	JuvenileChirodactyl	WyvernAdult	1298	30	0.66	Y																			Damage30	37	145	94	90	153	89	7	3	5
 Stinging Swarm	Evasion	35	660	13	6	22	18	24	20	13	8	VIT	MGT	4	29	43	29	29	21	21	14	14	1	1	4	StingingSwarm	SWLORSwarmA3	2067	6	1	Y																			Evasion30	19	104	108	101	136	117	7	4	4
-Speckled Seer	Force	35	370	5	26	12	19	14	27	24	10	AGI	WIL	4	4	29	7	43	21	21	14	43	3	4	3	SpeckledSeer	Kyoht3hydromancerx	318	77	1	Y																			Force30	19	108	71	126	111	136	2	8	4
+Speckled Seer	Force	35	370	5	26	12	19	14	27	24	10	AGI	WIL	4	4	29	7	43	21	21	14	43	3	4	3	SpeckledSeer	JellyfishMediumCCP	318	77	1	Y																			Force30	19	108	71	126	111	136	2	8	4
 Tundra Ponderer	Tank	35	1155	11	11	20	21	20	17	15	13	MGT	VIT	4	4	21	43	43	29	29	29	29	2	1	1	TundraPonderer	ElephantMammothProjectQDraygothTheAmethystDragon	174	8	0.66	Y																			Tank30	19	102	116	111	99	101	5	3	5
 Underbrush Scamp	Evasion	35	240	13	6	10	28	15	17	25	10	PER	AGI	4	29	43	29	29	21	21	14	14	1	1	4	UnderbrushScamp	FoxRedtailanimCCPhydromancerx	189	252	1	Y																			Evasion30	19	107	94	97	148	153	2	3	9
 Stoneclad Behemoth	Tank	35	1470	11	11	24	19	23	17	13	8	MGT	VIT	4	4	21	43	43	29	29	29	29	2	1	1	StonecladBehemoth	EarthDrakeCCCPLUSHHYENAofDOOM	202	33	0.5	Y																			Tank30	19	105	120	111	111	95	6	3	4
@@ -2619,7 +2619,7 @@ Fungal Shambler	Force	36	308	6	27	10	19	14	26	15	22	SOC	WIL	4	4	29	7	44	22	22	15
 Juvenile Rancor	Bruiser	36	734	31	17	23	22	23	19	11	8	VIT	MGT	44	29	22	44	22	15	15	7	7	0	0	0	JuvenileRancor	SWLORcrancorbull	3495	30	0.4	Y																			Bruiser30	22	148	122	94	135	91	6	4	5
 Juvenile Chirodactyl	Damage	36	498	19	12	24	21	25	18	11	8	VIT	MGT	44	44	22	15	22	29	29	4	4	1	1	4	JuvenileChirodactyl	WyvernAdult	1298	30	0.66	Y																			Damage30	37	149	96	93	156	91	7	4	5
 Stinging Swarm	Evasion	36	678	14	7	22	19	24	20	13	8	VIT	MGT	4	29	44	29	29	22	22	15	15	1	1	4	StingingSwarm	SWLORSwarmA3	2067	6	1	Y																			Evasion30	19	106	109	103	138	120	7	5	4
-Speckled Seer	Force	36	380	6	27	12	20	14	27	24	10	AGI	WIL	4	4	29	7	44	22	22	15	44	3	4	3	SpeckledSeer	Kyoht3hydromancerx	318	77	1	Y																			Force30	19	111	72	128	112	138	2	8	4
+Speckled Seer	Force	36	380	6	27	12	20	14	27	24	10	AGI	WIL	4	4	29	7	44	22	22	15	44	3	4	3	SpeckledSeer	JellyfishMediumCCP	318	77	1	Y																			Force30	19	111	72	128	112	138	2	8	4
 Tundra Ponderer	Tank	36	1186	11	11	20	22	20	17	15	13	MGT	VIT	4	4	22	44	44	29	29	29	29	2	1	1	TundraPonderer	ElephantMammothProjectQDraygothTheAmethystDragon	174	8	0.66	Y																			Tank30	19	104	118	113	101	103	5	3	5
 Underbrush Scamp	Evasion	36	246	14	7	10	29	15	17	25	10	PER	AGI	4	29	44	29	29	22	22	15	15	1	1	4	UnderbrushScamp	FoxRedtailanimCCPhydromancerx	189	252	1	Y																			Evasion30	19	109	95	98	151	156	2	3	9
 Stoneclad Behemoth	Tank	36	1510	11	11	24	20	23	17	13	8	MGT	VIT	4	4	22	44	44	29	29	29	29	2	1	1	StonecladBehemoth	EarthDrakeCCCPLUSHHYENAofDOOM	202	33	0.5	Y																			Tank30	19	107	122	113	113	97	6	3	4
@@ -2645,7 +2645,7 @@ Fungal Shambler	Force	37	316	6	27	11	19	14	26	15	22	SOC	WIL	4	4	30	8	46	23	23	15
 Juvenile Rancor	Bruiser	37	753	31	17	24	22	23	19	11	8	VIT	MGT	46	30	23	46	23	15	15	8	8	0	0	0	JuvenileRancor	SWLORcrancorbull	3495	30	0.4	Y																			Bruiser30	22	151	125	96	137	94	6	4	5
 Juvenile Chirodactyl	Damage	37	511	19	12	25	21	25	18	11	8	VIT	MGT	46	46	23	15	23	30	30	4	4	2	1	4	JuvenileChirodactyl	WyvernAdult	1298	30	0.66	Y																			Damage30	37	152	97	95	158	94	7	4	5
 Stinging Swarm	Evasion	37	696	14	7	23	19	24	20	13	8	VIT	MGT	4	30	46	30	30	23	23	15	15	1	1	4	StingingSwarm	SWLORSwarmA3	2067	6	1	Y																			Evasion30	19	108	111	105	140	122	7	5	4
-Speckled Seer	Force	37	390	6	27	13	20	14	27	24	10	AGI	WIL	4	4	30	8	46	23	23	15	46	3	4	3	SpeckledSeer	Kyoht3hydromancerx	318	77	1	Y																			Force30	19	113	74	131	114	140	2	8	4
+Speckled Seer	Force	37	390	6	27	13	20	14	27	24	10	AGI	WIL	4	4	30	8	46	23	23	15	46	3	4	3	SpeckledSeer	JellyfishMediumCCP	318	77	1	Y																			Force30	19	113	74	131	114	140	2	8	4
 Tundra Ponderer	Tank	37	1217	11	11	21	22	20	17	15	13	MGT	VIT	4	4	23	46	46	30	30	30	30	2	1	2	TundraPonderer	ElephantMammothProjectQDraygothTheAmethystDragon	174	8	0.66	Y																			Tank30	19	106	121	116	102	106	5	3	5
 Underbrush Scamp	Evasion	37	252	14	7	11	29	15	17	25	10	PER	AGI	4	30	46	30	30	23	23	15	15	1	1	4	UnderbrushScamp	FoxRedtailanimCCPhydromancerx	189	252	1	Y																			Evasion30	19	111	97	100	154	158	2	3	9
 Stoneclad Behemoth	Tank	37	1550	11	11	25	20	23	17	13	8	MGT	VIT	4	4	23	46	46	30	30	30	30	2	1	2	StonecladBehemoth	EarthDrakeCCCPLUSHHYENAofDOOM	202	33	0.5	Y																			Tank30	19	109	125	116	114	100	6	3	4
@@ -2671,7 +2671,7 @@ Fungal Shambler	Force	38	324	6	28	11	19	14	27	15	22	SOC	WIL	4	4	31	8	47	23	23	16
 Juvenile Rancor	Bruiser	38	772	32	17	24	22	23	20	11	8	VIT	MGT	47	31	23	47	23	16	16	8	8	0	0	0	JuvenileRancor	SWLORcrancorbull	3495	30	0.4	Y																			Bruiser30	22	154	128	98	139	96	6	4	6
 Juvenile Chirodactyl	Damage	38	524	20	12	25	21	25	19	11	8	VIT	MGT	47	47	23	16	23	31	31	4	4	2	1	4	JuvenileChirodactyl	WyvernAdult	1298	30	0.66	Y																			Damage30	37	155	100	96	161	96	7	4	5
 Stinging Swarm	Evasion	38	714	14	7	23	19	24	21	13	8	VIT	MGT	4	31	47	31	31	23	23	16	16	1	1	4	StingingSwarm	SWLORSwarmA3	2067	6	1	Y																			Evasion30	19	111	113	107	142	125	7	5	4
-Speckled Seer	Force	38	400	6	28	13	20	14	28	24	10	AGI	WIL	4	4	31	8	47	23	23	16	47	3	4	3	SpeckledSeer	Kyoht3hydromancerx	318	77	1	Y																			Force30	19	115	75	134	115	142	2	8	5
+Speckled Seer	Force	38	400	6	28	13	20	14	28	24	10	AGI	WIL	4	4	31	8	47	23	23	16	47	3	4	3	SpeckledSeer	JellyfishMediumCCP	318	77	1	Y																			Force30	19	115	75	134	115	142	2	8	5
 Tundra Ponderer	Tank	38	1248	11	11	21	22	20	18	15	13	MGT	VIT	4	4	23	47	47	31	31	31	31	2	1	2	TundraPonderer	ElephantMammothProjectQDraygothTheAmethystDragon	174	8	0.66	Y																			Tank30	19	108	123	119	104	108	5	3	6
 Underbrush Scamp	Evasion	38	258	14	7	11	29	15	18	25	10	PER	AGI	4	31	47	31	31	23	23	16	16	1	1	4	UnderbrushScamp	FoxRedtailanimCCPhydromancerx	189	252	1	Y																			Evasion30	19	113	100	103	156	161	2	3	9
 Stoneclad Behemoth	Tank	38	1590	11	11	25	20	23	18	13	8	MGT	VIT	4	4	23	47	47	31	31	31	31	2	1	2	StonecladBehemoth	EarthDrakeCCCPLUSHHYENAofDOOM	202	33	0.5	Y																			Tank30	19	111	128	119	116	102	6	3	5
@@ -2697,7 +2697,7 @@ Fungal Shambler	Force	39	332	6	29	11	19	15	27	16	22	SOC	WIL	4	4	32	8	48	24	24	16
 Juvenile Rancor	Bruiser	39	791	33	17	24	22	24	20	12	8	VIT	MGT	48	32	24	48	24	16	16	8	8	0	0	0	JuvenileRancor	SWLORcrancorbull	3495	30	0.4	Y																			Bruiser30	22	158	130	100	142	98	6	4	6
 Juvenile Chirodactyl	Damage	39	537	20	13	25	21	26	19	12	8	VIT	MGT	48	48	24	16	24	32	32	4	4	2	1	4	JuvenileChirodactyl	WyvernAdult	1298	30	0.66	Y																			Damage30	37	159	101	99	164	98	7	4	5
 Stinging Swarm	Evasion	39	732	14	7	23	19	25	21	14	8	VIT	MGT	4	32	48	32	32	24	24	16	16	1	1	4	StingingSwarm	SWLORSwarmA3	2067	6	1	Y																			Evasion30	19	113	115	110	145	128	7	5	4
-Speckled Seer	Force	39	410	6	29	13	20	15	28	25	10	AGI	WIL	4	4	32	8	48	24	24	16	48	3	4	3	SpeckledSeer	Kyoht3hydromancerx	318	77	1	Y																			Force30	19	118	76	136	117	145	2	8	5
+Speckled Seer	Force	39	410	6	29	13	20	15	28	25	10	AGI	WIL	4	4	32	8	48	24	24	16	48	3	4	3	SpeckledSeer	JellyfishMediumCCP	318	77	1	Y																			Force30	19	118	76	136	117	145	2	8	5
 Tundra Ponderer	Tank	39	1279	12	12	21	22	21	18	16	13	MGT	VIT	4	4	24	48	48	32	32	32	32	2	1	2	TundraPonderer	ElephantMammothProjectQDraygothTheAmethystDragon	174	8	0.66	Y																			Tank30	19	111	125	121	105	110	5	3	6
 Underbrush Scamp	Evasion	39	264	14	7	11	29	16	18	26	10	PER	AGI	4	32	48	32	32	24	24	16	16	1	1	4	UnderbrushScamp	FoxRedtailanimCCPhydromancerx	189	252	1	Y																			Evasion30	19	116	102	105	159	164	2	3	9
 Stoneclad Behemoth	Tank	39	1630	12	12	25	20	24	18	14	8	MGT	VIT	4	4	24	48	48	32	32	32	32	2	1	2	StonecladBehemoth	EarthDrakeCCCPLUSHHYENAofDOOM	202	33	0.5	Y																			Tank30	19	114	130	121	117	104	6	3	5
@@ -2723,7 +2723,7 @@ Fungal Shambler	Force	40	340	6	29	11	20	15	27	16	22	SOC	WIL	4	4	33	8	49	24	24	16
 Juvenile Rancor	Bruiser	40	810	33	18	24	23	24	20	12	8	VIT	MGT	49	33	24	49	24	16	16	8	8	0	0	0	JuvenileRancor	SWLORcrancorbull	3495	30	0.4	Y																			Bruiser40	27	161	132	101	144	100	6	4	6
 Juvenile Chirodactyl	Damage	40	550	21	13	25	22	26	19	12	8	VIT	MGT	49	49	24	16	24	33	33	4	4	2	1	4	JuvenileChirodactyl	WyvernAdult	1298	30	0.66	Y																			Damage40	43	162	102	100	166	100	7	4	5
 Stinging Swarm	Evasion	40	750	15	7	23	20	25	21	14	8	VIT	MGT	4	33	49	33	33	24	24	16	16	1	1	4	StingingSwarm	SWLORSwarmA3	2067	6	1	Y																			Evasion40	24	115	118	112	147	130	7	5	4
-Speckled Seer	Force	40	420	6	29	13	21	15	28	25	10	AGI	WIL	4	4	33	8	49	24	24	16	49	3	4	3	SpeckledSeer	Kyoht3hydromancerx	318	77	1	Y																			Force40	24	120	78	138	118	147	2	8	5
+Speckled Seer	Force	40	420	6	29	13	21	15	28	25	10	AGI	WIL	4	4	33	8	49	24	24	16	49	3	4	3	SpeckledSeer	JellyfishMediumCCP	318	77	1	Y																			Force40	24	120	78	138	118	147	2	8	5
 Tundra Ponderer	Tank	40	1310	12	12	21	23	21	18	16	13	MGT	VIT	4	4	24	49	49	33	33	33	33	2	1	2	TundraPonderer	ElephantMammothProjectQDraygothTheAmethystDragon	174	8	0.66	Y																			Tank40	19	113	128	123	107	112	5	3	6
 Underbrush Scamp	Evasion	40	270	15	7	11	30	16	18	26	10	PER	AGI	4	33	49	33	33	24	24	16	16	1	1	4	UnderbrushScamp	FoxRedtailanimCCPhydromancerx	189	252	1	Y																			Evasion40	24	118	104	107	161	166	2	3	9
 Stoneclad Behemoth	Tank	40	1670	12	12	25	21	24	18	14	8	MGT	VIT	4	4	24	49	49	33	33	33	33	2	1	2	StonecladBehemoth	EarthDrakeCCCPLUSHHYENAofDOOM	202	33	0.5	Y																			Tank40	19	116	132	123	119	106	6	3	5
@@ -2749,7 +2749,7 @@ Fungal Shambler	Force	41	348	6	30	11	20	15	27	16	23	SOC	WIL	4	4	33	8	50	25	25	17
 Juvenile Rancor	Bruiser	41	829	34	18	24	23	24	20	12	9	VIT	MGT	50	33	25	50	25	17	17	8	8	0	0	0	JuvenileRancor	SWLORcrancorbull	3495	30	0.4	Y																			Bruiser40	27	164	134	104	146	102	6	5	6
 Juvenile Chirodactyl	Damage	41	563	21	13	25	22	26	19	12	9	VIT	MGT	50	50	25	17	25	33	33	4	4	2	1	4	JuvenileChirodactyl	WyvernAdult	1298	30	0.66	Y																			Damage40	43	165	104	102	169	102	7	4	5
 Stinging Swarm	Evasion	41	768	15	7	23	20	25	21	14	9	VIT	MGT	4	33	50	33	33	25	25	17	17	1	1	4	StingingSwarm	SWLORSwarmA3	2067	6	1	Y																			Evasion40	24	117	119	113	149	133	7	5	4
-Speckled Seer	Force	41	430	6	30	13	21	15	28	25	11	AGI	WIL	4	4	33	8	50	25	25	17	50	3	4	3	SpeckledSeer	Kyoht3hydromancerx	318	77	1	Y																			Force40	24	122	79	141	120	149	2	9	5
+Speckled Seer	Force	41	430	6	30	13	21	15	28	25	11	AGI	WIL	4	4	33	8	50	25	25	17	50	3	4	3	SpeckledSeer	JellyfishMediumCCP	318	77	1	Y																			Force40	24	122	79	141	120	149	2	9	5
 Tundra Ponderer	Tank	41	1341	12	12	21	23	21	18	16	14	MGT	VIT	4	4	25	50	50	33	33	33	33	3	1	2	TundraPonderer	ElephantMammothProjectQDraygothTheAmethystDragon	174	8	0.66	Y																			Tank40	19	115	130	126	108	114	5	4	6
 Underbrush Scamp	Evasion	41	276	15	7	11	30	16	18	26	11	PER	AGI	4	33	50	33	33	25	25	17	17	1	1	4	UnderbrushScamp	FoxRedtailanimCCPhydromancerx	189	252	1	Y																			Evasion40	24	120	105	109	164	169	2	4	9
 Stoneclad Behemoth	Tank	41	1710	12	12	25	21	24	18	14	9	MGT	VIT	4	4	25	50	50	33	33	33	33	3	1	2	StonecladBehemoth	EarthDrakeCCCPLUSHHYENAofDOOM	202	33	0.5	Y																			Tank40	19	118	134	126	120	108	6	4	5
@@ -2775,7 +2775,7 @@ Fungal Shambler	Force	42	356	6	31	11	20	15	27	16	23	SOC	WIL	4	4	34	9	52	26	26	17
 Juvenile Rancor	Bruiser	42	848	35	18	24	23	24	20	12	9	VIT	MGT	52	34	26	52	26	17	17	9	9	0	0	0	JuvenileRancor	SWLORcrancorbull	3495	30	0.4	Y																			Bruiser40	27	168	138	106	148	104	7	5	6
 Juvenile Chirodactyl	Damage	42	576	21	13	25	22	26	19	12	9	VIT	MGT	52	52	26	17	26	34	34	4	4	2	1	4	JuvenileChirodactyl	WyvernAdult	1298	30	0.66	Y																			Damage40	43	169	106	105	172	104	8	4	6
 Stinging Swarm	Evasion	42	786	15	7	23	20	25	21	14	9	VIT	MGT	4	34	52	34	34	26	26	17	17	1	1	4	StingingSwarm	SWLORSwarmA3	2067	6	1	Y																			Evasion40	24	119	121	116	151	136	7	5	5
-Speckled Seer	Force	42	440	6	31	13	21	15	28	25	11	AGI	WIL	4	4	34	9	52	26	26	17	52	3	4	3	SpeckledSeer	Kyoht3hydromancerx	318	77	1	Y																			Force40	24	125	81	144	121	151	2	9	5
+Speckled Seer	Force	42	440	6	31	13	21	15	28	25	11	AGI	WIL	4	4	34	9	52	26	26	17	52	3	4	3	SpeckledSeer	JellyfishMediumCCP	318	77	1	Y																			Force40	24	125	81	144	121	151	2	9	5
 Tundra Ponderer	Tank	42	1372	12	12	21	23	21	18	16	14	MGT	VIT	4	4	26	52	52	34	34	34	34	3	1	2	TundraPonderer	ElephantMammothProjectQDraygothTheAmethystDragon	174	8	0.66	Y																			Tank40	19	117	133	129	110	116	5	4	6
 Underbrush Scamp	Evasion	42	282	15	7	11	30	16	18	26	11	PER	AGI	4	34	52	34	34	26	26	17	17	1	1	4	UnderbrushScamp	FoxRedtailanimCCPhydromancerx	189	252	1	Y																			Evasion40	24	122	108	111	167	172	3	4	10
 Stoneclad Behemoth	Tank	42	1750	12	12	25	21	24	18	14	9	MGT	VIT	4	4	26	52	52	34	34	34	34	3	1	2	StonecladBehemoth	EarthDrakeCCCPLUSHHYENAofDOOM	202	33	0.5	Y																			Tank40	19	120	138	129	122	110	7	4	5
@@ -2801,7 +2801,7 @@ Fungal Shambler	Force	43	364	6	31	11	20	15	28	16	23	SOC	WIL	4	4	35	9	53	26	26	18
 Juvenile Rancor	Bruiser	43	867	35	19	24	23	24	21	12	9	VIT	MGT	53	35	26	53	26	18	18	9	9	0	0	0	JuvenileRancor	SWLORcrancorbull	3495	30	0.4	Y																			Bruiser40	27	171	140	107	151	106	7	5	6
 Juvenile Chirodactyl	Damage	43	589	22	13	25	22	26	20	12	9	VIT	MGT	53	53	26	18	26	35	35	4	4	2	1	4	JuvenileChirodactyl	WyvernAdult	1298	30	0.66	Y																			Damage40	43	172	108	106	174	106	8	4	6
 Stinging Swarm	Evasion	43	804	16	7	23	20	25	22	14	9	VIT	MGT	4	35	53	35	35	26	26	18	18	1	1	4	StingingSwarm	SWLORSwarmA3	2067	6	1	Y																			Evasion40	24	122	123	118	154	138	7	5	5
-Speckled Seer	Force	43	450	6	31	13	21	15	29	25	11	AGI	WIL	4	4	35	9	53	26	26	18	53	4	4	4	SpeckledSeer	Kyoht3hydromancerx	318	77	1	Y																			Force40	24	127	82	146	123	154	2	9	5
+Speckled Seer	Force	43	450	6	31	13	21	15	29	25	11	AGI	WIL	4	4	35	9	53	26	26	18	53	4	4	4	SpeckledSeer	JellyfishMediumCCP	318	77	1	Y																			Force40	24	127	82	146	123	154	2	9	5
 Tundra Ponderer	Tank	43	1403	12	12	21	23	21	19	16	14	MGT	VIT	4	4	26	53	53	35	35	35	35	3	1	2	TundraPonderer	ElephantMammothProjectQDraygothTheAmethystDragon	174	8	0.66	Y																			Tank40	19	120	135	131	111	118	5	4	6
 Underbrush Scamp	Evasion	43	288	16	7	11	30	16	19	26	11	PER	AGI	4	35	53	35	35	26	26	18	18	1	1	4	UnderbrushScamp	FoxRedtailanimCCPhydromancerx	189	252	1	Y																			Evasion40	24	125	110	113	169	174	3	4	10
 Stoneclad Behemoth	Tank	43	1790	12	12	25	21	24	19	14	9	MGT	VIT	4	4	26	53	53	35	35	35	35	3	1	2	StonecladBehemoth	EarthDrakeCCCPLUSHHYENAofDOOM	202	33	0.5	Y																			Tank40	19	123	140	131	123	112	7	4	5
@@ -2827,7 +2827,7 @@ Fungal Shambler	Force	44	372	6	32	11	21	15	28	16	23	SOC	WIL	4	4	36	9	54	27	27	18
 Juvenile Rancor	Bruiser	44	886	36	19	24	24	24	21	12	9	VIT	MGT	54	36	27	54	27	18	18	9	9	0	0	0	JuvenileRancor	SWLORcrancorbull	3495	30	0.4	Y																			Bruiser40	27	174	142	110	153	108	7	5	6
 Juvenile Chirodactyl	Damage	44	602	22	14	25	23	26	20	12	9	VIT	MGT	54	54	27	18	27	36	36	4	4	2	1	4	JuvenileChirodactyl	WyvernAdult	1298	30	0.66	Y																			Damage40	43	175	109	108	177	108	8	4	6
 Stinging Swarm	Evasion	44	822	16	7	23	21	25	22	14	9	VIT	MGT	4	36	54	36	36	27	27	18	18	1	1	4	StingingSwarm	SWLORSwarmA3	2067	6	1	Y																			Evasion40	24	124	125	120	156	141	7	5	5
-Speckled Seer	Force	44	460	6	32	13	22	15	29	25	11	AGI	WIL	4	4	36	9	54	27	27	18	54	4	4	4	SpeckledSeer	Kyoht3hydromancerx	318	77	1	Y																			Force40	24	129	83	149	124	156	2	9	5
+Speckled Seer	Force	44	460	6	32	13	22	15	29	25	11	AGI	WIL	4	4	36	9	54	27	27	18	54	4	4	4	SpeckledSeer	JellyfishMediumCCP	318	77	1	Y																			Force40	24	129	83	149	124	156	2	9	5
 Tundra Ponderer	Tank	44	1434	13	13	21	24	21	19	16	14	MGT	VIT	4	4	27	54	54	36	36	36	36	3	1	2	TundraPonderer	ElephantMammothProjectQDraygothTheAmethystDragon	174	8	0.66	Y																			Tank40	19	122	137	134	113	120	5	4	6
 Underbrush Scamp	Evasion	44	294	16	7	11	31	16	19	26	11	PER	AGI	4	36	54	36	36	27	27	18	18	1	1	4	UnderbrushScamp	FoxRedtailanimCCPhydromancerx	189	252	1	Y																			Evasion40	24	127	112	116	172	177	3	4	10
 Stoneclad Behemoth	Tank	44	1830	13	13	25	22	24	19	14	9	MGT	VIT	4	4	27	54	54	36	36	36	36	3	1	2	StonecladBehemoth	EarthDrakeCCCPLUSHHYENAofDOOM	202	33	0.5	Y																			Tank40	19	125	142	134	125	114	7	4	5
@@ -2853,7 +2853,7 @@ Fungal Shambler	Force	45	380	6	33	12	21	15	28	16	23	SOC	WIL	5	5	37	9	55	28	28	18
 Juvenile Rancor	Bruiser	45	905	37	19	25	24	24	21	12	9	VIT	MGT	55	37	28	55	28	18	18	9	9	0	0	0	JuvenileRancor	SWLORcrancorbull	3495	30	0.4	Y																			Bruiser40	27	178	144	112	155	110	7	5	6
 Juvenile Chirodactyl	Damage	45	615	23	14	26	23	26	20	12	9	VIT	MGT	55	55	28	18	28	37	37	5	5	2	1	5	JuvenileChirodactyl	WyvernAdult	1298	30	0.66	Y																			Damage40	43	179	110	111	179	110	8	5	6
 Stinging Swarm	Evasion	45	840	16	7	24	21	25	22	14	9	VIT	MGT	5	37	55	37	37	28	28	18	18	1	1	5	StingingSwarm	SWLORSwarmA3	2067	6	1	Y																			Evasion40	24	126	128	123	158	143	7	6	5
-Speckled Seer	Force	45	470	6	33	14	22	15	29	25	11	AGI	WIL	5	5	37	9	55	28	28	18	55	4	5	4	SpeckledSeer	Kyoht3hydromancerx	318	77	1	Y																			Force40	24	132	85	151	126	158	2	9	5
+Speckled Seer	Force	45	470	6	33	14	22	15	29	25	11	AGI	WIL	5	5	37	9	55	28	28	18	55	4	5	4	SpeckledSeer	JellyfishMediumCCP	318	77	1	Y																			Force40	24	132	85	151	126	158	2	9	5
 Tundra Ponderer	Tank	45	1465	13	13	22	24	21	19	16	14	MGT	VIT	5	5	28	55	55	37	37	37	37	3	1	2	TundraPonderer	ElephantMammothProjectQDraygothTheAmethystDragon	174	8	0.66	Y																			Tank40	19	124	140	136	114	122	5	4	6
 Underbrush Scamp	Evasion	45	300	16	7	12	31	16	19	26	11	PER	AGI	5	37	55	37	37	28	28	18	18	1	1	5	UnderbrushScamp	FoxRedtailanimCCPhydromancerx	189	252	1	Y																			Evasion40	24	129	114	118	175	179	3	4	10
 Stoneclad Behemoth	Tank	45	1870	13	13	26	22	24	19	14	9	MGT	VIT	5	5	28	55	55	37	37	37	37	3	1	2	StonecladBehemoth	EarthDrakeCCCPLUSHHYENAofDOOM	202	33	0.5	Y																			Tank40	19	127	144	136	126	116	7	4	5
@@ -2879,7 +2879,7 @@ Fungal Shambler	Force	46	388	7	34	12	21	16	28	17	23	SOC	WIL	5	5	38	9	56	28	28	19
 Juvenile Rancor	Bruiser	46	924	38	20	25	24	25	21	13	9	VIT	MGT	56	38	28	56	28	19	19	9	9	0	0	0	JuvenileRancor	SWLORcrancorbull	3495	30	0.4	Y																			Bruiser40	27	181	146	113	157	112	7	5	7
 Juvenile Chirodactyl	Damage	46	628	23	14	26	23	27	20	13	9	VIT	MGT	56	56	28	19	28	38	38	5	5	2	1	5	JuvenileChirodactyl	WyvernAdult	1298	30	0.66	Y																			Damage40	43	182	112	112	182	112	8	5	6
 Stinging Swarm	Evasion	46	858	17	8	24	21	26	22	15	9	VIT	MGT	5	38	56	38	38	28	28	19	19	1	1	5	StingingSwarm	SWLORSwarmA3	2067	6	1	Y																			Evasion40	24	128	130	125	160	146	7	6	5
-Speckled Seer	Force	46	480	7	34	14	22	16	29	26	11	AGI	WIL	5	5	38	9	56	28	28	19	56	4	5	4	SpeckledSeer	Kyoht3hydromancerx	318	77	1	Y																			Force40	24	134	86	153	127	160	2	9	6
+Speckled Seer	Force	46	480	7	34	14	22	16	29	26	11	AGI	WIL	5	5	38	9	56	28	28	19	56	4	5	4	SpeckledSeer	JellyfishMediumCCP	318	77	1	Y																			Force40	24	134	86	153	127	160	2	9	6
 Tundra Ponderer	Tank	46	1496	13	13	22	24	22	19	17	14	MGT	VIT	5	5	28	56	56	38	38	38	38	3	1	2	TundraPonderer	ElephantMammothProjectQDraygothTheAmethystDragon	174	8	0.66	Y																			Tank40	19	126	142	138	116	124	5	4	7
 Underbrush Scamp	Evasion	46	306	17	8	12	31	17	19	27	11	PER	AGI	5	38	56	38	38	28	28	19	19	1	1	5	UnderbrushScamp	FoxRedtailanimCCPhydromancerx	189	252	1	Y																			Evasion40	24	131	116	120	177	182	3	4	10
 Stoneclad Behemoth	Tank	46	1910	13	13	26	22	25	19	15	9	MGT	VIT	5	5	28	56	56	38	38	38	38	3	1	2	StonecladBehemoth	EarthDrakeCCCPLUSHHYENAofDOOM	202	33	0.5	Y																			Tank40	19	129	146	138	128	118	7	4	6
@@ -2905,7 +2905,7 @@ Fungal Shambler	Force	47	396	7	34	12	21	16	29	17	23	SOC	WIL	5	5	38	10	58	29	29	1
 Juvenile Rancor	Bruiser	47	943	38	20	25	24	25	22	13	9	VIT	MGT	58	38	29	58	29	19	19	10	10	0	0	0	JuvenileRancor	SWLORcrancorbull	3495	30	0.4	Y																			Bruiser40	27	184	150	116	160	114	7	5	7
 Juvenile Chirodactyl	Damage	47	641	23	14	26	23	27	21	13	9	VIT	MGT	58	58	29	19	29	38	38	5	5	2	1	5	JuvenileChirodactyl	WyvernAdult	1298	30	0.66	Y																			Damage40	43	185	114	114	185	114	8	5	6
 Stinging Swarm	Evasion	47	876	17	8	24	21	26	23	15	9	VIT	MGT	5	38	58	38	38	29	29	19	19	1	1	5	StingingSwarm	SWLORSwarmA3	2067	6	1	Y																			Evasion40	24	131	131	126	163	149	7	6	5
-Speckled Seer	Force	47	490	7	34	14	22	16	30	26	11	AGI	WIL	5	5	38	10	58	29	29	19	58	4	5	4	SpeckledSeer	Kyoht3hydromancerx	318	77	1	Y																			Force40	24	136	88	157	129	163	2	9	6
+Speckled Seer	Force	47	490	7	34	14	22	16	30	26	11	AGI	WIL	5	5	38	10	58	29	29	19	58	4	5	4	SpeckledSeer	JellyfishMediumCCP	318	77	1	Y																			Force40	24	136	88	157	129	163	2	9	6
 Tundra Ponderer	Tank	47	1527	13	13	22	24	22	20	17	14	MGT	VIT	5	5	29	58	58	38	38	38	38	3	1	2	TundraPonderer	ElephantMammothProjectQDraygothTheAmethystDragon	174	8	0.66	Y																			Tank40	19	129	145	142	117	126	5	4	7
 Underbrush Scamp	Evasion	47	312	17	8	12	31	17	20	27	11	PER	AGI	5	38	58	38	38	29	29	19	19	1	1	5	UnderbrushScamp	FoxRedtailanimCCPhydromancerx	189	252	1	Y																			Evasion40	24	134	118	122	180	185	3	4	10
 Stoneclad Behemoth	Tank	47	1950	13	13	26	22	25	20	15	9	MGT	VIT	5	5	29	58	58	38	38	38	38	3	1	2	StonecladBehemoth	EarthDrakeCCCPLUSHHYENAofDOOM	202	33	0.5	Y																			Tank40	19	132	150	142	129	120	7	4	6
@@ -2931,7 +2931,7 @@ Fungal Shambler	Force	48	404	7	35	12	22	16	29	17	23	SOC	WIL	5	5	39	10	59	29	29	2
 Juvenile Rancor	Bruiser	48	962	39	20	25	25	25	22	13	9	VIT	MGT	59	39	29	59	29	20	20	10	10	0	0	0	JuvenileRancor	SWLORcrancorbull	3495	30	0.4	Y																			Bruiser40	27	188	152	117	162	116	7	5	7
 Juvenile Chirodactyl	Damage	48	654	24	14	26	24	27	21	13	9	VIT	MGT	59	59	29	20	29	39	39	5	5	2	1	5	JuvenileChirodactyl	WyvernAdult	1298	30	0.66	Y																			Damage40	43	189	116	116	187	116	8	5	6
 Stinging Swarm	Evasion	48	894	17	8	24	22	26	23	15	9	VIT	MGT	5	39	59	39	39	29	29	20	20	1	1	5	StingingSwarm	SWLORSwarmA3	2067	6	1	Y																			Evasion40	24	133	133	129	165	151	7	6	5
-Speckled Seer	Force	48	500	7	35	14	23	16	30	26	11	AGI	WIL	5	5	39	10	59	29	29	20	59	4	5	4	SpeckledSeer	Kyoht3hydromancerx	318	77	1	Y																			Force40	24	139	89	159	130	165	2	9	6
+Speckled Seer	Force	48	500	7	35	14	23	16	30	26	11	AGI	WIL	5	5	39	10	59	29	29	20	59	4	5	4	SpeckledSeer	JellyfishMediumCCP	318	77	1	Y																			Force40	24	139	89	159	130	165	2	9	6
 Tundra Ponderer	Tank	48	1558	13	13	22	25	22	20	17	14	MGT	VIT	5	5	29	59	59	39	39	39	39	3	1	2	TundraPonderer	ElephantMammothProjectQDraygothTheAmethystDragon	174	8	0.66	Y																			Tank40	19	131	147	144	119	128	5	4	7
 Underbrush Scamp	Evasion	48	318	17	8	12	32	17	20	27	11	PER	AGI	5	39	59	39	39	29	29	20	20	1	1	5	UnderbrushScamp	FoxRedtailanimCCPhydromancerx	189	252	1	Y																			Evasion40	24	136	120	124	182	187	3	4	10
 Stoneclad Behemoth	Tank	48	1990	13	13	26	23	25	20	15	9	MGT	VIT	5	5	29	59	59	39	39	39	39	3	1	2	StonecladBehemoth	EarthDrakeCCCPLUSHHYENAofDOOM	202	33	0.5	Y																			Tank40	19	134	152	144	131	122	7	4	6
@@ -2957,7 +2957,7 @@ Fungal Shambler	Force	49	412	7	36	12	22	16	29	17	23	SOC	WIL	5	5	40	10	60	30	30	2
 Juvenile Rancor	Bruiser	49	981	40	20	25	25	25	22	13	9	VIT	MGT	60	40	30	60	30	20	20	10	10	0	0	0	JuvenileRancor	SWLORcrancorbull	3495	30	0.4	Y																			Bruiser40	27	191	154	120	164	118	7	6	7
 Juvenile Chirodactyl	Damage	49	667	24	15	26	24	27	21	13	9	VIT	MGT	60	60	30	20	30	40	40	5	5	2	1	5	JuvenileChirodactyl	WyvernAdult	1298	30	0.66	Y																			Damage40	43	192	117	118	190	118	8	5	7
 Stinging Swarm	Evasion	49	912	17	8	24	22	26	23	15	9	VIT	MGT	5	40	60	40	40	30	30	20	20	1	1	5	StingingSwarm	SWLORSwarmA3	2067	6	1	Y																			Evasion40	24	135	136	131	167	154	8	6	6
-Speckled Seer	Force	49	510	7	36	14	23	16	30	26	11	AGI	WIL	5	5	40	10	60	30	30	20	60	4	5	4	SpeckledSeer	Kyoht3hydromancerx	318	77	1	Y																			Force40	24	141	91	162	132	167	3	10	6
+Speckled Seer	Force	49	510	7	36	14	23	16	30	26	11	AGI	WIL	5	5	40	10	60	30	30	20	60	4	5	4	SpeckledSeer	JellyfishMediumCCP	318	77	1	Y																			Force40	24	141	91	162	132	167	3	10	6
 Tundra Ponderer	Tank	49	1589	14	14	22	25	22	20	17	14	MGT	VIT	5	5	30	60	60	40	40	40	40	3	1	2	TundraPonderer	ElephantMammothProjectQDraygothTheAmethystDragon	174	8	0.66	Y																			Tank40	19	133	150	147	120	130	6	5	7
 Underbrush Scamp	Evasion	49	324	17	8	12	32	17	20	27	11	PER	AGI	5	40	60	40	40	30	30	20	20	1	1	5	UnderbrushScamp	FoxRedtailanimCCPhydromancerx	189	252	1	Y																			Evasion40	24	138	122	127	185	190	3	5	11
 Stoneclad Behemoth	Tank	49	2030	14	14	26	23	25	20	15	9	MGT	VIT	5	5	30	60	60	40	40	40	40	3	1	2	StonecladBehemoth	EarthDrakeCCCPLUSHHYENAofDOOM	202	33	0.5	Y																			Tank40	19	136	154	147	132	124	7	5	6
@@ -2983,7 +2983,7 @@ Fungal Shambler	Force	50	420	7	36	12	22	16	29	17	23	SOC	WIL	5	5	41	10	61	31	31	2
 Juvenile Rancor	Bruiser	50	1000	40	21	25	25	25	22	13	9	VIT	MGT	61	41	31	61	31	20	20	10	10	0	0	0	JuvenileRancor	SWLORcrancorbull	3495	30	0.4	Y																			Bruiser50	27	194	156	122	166	120	7	6	7
 Juvenile Chirodactyl	Damage	50	680	25	15	26	24	27	21	13	9	VIT	MGT	61	61	31	20	31	41	41	5	5	2	1	5	JuvenileChirodactyl	WyvernAdult	1298	30	0.66	Y																			Damage50	43	195	118	120	193	120	8	5	7
 Stinging Swarm	Evasion	50	930	18	8	24	22	26	23	15	9	VIT	MGT	5	41	61	41	41	31	31	20	20	1	1	5	StingingSwarm	SWLORSwarmA3	2067	6	1	Y																			Evasion50	24	137	138	133	169	157	8	6	6
-Speckled Seer	Force	50	520	7	36	14	23	16	30	26	11	AGI	WIL	5	5	41	10	61	31	31	20	61	4	5	4	SpeckledSeer	Kyoht3hydromancerx	318	77	1	Y																			Force50	24	143	92	164	134	169	3	10	6
+Speckled Seer	Force	50	520	7	36	14	23	16	30	26	11	AGI	WIL	5	5	41	10	61	31	31	20	61	4	5	4	SpeckledSeer	JellyfishMediumCCP	318	77	1	Y																			Force50	24	143	92	164	134	169	3	10	6
 Tundra Ponderer	Tank	50	1620	14	14	22	25	22	20	17	14	MGT	VIT	5	5	31	61	61	41	41	41	41	3	1	2	TundraPonderer	ElephantMammothProjectQDraygothTheAmethystDragon	174	8	0.66	Y																			Tank50	24	135	152	149	121	132	6	5	7
 Underbrush Scamp	Evasion	50	330	18	8	12	32	17	20	27	11	PER	AGI	5	41	61	41	41	31	31	20	20	1	1	5	UnderbrushScamp	FoxRedtailanimCCPhydromancerx	189	252	1	Y																			Evasion50	24	140	124	129	188	193	3	5	11
 Stoneclad Behemoth	Tank	50	2070	14	14	26	23	25	20	15	9	MGT	VIT	5	5	31	61	61	41	41	41	41	3	1	2	StonecladBehemoth	EarthDrakeCCCPLUSHHYENAofDOOM	202	33	0.5	Y																			Tank50	24	138	156	149	133	126	7	5	6

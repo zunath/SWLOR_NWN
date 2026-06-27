@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.AIService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
@@ -16,6 +17,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 {
     public sealed class GuardingRoarAbilityDefinition : IAbilityListDefinition
     {
+        private const float Radius = 5f;
+
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
@@ -37,6 +40,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 .UsesAnimation(Animation.FireForgetTaunt)
                 .HasRecastDelay(RecastGroup.GuardingRoar, 45f)
                 .SkillType(SkillType.BeastMastery)
+                .HasMaxRange(Radius)
+                .HasAITarget(AITarget.Self())
+                .HasAIScore(AIScore.AreaThreatControl(1, Radius))
                 .IsAreaAbility()
                 .HasImpactAction(GuardingRoar1ImpactAction)
                 .IsCastedAbility()
@@ -55,6 +61,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 .UsesAnimation(Animation.FireForgetTaunt)
                 .HasRecastDelay(RecastGroup.GuardingRoar, 45f)
                 .SkillType(SkillType.BeastMastery)
+                .HasMaxRange(Radius)
+                .HasAITarget(AITarget.Self())
+                .HasAIScore(AIScore.AreaThreatControl(2, Radius))
                 .IsAreaAbility()
                 .HasImpactAction(GuardingRoar2ImpactAction)
                 .IsCastedAbility()
@@ -73,6 +82,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 .UsesAnimation(Animation.FireForgetTaunt)
                 .HasRecastDelay(RecastGroup.GuardingRoar, 45f)
                 .SkillType(SkillType.BeastMastery)
+                .HasMaxRange(Radius)
+                .HasAITarget(AITarget.Self())
+                .HasAIScore(AIScore.AreaThreatControl(3, Radius))
                 .IsAreaAbility()
                 .HasImpactAction(GuardingRoar3ImpactAction)
                 .IsCastedAbility()
@@ -83,7 +95,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 
         private static void GuardingRoar1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            foreach (var hostile in GetHostileTargets(activator, target, targetLocation, true, 5f))
+            foreach (var hostile in GetHostileTargets(activator, target, targetLocation, true, Radius))
             {
                 ApplyGoad(activator, hostile);
             }
@@ -97,7 +109,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 
         private static void GuardingRoar2ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            foreach (var hostile in GetHostileTargets(activator, target, targetLocation, true, 5f))
+            foreach (var hostile in GetHostileTargets(activator, target, targetLocation, true, Radius))
             {
                 ApplyGoad(activator, hostile);
             }
@@ -111,7 +123,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 
         private static void GuardingRoar3ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            foreach (var hostile in GetHostileTargets(activator, target, targetLocation, true, 5f))
+            foreach (var hostile in GetHostileTargets(activator, target, targetLocation, true, Radius))
             {
                 ApplyGoad(activator, hostile);
             }

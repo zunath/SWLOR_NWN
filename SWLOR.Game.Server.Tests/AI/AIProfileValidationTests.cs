@@ -68,14 +68,41 @@ public class AIProfileValidationTests
                 registeredAbilities.Should().ContainKey(action.Feat);
                 var ability = registeredAbilities[action.Feat];
 
-                AITarget.InferDefault(action.Feat, ability)
+                (ability.AITargetSelector ?? AITarget.InferDefault(action.Feat, ability))
                     .Should()
                     .NotBeNull($"{action.Feat} must have an AI target selector");
 
-                AIScore.Ability(ability)
+                (ability.AIScore ?? AIScore.Ability(ability))
                     .Should()
                     .NotBeNull($"{action.Feat} must have an AI score calculation");
             }
+        }
+    }
+
+    [Test]
+    public void DefaultProfiles_UseAbilitySpecificAIMetadata()
+    {
+        Ability.CacheData();
+        var abilities = Ability.GetAllAbilityDetails();
+        var profiles = new DefaultAIProfileDefinition().BuildProfiles();
+        var beastActions = profiles[AIProfileType.BeastCompanion].Actions
+            .Where(action => action.Type == AIActionType.Ability)
+            .ToDictionary(action => action.Feat);
+
+        foreach (var feat in new[]
+                 {
+                     FeatType.Anger1,
+                     FeatType.Anger2,
+                     FeatType.GuardingRoar1,
+                     FeatType.GuardingRoar2,
+                     FeatType.GuardingRoar3
+                 })
+        {
+            var ability = abilities[feat];
+            var action = beastActions[feat];
+
+            action.TargetSelector.Should().BeSameAs(ability.AITargetSelector);
+            action.Score.Should().BeSameAs(ability.AIScore);
         }
     }
 

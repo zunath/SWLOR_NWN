@@ -34,6 +34,24 @@ namespace SWLOR.Game.Server.Service.AIService
             };
         }
 
+        public static AIScoreCalculation ThreatControl(int abilityLevel)
+        {
+            return context => context.EvaluatedTarget != OBJECT_INVALID
+                ? AIScoreBand.ThreatControl + abilityLevel
+                : 0;
+        }
+
+        public static AIScoreCalculation AreaThreatControl(int abilityLevel, float radius)
+        {
+            return context =>
+            {
+                var count = context.CountHostilesNearTarget(radius);
+                return count <= 0
+                    ? 0
+                    : AIScoreBand.ThreatControl + abilityLevel + count * 25;
+            };
+        }
+
         public static AIScoreCalculation Ability(AbilityDetail ability)
         {
             if (ability.IsHostileAbility && ability.IsAreaAbility)

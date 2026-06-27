@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.AIService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
@@ -36,6 +37,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 .UsesAnimation(Animation.FireForgetTaunt)
                 .HasRecastDelay(RecastGroup.Anger, activator => GetAngerRecastDelay(activator))
                 .SkillType(SkillType.BeastMastery)
+                .HasAITarget(AITarget.AllyAttacker())
+                .HasAIScore(AIScore.ThreatControl(1))
                 .IsSingleTargetAbility()
                 .RequiresTarget()
                 .HasImpactAction(Anger1ImpactAction)
@@ -55,6 +58,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 .UsesAnimation(Animation.FireForgetTaunt)
                 .HasRecastDelay(RecastGroup.Anger, activator => GetAngerRecastDelay(activator))
                 .SkillType(SkillType.BeastMastery)
+                .HasAITarget(AITarget.AllyAttacker())
+                .HasAIScore(AIScore.ThreatControl(2))
                 .IsSingleTargetAbility()
                 .RequiresTarget()
                 .HasImpactAction(Anger2ImpactAction)

@@ -98,9 +98,13 @@ namespace SWLOR.Game.Server.Feature.AIDefinition
 
             foreach (var (feat, ability) in _registeredAbilities)
             {
+                _builder.Ability(feat);
+
+                if (ability.AITargetSelector != null)
+                    _builder.Target(ability.AITargetSelector);
+
                 _builder
-                    .Ability(feat)
-                    .Score(AIScore.Ability(ability))
+                    .Score(ability.AIScore ?? AIScore.Ability(ability))
                     .Priority(priority);
 
                 priority++;

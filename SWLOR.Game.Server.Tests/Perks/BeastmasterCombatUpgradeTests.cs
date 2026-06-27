@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster;
 using SWLOR.Game.Server.Feature.PerkDefinition.Beast;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.AIService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
@@ -76,6 +77,19 @@ public class BeastmasterCombatUpgradeTests
         var evasiveChallenge = new EvasiveChallengeAbilityDefinition().BuildAbilities();
         AssertStaminaAbility(evasiveChallenge[FeatType.EvasiveChallenge1], "Evasive Challenge I", RecastGroup.EvasiveChallenge, 60f, 5, requiresTarget: true);
         AssertStaminaAbility(evasiveChallenge[FeatType.EvasiveChallenge2], "Evasive Challenge II", RecastGroup.EvasiveChallenge, 60f, 7, requiresTarget: false);
+
+        var anger = new AngerAbilityDefinition().BuildAbilities()[FeatType.Anger1];
+        AssertStaminaAbility(anger, "Anger I", RecastGroup.Anger, 18f, 3, requiresTarget: true);
+        anger.AITargetSelector.Should().NotBeNull();
+        anger.AIScore.Should().NotBeNull();
+
+        var guardingRoar = new GuardingRoarAbilityDefinition().BuildAbilities()[FeatType.GuardingRoar1];
+        AssertStaminaAbility(guardingRoar, "Guarding Roar I", RecastGroup.GuardingRoar, 45f, 6, requiresTarget: false);
+        guardingRoar.IsHostileAbility.Should().BeTrue();
+        guardingRoar.IsAreaAbility.Should().BeTrue();
+        guardingRoar.MaxRange.Should().Be(5f);
+        guardingRoar.AITargetSelector.Should().NotBeNull();
+        guardingRoar.AIScore.Should().NotBeNull();
 
         var ironHide = new IronHideAbilityDefinition().BuildAbilities()[FeatType.IronHide1];
         AssertStaminaAbility(ironHide, "Iron Hide I", RecastGroup.IronHide, 30f, 3, requiresTarget: false);

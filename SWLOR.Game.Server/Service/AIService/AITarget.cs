@@ -53,9 +53,40 @@ namespace SWLOR.Game.Server.Service.AIService
             };
         }
 
-        public static AITargetSelector AllyAttacker()
+        public static AITargetSelector AllyAttacker(float maxRange = 10f)
         {
-            return HighestEnmity();
+            return context =>
+            {
+                var bestTarget = OBJECT_INVALID;
+                var bestEnmity = 0;
+
+                foreach (var ally in context.Allies)
+                {
+                    if (ally == context.Self || !GetIsObjectValid(ally))
+                        continue;
+
+                    foreach (var (enemy, amount) in Enmity.GetEnmityTowardsAllEnemies(ally))
+                    {
+                        if (amount <= bestEnmity ||
+                            enemy == context.Self ||
+                            !GetIsObjectValid(enemy) ||
+                            !GetIsEnemy(enemy, context.Self) ||
+                            maxRange > 0f && GetDistanceBetween(context.Self, enemy) > maxRange ||
+                            !LineOfSightObject(context.Self, enemy) ||
+                            Enmity.GetHighestEnmityTarget(enemy) == context.Self)
+                        {
+                            continue;
+                        }
+
+                        bestTarget = enemy;
+                        bestEnmity = amount;
+                    }
+                }
+
+                return bestTarget != OBJECT_INVALID
+                    ? bestTarget
+                    : context.CurrentEnmityTarget;
+            };
         }
 
         public static AITargetSelector InferDefault(FeatType feat, AbilityDetail ability)

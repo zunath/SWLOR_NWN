@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Service.AIService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.Engine;
@@ -45,6 +46,8 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public AbilityTargetingDetail Targeting { get; set; }
         public List<AbilityTargetingDetail> AdditionalActivationTargeting { get; set; }
         public List<Type> StatusEffectTypesRemovedOnPerkRefund { get; set; }
+        public AITargetSelector AITargetSelector { get; set; }
+        public AIScoreCalculation AIScore { get; set; }
 
         public AbilityDetail()
         {

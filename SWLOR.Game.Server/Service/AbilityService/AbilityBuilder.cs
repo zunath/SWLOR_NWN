@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Service.AIService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -188,6 +189,20 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public AbilityBuilder HasCustomValidation(AbilityCustomValidationAction action)
         {
             _activeAbility.CustomValidation = action;
+
+            return this;
+        }
+
+        public AbilityBuilder HasAITarget(AITargetSelector selector)
+        {
+            _activeAbility.AITargetSelector = selector;
+
+            return this;
+        }
+
+        public AbilityBuilder HasAIScore(AIScoreCalculation score)
+        {
+            _activeAbility.AIScore = score;
 
             return this;
         }

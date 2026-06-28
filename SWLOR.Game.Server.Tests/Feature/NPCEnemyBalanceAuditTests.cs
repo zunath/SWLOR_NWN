@@ -1,9 +1,12 @@
+using System.IO.Compression;
 using System.Text.Json;
+using System.Xml.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.NPCService;
+using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Tests.Feature;
@@ -95,6 +98,10 @@ public class NPCEnemyBalanceAuditTests
         [(int)FeatType.StaticWeb] = ResistanceType.Electrical,
         [(int)FeatType.ForceSunder] = ResistanceType.Disruption,
         [(int)FeatType.NullShock] = ResistanceType.Disruption,
+        [(int)FeatType.ButchersCarve] = ResistanceType.Trauma,
+        [(int)FeatType.StimCanister] = ResistanceType.Poison,
+        [(int)FeatType.BloodFrenzyFlurry] = ResistanceType.Trauma,
+        [(int)FeatType.DraavosChallenge] = ResistanceType.Mind,
     };
 
     private static readonly ExpectedEnemy[] ExpectedAlternateEnemies =
@@ -107,6 +114,30 @@ public class NPCEnemyBalanceAuditTests
         new("ecoterr_2", "ecoter_hide", "npc_eco_rifle", 27, 490, 27, 15, 15, 22, 22, 59, 10, 14, 0, 5, 11, 9, 43, 41),
         new("byysk_guard002", "hu_byyskgua_hide", "vbyyskguardsword", 50, 2441, 42, 24, 24, 34, 34, 152, 26, 24, 2, 11, 21, 19, 77, 27),
     };
+
+    private static readonly ExpectedEnemy[] ExpectedBloodFrenzyEnemies =
+    {
+        new("bf_scavenger", "bf_scv_skin", "bf_scv_wp", 50, 1085, 40, 22, 22, 32, 32, 101, 18, 22, 0, 10, 19, 17, 81, 27),
+        new("bf_pulsedroid", "bf_pulse_skin", "bf_pulse_wp", 50, 977, 22, 40, 22, 32, 32, 88, 22, 22, 0, 13, 17, 17, 78, 41),
+        new("bf_duelist", "bf_duel_skin", "bf_duel_wp", 50, 1573, 41, 23, 23, 33, 33, 121, 21, 23, 1, 10, 20, 18, 88, 27),
+        new("bf_butcher", "bf_butch_skin", "bf_butch_wp", 50, 2441, 42, 24, 24, 34, 34, 152, 26, 24, 2, 11, 21, 19, 94, 27),
+        new("bf_kess", "bf_kess_skin", "bf_kess_wp", 50, 5425, 43, 25, 25, 35, 35, 253, 44, 25, 3, 11, 22, 20, 102, 27),
+    };
+
+    private static readonly IReadOnlyDictionary<string, FeatType[]> ExpectedBloodFrenzyAbilityPackages = new Dictionary<string, FeatType[]>
+    {
+        ["bf_scavenger"] = new[] { FeatType.RakingClaws, FeatType.RendingBite },
+        ["bf_pulsedroid"] = new[] { FeatType.SuppressingShot, FeatType.PrecisionShot },
+        ["bf_duelist"] = new[] { FeatType.PouncingStrike, FeatType.RendingBite, FeatType.TailSweep },
+        ["bf_butcher"] = new[] { FeatType.ButchersCarve, FeatType.StimCanister, FeatType.BloodFrenzyFlurry, FeatType.BrutalBash },
+        ["bf_kess"] = new[] { FeatType.BloodFrenzyFlurry, FeatType.DraavosChallenge, FeatType.StimCanister, FeatType.SerratedSlash, FeatType.BrutalBash, FeatType.TacticalMark },
+    };
+
+    private static readonly int[] BloodFrenzyPackageFeatIds = ResistanceThreatFeats
+        .Keys
+        .Append((int)FeatType.ChitinGuard)
+        .Distinct()
+        .ToArray();
 
     private static readonly ExpectedDualWieldDamage[] ExpectedDualWieldDamageTotals =
     {
@@ -175,6 +206,166 @@ public class NPCEnemyBalanceAuditTests
             AssertSkinCombatStats(skin.RootElement, expected);
             AssertWeaponStats(weapon.RootElement, expected);
         }
+    }
+
+    [Test]
+    public void BloodFrenzyEnemies_HaveBibleGuideStats()
+    {
+        var root = FindRepositoryRoot();
+
+        foreach (var expected in ExpectedBloodFrenzyEnemies)
+        {
+            using var utc = ReadJson(root, "Module", "utc", $"{expected.Resref}.utc.json");
+            using var skin = ReadJson(root, "Module", "uti", $"{expected.SkinResref}.uti.json");
+            using var weapon = ReadJson(root, "Module", "uti", $"{expected.WeaponResref}.uti.json");
+
+            GetEquippedResref(utc.RootElement, RightHandSlot).Should().Be(expected.WeaponResref, $"{expected.Resref} should use its dedicated Blood Frenzy weapon stats");
+            GetEquippedResref(utc.RootElement, CreatureArmorSlot).Should().Be(expected.SkinResref, $"{expected.Resref} should use its dedicated Blood Frenzy skin stats");
+            GetEquippedResref(utc.RootElement, LeftHandSlot).Should().BeNullOrEmpty($"{expected.Resref} should not inherit shield stats outside the Bible guide");
+
+            AssertCreatureHitPoints(utc.RootElement, expected);
+            AssertCreatureAttributes(utc.RootElement, expected);
+            AssertSkinCombatStats(skin.RootElement, expected);
+            AssertWeaponStats(weapon.RootElement, expected);
+        }
+    }
+
+    [Test]
+    public void BloodFrenzyEnemies_UseBibleAbilityPackages()
+    {
+        var root = FindRepositoryRoot();
+
+        foreach (var expected in ExpectedBloodFrenzyAbilityPackages)
+        {
+            using var utc = ReadJson(root, "Module", "utc", $"{expected.Key}.utc.json");
+            var expectedFeatIds = expected.Value.Select(feat => (int)feat).ToArray();
+
+            var creatureFeats = GetCreatureFeats(utc.RootElement);
+            creatureFeats.Should().Contain(expectedFeatIds, $"{expected.Key} should have every feat from its Blood Frenzy Bible ability package");
+            creatureFeats
+                .Intersect(BloodFrenzyPackageFeatIds)
+                .Should()
+                .BeEquivalentTo(expectedFeatIds, $"{expected.Key} should use its Blood Frenzy Bible ability package");
+        }
+    }
+
+    [Test]
+    public void KessDraavo_UsesBloodFrenzyCapstone()
+    {
+        var root = FindRepositoryRoot();
+        using var utc = ReadJson(root, "Module", "utc", "bf_kess.utc.json");
+
+        GetCreatureFeats(utc.RootElement)
+            .Should()
+            .Contain((int)FeatType.BloodFrenzyTrait, "Kess Draavo must visibly use the Blood Frenzy capstone");
+        GetJsonLocalInt(utc.RootElement, $"PERK_LEVEL_{(int)PerkType.BloodFrenzy}")
+            .Should()
+            .Be(1, "NPC perk stat bonuses use the generic PERK_LEVEL variable path");
+    }
+
+    [Test]
+    public void KessDraavo_UsesDocumentedTraumaResistanceOverride()
+    {
+        var root = FindRepositoryRoot();
+        using var skin = ReadJson(root, "Module", "uti", "bf_kess_skin.uti.json");
+
+        GetItemPropertyCost(skin.RootElement, ItemPropertyResistance, (int)ResistanceType.Trauma)
+            .Should()
+            .Be(100, "Kess Draavo's World NPCs Bible row documents a Trauma Res=100 stat override");
+    }
+
+    [Test]
+    public void WorldNpcsBible_CalculatesResistanceAdjustmentsWithHandEntryColumns()
+    {
+        var root = FindRepositoryRoot();
+        using var archive = ZipFile.OpenRead(Path.Combine(
+            root.FullName,
+            "design",
+            "bible",
+            "SWLOR Design Bible - Combat Upgrade.xlsx"));
+        var worksheet = ReadWorkbookXml(archive, "xl/worksheets/sheet56.xml");
+        var weaponDelays = ReadWorkbookXml(archive, "xl/worksheets/sheet54.xml");
+        var sharedStrings = ReadSharedStrings(archive);
+        XNamespace ns = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
+
+        GetWorkbookCellText(worksheet, sharedStrings, "AE1").Should().Be("Fire Res Adj");
+        GetWorkbookCellText(worksheet, sharedStrings, "AF1").Should().Be("Poison Res Adj");
+        GetWorkbookCellText(worksheet, sharedStrings, "AK1").Should().Be("Trauma Res Adj");
+        GetWorkbookCellText(worksheet, sharedStrings, "AL1").Should().Be("Disruption Res Adj");
+        GetWorkbookCellText(worksheet, sharedStrings, "AM1").Should().Be("Skill Override");
+        GetWorkbookCellText(worksheet, sharedStrings, "AC206").Should().Be("100");
+        GetWorkbookCellText(worksheet, sharedStrings, "AF206").Should().Be("-5");
+        GetWorkbookCellText(worksheet, sharedStrings, "AI206").Should().Be("-5");
+        GetWorkbookCellText(worksheet, sharedStrings, "AK206").Should().Be("87");
+        GetWorkbookCellText(worksheet, sharedStrings, "AP206")
+            .Should()
+            .Be("Blood Frenzy, Blood Frenzy Flurry, Draavo's Challenge, Stim Canister, Serrated Slash, Brutal Bash, Tactical Mark");
+        GetWorkbookCellFormula(worksheet, "X202").Should().Contain("+$AF202", "Poison resistance should read the numeric Poison Res Adj column");
+        GetWorkbookCellFormula(worksheet, "AA202").Should().Contain("+$AI202", "Mind resistance should read the numeric Mind Res Adj column");
+        GetWorkbookCellFormula(worksheet, "AC206").Should().Contain("+$AK206", "Kess's Trauma resistance should read the numeric Trauma Res Adj column");
+        GetWorkbookCellFormula(worksheet, "AN206").Should().Contain("'World NPC Weapon Delays'", "Blood Frenzy weapon delays should be calculated through the shared delay table");
+
+        var formulaColumns = new[]
+        {
+            "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V",
+            "W", "X", "Y", "Z", "AA", "AB", "AC", "AD", "AM", "AN", "AO",
+        };
+
+        foreach (var row in Enumerable.Range(202, 5))
+        {
+            foreach (var column in formulaColumns)
+            {
+                GetWorkbookCellFormula(worksheet, $"{column}{row}")
+                    .Should()
+                    .NotBeNullOrWhiteSpace($"{column}{row} should follow the World NPCs formula pattern");
+            }
+        }
+
+        var handEntryStyle = GetWorkbookCellStyle(worksheet, "A202");
+        foreach (var row in Enumerable.Range(2, 205))
+        {
+            foreach (var column in new[] { "AE", "AF", "AG", "AH", "AI", "AJ", "AK", "AL" })
+            {
+                GetWorkbookCellText(worksheet, sharedStrings, $"{column}{row}")
+                    .Should()
+                    .NotBeNullOrWhiteSpace($"{column}{row} should contain a numeric resistance adjustment, using 0 for no change");
+                GetWorkbookCellFormula(worksheet, $"{column}{row}")
+                    .Should()
+                    .BeEmpty($"{column}{row} should be hand-entered, not formula-driven");
+                GetWorkbookCellStyle(worksheet, $"{column}{row}")
+                    .Should()
+                    .Be(handEntryStyle, $"{column}{row} should use the same hand-entry style as the World NPCs input columns");
+            }
+        }
+
+        worksheet
+            .Descendants(ns + "autoFilter")
+            .Single()
+            .Attribute("ref")?
+            .Value
+            .Should()
+            .Be("$A$1:$AR$206", "the reusable resistance override columns should be included in World NPCs filtering");
+
+        worksheet
+            .Descendants(ns + "dataValidation")
+            .Single(validation => validation.Attribute("sqref")?.Value == "AE2:AL206")
+            .Attribute("type")?
+            .Value
+            .Should()
+            .Be("decimal", "resistance adjustments should be first-class numeric cells rather than text notes");
+
+        weaponDelays
+            .Descendants(ns + "autoFilter")
+            .Single()
+            .Attribute("ref")?
+            .Value
+            .Should()
+            .Be("$A$1:$E$201", "the Blood Frenzy weapon-delay lookup rows should be filterable");
+
+        GetWorkbookCellText(weaponDelays, sharedStrings, "A197").Should().Be("bf_scavenger");
+        GetWorkbookCellText(weaponDelays, sharedStrings, "D197").Should().Be("270");
+        GetWorkbookCellText(weaponDelays, sharedStrings, "A201").Should().Be("bf_kess");
+        GetWorkbookCellText(weaponDelays, sharedStrings, "D201").Should().Be("270");
     }
 
     [Test]
@@ -643,6 +834,71 @@ public class NPCEnemyBalanceAuditTests
             .GetProperty("entries")
             .EnumerateArray()
             .ToDictionary(entry => entry.GetProperty("id").GetInt32(), entry => entry.GetProperty("text").GetString() ?? string.Empty);
+    }
+
+    private static XDocument ReadWorkbookXml(ZipArchive archive, string entryName)
+    {
+        var entry = archive.GetEntry(entryName);
+        entry.Should().NotBeNull($"{entryName} should exist in the combat Bible workbook");
+
+        using var stream = entry!.Open();
+        return XDocument.Load(stream);
+    }
+
+    private static IReadOnlyList<string> ReadSharedStrings(ZipArchive archive)
+    {
+        var entry = archive.GetEntry("xl/sharedStrings.xml");
+        if (entry == null)
+            return Array.Empty<string>();
+
+        var sharedStrings = ReadWorkbookXml(archive, "xl/sharedStrings.xml");
+        XNamespace ns = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
+
+        return sharedStrings
+            .Descendants(ns + "si")
+            .Select(item => string.Concat(item.Descendants(ns + "t").Select(text => text.Value)))
+            .ToArray();
+    }
+
+    private static string GetWorkbookCellText(XDocument worksheet, IReadOnlyList<string> sharedStrings, string address)
+    {
+        XNamespace ns = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
+        var cell = worksheet
+            .Descendants(ns + "c")
+            .SingleOrDefault(candidate => candidate.Attribute("r")?.Value == address);
+
+        if (cell == null)
+            return string.Empty;
+
+        var type = cell.Attribute("t")?.Value;
+        if (type == "inlineStr")
+            return string.Concat(cell.Descendants(ns + "t").Select(text => text.Value));
+
+        var value = cell.Element(ns + "v")?.Value;
+        if (type == "s" && int.TryParse(value, out var index))
+            return sharedStrings[index];
+
+        return value ?? string.Empty;
+    }
+
+    private static string GetWorkbookCellFormula(XDocument worksheet, string address)
+    {
+        XNamespace ns = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
+        return worksheet
+            .Descendants(ns + "c")
+            .SingleOrDefault(candidate => candidate.Attribute("r")?.Value == address)?
+            .Element(ns + "f")?
+            .Value ?? string.Empty;
+    }
+
+    private static string GetWorkbookCellStyle(XDocument worksheet, string address)
+    {
+        XNamespace ns = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
+        return worksheet
+            .Descendants(ns + "c")
+            .SingleOrDefault(candidate => candidate.Attribute("r")?.Value == address)?
+            .Attribute("s")?
+            .Value ?? string.Empty;
     }
 
     private static DirectoryInfo FindRepositoryRoot()

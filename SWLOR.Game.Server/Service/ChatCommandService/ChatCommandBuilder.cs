@@ -154,6 +154,17 @@ namespace SWLOR.Game.Server.Service.ChatCommandService
         }
 
         /// <summary>
+        /// Indicates that ground selections are valid targets for this command.
+        /// </summary>
+        /// <returns>A configured ChatCommandBuilder.</returns>
+        public ChatCommandBuilder AllowsLocationTarget()
+        {
+            _currentDetail.AllowsLocationTarget = true;
+
+            return this;
+        }
+
+        /// <summary>
         /// Indicates this chat command can be used by anyone if the server is set to 'test' mode.
         /// </summary>
         /// <returns>A configured ChatCommandBuilder.</returns>

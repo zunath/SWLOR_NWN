@@ -27270,40 +27270,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Chaise Longue - Orange"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "frn_couch_swlr01"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Chaise Longue - Red"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "frn_couch_swlr02"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Chaise Longue (Blue)"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "_mdrn_pl_lovestp"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Chaise Longue (Orange)"
+                      "value": "Chaise Lounge - Orange"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -27314,11 +27281,44 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Chaise Longue (Red)"
+                      "value": "Chaise Lounge - Orange"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "frn_couch_swlr01"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Chaise Lounge - Red"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "_mdrn_pl_lovestm"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Chaise Lounge - Red"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "frn_couch_swlr02"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Chaise Lounge (Blue)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_pl_lovestp"
                     }
                   },
                   {
@@ -48334,7 +48334,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Chaise Longue, Art Deco (Red)"
+                      "value": "Chaise Lounge, Art Deco (Red)"
                     },
                     "RESREF": {
                       "type": "resref",

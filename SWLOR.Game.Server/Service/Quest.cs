@@ -240,6 +240,13 @@ namespace SWLOR.Game.Server.Service
             var possibleQuests = GetQuestsAssociatedWithNPCGroup(npcGroupType);
             if (possibleQuests.Count <= 0) return;
 
+            if (QuestEncounter.IsQuestEncounterCreature(creature))
+            {
+                QuestEncounter.ProgressKillCredit(creature, npcGroupType, possibleQuests);
+                QuestEncounter.ClearEncounterForCreature(creature);
+                return;
+            }
+
             // We can't use GetLastKiller() as various abilities deal damage that isn't sourced from
             // the PC.  So use the enmity service to pull the highest enmity PC (i.e. the one that
             // did the most attacks).  If we can't find one for some reason, pull the nearest PC.
@@ -252,7 +259,10 @@ namespace SWLOR.Game.Server.Service
             // Every player who needs this NPCGroupType for a quest will have their objective advanced if they are within range and in the same area.
             for (var member = GetFirstFactionMember(killer); GetIsObjectValid(member); member = GetNextFactionMember(killer))
             {
-                if (!GetIsPC(member) || GetIsDM(member))
+                if (!GetIsPC(member) ||
+                    GetIsDM(member) ||
+                    GetIsDead(member) ||
+                    GetCurrentHitPoints(member) <= 0)
                     continue;
 
                 if (GetArea(member) != GetArea(killer))

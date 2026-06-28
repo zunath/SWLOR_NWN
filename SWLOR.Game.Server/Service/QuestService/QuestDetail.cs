@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.DialogDefinition;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
+using SWLOR.Game.Server.Service.KeyItemService;
 using SWLOR.NWN.API.NWNX;
 using Player = SWLOR.Game.Server.Entity.Player;
 
@@ -26,6 +27,8 @@ namespace SWLOR.Game.Server.Service.QuestService
 
         public List<IQuestReward> Rewards { get; } = new List<IQuestReward>();
         public List<IQuestPrerequisite> Prerequisites { get; } = new List<IQuestPrerequisite>();
+        public List<KeyItemType> KeyItemsRemovedOnAbandon { get; } = new();
+        public List<KeyItemType> KeyItemsRemovedOnComplete { get; } = new();
 
         public Dictionary<int, QuestStateDetail> States { get; } = new Dictionary<int, QuestStateDetail>();
         public List<AcceptQuestDelegate> OnAcceptActions { get; } = new List<AcceptQuestDelegate>();
@@ -117,6 +120,12 @@ namespace SWLOR.Game.Server.Service.QuestService
         /// <returns>true if player can complete, false otherwise</returns>
         public bool CanComplete(uint player)
         {
+            if (!GetIsPC(player) ||
+                GetIsDM(player) ||
+                GetIsDead(player) ||
+                GetCurrentHitPoints(player) <= 0)
+                return false;
+
             // Has the player even accepted this quest?
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
@@ -150,7 +159,11 @@ namespace SWLOR.Game.Server.Service.QuestService
         /// <param name="questSource">The source of the quest reward giver</param>
         private void RequestRewardSelectionFromPC(uint player, uint questSource)
         {
-            if (!GetIsPC(player) || GetIsDM(player)) return;
+            if (!GetIsPC(player) ||
+                GetIsDM(player) ||
+                GetIsDead(player) ||
+                GetCurrentHitPoints(player) <= 0)
+                return;
 
             if (AllowRewardSelection)
             {
@@ -217,6 +230,12 @@ namespace SWLOR.Game.Server.Service.QuestService
                 action.Invoke(player);
             }
 
+            foreach (var keyItem in KeyItemsRemovedOnAbandon)
+            {
+                KeyItem.RemoveKeyItem(player, keyItem);
+            }
+
+            QuestEncounter.RefreshVisibilityForPlayer(player);
             Gui.PublishRefreshEvent(player, new QuestAbandonedRefreshEvent(QuestId));
         }
 
@@ -276,6 +295,7 @@ namespace SWLOR.Game.Server.Service.QuestService
                 action.Invoke(player, questSource);
             }
 
+            QuestEncounter.RefreshVisibilityForPlayer(player);
             Gui.PublishRefreshEvent(player, new QuestAcquiredRefreshEvent(QuestId));
         }
 
@@ -286,7 +306,11 @@ namespace SWLOR.Game.Server.Service.QuestService
         /// <param name="questSource">The source of quest advancement</param>
         public void Advance(uint player, uint questSource)
         {
-            if (!GetIsPC(player) || GetIsDM(player)) return;
+            if (!GetIsPC(player) ||
+                GetIsDM(player) ||
+                GetIsDead(player) ||
+                GetCurrentHitPoints(player) <= 0)
+                return;
 
             // Retrieve the player's current quest state.
             var playerId = GetObjectUUID(player);
@@ -332,7 +356,7 @@ namespace SWLOR.Game.Server.Service.QuestService
                 PlayerPlugin.AddCustomJournalEntry(player, new JournalEntry
                 {
                     Name = quest.Name,
-                    Text = currentState.JournalText,
+                    Text = nextState.JournalText,
                     Tag = QuestId,
                     State = playerQuest.CurrentState,
                     Priority = 1,
@@ -356,12 +380,18 @@ namespace SWLOR.Game.Server.Service.QuestService
                     objective.Initialize(player, QuestId);
                 }
 
+                foreach (var keyItem in currentState.KeyItemsGrantedOnAdvance)
+                {
+                    KeyItem.GiveKeyItem(player, keyItem);
+                }
+
                 // Run any quest-specific code.
                 foreach (var action in OnAdvanceActions)
                 {
                     action.Invoke(player, questSource, playerQuest.CurrentState);
                 }
 
+                QuestEncounter.RefreshVisibilityForPlayer(player);
                 Gui.PublishRefreshEvent(player, new QuestProgressedRefreshEvent(QuestId));
             }
 
@@ -376,7 +406,11 @@ namespace SWLOR.Game.Server.Service.QuestService
         /// <param name="selectedReward">The reward selected by the player</param>
         public void Complete(uint player, uint questSource, IQuestReward selectedReward)
         {
-            if (!GetIsPC(player) || GetIsDM(player)) return;
+            if (!GetIsPC(player) ||
+                GetIsDM(player) ||
+                GetIsDead(player) ||
+                GetCurrentHitPoints(player) <= 0)
+                return;
             if (!CanComplete(player)) return;
 
             var playerId = GetObjectUUID(player);
@@ -420,9 +454,15 @@ namespace SWLOR.Game.Server.Service.QuestService
                 action.Invoke(player, questSource);
             }
 
+            foreach (var keyItem in KeyItemsRemovedOnComplete)
+            {
+                KeyItem.RemoveKeyItem(player, keyItem);
+            }
+
             SendMessageToPC(player, "Quest '" + Name + "' complete!");
             RemoveJournalQuestEntry(QuestId, player, false);
 
+            QuestEncounter.RefreshVisibilityForPlayer(player);
             EventsPlugin.SignalEvent("SWLOR_COMPLETE_QUEST", player);
             Gui.PublishRefreshEvent(player, new QuestCompletedRefreshEvent(QuestId));
         }

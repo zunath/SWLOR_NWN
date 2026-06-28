@@ -2960,6 +2960,20 @@
           "type": "resref",
           "value": "prefabgriddesert"
         }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "visc_sewer_depth"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "pw_sc_velsewboss"
+        }
       }
     ]
   },

@@ -67,6 +67,8 @@ When the concept is underspecified, grill the request one dependency at a time. 
    - Set the enemy blueprint or placed enemy `VarTable` entry `QUEST_NPC_GROUP_ID` to the enum integer.
    - Add or update the planet spawn table with the enemy resref and frequency.
    - Place spawn tables through area locals (`CREATURE_SPAWN_TABLE_ID`, `CREATURE_SPAWN_COUNT`) for random area placement, or waypoint tags equal to the spawn table ID for fixed spawn points.
+   - When adding fixed-placement spawn tables, also create matching `Module/utw` waypoint blueprints and add them to `Module/itp/waypointpalcus.itp.json`. The blueprint `Tag` should be the spawn table ID; `TemplateResRef` should be a short unique resref.
+   - For quest-specific teleport destinations or boss spawn locations, create palette waypoint blueprints too. Leave actual area placement to the area builder unless the task explicitly asks for area placement.
 
 7. Validate.
    - Parse every touched Module JSON file with PowerShell `ConvertFrom-Json`.

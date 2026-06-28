@@ -7,7 +7,19 @@ namespace SWLOR.Game.Server.Service
 {
     public static class Targeting
     {
-        private static readonly Dictionary<uint, Action<uint>> _playerTargetingActions = new();
+        private class TargetingActionDetail
+        {
+            public TargetingActionDetail(Action<uint> selectionAction, bool allowsLocationTarget)
+            {
+                SelectionAction = selectionAction;
+                AllowsLocationTarget = allowsLocationTarget;
+            }
+
+            public Action<uint> SelectionAction { get; }
+            public bool AllowsLocationTarget { get; }
+        }
+
+        private static readonly Dictionary<uint, TargetingActionDetail> _playerTargetingActions = new();
 
         /// <summary>
         /// Forces player to enter targeting mode.
@@ -17,14 +29,16 @@ namespace SWLOR.Game.Server.Service
         /// <param name="objectType">The types of objects allowed to be targeted.</param>
         /// <param name="selectionAction">The action to run when an object is targeted.</param>
         /// <param name="message">The message to send to the player when entering targeting mode.</param>
+        /// <param name="allowsLocationTarget">true if ground selections should execute the selection action.</param>
         public static void EnterTargetingMode(
             uint player,
             ObjectType objectType,
             string message,
-            Action<uint> selectionAction)
+            Action<uint> selectionAction,
+            bool allowsLocationTarget = false)
         {
             NWScript.EnterTargetingMode(player, objectType);
-            _playerTargetingActions[player] = selectionAction;
+            _playerTargetingActions[player] = new TargetingActionDetail(selectionAction, allowsLocationTarget);
 
             if (!string.IsNullOrWhiteSpace(message))
             {
@@ -42,10 +56,16 @@ namespace SWLOR.Game.Server.Service
             if (!_playerTargetingActions.ContainsKey(player))
                 return;
             var targetedObject = GetTargetingModeSelectedObject();
+            var targetedLocation = GetTargetingModeSelectedPosition();
+            var targetingAction = _playerTargetingActions[player];
 
             if (GetIsObjectValid(targetedObject))
             {
-                _playerTargetingActions[player](targetedObject);
+                targetingAction.SelectionAction(targetedObject);
+            }
+            else if (targetingAction.AllowsLocationTarget && targetedLocation != Vector3())
+            {
+                targetingAction.SelectionAction(OBJECT_INVALID);
             }
         }
     }

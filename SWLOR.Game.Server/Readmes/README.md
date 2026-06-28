@@ -64,6 +64,9 @@ Combat-upgrade implementation scope, acceptance criteria, generated audit artifa
 ### [CombatUpgradeMigration.md](CombatUpgradeMigration.md)
 Migration notes for forced rebuild, perk refunds/removals, defense/resistance data movement, and item-property cleanup.
 
+### [CapstoneQuestLinePlan.md](CapstoneQuestLinePlan.md)
+Plan rules and follow-up tasks for locking level 50 capstone perks behind quest lines, including spawn placement constraints for high-level quest enemies.
+
 ### [PlayerRecognitionAndDisguisesPlan.md](PlayerRecognitionAndDisguisesPlan.md)
 Plan for observer-specific known names, long-running-world migration, combat-log considerations, and a follow-up disguise system.
 

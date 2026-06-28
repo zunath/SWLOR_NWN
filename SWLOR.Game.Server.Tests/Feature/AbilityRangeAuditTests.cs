@@ -60,6 +60,7 @@ public class AbilityRangeAuditTests
         var abilities = BuildAllAbilities();
 
         abilities[FeatType.ToxicSpit].MaxRange.Should().Be(8f);
+        abilities[FeatType.StimCanister].MaxRange.Should().Be(8f);
     }
 
     private static Dictionary<FeatType, AbilityDetail> BuildAllAbilities()

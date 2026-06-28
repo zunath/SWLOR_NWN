@@ -90,6 +90,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         return;
                     }
 
+                    if (GetIsDead(Player) || GetCurrentHitPoints(Player) <= 0)
+                    {
+                        FloatingTextStringOnCreature($"XP cannot be distributed while dead.", Player, false);
+                        return;
+                    }
+
                     var playerId = GetObjectUUID(Player);
                     var dbPlayer = DB.Get<Player>(playerId);
 

@@ -32,6 +32,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             Resurrect();
             SpawnGold();
             TeleportWaypoint();
+            TeleportToTarget();
             GetLocalVariable();
             SetLocalVariable();
             SetPortrait();
@@ -209,6 +210,20 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     }
 
                     AssignCommand(user, () => ActionJumpToLocation(GetLocation(wp)));
+                });
+        }
+
+        private void TeleportToTarget()
+        {
+            _builder.Create("tpto")
+                .Description("Teleports you to a selected creature or ground location.")
+                .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
+                .AvailableToAllOnTestEnvironment()
+                .RequiresTarget(ObjectType.Creature | ObjectType.Tile)
+                .AllowsLocationTarget()
+                .Action((user, target, location, args) =>
+                {
+                    AssignCommand(user, () => ActionJumpToLocation(location));
                 });
         }
 

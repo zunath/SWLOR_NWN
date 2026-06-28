@@ -1,6 +1,8 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Service.AnimationService;
 using SWLOR.Game.Server.Service.SpawnService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
 namespace SWLOR.Game.Server.Feature.SpawnDefinition
 {
@@ -24,6 +26,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             DeepMountainRaivors();
             CrystalSpiders();
             Swamplands();
+            SewersDepthsGeneral();
             Veles();
             VelesSewers();
             TwilightPraxeum();
@@ -208,6 +211,26 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
                 .AddSpawn(ObjectType.Creature, "v_flesheater2")
                 .WithFrequency(20)
+                .RandomlyWalks()
+                .ReturnsHome();
+        }
+
+        private void SewersDepthsGeneral()
+        {
+            _builder.Create("VISCARA_SEWERS_DEPTHS_GENERAL", "Viscara Sewers Depths - General")
+                .AddSpawn(ObjectType.Creature, "bf_scavenger")
+                .WithFrequency(70)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "bf_pulsedroid")
+                .WithFrequency(40)
+                .RandomlyWalks()
+                .ReturnsHome()
+                .PlayAnimation(DurationType.Instant, AnimationEvent.CreatureOnDeath, VisualEffect.Fnf_Fireball)
+
+                .AddSpawn(ObjectType.Creature, "bf_duelist")
+                .WithFrequency(70)
                 .RandomlyWalks()
                 .ReturnsHome();
         }

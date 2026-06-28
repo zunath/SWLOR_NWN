@@ -50,7 +50,7 @@
                  },
     "CurrentHitPoints":  {
                              "type":  "short",
-                             "value":  3600
+                             "value":  2441
                          },
     "DecayTime":  {
                       "type":  "dword",
@@ -81,21 +81,14 @@
                                              "__struct_id":  16,
                                              "EquippedRes":  {
                                                                  "type":  "resref",
-                                                                 "value":  "vbyyskguardsword"
-                                                             }
-                                         },
-                                         {
-                                             "__struct_id":  32,
-                                             "EquippedRes":  {
-                                                                 "type":  "resref",
-                                                                 "value":  "byysk_shield002"
+                                                                 "value":  "bf_butch_wp"
                                                              }
                                          },
                                          {
                                              "__struct_id":  131072,
                                              "EquippedRes":  {
                                                                  "type":  "resref",
-                                                                 "value":  "hu_byyskgua_hide"
+                                                                 "value":  "bf_butch_skin"
                                                              }
                                          }
                                      ]
@@ -234,24 +227,31 @@
                                                 }
                                    },
                                    {
-                                       "__struct_id":  1,
+                                       "__struct_id":  0,
+                                       "Feat":  {
+                                                    "type":  "word",
+                                                    "value":  1823
+                                                }
+                                   },
+                                   {
+                                       "__struct_id":  0,
+                                       "Feat":  {
+                                                    "type":  "word",
+                                                    "value":  1820
+                                                }
+                                   },
+                                   {
+                                       "__struct_id":  0,
                                        "Feat":  {
                                                     "type":  "word",
                                                     "value":  1824
                                                 }
                                    },
                                    {
-                                       "__struct_id":  1,
+                                       "__struct_id":  0,
                                        "Feat":  {
                                                     "type":  "word",
-                                                    "value":  1853
-                                                }
-                                   },
-                                   {
-                                       "__struct_id":  1,
-                                       "Feat":  {
-                                                    "type":  "word",
-                                                    "value":  1854
+                                                    "value":  1768
                                                 }
                                    }
                                ]
@@ -276,7 +276,7 @@
                  },
     "HitPoints":  {
                       "type":  "short",
-                      "value":  3600
+                      "value":  2441
                   },
     "Int":  {
                 "type":  "byte",
@@ -310,7 +310,7 @@
                  },
     "MaxHitPoints":  {
                          "type":  "short",
-                         "value":  3600
+                         "value":  2441
                      },
     "NaturalAC":  {
                       "type":  "byte",

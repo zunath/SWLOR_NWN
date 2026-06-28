@@ -38,7 +38,7 @@
                 },
     "Con":  {
                 "type":  "byte",
-                "value":  34
+                "value":  32
             },
     "Conversation":  {
                          "type":  "resref",
@@ -50,7 +50,7 @@
                  },
     "CurrentHitPoints":  {
                              "type":  "short",
-                             "value":  1800
+                             "value":  1085
                          },
     "DecayTime":  {
                       "type":  "dword",
@@ -68,7 +68,7 @@
                     },
     "Dex":  {
                 "type":  "byte",
-                "value":  24
+                "value":  22
             },
     "Disarmable":  {
                        "type":  "byte",
@@ -81,21 +81,14 @@
                                              "__struct_id":  16,
                                              "EquippedRes":  {
                                                                  "type":  "resref",
-                                                                 "value":  "vbyyskguardsword"
-                                                             }
-                                         },
-                                         {
-                                             "__struct_id":  32,
-                                             "EquippedRes":  {
-                                                                 "type":  "resref",
-                                                                 "value":  "byysk_shield002"
+                                                                 "value":  "bf_scv_wp"
                                                              }
                                          },
                                          {
                                              "__struct_id":  131072,
                                              "EquippedRes":  {
                                                                  "type":  "resref",
-                                                                 "value":  "hu_byyskgua_hide"
+                                                                 "value":  "bf_scv_skin"
                                                              }
                                          }
                                      ]
@@ -234,24 +227,17 @@
                                                 }
                                    },
                                    {
-                                       "__struct_id":  1,
+                                       "__struct_id":  0,
                                        "Feat":  {
                                                     "type":  "word",
-                                                    "value":  1824
+                                                    "value":  1822
                                                 }
                                    },
                                    {
-                                       "__struct_id":  1,
+                                       "__struct_id":  0,
                                        "Feat":  {
                                                     "type":  "word",
-                                                    "value":  1853
-                                                }
-                                   },
-                                   {
-                                       "__struct_id":  1,
-                                       "Feat":  {
-                                                    "type":  "word",
-                                                    "value":  1854
+                                                    "value":  1760
                                                 }
                                    }
                                ]
@@ -276,11 +262,11 @@
                  },
     "HitPoints":  {
                       "type":  "short",
-                      "value":  1800
+                      "value":  1085
                   },
     "Int":  {
                 "type":  "byte",
-                "value":  34
+                "value":  32
             },
     "Interruptable":  {
                           "type":  "byte",
@@ -310,7 +296,7 @@
                  },
     "MaxHitPoints":  {
                          "type":  "short",
-                         "value":  1800
+                         "value":  1085
                      },
     "NaturalAC":  {
                       "type":  "byte",
@@ -617,7 +603,7 @@
                         },
     "Str":  {
                 "type":  "byte",
-                "value":  42
+                "value":  40
             },
     "Subrace":  {
                     "type":  "cexostring",
@@ -690,6 +676,6 @@
                   },
     "Wis":  {
                 "type":  "byte",
-                "value":  24
+                "value":  22
             }
 }

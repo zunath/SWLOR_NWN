@@ -38,7 +38,7 @@
                 },
     "Con":  {
                 "type":  "byte",
-                "value":  34
+                "value":  33
             },
     "Conversation":  {
                          "type":  "resref",
@@ -50,7 +50,7 @@
                  },
     "CurrentHitPoints":  {
                              "type":  "short",
-                             "value":  2400
+                             "value":  1573
                          },
     "DecayTime":  {
                       "type":  "dword",
@@ -68,7 +68,7 @@
                     },
     "Dex":  {
                 "type":  "byte",
-                "value":  24
+                "value":  23
             },
     "Disarmable":  {
                        "type":  "byte",
@@ -81,21 +81,14 @@
                                              "__struct_id":  16,
                                              "EquippedRes":  {
                                                                  "type":  "resref",
-                                                                 "value":  "vbyyskguardsword"
-                                                             }
-                                         },
-                                         {
-                                             "__struct_id":  32,
-                                             "EquippedRes":  {
-                                                                 "type":  "resref",
-                                                                 "value":  "byysk_shield002"
+                                                                 "value":  "bf_duel_wp"
                                                              }
                                          },
                                          {
                                              "__struct_id":  131072,
                                              "EquippedRes":  {
                                                                  "type":  "resref",
-                                                                 "value":  "hu_byyskgua_hide"
+                                                                 "value":  "bf_duel_skin"
                                                              }
                                          }
                                      ]
@@ -234,24 +227,24 @@
                                                 }
                                    },
                                    {
-                                       "__struct_id":  1,
+                                       "__struct_id":  0,
+                                       "Feat":  {
+                                                    "type":  "word",
+                                                    "value":  1823
+                                                }
+                                   },
+                                   {
+                                       "__struct_id":  0,
+                                       "Feat":  {
+                                                    "type":  "word",
+                                                    "value":  1760
+                                                }
+                                   },
+                                   {
+                                       "__struct_id":  0,
                                        "Feat":  {
                                                     "type":  "word",
                                                     "value":  1824
-                                                }
-                                   },
-                                   {
-                                       "__struct_id":  1,
-                                       "Feat":  {
-                                                    "type":  "word",
-                                                    "value":  1853
-                                                }
-                                   },
-                                   {
-                                       "__struct_id":  1,
-                                       "Feat":  {
-                                                    "type":  "word",
-                                                    "value":  1854
                                                 }
                                    }
                                ]
@@ -276,11 +269,11 @@
                  },
     "HitPoints":  {
                       "type":  "short",
-                      "value":  2400
+                      "value":  1573
                   },
     "Int":  {
                 "type":  "byte",
-                "value":  34
+                "value":  33
             },
     "Interruptable":  {
                           "type":  "byte",
@@ -310,7 +303,7 @@
                  },
     "MaxHitPoints":  {
                          "type":  "short",
-                         "value":  2400
+                         "value":  1573
                      },
     "NaturalAC":  {
                       "type":  "byte",
@@ -617,7 +610,7 @@
                         },
     "Str":  {
                 "type":  "byte",
-                "value":  42
+                "value":  41
             },
     "Subrace":  {
                     "type":  "cexostring",
@@ -690,6 +683,6 @@
                   },
     "Wis":  {
                 "type":  "byte",
-                "value":  24
+                "value":  23
             }
 }

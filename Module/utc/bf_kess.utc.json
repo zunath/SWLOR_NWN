@@ -38,7 +38,7 @@
                 },
     "Con":  {
                 "type":  "byte",
-                "value":  34
+                "value":  35
             },
     "Conversation":  {
                          "type":  "resref",
@@ -50,7 +50,7 @@
                  },
     "CurrentHitPoints":  {
                              "type":  "short",
-                             "value":  5200
+                             "value":  5425
                          },
     "DecayTime":  {
                       "type":  "dword",
@@ -68,7 +68,7 @@
                     },
     "Dex":  {
                 "type":  "byte",
-                "value":  24
+                "value":  25
             },
     "Disarmable":  {
                        "type":  "byte",
@@ -81,21 +81,14 @@
                                              "__struct_id":  16,
                                              "EquippedRes":  {
                                                                  "type":  "resref",
-                                                                 "value":  "vbyyskguardsword"
-                                                             }
-                                         },
-                                         {
-                                             "__struct_id":  32,
-                                             "EquippedRes":  {
-                                                                 "type":  "resref",
-                                                                 "value":  "byysk_shield002"
+                                                                 "value":  "bf_kess_wp"
                                                              }
                                          },
                                          {
                                              "__struct_id":  131072,
                                              "EquippedRes":  {
                                                                  "type":  "resref",
-                                                                 "value":  "hu_byyskgua_hide"
+                                                                 "value":  "bf_kess_skin"
                                                              }
                                          }
                                      ]
@@ -234,24 +227,45 @@
                                                 }
                                    },
                                    {
-                                       "__struct_id":  1,
+                                       "__struct_id":  0,
+                                       "Feat":  {
+                                                    "type":  "word",
+                                                    "value":  1820
+                                                }
+                                   },
+                                   {
+                                       "__struct_id":  0,
+                                       "Feat":  {
+                                                    "type":  "word",
+                                                    "value":  1821
+                                                }
+                                   },
+                                   {
+                                       "__struct_id":  0,
                                        "Feat":  {
                                                     "type":  "word",
                                                     "value":  1824
                                                 }
                                    },
                                    {
-                                       "__struct_id":  1,
+                                       "__struct_id":  0,
                                        "Feat":  {
                                                     "type":  "word",
-                                                    "value":  1853
+                                                    "value":  1768
                                                 }
                                    },
                                    {
-                                       "__struct_id":  1,
+                                       "__struct_id":  0,
                                        "Feat":  {
                                                     "type":  "word",
-                                                    "value":  1854
+                                                    "value":  1844
+                                                }
+                                   },
+                                   {
+                                       "__struct_id":  0,
+                                       "Feat":  {
+                                                    "type":  "word",
+                                                    "value":  1767
                                                 }
                                    }
                                ]
@@ -276,11 +290,11 @@
                  },
     "HitPoints":  {
                       "type":  "short",
-                      "value":  5200
+                      "value":  5425
                   },
     "Int":  {
                 "type":  "byte",
-                "value":  34
+                "value":  35
             },
     "Interruptable":  {
                           "type":  "byte",
@@ -310,7 +324,7 @@
                  },
     "MaxHitPoints":  {
                          "type":  "short",
-                         "value":  5200
+                         "value":  5425
                      },
     "NaturalAC":  {
                       "type":  "byte",
@@ -617,7 +631,7 @@
                         },
     "Str":  {
                 "type":  "byte",
-                "value":  42
+                "value":  43
             },
     "Subrace":  {
                     "type":  "cexostring",
@@ -690,6 +704,6 @@
                   },
     "Wis":  {
                 "type":  "byte",
-                "value":  24
+                "value":  25
             }
 }

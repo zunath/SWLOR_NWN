@@ -38,7 +38,7 @@
                 },
     "Con":  {
                 "type":  "byte",
-                "value":  28
+                "value":  32
             },
     "Conversation":  {
                          "type":  "resref",
@@ -50,7 +50,7 @@
                  },
     "CurrentHitPoints":  {
                              "type":  "short",
-                             "value":  2100
+                             "value":  977
                          },
     "DecayTime":  {
                       "type":  "dword",
@@ -68,7 +68,7 @@
                     },
     "Dex":  {
                 "type":  "byte",
-                "value":  34
+                "value":  40
             },
     "Disarmable":  {
                        "type":  "byte",
@@ -81,14 +81,14 @@
                                              "__struct_id":  16,
                                              "EquippedRes":  {
                                                                  "type":  "resref",
-                                                                 "value":  "impturret_wp"
+                                                                 "value":  "bf_pulse_wp"
                                                              }
                                          },
                                          {
                                              "__struct_id":  131072,
                                              "EquippedRes":  {
                                                                  "type":  "resref",
-                                                                 "value":  "impturret_sk"
+                                                                 "value":  "bf_pulse_skin"
                                                              }
                                          }
                                      ]
@@ -164,24 +164,17 @@
                                                 }
                                    },
                                    {
-                                       "__struct_id":  2,
-                                       "Feat":  {
-                                                    "type":  "word",
-                                                    "value":  1764
-                                                }
-                                   },
-                                   {
-                                       "__struct_id":  3,
-                                       "Feat":  {
-                                                    "type":  "word",
-                                                    "value":  1850
-                                                }
-                                   },
-                                   {
-                                       "__struct_id":  4,
+                                       "__struct_id":  0,
                                        "Feat":  {
                                                     "type":  "word",
                                                     "value":  1851
+                                                }
+                                   },
+                                   {
+                                       "__struct_id":  0,
+                                       "Feat":  {
+                                                    "type":  "word",
+                                                    "value":  1850
                                                 }
                                    }
                                ]
@@ -206,11 +199,11 @@
                  },
     "HitPoints":  {
                       "type":  "short",
-                      "value":  2100
+                      "value":  977
                   },
     "Int":  {
                 "type":  "byte",
-                "value":  28
+                "value":  32
             },
     "Interruptable":  {
                           "type":  "byte",
@@ -240,7 +233,7 @@
                  },
     "MaxHitPoints":  {
                          "type":  "short",
-                         "value":  2100
+                         "value":  977
                      },
     "NaturalAC":  {
                       "type":  "byte",
@@ -547,7 +540,7 @@
                         },
     "Str":  {
                 "type":  "byte",
-                "value":  19
+                "value":  22
             },
     "Subrace":  {
                     "type":  "cexostring",
@@ -585,7 +578,7 @@
                   },
     "Wis":  {
                 "type":  "byte",
-                "value":  19
+                "value":  22
             },
     "VarTable":  {
                      "type":  "list",

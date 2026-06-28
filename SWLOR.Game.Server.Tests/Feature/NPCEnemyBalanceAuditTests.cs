@@ -108,6 +108,30 @@ public class NPCEnemyBalanceAuditTests
         new("byysk_guard002", "hu_byyskgua_hide", "vbyyskguardsword", 50, 2441, 42, 24, 24, 34, 34, 152, 26, 24, 2, 11, 21, 19, 77, 27),
     };
 
+    private static readonly ExpectedEnemy[] ExpectedBloodFrenzyEnemies =
+    {
+        new("bf_scavenger", "bf_scv_skin", "bf_scv_wp", 50, 1085, 40, 22, 22, 32, 32, 101, 18, 22, 0, 10, 19, 17, 81, 27),
+        new("bf_pulsedroid", "bf_pulse_skin", "bf_pulse_wp", 50, 977, 22, 40, 22, 32, 32, 88, 22, 22, 0, 13, 17, 17, 78, 41),
+        new("bf_duelist", "bf_duel_skin", "bf_duel_wp", 50, 1573, 41, 23, 23, 33, 33, 121, 21, 23, 1, 10, 20, 18, 88, 27),
+        new("bf_butcher", "bf_butch_skin", "bf_butch_wp", 50, 2441, 42, 24, 24, 34, 34, 152, 26, 24, 2, 11, 21, 19, 94, 27),
+        new("bf_kess", "bf_kess_skin", "bf_kess_wp", 50, 5425, 43, 25, 25, 35, 35, 253, 44, 25, 3, 11, 22, 20, 102, 27),
+    };
+
+    private static readonly IReadOnlyDictionary<string, FeatType[]> ExpectedBloodFrenzyAbilityPackages = new Dictionary<string, FeatType[]>
+    {
+        ["bf_scavenger"] = new[] { FeatType.RakingClaws, FeatType.RendingBite },
+        ["bf_pulsedroid"] = new[] { FeatType.SuppressingShot, FeatType.PrecisionShot },
+        ["bf_duelist"] = new[] { FeatType.PouncingStrike, FeatType.RendingBite, FeatType.TailSweep },
+        ["bf_butcher"] = new[] { FeatType.PouncingStrike, FeatType.MaulingBite, FeatType.TailSweep, FeatType.TerrifyingBellow },
+        ["bf_kess"] = new[] { FeatType.MaulingBite, FeatType.BonecrusherBite, FeatType.TailSweep, FeatType.TerrifyingBellow, FeatType.ChitinGuard, FeatType.RupturingQuake },
+    };
+
+    private static readonly int[] BloodFrenzyPackageFeatIds = ResistanceThreatFeats
+        .Keys
+        .Append((int)FeatType.ChitinGuard)
+        .Distinct()
+        .ToArray();
+
     private static readonly ExpectedDualWieldDamage[] ExpectedDualWieldDamageTotals =
     {
         new("s_app", 38),
@@ -174,6 +198,47 @@ public class NPCEnemyBalanceAuditTests
             AssertCreatureAttributes(utc.RootElement, expected);
             AssertSkinCombatStats(skin.RootElement, expected);
             AssertWeaponStats(weapon.RootElement, expected);
+        }
+    }
+
+    [Test]
+    public void BloodFrenzyEnemies_HaveBibleGuideStats()
+    {
+        var root = FindRepositoryRoot();
+
+        foreach (var expected in ExpectedBloodFrenzyEnemies)
+        {
+            using var utc = ReadJson(root, "Module", "utc", $"{expected.Resref}.utc.json");
+            using var skin = ReadJson(root, "Module", "uti", $"{expected.SkinResref}.uti.json");
+            using var weapon = ReadJson(root, "Module", "uti", $"{expected.WeaponResref}.uti.json");
+
+            GetEquippedResref(utc.RootElement, RightHandSlot).Should().Be(expected.WeaponResref, $"{expected.Resref} should use its dedicated Blood Frenzy weapon stats");
+            GetEquippedResref(utc.RootElement, CreatureArmorSlot).Should().Be(expected.SkinResref, $"{expected.Resref} should use its dedicated Blood Frenzy skin stats");
+            GetEquippedResref(utc.RootElement, LeftHandSlot).Should().BeNullOrEmpty($"{expected.Resref} should not inherit shield stats outside the Bible guide");
+
+            AssertCreatureHitPoints(utc.RootElement, expected);
+            AssertCreatureAttributes(utc.RootElement, expected);
+            AssertSkinCombatStats(skin.RootElement, expected);
+            AssertWeaponStats(weapon.RootElement, expected);
+        }
+    }
+
+    [Test]
+    public void BloodFrenzyEnemies_UseBibleAbilityPackages()
+    {
+        var root = FindRepositoryRoot();
+
+        foreach (var expected in ExpectedBloodFrenzyAbilityPackages)
+        {
+            using var utc = ReadJson(root, "Module", "utc", $"{expected.Key}.utc.json");
+            var expectedFeatIds = expected.Value.Select(feat => (int)feat).ToArray();
+
+            var creatureFeats = GetCreatureFeats(utc.RootElement);
+            creatureFeats.Should().Contain(expectedFeatIds, $"{expected.Key} should have every feat from its Blood Frenzy Bible ability package");
+            creatureFeats
+                .Intersect(BloodFrenzyPackageFeatIds)
+                .Should()
+                .BeEquivalentTo(expectedFeatIds, $"{expected.Key} should use its Blood Frenzy Bible ability package");
         }
     }
 

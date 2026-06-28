@@ -417,7 +417,6 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 
             _builder.Create("VISCARA_SEWERS_DEPTHS_PULSE_DROID")
                 .AddItem("elec_good", 20)
-                .AddItem("m_vibro_parts", 15)
                 .AddItem("med_supplies", 10, 2)
                 .AddGold(100, 10);
         }

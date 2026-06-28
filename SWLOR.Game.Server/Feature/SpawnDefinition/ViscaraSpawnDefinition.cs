@@ -1,6 +1,8 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Service.AnimationService;
 using SWLOR.Game.Server.Service.SpawnService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
 namespace SWLOR.Game.Server.Feature.SpawnDefinition
 {
@@ -225,6 +227,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .WithFrequency(40)
                 .RandomlyWalks()
                 .ReturnsHome()
+                .PlayAnimation(DurationType.Instant, AnimationEvent.CreatureOnDeath, VisualEffect.Fnf_Fireball)
 
                 .AddSpawn(ObjectType.Creature, "bf_duelist")
                 .WithFrequency(70)

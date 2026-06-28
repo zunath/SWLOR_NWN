@@ -3,6 +3,7 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Feature.LootTableDefinition;
 using SWLOR.Game.Server.Feature.SpawnDefinition;
 using SWLOR.Game.Server.Service.AnimationService;
+using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using System.Text.Json;
@@ -40,6 +41,34 @@ public class ViscaraSpawnDefinitionTests
         ("bf_duelist", "VISCARA_SEWERS_DEPTHS_DUELIST"),
         ("bf_kess", "VISCARA_SEWERS_DEPTHS_KING"),
     };
+
+    private static readonly (string Resref, string RareLootTableId, string UniqueItemResref)[] RepeatableBloodFrenzyRareLootTables =
+    {
+        ("bf_scavenger", "VISCARA_SEWERS_DEPTHS_SCAVENGER_RARES", "redline_vblade"),
+        ("bf_pulsedroid", "VISCARA_SEWERS_DEPTHS_PULSE_DROID_RARES", "pulse_calrifle"),
+        ("bf_butcher", "VISCARA_SEWERS_DEPTHS_BUTCHER_RARES", "butch_cleaver"),
+        ("bf_duelist", "VISCARA_SEWERS_DEPTHS_DUELIST_RARES", "duel_splitter"),
+    };
+
+    private static readonly (
+        string Resref,
+        string Name,
+        int BaseItem,
+        int Damage,
+        int RequiredSkillSubtype,
+        int RequiredSkill,
+        int Delay,
+        bool HasUnlimitedAmmunition)[] BloodFrenzyUniqueDrops =
+    {
+        ("redline_vblade", "Redline Vibroblade", 1, 23, 36, 45, 27, false),
+        ("pulse_calrifle", "Pulse-Frame Calibration Rifle", 7, 38, 46, 45, 41, true),
+        ("butch_cleaver", "Butcher's Cleaver", 13, 42, 39, 45, 41, false),
+        ("duel_splitter", "Duelist's Splitter", 12, 27, 41, 45, 39, false),
+    };
+
+    private static IEnumerable<string> BloodFrenzyLootTableIds => BloodFrenzyLootTables
+        .Select(entry => entry.LootTableId)
+        .Concat(RepeatableBloodFrenzyRareLootTables.Select(entry => entry.RareLootTableId));
 
     private static readonly string[] BloodFrenzyPhysicalProofItems =
     {
@@ -150,10 +179,11 @@ public class ViscaraSpawnDefinitionTests
 
         BloodFrenzyLootTables
             .Select(entry => entry.LootTableId)
+            .Concat(RepeatableBloodFrenzyRareLootTables.Select(entry => entry.RareLootTableId))
             .Should()
             .OnlyHaveUniqueItems();
 
-        foreach (var (_, lootTableId) in BloodFrenzyLootTables)
+        foreach (var lootTableId in BloodFrenzyLootTableIds)
         {
             tables.Should().ContainKey(lootTableId);
         }
@@ -165,7 +195,7 @@ public class ViscaraSpawnDefinitionTests
     {
         var tables = new ViscaraLootTableDefinition().BuildLootTables();
 
-        foreach (var (_, lootTableId) in BloodFrenzyLootTables)
+        foreach (var lootTableId in BloodFrenzyLootTableIds)
         {
             tables[lootTableId]
                 .Select(item => item.Resref)
@@ -175,16 +205,66 @@ public class ViscaraSpawnDefinitionTests
     }
 
     [Test]
-    public void PulseFrameTrainingDroidLoot_DoesNotDropMandalorianItems()
+    public void BloodFrenzySewersDepthsLoot_DoesNotDropMandalorianItems()
     {
         var tables = new ViscaraLootTableDefinition().BuildLootTables();
 
-        tables["VISCARA_SEWERS_DEPTHS_PULSE_DROID"]
-            .Select(item => item.Resref)
-            .Should()
-            .OnlyContain(resref =>
-                !resref.StartsWith("m_", StringComparison.OrdinalIgnoreCase) &&
-                !resref.StartsWith("mando_", StringComparison.OrdinalIgnoreCase));
+        foreach (var lootTableId in BloodFrenzyLootTableIds)
+        {
+            tables[lootTableId]
+                .Select(item => item.Resref)
+                .Should()
+                .OnlyContain(resref =>
+                    !resref.StartsWith("m_", StringComparison.OrdinalIgnoreCase) &&
+                    !resref.StartsWith("mando_", StringComparison.OrdinalIgnoreCase));
+        }
+    }
+
+    [Test]
+    public void BloodFrenzyUniqueLootTables_AreRareItemDrops()
+    {
+        var tables = new ViscaraLootTableDefinition().BuildLootTables();
+
+        foreach (var (_, rareLootTableId, uniqueItemResref) in RepeatableBloodFrenzyRareLootTables)
+        {
+            tables[rareLootTableId].IsRare.Should().BeTrue();
+            tables[rareLootTableId].Should().ContainSingle(item =>
+                item.Resref == uniqueItemResref &&
+                item.IsRare &&
+                item.MaxQuantity == 1);
+        }
+    }
+
+    [Test]
+    public void BloodFrenzyUniqueDropItems_AreBetweenOphidianAndChiroStats()
+    {
+        var root = FindRepositoryRoot();
+
+        foreach (var item in BloodFrenzyUniqueDrops)
+        {
+            using var blueprint = JsonDocument.Parse(File.ReadAllText(Path.Combine(
+                root.FullName,
+                "Module",
+                "uti",
+                $"{item.Resref}.uti.json")));
+
+            var json = blueprint.RootElement;
+            json.GetProperty("__data_type").GetString().Should().Be("UTI ");
+            json.GetProperty("LocalizedName").GetProperty("value").GetProperty("0").GetString().Should().Be(item.Name);
+            json.GetProperty("BaseItem").GetProperty("value").GetInt32().Should().Be(item.BaseItem);
+            json.GetProperty("Tag").GetProperty("value").GetString().Should().Be(item.Resref);
+            json.GetProperty("TemplateResRef").GetProperty("value").GetString().Should().Be(item.Resref);
+
+            GetItemPropertyCostValue(json, ItemPropertyType.DMG).Should().Be(item.Damage);
+            GetItemPropertyCostValue(json, ItemPropertyType.Delay).Should().Be(item.Delay);
+
+            var requiresSkill = GetItemProperty(json, ItemPropertyType.RequiresSkill);
+            requiresSkill.GetProperty("Subtype").GetProperty("value").GetInt32().Should().Be(item.RequiredSkillSubtype);
+            requiresSkill.GetProperty("CostValue").GetProperty("value").GetInt32().Should().Be(item.RequiredSkill);
+
+            var unlimitedAmmunitionCount = GetItemPropertyCount(json, ItemPropertyType.UnlimitedAmmunition);
+            unlimitedAmmunitionCount.Should().Be(item.HasUnlimitedAmmunition ? 1 : 0);
+        }
     }
 
     [Test]
@@ -216,6 +296,25 @@ public class ViscaraSpawnDefinitionTests
 
             GetLocalString(blueprint.RootElement, "LOOT_TABLE_1").Should().Be($"{lootTableId},100,1");
         }
+
+        foreach (var (resref, rareLootTableId, _) in RepeatableBloodFrenzyRareLootTables)
+        {
+            using var blueprint = JsonDocument.Parse(File.ReadAllText(Path.Combine(
+                root.FullName,
+                "Module",
+                "utc",
+                $"{resref}.utc.json")));
+
+            GetLocalString(blueprint.RootElement, "LOOT_TABLE_2").Should().Be($"{rareLootTableId},5,1");
+        }
+
+        using var kess = JsonDocument.Parse(File.ReadAllText(Path.Combine(
+            root.FullName,
+            "Module",
+            "utc",
+            "bf_kess.utc.json")));
+
+        TryGetLocalString(kess.RootElement, "LOOT_TABLE_2").Should().BeNull();
     }
 
     private static IEnumerable<string> GetWaypointPaletteResrefs(DirectoryInfo root)
@@ -231,13 +330,45 @@ public class ViscaraSpawnDefinitionTests
 
     private static string GetLocalString(JsonElement json, string variableName)
     {
-        return json.GetProperty("VarTable")
+        return TryGetLocalString(json, variableName)
+               ?? throw new InvalidOperationException($"Could not find local string '{variableName}'.");
+    }
+
+    private static string TryGetLocalString(JsonElement json, string variableName)
+    {
+        foreach (var entry in json.GetProperty("VarTable").GetProperty("value").EnumerateArray())
+        {
+            if (entry.GetProperty("Name").GetProperty("value").GetString() == variableName)
+            {
+                return entry.GetProperty("Value").GetProperty("value").GetString();
+            }
+        }
+
+        return null;
+    }
+
+    private static JsonElement GetItemProperty(JsonElement json, ItemPropertyType propertyName)
+    {
+        return json.GetProperty("PropertiesList")
             .GetProperty("value")
             .EnumerateArray()
-            .Single(entry => entry.GetProperty("Name").GetProperty("value").GetString() == variableName)
-            .GetProperty("Value")
+            .Single(property => property.GetProperty("PropertyName").GetProperty("value").GetInt32() == (int)propertyName);
+    }
+
+    private static int GetItemPropertyCostValue(JsonElement json, ItemPropertyType propertyName)
+    {
+        return GetItemProperty(json, propertyName)
+            .GetProperty("CostValue")
             .GetProperty("value")
-            .GetString()!;
+            .GetInt32();
+    }
+
+    private static int GetItemPropertyCount(JsonElement json, ItemPropertyType propertyName)
+    {
+        return json.GetProperty("PropertiesList")
+            .GetProperty("value")
+            .EnumerateArray()
+            .Count(property => property.GetProperty("PropertyName").GetProperty("value").GetInt32() == (int)propertyName);
     }
 
     private static IEnumerable<string> EnumerateResrefs(JsonElement element)

@@ -11,11 +11,7 @@ public class DeadPlayerXPTests
         var source = ReadServerSource("Service", "Skill.cs");
         var method = ExtractMethod(source, "public static void GiveSkillXP(");
 
-        method.Should().Contain("GetIsDead(player)");
-        method.Should().Contain("GetCurrentHitPoints(player) <= 0");
-        method.IndexOf("GetIsDead(player)", StringComparison.Ordinal)
-            .Should()
-            .BeLessThan(method.IndexOf("var modifiedSkills", StringComparison.Ordinal));
+        AssertDeadPlayerGuardExitsBefore(method, "player", "return;", "var modifiedSkills");
     }
 
     [Test]
@@ -24,14 +20,8 @@ public class DeadPlayerXPTests
         var source = ReadServerSource("Service", "CombatPoint.cs");
         var method = ExtractMethod(source, "static void DistributeSkillXP()");
 
-        method.Should().Contain("GetIsDead(player)");
-        method.Should().Contain("GetCurrentHitPoints(player) <= 0");
-        method.IndexOf("GetIsDead(player)", StringComparison.Ordinal)
-            .Should()
-            .BeLessThan(method.IndexOf("Skill.GiveSkillXP", StringComparison.Ordinal));
-        method.IndexOf("GetIsDead(player)", StringComparison.Ordinal)
-            .Should()
-            .BeLessThan(method.IndexOf("SWLOR_COMBAT_POINT_DISTRIBUTED", StringComparison.Ordinal));
+        AssertDeadPlayerGuardExitsBefore(method, "player", "continue;", "Skill.GiveSkillXP");
+        AssertDeadPlayerGuardExitsBefore(method, "player", "continue;", "SWLOR_COMBAT_POINT_DISTRIBUTED");
     }
 
     [Test]
@@ -42,23 +32,9 @@ public class DeadPlayerXPTests
         var payout = ExtractMethod(source, "private static void ProcessPlayerRoleplayXP(uint player)");
         var message = ExtractMethod(source, "public static void ProcessRPMessage()");
 
-        heartbeat.Should().Contain("GetIsDead(player)");
-        heartbeat.Should().Contain("GetCurrentHitPoints(player) <= 0");
-        heartbeat.IndexOf("GetIsDead(player)", StringComparison.Ordinal)
-            .Should()
-            .BeLessThan(heartbeat.IndexOf("var ticks = GetLocalInt(player, RPTickVariable) + 1;", StringComparison.Ordinal));
-
-        payout.Should().Contain("GetIsDead(player)");
-        payout.Should().Contain("GetCurrentHitPoints(player) <= 0");
-        payout.IndexOf("GetIsDead(player)", StringComparison.Ordinal)
-            .Should()
-            .BeLessThan(payout.IndexOf("dbPlayer.UnallocatedXP += xp;", StringComparison.Ordinal));
-
-        message.Should().Contain("GetIsDead(player)");
-        message.Should().Contain("GetCurrentHitPoints(player) <= 0");
-        message.IndexOf("GetIsDead(player)", StringComparison.Ordinal)
-            .Should()
-            .BeLessThan(message.IndexOf("dbPlayer.RoleplayProgress.RPPoints++;", StringComparison.Ordinal));
+        AssertDeadPlayerGuardExitsBefore(heartbeat, "player", "return;", "var ticks = GetLocalInt(player, RPTickVariable) + 1;");
+        AssertDeadPlayerGuardExitsBefore(payout, "player", "return;", "dbPlayer.UnallocatedXP += xp;");
+        AssertDeadPlayerGuardExitsBefore(message, "player", "return;", "dbPlayer.RoleplayProgress.RPPoints++;");
     }
 
     [Test]
@@ -69,14 +45,8 @@ public class DeadPlayerXPTests
         var openWindow = ExtractMethod(skillsSource, "public Action OnClickDistributeRPXP() => () =>");
         var confirm = ExtractMethod(distributeSource, "public Action OnClickConfirm() => () =>");
 
-        openWindow.Should().Contain("GetIsDead(Player)");
-        openWindow.Should().Contain("GetCurrentHitPoints(Player) <= 0");
-
-        confirm.Should().Contain("GetIsDead(Player)");
-        confirm.Should().Contain("GetCurrentHitPoints(Player) <= 0");
-        confirm.IndexOf("GetIsDead(Player)", StringComparison.Ordinal)
-            .Should()
-            .BeLessThan(confirm.IndexOf("dbPlayer.UnallocatedXP -= amount;", StringComparison.Ordinal));
+        AssertDeadPlayerGuardExitsBefore(openWindow, "Player", "return;", "var playerId = GetObjectUUID(Player);");
+        AssertDeadPlayerGuardExitsBefore(confirm, "Player", "return;", "dbPlayer.UnallocatedXP -= amount;");
     }
 
     [Test]
@@ -89,26 +59,12 @@ public class DeadPlayerXPTests
         var advance = ExtractMethod(questDetailSource, "public void Advance(uint player, uint questSource)");
         var complete = ExtractMethod(questDetailSource, "public void Complete(uint player, uint questSource, IQuestReward selectedReward)");
 
-        killProgression.Should().Contain("GetIsDead(member)");
-        killProgression.Should().Contain("GetCurrentHitPoints(member) <= 0");
-        killProgression.IndexOf("GetIsDead(member)", StringComparison.Ordinal)
-            .Should()
-            .BeLessThan(killProgression.IndexOf("killTargetObjective.Advance(member, questId);", StringComparison.Ordinal));
-
-        canComplete.Should().Contain("GetIsDead(player)");
-        canComplete.Should().Contain("GetCurrentHitPoints(player) <= 0");
-        canComplete.IndexOf("GetIsDead(player)", StringComparison.Ordinal)
-            .Should()
-            .BeLessThan(canComplete.IndexOf("var playerId = GetObjectUUID(player);", StringComparison.Ordinal));
-
-        advance.Should().Contain("GetIsDead(player)");
-        advance.Should().Contain("GetCurrentHitPoints(player) <= 0");
-
-        complete.Should().Contain("GetIsDead(player)");
-        complete.Should().Contain("GetCurrentHitPoints(player) <= 0");
-        complete.IndexOf("GetIsDead(player)", StringComparison.Ordinal)
-            .Should()
-            .BeLessThan(complete.IndexOf("if (!CanComplete(player)) return;", StringComparison.Ordinal));
+        AssertDeadPlayerGuardExitsBefore(killProgression, "member", "continue;", "killTargetObjective.Advance(member, questId);");
+        AssertDeadPlayerGuardExitsBefore(killProgression, "member", "continue;", "questDetail.Advance(member, creature);");
+        AssertDeadPlayerGuardExitsBefore(canComplete, "player", "return false;", "var playerId = GetObjectUUID(player);");
+        AssertDeadPlayerGuardExitsBefore(advance, "player", "return;", "var playerId = GetObjectUUID(player);");
+        AssertDeadPlayerGuardExitsBefore(complete, "player", "return;", "if (!CanComplete(player)) return;");
+        AssertDeadPlayerGuardExitsBefore(complete, "player", "return;", "reward.GiveReward(player);");
     }
 
     private static string ReadServerSource(params string[] pathSegments)
@@ -142,6 +98,135 @@ public class DeadPlayerXPTests
         }
 
         throw new InvalidOperationException($"Could not extract method '{signature}'.");
+    }
+
+    private static void AssertDeadPlayerGuardExitsBefore(
+        string method,
+        string playerExpression,
+        string expectedExitStatement,
+        string protectedToken)
+    {
+        var protectedIndex = method.IndexOf(protectedToken, StringComparison.Ordinal);
+        protectedIndex.Should().BeGreaterThanOrEqualTo(0);
+
+        var guard = FindDeadPlayerGuard(method, playerExpression, expectedExitStatement);
+        guard.Should().NotBeNull(
+            $"dead-player guard for '{playerExpression}' should exit with '{expectedExitStatement}'");
+        guard!.Value.IfIndex.Should().BeLessThan(protectedIndex);
+    }
+
+    private static (int IfIndex, string Condition)? FindDeadPlayerGuard(
+        string method,
+        string playerExpression,
+        string expectedExitStatement)
+    {
+        const string IfToken = "if";
+        var searchIndex = 0;
+        while (searchIndex < method.Length)
+        {
+            var ifIndex = method.IndexOf(IfToken, searchIndex, StringComparison.Ordinal);
+            if (ifIndex < 0)
+                return null;
+
+            searchIndex = ifIndex + IfToken.Length;
+            if ((ifIndex > 0 && IsIdentifierCharacter(method[ifIndex - 1])) ||
+                (searchIndex < method.Length && IsIdentifierCharacter(method[searchIndex])))
+            {
+                continue;
+            }
+
+            var openParenIndex = SkipWhitespace(method, searchIndex);
+            if (openParenIndex >= method.Length || method[openParenIndex] != '(')
+                continue;
+
+            var closeParenIndex = FindMatchingDelimiter(method, openParenIndex, '(', ')');
+            var condition = method.Substring(openParenIndex + 1, closeParenIndex - openParenIndex - 1);
+            if (!condition.Contains($"GetIsDead({playerExpression})", StringComparison.Ordinal) ||
+                !condition.Contains($"GetCurrentHitPoints({playerExpression}) <= 0", StringComparison.Ordinal))
+                continue;
+
+            if (StatementContainsExit(method, closeParenIndex + 1, expectedExitStatement))
+                return (ifIndex, condition);
+        }
+
+        return null;
+    }
+
+    private static bool StatementContainsExit(string source, int statementIndex, string expectedExitStatement)
+    {
+        statementIndex = SkipWhitespace(source, statementIndex);
+        if (statementIndex >= source.Length)
+            return false;
+
+        if (source[statementIndex] != '{')
+        {
+            var semicolonIndex = source.IndexOf(';', statementIndex);
+            return semicolonIndex >= 0 &&
+                   source.Substring(statementIndex, semicolonIndex - statementIndex + 1)
+                       .Trim()
+                       .Equals(expectedExitStatement, StringComparison.Ordinal);
+        }
+
+        var closeBraceIndex = FindMatchingDelimiter(source, statementIndex, '{', '}');
+        var body = source.Substring(statementIndex + 1, closeBraceIndex - statementIndex - 1);
+        var depth = 0;
+        for (var index = 0; index < body.Length; index++)
+        {
+            if (body[index] == '{')
+            {
+                depth++;
+                continue;
+            }
+
+            if (body[index] == '}')
+            {
+                depth--;
+                continue;
+            }
+
+            if (depth == 0 &&
+                body.AsSpan(index).TrimStart().StartsWith(expectedExitStatement.AsSpan(), StringComparison.Ordinal))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static int FindMatchingDelimiter(string source, int openIndex, char openDelimiter, char closeDelimiter)
+    {
+        var depth = 0;
+        for (var index = openIndex; index < source.Length; index++)
+        {
+            if (source[index] == openDelimiter)
+            {
+                depth++;
+            }
+            else if (source[index] == closeDelimiter)
+            {
+                depth--;
+                if (depth == 0)
+                    return index;
+            }
+        }
+
+        throw new InvalidOperationException($"Could not find matching '{closeDelimiter}'.");
+    }
+
+    private static int SkipWhitespace(string source, int index)
+    {
+        while (index < source.Length && char.IsWhiteSpace(source[index]))
+        {
+            index++;
+        }
+
+        return index;
+    }
+
+    private static bool IsIdentifierCharacter(char value)
+    {
+        return char.IsLetterOrDigit(value) || value == '_';
     }
 
     private static DirectoryInfo FindRepositoryRoot()

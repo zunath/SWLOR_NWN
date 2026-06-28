@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 using System.Collections.Generic;
+using SWLOR.Game.Server.Feature.QuestDefinition;
 
 namespace SWLOR.Game.Server.Feature.PerkDefinition
 {
@@ -69,7 +70,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .IncreasesStat(StatType.DefeatedEnemyAttackDelayReductionPercent, 10)
                 .IncreasesStat(StatType.DefeatedEnemyAttackDelayReductionDurationSeconds, 30)
                 .Price(4)
-                .RequirementSkill(SkillType.Vibroblade, 50);
+                .RequirementSkill(SkillType.Vibroblade, 50)
+                .RequirementQuest(BloodFrenzyQuestDefinition.FinalQuestId);
         }
 
         private void Bloodseeker()

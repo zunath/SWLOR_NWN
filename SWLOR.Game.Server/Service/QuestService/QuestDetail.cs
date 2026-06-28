@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.DialogDefinition;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
+using SWLOR.Game.Server.Service.KeyItemService;
 using SWLOR.NWN.API.NWNX;
 using Player = SWLOR.Game.Server.Entity.Player;
 
@@ -26,6 +27,8 @@ namespace SWLOR.Game.Server.Service.QuestService
 
         public List<IQuestReward> Rewards { get; } = new List<IQuestReward>();
         public List<IQuestPrerequisite> Prerequisites { get; } = new List<IQuestPrerequisite>();
+        public List<KeyItemType> KeyItemsRemovedOnAbandon { get; } = new();
+        public List<KeyItemType> KeyItemsRemovedOnComplete { get; } = new();
 
         public Dictionary<int, QuestStateDetail> States { get; } = new Dictionary<int, QuestStateDetail>();
         public List<AcceptQuestDelegate> OnAcceptActions { get; } = new List<AcceptQuestDelegate>();
@@ -217,6 +220,11 @@ namespace SWLOR.Game.Server.Service.QuestService
                 action.Invoke(player);
             }
 
+            foreach (var keyItem in KeyItemsRemovedOnAbandon)
+            {
+                KeyItem.RemoveKeyItem(player, keyItem);
+            }
+
             Gui.PublishRefreshEvent(player, new QuestAbandonedRefreshEvent(QuestId));
         }
 
@@ -276,6 +284,7 @@ namespace SWLOR.Game.Server.Service.QuestService
                 action.Invoke(player, questSource);
             }
 
+            QuestEncounter.RefreshVisibilityForPlayer(player);
             Gui.PublishRefreshEvent(player, new QuestAcquiredRefreshEvent(QuestId));
         }
 
@@ -332,7 +341,7 @@ namespace SWLOR.Game.Server.Service.QuestService
                 PlayerPlugin.AddCustomJournalEntry(player, new JournalEntry
                 {
                     Name = quest.Name,
-                    Text = currentState.JournalText,
+                    Text = nextState.JournalText,
                     Tag = QuestId,
                     State = playerQuest.CurrentState,
                     Priority = 1,
@@ -356,12 +365,18 @@ namespace SWLOR.Game.Server.Service.QuestService
                     objective.Initialize(player, QuestId);
                 }
 
+                foreach (var keyItem in currentState.KeyItemsGrantedOnAdvance)
+                {
+                    KeyItem.GiveKeyItem(player, keyItem);
+                }
+
                 // Run any quest-specific code.
                 foreach (var action in OnAdvanceActions)
                 {
                     action.Invoke(player, questSource, playerQuest.CurrentState);
                 }
 
+                QuestEncounter.RefreshVisibilityForPlayer(player);
                 Gui.PublishRefreshEvent(player, new QuestProgressedRefreshEvent(QuestId));
             }
 
@@ -420,9 +435,15 @@ namespace SWLOR.Game.Server.Service.QuestService
                 action.Invoke(player, questSource);
             }
 
+            foreach (var keyItem in KeyItemsRemovedOnComplete)
+            {
+                KeyItem.RemoveKeyItem(player, keyItem);
+            }
+
             SendMessageToPC(player, "Quest '" + Name + "' complete!");
             RemoveJournalQuestEntry(QuestId, player, false);
 
+            QuestEncounter.RefreshVisibilityForPlayer(player);
             EventsPlugin.SignalEvent("SWLOR_COMPLETE_QUEST", player);
             Gui.PublishRefreshEvent(player, new QuestCompletedRefreshEvent(QuestId));
         }

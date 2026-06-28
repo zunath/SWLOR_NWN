@@ -172,6 +172,16 @@ namespace SWLOR.Game.Server.Service.KeyItemService
         DantooineShovel = 79,
         [KeyItem(KeyItemCategoryType.Keys, "Viscara Lake Basement Key", true, "This key allows you to enter the super secret sith basement! Shhhhhh!")]
         SithBasementKey = 80,
+        [KeyItem(KeyItemCategoryType.Keys, "Viscara Sewers Depths Key", true, "Sera Vonn gave you this key to the sealed Viscara Sewers Depths.")]
+        ViscaraSewersDepthsKey = 81,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Red Vein Codex", true, "Sera Vonn's Blood Frenzy codex, recovered from the Viscara Sewers Depths scavengers.")]
+        BloodFrenzyRedVeinCodex = 82,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Pulse Metronome", true, "A timing core recovered from the Pulse-Frame Training Droids in the Viscara Sewers Depths.")]
+        BloodFrenzyPulseMetronome = 83,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Adrenal Glass", true, "A shard of clotted adrenal glass taken after defeating the Blood Frenzy Butcher in the Viscara Sewers Depths.")]
+        BloodFrenzyAdrenalGlass = 84,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Blood Frenzy Charm Fragments", true, "Fragments recovered from the Blood Frenzy Duelists in the Viscara Sewers Depths.")]
+        BloodFrenzyCharmFragments = 85,
     }
 
     public class KeyItemAttribute : Attribute

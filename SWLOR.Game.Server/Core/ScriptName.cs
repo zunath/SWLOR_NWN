@@ -256,6 +256,7 @@ namespace SWLOR.Game.Server.Core
         public const string OnQuestCollectDisturbed = "qst_collect_dist";
         public const string OnQuestPlaceable = "quest_placeable";
         public const string OnQuestTrigger = "quest_trigger";
+        public const string OnQuestEncounter = "quest_enc";
 
         // Trash events
         public const string OnTrashOpened = "trash_opened";

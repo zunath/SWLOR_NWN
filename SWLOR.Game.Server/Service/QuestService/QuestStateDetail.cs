@@ -1,10 +1,12 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Service.KeyItemService;
 
 namespace SWLOR.Game.Server.Service.QuestService
 {
     public class QuestStateDetail
     {
         private Dictionary<int, IQuestObjective> Objectives { get; } = new Dictionary<int, IQuestObjective>();
+        public List<KeyItemType> KeyItemsGrantedOnAdvance { get; } = new();
         public string JournalText { get; set; }
         public QuestStateDetail()
         {

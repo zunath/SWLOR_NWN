@@ -1,0 +1,359 @@
+﻿{
+    "__data_type":  "UTP ",
+    "AnimationState":  {
+                           "type":  "byte",
+                           "value":  0
+                       },
+    "Appearance":  {
+                       "type":  "dword",
+                       "value":  479
+                   },
+    "AutoRemoveKey":  {
+                          "type":  "byte",
+                          "value":  0
+                      },
+    "BodyBag":  {
+                    "type":  "byte",
+                    "value":  0
+                },
+    "CloseLockDC":  {
+                        "type":  "byte",
+                        "value":  0
+                    },
+    "Comment":  {
+                    "type":  "cexostring",
+                    "value":  "Blood Frenzy quest encounter activator. Place only in the dedicated Blood Frenzy encounter space."
+                },
+    "Conversation":  {
+                         "type":  "resref",
+                         "value":  ""
+                     },
+    "CurrentHP":  {
+                      "type":  "short",
+                      "value":  10
+                  },
+    "Description":  {
+                        "type":  "cexolocstring",
+                        "value":  {
+                                      "0":  "A broken Blood Frenzy charm fixed into a steel marker. Its groove is warm enough to feel through a glove."
+                                  }
+                    },
+    "DisarmDC":  {
+                     "type":  "byte",
+                     "value":  0
+                 },
+    "Faction":  {
+                    "type":  "dword",
+                    "value":  1
+                },
+    "Fort":  {
+                 "type":  "byte",
+                 "value":  5
+             },
+    "Hardness":  {
+                     "type":  "byte",
+                     "value":  5
+                 },
+    "HasInventory":  {
+                         "type":  "byte",
+                         "value":  0
+                     },
+    "HP":  {
+               "type":  "short",
+               "value":  10
+           },
+    "Interruptable":  {
+                          "type":  "byte",
+                          "value":  1
+                      },
+    "KeyName":  {
+                    "type":  "cexostring",
+                    "value":  ""
+                },
+    "KeyRequired":  {
+                        "type":  "byte",
+                        "value":  0
+                    },
+    "Lockable":  {
+                     "type":  "byte",
+                     "value":  0
+                 },
+    "Locked":  {
+                   "type":  "byte",
+                   "value":  0
+               },
+    "LocName":  {
+                    "type":  "cexolocstring",
+                    "value":  {
+                                  "0":  "Blood Frenzy Challenge Marker"
+                              }
+                },
+    "OnClick":  {
+                    "type":  "resref",
+                    "value":  ""
+                },
+    "OnClosed":  {
+                     "type":  "resref",
+                     "value":  ""
+                 },
+    "OnDamaged":  {
+                      "type":  "resref",
+                      "value":  ""
+                  },
+    "OnDeath":  {
+                    "type":  "resref",
+                    "value":  ""
+                },
+    "OnDisarm":  {
+                     "type":  "resref",
+                     "value":  ""
+                 },
+    "OnHeartbeat":  {
+                        "type":  "resref",
+                        "value":  ""
+                    },
+    "OnInvDisturbed":  {
+                           "type":  "resref",
+                           "value":  ""
+                       },
+    "OnLock":  {
+                   "type":  "resref",
+                   "value":  ""
+               },
+    "OnMeleeAttacked":  {
+                            "type":  "resref",
+                            "value":  ""
+                        },
+    "OnOpen":  {
+                   "type":  "resref",
+                   "value":  ""
+               },
+    "OnSpellCastAt":  {
+                          "type":  "resref",
+                          "value":  ""
+                      },
+    "OnTrapTriggered":  {
+                            "type":  "resref",
+                            "value":  ""
+                        },
+    "OnUnlock":  {
+                     "type":  "resref",
+                     "value":  ""
+                 },
+    "OnUsed":  {
+                   "type":  "resref",
+                   "value":  "quest_enc"
+               },
+    "OnUserDefined":  {
+                          "type":  "resref",
+                          "value":  ""
+                      },
+    "OpenLockDC":  {
+                       "type":  "byte",
+                       "value":  0
+                   },
+    "PaletteID":  {
+                      "type":  "byte",
+                      "value":  0
+                  },
+    "Plot":  {
+                 "type":  "byte",
+                 "value":  1
+             },
+    "PortraitId":  {
+                       "type":  "word",
+                       "value":  0
+                   },
+    "Ref":  {
+                "type":  "byte",
+                "value":  0
+            },
+    "Static":  {
+                   "type":  "byte",
+                   "value":  0
+               },
+    "Tag":  {
+                "type":  "cexostring",
+                "value":  "bf_kess_call"
+            },
+    "TemplateResRef":  {
+                           "type":  "resref",
+                           "value":  "bf_kess_call"
+                       },
+    "TrapDetectable":  {
+                           "type":  "byte",
+                           "value":  0
+                       },
+    "TrapDetectDC":  {
+                         "type":  "byte",
+                         "value":  0
+                     },
+    "TrapDisarmable":  {
+                           "type":  "byte",
+                           "value":  0
+                       },
+    "TrapFlag":  {
+                     "type":  "byte",
+                     "value":  0
+                 },
+    "TrapOneShot":  {
+                        "type":  "byte",
+                        "value":  1
+                    },
+    "TrapType":  {
+                     "type":  "byte",
+                     "value":  0
+                 },
+    "Type":  {
+                 "type":  "byte",
+                 "value":  0
+             },
+    "Useable":  {
+                    "type":  "byte",
+                    "value":  1
+                },
+    "VarTable":  {
+                     "type":  "list",
+                     "value":  [
+                                   {
+                                       "__struct_id":  0,
+                                       "Name":  {
+                                                    "type":  "cexostring",
+                                                    "value":  "QUEST_ID"
+                                                },
+                                       "Type":  {
+                                                    "type":  "dword",
+                                                    "value":  3
+                                                },
+                                       "Value":  {
+                                                     "type":  "cexostring",
+                                                     "value":  "blood_frenzy_mastery"
+                                                 }
+                                   },
+                                   {
+                                       "__struct_id":  0,
+                                       "Name":  {
+                                                    "type":  "cexostring",
+                                                    "value":  "QUEST_STATE"
+                                                },
+                                       "Type":  {
+                                                    "type":  "dword",
+                                                    "value":  1
+                                                },
+                                       "Value":  {
+                                                     "type":  "int",
+                                                     "value":  1
+                                                 }
+                                   },
+                                   {
+                                       "__struct_id":  0,
+                                       "Name":  {
+                                                    "type":  "cexostring",
+                                                    "value":  "VISIBILITY_HIDDEN_DEFAULT"
+                                                },
+                                       "Type":  {
+                                                    "type":  "dword",
+                                                    "value":  1
+                                                },
+                                       "Value":  {
+                                                     "type":  "int",
+                                                     "value":  1
+                                                 }
+                                   },
+                                   {
+                                       "__struct_id":  0,
+                                       "Name":  {
+                                                    "type":  "cexostring",
+                                                    "value":  "VISIBILITY_OBJECT_ID"
+                                                },
+                                       "Type":  {
+                                                    "type":  "dword",
+                                                    "value":  3
+                                                },
+                                       "Value":  {
+                                                     "type":  "cexostring",
+                                                     "value":  "BF_KESS_CALL"
+                                                 }
+                                   },
+                                   {
+                                       "__struct_id":  0,
+                                       "Name":  {
+                                                    "type":  "cexostring",
+                                                    "value":  "QUEST_ENCOUNTER_ID"
+                                                },
+                                       "Type":  {
+                                                    "type":  "dword",
+                                                    "value":  3
+                                                },
+                                       "Value":  {
+                                                     "type":  "cexostring",
+                                                     "value":  "blood_frenzy_mastery_kess"
+                                                 }
+                                   },
+                                   {
+                                       "__struct_id":  0,
+                                       "Name":  {
+                                                    "type":  "cexostring",
+                                                    "value":  "QUEST_ENCOUNTER_RESREF"
+                                                },
+                                       "Type":  {
+                                                    "type":  "dword",
+                                                    "value":  3
+                                                },
+                                       "Value":  {
+                                                     "type":  "cexostring",
+                                                     "value":  "bf_kess"
+                                                 }
+                                   },
+                                   {
+                                       "__struct_id":  0,
+                                       "Name":  {
+                                                    "type":  "cexostring",
+                                                    "value":  "QUEST_ENCOUNTER_WAYPOINT"
+                                                },
+                                       "Type":  {
+                                                    "type":  "dword",
+                                                    "value":  3
+                                                },
+                                       "Value":  {
+                                                     "type":  "cexostring",
+                                                     "value":  "BF_KESS_SPAWN"
+                                                 }
+                                   },
+                                   {
+                                       "__struct_id":  0,
+                                       "Name":  {
+                                                    "type":  "cexostring",
+                                                    "value":  "QUEST_ENCOUNTER_COOLDOWN_MINUTES"
+                                                },
+                                       "Type":  {
+                                                    "type":  "dword",
+                                                    "value":  1
+                                                },
+                                       "Value":  {
+                                                     "type":  "int",
+                                                     "value":  60
+                                                 }
+                                   },
+                                   {
+                                       "__struct_id":  0,
+                                       "Name":  {
+                                                    "type":  "cexostring",
+                                                    "value":  "QUEST_ENCOUNTER_IDLE_MINUTES"
+                                                },
+                                       "Type":  {
+                                                    "type":  "dword",
+                                                    "value":  1
+                                                },
+                                       "Value":  {
+                                                     "type":  "int",
+                                                     "value":  10
+                                                 }
+                                   }
+                               ]
+                 },
+    "Will":  {
+                 "type":  "byte",
+                 "value":  0
+             }
+}

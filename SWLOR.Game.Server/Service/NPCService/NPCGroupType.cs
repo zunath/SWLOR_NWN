@@ -128,6 +128,16 @@ namespace SWLOR.Game.Server.Service.NPCService
         Korriban_AlchemizedFrog = 59,
         [NPCGroup("Dantari Shaman")]
         Dantooine_DantariShaman = 60,
+        [NPCGroup("Red Vein Scavenger")]
+        Viscara_RedVeinScavenger = 61,
+        [NPCGroup("Pulse-Frame Training Droid")]
+        Viscara_PulseFrameTrainingDroid = 62,
+        [NPCGroup("Blood Frenzy Butcher")]
+        Viscara_BloodFrenzyButcher = 63,
+        [NPCGroup("Blood Frenzy Duelist")]
+        Viscara_BloodFrenzyDuelist = 64,
+        [NPCGroup("Blood Frenzy King")]
+        Viscara_BloodFrenzyKing = 65,
 
     }
 

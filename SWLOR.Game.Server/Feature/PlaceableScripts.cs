@@ -2,6 +2,7 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CurrencyService;
 using SWLOR.Game.Server.Service.KeyItemService;
+using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Associate;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
@@ -10,6 +11,8 @@ namespace SWLOR.Game.Server.Feature
 {
     public static class PlaceableScripts
     {
+        private const float TeleportPartyMemberRange = 8.0f;
+
         /// <summary>
         /// When a teleport placeable is used, send the user to the configured waypoint.
         /// Checks are made for required key items, if specified as local variables on the placeable.
@@ -31,6 +34,7 @@ namespace SWLOR.Game.Server.Feature
             var vfx = vfxId > 0 ? (VisualEffect) vfxId : VisualEffect.None;
             var requiredKeyItemId = GetLocalInt(device, "KEY_ITEM_ID");
             var missingKeyItemMessage = GetLocalString(device, "MISSING_KEY_ITEM_MESSAGE");
+            var teleportPartyMembers = GetLocalBool(device, "TELEPORT_PARTY_MEMBERS");
             if (string.IsNullOrWhiteSpace(missingKeyItemMessage))
                 missingKeyItemMessage = "You don't have the necessary key item to access this object.";
 
@@ -65,15 +69,42 @@ namespace SWLOR.Game.Server.Feature
             }
 
             var location = GetLocation(waypoint);
-            AssignCommand(user, () => JumpToLocation(location));
-            AssignCommand(user, () => SetFacing(GetFacing(waypoint)));
+            TeleportCreature(user, location, waypoint);
 
-            var henchman = GetAssociate(AssociateType.Henchman, user);
+            if (!teleportPartyMembers)
+            {
+                return;
+            }
+
+            foreach (var partyMember in Party.GetAllPartyMembers(user))
+            {
+                if (partyMember == user ||
+                    !GetIsObjectValid(partyMember) ||
+                    !GetIsPC(partyMember) ||
+                    GetIsDM(partyMember) ||
+                    GetArea(partyMember) != GetArea(device) ||
+                    GetDistanceBetween(partyMember, device) > TeleportPartyMemberRange)
+                {
+                    continue;
+                }
+
+                TeleportCreature(partyMember, location, waypoint);
+
+                var userName = PlayerName.GetDisplayName(partyMember, user);
+                SendMessageToPC(partyMember, $"You ventured forth with {userName}.");
+            }
+        }
+
+        private static void TeleportCreature(uint creature, Location location, uint waypoint)
+        {
+            AssignCommand(creature, () => JumpToLocation(location));
+            AssignCommand(creature, () => SetFacing(GetFacing(waypoint)));
+
+            var henchman = GetAssociate(AssociateType.Henchman, creature);
             if (GetIsObjectValid(henchman))
             {
                 AssignCommand(henchman, () => JumpToLocation(location));
             }
-
         }
 
         /// <summary>

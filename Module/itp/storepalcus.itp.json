@@ -27,11 +27,11 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
-                "value": "Generic Bartender"
+                "value": "Anchorhead Medical Center Store"
               },
               "RESREF": {
                 "type": "resref",
-                "value": "mag_barman_gen"
+                "value": "mag_medic_anchor"
               }
             },
             {
@@ -170,6 +170,17 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Generic Bartender"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "mag_barman_gen"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Hutlar General Store"
               },
               "RESREF": {
@@ -192,7 +203,7 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
-                "value": "Magasin de Lenny"
+                "value": "Lenny's Shop"
               },
               "RESREF": {
                 "type": "resref",
@@ -329,17 +340,6 @@
               "RESREF": {
                 "type": "resref",
                 "value": "veles_gen_merch"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Anchorhead Medical Center Store"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "mag_medic_anchor"
               }
             },
             {

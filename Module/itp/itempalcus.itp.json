@@ -879,28 +879,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Ninja Jawa Rags"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "vet_togejawa002"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Tusken Rags"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "vet_togetusken01"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Jolee's Robes"
                     },
                     "RESREF": {
@@ -1203,6 +1181,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "musicianoutfit1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ninja Jawa Rags"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vet_togejawa002"
                     }
                   },
                   {
@@ -1830,6 +1819,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "spy"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tusken Rags"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vet_togetusken01"
                     }
                   },
                   {
@@ -6774,6 +6774,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Crystal-Crazed Colossal Warocas Bite"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "crzcolwarocas_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Crystal-Crazed Warocas Beak"
                     },
                     "RESREF": {
@@ -6785,11 +6796,33 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Crystal-Crazed Warocas Bite"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cryscrzwaroc_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Dragon Turtle Bite"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "dragonturtle_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ghost Viper King Strike"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ghosvipeking_wp"
                     }
                   },
                   {
@@ -6928,6 +6961,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Qion Mutation Beast Strike"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "qionmut_lo_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Qion Mutation Beast Strike"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "qionmutbeast_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Qion Tiger Bite"
                     },
                     "RESREF": {
@@ -6972,6 +7027,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Rancor Bite"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "rancor_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Riktasha Bite"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "riktasha_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Riktasha Weapon"
                     },
                     "RESREF": {
@@ -7010,6 +7087,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "sandworm_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sewer Data Collection Droid Bite"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sewerdata_wp"
                     }
                   },
                   {
@@ -7148,6 +7236,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Vellen Raptor Bite"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vellenrap_lo_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Vellen Raptor Bite"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vellenraptor_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Viper Bite"
                     },
                     "RESREF": {
@@ -7186,6 +7296,61 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "raptorbite001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Zombie, Guard Bite"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "zombieguard_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Zombie, Rancor Bite"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "zombierancor_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Zombie, Scientist Bite"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "zombiesci_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Zombie, Worker Bite"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "zombieworker2_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Zombie, Worker Bite"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "zombieworker_wp"
                     }
                   }
                 ]
@@ -7285,11 +7450,33 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Holographic Gimpassa Claw"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "hologimp_lo_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Holographic Kath Hound Bite"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "holokathhound_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Holographic Kath Hound Claw"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "holokath_lo_wp"
                     }
                   },
                   {
@@ -7593,6 +7780,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Sewer Maintenance Droid Claw"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sewermaint_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Shyrack Claw"
                     },
                     "RESREF": {
@@ -7708,6 +7906,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "vellenking_0001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Vellen King Raptor Claw"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "velkingraptor_wp"
                     }
                   },
                   {
@@ -8410,7 +8619,40 @@
                     },
                     "RESREF": {
                       "type": "resref",
+                      "value": "darklord_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dark Lord Lightsaber"
+                    },
+                    "RESREF": {
+                      "type": "resref",
                       "value": "vnpcmplot"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Imperial Combot Rifle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "impcombot_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Imperial Defensive Turret Rifle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "impturret_wp"
                     }
                   },
                   {
@@ -8450,11 +8692,44 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Imperial Warform Greatsword"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "impwarform2_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Koyee's Saberstaff"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "dmnpckoyeestaff"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Lord Nephthyra Lightsaber"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "lordnephthyra_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Lord Sirtu Lightsaber"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "lordsirtu_wp"
                     }
                   },
                   {
@@ -8604,6 +8879,39 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Sewer Patrol Droid Rifle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sewerpatrol_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sirtu's Lieutenant Lightsaber"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sirtulieut_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Assassin Saberstaff"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sithassassin_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Sith Blademaster Lightsaber"
                     },
                     "RESREF": {
@@ -8626,11 +8934,77 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Sith Combat Medic Rifle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sithmedic_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Commander Rifle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sithcmdr_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Heavy Gunner Rifle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sithhgunner_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Inquisitor, Apprentice Saberstaff"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sithinqapp_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Sith Inquisitor, Initiate Saberstaff"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "sithinqinit_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Invader Rifle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sithinvader_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Juggernaut Greatsword"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sithjugg_wp"
                     }
                   },
                   {
@@ -8659,11 +9033,77 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Sith Marauder, Apprentice Lightsaber"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sithmarapp_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Sith Marauder, Initiate Lightsaber"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "sithmarinit_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Marksman Rifle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sithmarksman_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Scout Rifle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sithscout_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Sniper Rifle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sithsniper_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Soldier Rifle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sithsoldier_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Sorcerer, Apprentice Lightsaber"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sithsorcapp_wp"
                     }
                   },
                   {
@@ -8736,6 +9176,72 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Sith Trooper Rifle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sithtrooper_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Trooper, Elite Rifle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sithtroopelit_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Trooper, Heavy Greatsword"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sithheavy_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Trooper, Honor Guard Rifle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sithhguard2_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Trooper, Veteran Rifle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sithtroopvet_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Warmonger Lightsaber"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sithwarmonger_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Sith Warrior Lightsaber (vnpcmwar3)"
                     },
                     "RESREF": {
@@ -8763,6 +9269,39 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "sithwarrior_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith, Desperate Fodder Rifle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sithfodder_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith, Imperial Conscript Rifle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sithconscript_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith, Slave-Soldier Rifle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sithslave_wp"
                     }
                   },
                   {
@@ -9115,6 +9654,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Crystal-Crazed Colossal Warocas Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "crzcolwarocas_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Crystal-Crazed Warocas Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cryscrzwaroc_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Dantari Hunter"
                     },
                     "RESREF": {
@@ -9142,6 +9703,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "dantarishaman_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dark Lord Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "darklord_sk"
                     }
                   },
                   {
@@ -9225,6 +9797,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Exchange Enforcer Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "exchenf_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Force Witch Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "forcewitch_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Gaping Spider Stat Skin"
                     },
                     "RESREF": {
@@ -9251,7 +9845,29 @@
                     },
                     "RESREF": {
                       "type": "resref",
+                      "value": "gerogoon005_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Gero's Enforcer Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
                       "value": "gerosenforcer_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ghost Viper King Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ghosvipeking_sk"
                     }
                   },
                   {
@@ -9328,7 +9944,29 @@
                     },
                     "RESREF": {
                       "type": "resref",
+                      "value": "hologimp_lo_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Holographic Gimpassa Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
                       "value": "hologimp_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Holographic Kath Hound Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "holokath_lo_sk"
                     }
                   },
                   {
@@ -9368,11 +10006,44 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Imperial Combot Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "impcombot_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Imperial Defensive Turret Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "impturret_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Imperial Heavy Industry Drone Stat Skin"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "imphvydrone_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Imperial Observation Unit Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "impobsunit_sk"
                     }
                   },
                   {
@@ -9401,11 +10072,55 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Imperial Warform Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "impwarform2_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Iriaz Stat Skin"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "iriaz_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Jawa Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "extjawa004_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Jawa Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "jawa_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Jawa Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "jawaaddit_sk"
                     }
                   },
                   {
@@ -9500,6 +10215,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Lord Nephthyra Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "lordnephthyra_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Lord Sirtu Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "lordsirtu_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Lord Valerius Stat Skin"
                     },
                     "RESREF": {
@@ -9516,6 +10253,28 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "malechef_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Malfunctioning Security Droid Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "malfsecdroid_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Malfunctioning Spider Droid Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "malfspiddroi_sk"
                     }
                   },
                   {
@@ -9775,6 +10534,50 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Psychotic Prisoner Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "psychopris1_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Psychotic Prisoner Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "psychopris2_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Psychotic Prisoner Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "psychopris4_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Psychotic Prisoner Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "psychopris5_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Purbole Stat Skin"
                     },
                     "RESREF": {
@@ -9841,6 +10644,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Qion Mutation Beast Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "qionmut_lo_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Qion Mutation Beast Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "qionmutbeast_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Qion Slug Stat Skin"
                     },
                     "RESREF": {
@@ -9890,6 +10715,39 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "dathrancor_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Rancor Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "rancor_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Riktasha Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "riktasha_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Rodian Exchange Enforcer Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "rodexchenf_sk"
                     }
                   },
                   {
@@ -9973,6 +10831,39 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Sewer Data Collection Droid Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sewerdata_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sewer Maintenance Droid Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sewermaint_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sewer Patrol Droid Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sewerpatrol_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Shear Mite Stat Skin"
                     },
                     "RESREF": {
@@ -9995,6 +10886,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Sirtu's Lieutenant Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sirtulieut_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Sith Apprentice Ghost Stat Skin"
                     },
                     "RESREF": {
@@ -10011,6 +10913,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "s_app_hide"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Assassin Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sithassassin_sk"
                     }
                   },
                   {
@@ -10044,6 +10957,39 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "sithblade_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Combat Medic Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sithmedic_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Commander Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sithcmdr_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Commando Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sithcommando_sk"
                     }
                   },
                   {
@@ -10094,6 +11040,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Sith Heavy Gunner Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sithhgunner_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Honor Guard Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sithhguard_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Sith Inquisitor Initiate Stat Skin"
                     },
                     "RESREF": {
@@ -10105,11 +11073,44 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Sith Inquisitor, Apprentice Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sithinqapp_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Invader Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sithinvader_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Sith Invader T1 Skin"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "vnpcsinvade1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Juggernaut Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sithjugg_sk"
                     }
                   },
                   {
@@ -10138,6 +11139,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Sith Marauder, Apprentice Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sithmarapp_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Marksman Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sithmarksman_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Sith Marksman T2 Skin"
                     },
                     "RESREF": {
@@ -10154,6 +11177,61 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "sithofficer_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Saboteur Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sithsabot_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Scout Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sithscout_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Siege Trooper Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sithsiege_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Sniper Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sithsniper_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Soldier Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sithsoldier_sk"
                     }
                   },
                   {
@@ -10198,6 +11276,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "vnpcssorc4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Sorcerer, Apprentice Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sithsorcapp_sk"
                     }
                   },
                   {
@@ -10259,6 +11348,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Sith Trooper Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sithtrooper_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Sith Trooper T1 Skin"
                     },
                     "RESREF": {
@@ -10270,11 +11370,66 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Sith Trooper, Elite Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sithtroopelit_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Trooper, Heavy Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sithheavy_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Trooper, Honor Guard Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sithhguard2_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Trooper, Veteran Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sithtroopvet_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Sith Vanguard T3 Skin"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "vnpcsvang3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Warmonger Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sithwarmonger_sk"
                     }
                   },
                   {
@@ -10319,6 +11474,39 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "vnpcswar4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith, Desperate Fodder Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sithfodder_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith, Imperial Conscript Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sithconscript_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith, Slave-Soldier Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sithslave_sk"
                     }
                   },
                   {
@@ -10787,6 +11975,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Tunnel Drake Bruiser Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "drakebruiser_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tunnel Drake Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "tunneldrake_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Tusken Elite Melee Stat Skin"
                     },
                     "RESREF": {
@@ -10825,6 +12035,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "tuskenraider_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tusken Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "tusken_sk"
                     }
                   },
                   {
@@ -10891,6 +12112,39 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "velfleshlead_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Vellen King Raptor Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "velkingraptor_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Vellen Raptor Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vellenrap_lo_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Vellen Raptor Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vellenraptor_sk"
                     }
                   },
                   {
@@ -10990,6 +12244,61 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "wraid_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Zombie, Guard Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "zombieguard_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Zombie, Rancor Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "zombierancor_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Zombie, Scientist Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "zombiesci_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Zombie, Worker Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "zombieworker2_sk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Zombie, Worker Stat Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "zombieworker_sk"
                     }
                   }
                 ]
@@ -38071,6 +39380,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Scrap Pile"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "equ_ferraille"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Select Power Crystal"
                     },
                     "RESREF": {
@@ -39429,17 +40749,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "tarnuinch"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Tas de feraille"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "equ_ferraille"
                     }
                   },
                   {
@@ -44444,17 +45753,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Capsule remplie d'eau"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "equ_capsule_eau"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Carp Sushi"
                     },
                     "RESREF": {
@@ -46473,6 +47771,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "waro_potpie"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Water-Filled Capsule"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "equ_capsule_eau"
                     }
                   },
                   {
@@ -53941,6 +55250,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Force Witch Whip"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "forcewitch_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Force Witch's Force infused whip"
                     },
                     "RESREF": {
@@ -54886,6 +56206,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Psychotic Prisoner Knife"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "psychopris1_wp"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Raider Knife"
                           },
                           "RESREF": {
@@ -54930,11 +56261,55 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Sith Commando Knife"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "sithcommando_wp"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Sith Commando Knife"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "sithcommando_wp2"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Sith Knife"
                           },
                           "RESREF": {
                             "type": "resref",
                             "value": "sith_knife"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Sith Saboteur Knife"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "sithsabot_wp"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Sith Saboteur Knife"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "sithsabot_wp2"
                           }
                         },
                         {
@@ -54979,6 +56354,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "t_knife"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Tunnel Drake Knife"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "tunneldrake_wp"
                           }
                         },
                         {
@@ -57476,6 +58862,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Psychotic Prisoner Twin Blade"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "psychopris4_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Raider Staff"
                     },
                     "RESREF": {
@@ -57679,6 +59076,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "t_twin_elec"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tunnel Drake Bruiser Staff"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "drakebruiser_wp"
                     }
                   },
                   {
@@ -58965,6 +60373,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Psychotic Prisoner Spear"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "psychopris2_wp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Raider Spear"
                     },
                     "RESREF": {
@@ -58992,6 +60411,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "sith_pike"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Honor Guard Spear"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sithhguard_wp"
                     }
                   },
                   {
@@ -59134,7 +60564,40 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Pistolet Blaster Jawa"
+                            "value": "Jawa Blaster"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "extjawa004_wp"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Jawa Blaster"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "jawa_wp"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Jawa Blaster"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "jawaaddit_wp"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Jawa Blaster Pistol"
                           },
                           "RESREF": {
                             "type": "resref",
@@ -59243,6 +60706,28 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "sithsiegeblaster"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Sith Siege Trooper Blaster Rifle"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "sithsiege_wp"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Tusken Blaster Rifle"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "tusken_wp"
                           }
                         },
                         {
@@ -59474,6 +60959,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Exchange Enforcer Blaster"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "exchenf_wp"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Field Pistol"
                           },
                           "RESREF": {
@@ -59490,6 +60986,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "gerosenfaddit_wp"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Gero's Enforcer Blaster"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "gerogoon005_wp"
                           }
                         },
                         {
@@ -59562,6 +61069,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Imperial Observation Unit Blaster"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "impobsunit_wp"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Kwi Pistol"
                           },
                           "RESREF": {
@@ -59589,6 +61107,28 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "probedroid_wp"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Malfunctioning Security Droid Blaster"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "malfsecdroid_wp"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Malfunctioning Spider Droid Blaster"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "malfspiddroi_wp"
                           }
                         },
                         {
@@ -59661,6 +61201,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Psychotic Prisoner Blaster"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "psychopris5_wp"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Raider Pistol"
                           },
                           "RESREF": {
@@ -59688,6 +61239,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "soluspistol"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Rodian Exchange Enforcer Blaster"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "rodexchenf_wp"
                           }
                         },
                         {

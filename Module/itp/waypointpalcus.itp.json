@@ -643,6 +643,39 @@
                       "type": "resref",
                       "value": "v_wildwd_looter"
                     }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Viscara Sewers Depths - Butcher Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "bf_butch_spawn"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Viscara Sewers Depths - General Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "bf_sd_general"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Viscara Sewers Depths - Kess Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "bf_kess_spawn"
+                    }
                   }
                 ]
               },

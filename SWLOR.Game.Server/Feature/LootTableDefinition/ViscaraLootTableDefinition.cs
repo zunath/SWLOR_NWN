@@ -25,6 +25,9 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             Warocas();
             Nashtah();
             CrystalSpider();
+            SewersDepthsEntry();
+            SewersDepthsButcher();
+            SewersDepthsCircle();
 
             MandalorianCrate();
             CoxxionCrate();
@@ -402,6 +405,45 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .IsRare()
                 .AddItem("agate", 3, 1, true)
                 .AddItem("map_039", 1, 1, true);
+        }
+
+        private void SewersDepthsEntry()
+        {
+            _builder.Create("VISCARA_SEWERS_DEPTHS_SCAVENGER")
+                .AddItem("lth_flawed", 20)
+                .AddItem("elec_flawed", 20)
+                .AddItem("stim_pack", 10, 2)
+                .AddGold(100, 10);
+
+            _builder.Create("VISCARA_SEWERS_DEPTHS_PULSE_DROID")
+                .AddItem("elec_good", 20)
+                .AddItem("m_vibro_parts", 15)
+                .AddItem("med_supplies", 10, 2)
+                .AddGold(100, 10);
+        }
+
+        private void SewersDepthsButcher()
+        {
+            _builder.Create("VISCARA_SEWERS_DEPTHS_BUTCHER")
+                .AddItem("m_vibro_parts", 20)
+                .AddItem("stim_pack", 20, 3)
+                .AddItem("med_supplies", 20, 3)
+                .AddGold(150, 10);
+        }
+
+        private void SewersDepthsCircle()
+        {
+            _builder.Create("VISCARA_SEWERS_DEPTHS_DUELIST")
+                .AddItem("m_vibro_parts", 20)
+                .AddItem("stim_pack", 15, 2)
+                .AddItem("med_supplies", 15, 2)
+                .AddGold(120, 10);
+
+            _builder.Create("VISCARA_SEWERS_DEPTHS_KING")
+                .AddItem("m_vibro_parts", 20)
+                .AddItem("stim_pack", 20, 3)
+                .AddItem("med_supplies", 20, 3)
+                .AddGold(200, 10);
         }
     }
 }

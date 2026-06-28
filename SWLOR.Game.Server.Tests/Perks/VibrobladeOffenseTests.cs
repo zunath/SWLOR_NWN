@@ -1,5 +1,6 @@
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Feature.QuestDefinition;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade;
 using SWLOR.Game.Server.Feature.PerkDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
@@ -73,6 +74,15 @@ public class VibrobladeOffenseTests
             StatType.DefeatedEnemyStaminaRestore,
             StatType.DefeatedEnemyAttackDelayReductionPercent,
             StatType.DefeatedEnemyAttackDelayReductionDurationSeconds);
+
+        perks[PerkType.BloodFrenzy].PerkLevels[1].Requirements
+            .OfType<PerkRequirementQuest>()
+            .Should()
+            .ContainSingle()
+            .Which
+            .QuestId
+            .Should()
+            .Be(BloodFrenzyQuestDefinition.FinalQuestId);
     }
     [Test]
     public void VibrobladeOffenseStatusEffects_MatchCombatBible()

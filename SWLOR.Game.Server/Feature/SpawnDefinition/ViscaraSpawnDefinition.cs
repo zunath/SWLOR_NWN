@@ -24,6 +24,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             DeepMountainRaivors();
             CrystalSpiders();
             Swamplands();
+            SewersDepthsGeneral();
             Veles();
             VelesSewers();
             TwilightPraxeum();
@@ -208,6 +209,25 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
                 .AddSpawn(ObjectType.Creature, "v_flesheater2")
                 .WithFrequency(20)
+                .RandomlyWalks()
+                .ReturnsHome();
+        }
+
+        private void SewersDepthsGeneral()
+        {
+            _builder.Create("VISCARA_SEWERS_DEPTHS_GENERAL", "Viscara Sewers Depths - General")
+                .AddSpawn(ObjectType.Creature, "bf_scavenger")
+                .WithFrequency(70)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "bf_pulsedroid")
+                .WithFrequency(40)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "bf_duelist")
+                .WithFrequency(70)
                 .RandomlyWalks()
                 .ReturnsHome();
         }

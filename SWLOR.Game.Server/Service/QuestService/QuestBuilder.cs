@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.FactionService;
 using SWLOR.Game.Server.Service.KeyItemService;
 using SWLOR.Game.Server.Service.NPCService;
+using SWLOR.Game.Server.Service.SkillService;
 
 namespace SWLOR.Game.Server.Service.QuestService
 {
@@ -133,6 +134,42 @@ namespace SWLOR.Game.Server.Service.QuestService
         }
 
         /// <summary>
+        /// Grants a key item when the active quest state is completed and advances to the next state.
+        /// </summary>
+        /// <param name="keyItemType">The key item to grant.</param>
+        /// <returns>A QuestBuilder with the configured options.</returns>
+        public QuestBuilder GrantKeyItemOnAdvance(KeyItemType keyItemType)
+        {
+            _activeState.KeyItemsGrantedOnAdvance.Add(keyItemType);
+
+            return this;
+        }
+
+        /// <summary>
+        /// Removes a key item when this quest is abandoned.
+        /// </summary>
+        /// <param name="keyItemType">The key item to remove.</param>
+        /// <returns>A QuestBuilder with the configured options.</returns>
+        public QuestBuilder RemoveKeyItemOnAbandon(KeyItemType keyItemType)
+        {
+            _activeQuest.KeyItemsRemovedOnAbandon.Add(keyItemType);
+
+            return this;
+        }
+
+        /// <summary>
+        /// Removes a key item when this quest is completed.
+        /// </summary>
+        /// <param name="keyItemType">The key item to remove.</param>
+        /// <returns>A QuestBuilder with the configured options.</returns>
+        public QuestBuilder RemoveKeyItemOnComplete(KeyItemType keyItemType)
+        {
+            _activeQuest.KeyItemsRemovedOnComplete.Add(keyItemType);
+
+            return this;
+        }
+
+        /// <summary>
         /// Adds a guild GP reward for completing this quest.
         /// </summary>
         /// <param name="guild">The type of guild GP to reward.</param>
@@ -198,6 +235,20 @@ namespace SWLOR.Game.Server.Service.QuestService
         public QuestBuilder PrerequisiteKeyItem(KeyItemType keyItemType)
         {
             var prereq = new RequiredKeyItemPrerequisite(keyItemType);
+            _activeQuest.Prerequisites.Add(prereq);
+
+            return this;
+        }
+
+        /// <summary>
+        /// Adds a prerequisite to the quest. If the player has not reached the required skill rank, they will be unable to accept it.
+        /// </summary>
+        /// <param name="skillType">The skill to require.</param>
+        /// <param name="requiredRank">The required skill rank.</param>
+        /// <returns>A QuestBuilder with the configured options.</returns>
+        public QuestBuilder PrerequisiteSkill(SkillType skillType, int requiredRank)
+        {
+            var prereq = new RequiredSkillRankPrerequisite(skillType, requiredRank);
             _activeQuest.Prerequisites.Add(prereq);
 
             return this;

@@ -259,7 +259,10 @@ namespace SWLOR.Game.Server.Service
             // Every player who needs this NPCGroupType for a quest will have their objective advanced if they are within range and in the same area.
             for (var member = GetFirstFactionMember(killer); GetIsObjectValid(member); member = GetNextFactionMember(killer))
             {
-                if (!GetIsPC(member) || GetIsDM(member))
+                if (!GetIsPC(member) ||
+                    GetIsDM(member) ||
+                    GetIsDead(member) ||
+                    GetCurrentHitPoints(member) <= 0)
                     continue;
 
                 if (GetArea(member) != GetArea(killer))

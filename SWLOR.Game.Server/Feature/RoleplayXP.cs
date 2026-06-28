@@ -24,6 +24,12 @@ namespace SWLOR.Game.Server.Feature
         public static void DistributeRoleplayXP()
         {
             var player = OBJECT_SELF;
+            if (!GetIsPC(player) ||
+                GetIsDM(player) ||
+                GetIsDead(player) ||
+                GetCurrentHitPoints(player) <= 0)
+                return;
+
             var ticks = GetLocalInt(player, RPTickVariable) + 1;
 
             // Is it time to process RP points?
@@ -43,7 +49,11 @@ namespace SWLOR.Game.Server.Feature
         /// <param name="player">The player to process</param>
         private static void ProcessPlayerRoleplayXP(uint player)
         {
-            if (!GetIsPC(player) || GetIsDM(player)) return;
+            if (!GetIsPC(player) ||
+                GetIsDM(player) ||
+                GetIsDead(player) ||
+                GetCurrentHitPoints(player) <= 0)
+                return;
 
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId) ?? new Player(playerId);
@@ -76,7 +86,12 @@ namespace SWLOR.Game.Server.Feature
         {
             var channel = ChatPlugin.GetChannel();
             var player = ChatPlugin.GetSender();
-            if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player)) return;
+            if (!GetIsPC(player) ||
+                GetIsDM(player) ||
+                GetIsDMPossessed(player) ||
+                GetIsDead(player) ||
+                GetCurrentHitPoints(player) <= 0)
+                return;
 
             var message = ChatPlugin.GetMessage().Trim();
             var now = DateTime.UtcNow;

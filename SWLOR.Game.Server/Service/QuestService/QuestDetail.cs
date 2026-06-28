@@ -120,6 +120,12 @@ namespace SWLOR.Game.Server.Service.QuestService
         /// <returns>true if player can complete, false otherwise</returns>
         public bool CanComplete(uint player)
         {
+            if (!GetIsPC(player) ||
+                GetIsDM(player) ||
+                GetIsDead(player) ||
+                GetCurrentHitPoints(player) <= 0)
+                return false;
+
             // Has the player even accepted this quest?
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
@@ -153,7 +159,11 @@ namespace SWLOR.Game.Server.Service.QuestService
         /// <param name="questSource">The source of the quest reward giver</param>
         private void RequestRewardSelectionFromPC(uint player, uint questSource)
         {
-            if (!GetIsPC(player) || GetIsDM(player)) return;
+            if (!GetIsPC(player) ||
+                GetIsDM(player) ||
+                GetIsDead(player) ||
+                GetCurrentHitPoints(player) <= 0)
+                return;
 
             if (AllowRewardSelection)
             {
@@ -296,7 +306,11 @@ namespace SWLOR.Game.Server.Service.QuestService
         /// <param name="questSource">The source of quest advancement</param>
         public void Advance(uint player, uint questSource)
         {
-            if (!GetIsPC(player) || GetIsDM(player)) return;
+            if (!GetIsPC(player) ||
+                GetIsDM(player) ||
+                GetIsDead(player) ||
+                GetCurrentHitPoints(player) <= 0)
+                return;
 
             // Retrieve the player's current quest state.
             var playerId = GetObjectUUID(player);
@@ -392,7 +406,11 @@ namespace SWLOR.Game.Server.Service.QuestService
         /// <param name="selectedReward">The reward selected by the player</param>
         public void Complete(uint player, uint questSource, IQuestReward selectedReward)
         {
-            if (!GetIsPC(player) || GetIsDM(player)) return;
+            if (!GetIsPC(player) ||
+                GetIsDM(player) ||
+                GetIsDead(player) ||
+                GetCurrentHitPoints(player) <= 0)
+                return;
             if (!CanComplete(player)) return;
 
             var playerId = GetObjectUUID(player);

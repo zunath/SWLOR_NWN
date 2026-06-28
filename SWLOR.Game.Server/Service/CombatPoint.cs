@@ -89,6 +89,8 @@ namespace SWLOR.Game.Server.Service
                     if (!GetIsObjectValid(player) ||
                         !GetIsPC(player) ||
                         GetIsDM(player) ||
+                        GetIsDead(player) ||
+                        GetCurrentHitPoints(player) <= 0 ||
                         GetDistanceBetween(player, npc) > 40.0f ||
                         GetArea(player) != GetArea(npc))
                         continue;

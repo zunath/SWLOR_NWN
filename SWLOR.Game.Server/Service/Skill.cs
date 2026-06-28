@@ -88,7 +88,13 @@ namespace SWLOR.Game.Server.Service
             bool ignoreBonuses = false,
             bool applyHenchmanPenalty = true)
         {
-            if (skill == SkillType.Invalid || xp <= 0 || !GetIsPC(player) || GetIsDM(player)) return;
+            if (skill == SkillType.Invalid ||
+                xp <= 0 ||
+                !GetIsPC(player) ||
+                GetIsDM(player) ||
+                GetIsDead(player) ||
+                GetCurrentHitPoints(player) <= 0)
+                return;
 
             var modifiedSkills = new List<SkillType>();
             var playerId = GetObjectUUID(player);

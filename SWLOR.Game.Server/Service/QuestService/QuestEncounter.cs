@@ -3,6 +3,7 @@ using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.NPCService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
@@ -64,6 +65,7 @@ namespace SWLOR.Game.Server.Service.QuestService
             var encounterId = GetEncounterId(activator);
             if (string.IsNullOrWhiteSpace(encounterId))
             {
+                Log.Write(LogGroup.Error, $"Quest encounter activator {GetActivatorLogContext(activator)} is missing its encounter ID.");
                 SendMessageToPC(player, "This encounter object is missing its encounter ID. Please inform an admin.");
                 return;
             }
@@ -85,6 +87,7 @@ namespace SWLOR.Game.Server.Service.QuestService
             var creatureResref = GetLocalString(activator, CreatureResrefVariable);
             if (string.IsNullOrWhiteSpace(creatureResref))
             {
+                Log.Write(LogGroup.Error, $"Quest encounter '{encounterId}' activator {GetActivatorLogContext(activator)} is missing its creature resref.");
                 SendMessageToPC(player, "This encounter object is missing its creature resref. Please inform an admin.");
                 return;
             }
@@ -92,6 +95,7 @@ namespace SWLOR.Game.Server.Service.QuestService
             var encounterCreature = CreateObject(ObjectType.Creature, creatureResref, GetSpawnLocation(activator), true);
             if (!GetIsObjectValid(encounterCreature))
             {
+                Log.Write(LogGroup.Error, $"Quest encounter '{encounterId}' failed to spawn creature resref '{creatureResref}' from activator {GetActivatorLogContext(activator)}.");
                 SendMessageToPC(player, "The encounter failed to start. Please inform an admin.");
                 return;
             }
@@ -188,7 +192,7 @@ namespace SWLOR.Game.Server.Service.QuestService
 
             for (var obj = GetFirstObjectInArea(area); GetIsObjectValid(obj); obj = GetNextObjectInArea(area))
             {
-                if (string.IsNullOrWhiteSpace(GetLocalString(obj, EncounterIdVariable)))
+                if (!IsQuestEncounterActivator(obj))
                     continue;
 
                 RefreshVisibilityForActivator(player, obj);
@@ -310,6 +314,17 @@ namespace SWLOR.Game.Server.Service.QuestService
                 : VisibilityType.Hidden;
 
             VisibilityPlugin.SetVisibilityOverride(player, activator, visibility);
+        }
+
+        private static bool IsQuestEncounterActivator(uint obj)
+        {
+            return GetObjectType(obj) == ObjectType.Placeable &&
+                   !string.IsNullOrWhiteSpace(GetLocalString(obj, EncounterIdVariable));
+        }
+
+        private static string GetActivatorLogContext(uint activator)
+        {
+            return $"'{GetName(activator)}' ({GetTag(activator)} / {GetResRef(activator)})";
         }
 
         private static Location GetSpawnLocation(uint activator)

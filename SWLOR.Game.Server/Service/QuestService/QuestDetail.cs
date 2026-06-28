@@ -225,6 +225,7 @@ namespace SWLOR.Game.Server.Service.QuestService
                 KeyItem.RemoveKeyItem(player, keyItem);
             }
 
+            QuestEncounter.RefreshVisibilityForPlayer(player);
             Gui.PublishRefreshEvent(player, new QuestAbandonedRefreshEvent(QuestId));
         }
 

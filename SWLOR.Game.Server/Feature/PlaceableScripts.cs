@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Feature
         {
             var user = GetLastUsedBy();
 
-            if (GetIsInCombat(user) || Enmity.HasEnmity(user))
+            if (IsInCombatOrHasEnmity(user))
             {
                 SendMessageToPC(user, "You are in combat.");
                 return;
@@ -82,6 +82,7 @@ namespace SWLOR.Game.Server.Feature
                     !GetIsObjectValid(partyMember) ||
                     !GetIsPC(partyMember) ||
                     GetIsDM(partyMember) ||
+                    IsInCombatOrHasEnmity(partyMember) ||
                     GetArea(partyMember) != GetArea(device) ||
                     GetDistanceBetween(partyMember, device) > TeleportPartyMemberRange)
                 {
@@ -93,6 +94,11 @@ namespace SWLOR.Game.Server.Feature
                 var userName = PlayerName.GetDisplayName(partyMember, user);
                 SendMessageToPC(partyMember, $"You ventured forth with {userName}.");
             }
+        }
+
+        private static bool IsInCombatOrHasEnmity(uint creature)
+        {
+            return GetIsInCombat(creature) || Enmity.HasEnmity(creature);
         }
 
         private static void TeleportCreature(uint creature, Location location, uint waypoint)

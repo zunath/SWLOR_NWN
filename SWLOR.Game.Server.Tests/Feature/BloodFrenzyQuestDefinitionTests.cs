@@ -1,7 +1,9 @@
 using FluentAssertions;
 using NUnit.Framework;
 using System.Reflection;
+using System.Reflection.Emit;
 using SWLOR.Game.Server.Feature.QuestDefinition;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.KeyItemService;
 using SWLOR.Game.Server.Service.NPCService;
 using SWLOR.Game.Server.Service.QuestService;
@@ -45,20 +47,14 @@ public class BloodFrenzyQuestDefinitionTests
     {
         var quests = new BloodFrenzyQuestDefinition().BuildQuests();
         var openingQuest = quests["blood_frenzy_blade"];
+        var giveKeyItem = GetKeyItemMethod(nameof(KeyItem.GiveKeyItem));
+        var removeKeyItem = GetKeyItemMethod(nameof(KeyItem.RemoveKeyItem));
+        var sewersDepthsKey = (int)KeyItemType.ViscaraSewersDepthsKey;
 
-        openingQuest.OnAcceptActions.Should().NotBeEmpty();
-        openingQuest.OnAbandonActions.Should().NotBeEmpty();
-
-        var root = FindRepositoryRoot();
-        var questSource = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Feature",
-            "QuestDefinition",
-            "BloodFrenzyQuestDefinition.cs"));
-
-        questSource.Should().Contain("KeyItem.GiveKeyItem(player, KeyItemType.ViscaraSewersDepthsKey)");
-        questSource.Should().Contain("KeyItem.RemoveKeyItem(player, KeyItemType.ViscaraSewersDepthsKey)");
+        openingQuest.OnAcceptActions.Should()
+            .ContainSingle(action => DelegateCallsMethodWithIntArgument(action, giveKeyItem, sewersDepthsKey));
+        openingQuest.OnAbandonActions.Should()
+            .ContainSingle(action => DelegateCallsMethodWithIntArgument(action, removeKeyItem, sewersDepthsKey));
     }
 
     [Test]
@@ -264,9 +260,116 @@ public class BloodFrenzyQuestDefinitionTests
             Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "NPCService", "NPCGroupType.cs"),
         };
 
-        var content = contentFiles.Select(File.ReadAllText).ToArray();
-        content.Should().Contain(text => text.Contains("Blood Frenzy"));
+        foreach (var file in contentFiles)
+        {
+            File.ReadAllText(file)
+                .Should()
+                .Contain("Blood Frenzy", $"{Path.GetRelativePath(root.FullName, file)} should use player-facing Blood Frenzy terminology");
+        }
     }
+
+    private static bool DelegateCallsMethodWithIntArgument(
+        Delegate action,
+        MethodInfo expectedMethod,
+        int expectedIntArgument)
+    {
+        var body = action.Method.GetMethodBody();
+        var il = body?.GetILAsByteArray();
+        if (il == null)
+            return false;
+
+        var module = action.Method.Module;
+        var index = 0;
+        int? lastInteger = null;
+        while (index < il.Length)
+        {
+            var opCode = ReadOpCode(il, ref index);
+            var operandSize = GetOperandSize(opCode.OperandType, il, index);
+            lastInteger = ReadIntegerOperand(opCode, il, index) ?? lastInteger;
+
+            if (opCode.OperandType == OperandType.InlineMethod)
+            {
+                var token = BitConverter.ToInt32(il, index);
+                var calledMethod = module.ResolveMethod(token);
+                if (calledMethod.Module == expectedMethod.Module &&
+                    calledMethod.MetadataToken == expectedMethod.MetadataToken &&
+                    lastInteger == expectedIntArgument)
+                {
+                    return true;
+                }
+            }
+
+            index += operandSize;
+        }
+
+        return false;
+    }
+
+    private static int? ReadIntegerOperand(OpCode opCode, byte[] il, int index)
+    {
+        if (opCode == OpCodes.Ldc_I4_M1) return -1;
+        if (opCode == OpCodes.Ldc_I4_0) return 0;
+        if (opCode == OpCodes.Ldc_I4_1) return 1;
+        if (opCode == OpCodes.Ldc_I4_2) return 2;
+        if (opCode == OpCodes.Ldc_I4_3) return 3;
+        if (opCode == OpCodes.Ldc_I4_4) return 4;
+        if (opCode == OpCodes.Ldc_I4_5) return 5;
+        if (opCode == OpCodes.Ldc_I4_6) return 6;
+        if (opCode == OpCodes.Ldc_I4_7) return 7;
+        if (opCode == OpCodes.Ldc_I4_8) return 8;
+        if (opCode == OpCodes.Ldc_I4_S) return (sbyte)il[index];
+        if (opCode == OpCodes.Ldc_I4) return BitConverter.ToInt32(il, index);
+
+        return null;
+    }
+
+    private static MethodInfo GetKeyItemMethod(string methodName)
+    {
+        return typeof(KeyItem)
+            .GetMethods(BindingFlags.Public | BindingFlags.Static)
+            .Single(method =>
+                method.Name == methodName &&
+                method.GetParameters()
+                    .Select(parameter => parameter.ParameterType)
+                    .SequenceEqual(new[] { typeof(uint), typeof(KeyItemType) }));
+    }
+
+    private static OpCode ReadOpCode(byte[] il, ref int index)
+    {
+        var value = il[index++];
+        if (value != 0xFE)
+            return SingleByteOpCodes[(short)value];
+
+        return MultiByteOpCodes[unchecked((short)(0xFE00 | il[index++]))];
+    }
+
+    private static int GetOperandSize(OperandType operandType, byte[] il, int index)
+    {
+        return operandType switch
+        {
+            OperandType.InlineNone => 0,
+            OperandType.ShortInlineBrTarget or OperandType.ShortInlineI or OperandType.ShortInlineVar => 1,
+            OperandType.InlineVar => 2,
+            OperandType.InlineBrTarget or OperandType.InlineField or OperandType.InlineI or OperandType.InlineMethod or
+                OperandType.InlineSig or OperandType.InlineString or OperandType.InlineTok or OperandType.InlineType or
+                OperandType.ShortInlineR => 4,
+            OperandType.InlineI8 or OperandType.InlineR => 8,
+            OperandType.InlineSwitch => 4 + BitConverter.ToInt32(il, index) * 4,
+            _ => throw new NotSupportedException($"Unsupported IL operand type '{operandType}'.")
+        };
+    }
+
+    private static readonly IReadOnlyDictionary<short, OpCode> SingleByteOpCodes = typeof(OpCodes)
+        .GetFields(BindingFlags.Public | BindingFlags.Static)
+        .Select(field => (OpCode)field.GetValue(null)!)
+        .Where(opCode => opCode.Size == 1)
+        .ToDictionary(opCode => opCode.Value);
+
+    private static readonly IReadOnlyDictionary<short, OpCode> MultiByteOpCodes = typeof(OpCodes)
+        .GetFields(BindingFlags.Public | BindingFlags.Static)
+        .Select(field => (OpCode)field.GetValue(null)!)
+        .Where(opCode => opCode.Size == 2)
+        .ToDictionary(opCode => opCode.Value);
 
     private static void AssertQuestPrerequisite(
         Dictionary<string, QuestDetail> quests,

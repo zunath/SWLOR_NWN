@@ -164,14 +164,14 @@
                                                 }
                                    },
                                    {
-                                       "__struct_id":  0,
+                                       "__struct_id":  1,
                                        "Feat":  {
                                                     "type":  "word",
                                                     "value":  1851
                                                 }
                                    },
                                    {
-                                       "__struct_id":  0,
+                                       "__struct_id":  1,
                                        "Feat":  {
                                                     "type":  "word",
                                                     "value":  1850

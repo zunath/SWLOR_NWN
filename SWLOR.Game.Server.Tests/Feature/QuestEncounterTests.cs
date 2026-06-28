@@ -223,6 +223,8 @@ public class QuestEncounterTests
         encounterSource.Should().NotContain("Capstone");
         encounterSource.Should().NotContain("CAPSTONE_");
         encounterSource.Should().NotContain("Quest" + "EncounterCooldowns");
+        encounterSource.Should().Contain("IsQuestEncounterActivator(obj)");
+        encounterSource.Should().Contain("Log.Write(LogGroup.Error");
         questDetailSource.Should().Contain("QuestEncounter.RefreshVisibilityForPlayer(player);");
     }
 

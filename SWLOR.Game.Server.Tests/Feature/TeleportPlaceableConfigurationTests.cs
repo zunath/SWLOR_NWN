@@ -22,12 +22,12 @@ public class TeleportPlaceableConfigurationTests
     {
         var enabledTeleporters = LoadTeleportObjects()
             .Where(teleport => teleport.PartyTeleportFlag == 1)
-            .Select(teleport => $"{teleport.RelativePath}|{teleport.Name}|{teleport.Destination}|{teleport.TemplateResRef}|{teleport.Tag}")
+            .Select(teleport => $"{NormalizePath(teleport.RelativePath)}|{teleport.Name}|{teleport.Destination}|{teleport.TemplateResRef}|{teleport.Tag}")
             .ToArray();
 
         enabledTeleporters.Should().BeEquivalentTo(new[]
         {
-            @"Module\git\veles_sewers.git.json|Enter Sewers Depths|VISC_SEWER_DEPTHS_INSIDE|tele_obj|tele_obj",
+            "Module/git/veles_sewers.git.json|Enter Sewers Depths|VISC_SEWER_DEPTHS_INSIDE|tele_obj|tele_obj",
         });
 
         LoadTeleportObjects()
@@ -49,8 +49,16 @@ public class TeleportPlaceableConfigurationTests
         source.Should().Contain("private const float TeleportPartyMemberRange = 8.0f;");
         source.Should().Contain("GetLocalBool(device, \"TELEPORT_PARTY_MEMBERS\")");
         source.Should().Contain("GetDistanceBetween(partyMember, device) > TeleportPartyMemberRange");
+        source.Should().Contain("IsInCombatOrHasEnmity(partyMember)");
         source.Should().Contain("PlayerName.GetDisplayName(partyMember, user)");
         source.Should().Contain("You ventured forth with {userName}.");
+    }
+
+    private static string NormalizePath(string path)
+    {
+        return path
+            .Replace(Path.DirectorySeparatorChar, '/')
+            .Replace(Path.AltDirectorySeparatorChar, '/');
     }
 
     private static TeleportObject[] LoadTeleportObjects()

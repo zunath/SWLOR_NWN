@@ -14,7 +14,7 @@
             },
     "ChallengeRating":  {
                             "type":  "float",
-                            "value":  60
+                            "value":  60.0
                         },
     "ClassList":  {
                       "type":  "list",
@@ -230,42 +230,49 @@
                                        "__struct_id":  0,
                                        "Feat":  {
                                                     "type":  "word",
-                                                    "value":  1820
+                                                    "value":  2581
                                                 }
                                    },
                                    {
                                        "__struct_id":  0,
                                        "Feat":  {
                                                     "type":  "word",
-                                                    "value":  1821
+                                                    "value":  2582
                                                 }
                                    },
                                    {
                                        "__struct_id":  0,
                                        "Feat":  {
                                                     "type":  "word",
-                                                    "value":  1824
+                                                    "value":  2580
                                                 }
                                    },
                                    {
                                        "__struct_id":  0,
                                        "Feat":  {
                                                     "type":  "word",
-                                                    "value":  1768
+                                                    "value":  1853
                                                 }
                                    },
                                    {
                                        "__struct_id":  0,
                                        "Feat":  {
                                                     "type":  "word",
-                                                    "value":  1844
+                                                    "value":  1854
                                                 }
                                    },
                                    {
                                        "__struct_id":  0,
                                        "Feat":  {
                                                     "type":  "word",
-                                                    "value":  1767
+                                                    "value":  1855
+                                                }
+                                   },
+                                   {
+                                       "__struct_id":  0,
+                                       "Feat":  {
+                                                    "type":  "word",
+                                                    "value":  1376
                                                 }
                                    }
                                ]
@@ -686,6 +693,21 @@
                                        "Value":  {
                                                      "type":  "cexostring",
                                                      "value":  "VISCARA_SEWERS_DEPTHS_KING,100,1"
+                                                 }
+                                   },
+                                   {
+                                       "__struct_id":  0,
+                                       "Name":  {
+                                                    "type":  "cexostring",
+                                                    "value":  "PERK_LEVEL_322"
+                                                },
+                                       "Type":  {
+                                                    "type":  "dword",
+                                                    "value":  1
+                                                },
+                                       "Value":  {
+                                                     "type":  "int",
+                                                     "value":  1
                                                  }
                                    }
                                ]

@@ -14,7 +14,7 @@
             },
     "ChallengeRating":  {
                             "type":  "float",
-                            "value":  55
+                            "value":  55.0
                         },
     "ClassList":  {
                       "type":  "list",
@@ -230,28 +230,28 @@
                                        "__struct_id":  0,
                                        "Feat":  {
                                                     "type":  "word",
-                                                    "value":  1823
+                                                    "value":  2579
                                                 }
                                    },
                                    {
                                        "__struct_id":  0,
                                        "Feat":  {
                                                     "type":  "word",
-                                                    "value":  1820
+                                                    "value":  2580
                                                 }
                                    },
                                    {
                                        "__struct_id":  0,
                                        "Feat":  {
                                                     "type":  "word",
-                                                    "value":  1824
+                                                    "value":  2581
                                                 }
                                    },
                                    {
                                        "__struct_id":  0,
                                        "Feat":  {
                                                     "type":  "word",
-                                                    "value":  1768
+                                                    "value":  1854
                                                 }
                                    }
                                ]

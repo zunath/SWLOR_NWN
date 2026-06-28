@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
@@ -23,9 +24,17 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
                 .CanMutateInto(BeastType.BinarianSabercat)
 				.MutationWeight(20)
 
-                .CanMutateInto(BeastType.BomaBeastBaby)
+
+				.CanMutateInto(BeastType.BomaBeastBaby)
 				.MutationWeight(30)
 				.MutationRequiresDayOfWeek(DayOfWeek.Wednesday, DayOfWeek.Thursday, DayOfWeek.Sunday)
+
+
+				.CanMutateInto(BeastType.Garral)
+				.MutationWeight(10)
+				.MutationRequiresLyaseColor(EnzymeColorType.Black, 1)
+				.MutationRequiresIsomeraseColor(EnzymeColorType.Blue, 1)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.White, 1)
 
                 ;
 

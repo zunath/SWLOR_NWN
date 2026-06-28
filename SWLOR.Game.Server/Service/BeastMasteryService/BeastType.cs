@@ -104,6 +104,7 @@ namespace SWLOR.Game.Server.Service.BeastMasteryService
         Torosaurus = 1062,
         Spinosaurus = 1063,
         Allosaurus = 1064,
-        CharHound = 1065
+        CharHound = 1065,
+        Garral = 1066
     }
 }

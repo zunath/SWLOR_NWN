@@ -1,6 +1,6 @@
 param(
-    [string]$Feat2daPath = "SWLOR_Haks\swlor2_2da\feat.2da",
-    [string]$IconPath = "SWLOR_Haks\swlor2_tga",
+    [string]$Feat2daPath = "SWLOR_Haks\sw_2da\feat.2da",
+    [string]$IconPath = "SWLOR_Haks\sw_ability",
     [string]$MagickPath = "magick",
     [int]$GeneratedFeatStart = 2000,
     [int]$GeneratedFeatEnd = 2578,
@@ -159,6 +159,7 @@ function New-CooldownOverlay {
 
     $arguments += @(
         "-depth", "8",
+        "-compress", "None",
         $OutputPath)
     Invoke-Magick $arguments
 }
@@ -213,7 +214,9 @@ foreach ($icon in $icons) {
             "-grayscale", "Rec709Luma",
             "-fill", "black",
             "-colorize", "40%",
+            "-alpha", "opaque",
             "-depth", "8",
+            "-compress", "None",
             "-flip",
             "-orient", "BottomLeft",
             $baseFile
@@ -234,7 +237,9 @@ foreach ($icon in $icons) {
             "-alpha", "on",
             "-compose", "over",
             "-composite",
+            "-alpha", "opaque",
             "-depth", "8",
+            "-compress", "None",
             "-flip",
             "-orient", "BottomLeft",
             $stageFile

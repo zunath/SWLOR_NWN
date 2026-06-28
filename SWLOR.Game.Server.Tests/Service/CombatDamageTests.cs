@@ -741,7 +741,7 @@ public class CombatDamageTests
         var baseItemLines = File.ReadAllLines(Path.Combine(
             root.FullName,
             "SWLOR_Haks",
-            "swlor2_2da",
+            "sw_2da",
             "baseitems.2da"));
         var header = Split2daColumns(baseItemLines.First(line => line.Contains("InvSlotWidth")));
         var descriptionIndex = Array.IndexOf(header, "Description");
@@ -1105,7 +1105,7 @@ public class CombatDamageTests
         var enhanceWeapon2da = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR_Haks",
-            "swlor2_2da",
+            "sw_2da",
             "iprp_enhancewpn.2da"));
         var enhancementItemBuilderSource = File.ReadAllText(Path.Combine(
             root.FullName,
@@ -1145,7 +1145,7 @@ public class CombatDamageTests
         var itemPropsLines = File.ReadAllLines(Path.Combine(
             root.FullName,
             "SWLOR_Haks",
-            "swlor2_2da",
+            "sw_2da",
             "itemprops.2da"));
         var header = Split2daColumns(itemPropsLines.First(x => x.Contains("0_Melee")));
         var row = Split2daColumns(itemPropsLines.First(x => x.StartsWith("134")));
@@ -1166,7 +1166,7 @@ public class CombatDamageTests
         var itemPropDefLines = File.ReadAllLines(Path.Combine(
             root.FullName,
             "SWLOR_Haks",
-            "swlor2_2da",
+            "sw_2da",
             "itempropdef.2da"));
         Split2daColumns(itemPropDefLines.First(x => x.StartsWith("134")))
             .Should()

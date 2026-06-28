@@ -135,8 +135,8 @@ public class RifleMarksmanTests
     public void RifleMarksmanFeatAndAbilityIcons_AreUniqueAndPresent()
     {
         var root = FindRepositoryRoot();
-        var featRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "feat.2da");
-        var abilityRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "spells.2da");
+        var featRows = Read2da(root / "SWLOR_Haks" / "sw_2da" / "feat.2da");
+        var abilityRows = Read2da(root / "SWLOR_Haks" / "sw_2da" / "spells.2da");
 
         var feats = new[]
         {
@@ -162,7 +162,7 @@ public class RifleMarksmanTests
             featIcon.Should().Be(expectedIcon);
             abilityRow["IconResRef"].Should().Be(featIcon);
             seenIcons.Add(featIcon).Should().BeTrue($"{featType} should have a unique icon");
-            File.Exists((root / "SWLOR_Haks" / "swlor2_tga" / $"{featIcon}.tga").FullName).Should().BeTrue();
+            File.Exists((root / "SWLOR_Haks" / "sw_ability" / $"{featIcon}.tga").FullName).Should().BeTrue();
 
             abilityRow["Range"].Should().Be(range);
             abilityRow["TargetType"].Should().Be(targetType);
@@ -332,7 +332,7 @@ public class RifleMarksmanTests
         {
             var candidate = directory.FullName;
             if (File.Exists(Path.Combine(candidate, "SWLOR.Game.Server.sln")) &&
-                File.Exists(Path.Combine(candidate, "SWLOR_Haks", "swlor2_2da", "feat.2da")))
+                File.Exists(Path.Combine(candidate, "SWLOR_Haks", "sw_2da", "feat.2da")))
             {
                 return new PathInfo(candidate);
             }

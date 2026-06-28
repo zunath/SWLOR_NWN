@@ -80,8 +80,8 @@ public class VibroknifeShadowTests
     public void VibroknifeShadowFeatAndAbilityIcons_AreUniqueAndPresent()
     {
         var root = FindRepositoryRoot();
-        var featRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "feat.2da");
-        var spellRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "spells.2da");
+        var featRows = Read2da(root / "SWLOR_Haks" / "sw_2da" / "feat.2da");
+        var spellRows = Read2da(root / "SWLOR_Haks" / "sw_2da" / "spells.2da");
 
         var feats = new[]
         {
@@ -107,7 +107,7 @@ public class VibroknifeShadowTests
             featIcon.Should().Be(expectedIcon);
             spellRow["IconResRef"].Should().Be(featIcon);
             seenIcons.Add(featIcon).Should().BeTrue($"{featType} should have a unique icon");
-            File.Exists((root / "SWLOR_Haks" / "swlor2_tga" / $"{featIcon}.tga").FullName).Should().BeTrue();
+            File.Exists((root / "SWLOR_Haks" / "sw_ability" / $"{featIcon}.tga").FullName).Should().BeTrue();
 
             if (isHostile && !targetsSelf)
             {
@@ -123,9 +123,9 @@ public class VibroknifeShadowTests
     public void SmokeBombFeatAndSpellTlkEntries_DisplayExpectedText()
     {
         var root = FindRepositoryRoot();
-        var featRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "feat.2da");
-        var spellRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "spells.2da");
-        var tlkEntries = ReadTlkEntries(root / "SWLOR_Haks" / "swlor2_tlk" / "swlor2_tlk.tlk.json");
+        var featRows = Read2da(root / "SWLOR_Haks" / "sw_2da" / "feat.2da");
+        var spellRows = Read2da(root / "SWLOR_Haks" / "sw_2da" / "spells.2da");
+        var tlkEntries = ReadTlkEntries(root / "SWLOR_Haks" / "sw_tlk" / "sw_tlk.tlk.json");
         const int CustomTlkOffset = 16777216;
         const string ExpectedName = "Smoke Bomb I";
         const string ExpectedDescription =
@@ -308,7 +308,7 @@ public class VibroknifeShadowTests
         {
             var candidate = directory.FullName;
             if (File.Exists(Path.Combine(candidate, "SWLOR.Game.Server.sln")) &&
-                File.Exists(Path.Combine(candidate, "SWLOR_Haks", "swlor2_2da", "feat.2da")))
+                File.Exists(Path.Combine(candidate, "SWLOR_Haks", "sw_2da", "feat.2da")))
             {
                 return new PathInfo(candidate);
             }

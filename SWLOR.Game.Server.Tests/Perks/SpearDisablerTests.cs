@@ -116,8 +116,8 @@ public class SpearDisablerTests
     public void SpearDisablerFeatAndAbilityIcons_AreUniqueAndPresent()
     {
         var root = FindRepositoryRoot();
-        var featRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "feat.2da");
-        var abilityRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "spells.2da");
+        var featRows = Read2da(root / "SWLOR_Haks" / "sw_2da" / "feat.2da");
+        var abilityRows = Read2da(root / "SWLOR_Haks" / "sw_2da" / "spells.2da");
 
         var feats = new[]
         {
@@ -142,7 +142,7 @@ public class SpearDisablerTests
             featIcon.Should().Be(expectedIcon);
             abilityRow["IconResRef"].Should().Be(featIcon);
             seenIcons.Add(featIcon).Should().BeTrue($"{featType} should have a unique icon");
-            File.Exists((root / "SWLOR_Haks" / "swlor2_tga" / $"{featIcon}.tga").FullName).Should().BeTrue();
+            File.Exists((root / "SWLOR_Haks" / "sw_ability" / $"{featIcon}.tga").FullName).Should().BeTrue();
 
             abilityRow["TargetType"].Should().Be(targetType);
             abilityRow["HostileSetting"].Should().Be(hostileSetting);
@@ -182,9 +182,9 @@ public class SpearDisablerTests
     public void DisruptionFieldFeatAndAbilityDescriptions_DeclareVisibleRange()
     {
         var root = FindRepositoryRoot();
-        var featRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "feat.2da");
-        var abilityRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "spells.2da");
-        var tlkEntries = ReadTlkEntries(root / "SWLOR_Haks" / "swlor2_tlk" / "swlor2_tlk.tlk.json");
+        var featRows = Read2da(root / "SWLOR_Haks" / "sw_2da" / "feat.2da");
+        var abilityRows = Read2da(root / "SWLOR_Haks" / "sw_2da" / "spells.2da");
+        var tlkEntries = ReadTlkEntries(root / "SWLOR_Haks" / "sw_tlk" / "sw_tlk.tlk.json");
         const int CustomTlkOffset = 16777216;
         const string ExpectedDescription = "Forms a visible 5m disruption field at a targeted location. Enemies within the sphere lose 5% FP per second for 20 seconds.";
 
@@ -364,7 +364,7 @@ public class SpearDisablerTests
         {
             var candidate = directory.FullName;
             if (File.Exists(Path.Combine(candidate, "SWLOR.Game.Server.sln")) &&
-                File.Exists(Path.Combine(candidate, "SWLOR_Haks", "swlor2_2da", "feat.2da")))
+                File.Exists(Path.Combine(candidate, "SWLOR_Haks", "sw_2da", "feat.2da")))
             {
                 return new PathInfo(candidate);
             }

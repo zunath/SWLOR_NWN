@@ -1,171 +1,581 @@
 {
-  "TlkPath": "../SWLOR_Haks/swlor2_tlk/swlor2_tlk.tlk",
+  "TlkPath": "../SWLOR_Haks/sw_tlk/sw_tlk.tlk",
   "OutputPath": "../debugserver/",
   "EnableChecksumChecking": true,
   "HakList": [
     {
-      "Name":  "swlor2_2da",
-      "Path": "../SWLOR_Haks/swlor2_2da/",
+      "Name": "sw_2da",
+      "Path": "../SWLOR_Haks/sw_2da/",
       "CompileModels": false
     },
     {
-      "Name":  "swlor2_add_doors",
-      "Path": "../SWLOR_Haks/swlor2_add_doors/",
+      "Name": "sw_ability",
+      "Path": "../SWLOR_Haks/sw_ability/",
       "CompileModels": false
     },
     {
-      "Name":  "swlor2_add_loads",
-      "Path": "../SWLOR_Haks/swlor2_add_loads/",
+      "Name": "sw_ui",
+      "Path": "../SWLOR_Haks/sw_ui/",
       "CompileModels": false
     },
     {
-      "Name":  "swlor2_add_skies",
-      "Path": "../SWLOR_Haks/swlor2_add_skies/",
+      "Name": "sw_shader",
+      "Path": "../SWLOR_Haks/sw_shader/",
       "CompileModels": false
     },
     {
-      "Name":  "swlor2_add_tiles",
-      "Path": "../SWLOR_Haks/swlor2_add_tiles/",
+      "Name": "sw_palette",
+      "Path": "../SWLOR_Haks/sw_palette/",
       "CompileModels": false
     },
     {
-      "Name":  "swlor2_core0",
-      "Path": "../SWLOR_Haks/swlor2_core0/",
+      "Name": "sw_music",
+      "Path": "../SWLOR_Haks/sw_music/",
       "CompileModels": false
     },
     {
-      "Name":  "swlor2_core1",
-      "Path": "../SWLOR_Haks/swlor2_core1/",
+      "Name": "sw_sound",
+      "Path": "../SWLOR_Haks/sw_sound/",
       "CompileModels": false
     },
     {
-      "Name":  "swlor2_core2",
-      "Path": "../SWLOR_Haks/swlor2_core2/",
+      "Name": "sw_load",
+      "Path": "../SWLOR_Haks/sw_load/",
       "CompileModels": false
     },
     {
-      "Name":  "swlor2_core3",
-      "Path": "../SWLOR_Haks/swlor2_core3/",
+      "Name": "sw_skybox",
+      "Path": "../SWLOR_Haks/sw_skybox/",
       "CompileModels": false
     },
     {
-      "Name":  "swlor2_core4",
-      "Path": "../SWLOR_Haks/swlor2_core4/",
+      "Name": "sw_door",
+      "Path": "../SWLOR_Haks/sw_door/",
       "CompileModels": false
     },
     {
-      "Name":  "swlor2_core5",
-      "Path": "../SWLOR_Haks/swlor2_core5/",
+      "Name": "sw_vfx",
+      "Path": "../SWLOR_Haks/sw_vfx/",
       "CompileModels": false
     },
     {
-      "Name":  "swlor2_core6",
-      "Path": "../SWLOR_Haks/swlor2_core6/",
+      "Name": "sw_portrait",
+      "Path": "../SWLOR_Haks/sw_portrait/",
       "CompileModels": false
     },
     {
-      "Name":  "swlor2_core7",
-      "Path": "../SWLOR_Haks/swlor2_core7/",
+      "Name": "sw_pt_root",
+      "Path": "../SWLOR_Haks/sw_pt_root/",
       "CompileModels": false
     },
     {
-      "Name":  "swlor2_dds",
-      "Path": "../SWLOR_Haks/swlor2_dds/",
+      "Name": "sw_pt_belt",
+      "Path": "../SWLOR_Haks/sw_pt_belt/",
       "CompileModels": false
     },
     {
-      "Name":  "swlor2_dwk",
-      "Path": "../SWLOR_Haks/swlor2_dwk/",
+      "Name": "sw_pt_chest",
+      "Path": "../SWLOR_Haks/sw_pt_chest/",
       "CompileModels": false
     },
     {
-      "Name":  "swlor2_ext_tiles",
-      "Path": "../SWLOR_Haks/swlor2_ext_tiles/",
+      "Name": "sw_pt_cloak",
+      "Path": "../SWLOR_Haks/sw_pt_cloak/",
       "CompileModels": false
     },
     {
-      "Name":  "swlor2_gui",
-      "Path": "../SWLOR_Haks/swlor2_gui/",
+      "Name": "sw_pt_head",
+      "Path": "../SWLOR_Haks/sw_pt_head/",
       "CompileModels": false
     },
     {
-      "Name":  "swlor2_ini",
-      "Path": "../SWLOR_Haks/swlor2_ini/",
+      "Name": "sw_pt_helm",
+      "Path": "../SWLOR_Haks/sw_pt_helm/",
       "CompileModels": false
     },
     {
-      "Name":  "swlor2_itp",
-      "Path": "../SWLOR_Haks/swlor2_itp/",
+      "Name": "sw_pt_neck",
+      "Path": "../SWLOR_Haks/sw_pt_neck/",
       "CompileModels": false
     },
     {
-      "Name":  "swlor2_mdl",
-      "Path": "../SWLOR_Haks/swlor2_mdl/",
+      "Name": "sw_pt_pelvis",
+      "Path": "../SWLOR_Haks/sw_pt_pelvis/",
       "CompileModels": false
     },
     {
-      "Name":  "swlor2_mtr",
-      "Path": "../SWLOR_Haks/swlor2_mtr/",
+      "Name": "sw_pt_robe",
+      "Path": "../SWLOR_Haks/sw_pt_robe/",
       "CompileModels": false
     },
     {
-      "Name":  "swlor2_music",
-      "Path": "../SWLOR_Haks/swlor2_music/",
+      "Name": "sw_pt_lbicep",
+      "Path": "../SWLOR_Haks/sw_pt_lbicep/",
       "CompileModels": false
     },
     {
-      "Name":  "swlor2_parts",
-      "Path": "../SWLOR_Haks/swlor2_parts/",
+      "Name": "sw_pt_rbicep",
+      "Path": "../SWLOR_Haks/sw_pt_rbicep/",
       "CompileModels": false
     },
     {
-      "Name":  "swlor2_plt",
-      "Path": "../SWLOR_Haks/swlor2_plt/",
+      "Name": "sw_pt_lfore",
+      "Path": "../SWLOR_Haks/sw_pt_lfore/",
       "CompileModels": false
     },
     {
-      "Name":  "swlor2_portraits",
-      "Path": "../SWLOR_Haks/swlor2_portraits/",
+      "Name": "sw_pt_rfore",
+      "Path": "../SWLOR_Haks/sw_pt_rfore/",
       "CompileModels": false
     },
     {
-      "Name":  "swlor2_pwk",
-      "Path": "../SWLOR_Haks/swlor2_pwk/",
+      "Name": "sw_pt_lhand",
+      "Path": "../SWLOR_Haks/sw_pt_lhand/",
       "CompileModels": false
     },
     {
-      "Name":  "swlor2_set",
-      "Path": "../SWLOR_Haks/swlor2_set/",
+      "Name": "sw_pt_rhand",
+      "Path": "../SWLOR_Haks/sw_pt_rhand/",
       "CompileModels": false
     },
     {
-      "Name":  "swlor2_shd",
-      "Path": "../SWLOR_Haks/swlor2_shd/",
+      "Name": "sw_pt_lshoul",
+      "Path": "../SWLOR_Haks/sw_pt_lshoul/",
       "CompileModels": false
     },
     {
-      "Name":  "swlor2_ssf",
-      "Path": "../SWLOR_Haks/swlor2_ssf/",
+      "Name": "sw_pt_rshoul",
+      "Path": "../SWLOR_Haks/sw_pt_rshoul/",
       "CompileModels": false
     },
     {
-      "Name":  "swlor2_tga",
-      "Path": "../SWLOR_Haks/swlor2_tga/",
+      "Name": "sw_pt_lthigh",
+      "Path": "../SWLOR_Haks/sw_pt_lthigh/",
       "CompileModels": false
     },
     {
-      "Name":  "swlor2_txi",
-      "Path": "../SWLOR_Haks/swlor2_txi/",
+      "Name": "sw_pt_rthigh",
+      "Path": "../SWLOR_Haks/sw_pt_rthigh/",
       "CompileModels": false
     },
     {
-      "Name":  "swlor2_wav",
-      "Path": "../SWLOR_Haks/swlor2_wav/",
+      "Name": "sw_pt_lshin",
+      "Path": "../SWLOR_Haks/sw_pt_lshin/",
       "CompileModels": false
     },
     {
-      "Name":  "swlor2_wok",
-      "Path": "../SWLOR_Haks/swlor2_wok/",
+      "Name": "sw_pt_rshin",
+      "Path": "../SWLOR_Haks/sw_pt_rshin/",
+      "CompileModels": false
+    },
+    {
+      "Name": "sw_pt_lfoot",
+      "Path": "../SWLOR_Haks/sw_pt_lfoot/",
+      "CompileModels": false
+    },
+    {
+      "Name": "sw_pt_rfoot",
+      "Path": "../SWLOR_Haks/sw_pt_rfoot/",
+      "CompileModels": false
+    },
+    {
+      "Name": "sw_cr_creature",
+      "Path": "../SWLOR_Haks/sw_cr_creature/",
+      "CompileModels": false
+    },
+    {
+      "Name": "sw_cr_vehicle",
+      "Path": "../SWLOR_Haks/sw_cr_vehicle/",
+      "CompileModels": false
+    },
+    {
+      "Name": "sw_plc",
+      "Path": "../SWLOR_Haks/sw_plc/",
+      "CompileModels": false
+    },
+    {
+      "Name": "sw_plc_cep",
+      "Path": "../SWLOR_Haks/sw_plc_cep/",
+      "CompileModels": false
+    },
+    {
+      "Name": "sw_plc_mdrn",
+      "Path": "../SWLOR_Haks/sw_plc_mdrn/",
+      "CompileModels": false
+    },
+    {
+      "Name": "sw_plc_swtor",
+      "Path": "../SWLOR_Haks/sw_plc_swtor/",
+      "CompileModels": false
+    },
+    {
+      "Name": "sw_item",
+      "Path": "../SWLOR_Haks/sw_item/",
+      "CompileModels": false
+    },
+    {
+      "Name": "sw_weapon",
+      "Path": "../SWLOR_Haks/sw_weapon/",
+      "CompileModels": false
+    },
+    {
+      "Name": "sw_t_modernex",
+      "Path": "../SWLOR_Haks/sw_t_modernex/",
+      "CompileModels": false
+    },
+    {
+      "Name": "sw_t_futcity",
+      "Path": "../SWLOR_Haks/sw_t_futcity/",
+      "CompileModels": false
+    },
+    {
+      "Name": "sw_t_bunker",
+      "Path": "../SWLOR_Haks/sw_t_bunker/",
+      "CompileModels": false
+    },
+    {
+      "Name": "sw_t_garage",
+      "Path": "../SWLOR_Haks/sw_t_garage/",
+      "CompileModels": false
+    },
+    {
+      "Name": "sw_t_jungle",
+      "Path": "../SWLOR_Haks/sw_t_jungle/",
+      "CompileModels": false
+    },
+    {
+      "Name": "sw_t_ravforest",
+      "Path": "../SWLOR_Haks/sw_t_ravforest/",
+      "CompileModels": false
+    },
+    {
+      "Name": "sw_t_duct",
+      "Path": "../SWLOR_Haks/sw_t_duct/",
+      "CompileModels": false
+    },
+    {
+      "Name": "sw_t_virtunet",
+      "Path": "../SWLOR_Haks/sw_t_virtunet/",
+      "CompileModels": false
+    },
+    {
+      "Name": "sw_t_wiztower",
+      "Path": "../SWLOR_Haks/sw_t_wiztower/",
+      "CompileModels": false
+    },
+    {
+      "Name": "sw_t_starship",
+      "Path": "../SWLOR_Haks/sw_t_starship/",
+      "CompileModels": false
+    },
+    {
+      "Name": "sw_t_metalint",
+      "Path": "../SWLOR_Haks/sw_t_metalint/",
+      "CompileModels": false
+    },
+    {
+      "Name": "sw_t_shadowrun",
+      "Path": "../SWLOR_Haks/sw_t_shadowrun/",
+      "CompileModels": false
+    },
+    {
+      "Name": "sw_t_swprefab",
+      "Path": "../SWLOR_Haks/sw_t_swprefab/",
+      "CompileModels": false
+    },
+    {
+      "Name": "sw_t_barrow",
+      "Path": "../SWLOR_Haks/sw_t_barrow/",
+      "CompileModels": false
+    },
+    {
+      "Name": "sw_t_facility",
+      "Path": "../SWLOR_Haks/sw_t_facility/",
+      "CompileModels": false
+    },
+    {
+      "Name": "sw_t_secbase",
+      "Path": "../SWLOR_Haks/sw_t_secbase/",
+      "CompileModels": false
+    },
+    {
+      "Name": "sw_t_cityext",
+      "Path": "../SWLOR_Haks/sw_t_cityext/",
+      "CompileModels": false
+    },
+    {
+      "Name": "sw_t_crypt",
+      "Path": "../SWLOR_Haks/sw_t_crypt/",
+      "CompileModels": false
+    },
+    {
+      "Name": "sw_t_dungeon",
+      "Path": "../SWLOR_Haks/sw_t_dungeon/",
+      "CompileModels": false
+    },
+    {
+      "Name": "sw_t_table",
+      "Path": "../SWLOR_Haks/sw_t_table/",
+      "CompileModels": false
+    },
+    {
+      "Name": "sw_t_mine",
+      "Path": "../SWLOR_Haks/sw_t_mine/",
+      "CompileModels": false
+    },
+    {
+      "Name": "sw_t_ruin",
+      "Path": "../SWLOR_Haks/sw_t_ruin/",
+      "CompileModels": false
+    },
+    {
+      "Name": "sw_t_sewer",
+      "Path": "../SWLOR_Haks/sw_t_sewer/",
+      "CompileModels": false
+    },
+    {
+      "Name": "sw_t_minecave",
+      "Path": "../SWLOR_Haks/sw_t_minecave/",
+      "CompileModels": false
+    },
+    {
+      "Name": "sw_t_elvencity",
+      "Path": "../SWLOR_Haks/sw_t_elvencity/",
+      "CompileModels": false
+    },
+    {
+      "Name": "sw_t_modint",
+      "Path": "../SWLOR_Haks/sw_t_modint/",
+      "CompileModels": false
+    },
+    {
+      "Name": "sw_t_treetop",
+      "Path": "../SWLOR_Haks/sw_t_treetop/",
+      "CompileModels": false
+    },
+    {
+      "Name": "sw_t_beholder",
+      "Path": "../SWLOR_Haks/sw_t_beholder/",
+      "CompileModels": false
+    },
+    {
+      "Name": "sw_t_castle1",
+      "Path": "../SWLOR_Haks/sw_t_castle1/",
+      "CompileModels": false
+    },
+    {
+      "Name": "sw_t_drowint",
+      "Path": "../SWLOR_Haks/sw_t_drowint/",
+      "CompileModels": false
+    },
+    {
+      "Name": "sw_t_illithid",
+      "Path": "../SWLOR_Haks/sw_t_illithid/",
+      "CompileModels": false
+    },
+    {
+      "Name": "sw_t_cityint1",
+      "Path": "../SWLOR_Haks/sw_t_cityint1/",
+      "CompileModels": false
+    },
+    {
+      "Name": "sw_t_secretbs",
+      "Path": "../SWLOR_Haks/sw_t_secretbs/",
+      "CompileModels": false
+    },
+    {
+      "Name": "sw_t_modint2",
+      "Path": "../SWLOR_Haks/sw_t_modint2/",
+      "CompileModels": false
+    },
+    {
+      "Name": "sw_t_template",
+      "Path": "../SWLOR_Haks/sw_t_template/",
+      "CompileModels": false
+    },
+    {
+      "Name": "sw_t_cityint2",
+      "Path": "../SWLOR_Haks/sw_t_cityint2/",
+      "CompileModels": false
+    },
+    {
+      "Name": "sw_t_tnocastle",
+      "Path": "../SWLOR_Haks/sw_t_tnocastle/",
+      "CompileModels": false
+    },
+    {
+      "Name": "sw_t_castleex",
+      "Path": "../SWLOR_Haks/sw_t_castleex/",
+      "CompileModels": false
+    },
+    {
+      "Name": "sw_t_labstore",
+      "Path": "../SWLOR_Haks/sw_t_labstore/",
+      "CompileModels": false
+    },
+    {
+      "Name": "sw_t_steamwork",
+      "Path": "../SWLOR_Haks/sw_t_steamwork/",
+      "CompileModels": false
+    },
+    {
+      "Name": "sw_t_tatooine",
+      "Path": "../SWLOR_Haks/sw_t_tatooine/",
+      "CompileModels": false
+    },
+    {
+      "Name": "sw_t_forest",
+      "Path": "../SWLOR_Haks/sw_t_forest/",
+      "CompileModels": false
+    },
+    {
+      "Name": "sw_t_frozen",
+      "Path": "../SWLOR_Haks/sw_t_frozen/",
+      "CompileModels": false
+    },
+    {
+      "Name": "sw_t_rural",
+      "Path": "../SWLOR_Haks/sw_t_rural/",
+      "CompileModels": false
+    },
+    {
+      "Name": "sw_t_winter",
+      "Path": "../SWLOR_Haks/sw_t_winter/",
+      "CompileModels": false
+    },
+    {
+      "Name": "sw_t_underdark",
+      "Path": "../SWLOR_Haks/sw_t_underdark/",
+      "CompileModels": false
+    },
+    {
+      "Name": "sw_t_wildwood",
+      "Path": "../SWLOR_Haks/sw_t_wildwood/",
+      "CompileModels": false
+    },
+    {
+      "Name": "sw_t_coastal",
+      "Path": "../SWLOR_Haks/sw_t_coastal/",
+      "CompileModels": false
+    },
+    {
+      "Name": "sw_t_fortint",
+      "Path": "../SWLOR_Haks/sw_t_fortint/",
+      "CompileModels": false
+    },
+    {
+      "Name": "sw_t_wildland",
+      "Path": "../SWLOR_Haks/sw_t_wildland/",
+      "CompileModels": false
+    },
+    {
+      "Name": "sw_t_suburb",
+      "Path": "../SWLOR_Haks/sw_t_suburb/",
+      "CompileModels": false
+    },
+    {
+      "Name": "sw_t_office",
+      "Path": "../SWLOR_Haks/sw_t_office/",
+      "CompileModels": false
+    },
+    {
+      "Name": "sw_t_space",
+      "Path": "../SWLOR_Haks/sw_t_space/",
+      "CompileModels": false
+    },
+    {
+      "Name": "sw_t_planet",
+      "Path": "../SWLOR_Haks/sw_t_planet/",
+      "CompileModels": false
+    },
+    {
+      "Name": "sw_t_alienruin",
+      "Path": "../SWLOR_Haks/sw_t_alienruin/",
+      "CompileModels": false
+    },
+    {
+      "Name": "sw_t_season",
+      "Path": "../SWLOR_Haks/sw_t_season/",
+      "CompileModels": false
+    },
+    {
+      "Name": "sw_t_cepcityex",
+      "Path": "../SWLOR_Haks/sw_t_cepcityex/",
+      "CompileModels": false
+    },
+    {
+      "Name": "sw_t_cepcrypt",
+      "Path": "../SWLOR_Haks/sw_t_cepcrypt/",
+      "CompileModels": false
+    },
+    {
+      "Name": "sw_t_cepdungeon",
+      "Path": "../SWLOR_Haks/sw_t_cepdungeon/",
+      "CompileModels": false
+    },
+    {
+      "Name": "sw_t_cepmine",
+      "Path": "../SWLOR_Haks/sw_t_cepmine/",
+      "CompileModels": false
+    },
+    {
+      "Name": "sw_t_cepbehold",
+      "Path": "../SWLOR_Haks/sw_t_cepbehold/",
+      "CompileModels": false
+    },
+    {
+      "Name": "sw_t_cepcastle",
+      "Path": "../SWLOR_Haks/sw_t_cepcastle/",
+      "CompileModels": false
+    },
+    {
+      "Name": "sw_t_cepdrow",
+      "Path": "../SWLOR_Haks/sw_t_cepdrow/",
+      "CompileModels": false
+    },
+    {
+      "Name": "sw_t_cepcityin",
+      "Path": "../SWLOR_Haks/sw_t_cepcityin/",
+      "CompileModels": false
+    },
+    {
+      "Name": "sw_t_cepswamp",
+      "Path": "../SWLOR_Haks/sw_t_cepswamp/",
+      "CompileModels": false
+    },
+    {
+      "Name": "sw_t_scifibase",
+      "Path": "../SWLOR_Haks/sw_t_scifibase/",
+      "CompileModels": false
+    },
+    {
+      "Name": "sw_t_cepdesert",
+      "Path": "../SWLOR_Haks/sw_t_cepdesert/",
+      "CompileModels": false
+    },
+    {
+      "Name": "sw_t_cepforest",
+      "Path": "../SWLOR_Haks/sw_t_cepforest/",
+      "CompileModels": false
+    },
+    {
+      "Name": "sw_t_cepfrozen",
+      "Path": "../SWLOR_Haks/sw_t_cepfrozen/",
+      "CompileModels": false
+    },
+    {
+      "Name": "sw_t_ceprural",
+      "Path": "../SWLOR_Haks/sw_t_ceprural/",
+      "CompileModels": false
+    },
+    {
+      "Name": "sw_t_cepwinter",
+      "Path": "../SWLOR_Haks/sw_t_cepwinter/",
+      "CompileModels": false
+    },
+    {
+      "Name": "sw_t_cepunder",
+      "Path": "../SWLOR_Haks/sw_t_cepunder/",
       "CompileModels": false
     }
   ]

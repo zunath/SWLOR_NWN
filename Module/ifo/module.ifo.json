@@ -2983,7 +2983,7 @@
   },
   "Mod_CustomTlk": {
     "type": "cexostring",
-    "value": "swlor2_tlk"
+    "value": "sw_tlk"
   },
   "Mod_CutSceneList": {
     "type": "list",
@@ -3046,238 +3046,812 @@
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor2_2da"
+          "value": "sw_2da"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor2_mtr"
+          "value": "sw_ability"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor2_dds"
+          "value": "sw_ui"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor2_dwk"
+          "value": "sw_shader"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor2_gui"
+          "value": "sw_palette"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor2_ini"
+          "value": "sw_music"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor2_itp"
+          "value": "sw_sound"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor2_mdl"
+          "value": "sw_load"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor2_music"
+          "value": "sw_skybox"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor2_parts"
+          "value": "sw_door"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor2_plt"
+          "value": "sw_vfx"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor2_portraits"
+          "value": "sw_portrait"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor2_pwk"
+          "value": "sw_pt_root"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor2_set"
+          "value": "sw_pt_belt"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor2_shd"
+          "value": "sw_pt_chest"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor2_ssf"
+          "value": "sw_pt_cloak"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor2_tga"
+          "value": "sw_pt_head"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor2_txi"
+          "value": "sw_pt_helm"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor2_wav"
+          "value": "sw_pt_neck"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor2_wok"
+          "value": "sw_pt_pelvis"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor2_add_doors"
+          "value": "sw_pt_robe"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor2_add_loads"
+          "value": "sw_pt_lbicep"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor2_add_skies"
+          "value": "sw_pt_rbicep"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor2_ext_tiles"
+          "value": "sw_pt_lfore"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor2_add_tiles"
+          "value": "sw_pt_rfore"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor2_core0"
+          "value": "sw_pt_lhand"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor2_core1"
+          "value": "sw_pt_rhand"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor2_core2"
+          "value": "sw_pt_lshoul"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor2_core3"
+          "value": "sw_pt_rshoul"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor2_core4"
+          "value": "sw_pt_lthigh"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor2_core5"
+          "value": "sw_pt_rthigh"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor2_core6"
+          "value": "sw_pt_lshin"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor2_core7"
+          "value": "sw_pt_rshin"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
+          "value": "sw_pt_lfoot"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
+          "value": "sw_pt_rfoot"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
+          "value": "sw_cr_creature"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
+          "value": "sw_cr_vehicle"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
+          "value": "sw_plc"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
+          "value": "sw_plc_cep"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
+          "value": "sw_plc_mdrn"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
+          "value": "sw_plc_swtor"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
+          "value": "sw_item"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
+          "value": "sw_weapon"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
+          "value": "sw_t_modernex"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
+          "value": "sw_t_futcity"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
+          "value": "sw_t_bunker"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
+          "value": "sw_t_garage"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
+          "value": "sw_t_jungle"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
+          "value": "sw_t_ravforest"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
+          "value": "sw_t_duct"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
+          "value": "sw_t_virtunet"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
+          "value": "sw_t_wiztower"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
+          "value": "sw_t_starship"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
+          "value": "sw_t_metalint"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
+          "value": "sw_t_shadowrun"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
+          "value": "sw_t_swprefab"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
+          "value": "sw_t_barrow"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
+          "value": "sw_t_facility"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
+          "value": "sw_t_secbase"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
+          "value": "sw_t_cityext"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
+          "value": "sw_t_crypt"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
+          "value": "sw_t_dungeon"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
+          "value": "sw_t_table"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
+          "value": "sw_t_mine"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
+          "value": "sw_t_ruin"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
+          "value": "sw_t_sewer"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
+          "value": "sw_t_minecave"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
+          "value": "sw_t_elvencity"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
+          "value": "sw_t_modint"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
+          "value": "sw_t_treetop"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
+          "value": "sw_t_beholder"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
+          "value": "sw_t_castle1"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
+          "value": "sw_t_drowint"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
+          "value": "sw_t_illithid"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
+          "value": "sw_t_cityint1"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
+          "value": "sw_t_secretbs"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
+          "value": "sw_t_modint2"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
+          "value": "sw_t_template"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
+          "value": "sw_t_cityint2"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
+          "value": "sw_t_tnocastle"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
+          "value": "sw_t_castleex"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
+          "value": "sw_t_labstore"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
+          "value": "sw_t_steamwork"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
+          "value": "sw_t_tatooine"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
+          "value": "sw_t_forest"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
+          "value": "sw_t_frozen"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
+          "value": "sw_t_rural"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
+          "value": "sw_t_winter"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
+          "value": "sw_t_underdark"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
+          "value": "sw_t_wildwood"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
+          "value": "sw_t_coastal"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
+          "value": "sw_t_fortint"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
+          "value": "sw_t_wildland"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
+          "value": "sw_t_suburb"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
+          "value": "sw_t_office"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
+          "value": "sw_t_space"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
+          "value": "sw_t_planet"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
+          "value": "sw_t_alienruin"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
+          "value": "sw_t_season"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
+          "value": "sw_t_cepcityex"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
+          "value": "sw_t_cepcrypt"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
+          "value": "sw_t_cepdungeon"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
+          "value": "sw_t_cepmine"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
+          "value": "sw_t_cepbehold"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
+          "value": "sw_t_cepcastle"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
+          "value": "sw_t_cepdrow"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
+          "value": "sw_t_cepcityin"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
+          "value": "sw_t_cepswamp"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
+          "value": "sw_t_scifibase"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
+          "value": "sw_t_cepdesert"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
+          "value": "sw_t_cepforest"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
+          "value": "sw_t_cepfrozen"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
+          "value": "sw_t_ceprural"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
+          "value": "sw_t_cepwinter"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
+          "value": "sw_t_cepunder"
         }
       }
     ]
   },
   "Mod_ID": {
     "type": "void",
-    "value": "ÿÿÿÿ\u0001\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000"
+    "value": "ï¿½ï¿½ï¿½ï¿½\u0001\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000"
   },
   "Mod_IsSaveGame": {
     "type": "byte",

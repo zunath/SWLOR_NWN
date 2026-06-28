@@ -868,13 +868,13 @@ foreach ($row in $manifest) {
     }
 }
 
-$iconRoot = Resolve-RepoPath "SWLOR_Haks\swlor2_tga"
+$iconRoot = Resolve-RepoPath "SWLOR_Haks\sw_ability"
 $iconNames = New-Object "System.Collections.Generic.HashSet[string]" ([System.StringComparer]::OrdinalIgnoreCase)
 Get-ChildItem $iconRoot -Filter "*.tga" | ForEach-Object {
     $iconNames.Add([System.IO.Path]::GetFileNameWithoutExtension($_.Name)) | Out-Null
 }
 
-$featRows = Import-2DA (Resolve-RepoPath "SWLOR_Haks\swlor2_2da\feat.2da")
+$featRows = Import-2DA (Resolve-RepoPath "SWLOR_Haks\sw_2da\feat.2da")
 $combatUpgradeSpellIds = New-Object "System.Collections.Generic.HashSet[int]"
 foreach ($row in $featRows) {
     $iconIndex = [array]::IndexOf($row.Headers, "ICON") + 1
@@ -889,7 +889,7 @@ foreach ($row in $featRows) {
                 Row = $row.Number
                 Name = $row.Fields[1]
                 PerkType = ""
-                File = "SWLOR_Haks\swlor2_2da\feat.2da"
+                File = "SWLOR_Haks\sw_2da\feat.2da"
                 Style = ""
                 Price = ""
                 Requirements = ""
@@ -921,7 +921,7 @@ foreach ($row in $featRows) {
             Row = $row.Number
             Name = $row.Fields[1]
             PerkType = ""
-            File = "SWLOR_Haks\swlor2_2da\feat.2da"
+            File = "SWLOR_Haks\sw_2da\feat.2da"
             Style = ""
             Price = ""
                 Requirements = ""
@@ -937,7 +937,7 @@ foreach ($row in $featRows) {
     }
 }
 
-$spellRows = Import-2DA (Resolve-RepoPath "SWLOR_Haks\swlor2_2da\spells.2da")
+$spellRows = Import-2DA (Resolve-RepoPath "SWLOR_Haks\sw_2da\spells.2da")
 foreach ($row in $spellRows) {
     if (!$combatUpgradeSpellIds.Contains($row.Number)) {
         continue
@@ -956,7 +956,7 @@ foreach ($row in $spellRows) {
             Row = $row.Number
             Name = $row.Fields[1]
             PerkType = ""
-            File = "SWLOR_Haks\swlor2_2da\spells.2da"
+            File = "SWLOR_Haks\sw_2da\spells.2da"
             Style = ""
             Price = ""
             Requirements = ""

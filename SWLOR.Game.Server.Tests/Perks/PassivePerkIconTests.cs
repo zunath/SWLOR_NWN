@@ -19,9 +19,9 @@ public class PassivePerkIconTests
         var featRows = Test2daHelper.Read2da(new FileInfo(Path.Combine(
             root.FullName,
             "SWLOR_Haks",
-            "swlor2_2da",
+            "sw_2da",
             "feat.2da")));
-        var iconRoot = Path.Combine(root.FullName, "SWLOR_Haks", "swlor2_tga");
+        var iconRoot = Path.Combine(root.FullName, "SWLOR_Haks", "sw_ability");
         var failures = new List<string>();
 
         foreach (var perk in BuildPerksWithout2daLookup().OrderBy(x => x.Detail.Name).ThenBy(x => x.Type))
@@ -63,9 +63,9 @@ public class PassivePerkIconTests
         var featRows = Test2daHelper.Read2da(new FileInfo(Path.Combine(
             root.FullName,
             "SWLOR_Haks",
-            "swlor2_2da",
+            "sw_2da",
             "feat.2da")));
-        var iconRoot = Path.Combine(root.FullName, "SWLOR_Haks", "swlor2_tga");
+        var iconRoot = Path.Combine(root.FullName, "SWLOR_Haks", "sw_ability");
         var passiveRows = featRows
             .Where(x => x.Key is >= PassiveTraitFeatStart and <= PassiveTraitFeatEnd)
             .Where(x => HasLabel(x.Value))

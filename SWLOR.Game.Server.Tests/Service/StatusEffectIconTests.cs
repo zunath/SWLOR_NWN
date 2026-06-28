@@ -28,7 +28,7 @@ public class StatusEffectIconTests
         var rows = Test2daHelper.Read2da(new FileInfo(Path.Combine(
             root.FullName,
             "SWLOR_Haks",
-            "swlor2_2da",
+            "sw_2da",
             "effecticons.2da")));
 
         rows[130]["Label"].Should().Be("FOOD");
@@ -51,7 +51,7 @@ public class StatusEffectIconTests
         var effectIconRows = Test2daHelper.Read2da(new FileInfo(Path.Combine(
             root.FullName,
             "SWLOR_Haks",
-            "swlor2_2da",
+            "sw_2da",
             "effecticons.2da")));
         var iconHashes = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
@@ -67,7 +67,7 @@ public class StatusEffectIconTests
             effectIconRow["Icon"].Should().Be(row.IconResRef);
             effectIconRow["StrRef"].Should().MatchRegex(@"^\d+$");
 
-            var iconPath = Path.Combine(root.FullName, "SWLOR_Haks", "swlor2_tga", $"{row.IconResRef}.tga");
+            var iconPath = Path.Combine(root.FullName, "SWLOR_Haks", "sw_ability", $"{row.IconResRef}.tga");
             AssertGameplayIconTga(iconPath, $"{row.Type} {row.Key}");
             AssertUniqueIconPixels(iconPath, $"{row.Type} {row.Key}", iconHashes);
         }
@@ -83,12 +83,12 @@ public class StatusEffectIconTests
         var featRows = Read2daByLabel(new FileInfo(Path.Combine(
             root.FullName,
             "SWLOR_Haks",
-            "swlor2_2da",
+            "sw_2da",
             "feat.2da")));
         var spellRows = Read2daByLabel(new FileInfo(Path.Combine(
             root.FullName,
             "SWLOR_Haks",
-            "swlor2_2da",
+            "sw_2da",
             "spells.2da")));
         var iconHashes = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
@@ -106,7 +106,7 @@ public class StatusEffectIconTests
             if (spellRows.TryGetValue(row.Key, out var spellRow))
                 spellRow["IconResRef"].Should().Be(row.IconResRef);
 
-            var iconPath = Path.Combine(root.FullName, "SWLOR_Haks", "swlor2_tga", $"{row.IconResRef}.tga");
+            var iconPath = Path.Combine(root.FullName, "SWLOR_Haks", "sw_ability", $"{row.IconResRef}.tga");
             AssertGameplayIconTga(iconPath, $"{row.Type} {row.Key}");
             AssertSemanticFrame(iconPath, row.SemanticCategory, $"{row.Type} {row.Key}");
             AssertUniqueIconPixels(iconPath, $"{row.Type} {row.Key}", iconHashes);
@@ -117,7 +117,7 @@ public class StatusEffectIconTests
             var suffix = row.IconResRef[4..];
             for (var stage = 0; stage <= 5; stage++)
             {
-                var cooldownPath = Path.Combine(root.FullName, "SWLOR_Haks", "swlor2_tga", $"pr{stage}_{suffix}.tga");
+                var cooldownPath = Path.Combine(root.FullName, "SWLOR_Haks", "sw_ability", $"pr{stage}_{suffix}.tga");
                 AssertGameplayIconTga(cooldownPath, $"{row.Type} {row.Key} cooldown pr{stage}");
             }
         }
@@ -169,7 +169,7 @@ public class StatusEffectIconTests
 
         foreach (var row in manifestRows)
         {
-            var iconPath = Path.Combine(root.FullName, "SWLOR_Haks", "swlor2_tga", $"{row.IconResRef}.tga");
+            var iconPath = Path.Combine(root.FullName, "SWLOR_Haks", "sw_ability", $"{row.IconResRef}.tga");
             AssertGameplayIconTga(iconPath, $"{row.Type} {row.Key}");
             AssertSemanticFrame(iconPath, row.SemanticCategory, $"{row.Type} {row.Key}");
         }
@@ -192,7 +192,7 @@ public class StatusEffectIconTests
             var rows = Test2daHelper.Read2da(new FileInfo(Path.Combine(
                 root.FullName,
                 "SWLOR_Haks",
-                "swlor2_2da",
+                "sw_2da",
                 file)));
 
             foreach (var (rowNumber, row) in rows)
@@ -216,7 +216,7 @@ public class StatusEffectIconTests
         var rows = Test2daHelper.Read2da(new FileInfo(Path.Combine(
             root.FullName,
             "SWLOR_Haks",
-            "swlor2_2da",
+            "sw_2da",
             "feat.2da")));
         var feats = new[]
         {
@@ -290,7 +290,7 @@ public class StatusEffectIconTests
     public void RenamedGeneratedIcons_DoNotLeaveOldResourceFiles()
     {
         var root = FindRepositoryRoot();
-        var iconRoot = Path.Combine(root.FullName, "SWLOR_Haks", "swlor2_tga");
+        var iconRoot = Path.Combine(root.FullName, "SWLOR_Haks", "sw_ability");
         var obsoleteFiles = new[]
         {
             "ief_forcerage1.tga",
@@ -409,17 +409,17 @@ public class StatusEffectIconTests
         const int customTlkOffset = 16777216;
         const int customFeatStart = 1116;
         const int customSpellStart = 1000;
-        var iconRoot = Path.Combine(root.FullName, "SWLOR_Haks", "swlor2_tga");
+        var iconRoot = Path.Combine(root.FullName, "SWLOR_Haks", "sw_ability");
         var icons = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         var featRows = Test2daHelper.Read2da(new FileInfo(Path.Combine(
             root.FullName,
             "SWLOR_Haks",
-            "swlor2_2da",
+            "sw_2da",
             "feat.2da")));
         var spellRows = Test2daHelper.Read2da(new FileInfo(Path.Combine(
             root.FullName,
             "SWLOR_Haks",
-            "swlor2_2da",
+            "sw_2da",
             "spells.2da")));
 
         foreach (var (rowNumber, row) in featRows)

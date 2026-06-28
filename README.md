@@ -57,7 +57,7 @@ Copy the files in the hak directory to your NWN play directory. Alternatively, e
 
 **'Missing required TLK file' error on login**
 
-Copy the swlor2_tlk.tlk file in the tlk directory to your NWN play directory. Alternatively, edit nwn.ini to point to the debugserver/tlk folder.
+Copy the sw_tlk.tlk file in the tlk directory to your NWN play directory. Alternatively, edit nwn.ini to point to the debugserver/tlk folder.
 
 **'Unable to load module' error**
 

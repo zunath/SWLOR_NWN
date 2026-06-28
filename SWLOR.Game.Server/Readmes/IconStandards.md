@@ -164,7 +164,7 @@ Icon tools and audits must fail when a gameplay icon violates these standards:
 - Generated cooldown icon name longer than NWN's 16-character resource limit.
 - Recast group or resource generators silently truncating player-facing labels or icon names.
 
-After adding or changing an ability icon referenced by `SWLOR_Haks/swlor2_2da/feat.2da` or `SWLOR_Haks/swlor2_2da/spells.2da`, run:
+After adding or changing an ability icon referenced by `SWLOR_Haks/sw_2da/feat.2da` or `SWLOR_Haks/sw_2da/spells.2da`, run:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File tools/GenerateCooldownIcons.ps1 -Force

@@ -13,7 +13,7 @@ public class ArmorDualWieldTests
     public void DualWieldResPerkRow_IsPresent()
     {
         var root = FindRepositoryRoot();
-        var perkRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "iprp_resperk.2da");
+        var perkRows = Read2da(root / "SWLOR_Haks" / "sw_2da" / "iprp_resperk.2da");
 
         perkRows[173]["Name"].Should().Be("16872220");
         perkRows[173]["Label"].Should().Be("DualWield");
@@ -108,7 +108,7 @@ public class ArmorDualWieldTests
         {
             var candidate = directory.FullName;
             if (File.Exists(Path.Combine(candidate, "SWLOR.Game.Server.sln")) &&
-                File.Exists(Path.Combine(candidate, "SWLOR_Haks", "swlor2_2da", "feat.2da")))
+                File.Exists(Path.Combine(candidate, "SWLOR_Haks", "sw_2da", "feat.2da")))
             {
                 return new PathInfo(candidate);
             }

@@ -45485,7 +45485,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 1.469393021770371e-38
+          "value": 1.469393021770371e-038
         },
         "XPosition": {
           "type": "float",
@@ -45501,7 +45501,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": -5.7220458984375e-06
+          "value": -5.7220458984375e-006
         }
       }
     ]

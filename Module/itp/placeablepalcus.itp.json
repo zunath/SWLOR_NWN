@@ -79148,28 +79148,6 @@
                       "type": "resref",
                       "value": "tele_obj"
                     }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Blood Frenzy Butcher Marker"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "bf_butch_call"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Blood Frenzy Challenge Marker"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "bf_kess_call"
-                    }
                   }
                 ]
               },

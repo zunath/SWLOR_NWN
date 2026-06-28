@@ -2044,5 +2044,9 @@ namespace SWLOR.NWN.API.NWScript.Enum
         RadiantLance2 = 2576,
         ForceJudgment3 = 2577,
         RadiantLance3 = 2578,
+        ButchersCarve = 2579,
+        StimCanister = 2580,
+        BloodFrenzyFlurry = 2581,
+        DraavosChallenge = 2582,
     }
 }

@@ -118,6 +118,20 @@ public class NPCAbilityDefinitionTests
         normalizedSource.Should().NotContain("ResistanceType.Disruption,\n                VisualEffect.Vfx_Beam_Drain,");
     }
 
+    [Test]
+    public void DraavosChallenge_UsesDamageAndControlInsteadOfEnmityOnlyPressure()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText(
+            (root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "NPC" / "DraavosChallengeAbilityDefinition.cs").FullName);
+        var normalizedSource = source.Replace("\r\n", "\n");
+
+        normalizedSource.Should().Contain("5,\n                30,\n                6,\n                typeof(DazedStatusEffect)");
+        source.Should().Contain("CombatDamageType.Sonic");
+        source.Should().Contain("ResistanceType.Mind");
+        source.Should().NotContain("enmityBonus");
+    }
+
     private static Dictionary<FeatType, AbilityDetail> BuildNPCAbilities()
     {
         var definitionType = typeof(IAbilityListDefinition);
@@ -199,6 +213,10 @@ public class NPCAbilityDefinitionTests
             [FeatType.StaticWeb] = new("Static Web", RecastGroup.StaticWeb, 22f, 6),
             [FeatType.ForceSunder] = new("Force Sunder", RecastGroup.ForceSunder, 18f, 6),
             [FeatType.NullShock] = new("Null Shock", RecastGroup.NullShock, 24f, 7),
+            [FeatType.ButchersCarve] = new("Butcher's Carve", RecastGroup.ButchersCarve, 18f, 5),
+            [FeatType.StimCanister] = new("Stim Canister", RecastGroup.StimCanister, 24f, 6),
+            [FeatType.BloodFrenzyFlurry] = new("Blood Frenzy Flurry", RecastGroup.BloodFrenzyFlurry, 20f, 6),
+            [FeatType.DraavosChallenge] = new("Draavo's Challenge", RecastGroup.DraavosChallenge, 24f, 5),
         };
     }
 
@@ -214,7 +232,11 @@ public class NPCAbilityDefinitionTests
             FeatType.CapacitorSurge,
             FeatType.StaticWeb,
             FeatType.ForceSunder,
-            FeatType.NullShock
+            FeatType.NullShock,
+            FeatType.ButchersCarve,
+            FeatType.StimCanister,
+            FeatType.BloodFrenzyFlurry,
+            FeatType.DraavosChallenge
         };
     }
 

@@ -654,6 +654,14 @@ namespace SWLOR.Game.Server.Service.AbilityService
         ForceSunder = 428,
         [RecastGroup("Null Shock", "Null Shock", true)]
         NullShock = 429,
+        [RecastGroup("Butcher's Carve", "Butch. Carve", true)]
+        ButchersCarve = 430,
+        [RecastGroup("Stim Canister", "Stim Can.", true)]
+        StimCanister = 431,
+        [RecastGroup("Blood Frenzy Flurry", "BF Flurry", true)]
+        BloodFrenzyFlurry = 432,
+        [RecastGroup("Draavo's Challenge", "Draavo Chall.", true)]
+        DraavosChallenge = 433,
     }
 
     public class RecastGroupAttribute : Attribute

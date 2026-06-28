@@ -3403,13 +3403,6 @@
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "sw_t_wiztower"
-        }
-      },
-      {
-        "__struct_id": 8,
-        "Mod_Hak": {
-          "type": "cexostring",
           "value": "sw_t_starship"
         }
       },
@@ -3474,13 +3467,6 @@
         "Mod_Hak": {
           "type": "cexostring",
           "value": "sw_t_dungeon"
-        }
-      },
-      {
-        "__struct_id": 8,
-        "Mod_Hak": {
-          "type": "cexostring",
-          "value": "sw_t_table"
         }
       },
       {

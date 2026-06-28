@@ -101,7 +101,8 @@ namespace SWLOR.Game.Server.Service
                             ? GetLocation(target)
                             : Location(GetArea(sender), GetTargetingModeSelectedPosition(), 0.0f);
                         ProcessChatCommand(command, sender, target, location, args);
-                    });
+                    },
+                    chatCommand.AllowsLocationTarget);
                 }
                 else
                 {

@@ -1,0 +1,69 @@
+using FluentAssertions;
+using NUnit.Framework;
+using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Feature.ChatCommandDefinition;
+using SWLOR.NWN.API.NWScript.Enum;
+
+namespace SWLOR.Game.Server.Tests.Feature;
+
+public class DMChatCommandTests
+{
+    [Test]
+    public void TeleportToTarget_AllowsStaffAndTestUsersToTargetCreaturesOrGround()
+    {
+        var commands = new DMChatCommand().BuildChatCommands();
+
+        commands.Should().ContainKey("tpto");
+
+        var command = commands["tpto"];
+        command.Authorization.Should().Be(AuthorizationLevel.DM | AuthorizationLevel.Admin);
+        command.AvailableToAllOnTestEnvironment.Should().BeTrue();
+        command.RequiresTarget.Should().BeTrue();
+        command.ValidTargetTypes.Should().Be(ObjectType.Creature | ObjectType.Tile);
+        command.AllowsLocationTarget.Should().BeTrue();
+    }
+
+    [Test]
+    public void LocationTargeting_IsOptInForChatCommands()
+    {
+        var root = FindRepositoryRoot();
+        var chatCommandSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "ChatCommand.cs"));
+        var targetingSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "Targeting.cs"));
+        var dmChatCommandSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "ChatCommandDefinition",
+            "DMChatCommand.cs"));
+
+        chatCommandSource.Should().Contain("chatCommand.AllowsLocationTarget");
+        targetingSource.Should().Contain("targetingAction.AllowsLocationTarget && targetedLocation != Vector3()");
+        targetingSource.Should().Contain("targetingAction.SelectionAction(OBJECT_INVALID);");
+        dmChatCommandSource.Should().Contain("_builder.Create(\"tpto\")");
+        dmChatCommandSource.Should().Contain(".RequiresTarget(ObjectType.Creature | ObjectType.Tile)");
+        dmChatCommandSource.Should().Contain(".AllowsLocationTarget()");
+        dmChatCommandSource.Should().Contain("ActionJumpToLocation(location)");
+    }
+
+    private static DirectoryInfo FindRepositoryRoot()
+    {
+        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
+        while (directory != null)
+        {
+            if (File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln")))
+                return directory;
+
+            directory = directory.Parent;
+        }
+
+        throw new DirectoryNotFoundException("Could not locate the SWLOR_NWN repository root.");
+    }
+}

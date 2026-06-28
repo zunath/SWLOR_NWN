@@ -2,6 +2,9 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.LootTableDefinition;
 using SWLOR.Game.Server.Feature.SpawnDefinition;
+using SWLOR.Game.Server.Service.AnimationService;
+using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using System.Text.Json;
 
 namespace SWLOR.Game.Server.Tests.Feature;
@@ -145,6 +148,11 @@ public class ViscaraSpawnDefinitionTests
     {
         var tables = new ViscaraLootTableDefinition().BuildLootTables();
 
+        BloodFrenzyLootTables
+            .Select(entry => entry.LootTableId)
+            .Should()
+            .OnlyHaveUniqueItems();
+
         foreach (var (_, lootTableId) in BloodFrenzyLootTables)
         {
             tables.Should().ContainKey(lootTableId);
@@ -164,6 +172,33 @@ public class ViscaraSpawnDefinitionTests
                 .Should()
                 .NotIntersectWith(BloodFrenzyPhysicalProofItems);
         }
+    }
+
+    [Test]
+    public void PulseFrameTrainingDroidLoot_DoesNotDropMandalorianItems()
+    {
+        var tables = new ViscaraLootTableDefinition().BuildLootTables();
+
+        tables["VISCARA_SEWERS_DEPTHS_PULSE_DROID"]
+            .Select(item => item.Resref)
+            .Should()
+            .OnlyContain(resref =>
+                !resref.StartsWith("m_", StringComparison.OrdinalIgnoreCase) &&
+                !resref.StartsWith("mando_", StringComparison.OrdinalIgnoreCase));
+    }
+
+    [Test]
+    public void PulseFrameTrainingDroid_PlaysFireballExplosionOnDeath()
+    {
+        var tables = new ViscaraSpawnDefinition().BuildSpawnTables();
+        var spawn = tables["VISCARA_SEWERS_DEPTHS_GENERAL"]
+            .Spawns
+            .Single(spawn => spawn.Resref == "bf_pulsedroid");
+
+        spawn.Animators.Should().ContainSingle(animator =>
+            animator.Event.Value == AnimationEvent.CreatureOnDeath.Value &&
+            animator.Duration == DurationType.Instant &&
+            animator.Vfx == VisualEffect.Fnf_Fireball);
     }
 
     [Test]

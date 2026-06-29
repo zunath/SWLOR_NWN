@@ -95,8 +95,8 @@ namespace SWLOR.Game.Server.Service.AbilityService
         Tame = 73,
         [RecastGroup("Reward", "Reward", true)]
         Reward = 74,
-        [RecastGroup("Snarl/Growl", "Snarl/Growl", true)]
-        SnarlGrowl = 75,
+        [RecastGroup("Beast Bond", "Beast Bond", true)]
+        BeastBond = 75,
         [RecastGroup("Soothe Pet", "Soothe Pet", true)]
         SoothePet = 76,
         [RecastGroup("Revive Beast", "Rev. Beast", true)]

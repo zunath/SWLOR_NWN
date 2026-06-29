@@ -301,12 +301,26 @@ public class StatusEffectIconTests
             "ife_grn_ion2.tga",
             "ife_grn_ion3.tga",
             "ife_cast_light.tga",
+            "ife_snarl.tga",
+            "ife_growl.tga",
             "pr0_forcerg1.tga",
             "pr5_forcerg2.tga",
             "pr0_grn_ion1.tga",
             "pr5_grn_ion3.tga",
             "pr0_cast_light.tga",
-            "pr5_cast_light.tga"
+            "pr5_cast_light.tga",
+            "pr0_snarl.tga",
+            "pr1_snarl.tga",
+            "pr2_snarl.tga",
+            "pr3_snarl.tga",
+            "pr4_snarl.tga",
+            "pr5_snarl.tga",
+            "pr0_growl.tga",
+            "pr1_growl.tga",
+            "pr2_growl.tga",
+            "pr3_growl.tga",
+            "pr4_growl.tga",
+            "pr5_growl.tga"
         };
 
         foreach (var file in obsoleteFiles)

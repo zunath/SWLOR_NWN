@@ -66,6 +66,14 @@ public class BeastmasterCombatUpgradeTests
         new EvasiveChallenge1SelfStatusEffect().StatGroup.Stats[StatType.AvoidedAttackSingleStaminaRestore].Should().Be(1);
         new Intercept2StatusEffect().StatGroup.Stats[StatType.DamageTakenRedirectToStatusSourcePercent].Should().Be(50);
         new PredatorsMark1StatusEffect(10).StatGroup.Stats[StatType.DamageTakenFromStatusSourcePercentAdjustment].Should().Be(10);
+        new GuardingBondBeastStatusEffect().StatGroup.Stats[StatType.PhysicalDefensePercentAdjustment].Should().Be(20);
+        new GuardingBondBeastStatusEffect().StatGroup.Stats[StatType.ForceDefensePercentAdjustment].Should().Be(20);
+        new GuardingBondBeastStatusEffect().StatGroup.Stats[StatType.DamageTakenPercentAdjustment].Should().Be(-15);
+        new GuardingBondBeastStatusEffect().StatGroup.Stats[StatType.EnmityPercentAdjustment].Should().Be(75);
+        new PredatoryBondBeastStatusEffect().StatGroup.Stats[StatType.DamageDealtPercentAdjustment].Should().Be(25);
+        new PredatoryBondBeastStatusEffect().StatGroup.Stats[StatType.AttackDelayReductionPercent].Should().Be(15);
+        new PredatoryBondBeastStatusEffect().StatGroup.Stats[StatType.AbilityHitChancePercentAdjustment].Should().Be(10);
+        new PredatoryBondBeastStatusEffect().StatGroup.Stats[StatType.EnmityPercentAdjustment].Should().Be(-40);
     }
 
     [Test]
@@ -97,6 +105,12 @@ public class BeastmasterCombatUpgradeTests
         var forceTouch = new ForceTouchAbilityDefinition().BuildAbilities()[FeatType.ForceTouch3];
         forceTouch.Requirements.OfType<AbilityRequirementFP>().Should().ContainSingle().Which.RequiredFP.Should().Be(6);
         forceTouch.RecastDelay(0).Should().Be(12f);
+
+        var guardingBond = new GuardingBondAbilityDefinition().BuildAbilities()[FeatType.Snarl];
+        AssertBeastBondAbility(guardingBond, "Guarding Bond");
+
+        var predatoryBond = new PredatoryBondAbilityDefinition().BuildAbilities()[FeatType.Growl];
+        AssertBeastBondAbility(predatoryBond, "Predatory Bond");
     }
 
     [Test]
@@ -213,6 +227,17 @@ public class BeastmasterCombatUpgradeTests
         ability.RecastDelay(0).Should().Be(recastSeconds);
         ability.RequiresTarget.Should().Be(requiresTarget);
         ability.Requirements.OfType<AbilityRequirementStamina>().Should().ContainSingle().Which.RequiredSTM.Should().Be(staminaCost);
+    }
+
+    private static void AssertBeastBondAbility(AbilityDetail ability, string name)
+    {
+        ability.Name.Should().Be(name);
+        ability.SkillType.Should().Be(SkillType.BeastMastery);
+        ability.RecastGroup.Should().Be(RecastGroup.BeastBond);
+        ability.RecastDelay(0).Should().Be(180f);
+        ability.RequiresTarget.Should().BeFalse();
+        ability.Requirements.OfType<AbilityRequirementStamina>().Should().BeEmpty();
+        ability.StatusEffectTypesRemovedOnPerkRefund.Should().ContainSingle();
     }
 
     private static void AssertStatBonus(PerkLevel level, StatType statType, int value)

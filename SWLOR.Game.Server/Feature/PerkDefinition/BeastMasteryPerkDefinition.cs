@@ -18,8 +18,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             Tame();
             Reward();
             Stabling();
-            Snarl();
-            Growl();
+            GuardingBond();
+            PredatoryBond();
             SoothePet();
             ReviveBeast();
 
@@ -221,26 +221,26 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         }
 
 
-        private void Snarl()
+        private void GuardingBond()
         {
             _builder.Create(PerkCategoryType.BeastMasteryTraining, PerkType.Snarl)
-                .Name("Snarl")
+                .Name("Guarding Bond")
 
                 .AddPerkLevel()
-                .Description("Transfers 50% of your enmity to your pet.")
+                .Description("While active, your beast gains +20% Defense, +20% Force Defense, takes 15% less damage, and generates +75% enmity. Only one combat mode may be active at a time.")
                 .Price(2)
                 .RequirementSkill(SkillType.BeastMastery, 15)
                 .GrantsFeat(FeatType.Snarl);
         }
 
 
-        private void Growl()
+        private void PredatoryBond()
         {
             _builder.Create(PerkCategoryType.BeastMasteryTraining, PerkType.Growl)
-                .Name("Growl")
+                .Name("Predatory Bond")
 
                 .AddPerkLevel()
-                .Description("Transfers 50% of your pet's enmity to you.")
+                .Description("While active, your beast deals +25% damage, gains +15% haste and +10% ability accuracy, and generates 40% less enmity. Only one combat mode may be active at a time.")
                 .Price(2)
                 .RequirementSkill(SkillType.BeastMastery, 15)
                 .GrantsFeat(FeatType.Growl);

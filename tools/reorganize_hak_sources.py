@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """Reorganize SWLOR hak source folders by content ownership.
 
+Requires Python 3.10 or newer.
+
 The script is intentionally conservative:
 - Builds the active resource set from the current module hak order.
 - Keeps only the current highest-priority winner for each resref/ext pair.
@@ -17,9 +19,14 @@ import os
 import re
 import shutil
 import shlex
+import sys
 from collections import Counter, defaultdict
 from pathlib import Path
 
+
+MIN_PYTHON_VERSION = (3, 10)
+if sys.version_info < MIN_PYTHON_VERSION:
+    raise SystemExit("reorganize_hak_sources.py requires Python 3.10 or newer.")
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 HAK_ROOT = REPO_ROOT / "SWLOR_Haks"
@@ -27,6 +34,8 @@ BUILD_CONFIG = REPO_ROOT / "Build" / "hakbuilder.json"
 SUBMODULE_CONFIG = HAK_ROOT / "hakbuilder.json"
 MODULE_IFO = REPO_ROOT / "Module" / "ifo" / "module.ifo.json"
 AUDIT_DIR = HAK_ROOT / "output" / "hak_reorg_audit"
+CUSTOM_TLK_NAME = "sw_tlk"
+CUSTOM_TLK_FILE = f"{CUSTOM_TLK_NAME}.tlk"
 
 TEXTURE_EXTS = {"dds", "tga", "txi", "mtr", "plt"}
 MODEL_DEP_EXTS = {"mdl", "mtr", "txi"}
@@ -989,24 +998,67 @@ def write_audit(winners: dict[str, dict], assignments: dict[str, str], losers: l
 
 
 def apply_moves(winners: dict[str, dict], assignments: dict[str, str], losers: list[dict]) -> None:
-    for hak in TARGET_HAKS:
-        (HAK_ROOT / hak).mkdir(parents=True, exist_ok=True)
+    loser_paths = {(REPO_ROOT / loser["source_path"]).resolve() for loser in losers}
+    planned_destinations: dict[Path, str] = {}
+    reserved_paths: set[Path] = set()
+    move_plan = []
 
     for key, record in sorted(winners.items()):
         target = assignments[key]
-        source = record["abs_path"]
-        destination = HAK_ROOT / target / record["file_name"]
-        if source.resolve() == destination.resolve():
+        if target not in TARGET_HAKS:
+            raise RuntimeError(f"Unexpected target hak for {key}: {target}")
+
+        source = record["abs_path"].resolve()
+        destination = (HAK_ROOT / target / record["file_name"]).resolve()
+        prior_key = planned_destinations.get(destination)
+        if prior_key is not None:
+            raise RuntimeError(f"Multiple resources target {rel(destination)}: {prior_key}, {key}")
+        planned_destinations[destination] = key
+
+        if source == destination:
             continue
-        if destination.exists():
+
+        if destination.exists() and destination not in loser_paths:
             raise RuntimeError(f"Target already exists for {key}: {rel(destination)}")
-        destination.parent.mkdir(parents=True, exist_ok=True)
-        shutil.move(str(source), str(destination))
+
+        move_destination = destination
+        if destination in loser_paths:
+            for index in range(1, 1000):
+                candidate = destination.with_name(f".{destination.name}.hak_reorg_{index}.tmp")
+                resolved_candidate = candidate.resolve()
+                if (
+                    resolved_candidate not in planned_destinations
+                    and resolved_candidate not in loser_paths
+                    and resolved_candidate not in reserved_paths
+                    and not candidate.exists()
+                ):
+                    move_destination = resolved_candidate
+                    reserved_paths.add(resolved_candidate)
+                    break
+            else:
+                raise RuntimeError(f"Could not reserve temporary destination for {key}: {rel(destination)}")
+
+        move_plan.append((source, destination, move_destination))
+
+    for hak in TARGET_HAKS:
+        (HAK_ROOT / hak).mkdir(parents=True, exist_ok=True)
+
+    pending_final_moves = []
+    for source, destination, move_destination in move_plan:
+        move_destination.parent.mkdir(parents=True, exist_ok=True)
+        shutil.move(str(source), str(move_destination))
+        if move_destination != destination:
+            pending_final_moves.append((move_destination, destination))
 
     for loser in losers:
         path = REPO_ROOT / loser["source_path"]
         if path.exists():
             path.unlink()
+
+    for source, destination in pending_final_moves:
+        if destination.exists():
+            raise RuntimeError(f"Target still exists after duplicate cleanup: {rel(destination)}")
+        shutil.move(str(source), str(destination))
 
     for hak in sorted(OLD_SOURCE_HAKS - set(TARGET_HAKS)):
         directory = HAK_ROOT / hak
@@ -1033,14 +1085,34 @@ def target_hak_entries(prefix: str) -> list[dict[str, object]]:
     ]
 
 
+def update_hakbuilder_tlk(config: dict, tlk_path: str) -> None:
+    config["TlkPath"] = tlk_path
+    if "Mod_CustomTlk" in config:
+        config["Mod_CustomTlk"] = CUSTOM_TLK_NAME
+
+
 def write_hakbuilder_configs() -> None:
     build_config = read_json(BUILD_CONFIG)
+    update_hakbuilder_tlk(build_config, f"../SWLOR_Haks/{CUSTOM_TLK_NAME}/{CUSTOM_TLK_FILE}")
     build_config["HakList"] = target_hak_entries("../SWLOR_Haks/")
     BUILD_CONFIG.write_text(json.dumps(build_config, indent=2) + "\n", encoding="utf-8")
 
     sub_config = read_json(SUBMODULE_CONFIG)
+    update_hakbuilder_tlk(sub_config, f"./{CUSTOM_TLK_NAME}/{CUSTOM_TLK_FILE}")
     sub_config["HakList"] = target_hak_entries("./")
     SUBMODULE_CONFIG.write_text(json.dumps(sub_config, indent=2) + "\n", encoding="utf-8")
+
+
+def replace_module_custom_tlk(text: str) -> str:
+    marker = '  "Mod_CustomTlk": {'
+    start = text.find(marker)
+    if start == -1:
+        return text
+
+    value_marker = '    "value": "'
+    value_start = text.index(value_marker, start) + len(value_marker)
+    value_end = text.index('"', value_start)
+    return text[:value_start] + CUSTOM_TLK_NAME + text[value_end:]
 
 
 def replace_module_hak_list() -> None:
@@ -1083,6 +1155,7 @@ def replace_module_hak_list() -> None:
         "  }"
     )
     new_text = text[:start] + block + text[end:]
+    new_text = replace_module_custom_tlk(new_text)
     MODULE_IFO.write_bytes(new_text.encode("latin-1"))
 
 

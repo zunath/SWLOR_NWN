@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.IO.Compression;
 using System.Text.Json;
 using System.Xml.Linq;
@@ -293,10 +294,10 @@ public class NPCEnemyBalanceAuditTests
         GetWorkbookCellText(worksheet, sharedStrings, "AK1").Should().Be("Trauma Res Adj");
         GetWorkbookCellText(worksheet, sharedStrings, "AL1").Should().Be("Disruption Res Adj");
         GetWorkbookCellText(worksheet, sharedStrings, "AM1").Should().Be("Skill Override");
-        GetWorkbookCellText(worksheet, sharedStrings, "AC206").Should().Be("100");
-        GetWorkbookCellText(worksheet, sharedStrings, "AF206").Should().Be("-5.0");
-        GetWorkbookCellText(worksheet, sharedStrings, "AI206").Should().Be("-5.0");
-        GetWorkbookCellText(worksheet, sharedStrings, "AK206").Should().Be("87.0");
+        GetWorkbookCellNumber(worksheet, sharedStrings, "AC206").Should().Be(100m);
+        GetWorkbookCellNumber(worksheet, sharedStrings, "AF206").Should().Be(-5m);
+        GetWorkbookCellNumber(worksheet, sharedStrings, "AI206").Should().Be(-5m);
+        GetWorkbookCellNumber(worksheet, sharedStrings, "AK206").Should().Be(87m);
         GetWorkbookCellText(worksheet, sharedStrings, "AP206")
             .Should()
             .Be("Blood Frenzy, Blood Frenzy Flurry, Draavo's Challenge, Stim Canister, Serrated Slash, Brutal Bash, Tactical Mark");
@@ -363,9 +364,9 @@ public class NPCEnemyBalanceAuditTests
             .Be("$A$1:$E$201", "the Blood Frenzy weapon-delay lookup rows should be filterable");
 
         GetWorkbookCellText(weaponDelays, sharedStrings, "A197").Should().Be("bf_scavenger");
-        GetWorkbookCellText(weaponDelays, sharedStrings, "D197").Should().Be("270.0");
+        GetWorkbookCellNumber(weaponDelays, sharedStrings, "D197").Should().Be(270m);
         GetWorkbookCellText(weaponDelays, sharedStrings, "A201").Should().Be("bf_kess");
-        GetWorkbookCellText(weaponDelays, sharedStrings, "D201").Should().Be("270.0");
+        GetWorkbookCellNumber(weaponDelays, sharedStrings, "D201").Should().Be(270m);
     }
 
     [Test]
@@ -907,6 +908,12 @@ public class NPCEnemyBalanceAuditTests
             return sharedStrings[index];
 
         return value ?? string.Empty;
+    }
+
+    private static decimal GetWorkbookCellNumber(XDocument worksheet, IReadOnlyList<string> sharedStrings, string address)
+    {
+        var text = GetWorkbookCellText(worksheet, sharedStrings, address);
+        return decimal.Parse(text, NumberStyles.Number, CultureInfo.InvariantCulture);
     }
 
     private static string GetWorkbookCellFormula(XDocument worksheet, string address)

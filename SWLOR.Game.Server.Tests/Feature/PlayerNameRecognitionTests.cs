@@ -423,7 +423,7 @@ public class PlayerNameRecognitionTests
         var appearanceSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR_Haks",
-            "swlor2_2da",
+            "sw_2da",
             "appearance.2da"));
 
         migrationSource.Should().Contain("EnsureUnknownDisplayName(dbPlayer);");

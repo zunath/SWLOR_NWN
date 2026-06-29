@@ -178,8 +178,8 @@ public class ForceDarkManipulatorTests
     public void ForceDarkManipulatorFeatAndAbilityIcons_AreUniqueAndPresent()
     {
         var root = FindRepositoryRoot();
-        var featRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "feat.2da");
-        var abilityRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "spells.2da");
+        var featRows = Read2da(root / "SWLOR_Haks" / "sw_2da" / "feat.2da");
+        var abilityRows = Read2da(root / "SWLOR_Haks" / "sw_2da" / "spells.2da");
 
         var feats = new[]
         {
@@ -212,7 +212,7 @@ public class ForceDarkManipulatorTests
             }
 
             seenIcons.Add(featIcon).Should().BeTrue($"{featType} should have a unique icon");
-            File.Exists((root / "SWLOR_Haks" / "swlor2_tga" / $"{featIcon}.tga").FullName).Should().BeTrue();
+            File.Exists((root / "SWLOR_Haks" / "sw_ability" / $"{featIcon}.tga").FullName).Should().BeTrue();
 
             abilityRow["Range"].Should().Be(range);
             abilityRow["TargetType"].Should().Be(targetType);
@@ -228,9 +228,9 @@ public class ForceDarkManipulatorTests
     public void CreepingTerrorFeatAndAbilityDescriptions_MatchImplementedValues()
     {
         var root = FindRepositoryRoot();
-        var featRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "feat.2da");
-        var abilityRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "spells.2da");
-        var tlkEntries = ReadTlkEntries(root / "SWLOR_Haks" / "swlor2_tlk" / "swlor2_tlk.tlk.json");
+        var featRows = Read2da(root / "SWLOR_Haks" / "sw_2da" / "feat.2da");
+        var abilityRows = Read2da(root / "SWLOR_Haks" / "sw_2da" / "spells.2da");
+        var tlkEntries = ReadTlkEntries(root / "SWLOR_Haks" / "sw_tlk" / "sw_tlk.tlk.json");
         var descriptions = new[]
         {
             (FeatType.CreepingTerror1, "Creates a visible 5m field of grasping dark energy within 15m for 12 seconds. Enemies inside are Hobbled and take 10 force DMG plus WIL scaling every 3 seconds."),
@@ -254,7 +254,7 @@ public class ForceDarkManipulatorTests
     public void CreepingTerrorPersistentVfx_IsVisualOnlyTentacleField()
     {
         var root = FindRepositoryRoot();
-        var persistentVfx = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "vfx_persistent.2da");
+        var persistentVfx = Read2da(root / "SWLOR_Haks" / "sw_2da" / "vfx_persistent.2da");
         AssertCreepingTerrorTentacleField(
             persistentVfx[(int)AreaOfEffect.CreepingTerrorTentacles],
             "AOE_CREEPING_TERROR_TENTACLES",
@@ -458,7 +458,7 @@ public class ForceDarkManipulatorTests
         {
             var candidate = directory.FullName;
             if (File.Exists(Path.Combine(candidate, "SWLOR.Game.Server.sln")) &&
-                File.Exists(Path.Combine(candidate, "SWLOR_Haks", "swlor2_2da", "feat.2da")))
+                File.Exists(Path.Combine(candidate, "SWLOR_Haks", "sw_2da", "feat.2da")))
             {
                 return new PathInfo(candidate);
             }

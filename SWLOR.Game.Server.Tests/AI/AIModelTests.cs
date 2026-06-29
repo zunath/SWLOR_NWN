@@ -881,7 +881,7 @@ public class AIModelTests
         var persistentVfx = File.ReadAllLines(Path.Combine(
             FindRepositoryRoot().FullName,
             "SWLOR_Haks",
-            "swlor2_2da",
+            "sw_2da",
             "vfx_persistent.2da"));
 
         var rows = persistentVfx

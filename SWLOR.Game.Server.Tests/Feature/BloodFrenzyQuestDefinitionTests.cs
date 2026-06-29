@@ -253,8 +253,6 @@ public class BloodFrenzyQuestDefinitionTests
             Path.Combine(root.FullName, "Module", "utc", "bf_kess.utc.json"),
             Path.Combine(root.FullName, "Module", "utc", "bf_pulsedroid.utc.json"),
             Path.Combine(root.FullName, "Module", "utc", "bf_scavenger.utc.json"),
-            Path.Combine(root.FullName, "Module", "utp", "bf_butch_call.utp.json"),
-            Path.Combine(root.FullName, "Module", "utp", "bf_kess_call.utp.json"),
             Path.Combine(root.FullName, "SWLOR.Game.Server", "Readmes", "CapstoneQuestLinePlan.md"),
             Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "KeyItemService", "KeyItemType.cs"),
             Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "NPCService", "NPCGroupType.cs"),

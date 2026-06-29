@@ -153,8 +153,8 @@ public class DevicesFieldSupportAndAssaultGadgetsTests
     public void DevicesFieldSupportAndAssaultGadgetsFeatAndSpellIcons_AreUniqueAndPresent()
     {
         var root = FindRepositoryRoot();
-        var featRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "feat.2da");
-        var spellRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "spells.2da");
+        var featRows = Read2da(root / "SWLOR_Haks" / "sw_2da" / "feat.2da");
+        var spellRows = Read2da(root / "SWLOR_Haks" / "sw_2da" / "spells.2da");
         var feats = new[]
         {
             (FeatType.DeflectorShield1, "ife_dflctrshld1", "M", "0x03", "0", "****", "****", "****", "****", "****"),
@@ -191,7 +191,7 @@ public class DevicesFieldSupportAndAssaultGadgetsTests
             featIcon.Should().Be(expectedIcon);
             spellRow["IconResRef"].Should().Be(featIcon);
             seenIcons.Add(featIcon).Should().BeTrue($"{featType} should have a unique icon");
-            File.Exists((root / "SWLOR_Haks" / "swlor2_tga" / $"{featIcon}.tga").FullName).Should().BeTrue();
+            File.Exists((root / "SWLOR_Haks" / "sw_ability" / $"{featIcon}.tga").FullName).Should().BeTrue();
 
             spellRow["Range"].Should().Be(range);
             spellRow["TargetType"].Should().Be(targetType);
@@ -438,7 +438,7 @@ public class DevicesFieldSupportAndAssaultGadgetsTests
         {
             var candidate = directory.FullName;
             if (File.Exists(Path.Combine(candidate, "SWLOR.Game.Server.sln")) &&
-                File.Exists(Path.Combine(candidate, "SWLOR_Haks", "swlor2_2da", "feat.2da")))
+                File.Exists(Path.Combine(candidate, "SWLOR_Haks", "sw_2da", "feat.2da")))
             {
                 return new PathInfo(candidate);
             }

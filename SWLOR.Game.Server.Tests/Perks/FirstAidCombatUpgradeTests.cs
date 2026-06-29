@@ -225,7 +225,7 @@ public class FirstAidCombatUpgradeTests
         var visualEffectEnum = File.ReadAllText((root / "SWLOR.NWN.API" / "NWScript" / "Enum" / "VisualEffect" / "VisualEffect.cs").FullName);
         visualEffectEnum.Should().Contain("Vfx_Imp_Healing_M_Silent = 842");
 
-        var visualEffects = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "visualeffects.2da");
+        var visualEffects = Read2da(root / "SWLOR_Haks" / "sw_2da" / "visualeffects.2da");
         visualEffects[842]["Label"].Should().Be("VFX_IMP_HEALING_M_SILENT");
         visualEffects[842]["Imp_HeadCon_Node"].Should().Be("vim_heal04");
         visualEffects[842]["SoundImpact"].Should().Be("****");
@@ -235,8 +235,8 @@ public class FirstAidCombatUpgradeTests
     public void FirstAidFeatAndAbilityIcons_AreUniqueAndPresent()
     {
         var root = FindRepositoryRoot();
-        var featRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "feat.2da");
-        var abilityRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "spells.2da");
+        var featRows = Read2da(root / "SWLOR_Haks" / "sw_2da" / "feat.2da");
+        var abilityRows = Read2da(root / "SWLOR_Haks" / "sw_2da" / "spells.2da");
         var feats = new[]
         {
             (FeatType.MedKit1, "ife_mdkt1", "M", "0x03", "0", "****", "****", "****", "****", "****"),
@@ -277,7 +277,7 @@ public class FirstAidCombatUpgradeTests
             featIcon.Should().Be(expectedIcon);
             abilityRow["IconResRef"].Should().Be(featIcon);
             seenIcons.Add(featIcon).Should().BeTrue($"{featType} should have a unique icon");
-            File.Exists((root / "SWLOR_Haks" / "swlor2_tga" / $"{featIcon}.tga").FullName).Should().BeTrue();
+            File.Exists((root / "SWLOR_Haks" / "sw_ability" / $"{featIcon}.tga").FullName).Should().BeTrue();
 
             abilityRow["Range"].Should().Be(range);
             abilityRow["TargetType"].Should().Be(targetType);
@@ -297,9 +297,9 @@ public class FirstAidCombatUpgradeTests
     public void FirstAidFeatAndAbilityDescriptions_MatchCombatBible()
     {
         var root = FindRepositoryRoot();
-        var featRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "feat.2da");
-        var abilityRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "spells.2da");
-        var tlkEntries = ReadTlkEntries(root / "SWLOR_Haks" / "swlor2_tlk" / "swlor2_tlk.tlk.json");
+        var featRows = Read2da(root / "SWLOR_Haks" / "sw_2da" / "feat.2da");
+        var abilityRows = Read2da(root / "SWLOR_Haks" / "sw_2da" / "spells.2da");
+        var tlkEntries = ReadTlkEntries(root / "SWLOR_Haks" / "sw_tlk" / "sw_tlk.tlk.json");
         const int CustomTlkOffset = 16777216;
         var descriptions = new[]
         {
@@ -562,7 +562,7 @@ public class FirstAidCombatUpgradeTests
         {
             var candidate = directory.FullName;
             if (File.Exists(Path.Combine(candidate, "SWLOR.Game.Server.sln")) &&
-                File.Exists(Path.Combine(candidate, "SWLOR_Haks", "swlor2_2da", "feat.2da")))
+                File.Exists(Path.Combine(candidate, "SWLOR_Haks", "sw_2da", "feat.2da")))
             {
                 return new PathInfo(candidate);
             }

@@ -3,7 +3,7 @@ param(
     [string]$ReferenceArtworkPath = "SWLOR_Haks\output\icon_badge_rules",
     [string]$GeneratedSheetPath = "SWLOR_Haks\output\imagegen\gpt2_icon_production\all_source_sheets",
     [string]$OverrideArtworkPath = "SWLOR_Haks\output\icon_overrides",
-    [string]$IconOutputPath = "SWLOR_Haks\swlor2_tga",
+    [string]$IconOutputPath = "SWLOR_Haks\sw_ability",
     [string]$MatchReportPath = "SWLOR_Haks\output\icon_source_matches\ability_icon_matches.csv",
     [int]$IconSize = 32,
     [string[]]$IconResRefs = @()

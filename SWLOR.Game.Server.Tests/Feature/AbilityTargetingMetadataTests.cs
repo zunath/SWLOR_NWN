@@ -29,8 +29,8 @@ public class AbilityTargetingMetadataTests
     {
         var root = FindRepositoryRoot();
         var abilities = BuildAbilityDetails();
-        var featRows = Read2daRows(root / "SWLOR_Haks" / "swlor2_2da" / "feat.2da");
-        var spellRows = Read2daRows(root / "SWLOR_Haks" / "swlor2_2da" / "spells.2da");
+        var featRows = Read2daRows(root / "SWLOR_Haks" / "sw_2da" / "feat.2da");
+        var spellRows = Read2daRows(root / "SWLOR_Haks" / "sw_2da" / "spells.2da");
         var positiveDelayAreaAbilities = FindPositiveDelayCastedAreaAbilities(abilities);
 
         foreach (var (feat, ability) in positiveDelayAreaAbilities)
@@ -160,7 +160,7 @@ public class AbilityTargetingMetadataTests
         {
             var candidate = directory.FullName;
             if (File.Exists(Path.Combine(candidate, "SWLOR.Game.Server.sln")) &&
-                File.Exists(Path.Combine(candidate, "SWLOR_Haks", "swlor2_2da", "feat.2da")))
+                File.Exists(Path.Combine(candidate, "SWLOR_Haks", "sw_2da", "feat.2da")))
             {
                 return new PathInfo(candidate);
             }

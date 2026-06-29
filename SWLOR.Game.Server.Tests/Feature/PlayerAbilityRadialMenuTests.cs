@@ -22,9 +22,9 @@ public class PlayerAbilityRadialMenuTests
     public void CustomPlayerAbilityFeats_AreLinkedAndAvailableOnFighterMenu()
     {
         var root = FindRepositoryRoot();
-        var featRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "feat.2da");
-        var spellRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "spells.2da");
-        var classFeatRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "CLS_FEAT_FIGHT.2da");
+        var featRows = Read2da(root / "SWLOR_Haks" / "sw_2da" / "feat.2da");
+        var spellRows = Read2da(root / "SWLOR_Haks" / "sw_2da" / "spells.2da");
+        var classFeatRows = Read2da(root / "SWLOR_Haks" / "sw_2da" / "CLS_FEAT_FIGHT.2da");
         var playerAbilityFeats = BuildPlayerAbilityFeats()
             .Where(feat => (int)feat >= 2000)
             .OrderBy(feat => (int)feat)
@@ -122,7 +122,7 @@ public class PlayerAbilityRadialMenuTests
         {
             var candidate = directory.FullName;
             if (File.Exists(Path.Combine(candidate, "SWLOR.Game.Server.sln")) &&
-                File.Exists(Path.Combine(candidate, "SWLOR_Haks", "swlor2_2da", "feat.2da")))
+                File.Exists(Path.Combine(candidate, "SWLOR_Haks", "sw_2da", "feat.2da")))
             {
                 return new PathInfo(candidate);
             }

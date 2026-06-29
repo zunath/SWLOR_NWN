@@ -1,6 +1,6 @@
 param(
     [string]$ManifestPath = "SWLOR.Game.Server\Readmes\GameplayIconManifest.csv",
-    [string]$IconPath = "SWLOR_Haks\swlor2_tga",
+    [string]$IconPath = "SWLOR_Haks\sw_ability",
     [int]$IconSize = 32,
     [string[]]$IconResRefs = @(),
     [switch]$Apply,

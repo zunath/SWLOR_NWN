@@ -9,9 +9,9 @@ SWLOR (Star Wars: Legends of the Old Republic) is a Neverwinter Nights: Enhanced
 ## Development Commands
 
 ### TLK Entry Allocation
-- New custom TLK strings must use a pre-existing empty TLK slot or gap before appending new IDs at the end of `SWLOR_Haks/swlor2_tlk/swlor2_tlk.tlk.json`.
+- New custom TLK strings must use a pre-existing empty TLK slot or gap before appending new IDs at the end of `SWLOR_Haks/sw_tlk/sw_tlk.tlk.json`.
 - NWN custom TLK references in 2DA files use `16777216 + tlkId`. When moving or adding a TLK entry, update every 2DA/reference to the matching custom strref.
-- After editing `swlor2_tlk.tlk.json`, regenerate `swlor2_tlk.tlk` before building or handing off the change.
+- After editing `sw_tlk.tlk.json`, regenerate `sw_tlk.tlk` before building or handing off the change.
 
 ### Building the Project
 ```bash

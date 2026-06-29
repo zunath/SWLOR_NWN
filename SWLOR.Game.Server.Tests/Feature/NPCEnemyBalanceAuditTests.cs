@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.IO.Compression;
 using System.Text.Json;
 using System.Xml.Linq;
@@ -283,8 +284,8 @@ public class NPCEnemyBalanceAuditTests
             "design",
             "bible",
             "SWLOR Design Bible - Combat Upgrade.xlsx"));
-        var worksheet = ReadWorkbookXml(archive, "xl/worksheets/sheet56.xml");
-        var weaponDelays = ReadWorkbookXml(archive, "xl/worksheets/sheet54.xml");
+        var worksheet = ReadWorksheetByName(archive, "World NPCs");
+        var weaponDelays = ReadWorksheetByName(archive, "World NPC Weapon Delays");
         var sharedStrings = ReadSharedStrings(archive);
         XNamespace ns = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
 
@@ -293,10 +294,10 @@ public class NPCEnemyBalanceAuditTests
         GetWorkbookCellText(worksheet, sharedStrings, "AK1").Should().Be("Trauma Res Adj");
         GetWorkbookCellText(worksheet, sharedStrings, "AL1").Should().Be("Disruption Res Adj");
         GetWorkbookCellText(worksheet, sharedStrings, "AM1").Should().Be("Skill Override");
-        GetWorkbookCellText(worksheet, sharedStrings, "AC206").Should().Be("100");
-        GetWorkbookCellText(worksheet, sharedStrings, "AF206").Should().Be("-5");
-        GetWorkbookCellText(worksheet, sharedStrings, "AI206").Should().Be("-5");
-        GetWorkbookCellText(worksheet, sharedStrings, "AK206").Should().Be("87");
+        GetWorkbookCellNumber(worksheet, sharedStrings, "AC206").Should().Be(100m);
+        GetWorkbookCellNumber(worksheet, sharedStrings, "AF206").Should().Be(-5m);
+        GetWorkbookCellNumber(worksheet, sharedStrings, "AI206").Should().Be(-5m);
+        GetWorkbookCellNumber(worksheet, sharedStrings, "AK206").Should().Be(87m);
         GetWorkbookCellText(worksheet, sharedStrings, "AP206")
             .Should()
             .Be("Blood Frenzy, Blood Frenzy Flurry, Draavo's Challenge, Stim Canister, Serrated Slash, Brutal Bash, Tactical Mark");
@@ -363,9 +364,9 @@ public class NPCEnemyBalanceAuditTests
             .Be("$A$1:$E$201", "the Blood Frenzy weapon-delay lookup rows should be filterable");
 
         GetWorkbookCellText(weaponDelays, sharedStrings, "A197").Should().Be("bf_scavenger");
-        GetWorkbookCellText(weaponDelays, sharedStrings, "D197").Should().Be("270");
+        GetWorkbookCellNumber(weaponDelays, sharedStrings, "D197").Should().Be(270m);
         GetWorkbookCellText(weaponDelays, sharedStrings, "A201").Should().Be("bf_kess");
-        GetWorkbookCellText(weaponDelays, sharedStrings, "D201").Should().Be("270");
+        GetWorkbookCellNumber(weaponDelays, sharedStrings, "D201").Should().Be(270m);
     }
 
     [Test]
@@ -487,9 +488,9 @@ public class NPCEnemyBalanceAuditTests
     public void ResistanceItemProperties_UseResistanceCostTableRows()
     {
         var root = FindRepositoryRoot();
-        var costTableRows = Read2DARows(root, "SWLOR_Haks", "swlor2_2da", "iprp_costtable.2da");
-        var itempropdefRows = Read2DARows(root, "SWLOR_Haks", "swlor2_2da", "itempropdef.2da");
-        var resistanceCostRows = Read2DARows(root, "SWLOR_Haks", "swlor2_2da", "iprp_swlrescost.2da");
+        var costTableRows = Read2DARows(root, "SWLOR_Haks", "sw_2da", "iprp_costtable.2da");
+        var itempropdefRows = Read2DARows(root, "SWLOR_Haks", "sw_2da", "itempropdef.2da");
+        var resistanceCostRows = Read2DARows(root, "SWLOR_Haks", "sw_2da", "iprp_swlrescost.2da");
         var resistanceAmountByRow = resistanceCostRows
             .ToDictionary(row => row.Id, row => int.Parse(row.Columns[3]));
         var customTlkTextById = ReadCustomTlkTextById(root);
@@ -520,7 +521,7 @@ public class NPCEnemyBalanceAuditTests
                 continue;
 
             var tlkId = int.Parse(row.Columns[1]) - CustomTlkOffset;
-            customTlkTextById.Should().ContainKey(tlkId, $"SWLOR resistance {amount} custom strref should exist in swlor2_tlk.tlk.json");
+            customTlkTextById.Should().ContainKey(tlkId, $"SWLOR resistance {amount} custom strref should exist in sw_tlk.tlk.json");
             customTlkTextById[tlkId].Should().Be(amount.ToString(), $"SWLOR resistance {amount} should display its signed amount");
         }
 
@@ -828,7 +829,7 @@ public class NPCEnemyBalanceAuditTests
 
     private static IReadOnlyDictionary<int, string> ReadCustomTlkTextById(DirectoryInfo root)
     {
-        using var tlk = ReadJson(root, "SWLOR_Haks", "swlor2_tlk", "swlor2_tlk.tlk.json");
+        using var tlk = ReadJson(root, "SWLOR_Haks", "sw_tlk", "sw_tlk.tlk.json");
 
         return tlk.RootElement
             .GetProperty("entries")
@@ -843,6 +844,34 @@ public class NPCEnemyBalanceAuditTests
 
         using var stream = entry!.Open();
         return XDocument.Load(stream);
+    }
+
+    private static XDocument ReadWorksheetByName(ZipArchive archive, string sheetName)
+    {
+        var workbook = ReadWorkbookXml(archive, "xl/workbook.xml");
+        var relationships = ReadWorkbookXml(archive, "xl/_rels/workbook.xml.rels");
+        XNamespace workbookNs = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
+        XNamespace relationshipNs = "http://schemas.openxmlformats.org/officeDocument/2006/relationships";
+        XNamespace packageRelationshipNs = "http://schemas.openxmlformats.org/package/2006/relationships";
+
+        var sheet = workbook
+            .Descendants(workbookNs + "sheet")
+            .Single(candidate => candidate.Attribute("name")?.Value == sheetName);
+        var relationshipId = sheet.Attribute(relationshipNs + "id")?.Value;
+        relationshipId.Should().NotBeNullOrWhiteSpace($"{sheetName} should have a workbook relationship id");
+
+        var target = relationships
+            .Descendants(packageRelationshipNs + "Relationship")
+            .Single(candidate => candidate.Attribute("Id")?.Value == relationshipId)
+            .Attribute("Target")?
+            .Value
+            .Replace('\\', '/');
+        target.Should().NotBeNullOrWhiteSpace($"{sheetName} should resolve to a worksheet XML target");
+
+        var entryName = target!.StartsWith("/", StringComparison.Ordinal)
+            ? target.TrimStart('/')
+            : $"xl/{target}";
+        return ReadWorkbookXml(archive, entryName);
     }
 
     private static IReadOnlyList<string> ReadSharedStrings(ZipArchive archive)
@@ -881,14 +910,26 @@ public class NPCEnemyBalanceAuditTests
         return value ?? string.Empty;
     }
 
+    private static decimal GetWorkbookCellNumber(XDocument worksheet, IReadOnlyList<string> sharedStrings, string address)
+    {
+        var text = GetWorkbookCellText(worksheet, sharedStrings, address);
+        return decimal.Parse(text, NumberStyles.Number, CultureInfo.InvariantCulture);
+    }
+
     private static string GetWorkbookCellFormula(XDocument worksheet, string address)
     {
         XNamespace ns = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
-        return worksheet
+        var formula = worksheet
             .Descendants(ns + "c")
             .SingleOrDefault(candidate => candidate.Attribute("r")?.Value == address)?
-            .Element(ns + "f")?
-            .Value ?? string.Empty;
+            .Element(ns + "f");
+
+        if (formula == null)
+            return string.Empty;
+
+        return string.IsNullOrWhiteSpace(formula.Value)
+            ? formula.Attribute("t")?.Value ?? string.Empty
+            : formula.Value;
     }
 
     private static string GetWorkbookCellStyle(XDocument worksheet, string address)

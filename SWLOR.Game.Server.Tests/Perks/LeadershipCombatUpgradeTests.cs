@@ -96,8 +96,8 @@ public class LeadershipCombatUpgradeTests
             "FieldRecovery2", "WatchfulPresence3"
         };
         var root = FindRepositoryRoot();
-        var featRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "feat.2da", "ICON");
-        var spellRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "spells.2da", "IconResRef");
+        var featRows = Read2da(root / "SWLOR_Haks" / "sw_2da" / "feat.2da", "ICON");
+        var spellRows = Read2da(root / "SWLOR_Haks" / "sw_2da" / "spells.2da", "IconResRef");
         var targetIcons = new List<string>();
 
         foreach (var label in labels)
@@ -112,7 +112,7 @@ public class LeadershipCombatUpgradeTests
 
             featRows.Values.Where(x => x.Icon == featIcon && !labels.Contains(x.Label)).Should().BeEmpty();
             spellRows.Values.Where(x => x.Icon == spellIcon && !labels.Contains(x.Label)).Should().BeEmpty();
-            File.Exists((root / "SWLOR_Haks" / "swlor2_tga" / $"{featIcon}.tga").FullName).Should().BeTrue();
+            File.Exists((root / "SWLOR_Haks" / "sw_ability" / $"{featIcon}.tga").FullName).Should().BeTrue();
         }
 
         targetIcons.Should().OnlyHaveUniqueItems();
@@ -122,9 +122,9 @@ public class LeadershipCombatUpgradeTests
     public void LeadershipFeatAndAbilityDescriptions_MatchCombatBible()
     {
         var root = FindRepositoryRoot();
-        var featRows = Read2daRows(root / "SWLOR_Haks" / "swlor2_2da" / "feat.2da");
-        var abilityRows = Read2daRows(root / "SWLOR_Haks" / "swlor2_2da" / "spells.2da");
-        var tlkEntries = ReadTlkEntries(root / "SWLOR_Haks" / "swlor2_tlk" / "swlor2_tlk.tlk.json");
+        var featRows = Read2daRows(root / "SWLOR_Haks" / "sw_2da" / "feat.2da");
+        var abilityRows = Read2daRows(root / "SWLOR_Haks" / "sw_2da" / "spells.2da");
+        var tlkEntries = ReadTlkEntries(root / "SWLOR_Haks" / "sw_tlk" / "sw_tlk.tlk.json");
         const int CustomTlkOffset = 16777216;
         var descriptions = new[]
         {
@@ -172,8 +172,8 @@ public class LeadershipCombatUpgradeTests
     public void LeadershipAreaAbility2daRows_MatchTargeting()
     {
         var root = FindRepositoryRoot();
-        var featRows = Read2daRows(root / "SWLOR_Haks" / "swlor2_2da" / "feat.2da");
-        var abilityRows = Read2daRows(root / "SWLOR_Haks" / "swlor2_2da" / "spells.2da");
+        var featRows = Read2daRows(root / "SWLOR_Haks" / "sw_2da" / "feat.2da");
+        var abilityRows = Read2daRows(root / "SWLOR_Haks" / "sw_2da" / "spells.2da");
         var expectedAreaRows = new[]
         {
             FeatType.CleanseOrder2,
@@ -412,7 +412,7 @@ public class LeadershipCombatUpgradeTests
         {
             var candidate = directory.FullName;
             if (File.Exists(Path.Combine(candidate, "SWLOR.Game.Server.sln")) &&
-                File.Exists(Path.Combine(candidate, "SWLOR_Haks", "swlor2_2da", "feat.2da")))
+                File.Exists(Path.Combine(candidate, "SWLOR_Haks", "sw_2da", "feat.2da")))
             {
                 return new PathInfo(candidate);
             }

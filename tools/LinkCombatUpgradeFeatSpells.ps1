@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param(
-    [string]$Feat2daPath = "SWLOR_Haks\swlor2_2da\feat.2da",
-    [string]$Spells2daPath = "SWLOR_Haks\swlor2_2da\spells.2da",
+    [string]$Feat2daPath = "SWLOR_Haks\sw_2da\feat.2da",
+    [string]$Spells2daPath = "SWLOR_Haks\sw_2da\spells.2da",
     [string]$SpellEnumPath = "SWLOR.NWN.API\NWScript\Enum\spell.cs",
     [int]$GeneratedFeatStart = 2000,
     [int]$GeneratedFeatEnd = 2578

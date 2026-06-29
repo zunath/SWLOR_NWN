@@ -40,7 +40,7 @@ public class ShieldDeflectionTests
         var itemPropDefRows = Read2da(Path.Combine(
             root.FullName,
             "SWLOR_Haks",
-            "swlor2_2da",
+            "sw_2da",
             "itempropdef.2da"));
         itemPropDefRows[135]["Name"].Should().Be("16859987");
         itemPropDefRows[135]["Label"].Should().Be("ShieldDeflection");
@@ -51,7 +51,7 @@ public class ShieldDeflectionTests
         var itemPropRows = Read2da(Path.Combine(
             root.FullName,
             "SWLOR_Haks",
-            "swlor2_2da",
+            "sw_2da",
             "itemprops.2da"));
         itemPropRows[135]["6_Arm_Shld"].Should().Be("1");
         itemPropRows[135]["0_Melee"].Should().Be("****");
@@ -87,7 +87,7 @@ public class ShieldDeflectionTests
         var enhanceArmorRows = Read2da(Path.Combine(
             root.FullName,
             "SWLOR_Haks",
-            "swlor2_2da",
+            "sw_2da",
             "iprp_enhancearm.2da"));
         enhanceArmorRows[127]["Name"].Should().Be("16859987");
         enhanceArmorRows[127]["Label"].Should().Be("ShieldDeflection");
@@ -142,8 +142,8 @@ public class ShieldDeflectionTests
         using var document = JsonDocument.Parse(File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR_Haks",
-            "swlor2_tlk",
-            "swlor2_tlk.tlk.json")));
+            "sw_tlk",
+            "sw_tlk.tlk.json")));
 
         return document
             .RootElement

@@ -60,7 +60,7 @@ public class NPCAbilityDefinitionTests
     public void NPCAbilities_HaveMatchingFeat2daRows()
     {
         var root = FindRepositoryRoot();
-        var featRows = Read2daRows(root / "SWLOR_Haks" / "swlor2_2da" / "feat.2da");
+        var featRows = Read2daRows(root / "SWLOR_Haks" / "sw_2da" / "feat.2da");
 
         foreach (var feat in ExpectedAbilities().Keys)
         {
@@ -73,8 +73,8 @@ public class NPCAbilityDefinitionTests
     public void NewResistanceThreatAbilities_UseFeatOnly2daRowsWithSharedNpcSpell()
     {
         var root = FindRepositoryRoot();
-        var featRows = Read2daRows(root / "SWLOR_Haks" / "swlor2_2da" / "feat.2da");
-        var spellRows = Read2daRows(root / "SWLOR_Haks" / "swlor2_2da" / "spells.2da");
+        var featRows = Read2daRows(root / "SWLOR_Haks" / "sw_2da" / "feat.2da");
+        var spellRows = Read2daRows(root / "SWLOR_Haks" / "sw_2da" / "spells.2da");
 
         spellRows[904]["Label"].Should().Be("Bite", "NPC innate abilities reuse the shared feat-activation spell row");
 
@@ -280,7 +280,7 @@ public class NPCAbilityDefinitionTests
         {
             var candidate = directory.FullName;
             if (File.Exists(Path.Combine(candidate, "SWLOR.Game.Server.sln")) &&
-                File.Exists(Path.Combine(candidate, "SWLOR_Haks", "swlor2_2da", "feat.2da")))
+                File.Exists(Path.Combine(candidate, "SWLOR_Haks", "sw_2da", "feat.2da")))
             {
                 return new PathInfo(candidate);
             }

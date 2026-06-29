@@ -58,8 +58,8 @@ public class ArmorProvokeTests
     public void ProvokeFeatAndSpellIcons_AreUniqueAndPresent()
     {
         var root = FindRepositoryRoot();
-        var featRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "feat.2da");
-        var spellRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "spells.2da");
+        var featRows = Read2da(root / "SWLOR_Haks" / "sw_2da" / "feat.2da");
+        var spellRows = Read2da(root / "SWLOR_Haks" / "sw_2da" / "spells.2da");
 
         var provoke1FeatIcon = featRows[1813]["ICON"];
         var provoke2FeatIcon = featRows[1814]["ICON"];
@@ -72,16 +72,16 @@ public class ArmorProvokeTests
         provoke2SpellIcon.Should().Be(provoke2FeatIcon);
         provoke2FeatIcon.Should().NotBe(provoke1FeatIcon);
 
-        File.Exists((root / "SWLOR_Haks" / "swlor2_tga" / $"{provoke1FeatIcon}.tga").FullName).Should().BeTrue();
-        File.Exists((root / "SWLOR_Haks" / "swlor2_tga" / $"{provoke2FeatIcon}.tga").FullName).Should().BeTrue();
+        File.Exists((root / "SWLOR_Haks" / "sw_ability" / $"{provoke1FeatIcon}.tga").FullName).Should().BeTrue();
+        File.Exists((root / "SWLOR_Haks" / "sw_ability" / $"{provoke2FeatIcon}.tga").FullName).Should().BeTrue();
     }
 
     [Test]
     public void Provoke2FeatAndSpellTargeting_IsSelectableArea()
     {
         var root = FindRepositoryRoot();
-        var featRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "feat.2da");
-        var spellRows = Read2da(root / "SWLOR_Haks" / "swlor2_2da" / "spells.2da");
+        var featRows = Read2da(root / "SWLOR_Haks" / "sw_2da" / "feat.2da");
+        var spellRows = Read2da(root / "SWLOR_Haks" / "sw_2da" / "spells.2da");
 
         var provoke2Feat = featRows[1814];
         var provoke2Spell = spellRows[972];
@@ -164,7 +164,7 @@ public class ArmorProvokeTests
         {
             var candidate = directory.FullName;
             if (File.Exists(Path.Combine(candidate, "SWLOR.Game.Server.sln")) &&
-                File.Exists(Path.Combine(candidate, "SWLOR_Haks", "swlor2_2da", "feat.2da")))
+                File.Exists(Path.Combine(candidate, "SWLOR_Haks", "sw_2da", "feat.2da")))
             {
                 return new PathInfo(candidate);
             }

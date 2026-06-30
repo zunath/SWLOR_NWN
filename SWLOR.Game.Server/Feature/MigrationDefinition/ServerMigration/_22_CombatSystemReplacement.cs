@@ -9,7 +9,6 @@ using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.MigrationService;
 using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.CraftService;
 using AppearanceType = SWLOR.NWN.API.NWScript.Enum.AppearanceType;
@@ -366,76 +365,6 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
             { PerkType.FocusAttention, (3, new[] { 2, 2, 2, 3, 3 }) },
         };
 
-        private static readonly HashSet<RecastGroup> ObsoleteRecastGroups = new()
-        {
-            (RecastGroup)1,
-            (RecastGroup)2,
-            (RecastGroup)3,
-            (RecastGroup)4,
-            (RecastGroup)5,
-            (RecastGroup)6,
-            (RecastGroup)7,
-            (RecastGroup)8,
-            (RecastGroup)9,
-            (RecastGroup)10,
-            (RecastGroup)11,
-            (RecastGroup)12,
-            (RecastGroup)13,
-            (RecastGroup)14,
-            (RecastGroup)15,
-            (RecastGroup)25,
-            (RecastGroup)26,
-            (RecastGroup)27,
-            (RecastGroup)28,
-            (RecastGroup)29,
-            (RecastGroup)30,
-            (RecastGroup)31,
-            (RecastGroup)32,
-            (RecastGroup)33,
-            (RecastGroup)34,
-            (RecastGroup)35,
-            (RecastGroup)36,
-            (RecastGroup)39,
-            (RecastGroup)40,
-            (RecastGroup)41,
-            (RecastGroup)42,
-            (RecastGroup)43,
-            (RecastGroup)44,
-            (RecastGroup)45,
-            (RecastGroup)46,
-            (RecastGroup)47,
-            (RecastGroup)48,
-            (RecastGroup)49,
-            (RecastGroup)61,
-            (RecastGroup)64,
-            (RecastGroup)65,
-            (RecastGroup)66,
-            (RecastGroup)67,
-            (RecastGroup)68,
-            (RecastGroup)70,
-            (RecastGroup)71,
-            (RecastGroup)72,
-            (RecastGroup)79,
-            (RecastGroup)80,
-            (RecastGroup)81,
-            (RecastGroup)82,
-            (RecastGroup)83,
-            (RecastGroup)84,
-            (RecastGroup)85,
-            (RecastGroup)86,
-            (RecastGroup)87,
-            (RecastGroup)88,
-            (RecastGroup)89,
-            (RecastGroup)90,
-            (RecastGroup)91,
-            (RecastGroup)92,
-            (RecastGroup)93,
-            (RecastGroup)94,
-            (RecastGroup)95,
-            (RecastGroup)96,
-            (RecastGroup)97,
-        };
-
         private static readonly IReadOnlyDictionary<string, ResistanceType> ResistanceKeyMap =
             new Dictionary<string, ResistanceType>
             {
@@ -491,6 +420,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
             foreach (var dbPlayerJson in dbPlayersRaw)
             {
                 var jObject = JObject.Parse(dbPlayerJson);
+                ClearRecastTimes(jObject);
                 var refundAmount = CalculateRefundAmount(jObject["Perks"] as JObject);
                 WeaponBlueprintPerkMigration.CollapsePlayerPerks(jObject, out var weaponBlueprintRefundAmount);
                 refundAmount += weaponBlueprintRefundAmount;
@@ -501,7 +431,6 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
 
                 RemoveInvalidEnumDictionaryKeys<PerkType>(jObject["Perks"] as JObject);
                 RemoveInvalidEnumDictionaryKeys<PerkType>(jObject["UnlockedPerks"] as JObject);
-                RemoveInvalidEnumDictionaryKeys<RecastGroup>(jObject["RecastTimes"] as JObject);
                 RemoveInvalidEnumDictionaryKeys<RecipeType>(jObject["UnlockedRecipes"] as JObject);
                 RemoveInvalidEnumDictionaryKeys<RecipeType>(jObject["CraftedRecipes"] as JObject);
                 RemoveInvalidSkillDictionaryKeys(jObject);
@@ -522,7 +451,6 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
                     PlayerTrimmedPerks,
                     out _);
                 RemoveUnlockedPerks(dbPlayer);
-                RemoveRecastTimes(dbPlayer);
 
                 if (refundAmount > 0)
                     dbPlayer.UnallocatedSP += refundAmount;
@@ -1132,20 +1060,6 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
             return changed;
         }
 
-        private static bool RemoveRecastTimes(Player player)
-        {
-            if (player.RecastTimes == null)
-                return false;
-
-            var changed = false;
-            foreach (var recastGroup in ObsoleteRecastGroups)
-            {
-                changed |= player.RecastTimes.Remove(recastGroup);
-            }
-
-            return changed;
-        }
-
         private static JToken GetToken(JObject obj, string name, int value)
         {
             return obj?[name] ?? obj?[value.ToString()];
@@ -1369,6 +1283,24 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
             }
 
             return false;
+        }
+
+        private static bool ClearRecastTimes(JObject player)
+        {
+            if (player == null)
+                return false;
+
+            if (player[nameof(Player.RecastTimes)] is not JObject recastTimes)
+            {
+                player[nameof(Player.RecastTimes)] = new JObject();
+                return true;
+            }
+
+            if (!recastTimes.HasValues)
+                return false;
+
+            recastTimes.RemoveAll();
+            return true;
         }
 
         private static void RemoveInvalidEnumDictionaryKeys<TEnum>(JObject dictionary)

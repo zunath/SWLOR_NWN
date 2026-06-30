@@ -455,7 +455,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "It's not all bad. Now that Viscara is in the hands of Viscarans we can start to help out here adn there. The main thing is just to gather supplies for those who need them."
+            "0": "It's not all bad. Now that Viscara is in the hands of Viscarans we can start to help out here and there. The main thing is just to gather supplies for those who need them."
           }
         }
       },
@@ -631,7 +631,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Spears and blaster pistols would be best. Simple things they can yse to fend off pirates, wildlife, and whatever else happens to wander a bit too close, y'know? Four Basic Spears and two Basic Blaster Pistols will do."
+            "0": "Spears and blaster pistols would be best. Simple things they can use to fend off pirates, wildlife, and whatever else happens to wander a bit too close, y'know? Four Basic Spears and two Basic Blaster Pistols will do."
           }
         }
       },

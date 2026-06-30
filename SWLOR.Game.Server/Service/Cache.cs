@@ -26,7 +26,6 @@ namespace SWLOR.Game.Server.Service
         private static readonly ReadOnlyDictionary<string, string> CustomSoundSetPreviewSoundResrefs = new(
             new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
             {
-                ["c_spiker"] = "c_spiker_bat1",
                 ["c_viper"] = "c_viper_bat1",
                 ["c_slime"] = "c_slime_bat1",
                 ["c_treant"] = "c_treant_bat1",

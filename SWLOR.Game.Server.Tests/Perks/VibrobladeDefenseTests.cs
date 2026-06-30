@@ -35,12 +35,15 @@ public class VibrobladeDefenseTests
 
         var shieldWall = new ShieldWallAbilityDefinition().BuildAbilities()[FeatType.ShieldWall1];
         AssertAbility(shieldWall, "Shield Wall", 1, RecastGroup.ShieldWall, 120f, 6f, 10, false, AbilityActivationType.Casted);
+        AssertActivationAnimation(shieldWall, "Shield_Wall");
 
         var coveringStrike = new CoveringStrikeAbilityDefinition().BuildAbilities()[FeatType.CoveringStrike1];
         AssertAbility(coveringStrike, "Covering Strike", 1, RecastGroup.CoveringStrike, 45f, 0f, 6, true, AbilityActivationType.Casted);
+        AssertImpactAnimation(coveringStrike, "Covering_Strike");
 
         var invincible = new InvincibleAbilityDefinition().BuildAbilities()[FeatType.Invincible1];
         AssertAbility(invincible, "Invincible", 1, RecastGroup.Capstone, 345f, 1f, 15, false, AbilityActivationType.Casted);
+        AssertActivationAnimation(invincible, "Invincible");
     }
 
     [Test]
@@ -81,6 +84,22 @@ public class VibrobladeDefenseTests
 
         var invincible = new InvincibleStatusEffect();
         invincible.StatGroup.Stats[StatType.PhysicalDamageTakenPercentAdjustment].Should().Be(-50);
+    }
+
+    [Test]
+    public void InvincibleStatusEffect_AppliesProtectiveDurationVisualEffect()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "StatusEffectDefinition",
+            "InvincibleStatusEffect.cs"));
+
+        source.Should().Contain("VisualEffect.Dur_Prot_Premonition");
+        source.Should().Contain("TagNativeEffect(EffectVisualEffect");
+        source.Should().Contain("ApplyEffectToObject(DurationType.Temporary, effect, creature, duration)");
     }
 
     [Test]
@@ -192,9 +211,22 @@ public class VibrobladeDefenseTests
 
     private static void AssertShieldBashAnimation(AbilityDetail ability)
     {
+        AssertImpactAnimation(ability, "Shield_Bash");
+    }
+
+    private static void AssertActivationAnimation(AbilityDetail ability, string replacementAnimationName)
+    {
+        ability.AnimationType.Should().Be(Animation.FireForgetTaunt);
+        ability.AnimationSourceAnimationName.Should().Be("taunt");
+        ability.AnimationReplacementAnimationName.Should().Be(replacementAnimationName);
+        ability.AnimationRestoreDelaySeconds.Should().Be(1.1f);
+    }
+
+    private static void AssertImpactAnimation(AbilityDetail ability, string replacementAnimationName)
+    {
         ability.ImpactAnimationType.Should().Be(Animation.FireForgetTaunt);
         ability.ImpactAnimationSourceAnimationName.Should().Be("taunt");
-        ability.ImpactAnimationReplacementAnimationName.Should().Be("Shield_Bash");
+        ability.ImpactAnimationReplacementAnimationName.Should().Be(replacementAnimationName);
         ability.ImpactAnimationRestoreDelaySeconds.Should().Be(1.1f);
     }
 

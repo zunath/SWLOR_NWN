@@ -46,6 +46,37 @@ public class AbilityImpactAnimationAuditTests
             "shared combat-impact helpers should never choose a default animation for an ability");
     }
 
+    [Test]
+    public void ActivationAnimationOverwrite_ReplacesCarrierBeforePlayingAnimation()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "UsePerkFeat.cs")).Replace("\r\n", "\n");
+        var processAnimationBody = source.Substring(
+            source.IndexOf("List<string> ProcessAnimationAndVisualEffects", StringComparison.Ordinal),
+            source.IndexOf("// Force out of stealth", StringComparison.Ordinal) -
+            source.IndexOf("List<string> ProcessAnimationAndVisualEffects", StringComparison.Ordinal));
+
+        var replaceIndex = processAnimationBody.IndexOf(
+            "ReplaceObjectAnimation(activator, sourceAnimationName, replacementAnimationName)",
+            StringComparison.Ordinal);
+        var playIndex = processAnimationBody.IndexOf(
+            "ActionPlayAnimation(ability.AnimationType, 1.0f, animationLength)",
+            StringComparison.Ordinal);
+        var restoreIndex = processAnimationBody.IndexOf(
+            "ReplaceObjectAnimation(activator, sourceAnimationName);",
+            StringComparison.Ordinal);
+
+        replaceIndex.Should().BeGreaterThanOrEqualTo(0);
+        playIndex.Should().BeGreaterThanOrEqualTo(0);
+        restoreIndex.Should().BeGreaterThanOrEqualTo(0);
+        replaceIndex.Should().BeLessThan(playIndex);
+        playIndex.Should().BeLessThan(restoreIndex);
+    }
+
     private static bool UsesCastedActionWithoutOwnedAnimation(AbilityDetail ability, string source)
     {
         return ability.ActivationType == AbilityActivationType.Casted &&

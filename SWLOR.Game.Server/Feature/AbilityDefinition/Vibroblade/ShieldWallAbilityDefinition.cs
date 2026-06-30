@@ -8,6 +8,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
 {
     public class ShieldWallAbilityDefinition : WeaponActiveAbilityDefinitionBase, IAbilityListDefinition
     {
+        private const string ReplacementAnimationName = "Shield_Wall";
+
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
@@ -18,7 +20,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
                     .Name("Shield Wall")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.ShieldWall, 120f)
-                    .UsesAnimation(Animation.ShieldWall),
+                    .UsesAnimationOverwrite(ReplacementAnimationName),
                 typeof(ShieldWallStatusEffect),
                 60f,
                 10,

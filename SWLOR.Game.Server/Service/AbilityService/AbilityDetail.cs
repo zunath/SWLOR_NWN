@@ -30,6 +30,9 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public AbilityActivationType ActivationType { get; set; }
         public PerkType EffectiveLevelPerkType { get; set; }
         public Animation AnimationType { get; set; }
+        public string AnimationSourceAnimationName { get; set; }
+        public string AnimationReplacementAnimationName { get; set; }
+        public float AnimationRestoreDelaySeconds { get; set; }
         public Animation ImpactAnimationType { get; set; }
         public string ImpactAnimationSourceAnimationName { get; set; }
         public string ImpactAnimationReplacementAnimationName { get; set; }
@@ -59,9 +62,13 @@ namespace SWLOR.Game.Server.Service.AbilityService
             ActivationSound = string.Empty;
             ImpactSound = string.Empty;
             AnimationType = Animation.Invalid;
+            AnimationSourceAnimationName = string.Empty;
+            AnimationReplacementAnimationName = string.Empty;
+            AnimationRestoreDelaySeconds = 0f;
             ImpactAnimationType = Animation.Invalid;
             ImpactAnimationSourceAnimationName = string.Empty;
             ImpactAnimationReplacementAnimationName = string.Empty;
+            ImpactAnimationRestoreDelaySeconds = 0f;
             Requirements = new List<IAbilityActivationRequirement>();
             MaxRange = 5.0f;
             IsHostileAbility = false;

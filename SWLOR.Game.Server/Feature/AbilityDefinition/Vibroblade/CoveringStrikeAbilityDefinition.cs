@@ -11,6 +11,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
 {
     public class CoveringStrikeAbilityDefinition : IAbilityListDefinition
     {
+        private const string ReplacementAnimationName = "Covering_Strike";
+
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
@@ -27,7 +29,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
                 .Name("Covering Strike")
                 .Level(1)
                 .HasActivationDelay(0f)
-                .UsesAnimation(Animation.DoubleStrike)
+                .UsesImpactAnimationOverwrite(ReplacementAnimationName)
                 .HasRecastDelay(RecastGroup.CoveringStrike, 45f)
                 .HasImpactAction(CoveringStrike1ImpactAction)
                 .HasTargetingLine(

@@ -21,6 +21,10 @@ public class AbilityBuilderTests
         abilities[FeatType.Invalid].ImpactAnimationSourceAnimationName.Should().BeEmpty();
         abilities[FeatType.Invalid].ImpactAnimationReplacementAnimationName.Should().BeEmpty();
         abilities[FeatType.Invalid].ImpactAnimationRestoreDelaySeconds.Should().Be(0f);
+        abilities[FeatType.Invalid].AnimationType.Should().Be(Animation.Invalid);
+        abilities[FeatType.Invalid].AnimationSourceAnimationName.Should().BeEmpty();
+        abilities[FeatType.Invalid].AnimationReplacementAnimationName.Should().BeEmpty();
+        abilities[FeatType.Invalid].AnimationRestoreDelaySeconds.Should().Be(0f);
         abilities[FeatType.Invalid].UsesActiveAttackTarget.Should().BeFalse();
     }
 
@@ -37,6 +41,37 @@ public class AbilityBuilderTests
         abilities[FeatType.Invalid].ImpactAnimationSourceAnimationName.Should().BeEmpty();
         abilities[FeatType.Invalid].ImpactAnimationReplacementAnimationName.Should().BeEmpty();
         abilities[FeatType.Invalid].ImpactAnimationRestoreDelaySeconds.Should().Be(0f);
+    }
+
+    [Test]
+    public void UsesAnimationOverwrite_UsesDefaultCarrierAndSource()
+    {
+        var abilities = new AbilityBuilder()
+            .Create(FeatType.Invalid, PerkType.Invalid)
+            .UsesAnimationOverwrite("Shield_Wall")
+            .Build();
+
+        var ability = abilities[FeatType.Invalid];
+        ability.AnimationType.Should().Be(Animation.FireForgetTaunt);
+        ability.AnimationSourceAnimationName.Should().Be("taunt");
+        ability.AnimationReplacementAnimationName.Should().Be("Shield_Wall");
+        ability.AnimationRestoreDelaySeconds.Should().Be(1.1f);
+    }
+
+    [Test]
+    public void UsesAnimation_ResetsActivationAnimationOverwrite()
+    {
+        var abilities = new AbilityBuilder()
+            .Create(FeatType.Invalid, PerkType.Invalid)
+            .UsesAnimationOverwrite("Shield_Wall")
+            .UsesAnimation(Animation.ShieldWall)
+            .Build();
+
+        var ability = abilities[FeatType.Invalid];
+        ability.AnimationType.Should().Be(Animation.ShieldWall);
+        ability.AnimationSourceAnimationName.Should().BeEmpty();
+        ability.AnimationReplacementAnimationName.Should().BeEmpty();
+        ability.AnimationRestoreDelaySeconds.Should().Be(0f);
     }
 
     [Test]

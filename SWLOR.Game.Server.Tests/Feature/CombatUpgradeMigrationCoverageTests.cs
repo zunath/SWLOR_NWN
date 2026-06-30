@@ -57,6 +57,29 @@ public class CombatUpgradeMigrationCoverageTests
     }
 
     [Test]
+    public void CombatUpgradeServerMigration_ClearsRecastTimesBeforePlayerDeserialization()
+    {
+        var clearRecastTimes = typeof(_22_CombatSystemReplacement)
+            .GetMethod("ClearRecastTimes", BindingFlags.NonPublic | BindingFlags.Static)!;
+        var playerJson = JObject.Parse("""
+            {
+              "RecastTimes": {
+                "SnarlGrowl": "2026-06-30T00:00:00Z",
+                "ShieldWall": "2026-06-30T00:01:00Z"
+              }
+            }
+            """);
+
+        ((bool)clearRecastTimes.Invoke(null, new object[] { playerJson })!)
+            .Should()
+            .BeTrue();
+        var recastTimes = (JObject)playerJson[nameof(Player.RecastTimes)]!;
+
+        recastTimes.Properties().Should().BeEmpty();
+        playerJson.ToObject<Player>()!.RecastTimes.Should().BeEmpty();
+    }
+
+    [Test]
     public void LoggedOutStatusEffects_RemainProcessLocalRuntimeState()
     {
         var root = FindRepositoryRoot();
@@ -553,9 +576,8 @@ public class CombatUpgradeMigrationCoverageTests
 
         serverMigration.Should().Contain("BeastRemovedPerks");
         serverMigration.Should().Contain("BeastTrimmedPerks");
-        serverMigration.Should().Contain("ObsoleteRecastGroups");
+        serverMigration.Should().Contain("ClearRecastTimes(jObject)");
         serverMigration.Should().Contain("RemoveUnlockedPerks(dbPlayer)");
-        serverMigration.Should().Contain("RemoveRecastTimes(dbPlayer)");
         AssertMigrationCalls(storedItemMigration,
             "MigrateInventoryItems(progress);",
             "MigrateMarketItems(progress);",

@@ -303,6 +303,29 @@ namespace SWLOR.Game.Server.Feature
             // Handles displaying animation and visual effects.
             List<string> ProcessAnimationAndVisualEffects(float delay)
             {
+                void PlayActivationAnimation(float animationLength)
+                {
+                    var sourceAnimationName = ability.AnimationSourceAnimationName;
+                    var replacementAnimationName = ability.AnimationReplacementAnimationName;
+
+                    if (!string.IsNullOrWhiteSpace(sourceAnimationName) &&
+                        !string.IsNullOrWhiteSpace(replacementAnimationName))
+                    {
+                        AssignCommand(activator, () =>
+                        {
+                            ReplaceObjectAnimation(activator, sourceAnimationName, replacementAnimationName);
+                            ActionPlayAnimation(ability.AnimationType, 1.0f, animationLength);
+                            DelayCommand(ability.AnimationRestoreDelaySeconds, () =>
+                            {
+                                ReplaceObjectAnimation(activator, sourceAnimationName);
+                            });
+                        });
+                        return;
+                    }
+
+                    AssignCommand(activator, () => ActionPlayAnimation(ability.AnimationType, 1.0f, animationLength));
+                }
+
                 // Force out of stealth
                 if (GetActionMode(activator, ActionMode.Stealth))
                     SetActionMode(activator, ActionMode.Stealth, false);
@@ -341,7 +364,7 @@ namespace SWLOR.Game.Server.Feature
                     if (animationLength < 0f)
                         animationLength = 0f;
 
-                    AssignCommand(activator, () => ActionPlayAnimation(ability.AnimationType, 1.0f, animationLength));
+                    PlayActivationAnimation(animationLength);
                 }
 
                 return DisplayActivationTargetingTelegraphs(activator, target, targetLocation, ability, delay);

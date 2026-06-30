@@ -84,6 +84,17 @@ public class VibrobladeOffenseTests
             .Should()
             .Be(BloodFrenzyQuestDefinition.FinalQuestId);
     }
+
+    [Test]
+    public void HackingBladeAbilities_UseHackingBladeAnimation()
+    {
+        var hackingBlade = new HackingBladeAbilityDefinition().BuildAbilities();
+
+        AssertImpactAnimation(hackingBlade[FeatType.HackingBlade1], "Hacking_Blade");
+        AssertImpactAnimation(hackingBlade[FeatType.HackingBlade2], "Hacking_Blade");
+        AssertImpactAnimation(hackingBlade[FeatType.HackingBlade3], "Hacking_Blade");
+    }
+
     [Test]
     public void VibrobladeOffenseStatusEffects_MatchCombatBible()
     {
@@ -242,6 +253,14 @@ public class VibrobladeOffenseTests
         {
             ability.Requirements.OfType<AbilityRequirementStamina>().Should().BeEmpty();
         }
+    }
+
+    private static void AssertImpactAnimation(AbilityDetail ability, string replacementAnimationName)
+    {
+        ability.ImpactAnimationType.Should().Be(Animation.FireForgetTaunt);
+        ability.ImpactAnimationSourceAnimationName.Should().Be("taunt");
+        ability.ImpactAnimationReplacementAnimationName.Should().Be(replacementAnimationName);
+        ability.ImpactAnimationRestoreDelaySeconds.Should().Be(1.1f);
     }
 
     private static void AssertSkillRequirement(PerkLevel level, SkillType skill, int rank)

@@ -103,7 +103,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Do you have a few coins for a starving refugee?"
+            "0": "Hey, got some credits for a few colonists outside of Veles?"
           }
         }
       },
@@ -191,7 +191,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Thanks stranger! It's so rare to see generous people around here."
+            "0": "Thanks stranger! Nice to see generous people around here."
           }
         }
       },
@@ -279,7 +279,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Ahem...It's not that simple."
+            "0": "Not that simple, sadly. There are other colonies on the planet that didn't get nearly as much attention as Veles did."
           }
         }
       },
@@ -367,7 +367,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "They have a foundation which is supposed to help us, but it is in fact a cover for their illegal activities. Czerka offers newcomer refugees food and housing but the it comes at a really expensive price. Alternatively you can work for them and create equipment for their use.\n.\nWe have to work fourteen hours a day just to have a meal and a place to sleep. Not to mention - if you get sick or work too slow they beat you and evict you. \n\nLast week, one of the refugees stole a piece of bread, they cut his hand and kicked him to the streets. He bled to death and no one seemed to care."
+            "0": "Veles was the 'Emerald Jewel' of Viscara, so it was the main trade hub, the place where all the new spacers and mercs came, it was the colony that got attention."
           }
         }
       },
@@ -455,7 +455,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Not all of them are aware of the situation. Many people on this planet work for Czerka because they don't have any other option.\n.\nSzaan Synko leads the Refugee Care Foundation but he doesn't seem to know anything about what REALLY happens there.\n\nHe thinks the Kath Hound furs and tooths collected by Czerka are used to craft blankets for us. In actuality, they are used in the Czerka facilities to build weaponry. You know - the same batons those Czerka guards use against us if we have the heart to complain."
+            "0": "It's not all bad. Now that Viscara is in the hands of Viscarans we can start to help out here adn there. The main thing is just to gather supplies for those who need them."
           }
         }
       },
@@ -543,7 +543,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "We are trying to organize a rebellion. The fact is we can't keep the weapons we are building everyday. Every hour, a few guards come to the facility and take all the weapons we have crafted. We need someone from the outside to bring us weapons so we can fight back.\n"
+            "0": "The credits go a long way, but if you're looking to help out a bit more you can always help us gather up some weapons."
           }
         }
       },
@@ -631,7 +631,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Spears and blaster pistols would be best.  Simple things that untrained refugees can use.  Two spears and three blaster pistols would be a great help."
+            "0": "Spears and blaster pistols would be best. Simple things they can yse to fend off pirates, wildlife, and whatever else happens to wander a bit too close, y'know? Four Basic Spears and two Basic Blaster Pistols will do."
           }
         }
       },
@@ -788,7 +788,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Great work! This will give us what we need to fight back our oppressors. I don't have much in the way of credits but perhaps this will help you."
+            "0": "Great work! This will give us what we need to keep people safe. Here's something for the effort, thanks."
           }
         }
       },
@@ -837,7 +837,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "They'll never know what hit them."
+            "0": "Hey, thanks for the help! Those supplies are really helping out at the other colonies."
           }
         }
       }
@@ -845,7 +845,7 @@
   },
   "NumWords": {
     "type": "dword",
-    "value": 457
+    "value": 308
   },
   "PreventZoomIn": {
     "type": "byte",
@@ -1070,7 +1070,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Isn't the Czerka Refugees Care Foundation supposed to help you with food and housing ?"
+            "0": "The colony seems pretty well-off, why are you collecting credits?"
           }
         }
       },
@@ -1290,7 +1290,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "That's terrible. They're monsters!"
+            "0": "That's terrible!"
           }
         }
       },

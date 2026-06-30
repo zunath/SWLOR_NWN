@@ -3067,7 +3067,7 @@ Boma Beast Baby	Force	1	122	2	2	16	11	16	11	9	6	SOC	WIL	0	0	0	0	1	0	0	0	1	0	0	0	
 Ubese Thorn	Force	1	122	2	2	29	24	28	25	16	8	WIL	VIT	0	0	0	0	1	0	0	0	1	0	0	0	UbeseThorn	MdrnCrodluBrown	4034	95	1	Y																			Force0	6	38	51	47	76	49	9	7	7									
 Swamp Rat	Damage	1	108	5	5	18	19	18	24	10	10	PER	AGI	1	1	0	0	0	0	0	0	0	0	0	0	SwampRat	RodentRat	603	249	1	Y																			Damage0	8	21	36	45	60	31	4	7	4									
 Orbak Water Horse	Damage	1	107	5	5	15	19	11	13	25	16	MGT	AGI	1	1	0	0	0	0	0	0	0	0	0	0	OrbakWaterHorse	HorseEachuisgeCCCphenixrising	1277	259	1	Y																			Damage0	8	36	25	28	48	76	0	1	4									
-Orray	Bruiser	1	107	6	6	11	14	18	22	24	13	WIL	SOC	1	0	0	1	0	0	0	0	0	0	0	0	Orray	DregothDrayCCCPLUSHHYENAofDOOM	3170	30	1	Y																			Bruiser0	8	24	37	42	67	73	4	6	2									
+Orray	Bruiser	1	107	6	6	11	14	18	22	24	13	WIL	SOC	1	0	0	1	0	0	0	0	0	0	0	0	Orray	Bulette	819	446	1	Y																			Bruiser0	8	24	37	42	67	73	4	6	2									
 Ronto	Damage	1	105	5	5	8	18	9	17	11	11	VIT	MGT	1	1	0	0	0	0	0	0	0	0	0	0	Ronto	SWLORRonto	2008	385	0.6	Y																			Damage0	8	19	22	34	29	34	0	3	4									
 Katarn	Balanced	1	118	5	5	31	23	29	12	16	17	MGT	AGI	0	0	0	0	0	0	0	0	0	0	0	0	Katarn	SWLORKatarn	601	60	1	Y																			Balanced0	8	26	52	27	95	49	9	1	6									
 Grutchin	Evasion	1	119	3	3	30	23	8	26	13	14	PER	SOC	0	0	1	0	0	0	0	0	0	0	0	0	Grutchin	MdrnEttercap2	204	36	1	Y																			Evasion0	6	24	21	48	71	41	0	8	6									
@@ -3105,7 +3105,7 @@ Boma Beast Baby	Force	2	144	2	3	17	11	16	11	9	6	SOC	WIL	0	0	2	0	3	1	1	1	3	0	0	0	
 Ubese Thorn	Force	2	144	2	3	30	24	28	25	16	8	WIL	VIT	0	0	2	0	3	1	1	1	3	0	0	0	UbeseThorn	MdrnCrodluBrown	4034	95	1	Y																			Force0	6	40	52	50	78	52	9	7	7									
 Swamp Rat	Damage	2	116	5	5	19	19	18	24	10	10	PER	AGI	3	3	1	1	1	2	2	0	0	0	0	0	SwampRat	RodentRat	603	249	1	Y																			Damage0	8	26	38	47	64	34	4	7	4									
 Orbak Water Horse	Damage	2	114	5	5	16	19	11	13	25	16	MGT	AGI	3	3	1	1	1	2	2	0	0	0	0	0	OrbakWaterHorse	HorseEachuisgeCCCphenixrising	1277	259	1	Y																			Damage0	8	41	27	30	52	79	0	1	4									
-Orray	Bruiser	2	114	7	6	12	14	18	22	24	13	WIL	SOC	3	2	1	3	1	1	1	0	0	0	0	0	Orray	DregothDrayCCCPLUSHHYENAofDOOM	3170	30	1	Y																			Bruiser0	8	29	40	44	70	76	4	6	2									
+Orray	Bruiser	2	114	7	6	12	14	18	22	24	13	WIL	SOC	3	2	1	3	1	1	1	0	0	0	0	0	Orray	Bulette	819	446	1	Y																			Bruiser0	8	29	40	44	70	76	4	6	2									
 Ronto	Damage	2	110	5	5	9	18	9	17	11	11	VIT	MGT	3	3	1	1	1	2	2	0	0	0	0	0	Ronto	SWLORRonto	2008	385	0.6	Y																			Damage0	8	24	24	36	33	37	0	3	4									
 Katarn	Balanced	2	136	6	6	32	23	29	12	16	17	MGT	AGI	2	2	2	2	2	1	1	1	1	0	0	0	Katarn	SWLORKatarn	601	60	1	Y																			Balanced0	8	30	55	30	98	52	9	1	6									
 Grutchin	Evasion	2	138	3	3	31	23	8	26	13	14	PER	SOC	0	2	3	2	2	1	1	1	1	0	0	0	Grutchin	MdrnEttercap2	204	36	1	Y																			Evasion0	6	26	24	51	74	45	0	8	6									
@@ -3143,7 +3143,7 @@ Boma Beast Baby	Force	3	166	2	3	17	12	16	11	9	6	SOC	WIL	0	0	2	1	5	2	2	1	5	0	0	0	
 Ubese Thorn	Force	3	166	2	3	30	25	28	25	16	8	WIL	VIT	0	0	2	1	5	2	2	1	5	0	0	0	UbeseThorn	MdrnCrodluBrown	4034	95	1	Y																			Force0	6	43	54	54	80	55	9	7	7									
 Swamp Rat	Damage	3	124	6	5	19	20	18	24	10	10	PER	AGI	5	5	2	1	2	2	2	0	0	0	0	0	SwampRat	RodentRat	603	249	1	Y																			Damage0	8	29	39	49	66	36	4	7	4									
 Orbak Water Horse	Damage	3	121	6	5	16	20	11	13	25	16	MGT	AGI	5	5	2	1	2	2	2	0	0	0	0	0	OrbakWaterHorse	HorseEachuisgeCCCphenixrising	1277	259	1	Y																			Damage0	8	44	29	33	55	81	0	1	4									
-Orray	Bruiser	3	121	7	7	12	15	18	22	24	13	WIL	SOC	5	2	2	5	2	1	1	1	1	0	0	0	Orray	DregothDrayCCCPLUSHHYENAofDOOM	3170	30	1	Y																			Bruiser0	8	32	43	46	73	78	4	6	2									
+Orray	Bruiser	3	121	7	7	12	15	18	22	24	13	WIL	SOC	5	2	2	5	2	1	1	1	1	0	0	0	Orray	Bulette	819	446	1	Y																			Bruiser0	8	32	43	46	73	78	4	6	2									
 Ronto	Damage	3	115	6	5	9	19	9	17	11	11	VIT	MGT	5	5	2	1	2	2	2	0	0	0	0	0	Ronto	SWLORRonto	2008	385	0.6	Y																			Damage0	8	27	26	39	36	39	0	3	4									
 Katarn	Balanced	3	154	6	6	32	24	29	12	16	17	MGT	AGI	2	2	2	2	2	2	2	2	2	0	0	0	Katarn	SWLORKatarn	601	60	1	Y																			Balanced0	8	33	57	31	101	55	9	1	6									
 Grutchin	Evasion	3	157	4	3	31	24	8	26	13	14	PER	SOC	0	2	5	2	2	2	2	1	1	0	0	0	Grutchin	MdrnEttercap2	204	36	1	Y																			Evasion0	6	29	25	52	76	48	0	8	6									
@@ -3181,7 +3181,7 @@ Boma Beast Baby	Force	4	188	2	4	17	12	16	12	9	7	SOC	WIL	0	0	3	1	6	2	2	2	6	0	0	0	
 Ubese Thorn	Force	4	188	2	4	30	25	28	26	16	9	WIL	VIT	0	0	3	1	6	2	2	2	6	0	0	0	UbeseThorn	MdrnCrodluBrown	4034	95	1	Y																			Force0	6	45	55	56	81	57	9	7	7									
 Swamp Rat	Damage	4	132	6	6	19	20	18	25	10	11	PER	AGI	6	6	2	2	2	3	3	0	0	0	0	0	SwampRat	RodentRat	603	249	1	Y																			Damage0	8	32	41	50	69	38	4	7	4									
 Orbak Water Horse	Damage	4	128	6	6	16	20	11	14	25	17	MGT	AGI	6	6	2	2	2	3	3	0	0	0	0	0	OrbakWaterHorse	HorseEachuisgeCCCphenixrising	1277	259	1	Y																			Damage0	8	47	31	34	58	83	0	1	4									
-Orray	Bruiser	4	128	8	7	12	15	18	23	24	14	WIL	SOC	6	3	2	6	2	2	2	1	1	0	0	0	Orray	DregothDrayCCCPLUSHHYENAofDOOM	3170	30	1	Y																			Bruiser0	8	35	45	47	75	80	4	6	2									
+Orray	Bruiser	4	128	8	7	12	15	18	23	24	14	WIL	SOC	6	3	2	6	2	2	2	1	1	0	0	0	Orray	Bulette	819	446	1	Y																			Bruiser0	8	35	45	47	75	80	4	6	2									
 Ronto	Damage	4	120	6	6	9	19	9	18	11	12	VIT	MGT	6	6	2	2	2	3	3	0	0	0	0	0	Ronto	SWLORRonto	2008	385	0.6	Y																			Damage0	8	31	28	40	38	41	0	3	4									
 Katarn	Balanced	4	172	7	7	32	24	29	13	16	18	MGT	AGI	3	3	3	3	3	2	2	2	2	0	0	0	Katarn	SWLORKatarn	601	60	1	Y																			Balanced0	8	36	59	33	103	57	9	1	6									
 Grutchin	Evasion	4	176	4	3	31	24	8	27	13	15	PER	SOC	0	3	6	3	3	2	2	2	2	0	0	0	Grutchin	MdrnEttercap2	204	36	1	Y																			Evasion0	6	31	27	54	78	50	0	8	6									
@@ -3219,7 +3219,7 @@ Boma Beast Baby	Force	5	210	2	5	17	12	17	12	10	7	SOC	WIL	1	1	4	1	7	3	3	2	7	0	1	0
 Ubese Thorn	Force	5	210	2	5	30	25	29	26	17	9	WIL	VIT	1	1	4	1	7	3	3	2	7	0	1	0	UbeseThorn	MdrnCrodluBrown	4034	95	1	Y																			Force0	6	47	56	58	83	59	9	7	7									
 Swamp Rat	Damage	5	140	7	6	19	20	19	25	11	11	PER	AGI	7	7	3	2	3	4	4	1	1	0	0	1	SwampRat	RodentRat	603	249	1	Y																			Damage0	8	36	42	53	72	40	4	7	4									
 Orbak Water Horse	Damage	5	135	7	6	16	20	12	14	26	17	MGT	AGI	7	7	3	2	3	4	4	1	1	0	0	1	OrbakWaterHorse	HorseEachuisgeCCCphenixrising	1277	259	1	Y																			Damage0	8	51	32	36	61	85	0	1	4									
-Orray	Bruiser	5	135	9	7	12	15	19	23	25	14	WIL	SOC	7	4	3	7	3	2	2	1	1	0	0	0	Orray	DregothDrayCCCPLUSHHYENAofDOOM	3170	30	1	Y																			Bruiser0	8	39	47	50	77	82	4	6	2									
+Orray	Bruiser	5	135	9	7	12	15	19	23	25	14	WIL	SOC	7	4	3	7	3	2	2	1	1	0	0	0	Orray	Bulette	819	446	1	Y																			Bruiser0	8	39	47	50	77	82	4	6	2									
 Ronto	Damage	5	125	7	6	9	19	10	18	12	12	VIT	MGT	7	7	3	2	3	4	4	1	1	0	0	1	Ronto	SWLORRonto	2008	385	0.6	Y																			Damage0	8	34	29	42	41	43	0	3	4									
 Katarn	Balanced	5	190	7	7	32	24	30	13	17	18	MGT	AGI	4	4	4	4	4	3	3	3	3	0	0	0	Katarn	SWLORKatarn	601	60	1	Y																			Balanced0	8	39	61	36	106	59	9	1	6									
 Grutchin	Evasion	5	195	4	3	31	24	9	27	14	15	PER	SOC	1	4	7	4	4	3	3	2	2	0	0	1	Grutchin	MdrnEttercap2	204	36	1	Y																			Evasion0	6	33	29	57	81	53	0	8	6									
@@ -3257,7 +3257,7 @@ Boma Beast Baby	Force	6	232	3	6	18	12	17	12	10	7	SOC	WIL	1	1	5	1	8	4	4	2	8	0	1	0
 Ubese Thorn	Force	6	232	3	6	31	25	29	26	17	9	WIL	VIT	1	1	5	1	8	4	4	2	8	0	1	0	UbeseThorn	MdrnCrodluBrown	4034	95	1	Y																			Force0	6	49	58	60	84	61	9	7	7									
 Swamp Rat	Damage	6	148	7	6	20	20	19	25	11	11	PER	AGI	8	8	4	2	4	5	5	1	1	0	0	1	SwampRat	RodentRat	603	249	1	Y																			Damage0	8	39	44	55	75	42	4	7	5									
 Orbak Water Horse	Damage	6	142	7	6	17	20	12	14	26	17	MGT	AGI	8	8	4	2	4	5	5	1	1	0	0	1	OrbakWaterHorse	HorseEachuisgeCCCphenixrising	1277	259	1	Y																			Damage0	8	54	33	38	64	87	0	1	5									
-Orray	Bruiser	6	142	10	8	13	15	19	23	25	14	WIL	SOC	8	5	4	8	4	2	2	1	1	0	0	0	Orray	DregothDrayCCCPLUSHHYENAofDOOM	3170	30	1	Y																			Bruiser0	8	42	50	52	79	84	4	6	2									
+Orray	Bruiser	6	142	10	8	13	15	19	23	25	14	WIL	SOC	8	5	4	8	4	2	2	1	1	0	0	0	Orray	Bulette	819	446	1	Y																			Bruiser0	8	42	50	52	79	84	4	6	2									
 Ronto	Damage	6	130	7	6	10	19	10	18	12	12	VIT	MGT	8	8	4	2	4	5	5	1	1	0	0	1	Ronto	SWLORRonto	2008	385	0.6	Y																			Damage0	8	38	30	44	43	45	0	3	4									
 Katarn	Balanced	6	208	8	8	33	24	30	13	17	18	MGT	AGI	5	5	5	5	5	4	4	4	4	0	0	0	Katarn	SWLORKatarn	601	60	1	Y																			Balanced0	8	42	63	38	109	61	9	1	7									
 Grutchin	Evasion	6	214	5	4	32	24	9	27	14	15	PER	SOC	1	5	8	5	5	4	4	2	2	0	0	1	Grutchin	MdrnEttercap2	204	36	1	Y																			Evasion0	6	35	32	59	83	55	0	8	7									
@@ -3295,7 +3295,7 @@ Boma Beast Baby	Force	7	254	3	6	18	12	17	12	10	7	SOC	WIL	1	1	6	1	9	4	4	3	9	1	1	1
 Ubese Thorn	Force	7	254	3	6	31	25	29	26	17	9	WIL	VIT	1	1	6	1	9	4	4	3	9	1	1	1	UbeseThorn	MdrnCrodluBrown	4034	95	1	Y																			Force0	6	52	59	63	86	63	9	8	7									
 Swamp Rat	Damage	7	156	7	6	20	20	19	25	11	11	PER	AGI	9	9	4	3	4	6	6	1	1	0	0	1	SwampRat	RodentRat	603	249	1	Y																			Damage0	8	42	46	56	77	44	4	7	5									
 Orbak Water Horse	Damage	7	149	7	6	17	20	12	14	26	17	MGT	AGI	9	9	4	3	4	6	6	1	1	0	0	1	OrbakWaterHorse	HorseEachuisgeCCCphenixrising	1277	259	1	Y																			Damage0	8	57	35	40	67	89	0	2	5									
-Orray	Bruiser	7	149	10	8	13	15	19	23	25	14	WIL	SOC	9	6	4	9	4	3	3	1	1	0	0	0	Orray	DregothDrayCCCPLUSHHYENAofDOOM	3170	30	1	Y																			Bruiser0	8	45	52	53	82	86	4	6	2									
+Orray	Bruiser	7	149	10	8	13	15	19	23	25	14	WIL	SOC	9	6	4	9	4	3	3	1	1	0	0	0	Orray	Bulette	819	446	1	Y																			Bruiser0	8	45	52	53	82	86	4	6	2									
 Ronto	Damage	7	135	7	6	10	19	10	18	12	12	VIT	MGT	9	9	4	3	4	6	6	1	1	0	0	1	Ronto	SWLORRonto	2008	385	0.6	Y																			Damage0	8	41	32	46	46	47	0	4	4									
 Katarn	Balanced	7	226	8	8	33	24	30	13	17	18	MGT	AGI	6	6	6	6	6	4	4	4	4	0	0	0	Katarn	SWLORKatarn	601	60	1	Y																			Balanced0	8	45	65	40	111	63	9	1	7									
 Grutchin	Evasion	7	233	5	4	32	24	9	27	14	15	PER	SOC	1	6	9	6	6	4	4	3	3	0	0	1	Grutchin	MdrnEttercap2	204	36	1	Y																			Evasion0	6	38	34	61	86	58	0	8	7									
@@ -3333,7 +3333,7 @@ Boma Beast Baby	Force	8	276	3	7	18	12	17	12	10	7	SOC	WIL	1	1	7	2	11	5	5	3	11	1	1
 Ubese Thorn	Force	8	276	3	7	31	25	29	26	17	9	WIL	VIT	1	1	7	2	11	5	5	3	11	1	1	1	UbeseThorn	MdrnCrodluBrown	4034	95	1	Y																			Force0	6	54	61	66	87	65	9	8	7									
 Swamp Rat	Damage	8	164	8	6	20	20	19	25	11	11	PER	AGI	11	11	5	3	5	7	7	1	1	0	0	1	SwampRat	RodentRat	603	249	1	Y																			Damage0	8	46	47	58	80	46	4	7	5									
 Orbak Water Horse	Damage	8	156	8	6	17	20	12	14	26	17	MGT	AGI	11	11	5	3	5	7	7	1	1	0	0	1	OrbakWaterHorse	HorseEachuisgeCCCphenixrising	1277	259	1	Y																			Damage0	8	61	36	42	70	91	0	2	5									
-Orray	Bruiser	8	156	11	8	13	15	19	23	25	14	WIL	SOC	11	7	5	11	5	3	3	2	2	0	0	0	Orray	DregothDrayCCCPLUSHHYENAofDOOM	3170	30	1	Y																			Bruiser0	8	49	55	55	84	88	4	6	2									
+Orray	Bruiser	8	156	11	8	13	15	19	23	25	14	WIL	SOC	11	7	5	11	5	3	3	2	2	0	0	0	Orray	Bulette	819	446	1	Y																			Bruiser0	8	49	55	55	84	88	4	6	2									
 Ronto	Damage	8	140	8	6	10	19	10	18	12	12	VIT	MGT	11	11	5	3	5	7	7	1	1	0	0	1	Ronto	SWLORRonto	2008	385	0.6	Y																			Damage0	8	45	33	48	49	49	0	4	4									
 Katarn	Balanced	8	244	9	9	33	24	30	13	17	18	MGT	AGI	7	7	7	7	7	5	5	5	5	0	0	0	Katarn	SWLORKatarn	601	60	1	Y																			Balanced0	8	48	67	42	114	65	9	1	7									
 Grutchin	Evasion	8	252	5	4	32	24	9	27	14	15	PER	SOC	1	7	11	7	7	5	5	3	3	0	0	1	Grutchin	MdrnEttercap2	204	36	1	Y																			Evasion0	6	40	36	63	88	61	0	8	7									
@@ -3371,7 +3371,7 @@ Boma Beast Baby	Force	9	298	3	8	18	13	17	12	10	7	SOC	WIL	1	1	7	2	12	6	6	4	12	1	1
 Ubese Thorn	Force	9	298	3	8	31	26	29	26	17	9	WIL	VIT	1	1	7	2	12	6	6	4	12	1	1	1	UbeseThorn	MdrnCrodluBrown	4034	95	1	Y																			Force0	6	56	62	68	89	68	9	8	7									
 Swamp Rat	Damage	9	172	8	7	20	21	19	25	11	11	PER	AGI	12	12	6	4	6	7	7	1	1	0	0	1	SwampRat	RodentRat	603	249	1	Y																			Damage0	8	49	49	60	83	48	4	7	5									
 Orbak Water Horse	Damage	9	163	8	7	17	21	12	14	26	17	MGT	AGI	12	12	6	4	6	7	7	1	1	0	0	1	OrbakWaterHorse	HorseEachuisgeCCCphenixrising	1277	259	1	Y																			Damage0	8	64	39	44	73	93	1	2	5									
-Orray	Bruiser	9	163	12	8	13	16	19	23	25	14	WIL	SOC	12	7	6	12	6	4	4	2	2	0	0	0	Orray	DregothDrayCCCPLUSHHYENAofDOOM	3170	30	1	Y																			Bruiser0	8	52	57	57	86	90	4	6	2									
+Orray	Bruiser	9	163	12	8	13	16	19	23	25	14	WIL	SOC	12	7	6	12	6	4	4	2	2	0	0	0	Orray	Bulette	819	446	1	Y																			Bruiser0	8	52	57	57	86	90	4	6	2									
 Ronto	Damage	9	145	8	7	10	20	10	18	12	12	VIT	MGT	12	12	6	4	6	7	7	1	1	0	0	1	Ronto	SWLORRonto	2008	385	0.6	Y																			Damage0	8	48	36	50	51	51	0	4	4									
 Katarn	Balanced	9	262	9	9	33	25	30	13	17	18	MGT	AGI	7	7	7	7	7	6	6	6	6	1	1	1	Katarn	SWLORKatarn	601	60	1	Y																			Balanced0	8	50	69	43	117	68	10	1	7									
 Grutchin	Evasion	9	271	5	4	32	25	9	27	14	15	PER	SOC	1	7	12	7	7	6	6	4	4	0	0	1	Grutchin	MdrnEttercap2	204	36	1	Y																			Evasion0	6	42	37	64	90	63	0	8	7									
@@ -3409,7 +3409,7 @@ Boma Beast Baby	Force	10	320	3	8	19	13	17	12	10	7	SOC	WIL	1	1	8	2	13	6	6	4	13	1	
 Ubese Thorn	Force	10	320	3	8	32	26	29	26	17	9	WIL	VIT	1	1	8	2	13	6	6	4	13	1	1	1	UbeseThorn	MdrnCrodluBrown	4034	95	1	Y																			Force10	10	58	63	70	90	70	9	8	7									
 Swamp Rat	Damage	10	180	9	7	21	21	19	25	11	11	PER	AGI	13	13	6	4	6	8	8	1	1	0	0	1	SwampRat	RodentRat	603	249	1	Y																			Damage10	16	52	50	62	86	50	4	7	5									
 Orbak Water Horse	Damage	10	170	9	7	18	21	12	14	26	17	MGT	AGI	13	13	6	4	6	8	8	1	1	0	0	1	OrbakWaterHorse	HorseEachuisgeCCCphenixrising	1277	259	1	Y																			Damage10	16	67	40	45	76	95	1	2	5									
-Orray	Bruiser	10	170	12	9	14	16	19	23	25	14	WIL	SOC	13	8	6	13	6	4	4	2	2	0	0	0	Orray	DregothDrayCCCPLUSHHYENAofDOOM	3170	30	1	Y																			Bruiser10	13	55	59	59	88	92	4	6	2									
+Orray	Bruiser	10	170	12	9	14	16	19	23	25	14	WIL	SOC	13	8	6	13	6	4	4	2	2	0	0	0	Orray	Bulette	819	446	1	Y																			Bruiser10	13	55	59	59	88	92	4	6	2									
 Ronto	Damage	10	150	9	7	11	20	10	18	12	12	VIT	MGT	13	13	6	4	6	8	8	1	1	0	0	1	Ronto	SWLORRonto	2008	385	0.6	Y																			Damage10	16	52	37	51	54	53	0	4	4									
 Katarn	Balanced	10	280	10	10	34	25	30	13	17	18	MGT	AGI	8	8	8	8	8	6	6	6	6	1	1	1	Katarn	SWLORKatarn	601	60	1	Y																			Balanced10	16	53	71	46	119	70	10	1	7									
 Grutchin	Evasion	10	290	6	4	33	25	9	27	14	15	PER	SOC	1	8	13	8	8	6	6	4	4	0	0	1	Grutchin	MdrnEttercap2	204	36	1	Y																			Evasion10	10	44	39	67	93	66	0	8	7									
@@ -3447,7 +3447,7 @@ Boma Beast Baby	Force	11	342	3	9	19	13	17	13	10	8	SOC	WIL	1	1	9	2	14	7	7	4	14	1	
 Ubese Thorn	Force	11	342	3	9	32	26	29	27	17	10	WIL	VIT	1	1	9	2	14	7	7	4	14	1	1	1	UbeseThorn	MdrnCrodluBrown	4034	95	1	Y																			Force10	10	60	65	72	92	72	9	8	8									
 Swamp Rat	Damage	11	188	9	7	21	21	19	26	11	12	PER	AGI	14	14	7	4	7	9	9	1	1	0	0	1	SwampRat	RodentRat	603	249	1	Y																			Damage10	16	56	52	64	88	52	4	7	5									
 Orbak Water Horse	Damage	11	177	9	7	18	21	12	15	26	18	MGT	AGI	14	14	7	4	7	9	9	1	1	0	0	1	OrbakWaterHorse	HorseEachuisgeCCCphenixrising	1277	259	1	Y																			Damage10	16	71	41	47	79	97	1	2	5									
-Orray	Bruiser	11	177	13	9	14	16	19	24	25	15	WIL	SOC	14	9	7	14	7	4	4	2	2	0	0	0	Orray	DregothDrayCCCPLUSHHYENAofDOOM	3170	30	1	Y																			Bruiser10	13	59	62	61	91	94	4	6	3									
+Orray	Bruiser	11	177	13	9	14	16	19	24	25	15	WIL	SOC	14	9	7	14	7	4	4	2	2	0	0	0	Orray	Bulette	819	446	1	Y																			Bruiser10	13	59	62	61	91	94	4	6	3									
 Ronto	Damage	11	155	9	7	11	20	10	19	12	13	VIT	MGT	14	14	7	4	7	9	9	1	1	0	0	1	Ronto	SWLORRonto	2008	385	0.6	Y																			Damage10	16	55	38	53	56	55	0	4	5									
 Katarn	Balanced	11	298	10	10	34	25	30	14	17	19	MGT	AGI	9	9	9	9	9	7	7	7	7	1	1	1	Katarn	SWLORKatarn	601	60	1	Y																			Balanced10	16	56	73	48	122	72	10	1	7									
 Grutchin	Evasion	11	309	6	4	33	25	9	28	14	16	PER	SOC	1	9	14	9	9	7	7	4	4	0	0	1	Grutchin	MdrnEttercap2	204	36	1	Y																			Evasion10	10	47	42	69	95	68	0	8	7									
@@ -3485,7 +3485,7 @@ Boma Beast Baby	Force	12	364	3	10	19	13	17	13	10	8	SOC	WIL	1	1	10	2	15	7	7	5	15	
 Ubese Thorn	Force	12	364	3	10	32	26	29	27	17	10	WIL	VIT	1	1	10	2	15	7	7	5	15	1	1	1	UbeseThorn	MdrnCrodluBrown	4034	95	1	Y																			Force10	10	63	66	75	93	74	9	8	8									
 Swamp Rat	Damage	12	196	9	7	21	21	19	26	11	12	PER	AGI	15	15	7	5	7	10	10	1	1	0	0	1	SwampRat	RodentRat	603	249	1	Y																			Damage10	16	59	54	65	91	54	4	7	5									
 Orbak Water Horse	Damage	12	184	9	7	18	21	12	15	26	18	MGT	AGI	15	15	7	5	7	10	10	1	1	0	0	1	OrbakWaterHorse	HorseEachuisgeCCCphenixrising	1277	259	1	Y																			Damage10	16	74	43	49	82	99	1	2	5									
-Orray	Bruiser	12	184	14	9	14	16	19	24	25	15	WIL	SOC	15	10	7	15	7	5	5	2	2	0	0	0	Orray	DregothDrayCCCPLUSHHYENAofDOOM	3170	30	1	Y																			Bruiser10	13	62	64	62	93	96	4	6	3									
+Orray	Bruiser	12	184	14	9	14	16	19	24	25	15	WIL	SOC	15	10	7	15	7	5	5	2	2	0	0	0	Orray	Bulette	819	446	1	Y																			Bruiser10	13	62	64	62	93	96	4	6	3									
 Ronto	Damage	12	160	9	7	11	20	10	19	12	13	VIT	MGT	15	15	7	5	7	10	10	1	1	0	0	1	Ronto	SWLORRonto	2008	385	0.6	Y																			Damage10	16	59	40	55	59	57	0	4	5									
 Katarn	Balanced	12	316	11	11	34	25	30	14	17	19	MGT	AGI	10	10	10	10	10	7	7	7	7	1	1	1	Katarn	SWLORKatarn	601	60	1	Y																			Balanced10	16	59	75	50	124	74	10	1	7									
 Grutchin	Evasion	12	328	6	4	33	25	9	28	14	16	PER	SOC	1	10	15	10	10	7	7	5	5	0	0	1	Grutchin	MdrnEttercap2	204	36	1	Y																			Evasion10	10	49	44	71	97	71	0	8	7									
@@ -3523,7 +3523,7 @@ Boma Beast Baby	Force	13	386	3	10	19	13	18	13	11	8	SOC	WIL	1	1	11	3	17	8	8	5	17	
 Ubese Thorn	Force	13	386	3	10	32	26	30	27	18	10	WIL	VIT	1	1	11	3	17	8	8	5	17	1	1	1	UbeseThorn	MdrnCrodluBrown	4034	95	1	Y																			Force10	10	65	68	78	95	76	9	8	8									
 Swamp Rat	Damage	13	204	10	7	21	21	20	26	12	12	PER	AGI	17	17	8	5	8	11	11	1	1	1	0	1	SwampRat	RodentRat	603	249	1	Y																			Damage10	16	62	55	67	94	56	4	7	5									
 Orbak Water Horse	Damage	13	191	10	7	18	21	13	15	27	18	MGT	AGI	17	17	8	5	8	11	11	1	1	1	0	1	OrbakWaterHorse	HorseEachuisgeCCCphenixrising	1277	259	1	Y																			Damage10	16	77	44	51	85	101	1	2	5									
-Orray	Bruiser	13	191	14	10	14	16	20	24	26	15	WIL	SOC	17	11	8	17	8	5	5	3	3	0	0	0	Orray	DregothDrayCCCPLUSHHYENAofDOOM	3170	30	1	Y																			Bruiser10	13	66	67	64	95	98	4	6	3									
+Orray	Bruiser	13	191	14	10	14	16	20	24	26	15	WIL	SOC	17	11	8	17	8	5	5	3	3	0	0	0	Orray	Bulette	819	446	1	Y																			Bruiser10	13	66	67	64	95	98	4	6	3									
 Ronto	Damage	13	165	10	7	11	20	11	19	13	13	VIT	MGT	17	17	8	5	8	11	11	1	1	1	0	1	Ronto	SWLORRonto	2008	385	0.6	Y																			Damage10	16	62	41	57	61	59	0	4	5									
 Katarn	Balanced	13	334	11	11	34	25	31	14	18	19	MGT	AGI	11	11	11	11	11	8	8	8	8	1	1	1	Katarn	SWLORKatarn	601	60	1	Y																			Balanced10	16	62	77	52	127	76	10	1	7									
 Grutchin	Evasion	13	347	7	4	33	25	10	28	15	16	PER	SOC	1	11	17	11	11	8	8	5	5	0	0	1	Grutchin	MdrnEttercap2	204	36	1	Y																			Evasion10	10	51	46	73	100	73	0	8	7									
@@ -3561,7 +3561,7 @@ Boma Beast Baby	Force	14	408	3	11	20	14	18	13	11	8	SOC	WIL	1	1	11	3	18	9	9	6	18	
 Ubese Thorn	Force	14	408	3	11	33	27	30	27	18	10	WIL	VIT	1	1	11	3	18	9	9	6	18	1	1	1	UbeseThorn	MdrnCrodluBrown	4034	95	1	Y																			Force10	10	67	69	80	96	79	9	8	8									
 Swamp Rat	Damage	14	212	10	8	22	22	20	26	12	12	PER	AGI	18	18	9	6	9	11	11	1	1	1	0	1	SwampRat	RodentRat	603	249	1	Y																			Damage10	16	66	57	70	97	58	4	8	5									
 Orbak Water Horse	Damage	14	198	10	8	19	22	13	15	27	18	MGT	AGI	18	18	9	6	9	11	11	1	1	1	0	1	OrbakWaterHorse	HorseEachuisgeCCCphenixrising	1277	259	1	Y																			Damage10	16	81	47	53	88	103	1	2	5									
-Orray	Bruiser	14	198	15	10	15	17	20	24	26	15	WIL	SOC	18	11	9	18	9	6	6	3	3	0	0	0	Orray	DregothDrayCCCPLUSHHYENAofDOOM	3170	30	1	Y																			Bruiser10	13	69	69	67	97	100	4	7	3									
+Orray	Bruiser	14	198	15	10	15	17	20	24	26	15	WIL	SOC	18	11	9	18	9	6	6	3	3	0	0	0	Orray	Bulette	819	446	1	Y																			Bruiser10	13	69	69	67	97	100	4	7	3									
 Ronto	Damage	14	170	10	8	12	21	11	19	13	13	VIT	MGT	18	18	9	6	9	11	11	1	1	1	0	1	Ronto	SWLORRonto	2008	385	0.6	Y																			Damage10	16	66	44	59	64	61	0	4	5									
 Katarn	Balanced	14	352	12	12	35	26	31	14	18	19	MGT	AGI	11	11	11	11	11	9	9	9	9	1	1	1	Katarn	SWLORKatarn	601	60	1	Y																			Balanced10	16	65	79	54	130	79	10	2	7									
 Grutchin	Evasion	14	366	7	4	34	26	10	28	15	16	PER	SOC	1	11	18	11	11	9	9	6	6	0	0	1	Grutchin	MdrnEttercap2	204	36	1	Y																			Evasion10	10	53	47	75	102	76	0	9	7									
@@ -3599,7 +3599,7 @@ Boma Beast Baby	Force	15	430	3	12	20	14	18	13	11	8	SOC	WIL	2	2	12	3	19	9	9	6	19	
 Ubese Thorn	Force	15	430	3	12	33	27	30	27	18	10	WIL	VIT	2	2	12	3	19	9	9	6	19	1	2	1	UbeseThorn	MdrnCrodluBrown	4034	95	1	Y																			Force10	10	69	70	82	98	81	9	8	8									
 Swamp Rat	Damage	15	220	11	8	22	22	20	26	12	12	PER	AGI	19	19	9	6	9	12	12	2	2	1	0	2	SwampRat	RodentRat	603	249	1	Y																			Damage10	16	69	58	71	99	60	4	8	5									
 Orbak Water Horse	Damage	15	205	11	8	19	22	13	15	27	18	MGT	AGI	19	19	9	6	9	12	12	2	2	1	0	2	OrbakWaterHorse	HorseEachuisgeCCCphenixrising	1277	259	1	Y																			Damage10	16	84	48	54	91	105	1	2	5									
-Orray	Bruiser	15	205	16	10	15	17	20	24	26	15	WIL	SOC	19	12	9	19	9	6	6	3	3	0	0	0	Orray	DregothDrayCCCPLUSHHYENAofDOOM	3170	30	1	Y																			Bruiser10	13	72	71	68	100	102	4	7	3									
+Orray	Bruiser	15	205	16	10	15	17	20	24	26	15	WIL	SOC	19	12	9	19	9	6	6	3	3	0	0	0	Orray	Bulette	819	446	1	Y																			Bruiser10	13	72	71	68	100	102	4	7	3									
 Ronto	Damage	15	175	11	8	12	21	11	19	13	13	VIT	MGT	19	19	9	6	9	12	12	2	2	1	0	2	Ronto	SWLORRonto	2008	385	0.6	Y																			Damage10	16	69	45	60	67	63	0	4	5									
 Katarn	Balanced	15	370	12	12	35	26	31	14	18	19	MGT	AGI	12	12	12	12	12	9	9	9	9	1	1	1	Katarn	SWLORKatarn	601	60	1	Y																			Balanced10	16	68	81	56	132	81	10	2	7									
 Grutchin	Evasion	15	385	7	4	34	26	10	28	15	16	PER	SOC	2	12	19	12	12	9	9	6	6	0	0	2	Grutchin	MdrnEttercap2	204	36	1	Y																			Evasion10	10	56	49	77	105	79	0	9	7									
@@ -3637,7 +3637,7 @@ Boma Beast Baby	Force	16	452	4	13	20	14	18	13	11	8	SOC	WIL	2	2	13	3	20	10	10	7	2
 Ubese Thorn	Force	16	452	4	13	33	27	30	27	18	10	WIL	VIT	2	2	13	3	20	10	10	7	20	1	2	1	UbeseThorn	MdrnCrodluBrown	4034	95	1	Y																			Force10	10	72	71	84	99	83	9	8	8									
 Swamp Rat	Damage	16	228	11	8	22	22	20	26	12	12	PER	AGI	20	20	10	7	10	13	13	2	2	1	0	2	SwampRat	RodentRat	603	249	1	Y																			Damage10	16	72	60	73	102	62	4	8	5									
 Orbak Water Horse	Damage	16	212	11	8	19	22	13	15	27	18	MGT	AGI	20	20	10	7	10	13	13	2	2	1	0	2	OrbakWaterHorse	HorseEachuisgeCCCphenixrising	1277	259	1	Y																			Damage10	16	87	50	56	94	107	1	2	5									
-Orray	Bruiser	16	212	17	11	15	17	20	24	26	15	WIL	SOC	20	13	10	20	10	7	7	3	3	0	0	0	Orray	DregothDrayCCCPLUSHHYENAofDOOM	3170	30	1	Y																			Bruiser10	13	76	73	70	102	104	4	7	3									
+Orray	Bruiser	16	212	17	11	15	17	20	24	26	15	WIL	SOC	20	13	10	20	10	7	7	3	3	0	0	0	Orray	Bulette	819	446	1	Y																			Bruiser10	13	76	73	70	102	104	4	7	3									
 Ronto	Damage	16	180	11	8	12	21	11	19	13	13	VIT	MGT	20	20	10	7	10	13	13	2	2	1	0	2	Ronto	SWLORRonto	2008	385	0.6	Y																			Damage10	16	73	47	62	69	65	0	4	5									
 Katarn	Balanced	16	388	13	13	35	26	31	14	18	19	MGT	AGI	13	13	13	13	13	10	10	10	10	1	1	1	Katarn	SWLORKatarn	601	60	1	Y																			Balanced10	16	71	83	58	135	83	10	2	7									
 Grutchin	Evasion	16	404	8	5	34	26	10	28	15	16	PER	SOC	2	13	20	13	13	10	10	7	7	0	0	2	Grutchin	MdrnEttercap2	204	36	1	Y																			Evasion10	10	58	51	79	107	81	0	9	7									
@@ -3675,7 +3675,7 @@ Boma Beast Baby	Force	17	474	4	13	21	14	18	13	11	8	SOC	WIL	2	2	14	3	21	10	10	7	2
 Ubese Thorn	Force	17	474	4	13	34	27	30	27	18	10	WIL	VIT	2	2	14	3	21	10	10	7	21	1	2	1	UbeseThorn	MdrnCrodluBrown	4034	95	1	Y																			Force10	10	74	73	87	101	85	10	8	8									
 Swamp Rat	Damage	17	236	11	8	23	22	20	26	12	12	PER	AGI	21	21	10	7	10	14	14	2	2	1	0	2	SwampRat	RodentRat	603	249	1	Y																			Damage10	16	76	62	74	105	64	5	8	6									
 Orbak Water Horse	Damage	17	219	11	8	20	22	13	15	27	18	MGT	AGI	21	21	10	7	10	14	14	2	2	1	0	2	OrbakWaterHorse	HorseEachuisgeCCCphenixrising	1277	259	1	Y																			Damage10	16	91	51	58	97	109	1	2	6									
-Orray	Bruiser	17	219	17	11	16	17	20	24	26	15	WIL	SOC	21	14	10	21	10	7	7	3	3	0	0	0	Orray	DregothDrayCCCPLUSHHYENAofDOOM	3170	30	1	Y																			Bruiser10	13	79	76	71	104	106	5	7	3									
+Orray	Bruiser	17	219	17	11	16	17	20	24	26	15	WIL	SOC	21	14	10	21	10	7	7	3	3	0	0	0	Orray	Bulette	819	446	1	Y																			Bruiser10	13	79	76	71	104	106	5	7	3									
 Ronto	Damage	17	185	11	8	13	21	11	19	13	13	VIT	MGT	21	21	10	7	10	14	14	2	2	1	0	2	Ronto	SWLORRonto	2008	385	0.6	Y																			Damage10	16	76	48	64	72	67	0	4	5									
 Katarn	Balanced	17	406	13	13	36	26	31	14	18	19	MGT	AGI	14	14	14	14	14	10	10	10	10	1	1	1	Katarn	SWLORKatarn	601	60	1	Y																			Balanced10	16	74	85	60	137	85	10	2	8									
 Grutchin	Evasion	17	423	8	5	35	26	10	28	15	16	PER	SOC	2	14	21	14	14	10	10	7	7	0	0	2	Grutchin	MdrnEttercap2	204	36	1	Y																			Evasion10	10	60	54	81	109	84	0	9	8									
@@ -3713,7 +3713,7 @@ Boma Beast Baby	Force	18	496	4	14	21	14	18	14	11	9	SOC	WIL	2	2	15	4	23	11	11	7	2
 Ubese Thorn	Force	18	496	4	14	34	27	30	28	18	11	WIL	VIT	2	2	15	4	23	11	11	7	23	1	2	1	UbeseThorn	MdrnCrodluBrown	4034	95	1	Y																			Force10	10	76	75	90	103	87	10	8	8									
 Swamp Rat	Damage	18	244	12	8	23	22	20	27	12	13	PER	AGI	23	23	11	7	11	15	15	2	2	1	0	2	SwampRat	RodentRat	603	249	1	Y																			Damage10	16	79	63	76	108	66	5	8	6									
 Orbak Water Horse	Damage	18	226	12	8	20	22	13	16	27	19	MGT	AGI	23	23	11	7	11	15	15	2	2	1	0	2	OrbakWaterHorse	HorseEachuisgeCCCphenixrising	1277	259	1	Y																			Damage10	16	94	52	60	100	111	1	2	6									
-Orray	Bruiser	18	226	18	11	16	17	20	25	26	16	WIL	SOC	23	15	11	23	11	7	7	4	4	0	0	0	Orray	DregothDrayCCCPLUSHHYENAofDOOM	3170	30	1	Y																			Bruiser10	13	82	79	73	106	108	5	7	3									
+Orray	Bruiser	18	226	18	11	16	17	20	25	26	16	WIL	SOC	23	15	11	23	11	7	7	4	4	0	0	0	Orray	Bulette	819	446	1	Y																			Bruiser10	13	82	79	73	106	108	5	7	3									
 Ronto	Damage	18	190	12	8	13	21	11	20	13	14	VIT	MGT	23	23	11	7	11	15	15	2	2	1	0	2	Ronto	SWLORRonto	2008	385	0.6	Y																			Damage10	16	79	49	66	74	69	0	4	5									
 Katarn	Balanced	18	424	14	14	36	26	31	15	18	20	MGT	AGI	15	15	15	15	15	11	11	11	11	1	1	1	Katarn	SWLORKatarn	601	60	1	Y																			Balanced10	16	77	87	62	140	87	10	2	8									
 Grutchin	Evasion	18	442	8	5	35	26	10	29	15	17	PER	SOC	2	15	23	15	15	11	11	7	7	0	0	2	Grutchin	MdrnEttercap2	204	36	1	Y																			Evasion10	10	62	56	83	112	86	0	9	8									
@@ -3751,7 +3751,7 @@ Boma Beast Baby	Force	19	518	4	15	21	14	18	14	11	9	SOC	WIL	2	2	16	4	24	12	12	8	2
 Ubese Thorn	Force	19	518	4	15	34	27	30	28	18	11	WIL	VIT	2	2	16	4	24	12	12	8	24	2	2	2	UbeseThorn	MdrnCrodluBrown	4034	95	1	Y																			Force10	10	78	76	92	104	89	10	8	8									
 Swamp Rat	Damage	19	252	12	9	23	22	20	27	12	13	PER	AGI	24	24	12	8	12	16	16	2	2	1	0	2	SwampRat	RodentRat	603	249	1	Y																			Damage10	16	82	65	79	110	68	5	8	6									
 Orbak Water Horse	Damage	19	233	12	9	20	22	13	16	27	19	MGT	AGI	24	24	12	8	12	16	16	2	2	1	0	2	OrbakWaterHorse	HorseEachuisgeCCCphenixrising	1277	259	1	Y																			Damage10	16	97	54	62	103	113	1	2	6									
-Orray	Bruiser	19	233	19	11	16	17	20	25	26	16	WIL	SOC	24	16	12	24	12	8	8	4	4	0	0	0	Orray	DregothDrayCCCPLUSHHYENAofDOOM	3170	30	1	Y																			Bruiser10	13	86	81	76	109	110	5	7	3									
+Orray	Bruiser	19	233	19	11	16	17	20	25	26	16	WIL	SOC	24	16	12	24	12	8	8	4	4	0	0	0	Orray	Bulette	819	446	1	Y																			Bruiser10	13	86	81	76	109	110	5	7	3									
 Ronto	Damage	19	195	12	9	13	21	11	20	13	14	VIT	MGT	24	24	12	8	12	16	16	2	2	1	0	2	Ronto	SWLORRonto	2008	385	0.6	Y																			Damage10	16	83	51	68	77	71	0	4	5									
 Katarn	Balanced	19	442	14	14	36	26	31	15	18	20	MGT	AGI	16	16	16	16	16	12	12	12	12	1	1	1	Katarn	SWLORKatarn	601	60	1	Y																			Balanced10	16	80	89	65	143	89	10	2	8									
 Grutchin	Evasion	19	461	8	5	35	26	10	29	15	17	PER	SOC	2	16	24	16	16	12	12	8	8	0	0	2	Grutchin	MdrnEttercap2	204	36	1	Y																			Evasion10	10	65	58	86	114	89	0	9	8									
@@ -3789,7 +3789,7 @@ Boma Beast Baby	Force	20	540	4	15	21	15	18	14	11	9	SOC	WIL	2	2	16	4	25	12	12	8	2
 Ubese Thorn	Force	20	540	4	15	34	28	30	28	18	11	WIL	VIT	2	2	16	4	25	12	12	8	25	2	2	2	UbeseThorn	MdrnCrodluBrown	4034	95	1	Y																			Force20	15	80	77	94	106	92	10	8	8									
 Swamp Rat	Damage	20	260	13	9	23	23	20	27	12	13	PER	AGI	25	25	12	8	12	16	16	2	2	1	0	2	SwampRat	RodentRat	603	249	1	Y																			Damage20	29	86	66	80	113	70	5	8	6									
 Orbak Water Horse	Damage	20	240	13	9	20	23	13	16	27	19	MGT	AGI	25	25	12	8	12	16	16	2	2	1	0	2	OrbakWaterHorse	HorseEachuisgeCCCphenixrising	1277	259	1	Y																			Damage20	29	101	56	63	106	115	1	2	6									
-Orray	Bruiser	20	240	19	12	16	18	20	25	26	16	WIL	SOC	25	16	12	25	12	8	8	4	4	0	0	0	Orray	DregothDrayCCCPLUSHHYENAofDOOM	3170	30	1	Y																			Bruiser20	18	89	83	77	111	112	5	7	3									
+Orray	Bruiser	20	240	19	12	16	18	20	25	26	16	WIL	SOC	25	16	12	25	12	8	8	4	4	0	0	0	Orray	Bulette	819	446	1	Y																			Bruiser20	18	89	83	77	111	112	5	7	3									
 Ronto	Damage	20	200	13	9	13	22	11	20	13	14	VIT	MGT	25	25	12	8	12	16	16	2	2	1	0	2	Ronto	SWLORRonto	2008	385	0.6	Y																			Damage20	29	86	53	69	79	73	0	4	5									
 Katarn	Balanced	20	460	15	15	36	27	31	15	18	20	MGT	AGI	16	16	16	16	16	12	12	12	12	1	1	1	Katarn	SWLORKatarn	601	60	1	Y																			Balanced20	25	83	91	66	145	92	10	2	8									
 Grutchin	Evasion	20	480	9	5	35	27	10	29	15	17	PER	SOC	2	16	25	16	16	12	12	8	8	0	0	2	Grutchin	MdrnEttercap2	204	36	1	Y																			Evasion20	15	67	59	87	116	91	0	9	8									
@@ -3827,7 +3827,7 @@ Boma Beast Baby	Force	21	562	4	16	22	15	19	14	12	9	SOC	WIL	2	2	17	4	26	13	13	9	2
 Ubese Thorn	Force	21	562	4	16	35	28	31	28	19	11	WIL	VIT	2	2	17	4	26	13	13	9	26	2	2	2	UbeseThorn	MdrnCrodluBrown	4034	95	1	Y																			Force20	15	83	78	97	107	94	10	9	8									
 Swamp Rat	Damage	21	268	13	9	24	23	21	27	13	13	PER	AGI	26	26	13	9	13	17	17	2	2	1	0	2	SwampRat	RodentRat	603	249	1	Y																			Damage20	29	89	68	82	116	72	5	8	6									
 Orbak Water Horse	Damage	21	247	13	9	21	23	14	16	28	19	MGT	AGI	26	26	13	9	13	17	17	2	2	1	0	2	OrbakWaterHorse	HorseEachuisgeCCCphenixrising	1277	259	1	Y																			Damage20	29	104	58	66	109	117	1	3	6									
-Orray	Bruiser	21	247	20	12	17	18	21	25	27	16	WIL	SOC	26	17	13	26	13	9	9	4	4	0	0	0	Orray	DregothDrayCCCPLUSHHYENAofDOOM	3170	30	1	Y																			Bruiser20	18	92	85	79	113	114	5	7	3									
+Orray	Bruiser	21	247	20	12	17	18	21	25	27	16	WIL	SOC	26	17	13	26	13	9	9	4	4	0	0	0	Orray	Bulette	819	446	1	Y																			Bruiser20	18	92	85	79	113	114	5	7	3									
 Ronto	Damage	21	205	13	9	14	22	12	20	14	14	VIT	MGT	26	26	13	9	13	17	17	2	2	1	0	2	Ronto	SWLORRonto	2008	385	0.6	Y																			Damage20	29	90	55	72	82	75	0	5	5									
 Katarn	Balanced	21	478	15	15	37	27	32	15	19	20	MGT	AGI	17	17	17	17	17	13	13	13	13	1	1	1	Katarn	SWLORKatarn	601	60	1	Y																			Balanced20	25	86	93	68	148	94	10	2	8									
 Grutchin	Evasion	21	499	9	5	36	27	11	29	16	17	PER	SOC	2	17	26	17	17	13	13	9	9	0	0	2	Grutchin	MdrnEttercap2	204	36	1	Y																			Evasion20	15	69	61	89	119	94	0	9	8									
@@ -3865,7 +3865,7 @@ Boma Beast Baby	Force	22	584	4	17	22	15	19	14	12	9	SOC	WIL	2	2	18	4	27	13	13	9	2
 Ubese Thorn	Force	22	584	4	17	35	28	31	28	19	11	WIL	VIT	2	2	18	4	27	13	13	9	27	2	2	2	UbeseThorn	MdrnCrodluBrown	4034	95	1	Y																			Force20	15	85	80	99	109	96	10	9	9									
 Swamp Rat	Damage	22	276	13	9	24	23	21	27	13	13	PER	AGI	27	27	13	9	13	18	18	2	2	1	0	2	SwampRat	RodentRat	603	249	1	Y																			Damage20	29	92	70	83	119	74	5	8	6									
 Orbak Water Horse	Damage	22	254	13	9	21	23	14	16	28	19	MGT	AGI	27	27	13	9	13	18	18	2	2	1	0	2	OrbakWaterHorse	HorseEachuisgeCCCphenixrising	1277	259	1	Y																			Damage20	29	107	59	67	112	119	1	3	6									
-Orray	Bruiser	22	254	21	12	17	18	21	25	27	16	WIL	SOC	27	18	13	27	13	9	9	4	4	0	0	0	Orray	DregothDrayCCCPLUSHHYENAofDOOM	3170	30	1	Y																			Bruiser20	18	96	88	80	115	116	5	7	4									
+Orray	Bruiser	22	254	21	12	17	18	21	25	27	16	WIL	SOC	27	18	13	27	13	9	9	4	4	0	0	0	Orray	Bulette	819	446	1	Y																			Bruiser20	18	96	88	80	115	116	5	7	4									
 Ronto	Damage	22	210	13	9	14	22	12	20	14	14	VIT	MGT	27	27	13	9	13	18	18	2	2	1	0	2	Ronto	SWLORRonto	2008	385	0.6	Y																			Damage20	29	93	56	73	85	77	0	5	6									
 Katarn	Balanced	22	496	16	16	37	27	32	15	19	20	MGT	AGI	18	18	18	18	18	13	13	13	13	1	1	1	Katarn	SWLORKatarn	601	60	1	Y																			Balanced20	25	89	95	70	150	96	10	2	8									
 Grutchin	Evasion	22	518	9	5	36	27	11	29	16	17	PER	SOC	2	18	27	18	18	13	13	9	9	0	0	2	Grutchin	MdrnEttercap2	204	36	1	Y																			Evasion20	15	71	64	91	121	97	0	9	8									
@@ -3903,7 +3903,7 @@ Boma Beast Baby	Force	23	606	4	17	22	15	19	14	12	9	SOC	WIL	2	2	19	5	29	14	14	9	2
 Ubese Thorn	Force	23	606	4	17	35	28	31	28	19	11	WIL	VIT	2	2	19	5	29	14	14	9	29	2	2	2	UbeseThorn	MdrnCrodluBrown	4034	95	1	Y																			Force20	15	87	82	102	110	98	10	9	9									
 Swamp Rat	Damage	23	284	14	9	24	23	21	27	13	13	PER	AGI	29	29	14	9	14	19	19	2	2	1	0	2	SwampRat	RodentRat	603	249	1	Y																			Damage20	29	96	71	85	121	76	5	8	6									
 Orbak Water Horse	Damage	23	261	14	9	21	23	14	16	28	19	MGT	AGI	29	29	14	9	14	19	19	2	2	1	0	2	OrbakWaterHorse	HorseEachuisgeCCCphenixrising	1277	259	1	Y																			Damage20	29	111	60	69	115	121	1	3	6									
-Orray	Bruiser	23	261	21	13	17	18	21	25	27	16	WIL	SOC	29	19	14	29	14	9	9	5	5	0	0	0	Orray	DregothDrayCCCPLUSHHYENAofDOOM	3170	30	1	Y																			Bruiser20	18	99	91	82	118	118	5	7	4									
+Orray	Bruiser	23	261	21	13	17	18	21	25	27	16	WIL	SOC	29	19	14	29	14	9	9	5	5	0	0	0	Orray	Bulette	819	446	1	Y																			Bruiser20	18	99	91	82	118	118	5	7	4									
 Ronto	Damage	23	215	14	9	14	22	12	20	14	14	VIT	MGT	29	29	14	9	14	19	19	2	2	1	0	2	Ronto	SWLORRonto	2008	385	0.6	Y																			Damage20	29	97	57	75	87	79	0	5	6									
 Katarn	Balanced	23	514	16	16	37	27	32	15	19	20	MGT	AGI	19	19	19	19	19	14	14	14	14	1	1	1	Katarn	SWLORKatarn	601	60	1	Y																			Balanced20	25	92	97	72	153	98	10	2	8									
 Grutchin	Evasion	23	537	10	5	36	27	11	29	16	17	PER	SOC	2	19	29	19	19	14	14	9	9	0	0	2	Grutchin	MdrnEttercap2	204	36	1	Y																			Evasion20	15	74	66	93	123	99	0	9	8									
@@ -3941,7 +3941,7 @@ Boma Beast Baby	Force	24	628	4	18	22	15	19	14	12	9	SOC	WIL	2	2	20	5	30	15	15	10	
 Ubese Thorn	Force	24	628	4	18	35	28	31	28	19	11	WIL	VIT	2	2	20	5	30	15	15	10	30	2	2	2	UbeseThorn	MdrnCrodluBrown	4034	95	1	Y																			Force20	15	89	83	104	112	100	10	9	9									
 Swamp Rat	Damage	24	292	14	10	24	23	21	27	13	13	PER	AGI	30	30	15	10	15	20	20	2	2	1	0	2	SwampRat	RodentRat	603	249	1	Y																			Damage20	29	99	73	88	124	78	5	8	6									
 Orbak Water Horse	Damage	24	268	14	10	21	23	14	16	28	19	MGT	AGI	30	30	15	10	15	20	20	2	2	1	0	2	OrbakWaterHorse	HorseEachuisgeCCCphenixrising	1277	259	1	Y																			Damage20	29	114	62	71	118	123	1	3	6									
-Orray	Bruiser	24	268	22	13	17	18	21	25	27	16	WIL	SOC	30	20	15	30	15	10	10	5	5	0	0	0	Orray	DregothDrayCCCPLUSHHYENAofDOOM	3170	30	1	Y																			Bruiser20	18	102	93	85	120	120	5	7	4									
+Orray	Bruiser	24	268	22	13	17	18	21	25	27	16	WIL	SOC	30	20	15	30	15	10	10	5	5	0	0	0	Orray	Bulette	819	446	1	Y																			Bruiser20	18	102	93	85	120	120	5	7	4									
 Ronto	Damage	24	220	14	10	14	22	12	20	14	14	VIT	MGT	30	30	15	10	15	20	20	2	2	1	0	2	Ronto	SWLORRonto	2008	385	0.6	Y																			Damage20	29	100	59	77	90	81	0	5	6									
 Katarn	Balanced	24	532	17	17	37	27	32	15	19	20	MGT	AGI	20	20	20	20	20	15	15	15	15	1	1	1	Katarn	SWLORKatarn	601	60	1	Y																			Balanced20	25	95	99	75	156	100	10	2	8									
 Grutchin	Evasion	24	556	10	5	36	27	11	29	16	17	PER	SOC	2	20	30	20	20	15	15	10	10	0	0	2	Grutchin	MdrnEttercap2	204	36	1	Y																			Evasion20	15	76	68	96	126	102	0	9	8									
@@ -3979,7 +3979,7 @@ Boma Beast Baby	Force	25	650	4	19	23	16	19	15	12	10	SOC	WIL	3	3	20	5	31	15	15	10
 Ubese Thorn	Force	25	650	4	19	36	29	31	29	19	12	WIL	VIT	3	3	20	5	31	15	15	10	31	2	3	2	UbeseThorn	MdrnCrodluBrown	4034	95	1	Y																			Force20	15	92	84	106	113	103	10	9	9									
 Swamp Rat	Damage	25	300	15	10	25	24	21	28	13	14	PER	AGI	31	31	15	10	15	20	20	3	3	1	1	3	SwampRat	RodentRat	603	249	1	Y																			Damage20	29	102	74	89	127	79	5	8	6									
 Orbak Water Horse	Damage	25	275	15	10	22	24	14	17	28	20	MGT	AGI	31	31	15	10	15	20	20	3	3	1	1	3	OrbakWaterHorse	HorseEachuisgeCCCphenixrising	1277	259	1	Y																			Damage20	29	117	64	72	121	124	2	3	6									
-Orray	Bruiser	25	275	23	13	18	19	21	26	27	17	WIL	SOC	31	20	15	31	15	10	10	5	5	0	0	0	Orray	DregothDrayCCCPLUSHHYENAofDOOM	3170	30	1	Y																			Bruiser20	18	106	95	86	122	121	5	7	4									
+Orray	Bruiser	25	275	23	13	18	19	21	26	27	17	WIL	SOC	31	20	15	31	15	10	10	5	5	0	0	0	Orray	Bulette	819	446	1	Y																			Bruiser20	18	106	95	86	122	121	5	7	4									
 Ronto	Damage	25	225	15	10	15	23	12	21	14	15	VIT	MGT	31	31	15	10	15	20	20	3	3	1	1	3	Ronto	SWLORRonto	2008	385	0.6	Y																			Damage20	29	104	61	78	92	82	1	5	6									
 Katarn	Balanced	25	550	17	17	38	28	32	16	19	21	MGT	AGI	20	20	20	20	20	15	15	15	15	2	2	2	Katarn	SWLORKatarn	601	60	1	Y																			Balanced20	25	97	101	76	158	103	11	2	8									
 Grutchin	Evasion	25	575	10	5	37	28	11	30	16	18	PER	SOC	3	20	31	20	20	15	15	10	10	1	1	3	Grutchin	MdrnEttercap2	204	36	1	Y																			Evasion20	15	78	69	97	128	104	0	9	8									
@@ -4017,7 +4017,7 @@ Boma Beast Baby	Force	26	672	5	20	23	16	19	15	12	10	SOC	WIL	3	3	21	5	32	16	16	11
 Ubese Thorn	Force	26	672	5	20	36	29	31	29	19	12	WIL	VIT	3	3	21	5	32	16	16	11	32	2	3	2	UbeseThorn	MdrnCrodluBrown	4034	95	1	Y																			Force20	15	94	85	109	115	105	10	9	9									
 Swamp Rat	Damage	26	308	15	10	25	24	21	28	13	14	PER	AGI	32	32	16	11	16	21	21	3	3	1	1	3	SwampRat	RodentRat	603	249	1	Y																			Damage20	29	105	76	91	130	81	5	8	6									
 Orbak Water Horse	Damage	26	282	15	10	22	24	14	17	28	20	MGT	AGI	32	32	16	11	16	21	21	3	3	1	1	3	OrbakWaterHorse	HorseEachuisgeCCCphenixrising	1277	259	1	Y																			Damage20	29	120	66	75	124	126	2	3	6									
-Orray	Bruiser	26	282	24	14	18	19	21	26	27	17	WIL	SOC	32	21	16	32	16	11	11	5	5	0	0	0	Orray	DregothDrayCCCPLUSHHYENAofDOOM	3170	30	1	Y																			Bruiser20	18	109	97	88	124	123	5	7	4									
+Orray	Bruiser	26	282	24	14	18	19	21	26	27	17	WIL	SOC	32	21	16	32	16	11	11	5	5	0	0	0	Orray	Bulette	819	446	1	Y																			Bruiser20	18	109	97	88	124	123	5	7	4									
 Ronto	Damage	26	230	15	10	15	23	12	21	14	15	VIT	MGT	32	32	16	11	16	21	21	3	3	1	1	3	Ronto	SWLORRonto	2008	385	0.6	Y																			Damage20	29	107	63	81	95	84	1	5	6									
 Katarn	Balanced	26	568	18	18	38	28	32	16	19	21	MGT	AGI	21	21	21	21	21	16	16	16	16	2	2	2	Katarn	SWLORKatarn	601	60	1	Y																			Balanced20	25	100	103	78	161	105	11	2	8									
 Grutchin	Evasion	26	594	11	6	37	28	11	30	16	18	PER	SOC	3	21	32	21	21	16	16	11	11	1	1	3	Grutchin	MdrnEttercap2	204	36	1	Y																			Evasion20	15	80	71	99	131	107	0	9	8									
@@ -4055,7 +4055,7 @@ Boma Beast Baby	Force	27	694	5	20	23	16	19	15	12	10	SOC	WIL	3	3	22	6	34	17	17	11
 Ubese Thorn	Force	27	694	5	20	36	29	31	29	19	12	WIL	VIT	3	3	22	6	34	17	17	11	34	2	3	2	UbeseThorn	MdrnCrodluBrown	4034	95	1	Y																			Force20	15	96	87	112	116	107	10	9	9									
 Swamp Rat	Damage	27	316	15	10	25	24	21	28	13	14	PER	AGI	34	34	17	11	17	22	22	3	3	1	1	3	SwampRat	RodentRat	603	249	1	Y																			Damage20	29	109	77	93	132	83	5	8	6									
 Orbak Water Horse	Damage	27	289	15	10	22	24	14	17	28	20	MGT	AGI	34	34	17	11	17	22	22	3	3	1	1	3	OrbakWaterHorse	HorseEachuisgeCCCphenixrising	1277	259	1	Y																			Damage20	29	124	67	77	127	128	2	3	6									
-Orray	Bruiser	27	289	24	14	18	19	21	26	27	17	WIL	SOC	34	22	17	34	17	11	11	6	6	0	0	0	Orray	DregothDrayCCCPLUSHHYENAofDOOM	3170	30	1	Y																			Bruiser20	18	112	100	90	127	125	5	7	4									
+Orray	Bruiser	27	289	24	14	18	19	21	26	27	17	WIL	SOC	34	22	17	34	17	11	11	6	6	0	0	0	Orray	Bulette	819	446	1	Y																			Bruiser20	18	112	100	90	127	125	5	7	4									
 Ronto	Damage	27	235	15	10	15	23	12	21	14	15	VIT	MGT	34	34	17	11	17	22	22	3	3	1	1	3	Ronto	SWLORRonto	2008	385	0.6	Y																			Damage20	29	111	64	83	97	86	1	5	6									
 Katarn	Balanced	27	586	18	18	38	28	32	16	19	21	MGT	AGI	22	22	22	22	22	17	17	17	17	2	2	2	Katarn	SWLORKatarn	601	60	1	Y																			Balanced20	25	103	105	80	164	107	11	2	8									
 Grutchin	Evasion	27	613	11	6	37	28	11	30	16	18	PER	SOC	3	22	34	22	22	17	17	11	11	1	1	3	Grutchin	MdrnEttercap2	204	36	1	Y																			Evasion20	15	83	73	101	133	109	0	9	8									
@@ -4093,7 +4093,7 @@ Boma Beast Baby	Force	28	716	5	21	23	16	19	15	12	10	SOC	WIL	3	3	23	6	35	17	17	11
 Ubese Thorn	Force	28	716	5	21	36	29	31	29	19	12	WIL	VIT	3	3	23	6	35	17	17	11	35	2	3	2	UbeseThorn	MdrnCrodluBrown	4034	95	1	Y																			Force20	15	98	89	114	118	109	10	9	9									
 Swamp Rat	Damage	28	324	16	10	25	24	21	28	13	14	PER	AGI	35	35	17	11	17	23	23	3	3	1	1	3	SwampRat	RodentRat	603	249	1	Y																			Damage20	29	112	79	95	135	85	5	9	7									
 Orbak Water Horse	Damage	28	296	16	10	22	24	14	17	28	20	MGT	AGI	35	35	17	11	17	23	23	3	3	1	1	3	OrbakWaterHorse	HorseEachuisgeCCCphenixrising	1277	259	1	Y																			Damage20	29	127	68	78	130	130	2	3	7									
-Orray	Bruiser	28	296	25	14	18	19	21	26	27	17	WIL	SOC	35	23	17	35	17	11	11	6	6	0	0	0	Orray	DregothDrayCCCPLUSHHYENAofDOOM	3170	30	1	Y																			Bruiser20	18	116	103	92	129	127	5	8	4									
+Orray	Bruiser	28	296	25	14	18	19	21	26	27	17	WIL	SOC	35	23	17	35	17	11	11	6	6	0	0	0	Orray	Bulette	819	446	1	Y																			Bruiser20	18	116	103	92	129	127	5	8	4									
 Ronto	Damage	28	240	16	10	15	23	12	21	14	15	VIT	MGT	35	35	17	11	17	23	23	3	3	1	1	3	Ronto	SWLORRonto	2008	385	0.6	Y																			Damage20	29	114	65	84	100	88	1	5	6									
 Katarn	Balanced	28	604	19	19	38	28	32	16	19	21	MGT	AGI	23	23	23	23	23	17	17	17	17	2	2	2	Katarn	SWLORKatarn	601	60	1	Y																			Balanced20	25	106	107	83	166	109	11	3	9									
 Grutchin	Evasion	28	632	11	6	37	28	11	30	16	18	PER	SOC	3	23	35	23	23	17	17	11	11	1	1	3	Grutchin	MdrnEttercap2	204	36	1	Y																			Evasion20	15	85	76	104	135	112	0	10	9									
@@ -4131,7 +4131,7 @@ Boma Beast Baby	Force	29	738	5	22	24	16	20	15	13	10	SOC	WIL	3	3	24	6	36	18	18	12
 Ubese Thorn	Force	29	738	5	22	37	29	32	29	20	12	WIL	VIT	3	3	24	6	36	18	18	12	36	2	3	2	UbeseThorn	MdrnCrodluBrown	4034	95	1	Y																			Force20	15	101	90	116	119	111	10	9	9									
 Swamp Rat	Damage	29	332	16	11	26	24	22	28	14	14	PER	AGI	36	36	18	12	18	24	24	3	3	1	1	3	SwampRat	RodentRat	603	249	1	Y																			Damage20	29	115	81	97	138	87	5	9	7									
 Orbak Water Horse	Damage	29	303	16	11	23	24	15	17	29	20	MGT	AGI	36	36	18	12	18	24	24	3	3	1	1	3	OrbakWaterHorse	HorseEachuisgeCCCphenixrising	1277	259	1	Y																			Damage20	29	130	70	80	133	132	2	3	7									
-Orray	Bruiser	29	303	26	14	19	19	22	26	28	17	WIL	SOC	36	24	18	36	18	12	12	6	6	0	0	0	Orray	DregothDrayCCCPLUSHHYENAofDOOM	3170	30	1	Y																			Bruiser20	18	119	105	94	131	129	5	8	4									
+Orray	Bruiser	29	303	26	14	19	19	22	26	28	17	WIL	SOC	36	24	18	36	18	12	12	6	6	0	0	0	Orray	Bulette	819	446	1	Y																			Bruiser20	18	119	105	94	131	129	5	8	4									
 Ronto	Damage	29	245	16	11	16	23	13	21	15	15	VIT	MGT	36	36	18	12	18	24	24	3	3	1	1	3	Ronto	SWLORRonto	2008	385	0.6	Y																			Damage20	29	118	67	86	103	90	1	5	6									
 Katarn	Balanced	29	622	19	19	39	28	33	16	20	21	MGT	AGI	24	24	24	24	24	18	18	18	18	2	2	2	Katarn	SWLORKatarn	601	60	1	Y																			Balanced20	25	109	109	85	169	111	11	3	9									
 Grutchin	Evasion	29	651	11	6	38	28	12	30	17	18	PER	SOC	3	24	36	24	24	18	18	12	12	1	1	3	Grutchin	MdrnEttercap2	204	36	1	Y																			Evasion20	15	87	78	106	138	115	0	10	9									
@@ -4169,7 +4169,7 @@ Boma Beast Baby	Force	30	760	5	22	24	17	20	15	13	10	SOC	WIL	3	3	24	6	37	18	18	12
 Ubese Thorn	Force	30	760	5	22	37	30	32	29	20	12	WIL	VIT	3	3	24	6	37	18	18	12	37	2	3	2	UbeseThorn	MdrnCrodluBrown	4034	95	1	Y																			Force30	19	103	91	118	121	114	10	9	9									
 Swamp Rat	Damage	30	340	17	11	26	25	22	28	14	14	PER	AGI	37	37	18	12	18	24	24	3	3	1	1	3	SwampRat	RodentRat	603	249	1	Y																			Damage30	37	119	82	98	141	89	5	9	7									
 Orbak Water Horse	Damage	30	310	17	11	23	25	15	17	29	20	MGT	AGI	37	37	18	12	18	24	24	3	3	1	1	3	OrbakWaterHorse	HorseEachuisgeCCCphenixrising	1277	259	1	Y																			Damage30	37	134	72	81	136	134	2	3	7									
-Orray	Bruiser	30	310	26	15	19	20	22	26	28	17	WIL	SOC	37	24	18	37	18	12	12	6	6	0	0	0	Orray	DregothDrayCCCPLUSHHYENAofDOOM	3170	30	1	Y																			Bruiser30	22	122	107	95	133	131	5	8	4									
+Orray	Bruiser	30	310	26	15	19	20	22	26	28	17	WIL	SOC	37	24	18	37	18	12	12	6	6	0	0	0	Orray	Bulette	819	446	1	Y																			Bruiser30	22	122	107	95	133	131	5	8	4									
 Ronto	Damage	30	250	17	11	16	24	13	21	15	15	VIT	MGT	37	37	18	12	18	24	24	3	3	1	1	3	Ronto	SWLORRonto	2008	385	0.6	Y																			Damage30	37	121	69	87	105	92	1	5	6									
 Katarn	Balanced	30	640	20	20	39	29	33	16	20	21	MGT	AGI	24	24	24	24	24	18	18	18	18	2	2	2	Katarn	SWLORKatarn	601	60	1	Y																			Balanced30	33	112	111	86	171	114	11	3	9									
 Grutchin	Evasion	30	670	12	6	38	29	12	30	17	18	PER	SOC	3	24	37	24	24	18	18	12	12	1	1	3	Grutchin	MdrnEttercap2	204	36	1	Y																			Evasion30	19	89	79	107	140	117	0	10	9									
@@ -4207,7 +4207,7 @@ Boma Beast Baby	Force	31	782	5	23	24	17	20	15	13	10	SOC	WIL	3	3	25	6	38	19	19	13
 Ubese Thorn	Force	31	782	5	23	37	30	32	29	20	12	WIL	VIT	3	3	25	6	38	19	19	13	38	3	3	3	UbeseThorn	MdrnCrodluBrown	4034	95	1	Y																			Force30	19	105	92	121	122	116	10	9	9									
 Swamp Rat	Damage	31	348	17	11	26	25	22	28	14	14	PER	AGI	38	38	19	13	19	25	25	3	3	1	1	3	SwampRat	RodentRat	603	249	1	Y																			Damage30	37	122	84	100	143	91	5	9	7									
 Orbak Water Horse	Damage	31	317	17	11	23	25	15	17	29	20	MGT	AGI	38	38	19	13	19	25	25	3	3	1	1	3	OrbakWaterHorse	HorseEachuisgeCCCphenixrising	1277	259	1	Y																			Damage30	37	137	74	84	139	136	2	3	7									
-Orray	Bruiser	31	317	27	15	19	20	22	26	28	17	WIL	SOC	38	25	19	38	19	13	13	6	6	0	0	0	Orray	DregothDrayCCCPLUSHHYENAofDOOM	3170	30	1	Y																			Bruiser30	22	126	109	97	136	133	5	8	4									
+Orray	Bruiser	31	317	27	15	19	20	22	26	28	17	WIL	SOC	38	25	19	38	19	13	13	6	6	0	0	0	Orray	Bulette	819	446	1	Y																			Bruiser30	22	126	109	97	136	133	5	8	4									
 Ronto	Damage	31	255	17	11	16	24	13	21	15	15	VIT	MGT	38	38	19	13	19	25	25	3	3	1	1	3	Ronto	SWLORRonto	2008	385	0.6	Y																			Damage30	37	125	71	90	108	94	1	5	6									
 Katarn	Balanced	31	658	20	20	39	29	33	16	20	21	MGT	AGI	25	25	25	25	25	19	19	19	19	2	2	2	Katarn	SWLORKatarn	601	60	1	Y																			Balanced30	33	115	113	88	174	116	11	3	9									
 Grutchin	Evasion	31	689	12	6	38	29	12	30	17	18	PER	SOC	3	25	38	25	25	19	19	13	13	1	1	3	Grutchin	MdrnEttercap2	204	36	1	Y																			Evasion30	19	92	81	109	142	120	0	10	9									
@@ -4245,7 +4245,7 @@ Boma Beast Baby	Force	32	804	5	24	24	17	20	16	13	11	SOC	WIL	3	3	26	7	40	20	20	13
 Ubese Thorn	Force	32	804	5	24	37	30	32	30	20	13	WIL	VIT	3	3	26	7	40	20	20	13	40	3	3	3	UbeseThorn	MdrnCrodluBrown	4034	95	1	Y																			Force30	19	107	94	124	124	118	10	9	9									
 Swamp Rat	Damage	32	356	17	11	26	25	22	29	14	15	PER	AGI	40	40	20	13	20	26	26	3	3	1	1	3	SwampRat	RodentRat	603	249	1	Y																			Damage30	37	125	85	102	146	93	5	9	7									
 Orbak Water Horse	Damage	32	324	17	11	23	25	15	18	29	21	MGT	AGI	40	40	20	13	20	26	26	3	3	1	1	3	OrbakWaterHorse	HorseEachuisgeCCCphenixrising	1277	259	1	Y																			Damage30	37	140	75	86	142	138	2	3	7									
-Orray	Bruiser	32	324	28	15	19	20	22	27	28	18	WIL	SOC	40	26	20	40	20	13	13	7	7	0	0	0	Orray	DregothDrayCCCPLUSHHYENAofDOOM	3170	30	1	Y																			Bruiser30	22	129	112	99	138	135	5	8	4									
+Orray	Bruiser	32	324	28	15	19	20	22	27	28	18	WIL	SOC	40	26	20	40	20	13	13	7	7	0	0	0	Orray	Bulette	819	446	1	Y																			Bruiser30	22	129	112	99	138	135	5	8	4									
 Ronto	Damage	32	260	17	11	16	24	13	22	15	16	VIT	MGT	40	40	20	13	20	26	26	3	3	1	1	3	Ronto	SWLORRonto	2008	385	0.6	Y																			Damage30	37	128	72	92	110	96	1	5	6									
 Katarn	Balanced	32	676	21	21	39	29	33	17	20	22	MGT	AGI	26	26	26	26	26	20	20	20	20	2	2	2	Katarn	SWLORKatarn	601	60	1	Y																			Balanced30	33	118	115	90	177	118	11	3	9									
 Grutchin	Evasion	32	708	12	6	38	29	12	31	17	19	PER	SOC	3	26	40	26	26	20	20	13	13	1	1	3	Grutchin	MdrnEttercap2	204	36	1	Y																			Evasion30	19	94	83	111	145	122	0	10	9									
@@ -4283,7 +4283,7 @@ Boma Beast Baby	Force	33	826	5	24	25	17	20	16	13	11	SOC	WIL	3	3	27	7	41	20	20	13
 Ubese Thorn	Force	33	826	5	24	38	30	32	30	20	13	WIL	VIT	3	3	27	7	41	20	20	13	41	3	3	3	UbeseThorn	MdrnCrodluBrown	4034	95	1	Y																			Force30	19	109	96	126	126	120	11	9	10									
 Swamp Rat	Damage	33	364	18	11	27	25	22	29	14	15	PER	AGI	41	41	20	13	20	27	27	3	3	1	1	3	SwampRat	RodentRat	603	249	1	Y																			Damage30	37	129	87	104	149	95	6	9	7									
 Orbak Water Horse	Damage	33	331	18	11	24	25	15	18	29	21	MGT	AGI	41	41	20	13	20	27	27	3	3	1	1	3	OrbakWaterHorse	HorseEachuisgeCCCphenixrising	1277	259	1	Y																			Damage30	37	144	76	87	145	140	2	3	7									
-Orray	Bruiser	33	331	28	16	20	20	22	27	28	18	WIL	SOC	41	27	20	41	20	13	13	7	7	0	0	0	Orray	DregothDrayCCCPLUSHHYENAofDOOM	3170	30	1	Y																			Bruiser30	22	132	115	101	140	137	6	8	5									
+Orray	Bruiser	33	331	28	16	20	20	22	27	28	18	WIL	SOC	41	27	20	41	20	13	13	7	7	0	0	0	Orray	Bulette	819	446	1	Y																			Bruiser30	22	132	115	101	140	137	6	8	5									
 Ronto	Damage	33	265	18	11	17	24	13	22	15	16	VIT	MGT	41	41	20	13	20	27	27	3	3	1	1	3	Ronto	SWLORRonto	2008	385	0.6	Y																			Damage30	37	131	73	93	113	98	1	5	7									
 Katarn	Balanced	33	694	21	21	40	29	33	17	20	22	MGT	AGI	27	27	27	27	27	20	20	20	20	2	2	2	Katarn	SWLORKatarn	601	60	1	Y																			Balanced30	33	121	117	93	179	120	11	3	9									
 Grutchin	Evasion	33	727	13	6	39	29	12	31	17	19	PER	SOC	3	27	41	27	27	20	20	13	13	1	1	3	Grutchin	MdrnEttercap2	204	36	1	Y																			Evasion30	19	96	86	114	147	125	1	10	9									
@@ -4321,7 +4321,7 @@ Boma Beast Baby	Force	34	848	5	25	25	17	20	16	13	11	SOC	WIL	3	3	28	7	42	21	21	14
 Ubese Thorn	Force	34	848	5	25	38	30	32	30	20	13	WIL	VIT	3	3	28	7	42	21	21	14	42	3	3	3	UbeseThorn	MdrnCrodluBrown	4034	95	1	Y																			Force30	19	112	97	128	127	122	11	9	10									
 Swamp Rat	Damage	34	372	18	12	27	25	22	29	14	15	PER	AGI	42	42	21	14	21	28	28	3	3	1	1	3	SwampRat	RodentRat	603	249	1	Y																			Damage30	37	132	89	106	152	97	6	9	7									
 Orbak Water Horse	Damage	34	338	18	12	24	25	15	18	29	21	MGT	AGI	42	42	21	14	21	28	28	3	3	1	1	3	OrbakWaterHorse	HorseEachuisgeCCCphenixrising	1277	259	1	Y																			Damage30	37	147	78	89	148	142	2	3	7									
-Orray	Bruiser	34	338	29	16	20	20	22	27	28	18	WIL	SOC	42	28	21	42	21	14	14	7	7	0	0	0	Orray	DregothDrayCCCPLUSHHYENAofDOOM	3170	30	1	Y																			Bruiser30	22	136	117	103	142	139	6	8	5									
+Orray	Bruiser	34	338	29	16	20	20	22	27	28	18	WIL	SOC	42	28	21	42	21	14	14	7	7	0	0	0	Orray	Bulette	819	446	1	Y																			Bruiser30	22	136	117	103	142	139	6	8	5									
 Ronto	Damage	34	270	18	12	17	24	13	22	15	16	VIT	MGT	42	42	21	14	21	28	28	3	3	1	1	3	Ronto	SWLORRonto	2008	385	0.6	Y																			Damage30	37	135	75	95	115	100	1	5	7									
 Katarn	Balanced	34	712	22	22	40	29	33	17	20	22	MGT	AGI	28	28	28	28	28	21	21	21	21	2	2	2	Katarn	SWLORKatarn	601	60	1	Y																			Balanced30	33	124	119	95	182	122	11	3	9									
 Grutchin	Evasion	34	746	13	6	39	29	12	31	17	19	PER	SOC	3	28	42	28	28	21	21	14	14	1	1	3	Grutchin	MdrnEttercap2	204	36	1	Y																			Evasion30	19	98	88	116	149	127	1	10	9									
@@ -4359,7 +4359,7 @@ Boma Beast Baby	Force	35	870	5	26	25	17	20	16	13	11	SOC	WIL	4	4	29	7	43	21	21	14
 Ubese Thorn	Force	35	870	5	26	38	30	32	30	20	13	WIL	VIT	4	4	29	7	43	21	21	14	43	3	4	3	UbeseThorn	MdrnCrodluBrown	4034	95	1	Y																			Force30	19	114	98	131	129	124	11	10	10									
 Swamp Rat	Damage	35	380	19	12	27	25	22	29	14	15	PER	AGI	43	43	21	14	21	29	29	4	4	1	1	4	SwampRat	RodentRat	603	249	1	Y																			Damage30	37	135	90	107	154	99	6	9	7									
 Orbak Water Horse	Damage	35	345	19	12	24	25	15	18	29	21	MGT	AGI	43	43	21	14	21	29	29	4	4	1	1	4	OrbakWaterHorse	HorseEachuisgeCCCphenixrising	1277	259	1	Y																			Damage30	37	150	79	91	151	144	2	4	7									
-Orray	Bruiser	35	345	30	16	20	20	22	27	28	18	WIL	SOC	43	29	21	43	21	14	14	7	7	0	0	0	Orray	DregothDrayCCCPLUSHHYENAofDOOM	3170	30	1	Y																			Bruiser30	22	139	119	104	145	141	6	8	5									
+Orray	Bruiser	35	345	30	16	20	20	22	27	28	18	WIL	SOC	43	29	21	43	21	14	14	7	7	0	0	0	Orray	Bulette	819	446	1	Y																			Bruiser30	22	139	119	104	145	141	6	8	5									
 Ronto	Damage	35	275	19	12	17	24	13	22	15	16	VIT	MGT	43	43	21	14	21	29	29	4	4	1	1	4	Ronto	SWLORRonto	2008	385	0.6	Y																			Damage30	37	138	76	97	118	102	1	6	7									
 Katarn	Balanced	35	730	22	22	40	29	33	17	20	22	MGT	AGI	29	29	29	29	29	21	21	21	21	2	2	2	Katarn	SWLORKatarn	601	60	1	Y																			Balanced30	33	127	121	97	184	124	11	3	9									
 Grutchin	Evasion	35	765	13	6	39	29	12	31	17	19	PER	SOC	4	29	43	29	29	21	21	14	14	1	1	4	Grutchin	MdrnEttercap2	204	36	1	Y																			Evasion30	19	101	90	118	152	130	1	10	9									
@@ -4397,7 +4397,7 @@ Boma Beast Baby	Force	36	892	6	27	26	18	20	16	13	11	SOC	WIL	4	4	29	7	44	22	22	15
 Ubese Thorn	Force	36	892	6	27	39	31	32	30	20	13	WIL	VIT	4	4	29	7	44	22	22	15	44	3	4	3	UbeseThorn	MdrnCrodluBrown	4034	95	1	Y																			Force30	19	116	99	133	130	127	11	10	10									
 Swamp Rat	Damage	36	388	19	12	28	26	22	29	14	15	PER	AGI	44	44	22	15	22	29	29	4	4	1	1	4	SwampRat	RodentRat	603	249	1	Y																			Damage30	37	139	92	109	157	101	6	9	7									
 Orbak Water Horse	Damage	36	352	19	12	25	26	15	18	29	21	MGT	AGI	44	44	22	15	22	29	29	4	4	1	1	4	OrbakWaterHorse	HorseEachuisgeCCCphenixrising	1277	259	1	Y																			Damage30	37	154	82	93	154	146	2	4	7									
-Orray	Bruiser	36	352	31	17	21	21	22	27	28	18	WIL	SOC	44	29	22	44	22	15	15	7	7	0	0	0	Orray	DregothDrayCCCPLUSHHYENAofDOOM	3170	30	1	Y																			Bruiser30	22	142	121	106	147	143	6	8	5									
+Orray	Bruiser	36	352	31	17	21	21	22	27	28	18	WIL	SOC	44	29	22	44	22	15	15	7	7	0	0	0	Orray	Bulette	819	446	1	Y																			Bruiser30	22	142	121	106	147	143	6	8	5									
 Ronto	Damage	36	280	19	12	18	25	13	22	15	16	VIT	MGT	44	44	22	15	22	29	29	4	4	1	1	4	Ronto	SWLORRonto	2008	385	0.6	Y																			Damage30	37	142	79	99	121	104	1	6	7									
 Katarn	Balanced	36	748	23	23	41	30	33	17	20	22	MGT	AGI	29	29	29	29	29	22	22	22	22	2	2	2	Katarn	SWLORKatarn	601	60	1	Y																			Balanced30	33	130	123	98	187	127	11	3	9									
 Grutchin	Evasion	36	784	14	7	40	30	12	31	17	19	PER	SOC	4	29	44	29	29	22	22	15	15	1	1	4	Grutchin	MdrnEttercap2	204	36	1	Y																			Evasion30	19	103	91	119	154	133	1	10	9									
@@ -4435,7 +4435,7 @@ Boma Beast Baby	Force	37	914	6	27	26	18	21	16	14	11	SOC	WIL	4	4	30	8	46	23	23	15
 Ubese Thorn	Force	37	914	6	27	39	31	33	30	21	13	WIL	VIT	4	4	30	8	46	23	23	15	46	3	4	3	UbeseThorn	MdrnCrodluBrown	4034	95	1	Y																			Force30	19	118	101	136	132	129	11	10	10									
 Swamp Rat	Damage	37	396	19	12	28	26	23	29	15	15	PER	AGI	46	46	23	15	23	30	30	4	4	2	1	4	SwampRat	RodentRat	603	249	1	Y																			Damage30	37	142	93	111	160	103	6	9	7									
 Orbak Water Horse	Damage	37	359	19	12	25	26	16	18	30	21	MGT	AGI	46	46	23	15	23	30	30	4	4	2	1	4	OrbakWaterHorse	HorseEachuisgeCCCphenixrising	1277	259	1	Y																			Damage30	37	157	83	95	157	148	2	4	7									
-Orray	Bruiser	37	359	31	17	21	21	23	27	29	18	WIL	SOC	46	30	23	46	23	15	15	8	8	0	0	0	Orray	DregothDrayCCCPLUSHHYENAofDOOM	3170	30	1	Y																			Bruiser30	22	146	124	108	149	145	6	8	5									
+Orray	Bruiser	37	359	31	17	21	21	23	27	29	18	WIL	SOC	46	30	23	46	23	15	15	8	8	0	0	0	Orray	Bulette	819	446	1	Y																			Bruiser30	22	146	124	108	149	145	6	8	5									
 Ronto	Damage	37	285	19	12	18	25	14	22	16	16	VIT	MGT	46	46	23	15	23	30	30	4	4	2	1	4	Ronto	SWLORRonto	2008	385	0.6	Y																			Damage30	37	145	80	101	123	106	1	6	7									
 Katarn	Balanced	37	766	23	23	41	30	34	17	21	22	MGT	AGI	30	30	30	30	30	23	23	23	23	2	2	2	Katarn	SWLORKatarn	601	60	1	Y																			Balanced30	33	133	125	100	190	129	11	3	9									
 Grutchin	Evasion	37	803	14	7	40	30	13	31	18	19	PER	SOC	4	30	46	30	30	23	23	15	15	1	1	4	Grutchin	MdrnEttercap2	204	36	1	Y																			Evasion30	19	105	93	121	157	135	1	10	9									
@@ -4473,7 +4473,7 @@ Boma Beast Baby	Force	38	936	6	28	26	18	21	16	14	11	SOC	WIL	4	4	31	8	47	23	23	16
 Ubese Thorn	Force	38	936	6	28	39	31	33	30	21	13	WIL	VIT	4	4	31	8	47	23	23	16	47	3	4	3	UbeseThorn	MdrnCrodluBrown	4034	95	1	Y																			Force30	19	121	102	138	133	131	11	10	10									
 Swamp Rat	Damage	38	404	20	12	28	26	23	29	15	15	PER	AGI	47	47	23	16	23	31	31	4	4	2	1	4	SwampRat	RodentRat	603	249	1	Y																			Damage30	37	145	95	113	163	105	6	9	7									
 Orbak Water Horse	Damage	38	366	20	12	25	26	16	18	30	21	MGT	AGI	47	47	23	16	23	31	31	4	4	2	1	4	OrbakWaterHorse	HorseEachuisgeCCCphenixrising	1277	259	1	Y																			Damage30	37	160	85	96	160	150	2	4	7									
-Orray	Bruiser	38	366	32	17	21	21	23	27	29	18	WIL	SOC	47	31	23	47	23	16	16	8	8	0	0	0	Orray	DregothDrayCCCPLUSHHYENAofDOOM	3170	30	1	Y																			Bruiser30	22	149	126	110	151	147	6	8	5									
+Orray	Bruiser	38	366	32	17	21	21	23	27	29	18	WIL	SOC	47	31	23	47	23	16	16	8	8	0	0	0	Orray	Bulette	819	446	1	Y																			Bruiser30	22	149	126	110	151	147	6	8	5									
 Ronto	Damage	38	290	20	12	18	25	14	22	16	16	VIT	MGT	47	47	23	16	23	31	31	4	4	2	1	4	Ronto	SWLORRonto	2008	385	0.6	Y																			Damage30	37	149	82	102	126	108	1	6	7									
 Katarn	Balanced	38	784	24	24	41	30	34	17	21	22	MGT	AGI	31	31	31	31	31	23	23	23	23	2	2	2	Katarn	SWLORKatarn	601	60	1	Y																			Balanced30	33	136	127	103	192	131	11	3	9									
 Grutchin	Evasion	38	822	14	7	40	30	13	31	18	19	PER	SOC	4	31	47	31	31	23	23	16	16	1	1	4	Grutchin	MdrnEttercap2	204	36	1	Y																			Evasion30	19	107	95	124	159	138	1	10	9									
@@ -4511,7 +4511,7 @@ Boma Beast Baby	Force	39	958	6	29	26	18	21	17	14	12	SOC	WIL	4	4	32	8	48	24	24	16
 Ubese Thorn	Force	39	958	6	29	39	31	33	31	21	14	WIL	VIT	4	4	32	8	48	24	24	16	48	3	4	3	UbeseThorn	MdrnCrodluBrown	4034	95	1	Y																			Force30	19	123	104	140	135	133	11	10	10									
 Swamp Rat	Damage	39	412	20	13	28	26	23	30	15	16	PER	AGI	48	48	24	16	24	32	32	4	4	2	1	4	SwampRat	RodentRat	603	249	1	Y																			Damage30	37	149	97	115	165	107	6	9	8									
 Orbak Water Horse	Damage	39	373	20	13	25	26	16	19	30	22	MGT	AGI	48	48	24	16	24	32	32	4	4	2	1	4	OrbakWaterHorse	HorseEachuisgeCCCphenixrising	1277	259	1	Y																			Damage30	37	164	86	98	163	152	2	4	8									
-Orray	Bruiser	39	373	33	17	21	21	23	28	29	19	WIL	SOC	48	32	24	48	24	16	16	8	8	0	0	0	Orray	DregothDrayCCCPLUSHHYENAofDOOM	3170	30	1	Y																			Bruiser30	22	153	129	112	154	149	6	8	5									
+Orray	Bruiser	39	373	33	17	21	21	23	28	29	19	WIL	SOC	48	32	24	48	24	16	16	8	8	0	0	0	Orray	Bulette	819	446	1	Y																			Bruiser30	22	153	129	112	154	149	6	8	5									
 Ronto	Damage	39	295	20	13	18	25	14	23	16	17	VIT	MGT	48	48	24	16	24	32	32	4	4	2	1	4	Ronto	SWLORRonto	2008	385	0.6	Y																			Damage30	37	152	83	104	128	110	1	6	7									
 Katarn	Balanced	39	802	24	24	41	30	34	18	21	23	MGT	AGI	32	32	32	32	32	24	24	24	24	2	2	2	Katarn	SWLORKatarn	601	60	1	Y																			Balanced30	33	139	129	105	195	133	11	3	10									
 Grutchin	Evasion	39	841	14	7	40	30	13	32	18	20	PER	SOC	4	32	48	32	32	24	24	16	16	1	1	4	Grutchin	MdrnEttercap2	204	36	1	Y																			Evasion30	19	110	98	126	161	140	1	10	10									
@@ -4549,7 +4549,7 @@ Boma Beast Baby	Force	40	980	6	29	27	18	21	17	14	12	SOC	WIL	4	4	33	8	49	24	24	16
 Ubese Thorn	Force	40	980	6	29	40	31	33	31	21	14	WIL	VIT	4	4	33	8	49	24	24	16	49	3	4	3	UbeseThorn	MdrnCrodluBrown	4034	95	1	Y																			Force40	24	125	105	143	136	135	11	10	10									
 Swamp Rat	Damage	40	420	21	13	29	26	23	30	15	16	PER	AGI	49	49	24	16	24	33	33	4	4	2	1	4	SwampRat	RodentRat	603	249	1	Y																			Damage40	43	152	98	116	168	109	6	9	8									
 Orbak Water Horse	Damage	40	380	21	13	26	26	16	19	30	22	MGT	AGI	49	49	24	16	24	33	33	4	4	2	1	4	OrbakWaterHorse	HorseEachuisgeCCCphenixrising	1277	259	1	Y																			Damage40	43	167	87	100	166	154	2	4	8									
-Orray	Bruiser	40	380	33	18	22	21	23	28	29	19	WIL	SOC	49	33	24	49	24	16	16	8	8	0	0	0	Orray	DregothDrayCCCPLUSHHYENAofDOOM	3170	30	1	Y																			Bruiser40	27	156	131	113	156	151	6	8	5									
+Orray	Bruiser	40	380	33	18	22	21	23	28	29	19	WIL	SOC	49	33	24	49	24	16	16	8	8	0	0	0	Orray	Bulette	819	446	1	Y																			Bruiser40	27	156	131	113	156	151	6	8	5									
 Ronto	Damage	40	300	21	13	19	25	14	23	16	17	VIT	MGT	49	49	24	16	24	33	33	4	4	2	1	4	Ronto	SWLORRonto	2008	385	0.6	Y																			Damage40	43	156	84	106	131	112	1	6	7									
 Katarn	Balanced	40	820	25	25	42	30	34	18	21	23	MGT	AGI	33	33	33	33	33	24	24	24	24	2	2	2	Katarn	SWLORKatarn	601	60	1	Y																			Balanced40	43	142	131	107	197	135	11	3	10									
 Grutchin	Evasion	40	860	15	7	41	30	13	32	18	20	PER	SOC	4	33	49	33	33	24	24	16	16	1	1	4	Grutchin	MdrnEttercap2	204	36	1	Y																			Evasion40	24	112	100	128	164	143	1	10	10									
@@ -4587,7 +4587,7 @@ Boma Beast Baby	Force	41	1002	6	30	27	19	21	17	14	12	SOC	WIL	4	4	33	8	50	25	25	1
 Ubese Thorn	Force	41	1002	6	30	40	32	33	31	21	14	WIL	VIT	4	4	33	8	50	25	25	17	50	3	4	3	UbeseThorn	MdrnCrodluBrown	4034	95	1	Y																			Force40	24	127	106	145	138	138	11	10	10									
 Swamp Rat	Damage	41	428	21	13	29	27	23	30	15	16	PER	AGI	50	50	25	17	25	33	33	4	4	2	1	4	SwampRat	RodentRat	603	249	1	Y																			Damage40	43	155	100	118	171	111	6	9	8									
 Orbak Water Horse	Damage	41	387	21	13	26	27	16	19	30	22	MGT	AGI	50	50	25	17	25	33	33	4	4	2	1	4	OrbakWaterHorse	HorseEachuisgeCCCphenixrising	1277	259	1	Y																			Damage40	43	170	90	102	169	156	3	4	8									
-Orray	Bruiser	41	387	34	18	22	22	23	28	29	19	WIL	SOC	50	33	25	50	25	17	17	8	8	0	0	0	Orray	DregothDrayCCCPLUSHHYENAofDOOM	3170	30	1	Y																			Bruiser40	27	159	133	115	158	153	6	8	5									
+Orray	Bruiser	41	387	34	18	22	22	23	28	29	19	WIL	SOC	50	33	25	50	25	17	17	8	8	0	0	0	Orray	Bulette	819	446	1	Y																			Bruiser40	27	159	133	115	158	153	6	8	5									
 Ronto	Damage	41	305	21	13	19	26	14	23	16	17	VIT	MGT	50	50	25	17	25	33	33	4	4	2	1	4	Ronto	SWLORRonto	2008	385	0.6	Y																			Damage40	43	159	87	108	133	114	2	6	7									
 Katarn	Balanced	41	838	25	25	42	31	34	18	21	23	MGT	AGI	33	33	33	33	33	25	25	25	25	3	3	3	Katarn	SWLORKatarn	601	60	1	Y																			Balanced40	43	144	133	108	200	138	12	3	10									
 Grutchin	Evasion	41	879	15	7	41	31	13	32	18	20	PER	SOC	4	33	50	33	33	25	25	17	17	1	1	4	Grutchin	MdrnEttercap2	204	36	1	Y																			Evasion40	24	114	101	129	166	145	1	10	10									
@@ -4625,7 +4625,7 @@ Boma Beast Baby	Force	42	1024	6	31	27	19	21	17	14	12	SOC	WIL	4	4	34	9	52	26	26	1
 Ubese Thorn	Force	42	1024	6	31	40	32	33	31	21	14	WIL	VIT	4	4	34	9	52	26	26	17	52	3	4	3	UbeseThorn	MdrnCrodluBrown	4034	95	1	Y																			Force40	24	129	108	148	139	140	11	10	10									
 Swamp Rat	Damage	42	436	21	13	29	27	23	30	15	16	PER	AGI	52	52	26	17	26	34	34	4	4	2	1	4	SwampRat	RodentRat	603	249	1	Y																			Damage40	43	159	101	121	174	113	6	10	8									
 Orbak Water Horse	Damage	42	394	21	13	26	27	16	19	30	22	MGT	AGI	52	52	26	17	26	34	34	4	4	2	1	4	OrbakWaterHorse	HorseEachuisgeCCCphenixrising	1277	259	1	Y																			Damage40	43	174	91	104	172	158	3	4	8									
-Orray	Bruiser	42	394	35	18	22	22	23	28	29	19	WIL	SOC	52	34	26	52	26	17	17	9	9	0	0	0	Orray	DregothDrayCCCPLUSHHYENAofDOOM	3170	30	1	Y																			Bruiser40	27	163	136	118	160	155	6	9	5									
+Orray	Bruiser	42	394	35	18	22	22	23	28	29	19	WIL	SOC	52	34	26	52	26	17	17	9	9	0	0	0	Orray	Bulette	819	446	1	Y																			Bruiser40	27	163	136	118	160	155	6	9	5									
 Ronto	Damage	42	310	21	13	19	26	14	23	16	17	VIT	MGT	52	52	26	17	26	34	34	4	4	2	1	4	Ronto	SWLORRonto	2008	385	0.6	Y																			Damage40	43	163	88	110	136	116	2	6	7									
 Katarn	Balanced	42	856	26	26	42	31	34	18	21	23	MGT	AGI	34	34	34	34	34	26	26	26	26	3	3	3	Katarn	SWLORKatarn	601	60	1	Y																			Balanced40	43	147	135	111	203	140	12	4	10									
 Grutchin	Evasion	42	898	15	7	41	31	13	32	18	20	PER	SOC	4	34	52	34	34	26	26	17	17	1	1	4	Grutchin	MdrnEttercap2	204	36	1	Y																			Evasion40	24	116	103	132	168	148	1	11	10									
@@ -4663,7 +4663,7 @@ Boma Beast Baby	Force	43	1046	6	31	27	19	21	17	14	12	SOC	WIL	4	4	35	9	53	26	26	1
 Ubese Thorn	Force	43	1046	6	31	40	32	33	31	21	14	WIL	VIT	4	4	35	9	53	26	26	18	53	4	4	4	UbeseThorn	MdrnCrodluBrown	4034	95	1	Y																			Force40	24	132	109	150	141	142	11	10	10									
 Swamp Rat	Damage	43	444	22	13	29	27	23	30	15	16	PER	AGI	53	53	26	18	26	35	35	4	4	2	1	4	SwampRat	RodentRat	603	249	1	Y																			Damage40	43	162	103	122	176	115	6	10	8									
 Orbak Water Horse	Damage	43	401	22	13	26	27	16	19	30	22	MGT	AGI	53	53	26	18	26	35	35	4	4	2	1	4	OrbakWaterHorse	HorseEachuisgeCCCphenixrising	1277	259	1	Y																			Damage40	43	177	93	105	175	160	3	4	8									
-Orray	Bruiser	43	401	35	19	22	22	23	28	29	19	WIL	SOC	53	35	26	53	26	18	18	9	9	0	0	0	Orray	DregothDrayCCCPLUSHHYENAofDOOM	3170	30	1	Y																			Bruiser40	27	166	138	119	163	157	6	9	5									
+Orray	Bruiser	43	401	35	19	22	22	23	28	29	19	WIL	SOC	53	35	26	53	26	18	18	9	9	0	0	0	Orray	Bulette	819	446	1	Y																			Bruiser40	27	166	138	119	163	157	6	9	5									
 Ronto	Damage	43	315	22	13	19	26	14	23	16	17	VIT	MGT	53	53	26	18	26	35	35	4	4	2	1	4	Ronto	SWLORRonto	2008	385	0.6	Y																			Damage40	43	166	90	111	139	118	2	6	7									
 Katarn	Balanced	43	874	26	26	42	31	34	18	21	23	MGT	AGI	35	35	35	35	35	26	26	26	26	3	3	3	Katarn	SWLORKatarn	601	60	1	Y																			Balanced40	43	150	137	113	205	142	12	4	10									
 Grutchin	Evasion	43	917	16	7	41	31	13	32	18	20	PER	SOC	4	35	53	35	35	26	26	18	18	1	1	4	Grutchin	MdrnEttercap2	204	36	1	Y																			Evasion40	24	119	105	134	171	151	1	11	10									
@@ -4701,7 +4701,7 @@ Boma Beast Baby	Force	44	1068	6	32	28	19	21	17	14	12	SOC	WIL	4	4	36	9	54	27	27	1
 Ubese Thorn	Force	44	1068	6	32	41	32	33	31	21	14	WIL	VIT	4	4	36	9	54	27	27	18	54	4	4	4	UbeseThorn	MdrnCrodluBrown	4034	95	1	Y																			Force40	24	134	111	152	142	144	11	10	11									
 Swamp Rat	Damage	44	452	22	14	30	27	23	30	15	16	PER	AGI	54	54	27	18	27	36	36	4	4	2	1	4	SwampRat	RodentRat	603	249	1	Y																			Damage40	43	165	105	124	179	117	6	10	8									
 Orbak Water Horse	Damage	44	408	22	14	27	27	16	19	30	22	MGT	AGI	54	54	27	18	27	36	36	4	4	2	1	4	OrbakWaterHorse	HorseEachuisgeCCCphenixrising	1277	259	1	Y																			Damage40	43	180	94	107	178	162	3	4	8									
-Orray	Bruiser	44	408	36	19	23	22	23	28	29	19	WIL	SOC	54	36	27	54	27	18	18	9	9	0	0	0	Orray	DregothDrayCCCPLUSHHYENAofDOOM	3170	30	1	Y																			Bruiser40	27	169	141	121	165	159	6	9	6									
+Orray	Bruiser	44	408	36	19	23	22	23	28	29	19	WIL	SOC	54	36	27	54	27	18	18	9	9	0	0	0	Orray	Bulette	819	446	1	Y																			Bruiser40	27	169	141	121	165	159	6	9	6									
 Ronto	Damage	44	320	22	14	20	26	14	23	16	17	VIT	MGT	54	54	27	18	27	36	36	4	4	2	1	4	Ronto	SWLORRonto	2008	385	0.6	Y																			Damage40	43	170	91	113	141	120	2	6	8									
 Katarn	Balanced	44	892	27	27	43	31	34	18	21	23	MGT	AGI	36	36	36	36	36	27	27	27	27	3	3	3	Katarn	SWLORKatarn	601	60	1	Y																			Balanced40	43	153	139	115	208	144	12	4	10									
 Grutchin	Evasion	44	936	16	7	42	31	13	32	18	20	PER	SOC	4	36	54	36	36	27	27	18	18	1	1	4	Grutchin	MdrnEttercap2	204	36	1	Y																			Evasion40	24	121	108	136	173	153	1	11	10									
@@ -4739,7 +4739,7 @@ Boma Beast Baby	Force	45	1090	6	33	28	19	22	17	15	12	SOC	WIL	5	5	37	9	55	28	28	1
 Ubese Thorn	Force	45	1090	6	33	41	32	34	31	22	14	WIL	VIT	5	5	37	9	55	28	28	18	55	4	5	4	UbeseThorn	MdrnCrodluBrown	4034	95	1	Y																			Force40	24	136	112	155	144	146	11	10	11									
 Swamp Rat	Damage	45	460	23	14	30	27	24	30	16	16	PER	AGI	55	55	28	18	28	37	37	5	5	2	1	5	SwampRat	RodentRat	603	249	1	Y																			Damage40	43	169	106	126	182	119	6	10	8									
 Orbak Water Horse	Damage	45	415	23	14	27	27	17	19	31	22	MGT	AGI	55	55	28	18	28	37	37	5	5	2	1	5	OrbakWaterHorse	HorseEachuisgeCCCphenixrising	1277	259	1	Y																			Damage40	43	184	95	110	181	164	3	4	8									
-Orray	Bruiser	45	415	37	19	23	22	24	28	30	19	WIL	SOC	55	37	28	55	28	18	18	9	9	0	0	0	Orray	DregothDrayCCCPLUSHHYENAofDOOM	3170	30	1	Y																			Bruiser40	27	173	143	123	167	161	6	9	6									
+Orray	Bruiser	45	415	37	19	23	22	24	28	30	19	WIL	SOC	55	37	28	55	28	18	18	9	9	0	0	0	Orray	Bulette	819	446	1	Y																			Bruiser40	27	173	143	123	167	161	6	9	6									
 Ronto	Damage	45	325	23	14	20	26	15	23	17	17	VIT	MGT	55	55	28	18	28	37	37	5	5	2	1	5	Ronto	SWLORRonto	2008	385	0.6	Y																			Damage40	43	173	92	116	144	122	2	6	8									
 Katarn	Balanced	45	910	27	27	43	31	35	18	22	23	MGT	AGI	37	37	37	37	37	28	28	28	28	3	3	3	Katarn	SWLORKatarn	601	60	1	Y																			Balanced40	43	156	141	117	211	146	12	4	10									
 Grutchin	Evasion	45	955	16	7	42	31	14	32	19	20	PER	SOC	5	37	55	37	37	28	28	18	18	1	1	5	Grutchin	MdrnEttercap2	204	36	1	Y																			Evasion40	24	123	110	138	176	156	1	11	10									
@@ -4777,7 +4777,7 @@ Boma Beast Baby	Force	46	1112	7	34	28	19	22	18	15	13	SOC	WIL	5	5	38	9	56	28	28	1
 Ubese Thorn	Force	46	1112	7	34	41	32	34	32	22	15	WIL	VIT	5	5	38	9	56	28	28	19	56	4	5	4	UbeseThorn	MdrnCrodluBrown	4034	95	1	Y																			Force40	24	138	113	157	145	148	11	10	11									
 Swamp Rat	Damage	46	468	23	14	30	27	24	31	16	17	PER	AGI	56	56	28	19	28	38	38	5	5	2	1	5	SwampRat	RodentRat	603	249	1	Y																			Damage40	43	172	108	127	185	121	6	10	8									
 Orbak Water Horse	Damage	46	422	23	14	27	27	17	20	31	23	MGT	AGI	56	56	28	19	28	38	38	5	5	2	1	5	OrbakWaterHorse	HorseEachuisgeCCCphenixrising	1277	259	1	Y																			Damage40	43	187	97	111	184	166	3	4	8									
-Orray	Bruiser	46	422	38	20	23	22	24	29	30	20	WIL	SOC	56	38	28	56	28	19	19	9	9	0	0	0	Orray	DregothDrayCCCPLUSHHYENAofDOOM	3170	30	1	Y																			Bruiser40	27	176	145	124	169	163	6	9	6									
+Orray	Bruiser	46	422	38	20	23	22	24	29	30	20	WIL	SOC	56	38	28	56	28	19	19	9	9	0	0	0	Orray	Bulette	819	446	1	Y																			Bruiser40	27	176	145	124	169	163	6	9	6									
 Ronto	Damage	46	330	23	14	20	26	15	24	17	18	VIT	MGT	56	56	28	19	28	38	38	5	5	2	1	5	Ronto	SWLORRonto	2008	385	0.6	Y																			Damage40	43	177	94	117	146	124	2	6	8									
 Katarn	Balanced	46	928	28	28	43	31	35	19	22	24	MGT	AGI	38	38	38	38	38	28	28	28	28	3	3	3	Katarn	SWLORKatarn	601	60	1	Y																			Balanced40	43	159	143	119	213	148	12	4	10									
 Grutchin	Evasion	46	974	17	8	42	31	14	33	19	21	PER	SOC	5	38	56	38	38	28	28	19	19	1	1	5	Grutchin	MdrnEttercap2	204	36	1	Y																			Evasion40	24	125	112	140	178	158	1	11	10									
@@ -4815,7 +4815,7 @@ Boma Beast Baby	Force	47	1134	7	34	28	20	22	18	15	13	SOC	WIL	5	5	38	10	58	29	29	
 Ubese Thorn	Force	47	1134	7	34	41	33	34	32	22	15	WIL	VIT	5	5	38	10	58	29	29	19	58	4	5	4	UbeseThorn	MdrnCrodluBrown	4034	95	1	Y																			Force40	24	141	115	160	147	151	11	10	11									
 Swamp Rat	Damage	47	476	23	14	30	28	24	31	16	17	PER	AGI	58	58	29	19	29	38	38	5	5	2	1	5	SwampRat	RodentRat	603	249	1	Y																			Damage40	43	175	109	130	187	123	6	10	8									
 Orbak Water Horse	Damage	47	429	23	14	27	28	17	20	31	23	MGT	AGI	58	58	29	19	29	38	38	5	5	2	1	5	OrbakWaterHorse	HorseEachuisgeCCCphenixrising	1277	259	1	Y																			Damage40	43	190	99	113	187	168	3	4	8									
-Orray	Bruiser	47	429	38	20	23	23	24	29	30	20	WIL	SOC	58	38	29	58	29	19	19	10	10	0	0	0	Orray	DregothDrayCCCPLUSHHYENAofDOOM	3170	30	1	Y																			Bruiser40	27	179	148	127	172	165	6	9	6									
+Orray	Bruiser	47	429	38	20	23	23	24	29	30	20	WIL	SOC	58	38	29	58	29	19	19	10	10	0	0	0	Orray	Bulette	819	446	1	Y																			Bruiser40	27	179	148	127	172	165	6	9	6									
 Ronto	Damage	47	335	23	14	20	27	15	24	17	18	VIT	MGT	58	58	29	19	29	38	38	5	5	2	1	5	Ronto	SWLORRonto	2008	385	0.6	Y																			Damage40	43	180	96	119	149	126	2	6	8									
 Katarn	Balanced	47	946	28	28	43	32	35	19	22	24	MGT	AGI	38	38	38	38	38	29	29	29	29	3	3	3	Katarn	SWLORKatarn	601	60	1	Y																			Balanced40	43	162	145	121	216	151	12	4	10									
 Grutchin	Evasion	47	993	17	8	42	32	14	33	19	21	PER	SOC	5	38	58	38	38	29	29	19	19	1	1	5	Grutchin	MdrnEttercap2	204	36	1	Y																			Evasion40	24	128	113	142	180	161	1	11	10									
@@ -4853,7 +4853,7 @@ Boma Beast Baby	Force	48	1156	7	35	29	20	22	18	15	13	SOC	WIL	5	5	39	10	59	29	29	
 Ubese Thorn	Force	48	1156	7	35	42	33	34	32	22	15	WIL	VIT	5	5	39	10	59	29	29	20	59	4	5	4	UbeseThorn	MdrnCrodluBrown	4034	95	1	Y																			Force40	24	143	116	162	148	153	11	10	11									
 Swamp Rat	Damage	48	484	24	14	31	28	24	31	16	17	PER	AGI	59	59	29	20	29	39	39	5	5	2	1	5	SwampRat	RodentRat	603	249	1	Y																			Damage40	43	179	111	131	190	125	6	10	8									
 Orbak Water Horse	Damage	48	436	24	14	28	28	17	20	31	23	MGT	AGI	59	59	29	20	29	39	39	5	5	2	1	5	OrbakWaterHorse	HorseEachuisgeCCCphenixrising	1277	259	1	Y																			Damage40	43	194	101	114	190	170	3	4	8									
-Orray	Bruiser	48	436	39	20	24	23	24	29	30	20	WIL	SOC	59	39	29	59	29	20	20	10	10	0	0	0	Orray	DregothDrayCCCPLUSHHYENAofDOOM	3170	30	1	Y																			Bruiser40	27	183	150	128	174	167	6	9	6									
+Orray	Bruiser	48	436	39	20	24	23	24	29	30	20	WIL	SOC	59	39	29	59	29	20	20	10	10	0	0	0	Orray	Bulette	819	446	1	Y																			Bruiser40	27	183	150	128	174	167	6	9	6									
 Ronto	Damage	48	340	24	14	21	27	15	24	17	18	VIT	MGT	59	59	29	20	29	39	39	5	5	2	1	5	Ronto	SWLORRonto	2008	385	0.6	Y																			Damage40	43	184	98	120	151	128	2	6	8									
 Katarn	Balanced	48	964	29	29	44	32	35	19	22	24	MGT	AGI	39	39	39	39	39	29	29	29	29	3	3	3	Katarn	SWLORKatarn	601	60	1	Y																			Balanced40	43	165	147	123	218	153	12	4	10									
 Grutchin	Evasion	48	1012	17	8	43	32	14	33	19	21	PER	SOC	5	39	59	39	39	29	29	20	20	1	1	5	Grutchin	MdrnEttercap2	204	36	1	Y																			Evasion40	24	130	115	144	183	163	1	11	10									
@@ -4891,7 +4891,7 @@ Boma Beast Baby	Force	49	1178	7	36	29	20	22	18	15	13	SOC	WIL	5	5	40	10	60	30	30	
 Ubese Thorn	Force	49	1178	7	36	42	33	34	32	22	15	WIL	VIT	5	5	40	10	60	30	30	20	60	4	5	4	UbeseThorn	MdrnCrodluBrown	4034	95	1	Y																			Force40	24	145	118	165	150	155	12	11	11									
 Swamp Rat	Damage	49	492	24	15	31	28	24	31	16	17	PER	AGI	60	60	30	20	30	40	40	5	5	2	1	5	SwampRat	RodentRat	603	249	1	Y																			Damage40	43	182	113	133	193	127	7	10	9									
 Orbak Water Horse	Damage	49	443	24	15	28	28	17	20	31	23	MGT	AGI	60	60	30	20	30	40	40	5	5	2	1	5	OrbakWaterHorse	HorseEachuisgeCCCphenixrising	1277	259	1	Y																			Damage40	43	197	102	117	193	172	3	5	9									
-Orray	Bruiser	49	443	40	20	24	23	24	29	30	20	WIL	SOC	60	40	30	60	30	20	20	10	10	0	0	0	Orray	DregothDrayCCCPLUSHHYENAofDOOM	3170	30	1	Y																			Bruiser40	27	186	153	130	176	169	7	9	6									
+Orray	Bruiser	49	443	40	20	24	23	24	29	30	20	WIL	SOC	60	40	30	60	30	20	20	10	10	0	0	0	Orray	Bulette	819	446	1	Y																			Bruiser40	27	186	153	130	176	169	7	9	6									
 Ronto	Damage	49	345	24	15	21	27	15	24	17	18	VIT	MGT	60	60	30	20	30	40	40	5	5	2	1	5	Ronto	SWLORRonto	2008	385	0.6	Y																			Damage40	43	187	99	123	154	130	2	7	8									
 Katarn	Balanced	49	982	29	29	44	32	35	19	22	24	MGT	AGI	40	40	40	40	40	30	30	30	30	3	3	3	Katarn	SWLORKatarn	601	60	1	Y																			Balanced40	43	168	149	125	221	155	12	4	11									
 Grutchin	Evasion	49	1031	17	8	43	32	14	33	19	21	PER	SOC	5	40	60	40	40	30	30	20	20	1	1	5	Grutchin	MdrnEttercap2	204	36	1	Y																			Evasion40	24	132	118	146	185	166	2	11	11									
@@ -4929,7 +4929,7 @@ Boma Beast Baby	Force	50	1200	7	36	29	20	22	18	15	13	SOC	WIL	5	5	41	10	61	31	31	
 Ubese Thorn	Force	50	1200	7	36	42	33	34	32	22	15	WIL	VIT	5	5	41	10	61	31	31	20	61	4	5	4	UbeseThorn	MdrnCrodluBrown	4034	95	1	Y																			Force50	24	147	119	167	152	157	12	11	11									
 Swamp Rat	Damage	50	500	25	15	31	28	24	31	16	17	PER	AGI	61	61	31	20	31	41	41	5	5	2	1	5	SwampRat	RodentRat	603	249	1	Y																			Damage50	43	185	114	135	196	129	7	10	9									
 Orbak Water Horse	Damage	50	450	25	15	28	28	17	20	31	23	MGT	AGI	61	61	31	20	31	41	41	5	5	2	1	5	OrbakWaterHorse	HorseEachuisgeCCCphenixrising	1277	259	1	Y																			Damage50	43	200	103	119	196	174	3	5	9									
-Orray	Bruiser	50	450	40	21	24	23	24	29	30	20	WIL	SOC	61	41	31	61	31	20	20	10	10	0	0	0	Orray	DregothDrayCCCPLUSHHYENAofDOOM	3170	30	1	Y																			Bruiser50	27	189	155	132	178	171	7	9	6									
+Orray	Bruiser	50	450	40	21	24	23	24	29	30	20	WIL	SOC	61	41	31	61	31	20	20	10	10	0	0	0	Orray	Bulette	819	446	1	Y																			Bruiser50	27	189	155	132	178	171	7	9	6									
 Ronto	Damage	50	350	25	15	21	27	15	24	17	18	VIT	MGT	61	61	31	20	31	41	41	5	5	2	1	5	Ronto	SWLORRonto	2008	385	0.6	Y																			Damage50	43	190	100	125	157	132	2	7	8									
 Katarn	Balanced	50	1000	30	30	44	32	35	19	22	24	MGT	AGI	41	41	41	41	41	31	31	31	31	3	3	3	Katarn	SWLORKatarn	601	60	1	Y																			Balanced50	43	171	151	127	224	157	12	4	11									
 Grutchin	Evasion	50	1050	18	8	43	32	14	33	19	21	PER	SOC	5	41	61	41	41	31	31	20	20	1	1	5	Grutchin	MdrnEttercap2	204	36	1	Y																			Evasion50	24	134	120	148	187	169	2	11	11									

@@ -13,13 +13,12 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
         {
             _builder.Create(BeastType.Orray)
                 .Name("Orray")
-                .Appearance(AppearanceType.DregothDrayCCCPLUSHHYENAofDOOM)
+                .Appearance(AppearanceType.Bulette)
                 .AppearanceScale(1f)
-                .SoundSetId(30)
-                .PortraitId(3170)
+                .SoundSetId(446)
+                .PortraitId(819)
                 .CombatStats(AbilityType.Willpower, AbilityType.Social)
                 .Role(BeastRoleType.Bruiser)
-
 
 
                 ;

@@ -18,6 +18,10 @@ public class AbilityBuilderTests
             .Build();
 
         abilities[FeatType.Invalid].ImpactAnimationType.Should().Be(Animation.Invalid);
+        abilities[FeatType.Invalid].ImpactAnimationSourceAnimationName.Should().BeEmpty();
+        abilities[FeatType.Invalid].ImpactAnimationReplacementAnimationName.Should().BeEmpty();
+        abilities[FeatType.Invalid].ImpactAnimationRestoreDelaySeconds.Should().Be(0f);
+        abilities[FeatType.Invalid].UsesActiveAttackTarget.Should().BeFalse();
     }
 
     [Test]
@@ -30,6 +34,39 @@ public class AbilityBuilderTests
             .Build();
 
         abilities[FeatType.Invalid].ImpactAnimationType.Should().Be(Animation.QuickDraw);
+        abilities[FeatType.Invalid].ImpactAnimationSourceAnimationName.Should().BeEmpty();
+        abilities[FeatType.Invalid].ImpactAnimationReplacementAnimationName.Should().BeEmpty();
+        abilities[FeatType.Invalid].ImpactAnimationRestoreDelaySeconds.Should().Be(0f);
+    }
+
+    [Test]
+    public void UsesImpactAnimationOverwrite_UsesDefaultCarrierAndSource()
+    {
+        var abilities = new AbilityBuilder()
+            .Create(FeatType.Invalid, PerkType.Invalid)
+            .UsesImpactAnimationOverwrite("Shield_Bash")
+            .Build();
+
+        var ability = abilities[FeatType.Invalid];
+        ability.ImpactAnimationType.Should().Be(Animation.FireForgetTaunt);
+        ability.ImpactAnimationSourceAnimationName.Should().Be("taunt");
+        ability.ImpactAnimationReplacementAnimationName.Should().Be("Shield_Bash");
+        ability.ImpactAnimationRestoreDelaySeconds.Should().Be(1.1f);
+    }
+
+    [Test]
+    public void UsesImpactAnimationOverwrite_CanInferSourceFromCarrier()
+    {
+        var abilities = new AbilityBuilder()
+            .Create(FeatType.Invalid, PerkType.Invalid)
+            .UsesImpactAnimationOverwrite(Animation.FireForgetTaunt, "Shield_Bash", 1.25f)
+            .Build();
+
+        var ability = abilities[FeatType.Invalid];
+        ability.ImpactAnimationType.Should().Be(Animation.FireForgetTaunt);
+        ability.ImpactAnimationSourceAnimationName.Should().Be("taunt");
+        ability.ImpactAnimationReplacementAnimationName.Should().Be("Shield_Bash");
+        ability.ImpactAnimationRestoreDelaySeconds.Should().Be(1.25f);
     }
 
     [Test]
@@ -41,6 +78,20 @@ public class AbilityBuilderTests
             .Build();
 
         abilities[FeatType.Invalid].ImpactAnimationType.Should().Be(Animation.Invalid);
+    }
+
+    [Test]
+    public void UsesActiveAttackTarget_DoesNotRequireExplicitTarget()
+    {
+        var abilities = new AbilityBuilder()
+            .Create(FeatType.Invalid, PerkType.Invalid)
+            .RequiresTarget()
+            .UsesActiveAttackTarget()
+            .Build();
+
+        var ability = abilities[FeatType.Invalid];
+        ability.UsesActiveAttackTarget.Should().BeTrue();
+        ability.RequiresTarget.Should().BeFalse();
     }
 
     [Test]

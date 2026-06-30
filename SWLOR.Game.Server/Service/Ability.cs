@@ -1733,6 +1733,35 @@ namespace SWLOR.Game.Server.Service
             if (animation == Animation.Invalid)
                 return;
 
+            var sourceAnimationName = string.Empty;
+            var replacementAnimationName = string.Empty;
+            var restoreDelaySeconds = 0f;
+
+            if (impactAnimation == Animation.Invalid && trackedAbility != null)
+            {
+                sourceAnimationName = trackedAbility.ImpactAnimationSourceAnimationName;
+                replacementAnimationName = trackedAbility.ImpactAnimationReplacementAnimationName;
+                restoreDelaySeconds = trackedAbility.ImpactAnimationRestoreDelaySeconds;
+            }
+
+            if (!string.IsNullOrWhiteSpace(sourceAnimationName) &&
+                !string.IsNullOrWhiteSpace(replacementAnimationName))
+            {
+                AssignCommand(activator, () =>
+                {
+                    ReplaceObjectAnimation(
+                        activator,
+                        sourceAnimationName,
+                        replacementAnimationName);
+                    ActionPlayAnimation(animation);
+                    DelayCommand(restoreDelaySeconds, () =>
+                    {
+                        ReplaceObjectAnimation(activator, sourceAnimationName);
+                    });
+                });
+                return;
+            }
+
             AssignCommand(activator, () => ActionPlayAnimation(animation));
         }
 

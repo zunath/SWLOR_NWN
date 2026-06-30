@@ -19,9 +19,15 @@ public class VibrobladeDefenseTests
     public void VibrobladeDefenseAbilities_MatchCombatBible()
     {
         var shieldBash = new ShieldBashAbilityDefinition().BuildAbilities();
-        AssertAbility(shieldBash[FeatType.ShieldBash1], "Shield Bash I", 1, RecastGroup.ShieldBash, 60f, 0f, 3, true, AbilityActivationType.Weapon);
-        AssertAbility(shieldBash[FeatType.ShieldBash2], "Shield Bash II", 2, RecastGroup.ShieldBash, 60f, 0f, 5, true, AbilityActivationType.Weapon);
-        AssertAbility(shieldBash[FeatType.ShieldBash3], "Shield Bash III", 3, RecastGroup.ShieldBash, 60f, 0f, 8, true, AbilityActivationType.Weapon);
+        AssertAbility(shieldBash[FeatType.ShieldBash1], "Shield Bash I", 1, RecastGroup.ShieldBash, 60f, 0f, 3, true, AbilityActivationType.Casted);
+        AssertAbility(shieldBash[FeatType.ShieldBash2], "Shield Bash II", 2, RecastGroup.ShieldBash, 60f, 0f, 5, true, AbilityActivationType.Casted);
+        AssertAbility(shieldBash[FeatType.ShieldBash3], "Shield Bash III", 3, RecastGroup.ShieldBash, 60f, 0f, 8, true, AbilityActivationType.Casted);
+        AssertShieldBashAnimation(shieldBash[FeatType.ShieldBash1]);
+        AssertShieldBashAnimation(shieldBash[FeatType.ShieldBash2]);
+        AssertShieldBashAnimation(shieldBash[FeatType.ShieldBash3]);
+        AssertShieldBashTargeting(shieldBash[FeatType.ShieldBash1]);
+        AssertShieldBashTargeting(shieldBash[FeatType.ShieldBash2]);
+        AssertShieldBashTargeting(shieldBash[FeatType.ShieldBash3]);
 
         var defensiveStance = new DefensiveStanceAbilityDefinition().BuildAbilities();
         AssertAbility(defensiveStance[FeatType.DefensiveStance1], "Defensive Stance I", 1, RecastGroup.DefensiveStance, 180f, 2f, null, false, AbilityActivationType.Casted);
@@ -182,6 +188,23 @@ public class VibrobladeDefenseTests
         {
             ability.Requirements.OfType<AbilityRequirementStamina>().Should().BeEmpty();
         }
+    }
+
+    private static void AssertShieldBashAnimation(AbilityDetail ability)
+    {
+        ability.ImpactAnimationType.Should().Be(Animation.FireForgetTaunt);
+        ability.ImpactAnimationSourceAnimationName.Should().Be("taunt");
+        ability.ImpactAnimationReplacementAnimationName.Should().Be("Shield_Bash");
+        ability.ImpactAnimationRestoreDelaySeconds.Should().Be(1.1f);
+    }
+
+    private static void AssertShieldBashTargeting(AbilityDetail ability)
+    {
+        ability.RequiresTarget.Should().BeFalse();
+        ability.UsesActiveAttackTarget.Should().BeTrue();
+        ability.CustomValidation.Should().NotBeNull();
+        ability.ImpactAction.Should().NotBeNull();
+        ability.IsSingleTargetAbility.Should().BeTrue();
     }
 
     private static void AssertSkillRequirement(PerkLevel level, SkillType skill, int rank)

@@ -31,12 +31,16 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public PerkType EffectiveLevelPerkType { get; set; }
         public Animation AnimationType { get; set; }
         public Animation ImpactAnimationType { get; set; }
+        public string ImpactAnimationSourceAnimationName { get; set; }
+        public string ImpactAnimationReplacementAnimationName { get; set; }
+        public float ImpactAnimationRestoreDelaySeconds { get; set; }
         public bool CanBeUsedInSpace { get; set; }
         public float MaxRange { get; set; }
         public bool IsHostileAbility { get; set; }
         public bool DisplaysActivationMessage { get; set; }
         public bool BreaksStealth { get; set; }
         public bool RequiresTarget { get; set; }
+        public bool UsesActiveAttackTarget { get; set; }
         public int AbilityLevel { get; set; }
         public SkillType SkillType { get; set; }
         public AbilityType CombatImpactDamageAbility { get; set; }
@@ -56,12 +60,15 @@ namespace SWLOR.Game.Server.Service.AbilityService
             ImpactSound = string.Empty;
             AnimationType = Animation.Invalid;
             ImpactAnimationType = Animation.Invalid;
+            ImpactAnimationSourceAnimationName = string.Empty;
+            ImpactAnimationReplacementAnimationName = string.Empty;
             Requirements = new List<IAbilityActivationRequirement>();
             MaxRange = 5.0f;
             IsHostileAbility = false;
             DisplaysActivationMessage = true;
             BreaksStealth = false;
             RequiresTarget = false;
+            UsesActiveAttackTarget = false;
             AbilityLevel = 1;
             SkillType = SkillType.Invalid;
             CombatImpactDamageAbility = AbilityType.Invalid;

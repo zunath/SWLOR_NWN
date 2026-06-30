@@ -360,19 +360,19 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ShieldBash1)
-                .Description("Bashes an enemy for 12 DMG and inflicts Dazed for 3 seconds.")
+                .Description("Bashes your current attack target for 12 DMG and inflicts Dazed for 3 seconds. Requires an active attack target.")
                 .Price(2)
                 .RequirementSkill(SkillType.Vibroblade, 8)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ShieldBash2)
-                .Description("Bashes an enemy for 24 DMG and inflicts Dazed for 6 seconds.")
+                .Description("Bashes your current attack target for 24 DMG and inflicts Dazed for 6 seconds. Requires an active attack target.")
                 .Price(3)
                 .RequirementSkill(SkillType.Vibroblade, 18)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ShieldBash3)
-                .Description("Bashes an enemy for 36 DMG, inflicts Stunned for 3 seconds, and inflicts Dazed for 6 seconds.")
+                .Description("Bashes your current attack target for 36 DMG, inflicts Stunned for 3 seconds, and inflicts Dazed for 6 seconds. Requires an active attack target.")
                 .Price(4)
                 .RequirementSkill(SkillType.Vibroblade, 35);
         }

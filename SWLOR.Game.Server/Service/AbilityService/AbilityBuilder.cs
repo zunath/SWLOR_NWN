@@ -9,6 +9,9 @@ namespace SWLOR.Game.Server.Service.AbilityService
 {
     public class AbilityBuilder
     {
+        private const Animation DefaultImpactAnimationOverwriteCarrier = Animation.FireForgetTaunt;
+        private const string FireForgetTauntSourceAnimationName = "taunt";
+
         private readonly Dictionary<FeatType, AbilityDetail> _abilities = new Dictionary<FeatType, AbilityDetail>();
         private AbilityDetail _activeAbility;
 
@@ -94,8 +97,86 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public AbilityBuilder UsesImpactAnimation(Animation animation)
         {
             _activeAbility.ImpactAnimationType = animation;
+            _activeAbility.ImpactAnimationSourceAnimationName = string.Empty;
+            _activeAbility.ImpactAnimationReplacementAnimationName = string.Empty;
+            _activeAbility.ImpactAnimationRestoreDelaySeconds = 0f;
 
             return this;
+        }
+
+        /// <summary>
+        /// Assigns an impact animation that temporarily overwrites a model animation key before playback.
+        /// </summary>
+        /// <param name="replacementAnimationName">The model animation key to play instead.</param>
+        /// <param name="restoreDelaySeconds">The number of seconds before the source animation key is restored.</param>
+        /// <returns>An ability builder with the configured options.</returns>
+        public AbilityBuilder UsesImpactAnimationOverwrite(
+            string replacementAnimationName,
+            float restoreDelaySeconds = 1.1f)
+        {
+            return UsesImpactAnimationOverwrite(
+                DefaultImpactAnimationOverwriteCarrier,
+                replacementAnimationName,
+                restoreDelaySeconds);
+        }
+
+        /// <summary>
+        /// Assigns an impact animation that temporarily overwrites the carrier animation's model key before playback.
+        /// </summary>
+        /// <param name="animation">The engine animation used to trigger the source animation key.</param>
+        /// <param name="replacementAnimationName">The model animation key to play instead.</param>
+        /// <param name="restoreDelaySeconds">The number of seconds before the source animation key is restored.</param>
+        /// <returns>An ability builder with the configured options.</returns>
+        public AbilityBuilder UsesImpactAnimationOverwrite(
+            Animation animation,
+            string replacementAnimationName,
+            float restoreDelaySeconds = 1.1f)
+        {
+            return UsesImpactAnimationOverwrite(
+                animation,
+                GetImpactAnimationSourceAnimationName(animation),
+                replacementAnimationName,
+                restoreDelaySeconds);
+        }
+
+        /// <summary>
+        /// Assigns an impact animation that temporarily overwrites a specific model animation key before playback.
+        /// </summary>
+        /// <param name="animation">The engine animation used to trigger the source animation key.</param>
+        /// <param name="sourceAnimationName">The existing model animation key to replace.</param>
+        /// <param name="replacementAnimationName">The model animation key to play instead.</param>
+        /// <param name="restoreDelaySeconds">The number of seconds before the source animation key is restored.</param>
+        /// <returns>An ability builder with the configured options.</returns>
+        public AbilityBuilder UsesImpactAnimationOverwrite(
+            Animation animation,
+            string sourceAnimationName,
+            string replacementAnimationName,
+            float restoreDelaySeconds = 1.1f)
+        {
+            if (string.IsNullOrWhiteSpace(sourceAnimationName))
+                throw new ArgumentException("Source animation name is required.", nameof(sourceAnimationName));
+            if (string.IsNullOrWhiteSpace(replacementAnimationName))
+                throw new ArgumentException("Replacement animation name is required.", nameof(replacementAnimationName));
+            if (restoreDelaySeconds <= 0f)
+                throw new ArgumentOutOfRangeException(nameof(restoreDelaySeconds), restoreDelaySeconds, "Restore delay must be positive.");
+
+            _activeAbility.ImpactAnimationType = animation;
+            _activeAbility.ImpactAnimationSourceAnimationName = sourceAnimationName;
+            _activeAbility.ImpactAnimationReplacementAnimationName = replacementAnimationName;
+            _activeAbility.ImpactAnimationRestoreDelaySeconds = restoreDelaySeconds;
+
+            return this;
+        }
+
+        private static string GetImpactAnimationSourceAnimationName(Animation animation)
+        {
+            return animation switch
+            {
+                Animation.FireForgetTaunt => FireForgetTauntSourceAnimationName,
+                _ => throw new ArgumentException(
+                    $"No model animation source key is mapped for {animation}. Use the overload that accepts a source animation name.",
+                    nameof(animation))
+            };
         }
 
         /// <summary>
@@ -214,6 +295,18 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public AbilityBuilder RequiresTarget()
         {
             _activeAbility.RequiresTarget = true;
+
+            return this;
+        }
+
+        /// <summary>
+        /// Indicates this ability should resolve its target from the creature's current attack target.
+        /// </summary>
+        /// <returns>An ability builder with the configured options.</returns>
+        public AbilityBuilder UsesActiveAttackTarget()
+        {
+            _activeAbility.UsesActiveAttackTarget = true;
+            _activeAbility.RequiresTarget = false;
 
             return this;
         }

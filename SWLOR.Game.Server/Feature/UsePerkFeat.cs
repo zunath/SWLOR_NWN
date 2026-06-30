@@ -62,6 +62,22 @@ namespace SWLOR.Game.Server.Feature
             return OBJECT_INVALID;
         }
 
+        private static (uint Target, Location TargetLocation) ResolveAbilityTarget(
+            uint activator,
+            uint target,
+            Location targetLocation,
+            AbilityDetail ability)
+        {
+            if (!ability.UsesActiveAttackTarget)
+                return (target, targetLocation);
+
+            var attackTarget = GetAttackTarget(activator);
+            if (!GetIsObjectValid(attackTarget))
+                return (OBJECT_INVALID, targetLocation);
+
+            return (attackTarget, GetLocation(attackTarget));
+        }
+
         private static void ResumeAttack(uint activator, uint target, bool clearActions = true)
         {
             if (!GetIsObjectValid(activator) ||
@@ -160,6 +176,12 @@ namespace SWLOR.Game.Server.Feature
             var ability = Ability.GetAbilityDetail(feat);
             if (skipNativeEvent)
                 EventsPlugin.SkipEvent();
+
+            (target, targetLocation) = ResolveAbilityTarget(
+                activator,
+                target,
+                targetLocation,
+                ability);
 
             // Creature cannot use the feat.
             var effectivePerkLevel =

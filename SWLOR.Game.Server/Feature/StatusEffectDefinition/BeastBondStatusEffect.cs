@@ -14,6 +14,8 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         public override StatusEffectSourceType SourceType => StatusEffectSourceType.Stance;
 
+        public override float Frequency => 1f;
+
         protected override void Apply(uint creature, int durationTicks)
         {
             SyncBeastStatus(creature);

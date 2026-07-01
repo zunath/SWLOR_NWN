@@ -79,8 +79,8 @@ public class SaberstaffTempestTests
         var statSource = File.ReadAllText((root / "SWLOR.Game.Server" / "Service" / "Stat.cs").FullName);
         var perks = BuildSaberstaffTempestPerksWithout2daLookup();
 
-        source.Should().Contain("StatType.AttackDeflection, 8");
-        source.Should().Contain("StatType.AttackDeflection, 16");
+        source.Should().Contain("StatType.AttackDeflection, 5");
+        source.Should().Contain("StatType.AttackDeflection, 10");
         source.Should().NotContain("StatType.AttackDeflection, creature => EquipmentPredicates.HasMainHandSaberstaff");
         statSource.Should().Contain("Combat.TryUseStatTrigger(creatureId, StatType.DeflectionFPRestore, fpRestoreCooldown)");
         statSource.Should().Contain("Recast.ReduceRecastDelay(creatureId, recastReductionGroup, recastReductionSeconds);");
@@ -93,7 +93,7 @@ public class SaberstaffTempestTests
             2,
             22,
             FeatType.SpinningDeflectionTrait,
-            "Gain +8 Attack Deflection. After deflecting an attack, reduce Circle Slash's cooldown by 1 second and your next Circle Slash deals +8 DMG.",
+            "Gain +5 Attack Deflection. After deflecting an attack, reduce Circle Slash's cooldown by 1 second and your next Circle Slash within 18 seconds deals +8 DMG.",
             StatType.AttackDeflection,
             StatType.DeflectionRecastReductionGroup,
             StatType.DeflectionRecastReductionSeconds,
@@ -102,6 +102,8 @@ public class SaberstaffTempestTests
             StatType.DeflectionNextAbilityDamageBonusDurationSeconds);
         AssertStatBonus(spinningDeflection.PerkLevels[1], StatType.DeflectionRecastReductionGroup, (int)RecastGroup.CircleSlash);
         AssertStatBonus(spinningDeflection.PerkLevels[1], StatType.DeflectionRecastReductionSeconds, 1);
+        AssertStatBonus(spinningDeflection.PerkLevels[1], StatType.AttackDeflection, 5);
+        AssertStatBonus(spinningDeflection.PerkLevels[1], StatType.DeflectionNextAbilityDamageBonusDurationSeconds, 18);
 
         AssertPerkLevel(
             spinningDeflection,
@@ -110,7 +112,7 @@ public class SaberstaffTempestTests
             2,
             40,
             null,
-            "Gain +16 Attack Deflection total. After deflecting an attack, reduce Circle Slash's cooldown by 1 second and your next Circle Slash deals +8 DMG. Deflecting an attack restores 4 FP once every 6 seconds.",
+            "Gain +10 Attack Deflection total. After deflecting an attack, reduce Circle Slash's cooldown by 1 second and your next Circle Slash within 18 seconds deals +8 DMG. Deflecting an attack restores 4 FP once every 6 seconds.",
             StatType.AttackDeflection,
             StatType.DeflectionRecastReductionGroup,
             StatType.DeflectionRecastReductionSeconds,
@@ -121,6 +123,8 @@ public class SaberstaffTempestTests
             StatType.DeflectionFPRestoreCooldownSeconds);
         AssertStatBonus(spinningDeflection.PerkLevels[2], StatType.DeflectionRecastReductionGroup, (int)RecastGroup.CircleSlash);
         AssertStatBonus(spinningDeflection.PerkLevels[2], StatType.DeflectionRecastReductionSeconds, 1);
+        AssertStatBonus(spinningDeflection.PerkLevels[2], StatType.AttackDeflection, 10);
+        AssertStatBonus(spinningDeflection.PerkLevels[2], StatType.DeflectionNextAbilityDamageBonusDurationSeconds, 18);
         AssertStatBonus(spinningDeflection.PerkLevels[2], StatType.DeflectionFPRestore, 4);
         AssertStatBonus(spinningDeflection.PerkLevels[2], StatType.DeflectionFPRestoreCooldownSeconds, 6);
         Stat.GetStatTypeCategory(StatType.DeflectionFPRestoreCooldownSeconds).Should().Be(StatTypeCategory.NonBeneficial);

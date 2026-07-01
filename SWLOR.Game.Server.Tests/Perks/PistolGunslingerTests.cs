@@ -33,11 +33,12 @@ public class PistolGunslingerTests
         AssertPerkLevel(perks[PerkType.DoubleShot], "Double Shot", 2, 3, 20, FeatType.DoubleShot2,
             "Instantly attacks twice, each for weapon DMG + 15.");
         AssertPerkLevel(perks[PerkType.DeadeyeReload], "Deadeye Reload", 1, 2, 22, FeatType.DeadeyeReloadTrait,
-            "After using a pistol combat ability, your next auto-attack within 6 seconds deals +10 DMG.",
+            "After using a pistol combat ability, your next auto-attack within 18 seconds deals +10 DMG.",
             StatType.AbilityUsedNextSkillAutoAttackDamageBonusTriggerSkillType,
             StatType.AbilityUsedNextSkillAutoAttackDamageBonusSkillType,
             StatType.AbilityUsedNextSkillAutoAttackDamageBonus,
             StatType.AbilityUsedNextSkillAutoAttackDamageWindowSeconds);
+        AssertStatBonus(perks[PerkType.DeadeyeReload].PerkLevels[1], StatType.AbilityUsedNextSkillAutoAttackDamageWindowSeconds, 18);
         AssertPerkLevel(perks[PerkType.FanTheHammer], "Fan the Hammer", 1, 3, 25, FeatType.FanTheHammer1,
             "Fires at up to 3 enemies in a cone for weapon DMG + 12 each.");
         AssertPerkLevel(perks[PerkType.QuickDraw], "Quick Draw", 3, 3, 28, FeatType.QuickDraw3,
@@ -284,6 +285,15 @@ public class PistolGunslingerTests
         }
 
         ability.Requirements.OfType<AbilityRequirementFP>().Should().BeEmpty();
+    }
+
+    private static void AssertStatBonus(PerkLevel level, StatType statType, int value)
+    {
+        level.StatBonuses
+            .Single(x => x.Stat == statType)
+            .Calculate(0)
+            .Should()
+            .Be(value);
     }
 
     private static void AssertSkillRequirement(PerkLevel level, SkillType skill, int rank)

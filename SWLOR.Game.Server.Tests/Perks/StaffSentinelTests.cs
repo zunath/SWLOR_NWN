@@ -100,18 +100,18 @@ public class StaffSentinelTests
         var perks = BuildStaffSentinelPerksWithout2daLookup();
         var staffParry = perks[PerkType.StaffParry];
 
-        AssertPerkLevel(staffParry, "Staff Parry", 1, 2, 8, FeatType.StaffParryTrait, "Gain +8 Attack Deflection.", StatType.AttackDeflection);
-        AssertStatBonus(staffParry.PerkLevels[1], StatType.AttackDeflection, 8);
+        AssertPerkLevel(staffParry, "Staff Parry", 1, 2, 8, FeatType.StaffParryTrait, "Gain +4 Attack Deflection.", StatType.AttackDeflection);
+        AssertStatBonus(staffParry.PerkLevels[1], StatType.AttackDeflection, 4);
 
-        AssertPerkLevel(staffParry, "Staff Parry", 2, 4, 18, null, "Gain +16 Attack Deflection total.", StatType.AttackDeflection);
-        AssertStatBonus(staffParry.PerkLevels[2], StatType.AttackDeflection, 16);
+        AssertPerkLevel(staffParry, "Staff Parry", 2, 4, 18, null, "Gain +8 Attack Deflection total.", StatType.AttackDeflection);
+        AssertStatBonus(staffParry.PerkLevels[2], StatType.AttackDeflection, 8);
 
-        AssertPerkLevel(staffParry, "Staff Parry", 3, 4, 28, null, "Gain +24 Attack Deflection total. Deflecting attacks restores 2 STM.", StatType.AttackDeflection, StatType.DeflectionStaminaRestore);
-        AssertStatBonus(staffParry.PerkLevels[3], StatType.AttackDeflection, 24);
+        AssertPerkLevel(staffParry, "Staff Parry", 3, 4, 28, null, "Gain +10 Attack Deflection total. Deflecting attacks restores 2 STM.", StatType.AttackDeflection, StatType.DeflectionStaminaRestore);
+        AssertStatBonus(staffParry.PerkLevels[3], StatType.AttackDeflection, 10);
         AssertStatBonus(staffParry.PerkLevels[3], StatType.DeflectionStaminaRestore, 2);
 
-        AssertPerkLevel(staffParry, "Staff Parry", 4, 4, 42, null, "Gain +30 Attack Deflection total. Deflecting attacks restores 4 STM.", StatType.AttackDeflection, StatType.DeflectionStaminaRestore);
-        AssertStatBonus(staffParry.PerkLevels[4], StatType.AttackDeflection, 30);
+        AssertPerkLevel(staffParry, "Staff Parry", 4, 4, 42, null, "Gain +12 Attack Deflection total. Deflecting attacks restores 4 STM.", StatType.AttackDeflection, StatType.DeflectionStaminaRestore);
+        AssertStatBonus(staffParry.PerkLevels[4], StatType.AttackDeflection, 12);
         AssertStatBonus(staffParry.PerkLevels[4], StatType.DeflectionStaminaRestore, 4);
     }
 

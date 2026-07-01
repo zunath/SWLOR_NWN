@@ -26,7 +26,7 @@ public class SpearDamageTests
 
         var flankingBarrage = new FlankingBarrageAbilityDefinition().BuildAbilities()[FeatType.FlankingBarrage1];
         AssertAbility(flankingBarrage, "Flanking Barrage", 1, RecastGroup.FlankingBarrage, 120f, 0f, 8, true, true, true, false, AbilityActivationType.Casted);
-        flankingBarrage.CustomValidation.Should().NotBeNull();
+        flankingBarrage.CustomValidation.Should().BeNull();
 
         var sweepingFlank = new SweepingFlankAbilityDefinition().BuildAbilities()[FeatType.SweepingFlank1];
         AssertAbility(sweepingFlank, "Sweeping Flank", 1, RecastGroup.SweepingFlank, 60f, 2f, 10, true, false, false, true, AbilityActivationType.Casted);
@@ -76,6 +76,100 @@ public class SpearDamageTests
         var cripplingDefense = new CrippledDefenseStatusEffect();
         cripplingDefense.StatGroup.Stats[StatType.PhysicalDefensePercentAdjustment].Should().Be(-15);
         cripplingDefense.StatGroup.Stats[StatType.ForceDefensePercentAdjustment].Should().Be(-15);
+    }
+
+    [Test]
+    public void SpearDamagePositionals_AreBaselineWithSideBonuses()
+    {
+        var perks = BuildSpearDamagePerksWithout2daLookup();
+
+        AssertPerkLevel(
+            perks[PerkType.FlankingBarrage],
+            "Flanking Barrage",
+            1,
+            3,
+            20,
+            FeatType.FlankingBarrage1,
+            "Deal weapon DMG + 16 to your target. From the side, deal +20 DMG and reduce their Attack by 12% for 8 seconds.");
+
+        AssertPerkLevel(
+            perks[PerkType.LateralStrike],
+            "Lateral Strike",
+            1,
+            3,
+            8,
+            FeatType.LateralStrikeTrait,
+            "Spear attacks restore 2 STM. Side attacks restore an additional 2 STM. Each restore can only trigger once every 4 seconds.",
+            StatType.DamageDealtStaminaRestoreSkillType,
+            StatType.DamageDealtStaminaRestore,
+            StatType.DamageDealtStaminaRestoreCooldownSeconds,
+            StatType.SideAttackStaminaRestore,
+            StatType.SideAttackStaminaRestoreCooldownSeconds);
+        AssertStatBonus(perks[PerkType.LateralStrike].PerkLevels[1], StatType.DamageDealtStaminaRestoreSkillType, (int)SkillType.Spear);
+        AssertStatBonus(perks[PerkType.LateralStrike].PerkLevels[1], StatType.DamageDealtStaminaRestore, 2);
+        AssertStatBonus(perks[PerkType.LateralStrike].PerkLevels[1], StatType.SideAttackStaminaRestore, 2);
+
+        AssertPerkLevel(
+            perks[PerkType.LateralStrike],
+            "Lateral Strike",
+            2,
+            2,
+            22,
+            null,
+            "Spear attacks restore 3 STM. Side attacks restore an additional 3 STM. Each restore can only trigger once every 4 seconds.",
+            StatType.DamageDealtStaminaRestoreSkillType,
+            StatType.DamageDealtStaminaRestore,
+            StatType.DamageDealtStaminaRestoreCooldownSeconds,
+            StatType.SideAttackStaminaRestore,
+            StatType.SideAttackStaminaRestoreCooldownSeconds);
+        AssertStatBonus(perks[PerkType.LateralStrike].PerkLevels[2], StatType.DamageDealtStaminaRestore, 3);
+        AssertStatBonus(perks[PerkType.LateralStrike].PerkLevels[2], StatType.SideAttackStaminaRestore, 3);
+
+        AssertPerkLevel(
+            perks[PerkType.OpportunistsFlow],
+            "Opportunist's Flow",
+            1,
+            4,
+            35,
+            FeatType.OpportunistsFlowTrait,
+            "After dealing Spear damage, your next attack's delay is 10% quicker for 18 seconds. Side attacks grant an additional 10%.",
+            StatType.DamageDealtAttackDelayReductionSkillType,
+            StatType.DamageDealtAttackDelayReductionPercent,
+            StatType.DamageDealtAttackDelayReductionDurationSeconds,
+            StatType.SideAttackDelayReductionPercent,
+            StatType.SideAttackDelayReductionDurationSeconds);
+        AssertStatBonus(perks[PerkType.OpportunistsFlow].PerkLevels[1], StatType.DamageDealtAttackDelayReductionSkillType, (int)SkillType.Spear);
+        AssertStatBonus(perks[PerkType.OpportunistsFlow].PerkLevels[1], StatType.DamageDealtAttackDelayReductionPercent, 10);
+        AssertStatBonus(perks[PerkType.OpportunistsFlow].PerkLevels[1], StatType.DamageDealtAttackDelayReductionDurationSeconds, 18);
+        AssertStatBonus(perks[PerkType.OpportunistsFlow].PerkLevels[1], StatType.SideAttackDelayReductionPercent, 10);
+        AssertStatBonus(perks[PerkType.OpportunistsFlow].PerkLevels[1], StatType.SideAttackDelayReductionDurationSeconds, 18);
+
+        AssertPerkLevel(
+            perks[PerkType.RestorationStrike],
+            "Restoration Strike",
+            1,
+            3,
+            38,
+            FeatType.RestorationStrikeTrait,
+            "Critical hit chance increases by 10%. Critical hits restore 4 STM once every 6 seconds. If you were at the side of your target, critical hits have a 35% chance to restore an additional 8 STM.",
+            StatType.CriticalRatePercentAdjustment,
+            StatType.CriticalStaminaRestoreSkillType,
+            StatType.CriticalStaminaRestore,
+            StatType.CriticalStaminaRestoreCooldownSeconds,
+            StatType.CriticalSideAttackStaminaRestoreChance,
+            StatType.CriticalSideAttackStaminaRestore);
+        AssertStatBonus(perks[PerkType.RestorationStrike].PerkLevels[1], StatType.CriticalStaminaRestoreSkillType, (int)SkillType.Spear);
+        AssertStatBonus(perks[PerkType.RestorationStrike].PerkLevels[1], StatType.CriticalStaminaRestore, 4);
+        AssertStatBonus(perks[PerkType.RestorationStrike].PerkLevels[1], StatType.CriticalSideAttackStaminaRestore, 8);
+
+        var combat = File.ReadAllText((FindRepositoryRoot() / "SWLOR.Game.Server" / "Service" / "Combat.cs").FullName);
+        var flankingBarrage = File.ReadAllText((FindRepositoryRoot() / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Spear" / "FlankingBarrageAbilityDefinition.cs").FullName);
+        combat.Should().Contain("ApplyDamageDealtStaminaRestore(attacker, skillType);");
+        combat.Should().Contain("ApplyDamageDealtAttackDelayReduction(attacker, skillType);");
+        combat.Should().Contain("StatType.DamageDealtStaminaRestoreSkillType");
+        combat.Should().Contain("StatType.DamageDealtAttackDelayReductionSkillType");
+        flankingBarrage.Should().Contain("Combat.IsAttackerBesideTarget(activator, target)");
+        flankingBarrage.Should().NotContain("You must be beside your target.");
     }
 
     [Test]
@@ -203,6 +297,15 @@ public class SpearDamageTests
 
         requirement.Type.Should().Be(skill);
         requirement.RequiredRank.Should().Be(rank);
+    }
+
+    private static void AssertStatBonus(PerkLevel level, StatType statType, int value)
+    {
+        level.StatBonuses
+            .Single(x => x.Stat == statType)
+            .Calculate(0)
+            .Should()
+            .Be(value);
     }
 
     private static Dictionary<PerkType, PerkDetail> BuildSpearDamagePerksWithout2daLookup()

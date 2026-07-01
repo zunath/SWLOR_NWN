@@ -13,13 +13,13 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         protected override void OnDamageDealt(uint attacker, uint defender, int damage, CombatDamageType damageType)
         {
-            var percent = Math.Max(10, 40 - Math.Max(0, GetAbilityScore(attacker, AbilityType.Might)));
+            var percent = Math.Max(20, 45 - Math.Max(0, GetAbilityScore(attacker, AbilityType.Might)));
             AssignCommand(attacker, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(PercentOfDamage(damage, percent)), attacker));
         }
         public SoulDevourerStatusEffect()
         {
-            StatGroup.Stats[StatType.AttackPercentAdjustment] = 35;
-            StatGroup.Stats[StatType.CriticalRatePercentAdjustment] = 15;
+            StatGroup.Stats[StatType.AttackPercentAdjustment] = 25;
+            StatGroup.Stats[StatType.CriticalRatePercentAdjustment] = 10;
         }
 
     }

@@ -22,7 +22,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
                 12,
                 8,
                 typeof(ForceDisruptionStatusEffect),
-                4);
+                4,
+                additionalStatusEffect: typeof(FoggyMindStatusEffect));
             ConfigureWeapon(
                 builder
                     .Create(FeatType.DisablingStrike2, PerkType.DisablingStrike)
@@ -33,7 +34,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
                 18,
                 8,
                 typeof(ForceDisruptionStatusEffect),
-                8);
+                8,
+                additionalStatusEffect: typeof(FoggyMindStatusEffect));
             ConfigureWeapon(
                 builder
                     .Create(FeatType.DisablingStrike3, PerkType.DisablingStrike)
@@ -44,7 +46,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
                 26,
                 8,
                 typeof(ForceDisruptionStatusEffect),
-                16);
+                16,
+                additionalStatusEffect: typeof(FoggyMindStatusEffect));
 
             return builder.Build();
         }

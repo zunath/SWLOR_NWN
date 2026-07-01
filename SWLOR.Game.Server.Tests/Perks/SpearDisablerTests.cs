@@ -56,10 +56,14 @@ public class SpearDisablerTests
         var forceErosion = new ForceErosionStatusEffect();
         forceErosion.StatGroup.Stats[StatType.ForceDefensePercentAdjustment].Should().Be(-10);
 
+        var defaultFoggyMind = new FoggyMindStatusEffect();
+        defaultFoggyMind.StatGroup.Stats[StatType.ActivationDelayFlatAdjustment].Should().Be(1);
+
         var foggyMind = new FoggyMindStatusEffect(2);
         foggyMind.StatGroup.Stats[StatType.ActivationDelayFlatAdjustment].Should().Be(2);
 
         var forceSuppression = new ForceSuppressionStatusEffect();
+        forceSuppression.StatGroup.Stats[StatType.AttackPercentAdjustment].Should().Be(-10);
         forceSuppression.StatGroup.Stats[StatType.ForceAttackPercentAdjustment].Should().Be(-15);
 
         var forceNullification = new ForceDisruptionStatusEffect(true);
@@ -70,6 +74,97 @@ public class SpearDisablerTests
 
         var forcebane = new ForcebaneStatusEffect();
         forcebane.StatGroup.Stats[StatType.FPRestorePercentAdjustment].Should().Be(-75);
+    }
+
+    [Test]
+    public void SpearDisablerPerks_IncludeNonForceShutdownUtility()
+    {
+        var perks = BuildSpearDisablerPerksWithout2daLookup();
+
+        AssertPerkLevel(
+            perks[PerkType.DisablingStrike],
+            "Disabling Strike",
+            1,
+            2,
+            8,
+            FeatType.DisablingStrike1,
+            "Your next attack deals +12 DMG and inflicts Force Disruption and Foggy Mind for 8 seconds.");
+        AssertPerkLevel(
+            perks[PerkType.DisablingStrike],
+            "Disabling Strike",
+            2,
+            2,
+            22,
+            FeatType.DisablingStrike2,
+            "Your next attack deals +18 DMG and inflicts Force Disruption and Foggy Mind for 8 seconds.");
+        AssertPerkLevel(
+            perks[PerkType.DisablingStrike],
+            "Disabling Strike",
+            3,
+            3,
+            40,
+            FeatType.DisablingStrike3,
+            "Your next attack deals +26 DMG and inflicts Force Disruption and Foggy Mind for 8 seconds.");
+
+        AssertPerkLevel(
+            perks[PerkType.ForcePiercing],
+            "Force Piercing",
+            1,
+            4,
+            18,
+            FeatType.ForcePiercingTrait,
+            "Critical hit chance increases by 5%. Additionally, critical hits reduce FP and STM by 10% of the damage dealt.",
+            StatType.CriticalRatePercentAdjustment,
+            StatType.CriticalTargetFPLossPercentOfDamage,
+            StatType.CriticalTargetStaminaLossPercentOfDamage);
+        AssertStatBonus(perks[PerkType.ForcePiercing].PerkLevels[1], StatType.CriticalTargetFPLossPercentOfDamage, 10);
+        AssertStatBonus(perks[PerkType.ForcePiercing].PerkLevels[1], StatType.CriticalTargetStaminaLossPercentOfDamage, 10);
+
+        AssertPerkLevel(
+            perks[PerkType.ForceSuppression],
+            "Force Suppression",
+            1,
+            3,
+            20,
+            FeatType.ForceSuppression1,
+            "Deals weapon DMG + 20 and reduces your target's Attack by 10% and Force Attack by 15% for 30 seconds.");
+
+        AssertPerkLevel(
+            perks[PerkType.ErosionStrike],
+            "Erosion Strike",
+            2,
+            2,
+            32,
+            null,
+            "The Force Erosion effect additionally reduces FP and STM by 2 every second.",
+            StatType.DamageDealtForceErosionDurationSeconds,
+            StatType.DamageDealtForceErosionFPLossPerTick,
+            StatType.DamageDealtForceErosionStaminaLossPerTick);
+        AssertStatBonus(perks[PerkType.ErosionStrike].PerkLevels[2], StatType.DamageDealtForceErosionFPLossPerTick, 2);
+        AssertStatBonus(perks[PerkType.ErosionStrike].PerkLevels[2], StatType.DamageDealtForceErosionStaminaLossPerTick, 2);
+
+        AssertPerkLevel(
+            perks[PerkType.TotalForceDenial],
+            "Total Force Denial",
+            1,
+            4,
+            35,
+            FeatType.TotalForceDenial1,
+            "Deal weapon DMG + 28 to all enemies in area of effect (cone) and inflicts Force Disruption and Foggy Mind for 12 seconds.");
+
+        var combat = File.ReadAllText((FindRepositoryRoot() / "SWLOR.Game.Server" / "Service" / "Combat.cs").FullName);
+        var disablingStrike = File.ReadAllText((FindRepositoryRoot() / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Spear" / "DisablingStrikeAbilityDefinition.cs").FullName);
+        var totalForceDenial = File.ReadAllText((FindRepositoryRoot() / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Spear" / "TotalForceDenialAbilityDefinition.cs").FullName);
+        var disruptionField = File.ReadAllText((FindRepositoryRoot() / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Spear" / "DisruptionFieldAbilityDefinition.cs").FullName);
+
+        combat.Should().Contain("StatType.CriticalTargetStaminaLossPercentOfDamage");
+        combat.Should().Contain("Stat.ReduceStamina(defender, staminaLoss);");
+        disablingStrike.Should().Contain("additionalStatusEffect: typeof(FoggyMindStatusEffect)");
+        totalForceDenial.Should().Contain("additionalStatusEffects: new[] { typeof(FoggyMindStatusEffect) }");
+        disablingStrike.Should().NotContain("additionalStatusEffectFactories");
+        totalForceDenial.Should().NotContain("additionalStatusEffectFactories");
+        disruptionField.Should().Contain("StaminaDrainPercent = 5");
+        disruptionField.Should().Contain("Stat.ReduceStamina(hostile, staminaDrain);");
     }
 
     [Test]
@@ -109,7 +204,7 @@ public class SpearDisablerTests
             3,
             25,
             FeatType.DisruptionField1,
-            "Forms a visible 5m disruption field at a targeted location. Enemies within the sphere lose 5% FP per second for 20 seconds.");
+            "Forms a visible 5m disruption field at a targeted location. Enemies within the sphere lose 5% FP and 5% STM per second for 20 seconds.");
     }
 
     [Test]
@@ -173,6 +268,8 @@ public class SpearDisablerTests
 
         source.Should().Contain("DisruptionFieldMarkerVisualEffect = VisualEffect.Vfx_Dur_Aura_Cyan");
         source.Should().Contain("DisruptionFieldPulseVisualEffect = VisualEffect.Vfx_Fnf_Gas_Explosion_Mind");
+        source.Should().Contain("FPDrainPercent = 5");
+        source.Should().Contain("StaminaDrainPercent = 5");
         source.Should().Contain("DurationType.Temporary");
         source.Should().Contain("EffectVisualEffect(DisruptionFieldMarkerVisualEffect, false, 2f)");
         source.Should().Contain("EffectVisualEffect(DisruptionFieldPulseVisualEffect)");
@@ -186,7 +283,7 @@ public class SpearDisablerTests
         var abilityRows = Read2da(root / "SWLOR_Haks" / "sw_2da" / "spells.2da");
         var tlkEntries = ReadTlkEntries(root / "SWLOR_Haks" / "sw_tlk" / "sw_tlk.tlk.json");
         const int CustomTlkOffset = 16777216;
-        const string ExpectedDescription = "Forms a visible 5m disruption field at a targeted location. Enemies within the sphere lose 5% FP per second for 20 seconds.";
+        const string ExpectedDescription = "Forms a visible 5m disruption field at a targeted location. Enemies within the sphere lose 5% FP and 5% STM per second for 20 seconds.";
 
         var featRow = featRows[(int)FeatType.DisruptionField1];
         var featDescriptionId = int.Parse(featRow["DESCRIPTION"]) - CustomTlkOffset;
@@ -282,6 +379,15 @@ public class SpearDisablerTests
 
         requirement.Type.Should().Be(skill);
         requirement.RequiredRank.Should().Be(rank);
+    }
+
+    private static void AssertStatBonus(PerkLevel level, StatType statType, int value)
+    {
+        level.StatBonuses
+            .Single(x => x.Stat == statType)
+            .Calculate(0)
+            .Should()
+            .Be(value);
     }
 
     private static Dictionary<PerkType, PerkDetail> BuildSpearDisablerPerksWithout2daLookup()

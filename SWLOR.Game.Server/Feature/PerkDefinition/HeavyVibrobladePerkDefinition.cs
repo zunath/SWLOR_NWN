@@ -68,7 +68,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.AngerStrikeTrait)
-                .Description("Heavy Vibroblade Defense attacks generate extra enmity, and your next attack after using a Heavy Vibroblade Defense ability deals +12 DMG.")
+                .Description("Heavy Vibroblade Defense attacks generate extra enmity, and your next attack within 18 seconds after using a Heavy Vibroblade Defense ability deals +12 DMG.")
                 .IncreasesStat(StatType.HeavyVibrobladeDefenseAbilityEnmityBonus, 150)
                 .IncreasesStat(StatType.HeavyVibrobladeDefenseAbilityNextAutoAttackDamageTriggerPrimaryPerkType, (int)PerkType.FortressStrike)
                 .IncreasesStat(StatType.HeavyVibrobladeDefenseAbilityNextAutoAttackDamageTriggerSecondaryPerkType, (int)PerkType.BastionStance)
@@ -77,7 +77,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .IncreasesStat(StatType.HeavyVibrobladeDefenseAbilityNextAutoAttackDamageTriggerQuinaryPerkType, (int)PerkType.Earthshatter)
                 .IncreasesStat(StatType.HeavyVibrobladeDefenseAbilityNextAutoAttackDamageTriggerSenaryPerkType, (int)PerkType.AbsoluteDefense)
                 .IncreasesStat(StatType.HeavyVibrobladeDefenseAbilityNextAutoAttackDamageBonus, 12)
-                .IncreasesStat(StatType.HeavyVibrobladeDefenseAbilityNextAutoAttackDamageDurationSeconds, 8)
+                .IncreasesStat(StatType.HeavyVibrobladeDefenseAbilityNextAutoAttackDamageDurationSeconds, 18)
                 .Price(2)
                 .RequirementSkill(SkillType.HeavyVibroblade, 8);
         }
@@ -116,8 +116,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.BloodWeaponTrait)
-                .Description("While you have a Heavy Vibroblade Defense Physical Defense or damage-reduction buff, restore HP equal to 2% of combat damage you deal.")
-                .IncreasesStat(StatType.HeavyVibrobladeDefenseDamageDealtHPPercentRestore, 2)
+                .Description("While you have a Heavy Vibroblade Defense Physical Defense or damage-reduction buff, restore HP equal to 1% of combat damage you deal.")
+                .IncreasesStat(StatType.HeavyVibrobladeDefenseDamageDealtHPPercentRestore, 1)
                 .Price(3)
                 .RequirementSkill(SkillType.HeavyVibroblade, 45);
         }
@@ -291,10 +291,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.GuardiansReapingTrait)
-                .Description("Defeating an enemy restores 20% max HP to you and grants +15% Physical Defense to all nearby allies for 25 seconds.")
-                .IncreasesStat(StatType.DefeatedEnemyHPPercentRestore, 20)
-                .IncreasesStat(StatType.DefeatedEnemyNearbyAllyPhysicalDefensePercentAdjustment, 15)
-                .IncreasesStat(StatType.DefeatedEnemyNearbyAllyPhysicalDefenseDurationSeconds, 25)
+                .Description("Defeating an enemy restores 12% max HP to you and grants +10% Physical Defense to all nearby allies for 20 seconds.")
+                .IncreasesStat(StatType.DefeatedEnemyHPPercentRestore, 12)
+                .IncreasesStat(StatType.DefeatedEnemyNearbyAllyPhysicalDefensePercentAdjustment, 10)
+                .IncreasesStat(StatType.DefeatedEnemyNearbyAllyPhysicalDefenseDurationSeconds, 20)
                 .Price(4)
                 .RequirementSkill(SkillType.HeavyVibroblade, 48);
         }
@@ -344,9 +344,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.LifeSiphonTrait)
-                .Description("When below 50% HP, your attacks heal you for 15% of damage dealt.")
-                .IncreasesStat(StatType.LowHPDamageDealtHPRestoreThresholdPercent, 50)
-                .IncreasesStat(StatType.LowHPDamageDealtHPPercentRestore, 15)
+                .Description("When below 40% HP, your attacks heal you for 8% of damage dealt.")
+                .IncreasesStat(StatType.LowHPDamageDealtHPRestoreThresholdPercent, 40)
+                .IncreasesStat(StatType.LowHPDamageDealtHPPercentRestore, 8)
                 .Price(3)
                 .RequirementSkill(SkillType.HeavyVibroblade, 20);
         }
@@ -385,9 +385,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SoulAmplificationTrait)
-                .Description("When you recover HP, gain +15% Attack for 15 seconds.")
-                .IncreasesStat(StatType.HealingReceivedAttackPercentAdjustment, 15)
-                .IncreasesStat(StatType.HealingReceivedAttackDurationSeconds, 15)
+                .Description("When you recover HP, gain +10% Attack for 12 seconds.")
+                .IncreasesStat(StatType.HealingReceivedAttackPercentAdjustment, 10)
+                .IncreasesStat(StatType.HealingReceivedAttackDurationSeconds, 12)
                 .Price(3)
                 .RequirementSkill(SkillType.HeavyVibroblade, 30);
         }
@@ -400,7 +400,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SoulAscensionTrait)
-                .Description("Defeating an enemy after spending HP on a Heavy Vibroblade Offense ability grants +15% Attack and heals you for 20% of physical damage dealt for 20 seconds.")
+                .Description("Defeating an enemy after spending HP on a Heavy Vibroblade Offense ability grants +10% Attack and heals you for 10% of physical damage dealt for 15 seconds.")
                 .IncreasesStat(StatType.HeavyVibrobladeOffenseSoulAscension, 1)
                 .IncreasesStat(StatType.HeavyVibrobladeOffenseHitPointSpendWindowSeconds, 20)
                 .Price(4)
@@ -445,7 +445,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SoulDevourer1)
-                .Description("While active, gain +35% Attack and +15% critical chance, but each attack you make deals 40% of the damage back to you. Damage reduced by 1% per MGT. (Minimum 10%)")
+                .Description("While active, gain +25% Attack and +10% critical chance, but each attack you make deals 45% of the damage back to you. Damage reduced by 1% per MGT. (Minimum 20%)")
                 .Price(4)
                 .RequirementSkill(SkillType.HeavyVibroblade, 18);
         }
@@ -458,10 +458,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SoulReapingTrait)
-                .Description("Defeating an enemy restores 15% max HP and grants +20% Attack for 30 seconds.")
-                .IncreasesStat(StatType.DefeatedEnemyHPPercentRestore, 15)
-                .IncreasesStat(StatType.DefeatedEnemyAttackPercentAdjustment, 20)
-                .IncreasesStat(StatType.DefeatedEnemyAttackDurationSeconds, 30)
+                .Description("Defeating an enemy restores 10% max HP and grants +15% Attack for 20 seconds.")
+                .IncreasesStat(StatType.DefeatedEnemyHPPercentRestore, 10)
+                .IncreasesStat(StatType.DefeatedEnemyAttackPercentAdjustment, 15)
+                .IncreasesStat(StatType.DefeatedEnemyAttackDurationSeconds, 20)
                 .Price(4)
                 .RequirementSkill(SkillType.HeavyVibroblade, 48);
         }
@@ -474,7 +474,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SoulSacrificeTrait)
-                .Description("After you spend HP on a Heavy Vibroblade Offense ability, gain +20% Attack and +10% critical chance for 12 seconds. The HP cost reduction scales with MGT.")
+                .Description("After you spend HP on a Heavy Vibroblade Offense ability, gain +15% Attack and +5% critical chance for 12 seconds. The HP cost reduction scales with MGT.")
                 .IncreasesStat(StatType.HeavyVibrobladeOffenseHitPointSpendSoulSacrifice, 1)
                 .IncreasesStat(StatType.HeavyVibrobladeOffenseHitPointSpendWindowSeconds, 20)
                 .Price(3)
@@ -502,19 +502,19 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SoulStrike1)
-                .Description("Your next attack deals +15 DMG and heals you for 25% of damage dealt.")
+                .Description("Your next attack deals +15 DMG and heals you for 15% of damage dealt.")
                 .Price(2)
                 .RequirementSkill(SkillType.HeavyVibroblade, 8)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SoulStrike2)
-                .Description("Your next attack deals +30 DMG and heals you for 40% of damage dealt.")
+                .Description("Your next attack deals +30 DMG and heals you for 25% of damage dealt.")
                 .Price(4)
                 .RequirementSkill(SkillType.HeavyVibroblade, 28)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SoulStrike3)
-                .Description("Your next attack deals +45 DMG and heals you for 45% of damage dealt. Amount healed increases by 1 percentage point per MGT to a maximum of 60%.")
+                .Description("Your next attack deals +45 DMG and heals you for 30% of damage dealt. Amount healed increases by 1 percentage point per 2 MGT to a maximum of 40%.")
                 .Price(3)
                 .RequirementSkill(SkillType.HeavyVibroblade, 45);
         }
@@ -527,10 +527,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.UnbreakableWillTrait)
-                .Description("Gain +5 Attack Deflection, increased by +1 per 2 MGT to a maximum of +15. Deflecting an attack restores 4 STM. This can trigger once every 6 seconds.")
+                .Description("Gain +4 Attack Deflection, increased by +1 per 4 MGT to a maximum of +8. Deflecting an attack restores 4 STM. This can trigger once every 6 seconds.")
                 .IncreasesStat(
                     StatType.AttackDeflection,
-                    creature => Math.Min(15, 5 + Math.Max(0, GetAbilityScore(creature, AbilityType.Might)) / 2))
+                    creature => Math.Min(8, 4 + Math.Max(0, GetAbilityScore(creature, AbilityType.Might)) / 4))
                 .IncreasesStat(StatType.DeflectionStaminaRestore, 4)
                 .IncreasesStat(StatType.DeflectionStaminaRestoreCooldownSeconds, 6)
                 .Price(3)
@@ -545,13 +545,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.VampiricFuryTrait)
-                .Description("Critical hits restore HP equal to 25% of damage dealt, increased by 1 percentage point per MGT to a maximum of 45%. This can trigger once every 6 seconds.")
+                .Description("Critical hits restore HP equal to 12% of damage dealt, increased by 1 percentage point per 2 MGT to a maximum of 25%. This can trigger once every 8 seconds.")
                 .IncreasesStat(
                     StatType.CriticalHPPercentOfDamageRestore,
-                    creature => Math.Min(45, 25 + Math.Max(0, GetAbilityScore(creature, AbilityType.Might))))
+                    creature => Math.Min(25, 12 + Math.Max(0, GetAbilityScore(creature, AbilityType.Might)) / 2))
                 .IncreasesStat(
                     StatType.CriticalHPPercentOfDamageRestoreCooldownSeconds,
-                    6)
+                    8)
                 .Price(3)
                 .RequirementSkill(SkillType.HeavyVibroblade, 22);
         }

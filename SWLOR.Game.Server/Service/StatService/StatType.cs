@@ -3726,7 +3726,67 @@ namespace SWLOR.Game.Server.Service.StatService
         /// Cooldown in seconds for AvoidedAttackStaminaRestore.
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
-        AvoidedAttackStaminaRestoreCooldownSeconds = 635
+        AvoidedAttackStaminaRestoreCooldownSeconds = 635,
+
+        /// <summary>
+        /// SkillType id required before direct damage dealt restores Stamina. Invalid or 0 allows any skill.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        DamageDealtStaminaRestoreSkillType = 636,
+
+        /// <summary>
+        /// Flat Stamina restored after dealing direct damage, subject to DamageDealtStaminaRestoreCooldownSeconds.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        DamageDealtStaminaRestore = 637,
+
+        /// <summary>
+        /// Cooldown in seconds for DamageDealtStaminaRestore.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        DamageDealtStaminaRestoreCooldownSeconds = 638,
+
+        /// <summary>
+        /// SkillType id required before direct damage dealt grants AttackDelayReductionPercent.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        DamageDealtAttackDelayReductionSkillType = 639,
+
+        /// <summary>
+        /// Attack delay reduction granted after dealing direct damage.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        DamageDealtAttackDelayReductionPercent = 640,
+
+        /// <summary>
+        /// Duration in seconds for DamageDealtAttackDelayReductionPercent.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        DamageDealtAttackDelayReductionDurationSeconds = 641,
+
+        /// <summary>
+        /// Percent of critical hit damage also removed from the target's Stamina.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        CriticalTargetStaminaLossPercentOfDamage = 642,
+
+        /// <summary>
+        /// Flat Stamina removed each Force Erosion tick.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        DamageDealtForceErosionStaminaLossPerTick = 643,
+
+        /// <summary>
+        /// Duration in seconds for Sunder from hostile Lightsaber Offense abilities.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        LightsaberOffenseSunderDurationSeconds = 644,
+
+        /// <summary>
+        /// Duration in seconds for Disoriented from hostile Lightsaber Offense abilities.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        LightsaberOffenseDisorientedDurationSeconds = 645
     }
 
     public class StatTypeAttribute : Attribute

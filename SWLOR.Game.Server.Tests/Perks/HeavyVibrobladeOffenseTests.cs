@@ -53,20 +53,20 @@ public class HeavyVibrobladeOffenseTests
         essenceDrain.ResistanceType.Should().Be(ResistanceType.Trauma);
 
         var soulDevourer = new SoulDevourerStatusEffect();
-        soulDevourer.StatGroup.Stats[StatType.AttackPercentAdjustment].Should().Be(35);
-        soulDevourer.StatGroup.Stats[StatType.CriticalRatePercentAdjustment].Should().Be(15);
+        soulDevourer.StatGroup.Stats[StatType.AttackPercentAdjustment].Should().Be(25);
+        soulDevourer.StatGroup.Stats[StatType.CriticalRatePercentAdjustment].Should().Be(10);
 
         var soulSacrifice = new SoulSacrificeStatusEffect();
-        soulSacrifice.StatGroup.Stats[StatType.AttackPercentAdjustment].Should().Be(20);
-        soulSacrifice.StatGroup.Stats[StatType.CriticalRatePercentAdjustment].Should().Be(10);
+        soulSacrifice.StatGroup.Stats[StatType.AttackPercentAdjustment].Should().Be(15);
+        soulSacrifice.StatGroup.Stats[StatType.CriticalRatePercentAdjustment].Should().Be(5);
 
         var soulStorm = new SoulStormStatusEffect();
         soulStorm.StatGroup.Stats[StatType.DamageDealtPercentAdjustment].Should().Be(20);
         soulStorm.StatGroup.Stats[StatType.AttackPercentAdjustment].Should().Be(0);
 
         var soulAscension = new SoulAscensionStatusEffect();
-        soulAscension.StatGroup.Stats[StatType.AttackPercentAdjustment].Should().Be(15);
-        soulAscension.StatGroup.Stats[StatType.PhysicalDamageDealtHPPercentRestore].Should().Be(20);
+        soulAscension.StatGroup.Stats[StatType.AttackPercentAdjustment].Should().Be(10);
+        soulAscension.StatGroup.Stats[StatType.PhysicalDamageDealtHPPercentRestore].Should().Be(10);
     }
 
     [Test]
@@ -133,15 +133,127 @@ public class HeavyVibrobladeOffenseTests
             3,
             22,
             FeatType.VampiricFuryTrait,
-            "Critical hits restore HP equal to 25% of damage dealt, increased by 1 percentage point per MGT to a maximum of 45%. This can trigger once every 6 seconds.",
+            "Critical hits restore HP equal to 12% of damage dealt, increased by 1 percentage point per 2 MGT to a maximum of 25%. This can trigger once every 8 seconds.",
             StatType.CriticalHPPercentOfDamageRestore,
             StatType.CriticalHPPercentOfDamageRestoreCooldownSeconds);
 
-        perkSource.Should().Contain("Math.Min(45, 25 + Math.Max(0, GetAbilityScore(creature, AbilityType.Might)))");
+        perkSource.Should().Contain("Math.Min(25, 12 + Math.Max(0, GetAbilityScore(creature, AbilityType.Might)) / 2)");
         perkSource.Should().Contain("StatType.CriticalHPPercentOfDamageRestoreCooldownSeconds");
         perkSource.Should().NotContain("EquipmentPredicates.HasMainHandHeavyVibroblade");
-        AssertStatBonus(vampiricFury.PerkLevels[1], StatType.CriticalHPPercentOfDamageRestoreCooldownSeconds, 6);
+        AssertStatBonus(vampiricFury.PerkLevels[1], StatType.CriticalHPPercentOfDamageRestoreCooldownSeconds, 8);
         combatSource.Should().Contain("TryUseStatTrigger(attacker, StatType.CriticalHPPercentOfDamageRestore, hpRestoreCooldown)");
+    }
+
+    [Test]
+    public void HeavyVibrobladeOffenseSustainBudget_UsesReducedReleaseValues()
+    {
+        var root = FindRepositoryRoot();
+        var soulStrikeSource = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "HeavyVibroblade" / "SoulStrikeAbilityDefinition.cs").FullName);
+        var soulDevourerSource = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "StatusEffectDefinition" / "SoulDevourerStatusEffect.cs").FullName);
+        var combatSource = File.ReadAllText((root / "SWLOR.Game.Server" / "Service" / "Combat.cs").FullName);
+        var perks = BuildHeavyVibrobladeOffensePerksWithout2daLookup();
+
+        AssertPerkLevel(
+            perks[PerkType.LifeSiphon],
+            "Life Siphon",
+            1,
+            3,
+            20,
+            FeatType.LifeSiphonTrait,
+            "When below 40% HP, your attacks heal you for 8% of damage dealt.",
+            StatType.LowHPDamageDealtHPRestoreThresholdPercent,
+            StatType.LowHPDamageDealtHPPercentRestore);
+        AssertStatBonus(perks[PerkType.LifeSiphon].PerkLevels[1], StatType.LowHPDamageDealtHPRestoreThresholdPercent, 40);
+        AssertStatBonus(perks[PerkType.LifeSiphon].PerkLevels[1], StatType.LowHPDamageDealtHPPercentRestore, 8);
+
+        AssertPerkLevel(
+            perks[PerkType.SoulAmplification],
+            "Soul Amplification",
+            1,
+            3,
+            30,
+            FeatType.SoulAmplificationTrait,
+            "When you recover HP, gain +10% Attack for 12 seconds.",
+            StatType.HealingReceivedAttackPercentAdjustment,
+            StatType.HealingReceivedAttackDurationSeconds);
+        AssertStatBonus(perks[PerkType.SoulAmplification].PerkLevels[1], StatType.HealingReceivedAttackPercentAdjustment, 10);
+        AssertStatBonus(perks[PerkType.SoulAmplification].PerkLevels[1], StatType.HealingReceivedAttackDurationSeconds, 12);
+
+        AssertPerkLevel(
+            perks[PerkType.SoulReaping],
+            "Soul Reaping",
+            1,
+            4,
+            48,
+            FeatType.SoulReapingTrait,
+            "Defeating an enemy restores 10% max HP and grants +15% Attack for 20 seconds.",
+            StatType.DefeatedEnemyHPPercentRestore,
+            StatType.DefeatedEnemyAttackPercentAdjustment,
+            StatType.DefeatedEnemyAttackDurationSeconds);
+        AssertStatBonus(perks[PerkType.SoulReaping].PerkLevels[1], StatType.DefeatedEnemyHPPercentRestore, 10);
+        AssertStatBonus(perks[PerkType.SoulReaping].PerkLevels[1], StatType.DefeatedEnemyAttackPercentAdjustment, 15);
+        AssertStatBonus(perks[PerkType.SoulReaping].PerkLevels[1], StatType.DefeatedEnemyAttackDurationSeconds, 20);
+
+        AssertPerkLevel(
+            perks[PerkType.SoulAscension],
+            "Soul Ascension",
+            1,
+            4,
+            50,
+            FeatType.SoulAscensionTrait,
+            "Defeating an enemy after spending HP on a Heavy Vibroblade Offense ability grants +10% Attack and heals you for 10% of physical damage dealt for 15 seconds.",
+            StatType.HeavyVibrobladeOffenseSoulAscension,
+            StatType.HeavyVibrobladeOffenseHitPointSpendWindowSeconds);
+        combatSource.Should().Contain("typeof(SoulAscensionStatusEffect), 15f");
+
+        AssertPerkLevel(
+            perks[PerkType.SoulSacrifice],
+            "Soul Sacrifice",
+            1,
+            3,
+            32,
+            FeatType.SoulSacrificeTrait,
+            "After you spend HP on a Heavy Vibroblade Offense ability, gain +15% Attack and +5% critical chance for 12 seconds. The HP cost reduction scales with MGT.",
+            StatType.HeavyVibrobladeOffenseHitPointSpendSoulSacrifice,
+            StatType.HeavyVibrobladeOffenseHitPointSpendWindowSeconds);
+
+        AssertPerkLevel(
+            perks[PerkType.SoulStrike],
+            "Soul Strike",
+            1,
+            2,
+            8,
+            FeatType.SoulStrike1,
+            "Your next attack deals +15 DMG and heals you for 15% of damage dealt.");
+        AssertPerkLevel(
+            perks[PerkType.SoulStrike],
+            "Soul Strike",
+            2,
+            4,
+            28,
+            FeatType.SoulStrike2,
+            "Your next attack deals +30 DMG and heals you for 25% of damage dealt.");
+        AssertPerkLevel(
+            perks[PerkType.SoulStrike],
+            "Soul Strike",
+            3,
+            3,
+            45,
+            FeatType.SoulStrike3,
+            "Your next attack deals +45 DMG and heals you for 30% of damage dealt. Amount healed increases by 1 percentage point per 2 MGT to a maximum of 40%.");
+        soulStrikeSource.Should().Contain("SoulStrikeImpact(activator, target, targetLocation, 15, 15)");
+        soulStrikeSource.Should().Contain("SoulStrikeImpact(activator, target, targetLocation, 30, 25)");
+        soulStrikeSource.Should().Contain("Math.Min(40, 30 + Math.Max(0, GetAbilityScore(activator, AbilityType.Might)) / 2)");
+
+        AssertPerkLevel(
+            perks[PerkType.SoulDevourer],
+            "Soul Devourer",
+            1,
+            4,
+            18,
+            FeatType.SoulDevourer1,
+            "While active, gain +25% Attack and +10% critical chance, but each attack you make deals 45% of the damage back to you. Damage reduced by 1% per MGT. (Minimum 20%)");
+        soulDevourerSource.Should().Contain("Math.Max(20, 45 - Math.Max(0, GetAbilityScore(attacker, AbilityType.Might)))");
     }
 
     [Test]

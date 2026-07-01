@@ -111,19 +111,19 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.DisablingStrike1)
-                .Description("Your next attack deals +12 DMG and inflicts Force Disruption for 8 seconds.")
+                .Description("Your next attack deals +12 DMG and inflicts Force Disruption and Foggy Mind for 8 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Spear, 8)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.DisablingStrike2)
-                .Description("Your next attack deals +18 DMG and inflicts Force Disruption for 8 seconds.")
+                .Description("Your next attack deals +18 DMG and inflicts Force Disruption and Foggy Mind for 8 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Spear, 22)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.DisablingStrike3)
-                .Description("Your next attack deals +26 DMG and inflicts Force Disruption for 8 seconds.")
+                .Description("Your next attack deals +26 DMG and inflicts Force Disruption and Foggy Mind for 8 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Spear, 40);
         }
@@ -151,7 +151,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.DisruptionField1)
-                .Description("Forms a visible 5m disruption field at a targeted location. Enemies within the sphere lose 5% FP per second for 20 seconds.")
+                .Description("Forms a visible 5m disruption field at a targeted location. Enemies within the sphere lose 5% FP and 5% STM per second for 20 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Spear, 25);
         }
@@ -170,9 +170,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Spear, 2)
 
                 .AddPerkLevel()
-                .Description("The Force Erosion effect additionally reduces FP by 2 every second.")
+                .Description("The Force Erosion effect additionally reduces FP and STM by 2 every second.")
                 .IncreasesStat(StatType.DamageDealtForceErosionDurationSeconds, 12)
                 .IncreasesStat(StatType.DamageDealtForceErosionFPLossPerTick, 2)
+                .IncreasesStat(StatType.DamageDealtForceErosionStaminaLossPerTick, 2)
                 .Price(2)
                 .RequirementSkill(SkillType.Spear, 32);
         }
@@ -185,7 +186,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.FlankingBarrage1)
-                .Description("Deal weapon DMG + 20 from the side to your target and reduce their Attack by 12% for 8 seconds.")
+                .Description("Deal weapon DMG + 16 to your target. From the side, deal +20 DMG and reduce their Attack by 12% for 8 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Spear, 20);
         }
@@ -247,9 +248,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ForcePiercingTrait)
-                .Description("Critical hit chance increases by 5%. Additionally, critical hits reduce FP by 10% of the damage dealt.")
+                .Description("Critical hit chance increases by 5%. Additionally, critical hits reduce FP and STM by 10% of the damage dealt.")
                 .IncreasesStat(StatType.CriticalRatePercentAdjustment, 5)
                 .IncreasesStat(StatType.CriticalTargetFPLossPercentOfDamage, 10)
+                .IncreasesStat(StatType.CriticalTargetStaminaLossPercentOfDamage, 10)
                 .Price(4)
                 .RequirementSkill(SkillType.Spear, 18);
         }
@@ -262,7 +264,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ForceSuppression1)
-                .Description("Deals weapon DMG + 20 and reduces your target's Force Attack by 15% for 30 seconds.")
+                .Description("Deals weapon DMG + 20 and reduces your target's Attack by 10% and Force Attack by 15% for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Spear, 20);
         }
@@ -375,15 +377,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.LateralStrikeTrait)
-                .Description("Attacks from the side restore 2 STM. This can only trigger once every 4 seconds.")
+                .Description("Spear attacks restore 2 STM. Side attacks restore an additional 2 STM. Each restore can only trigger once every 4 seconds.")
+                .IncreasesStat(StatType.DamageDealtStaminaRestoreSkillType, (int)SkillType.Spear)
+                .IncreasesStat(StatType.DamageDealtStaminaRestore, 2)
+                .IncreasesStat(StatType.DamageDealtStaminaRestoreCooldownSeconds, 4)
                 .IncreasesStat(StatType.SideAttackStaminaRestore, 2)
                 .IncreasesStat(StatType.SideAttackStaminaRestoreCooldownSeconds, 4)
                 .Price(3)
                 .RequirementSkill(SkillType.Spear, 8)
 
                 .AddPerkLevel()
-                .Description("Attacks from the side restore 6 STM. This can only trigger once every 4 seconds.")
-                .IncreasesStat(StatType.SideAttackStaminaRestore, 6)
+                .Description("Spear attacks restore 3 STM. Side attacks restore an additional 3 STM. Each restore can only trigger once every 4 seconds.")
+                .IncreasesStat(StatType.DamageDealtStaminaRestoreSkillType, (int)SkillType.Spear)
+                .IncreasesStat(StatType.DamageDealtStaminaRestore, 3)
+                .IncreasesStat(StatType.DamageDealtStaminaRestoreCooldownSeconds, 4)
+                .IncreasesStat(StatType.SideAttackStaminaRestore, 3)
                 .IncreasesStat(StatType.SideAttackStaminaRestoreCooldownSeconds, 4)
                 .Price(2)
                 .RequirementSkill(SkillType.Spear, 22);
@@ -397,9 +405,12 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.OpportunistsFlowTrait)
-                .Description("After dealing damage from a side attack, your next attack's delay is 20% quicker.")
-                .IncreasesStat(StatType.SideAttackDelayReductionPercent, 20)
-                .IncreasesStat(StatType.SideAttackDelayReductionDurationSeconds, 6)
+                .Description("After dealing Spear damage, your next attack's delay is 10% quicker for 18 seconds. Side attacks grant an additional 10%.")
+                .IncreasesStat(StatType.DamageDealtAttackDelayReductionSkillType, (int)SkillType.Spear)
+                .IncreasesStat(StatType.DamageDealtAttackDelayReductionPercent, 10)
+                .IncreasesStat(StatType.DamageDealtAttackDelayReductionDurationSeconds, 18)
+                .IncreasesStat(StatType.SideAttackDelayReductionPercent, 10)
+                .IncreasesStat(StatType.SideAttackDelayReductionDurationSeconds, 18)
                 .Price(4)
                 .RequirementSkill(SkillType.Spear, 35);
         }
@@ -425,10 +436,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.RestorationStrikeTrait)
-                .Description("Critical hit chance increases by 10%. Additionally, if you were at the side of your target, critical hits have a 35% chance to restore 15 STM.")
+                .Description("Critical hit chance increases by 10%. Critical hits restore 4 STM once every 6 seconds. If you were at the side of your target, critical hits have a 35% chance to restore an additional 8 STM.")
                 .IncreasesStat(StatType.CriticalRatePercentAdjustment, 10)
+                .IncreasesStat(StatType.CriticalStaminaRestoreSkillType, (int)SkillType.Spear)
+                .IncreasesStat(StatType.CriticalStaminaRestore, 4)
+                .IncreasesStat(StatType.CriticalStaminaRestoreCooldownSeconds, 6)
                 .IncreasesStat(StatType.CriticalSideAttackStaminaRestoreChance, 35)
-                .IncreasesStat(StatType.CriticalSideAttackStaminaRestore, 15)
+                .IncreasesStat(StatType.CriticalSideAttackStaminaRestore, 8)
                 .Price(3)
                 .RequirementSkill(SkillType.Spear, 38);
         }
@@ -479,7 +493,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.TotalForceDenial1)
-                .Description("Deal weapon DMG + 28 to all enemies in area of effect (cone) and inflicts Force Disruption for 12 seconds.")
+                .Description("Deal weapon DMG + 28 to all enemies in area of effect (cone) and inflicts Force Disruption and Foggy Mind for 12 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Spear, 35);
         }

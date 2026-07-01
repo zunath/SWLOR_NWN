@@ -85,9 +85,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.CrushingStyleTrait)
-                .Description("Gains +1 weapon DMG for every 2 Might over 10 with all weapons and +10% critical chance.")
-                .IncreasesStat(StatType.WeaponMightModifierDamageMultiplier, 1)
-                .IncreasesStat(StatType.CriticalRatePercentAdjustment, 10)
+                .Description("Staff attacks gain +1 weapon DMG for every 2 Might over 10. All weapons gain +5% critical chance.")
+                .IncreasesStat(StatType.StaffMightModifierDamageMultiplier, 1)
+                .IncreasesStat(StatType.CriticalRatePercentAdjustment, 5)
                 .Price(3)
                 .RequirementSkill(SkillType.Staff, 25);
         }
@@ -99,30 +99,30 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.CrushingMasteryTrait)
-                .Description("Critical hits with any weapon deal +10% damage and restore 2 STM. This can only trigger once every 6 seconds.")
-                .IncreasesStat(StatType.CriticalDamagePercentAdjustment, 10)
+                .Description("Critical hits with any weapon deal +5% damage and restore 2 STM. This can only trigger once every 6 seconds.")
+                .IncreasesStat(StatType.CriticalDamagePercentAdjustment, 5)
                 .IncreasesStat(StatType.CriticalStaminaRestore, 2)
                 .IncreasesStat(StatType.CriticalStaminaRestoreCooldownSeconds, 6)
                 .Price(3)
                 .RequirementSkill(SkillType.Staff, 12)
 
                 .AddPerkLevel()
-                .Description("Bonus damage with all weapons increases to 2x your MGT modifier and critical chance increases by an additional 10%. Critical hits with any weapon still deal +10% damage and restore 2 STM once every 6 seconds.")
-                .IncreasesStat(StatType.CriticalDamagePercentAdjustment, 10)
+                .Description("Staff attacks gain +2 weapon DMG for every 2 Might over 10. Critical hits with any weapon deal +5% damage and restore 2 STM once every 6 seconds.")
+                .IncreasesStat(StatType.CriticalDamagePercentAdjustment, 5)
                 .IncreasesStat(StatType.CriticalStaminaRestore, 2)
                 .IncreasesStat(StatType.CriticalStaminaRestoreCooldownSeconds, 6)
-                .IncreasesStat(StatType.WeaponMightModifierDamageMultiplier, 1)
-                .IncreasesStat(StatType.CriticalRatePercentAdjustment, 10)
+                .IncreasesStat(StatType.StaffMightModifierDamageMultiplier, 2)
+                .IncreasesStat(StatType.CriticalRatePercentAdjustment, 5)
                 .Price(2)
                 .RequirementSkill(SkillType.Staff, 32)
 
                 .AddPerkLevel()
-                .Description("Critical hits with any weapon deal +20% damage and restore 4 STM once every 6 seconds. Bonus damage with all weapons remains 2x your MGT modifier and the additional +10% critical chance remains.")
-                .IncreasesStat(StatType.CriticalDamagePercentAdjustment, 20)
-                .IncreasesStat(StatType.CriticalStaminaRestore, 4)
+                .Description("Staff attacks gain +2 weapon DMG for every 2 Might over 10. Critical hits with any weapon deal +10% damage and restore 3 STM once every 6 seconds.")
+                .IncreasesStat(StatType.CriticalDamagePercentAdjustment, 10)
+                .IncreasesStat(StatType.CriticalStaminaRestore, 3)
                 .IncreasesStat(StatType.CriticalStaminaRestoreCooldownSeconds, 6)
-                .IncreasesStat(StatType.WeaponMightModifierDamageMultiplier, 1)
-                .IncreasesStat(StatType.CriticalRatePercentAdjustment, 10)
+                .IncreasesStat(StatType.StaffMightModifierDamageMultiplier, 2)
+                .IncreasesStat(StatType.CriticalRatePercentAdjustment, 5)
                 .Price(4)
                 .RequirementSkill(SkillType.Staff, 48);
         }
@@ -147,10 +147,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.FlowingDefenseTrait)
-                .Description("After dodging or deflecting an attack, your next Staff ability costs 2 less STM.")
+                .Description("After dodging or deflecting an attack, your next Staff ability within 18 seconds costs 2 less STM.")
                 .IncreasesStat(StatType.AvoidedAttackNextSkillAbilitySkillType, (int)SkillType.Staff)
                 .IncreasesStat(StatType.AvoidedAttackNextSkillAbilityStaminaCostAdjustment, -2)
-                .IncreasesStat(StatType.AvoidedAttackNextSkillAbilityWindowSeconds, 8)
+                .IncreasesStat(StatType.AvoidedAttackNextSkillAbilityWindowSeconds, 18)
                 .Price(2)
                 .RequirementSkill(SkillType.Staff, 32);
         }
@@ -374,27 +374,27 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.StaffParryTrait)
-                .Description("Gain +8 Attack Deflection.")
-                .IncreasesStat(StatType.AttackDeflection, 8)
+                .Description("Gain +4 Attack Deflection.")
+                .IncreasesStat(StatType.AttackDeflection, 4)
                 .Price(2)
                 .RequirementSkill(SkillType.Staff, 8)
 
                 .AddPerkLevel()
-                .Description("Gain +16 Attack Deflection total.")
-                .IncreasesStat(StatType.AttackDeflection, 16)
+                .Description("Gain +8 Attack Deflection total.")
+                .IncreasesStat(StatType.AttackDeflection, 8)
                 .Price(4)
                 .RequirementSkill(SkillType.Staff, 18)
 
                 .AddPerkLevel()
-                .Description("Gain +24 Attack Deflection total. Deflecting attacks restores 2 STM.")
-                .IncreasesStat(StatType.AttackDeflection, 24)
+                .Description("Gain +10 Attack Deflection total. Deflecting attacks restores 2 STM.")
+                .IncreasesStat(StatType.AttackDeflection, 10)
                 .IncreasesStat(StatType.DeflectionStaminaRestore, 2)
                 .Price(4)
                 .RequirementSkill(SkillType.Staff, 28)
 
                 .AddPerkLevel()
-                .Description("Gain +30 Attack Deflection total. Deflecting attacks restores 4 STM.")
-                .IncreasesStat(StatType.AttackDeflection, 30)
+                .Description("Gain +12 Attack Deflection total. Deflecting attacks restores 4 STM.")
+                .IncreasesStat(StatType.AttackDeflection, 12)
                 .IncreasesStat(StatType.DeflectionStaminaRestore, 4)
                 .Price(4)
                 .RequirementSkill(SkillType.Staff, 42);

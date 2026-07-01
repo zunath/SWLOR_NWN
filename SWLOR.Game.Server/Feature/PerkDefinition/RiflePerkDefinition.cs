@@ -139,14 +139,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.DeadCenterTrait)
-                .Description("Rifle critical hits restore 4 STM and cause your next Aimed Shot within 8 seconds to deal +10 DMG. This can only trigger once every 6 seconds.")
+                .Description("Rifle critical hits restore 4 STM and cause your next Aimed Shot within 18 seconds to deal +10 DMG. This can only trigger once every 6 seconds.")
                 .IncreasesStat(StatType.CriticalStaminaRestore, 4)
                 .IncreasesStat(StatType.CriticalStaminaRestoreSkillType, (int)SkillType.Rifle)
                 .IncreasesStat(StatType.CriticalStaminaRestoreCooldownSeconds, 6)
                 .IncreasesStat(StatType.CriticalNextAbilityDamageBonusTriggerSkillType, (int)SkillType.Rifle)
                 .IncreasesStat(StatType.CriticalNextAbilityDamageBonusPerkType, (int)PerkType.AimedShot)
                 .IncreasesStat(StatType.CriticalNextAbilityDamageBonus, 10)
-                .IncreasesStat(StatType.CriticalNextAbilityDamageBonusDurationSeconds, 8)
+                .IncreasesStat(StatType.CriticalNextAbilityDamageBonusDurationSeconds, 18)
                 .IncreasesStat(StatType.CriticalNextAbilityDamageBonusCooldownSeconds, 6)
                 .Price(3)
                 .RequirementSkill(SkillType.Rifle, 38);

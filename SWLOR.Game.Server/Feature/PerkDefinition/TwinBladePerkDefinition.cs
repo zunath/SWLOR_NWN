@@ -83,11 +83,11 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.CenterlineGuardTrait)
-                .Description("Gain +10 Attack Deflection. After deflecting an attack, your next attack within 8 seconds deals +8 DMG.")
-                .IncreasesStat(StatType.AttackDeflection, 10)
+                .Description("Gain +5 Attack Deflection. After deflecting an attack, your next attack within 18 seconds deals +8 DMG.")
+                .IncreasesStat(StatType.AttackDeflection, 5)
                 .IncreasesStat(StatType.DeflectionNextSkillAbilitySkillType, (int)SkillType.TwinBlade)
                 .IncreasesStat(StatType.DeflectionNextSkillAbilityDamageBonus, 8)
-                .IncreasesStat(StatType.DeflectionNextSkillAbilityDamageBonusWindowSeconds, 8)
+                .IncreasesStat(StatType.DeflectionNextSkillAbilityDamageBonusWindowSeconds, 18)
                 .Price(2)
                 .RequirementSkill(SkillType.TwinBlade, 2);
         }
@@ -347,7 +347,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ReversalCutTrait)
-                .Description("After you are hit, your next Twin Blade Duelist ability within 8 seconds deals +40 DMG and inflicts Dazed for 3 seconds.")
+                .Description("After you are hit, your next Twin Blade Duelist ability within 18 seconds deals +40 DMG and inflicts Dazed for 3 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.TwinBlade, 38)
                 .IncreasesStat(StatType.TwinBladeDuelistReversalCut, 1)
@@ -356,7 +356,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .IncreasesStat(StatType.TwinBladeDuelistReversalCutTriggerTertiaryPerkType, (int)PerkType.BindingCross)
                 .IncreasesStat(StatType.TwinBladeDuelistReversalCutDamageBonus, 40)
                 .IncreasesStat(StatType.TwinBladeDuelistReversalCutDazedDurationSeconds, 3)
-                .IncreasesStat(StatType.TwinBladeDuelistReversalCutWindowSeconds, 8);
+                .IncreasesStat(StatType.TwinBladeDuelistReversalCutWindowSeconds, 18);
         }
 
         private void SplitGuardStrike()

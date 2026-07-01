@@ -141,6 +141,40 @@ public class HeavyVibrobladeDefenseTests
     }
 
     [Test]
+    public void HeavyVibrobladeDefenseRecoveryBudget_UsesReducedReleaseValues()
+    {
+        var perks = BuildHeavyVibrobladeDefensePerksWithout2daLookup();
+        var bloodWeapon = perks[PerkType.BloodWeapon];
+        var guardiansReaping = perks[PerkType.GuardiansReaping];
+
+        AssertPerkLevel(
+            bloodWeapon,
+            "Blood Weapon",
+            1,
+            3,
+            45,
+            FeatType.BloodWeaponTrait,
+            "While you have a Heavy Vibroblade Defense Physical Defense or damage-reduction buff, restore HP equal to 1% of combat damage you deal.",
+            StatType.HeavyVibrobladeDefenseDamageDealtHPPercentRestore);
+        AssertStatBonus(bloodWeapon.PerkLevels[1], StatType.HeavyVibrobladeDefenseDamageDealtHPPercentRestore, 1);
+
+        AssertPerkLevel(
+            guardiansReaping,
+            "Guardian's Reaping",
+            1,
+            4,
+            48,
+            FeatType.GuardiansReapingTrait,
+            "Defeating an enemy restores 12% max HP to you and grants +10% Physical Defense to all nearby allies for 20 seconds.",
+            StatType.DefeatedEnemyHPPercentRestore,
+            StatType.DefeatedEnemyNearbyAllyPhysicalDefensePercentAdjustment,
+            StatType.DefeatedEnemyNearbyAllyPhysicalDefenseDurationSeconds);
+        AssertStatBonus(guardiansReaping.PerkLevels[1], StatType.DefeatedEnemyHPPercentRestore, 12);
+        AssertStatBonus(guardiansReaping.PerkLevels[1], StatType.DefeatedEnemyNearbyAllyPhysicalDefensePercentAdjustment, 10);
+        AssertStatBonus(guardiansReaping.PerkLevels[1], StatType.DefeatedEnemyNearbyAllyPhysicalDefenseDurationSeconds, 20);
+    }
+
+    [Test]
     public void LastStand_GrantsTemporaryHitPointsOnLowHPThreshold()
     {
         var perks = BuildHeavyVibrobladeDefensePerksWithout2daLookup();
@@ -229,12 +263,12 @@ public class HeavyVibrobladeDefenseTests
             3,
             22,
             FeatType.UnbreakableWillTrait,
-            "Gain +5 Attack Deflection, increased by +1 per 2 MGT to a maximum of +15. Deflecting an attack restores 4 STM. This can trigger once every 6 seconds.",
+            "Gain +4 Attack Deflection, increased by +1 per 4 MGT to a maximum of +8. Deflecting an attack restores 4 STM. This can trigger once every 6 seconds.",
             StatType.AttackDeflection,
             StatType.DeflectionStaminaRestore,
             StatType.DeflectionStaminaRestoreCooldownSeconds);
 
-        unbreakableWillSource.Should().Contain("Math.Min(15, 5 + Math.Max(0, GetAbilityScore(creature, AbilityType.Might)) / 2)");
+        unbreakableWillSource.Should().Contain("Math.Min(8, 4 + Math.Max(0, GetAbilityScore(creature, AbilityType.Might)) / 4)");
         unbreakableWillSource.Should().Contain(".IncreasesStat(StatType.DeflectionStaminaRestore, 4)");
         unbreakableWillSource.Should().Contain(".IncreasesStat(StatType.DeflectionStaminaRestoreCooldownSeconds, 6)");
         unbreakableWillSource.Should().NotContain("EquipmentPredicates.HasMainHandHeavyVibroblade");

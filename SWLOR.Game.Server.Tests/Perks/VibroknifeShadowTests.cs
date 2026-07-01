@@ -67,13 +67,47 @@ public class VibroknifeShadowTests
     }
 
     [Test]
-    public void BackstabAbilities_PlayBladeSoundOnImpact()
+    public void BackstabAbilities_AreUsableWithoutRearPositionAndRewardRearPosition()
     {
         var backstab = new BackstabAbilityDefinition().BuildAbilities();
+        var perks = BuildVibroknifeShadowPerksWithout2daLookup();
+        var source = File.ReadAllText((FindRepositoryRoot() / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Vibroknife" / "BackstabAbilityDefinition.cs").FullName);
 
         backstab[FeatType.Backstab1].ImpactSound.Should().Be("cb_sw_blade1");
         backstab[FeatType.Backstab2].ImpactSound.Should().Be("cb_sw_blade1");
         backstab[FeatType.Backstab3].ImpactSound.Should().Be("cb_sw_blade1");
+        backstab[FeatType.Backstab1].CustomValidation.Should().BeNull();
+        backstab[FeatType.Backstab2].CustomValidation.Should().BeNull();
+        backstab[FeatType.Backstab3].CustomValidation.Should().BeNull();
+
+        source.Should().Contain("Combat.IsTargetNotFacingAttacker(activator, target)");
+        source.Should().Contain("isBehindTarget && level == 3 ? typeof(KnockdownStatusEffect) : null");
+        source.Should().NotContain("You must be behind your target.");
+
+        AssertPerkLevel(
+            perks[PerkType.Backstab],
+            "Backstab",
+            1,
+            2,
+            10,
+            FeatType.Backstab1,
+            "Deals weapon DMG + 14. From behind your target, deals +20 DMG.");
+        AssertPerkLevel(
+            perks[PerkType.Backstab],
+            "Backstab",
+            2,
+            3,
+            18,
+            FeatType.Backstab2,
+            "Deals weapon DMG + 28. From behind your target, deals +40 DMG.");
+        AssertPerkLevel(
+            perks[PerkType.Backstab],
+            "Backstab",
+            3,
+            4,
+            35,
+            FeatType.Backstab3,
+            "Deals weapon DMG + 42. From behind your target, deals +60 DMG and knocks down for 3 seconds.");
     }
 
     [Test]

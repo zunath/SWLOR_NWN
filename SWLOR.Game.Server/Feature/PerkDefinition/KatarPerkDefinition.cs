@@ -260,11 +260,11 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.RedirectingGuardTrait)
-                .Description("When you guard an attack, your next katar attack within 10 seconds gains +10% critical chance and deals +10 DMG.")
+                .Description("When you guard an attack, your next katar attack within 18 seconds gains +10% critical chance and deals +10 DMG.")
                 .IncreasesStat(StatType.GuardedHitNextSkillAbilitySkillType, (int)SkillType.Katar)
                 .IncreasesStat(StatType.GuardedHitNextSkillAbilityCriticalRatePercentAdjustment, 10)
                 .IncreasesStat(StatType.GuardedHitNextSkillAbilityDamageBonus, 10)
-                .IncreasesStat(StatType.GuardedHitNextSkillAbilityWindowSeconds, 10)
+                .IncreasesStat(StatType.GuardedHitNextSkillAbilityWindowSeconds, 18)
                 .Price(3)
                 .RequirementSkill(SkillType.Katar, 20);
         }
@@ -276,11 +276,11 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.RetaliatoryFlowTrait)
-                .Description("After you guard a hit, your next Guard Counter within 8 seconds costs 2 less STM and deals +8 DMG.")
+                .Description("After you guard a hit, your next Guard Counter within 18 seconds costs 2 less STM and deals +8 DMG.")
                 .IncreasesStat(StatType.GuardedHitNextMatchingAbilityPerkType, (int)PerkType.GuardCounter)
                 .IncreasesStat(StatType.GuardedHitNextMatchingAbilityDamageBonus, 8)
                 .IncreasesStat(StatType.GuardedHitNextMatchingAbilityStaminaCostAdjustment, -2)
-                .IncreasesStat(StatType.GuardedHitNextMatchingAbilityWindowSeconds, 8)
+                .IncreasesStat(StatType.GuardedHitNextMatchingAbilityWindowSeconds, 18)
                 .Price(2)
                 .RequirementSkill(SkillType.Katar, 32);
         }

@@ -54,11 +54,12 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ArcStrikeTrait)
-                .Description("Lightsaber Offense area abilities deal +20 DMG to nearby secondary targets.")
+                .Description("Lightsaber Offense area abilities deal +20 DMG to nearby secondary targets. Single-target Lightsaber Offense abilities deal +10 DMG to debuffed targets.")
                 .Price(3)
                 .RequirementSkill(SkillType.Lightsaber, 38)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
-                .IncreasesStat(StatType.LightsaberOffenseAreaDamageBonus, 20);
+                .IncreasesStat(StatType.LightsaberOffenseAreaDamageBonus, 20)
+                .IncreasesStat(StatType.LightsaberOffenseDebuffedTargetDamageBonus, 10);
         }
 
 
@@ -193,22 +194,22 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.DeflectionTrainingTrait)
-                .Description("Grants +8 Attack Deflection.")
-                .IncreasesStat(StatType.AttackDeflection, 8)
+                .Description("Grants +6 Attack Deflection.")
+                .IncreasesStat(StatType.AttackDeflection, 6)
                 .Price(2)
                 .RequirementSkill(SkillType.Lightsaber, 2)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
 
                 .AddPerkLevel()
-                .Description("Grants +14 Attack Deflection total.")
-                .IncreasesStat(StatType.AttackDeflection, 14)
+                .Description("Grants +10 Attack Deflection total.")
+                .IncreasesStat(StatType.AttackDeflection, 10)
                 .Price(3)
                 .RequirementSkill(SkillType.Lightsaber, 15)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
 
                 .AddPerkLevel()
-                .Description("Grants +20 Attack Deflection total.")
-                .IncreasesStat(StatType.AttackDeflection, 20)
+                .Description("Grants +14 Attack Deflection total.")
+                .IncreasesStat(StatType.AttackDeflection, 14)
                 .Price(4)
                 .RequirementSkill(SkillType.Lightsaber, 32)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
@@ -381,11 +382,11 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.OverwhelmingStrikeTrait)
-                .Description("Lightsaber Offense area abilities inflict Sunder on enemies hit, reducing Defense and Force Defense by 15% for 30 seconds.")
+                .Description("Hostile Lightsaber Offense abilities inflict Sunder on enemies hit, reducing Defense and Force Defense by 15% for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Lightsaber, 25)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
-                .IncreasesStat(StatType.LightsaberOffenseAreaSunderDurationSeconds, 30);
+                .IncreasesStat(StatType.LightsaberOffenseSunderDurationSeconds, 30);
         }
 
 
@@ -410,7 +411,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PurifyTrait)
-                .Description("Lightsaber Offense area abilities remove one debuff from you and transfer it to a nearby enemy. This can trigger once every 20 seconds.")
+                .Description("Hostile Lightsaber Offense abilities remove one debuff from you and transfer it to a nearby enemy. This can trigger once every 20 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Lightsaber, 30)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -448,11 +449,11 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.RippleSlashTrait)
-                .Description("Lightsaber Offense area abilities also inflict Disoriented on nearby enemies, reducing Accuracy and Evasion by 15% for 20 seconds.")
+                .Description("Hostile Lightsaber Offense abilities also inflict Disoriented on enemies hit, reducing Accuracy and Evasion by 15% for 20 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Lightsaber, 45)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
-                .IncreasesStat(StatType.LightsaberOffenseAreaDisorientedDurationSeconds, 20);
+                .IncreasesStat(StatType.LightsaberOffenseDisorientedDurationSeconds, 20);
         }
 
 

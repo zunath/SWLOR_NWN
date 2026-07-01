@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Game.Server.Service.SkillService;
 
@@ -21,9 +20,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                     .Level(1)
                     .HasRecastDelay(RecastGroup.Backstab, 60f)
                     .UsesAnimation(Animation.Backstab)
-                    .PlaysSoundOnImpact("cb_sw_blade1")
-                    .HasCustomValidation(ValidateBehindTarget),
-                SkillType.Vibroknife,
+                    .PlaysSoundOnImpact("cb_sw_blade1"),
+                14,
                 20,
                 3);
             ConfigureCastedTarget(
@@ -33,9 +31,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                     .Level(2)
                     .HasRecastDelay(RecastGroup.Backstab, 60f)
                     .UsesAnimation(Animation.Backstab)
-                    .PlaysSoundOnImpact("cb_sw_blade1")
-                    .HasCustomValidation(ValidateBehindTarget),
-                SkillType.Vibroknife,
+                    .PlaysSoundOnImpact("cb_sw_blade1"),
+                28,
                 40,
                 5);
             ConfigureCastedTarget(
@@ -45,22 +42,45 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                     .Level(3)
                     .HasRecastDelay(RecastGroup.Backstab, 60f)
                     .UsesAnimation(Animation.Backstab)
-                    .PlaysSoundOnImpact("cb_sw_blade1")
-                    .HasCustomValidation(ValidateBehindTarget),
-                SkillType.Vibroknife,
+                    .PlaysSoundOnImpact("cb_sw_blade1"),
+                42,
                 60,
-                8,
-                3,
-                typeof(KnockdownStatusEffect));
+                8);
 
             return builder.Build();
         }
 
-        private static string ValidateBehindTarget(uint activator, uint target, int level, Location targetLocation)
+        private static void ConfigureCastedTarget(
+            AbilityBuilder ability,
+            int baseDamage,
+            int rearDamage,
+            int stamina)
         {
-            return Combat.IsTargetNotFacingAttacker(activator, target)
-                ? string.Empty
-                : "You must be behind your target.";
+            ability.HasActivationDelay(0f)
+                .SkillType(SkillType.Vibroknife)
+                .IsSingleTargetAbility()
+                .RequiresTarget()
+                .HasImpactAction((activator, target, level, targetLocation) =>
+                {
+                    var isBehindTarget = Combat.IsTargetNotFacingAttacker(activator, target);
+                    var damage = isBehindTarget
+                        ? rearDamage
+                        : baseDamage;
+
+                    Ability.ApplyCombatImpact(
+                        activator,
+                        target,
+                        targetLocation,
+                        SkillType.Vibroknife,
+                        damage,
+                        isBehindTarget && level == 3 ? 3 : 0,
+                        isBehindTarget && level == 3 ? typeof(KnockdownStatusEffect) : null,
+                        false);
+                })
+                .IsCastedAbility()
+                .IsHostileAbility()
+                .BreaksStealth()
+                .RequirementStamina(stamina);
         }
     }
 }

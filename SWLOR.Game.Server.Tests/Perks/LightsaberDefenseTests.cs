@@ -48,9 +48,9 @@ public class LightsaberDefenseTests
         var root = FindSourceRepositoryRoot();
         var source = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "PerkDefinition" / "LightsaberPerkDefinition.cs").FullName);
 
-        source.Should().Contain("StatType.AttackDeflection, 8");
+        source.Should().Contain("StatType.AttackDeflection, 6");
+        source.Should().Contain("StatType.AttackDeflection, 10");
         source.Should().Contain("StatType.AttackDeflection, 14");
-        source.Should().Contain("StatType.AttackDeflection, 20");
         source.Should().Contain("StatType.DeflectionNextAutoAttackCriticalRateSkillType, (int)SkillType.Lightsaber");
         source.Should().Contain("StatType.DeflectionNextAutoAttackCriticalRatePercentAdjustment, 20");
         source.Should().Contain("StatType.DeflectionNextAutoAttackCriticalRateWindowSeconds, 15");

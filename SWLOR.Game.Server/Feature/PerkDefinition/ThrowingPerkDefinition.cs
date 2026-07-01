@@ -343,11 +343,11 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ReturningGripTrait)
-                .Description("After using a Throwing combat ability, your next auto-attack within 8 seconds deals +8 DMG.")
+                .Description("After using a Throwing combat ability, your next auto-attack within 18 seconds deals +8 DMG.")
                 .IncreasesStat(StatType.AbilityUsedNextSkillAutoAttackDamageBonusTriggerSkillType, (int)SkillType.Throwing)
                 .IncreasesStat(StatType.AbilityUsedNextSkillAutoAttackDamageBonusSkillType, (int)SkillType.Throwing)
                 .IncreasesStat(StatType.AbilityUsedNextSkillAutoAttackDamageBonus, 8)
-                .IncreasesStat(StatType.AbilityUsedNextSkillAutoAttackDamageWindowSeconds, 8)
+                .IncreasesStat(StatType.AbilityUsedNextSkillAutoAttackDamageWindowSeconds, 18)
                 .Price(3)
                 .RequirementSkill(SkillType.Throwing, 12);
         }

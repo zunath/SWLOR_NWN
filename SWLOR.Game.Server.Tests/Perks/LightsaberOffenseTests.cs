@@ -78,6 +78,65 @@ public class LightsaberOffenseTests
     }
 
     [Test]
+    public void LightsaberOffenseRiders_WorkBeforeCapstone()
+    {
+        var perks = BuildLightsaberOffensePerksWithout2daLookup();
+
+        AssertPerkLevel(
+            perks[PerkType.ArcStrike],
+            "Arc Strike",
+            1,
+            3,
+            38,
+            FeatType.ArcStrikeTrait,
+            "Lightsaber Offense area abilities deal +20 DMG to nearby secondary targets. Single-target Lightsaber Offense abilities deal +10 DMG to debuffed targets.",
+            StatType.LightsaberOffenseAreaDamageBonus,
+            StatType.LightsaberOffenseDebuffedTargetDamageBonus);
+        AssertStatBonus(perks[PerkType.ArcStrike].PerkLevels[1], StatType.LightsaberOffenseAreaDamageBonus, 20);
+        AssertStatBonus(perks[PerkType.ArcStrike].PerkLevels[1], StatType.LightsaberOffenseDebuffedTargetDamageBonus, 10);
+
+        AssertPerkLevel(
+            perks[PerkType.OverwhelmingStrike],
+            "Overwhelming Strike",
+            1,
+            3,
+            25,
+            FeatType.OverwhelmingStrikeTrait,
+            "Hostile Lightsaber Offense abilities inflict Sunder on enemies hit, reducing Defense and Force Defense by 15% for 30 seconds.",
+            StatType.LightsaberOffenseSunderDurationSeconds);
+        AssertStatBonus(perks[PerkType.OverwhelmingStrike].PerkLevels[1], StatType.LightsaberOffenseSunderDurationSeconds, 30);
+
+        AssertPerkLevel(
+            perks[PerkType.Purify],
+            "Purify",
+            1,
+            2,
+            30,
+            FeatType.PurifyTrait,
+            "Hostile Lightsaber Offense abilities remove one debuff from you and transfer it to a nearby enemy. This can trigger once every 20 seconds.",
+            StatType.LightsaberOffensePurify,
+            StatType.LightsaberOffensePurifyCooldownSeconds);
+
+        AssertPerkLevel(
+            perks[PerkType.RippleSlash],
+            "Ripple Slash",
+            1,
+            4,
+            45,
+            FeatType.RippleSlashTrait,
+            "Hostile Lightsaber Offense abilities also inflict Disoriented on enemies hit, reducing Accuracy and Evasion by 15% for 20 seconds.",
+            StatType.LightsaberOffenseDisorientedDurationSeconds);
+        AssertStatBonus(perks[PerkType.RippleSlash].PerkLevels[1], StatType.LightsaberOffenseDisorientedDurationSeconds, 20);
+
+        var combat = File.ReadAllText((FindRepositoryRoot() / "SWLOR.Game.Server" / "Service" / "Combat.cs").FullName);
+        combat.Should().Contain("StatType.LightsaberOffenseSunderDurationSeconds");
+        combat.Should().Contain("StatType.LightsaberOffenseDisorientedDurationSeconds");
+        combat.Should().Contain("ApplyLightsaberOffenseSunder(activator, target, sunderDuration);");
+        combat.Should().Contain("HasSunderPenaltyAtLeast(target, DefensePenaltyPercent)");
+        combat.Should().Contain("StatusEffect.HasStatusEffectCategory(target, StatusEffectCategory.Debuff)");
+    }
+
+    [Test]
     public void LightsaberOffenseFeatAndAbilityIcons_AreUniqueAndPresent()
     {
         var root = FindRepositoryRoot();
@@ -222,6 +281,15 @@ public class LightsaberOffenseTests
 
         requirement.Type.Should().Be(skill);
         requirement.RequiredRank.Should().Be(rank);
+    }
+
+    private static void AssertStatBonus(PerkLevel level, StatType statType, int value)
+    {
+        level.StatBonuses
+            .Single(x => x.Stat == statType)
+            .Calculate(0)
+            .Should()
+            .Be(value);
     }
 
     private static void AssertCharacterRequirement(PerkLevel level, CharacterType characterType)

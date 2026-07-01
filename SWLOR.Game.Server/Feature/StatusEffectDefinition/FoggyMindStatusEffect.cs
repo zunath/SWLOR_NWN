@@ -7,10 +7,12 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
     public sealed class FoggyMindStatusEffect : StatusEffectBase
     {
+        private const int DefaultActivationDelaySeconds = 1;
+
         private readonly int _activationDelaySeconds;
 
         public FoggyMindStatusEffect()
-            : this(0)
+            : this(DefaultActivationDelaySeconds)
         {
         }
 

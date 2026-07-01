@@ -60,11 +60,11 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.DeadeyeReloadTrait)
-                .Description("After using a pistol combat ability, your next auto-attack within 6 seconds deals +10 DMG.")
+                .Description("After using a pistol combat ability, your next auto-attack within 18 seconds deals +10 DMG.")
                 .IncreasesStat(StatType.AbilityUsedNextSkillAutoAttackDamageBonusTriggerSkillType, (int)SkillType.Pistol)
                 .IncreasesStat(StatType.AbilityUsedNextSkillAutoAttackDamageBonusSkillType, (int)SkillType.Pistol)
                 .IncreasesStat(StatType.AbilityUsedNextSkillAutoAttackDamageBonus, 10)
-                .IncreasesStat(StatType.AbilityUsedNextSkillAutoAttackDamageWindowSeconds, 6)
+                .IncreasesStat(StatType.AbilityUsedNextSkillAutoAttackDamageWindowSeconds, 18)
                 .Price(2)
                 .RequirementSkill(SkillType.Pistol, 22);
         }

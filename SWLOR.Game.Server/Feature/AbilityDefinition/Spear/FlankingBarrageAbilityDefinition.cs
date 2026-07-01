@@ -30,7 +30,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
                 .UsesAnimation(Animation.DoubleThrust)
                 .HasRecastDelay(RecastGroup.FlankingBarrage, 120f)
                 .RequiresTarget()
-                .HasCustomValidation(ValidateBesideTarget)
                 .HasImpactAction(FlankingBarrage1ImpactAction)
                 .SkillType(SkillType.Spear)
                 .IsCastedAbility()
@@ -42,14 +41,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
 
         private static void FlankingBarrage1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Spear, 20, 8, typeof(FlankingBarrageStatusEffect), false);
-        }
-
-        private static string ValidateBesideTarget(uint activator, uint target, int level, Location targetLocation)
-        {
-            return Combat.IsAttackerBesideTarget(activator, target)
-                ? string.Empty
-                : "You must be beside your target.";
+            var isBesideTarget = Combat.IsAttackerBesideTarget(activator, target);
+            Ability.ApplyCombatImpact(
+                activator,
+                target,
+                targetLocation,
+                SkillType.Spear,
+                isBesideTarget ? 20 : 16,
+                isBesideTarget ? 8 : 0,
+                isBesideTarget ? typeof(FlankingBarrageStatusEffect) : null,
+                false);
         }
     }
 }

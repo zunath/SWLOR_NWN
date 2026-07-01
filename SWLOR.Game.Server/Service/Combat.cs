@@ -827,6 +827,8 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             ApplySideAttackDamageEffects(attacker, defender, skillType, damage);
+            ApplyDamageDealtStaminaRestore(attacker, skillType);
+            ApplyDamageDealtAttackDelayReduction(attacker, skillType);
             ApplyPredatorsMarkEffects(attacker, defender, skillType);
             ApplyDamageDealtForceErosionEffect(attacker, defender, deliveryType);
             ApplyBleedingTargetStaminaRestore(attacker, defender);
@@ -974,10 +976,11 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             var fpLossPerTick = Stat.GetStatAdjustment(attacker, StatType.DamageDealtForceErosionFPLossPerTick);
+            var staminaLossPerTick = Stat.GetStatAdjustment(attacker, StatType.DamageDealtForceErosionStaminaLossPerTick);
             StatusEffect.ApplyStatusEffect(
                 attacker,
                 defender,
-                new ForceErosionStatusEffect(fpLossPerTick),
+                new ForceErosionStatusEffect(fpLossPerTick, staminaLossPerTick),
                 duration,
                 CombatDamageType.Physical);
         }
@@ -1003,8 +1006,49 @@ namespace SWLOR.Game.Server.Service
                     StatType.AttackDelayReductionPercent,
                     delayReduction,
                     duration,
-                    StatType.SideAttackDelayReductionPercent);
+                StatType.SideAttackDelayReductionPercent);
             }
+        }
+
+        private static void ApplyDamageDealtStaminaRestore(uint attacker, SkillType skillType)
+        {
+            var requiredSkillType = GetSkillTypeFromStat(Stat.GetStatAdjustment(
+                attacker,
+                StatType.DamageDealtStaminaRestoreSkillType));
+            var staminaRestore = Stat.GetStatAdjustment(attacker, StatType.DamageDealtStaminaRestore);
+            var cooldown = Stat.GetStatAdjustment(attacker, StatType.DamageDealtStaminaRestoreCooldownSeconds);
+
+            if (staminaRestore <= 0 ||
+                !SkillTypeMatches(skillType, requiredSkillType) ||
+                !TryUseStatTrigger(attacker, StatType.DamageDealtStaminaRestore, cooldown))
+            {
+                return;
+            }
+
+            Stat.RestoreStamina(attacker, staminaRestore);
+        }
+
+        private static void ApplyDamageDealtAttackDelayReduction(uint attacker, SkillType skillType)
+        {
+            var requiredSkillType = GetSkillTypeFromStat(Stat.GetStatAdjustment(
+                attacker,
+                StatType.DamageDealtAttackDelayReductionSkillType));
+            var delayReduction = Stat.GetStatAdjustment(attacker, StatType.DamageDealtAttackDelayReductionPercent);
+            var duration = Stat.GetStatAdjustment(attacker, StatType.DamageDealtAttackDelayReductionDurationSeconds);
+
+            if (delayReduction == 0 ||
+                duration <= 0 ||
+                !SkillTypeMatches(skillType, requiredSkillType))
+            {
+                return;
+            }
+
+            TemporaryStatModifier.Replace(
+                attacker,
+                StatType.AttackDelayReductionPercent,
+                delayReduction,
+                duration,
+                StatType.DamageDealtAttackDelayReductionPercent);
         }
 
         public static int ApplySideAttackDamageModifier(uint attacker, uint defender, SkillType skillType, int damage)
@@ -1111,6 +1155,13 @@ namespace SWLOR.Game.Server.Service
             {
                 var fpLoss = Math.Max(1, (int)Math.Ceiling(damage * (targetFPLossPercent / 100f)));
                 Stat.ReduceFP(defender, fpLoss);
+            }
+
+            var targetStaminaLossPercent = Stat.GetStatAdjustment(attacker, StatType.CriticalTargetStaminaLossPercentOfDamage);
+            if (targetStaminaLossPercent > 0)
+            {
+                var staminaLoss = Math.Max(1, (int)Math.Ceiling(damage * (targetStaminaLossPercent / 100f)));
+                Stat.ReduceStamina(defender, staminaLoss);
             }
 
             var hpRestorePercent = Stat.GetStatAdjustment(attacker, StatType.CriticalHPPercentOfDamageRestore);
@@ -1490,7 +1541,7 @@ namespace SWLOR.Game.Server.Service
             if (marker <= 0)
                 return;
 
-            StatusEffect.ApplyStatusEffect(creature, creature, typeof(SoulAscensionStatusEffect), 20f);
+            StatusEffect.ApplyStatusEffect(creature, creature, typeof(SoulAscensionStatusEffect), 15f);
         }
 
         private static void ApplyRecentDamagerDefeatedEnemyEffects(uint defeated)
@@ -3088,19 +3139,16 @@ namespace SWLOR.Game.Server.Service
             if (!ability.IsHostileAbility)
                 return;
 
-            if (ability.IsAreaAbility)
+            var sunderDuration = Stat.GetStatAdjustment(activator, StatType.LightsaberOffenseSunderDurationSeconds);
+            if (sunderDuration > 0)
             {
-                var sunderDuration = Stat.GetStatAdjustment(activator, StatType.LightsaberOffenseAreaSunderDurationSeconds);
-                if (sunderDuration > 0)
-                {
-                    StatusEffect.ApplyStatusEffect(activator, target, typeof(SunderStatusEffect), sunderDuration, CombatDamageType.Physical);
-                }
+                ApplyLightsaberOffenseSunder(activator, target, sunderDuration);
+            }
 
-                var disorientedDuration = Stat.GetStatAdjustment(activator, StatType.LightsaberOffenseAreaDisorientedDurationSeconds);
-                if (disorientedDuration > 0)
-                {
-                    StatusEffect.ApplyStatusEffect(activator, target, typeof(DisorientedStatusEffect), disorientedDuration, ResistanceType.Mind);
-                }
+            var disorientedDuration = Stat.GetStatAdjustment(activator, StatType.LightsaberOffenseDisorientedDurationSeconds);
+            if (disorientedDuration > 0)
+            {
+                StatusEffect.ApplyStatusEffect(activator, target, typeof(DisorientedStatusEffect), disorientedDuration, ResistanceType.Mind);
             }
 
             if (ability.IsSingleTargetAbility)
@@ -3113,6 +3161,31 @@ namespace SWLOR.Game.Server.Service
             }
 
             ApplyLightsaberOffensePurify(activator, target);
+        }
+
+        private static void ApplyLightsaberOffenseSunder(uint activator, uint target, int duration)
+        {
+            const int DefensePenaltyPercent = 15;
+
+            if (HasSunderPenaltyAtLeast(target, DefensePenaltyPercent))
+                return;
+
+            StatusEffect.ApplyStatusEffect(
+                activator,
+                target,
+                new SunderStatusEffect(DefensePenaltyPercent),
+                duration,
+                CombatDamageType.Physical);
+        }
+
+        private static bool HasSunderPenaltyAtLeast(uint target, int defensePenaltyPercent)
+        {
+            return StatusEffect.GetCreatureStatusEffects(target)
+                .GetAllEffects()
+                .OfType<SunderStatusEffect>()
+                .Select(effect => Math.Abs(effect.StatGroup.Stats.GetValueOrDefault(StatType.PhysicalDefensePercentAdjustment)))
+                .DefaultIfEmpty(0)
+                .Max() >= defensePenaltyPercent;
         }
 
         private static void ApplyLightsaberOffensePurify(uint activator, uint target)

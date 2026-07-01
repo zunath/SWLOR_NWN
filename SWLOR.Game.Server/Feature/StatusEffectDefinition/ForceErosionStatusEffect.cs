@@ -9,6 +9,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class ForceErosionStatusEffect : StatusEffectBase
     {
         private readonly int _fpLossPerTick;
+        private readonly int _staminaLossPerTick;
 
         public override string Name => "Force Erosion";
         public override EffectIconType Icon => EffectIconType.ForceErosionStatusEffect;
@@ -28,12 +29,23 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             _fpLossPerTick = fpLossPerTick;
         }
 
+        public ForceErosionStatusEffect(int fpLossPerTick, int staminaLossPerTick)
+            : this(fpLossPerTick)
+        {
+            _staminaLossPerTick = staminaLossPerTick;
+        }
+
         protected override void Tick(uint creature)
         {
-            if (_fpLossPerTick <= 0)
-                return;
+            if (_fpLossPerTick > 0)
+            {
+                Stat.ReduceFP(creature, _fpLossPerTick);
+            }
 
-            Stat.ReduceFP(creature, _fpLossPerTick);
+            if (_staminaLossPerTick > 0)
+            {
+                Stat.ReduceStamina(creature, _staminaLossPerTick);
+            }
         }
     }
 }

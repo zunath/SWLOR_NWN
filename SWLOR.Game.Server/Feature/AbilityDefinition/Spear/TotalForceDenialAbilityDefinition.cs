@@ -44,7 +44,19 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
 
         private static void TotalForceDenial1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.Spear, 28, 12, typeof(ForceDisruptionStatusEffect), CombatImpactAreaShape.Cone, 0.25f, 5f, 5f);
+            Ability.ApplyTelegraphedCombatImpact(
+                activator,
+                target,
+                targetLocation,
+                SkillType.Spear,
+                28,
+                12,
+                typeof(ForceDisruptionStatusEffect),
+                CombatImpactAreaShape.Cone,
+                0.25f,
+                5f,
+                5f,
+                additionalStatusEffects: new[] { typeof(FoggyMindStatusEffect) });
         }
     }
 }

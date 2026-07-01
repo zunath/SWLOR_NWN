@@ -999,7 +999,6 @@ namespace SWLOR.Game.Server.Service
             VisualEffect areaVisualEffect = VisualEffect.None,
             Func<uint, int> damagePercentAdjustment = null,
             Func<uint, int> baseDamageAdjustment = null,
-            IEnumerable<Func<IStatusEffect>> additionalStatusEffectFactories = null,
             Animation impactAnimation = Animation.Invalid,
             int enmityBonus = 0,
             Action<uint> afterSuccessfulHit = null,
@@ -1049,7 +1048,6 @@ namespace SWLOR.Game.Server.Service
                     targetVisualEffect,
                     damagePercentAdjustment,
                     baseDamageAdjustment,
-                    additionalStatusEffectFactories: additionalStatusEffectFactories,
                     enmityBonus: enmityBonus,
                     afterSuccessfulHit: afterSuccessfulHit,
                     hitChancePercentAdjustment: hitChancePercentAdjustment,
@@ -1077,7 +1075,6 @@ namespace SWLOR.Game.Server.Service
                     targetVisualEffect,
                     damagePercentAdjustment,
                     baseDamageAdjustment,
-                    additionalStatusEffectFactories: additionalStatusEffectFactories,
                     enmityBonus: enmityBonus,
                     afterSuccessfulHit: afterSuccessfulHit,
                     hitChancePercentAdjustment: hitChancePercentAdjustment,
@@ -1122,7 +1119,6 @@ namespace SWLOR.Game.Server.Service
             Func<uint, int> baseDamageAdjustment = null,
             Action<AbilityImpactSummary> afterImpactAction = null,
             int maxTargets = 0,
-            IEnumerable<Func<IStatusEffect>> additionalStatusEffectFactories = null,
             Animation impactAnimation = Animation.Invalid,
             int enmityBonus = 0,
             Action<uint> beforeImpact = null,
@@ -1164,7 +1160,6 @@ namespace SWLOR.Game.Server.Service
                     damagePercentAdjustment,
                     baseDamageAdjustment,
                     maxTargets,
-                    additionalStatusEffectFactories,
                     enmityBonus,
                     beforeImpact,
                     afterSuccessfulHit,
@@ -1213,7 +1208,6 @@ namespace SWLOR.Game.Server.Service
                 baseDamageAdjustment,
                 afterImpactAction,
                 maxTargets,
-                additionalStatusEffectFactories,
                 enmityBonus,
                 beforeImpact,
                 afterSuccessfulHit,
@@ -1290,7 +1284,6 @@ namespace SWLOR.Game.Server.Service
             Func<uint, int> damagePercentAdjustment,
             Func<uint, int> baseDamageAdjustment,
             int maxTargets,
-            IEnumerable<Func<IStatusEffect>> additionalStatusEffectFactories,
             int enmityBonus,
             Action<uint> beforeImpact,
             Action<uint> afterSuccessfulHit,
@@ -1342,7 +1335,6 @@ namespace SWLOR.Game.Server.Service
                 damagePercentAdjustment,
                 baseDamageAdjustment,
                 maxTargets,
-                additionalStatusEffectFactories,
                 enmityBonus,
                 beforeImpact,
                 afterSuccessfulHit,
@@ -1378,7 +1370,6 @@ namespace SWLOR.Game.Server.Service
             Func<uint, int> baseDamageAdjustment,
             Action<AbilityImpactSummary> afterImpactAction,
             int maxTargets,
-            IEnumerable<Func<IStatusEffect>> additionalStatusEffectFactories,
             int enmityBonus,
             Action<uint> beforeImpact,
             Action<uint> afterSuccessfulHit,
@@ -1457,7 +1448,6 @@ namespace SWLOR.Game.Server.Service
                     damagePercentAdjustment,
                     baseDamageAdjustment,
                     maxTargets,
-                    additionalStatusEffectFactories,
                     enmityBonus,
                     beforeImpact,
                     afterSuccessfulHit,
@@ -1495,7 +1485,6 @@ namespace SWLOR.Game.Server.Service
             Func<uint, int> damagePercentAdjustment = null,
             Func<uint, int> baseDamageAdjustment = null,
             int maxTargets = 0,
-            IEnumerable<Func<IStatusEffect>> additionalStatusEffectFactories = null,
             int enmityBonus = 0,
             Action<uint> beforeImpact = null,
             Action<uint> afterSuccessfulHit = null,
@@ -1537,7 +1526,6 @@ namespace SWLOR.Game.Server.Service
                     targetVisualEffect,
                     damagePercentAdjustment,
                     baseDamageAdjustment,
-                    additionalStatusEffectFactories,
                     enmityBonus,
                     afterSuccessfulHit,
                     hitChancePercentAdjustment,
@@ -1777,7 +1765,6 @@ namespace SWLOR.Game.Server.Service
             Func<IStatusEffect> statusEffectFactory = null,
             ResistanceType statusResistanceType = ResistanceType.Invalid,
             VisualEffect targetVisualEffect = VisualEffect.None,
-            IEnumerable<Func<IStatusEffect>> additionalStatusEffectFactories = null,
             int enmityBonus = 0,
             Action<uint> afterSuccessfulHit = null,
             bool awardsCombatPoints = true,
@@ -1820,7 +1807,6 @@ namespace SWLOR.Game.Server.Service
                 duration,
                 additionalStatusEffects,
                 statusEffectFactory,
-                additionalStatusEffectFactories,
                 statusResistanceType,
                 damageType);
             if (statusApplied)
@@ -1865,7 +1851,6 @@ namespace SWLOR.Game.Server.Service
             VisualEffect targetVisualEffect,
             Func<uint, int> damagePercentAdjustment = null,
             Func<uint, int> baseDamageAdjustment = null,
-            IEnumerable<Func<IStatusEffect>> additionalStatusEffectFactories = null,
             int enmityBonus = 0,
             Action<uint> afterSuccessfulHit = null,
             int hitChancePercentAdjustment = 0,
@@ -1924,7 +1909,6 @@ namespace SWLOR.Game.Server.Service
                 statusEffectFactory,
                 statusResistanceType,
                 targetVisualEffect,
-                additionalStatusEffectFactories,
                 enmityBonus,
                 afterSuccessfulHit,
                 awardsCombatPoints,
@@ -2433,13 +2417,11 @@ namespace SWLOR.Game.Server.Service
             int duration,
             IEnumerable<Type> additionalStatusEffects,
             Func<IStatusEffect> statusEffectFactory,
-            IEnumerable<Func<IStatusEffect>> additionalStatusEffectFactories,
             ResistanceType statusResistanceType,
             CombatDamageType sourceDamageType)
         {
             var hasAdditionalStatusEffects = additionalStatusEffects?.Any(x => x != null) ?? false;
-            var hasAdditionalStatusEffectFactories = additionalStatusEffectFactories?.Any(x => x != null) ?? false;
-            if (duration <= 0 || (statusEffect == null && statusEffectFactory == null && !hasAdditionalStatusEffects && !hasAdditionalStatusEffectFactories))
+            if (duration <= 0 || (statusEffect == null && statusEffectFactory == null && !hasAdditionalStatusEffects))
                 return false;
 
             duration = ApplyAbilityStatusDurationAdjustment(activator, duration);
@@ -2455,14 +2437,6 @@ namespace SWLOR.Game.Server.Service
                 foreach (var additionalStatusEffect in additionalStatusEffects.Where(x => x != null && x != statusEffect).Distinct())
                 {
                     statusApplied |= ApplyCombatImpactTrackedStatusEffect(activator, target, additionalStatusEffect, duration, statusResistanceType, sourceDamageType);
-                }
-            }
-
-            if (additionalStatusEffectFactories != null)
-            {
-                foreach (var additionalStatusEffectFactory in additionalStatusEffectFactories.Where(x => x != null))
-                {
-                    statusApplied |= ApplyCombatImpactTrackedStatusEffect(activator, target, additionalStatusEffectFactory, duration, statusResistanceType, sourceDamageType);
                 }
             }
 

@@ -1,0 +1,357 @@
+# Combat Upgrade Release Balance Plan
+
+Last reviewed: 2026-07-01
+
+## Purpose
+
+This plan formalizes the pre-release balance and design review for the combat upgrade after player feedback exposed several live-play risks: cross-tree passive stacking, permanent Attack Deflection approaching cap, positional dependency, short-duration buff feel, and weapon trees with unclear or overly narrow playstyle identity.
+
+The goal is not to reduce build variety. SWLOR should continue to support mix-and-match combat builds across weapon lines and support systems. Weapon-locked perks are an absolute last resort. The preferred solution is to set design budgets, audit legal cross-tree builds, and tune values or triggers so combinations remain healthy without hardcoding individual combo exceptions.
+
+## Current Implementation Status
+
+The current blocker pass is implemented in code, Bible, TLK, and regression tests. The completed fixes cover permanent Attack Deflection budget, Staff Crusher cross-tree payload, damage-plus-sustain loops, positional baseline viability, Spear Disabler non-Force value, Lightsaber Offense rider cadence, and short weapon setup payoff windows.
+
+The remaining release gate is validation, not unimplemented design: run the curated archetype playtests, inspect full-enumeration outliers, and confirm real enemy profiles after the fix pass.
+
+## Core Principles
+
+- Preserve cross-tree build freedom. Perks should be broadly mixable unless a specific interaction remains broken after softer fixes.
+- Balance by design first. Tune Bible values, trigger conditions, uptime, cooldowns, and magnitude before adding new code enforcement.
+- Avoid combo-specific hardcoding. Do not add special-case logic such as "if Crusher plus Soul Devourer plus Spear, reduce damage."
+- Use shared combat and stat concepts. When code support is needed, prefer metadata-driven or shared-stat behavior over perk-specific branches.
+- Treat curated archetypes as the release gate. Full build enumeration is required for comparison and outlier discovery, but curated builds are the main release decision surface.
+- Judge compound profiles, not isolated screenshots. High damage alone is less dangerous than high damage plus sustain, defense, control, or support.
+- Keep positional bonuses as bonus payoff, not baseline viability.
+- Keep permanent Attack Deflection meaningfully below cap. If Attack Deflection can approach or reach cap, it should be temporary, active, capstone-limited, or otherwise constrained.
+
+## Deliverables
+
+### Balance Audit Matrix
+
+The balance audit covers all combat systems:
+
+- Weapons
+- Force
+- Devices
+- Leadership
+- First Aid
+- Beast Mastery
+
+Force, Devices, Leadership, First Aid, and Beast Mastery are included because they affect legal build profiles and cross-tree totals. They are not targeted for broad thematic redesign unless the audit exposes a release-critical issue. Prefer numeric, uptime, cooldown, trigger, or interaction tuning for these systems.
+
+The audit should report:
+
+- Offensive budget totals.
+- Defensive budget totals.
+- Sustain and recovery totals.
+- Control and debuff coverage.
+- Support throughput.
+- Uptime category.
+- Source tier.
+- Legal SP cost under the 400 SP cap.
+- Tradeoffs and missing capabilities.
+- Whether a finding is a design blocker, balance blocker, validation blocker, or diagnostic warning.
+
+### Weapon Identity Matrix
+
+The identity matrix covers weapon trees only. It should clarify each tree's supported playstyles without implying hierarchy. Avoid labels such as "primary role" and "secondary role" if they suggest one path is better.
+
+Use non-hierarchical labels such as:
+
+- `Playstyle A`
+- `Playstyle B`
+- `Supported Playstyles`
+- `Combat Loop`
+- `Cross-Tree Value`
+
+Each weapon tree should define:
+
+- Supported playstyles.
+- Expected combat loop.
+- Expected cross-tree value.
+- Main trigger language.
+- Allowed offensive mechanics.
+- Allowed defensive mechanics.
+- Positional dependency, if any.
+- Mechanics the tree should not own.
+- Known conceptual mismatches.
+- Positive calibration anchors, if applicable.
+
+### Audit Rules And Config
+
+Create a durable rule/config surface that defines:
+
+- Budget buckets.
+- Source tiers.
+- Uptime categories.
+- Duration bands.
+- Curated archetypes.
+- Full-enumeration reporting rules.
+- Blocker taxonomy.
+- Warning versus blocker thresholds.
+
+The Bible should carry lightweight row-level labels where useful: budget bucket, source tier, uptime type, expected playstyle, and duration band. The repo rule/config should define what those labels mean.
+
+### Bible Workbook Scaffolding
+
+The local Combat Upgrade Bible includes these planning tabs for the release balance pass:
+
+- `Combat Balance Budgets`: shared budget categories, source tiers, uptime categories, warning conditions, and release blockers across weapon, Force, Devices, Leadership, First Aid, Beast Mastery, Armor, and companion contribution.
+- `Combat Archetypes`: curated legal build profiles used as the release decision surface.
+- `Weapon Identity Matrix`: weapon-tree-only identity, combat loop, cross-tree value, positional dependency, and guardrail notes.
+- `Combat Balance Findings`: player-feedback findings with severity, status, affected systems, and proposed audit action.
+- `Combat Enumeration`: lower-priority full-enumeration queues used to find legal outliers for comparison against the curated archetypes.
+- `Combat Mechanic Inventory`: current source-level evidence for high-risk stats and interactions.
+- `Combat Fix Queue`: prioritized implementation queue produced by the current-state audit.
+
+## Budget Buckets
+
+The audit should separate at least the following offensive buckets:
+
+- Attack percent.
+- Flat weapon damage.
+- Ability damage percent.
+- Critical rate.
+- Critical damage.
+- Haste or attack delay reduction.
+- Target damage taken.
+- Defense or Force Defense reduction.
+- Resource pressure.
+- Sustain from damage dealt.
+
+The audit should separate at least the following defensive buckets:
+
+- Attack Deflection.
+- Shield Deflection.
+- Guard.
+- Evasion.
+- Physical Defense.
+- Force Defense.
+- Damage reduction.
+- Temporary HP or absorption.
+- Status resistance.
+- Healing received and recovery.
+
+The same numeric stat may need different budget targets depending on its source tier and uptime.
+
+## Source Tiers
+
+Use separate budget expectations for different source tiers:
+
+- Always-on passive.
+- Conditional passive.
+- Active ability.
+- Stance or toggle.
+- Aura or party support.
+- Capstone.
+
+The rough power allowance should follow this shape:
+
+`always-on passive < conditional passive < active/stance < capstone`
+
+Always-on passives need the strictest budget because they require no timing, cost, or playstyle execution. Conditional passives can have more room when they require enemy state, position, crits, guard, deflect, kill, low HP, or resource thresholds. Active abilities, stances, and capstones can spike higher because they require attention, resources, cooldowns, uptime windows, or drawbacks.
+
+## Uptime Categories
+
+Uptime must be part of the audit. The same magnitude has different value depending on how often it is realistically available.
+
+Use categories such as:
+
+- Always-on.
+- High uptime.
+- Medium uptime.
+- Burst window.
+- Next hit or next few hits.
+- Requires enemy state.
+- Requires position.
+- Requires kill.
+- Requires guard, deflect, or crit.
+- Party-dependent.
+
+Short-duration effects should be reviewed after budget issues are addressed. Extend durations before rewriting mechanics. Mechanic rewrites such as converting timer buffs into "next N attacks" should be reserved for cases where playtest proves duration tuning cannot solve the problem.
+
+Recommended duration guidance:
+
+- Quick proc or next-hit payoff: generally 15-30 seconds.
+- Self setup for a follow-up: generally 20-45 seconds.
+- Multi-step setup: generally 30-60 seconds, or simplify the setup.
+- Party support buff: generally 60-240 seconds with lower magnitude.
+- Capstone or burst mode: 45 seconds remains an acceptable baseline because it is constrained by shared capstone timing.
+
+These are review bands, not automatic values.
+
+## Archetypes And Enumeration
+
+### Curated Archetypes
+
+Curated archetypes are the release gate. At minimum, model:
+
+- Single weapon specialist.
+- Two weapon-line hybrid.
+- Three weapon-line combat maximizer.
+- Weapon plus Leadership.
+- Weapon plus Force support.
+- Weapon plus Devices support.
+- Weapon plus First Aid sustain.
+- Weapon plus Beast Mastery companion pressure.
+- High-MGT damage stack.
+- High-PER crit stack.
+- Attack Deflection stack.
+- Shield Deflection stack.
+- Guard tank stack.
+- Sustain tank.
+- High-control/debuff stack.
+- Positional low-uptime build.
+- Positional high-uptime build.
+
+The curated set should include known scary builds from player testing, including high-MGT melee stacks, high-PER crit stacks, Attack Deflection stacks, and damage-plus-sustain stacks.
+
+### Full Enumeration
+
+Full enumeration is required as a comparison/reporting tool. It should identify legal outliers under the 400 SP cap and explain which buckets they maximize.
+
+Enumeration findings are diagnostic by default, not automatic release blockers. Promote an enumeration outlier to blocker when it violates a core design rule or combines multiple high-risk axes without meaningful tradeoff.
+
+Examples:
+
+- High damage only: inspect.
+- High damage plus high sustain: likely blocker.
+- High damage plus high deflection: likely blocker.
+- High damage plus high control or debuff uptime: likely blocker.
+- High defense plus high sustain plus low damage: likely acceptable tank identity.
+- High support plus moderate damage: likely acceptable hybrid identity.
+
+## Weapon Identity Guidance
+
+### Calibration Anchors
+
+Use positive-baseline trees as feel anchors, not as templates to clone:
+
+- Vibroblade Offense: satisfying throughput and clear combat loop.
+- Heavy Vibroblade: strong risk/sustain identity, but still needs stacking guardrails.
+- Staff Sentinel: clear support and defense identity.
+- Katar Iron Guard: strong tank/control identity, with some dead-window traits to review.
+
+### Positional Mechanics
+
+Positionals are difficult to execute reliably in NWN. No weapon tree should require side or back uptime to reach acceptable baseline performance.
+
+Positional effects may grant:
+
+- Extra burst.
+- Extra critical pressure.
+- Extra sustain or recovery.
+- Bonus utility.
+- Stronger payoff on an already functional baseline loop.
+
+Prefer dual-trigger designs where practical:
+
+- A normal trigger grants a smaller baseline bonus.
+- A side or back trigger upgrades the bonus.
+- Enemy states such as Disoriented, Exposed, Slowed, or Hamstring can provide alternate non-positional access.
+
+Test positional trees under both low-positional-uptime and high-positional-uptime assumptions.
+
+### Spear Disabler
+
+Spear Disabler should broaden from anti-Force niche into general shutdown and resource pressure.
+
+Its identity should be:
+
+`shutdown, interruption, FP/STM pressure, recovery suppression, ability disruption`
+
+Force-sensitive targets can still suffer extra, but the baseline should matter against ordinary dangerous targets. FP drain should become FP/STM drain or otherwise affect the relevant resource. Against enemies without meaningful resources, resource pressure should translate into short debuffs or recovery suppression instead of doing nothing.
+
+### Attack Deflection
+
+Permanent Attack Deflection should not approach or reach cap. If cap access is possible at all, it should be temporary.
+
+Rules:
+
+- Audit permanent Attack Deflection separately from temporary Attack Deflection.
+- Passive/permanent Attack Deflection near cap is a release blocker.
+- Temporary Attack Deflection may approach cap during constrained windows.
+- Capstone Attack Deflection may exceed normal temporary budget briefly when intentional.
+- Ally-granted Attack Deflection follows the same restriction, with extra caution for permanent or group-wide uptime.
+- Lightsaber Defense remains the flagship non-shield Attack Deflection style, but its identity should come from moderate passive values plus temporary windows, FP recovery, enmity, ripostes, and ally support.
+- Staff, Saberstaff, Twin Blade, and Heavy Vibroblade Defense may touch Attack Deflection, but should not casually stack into permanent cap access.
+- Shield Deflection may keep a higher passive ceiling because shields are a larger equipment commitment.
+- Guard remains a separate damage-stage mitigation and enmity mechanic.
+
+## Blocker Taxonomy
+
+### Design Blockers
+
+Design blockers require a design decision or mechanical reshape before release.
+
+Examples:
+
+- Permanent Attack Deflection can approach or reach cap.
+- A weapon tree requires positional uptime to function at baseline.
+- Spear Disabler remains too Force-only.
+- A weapon tree's mechanics contradict its intended playstyle.
+- A cross-tree passive becomes mandatory for most builds.
+- Attack Deflection, Shield Deflection, and Guard are blurred into the same role.
+
+### Balance Blockers
+
+Balance blockers require value, uptime, trigger, cooldown, or resource tuning.
+
+Examples:
+
+- A curated legal build has high damage plus high sustain.
+- A curated legal build has high damage plus high defense or deflection.
+- A curated legal build has high damage plus high control/debuff uptime.
+- A universal passive exceeds its design budget without meaningful tradeoff.
+- A non-weapon system contributes to a runaway weapon profile.
+- Always-on passive throughput is too close to active, stance, or capstone throughput.
+
+### Validation Blockers
+
+Validation blockers mean release confidence is missing.
+
+Examples:
+
+- Balance audit matrix is missing, incomplete, or stale after Bible changes.
+- Weapon identity matrix is missing, incomplete, or stale for any weapon tree.
+- Curated archetypes have not been tested.
+- Full enumeration outliers have not been reviewed.
+- Hologram tests are the only available evidence.
+- Real-enemy playtests have not covered representative enemy profiles.
+
+## Release Sequence
+
+1. Define budgets, source tiers, uptime categories, duration bands, curated archetypes, full-enumeration rules, and blocker taxonomy.
+2. Build or update the all-system balance audit matrix.
+3. Build or update the weapon-only identity matrix.
+4. Run the audit against current data.
+5. Fix design blockers.
+6. Fix balance blockers.
+7. Apply weapon identity cleanup.
+8. Do numeric tuning using the audit as the guardrail.
+9. Review effect durations after value and budget tuning.
+10. Validate curated archetypes.
+11. Inspect full-enumeration outliers.
+12. Playtest real enemy profiles, not only holographic test targets.
+
+## Release Gate
+
+Do not release while any of these remain true:
+
+- Permanent Attack Deflection can approach or reach cap.
+- A legal curated archetype has high damage plus high sustain, defense, control, or support without meaningful tradeoff.
+- A weapon tree needs positional uptime to function at baseline.
+- A cross-tree passive is broadly mandatory for most weapon builds.
+- Spear Disabler is only meaningfully useful against Force-sensitive targets.
+- The audit cannot explain known scary player-test builds.
+- Full enumeration outliers have not been reviewed.
+- Real-enemy playtest has not been run against representative enemy profiles.
+
+## Implementation Notes
+
+- Prefer Bible/data tuning before code changes.
+- Prefer adding audit coverage before changing numbers.
+- Prefer extending short durations before converting timed buffs into "next N attacks" mechanics.
+- If code support becomes necessary, prefer shared `StatType`-driven systems and enum metadata over hardcoded perk checks.
+- Keep Force, Devices, Leadership, First Aid, and Beast Mastery in the balance audit but avoid sweeping thematic redesign unless the audit identifies a release-critical issue.

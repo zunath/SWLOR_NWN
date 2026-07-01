@@ -15,6 +15,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         public ForceSuppressionStatusEffect()
         {
+            StatGroup.Stats[StatType.AttackPercentAdjustment] = -10;
             StatGroup.Stats[StatType.ForceAttackPercentAdjustment] = -15;
         }
     }

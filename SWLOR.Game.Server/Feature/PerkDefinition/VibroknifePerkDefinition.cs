@@ -61,9 +61,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.AmbushTacticsTrait)
-                .Description("After dealing a critical hit, your next attack within 8 seconds ignores 20% of defense.")
+                .Description("After dealing a critical hit, your next attack within 18 seconds ignores 20% of defense.")
                 .IncreasesStat(StatType.CriticalNextSkillAbilityDefenseIgnorePercentAdjustment, 20)
-                .IncreasesStat(StatType.CriticalNextSkillAbilityDefenseIgnoreDurationSeconds, 8)
+                .IncreasesStat(StatType.CriticalNextSkillAbilityDefenseIgnoreDurationSeconds, 18)
                 .Price(3)
                 .RequirementSkill(SkillType.Vibroknife, 25);
         }
@@ -75,19 +75,19 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Backstab1)
-                .Description("Deals weapon DMG + 20 from behind your target.")
+                .Description("Deals weapon DMG + 14. From behind your target, deals +20 DMG.")
                 .Price(2)
                 .RequirementSkill(SkillType.Vibroknife, 10)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Backstab2)
-                .Description("Deals weapon DMG + 40 from behind your target.")
+                .Description("Deals weapon DMG + 28. From behind your target, deals +40 DMG.")
                 .Price(3)
                 .RequirementSkill(SkillType.Vibroknife, 18)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Backstab3)
-                .Description("Deals weapon DMG + 60 from behind your target and knocks down for 3 seconds.")
+                .Description("Deals weapon DMG + 42. From behind your target, deals +60 DMG and knocks down for 3 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Vibroknife, 35);
         }

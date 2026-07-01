@@ -189,9 +189,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.GuardiansRiposteTrait)
-                .Description("Receive Guardian's Riposte after deflecting an attack with a shield. Your next attack within 12s deals +10 DMG.")
+                .Description("Receive Guardian's Riposte after deflecting an attack with a shield. Your next attack within 18 seconds deals +10 DMG.")
                 .IncreasesStat(StatType.DeflectionNextSkillAbilityDamageBonus, creature => EquipmentPredicates.HasOffHandShield(creature) ? 10 : 0)
-                .IncreasesStat(StatType.DeflectionNextSkillAbilityDamageBonusWindowSeconds, creature => EquipmentPredicates.HasOffHandShield(creature) ? 12 : 0)
+                .IncreasesStat(StatType.DeflectionNextSkillAbilityDamageBonusWindowSeconds, creature => EquipmentPredicates.HasOffHandShield(creature) ? 18 : 0)
                 .Price(3)
                 .RequirementSkill(SkillType.Vibroblade, 30);
         }

@@ -34,6 +34,14 @@ namespace SWLOR.Game.Server.Service
         public const int StandardCriticalRating = 2;
         public const int BaseAttackDelayMilliseconds = 1750;
         public const string GeneratedWeaponAbilityHasteGroup = "GeneratedWeaponAbility:Haste";
+
+        // The engine/client cannot play swing animations faster than the base attack delay.
+        // Delays below it are honored by resolving multiple attack rolls within a single swing,
+        // mirroring the stock engine's flurry behavior for high attacks-per-round builds.
+        public const int MaxAttacksPerSwing = 3;
+        public const int MinimumAttackDelayMilliseconds =
+            (BaseAttackDelayMilliseconds + MaxAttacksPerSwing - 1) / MaxAttacksPerSwing;
+
         private const int AttackDelayUnitsPerSecond = 60;
         private const int MillisecondsPerSecond = 1000;
         private const int BaseAttackDelayUnits = BaseAttackDelayMilliseconds * AttackDelayUnitsPerSecond / MillisecondsPerSecond;
@@ -54,6 +62,7 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<uint, int> _autoAttackCycleCounts = new();
         private static readonly Dictionary<uint, int> _autoAttackCycleCriticalCounts = new();
         private static readonly Dictionary<(uint, uint), TargetHitSequenceState> _areaAbilityTargetHitSequences = new();
+        private static readonly Dictionary<uint, float> _attackSwingDebts = new();
         private static readonly Dictionary<uint, RepeatedTargetDamageState> _repeatedTargetDamageStates = new();
         private static readonly Dictionary<uint, AbilityStaminaCostState> _lastAbilityStaminaCosts = new();
         private static bool _damageTypesCached;
@@ -3311,6 +3320,7 @@ namespace SWLOR.Game.Server.Service
                 _areaAbilityTargetHitSequences.Remove(key);
             }
 
+            _attackSwingDebts.Remove(creature);
             _repeatedTargetDamageStates.Remove(creature);
             TemporaryStatModifier.Clear(creature);
         }
@@ -7517,6 +7527,8 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// Calculates the attack delay used by the attack loop after accounting for the engine's default delay.
+        /// Delays below <see cref="BaseAttackDelayMilliseconds"/> are honored through multi-attack swings and
+        /// are clamped to <see cref="MinimumAttackDelayMilliseconds"/>.
         /// </summary>
         /// <param name="attackerDelayMilliseconds">The attacker's calculated delay in milliseconds.</param>
         /// <param name="useDefaultMinimumDelay">If true, ignore extra weapon delay and use the default engine minimum.</param>
@@ -7530,7 +7542,76 @@ namespace SWLOR.Game.Server.Service
                 return BaseAttackDelayMilliseconds;
 
             var effectiveDelay = attackerDelayMilliseconds - BaseAttackDelayMilliseconds;
-            return Math.Max(BaseAttackDelayMilliseconds, effectiveDelay);
+            return Math.Max(MinimumAttackDelayMilliseconds, effectiveDelay);
+        }
+
+        /// <summary>
+        /// Calculates the wall-clock interval between swing animations for a given effective attack delay.
+        /// The engine cannot animate swings faster than <see cref="BaseAttackDelayMilliseconds"/>, so faster
+        /// delays keep the swing cadence at that floor and resolve additional attacks per swing instead.
+        /// </summary>
+        /// <param name="effectiveDelayMilliseconds">The effective per-attack delay in milliseconds.</param>
+        /// <returns>The interval between swings in milliseconds.</returns>
+        public static int CalculateAttackSwingDelay(int effectiveDelayMilliseconds)
+        {
+            return Math.Max(BaseAttackDelayMilliseconds, effectiveDelayMilliseconds);
+        }
+
+        /// <summary>
+        /// Calculates how many attacks a swing should resolve for a given effective attack delay,
+        /// carrying fractional attacks between swings so the long-run attack rate matches the delay.
+        /// </summary>
+        /// <param name="effectiveDelayMilliseconds">The effective per-attack delay in milliseconds.</param>
+        /// <param name="attackDebt">Fractional attacks owed from previous swings.</param>
+        /// <param name="updatedAttackDebt">Fractional attacks still owed after this swing.</param>
+        /// <returns>The number of attacks to resolve in this swing.</returns>
+        public static int CalculateAttacksPerSwing(
+            int effectiveDelayMilliseconds,
+            float attackDebt,
+            out float updatedAttackDebt)
+        {
+            if (effectiveDelayMilliseconds <= 0)
+            {
+                updatedAttackDebt = 0f;
+                return 1;
+            }
+
+            var swingDelay = CalculateAttackSwingDelay(effectiveDelayMilliseconds);
+            var attacksOwed = attackDebt + swingDelay / (float)effectiveDelayMilliseconds;
+            var attacks = Math.Clamp((int)attacksOwed, 1, MaxAttacksPerSwing);
+            updatedAttackDebt = Math.Clamp(attacksOwed - attacks, 0f, MaxAttacksPerSwing);
+
+            return attacks;
+        }
+
+        /// <summary>
+        /// Determines how many attacks the attacker's next swing should resolve and updates the
+        /// attacker's carried fractional attack debt.
+        /// </summary>
+        /// <param name="attacker">The attacking creature.</param>
+        /// <param name="effectiveDelayMilliseconds">The effective per-attack delay in milliseconds.</param>
+        /// <returns>The number of attacks to resolve in this swing.</returns>
+        public static int ConsumeAttacksPerSwing(uint attacker, int effectiveDelayMilliseconds)
+        {
+            _attackSwingDebts.TryGetValue(attacker, out var attackDebt);
+            var attacks = CalculateAttacksPerSwing(effectiveDelayMilliseconds, attackDebt, out var updatedAttackDebt);
+
+            if (updatedAttackDebt <= 0f)
+                _attackSwingDebts.Remove(attacker);
+            else
+                _attackSwingDebts[attacker] = updatedAttackDebt;
+
+            return attacks;
+        }
+
+        /// <summary>
+        /// Clears any carried fractional attack debt for a creature. Used when combat ends,
+        /// the creature becomes unable to attack, or its equipped weapons change.
+        /// </summary>
+        /// <param name="attacker">The attacking creature.</param>
+        public static void ClearAttackSwingDebt(uint attacker)
+        {
+            _attackSwingDebts.Remove(attacker);
         }
 
         private static int ApplyOffhandAttackDelayReduction(uint attacker, int offhandDelay)

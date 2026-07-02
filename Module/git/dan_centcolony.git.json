@@ -476,7 +476,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 4.429737687772217e-010
+                "value": 4.429737687772217e-10
               },
               "XPosition": {
                 "type": "float",
@@ -1074,7 +1074,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 5.266311831064741e-010
+          "value": 5.266311831064741e-10
         },
         "XPosition": {
           "type": "float",
@@ -1511,7 +1511,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 8.724495449274026e-039
+                "value": 8.724495449274026e-39
               },
               "XPosition": {
                 "type": "float",
@@ -2525,7 +2525,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 2.550094834821199e-021
+                "value": 2.550094834821199e-21
               },
               "XPosition": {
                 "type": "float",
@@ -3153,7 +3153,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 1.356315642694011e-019
+          "value": 1.356315642694011e-19
         },
         "XPosition": {
           "type": "float",
@@ -3579,7 +3579,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 4.500037402634072e-039
+                "value": 4.500037402634072e-39
               },
               "XPosition": {
                 "type": "float",
@@ -4189,7 +4189,7 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 68.74021148681641
+          "value": 68.7402114868164
         },
         "ZPosition": {
           "type": "float",
@@ -8382,7 +8382,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.361267160926038e-038
+          "value": 3.361267160926038e-38
         },
         "BodyBag": {
           "type": "byte",
@@ -14861,7 +14861,7 @@
         },
         "Y": {
           "type": "float",
-          "value": 98.10622406005859
+          "value": 98.1062240600586
         },
         "Z": {
           "type": "float",
@@ -15744,7 +15744,7 @@
         },
         "Y": {
           "type": "float",
-          "value": 90.18666839599609
+          "value": 90.1866683959961
         },
         "Z": {
           "type": "float",
@@ -18666,7 +18666,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 7.006492321624085e-045
+          "value": 7.006492321624085e-45
         },
         "BodyBag": {
           "type": "byte",
@@ -18868,7 +18868,7 @@
         },
         "Y": {
           "type": "float",
-          "value": 92.72238922119141
+          "value": 92.7223892211914
         },
         "Z": {
           "type": "float",
@@ -18891,7 +18891,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 5.605193857299268e-045
+          "value": 5.605193857299268e-45
         },
         "BodyBag": {
           "type": "byte",
@@ -19095,7 +19095,7 @@
         },
         "Y": {
           "type": "float",
-          "value": 92.73330688476563
+          "value": 92.73330688476562
         },
         "Z": {
           "type": "float",
@@ -19118,7 +19118,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 2.802596928649634e-045
+          "value": 2.802596928649634e-45
         },
         "BodyBag": {
           "type": "byte",
@@ -19799,7 +19799,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.306242878594843e-037
+          "value": 3.306242878594843e-37
         },
         "BodyBag": {
           "type": "byte",
@@ -20024,7 +20024,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.099999963116716e-006
+          "value": 1.099999963116716e-06
         },
         "BodyBag": {
           "type": "byte",
@@ -20897,7 +20897,7 @@
         },
         "X": {
           "type": "float",
-          "value": 4.76837158203125e-007
+          "value": 4.76837158203125e-07
         },
         "Y": {
           "type": "float",
@@ -22143,7 +22143,7 @@
         },
         "Y": {
           "type": "float",
-          "value": 86.05239868164063
+          "value": 86.05239868164062
         },
         "Z": {
           "type": "float",
@@ -22932,7 +22932,7 @@
         },
         "Y": {
           "type": "float",
-          "value": 90.12985992431641
+          "value": 90.1298599243164
         },
         "Z": {
           "type": "float",
@@ -23405,7 +23405,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.401298464324817e-045
+          "value": 1.401298464324817e-45
         },
         "BodyBag": {
           "type": "byte",
@@ -23607,7 +23607,7 @@
         },
         "Y": {
           "type": "float",
-          "value": 99.96250152587891
+          "value": 99.9625015258789
         },
         "Z": {
           "type": "float",
@@ -24057,7 +24057,7 @@
         },
         "Y": {
           "type": "float",
-          "value": 88.29897308349609
+          "value": 88.2989730834961
         },
         "Z": {
           "type": "float",
@@ -24980,7 +24980,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 2.242077542919707e-044
+          "value": 2.242077542919707e-44
         },
         "BodyBag": {
           "type": "byte",
@@ -29678,7 +29678,7 @@
         },
         "X": {
           "type": "float",
-          "value": 2.384185791015625e-006
+          "value": 2.384185791015625e-06
         },
         "Y": {
           "type": "float",
@@ -30132,7 +30132,7 @@
         },
         "Y": {
           "type": "float",
-          "value": 9.5367431640625e-007
+          "value": 9.5367431640625e-07
         },
         "Z": {
           "type": "float",
@@ -30830,7 +30830,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 2.242077542919707e-044
+          "value": 2.242077542919707e-44
         },
         "BodyBag": {
           "type": "byte",
@@ -31055,7 +31055,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 2.802596928649634e-045
+          "value": 2.802596928649634e-45
         },
         "BodyBag": {
           "type": "byte",
@@ -32157,7 +32157,7 @@
         },
         "Y": {
           "type": "float",
-          "value": 4.76837158203125e-007
+          "value": 4.76837158203125e-07
         },
         "Z": {
           "type": "float",
@@ -34205,7 +34205,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 2.571435931377684e-039
+          "value": 2.571435931377684e-39
         },
         "BodyBag": {
           "type": "byte",
@@ -36905,7 +36905,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 7.006492321624085e-045
+          "value": 7.006492321624085e-45
         },
         "BodyBag": {
           "type": "byte",
@@ -37580,7 +37580,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 2.020410342743558e-039
+          "value": 2.020410342743558e-39
         },
         "BodyBag": {
           "type": "byte",
@@ -39586,7 +39586,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 7.006492321624085e-045
+          "value": 7.006492321624085e-45
         },
         "BodyBag": {
           "type": "byte",
@@ -41615,7 +41615,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 3.746984372320694e-038
+          "value": 3.746984372320694e-38
         },
         "BodyBag": {
           "type": "byte",
@@ -43396,7 +43396,7 @@
         },
         "Y": {
           "type": "float",
-          "value": 66.14536285400391
+          "value": 66.1453628540039
         },
         "Z": {
           "type": "float",
@@ -47474,7 +47474,7 @@
         },
         "X": {
           "type": "float",
-          "value": 95.83718109130859
+          "value": 95.8371810913086
         },
         "Y": {
           "type": "float",
@@ -49301,7 +49301,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.010196062931761e-039
+          "value": 1.010196062931761e-39
         },
         "BodyBag": {
           "type": "byte",
@@ -49751,7 +49751,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -8.886553047252327e-035
+          "value": -8.886553047252327e-35
         },
         "BodyBag": {
           "type": "byte",
@@ -52226,7 +52226,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 8.265463143004974e-038
+          "value": 8.265463143004974e-38
         },
         "BodyBag": {
           "type": "byte",
@@ -53774,7 +53774,7 @@
         },
         "X": {
           "type": "float",
-          "value": 83.96328735351563
+          "value": 83.96328735351562
         },
         "Y": {
           "type": "float",
@@ -54251,7 +54251,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 7.071359828836146e-039
+          "value": 7.071359828836145e-39
         },
         "BodyBag": {
           "type": "byte",
@@ -56275,7 +56275,7 @@
         },
         "Y": {
           "type": "float",
-          "value": 75.52321624755859
+          "value": 75.5232162475586
         },
         "Z": {
           "type": "float",
@@ -57198,7 +57198,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 4.737703353683355e-024
+          "value": 4.737703353683355e-24
         },
         "BodyBag": {
           "type": "byte",
@@ -57400,7 +57400,7 @@
         },
         "Y": {
           "type": "float",
-          "value": 77.15347290039063
+          "value": 77.15347290039062
         },
         "Z": {
           "type": "float",
@@ -57850,7 +57850,7 @@
         },
         "Y": {
           "type": "float",
-          "value": 69.13699340820313
+          "value": 69.13699340820312
         },
         "Z": {
           "type": "float",
@@ -58075,7 +58075,7 @@
         },
         "Y": {
           "type": "float",
-          "value": 77.55283355712891
+          "value": 77.5528335571289
         },
         "Z": {
           "type": "float",
@@ -59448,7 +59448,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.570397774299825e-038
+          "value": 1.570397774299825e-38
         },
         "BodyBag": {
           "type": "byte",
@@ -61101,7 +61101,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 2.468529294006889e-015
+          "value": 2.468529294006889e-15
         },
         "BodyBag": {
           "type": "byte",
@@ -62230,7 +62230,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.18330893194226e-028
+          "value": 1.18330893194226e-28
         },
         "BodyBag": {
           "type": "byte",
@@ -63584,7 +63584,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 2.461794873856449e-014
+          "value": 2.461794873856449e-14
         },
         "BodyBag": {
           "type": "byte",
@@ -65377,7 +65377,7 @@
         },
         "Y": {
           "type": "float",
-          "value": 9.230422973632813
+          "value": 9.230422973632812
         },
         "Z": {
           "type": "float",
@@ -66579,7 +66579,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.03177184949e-014
+          "value": 1.03177184949e-14
         },
         "BodyBag": {
           "type": "byte",
@@ -67658,7 +67658,7 @@
         },
         "Y": {
           "type": "float",
-          "value": 8.131381988525391
+          "value": 8.13138198852539
         },
         "Z": {
           "type": "float",
@@ -67681,7 +67681,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 7.789318601057932e-023
+          "value": 7.789318601057932e-23
         },
         "BodyBag": {
           "type": "byte",
@@ -68280,7 +68280,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 6.794921585041217e-033
+                      "value": 6.794921585041216e-33
                     },
                     "XPosition": {
                       "type": "float",
@@ -68387,7 +68387,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.501140492291327e-019
+                      "value": 1.501140492291327e-19
                     },
                     "XPosition": {
                       "type": "float",
@@ -68494,7 +68494,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.509406094562263e-019
+                      "value": 1.509406094562263e-19
                     },
                     "XPosition": {
                       "type": "float",
@@ -68601,7 +68601,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.077572164831508e-008
+                      "value": 1.077572164831508e-08
                     },
                     "XPosition": {
                       "type": "float",
@@ -68708,7 +68708,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 2.3301325313696e-009
+                      "value": 2.3301325313696e-09
                     },
                     "XPosition": {
                       "type": "float",
@@ -68815,7 +68815,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.356318615374338e-019
+                      "value": 1.356318615374338e-19
                     },
                     "XPosition": {
                       "type": "float",
@@ -68922,7 +68922,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 6.701726951163778e-010
+                      "value": 6.701726951163778e-10
                     },
                     "XPosition": {
                       "type": "float",
@@ -69029,7 +69029,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 6.794945094928233e-033
+                      "value": 6.794945094928233e-33
                     },
                     "XPosition": {
                       "type": "float",
@@ -69136,7 +69136,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.500869590640716e-019
+                      "value": 1.500869590640716e-19
                     },
                     "XPosition": {
                       "type": "float",
@@ -69243,7 +69243,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.509479506841627e-019
+                      "value": 1.509479506841627e-19
                     },
                     "XPosition": {
                       "type": "float",
@@ -69350,7 +69350,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.714802237984259e-007
+                      "value": 1.714802237984259e-07
                     },
                     "XPosition": {
                       "type": "float",
@@ -69457,7 +69457,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 2.330125425942242e-009
+                      "value": 2.330125425942242e-09
                     },
                     "XPosition": {
                       "type": "float",
@@ -69564,7 +69564,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.356311506790948e-019
+                      "value": 1.356311506790948e-19
                     },
                     "XPosition": {
                       "type": "float",
@@ -69812,7 +69812,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 6.794921585041217e-033
+                      "value": 6.794921585041216e-33
                     },
                     "XPosition": {
                       "type": "float",
@@ -69953,7 +69953,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 2.3301325313696e-009
+                      "value": 2.3301325313696e-09
                     },
                     "XPosition": {
                       "type": "float",
@@ -70060,7 +70060,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 2.324803713159929e-020
+                      "value": 2.324803713159929e-20
                     },
                     "XPosition": {
                       "type": "float",
@@ -70167,7 +70167,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.356315642694011e-019
+                      "value": 1.356315642694011e-19
                     },
                     "XPosition": {
                       "type": "float",
@@ -70274,7 +70274,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 5.825331328423999e-010
+                      "value": 5.825331328423999e-10
                     },
                     "XPosition": {
                       "type": "float",
@@ -70381,7 +70381,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 2.998821605202633e-027
+                      "value": 2.998821605202633e-27
                     },
                     "XPosition": {
                       "type": "float",
@@ -96586,7 +96586,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 25
+                            "value": 22
                           },
                           "Param1": {
                             "type": "byte",
@@ -96802,7 +96802,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 25
+                            "value": 22
                           },
                           "Param1": {
                             "type": "byte",
@@ -97018,7 +97018,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 25
+                            "value": 22
                           },
                           "Param1": {
                             "type": "byte",
@@ -97234,7 +97234,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 25
+                            "value": 22
                           },
                           "Param1": {
                             "type": "byte",
@@ -97450,7 +97450,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 25
+                            "value": 22
                           },
                           "Param1": {
                             "type": "byte",
@@ -97666,7 +97666,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 25
+                            "value": 22
                           },
                           "Param1": {
                             "type": "byte",
@@ -97882,7 +97882,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 25
+                            "value": 22
                           },
                           "Param1": {
                             "type": "byte",
@@ -98098,7 +98098,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 25
+                            "value": 22
                           },
                           "Param1": {
                             "type": "byte",
@@ -98314,7 +98314,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 25
+                            "value": 22
                           },
                           "Param1": {
                             "type": "byte",
@@ -98532,7 +98532,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 41
+                            "value": 30
                           },
                           "Param1": {
                             "type": "byte",
@@ -98750,7 +98750,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 41
+                            "value": 30
                           },
                           "Param1": {
                             "type": "byte",
@@ -98968,7 +98968,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 41
+                            "value": 30
                           },
                           "Param1": {
                             "type": "byte",
@@ -99186,7 +99186,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 41
+                            "value": 30
                           },
                           "Param1": {
                             "type": "byte",
@@ -99404,7 +99404,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 41
+                            "value": 30
                           },
                           "Param1": {
                             "type": "byte",
@@ -99622,7 +99622,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 41
+                            "value": 30
                           },
                           "Param1": {
                             "type": "byte",
@@ -99840,7 +99840,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 41
+                            "value": 30
                           },
                           "Param1": {
                             "type": "byte",
@@ -100058,7 +100058,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 41
+                            "value": 30
                           },
                           "Param1": {
                             "type": "byte",
@@ -100276,7 +100276,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 41
+                            "value": 30
                           },
                           "Param1": {
                             "type": "byte",
@@ -100494,7 +100494,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 27
+                            "value": 23
                           },
                           "Param1": {
                             "type": "byte",
@@ -100712,7 +100712,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 27
+                            "value": 23
                           },
                           "Param1": {
                             "type": "byte",
@@ -100930,7 +100930,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 27
+                            "value": 23
                           },
                           "Param1": {
                             "type": "byte",
@@ -101148,7 +101148,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 27
+                            "value": 23
                           },
                           "Param1": {
                             "type": "byte",
@@ -101366,7 +101366,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 27
+                            "value": 23
                           },
                           "Param1": {
                             "type": "byte",
@@ -101584,7 +101584,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 27
+                            "value": 23
                           },
                           "Param1": {
                             "type": "byte",
@@ -101802,7 +101802,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 27
+                            "value": 23
                           },
                           "Param1": {
                             "type": "byte",
@@ -102020,7 +102020,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 27
+                            "value": 23
                           },
                           "Param1": {
                             "type": "byte",
@@ -102238,7 +102238,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 27
+                            "value": 23
                           },
                           "Param1": {
                             "type": "byte",
@@ -102455,7 +102455,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 25
+                            "value": 22
                           },
                           "Param1": {
                             "type": "byte",
@@ -102672,7 +102672,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 25
+                            "value": 22
                           },
                           "Param1": {
                             "type": "byte",
@@ -102889,7 +102889,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 25
+                            "value": 22
                           },
                           "Param1": {
                             "type": "byte",
@@ -103106,7 +103106,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 25
+                            "value": 22
                           },
                           "Param1": {
                             "type": "byte",
@@ -103323,7 +103323,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 25
+                            "value": 22
                           },
                           "Param1": {
                             "type": "byte",
@@ -103540,7 +103540,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 25
+                            "value": 22
                           },
                           "Param1": {
                             "type": "byte",
@@ -103757,7 +103757,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 25
+                            "value": 22
                           },
                           "Param1": {
                             "type": "byte",
@@ -103974,7 +103974,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 25
+                            "value": 22
                           },
                           "Param1": {
                             "type": "byte",
@@ -104191,7 +104191,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 25
+                            "value": 22
                           },
                           "Param1": {
                             "type": "byte",
@@ -104407,7 +104407,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 35
+                            "value": 27
                           },
                           "Param1": {
                             "type": "byte",
@@ -104623,7 +104623,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 35
+                            "value": 27
                           },
                           "Param1": {
                             "type": "byte",
@@ -104839,7 +104839,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 35
+                            "value": 27
                           },
                           "Param1": {
                             "type": "byte",
@@ -105055,7 +105055,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 35
+                            "value": 27
                           },
                           "Param1": {
                             "type": "byte",
@@ -105271,7 +105271,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 35
+                            "value": 27
                           },
                           "Param1": {
                             "type": "byte",
@@ -105487,7 +105487,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 35
+                            "value": 27
                           },
                           "Param1": {
                             "type": "byte",
@@ -105703,7 +105703,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 35
+                            "value": 27
                           },
                           "Param1": {
                             "type": "byte",
@@ -105919,7 +105919,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 35
+                            "value": 27
                           },
                           "Param1": {
                             "type": "byte",
@@ -106135,7 +106135,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 35
+                            "value": 27
                           },
                           "Param1": {
                             "type": "byte",
@@ -106351,7 +106351,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 39
+                            "value": 29
                           },
                           "Param1": {
                             "type": "byte",
@@ -106567,7 +106567,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 39
+                            "value": 29
                           },
                           "Param1": {
                             "type": "byte",
@@ -106783,7 +106783,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 39
+                            "value": 29
                           },
                           "Param1": {
                             "type": "byte",
@@ -106999,7 +106999,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 39
+                            "value": 29
                           },
                           "Param1": {
                             "type": "byte",
@@ -107215,7 +107215,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 39
+                            "value": 29
                           },
                           "Param1": {
                             "type": "byte",
@@ -107431,7 +107431,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 39
+                            "value": 29
                           },
                           "Param1": {
                             "type": "byte",
@@ -107647,7 +107647,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 39
+                            "value": 29
                           },
                           "Param1": {
                             "type": "byte",
@@ -107863,7 +107863,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 39
+                            "value": 29
                           },
                           "Param1": {
                             "type": "byte",
@@ -108079,7 +108079,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 39
+                            "value": 29
                           },
                           "Param1": {
                             "type": "byte",
@@ -108295,7 +108295,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 37
+                            "value": 28
                           },
                           "Param1": {
                             "type": "byte",
@@ -108511,7 +108511,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 37
+                            "value": 28
                           },
                           "Param1": {
                             "type": "byte",
@@ -108727,7 +108727,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 37
+                            "value": 28
                           },
                           "Param1": {
                             "type": "byte",
@@ -108943,7 +108943,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 37
+                            "value": 28
                           },
                           "Param1": {
                             "type": "byte",
@@ -109159,7 +109159,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 37
+                            "value": 28
                           },
                           "Param1": {
                             "type": "byte",
@@ -109375,7 +109375,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 37
+                            "value": 28
                           },
                           "Param1": {
                             "type": "byte",
@@ -109593,7 +109593,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 37
+                            "value": 28
                           },
                           "Param1": {
                             "type": "byte",
@@ -109811,7 +109811,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 37
+                            "value": 28
                           },
                           "Param1": {
                             "type": "byte",
@@ -110029,7 +110029,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 37
+                            "value": 28
                           },
                           "Param1": {
                             "type": "byte",
@@ -110276,7 +110276,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 31
+                            "value": 25
                           },
                           "Param1": {
                             "type": "byte",
@@ -110523,7 +110523,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 31
+                            "value": 25
                           },
                           "Param1": {
                             "type": "byte",
@@ -110770,7 +110770,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 31
+                            "value": 25
                           },
                           "Param1": {
                             "type": "byte",
@@ -111017,7 +111017,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 31
+                            "value": 25
                           },
                           "Param1": {
                             "type": "byte",
@@ -111264,7 +111264,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 31
+                            "value": 25
                           },
                           "Param1": {
                             "type": "byte",
@@ -111511,7 +111511,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 31
+                            "value": 25
                           },
                           "Param1": {
                             "type": "byte",
@@ -111758,7 +111758,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 31
+                            "value": 25
                           },
                           "Param1": {
                             "type": "byte",
@@ -112005,7 +112005,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 31
+                            "value": 25
                           },
                           "Param1": {
                             "type": "byte",
@@ -112252,7 +112252,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 31
+                            "value": 25
                           },
                           "Param1": {
                             "type": "byte",
@@ -112501,7 +112501,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 41
+                            "value": 30
                           },
                           "Param1": {
                             "type": "byte",
@@ -112750,7 +112750,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 41
+                            "value": 30
                           },
                           "Param1": {
                             "type": "byte",
@@ -112999,7 +112999,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 41
+                            "value": 30
                           },
                           "Param1": {
                             "type": "byte",
@@ -113248,7 +113248,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 41
+                            "value": 30
                           },
                           "Param1": {
                             "type": "byte",
@@ -113497,7 +113497,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 41
+                            "value": 30
                           },
                           "Param1": {
                             "type": "byte",
@@ -113746,7 +113746,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 41
+                            "value": 30
                           },
                           "Param1": {
                             "type": "byte",
@@ -113995,7 +113995,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 41
+                            "value": 30
                           },
                           "Param1": {
                             "type": "byte",
@@ -114244,7 +114244,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 41
+                            "value": 30
                           },
                           "Param1": {
                             "type": "byte",
@@ -114493,7 +114493,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 41
+                            "value": 30
                           },
                           "Param1": {
                             "type": "byte",
@@ -114701,7 +114701,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 25
+                            "value": 22
                           },
                           "Param1": {
                             "type": "byte",
@@ -114901,7 +114901,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 25
+                            "value": 22
                           },
                           "Param1": {
                             "type": "byte",
@@ -115101,7 +115101,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 25
+                            "value": 22
                           },
                           "Param1": {
                             "type": "byte",
@@ -115301,7 +115301,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 25
+                            "value": 22
                           },
                           "Param1": {
                             "type": "byte",
@@ -115501,7 +115501,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 25
+                            "value": 22
                           },
                           "Param1": {
                             "type": "byte",
@@ -115701,7 +115701,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 25
+                            "value": 22
                           },
                           "Param1": {
                             "type": "byte",
@@ -115903,7 +115903,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 25
+                            "value": 22
                           },
                           "Param1": {
                             "type": "byte",
@@ -116105,7 +116105,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 25
+                            "value": 22
                           },
                           "Param1": {
                             "type": "byte",
@@ -116307,7 +116307,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 25
+                            "value": 22
                           },
                           "Param1": {
                             "type": "byte",
@@ -116547,7 +116547,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 28
+                            "value": 24
                           },
                           "Param1": {
                             "type": "byte",
@@ -116795,7 +116795,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 28
+                            "value": 24
                           },
                           "Param1": {
                             "type": "byte",
@@ -117043,7 +117043,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 28
+                            "value": 24
                           },
                           "Param1": {
                             "type": "byte",
@@ -117291,7 +117291,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 28
+                            "value": 24
                           },
                           "Param1": {
                             "type": "byte",
@@ -117539,7 +117539,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 28
+                            "value": 24
                           },
                           "Param1": {
                             "type": "byte",
@@ -117787,7 +117787,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 28
+                            "value": 24
                           },
                           "Param1": {
                             "type": "byte",
@@ -118035,7 +118035,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 28
+                            "value": 24
                           },
                           "Param1": {
                             "type": "byte",
@@ -118283,7 +118283,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 28
+                            "value": 24
                           },
                           "Param1": {
                             "type": "byte",
@@ -118531,7 +118531,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 28
+                            "value": 24
                           },
                           "Param1": {
                             "type": "byte",
@@ -118778,7 +118778,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 39
+                            "value": 29
                           },
                           "Param1": {
                             "type": "byte",
@@ -119025,7 +119025,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 39
+                            "value": 29
                           },
                           "Param1": {
                             "type": "byte",
@@ -119272,7 +119272,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 39
+                            "value": 29
                           },
                           "Param1": {
                             "type": "byte",
@@ -119519,7 +119519,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 39
+                            "value": 29
                           },
                           "Param1": {
                             "type": "byte",
@@ -119766,7 +119766,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 39
+                            "value": 29
                           },
                           "Param1": {
                             "type": "byte",
@@ -120013,7 +120013,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 39
+                            "value": 29
                           },
                           "Param1": {
                             "type": "byte",
@@ -120260,7 +120260,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 39
+                            "value": 29
                           },
                           "Param1": {
                             "type": "byte",
@@ -120507,7 +120507,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 39
+                            "value": 29
                           },
                           "Param1": {
                             "type": "byte",
@@ -120754,7 +120754,7 @@
                           },
                           "CostValue": {
                             "type": "word",
-                            "value": 39
+                            "value": 29
                           },
                           "Param1": {
                             "type": "byte",
@@ -130355,7 +130355,7 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 97.00832366943359
+          "value": 97.0083236694336
         },
         "ZOrientation": {
           "type": "float",
@@ -131037,7 +131037,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 7.549790126404332e-008
+          "value": 7.549790126404332e-08
         },
         "YPosition": {
           "type": "float",
@@ -131287,7 +131287,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 7.549790126404332e-008
+          "value": 7.549790126404332e-08
         },
         "YPosition": {
           "type": "float",
@@ -131769,7 +131769,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 1.541428310757299e-043
+          "value": 1.541428310757299e-43
         },
         "XPosition": {
           "type": "float",

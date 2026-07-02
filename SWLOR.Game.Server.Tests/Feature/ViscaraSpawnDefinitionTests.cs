@@ -60,10 +60,10 @@ public class ViscaraSpawnDefinitionTests
         int Delay,
         bool HasUnlimitedAmmunition)[] BloodFrenzyUniqueDrops =
     {
-        ("redline_vblade", "Redline Vibroblade", 1, 23, 36, 45, 27, false),
-        ("pulse_calrifle", "Pulse-Frame Calibration Rifle", 7, 38, 46, 45, 41, true),
-        ("butch_cleaver", "Butcher's Cleaver", 13, 42, 39, 45, 41, false),
-        ("duel_splitter", "Duelist's Splitter", 12, 27, 41, 45, 39, false),
+        ("redline_vblade", "Redline Vibroblade", 1, 23, 36, 45, 23, false),
+        ("pulse_calrifle", "Pulse-Frame Calibration Rifle", 7, 38, 46, 45, 30, true),
+        ("butch_cleaver", "Butcher's Cleaver", 13, 42, 39, 45, 30, false),
+        ("duel_splitter", "Duelist's Splitter", 12, 27, 41, 45, 29, false),
     };
 
     private static IEnumerable<string> BloodFrenzyLootTableIds => BloodFrenzyLootTables

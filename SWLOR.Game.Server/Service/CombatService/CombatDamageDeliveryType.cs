@@ -6,5 +6,6 @@ namespace SWLOR.Game.Server.Service.CombatService
         Direct = 1,
         DamageOverTime = 2,
         Triggered = 3,
+        Transferred = 4,
     }
 }

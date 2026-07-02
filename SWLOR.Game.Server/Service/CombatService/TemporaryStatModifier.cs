@@ -176,6 +176,11 @@ namespace SWLOR.Game.Server.Service.CombatService
             }
         }
 
+        public static void Refresh(uint creature, StatType statType, float durationSeconds, StatType groupStatType)
+        {
+            Refresh(creature, statType, durationSeconds, GetGroup(groupStatType));
+        }
+
         public static void Clear(uint creature)
         {
             _modifiers.Remove(creature);

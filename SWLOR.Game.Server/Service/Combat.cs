@@ -29,11 +29,9 @@ namespace SWLOR.Game.Server.Service
         private const int BaseGuardDamageReductionPercent = 20;
         private const int MaximumGuardDamageReductionPercent = 40;
         private const int MaximumNormalDamageReductionPercent = 95;
-        private const string DamageShareSuppressionLocal = "DAMAGE_SHARE_SUPPRESSION";
 
         public const int StandardCriticalRating = 2;
         public const int BaseAttackDelayMilliseconds = 1750;
-        public const string GeneratedWeaponAbilityHasteGroup = "GeneratedWeaponAbility:Haste";
 
         // The engine/client cannot play swing animations faster than the base attack delay.
         // Delays below it are honored by resolving multiple attack rolls within a single swing,
@@ -513,7 +511,8 @@ namespace SWLOR.Game.Server.Service
             uint defender,
             int damage,
             uint attacker = OBJECT_INVALID,
-            CombatDamageType damageType = CombatDamageType.Physical)
+            CombatDamageType damageType = CombatDamageType.Physical,
+            CombatDamageDeliveryType deliveryType = CombatDamageDeliveryType.Direct)
         {
             if (damage <= 0)
                 return damage;
@@ -529,7 +528,8 @@ namespace SWLOR.Game.Server.Service
             damage += Stat.GetStatAdjustment(defender, StatType.DamageTakenFlatAdjustment);
             damage = Math.Max(1, damage);
             damage = ApplyDamageTakenRedirectToStatusSource(defender, attacker, damage, damageType);
-            damage = ApplyDamageTakenShareToStatusSource(defender, attacker, damage, damageType);
+            if (deliveryType != CombatDamageDeliveryType.Transferred)
+                damage = ApplyDamageTakenShareToStatusSource(defender, attacker, damage, damageType);
 
             if (damage <= 0)
                 return 0;
@@ -587,7 +587,7 @@ namespace SWLOR.Game.Server.Service
             int damage,
             CombatDamageType damageType)
         {
-            if (damage <= 0 || GetLocalInt(defender, DamageShareSuppressionLocal) > 0)
+            if (damage <= 0)
                 return damage;
 
             var sharePercent = Stat.GetStatAdjustment(defender, StatType.DamageTakenShareToStatusSourcePercent);
@@ -608,29 +608,29 @@ namespace SWLOR.Game.Server.Service
             var sharedDamage = Math.Min(
                 damage,
                 Math.Max(1, (int)Math.Ceiling(damage * (Math.Min(100, sharePercent) / 100f))));
+            var finalSharedDamage = ApplyDamageTakenModifiers(
+                shareTarget,
+                sharedDamage,
+                attacker,
+                damageType,
+                CombatDamageDeliveryType.Transferred);
 
-            AssignCommand(
-                defender,
-                () =>
-                {
-                    SetLocalInt(shareTarget, DamageShareSuppressionLocal, 1);
-                    try
-                    {
-                        ApplyEffectToObject(
-                            DurationType.Instant,
-                            EffectDamage(sharedDamage, damageType.GetNWScriptDamageType()),
-                            shareTarget);
-                    }
-                    finally
-                    {
-                        DeleteLocalInt(shareTarget, DamageShareSuppressionLocal);
-                    }
-                });
-            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Holy_Aid), shareTarget);
-
-            if (GetIsObjectValid(attacker) && GetIsReactionTypeHostile(attacker, shareTarget))
+            if (finalSharedDamage > 0)
             {
-                Enmity.ModifyEnmity(shareTarget, attacker, sharedDamage);
+                AssignCommand(
+                    defender,
+                    () => ApplyEffectToObject(
+                        DurationType.Instant,
+                        EffectDamage(finalSharedDamage, damageType.GetNWScriptDamageType()),
+                        shareTarget));
+                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Holy_Aid), shareTarget);
+            }
+
+            if (finalSharedDamage > 0 &&
+                GetIsObjectValid(attacker) &&
+                GetIsReactionTypeHostile(attacker, shareTarget))
+            {
+                Enmity.ModifyEnmity(shareTarget, attacker, finalSharedDamage);
             }
 
             return damage - sharedDamage;
@@ -4344,7 +4344,7 @@ namespace SWLOR.Game.Server.Service
                 attacker,
                 StatType.AttackDelayReductionPercent,
                 duration,
-                GeneratedWeaponAbilityHasteGroup);
+                StatType.AttackDelayReductionPercent);
         }
 
         private static bool HasSunderPenaltyAtLeast(uint target, int defensePenaltyPercent)

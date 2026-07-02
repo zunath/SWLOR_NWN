@@ -391,7 +391,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                             SelfHastePercentIfAllHitsLand,
                             SelfHasteDurationSecondsIfAllHitsLand,
                             SelfHasteMaximumPercentIfAllHitsLand > 0 ? SelfHasteMaximumPercentIfAllHitsLand : SelfHastePercentIfAllHitsLand,
-                            Combat.GeneratedWeaponAbilityHasteGroup,
+                            StatType.AttackDelayReductionPercent,
                             1);
                     }
                 }
@@ -440,7 +440,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                         SelfHastePercent,
                         SelfHasteDurationSeconds,
                         max,
-                        Combat.GeneratedWeaponAbilityHasteGroup,
+                        StatType.AttackDelayReductionPercent,
                         1);
                 }
 

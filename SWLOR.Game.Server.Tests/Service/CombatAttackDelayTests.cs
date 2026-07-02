@@ -411,45 +411,7 @@ public class CombatAttackDelayTests
         string path,
         ICollection<string> findings)
     {
-        switch (element.ValueKind)
-        {
-            case JsonValueKind.Object:
-                if (TryGetWrappedInt(element, "BaseItem", out var baseItem) &&
-                    WeaponDelayCostByBaseItem.TryGetValue(baseItem, out var expectedDelayCost) &&
-                    TryGetWrappedValue(element, "PropertiesList", out var propertiesList))
-                {
-                    var delayCosts = GetDelayCostValues(propertiesList).ToList();
-                    if (delayCosts.Count == 0)
-                    {
-                        findings.Add($"{file}:{path} missing weapon Delay");
-                    }
-                    else if (delayCosts.Any(x => x != expectedDelayCost))
-                    {
-                        findings.Add($"{file}:{path} weapon Delay [{string.Join(", ", delayCosts)}] should be {expectedDelayCost}");
-                    }
-                }
-
-                foreach (var property in element.EnumerateObject())
-                {
-                    if (property.Name == "__struct_id")
-                        continue;
-
-                    InspectWeaponDelays(
-                        property.Value,
-                        file,
-                        string.IsNullOrWhiteSpace(path) ? property.Name : $"{path}.{property.Name}",
-                        findings);
-                }
-                break;
-            case JsonValueKind.Array:
-                var index = 0;
-                foreach (var item in element.EnumerateArray())
-                {
-                    InspectWeaponDelays(item, file, $"{path}[{index}]", findings);
-                    index++;
-                }
-                break;
-        }
+        InspectItemDelays(element, file, path, findings, InspectWeaponDelay);
     }
 
     private static void InspectShieldDelays(
@@ -458,18 +420,23 @@ public class CombatAttackDelayTests
         string path,
         ICollection<string> findings)
     {
+        InspectItemDelays(element, file, path, findings, InspectShieldDelay);
+    }
+
+    private static void InspectItemDelays(
+        JsonElement element,
+        string file,
+        string path,
+        ICollection<string> findings,
+        Action<int, JsonElement, string, ICollection<string>> inspectItemDelay)
+    {
         switch (element.ValueKind)
         {
             case JsonValueKind.Object:
                 if (TryGetWrappedInt(element, "BaseItem", out var baseItem) &&
-                    ShieldBaseItems.Contains(baseItem) &&
                     TryGetWrappedValue(element, "PropertiesList", out var propertiesList))
                 {
-                    var delayCosts = GetDelayCostValues(propertiesList).ToList();
-                    if (delayCosts.Count > 0)
-                    {
-                        findings.Add($"{file}:{path} shield Delay [{string.Join(", ", delayCosts)}] should be removed");
-                    }
+                    inspectItemDelay(baseItem, propertiesList, $"{file}:{path}", findings);
                 }
 
                 foreach (var property in element.EnumerateObject())
@@ -477,21 +444,58 @@ public class CombatAttackDelayTests
                     if (property.Name == "__struct_id")
                         continue;
 
-                    InspectShieldDelays(
+                    InspectItemDelays(
                         property.Value,
                         file,
                         string.IsNullOrWhiteSpace(path) ? property.Name : $"{path}.{property.Name}",
-                        findings);
+                        findings,
+                        inspectItemDelay);
                 }
                 break;
             case JsonValueKind.Array:
                 var index = 0;
                 foreach (var item in element.EnumerateArray())
                 {
-                    InspectShieldDelays(item, file, $"{path}[{index}]", findings);
+                    InspectItemDelays(item, file, $"{path}[{index}]", findings, inspectItemDelay);
                     index++;
                 }
                 break;
+        }
+    }
+
+    private static void InspectWeaponDelay(
+        int baseItem,
+        JsonElement propertiesList,
+        string findingPath,
+        ICollection<string> findings)
+    {
+        if (!WeaponDelayCostByBaseItem.TryGetValue(baseItem, out var expectedDelayCost))
+            return;
+
+        var delayCosts = GetDelayCostValues(propertiesList).ToList();
+        if (delayCosts.Count == 0)
+        {
+            findings.Add($"{findingPath} missing weapon Delay");
+        }
+        else if (delayCosts.Any(x => x != expectedDelayCost))
+        {
+            findings.Add($"{findingPath} weapon Delay [{string.Join(", ", delayCosts)}] should be {expectedDelayCost}");
+        }
+    }
+
+    private static void InspectShieldDelay(
+        int baseItem,
+        JsonElement propertiesList,
+        string findingPath,
+        ICollection<string> findings)
+    {
+        if (!ShieldBaseItems.Contains(baseItem))
+            return;
+
+        var delayCosts = GetDelayCostValues(propertiesList).ToList();
+        if (delayCosts.Count > 0)
+        {
+            findings.Add($"{findingPath} shield Delay [{string.Join(", ", delayCosts)}] should be removed");
         }
     }
 

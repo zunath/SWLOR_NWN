@@ -224,6 +224,40 @@ public class CombatAttackDelayTests
     }
 
     [Test]
+    public void ConsumeAttacksPerSwing_TracksDebtPerAttacker()
+    {
+        const uint attackerOne = 100;
+        const uint attackerTwo = 200;
+        const int effectiveDelay = 1000;
+
+        Combat.ClearAttackSwingDebt(attackerOne);
+        Combat.ClearAttackSwingDebt(attackerTwo);
+
+        Combat.ConsumeAttacksPerSwing(attackerOne, effectiveDelay).Should().Be(1);
+        Combat.ConsumeAttacksPerSwing(attackerTwo, effectiveDelay).Should().Be(1);
+        Combat.ConsumeAttacksPerSwing(attackerOne, effectiveDelay).Should().Be(2);
+        Combat.ConsumeAttacksPerSwing(attackerTwo, effectiveDelay).Should().Be(2);
+
+        Combat.ClearAttackSwingDebt(attackerOne);
+        Combat.ClearAttackSwingDebt(attackerTwo);
+    }
+
+    [Test]
+    public void ClearAttackSwingDebt_ResetsStoredDebt()
+    {
+        const uint attacker = 300;
+        const int effectiveDelay = 1000;
+
+        Combat.ClearAttackSwingDebt(attacker);
+
+        Combat.ConsumeAttacksPerSwing(attacker, effectiveDelay).Should().Be(1);
+        Combat.ClearAttackSwingDebt(attacker);
+        Combat.ConsumeAttacksPerSwing(attacker, effectiveDelay).Should().Be(1);
+
+        Combat.ClearAttackSwingDebt(attacker);
+    }
+
+    [Test]
     public void CalculateEffectiveAttackDelay_UsesDefaultMinimumWhenNoDelayAttackIsQueued()
     {
         var attackerDelay = Combat.BaseAttackDelayMilliseconds + 2000;
@@ -308,6 +342,25 @@ public class CombatAttackDelayTests
         findings.Should().BeEmpty(string.Join("\n", findings.Take(25)));
     }
 
+    [Test]
+    public void ModuleShieldItems_DoNotHaveDelayProperties()
+    {
+        var root = FindRepositoryRoot();
+        var moduleRoot = Path.Combine(root.FullName, "Module");
+        var files = Directory.EnumerateFiles(Path.Combine(moduleRoot, "uti"), "*.json")
+            .Concat(Directory.EnumerateFiles(Path.Combine(moduleRoot, "git"), "*.json"))
+            .Concat(Directory.EnumerateFiles(Path.Combine(moduleRoot, "utc"), "*.json"));
+        var findings = new List<string>();
+
+        foreach (var file in files)
+        {
+            using var document = JsonDocument.Parse(File.ReadAllText(file));
+            InspectShieldDelays(document.RootElement, Path.GetRelativePath(root.FullName, file), string.Empty, findings);
+        }
+
+        findings.Should().BeEmpty(string.Join("\n", findings.Take(25)));
+    }
+
     private static DirectoryInfo FindRepositoryRoot()
     {
         var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
@@ -319,6 +372,9 @@ public class CombatAttackDelayTests
     }
 
     private static readonly IReadOnlyDictionary<int, int> WeaponDelayCostByBaseItem = BuildWeaponDelayCostByBaseItem();
+    private static readonly IReadOnlySet<int> ShieldBaseItems = SWLOR.Game.Server.Service.Item.ShieldBaseItemTypes
+        .Select(x => (int)x)
+        .ToHashSet();
 
     private static IReadOnlyDictionary<int, int> BuildWeaponDelayCostByBaseItem()
     {
@@ -390,6 +446,49 @@ public class CombatAttackDelayTests
                 foreach (var item in element.EnumerateArray())
                 {
                     InspectWeaponDelays(item, file, $"{path}[{index}]", findings);
+                    index++;
+                }
+                break;
+        }
+    }
+
+    private static void InspectShieldDelays(
+        JsonElement element,
+        string file,
+        string path,
+        ICollection<string> findings)
+    {
+        switch (element.ValueKind)
+        {
+            case JsonValueKind.Object:
+                if (TryGetWrappedInt(element, "BaseItem", out var baseItem) &&
+                    ShieldBaseItems.Contains(baseItem) &&
+                    TryGetWrappedValue(element, "PropertiesList", out var propertiesList))
+                {
+                    var delayCosts = GetDelayCostValues(propertiesList).ToList();
+                    if (delayCosts.Count > 0)
+                    {
+                        findings.Add($"{file}:{path} shield Delay [{string.Join(", ", delayCosts)}] should be removed");
+                    }
+                }
+
+                foreach (var property in element.EnumerateObject())
+                {
+                    if (property.Name == "__struct_id")
+                        continue;
+
+                    InspectShieldDelays(
+                        property.Value,
+                        file,
+                        string.IsNullOrWhiteSpace(path) ? property.Name : $"{path}.{property.Name}",
+                        findings);
+                }
+                break;
+            case JsonValueKind.Array:
+                var index = 0;
+                foreach (var item in element.EnumerateArray())
+                {
+                    InspectShieldDelays(item, file, $"{path}[{index}]", findings);
                     index++;
                 }
                 break;

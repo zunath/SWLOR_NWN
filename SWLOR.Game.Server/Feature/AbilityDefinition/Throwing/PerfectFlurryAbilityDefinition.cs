@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
                 builder.Create(FeatType.PerfectFlurry1, PerkType.PerfectFlurry)
                     .Name("Perfect Flurry")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.Capstone, 345.0f),
+                    .HasRecastDelay(RecastGroup.Capstone, 90.0f),
                 SkillType.Throwing,
                 30,
                 45,

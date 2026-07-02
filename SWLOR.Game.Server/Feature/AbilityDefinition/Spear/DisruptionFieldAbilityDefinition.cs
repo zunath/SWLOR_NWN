@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
                 builder.Create(FeatType.DisruptionField1, PerkType.DisruptionField)
                     .Name("Disruption Field I")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.DisruptionField, 60.0f),
+                    .HasRecastDelay(RecastGroup.DisruptionField, 30.0f),
                 SkillType.Spear,
                 16,
                 30,
@@ -47,7 +47,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
                 builder.Create(FeatType.DisruptionField2, PerkType.DisruptionField)
                     .Name("Disruption Field II")
                     .Level(2)
-                    .HasRecastDelay(RecastGroup.DisruptionField, 60.0f),
+                    .HasRecastDelay(RecastGroup.DisruptionField, 30.0f),
                 SkillType.Spear,
                 30,
                 30,

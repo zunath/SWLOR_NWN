@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                 builder.Create(FeatType.LaceratingCut1, PerkType.LaceratingCut)
                     .Name("Lacerating Cut I")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.LaceratingCut, 30.0f),
+                    .HasRecastDelay(RecastGroup.LaceratingCut, 18.0f),
                 SkillType.Vibroknife,
                 8,
                 30,
@@ -47,7 +47,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                 builder.Create(FeatType.LaceratingCut2, PerkType.LaceratingCut)
                     .Name("Lacerating Cut II")
                     .Level(2)
-                    .HasRecastDelay(RecastGroup.LaceratingCut, 30.0f),
+                    .HasRecastDelay(RecastGroup.LaceratingCut, 18.0f),
                 SkillType.Vibroknife,
                 18,
                 36,
@@ -73,7 +73,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                 builder.Create(FeatType.LaceratingCut3, PerkType.LaceratingCut)
                     .Name("Lacerating Cut III")
                     .Level(3)
-                    .HasRecastDelay(RecastGroup.LaceratingCut, 30.0f),
+                    .HasRecastDelay(RecastGroup.LaceratingCut, 18.0f),
                 SkillType.Vibroknife,
                 28,
                 45,
@@ -99,7 +99,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                 builder.Create(FeatType.LaceratingCut4, PerkType.LaceratingCut)
                     .Name("Lacerating Cut IV")
                     .Level(4)
-                    .HasRecastDelay(RecastGroup.LaceratingCut, 30.0f),
+                    .HasRecastDelay(RecastGroup.LaceratingCut, 18.0f),
                 SkillType.Vibroknife,
                 38,
                 60,

@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
                 builder.Create(FeatType.HamperingBarrage1, PerkType.HamperingBarrage)
                     .Name("Hampering Barrage I")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.HamperingBarrage, 60.0f),
+                    .HasRecastDelay(RecastGroup.HamperingBarrage, 30.0f),
                 SkillType.Spear,
                 16,
                 30,
@@ -47,7 +47,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
                 builder.Create(FeatType.HamperingBarrage2, PerkType.HamperingBarrage)
                     .Name("Hampering Barrage II")
                     .Level(2)
-                    .HasRecastDelay(RecastGroup.HamperingBarrage, 60.0f),
+                    .HasRecastDelay(RecastGroup.HamperingBarrage, 30.0f),
                 SkillType.Spear,
                 30,
                 30,

@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
                 .Level(1)
                 .HasActivationDelay(0f)
                 .UsesAnimation(Animation.Whirlwind)
-                .HasRecastDelay(RecastGroup.SoulStorm, 300f)
+                .HasRecastDelay(RecastGroup.SoulStorm, 90f)
                 .HasImpactAction((activator, target, level, targetLocation) =>
                 {
                     SacrificeHitPoints(activator, 40, 10);

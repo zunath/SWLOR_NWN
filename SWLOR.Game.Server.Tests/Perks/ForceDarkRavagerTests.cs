@@ -65,20 +65,20 @@ public class ForceDarkRavagerTests
         AssertAbility(forceSpark[FeatType.ForceSpark3], "Force Spark III", 3, RecastGroup.ForceSpark, 6f, 1f, 6, null, true, true, true, false, AbilityActivationType.Casted, 15f, true);
 
         var forceLightning = new ForceLightningAbilityDefinition().BuildAbilities();
-        AssertAbility(forceLightning[FeatType.ForceLightning1], "Force Lightning I", 1, RecastGroup.ForceLightning, 24f, 1.5f, 4, null, true, true, false, true, AbilityActivationType.Casted, 15f, true);
-        AssertAbility(forceLightning[FeatType.ForceLightning2], "Force Lightning II", 2, RecastGroup.ForceLightning, 24f, 1.5f, 6, null, true, true, false, true, AbilityActivationType.Casted, 15f, true);
+        AssertAbility(forceLightning[FeatType.ForceLightning1], "Force Lightning I", 1, RecastGroup.ForceLightning, 15f, 1.5f, 4, null, true, true, false, true, AbilityActivationType.Casted, 15f, true);
+        AssertAbility(forceLightning[FeatType.ForceLightning2], "Force Lightning II", 2, RecastGroup.ForceLightning, 15f, 1.5f, 6, null, true, true, false, true, AbilityActivationType.Casted, 15f, true);
 
         var forceDrain = new ForceDrainAbilityDefinition().BuildAbilities();
-        AssertAbility(forceDrain[FeatType.ForceDrain1], "Force Drain I", 1, RecastGroup.ForceDrain, 18f, 1f, 4, null, true, true, true, false, AbilityActivationType.Casted, 15f, true);
-        AssertAbility(forceDrain[FeatType.ForceDrain2], "Force Drain II", 2, RecastGroup.ForceDrain, 18f, 1f, 6, null, true, true, true, false, AbilityActivationType.Casted, 15f, true);
-        AssertAbility(forceDrain[FeatType.ForceDrain3], "Force Drain III", 3, RecastGroup.ForceDrain, 18f, 1f, 8, null, true, true, true, false, AbilityActivationType.Casted, 15f, true);
+        AssertAbility(forceDrain[FeatType.ForceDrain1], "Force Drain I", 1, RecastGroup.ForceDrain, 12f, 1f, 4, null, true, true, true, false, AbilityActivationType.Casted, 15f, true);
+        AssertAbility(forceDrain[FeatType.ForceDrain2], "Force Drain II", 2, RecastGroup.ForceDrain, 12f, 1f, 6, null, true, true, true, false, AbilityActivationType.Casted, 15f, true);
+        AssertAbility(forceDrain[FeatType.ForceDrain3], "Force Drain III", 3, RecastGroup.ForceDrain, 12f, 1f, 8, null, true, true, true, false, AbilityActivationType.Casted, 15f, true);
 
         var furyStance = new FuryStanceAbilityDefinition().BuildAbilities();
-        AssertAbility(furyStance[FeatType.FuryStance1], "Fury Stance I", 1, RecastGroup.FuryStance, 60f, 2f, 5, null, false, false, false, false, AbilityActivationType.Casted, 5f, false);
-        AssertAbility(furyStance[FeatType.FuryStance2], "Fury Stance II", 2, RecastGroup.FuryStance, 60f, 2f, 8, null, false, false, false, false, AbilityActivationType.Casted, 5f, false);
+        AssertAbility(furyStance[FeatType.FuryStance1], "Fury Stance I", 1, RecastGroup.FuryStance, 30f, 2f, 5, null, false, false, false, false, AbilityActivationType.Casted, 5f, false);
+        AssertAbility(furyStance[FeatType.FuryStance2], "Fury Stance II", 2, RecastGroup.FuryStance, 30f, 2f, 8, null, false, false, false, false, AbilityActivationType.Casted, 5f, false);
 
         var hunger = new HungerOfTheDarkAbilityDefinition().BuildAbilities()[FeatType.HungerOfTheDark1];
-        AssertAbility(hunger, "Hunger of the Dark", 1, RecastGroup.Capstone, 345f, 0f, 10, null, false, false, true, false, AbilityActivationType.Casted, 5f, false);
+        AssertAbility(hunger, "Hunger of the Dark", 1, RecastGroup.Capstone, 90f, 0f, 10, null, false, false, true, false, AbilityActivationType.Casted, 5f, false);
     }
 
     [Test]

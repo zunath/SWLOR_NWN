@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 builder.Create(FeatType.DoubleShot1, PerkType.DoubleShot)
                     .Name("Double Shot I")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.DoubleShot, 45.0f),
+                    .HasRecastDelay(RecastGroup.DoubleShot, 24.0f),
                 SkillType.Pistol,
                 6,
                 0,
@@ -51,7 +51,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 builder.Create(FeatType.DoubleShot2, PerkType.DoubleShot)
                     .Name("Double Shot II")
                     .Level(2)
-                    .HasRecastDelay(RecastGroup.DoubleShot, 45.0f),
+                    .HasRecastDelay(RecastGroup.DoubleShot, 24.0f),
                 SkillType.Pistol,
                 13,
                 0,
@@ -81,7 +81,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 builder.Create(FeatType.DoubleShot3, PerkType.DoubleShot)
                     .Name("Double Shot III")
                     .Level(3)
-                    .HasRecastDelay(RecastGroup.DoubleShot, 45.0f),
+                    .HasRecastDelay(RecastGroup.DoubleShot, 24.0f),
                 SkillType.Pistol,
                 20,
                 0,

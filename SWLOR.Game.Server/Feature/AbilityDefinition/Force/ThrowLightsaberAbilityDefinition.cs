@@ -62,7 +62,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .Name(name)
                 .Level(level)
                 .HasActivationDelay(1.5f)
-                .HasRecastDelay(RecastGroup.ThrowLightsaber, 18f)
+                .HasRecastDelay(RecastGroup.ThrowLightsaber, 12f)
                 .SkillType(SkillType.Force)
                 .CombatImpactDamageAbility(AbilityType.Willpower)
                 .UsesImpactAnimation(Animation.SaberThrow)

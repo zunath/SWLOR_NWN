@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
                 builder.Create(FeatType.TempestBloom1, PerkType.TempestBloom)
                     .Name("Tempest Bloom")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.Capstone, 345.0f),
+                    .HasRecastDelay(RecastGroup.Capstone, 90.0f),
                 SkillType.TwinBlade,
                 25,
                 45,

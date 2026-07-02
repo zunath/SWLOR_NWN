@@ -37,7 +37,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasActivationDelay(1.5f)
                 .UsesAnimation(Animation.LoopingConjure1)
                 .PlaysSoundOnImpact("ksfx_frc_armor")
-                .HasRecastDelay(RecastGroup.ForceSanctuary, 90f)
+                .HasRecastDelay(RecastGroup.ForceSanctuary, 45f)
                 .SkillType(SkillType.Force)
                 .IsAreaAbility()
                 .HasImpactAction(ForceSanctuary1ImpactAction)

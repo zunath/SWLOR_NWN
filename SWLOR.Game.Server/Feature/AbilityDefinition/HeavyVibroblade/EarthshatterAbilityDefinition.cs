@@ -44,7 +44,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
                 .Level(level)
                 .HasActivationDelay(0f)
                 .UsesAnimation(Animation.DoubleThrust)
-                .HasRecastDelay(RecastGroup.Earthshatter, 90f)
+                .HasRecastDelay(RecastGroup.Earthshatter, 45f)
                 .HasImpactAction(EarthshatterImpactAction)
                 .HasTargetingLine(
                     spell,

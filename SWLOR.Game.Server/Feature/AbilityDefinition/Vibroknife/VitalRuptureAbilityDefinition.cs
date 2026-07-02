@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                 builder.Create(FeatType.VitalRupture1, PerkType.VitalRupture)
                     .Name("Vital Rupture")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.Capstone, 345.0f),
+                    .HasRecastDelay(RecastGroup.Capstone, 90.0f),
                 SkillType.Vibroknife,
                 30,
                 45,

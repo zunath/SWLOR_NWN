@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                 builder.Create(FeatType.TempestStance1, PerkType.TempestStance)
                     .Name("Tempest Stance")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.TempestStance, 180.0f),
+                    .HasRecastDelay(RecastGroup.TempestStance, 30.0f),
                 SkillType.Saberstaff,
                 8,
                 30,

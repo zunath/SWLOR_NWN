@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                 builder.Create(FeatType.Hemorrhage1, PerkType.Hemorrhage)
                     .Name("Hemorrhage I")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.Hemorrhage, 60.0f),
+                    .HasRecastDelay(RecastGroup.Hemorrhage, 30.0f),
                 SkillType.Vibroknife,
                 16,
                 30,
@@ -47,7 +47,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                 builder.Create(FeatType.Hemorrhage2, PerkType.Hemorrhage)
                     .Name("Hemorrhage II")
                     .Level(2)
-                    .HasRecastDelay(RecastGroup.Hemorrhage, 60.0f),
+                    .HasRecastDelay(RecastGroup.Hemorrhage, 30.0f),
                 SkillType.Vibroknife,
                 30,
                 30,

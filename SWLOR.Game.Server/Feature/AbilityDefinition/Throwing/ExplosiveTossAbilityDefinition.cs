@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
                 builder.Create(FeatType.ExplosiveToss1, PerkType.ExplosiveToss)
                     .Name("Explosive Toss I")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.ExplosiveToss, 30.0f),
+                    .HasRecastDelay(RecastGroup.ExplosiveToss, 18.0f),
                 SkillType.Throwing,
                 8,
                 30,
@@ -47,7 +47,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
                 builder.Create(FeatType.ExplosiveToss2, PerkType.ExplosiveToss)
                     .Name("Explosive Toss II")
                     .Level(2)
-                    .HasRecastDelay(RecastGroup.ExplosiveToss, 30.0f),
+                    .HasRecastDelay(RecastGroup.ExplosiveToss, 18.0f),
                 SkillType.Throwing,
                 18,
                 30,
@@ -73,7 +73,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
                 builder.Create(FeatType.ExplosiveToss3, PerkType.ExplosiveToss)
                     .Name("Explosive Toss III")
                     .Level(3)
-                    .HasRecastDelay(RecastGroup.ExplosiveToss, 30.0f),
+                    .HasRecastDelay(RecastGroup.ExplosiveToss, 18.0f),
                 SkillType.Throwing,
                 28,
                 30,
@@ -99,7 +99,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
                 builder.Create(FeatType.ExplosiveToss4, PerkType.ExplosiveToss)
                     .Name("Explosive Toss IV")
                     .Level(4)
-                    .HasRecastDelay(RecastGroup.ExplosiveToss, 30.0f),
+                    .HasRecastDelay(RecastGroup.ExplosiveToss, 18.0f),
                 SkillType.Throwing,
                 38,
                 30,

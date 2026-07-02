@@ -39,7 +39,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 1,
                 14,
                 2,
-                18f,
+                12f,
                 typeof(ForceJudgment1StatusEffect),
                 1);
         }
@@ -54,7 +54,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 2,
                 24,
                 3,
-                18f,
+                12f,
                 typeof(ForceJudgment2StatusEffect),
                 2);
         }
@@ -69,7 +69,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 3,
                 36,
                 4,
-                24f,
+                15f,
                 typeof(ForceJudgment3StatusEffect),
                 0);
         }

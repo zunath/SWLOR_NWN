@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 builder.Create(FeatType.SkirmisherStance1, PerkType.SkirmisherStance)
                     .Name("Skirmisher Stance")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.SkirmisherStance, 180.0f),
+                    .HasRecastDelay(RecastGroup.SkirmisherStance, 30.0f),
                 SkillType.Pistol,
                 8,
                 0,

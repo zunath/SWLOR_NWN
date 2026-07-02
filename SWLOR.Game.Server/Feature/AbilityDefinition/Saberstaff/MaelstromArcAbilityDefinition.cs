@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                 builder.Create(FeatType.MaelstromArc1, PerkType.MaelstromArc)
                     .Name("Maelstrom Arc I")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.MaelstromArc, 60.0f),
+                    .HasRecastDelay(RecastGroup.MaelstromArc, 30.0f),
                 SkillType.Saberstaff,
                 16,
                 0,
@@ -50,7 +50,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                 builder.Create(FeatType.MaelstromArc2, PerkType.MaelstromArc)
                     .Name("Maelstrom Arc II")
                     .Level(2)
-                    .HasRecastDelay(RecastGroup.MaelstromArc, 60.0f),
+                    .HasRecastDelay(RecastGroup.MaelstromArc, 30.0f),
                 SkillType.Saberstaff,
                 30,
                 0,

@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 .Level(1)
                 .HasActivationDelay(0f)
                 .UsesAnimation(Animation.DoubleStrike)
-                .HasRecastDelay(RecastGroup.ApexBite, 120f)
+                .HasRecastDelay(RecastGroup.ApexBite, 45f)
                 .SkillType(SkillType.BeastMastery)
                 .IsSingleTargetAbility()
                 .RequiresTarget()

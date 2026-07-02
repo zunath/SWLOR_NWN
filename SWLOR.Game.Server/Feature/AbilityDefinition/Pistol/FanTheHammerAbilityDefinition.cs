@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 builder.Create(FeatType.FanTheHammer1, PerkType.FanTheHammer)
                     .Name("Fan the Hammer I")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.FanTheHammer, 60.0f),
+                    .HasRecastDelay(RecastGroup.FanTheHammer, 30.0f),
                 SkillType.Pistol,
                 14,
                 0,
@@ -50,7 +50,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 builder.Create(FeatType.FanTheHammer2, PerkType.FanTheHammer)
                     .Name("Fan the Hammer II")
                     .Level(2)
-                    .HasRecastDelay(RecastGroup.FanTheHammer, 60.0f),
+                    .HasRecastDelay(RecastGroup.FanTheHammer, 30.0f),
                 SkillType.Pistol,
                 26,
                 0,

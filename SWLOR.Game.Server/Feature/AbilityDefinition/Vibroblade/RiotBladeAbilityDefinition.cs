@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
                     .Create(FeatType.RiotBlade1, PerkType.RiotBlade)
                     .Name("Riot Blade I")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.RiotBlade, 60f),
+                    .HasRecastDelay(RecastGroup.RiotBlade, 30f),
                 15,
                 3);
             ConfigureRiotBlade(
@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
                     .Create(FeatType.RiotBlade2, PerkType.RiotBlade)
                     .Name("Riot Blade II")
                     .Level(2)
-                    .HasRecastDelay(RecastGroup.RiotBlade, 60f),
+                    .HasRecastDelay(RecastGroup.RiotBlade, 30f),
                 30,
                 5);
             ConfigureRiotBlade(
@@ -36,7 +36,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
                     .Create(FeatType.RiotBlade3, PerkType.RiotBlade)
                     .Name("Riot Blade III")
                     .Level(3)
-                    .HasRecastDelay(RecastGroup.RiotBlade, 60f),
+                    .HasRecastDelay(RecastGroup.RiotBlade, 30f),
                 45,
                 8);
 

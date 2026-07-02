@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
                     .Create(FeatType.ShieldWall1, PerkType.ShieldWall)
                     .Name("Shield Wall")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.ShieldWall, 120f)
+                    .HasRecastDelay(RecastGroup.ShieldWall, 45f)
                     .UsesAnimationOverwrite(ReplacementAnimationName),
                 typeof(ShieldWallStatusEffect),
                 60f,

@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
                 builder.Create(FeatType.WhirlingGuard1, PerkType.WhirlingGuard)
                     .Name("Whirling Guard")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.WhirlingGuard, 120.0f),
+                    .HasRecastDelay(RecastGroup.WhirlingGuard, 45.0f),
                 SkillType.Katar,
                 8,
                 30,

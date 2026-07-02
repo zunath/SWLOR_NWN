@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
                 builder.Create(FeatType.PinningToss1, PerkType.PinningToss)
                     .Name("Pinning Toss I")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.PinningToss, 45.0f),
+                    .HasRecastDelay(RecastGroup.PinningToss, 24.0f),
                 SkillType.Throwing,
                 12,
                 30,
@@ -52,7 +52,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
                 builder.Create(FeatType.PinningToss2, PerkType.PinningToss)
                     .Name("Pinning Toss II")
                     .Level(2)
-                    .HasRecastDelay(RecastGroup.PinningToss, 45.0f),
+                    .HasRecastDelay(RecastGroup.PinningToss, 24.0f),
                 SkillType.Throwing,
                 24,
                 30,
@@ -83,7 +83,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
                 builder.Create(FeatType.PinningToss3, PerkType.PinningToss)
                     .Name("Pinning Toss III")
                     .Level(3)
-                    .HasRecastDelay(RecastGroup.PinningToss, 45.0f),
+                    .HasRecastDelay(RecastGroup.PinningToss, 24.0f),
                 SkillType.Throwing,
                 36,
                 30,

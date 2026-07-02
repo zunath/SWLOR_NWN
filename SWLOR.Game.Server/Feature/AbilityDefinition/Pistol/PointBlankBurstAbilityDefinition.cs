@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 builder.Create(FeatType.PointBlankBurst1, PerkType.PointBlankBurst)
                     .Name("Point Blank Burst I")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.PointBlankBurst, 60.0f),
+                    .HasRecastDelay(RecastGroup.PointBlankBurst, 30.0f),
                 SkillType.Pistol,
                 16,
                 30,
@@ -51,7 +51,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 builder.Create(FeatType.PointBlankBurst2, PerkType.PointBlankBurst)
                     .Name("Point Blank Burst II")
                     .Level(2)
-                    .HasRecastDelay(RecastGroup.PointBlankBurst, 60.0f),
+                    .HasRecastDelay(RecastGroup.PointBlankBurst, 30.0f),
                 SkillType.Pistol,
                 30,
                 30,

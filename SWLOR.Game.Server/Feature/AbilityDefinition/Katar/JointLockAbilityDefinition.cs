@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
                 builder.Create(FeatType.JointLock1, PerkType.JointLock)
                     .Name("Joint Lock I")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.JointLock, 45.0f),
+                    .HasRecastDelay(RecastGroup.JointLock, 24.0f),
                 SkillType.Katar,
                 12,
                 30,
@@ -47,7 +47,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
                 builder.Create(FeatType.JointLock2, PerkType.JointLock)
                     .Name("Joint Lock II")
                     .Level(2)
-                    .HasRecastDelay(RecastGroup.JointLock, 45.0f),
+                    .HasRecastDelay(RecastGroup.JointLock, 24.0f),
                 SkillType.Katar,
                 24,
                 30,
@@ -73,7 +73,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
                 builder.Create(FeatType.JointLock3, PerkType.JointLock)
                     .Name("Joint Lock III")
                     .Level(3)
-                    .HasRecastDelay(RecastGroup.JointLock, 45.0f),
+                    .HasRecastDelay(RecastGroup.JointLock, 24.0f),
                 SkillType.Katar,
                 36,
                 30,

@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
                 builder.Create(FeatType.DisablingStrike1, PerkType.DisablingStrike)
                     .Name("Disabling Strike I")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.DisablingStrike, 30.0f),
+                    .HasRecastDelay(RecastGroup.DisablingStrike, 18.0f),
                 SkillType.Spear,
                 8,
                 30,
@@ -47,7 +47,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
                 builder.Create(FeatType.DisablingStrike2, PerkType.DisablingStrike)
                     .Name("Disabling Strike II")
                     .Level(2)
-                    .HasRecastDelay(RecastGroup.DisablingStrike, 30.0f),
+                    .HasRecastDelay(RecastGroup.DisablingStrike, 18.0f),
                 SkillType.Spear,
                 18,
                 30,
@@ -73,7 +73,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
                 builder.Create(FeatType.DisablingStrike3, PerkType.DisablingStrike)
                     .Name("Disabling Strike III")
                     .Level(3)
-                    .HasRecastDelay(RecastGroup.DisablingStrike, 30.0f),
+                    .HasRecastDelay(RecastGroup.DisablingStrike, 18.0f),
                 SkillType.Spear,
                 28,
                 30,
@@ -99,7 +99,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
                 builder.Create(FeatType.DisablingStrike4, PerkType.DisablingStrike)
                     .Name("Disabling Strike IV")
                     .Level(4)
-                    .HasRecastDelay(RecastGroup.DisablingStrike, 30.0f),
+                    .HasRecastDelay(RecastGroup.DisablingStrike, 18.0f),
                 SkillType.Spear,
                 38,
                 30,

@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 builder.Create(FeatType.GuardiansChallenge1, PerkType.GuardiansChallenge)
                     .Name("Guardian's Challenge I")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.GuardiansChallenge, 45.0f),
+                    .HasRecastDelay(RecastGroup.GuardiansChallenge, 24.0f),
                 SkillType.Lightsaber,
                 12,
                 30,
@@ -53,7 +53,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 builder.Create(FeatType.GuardiansChallenge2, PerkType.GuardiansChallenge)
                     .Name("Guardian's Challenge II")
                     .Level(2)
-                    .HasRecastDelay(RecastGroup.GuardiansChallenge, 45.0f),
+                    .HasRecastDelay(RecastGroup.GuardiansChallenge, 24.0f),
                 SkillType.Lightsaber,
                 24,
                 30,
@@ -85,7 +85,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 builder.Create(FeatType.GuardiansChallenge3, PerkType.GuardiansChallenge)
                     .Name("Guardian's Challenge III")
                     .Level(3)
-                    .HasRecastDelay(RecastGroup.GuardiansChallenge, 45.0f),
+                    .HasRecastDelay(RecastGroup.GuardiansChallenge, 24.0f),
                 SkillType.Lightsaber,
                 36,
                 30,

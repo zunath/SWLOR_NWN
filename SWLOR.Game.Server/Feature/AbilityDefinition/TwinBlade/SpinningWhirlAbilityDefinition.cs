@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
                 builder.Create(FeatType.SpinningWhirl1, PerkType.SpinningWhirl)
                     .Name("Spinning Whirl I")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.SpinningWhirl, 45.0f),
+                    .HasRecastDelay(RecastGroup.SpinningWhirl, 24.0f),
                 SkillType.TwinBlade,
                 10,
                 0,
@@ -50,7 +50,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
                 builder.Create(FeatType.SpinningWhirl2, PerkType.SpinningWhirl)
                     .Name("Spinning Whirl II")
                     .Level(2)
-                    .HasRecastDelay(RecastGroup.SpinningWhirl, 45.0f),
+                    .HasRecastDelay(RecastGroup.SpinningWhirl, 24.0f),
                 SkillType.TwinBlade,
                 20,
                 0,
@@ -79,7 +79,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
                 builder.Create(FeatType.SpinningWhirl3, PerkType.SpinningWhirl)
                     .Name("Spinning Whirl III")
                     .Level(3)
-                    .HasRecastDelay(RecastGroup.SpinningWhirl, 45.0f),
+                    .HasRecastDelay(RecastGroup.SpinningWhirl, 24.0f),
                 SkillType.TwinBlade,
                 30,
                 0,

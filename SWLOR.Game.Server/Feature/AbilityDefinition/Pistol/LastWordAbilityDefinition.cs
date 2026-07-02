@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 builder.Create(FeatType.LastWord1, PerkType.LastWord)
                     .Name("Last Word")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.Capstone, 345.0f),
+                    .HasRecastDelay(RecastGroup.Capstone, 90.0f),
                 SkillType.Pistol,
                 35,
                 45,

@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 builder.Create(FeatType.SurgeStrike1, PerkType.SurgeStrike)
                     .Name("Surge Strike I")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.SurgeStrike, 60.0f),
+                    .HasRecastDelay(RecastGroup.SurgeStrike, 30.0f),
                 SkillType.Lightsaber,
                 16,
                 30,
@@ -52,7 +52,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 builder.Create(FeatType.SurgeStrike2, PerkType.SurgeStrike)
                     .Name("Surge Strike II")
                     .Level(2)
-                    .HasRecastDelay(RecastGroup.SurgeStrike, 60.0f),
+                    .HasRecastDelay(RecastGroup.SurgeStrike, 30.0f),
                 SkillType.Lightsaber,
                 30,
                 30,

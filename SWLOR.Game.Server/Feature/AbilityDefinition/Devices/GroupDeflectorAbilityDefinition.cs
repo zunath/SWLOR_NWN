@@ -34,7 +34,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .HasActivationDelay(1.5f)
                 .UsesAnimation(Animation.CastOutAnimation)
                 .PlaysSoundOnImpact("ksfx_act_shield")
-                .HasRecastDelay(RecastGroup.GroupDeflector, 90f)
+                .HasRecastDelay(RecastGroup.GroupDeflector, 45f)
                 .SkillType(SkillType.Devices)
                 .IsAreaAbility()
                 .HasImpactAction(GroupDeflector1ImpactAction)

@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
                 builder.Create(FeatType.RainOfSteel1, PerkType.RainOfSteel)
                     .Name("Rain of Steel")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.Capstone, 345.0f),
+                    .HasRecastDelay(RecastGroup.Capstone, 90.0f),
                 SkillType.Throwing,
                 8,
                 45,

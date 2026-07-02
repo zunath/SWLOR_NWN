@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
                 builder.Create(FeatType.InterruptingSweep1, PerkType.InterruptingSweep)
                     .Name("Interrupting Sweep I")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.InterruptingSweep, 60.0f),
+                    .HasRecastDelay(RecastGroup.InterruptingSweep, 30.0f),
                 SkillType.Katar,
                 16,
                 0,
@@ -50,7 +50,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
                 builder.Create(FeatType.InterruptingSweep2, PerkType.InterruptingSweep)
                     .Name("Interrupting Sweep II")
                     .Level(2)
-                    .HasRecastDelay(RecastGroup.InterruptingSweep, 60.0f),
+                    .HasRecastDelay(RecastGroup.InterruptingSweep, 30.0f),
                 SkillType.Katar,
                 30,
                 0,

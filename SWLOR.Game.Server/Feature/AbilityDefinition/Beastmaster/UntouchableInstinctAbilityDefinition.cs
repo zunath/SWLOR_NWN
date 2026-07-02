@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 .Level(1)
                 .HasActivationDelay(0f)
                 .UsesAnimation(Animation.FireForgetDodgeSide)
-                .HasRecastDelay(RecastGroup.UntouchableInstinct, 120f)
+                .HasRecastDelay(RecastGroup.UntouchableInstinct, 45f)
                 .SkillType(SkillType.BeastMastery)
                 .IsSingleTargetAbility()
                 .HasImpactAction(UntouchableInstinct1ImpactAction)

@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 builder.Create(FeatType.SuppressingShot1, PerkType.SuppressingShot)
                     .Name("Suppressing Shot I")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.SuppressingShot, 30.0f),
+                    .HasRecastDelay(RecastGroup.SuppressingShot, 18.0f),
                 SkillType.Rifle,
                 8,
                 30,
@@ -52,7 +52,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 builder.Create(FeatType.SuppressingShot2, PerkType.SuppressingShot)
                     .Name("Suppressing Shot II")
                     .Level(2)
-                    .HasRecastDelay(RecastGroup.SuppressingShot, 30.0f),
+                    .HasRecastDelay(RecastGroup.SuppressingShot, 18.0f),
                 SkillType.Rifle,
                 18,
                 30,
@@ -83,7 +83,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 builder.Create(FeatType.SuppressingShot3, PerkType.SuppressingShot)
                     .Name("Suppressing Shot III")
                     .Level(3)
-                    .HasRecastDelay(RecastGroup.SuppressingShot, 30.0f),
+                    .HasRecastDelay(RecastGroup.SuppressingShot, 18.0f),
                 SkillType.Rifle,
                 28,
                 30,
@@ -114,7 +114,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 builder.Create(FeatType.SuppressingShot4, PerkType.SuppressingShot)
                     .Name("Suppressing Shot IV")
                     .Level(4)
-                    .HasRecastDelay(RecastGroup.SuppressingShot, 30.0f),
+                    .HasRecastDelay(RecastGroup.SuppressingShot, 18.0f),
                 SkillType.Rifle,
                 38,
                 30,

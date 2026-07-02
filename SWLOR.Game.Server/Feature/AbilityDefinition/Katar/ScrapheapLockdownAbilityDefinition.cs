@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
                 builder.Create(FeatType.ScrapheapLockdown1, PerkType.ScrapheapLockdown)
                     .Name("Scrapheap Lockdown")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.Capstone, 345.0f),
+                    .HasRecastDelay(RecastGroup.Capstone, 90.0f),
                 SkillType.Katar,
                 25,
                 30,

@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
                 builder.Create(FeatType.HookingStrike1, PerkType.HookingStrike)
                     .Name("Hooking Strike I")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.HookingStrike, 30.0f),
+                    .HasRecastDelay(RecastGroup.HookingStrike, 18.0f),
                 SkillType.Katar,
                 8,
                 30,
@@ -47,7 +47,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
                 builder.Create(FeatType.HookingStrike2, PerkType.HookingStrike)
                     .Name("Hooking Strike II")
                     .Level(2)
-                    .HasRecastDelay(RecastGroup.HookingStrike, 30.0f),
+                    .HasRecastDelay(RecastGroup.HookingStrike, 18.0f),
                 SkillType.Katar,
                 18,
                 30,
@@ -73,7 +73,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
                 builder.Create(FeatType.HookingStrike3, PerkType.HookingStrike)
                     .Name("Hooking Strike III")
                     .Level(3)
-                    .HasRecastDelay(RecastGroup.HookingStrike, 30.0f),
+                    .HasRecastDelay(RecastGroup.HookingStrike, 18.0f),
                 SkillType.Katar,
                 28,
                 30,
@@ -99,7 +99,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
                 builder.Create(FeatType.HookingStrike4, PerkType.HookingStrike)
                     .Name("Hooking Strike IV")
                     .Level(4)
-                    .HasRecastDelay(RecastGroup.HookingStrike, 30.0f),
+                    .HasRecastDelay(RecastGroup.HookingStrike, 18.0f),
                 SkillType.Katar,
                 38,
                 30,

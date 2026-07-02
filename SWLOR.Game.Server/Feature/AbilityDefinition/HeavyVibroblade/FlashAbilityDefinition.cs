@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
                 .Level(1)
                 .HasActivationDelay(0f)
                 .UsesAnimation(Animation.CastOutAnimation)
-                .HasRecastDelay(RecastGroup.Flash, 90f)
+                .HasRecastDelay(RecastGroup.Flash, 45f)
                 .HasImpactAction((activator, target, level, targetLocation) =>
                 {
                     Ability.ApplyTelegraphedCombatImpact(

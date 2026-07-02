@@ -40,13 +40,13 @@ public class ForceUniversalTests
     public void ForceUniversalAbilities_MatchCombatBible()
     {
         var forcePush = new ForcePushAbilityDefinition().BuildAbilities();
-        AssertAbility(forcePush[FeatType.ForcePush1], "Force Push I", 1, RecastGroup.ForcePush, 24f, 0f, 2, true, false, false, true, AbilityActivationType.Casted, 5f);
-        AssertAbility(forcePush[FeatType.ForcePush2], "Force Push II", 2, RecastGroup.ForcePush, 24f, 0f, 3, true, false, false, true, AbilityActivationType.Casted, 5f);
-        AssertAbility(forcePush[FeatType.ForcePush3], "Force Push III", 3, RecastGroup.ForcePush, 24f, 0f, 4, true, false, false, true, AbilityActivationType.Casted, 5f);
+        AssertAbility(forcePush[FeatType.ForcePush1], "Force Push I", 1, RecastGroup.ForcePush, 15f, 0f, 2, true, false, false, true, AbilityActivationType.Casted, 5f);
+        AssertAbility(forcePush[FeatType.ForcePush2], "Force Push II", 2, RecastGroup.ForcePush, 15f, 0f, 3, true, false, false, true, AbilityActivationType.Casted, 5f);
+        AssertAbility(forcePush[FeatType.ForcePush3], "Force Push III", 3, RecastGroup.ForcePush, 15f, 0f, 4, true, false, false, true, AbilityActivationType.Casted, 5f);
 
         var forceLeap = new ForceLeapAbilityDefinition().BuildAbilities();
-        AssertAbility(forceLeap[FeatType.ForceLeap1], "Force Leap I", 1, RecastGroup.ForceLeap, 30f, 0f, 3, true, true, true, false, AbilityActivationType.Casted, 15f);
-        AssertAbility(forceLeap[FeatType.ForceLeap2], "Force Leap II", 2, RecastGroup.ForceLeap, 30f, 0f, 4, true, true, true, false, AbilityActivationType.Casted, 18f);
+        AssertAbility(forceLeap[FeatType.ForceLeap1], "Force Leap I", 1, RecastGroup.ForceLeap, 18f, 0f, 3, true, true, true, false, AbilityActivationType.Casted, 15f);
+        AssertAbility(forceLeap[FeatType.ForceLeap2], "Force Leap II", 2, RecastGroup.ForceLeap, 18f, 0f, 4, true, true, true, false, AbilityActivationType.Casted, 18f);
     }
 
     [Test]

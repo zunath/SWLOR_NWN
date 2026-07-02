@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                 builder.Create(FeatType.Hamstring1, PerkType.Hamstring)
                     .Name("Hamstring I")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.Hamstring, 45.0f),
+                    .HasRecastDelay(RecastGroup.Hamstring, 24.0f),
                 SkillType.Vibroknife,
                 8,
                 30,
@@ -47,7 +47,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                 builder.Create(FeatType.Hamstring2, PerkType.Hamstring)
                     .Name("Hamstring II")
                     .Level(2)
-                    .HasRecastDelay(RecastGroup.Hamstring, 45.0f),
+                    .HasRecastDelay(RecastGroup.Hamstring, 24.0f),
                 SkillType.Vibroknife,
                 18,
                 30,
@@ -73,7 +73,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                 builder.Create(FeatType.Hamstring3, PerkType.Hamstring)
                     .Name("Hamstring III")
                     .Level(3)
-                    .HasRecastDelay(RecastGroup.Hamstring, 45.0f),
+                    .HasRecastDelay(RecastGroup.Hamstring, 24.0f),
                 SkillType.Vibroknife,
                 28,
                 30,

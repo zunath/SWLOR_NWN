@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
                 builder.Create(FeatType.ConcussiveToss1, PerkType.ConcussiveToss)
                     .Name("Concussive Toss I")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.ConcussiveToss, 60.0f),
+                    .HasRecastDelay(RecastGroup.ConcussiveToss, 30.0f),
                 SkillType.Throwing,
                 16,
                 30,
@@ -47,7 +47,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
                 builder.Create(FeatType.ConcussiveToss2, PerkType.ConcussiveToss)
                     .Name("Concussive Toss II")
                     .Level(2)
-                    .HasRecastDelay(RecastGroup.ConcussiveToss, 60.0f),
+                    .HasRecastDelay(RecastGroup.ConcussiveToss, 30.0f),
                 SkillType.Throwing,
                 30,
                 30,

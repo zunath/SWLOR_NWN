@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 builder.Create(FeatType.PunishingGuard1, PerkType.PunishingGuard)
                     .Name("Punishing Guard I")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.PunishingGuard, 60.0f),
+                    .HasRecastDelay(RecastGroup.PunishingGuard, 30.0f),
                 SkillType.Lightsaber,
                 16,
                 30,
@@ -53,7 +53,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 builder.Create(FeatType.PunishingGuard2, PerkType.PunishingGuard)
                     .Name("Punishing Guard II")
                     .Level(2)
-                    .HasRecastDelay(RecastGroup.PunishingGuard, 60.0f),
+                    .HasRecastDelay(RecastGroup.PunishingGuard, 30.0f),
                 SkillType.Lightsaber,
                 30,
                 30,

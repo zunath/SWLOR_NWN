@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 builder.Create(FeatType.GamblerStance1, PerkType.GamblerStance)
                     .Name("Gambler Stance")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.GamblerStance, 180.0f),
+                    .HasRecastDelay(RecastGroup.GamblerStance, 30.0f),
                 SkillType.Pistol,
                 8,
                 0,

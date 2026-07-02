@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
                 builder.Create(FeatType.VigorThrust1, PerkType.VigorThrust)
                     .Name("Vigor Thrust I")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.VigorThrust, 30.0f),
+                    .HasRecastDelay(RecastGroup.VigorThrust, 18.0f),
                 SkillType.Spear,
                 8,
                 30,
@@ -51,7 +51,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
                 builder.Create(FeatType.VigorThrust2, PerkType.VigorThrust)
                     .Name("Vigor Thrust II")
                     .Level(2)
-                    .HasRecastDelay(RecastGroup.VigorThrust, 30.0f),
+                    .HasRecastDelay(RecastGroup.VigorThrust, 18.0f),
                 SkillType.Spear,
                 18,
                 30,
@@ -81,7 +81,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
                 builder.Create(FeatType.VigorThrust3, PerkType.VigorThrust)
                     .Name("Vigor Thrust III")
                     .Level(3)
-                    .HasRecastDelay(RecastGroup.VigorThrust, 30.0f),
+                    .HasRecastDelay(RecastGroup.VigorThrust, 18.0f),
                 SkillType.Spear,
                 28,
                 30,
@@ -111,7 +111,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
                 builder.Create(FeatType.VigorThrust4, PerkType.VigorThrust)
                     .Name("Vigor Thrust IV")
                     .Level(4)
-                    .HasRecastDelay(RecastGroup.VigorThrust, 30.0f),
+                    .HasRecastDelay(RecastGroup.VigorThrust, 18.0f),
                 SkillType.Spear,
                 38,
                 30,

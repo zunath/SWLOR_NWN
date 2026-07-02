@@ -36,7 +36,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
                 .Level(level)
                 .HasActivationDelay(2f)
                 .UsesAnimation(Animation.LoopingGetMid)
-                .HasRecastDelay(RecastGroup.FieldRecovery, 60f)
+                .HasRecastDelay(RecastGroup.FieldRecovery, 30f)
                 .SkillType(SkillType.Leadership)
                 .IsAreaAbility()
                 .HasImpactAction(FieldRecoveryImpactAction)

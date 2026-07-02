@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
                 builder.Create(FeatType.SerratedArc1, PerkType.SerratedArc)
                     .Name("Serrated Arc I")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.SerratedArc, 45.0f),
+                    .HasRecastDelay(RecastGroup.SerratedArc, 24.0f),
                 SkillType.TwinBlade,
                 10,
                 0,
@@ -51,7 +51,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
                 builder.Create(FeatType.SerratedArc2, PerkType.SerratedArc)
                     .Name("Serrated Arc II")
                     .Level(2)
-                    .HasRecastDelay(RecastGroup.SerratedArc, 45.0f),
+                    .HasRecastDelay(RecastGroup.SerratedArc, 24.0f),
                 SkillType.TwinBlade,
                 20,
                 0,
@@ -81,7 +81,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
                 builder.Create(FeatType.SerratedArc3, PerkType.SerratedArc)
                     .Name("Serrated Arc III")
                     .Level(3)
-                    .HasRecastDelay(RecastGroup.SerratedArc, 45.0f),
+                    .HasRecastDelay(RecastGroup.SerratedArc, 24.0f),
                 SkillType.TwinBlade,
                 30,
                 0,

@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 .Level(1)
                 .HasActivationDelay(0f)
                 .UsesAnimation(Animation.ShieldWall)
-                .HasRecastDelay(RecastGroup.UnbreakableBeast, 180f)
+                .HasRecastDelay(RecastGroup.UnbreakableBeast, 60f)
                 .SkillType(SkillType.BeastMastery)
                 .IsSingleTargetAbility()
                 .HasImpactAction(UnbreakableBeast1ImpactAction)

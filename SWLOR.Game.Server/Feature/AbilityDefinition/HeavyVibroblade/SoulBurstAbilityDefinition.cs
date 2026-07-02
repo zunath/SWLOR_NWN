@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
                 .Level(1)
                 .HasActivationDelay(0f)
                 .UsesAnimation(Animation.CastOutAnimation)
-                .HasRecastDelay(RecastGroup.SoulBurst, 180f)
+                .HasRecastDelay(RecastGroup.SoulBurst, 60f)
                 .HasImpactAction(SoulBurst1ImpactAction)
                 .SkillType(SkillType.HeavyVibroblade)
                 .IsCastedAbility()

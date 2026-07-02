@@ -37,7 +37,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
                 .Level(level)
                 .HasActivationDelay(2f)
                 .UsesAnimation(Animation.LoopingLookFar)
-                .HasRecastDelay(RecastGroup.WatchfulPresence, 60f)
+                .HasRecastDelay(RecastGroup.WatchfulPresence, 30f)
                 .SkillType(SkillType.Leadership)
                 .IsAreaAbility()
                 .HasImpactAction(WatchfulPresenceImpactAction)

@@ -54,7 +54,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .Name(name)
                 .Level(level)
                 .HasActivationDelay(1f)
-                .HasRecastDelay(RecastGroup.ArcProjector, 18f)
+                .HasRecastDelay(RecastGroup.ArcProjector, 12f)
                 .SkillType(SkillType.Devices)
                 .CombatImpactDamageAbility(AbilityType.Perception)
                 .UsesImpactAnimation(Animation.CastOutAnimation)

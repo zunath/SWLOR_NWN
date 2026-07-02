@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .Name("Signal Jammer")
                 .Level(1)
                 .HasActivationDelay(1.5f)
-                .HasRecastDelay(RecastGroup.SignalJammer, 45f)
+                .HasRecastDelay(RecastGroup.SignalJammer, 24f)
                 .SkillType(SkillType.Devices)
                 .UsesAnimation(Animation.CastOutAnimation)
                 .IsAreaAbility()

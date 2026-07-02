@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
                 .Level(1)
                 .HasActivationDelay(2f)
                 .UsesAnimation(Animation.ShieldWall)
-                .HasRecastDelay(RecastGroup.BastionStance, 180f)
+                .HasRecastDelay(RecastGroup.BastionStance, 30f)
                 .HasActivationAction((activator, target, level, targetLocation) => ToggleSelfStatus(activator, typeof(BastionStanceStatusEffect)))
                 .RemoveStatusEffectOnPerkRefund(typeof(BastionStanceStatusEffect))
                 .HasImpactAction((activator, target, level, targetLocation) => ApplySelfStatus(activator, typeof(BastionStanceStatusEffect)))

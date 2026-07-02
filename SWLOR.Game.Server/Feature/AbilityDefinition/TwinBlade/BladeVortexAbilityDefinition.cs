@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
                 builder.Create(FeatType.BladeVortex1, PerkType.BladeVortex)
                     .Name("Blade Vortex I")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.BladeVortex, 60.0f),
+                    .HasRecastDelay(RecastGroup.BladeVortex, 30.0f),
                 SkillType.TwinBlade,
                 18,
                 0,
@@ -50,7 +50,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
                 builder.Create(FeatType.BladeVortex2, PerkType.BladeVortex)
                     .Name("Blade Vortex II")
                     .Level(2)
-                    .HasRecastDelay(RecastGroup.BladeVortex, 60.0f),
+                    .HasRecastDelay(RecastGroup.BladeVortex, 30.0f),
                 SkillType.TwinBlade,
                 30,
                 0,

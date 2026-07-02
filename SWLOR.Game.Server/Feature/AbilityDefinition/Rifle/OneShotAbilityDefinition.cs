@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 builder.Create(FeatType.OneShot1, PerkType.OneShot)
                     .Name("One Shot")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.Capstone, 345.0f),
+                    .HasRecastDelay(RecastGroup.Capstone, 90.0f),
                 SkillType.Rifle,
                 50,
                 0,

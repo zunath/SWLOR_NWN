@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                 builder.Create(FeatType.EnfeeblingStrike1, PerkType.EnfeeblingStrike)
                     .Name("Enfeebling Strike I")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.EnfeeblingStrike, 30.0f),
+                    .HasRecastDelay(RecastGroup.EnfeeblingStrike, 18.0f),
                 SkillType.Vibroknife,
                 10,
                 30,
@@ -50,7 +50,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                 builder.Create(FeatType.EnfeeblingStrike2, PerkType.EnfeeblingStrike)
                     .Name("Enfeebling Strike II")
                     .Level(2)
-                    .HasRecastDelay(RecastGroup.EnfeeblingStrike, 30.0f),
+                    .HasRecastDelay(RecastGroup.EnfeeblingStrike, 18.0f),
                 SkillType.Vibroknife,
                 22,
                 30,
@@ -79,7 +79,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                 builder.Create(FeatType.EnfeeblingStrike3, PerkType.EnfeeblingStrike)
                     .Name("Enfeebling Strike III")
                     .Level(3)
-                    .HasRecastDelay(RecastGroup.EnfeeblingStrike, 30.0f),
+                    .HasRecastDelay(RecastGroup.EnfeeblingStrike, 18.0f),
                 SkillType.Vibroknife,
                 34,
                 30,
@@ -108,7 +108,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                 builder.Create(FeatType.EnfeeblingStrike4, PerkType.EnfeeblingStrike)
                     .Name("Enfeebling Strike IV")
                     .Level(4)
-                    .HasRecastDelay(RecastGroup.EnfeeblingStrike, 30.0f),
+                    .HasRecastDelay(RecastGroup.EnfeeblingStrike, 18.0f),
                 SkillType.Vibroknife,
                 44,
                 30,

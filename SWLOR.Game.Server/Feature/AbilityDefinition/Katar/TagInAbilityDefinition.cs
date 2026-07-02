@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
                 builder.Create(FeatType.TwinIntercept1, PerkType.TwinIntercept)
                     .Name("Tag In")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.TwinIntercept, 30.0f),
+                    .HasRecastDelay(RecastGroup.TwinIntercept, 18.0f),
                 SkillType.Katar,
                 8,
                 30,

@@ -80,19 +80,19 @@ public class BeastmasterCombatUpgradeTests
     public void BeastmasterAbilities_MatchTargetingAndResourceCosts()
     {
         var apexBite = new ApexBiteAbilityDefinition().BuildAbilities()[FeatType.ApexBite1];
-        AssertStaminaAbility(apexBite, "Apex Bite", RecastGroup.ApexBite, 120f, 10, requiresTarget: true);
+        AssertStaminaAbility(apexBite, "Apex Bite", RecastGroup.ApexBite, 45f, 10, requiresTarget: true);
 
         var evasiveChallenge = new EvasiveChallengeAbilityDefinition().BuildAbilities();
-        AssertStaminaAbility(evasiveChallenge[FeatType.EvasiveChallenge1], "Evasive Challenge I", RecastGroup.EvasiveChallenge, 60f, 5, requiresTarget: true);
-        AssertStaminaAbility(evasiveChallenge[FeatType.EvasiveChallenge2], "Evasive Challenge II", RecastGroup.EvasiveChallenge, 60f, 7, requiresTarget: false);
+        AssertStaminaAbility(evasiveChallenge[FeatType.EvasiveChallenge1], "Evasive Challenge I", RecastGroup.EvasiveChallenge, 30f, 5, requiresTarget: true);
+        AssertStaminaAbility(evasiveChallenge[FeatType.EvasiveChallenge2], "Evasive Challenge II", RecastGroup.EvasiveChallenge, 30f, 7, requiresTarget: false);
 
         var anger = new AngerAbilityDefinition().BuildAbilities()[FeatType.Anger1];
-        AssertStaminaAbility(anger, "Anger I", RecastGroup.Anger, 18f, 3, requiresTarget: true);
+        AssertStaminaAbility(anger, "Anger I", RecastGroup.Anger, 12f, 3, requiresTarget: true);
         anger.AITargetSelector.Should().NotBeNull();
         anger.AIScore.Should().NotBeNull();
 
         var guardingRoar = new GuardingRoarAbilityDefinition().BuildAbilities()[FeatType.GuardingRoar1];
-        AssertStaminaAbility(guardingRoar, "Guarding Roar I", RecastGroup.GuardingRoar, 45f, 6, requiresTarget: false);
+        AssertStaminaAbility(guardingRoar, "Guarding Roar I", RecastGroup.GuardingRoar, 24f, 6, requiresTarget: false);
         guardingRoar.IsHostileAbility.Should().BeTrue();
         guardingRoar.IsAreaAbility.Should().BeTrue();
         guardingRoar.MaxRange.Should().Be(5f);
@@ -100,11 +100,11 @@ public class BeastmasterCombatUpgradeTests
         guardingRoar.AIScore.Should().NotBeNull();
 
         var ironHide = new IronHideAbilityDefinition().BuildAbilities()[FeatType.IronHide1];
-        AssertStaminaAbility(ironHide, "Iron Hide I", RecastGroup.IronHide, 30f, 3, requiresTarget: false);
+        AssertStaminaAbility(ironHide, "Iron Hide I", RecastGroup.IronHide, 18f, 3, requiresTarget: false);
 
         var forceTouch = new ForceTouchAbilityDefinition().BuildAbilities()[FeatType.ForceTouch3];
         forceTouch.Requirements.OfType<AbilityRequirementFP>().Should().ContainSingle().Which.RequiredFP.Should().Be(6);
-        forceTouch.RecastDelay(0).Should().Be(12f);
+        forceTouch.RecastDelay(0).Should().Be(8f);
 
         var guardingBond = new GuardingBondAbilityDefinition().BuildAbilities()[FeatType.GuardingBond];
         AssertBeastBondAbility(guardingBond, "Guarding Bond");
@@ -234,7 +234,7 @@ public class BeastmasterCombatUpgradeTests
         ability.Name.Should().Be(name);
         ability.SkillType.Should().Be(SkillType.BeastMastery);
         ability.RecastGroup.Should().Be(RecastGroup.BeastBond);
-        ability.RecastDelay(0).Should().Be(180f);
+        ability.RecastDelay(0).Should().Be(30f);
         ability.RequiresTarget.Should().BeFalse();
         ability.Requirements.OfType<AbilityRequirementStamina>().Should().BeEmpty();
         ability.StatusEffectTypesRemovedOnPerkRefund.Should().ContainSingle();

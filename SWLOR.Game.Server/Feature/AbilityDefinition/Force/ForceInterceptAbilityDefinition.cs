@@ -35,7 +35,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasActivationDelay(0f)
                 .UsesAnimation(Animation.ForceLeap)
                 .PlaysSoundOnImpact("ksfx_frc_speed")
-                .HasRecastDelay(RecastGroup.ForceIntercept, 45f)
+                .HasRecastDelay(RecastGroup.ForceIntercept, 24f)
                 .SkillType(SkillType.Force)
                 .IsSingleTargetAbility()
                 .HasMaxRange(15f)

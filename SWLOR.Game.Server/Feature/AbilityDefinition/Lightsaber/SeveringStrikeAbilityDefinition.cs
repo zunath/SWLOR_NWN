@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 builder.Create(FeatType.SeveringStrike1, PerkType.SeveringStrike)
                     .Name("Severing Strike I")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.SeveringStrike, 30.0f),
+                    .HasRecastDelay(RecastGroup.SeveringStrike, 18.0f),
                 SkillType.Lightsaber,
                 8,
                 30,
@@ -50,7 +50,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 builder.Create(FeatType.SeveringStrike2, PerkType.SeveringStrike)
                     .Name("Severing Strike II")
                     .Level(2)
-                    .HasRecastDelay(RecastGroup.SeveringStrike, 30.0f),
+                    .HasRecastDelay(RecastGroup.SeveringStrike, 18.0f),
                 SkillType.Lightsaber,
                 18,
                 30,
@@ -79,7 +79,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 builder.Create(FeatType.SeveringStrike3, PerkType.SeveringStrike)
                     .Name("Severing Strike III")
                     .Level(3)
-                    .HasRecastDelay(RecastGroup.SeveringStrike, 30.0f),
+                    .HasRecastDelay(RecastGroup.SeveringStrike, 18.0f),
                 SkillType.Lightsaber,
                 28,
                 30,
@@ -108,7 +108,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 builder.Create(FeatType.SeveringStrike4, PerkType.SeveringStrike)
                     .Name("Severing Strike IV")
                     .Level(4)
-                    .HasRecastDelay(RecastGroup.SeveringStrike, 30.0f),
+                    .HasRecastDelay(RecastGroup.SeveringStrike, 18.0f),
                 SkillType.Lightsaber,
                 38,
                 30,

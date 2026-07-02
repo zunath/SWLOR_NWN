@@ -31,17 +31,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 
         private static void IonLance1(AbilityBuilder builder)
         {
-            ConfigureIonLance(builder, FeatType.IonLance1, Spell.IonLance1, "Ion Lance I", 1, 12, 4, 24f);
+            ConfigureIonLance(builder, FeatType.IonLance1, Spell.IonLance1, "Ion Lance I", 1, 12, 4, 15f);
         }
 
         private static void IonLance2(AbilityBuilder builder)
         {
-            ConfigureIonLance(builder, FeatType.IonLance2, Spell.IonLance2, "Ion Lance II", 2, 22, 5, 24f);
+            ConfigureIonLance(builder, FeatType.IonLance2, Spell.IonLance2, "Ion Lance II", 2, 22, 5, 15f);
         }
 
         private static void IonLance3(AbilityBuilder builder)
         {
-            ConfigureIonLance(builder, FeatType.IonLance3, Spell.IonLance3, "Ion Lance III", 3, 32, 6, 30f);
+            ConfigureIonLance(builder, FeatType.IonLance3, Spell.IonLance3, "Ion Lance III", 3, 32, 6, 18f);
         }
 
         private static void ConfigureIonLance(

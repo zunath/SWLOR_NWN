@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
                 builder.Create(FeatType.Worldbreaker1, PerkType.Worldbreaker)
                     .Name("Worldbreaker")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.Capstone, 345.0f),
+                    .HasRecastDelay(RecastGroup.Capstone, 90.0f),
                 SkillType.Staff,
                 35,
                 30,

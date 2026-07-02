@@ -36,7 +36,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .HasActivationDelay(0f)
                 .UsesAnimation(Animation.FireForgetSalute)
                 .PlaysSoundOnImpact("ksfx_healing")
-                .HasRecastDelay(RecastGroup.EmergencyTriage, 45f)
+                .HasRecastDelay(RecastGroup.EmergencyTriage, 24f)
                 .SkillType(SkillType.FirstAid)
                 .IsSingleTargetAbility()
                 .HasMaxRange(RangeMeters)

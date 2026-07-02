@@ -19,10 +19,10 @@ public class ForceLightGuardianTests
     public void ForceLightGuardianAbilities_MatchCombatBible()
     {
         var guardianWard = new GuardianWardAbilityDefinition().BuildAbilities();
-        AssertAbility(guardianWard[FeatType.GuardianWard1], "Guardian Ward I", 1, RecastGroup.GuardianWard, 18f, 1f, 2, false, true, true, false, AbilityActivationType.Casted, 15f);
-        AssertAbility(guardianWard[FeatType.GuardianWard2], "Guardian Ward II", 2, RecastGroup.GuardianWard, 18f, 1f, 3, false, true, true, false, AbilityActivationType.Casted, 15f);
-        AssertAbility(guardianWard[FeatType.GuardianWard3], "Guardian Ward III", 3, RecastGroup.GuardianWard, 18f, 1f, 4, false, true, true, false, AbilityActivationType.Casted, 15f);
-        AssertAbility(guardianWard[FeatType.GuardianWard4], "Guardian Ward IV", 4, RecastGroup.GuardianWard, 18f, 1f, 6, false, true, true, false, AbilityActivationType.Casted, 15f);
+        AssertAbility(guardianWard[FeatType.GuardianWard1], "Guardian Ward I", 1, RecastGroup.GuardianWard, 12f, 1f, 2, false, true, true, false, AbilityActivationType.Casted, 15f);
+        AssertAbility(guardianWard[FeatType.GuardianWard2], "Guardian Ward II", 2, RecastGroup.GuardianWard, 12f, 1f, 3, false, true, true, false, AbilityActivationType.Casted, 15f);
+        AssertAbility(guardianWard[FeatType.GuardianWard3], "Guardian Ward III", 3, RecastGroup.GuardianWard, 12f, 1f, 4, false, true, true, false, AbilityActivationType.Casted, 15f);
+        AssertAbility(guardianWard[FeatType.GuardianWard4], "Guardian Ward IV", 4, RecastGroup.GuardianWard, 12f, 1f, 6, false, true, true, false, AbilityActivationType.Casted, 15f);
         guardianWard.Values.Select(x => x.ImpactSound).Should().OnlyContain(x => x == "ksfx_frc_armor");
 
         var root = FindRepositoryRoot();
@@ -30,17 +30,17 @@ public class ForceLightGuardianTests
         guardianWardSource.Should().NotContain("Vfx_Imp_Healing_M");
 
         var forceIntercept = new ForceInterceptAbilityDefinition().BuildAbilities()[FeatType.ForceIntercept1];
-        AssertAbility(forceIntercept, "Force Intercept", 1, RecastGroup.ForceIntercept, 45f, 0f, 5, false, true, true, false, AbilityActivationType.Casted, 15f);
+        AssertAbility(forceIntercept, "Force Intercept", 1, RecastGroup.ForceIntercept, 24f, 0f, 5, false, true, true, false, AbilityActivationType.Casted, 15f);
 
         var purifyingWave = new PurifyingWaveAbilityDefinition().BuildAbilities()[FeatType.PurifyingWave1];
-        AssertAbility(purifyingWave, "Purifying Wave", 1, RecastGroup.PurifyingWave, 90f, 1.5f, 7, true, false, false, true, AbilityActivationType.Casted, 5f);
+        AssertAbility(purifyingWave, "Purifying Wave", 1, RecastGroup.PurifyingWave, 45f, 1.5f, 7, true, false, false, true, AbilityActivationType.Casted, 5f);
         purifyingWave.CombatImpactDamageAbility.Should().Be(AbilityType.Willpower);
         purifyingWave.Targeting.Should().NotBeNull();
         purifyingWave.Targeting!.Flags.Should().Be(
             AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.HelpsAllies | AbilityTargetingFlags.OriginOnSelf);
 
         var lastStand = new LastStandOfTheLightAbilityDefinition().BuildAbilities()[FeatType.LastStandOfTheLight1];
-        AssertAbility(lastStand, "Last Stand of the Light", 1, RecastGroup.Capstone, 345f, 1.5f, 10, false, true, true, false, AbilityActivationType.Casted, 15f);
+        AssertAbility(lastStand, "Last Stand of the Light", 1, RecastGroup.Capstone, 90f, 1.5f, 10, false, true, true, false, AbilityActivationType.Casted, 15f);
     }
 
     [Test]

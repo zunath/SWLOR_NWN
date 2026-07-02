@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
                 builder.Create(FeatType.SeveringToss1, PerkType.SeveringToss)
                     .Name("Severing Toss I")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.SeveringToss, 60.0f),
+                    .HasRecastDelay(RecastGroup.SeveringToss, 30.0f),
                 SkillType.Throwing,
                 16,
                 30,
@@ -52,7 +52,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
                 builder.Create(FeatType.SeveringToss2, PerkType.SeveringToss)
                     .Name("Severing Toss II")
                     .Level(2)
-                    .HasRecastDelay(RecastGroup.SeveringToss, 60.0f),
+                    .HasRecastDelay(RecastGroup.SeveringToss, 30.0f),
                 SkillType.Throwing,
                 30,
                 30,

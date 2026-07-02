@@ -51,45 +51,45 @@ public class FirstAidCombatUpgradeTests
         AssertAbility(medKit[FeatType.MedKit4], "Med Kit IV", 4, RecastGroup.MedKit, 6f, 1.5f, 8, "med_supplies", 1, false, true);
 
         var treatmentKit = new TreatmentKitAbilityDefinition().BuildAbilities();
-        AssertAbility(treatmentKit[FeatType.TreatmentKit1], "Treatment Kit I", 1, RecastGroup.TreatmentKit, 8f, 1f, 3, "med_supplies", 1, false, true);
-        AssertAbility(treatmentKit[FeatType.TreatmentKit2], "Treatment Kit II", 2, RecastGroup.TreatmentKit, 8f, 1f, 4, "med_supplies", 1, false, true);
-        AssertAbility(treatmentKit[FeatType.TreatmentKit3], "Treatment Kit III", 3, RecastGroup.TreatmentKit, 18f, 1f, 5, null, 0, false, true);
+        AssertAbility(treatmentKit[FeatType.TreatmentKit1], "Treatment Kit I", 1, RecastGroup.TreatmentKit, 6f, 1f, 3, "med_supplies", 1, false, true);
+        AssertAbility(treatmentKit[FeatType.TreatmentKit2], "Treatment Kit II", 2, RecastGroup.TreatmentKit, 6f, 1f, 4, "med_supplies", 1, false, true);
+        AssertAbility(treatmentKit[FeatType.TreatmentKit3], "Treatment Kit III", 3, RecastGroup.TreatmentKit, 12f, 1f, 5, null, 0, false, true);
 
         var koltoMist = new KoltoMistAbilityDefinition().BuildAbilities();
-        AssertAbility(koltoMist[FeatType.KoltoMist1], "Kolto Mist I", 1, RecastGroup.KoltoMist, 30f, 1.5f, 6, "med_supplies", 1, true, false, maxRange: 15f, expectsCustomValidation: true);
-        AssertAbility(koltoMist[FeatType.KoltoMist2], "Kolto Mist II", 2, RecastGroup.KoltoMist, 30f, 1.5f, 7, "med_supplies", 1, true, false, maxRange: 15f, expectsCustomValidation: true);
+        AssertAbility(koltoMist[FeatType.KoltoMist1], "Kolto Mist I", 1, RecastGroup.KoltoMist, 18f, 1.5f, 6, "med_supplies", 1, true, false, maxRange: 15f, expectsCustomValidation: true);
+        AssertAbility(koltoMist[FeatType.KoltoMist2], "Kolto Mist II", 2, RecastGroup.KoltoMist, 18f, 1.5f, 7, "med_supplies", 1, true, false, maxRange: 15f, expectsCustomValidation: true);
 
         var resuscitation = new ResuscitationAbilityDefinition().BuildAbilities();
-        AssertAbility(resuscitation[FeatType.Resuscitation1], "Resuscitation I", 1, RecastGroup.Resuscitation, 180f, 4f, 10, "med_supplies", 1, false, true);
-        AssertAbility(resuscitation[FeatType.Resuscitation2], "Resuscitation II", 2, RecastGroup.Resuscitation, 180f, 4f, 10, "med_supplies", 1, false, true);
+        AssertAbility(resuscitation[FeatType.Resuscitation1], "Resuscitation I", 1, RecastGroup.Resuscitation, 60f, 4f, 10, "med_supplies", 1, false, true);
+        AssertAbility(resuscitation[FeatType.Resuscitation2], "Resuscitation II", 2, RecastGroup.Resuscitation, 60f, 4f, 10, "med_supplies", 1, false, true);
 
         var infusion = new InfusionAbilityDefinition().BuildAbilities();
-        AssertAbility(infusion[FeatType.Infusion1], "Infusion I", 1, RecastGroup.Infusion, 45f, 1f, 6, "med_supplies", 1, false, true);
-        AssertAbility(infusion[FeatType.Infusion2], "Infusion II", 2, RecastGroup.Infusion, 45f, 1f, 8, "med_supplies", 1, false, true);
+        AssertAbility(infusion[FeatType.Infusion1], "Infusion I", 1, RecastGroup.Infusion, 24f, 1f, 6, "med_supplies", 1, false, true);
+        AssertAbility(infusion[FeatType.Infusion2], "Infusion II", 2, RecastGroup.Infusion, 24f, 1f, 8, "med_supplies", 1, false, true);
 
-        AssertAbility(new EmergencyTriageAbilityDefinition().BuildAbilities()[FeatType.EmergencyTriage1], "Emergency Triage", 1, RecastGroup.EmergencyTriage, 45f, 0f, 8, "med_supplies", 2, false, true, maxRange: 15f);
+        AssertAbility(new EmergencyTriageAbilityDefinition().BuildAbilities()[FeatType.EmergencyTriage1], "Emergency Triage", 1, RecastGroup.EmergencyTriage, 24f, 0f, 8, "med_supplies", 2, false, true, maxRange: 15f);
 
         var adrenal = new AdrenalStimAbilityDefinition().BuildAbilities();
-        AssertAbility(adrenal[FeatType.AdrenalStim1], "Adrenal Stim I", 1, RecastGroup.AdrenalStim, 120f, 1f, null, "stim_pack", 1, false, true, true);
-        AssertAbility(adrenal[FeatType.AdrenalStim2], "Adrenal Stim II", 2, RecastGroup.AdrenalStim, 120f, 1f, null, "stim_pack", 1, false, true, true);
-        AssertAbility(adrenal[FeatType.AdrenalStim3], "Adrenal Stim III", 3, RecastGroup.AdrenalStim, 120f, 1f, null, "stim_pack", 1, false, true, true);
+        AssertAbility(adrenal[FeatType.AdrenalStim1], "Adrenal Stim I", 1, RecastGroup.AdrenalStim, 45f, 1f, null, "stim_pack", 1, false, true, true);
+        AssertAbility(adrenal[FeatType.AdrenalStim2], "Adrenal Stim II", 2, RecastGroup.AdrenalStim, 45f, 1f, null, "stim_pack", 1, false, true, true);
+        AssertAbility(adrenal[FeatType.AdrenalStim3], "Adrenal Stim III", 3, RecastGroup.AdrenalStim, 45f, 1f, null, "stim_pack", 1, false, true, true);
 
         var shielding = new ShieldingAbilityDefinition().BuildAbilities();
-        AssertAbility(shielding[FeatType.Shielding1], "Shielding I", 1, RecastGroup.Shielding, 30f, 1f, 3, "stim_pack", 1, false, true, true);
-        AssertAbility(shielding[FeatType.Shielding2], "Shielding II", 2, RecastGroup.Shielding, 30f, 1f, 4, "stim_pack", 1, false, true, true);
-        AssertAbility(shielding[FeatType.Shielding3], "Shielding III", 3, RecastGroup.Shielding, 30f, 1f, 5, "stim_pack", 1, false, true, true);
+        AssertAbility(shielding[FeatType.Shielding1], "Shielding I", 1, RecastGroup.Shielding, 18f, 1f, 3, "stim_pack", 1, false, true, true);
+        AssertAbility(shielding[FeatType.Shielding2], "Shielding II", 2, RecastGroup.Shielding, 18f, 1f, 4, "stim_pack", 1, false, true, true);
+        AssertAbility(shielding[FeatType.Shielding3], "Shielding III", 3, RecastGroup.Shielding, 18f, 1f, 5, "stim_pack", 1, false, true, true);
 
         var pain = new PainSuppressantAbilityDefinition().BuildAbilities();
-        AssertAbility(pain[FeatType.PainSuppressant1], "Pain Suppressant I", 1, RecastGroup.PainSuppressant, 60f, 1f, 5, "stim_pack", 1, false, true, true);
-        AssertAbility(pain[FeatType.PainSuppressant2], "Pain Suppressant II", 2, RecastGroup.PainSuppressant, 60f, 1f, 6, "stim_pack", 1, false, true, true);
+        AssertAbility(pain[FeatType.PainSuppressant1], "Pain Suppressant I", 1, RecastGroup.PainSuppressant, 30f, 1f, 5, "stim_pack", 1, false, true, true);
+        AssertAbility(pain[FeatType.PainSuppressant2], "Pain Suppressant II", 2, RecastGroup.PainSuppressant, 30f, 1f, 6, "stim_pack", 1, false, true, true);
 
-        AssertAbility(new AntitoxinAbilityDefinition().BuildAbilities()[FeatType.Antitoxin1], "Antitoxin", 1, RecastGroup.Antitoxin, 45f, 1f, 3, "stim_pack", 1, false, true, true);
+        AssertAbility(new AntitoxinAbilityDefinition().BuildAbilities()[FeatType.Antitoxin1], "Antitoxin", 1, RecastGroup.Antitoxin, 24f, 1f, 3, "stim_pack", 1, false, true, true);
 
         var focus = new FocusStimAbilityDefinition().BuildAbilities();
-        AssertAbility(focus[FeatType.FocusStim1], "Focus Stim I", 1, RecastGroup.FocusStim, 45f, 1f, 4, "stim_pack", 1, false, true, true);
-        AssertAbility(focus[FeatType.FocusStim2], "Focus Stim II", 2, RecastGroup.FocusStim, 45f, 1f, 5, "stim_pack", 1, false, true, true);
+        AssertAbility(focus[FeatType.FocusStim1], "Focus Stim I", 1, RecastGroup.FocusStim, 24f, 1f, 4, "stim_pack", 1, false, true, true);
+        AssertAbility(focus[FeatType.FocusStim2], "Focus Stim II", 2, RecastGroup.FocusStim, 24f, 1f, 5, "stim_pack", 1, false, true, true);
 
-        AssertAbility(new EmergencyCocktailAbilityDefinition().BuildAbilities()[FeatType.EmergencyCocktail1], "Emergency Cocktail", 1, RecastGroup.Capstone, 345f, 1f, 15, "stim_pack", 1, false, true, true);
+        AssertAbility(new EmergencyCocktailAbilityDefinition().BuildAbilities()[FeatType.EmergencyCocktail1], "Emergency Cocktail", 1, RecastGroup.Capstone, 90f, 1f, 15, "stim_pack", 1, false, true, true);
     }
 
     [Test]

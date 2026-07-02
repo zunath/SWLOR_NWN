@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 builder.Create(FeatType.AimedShot1, PerkType.AimedShot)
                     .Name("Aimed Shot I")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.AimedShot, 30.0f),
+                    .HasRecastDelay(RecastGroup.AimedShot, 18.0f),
                 SkillType.Rifle,
                 10,
                 3,
@@ -51,7 +51,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 builder.Create(FeatType.AimedShot2, PerkType.AimedShot)
                     .Name("Aimed Shot II")
                     .Level(2)
-                    .HasRecastDelay(RecastGroup.AimedShot, 30.0f),
+                    .HasRecastDelay(RecastGroup.AimedShot, 18.0f),
                 SkillType.Rifle,
                 22,
                 3,
@@ -81,7 +81,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 builder.Create(FeatType.AimedShot3, PerkType.AimedShot)
                     .Name("Aimed Shot III")
                     .Level(3)
-                    .HasRecastDelay(RecastGroup.AimedShot, 30.0f),
+                    .HasRecastDelay(RecastGroup.AimedShot, 18.0f),
                 SkillType.Rifle,
                 34,
                 3,
@@ -111,7 +111,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 builder.Create(FeatType.AimedShot4, PerkType.AimedShot)
                     .Name("Aimed Shot IV")
                     .Level(4)
-                    .HasRecastDelay(RecastGroup.AimedShot, 30.0f),
+                    .HasRecastDelay(RecastGroup.AimedShot, 18.0f),
                 SkillType.Rifle,
                 46,
                 3,

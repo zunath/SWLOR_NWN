@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
                 builder.Create(FeatType.FlashToss1, PerkType.FlashToss)
                     .Name("Flash Toss I")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.FlashToss, 45.0f),
+                    .HasRecastDelay(RecastGroup.FlashToss, 24.0f),
                 SkillType.Throwing,
                 12,
                 30,
@@ -47,7 +47,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
                 builder.Create(FeatType.FlashToss2, PerkType.FlashToss)
                     .Name("Flash Toss II")
                     .Level(2)
-                    .HasRecastDelay(RecastGroup.FlashToss, 45.0f),
+                    .HasRecastDelay(RecastGroup.FlashToss, 24.0f),
                 SkillType.Throwing,
                 24,
                 30,
@@ -73,7 +73,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
                 builder.Create(FeatType.FlashToss3, PerkType.FlashToss)
                     .Name("Flash Toss III")
                     .Level(3)
-                    .HasRecastDelay(RecastGroup.FlashToss, 45.0f),
+                    .HasRecastDelay(RecastGroup.FlashToss, 24.0f),
                 SkillType.Throwing,
                 36,
                 30,

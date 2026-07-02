@@ -42,7 +42,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
                 .Name(name)
                 .Level(level)
                 .HasActivationDelay(0f)
-                .HasRecastDelay(RecastGroup.ShieldBash, 60f)
+                .HasRecastDelay(RecastGroup.ShieldBash, 30f)
                 .HasCustomValidation((activator, target, effectivePerkLevel, targetLocation) =>
                 {
                     var (isOnRecast, _) = Recast.IsOnRecastDelay(activator, RecastGroup.ShieldBash);

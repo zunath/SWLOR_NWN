@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
                 .Level(1)
                 .HasActivationDelay(0f)
                 .UsesAnimation(Animation.ShieldWall)
-                .HasRecastDelay(RecastGroup.Rampart, 180f)
+                .HasRecastDelay(RecastGroup.Rampart, 60f)
                 .HasImpactAction((activator, target, level, targetLocation) =>
                 {
                     ApplyStatusToNearbyParty(

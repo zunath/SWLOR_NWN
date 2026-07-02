@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
                 builder.Create(FeatType.VigorStance1, PerkType.VigorStance)
                     .Name("Vigor Stance")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.VigorStance, 180.0f),
+                    .HasRecastDelay(RecastGroup.VigorStance, 30.0f),
                 SkillType.Spear,
                 8,
                 30,

@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                 builder.Create(FeatType.SeverFocus1, PerkType.SeverFocus)
                     .Name("Sever Focus I")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.SeverFocus, 60.0f),
+                    .HasRecastDelay(RecastGroup.SeverFocus, 30.0f),
                 SkillType.Saberstaff,
                 16,
                 0,
@@ -52,7 +52,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                 builder.Create(FeatType.SeverFocus2, PerkType.SeverFocus)
                     .Name("Sever Focus II")
                     .Level(2)
-                    .HasRecastDelay(RecastGroup.SeverFocus, 60.0f),
+                    .HasRecastDelay(RecastGroup.SeverFocus, 30.0f),
                 SkillType.Saberstaff,
                 30,
                 0,

@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
                 builder.Create(FeatType.Slam1, PerkType.Slam)
                     .Name("Slam I")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.Slam, 30.0f),
+                    .HasRecastDelay(RecastGroup.Slam, 18.0f),
                 SkillType.Staff,
                 8,
                 0,
@@ -50,7 +50,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
                 builder.Create(FeatType.Slam2, PerkType.Slam)
                     .Name("Slam II")
                     .Level(2)
-                    .HasRecastDelay(RecastGroup.Slam, 30.0f),
+                    .HasRecastDelay(RecastGroup.Slam, 18.0f),
                 SkillType.Staff,
                 18,
                 0,
@@ -79,7 +79,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
                 builder.Create(FeatType.Slam3, PerkType.Slam)
                     .Name("Slam III")
                     .Level(3)
-                    .HasRecastDelay(RecastGroup.Slam, 30.0f),
+                    .HasRecastDelay(RecastGroup.Slam, 18.0f),
                 SkillType.Staff,
                 28,
                 0,
@@ -108,7 +108,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
                 builder.Create(FeatType.Slam4, PerkType.Slam)
                     .Name("Slam IV")
                     .Level(4)
-                    .HasRecastDelay(RecastGroup.Slam, 30.0f),
+                    .HasRecastDelay(RecastGroup.Slam, 18.0f),
                 SkillType.Staff,
                 38,
                 0,

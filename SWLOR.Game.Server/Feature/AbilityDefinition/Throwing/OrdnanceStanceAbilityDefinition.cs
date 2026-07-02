@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
                 builder.Create(FeatType.OrdnanceStance1, PerkType.OrdnanceStance)
                     .Name("Ordnance Stance")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.OrdnanceStance, 180.0f),
+                    .HasRecastDelay(RecastGroup.OrdnanceStance, 30.0f),
                 SkillType.Throwing,
                 8,
                 0,

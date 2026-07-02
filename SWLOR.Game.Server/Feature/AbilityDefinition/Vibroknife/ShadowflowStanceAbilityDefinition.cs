@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                 builder.Create(FeatType.ShadowflowStance1, PerkType.ShadowflowStance)
                     .Name("Shadowflow Stance")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.ShadowflowStance, 180.0f),
+                    .HasRecastDelay(RecastGroup.ShadowflowStance, 30.0f),
                 SkillType.Vibroknife,
                 8,
                 0,

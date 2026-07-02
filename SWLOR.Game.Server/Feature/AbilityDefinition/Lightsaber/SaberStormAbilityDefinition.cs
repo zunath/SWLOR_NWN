@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 builder.Create(FeatType.SaberStorm1, PerkType.SaberStorm)
                     .Name("Saber Storm")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.Capstone, 345.0f),
+                    .HasRecastDelay(RecastGroup.Capstone, 90.0f),
                 SkillType.Lightsaber,
                 45,
                 45,

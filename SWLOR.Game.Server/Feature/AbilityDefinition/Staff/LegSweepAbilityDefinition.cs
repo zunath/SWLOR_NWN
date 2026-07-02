@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
                 builder.Create(FeatType.LegSweep1, PerkType.LegSweep)
                     .Name("Leg Sweep I")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.LegSweep, 45.0f),
+                    .HasRecastDelay(RecastGroup.LegSweep, 24.0f),
                 SkillType.Staff,
                 12,
                 30,
@@ -47,7 +47,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
                 builder.Create(FeatType.LegSweep2, PerkType.LegSweep)
                     .Name("Leg Sweep II")
                     .Level(2)
-                    .HasRecastDelay(RecastGroup.LegSweep, 45.0f),
+                    .HasRecastDelay(RecastGroup.LegSweep, 24.0f),
                 SkillType.Staff,
                 24,
                 30,
@@ -73,7 +73,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
                 builder.Create(FeatType.LegSweep3, PerkType.LegSweep)
                     .Name("Leg Sweep III")
                     .Level(3)
-                    .HasRecastDelay(RecastGroup.LegSweep, 45.0f),
+                    .HasRecastDelay(RecastGroup.LegSweep, 24.0f),
                 SkillType.Staff,
                 36,
                 30,

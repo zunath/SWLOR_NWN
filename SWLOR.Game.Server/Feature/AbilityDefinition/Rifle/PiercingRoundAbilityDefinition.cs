@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 builder.Create(FeatType.PiercingRound1, PerkType.PiercingRound)
                     .Name("Piercing Round I")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.PiercingRound, 45.0f),
+                    .HasRecastDelay(RecastGroup.PiercingRound, 24.0f),
                 SkillType.Rifle,
                 12,
                 0,
@@ -50,7 +50,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 builder.Create(FeatType.PiercingRound2, PerkType.PiercingRound)
                     .Name("Piercing Round II")
                     .Level(2)
-                    .HasRecastDelay(RecastGroup.PiercingRound, 45.0f),
+                    .HasRecastDelay(RecastGroup.PiercingRound, 24.0f),
                 SkillType.Rifle,
                 24,
                 0,
@@ -79,7 +79,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 builder.Create(FeatType.PiercingRound3, PerkType.PiercingRound)
                     .Name("Piercing Round III")
                     .Level(3)
-                    .HasRecastDelay(RecastGroup.PiercingRound, 45.0f),
+                    .HasRecastDelay(RecastGroup.PiercingRound, 24.0f),
                 SkillType.Rifle,
                 36,
                 0,

@@ -97,8 +97,8 @@ public class ForceLightConsularTests
     {
         var mindTrick = new MindTrickAbilityDefinition().BuildAbilities();
 
-        AssertAbility(mindTrick[FeatType.MindTrick1], "Mind Trick I", 1, RecastGroup.MindTrick, 60f, 1f, 4, true, true, true, false, AbilityActivationType.Casted, 15f);
-        AssertAbility(mindTrick[FeatType.MindTrick2], "Mind Trick II", 2, RecastGroup.MindTrick, 60f, 1f, 5, true, true, true, false, AbilityActivationType.Casted, 15f);
+        AssertAbility(mindTrick[FeatType.MindTrick1], "Mind Trick I", 1, RecastGroup.MindTrick, 30f, 1f, 4, true, true, true, false, AbilityActivationType.Casted, 15f);
+        AssertAbility(mindTrick[FeatType.MindTrick2], "Mind Trick II", 2, RecastGroup.MindTrick, 30f, 1f, 5, true, true, true, false, AbilityActivationType.Casted, 15f);
 
         var root = FindSourceRepositoryRoot();
         var abilitySource = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Force" / "MindTrickAbilityDefinition.cs").FullName);

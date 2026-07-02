@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 builder.Create(FeatType.SuppressionStance1, PerkType.SuppressionStance)
                     .Name("Suppression Stance")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.SuppressionStance, 180.0f),
+                    .HasRecastDelay(RecastGroup.SuppressionStance, 30.0f),
                 SkillType.Rifle,
                 8,
                 0,

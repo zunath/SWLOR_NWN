@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
                 builder.Create(FeatType.GroundQuake1, PerkType.GroundQuake)
                     .Name("Ground Quake I")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.GroundQuake, 60.0f),
+                    .HasRecastDelay(RecastGroup.GroundQuake, 30.0f),
                 SkillType.Staff,
                 18,
                 30,
@@ -52,7 +52,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
                 builder.Create(FeatType.GroundQuake2, PerkType.GroundQuake)
                     .Name("Ground Quake II")
                     .Level(2)
-                    .HasRecastDelay(RecastGroup.GroundQuake, 60.0f),
+                    .HasRecastDelay(RecastGroup.GroundQuake, 30.0f),
                 SkillType.Staff,
                 30,
                 30,

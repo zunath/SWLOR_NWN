@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
                 builder.Create(FeatType.LaceratingTwinCut1, PerkType.LaceratingTwinCut)
                     .Name("Lacerating Twin Cut I")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.LaceratingTwinCut, 30.0f),
+                    .HasRecastDelay(RecastGroup.LaceratingTwinCut, 18.0f),
                 SkillType.TwinBlade,
                 5,
                 30,
@@ -50,7 +50,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
                 builder.Create(FeatType.LaceratingTwinCut2, PerkType.LaceratingTwinCut)
                     .Name("Lacerating Twin Cut II")
                     .Level(2)
-                    .HasRecastDelay(RecastGroup.LaceratingTwinCut, 30.0f),
+                    .HasRecastDelay(RecastGroup.LaceratingTwinCut, 18.0f),
                 SkillType.TwinBlade,
                 11,
                 36,
@@ -79,7 +79,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
                 builder.Create(FeatType.LaceratingTwinCut3, PerkType.LaceratingTwinCut)
                     .Name("Lacerating Twin Cut III")
                     .Level(3)
-                    .HasRecastDelay(RecastGroup.LaceratingTwinCut, 30.0f),
+                    .HasRecastDelay(RecastGroup.LaceratingTwinCut, 18.0f),
                 SkillType.TwinBlade,
                 17,
                 45,
@@ -108,7 +108,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
                 builder.Create(FeatType.LaceratingTwinCut4, PerkType.LaceratingTwinCut)
                     .Name("Lacerating Twin Cut IV")
                     .Level(4)
-                    .HasRecastDelay(RecastGroup.LaceratingTwinCut, 30.0f),
+                    .HasRecastDelay(RecastGroup.LaceratingTwinCut, 18.0f),
                 SkillType.TwinBlade,
                 23,
                 60,

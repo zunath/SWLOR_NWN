@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                 builder.Create(FeatType.NerveStrike1, PerkType.NerveStrike)
                     .Name("Nerve Strike I")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.NerveStrike, 60.0f),
+                    .HasRecastDelay(RecastGroup.NerveStrike, 30.0f),
                 SkillType.Vibroknife,
                 18,
                 30,
@@ -50,7 +50,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                 builder.Create(FeatType.NerveStrike2, PerkType.NerveStrike)
                     .Name("Nerve Strike II")
                     .Level(2)
-                    .HasRecastDelay(RecastGroup.NerveStrike, 60.0f),
+                    .HasRecastDelay(RecastGroup.NerveStrike, 30.0f),
                 SkillType.Vibroknife,
                 30,
                 30,

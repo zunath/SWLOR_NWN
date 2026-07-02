@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
                 builder.Create(FeatType.SweepingFlank1, PerkType.SweepingFlank)
                     .Name("Sweeping Flank I")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.SweepingFlank, 45.0f),
+                    .HasRecastDelay(RecastGroup.SweepingFlank, 24.0f),
                 SkillType.Spear,
                 12,
                 0,
@@ -50,7 +50,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
                 builder.Create(FeatType.SweepingFlank2, PerkType.SweepingFlank)
                     .Name("Sweeping Flank II")
                     .Level(2)
-                    .HasRecastDelay(RecastGroup.SweepingFlank, 45.0f),
+                    .HasRecastDelay(RecastGroup.SweepingFlank, 24.0f),
                 SkillType.Spear,
                 24,
                 0,
@@ -79,7 +79,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
                 builder.Create(FeatType.SweepingFlank3, PerkType.SweepingFlank)
                     .Name("Sweeping Flank III")
                     .Level(3)
-                    .HasRecastDelay(RecastGroup.SweepingFlank, 45.0f),
+                    .HasRecastDelay(RecastGroup.SweepingFlank, 24.0f),
                 SkillType.Spear,
                 36,
                 0,

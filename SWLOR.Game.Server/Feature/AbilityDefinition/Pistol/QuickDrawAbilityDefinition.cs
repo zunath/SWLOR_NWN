@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 builder.Create(FeatType.QuickDraw1, PerkType.QuickDraw)
                     .Name("Quick Draw I")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.QuickDraw, 30.0f),
+                    .HasRecastDelay(RecastGroup.QuickDraw, 18.0f),
                 SkillType.Pistol,
                 8,
                 0,
@@ -51,7 +51,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 builder.Create(FeatType.QuickDraw2, PerkType.QuickDraw)
                     .Name("Quick Draw II")
                     .Level(2)
-                    .HasRecastDelay(RecastGroup.QuickDraw, 30.0f),
+                    .HasRecastDelay(RecastGroup.QuickDraw, 18.0f),
                 SkillType.Pistol,
                 18,
                 0,
@@ -81,7 +81,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 builder.Create(FeatType.QuickDraw3, PerkType.QuickDraw)
                     .Name("Quick Draw III")
                     .Level(3)
-                    .HasRecastDelay(RecastGroup.QuickDraw, 30.0f),
+                    .HasRecastDelay(RecastGroup.QuickDraw, 18.0f),
                 SkillType.Pistol,
                 28,
                 0,
@@ -111,7 +111,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 builder.Create(FeatType.QuickDraw4, PerkType.QuickDraw)
                     .Name("Quick Draw IV")
                     .Level(4)
-                    .HasRecastDelay(RecastGroup.QuickDraw, 30.0f),
+                    .HasRecastDelay(RecastGroup.QuickDraw, 18.0f),
                 SkillType.Pistol,
                 38,
                 0,

@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 builder.Create(FeatType.FocusedStance1, PerkType.FocusedStance)
                     .Name("Focused Stance")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.FocusedStance, 180.0f),
+                    .HasRecastDelay(RecastGroup.FocusedStance, 30.0f),
                 SkillType.Lightsaber,
                 8,
                 0,

@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 builder.Create(FeatType.SuppressiveLine1, PerkType.SuppressiveLine)
                     .Name("Suppressive Line I")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.SuppressiveLine, 60.0f),
+                    .HasRecastDelay(RecastGroup.SuppressiveLine, 30.0f),
                 SkillType.Rifle,
                 16,
                 30,
@@ -51,7 +51,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 builder.Create(FeatType.SuppressiveLine2, PerkType.SuppressiveLine)
                     .Name("Suppressive Line II")
                     .Level(2)
-                    .HasRecastDelay(RecastGroup.SuppressiveLine, 60.0f),
+                    .HasRecastDelay(RecastGroup.SuppressiveLine, 30.0f),
                 SkillType.Rifle,
                 30,
                 30,

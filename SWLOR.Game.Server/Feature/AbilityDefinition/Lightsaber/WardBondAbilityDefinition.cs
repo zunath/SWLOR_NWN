@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 builder.Create(FeatType.WardBond1, PerkType.WardBond)
                     .Name("Ward Bond I")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.WardBond, 30.0f),
+                    .HasRecastDelay(RecastGroup.WardBond, 18.0f),
                 SkillType.Lightsaber,
                 8,
                 45,
@@ -52,7 +52,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 builder.Create(FeatType.WardBond2, PerkType.WardBond)
                     .Name("Ward Bond II")
                     .Level(2)
-                    .HasRecastDelay(RecastGroup.WardBond, 30.0f),
+                    .HasRecastDelay(RecastGroup.WardBond, 18.0f),
                 SkillType.Lightsaber,
                 18,
                 45,
@@ -83,7 +83,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 builder.Create(FeatType.WardBond3, PerkType.WardBond)
                     .Name("Ward Bond III")
                     .Level(3)
-                    .HasRecastDelay(RecastGroup.WardBond, 30.0f),
+                    .HasRecastDelay(RecastGroup.WardBond, 18.0f),
                 SkillType.Lightsaber,
                 28,
                 45,
@@ -114,7 +114,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 builder.Create(FeatType.WardBond4, PerkType.WardBond)
                     .Name("Ward Bond IV")
                     .Level(4)
-                    .HasRecastDelay(RecastGroup.WardBond, 30.0f),
+                    .HasRecastDelay(RecastGroup.WardBond, 18.0f),
                 SkillType.Lightsaber,
                 38,
                 45,

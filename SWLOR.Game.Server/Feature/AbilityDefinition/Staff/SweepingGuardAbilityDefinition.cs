@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
                 builder.Create(FeatType.SweepingGuard1, PerkType.SweepingGuard)
                     .Name("Sweeping Guard")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.SweepingGuard, 60.0f),
+                    .HasRecastDelay(RecastGroup.SweepingGuard, 30.0f),
                 SkillType.Staff,
                 16,
                 30,

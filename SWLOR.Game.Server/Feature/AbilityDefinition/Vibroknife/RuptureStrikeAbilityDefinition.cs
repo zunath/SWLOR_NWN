@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                 builder.Create(FeatType.RuptureStrike1, PerkType.RuptureStrike)
                     .Name("Rupture Strike I")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.RuptureStrike, 45.0f),
+                    .HasRecastDelay(RecastGroup.RuptureStrike, 24.0f),
                 SkillType.Vibroknife,
                 10,
                 30,
@@ -51,7 +51,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                 builder.Create(FeatType.RuptureStrike2, PerkType.RuptureStrike)
                     .Name("Rupture Strike II")
                     .Level(2)
-                    .HasRecastDelay(RecastGroup.RuptureStrike, 45.0f),
+                    .HasRecastDelay(RecastGroup.RuptureStrike, 24.0f),
                 SkillType.Vibroknife,
                 22,
                 30,
@@ -81,7 +81,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                 builder.Create(FeatType.RuptureStrike3, PerkType.RuptureStrike)
                     .Name("Rupture Strike III")
                     .Level(3)
-                    .HasRecastDelay(RecastGroup.RuptureStrike, 45.0f),
+                    .HasRecastDelay(RecastGroup.RuptureStrike, 24.0f),
                 SkillType.Vibroknife,
                 34,
                 30,

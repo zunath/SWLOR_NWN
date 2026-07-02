@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
                 builder.Create(FeatType.TwinRupture1, PerkType.TwinRupture)
                     .Name("Twin Rupture I")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.TwinRupture, 60.0f),
+                    .HasRecastDelay(RecastGroup.TwinRupture, 30.0f),
                 SkillType.TwinBlade,
                 18,
                 30,
@@ -52,7 +52,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
                 builder.Create(FeatType.TwinRupture2, PerkType.TwinRupture)
                     .Name("Twin Rupture II")
                     .Level(2)
-                    .HasRecastDelay(RecastGroup.TwinRupture, 60.0f),
+                    .HasRecastDelay(RecastGroup.TwinRupture, 30.0f),
                 SkillType.TwinBlade,
                 32,
                 30,

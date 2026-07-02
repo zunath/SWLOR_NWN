@@ -32,7 +32,7 @@ public class ArmorProvokeTests
         provoke1.Name.Should().Be("Provoke I");
         provoke1.AbilityLevel.Should().Be(1);
         provoke1.RecastGroup.Should().Be(RecastGroup.Provoke);
-        provoke1.RecastDelay(0).Should().Be(10f);
+        provoke1.RecastDelay(0).Should().Be(6f);
         provoke1.ActivationDelay(0, 0, 1).Should().Be(1f);
         provoke1.MaxRange.Should().Be(15f);
         provoke1.IsSingleTargetAbility.Should().BeTrue();
@@ -44,7 +44,7 @@ public class ArmorProvokeTests
         provoke2.Name.Should().Be("Provoke II");
         provoke2.AbilityLevel.Should().Be(2);
         provoke2.RecastGroup.Should().Be(RecastGroup.Provoke2);
-        provoke2.RecastDelay(0).Should().Be(20f);
+        provoke2.RecastDelay(0).Should().Be(12f);
         provoke2.ActivationDelay(0, 0, 2).Should().Be(1f);
         provoke2.MaxRange.Should().Be(15f);
         provoke2.IsAreaAbility.Should().BeTrue();

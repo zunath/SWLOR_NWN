@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
                 builder.Create(FeatType.GuardCounter1, PerkType.GuardCounter)
                     .Name("Guard Counter I")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.GuardCounter, 30.0f),
+                    .HasRecastDelay(RecastGroup.GuardCounter, 18.0f),
                 SkillType.Katar,
                 8,
                 0,
@@ -51,7 +51,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
                 builder.Create(FeatType.GuardCounter2, PerkType.GuardCounter)
                     .Name("Guard Counter II")
                     .Level(2)
-                    .HasRecastDelay(RecastGroup.GuardCounter, 30.0f),
+                    .HasRecastDelay(RecastGroup.GuardCounter, 18.0f),
                 SkillType.Katar,
                 18,
                 0,
@@ -81,7 +81,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
                 builder.Create(FeatType.GuardCounter3, PerkType.GuardCounter)
                     .Name("Guard Counter III")
                     .Level(3)
-                    .HasRecastDelay(RecastGroup.GuardCounter, 45.0f),
+                    .HasRecastDelay(RecastGroup.GuardCounter, 24.0f),
                 SkillType.Katar,
                 28,
                 30,

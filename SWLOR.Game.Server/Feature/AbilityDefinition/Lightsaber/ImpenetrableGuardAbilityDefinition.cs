@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 builder.Create(FeatType.ImpenetrableGuard1, PerkType.ImpenetrableGuard)
                     .Name("Impenetrable Guard")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.ImpenetrableGuard, 180.0f),
+                    .HasRecastDelay(RecastGroup.ImpenetrableGuard, 30.0f),
                 SkillType.Lightsaber,
                 8,
                 0,

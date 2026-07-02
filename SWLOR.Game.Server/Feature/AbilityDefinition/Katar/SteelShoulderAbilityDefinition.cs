@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
                 builder.Create(FeatType.TwinGuardStance1, PerkType.TwinGuardStance)
                     .Name("Steel Shoulder")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.TwinGuardStance, 30.0f),
+                    .HasRecastDelay(RecastGroup.TwinGuardStance, 18.0f),
                 SkillType.Katar,
                 8,
                 0,

@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 builder.Create(FeatType.InterruptingShot1, PerkType.InterruptingShot)
                     .Name("Interrupting Shot I")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.InterruptingShot, 45.0f),
+                    .HasRecastDelay(RecastGroup.InterruptingShot, 24.0f),
                 SkillType.Pistol,
                 12,
                 30,
@@ -51,7 +51,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 builder.Create(FeatType.InterruptingShot2, PerkType.InterruptingShot)
                     .Name("Interrupting Shot II")
                     .Level(2)
-                    .HasRecastDelay(RecastGroup.InterruptingShot, 45.0f),
+                    .HasRecastDelay(RecastGroup.InterruptingShot, 24.0f),
                 SkillType.Pistol,
                 24,
                 30,
@@ -81,7 +81,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 builder.Create(FeatType.InterruptingShot3, PerkType.InterruptingShot)
                     .Name("Interrupting Shot III")
                     .Level(3)
-                    .HasRecastDelay(RecastGroup.InterruptingShot, 45.0f),
+                    .HasRecastDelay(RecastGroup.InterruptingShot, 24.0f),
                 SkillType.Pistol,
                 36,
                 30,

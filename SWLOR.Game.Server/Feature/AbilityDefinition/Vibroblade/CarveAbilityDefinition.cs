@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
                 .UsesAnimation(Animation.CrossCut)
                 .RequiresTarget()
                 .IsSingleTargetAbility()
-                .HasRecastDelay(RecastGroup.Carve, 75f)
+                .HasRecastDelay(RecastGroup.Carve, 36f)
                 .HasImpactAction(Carve1ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()

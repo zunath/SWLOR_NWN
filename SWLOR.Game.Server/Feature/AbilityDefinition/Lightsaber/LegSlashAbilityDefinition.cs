@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 builder.Create(FeatType.LegSlash1, PerkType.LegSlash)
                     .Name("Leg Slash I")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.LegSlash, 45.0f),
+                    .HasRecastDelay(RecastGroup.LegSlash, 24.0f),
                 SkillType.Lightsaber,
                 12,
                 30,
@@ -50,7 +50,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 builder.Create(FeatType.LegSlash2, PerkType.LegSlash)
                     .Name("Leg Slash II")
                     .Level(2)
-                    .HasRecastDelay(RecastGroup.LegSlash, 45.0f),
+                    .HasRecastDelay(RecastGroup.LegSlash, 24.0f),
                 SkillType.Lightsaber,
                 24,
                 30,
@@ -79,7 +79,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 builder.Create(FeatType.LegSlash3, PerkType.LegSlash)
                     .Name("Leg Slash III")
                     .Level(3)
-                    .HasRecastDelay(RecastGroup.LegSlash, 45.0f),
+                    .HasRecastDelay(RecastGroup.LegSlash, 24.0f),
                 SkillType.Lightsaber,
                 36,
                 30,

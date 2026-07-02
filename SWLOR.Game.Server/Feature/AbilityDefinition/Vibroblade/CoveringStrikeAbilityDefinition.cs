@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
                 .Level(1)
                 .HasActivationDelay(0f)
                 .UsesImpactAnimationOverwrite(ReplacementAnimationName)
-                .HasRecastDelay(RecastGroup.CoveringStrike, 45f)
+                .HasRecastDelay(RecastGroup.CoveringStrike, 24f)
                 .HasImpactAction(CoveringStrike1ImpactAction)
                 .HasTargetingLine(
                     Spell.CoveringStrike1,

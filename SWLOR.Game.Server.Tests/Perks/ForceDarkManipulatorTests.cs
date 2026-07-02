@@ -52,29 +52,29 @@ public class ForceDarkManipulatorTests
     public void ForceDarkManipulatorAbilities_MatchCombatBible()
     {
         var creepingTerror = new CreepingTerrorAbilityDefinition().BuildAbilities();
-        AssertAbility(creepingTerror[FeatType.CreepingTerror1], "Creeping Terror I", 1, RecastGroup.CreepingTerror, 30f, 1f, 4, true, false, false, true, AbilityActivationType.Casted, 15f, true);
-        AssertAbility(creepingTerror[FeatType.CreepingTerror2], "Creeping Terror II", 2, RecastGroup.CreepingTerror, 30f, 1f, 6, true, false, false, true, AbilityActivationType.Casted, 15f, true);
-        AssertAbility(creepingTerror[FeatType.CreepingTerror3], "Creeping Terror III", 3, RecastGroup.CreepingTerror, 30f, 1.5f, 8, true, false, false, true, AbilityActivationType.Casted, 15f, true);
+        AssertAbility(creepingTerror[FeatType.CreepingTerror1], "Creeping Terror I", 1, RecastGroup.CreepingTerror, 18f, 1f, 4, true, false, false, true, AbilityActivationType.Casted, 15f, true);
+        AssertAbility(creepingTerror[FeatType.CreepingTerror2], "Creeping Terror II", 2, RecastGroup.CreepingTerror, 18f, 1f, 6, true, false, false, true, AbilityActivationType.Casted, 15f, true);
+        AssertAbility(creepingTerror[FeatType.CreepingTerror3], "Creeping Terror III", 3, RecastGroup.CreepingTerror, 18f, 1.5f, 8, true, false, false, true, AbilityActivationType.Casted, 15f, true);
 
         var weakenResolve = new WeakenResolveAbilityDefinition().BuildAbilities();
-        AssertAbility(weakenResolve[FeatType.WeakenResolve1], "Weaken Resolve I", 1, RecastGroup.WeakenResolve, 18f, 1f, 3, true, true, true, false, AbilityActivationType.Casted, 15f, false);
-        AssertAbility(weakenResolve[FeatType.WeakenResolve2], "Weaken Resolve II", 2, RecastGroup.WeakenResolve, 18f, 1f, 5, true, true, true, false, AbilityActivationType.Casted, 15f, false);
+        AssertAbility(weakenResolve[FeatType.WeakenResolve1], "Weaken Resolve I", 1, RecastGroup.WeakenResolve, 12f, 1f, 3, true, true, true, false, AbilityActivationType.Casted, 15f, false);
+        AssertAbility(weakenResolve[FeatType.WeakenResolve2], "Weaken Resolve II", 2, RecastGroup.WeakenResolve, 12f, 1f, 5, true, true, true, false, AbilityActivationType.Casted, 15f, false);
 
         var nightmareField = new NightmareFieldAbilityDefinition().BuildAbilities()[FeatType.NightmareField1];
-        AssertAbility(nightmareField, "Nightmare Field", 1, RecastGroup.NightmareField, 75f, 1.5f, 7, true, false, false, true, AbilityActivationType.Casted, 5f, false);
+        AssertAbility(nightmareField, "Nightmare Field", 1, RecastGroup.NightmareField, 36f, 1.5f, 7, true, false, false, true, AbilityActivationType.Casted, 5f, false);
 
         var forceChoke = new ForceChokeAbilityDefinition().BuildAbilities();
-        AssertAbility(forceChoke[FeatType.ForceChoke1], "Force Choke I", 1, RecastGroup.ForceChoke, 36f, 1.5f, 2, true, true, true, false, AbilityActivationType.Casted, 15f, true);
-        AssertAbility(forceChoke[FeatType.ForceChoke2], "Force Choke II", 2, RecastGroup.ForceChoke, 36f, 1.5f, 3, true, true, true, false, AbilityActivationType.Casted, 15f, true);
-        AssertAbility(forceChoke[FeatType.ForceChoke3], "Force Choke III", 3, RecastGroup.ForceChoke, 36f, 1.5f, 4, true, true, true, false, AbilityActivationType.Casted, 15f, true);
-        AssertAbility(forceChoke[FeatType.ForceChoke4], "Force Choke IV", 4, RecastGroup.ForceChoke, 36f, 1.5f, 5, true, true, true, false, AbilityActivationType.Casted, 15f, true);
+        AssertAbility(forceChoke[FeatType.ForceChoke1], "Force Choke I", 1, RecastGroup.ForceChoke, 20f, 1.5f, 2, true, true, true, false, AbilityActivationType.Casted, 15f, true);
+        AssertAbility(forceChoke[FeatType.ForceChoke2], "Force Choke II", 2, RecastGroup.ForceChoke, 20f, 1.5f, 3, true, true, true, false, AbilityActivationType.Casted, 15f, true);
+        AssertAbility(forceChoke[FeatType.ForceChoke3], "Force Choke III", 3, RecastGroup.ForceChoke, 20f, 1.5f, 4, true, true, true, false, AbilityActivationType.Casted, 15f, true);
+        AssertAbility(forceChoke[FeatType.ForceChoke4], "Force Choke IV", 4, RecastGroup.ForceChoke, 20f, 1.5f, 5, true, true, true, false, AbilityActivationType.Casted, 15f, true);
         forceChoke[FeatType.ForceChoke1].ImpactAnimationType.Should().Be(Animation.CastOutAnimation);
         forceChoke[FeatType.ForceChoke2].ImpactAnimationType.Should().Be(Animation.CastOutAnimation);
         forceChoke[FeatType.ForceChoke3].ImpactAnimationType.Should().Be(Animation.CastOutAnimation);
         forceChoke[FeatType.ForceChoke4].ImpactAnimationType.Should().Be(Animation.CastOutAnimation);
 
         var eclipse = new EclipseOfResolveAbilityDefinition().BuildAbilities()[FeatType.EclipseOfResolve1];
-        AssertAbility(eclipse, "Eclipse of Resolve", 1, RecastGroup.Capstone, 345f, 1.5f, 10, true, false, false, true, AbilityActivationType.Casted, 5f, false);
+        AssertAbility(eclipse, "Eclipse of Resolve", 1, RecastGroup.Capstone, 90f, 1.5f, 10, true, false, false, true, AbilityActivationType.Casted, 5f, false);
     }
 
     [Test]

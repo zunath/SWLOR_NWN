@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 builder.Create(FeatType.Headshot1, PerkType.Headshot)
                     .Name("Headshot I")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.Headshot, 60.0f),
+                    .HasRecastDelay(RecastGroup.Headshot, 30.0f),
                 SkillType.Rifle,
                 20,
                 0,
@@ -51,7 +51,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 builder.Create(FeatType.Headshot2, PerkType.Headshot)
                     .Name("Headshot II")
                     .Level(2)
-                    .HasRecastDelay(RecastGroup.Headshot, 60.0f),
+                    .HasRecastDelay(RecastGroup.Headshot, 30.0f),
                 SkillType.Rifle,
                 38,
                 0,

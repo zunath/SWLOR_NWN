@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 .Create(FeatType.GuardingBond, PerkType.GuardingBond)
                 .Name("Guarding Bond")
                 .Level(1)
-                .HasRecastDelay(RecastGroup.BeastBond, 180f)
+                .HasRecastDelay(RecastGroup.BeastBond, 30f)
                 .UsesAnimation(Animation.FireForgetTaunt)
                 .SkillType(SkillType.BeastMastery)
                 .HasCustomValidation((activator, target, level, location) => ValidateBeast(activator));

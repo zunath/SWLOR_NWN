@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
                 builder.Create(FeatType.CrusherStance1, PerkType.CrusherStance)
                     .Name("Crusher Stance")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.CrusherStance, 180.0f),
+                    .HasRecastDelay(RecastGroup.CrusherStance, 30.0f),
                 SkillType.Staff,
                 8,
                 0,

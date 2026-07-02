@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
                 builder.Create(FeatType.ScrapperStance1, PerkType.ScrapperStance)
                     .Name("Scrapper Stance")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.ScrapperStance, 180.0f),
+                    .HasRecastDelay(RecastGroup.ScrapperStance, 30.0f),
                 SkillType.Katar,
                 8,
                 0,

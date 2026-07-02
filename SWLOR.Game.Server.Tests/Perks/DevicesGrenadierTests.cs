@@ -59,21 +59,21 @@ public class DevicesGrenadierTests
     public void DevicesGrenadierAbilities_MatchCombatBible()
     {
         var flashGrenade = new FlashGrenadeAbilityDefinition().BuildAbilities()[FeatType.FlashGrenade1];
-        AssertAbility(flashGrenade, "Flash Grenade", 1, RecastGroup.FlashGrenade, 24f, 1f, 2, "explosives");
+        AssertAbility(flashGrenade, "Flash Grenade", 1, RecastGroup.FlashGrenade, 15f, 1f, 2, "explosives");
         AssertTargeting(flashGrenade, Spell.FlashGrenade1, 4f);
 
         var adhesiveGrenade = new AdhesiveGrenadeAbilityDefinition().BuildAbilities();
-        AssertAbility(adhesiveGrenade[FeatType.AdhesiveGrenade1], "Adhesive Grenade I", 1, RecastGroup.AdhesiveGrenade, 30f, 1f, 4, "explosives");
+        AssertAbility(adhesiveGrenade[FeatType.AdhesiveGrenade1], "Adhesive Grenade I", 1, RecastGroup.AdhesiveGrenade, 18f, 1f, 4, "explosives");
         AssertTargeting(adhesiveGrenade[FeatType.AdhesiveGrenade1], Spell.AdhesiveGrenade1, 4f);
-        AssertAbility(adhesiveGrenade[FeatType.AdhesiveGrenade2], "Adhesive Grenade II", 2, RecastGroup.AdhesiveGrenade, 30f, 1f, 5, "explosives");
+        AssertAbility(adhesiveGrenade[FeatType.AdhesiveGrenade2], "Adhesive Grenade II", 2, RecastGroup.AdhesiveGrenade, 18f, 1f, 5, "explosives");
         AssertTargeting(adhesiveGrenade[FeatType.AdhesiveGrenade2], Spell.AdhesiveGrenade2, 4f);
 
         var clusterGrenade = new ClusterGrenadeAbilityDefinition().BuildAbilities()[FeatType.ClusterGrenade1];
-        AssertAbility(clusterGrenade, "Cluster Grenade", 1, RecastGroup.ClusterGrenade, 45f, 1f, 5, "explosives");
+        AssertAbility(clusterGrenade, "Cluster Grenade", 1, RecastGroup.ClusterGrenade, 24f, 1f, 5, "explosives");
         AssertTargeting(clusterGrenade, Spell.ClusterGrenade1, 3f);
 
         var disruptionPulse = new DisruptionPulseAbilityDefinition().BuildAbilities()[FeatType.DisruptionPulse1];
-        AssertAbility(disruptionPulse, "Disruption Pulse", 1, RecastGroup.DisruptionPulse, 45f, 1.5f, 4, "explosives");
+        AssertAbility(disruptionPulse, "Disruption Pulse", 1, RecastGroup.DisruptionPulse, 24f, 1.5f, 4, "explosives");
         disruptionPulse.MaxRange.Should().Be(12f);
         AssertTargeting(disruptionPulse, Spell.DisruptionPulse1, 5f);
     }

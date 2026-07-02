@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 .Level(1)
                 .HasActivationDelay(0f)
                 .UsesAnimation(Animation.FireForgetTaunt)
-                .HasRecastDelay(RecastGroup.AlphaRhythm, 120f)
+                .HasRecastDelay(RecastGroup.AlphaRhythm, 45f)
                 .SkillType(SkillType.BeastMastery)
                 .IsSingleTargetAbility()
                 .HasImpactAction(AlphaRhythm1ImpactAction)

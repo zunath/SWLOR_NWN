@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                 builder.Create(FeatType.DoubleStrike1, PerkType.DoubleStrike)
                     .Name("Double Strike I")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.DoubleStrike, 30.0f),
+                    .HasRecastDelay(RecastGroup.DoubleStrike, 18.0f),
                 SkillType.Saberstaff,
                 5,
                 0,
@@ -51,7 +51,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                 builder.Create(FeatType.DoubleStrike2, PerkType.DoubleStrike)
                     .Name("Double Strike II")
                     .Level(2)
-                    .HasRecastDelay(RecastGroup.DoubleStrike, 30.0f),
+                    .HasRecastDelay(RecastGroup.DoubleStrike, 18.0f),
                 SkillType.Saberstaff,
                 11,
                 0,
@@ -81,7 +81,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                 builder.Create(FeatType.DoubleStrike3, PerkType.DoubleStrike)
                     .Name("Double Strike III")
                     .Level(3)
-                    .HasRecastDelay(RecastGroup.DoubleStrike, 30.0f),
+                    .HasRecastDelay(RecastGroup.DoubleStrike, 18.0f),
                 SkillType.Saberstaff,
                 17,
                 0,
@@ -111,7 +111,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                 builder.Create(FeatType.DoubleStrike4, PerkType.DoubleStrike)
                     .Name("Double Strike IV")
                     .Level(4)
-                    .HasRecastDelay(RecastGroup.DoubleStrike, 30.0f),
+                    .HasRecastDelay(RecastGroup.DoubleStrike, 18.0f),
                 SkillType.Saberstaff,
                 23,
                 0,

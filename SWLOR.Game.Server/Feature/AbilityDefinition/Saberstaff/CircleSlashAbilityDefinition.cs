@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                 builder.Create(FeatType.CircleSlash1, PerkType.CircleSlash)
                     .Name("Circle Slash I")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.CircleSlash, 45.0f),
+                    .HasRecastDelay(RecastGroup.CircleSlash, 24.0f),
                 SkillType.Saberstaff,
                 12,
                 30,
@@ -51,7 +51,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                 builder.Create(FeatType.CircleSlash2, PerkType.CircleSlash)
                     .Name("Circle Slash II")
                     .Level(2)
-                    .HasRecastDelay(RecastGroup.CircleSlash, 45.0f),
+                    .HasRecastDelay(RecastGroup.CircleSlash, 24.0f),
                 SkillType.Saberstaff,
                 24,
                 30,
@@ -81,7 +81,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                 builder.Create(FeatType.CircleSlash3, PerkType.CircleSlash)
                     .Name("Circle Slash III")
                     .Level(3)
-                    .HasRecastDelay(RecastGroup.CircleSlash, 45.0f),
+                    .HasRecastDelay(RecastGroup.CircleSlash, 24.0f),
                 SkillType.Saberstaff,
                 36,
                 30,

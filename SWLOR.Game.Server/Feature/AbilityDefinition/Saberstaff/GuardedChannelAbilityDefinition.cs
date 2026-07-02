@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                 builder.Create(FeatType.GuardedChannel1, PerkType.GuardedChannel)
                     .Name("Guarded Channel I")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.GuardedChannel, 45.0f),
+                    .HasRecastDelay(RecastGroup.GuardedChannel, 24.0f),
                 SkillType.Saberstaff,
                 12,
                 0,
@@ -52,7 +52,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                 builder.Create(FeatType.GuardedChannel2, PerkType.GuardedChannel)
                     .Name("Guarded Channel II")
                     .Level(2)
-                    .HasRecastDelay(RecastGroup.GuardedChannel, 45.0f),
+                    .HasRecastDelay(RecastGroup.GuardedChannel, 24.0f),
                 SkillType.Saberstaff,
                 24,
                 0,
@@ -83,7 +83,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                 builder.Create(FeatType.GuardedChannel3, PerkType.GuardedChannel)
                     .Name("Guarded Channel III")
                     .Level(3)
-                    .HasRecastDelay(RecastGroup.GuardedChannel, 45.0f),
+                    .HasRecastDelay(RecastGroup.GuardedChannel, 24.0f),
                 SkillType.Saberstaff,
                 36,
                 0,

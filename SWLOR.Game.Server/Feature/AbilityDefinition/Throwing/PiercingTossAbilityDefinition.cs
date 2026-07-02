@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
                 builder.Create(FeatType.PiercingToss1, PerkType.PiercingToss)
                     .Name("Piercing Toss I")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.PiercingToss, 30.0f),
+                    .HasRecastDelay(RecastGroup.PiercingToss, 18.0f),
                 SkillType.Throwing,
                 8,
                 30,
@@ -47,7 +47,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
                 builder.Create(FeatType.PiercingToss2, PerkType.PiercingToss)
                     .Name("Piercing Toss II")
                     .Level(2)
-                    .HasRecastDelay(RecastGroup.PiercingToss, 30.0f),
+                    .HasRecastDelay(RecastGroup.PiercingToss, 18.0f),
                 SkillType.Throwing,
                 18,
                 36,
@@ -73,7 +73,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
                 builder.Create(FeatType.PiercingToss3, PerkType.PiercingToss)
                     .Name("Piercing Toss III")
                     .Level(3)
-                    .HasRecastDelay(RecastGroup.PiercingToss, 30.0f),
+                    .HasRecastDelay(RecastGroup.PiercingToss, 18.0f),
                 SkillType.Throwing,
                 28,
                 45,
@@ -99,7 +99,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
                 builder.Create(FeatType.PiercingToss4, PerkType.PiercingToss)
                     .Name("Piercing Toss IV")
                     .Level(4)
-                    .HasRecastDelay(RecastGroup.PiercingToss, 30.0f),
+                    .HasRecastDelay(RecastGroup.PiercingToss, 18.0f),
                 SkillType.Throwing,
                 38,
                 60,

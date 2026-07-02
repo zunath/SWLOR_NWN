@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
                 builder.Create(FeatType.RibBreaker1, PerkType.RibBreaker)
                     .Name("Rib Breaker I")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.RibBreaker, 45.0f),
+                    .HasRecastDelay(RecastGroup.RibBreaker, 24.0f),
                 SkillType.Staff,
                 12,
                 30,
@@ -47,7 +47,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
                 builder.Create(FeatType.RibBreaker2, PerkType.RibBreaker)
                     .Name("Rib Breaker II")
                     .Level(2)
-                    .HasRecastDelay(RecastGroup.RibBreaker, 45.0f),
+                    .HasRecastDelay(RecastGroup.RibBreaker, 24.0f),
                 SkillType.Staff,
                 24,
                 30,
@@ -73,7 +73,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
                 builder.Create(FeatType.RibBreaker3, PerkType.RibBreaker)
                     .Name("Rib Breaker III")
                     .Level(3)
-                    .HasRecastDelay(RecastGroup.RibBreaker, 45.0f),
+                    .HasRecastDelay(RecastGroup.RibBreaker, 24.0f),
                 SkillType.Staff,
                 36,
                 30,

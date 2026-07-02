@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
                 builder.Create(FeatType.CrossCut1, PerkType.CrossCut)
                     .Name("Cross Cut I")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.CrossCut, 30.0f),
+                    .HasRecastDelay(RecastGroup.CrossCut, 18.0f),
                 SkillType.TwinBlade,
                 6,
                 30,
@@ -53,7 +53,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
                 builder.Create(FeatType.CrossCut2, PerkType.CrossCut)
                     .Name("Cross Cut II")
                     .Level(2)
-                    .HasRecastDelay(RecastGroup.CrossCut, 30.0f),
+                    .HasRecastDelay(RecastGroup.CrossCut, 18.0f),
                 SkillType.TwinBlade,
                 13,
                 30,
@@ -85,7 +85,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
                 builder.Create(FeatType.CrossCut3, PerkType.CrossCut)
                     .Name("Cross Cut III")
                     .Level(3)
-                    .HasRecastDelay(RecastGroup.CrossCut, 30.0f),
+                    .HasRecastDelay(RecastGroup.CrossCut, 18.0f),
                 SkillType.TwinBlade,
                 20,
                 30,
@@ -117,7 +117,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
                 builder.Create(FeatType.CrossCut4, PerkType.CrossCut)
                     .Name("Cross Cut IV")
                     .Level(4)
-                    .HasRecastDelay(RecastGroup.CrossCut, 30.0f),
+                    .HasRecastDelay(RecastGroup.CrossCut, 18.0f),
                 SkillType.TwinBlade,
                 27,
                 30,

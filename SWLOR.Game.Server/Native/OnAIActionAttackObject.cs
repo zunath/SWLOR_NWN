@@ -21,6 +21,8 @@ namespace SWLOR.Game.Server.Native
         private const ushort AISTATE_CREATURE_USE_HANDS = 0x0004;
 
         private const int NWANIMBASE_ANIM_PAUSE = 0;
+        private const int NWANIMBASE_ANIM_READY = 1;
+        private const int NWANIMBASE_ANIM_ATTACK = 9;
         private const int FEEDBACK_ACTION_CANT_REACH_TARGET = 218;
 
         private const int CSERVERAIMASTER_AIACTION_ATTACKOBJECT = 12;
@@ -404,6 +406,19 @@ namespace SWLOR.Game.Server.Native
 
                     if (timeSinceLastAttack < swingDelay)
                     {
+                        // The engine only re-sends the Attack animation (and its attack burst,
+                        // which drives the client's swing-variant randomization) when the
+                        // animation field changes. Because this hook keeps the attack action
+                        // alive across swings, the animation would otherwise stay at Attack
+                        // forever and clients would loop the first swing variant. Once the
+                        // swing's animation pause has elapsed, drop back to the combat-ready
+                        // loop so the next swing registers as a fresh Attack animation.
+                        if (pCreature.m_pcCombatRound.m_bRoundPaused == 0 &&
+                            pCreature.m_nAnimation == NWANIMBASE_ANIM_ATTACK)
+                        {
+                            pCreature.SetAnimation(NWANIMBASE_ANIM_READY);
+                        }
+
                         // Still in delay period, return in progress
                         return ACTION_IN_PROGRESS;
                     }

@@ -316,6 +316,23 @@ public class EnmityTests
     }
 
     [Test]
+    public void GetStaleAttackRecoverySeconds_UsesShorterWindowForMultiAttackSwingCadence()
+    {
+        var recoverySeconds = GetStaleAttackRecoverySeconds(Combat.MinimumAttackDelayMilliseconds);
+
+        recoverySeconds.Should().BeApproximately(4.5f, 0.01f);
+        recoverySeconds.Should().BeLessThan(6f);
+    }
+
+    [Test]
+    public void GetStaleAttackRecoverySeconds_ScalesWithSlowerSwingCadence()
+    {
+        var recoverySeconds = GetStaleAttackRecoverySeconds(3000);
+
+        recoverySeconds.Should().BeApproximately(7f, 0.01f);
+    }
+
+    [Test]
     public void GetAttackMoveRange_UsesPreferredDistanceForRangedWeaponSkills()
     {
         GetAttackMoveRange(SkillType.Rifle, 10f).Should().Be(10f);
@@ -446,6 +463,17 @@ public class EnmityTests
                 method.Name == "ShouldMoveIntoAttackRange" &&
                 method.GetParameters().Length == 3)
             .Invoke(null, new object[] { distance, skillType, moveRange })!;
+    }
+
+    private static float GetStaleAttackRecoverySeconds(int effectiveDelayMilliseconds)
+    {
+        return (float)typeof(Enmity)
+            .GetMethods(BindingFlags.Static | BindingFlags.NonPublic)
+            .Single(method =>
+                method.Name == "GetStaleAttackRecoverySeconds" &&
+                method.GetParameters().Length == 1 &&
+                method.GetParameters()[0].ParameterType == typeof(int))
+            .Invoke(null, new object[] { effectiveDelayMilliseconds })!;
     }
 
     private static bool HasOnlyProximityEnmity(uint creature, uint enemy)

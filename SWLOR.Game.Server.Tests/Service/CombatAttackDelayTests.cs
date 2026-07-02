@@ -50,25 +50,26 @@ public class CombatAttackDelayTests
     }
 
     [Test]
-    public void CalculateEffectiveAttackDelay_ClampsPostBaselineDelayToDefaultMinimum()
+    public void CalculateEffectiveAttackDelay_AllowsDelaysBelowDefaultAfterBaselineSubtraction()
     {
         var attackerDelay = Combat.BaseAttackDelayMilliseconds + 1250;
 
         var effectiveDelay = Combat.CalculateEffectiveAttackDelay(attackerDelay);
 
-        effectiveDelay.Should().Be(Combat.BaseAttackDelayMilliseconds);
+        effectiveDelay.Should().Be(1250);
     }
 
     [Test]
     public void CalculateAttackDelayMilliseconds_FastestWeaponDelayCanBenefitFromHaste()
     {
-        var unmodifiedDelay = Combat.CalculateAttackDelayMilliseconds(290, 0, 0, 0);
-        var hastenOneDelay = Combat.CalculateAttackDelayMilliseconds(290, 0, 15, 0);
-        var hastenTwoDelay = Combat.CalculateAttackDelayMilliseconds(290, 0, 25, 0);
+        var unmodifiedDelay = Combat.CalculateAttackDelayMilliseconds(220, 0, 0, 0);
+        var hastenOneDelay = Combat.CalculateAttackDelayMilliseconds(220, 0, 15, 0);
+        var hastenTwoDelay = Combat.CalculateAttackDelayMilliseconds(220, 0, 25, 0);
 
         Combat.CalculateEffectiveAttackDelay(unmodifiedDelay).Should().BeGreaterThan(Combat.BaseAttackDelayMilliseconds);
-        Combat.CalculateEffectiveAttackDelay(hastenOneDelay).Should().BeGreaterThan(Combat.BaseAttackDelayMilliseconds);
-        Combat.CalculateEffectiveAttackDelay(hastenTwoDelay).Should().BeGreaterThan(Combat.BaseAttackDelayMilliseconds);
+        Combat.CalculateEffectiveAttackDelay(hastenOneDelay).Should().BeGreaterThan(Combat.MinimumAttackDelayMilliseconds);
+        Combat.CalculateEffectiveAttackDelay(hastenTwoDelay).Should().BeGreaterThan(Combat.MinimumAttackDelayMilliseconds);
+        Combat.CalculateEffectiveAttackDelay(hastenOneDelay).Should().BeLessThan(Combat.CalculateEffectiveAttackDelay(unmodifiedDelay));
         Combat.CalculateEffectiveAttackDelay(hastenTwoDelay).Should().BeLessThan(Combat.CalculateEffectiveAttackDelay(hastenOneDelay));
     }
 
@@ -98,30 +99,30 @@ public class CombatAttackDelayTests
 
         foreach (var naturalWeaponType in naturalWeaponTypes)
         {
-            WeaponDelay.GetWeaponDelay(naturalWeaponType).Should().Be(29);
+            WeaponDelay.GetWeaponDelay(naturalWeaponType).Should().Be(24);
         }
 
-        var unmodifiedDelay = Combat.CalculateAttackDelayMilliseconds(290, 0, 0, 0);
-        var hastenOneDelay = Combat.CalculateAttackDelayMilliseconds(290, 0, 15, 0);
-        var hastenTwoDelay = Combat.CalculateAttackDelayMilliseconds(290, 0, 25, 0);
+        var unmodifiedDelay = Combat.CalculateAttackDelayMilliseconds(240, 0, 0, 0);
+        var hastenOneDelay = Combat.CalculateAttackDelayMilliseconds(240, 0, 15, 0);
+        var hastenTwoDelay = Combat.CalculateAttackDelayMilliseconds(240, 0, 25, 0);
 
-        Combat.CalculateEffectiveAttackDelay(unmodifiedDelay).Should().Be(3083);
-        Combat.CalculateEffectiveAttackDelay(hastenOneDelay).Should().Be(2359);
-        Combat.CalculateEffectiveAttackDelay(hastenTwoDelay).Should().Be(1875);
+        Combat.CalculateEffectiveAttackDelay(unmodifiedDelay).Should().Be(2250);
+        Combat.CalculateEffectiveAttackDelay(hastenOneDelay).Should().Be(1650);
+        Combat.CalculateEffectiveAttackDelay(hastenTwoDelay).Should().Be(1250);
     }
 
     [Test]
     public void LegacySlingPistolDelay_UsesPistolDelay()
     {
-        WeaponDelay.GetWeaponDelay(BaseItem.Sling).Should().Be(31);
+        WeaponDelay.GetWeaponDelay(BaseItem.Sling).Should().Be(25);
     }
 
     [Test]
-    public void CalculateEffectiveAttackDelay_ClampsReducedDualWieldDelayToDefaultMinimum()
+    public void CalculateEffectiveAttackDelay_ClampsReducedDualWieldDelayToAbsoluteMinimum()
     {
         var delay = Combat.CalculateAttackDelayMilliseconds(210, 210, 45, 30);
 
-        Combat.CalculateEffectiveAttackDelay(delay).Should().Be(Combat.BaseAttackDelayMilliseconds);
+        Combat.CalculateEffectiveAttackDelay(delay).Should().Be(Combat.MinimumAttackDelayMilliseconds);
     }
 
     [Test]
@@ -140,6 +141,121 @@ public class CombatAttackDelayTests
 
             effectiveDelay.Should().Be(Combat.BaseAttackDelayMilliseconds);
         }
+    }
+
+    [Test]
+    public void MinimumAttackDelay_SupportsMaxAttacksPerSwingWithoutOverflow()
+    {
+        Combat.MinimumAttackDelayMilliseconds.Should().Be(584);
+        (Combat.BaseAttackDelayMilliseconds / (float)Combat.MinimumAttackDelayMilliseconds)
+            .Should()
+            .BeLessThanOrEqualTo(Combat.MaxAttacksPerSwing);
+    }
+
+    [Test]
+    public void CalculateAttackSwingDelay_FloorsAtBaseDelay()
+    {
+        Combat.CalculateAttackSwingDelay(584).Should().Be(Combat.BaseAttackDelayMilliseconds);
+        Combat.CalculateAttackSwingDelay(Combat.BaseAttackDelayMilliseconds).Should().Be(Combat.BaseAttackDelayMilliseconds);
+        Combat.CalculateAttackSwingDelay(2500).Should().Be(2500);
+    }
+
+    [Test]
+    public void CalculateAttacksPerSwing_ResolvesOneAttackWhenDelayAtOrAboveSwingFloor()
+    {
+        foreach (var effectiveDelay in new[] { Combat.BaseAttackDelayMilliseconds, 2500, 5000 })
+        {
+            var attacks = Combat.CalculateAttacksPerSwing(effectiveDelay, 0f, out var attackDebt);
+
+            attacks.Should().Be(1);
+            attackDebt.Should().Be(0f);
+        }
+    }
+
+    [Test]
+    public void CalculateAttacksPerSwing_ResolvesTwoAttacksWhenDelayIsHalfSwingFloor()
+    {
+        var attacks = Combat.CalculateAttacksPerSwing(Combat.BaseAttackDelayMilliseconds / 2, 0f, out var attackDebt);
+
+        attacks.Should().Be(2);
+        attackDebt.Should().BeApproximately(0f, 0.01f);
+    }
+
+    [Test]
+    public void CalculateAttacksPerSwing_CarriesFractionalAttacksBetweenSwings()
+    {
+        // 1000ms delay = 1.75 attacks per 1750ms swing; long-run average must match.
+        const int effectiveDelay = 1000;
+        var attackDebt = 0f;
+        var totalAttacks = 0;
+        const int swings = 100;
+
+        for (var i = 0; i < swings; i++)
+        {
+            totalAttacks += Combat.CalculateAttacksPerSwing(effectiveDelay, attackDebt, out attackDebt);
+        }
+
+        var expectedAttacks = swings * (Combat.BaseAttackDelayMilliseconds / (float)effectiveDelay);
+        totalAttacks.Should().BeCloseTo((int)expectedAttacks, 2);
+    }
+
+    [Test]
+    public void CalculateAttacksPerSwing_CapsAttacksAtMaxPerSwing()
+    {
+        var attacks = Combat.CalculateAttacksPerSwing(Combat.MinimumAttackDelayMilliseconds, 5f, out var attackDebt);
+
+        attacks.Should().Be(Combat.MaxAttacksPerSwing);
+        attackDebt.Should().BeLessThanOrEqualTo(Combat.MaxAttacksPerSwing);
+    }
+
+    [Test]
+    public void CalculateAttacksPerSwing_MinimumDelayAveragesToMaxAttacksPerSwing()
+    {
+        var attackDebt = 0f;
+        var totalAttacks = 0;
+        const int swings = 60;
+
+        for (var i = 0; i < swings; i++)
+        {
+            totalAttacks += Combat.CalculateAttacksPerSwing(Combat.MinimumAttackDelayMilliseconds, attackDebt, out attackDebt);
+        }
+
+        var expectedAttacks = swings * (Combat.BaseAttackDelayMilliseconds / (float)Combat.MinimumAttackDelayMilliseconds);
+        totalAttacks.Should().BeCloseTo((int)expectedAttacks, 2);
+    }
+
+    [Test]
+    public void ConsumeAttacksPerSwing_TracksDebtPerAttacker()
+    {
+        const uint attackerOne = 100;
+        const uint attackerTwo = 200;
+        const int effectiveDelay = 1000;
+
+        Combat.ClearAttackSwingDebt(attackerOne);
+        Combat.ClearAttackSwingDebt(attackerTwo);
+
+        Combat.ConsumeAttacksPerSwing(attackerOne, effectiveDelay).Should().Be(1);
+        Combat.ConsumeAttacksPerSwing(attackerTwo, effectiveDelay).Should().Be(1);
+        Combat.ConsumeAttacksPerSwing(attackerOne, effectiveDelay).Should().Be(2);
+        Combat.ConsumeAttacksPerSwing(attackerTwo, effectiveDelay).Should().Be(2);
+
+        Combat.ClearAttackSwingDebt(attackerOne);
+        Combat.ClearAttackSwingDebt(attackerTwo);
+    }
+
+    [Test]
+    public void ClearAttackSwingDebt_ResetsStoredDebt()
+    {
+        const uint attacker = 300;
+        const int effectiveDelay = 1000;
+
+        Combat.ClearAttackSwingDebt(attacker);
+
+        Combat.ConsumeAttacksPerSwing(attacker, effectiveDelay).Should().Be(1);
+        Combat.ClearAttackSwingDebt(attacker);
+        Combat.ConsumeAttacksPerSwing(attacker, effectiveDelay).Should().Be(1);
+
+        Combat.ClearAttackSwingDebt(attacker);
     }
 
     [Test]
@@ -201,10 +317,13 @@ public class CombatAttackDelayTests
         weaponDelayMigrationSource.Should().Contain("WeaponDelay.GetWeaponDelay(baseItem)");
         weaponDelayMigrationSource.Should().Contain("BuildWeaponBaseItemTypes");
         weaponDelayMigrationSource.Should().Contain("StaffBaseItemTypes");
-        weaponDelayMigrationSource.Should().Contain("[\"t_knife\"] = 25");
-        weaponDelayMigrationSource.Should().Contain("[\"t_shuriken\"] = 25");
-        weaponDelayMigrationSource.Should().Contain("[\"t_rifle\"] = 41");
-        weaponDelayMigrationSource.Should().Contain("[\"t_twinblade\"] = 39");
+        weaponDelayMigrationSource.Should().Contain("[\"t_knife\"] = 22");
+        weaponDelayMigrationSource.Should().Contain("[\"t_shuriken\"] = 22");
+        weaponDelayMigrationSource.Should().Contain("[\"t_rifle\"] = 30");
+        weaponDelayMigrationSource.Should().Contain("[\"t_twinblade\"] = 29");
+        weaponDelayMigrationSource.Should().Contain("[\"byyskwarriorswor\"] = 22");
+        weaponDelayMigrationSource.Should().Contain("[\"sith_blade\"] = 22");
+        weaponDelayMigrationSource.Should().Contain("[\"wswss002\"] = 22");
         weaponDelayMigrationSource.Should().Contain("GetHasInventory(obj)");
         weaponDelayMigrationSource.Should().Contain("GetItemInSlot((InventorySlot)index, creature)");
     }
@@ -227,6 +346,25 @@ public class CombatAttackDelayTests
         findings.Should().BeEmpty(string.Join("\n", findings.Take(25)));
     }
 
+    [Test]
+    public void ModuleShieldItems_DoNotHaveDelayProperties()
+    {
+        var root = FindRepositoryRoot();
+        var moduleRoot = Path.Combine(root.FullName, "Module");
+        var files = Directory.EnumerateFiles(Path.Combine(moduleRoot, "uti"), "*.json")
+            .Concat(Directory.EnumerateFiles(Path.Combine(moduleRoot, "git"), "*.json"))
+            .Concat(Directory.EnumerateFiles(Path.Combine(moduleRoot, "utc"), "*.json"));
+        var findings = new List<string>();
+
+        foreach (var file in files)
+        {
+            using var document = JsonDocument.Parse(File.ReadAllText(file));
+            InspectShieldDelays(document.RootElement, Path.GetRelativePath(root.FullName, file), string.Empty, findings);
+        }
+
+        findings.Should().BeEmpty(string.Join("\n", findings.Take(25)));
+    }
+
     private static DirectoryInfo FindRepositoryRoot()
     {
         var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
@@ -238,23 +376,26 @@ public class CombatAttackDelayTests
     }
 
     private static readonly IReadOnlyDictionary<int, int> WeaponDelayCostByBaseItem = BuildWeaponDelayCostByBaseItem();
+    private static readonly IReadOnlySet<int> ShieldBaseItems = SWLOR.Game.Server.Service.Item.ShieldBaseItemTypes
+        .Select(x => (int)x)
+        .ToHashSet();
 
     private static IReadOnlyDictionary<int, int> BuildWeaponDelayCostByBaseItem()
     {
         var delays = new Dictionary<int, int>();
-        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.VibrobladeBaseItemTypes, 27);
-        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.KatarBaseItemTypes, 25);
-        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.TwinBladeBaseItemTypes, 39);
-        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.VibroknifeBaseItemTypes, 25);
-        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.StaffBaseItemTypes, 35);
-        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.RifleBaseItemTypes, 41);
-        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.HeavyVibrobladeBaseItemTypes, 41);
-        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.PistolBaseItemTypes, 31);
-        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.LightsaberBaseItemTypes, 28);
-        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.SpearBaseItemTypes, 37);
-        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.ThrowingWeaponBaseItemTypes, 25);
-        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.SaberstaffBaseItemTypes, 39);
-        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.CreatureBaseItemTypes, 29);
+        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.VibrobladeBaseItemTypes, 23);
+        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.KatarBaseItemTypes, 22);
+        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.TwinBladeBaseItemTypes, 29);
+        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.VibroknifeBaseItemTypes, 22);
+        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.StaffBaseItemTypes, 27);
+        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.RifleBaseItemTypes, 30);
+        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.HeavyVibrobladeBaseItemTypes, 30);
+        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.PistolBaseItemTypes, 25);
+        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.LightsaberBaseItemTypes, 24);
+        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.SpearBaseItemTypes, 28);
+        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.ThrowingWeaponBaseItemTypes, 22);
+        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.SaberstaffBaseItemTypes, 29);
+        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.CreatureBaseItemTypes, 24);
 
         return delays;
     }
@@ -274,22 +415,32 @@ public class CombatAttackDelayTests
         string path,
         ICollection<string> findings)
     {
+        InspectItemDelays(element, file, path, findings, InspectWeaponDelay);
+    }
+
+    private static void InspectShieldDelays(
+        JsonElement element,
+        string file,
+        string path,
+        ICollection<string> findings)
+    {
+        InspectItemDelays(element, file, path, findings, InspectShieldDelay);
+    }
+
+    private static void InspectItemDelays(
+        JsonElement element,
+        string file,
+        string path,
+        ICollection<string> findings,
+        Action<int, JsonElement, string, ICollection<string>> inspectItemDelay)
+    {
         switch (element.ValueKind)
         {
             case JsonValueKind.Object:
                 if (TryGetWrappedInt(element, "BaseItem", out var baseItem) &&
-                    WeaponDelayCostByBaseItem.TryGetValue(baseItem, out var expectedDelayCost) &&
                     TryGetWrappedValue(element, "PropertiesList", out var propertiesList))
                 {
-                    var delayCosts = GetDelayCostValues(propertiesList).ToList();
-                    if (delayCosts.Count == 0)
-                    {
-                        findings.Add($"{file}:{path} missing weapon Delay");
-                    }
-                    else if (delayCosts.Any(x => x != expectedDelayCost))
-                    {
-                        findings.Add($"{file}:{path} weapon Delay [{string.Join(", ", delayCosts)}] should be {expectedDelayCost}");
-                    }
+                    inspectItemDelay(baseItem, propertiesList, $"{file}:{path}", findings);
                 }
 
                 foreach (var property in element.EnumerateObject())
@@ -297,21 +448,58 @@ public class CombatAttackDelayTests
                     if (property.Name == "__struct_id")
                         continue;
 
-                    InspectWeaponDelays(
+                    InspectItemDelays(
                         property.Value,
                         file,
                         string.IsNullOrWhiteSpace(path) ? property.Name : $"{path}.{property.Name}",
-                        findings);
+                        findings,
+                        inspectItemDelay);
                 }
                 break;
             case JsonValueKind.Array:
                 var index = 0;
                 foreach (var item in element.EnumerateArray())
                 {
-                    InspectWeaponDelays(item, file, $"{path}[{index}]", findings);
+                    InspectItemDelays(item, file, $"{path}[{index}]", findings, inspectItemDelay);
                     index++;
                 }
                 break;
+        }
+    }
+
+    private static void InspectWeaponDelay(
+        int baseItem,
+        JsonElement propertiesList,
+        string findingPath,
+        ICollection<string> findings)
+    {
+        if (!WeaponDelayCostByBaseItem.TryGetValue(baseItem, out var expectedDelayCost))
+            return;
+
+        var delayCosts = GetDelayCostValues(propertiesList).ToList();
+        if (delayCosts.Count == 0)
+        {
+            findings.Add($"{findingPath} missing weapon Delay");
+        }
+        else if (delayCosts.Any(x => x != expectedDelayCost))
+        {
+            findings.Add($"{findingPath} weapon Delay [{string.Join(", ", delayCosts)}] should be {expectedDelayCost}");
+        }
+    }
+
+    private static void InspectShieldDelay(
+        int baseItem,
+        JsonElement propertiesList,
+        string findingPath,
+        ICollection<string> findings)
+    {
+        if (!ShieldBaseItems.Contains(baseItem))
+            return;
+
+        var delayCosts = GetDelayCostValues(propertiesList).ToList();
+        if (delayCosts.Count > 0)
+        {
+            findings.Add($"{findingPath} shield Delay [{string.Join(", ", delayCosts)}] should be removed");
         }
     }
 

@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Service
         // Enemy -> Creature -> proximity enmity contribution mapping
         private static readonly Dictionary<uint, Dictionary<uint, int>> _proximityEnmityAmounts = new();
         private static readonly Dictionary<uint, DateTime> _attackCommandTimes = new();
-        private const float MinimumStaleAttackRecoverySeconds = 6f;
+        private const float MinimumStaleAttackRecoverySeconds = 4.5f;
         private const float AttackMoveRangeTolerance = 0.25f;
         private const float MeleeAttackMoveThreshold = 2.25f;
         private const float MeleeAttackMoveRange = 1.5f;
@@ -677,9 +677,18 @@ namespace SWLOR.Game.Server.Service
         private static float GetStaleAttackRecoverySeconds(uint creature)
         {
             var calculatedDelay = Combat.CalculateAttackDelay(creature);
-            var effectiveDelaySeconds = Combat.CalculateEffectiveAttackDelay(calculatedDelay) / 1000f;
+            var effectiveDelay = Combat.CalculateEffectiveAttackDelay(calculatedDelay);
 
-            return Math.Max(MinimumStaleAttackRecoverySeconds, effectiveDelaySeconds * 2f + 1f);
+            return GetStaleAttackRecoverySeconds(effectiveDelay);
+        }
+
+        private static float GetStaleAttackRecoverySeconds(int effectiveDelayMilliseconds)
+        {
+            // Attacks arrive in swings; fast delays resolve multiple attacks per swing,
+            // so staleness is measured against the swing cadence rather than the per-attack delay.
+            var swingDelaySeconds = Combat.CalculateAttackSwingDelay(effectiveDelayMilliseconds) / 1000f;
+
+            return Math.Max(MinimumStaleAttackRecoverySeconds, swingDelaySeconds * 2f + 1f);
         }
 
         /// <summary>

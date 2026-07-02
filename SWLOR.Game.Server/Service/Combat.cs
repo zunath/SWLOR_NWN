@@ -2720,6 +2720,7 @@ namespace SWLOR.Game.Server.Service
             _lastAttackActivity.Remove(creature);
             _lastCombatAbilityUse.Remove(creature);
             _autoAttackCycleCounts.Remove(creature);
+            _attackSwingDebts.Remove(creature);
             _repeatedTargetDamageStates.Remove(creature);
             TemporaryStatModifier.Clear(creature);
         }

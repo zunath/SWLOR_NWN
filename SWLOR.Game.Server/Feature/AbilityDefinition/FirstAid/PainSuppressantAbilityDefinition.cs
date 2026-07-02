@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -46,7 +47,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .IsCastedAbility()
                 .BreaksStealth()
                 .RequirementStamina(5)
-                .RequirementItem("stim_pack", preservePerkType: PerkType.FieldPharmacist, preserveChancePerLevel: 10);
+                .RequirementItem("stim_pack", preserveChanceStatType: StatType.StimPackPreserveChance);
         }
 
         private static void PainSuppressant2(AbilityBuilder builder)
@@ -68,12 +69,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .IsCastedAbility()
                 .BreaksStealth()
                 .RequirementStamina(6)
-                .RequirementItem("stim_pack", preservePerkType: PerkType.FieldPharmacist, preserveChancePerLevel: 10);
+                .RequirementItem("stim_pack", preserveChanceStatType: StatType.StimPackPreserveChance);
         }
 
         private static void PainSuppressant1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            var duration = FirstAidTreatmentAdjustments.ApplyStimDurationBonus(activator, 18f);
+            var duration = FirstAidTreatmentAdjustments.ApplyStimDurationBonus(activator, 30f);
             foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
                 ApplyTemporaryHP(activator, friendly, 10, duration);
@@ -85,7 +86,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
 
         private static void PainSuppressant2ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            var duration = FirstAidTreatmentAdjustments.ApplyStimDurationBonus(activator, 18f);
+            var duration = FirstAidTreatmentAdjustments.ApplyStimDurationBonus(activator, 30f);
             foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
                 ApplyTemporaryHP(activator, friendly, 15, duration);

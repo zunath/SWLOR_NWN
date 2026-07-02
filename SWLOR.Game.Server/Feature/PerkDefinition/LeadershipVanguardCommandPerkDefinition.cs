@@ -51,19 +51,19 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Press the Attack")
 
                 .AddPerkLevel()
-                .Description("Nearby party members deal +8% damage for 12 seconds. SOC scaling can raise this to +10%.")
+                .Description("Nearby party members deal +8% damage for 30 seconds. SOC scaling can raise this to +10%.")
                 .Price(2)
                 .RequirementSkill(SkillType.Leadership, 5)
                 .GrantsFeat(FeatType.PressTheAttack1)
 
                 .AddPerkLevel()
-                .Description("Nearby party members deal +11% damage for 12 seconds. SOC scaling can raise this to +14%.")
+                .Description("Nearby party members deal +11% damage for 30 seconds. SOC scaling can raise this to +14%.")
                 .Price(3)
                 .RequirementSkill(SkillType.Leadership, 18)
                 .GrantsFeat(FeatType.PressTheAttack2)
 
                 .AddPerkLevel()
-                .Description("Nearby party members gain +14% damage and +5% physical and Force ability hit chance for 15 seconds. SOC scaling can raise these to +18% damage and +7% hit chance.")
+                .Description("Nearby party members gain +14% damage and +5% physical and Force ability hit chance for 30 seconds. SOC scaling can raise these to +18% damage and +7% hit chance.")
                 .Price(4)
                 .RequirementSkill(SkillType.Leadership, 40)
                 .GrantsFeat(FeatType.PressTheAttack3);
@@ -103,13 +103,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.MarkTargetTrait)
-                .Description("Vanguard Command offensive commands mark affected enemies for 15 seconds. Party members deal +8% damage to marked targets. SOC scaling can raise this to +10%.")
+                .Description("Vanguard Command offensive commands mark affected enemies for 30 seconds. Party members deal +8% damage to marked targets. SOC scaling can raise this to +10%.")
                 .Price(3)
                 .RequirementSkill(SkillType.Leadership, 12)
                 .IncreasesStat(StatType.LeadershipVanguardMarkTargetRank, 1)
 
                 .AddPerkLevel()
-                .Description("Vanguard Command offensive commands mark affected enemies for 15 seconds. Party members deal +12% damage to marked targets, and marked targets suffer -10% evasion chance. SOC scaling can raise these to +15% damage and -12% evasion.")
+                .Description("Vanguard Command offensive commands mark affected enemies for 30 seconds. Party members deal +12% damage to marked targets, and marked targets suffer -10% evasion chance. SOC scaling can raise these to +15% damage and -12% evasion.")
                 .Price(4)
                 .RequirementSkill(SkillType.Leadership, 35)
                 .IncreasesStat(StatType.LeadershipVanguardMarkTargetRank, 2);
@@ -141,13 +141,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Break Morale")
 
                 .AddPerkLevel()
-                .Description("Nearby enemies suffer Flash for 15 seconds, reducing physical and Force ability hit chance by 10%. SOC scaling can raise the penalty to 12%. This command applies reliably to valid nearby enemies.")
+                .Description("Nearby enemies suffer Flash for 30 seconds, reducing physical and Force ability hit chance by 10%. SOC scaling can raise the penalty to 12%. This command applies reliably to valid nearby enemies.")
                 .Price(3)
                 .RequirementSkill(SkillType.Leadership, 25)
                 .GrantsFeat(FeatType.BreakMorale1)
 
                 .AddPerkLevel()
-                .Description("Nearby enemies suffer Flash, reducing physical and Force ability hit chance by 15%, and Weakened, reducing Attack by 12%, for 15 seconds. SOC scaling can raise these penalties to 18% and 15%. This command applies reliably to valid nearby enemies.")
+                .Description("Nearby enemies suffer Flash, reducing physical and Force ability hit chance by 15%, and Weakened, reducing Attack by 12%, for 30 seconds. SOC scaling can raise these penalties to 18% and 15%. This command applies reliably to valid nearby enemies.")
                 .Price(4)
                 .RequirementSkill(SkillType.Leadership, 42)
                 .GrantsFeat(FeatType.BreakMorale2);

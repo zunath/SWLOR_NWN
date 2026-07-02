@@ -87,7 +87,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 activator,
                 friendly,
                 new RegenerativeHealingStatusEffect(name, totalPercent, 5, true),
-                15f);
+                30f);
             FirstAidTreatmentAdjustments.ApplyTraumaMedicRiders(activator, friendly);
             FirstAidTreatmentAdjustments.ApplyMedicalVisualEffect(friendly);
         }

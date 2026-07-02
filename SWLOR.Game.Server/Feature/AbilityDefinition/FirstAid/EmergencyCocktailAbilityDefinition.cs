@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
@@ -42,7 +43,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .IsCastedAbility()
                 .BreaksStealth()
                 .RequirementStamina(CapstoneAbility.StaminaCost)
-                .RequirementItem("stim_pack", 1, PerkType.FieldPharmacist, 10);
+                .RequirementItem("stim_pack", preserveChanceStatType: StatType.StimPackPreserveChance);
         }
 
         private static void EmergencyCocktail1ImpactAction(uint activator, uint target, int level, Location targetLocation)

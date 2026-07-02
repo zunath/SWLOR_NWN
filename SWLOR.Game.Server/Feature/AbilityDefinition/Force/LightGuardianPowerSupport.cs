@@ -60,7 +60,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 var resistance = StatusEffect.HasStatusEffect(friendly, typeof(ReflectiveBarrier1StatusEffect), activator)
                     ? 15
                     : 10;
-                StatusEffect.ApplyStatusEffect(activator, friendly, new CourageousResolve1StatusEffect(resistance), 12f);
+                StatusEffect.ApplyStatusEffect(activator, friendly, new CourageousResolve1StatusEffect(resistance), 30f);
             }
         }
     }

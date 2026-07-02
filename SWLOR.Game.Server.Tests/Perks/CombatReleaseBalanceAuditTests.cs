@@ -1,0 +1,795 @@
+using System.Reflection;
+using FluentAssertions;
+using NUnit.Framework;
+using SWLOR.Game.Server.Feature.PerkDefinition;
+using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.StatService;
+
+namespace SWLOR.Game.Server.Tests.Perks;
+
+public class CombatReleaseBalanceAuditTests
+{
+    private const int SkillPointCap = 400;
+    private const int PermanentAttackDeflectionCap = 50;
+
+    private static readonly PerkCategoryType[] WeaponPackages =
+    {
+        PerkCategoryType.VibrobladeDefense,
+        PerkCategoryType.VibrobladeOffense,
+        PerkCategoryType.VibroknifeShadow,
+        PerkCategoryType.VibroknifeSaboteur,
+        PerkCategoryType.LightsaberDefense,
+        PerkCategoryType.LightsaberOffense,
+        PerkCategoryType.HeavyVibrobladeDefense,
+        PerkCategoryType.HeavyVibrobladeOffense,
+        PerkCategoryType.SpearDamage,
+        PerkCategoryType.SpearDisabler,
+        PerkCategoryType.TwinBladeCyclone,
+        PerkCategoryType.TwinBladeDuelist,
+        PerkCategoryType.SaberstaffConduit,
+        PerkCategoryType.SaberstaffTempest,
+        PerkCategoryType.KatarIronGuard,
+        PerkCategoryType.KatarVenomCurrent,
+        PerkCategoryType.StaffCrusher,
+        PerkCategoryType.StaffSentinel,
+        PerkCategoryType.PistolGunslinger,
+        PerkCategoryType.PistolSkirmisher,
+        PerkCategoryType.RifleMarksman,
+        PerkCategoryType.RiflePacification,
+        PerkCategoryType.ThrowingBombardier,
+        PerkCategoryType.ThrowingDeadeye
+    };
+
+    private static readonly PerkCategoryType[] SupportPackages =
+    {
+        PerkCategoryType.ForceUniversal,
+        PerkCategoryType.ForceLight,
+        PerkCategoryType.ForceDark,
+        PerkCategoryType.General,
+        PerkCategoryType.Leadership,
+        PerkCategoryType.LeadershipVanguardCommand,
+        PerkCategoryType.LeadershipFieldSteward,
+        PerkCategoryType.DevicesGrenadier,
+        PerkCategoryType.DevicesFieldEngineer,
+        PerkCategoryType.DevicesFieldSupport,
+        PerkCategoryType.DevicesAssaultGadgets,
+        PerkCategoryType.FirstAidTraumaMedic,
+        PerkCategoryType.FirstAidCombatPharmacology,
+        PerkCategoryType.BeastMasteryTraining,
+        PerkCategoryType.BeastMasteryIncubation,
+        PerkCategoryType.BeastDamage,
+        PerkCategoryType.BeastTank,
+        PerkCategoryType.BeastBalanced,
+        PerkCategoryType.BeastBruiser,
+        PerkCategoryType.BeastEvasion,
+        PerkCategoryType.BeastForce
+    };
+
+    private static readonly StatType[] DirectDamagePercentStats =
+    {
+        StatType.AttackPercentAdjustment,
+        StatType.ForceAttackPercentAdjustment,
+        StatType.DamageDealtPercentAdjustment,
+        StatType.WeaponAndForceDamageDealtPercentAdjustment,
+        StatType.TargetLowHPDamagePercentAdjustment,
+        StatType.TargetLowHPStatusDamagePercentAdjustment,
+        StatType.DamageToSunderedTargetPercentAdjustment,
+        StatType.DamageToBleedingTargetPercentAdjustment,
+        StatType.DamageToDebuffedTargetPercentAdjustment,
+        StatType.DamageToSourceAppliedStatusTargetPercentAdjustment,
+        StatType.AbilityDamageToSourceAppliedStatusTargetPercentAdjustment,
+        StatType.DamageToPoisonedOrDisorientedTargetPercentAdjustment,
+        StatType.DamageToWeakenedOrHamstringTargetPercentAdjustment,
+        StatType.DamageToControlTargetPercentAdjustment,
+        StatType.DamageToDisorientedDazedTargetPercentAdjustment,
+        StatType.RangedDamageToNearbyTargetPercentAdjustment,
+        StatType.HighFPAndStaminaAttackPercentAdjustment,
+        StatType.AttackToBleedingTargetPercentAdjustment,
+        StatType.TwinBladeSingleTargetAbilityDamagePercentAdjustment,
+        StatType.TwinBladeAreaAbilityDamagePercentAdjustment,
+        StatType.ThrowingAreaAbilityDamagePercentAdjustment,
+        StatType.SingleTargetPhysicalAbilityDamagePercentAdjustment,
+        StatType.DarkForceTargetLowHPDamagePercentAdjustment,
+        StatType.BeaconPulseDamagePercentAdjustment,
+        StatType.AssaultGadgetDamagePercentAdjustment,
+        StatType.SideAttackDamagePercentAdjustment,
+        StatType.RepeatedTargetDamagePercentPerHit,
+        StatType.DamageToStatusSourcePercentAdjustment,
+        StatType.HitPointSpendAbilityDamagePercentAdjustment,
+        StatType.LowHPAttackPercentAdjustment,
+        StatType.StatusAppliedSelfForceAttackPercentAdjustment,
+        StatType.HostileAbilityForceAttackPercentPerStack,
+        StatType.AreaAbilityAfterDeflectionDamagePercentAdjustment
+    };
+
+    private static readonly StatType[] FlatDamageStats =
+    {
+        StatType.AutoAttackDamageBonus,
+        StatType.NextAutoAttackDamageBonus,
+        StatType.NextAbilityDamageBonus,
+        StatType.CriticalNextAbilityDamageBonus,
+        StatType.AbilityDamageFlatAdjustment,
+        StatType.GuardedHitNextSkillAbilityDamageBonus,
+        StatType.NextSkillAbilityDamageBonus,
+        StatType.DeflectionNextSkillAbilityDamageBonus,
+        StatType.OpeningAutoAttackDamageBonus,
+        StatType.CurrentAutoAttackDamageBonus,
+        StatType.AbilityUsedNextSkillAutoAttackDamageBonus,
+        StatType.NextSkillAutoAttackDamageBonus,
+        StatType.RiotBladeSecondaryDamageBonus,
+        StatType.SavageCleaveSecondaryDamageBonus,
+        StatType.EarthshatterDamageBonus,
+        StatType.HeavyVibrobladeDefenseAbilityNextAutoAttackDamageBonus,
+        StatType.KatarIronGuardPulseDamageBonus,
+        StatType.KatarVenomCurrentSecondStrikeDamageBonus,
+        StatType.LightsaberOffenseAreaDamageBonus,
+        StatType.LightsaberOffenseDebuffedTargetDamageBonus,
+        StatType.LightsaberOffenseSingleTargetSplashDamage,
+        StatType.LightsaberOffenseSurgeStrikeDamageBonus,
+        StatType.PistolDamageToDisorientedKnockdownOrTranquilizedTargetBonus,
+        StatType.PistolSkirmisherRicochetDamageBonus,
+        StatType.SaberstaffConduitFlareDamageBonus,
+        StatType.SpearDamageBreachStrike,
+        StatType.StaffCrusherFinisherDamageBonus,
+        StatType.ThrowingBombardierClusterStormDamageBonus,
+        StatType.ThrowingBombardierSaturationTossDamage,
+        StatType.ThrowingDeadeyeRicochetDamageBonus,
+        StatType.TwinBladeDuelistReversalCutDamageBonus,
+        StatType.GuardedHitNextKatarAbilityDamageBonus,
+        StatType.RangedAttackDamageFlatAdjustment,
+        StatType.HighFPAndStaminaAbilityDamageBonus,
+        StatType.AbilityDamageToBleedingTargetBonus,
+        StatType.AutoAttackSuppressionStackDamageBonus,
+        StatType.RangedHitSuppressionStackDamageBonus,
+        StatType.SuppressionStackDamageBonusAdjustment,
+        StatType.StatusAppliedNextSkillAbilityDamageBonus,
+        StatType.AvoidedAttackNextSkillAbilityDamageBonus,
+        StatType.DamageTakenNextSkillAbilityDamageBonus,
+        StatType.CostlyAbilityDamageBonus,
+        StatType.AreaAbilityFragmentationDamage
+    };
+
+    private static readonly StatType[] CriticalRateStats =
+    {
+        StatType.CriticalRatePercentAdjustment,
+        StatType.StaffCriticalRatePercentAdjustment,
+        StatType.DeflectionNextSkillAbilityCriticalRatePercentAdjustment,
+        StatType.NextSkillAbilityCriticalRatePercentAdjustment,
+        StatType.ThrowingAbilityCriticalRateToBleedingOrDisorientedTargetPercentAdjustment,
+        StatType.CriticalRateAgainstTargetNotFacingAttackerPercentAdjustment,
+        StatType.OpeningAutoAttackCriticalRatePercentAdjustment,
+        StatType.AbilityCriticalRatePercentAdjustment,
+        StatType.BeaconPulseCriticalRatePercentAdjustment,
+        StatType.AssaultGadgetCriticalRatePercentAdjustment,
+        StatType.DeflectionNextAutoAttackCriticalRatePercentAdjustment,
+        StatType.NextAutoAttackCriticalRatePercentAdjustment,
+        StatType.SideAttackCriticalRatePercentAdjustment,
+        StatType.LightsaberOffenseCenteringAccuracyPercent,
+        StatType.LowHPCriticalRatePercentAdjustment,
+        StatType.StatusAppliedNextSkillAbilityCriticalRatePercentAdjustment,
+        StatType.TargetStatusCriticalRatePercentAdjustment,
+        StatType.AutoAttackCycleCriticalRatePercentAdjustment,
+        StatType.NonCriticalAbilityNextSkillAbilityCriticalRatePercentAdjustment
+    };
+
+    private static readonly StatType[] CriticalDamageStats =
+    {
+        StatType.CriticalDamagePercentAdjustment,
+        StatType.StaffCriticalDamagePercentAdjustment,
+        StatType.RangedCriticalDamagePercentAdjustment,
+        StatType.CriticalDamageHighHPTargetPercentAdjustment,
+        StatType.CriticalDamageTargetStatusPercentAdjustment,
+        StatType.IdleSkillAbilityCriticalDamagePercentAdjustment
+    };
+
+    private static readonly StatType[] HasteStats =
+    {
+        StatType.AttackDelayReductionPercent,
+        StatType.OffhandAttackDelayReductionPercent,
+        StatType.DefeatedEnemyAttackDelayReductionPercent,
+        StatType.SaberstaffAreaAbilityHastePercentAdjustment,
+        StatType.TwinBladeAreaAbilityHastePercentAdjustment,
+        StatType.DamageDealtAttackDelayReductionPercent,
+        StatType.PredatorsMarkHastePercentPerStack,
+        StatType.KatarToxicRushHastePercentPerStack,
+        StatType.SideAttackDelayReductionPercent,
+        StatType.TwinBladeCycloneSweepingAdvanceHastePercent,
+        StatType.AbilityRestoredBothResourcesHastePercentAdjustment,
+        StatType.StatusAppliedSelfHastePercentAdjustment,
+        StatType.AbilityRestoredFPHastePercentAdjustment,
+        StatType.CriticalHitSelfHastePercentAdjustment
+    };
+
+    private static readonly StatType[] DefenseStats =
+    {
+        StatType.DefensePercentAdjustment,
+        StatType.PhysicalDefensePercentAdjustment,
+        StatType.ForceDefensePercentAdjustment,
+        StatType.EvasionPercentAdjustment,
+        StatType.RangedEvasionPercentAdjustment,
+        StatType.DeflectionEvasionPercentAdjustment,
+        StatType.DeflectionDefensePercentAdjustment,
+        StatType.DeflectionForceDefensePercentAdjustment,
+        StatType.LowHPPhysicalDefensePercentAdjustment,
+        StatType.LowHPEvasionPercentAdjustment,
+        StatType.LowHPTemporaryHPPercent,
+        StatType.LowHPNoSaveTemporaryHPPercent,
+        StatType.FatalDamageTemporaryHPPercent,
+        StatType.LightGuardianPowerAttackDeflection,
+        StatType.LightGuardianTemporaryHPReflectiveBarrier,
+        StatType.DeviceShieldTemporaryHPPercentAdjustment,
+        StatType.FieldSupportRangedPhysicalDamageReductionPercent,
+        StatType.FieldSupportPhysicalAndForceDamageReductionPercent,
+        StatType.IncomingCriticalHitDowngradeToMinimumDamage,
+        StatType.PhysicalDamageImmunity,
+        StatType.PhysicalDamageTakenPercentAdjustment,
+        StatType.ForceDamageTakenPercentAdjustment,
+        StatType.RangedPhysicalDamageTakenPercentAdjustment,
+        StatType.DamageTakenFromStatusSourcePercentAdjustment,
+        StatType.DamageTakenFromStatusSourcePartyPercentAdjustment,
+        StatType.PhysicalAbilityDamageTakenPercentAdjustment,
+        StatType.HitPointSpendTemporaryHPPercentOfSpentHP,
+        StatType.AvoidedAttackAccuracyPercentAdjustment,
+        StatType.StatusAppliedSelfAttackDeflection,
+        StatType.StatusAppliedSelfDefensePercentAdjustment,
+        StatType.StatusAppliedSelfEvasionPercentAdjustment,
+        StatType.AreaAbilityUsedEvasionPercentAdjustment,
+        StatType.CriticalHitSelfEvasionPercentAdjustment,
+        StatType.AbilityUsedNearbyAllyDefensePercentAdjustment,
+        StatType.AbilityUsedNearbyAllyForceDefensePercentAdjustment,
+        StatType.AbilityUsedMovementSpeedPercentAdjustment,
+        StatType.DeflectionNearbyAllyGuard,
+        StatType.RangedAbilityHitNearTargetDamageDealtPercentAdjustment
+    };
+
+    private static readonly StatType[] SustainStats =
+    {
+        StatType.DamageDealtHPPercentRestore,
+        StatType.PhysicalDamageDealtHPPercentRestore,
+        StatType.CriticalHPPercentOfDamageRestore,
+        StatType.DefeatedEnemyHPPercentRestore,
+        StatType.DarkForceDamageHPPercentRestore,
+        StatType.LowHPDamageDealtHPPercentRestore,
+        StatType.HealingReceivedPercentAdjustment,
+        StatType.FirstAidMedicalHealingPercentAdjustment,
+        StatType.HPRegen,
+        StatType.FPRegen,
+        StatType.StaminaRegen,
+        StatType.FPRestorePercentAdjustment,
+        StatType.CriticalStaminaRestore,
+        StatType.DefeatedEnemyStaminaRestore,
+        StatType.DefeatedEnemyFPRestore,
+        StatType.AutoAttackStaminaRestore,
+        StatType.AutoAttackFPRestore,
+        StatType.DamageDealtStaminaRestore,
+        StatType.BeastBalancedAbilityStaminaRestore,
+        StatType.HeavyVibrobladeOffenseHitPointSpendStaminaRestoreBasePercent,
+        StatType.LowFPAndStaminaIntervalFPRestore,
+        StatType.LowFPAndStaminaIntervalStaminaRestore,
+        StatType.AbilityStaminaCostFPRestorePercent,
+        StatType.AbilityFPCostStaminaRestorePercent,
+        StatType.CriticalHitSequenceStaminaRestore,
+        StatType.HostileAbilityFPRestore,
+        StatType.HostileAbilityStaminaRestore,
+        StatType.CostlyAbilityHitStaminaRestore,
+        StatType.AbilityGrantedAttackDeflectionFPRestore
+    };
+
+    private static readonly StatType[] ControlStats =
+    {
+        StatType.ActivationDelayFlatAdjustment,
+        StatType.ForceAbilityActivationDisabled,
+        StatType.CriticalTargetFPLossPercentOfDamage,
+        StatType.CriticalTargetStaminaLossPercentOfDamage,
+        StatType.CriticalTargetDefensePercentAdjustment,
+        StatType.CriticalTargetEvasionPercentAdjustment,
+        StatType.AutoAttackTargetAccuracyPercentAdjustment,
+        StatType.OutgoingDebuffDurationPercentAdjustment,
+        StatType.OutgoingForceDisruptionDurationPercentAdjustment,
+        StatType.OutgoingForceDisruptionForceDefensePercentAdjustment,
+        StatType.OutgoingBleedingDurationBonusSeconds,
+        StatType.OutgoingBleedingDamagePercentAdjustment,
+        StatType.OutgoingPoisonAttackPercentAdjustment,
+        StatType.OutgoingDisorientedAttackPercentAdjustment,
+        StatType.OutgoingDisorientedEvasionPercentAdjustment,
+        StatType.DamageDealtForceErosionFPLossPerTick,
+        StatType.DamageDealtForceErosionStaminaLossPerTick,
+        StatType.AbilityDefenseIgnorePercentAdjustment,
+        StatType.AbilityDefenseIgnoreExposedOrSunderedPercentAdjustment,
+        StatType.CriticalNextSkillAbilityDefenseIgnorePercentAdjustment,
+        StatType.NextSkillAbilityDefenseIgnorePercentAdjustment,
+        StatType.FieldEngineerAreaEvasionPenaltyPercent,
+        StatType.SparkLightningPressureEvasionPenaltyPercent,
+        StatType.BleedingTargetAbilityBleedDurationExtensionSeconds,
+        StatType.BleedingTargetAbilityBleedSpreadChance,
+        StatType.AutoAttackSuppressionStackChance,
+        StatType.RangedHitSuppressionStackDurationSeconds,
+        StatType.AbilityResourceDrainFoggyMindFP,
+        StatType.AbilityResourceDrainFoggyMindStamina,
+        StatType.AbilityDefenseIgnoreForceDisruptionOrFoggyMindPercentAdjustment,
+        StatType.StatusAppliedTargetPhysicalDefensePercentAdjustment,
+        StatType.StatusAppliedTargetAccuracyPercentAdjustment,
+        StatType.AbilityTargetStatusPhysicalDefensePercentAdjustment,
+        StatType.AbilityHitChanceAgainstSuppressionStackPercentAdjustment,
+        StatType.SuppressionStackDamageDealtToOtherTargetsPercentAdjustment,
+        StatType.DefenseIgnoreHitPhysicalDefensePercentAdjustment,
+        StatType.AreaAbilityTargetHitSequenceExposedDurationSeconds,
+        StatType.IdleStatusDurationPercentAdjustment
+    };
+
+    [Test]
+    public void CuratedReleaseArchetypes_AreLegalAndStayWithinHardReleaseGates()
+    {
+        var packages = BuildPackages();
+        var archetypes = BuildCuratedArchetypes(packages);
+        var failures = new List<string>();
+
+        foreach (var archetype in archetypes)
+        {
+            if (archetype.Profile.Cost > SkillPointCap)
+            {
+                failures.Add($"{archetype.Name}: costs {archetype.Profile.Cost} SP, above {SkillPointCap}.");
+                continue;
+            }
+
+            if (archetype.Profile.AttackDeflection >= PermanentAttackDeflectionCap)
+            {
+                failures.Add($"{archetype.Name}: permanent Attack Deflection is {archetype.Profile.AttackDeflection}; cap access must stay temporary.");
+            }
+
+            if (IsCompoundReleaseBlocker(archetype.Profile))
+            {
+                failures.Add($"{archetype.Name}: compound budget blocker. {Describe(archetype.Profile)}");
+            }
+        }
+
+        TestContext.Out.WriteLine("Curated archetype budget scan:");
+        foreach (var archetype in archetypes.OrderByDescending(x => x.Profile.OffenseScore))
+        {
+            TestContext.Out.WriteLine($"{archetype.Name}: {Describe(archetype.Profile)}");
+        }
+
+        failures.Should().BeEmpty(string.Join(Environment.NewLine, failures));
+    }
+
+    [Test]
+    public void FullPackageEnumeration_ReportsLegalOutliersWithoutPermanentDeflectionCapAccess()
+    {
+        var packages = BuildPackages()
+            .Values
+            .Where(x => WeaponPackages.Contains(x.Category) || SupportPackages.Contains(x.Category))
+            .Where(x => x.Cost > 0)
+            .OrderBy(x => x.Cost)
+            .ThenBy(x => x.Name)
+            .ToArray();
+
+        var legalProfiles = EnumerateLegalFrontierProfiles(packages, SkillPointCap).ToArray();
+        legalProfiles.Should().NotBeEmpty("the release audit needs legal package combinations to inspect");
+
+        var capViolations = legalProfiles
+            .Where(x => x.AttackDeflection >= PermanentAttackDeflectionCap)
+            .OrderByDescending(x => x.AttackDeflection)
+            .ThenByDescending(x => x.OffenseScore)
+            .Take(20)
+            .ToArray();
+
+        var compoundOutliers = legalProfiles
+            .Where(IsCompoundReleaseBlocker)
+            .OrderByDescending(x => x.OffenseScore)
+            .ThenByDescending(x => x.SustainScore)
+            .ThenByDescending(x => x.DefenseScore)
+            .Take(20)
+            .ToArray();
+
+        TestContext.Out.WriteLine("Top legal offense profiles:");
+        foreach (var profile in legalProfiles.OrderByDescending(x => x.OffenseScore).Take(12))
+        {
+            TestContext.Out.WriteLine(Describe(profile));
+        }
+
+        TestContext.Out.WriteLine("Top legal sustain profiles:");
+        foreach (var profile in legalProfiles.OrderByDescending(x => x.SustainScore).Take(12))
+        {
+            TestContext.Out.WriteLine(Describe(profile));
+        }
+
+        TestContext.Out.WriteLine("Top compound outlier profiles for manual review:");
+        foreach (var profile in compoundOutliers)
+        {
+            TestContext.Out.WriteLine(Describe(profile));
+        }
+
+        capViolations.Should().BeEmpty(string.Join(Environment.NewLine, capViolations.Select(Describe)));
+    }
+
+    [Test]
+    public void ReleaseAuditScope_IncludesEveryWeaponAndSupportPackage()
+    {
+        var packages = BuildPackages();
+        var missing = WeaponPackages
+            .Concat(SupportPackages)
+            .Where(category => !packages.ContainsKey(category))
+            .ToArray();
+
+        missing.Should().BeEmpty("the release audit must cover weapons, Force, Devices, Leadership, First Aid, Beast Mastery, and Armor");
+    }
+
+    private static bool IsCompoundReleaseBlocker(ReleaseProfile profile)
+    {
+        if (profile.OffenseScore < 175)
+            return false;
+
+        return profile.SustainScore >= 80 ||
+               profile.DefenseScore >= 160 ||
+               profile.ControlScore >= 110 ||
+               profile.SupportPackageCount >= 3;
+    }
+
+    private static IReadOnlyDictionary<PerkCategoryType, AuditPackage> BuildPackages()
+    {
+        var packages = BuildPerksWithout2daLookup()
+            .Where(x => x.Detail.IsActive)
+            .GroupBy(x => x.Detail.Category)
+            .ToDictionary(
+                x => x.Key,
+                x => BuildPackage(x.Key, x.ToArray()));
+
+        return packages;
+    }
+
+    private static AuditPackage BuildPackage(PerkCategoryType category, IReadOnlyCollection<PerkRecord> perks)
+    {
+        var cost = 0;
+        var stats = new Dictionary<StatType, int>();
+        foreach (var perk in perks)
+        {
+            cost += perk.Detail.PerkLevels.Values.Sum(x => x.Price);
+
+            var maxLevel = perk.Detail.PerkLevels
+                .OrderByDescending(x => x.Key)
+                .First()
+                .Value;
+
+            foreach (var statBonus in maxLevel.StatBonuses)
+            {
+                var value = ResolveAuditStatValue(perk.Type, statBonus);
+                stats[statBonus.Stat] = stats.GetValueOrDefault(statBonus.Stat) + value;
+            }
+        }
+
+        return new AuditPackage(
+            category,
+            GetCategoryName(category),
+            cost,
+            stats,
+            Sum(stats, StatType.AttackDeflection),
+            Sum(stats, StatType.ShieldDeflection),
+            Sum(stats, StatType.Guard),
+            ScoreOffense(stats),
+            ScoreDefense(stats),
+            ScoreSustain(stats),
+            ScoreControl(stats),
+            SupportPackages.Contains(category) ? 1 : 0);
+    }
+
+    private static int ResolveAuditStatValue(PerkType perkType, PerkStatBonus statBonus)
+    {
+        var conditionalValue = (perkType, statBonus.Stat) switch
+        {
+            (PerkType.DualWield, StatType.OffhandAttackDelayReductionPercent) => 30,
+            (PerkType.RapidShot, StatType.AttackDelayReductionPercent) => 30,
+            (PerkType.RapidShot, StatType.AutoAttackStaminaRestoreChance) => 10,
+            (PerkType.RapidShot, StatType.AutoAttackStaminaRestore) => 2,
+            (PerkType.GuardiansRiposte, StatType.DeflectionNextSkillAbilityDamageBonus) => 10,
+            (PerkType.GuardiansRiposte, StatType.DeflectionNextSkillAbilityDamageBonusWindowSeconds) => 18,
+            (PerkType.Alacrity, StatType.DeflectionStaminaRestore) => 4,
+            (PerkType.Bulwark, StatType.ShieldDeflection) => 35,
+            (PerkType.ShieldTraining, StatType.DeflectionEvasionPercentAdjustment) => 3,
+            (PerkType.ShieldTraining, StatType.DeflectionEvasionEnmityPercentAdjustment) => 3,
+            (PerkType.ConduitTraining, StatType.AutoAttackFPRestore) => 3,
+            (PerkType.ConduitTraining, StatType.AutoAttackFPRestoreCooldownSeconds) => 4,
+            (PerkType.CriticalWard, StatType.IncomingCriticalHitDowngradeCooldownMilliseconds) => 12000,
+            (PerkType.UnbreakableWill, StatType.AttackDeflection) => 8,
+            (PerkType.VampiricFury, StatType.CriticalHPPercentOfDamageRestore) => 25,
+            (PerkType.BodyguardsResolve, StatType.DamageTakenPercentAdjustment) => -10,
+            _ => 0
+        };
+
+        if (conditionalValue != 0)
+            return conditionalValue;
+
+        return statBonus.Calculate(0);
+    }
+
+    private static IReadOnlyCollection<ReleaseArchetype> BuildCuratedArchetypes(IReadOnlyDictionary<PerkCategoryType, AuditPackage> packages)
+    {
+        return new[]
+        {
+            Archetype(packages, "Single weapon specialist", PerkCategoryType.VibrobladeOffense),
+            Archetype(packages, "Two weapon-line hybrid", PerkCategoryType.VibrobladeOffense, PerkCategoryType.HeavyVibrobladeOffense),
+            Archetype(packages, "Three weapon-line combat maximizer", PerkCategoryType.HeavyVibrobladeOffense, PerkCategoryType.SpearDamage, PerkCategoryType.StaffCrusher),
+            Archetype(packages, "Weapon plus Leadership", PerkCategoryType.VibrobladeOffense, PerkCategoryType.LeadershipVanguardCommand),
+            Archetype(packages, "Weapon plus Force support", PerkCategoryType.LightsaberOffense, PerkCategoryType.ForceUniversal, PerkCategoryType.ForceLight),
+            Archetype(packages, "Weapon plus Devices support", PerkCategoryType.RifleMarksman, PerkCategoryType.DevicesFieldSupport),
+            Archetype(packages, "Weapon plus First Aid sustain", PerkCategoryType.HeavyVibrobladeOffense, PerkCategoryType.FirstAidTraumaMedic),
+            Archetype(packages, "Weapon plus Beast pressure", PerkCategoryType.SpearDamage, PerkCategoryType.BeastDamage),
+            Archetype(packages, "High-MGT damage stack", PerkCategoryType.HeavyVibrobladeOffense, PerkCategoryType.SpearDamage, PerkCategoryType.StaffCrusher, PerkCategoryType.LeadershipVanguardCommand),
+            Archetype(packages, "High-PER crit stack", PerkCategoryType.PistolGunslinger, PerkCategoryType.RifleMarksman, PerkCategoryType.ThrowingDeadeye, PerkCategoryType.LeadershipVanguardCommand),
+            Archetype(packages, "Attack Deflection stack", PerkCategoryType.StaffSentinel, PerkCategoryType.LightsaberDefense, PerkCategoryType.SaberstaffTempest, PerkCategoryType.TwinBladeDuelist, PerkCategoryType.HeavyVibrobladeDefense),
+            Archetype(packages, "Shield Deflection stack", PerkCategoryType.VibrobladeDefense, PerkCategoryType.DevicesFieldSupport, PerkCategoryType.LeadershipFieldSteward),
+            Archetype(packages, "Guard tank stack", PerkCategoryType.KatarIronGuard, PerkCategoryType.HeavyVibrobladeDefense, PerkCategoryType.LeadershipFieldSteward),
+            Archetype(packages, "Sustain tank", PerkCategoryType.HeavyVibrobladeOffense, PerkCategoryType.HeavyVibrobladeDefense, PerkCategoryType.FirstAidTraumaMedic, PerkCategoryType.LeadershipFieldSteward),
+            Archetype(packages, "High-control/debuff stack", PerkCategoryType.SpearDisabler, PerkCategoryType.VibroknifeSaboteur, PerkCategoryType.RiflePacification, PerkCategoryType.DevicesGrenadier),
+            Archetype(packages, "Positional low-uptime build", PerkCategoryType.SpearDamage, PerkCategoryType.VibroknifeShadow),
+            Archetype(packages, "Positional high-uptime build", PerkCategoryType.SpearDamage, PerkCategoryType.VibroknifeShadow, PerkCategoryType.KatarVenomCurrent)
+        };
+    }
+
+    private static ReleaseArchetype Archetype(
+        IReadOnlyDictionary<PerkCategoryType, AuditPackage> packages,
+        string name,
+        params PerkCategoryType[] categories)
+    {
+        return new ReleaseArchetype(name, Combine(packages, name, categories));
+    }
+
+    private static IEnumerable<ReleaseProfile> EnumerateLegalFrontierProfiles(IReadOnlyList<AuditPackage> packages, int maximumCost)
+    {
+        var emptyProfile = new ReleaseProfile(
+            "Empty",
+            Array.Empty<string>(),
+            0,
+            new Dictionary<StatType, int>(),
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0);
+        var frontier = new Dictionary<EnumerationKey, ReleaseProfile>
+        {
+            [GetEnumerationKey(emptyProfile)] = emptyProfile
+        };
+
+        foreach (var package in packages)
+        {
+            var additions = new List<ReleaseProfile>();
+            foreach (var profile in frontier.Values)
+            {
+                if (profile.Cost + package.Cost > maximumCost)
+                    continue;
+
+                additions.Add(AddPackage(profile, package));
+            }
+
+            foreach (var profile in additions)
+            {
+                var key = GetEnumerationKey(profile);
+                if (!frontier.TryGetValue(key, out var existing) ||
+                    profile.Cost < existing.Cost ||
+                    profile.Cost == existing.Cost && profile.PackageNames.Count < existing.PackageNames.Count)
+                {
+                    frontier[key] = profile;
+                }
+            }
+        }
+
+        return frontier.Values.Where(x => x.Cost > 0);
+    }
+
+    private static ReleaseProfile AddPackage(ReleaseProfile profile, AuditPackage package)
+    {
+        var packageNames = profile.PackageNames
+            .Concat(new[] { package.Name })
+            .OrderBy(x => x)
+            .ToArray();
+
+        return new ReleaseProfile(
+            string.Join(" + ", packageNames),
+            packageNames,
+            profile.Cost + package.Cost,
+            new Dictionary<StatType, int>(),
+            profile.AttackDeflection + package.AttackDeflection,
+            profile.ShieldDeflection + package.ShieldDeflection,
+            profile.Guard + package.Guard,
+            profile.OffenseScore + package.OffenseScore,
+            profile.DefenseScore + package.DefenseScore,
+            profile.SustainScore + package.SustainScore,
+            profile.ControlScore + package.ControlScore,
+            profile.SupportPackageCount + package.SupportPackageCount);
+    }
+
+    private static EnumerationKey GetEnumerationKey(ReleaseProfile profile)
+    {
+        return new EnumerationKey(
+            Math.Min(profile.AttackDeflection, PermanentAttackDeflectionCap),
+            Math.Min(profile.OffenseScore, 175),
+            Math.Min(profile.DefenseScore, 160),
+            Math.Min(profile.SustainScore, 80),
+            Math.Min(profile.ControlScore, 110),
+            Math.Min(profile.SupportPackageCount, 3));
+    }
+
+    private static ReleaseProfile Combine(
+        IReadOnlyDictionary<PerkCategoryType, AuditPackage> packages,
+        string name,
+        IReadOnlyCollection<PerkCategoryType> categories)
+    {
+        var auditPackages = categories
+            .Select(category => packages[category])
+            .ToArray();
+
+        return Combine(auditPackages, name);
+    }
+
+    private static ReleaseProfile Combine(IReadOnlyCollection<AuditPackage> packages, string name = "")
+    {
+        var stats = new Dictionary<StatType, int>();
+        foreach (var package in packages)
+        {
+            foreach (var (stat, value) in package.Stats)
+            {
+                stats[stat] = stats.GetValueOrDefault(stat) + value;
+            }
+        }
+
+        var cost = packages.Sum(x => x.Cost);
+        var packageNames = packages.Select(x => x.Name).OrderBy(x => x).ToArray();
+        return new ReleaseProfile(
+            string.IsNullOrWhiteSpace(name) ? string.Join(" + ", packageNames) : name,
+            packageNames,
+            cost,
+            stats,
+            Sum(stats, StatType.AttackDeflection),
+            Sum(stats, StatType.ShieldDeflection),
+            Sum(stats, StatType.Guard),
+            ScoreOffense(stats),
+            ScoreDefense(stats),
+            ScoreSustain(stats),
+            ScoreControl(stats),
+            packages.Count(x => SupportPackages.Contains(x.Category)));
+    }
+
+    private static int ScoreOffense(IReadOnlyDictionary<StatType, int> stats)
+    {
+        var damagePercent = SumBeneficial(stats, DirectDamagePercentStats);
+        var flatDamage = SumBeneficial(stats, FlatDamageStats) / 2;
+        var crit = SumBeneficial(stats, CriticalRateStats) + SumBeneficial(stats, CriticalDamageStats) / 2;
+        var haste = SumBeneficial(stats, HasteStats);
+        var mightScaling = SumBeneficial(stats, StatType.WeaponMightModifierDamageMultiplier) * 12 +
+                           SumBeneficial(stats, StatType.StaffMightModifierDamageMultiplier) * 6;
+
+        return damagePercent + flatDamage + crit + haste + mightScaling;
+    }
+
+    private static int ScoreDefense(IReadOnlyDictionary<StatType, int> stats)
+    {
+        return SumBeneficial(stats, DefenseStats) +
+               SumBeneficial(stats, StatType.AttackDeflection) * 2 +
+               SumBeneficial(stats, StatType.ShieldDeflection) * 2 +
+               SumBeneficial(stats, StatType.Guard) +
+               SumBeneficial(stats, StatType.GuardDamageReductionPercentAdjustment) * 2;
+    }
+
+    private static int ScoreSustain(IReadOnlyDictionary<StatType, int> stats)
+    {
+        return SumBeneficial(stats, SustainStats);
+    }
+
+    private static int ScoreControl(IReadOnlyDictionary<StatType, int> stats)
+    {
+        return SumBeneficial(stats, ControlStats) +
+               SumBeneficial(stats, StatType.ForceAbilityActivationDisabled) * 20;
+    }
+
+    private static int Sum(IReadOnlyDictionary<StatType, int> stats, params StatType[] statTypes)
+    {
+        return statTypes.Sum(stat => stats.GetValueOrDefault(stat));
+    }
+
+    private static int SumBeneficial(IReadOnlyDictionary<StatType, int> stats, params StatType[] statTypes)
+    {
+        return statTypes.Sum(stat => GetBeneficialMagnitude(stat, stats.GetValueOrDefault(stat)));
+    }
+
+    private static int GetBeneficialMagnitude(StatType stat, int value)
+    {
+        return Stat.GetStatTypeCategory(stat) switch
+        {
+            StatTypeCategory.BeneficialWhenPositive => Math.Max(value, 0),
+            StatTypeCategory.BeneficialWhenNegative => Math.Max(-value, 0),
+            _ => 0
+        };
+    }
+
+    private static string Describe(ReleaseProfile profile)
+    {
+        return $"{profile.Name}: SP={profile.Cost}, Off={profile.OffenseScore}, Def={profile.DefenseScore}, Sustain={profile.SustainScore}, Control={profile.ControlScore}, AtkDef={profile.AttackDeflection}, ShieldDef={profile.ShieldDeflection}, Guard={profile.Guard}, SupportPkgs={profile.SupportPackageCount}, Packages=[{string.Join(", ", profile.PackageNames)}]";
+    }
+
+    private static IReadOnlyCollection<PerkRecord> BuildPerksWithout2daLookup()
+    {
+        var result = new List<PerkRecord>();
+        var definitionTypes = typeof(IPerkListDefinition).Assembly
+            .GetTypes()
+            .Where(x => !x.IsAbstract && typeof(IPerkListDefinition).IsAssignableFrom(x))
+            .OrderBy(x => x.FullName)
+            .ToArray();
+
+        foreach (var definitionType in definitionTypes)
+        {
+            var definition = Activator.CreateInstance(definitionType)!;
+            foreach (var method in definitionType.GetMethods(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly)
+                         .Where(x => x.ReturnType == typeof(void) && x.GetParameters().Length == 0 && !x.Name.Contains('<'))
+                         .OrderBy(x => x.MetadataToken))
+            {
+                method.Invoke(definition, null);
+            }
+
+            var builder = definitionType
+                .GetField("_builder", BindingFlags.Instance | BindingFlags.NonPublic)!
+                .GetValue(definition)!;
+
+            var perks = (Dictionary<PerkType, PerkDetail>)typeof(PerkBuilder)
+                .GetField("_perks", BindingFlags.Instance | BindingFlags.NonPublic)!
+                .GetValue(builder)!;
+
+            result.AddRange(perks.Select(x => new PerkRecord(x.Key, x.Value)));
+        }
+
+        return result;
+    }
+
+    private static string GetCategoryName(PerkCategoryType category)
+    {
+        var field = typeof(PerkCategoryType).GetField(category.ToString())!;
+        var attribute = (PerkCategoryAttribute)field
+            .GetCustomAttributes(typeof(PerkCategoryAttribute), false)
+            .Single();
+
+        return attribute.Name;
+    }
+
+    private sealed record PerkRecord(PerkType Type, PerkDetail Detail);
+
+    private sealed record AuditPackage(
+        PerkCategoryType Category,
+        string Name,
+        int Cost,
+        IReadOnlyDictionary<StatType, int> Stats,
+        int AttackDeflection,
+        int ShieldDeflection,
+        int Guard,
+        int OffenseScore,
+        int DefenseScore,
+        int SustainScore,
+        int ControlScore,
+        int SupportPackageCount);
+
+    private sealed record ReleaseArchetype(string Name, ReleaseProfile Profile);
+
+    private readonly record struct EnumerationKey(
+        int AttackDeflection,
+        int OffenseScore,
+        int DefenseScore,
+        int SustainScore,
+        int ControlScore,
+        int SupportPackageCount);
+
+    private sealed record ReleaseProfile(
+        string Name,
+        IReadOnlyCollection<string> PackageNames,
+        int Cost,
+        IReadOnlyDictionary<StatType, int> Stats,
+        int AttackDeflection,
+        int ShieldDeflection,
+        int Guard,
+        int OffenseScore,
+        int DefenseScore,
+        int SustainScore,
+        int ControlScore,
+        int SupportPackageCount);
+}

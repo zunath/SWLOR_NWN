@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 {
     public static class ForceControlHealingEffects
     {
-        private const float SereneFocusDurationSeconds = 12f;
+        private const float SereneFocusDurationSeconds = 30f;
         private const float ForceMendCooldownSeconds = 24f;
         private const float HarmonicRestorationCooldownSeconds = 20f;
         private const float HarmonicRestorationRadius = 5f;
@@ -85,7 +85,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                          .Take(2))
             {
                 AbilityEffectScaling.ApplyActivatedScaledHeal(activator, ally, 6);
-                StatusEffect.ApplyStatusEffect(activator, ally, typeof(HarmonicRestorationStatusEffect), 12f);
+                StatusEffect.ApplyStatusEffect(activator, ally, typeof(HarmonicRestorationStatusEffect), 30f);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_M), ally);
             }
         }

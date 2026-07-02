@@ -8,6 +8,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public bool IsAreaAbility { get; set; }
         public bool IsSingleTargetAbility { get; set; }
         public int ImpactedTargetCount { get; set; }
+        public int CriticalHitCount { get; set; }
 
         public AbilityImpactSummary()
         {

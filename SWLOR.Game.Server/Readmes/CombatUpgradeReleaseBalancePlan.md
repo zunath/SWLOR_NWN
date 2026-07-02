@@ -10,13 +10,16 @@ The goal is not to reduce build variety. SWLOR should continue to support mix-an
 
 ## Current Implementation Status
 
-The current blocker pass is implemented in code, Bible, TLK, and regression tests. The completed fixes cover permanent Attack Deflection budget, Staff Crusher cross-tree payload, damage-plus-sustain loops, positional baseline viability, Spear Disabler non-Force value, Lightsaber Offense rider cadence, and short weapon setup payoff windows.
+The current blocker pass is implemented in code, Bible, TLK, and regression tests. The completed fixes cover permanent Attack Deflection budget, Staff Crusher cross-tree payload, damage-plus-sustain loops, positional baseline viability, Spear Disabler non-Force value, former Lightsaber Offense rider cadence, and short weapon setup payoff windows.
 
-The remaining release gate is validation, not unimplemented design: run the curated archetype playtests, inspect full-enumeration outliers, and confirm real enemy profiles after the fix pass.
+The dependency-only weapon pass is also implemented in code, Bible, TLK, and regression tests. Perks should no longer exist solely to improve one named sibling perk unless every broader design option has failed and the exception is documented.
+
+The Bible-first weapon identity pass is now applied in the local workbook, regenerated manifest, generated perk/ability code, and regression tests: weapon styles use the screenshot archetype names, all weapon styles follow the 18-slot/60 SP progression template, and every weapon style opens with an active combat ability. The remaining gate is live validation. `CombatUpgradeReleaseValidationMatrix.md` defines the curated archetypes, full-enumeration outlier review, representative enemy profiles, attack-delay feel checks, support-system audit surface, peak-damage target bands, and mob-tuning stance for the testing team.
 
 ## Core Principles
 
 - Preserve cross-tree build freedom. Perks should be broadly mixable unless a specific interaction remains broken after softer fixes.
+- Avoid dependency-only perks. A trait can prefer a weapon line, trigger type, status condition, or playstyle loop, but it should not exist only to make one named sibling perk usable.
 - Balance by design first. Tune Bible values, trigger conditions, uptime, cooldowns, and magnitude before adding new code enforcement.
 - Avoid combo-specific hardcoding. Do not add special-case logic such as "if Crusher plus Soul Devourer plus Spear, reduce damage."
 - Use shared combat and stat concepts. When code support is needed, prefer metadata-driven or shared-stat behavior over perk-specific branches.
@@ -53,6 +56,12 @@ The audit should report:
 - Tradeoffs and missing capabilities.
 - Whether a finding is a design blocker, balance blocker, validation blocker, or diagnostic warning.
 
+Repo coverage:
+
+- `CombatReleaseBalanceAuditTests` validates curated archetype legality and hard gates.
+- `CombatReleaseBalanceAuditTests` scans legal 400 SP package-frontier outliers and hard-fails permanent Attack Deflection cap access.
+- `CombatUpgradeReleaseValidationMatrix.md` records the manual real-enemy and attack-delay checks that cannot be proven by static tests.
+
 ### Weapon Identity Matrix
 
 The identity matrix covers weapon trees only. It should clarify each tree's supported playstyles without implying hierarchy. Avoid labels such as "primary role" and "secondary role" if they suggest one path is better.
@@ -77,6 +86,14 @@ Each weapon tree should define:
 - Mechanics the tree should not own.
 - Known conceptual mismatches.
 - Positive calibration anchors, if applicable.
+
+### Default Weapon Progression Pattern
+
+Weapon skill perk lines should follow the default 18-slot, 60 SP progression pattern documented in `CombatUpgradeReleaseValidationMatrix.md`.
+
+The intended template uses three ranked combat abilities, two general traits, three cross-skill traits, one stance, and one capstone. The corrected type for `Ability 3 Rank I` is `Combat`.
+
+The local Bible and manifest now match the full template for every weapon style: 18 rows, 60 SP, a skill-rank 2 `Combat` opener, a skill-rank 50 `Capstone`, and the corrected `Ability 3 Rank I` `Combat` slot. The current mismatch is implementation-side: live C# definitions still need to be aligned to the new Bible names, descriptions, skill requirements, SP prices, resources, cooldowns, and effects.
 
 ### Audit Rules And Config
 
@@ -228,10 +245,10 @@ Examples:
 
 Use positive-baseline trees as feel anchors, not as templates to clone:
 
-- Vibroblade Offense: satisfying throughput and clear combat loop.
+- Vibroblade Frenzy: satisfying throughput and clear combat loop.
 - Heavy Vibroblade: strong risk/sustain identity, but still needs stacking guardrails.
-- Staff Sentinel: clear support and defense identity.
-- Katar Iron Guard: strong tank/control identity, with some dead-window traits to review.
+- Staff Sentinel: clear control and temporary-deflection identity.
+- Katar Scrapper: strong control identity, with cooldown windows to review.
 
 ### Positional Mechanics
 
@@ -274,8 +291,8 @@ Rules:
 - Temporary Attack Deflection may approach cap during constrained windows.
 - Capstone Attack Deflection may exceed normal temporary budget briefly when intentional.
 - Ally-granted Attack Deflection follows the same restriction, with extra caution for permanent or group-wide uptime.
-- Lightsaber Defense remains the flagship non-shield Attack Deflection style, but its identity should come from moderate passive values plus temporary windows, FP recovery, enmity, ripostes, and ally support.
-- Staff, Saberstaff, Twin Blade, and Heavy Vibroblade Defense may touch Attack Deflection, but should not casually stack into permanent cap access.
+- Lightsaber Severance remains the flagship non-shield deflection-payoff style, but its identity should come from temporary windows, empowered attacks after deflection, FP interaction, and ripostes rather than large passive Attack Deflection.
+- Staff Sentinel, Saberstaff Tempest, Lightsaber Ward, and Heavy Vibroblade Immortal may touch Attack Deflection or Guard, but should not casually stack into permanent cap access.
 - Shield Deflection may keep a higher passive ceiling because shields are a larger equipment commitment.
 - Guard remains a separate damage-stage mitigation and enmity mechanic.
 
@@ -345,8 +362,8 @@ Do not release while any of these remain true:
 - A cross-tree passive is broadly mandatory for most weapon builds.
 - Spear Disabler is only meaningfully useful against Force-sensitive targets.
 - The audit cannot explain known scary player-test builds.
-- Full enumeration outliers have not been reviewed.
-- Real-enemy playtest has not been run against representative enemy profiles.
+- Full enumeration outliers have not been reviewed against the validation matrix.
+- Real-enemy playtest has not been run against representative enemy profiles from the validation matrix.
 
 ## Implementation Notes
 

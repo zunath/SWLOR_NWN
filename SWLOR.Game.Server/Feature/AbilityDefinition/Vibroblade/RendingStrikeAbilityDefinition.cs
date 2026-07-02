@@ -58,12 +58,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
 
         private static void RendingStrike1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Vibroblade, 18, 10, typeof(ExposedStatusEffect), false);
+            Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Vibroblade, 18, 18, typeof(ExposedStatusEffect), false);
         }
 
         private static void RendingStrike2ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Vibroblade, 32, 12, typeof(ExposedStatusEffect), false, statusEffectFactory: () => new ExposedStatusEffect(-25));
+            Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Vibroblade, 32, 18, typeof(ExposedStatusEffect), false, statusEffectFactory: () => new ExposedStatusEffect(-25));
         }
     }
 }

@@ -45,7 +45,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
 
         private static void CoveringStrike1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.Vibroblade, 20, 12, typeof(CoveringStrikeStatusEffect), CombatImpactAreaShape.Line, 0.25f, 8f, 2.5f);
+            Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.Vibroblade, 20, 18, typeof(CoveringStrikeStatusEffect), CombatImpactAreaShape.Line, 0.25f, 8f, 2.5f);
         }
     }
 }

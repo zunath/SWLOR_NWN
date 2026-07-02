@@ -40,9 +40,9 @@ namespace SWLOR.Game.Server.Service
         public const int MaximumCombatReadinessPercent = 15;
         private const float MinimumMovementSpeedMultiplier = 0f;
         private const float MaximumMovementSpeedMultiplier = 1.5f;
-        private const float DeflectionEvasionBoostDurationSeconds = 10f;
-        private const float DeflectionEnmityBoostDurationSeconds = 12f;
-        private const float DeflectionDefenseBoostDurationSeconds = 12f;
+        private const float DeflectionEvasionBoostDurationSeconds = 30f;
+        private const float DeflectionEnmityBoostDurationSeconds = 30f;
+        private const float DeflectionDefenseBoostDurationSeconds = 30f;
         private static readonly Dictionary<StatType, StatTypeAttribute> _statTypeAttributes = new();
 
         [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
@@ -1088,6 +1088,7 @@ namespace SWLOR.Game.Server.Service
 
             adjustment += GetHighFPAndStaminaAttackAdjustment(creature);
             adjustment += Combat.GetNearbyStatusTargetAttackAdjustment(creature);
+            adjustment += Combat.GetLowHPAttackAdjustment(creature);
             return Math.Max(1, ApplyPercentAdjustment(attack, adjustment));
         }
 
@@ -1451,6 +1452,7 @@ namespace SWLOR.Game.Server.Service
         public static void ApplyDeflectionEffectsNative(CNWSCreature creature)
         {
             var creatureId = creature.m_idSelf;
+            Combat.TrackDeflection(creatureId);
 
             var staminaRestore = GetStatAdjustment(creatureId, StatType.DeflectionStaminaRestore);
             var fpRestore = GetStatAdjustment(creatureId, StatType.DeflectionFPRestore);
@@ -1462,11 +1464,6 @@ namespace SWLOR.Game.Server.Service
             var enmityBoost = GetStatAdjustment(creatureId, StatType.DeflectionEnmityPercentAdjustment);
             var defenseBoost = GetStatAdjustment(creatureId, StatType.DeflectionDefensePercentAdjustment);
             var forceDefenseBoost = GetStatAdjustment(creatureId, StatType.DeflectionForceDefensePercentAdjustment);
-            var recastReductionGroup = GetRecastGroupFromStat(GetStatAdjustment(creatureId, StatType.DeflectionRecastReductionGroup));
-            var recastReductionSeconds = GetStatAdjustment(creatureId, StatType.DeflectionRecastReductionSeconds);
-            var nextAbilityDamagePerkType = GetStatAdjustment(creatureId, StatType.DeflectionNextAbilityDamageBonusPerkType);
-            var nextAbilityDamageBonus = GetStatAdjustment(creatureId, StatType.DeflectionNextAbilityDamageBonus);
-            var nextAbilityDamageDuration = GetStatAdjustment(creatureId, StatType.DeflectionNextAbilityDamageBonusDurationSeconds);
             var nextSkillAbilitySkillType = GetSkillTypeFromStat(GetStatAdjustment(
                 creatureId,
                 StatType.DeflectionNextSkillAbilitySkillType));
@@ -1541,17 +1538,6 @@ namespace SWLOR.Game.Server.Service
                     DeflectionDefenseBoostDurationSeconds,
                     StatType.DeflectionDefensePercentAdjustment);
             }
-
-            if (recastReductionGroup != RecastGroup.Invalid && recastReductionSeconds > 0)
-            {
-                Recast.ReduceRecastDelay(creatureId, recastReductionGroup, recastReductionSeconds);
-            }
-
-            Combat.GrantNextAbilityDamageBonus(
-                creatureId,
-                nextAbilityDamagePerkType,
-                nextAbilityDamageBonus,
-                nextAbilityDamageDuration);
 
             Combat.GrantNextSkillAbilityBonuses(
                 creatureId,
@@ -1722,10 +1708,18 @@ namespace SWLOR.Game.Server.Service
         {
             return GetStatAdjustment(creature, StatType.DefensePercentAdjustment) + (type switch
             {
-                CombatDamageType.Physical => GetStatAdjustment(creature, StatType.PhysicalDefensePercentAdjustment),
+                CombatDamageType.Physical => GetStatAdjustment(creature, StatType.PhysicalDefensePercentAdjustment) +
+                                             GetShieldEquippedPhysicalDefensePercentAdjustment(creature),
                 CombatDamageType.Force => GetStatAdjustment(creature, StatType.ForceDefensePercentAdjustment),
                 _ => 0
             });
+        }
+
+        private static int GetShieldEquippedPhysicalDefensePercentAdjustment(uint creature)
+        {
+            return HasShieldEquipped(creature)
+                ? GetStatAdjustment(creature, StatType.ShieldEquippedPhysicalDefensePercentAdjustment)
+                : 0;
         }
 
         private static int GetDefenseAdjustment(uint creature, CombatDamageType type)

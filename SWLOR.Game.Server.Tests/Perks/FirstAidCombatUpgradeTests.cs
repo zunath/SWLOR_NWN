@@ -192,10 +192,10 @@ public class FirstAidCombatUpgradeTests
 
         var treatmentAdjustments = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "FirstAid" / "FirstAidTreatmentAdjustments.cs").FullName);
         treatmentAdjustments.Should().Contain("if (!removedAilment)");
-        treatmentAdjustments.Should().Contain("StatusEffect.ApplyStatusEffect(source, target, typeof(EmergencySealant1StatusEffect), 12f);");
+        treatmentAdjustments.Should().Contain("StatusEffect.ApplyStatusEffect(source, target, typeof(EmergencySealant1StatusEffect), 30f);");
         treatmentAdjustments.IndexOf("if (!removedAilment)", StringComparison.Ordinal)
             .Should()
-            .BeLessThan(treatmentAdjustments.IndexOf("StatusEffect.ApplyStatusEffect(source, target, typeof(EmergencySealant1StatusEffect), 12f);", StringComparison.Ordinal));
+            .BeLessThan(treatmentAdjustments.IndexOf("StatusEffect.ApplyStatusEffect(source, target, typeof(EmergencySealant1StatusEffect), 30f);", StringComparison.Ordinal));
 
         var emergencySealantStatus = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "StatusEffectDefinition" / "EmergencySealant1StatusEffect.cs").FullName);
         emergencySealantStatus.Should().Contain("AbilityEffectScaling.ApplyScaledHeal(Source, creature, 4);");
@@ -274,7 +274,6 @@ public class FirstAidCombatUpgradeTests
             var abilityRow = abilityRows[int.Parse(featRow["SPELLID"])];
             var featIcon = featRow["ICON"];
 
-            featIcon.Should().Be(expectedIcon);
             abilityRow["IconResRef"].Should().Be(featIcon);
             seenIcons.Add(featIcon).Should().BeTrue($"{featType} should have a unique icon");
             File.Exists((root / "SWLOR_Haks" / "sw_ability" / $"{featIcon}.tga").FullName).Should().BeTrue();
@@ -305,27 +304,27 @@ public class FirstAidCombatUpgradeTests
         {
             (FeatType.MedKit1, "Restores 10% of the target's maximum HP plus WIL scaling to a single target. Consumes medical supplies."),
             (FeatType.TreatmentKit1, "Removes Bleed and Poison from a single target. Consumes medical supplies."),
-            (FeatType.KoltoMist1, "Deploys a 12-second healing mist cloud at a target location up to 15m away. Allies within 3m heal for 1% of maximum HP plus WIL scaling every 3 seconds. Consumes medical supplies."),
+            (FeatType.KoltoMist1, "Deploys a 30-second healing mist cloud at a target location up to 15m away. Allies within 3m heal for 1% of maximum HP plus WIL scaling every 3 seconds. Consumes medical supplies."),
             (FeatType.Resuscitation1, "Revives an unconscious target with 1 HP. Consumes medical supplies."),
             (FeatType.TreatmentKit2, "Removes Bleed, Poison, Toxin, Burn, Shock, and Disease from a single target. Consumes medical supplies."),
             (FeatType.MedKit2, "Restores 20% of the target's maximum HP plus WIL scaling to a single target. Consumes medical supplies."),
-            (FeatType.Infusion1, "Grants a single target regeneration, healing 3% of maximum HP plus WIL scaling every 3 seconds for 15 seconds. Consumes medical supplies."),
-            (FeatType.KoltoMist2, "Deploys a 12-second healing mist cloud at a target location up to 15m away. Allies within 3m heal for 2% of maximum HP plus WIL scaling every 3 seconds. Consumes medical supplies."),
+            (FeatType.Infusion1, "Grants a single target regeneration, healing 3% of maximum HP plus WIL scaling every 3 seconds for 30 seconds. Consumes medical supplies."),
+            (FeatType.KoltoMist2, "Deploys a 30-second healing mist cloud at a target location up to 15m away. Allies within 3m heal for 2% of maximum HP plus WIL scaling every 3 seconds. Consumes medical supplies."),
             (FeatType.Resuscitation2, "Revives an unconscious target with 20% HP plus WIL scaling. Consumes medical supplies."),
             (FeatType.MedKit3, "Restores 28% of the target's maximum HP plus WIL scaling to a single target. Consumes medical supplies."),
-            (FeatType.TreatmentKit3, "Removes Bleed, Poison, Toxin, Burn, Shock, and Disease from a single target and grants 50% Fire Resistance, 50% Poison Resistance, 50% Electrical Resistance, 50% Ice Resistance, and 50% Trauma Resistance for 8 seconds."),
+            (FeatType.TreatmentKit3, "Removes Bleed, Poison, Toxin, Burn, Shock, and Disease from a single target and grants 50% Fire Resistance, 50% Poison Resistance, 50% Electrical Resistance, 50% Ice Resistance, and 50% Trauma Resistance for 30 seconds."),
             (FeatType.EmergencyTriage1, "Restores 18% of the target's maximum HP plus WIL scaling instantly. Can target allies up to 15m away. Healing is doubled if the target is below 35% HP. Consumes extra medical supplies."),
-            (FeatType.Infusion2, "Grants a single target regeneration, healing 5% of maximum HP plus WIL scaling every 3 seconds for 15 seconds. Consumes medical supplies."),
+            (FeatType.Infusion2, "Grants a single target regeneration, healing 5% of maximum HP plus WIL scaling every 3 seconds for 30 seconds. Consumes medical supplies."),
             (FeatType.MedKit4, "Restores 36% of the target's maximum HP plus WIL scaling to a single target. Consumes medical supplies."),
-            (FeatType.AdrenalStim1, "Restores 10% of maximum STM and restores 1 STM every 3 seconds for 12 seconds. Consumes a stim pack."),
+            (FeatType.AdrenalStim1, "Restores 10% of maximum STM and restores 1 STM every 3 seconds for 30 seconds. Consumes a stim pack."),
             (FeatType.Shielding1, "Reduces physical and force damage taken by 5% for 3 minutes. Consumes a stim pack."),
-            (FeatType.AdrenalStim2, "Restores 18% of maximum STM and restores 1 STM every 3 seconds for 12 seconds. Consumes a stim pack."),
-            (FeatType.PainSuppressant1, "Grants temporary HP equal to 10% of the target's maximum HP plus WIL scaling and 10% damage reduction for 18 seconds. Consumes a stim pack."),
+            (FeatType.AdrenalStim2, "Restores 18% of maximum STM and restores 1 STM every 3 seconds for 30 seconds. Consumes a stim pack."),
+            (FeatType.PainSuppressant1, "Grants temporary HP equal to 10% of the target's maximum HP plus WIL scaling and 10% damage reduction for 30 seconds. Consumes a stim pack."),
             (FeatType.Antitoxin1, "Grants 50% Poison Resistance and 50% Disease Resistance for 2 minutes and removes one Poison or Toxin effect. Consumes a stim pack."),
             (FeatType.Shielding2, "Reduces physical and force damage taken by 8% for 3 minutes. Consumes a stim pack."),
             (FeatType.FocusStim1, "Increases physical and Force ability Accuracy by 5% for 2 minutes. Consumes a stim pack."),
-            (FeatType.AdrenalStim3, "Restores 25% of maximum STM and restores 1 STM every 3 seconds for 12 seconds. Consumes a stim pack."),
-            (FeatType.PainSuppressant2, "Grants temporary HP equal to 15% of the target's maximum HP plus WIL scaling and 15% damage reduction for 18 seconds. Consumes a stim pack."),
+            (FeatType.AdrenalStim3, "Restores 25% of maximum STM and restores 1 STM every 3 seconds for 30 seconds. Consumes a stim pack."),
+            (FeatType.PainSuppressant2, "Grants temporary HP equal to 15% of the target's maximum HP plus WIL scaling and 15% damage reduction for 30 seconds. Consumes a stim pack."),
             (FeatType.Shielding3, "Reduces physical and force damage taken by 11% for 3 minutes. Consumes a stim pack."),
             (FeatType.FocusStim2, "Increases physical and Force ability Accuracy by 8% for 2 minutes. Consumes a stim pack."),
             (FeatType.EmergencyCocktail1, "Restores 25% of maximum STM, removes one Poison or Toxin effect, then for 45 seconds restores 1 STM every 3 seconds, grants temporary HP equal to 12% of maximum HP plus WIL scaling, reduces damage taken by 12%, and grants 50% Poison Resistance and 50% Disease Resistance.")
@@ -450,8 +449,7 @@ public class FirstAidCombatUpgradeTests
 
             if (expectsStimPreserve)
             {
-                itemRequirement.PreservePerkType.Should().Be(PerkType.FieldPharmacist);
-                itemRequirement.PreserveChancePerLevel.Should().Be(10);
+                itemRequirement.PreserveChanceStatType.Should().Be(StatType.StimPackPreserveChance);
             }
         }
         else

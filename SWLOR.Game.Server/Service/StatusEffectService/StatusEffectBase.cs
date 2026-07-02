@@ -21,6 +21,7 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
         public virtual StatusEffectCategory Categories => StatusEffectCategory.None;
         public virtual StatusEffectStackType StackingType => StatusEffectStackType.Disabled;
         public bool IsFlaggedForRemoval { get; protected set; }
+        public bool WasNaturallyExpired { get; private set; }
         public virtual bool SendsApplicationMessage => true;
         public virtual bool SendsWornOffMessage => true;
         public virtual StatusEffectCleanseType CleanseTypes => StatusEffectCleanseType.None;
@@ -77,6 +78,14 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
             Source = source;
         }
 
+        public void ExtendDurationTicks(int ticks)
+        {
+            if (_isPermanent || IsFlaggedForRemoval || ticks <= 0)
+                return;
+
+            _durationTicks += ticks;
+        }
+
         protected virtual void Reapply(uint creature) { }
         public void ReapplyEffect(uint creature)
         {
@@ -113,6 +122,7 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
             if (!_isPermanent && --_durationTicks <= 0)
             {
                 IsFlaggedForRemoval = true;
+                WasNaturallyExpired = true;
             }
 
             Tick(creature);
@@ -142,6 +152,7 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
             _durationTicks = 0;
             _lastRun = currentTime;
             IsFlaggedForRemoval = true;
+            WasNaturallyExpired = true;
         }
 
         protected virtual void OnHit(uint creature, uint target, int damage) { }

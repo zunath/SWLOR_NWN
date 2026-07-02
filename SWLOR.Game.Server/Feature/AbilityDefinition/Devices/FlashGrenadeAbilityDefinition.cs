@@ -64,7 +64,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 impactLocation,
                 SkillType.Devices,
                 0,
-                20,
+                30,
                 typeof(FlashStatusEffect),
                 CombatImpactAreaShape.Sphere,
                 0f,

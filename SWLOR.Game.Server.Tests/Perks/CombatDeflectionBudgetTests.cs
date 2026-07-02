@@ -1,8 +1,7 @@
-using System.Collections.Generic;
 using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Feature.PerkDefinition;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.StatService;
 
@@ -10,102 +9,184 @@ namespace SWLOR.Game.Server.Tests.Perks;
 
 public class CombatDeflectionBudgetTests
 {
+    private static readonly string[] WeaponCategoryPrefixes =
+    {
+        "Vibroblade",
+        "Vibroknife",
+        "Lightsaber",
+        "Heavy Vibroblade",
+        "Spear",
+        "Twin Blade",
+        "Saberstaff",
+        "Katar",
+        "Staff",
+        "Pistol",
+        "Rifle",
+        "Throwing",
+    };
+
+    private static readonly Dictionary<(PerkType Perk, StatType Stat), int> DynamicStatBudgetValues = new()
+    {
+        [(PerkType.UnbreakableWill, StatType.AttackDeflection)] = 8,
+    };
+
     [Test]
     public void PermanentWeaponAttackDeflectionSources_StayBelowDefaultCap()
     {
-        const int UnbreakableWillMaximumAttackDeflection = 8;
+        var sources = WeaponStatSources(StatType.AttackDeflection)
+            .Where(source => source.Value > 0)
+            .ToArray();
 
-        var permanentAttackDeflection =
-            GetStaticStatBonus<StaffPerkDefinition>("StaffParry", PerkType.StaffParry, 4, StatType.AttackDeflection) +
-            GetStaticStatBonus<LightsaberPerkDefinition>("DeflectionTraining", PerkType.DeflectionTraining, 3, StatType.AttackDeflection) +
-            GetStaticStatBonus<SaberstaffPerkDefinition>("SpinningDeflection", PerkType.SpinningDeflection, 2, StatType.AttackDeflection) +
-            GetStaticStatBonus<TwinBladePerkDefinition>("CenterlineGuard", PerkType.CenterlineGuard, 1, StatType.AttackDeflection) +
-            UnbreakableWillMaximumAttackDeflection;
-
-        permanentAttackDeflection.Should().Be(49);
-        permanentAttackDeflection.Should().BeLessThan(50);
+        sources.Sum(source => source.Value).Should().BeLessThan(
+            50,
+            "permanent weapon attack deflection should not reach the soft cap before temporary effects");
+        sources.Where(source => source.Value > 15).Should().BeEmpty(
+            "large attack deflection spikes should come from temporary effects, not always-on perk levels");
     }
 
     [Test]
-    public void AlwaysOnWeaponCriticalRateSources_StayWellBelowCritCapBeforeStancesAndSupport()
+    public void AlwaysOnWeaponCriticalRateSources_StayBelowCritCapBeforeStancesAndSupport()
     {
-        var alwaysOnWeaponCriticalRate =
-            GetStaticStatBonus<StaffPerkDefinition>("CrushingStyle", PerkType.CrushingStyle, 1, StatType.CriticalRatePercentAdjustment) +
-            GetStaticStatBonus<StaffPerkDefinition>("CrushingMastery", PerkType.CrushingMastery, 3, StatType.CriticalRatePercentAdjustment) +
-            GetStaticStatBonus<SpearPerkDefinition>("ForcePiercing", PerkType.ForcePiercing, 1, StatType.CriticalRatePercentAdjustment) +
-            GetStaticStatBonus<SpearPerkDefinition>("RestorationStrike", PerkType.RestorationStrike, 1, StatType.CriticalRatePercentAdjustment);
+        var sources = WeaponStatSources(StatType.CriticalRatePercentAdjustment)
+            .Where(source => source.Value > 0)
+            .ToArray();
 
-        alwaysOnWeaponCriticalRate.Should().Be(25);
-        alwaysOnWeaponCriticalRate.Should().BeLessThan(50);
+        sources.Sum(source => source.Value).Should().BeLessThan(
+            50,
+            "always-on weapon crit should leave room for stance, support, and temporary setup windows");
     }
 
     [Test]
     public void ShieldDeflectionGuardAndAttackDeflection_BudgetsRemainMechanicallySeparate()
     {
-        var bulwarkStats = GetStaticStatTypes<VibrobladePerkDefinition>("Bulwark", PerkType.Bulwark, 3);
-        bulwarkStats.Should().Contain(StatType.ShieldDeflection);
-        bulwarkStats.Should().NotContain(StatType.AttackDeflection);
-        bulwarkStats.Should().NotContain(StatType.Guard);
+        var failures = new List<string>();
 
-        var guardTrainingStats = GetStaticStatTypes<KatarPerkDefinition>("GuardTraining", PerkType.GuardTraining, 3);
-        guardTrainingStats.Should().Contain(StatType.Guard);
-        guardTrainingStats.Should().Contain(StatType.GuardDamageReductionPercentAdjustment);
-        guardTrainingStats.Should().NotContain(StatType.AttackDeflection);
-        guardTrainingStats.Should().NotContain(StatType.ShieldDeflection);
+        foreach (var source in WeaponPerkLevels())
+        {
+            var stats = source.Level.StatBonuses
+                .Select(bonus => bonus.Stat)
+                .ToHashSet();
+
+            if (stats.Contains(StatType.AttackDeflection) &&
+                (stats.Contains(StatType.ShieldDeflection) || stats.Contains(StatType.Guard)))
+            {
+                failures.Add($"{source.Perk.Name} level {source.LevelNumber} mixes Attack Deflection with Shield Deflection or Guard");
+            }
+
+            if (stats.Contains(StatType.ShieldDeflection) && stats.Contains(StatType.Guard))
+            {
+                failures.Add($"{source.Perk.Name} level {source.LevelNumber} mixes Shield Deflection with Guard");
+            }
+        }
+
+        failures.Should().BeEmpty(
+            "Attack Deflection, Shield Deflection, and Guard are separate mechanics with separate budget lanes");
     }
 
-    private static int GetStaticStatBonus<TDefinition>(
-        string methodName,
-        PerkType perkType,
-        int perkLevel,
-        StatType statType)
-        where TDefinition : new()
+    [Test]
+    public void DeflectionTriggeredTemporaryWindows_RespectMinimumDuration()
     {
-        var definition = new TDefinition();
-        typeof(TDefinition)
-            .GetMethod(methodName, BindingFlags.Instance | BindingFlags.NonPublic)!
-            .Invoke(definition, null);
+        var fieldNames = new[]
+        {
+            "DeflectionEvasionBoostDurationSeconds",
+            "DeflectionEnmityBoostDurationSeconds",
+            "DeflectionDefenseBoostDurationSeconds"
+        };
 
-        var builder = typeof(TDefinition)
-            .GetField("_builder", BindingFlags.Instance | BindingFlags.NonPublic)!
-            .GetValue(definition);
+        foreach (var fieldName in fieldNames)
+        {
+            var duration = (float)typeof(Stat)
+                .GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Static)!
+                .GetRawConstantValue()!;
 
-        var perks = (Dictionary<PerkType, PerkDetail>)typeof(PerkBuilder)
-            .GetField("_perks", BindingFlags.Instance | BindingFlags.NonPublic)!
-            .GetValue(builder)!;
-
-        return perks[perkType]
-            .PerkLevels[perkLevel]
-            .StatBonuses
-            .Should()
-            .ContainSingle(x => x.Stat == statType)
-            .Which
-            .Calculate(0);
+            duration.Should().BeGreaterThanOrEqualTo(30f);
+        }
     }
 
-    private static IReadOnlyCollection<StatType> GetStaticStatTypes<TDefinition>(
-        string methodName,
-        PerkType perkType,
-        int perkLevel)
-        where TDefinition : new()
+    private static IEnumerable<StatSource> WeaponStatSources(StatType statType)
     {
-        var definition = new TDefinition();
-        typeof(TDefinition)
-            .GetMethod(methodName, BindingFlags.Instance | BindingFlags.NonPublic)!
-            .Invoke(definition, null);
+        return WeaponPerkLevels()
+            .SelectMany(source => source.Level.StatBonuses
+                .Where(bonus => bonus.Stat == statType)
+                .Select(bonus => new StatSource(
+                    source.Perk.Name,
+                    source.LevelNumber,
+                    statType,
+                    CalculateBudgetValue(source.Type, bonus))));
+    }
 
-        var builder = typeof(TDefinition)
-            .GetField("_builder", BindingFlags.Instance | BindingFlags.NonPublic)!
-            .GetValue(definition);
+    private static int CalculateBudgetValue(PerkType perkType, PerkStatBonus bonus)
+    {
+        return DynamicStatBudgetValues.TryGetValue((perkType, bonus.Stat), out var budgetValue)
+            ? budgetValue
+            : bonus.Calculate(0);
+    }
 
-        var perks = (Dictionary<PerkType, PerkDetail>)typeof(PerkBuilder)
-            .GetField("_perks", BindingFlags.Instance | BindingFlags.NonPublic)!
-            .GetValue(builder)!;
+    private static IEnumerable<PerkLevelSource> WeaponPerkLevels()
+    {
+        foreach (var (type, perk) in BuildPerksWithout2daLookup())
+        {
+            if (!IsWeaponCategory(perk.Category))
+                continue;
 
-        return perks[perkType]
-            .PerkLevels[perkLevel]
-            .StatBonuses
-            .Select(x => x.Stat)
+            foreach (var (levelNumber, level) in perk.PerkLevels)
+            {
+                yield return new PerkLevelSource(type, perk, levelNumber, level);
+            }
+        }
+    }
+
+    private static bool IsWeaponCategory(PerkCategoryType category)
+    {
+        var name = GetCategoryName(category);
+        return WeaponCategoryPrefixes.Any(prefix =>
+            name.StartsWith(prefix + " - ", StringComparison.Ordinal));
+    }
+
+    private static string GetCategoryName(PerkCategoryType category)
+    {
+        var field = typeof(PerkCategoryType).GetField(category.ToString())!;
+        var attribute = (PerkCategoryAttribute)field
+            .GetCustomAttributes(typeof(PerkCategoryAttribute), false)
+            .Single();
+
+        return attribute.Name;
+    }
+
+    private static IReadOnlyCollection<(PerkType Type, PerkDetail Detail)> BuildPerksWithout2daLookup()
+    {
+        var result = new List<(PerkType Type, PerkDetail Detail)>();
+        var definitionTypes = typeof(IPerkListDefinition).Assembly
+            .GetTypes()
+            .Where(x => !x.IsAbstract && typeof(IPerkListDefinition).IsAssignableFrom(x))
+            .OrderBy(x => x.FullName)
             .ToArray();
+
+        foreach (var definitionType in definitionTypes)
+        {
+            var definition = Activator.CreateInstance(definitionType)!;
+            foreach (var method in definitionType.GetMethods(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly)
+                         .Where(x => x.ReturnType == typeof(void) && x.GetParameters().Length == 0 && !x.Name.Contains('<'))
+                         .OrderBy(x => x.MetadataToken))
+            {
+                method.Invoke(definition, null);
+            }
+
+            var builder = definitionType
+                .GetField("_builder", BindingFlags.Instance | BindingFlags.NonPublic)!
+                .GetValue(definition)!;
+
+            var perks = (Dictionary<PerkType, PerkDetail>)typeof(PerkBuilder)
+                .GetField("_perks", BindingFlags.Instance | BindingFlags.NonPublic)!
+                .GetValue(builder)!;
+
+            result.AddRange(perks.Select(x => (x.Key, x.Value)));
+        }
+
+        return result;
     }
+
+    private sealed record PerkLevelSource(PerkType Type, PerkDetail Perk, int LevelNumber, PerkLevel Level);
+
+    private sealed record StatSource(string PerkName, int LevelNumber, StatType Stat, int Value);
 }

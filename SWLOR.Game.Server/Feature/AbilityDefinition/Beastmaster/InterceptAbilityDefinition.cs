@@ -64,7 +64,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
         {
             foreach (var friendly in GetBeastMasterTargets(activator))
             {
-                StatusEffect.ApplyStatusEffect(activator, friendly, typeof(Intercept1StatusEffect), 8f);
+                StatusEffect.ApplyStatusEffect(activator, friendly, typeof(Intercept1StatusEffect), 30f);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Holy_Aid), friendly);
             }
         }
@@ -73,7 +73,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
         {
             foreach (var friendly in GetBeastMasterTargets(activator))
             {
-                StatusEffect.ApplyStatusEffect(activator, friendly, typeof(Intercept2StatusEffect), 8f);
+                StatusEffect.ApplyStatusEffect(activator, friendly, typeof(Intercept2StatusEffect), 30f);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Holy_Aid), friendly);
             }
         }

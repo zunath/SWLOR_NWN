@@ -194,7 +194,8 @@ namespace SWLOR.Game.Server.Service
                     () => (IStatusEffect)Activator.CreateInstance(type),
                     effect.Name,
                     effect.Frequency,
-                    effect.SourceType);
+                    effect.SourceType,
+                    effect.Categories);
             }
 
             Console.WriteLine($"Loaded {_statusEffects.Count} status effects.");
@@ -936,6 +937,38 @@ namespace SWLOR.Game.Server.Service
                 : null;
         }
 
+        public static bool ExtendStatusEffectDuration(
+            uint creature,
+            Type statusEffectClass,
+            uint source,
+            float durationSeconds)
+        {
+            if (!_creatureEffects.TryGetValue(creature, out var creatureEffects) ||
+                statusEffectClass == null ||
+                durationSeconds <= 0f)
+            {
+                return false;
+            }
+
+            var extended = false;
+            foreach (var statusEffect in creatureEffects.GetAllEffects())
+            {
+                if (statusEffect.GetType() != statusEffectClass)
+                    continue;
+
+                if (source != OBJECT_INVALID && statusEffect.Source != source)
+                    continue;
+
+                var ticks = Math.Max(1, (int)Math.Ceiling(durationSeconds / Math.Max(1f, statusEffect.Frequency)));
+                statusEffect.ExtendDurationTicks(ticks);
+                RemoveNativeStatusEffect(creature, statusEffect.Id);
+                ApplyTrackedNWNEffect(creature, statusEffect, statusEffect.DurationTicks, statusEffect.DurationTicks < 0);
+                extended = true;
+            }
+
+            return extended;
+        }
+
         public static bool HasStatusEffect<T>(uint creature)
             where T : IStatusEffect
         {
@@ -960,6 +993,15 @@ namespace SWLOR.Game.Server.Service
                    _creatureEffects[creature]
                        .GetAllEffects()
                        .Any(effect => (effect.Categories & category) == category);
+        }
+
+        public static bool HasStatusEffectCategory(Type statusEffectClass, StatusEffectCategory category)
+        {
+            if (statusEffectClass == null || category == StatusEffectCategory.None)
+                return false;
+
+            return _statusEffects.TryGetValue(statusEffectClass, out var statusEffect) &&
+                   (statusEffect.Categories & category) == category;
         }
 
         public static bool HasCleanseableStatusEffect(uint creature, StatusEffectCleanseType cleanseType)
@@ -1068,6 +1110,27 @@ namespace SWLOR.Game.Server.Service
             foreach (var effect in effects)
             {
                 RemoveStatusEffect(creature, effect.GetType(), effect.Source, sendsWornOffMessage);
+            }
+        }
+
+        public static void RemoveStatusEffectFromAllTargetsBySource(
+            Type statusEffectClass,
+            uint source,
+            bool sendsWornOffMessage = true)
+        {
+            if (statusEffectClass == null || !GetIsObjectValid(source))
+                return;
+
+            var targets = _creatureEffects
+                .Where(entry => entry.Value
+                    .GetAllEffects()
+                    .Any(effect => effect.GetType() == statusEffectClass && effect.Source == source))
+                .Select(entry => entry.Key)
+                .ToList();
+
+            foreach (var target in targets)
+            {
+                RemoveStatusEffect(target, statusEffectClass, source, sendsWornOffMessage);
             }
         }
 
@@ -1473,23 +1536,40 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
+        public static void OnGuardedHit(uint defender, uint attacker, int preventedDamage)
+        {
+            if (!_creatureEffects.TryGetValue(defender, out var creatureEffects))
+                return;
+
+            foreach (var effect in creatureEffects
+                         .GetAllEffects()
+                         .OfType<IGuardedHitStatusEffect>()
+                         .ToList())
+            {
+                effect.OnGuardedHitEffect(defender, attacker, preventedDamage);
+            }
+        }
+
         private readonly struct StatusEffectMetadata
         {
             public Func<IStatusEffect> Create { get; }
             public string Name { get; }
             public float Frequency { get; }
             public StatusEffectSourceType SourceType { get; }
+            public StatusEffectCategory Categories { get; }
 
             public StatusEffectMetadata(
                 Func<IStatusEffect> create,
                 string name,
                 float frequency,
-                StatusEffectSourceType sourceType)
+                StatusEffectSourceType sourceType,
+                StatusEffectCategory categories)
             {
                 Create = create;
                 Name = name;
                 Frequency = frequency;
                 SourceType = sourceType;
+                Categories = categories;
             }
         }
 

@@ -44,7 +44,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 
         private static void UnbreakableBeast1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            StatusEffect.ApplyStatusEffect(activator, activator, typeof(UnbreakableBeast1StatusEffect), 12f);
+            StatusEffect.ApplyStatusEffect(activator, activator, typeof(UnbreakableBeast1StatusEffect), 30f);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Holy_Aid), activator);
         }
 

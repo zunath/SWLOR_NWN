@@ -82,7 +82,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
         private static void PressTheAttack1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
             var radius = LeadershipAbilityEffects.GetLeadershipCommandRadius(activator);
-            var duration = LeadershipAbilityEffects.ApplyLeadershipCommandDurationBonus(activator, 12f);
+            var duration = LeadershipAbilityEffects.ApplyLeadershipCommandDurationBonus(activator, 30f);
             var affectedCount = 0;
 
             foreach (var friendly in AbilityTargeting.GetFriendlyTargets(activator, target, true, radius))
@@ -98,7 +98,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
         private static void PressTheAttack2ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
             var radius = LeadershipAbilityEffects.GetLeadershipCommandRadius(activator);
-            var duration = LeadershipAbilityEffects.ApplyLeadershipCommandDurationBonus(activator, 12f);
+            var duration = LeadershipAbilityEffects.ApplyLeadershipCommandDurationBonus(activator, 30f);
             var affectedCount = 0;
 
             foreach (var friendly in AbilityTargeting.GetFriendlyTargets(activator, target, true, radius))
@@ -114,7 +114,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
         private static void PressTheAttack3ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
             var radius = LeadershipAbilityEffects.GetLeadershipCommandRadius(activator);
-            var duration = LeadershipAbilityEffects.ApplyLeadershipCommandDurationBonus(activator, 15f);
+            var duration = LeadershipAbilityEffects.ApplyLeadershipCommandDurationBonus(activator, 30f);
             var affectedCount = 0;
 
             foreach (var friendly in AbilityTargeting.GetFriendlyTargets(activator, target, true, radius))

@@ -39,7 +39,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
 
         private static void Carve1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Vibroblade, 35, 12, typeof(HemorrhageStatusEffect), false);
+            Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Vibroblade, 35, 18, typeof(HemorrhageStatusEffect), false);
         }
     }
 }

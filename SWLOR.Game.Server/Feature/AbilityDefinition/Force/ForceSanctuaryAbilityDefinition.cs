@@ -14,7 +14,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
     public sealed class ForceSanctuaryAbilityDefinition : IAbilityListDefinition
     {
         private const float RadiusMeters = 4f;
-        private const float DurationSeconds = 18f;
+        private const float DurationSeconds = 30f;
         private const VisualEffect AllyPulseVisualEffect = VisualEffect.Vfx_Imp_Holy_Aid;
         private const VisualEffect AreaMarkerVisualEffect = VisualEffect.Dur_Sanctuary;
         private const float AreaMarkerVisualEffectScale = 2f;

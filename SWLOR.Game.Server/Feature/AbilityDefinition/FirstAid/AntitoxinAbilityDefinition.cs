@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -45,7 +46,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .IsCastedAbility()
                 .BreaksStealth()
                 .RequirementStamina(3)
-                .RequirementItem("stim_pack", preservePerkType: PerkType.FieldPharmacist, preserveChancePerLevel: 10);
+                .RequirementItem("stim_pack", preserveChanceStatType: StatType.StimPackPreserveChance);
         }
 
         private static void Antitoxin1ImpactAction(uint activator, uint target, int level, Location targetLocation)

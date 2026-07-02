@@ -103,7 +103,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             if (!removedAilment)
                 return;
 
-            StatusEffect.ApplyStatusEffect(source, target, typeof(EmergencySealant1StatusEffect), 12f);
+            StatusEffect.ApplyStatusEffect(source, target, typeof(EmergencySealant1StatusEffect), 30f);
         }
     }
 }

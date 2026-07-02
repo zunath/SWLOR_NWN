@@ -17,8 +17,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
     public sealed class MindTrickAbilityDefinition : IAbilityListDefinition
     {
         private const float Radius = 5f;
-        private const int BaseConfusionDurationSeconds = 10;
-        private const int MaximumConfusionDurationSeconds = 18;
+        private const int BaseConfusionDurationSeconds = 30;
+        private const int MaximumConfusionDurationSeconds = 38;
         private const float WillpowerContestDurationSeconds = 0.5f;
         private const int MindTrick2MaxTargets = 2;
 
@@ -124,7 +124,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 MidpointRounding.AwayFromZero);
             var duration = BaseConfusionDurationSeconds + contestSeconds;
 
-            return Math.Clamp(duration, 0, MaximumConfusionDurationSeconds);
+            return duration <= 0
+                ? 0
+                : Math.Clamp(duration, BaseConfusionDurationSeconds, MaximumConfusionDurationSeconds);
         }
 
         private static bool IsNonMechanical(uint target)

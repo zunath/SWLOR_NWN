@@ -132,7 +132,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             foreach (var friendly in AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
                 StatusEffect.RemoveCleanseableStatusEffects(friendly, StatusEffectCleanseType.TreatmentKit2, false);
-                StatusEffect.ApplyStatusEffect(activator, friendly, typeof(AilmentResistance3StatusEffect), 8f);
+                StatusEffect.ApplyStatusEffect(activator, friendly, typeof(AilmentResistance3StatusEffect), 30f);
                 FirstAidTreatmentAdjustments.ApplyTraumaMedicRiders(activator, friendly);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Remove_Condition), friendly);
                 affectedCount++;

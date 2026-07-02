@@ -70,7 +70,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 
             foreach (var friendly in new[] { activator })
             {
-                StatusEffect.ApplyStatusEffect(activator, friendly, typeof(EvasiveChallenge1SelfStatusEffect), 8f);
+                StatusEffect.ApplyStatusEffect(activator, friendly, typeof(EvasiveChallenge1SelfStatusEffect), 30f);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Ac_Bonus), friendly);
             }
         }
@@ -83,7 +83,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
             }
 
             RemoveMovementSlow(activator);
-            StatusEffect.ApplyStatusEffect(activator, activator, typeof(EvasiveChallenge2SelfStatusEffect), 8f);
+            StatusEffect.ApplyStatusEffect(activator, activator, typeof(EvasiveChallenge2SelfStatusEffect), 30f);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Remove_Condition), activator);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Ac_Bonus), activator);
         }

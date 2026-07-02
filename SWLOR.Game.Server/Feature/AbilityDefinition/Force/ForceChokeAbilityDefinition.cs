@@ -30,22 +30,22 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void ForceChoke1(AbilityBuilder builder)
         {
-            ConfigureForceChoke(builder, FeatType.ForceChoke1, "Force Choke I", 1, 2, 2, 8);
+            ConfigureForceChoke(builder, FeatType.ForceChoke1, "Force Choke I", 1, 2, 30, 8);
         }
 
         private static void ForceChoke2(AbilityBuilder builder)
         {
-            ConfigureForceChoke(builder, FeatType.ForceChoke2, "Force Choke II", 2, 3, 3, 16);
+            ConfigureForceChoke(builder, FeatType.ForceChoke2, "Force Choke II", 2, 3, 30, 16);
         }
 
         private static void ForceChoke3(AbilityBuilder builder)
         {
-            ConfigureForceChoke(builder, FeatType.ForceChoke3, "Force Choke III", 3, 4, 4, 24);
+            ConfigureForceChoke(builder, FeatType.ForceChoke3, "Force Choke III", 3, 4, 30, 24);
         }
 
         private static void ForceChoke4(AbilityBuilder builder)
         {
-            ConfigureForceChoke(builder, FeatType.ForceChoke4, "Force Choke IV", 4, 5, 5, 34);
+            ConfigureForceChoke(builder, FeatType.ForceChoke4, "Force Choke IV", 4, 5, 30, 34);
         }
 
         private static void ConfigureForceChoke(

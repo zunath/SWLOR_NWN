@@ -85,6 +85,10 @@ Lightsaber Offense riders were moved from mostly area-only payoff to the actual 
 
 ## High-Risk Warnings
 
+### W-000 Release Validation Matrix - Automated Coverage Added
+
+`CombatReleaseBalanceAuditTests` now checks curated archetype legality, permanent Attack Deflection cap access, and full 400 SP package-frontier outlier reporting. `CombatUpgradeReleaseValidationMatrix.md` defines the manual test set for real enemies, attack-delay feel, support-system interactions, weapon identity checks, peak-damage target bands, and mob-tuning decisions.
+
 ### W-001 Crit Cap Pressure - Automated Coverage Added
 
 Permanent crit pressure is now explicitly budget-tested. Staff Crusher plus Spear always-on crit sources stay below the 50 percent crit cap before stances, support, or temporary buffs.
@@ -102,6 +106,12 @@ Shield Deflection remains shield-gated and mechanically distinct from Attack Def
 ### W-004 Guard Is Distinct And Currently Less Dangerous Than Deflection - Guarded By Coverage
 
 Katar Iron Guard's `Guard Training` remains a damage-stage tank identity rather than a deflection clone. Regression coverage verifies Guard stays separate from both attack-roll deflection mechanics.
+
+### W-005 Dependency-Only Weapon Perks - Implemented, Automated Coverage Added
+
+Weapon perks that only enhanced one named sibling perk were converted to broader stat-driven effects. The pass covers Cascade Failure, Essence Hunter, Spinning Deflection, Retaliatory Flow, Reload Tempo, Gunslinger Focus, Expose Weak Point, Dead Center, Steady Aim II, Shrapnel Casing, and Volatile Payload.
+
+The removed behavior-specific hooks are no longer active in shared combat/stat code. Regression coverage now checks the replacement broad stat hooks and guards against reintroducing the old named dependency strings.
 
 ## Post-Fix Playtest Priorities
 
@@ -127,6 +137,9 @@ Katar Iron Guard's `Guard Training` remains a damage-stage tank identity rather 
 5. Spear Disabler non-Force target value: complete.
 6. Lightsaber Offense area-rider mismatch: complete.
 7. Weapon setup payoff duration pass: complete.
+8. Curated archetype and 400 SP package-frontier audit coverage: complete.
+9. Staff Sentinel `Sentinel Stance` text/stat mismatch: complete.
+10. Weapon capstone/SP cost normalization: complete for every weapon style; all weapon styles now use the 18-row/60 SP progression shape.
 
 ## Not Recommended
 

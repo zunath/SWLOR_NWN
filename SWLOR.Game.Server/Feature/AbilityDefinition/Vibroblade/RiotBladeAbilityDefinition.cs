@@ -26,16 +26,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
             ConfigureRiotBlade(
                 builder
                     .Create(FeatType.RiotBlade2, PerkType.RiotBlade)
-                    .Name("Riot Blade III")
-                    .Level(3)
+                    .Name("Riot Blade II")
+                    .Level(2)
                     .HasRecastDelay(RecastGroup.RiotBlade, 60f),
                 30,
                 5);
             ConfigureRiotBlade(
                 builder
                     .Create(FeatType.RiotBlade3, PerkType.RiotBlade)
-                    .Name("Riot Blade IV")
-                    .Level(4)
+                    .Name("Riot Blade III")
+                    .Level(3)
                     .HasRecastDelay(RecastGroup.RiotBlade, 60f),
                 45,
                 8);

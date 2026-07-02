@@ -44,13 +44,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 
         private static void AlphaRhythm1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            StatusEffect.ApplyStatusEffect(activator, activator, typeof(AlphaRhythm1BeastStatusEffect), 15f);
+            StatusEffect.ApplyStatusEffect(activator, activator, typeof(AlphaRhythm1BeastStatusEffect), 30f);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Holy_Aid), activator);
 
             var master = GetMaster(activator);
             if (GetIsObjectValid(master))
             {
-                StatusEffect.ApplyStatusEffect(activator, master, typeof(AlphaRhythm1StatusEffect), 15f);
+                StatusEffect.ApplyStatusEffect(activator, master, typeof(AlphaRhythm1StatusEffect), 30f);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Holy_Aid), master);
             }
         }

@@ -15,6 +15,7 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
         StatusEffectCategory Categories { get; }
         StatusEffectStackType StackingType { get; }
         bool IsFlaggedForRemoval { get; }
+        bool WasNaturallyExpired { get; }
         bool SendsApplicationMessage { get; }
         bool SendsWornOffMessage { get; }
         StatusEffectCleanseType CleanseTypes { get; }
@@ -31,6 +32,7 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
         void AssignResistanceType(ResistanceType type);
         void ApplyEffect(uint source, uint creature, int durationTicks);
         void ReassignSource(uint source);
+        void ExtendDurationTicks(int ticks);
         void ReapplyEffect(uint creature);
         void RemoveNativeEffects(uint creature);
         void RemoveEffect(uint creature);

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Service.AIService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
@@ -480,20 +481,17 @@ namespace SWLOR.Game.Server.Service.AbilityService
         /// </summary>
         /// <param name="itemResref">The resref of the required inventory item.</param>
         /// <param name="quantity">The number of items consumed on activation.</param>
-        /// <param name="preservePerkType">Optional perk that can preserve the consumed item.</param>
-        /// <param name="preserveChancePerLevel">Percent chance per preserve perk level to preserve the item.</param>
+        /// <param name="preserveChanceStatType">Optional stat containing the percent chance to preserve the item.</param>
         /// <returns>An ability builder with the configured options</returns>
         public AbilityBuilder RequirementItem(
             string itemResref,
             int quantity = 1,
-            PerkType preservePerkType = PerkType.Invalid,
-            int preserveChancePerLevel = 0)
+            StatType preserveChanceStatType = StatType.Invalid)
         {
             var requirement = new AbilityRequirementItem(
                 itemResref,
                 quantity,
-                preservePerkType,
-                preserveChancePerLevel);
+                preserveChanceStatType);
             _activeAbility.Requirements.Add(requirement);
 
             return this;

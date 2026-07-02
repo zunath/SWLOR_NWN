@@ -67,7 +67,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
                 targetLocation,
                 SkillType.HeavyVibroblade,
                 20,
-                12,
+                18,
                 null,
                 CombatImpactAreaShape.Line,
                 0.25f,

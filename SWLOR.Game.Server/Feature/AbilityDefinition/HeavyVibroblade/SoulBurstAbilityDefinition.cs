@@ -40,7 +40,19 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
         private static void SoulBurst1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
             SacrificeHitPoints(activator, 40, 10);
-            Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.HeavyVibroblade, 35, 0, null, CombatImpactAreaShape.Cone, 0.25f, 5f, 5f);
+            Ability.ApplyTelegraphedCombatImpact(
+                activator,
+                target,
+                targetLocation,
+                SkillType.HeavyVibroblade,
+                35,
+                0,
+                null,
+                CombatImpactAreaShape.Cone,
+                0.25f,
+                5f,
+                5f,
+                afterSuccessfulHit: hitTarget => ApplyEssenceHunter(activator, hitTarget));
         }
     }
 }

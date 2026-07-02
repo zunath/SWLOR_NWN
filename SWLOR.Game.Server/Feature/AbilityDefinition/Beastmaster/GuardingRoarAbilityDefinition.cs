@@ -102,7 +102,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 
             foreach (var friendly in new[] { activator })
             {
-                StatusEffect.ApplyStatusEffect(activator, friendly, typeof(GuardingRoar1SelfStatusEffect), 10f);
+                StatusEffect.ApplyStatusEffect(activator, friendly, typeof(GuardingRoar1SelfStatusEffect), 30f);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Ac_Bonus), friendly);
             }
         }
@@ -116,7 +116,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 
             foreach (var friendly in new[] { activator })
             {
-                StatusEffect.ApplyStatusEffect(activator, friendly, typeof(GuardingRoar2SelfStatusEffect), 10f);
+                StatusEffect.ApplyStatusEffect(activator, friendly, typeof(GuardingRoar2SelfStatusEffect), 30f);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Ac_Bonus), friendly);
             }
         }
@@ -130,7 +130,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 
             foreach (var friendly in new[] { activator })
             {
-                StatusEffect.ApplyStatusEffect(activator, friendly, typeof(GuardingRoar3SelfStatusEffect), 12f);
+                StatusEffect.ApplyStatusEffect(activator, friendly, typeof(GuardingRoar3SelfStatusEffect), 30f);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Ac_Bonus), friendly);
             }
         }

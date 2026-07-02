@@ -7,6 +7,6 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         protected override Type BeastStatusEffectType => typeof(GuardingBondBeastStatusEffect);
 
         public override string Name => "Guarding Bond";
-        public override EffectIconType Icon => EffectIconType.BastionStanceStatusEffect;
+        public override EffectIconType Icon => EffectIconType.GuardingBondStatusEffect;
     }
 }

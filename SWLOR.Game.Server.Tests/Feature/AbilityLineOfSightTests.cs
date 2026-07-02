@@ -104,10 +104,11 @@ public class AbilityLineOfSightTests
             "SWLOR.Game.Server",
             "Service",
             "Ability.cs")).Replace("\r\n", "\n");
+        var shapeImpactStartIndex = source.IndexOf("private static int ApplyCombatImpactInShape", StringComparison.Ordinal);
         var shapeImpactBody = source.Substring(
-            source.IndexOf("private static void ApplyCombatImpactInShape", StringComparison.Ordinal),
+            shapeImpactStartIndex,
             source.IndexOf("private static ApplyTelegraphEffect BuildTelegraphedCombatImpactAction", StringComparison.Ordinal) -
-            source.IndexOf("private static void ApplyCombatImpactInShape", StringComparison.Ordinal));
+            shapeImpactStartIndex);
         var telegraphActionBody = source.Substring(
             source.IndexOf("private static ApplyTelegraphEffect BuildTelegraphedCombatImpactAction", StringComparison.Ordinal),
             source.IndexOf("private static int ApplyCombatImpactToCreatures", StringComparison.Ordinal) -

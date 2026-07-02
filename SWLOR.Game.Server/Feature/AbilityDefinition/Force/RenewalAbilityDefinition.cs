@@ -114,7 +114,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 activator,
                 friendly,
                 new RegenerativeHealingStatusEffect(name, totalPercent, 6),
-                18f);
+                30f);
             ForceControlHealingEffects.ApplyRestorativeControlPower(activator, friendly, targetWasBelowHalfHP);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_M), friendly);
         }

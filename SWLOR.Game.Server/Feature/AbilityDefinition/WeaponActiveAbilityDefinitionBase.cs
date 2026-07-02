@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -15,6 +16,1188 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
     public abstract class WeaponActiveAbilityDefinitionBase
     {
         private const float ToggleActivationDelaySeconds = 2f;
+
+        protected sealed class GeneratedWeaponAbilityProfile
+        {
+            public static readonly GeneratedWeaponAbilityProfile Empty = new();
+
+            public int HitCount { get; init; } = 1;
+            public int MaximumAreaTargets { get; init; }
+            public int ExtraDamageIfRecentTarget { get; init; }
+            public float RecentTargetWindowSeconds { get; init; }
+            public int ExtraDamageIfHighResources { get; init; }
+            public int HighResourceExtraDamageThresholdPercent { get; init; }
+            public int ExtraDamageIfBesideOrBehind { get; init; }
+            public int ExtraDamageIfIdle { get; init; }
+            public int CriticalRateIfIdle { get; init; }
+            public int CriticalRateIfNotRecentTarget { get; init; }
+            public int DefenseIgnoreIfIdle { get; init; }
+            public float IdleWindowSeconds { get; init; }
+            public float NotRecentTargetWindowSeconds { get; init; }
+            public int ExtraDamageIfTargetBleeding { get; init; }
+            public int ExtraDamageIfTargetDebuffed { get; init; }
+            public int ExtraDamageIfTargetControlled { get; init; }
+            public int ExtraDamageIfTargetLowHP { get; init; }
+            public Type ExtraDamageTargetStatusEffect { get; init; }
+            public int ExtraDamageIfTargetStatusEffect { get; init; }
+            public int ExtraDamageIfRecentGuardedHit { get; init; }
+            public float RecentGuardedHitWindowSeconds { get; init; }
+            public int TargetLowHPThresholdPercent { get; init; }
+            public int DamagePercentIfTargetDebuffed { get; init; }
+            public int DamagePercentIfTargetControlled { get; init; }
+            public int DamagePercentIfTargetLowHP { get; init; }
+            public int CriticalRateIfTargetDebuffedOrControlled { get; init; }
+            public int DefenseIgnorePercent { get; init; }
+            public int HitChancePercentAdjustment { get; init; }
+            public int CriticalRatePercentAdjustment { get; init; }
+            public int EnmityBonus { get; init; }
+            public int HPCostPercent { get; init; }
+            public int HealPercentOfDamage { get; init; }
+            public int HealMaximum { get; init; }
+            public int RestoreStaminaOnHit { get; init; }
+            public int RestoreFPOnHit { get; init; }
+            public int RestoreStaminaAfterImpact { get; init; }
+            public int RestoreFPAfterImpact { get; init; }
+            public int RestoreStaminaIfAllHitsLand { get; init; }
+            public int RestoreFPIfAllHitsLand { get; init; }
+            public int RestoreStaminaIfAnyCriticalHit { get; init; }
+            public int SelfHastePercentIfAllHitsLand { get; init; }
+            public int SelfHasteMaximumPercentIfAllHitsLand { get; init; }
+            public int SelfHasteDurationSecondsIfAllHitsLand { get; init; }
+            public int DrainStaminaOnHit { get; init; }
+            public int DrainFPOnHit { get; init; }
+            public int RestoreBothResourcesBelowThresholdPercent { get; init; }
+            public int RestoreFPIfResourcesBelow { get; init; }
+            public int RestoreStaminaIfResourcesBelow { get; init; }
+            public int DrainTargetResourceAboveThresholdPercent { get; init; }
+            public int DrainTargetFPIfActivatorFPAboveThreshold { get; init; }
+            public int DrainTargetStaminaIfActivatorStaminaAboveThreshold { get; init; }
+            public int SelfHastePercent { get; init; }
+            public int SelfHasteDurationSeconds { get; init; }
+            public int SelfHasteMaximumPercent { get; init; }
+            public int SelfAttackPercent { get; init; }
+            public int SelfAccuracyPercent { get; init; }
+            public int SelfEvasionPercent { get; init; }
+            public int SelfDefensePercent { get; init; }
+            public int SelfForceDefensePercent { get; init; }
+            public int SelfAttackDeflection { get; init; }
+            public int SelfCriticalRatePercent { get; init; }
+            public int SelfStatDurationSeconds { get; init; }
+            public int SelfStatResourceAboveThresholdPercent { get; init; }
+            public int SelfGuardPercentIfRecentGuardedAllyHit { get; init; }
+            public int SelfGuardDurationSecondsIfRecentGuardedAllyHit { get; init; }
+            public int SelfEnmityPercentIfRecentWardHit { get; init; }
+            public int SelfEnmityDurationSecondsIfRecentWardHit { get; init; }
+            public int ProtectedTargetHitWindowSeconds { get; init; }
+            public bool RequiresRecentWardHitTarget { get; init; }
+            public int TemporaryDefeatedEnemyStaminaRestore { get; init; }
+            public int TemporaryDefeatedEnemyAttackDelayReductionPercent { get; init; }
+            public int TemporaryDefeatedEnemyAttackDelayReductionDurationSeconds { get; init; }
+            public int TemporaryDefeatedEnemyEffectDurationSeconds { get; init; }
+            public int TemporaryHostileAbilityFPRestore { get; init; }
+            public int TemporaryHostileAbilityStaminaRestore { get; init; }
+            public int TemporaryHighFPAndStaminaAbilityDamageBonus { get; init; }
+            public int TemporaryHighFPAndStaminaAbilityDamageBonusThresholdPercent { get; init; }
+            public int TemporaryFrenzySlashHasteRefreshDurationSeconds { get; init; }
+            public int TemporaryAvoidedAttackAbilityUsedEvasionRefreshDurationSeconds { get; init; }
+            public int TemporaryAvoidedAttackNextAutoAttackNoDelaySkillType { get; init; }
+            public int TemporaryAvoidedAttackNextAutoAttackNoDelayDurationSeconds { get; init; }
+            public int TemporaryRangedHitSuppressionStackDurationSeconds { get; init; }
+            public int TemporaryRangedHitSuppressionStackDamageBonus { get; init; }
+            public int TemporarySuppressionStackDamageBonusAdjustment { get; init; }
+            public int TemporaryAreaAbilityFragmentationDamage { get; init; }
+            public int TemporaryAreaAbilityFragmentationDurationSeconds { get; init; }
+            public int TemporaryAreaAbilityFragmentationPulseSeconds { get; init; }
+            public int TemporarySaberstaffAreaAbilityMinTargetsResourceRestoreThreshold { get; init; }
+            public int TemporarySaberstaffAreaAbilityFPRestore { get; init; }
+            public int TemporarySaberstaffAreaAbilityMinTargetsBuffThreshold { get; init; }
+            public int TemporarySaberstaffAreaAbilityAttackDeflection { get; init; }
+            public int TemporarySaberstaffAreaAbilityBuffDurationSeconds { get; init; }
+            public int TemporaryStatusAppliedRequiredCategory { get; init; }
+            public int TemporaryStatusAppliedSelfAttackDeflection { get; init; }
+            public int TemporaryStatusAppliedSelfDurationSeconds { get; init; }
+            public int TemporaryStatusAppliedSelfStaminaRestore { get; init; }
+            public Type NearbyPartyStatusEffect { get; init; }
+            public int NearbyPartyStatusDurationSeconds { get; init; }
+            public bool NearbyPartyStatusIncludesSelf { get; init; }
+            public int SelfKnockdownDazedImmunityDurationSeconds { get; init; }
+            public int TemporaryCostlyAbilityStatusSkillType { get; init; }
+            public int TemporaryCostlyAbilityHitMinimumStaminaCost { get; init; }
+            public int TemporaryCostlyAbilityExposedDurationSeconds { get; init; }
+            public bool ApplySuppressionStackOnHit { get; init; }
+            public int SuppressionStackDamageBonus { get; init; }
+            public int SuppressionStackDurationSeconds { get; init; }
+            public int SuppressionDisorientedRequiredStacks { get; init; }
+            public int SuppressionDisorientedDurationSeconds { get; init; }
+            public bool ConsumeBleedIntoHemorrhage { get; init; }
+            public int HemorrhageDurationSeconds { get; init; }
+            public bool SpreadBleedFromTarget { get; init; }
+            public int SpreadBleedDurationSeconds { get; init; }
+            public bool SpreadHemorrhageFromTarget { get; init; }
+            public int SpreadHemorrhageDurationSeconds { get; init; }
+            public bool ClearTargetActionsOnHit { get; init; }
+            public Type ConditionalStatusEffect { get; init; }
+            public int ConditionalStatusDurationSeconds { get; init; }
+            public int ConditionalStatusAfterDeflectionWindowSeconds { get; init; }
+            public Type RequiredTargetStatusEffectForConditionalStatus { get; init; }
+            public StatusEffectCategory RequiredTargetStatusCategoryForConditionalStatus { get; init; }
+            public bool RequireRecentGuardedHitForConditionalStatus { get; init; }
+            public bool RequireRecentGuardedAllyHitForConditionalStatus { get; init; }
+            public bool RequireRecentWardHitForConditionalStatus { get; init; }
+            public Type ConditionalTargetStatusEffect { get; init; }
+            public int ConditionalTargetStatusDurationSeconds { get; init; }
+            public Type TargetUsingAbilityStatusEffect { get; init; }
+            public int TargetUsingAbilityStatusDurationSeconds { get; init; }
+            public int TargetUsingAbilityDrainStamina { get; init; }
+            public int TargetUsingAbilityDrainFP { get; init; }
+            public int TargetAttackPercent { get; init; }
+            public int TargetAttackDurationSeconds { get; init; }
+            public int TargetAbilityHitChancePercent { get; init; }
+            public int TargetAbilityHitChanceDurationSeconds { get; init; }
+            public Func<IStatusEffect> StatusEffectFactory { get; init; }
+            public Func<IStatusEffect> FriendlyTargetStatusEffectFactory { get; init; }
+            public bool FriendlyTargetStatusPersistsUntilBroken { get; init; }
+            public bool RequiresGuardedTarget { get; init; }
+            public int FriendlyTargetTemporaryHPPercent { get; init; }
+            public int FriendlyTargetTemporaryHPDurationSeconds { get; init; }
+            public int SelfGuardPercent { get; init; }
+            public int SelfGuardDurationSeconds { get; init; }
+            public bool SelfStatusAlsoAppliesToGuardedTarget { get; init; }
+
+            public int GetBaseDamageAdjustment(uint activator, uint target)
+            {
+                var bonus = 0;
+                if (ExtraDamageIfRecentTarget != 0 &&
+                    RecentTargetWindowSeconds > 0f &&
+                    Combat.HasRecentDamageTarget(activator, target, RecentTargetWindowSeconds))
+                {
+                    bonus += ExtraDamageIfRecentTarget;
+                }
+
+                if (ExtraDamageIfHighResources != 0 &&
+                    HighResourceExtraDamageThresholdPercent > 0 &&
+                    Combat.IsCurrentFPAndStaminaAtOrAbovePercent(activator, HighResourceExtraDamageThresholdPercent))
+                {
+                    bonus += ExtraDamageIfHighResources;
+                }
+
+                if (ExtraDamageIfBesideOrBehind != 0 &&
+                    (Combat.IsAttackerBesideTarget(activator, target) ||
+                     Combat.IsTargetNotFacingAttacker(activator, target)))
+                {
+                    bonus += ExtraDamageIfBesideOrBehind;
+                }
+
+                if (ExtraDamageIfIdle != 0 && IsIdle(activator))
+                    bonus += ExtraDamageIfIdle;
+
+                if (ExtraDamageIfTargetBleeding != 0 && IsBleeding(target))
+                    bonus += ExtraDamageIfTargetBleeding;
+
+                if (ExtraDamageIfTargetDebuffed != 0 && StatusEffect.HasStatusEffectCategory(target, StatusEffectCategory.Debuff))
+                    bonus += ExtraDamageIfTargetDebuffed;
+
+                if (ExtraDamageIfTargetControlled != 0 && StatusEffect.HasStatusEffectCategory(target, StatusEffectCategory.Control))
+                    bonus += ExtraDamageIfTargetControlled;
+
+                if (ExtraDamageIfTargetLowHP != 0 && IsTargetBelowThreshold(target, TargetLowHPThresholdPercent))
+                    bonus += ExtraDamageIfTargetLowHP;
+
+                if (ExtraDamageIfTargetStatusEffect != 0 &&
+                    ExtraDamageTargetStatusEffect != null &&
+                    StatusEffect.HasStatusEffect(target, ExtraDamageTargetStatusEffect))
+                {
+                    bonus += ExtraDamageIfTargetStatusEffect;
+                }
+
+                if (ExtraDamageIfRecentGuardedHit != 0 &&
+                    RecentGuardedHitWindowSeconds > 0f &&
+                    Combat.HasRecentGuardedHit(activator, RecentGuardedHitWindowSeconds))
+                {
+                    bonus += ExtraDamageIfRecentGuardedHit;
+                }
+
+                return bonus;
+            }
+
+            public int GetDamagePercentAdjustment(uint activator, uint target)
+            {
+                var adjustment = HPCostPercent > 0
+                    ? Stat.GetStatAdjustment(activator, StatType.HitPointSpendAbilityDamagePercentAdjustment)
+                    : 0;
+                if (DamagePercentIfTargetDebuffed != 0 && StatusEffect.HasStatusEffectCategory(target, StatusEffectCategory.Debuff))
+                    adjustment += DamagePercentIfTargetDebuffed;
+                if (DamagePercentIfTargetControlled != 0 && StatusEffect.HasStatusEffectCategory(target, StatusEffectCategory.Control))
+                    adjustment += DamagePercentIfTargetControlled;
+                if (DamagePercentIfTargetLowHP != 0 && IsTargetBelowThreshold(target, TargetLowHPThresholdPercent))
+                    adjustment += DamagePercentIfTargetLowHP;
+
+                return adjustment;
+            }
+
+            public int GetCriticalRateAdjustment(uint activator, uint target)
+            {
+                var adjustment = CriticalRatePercentAdjustment;
+                if (CriticalRateIfIdle != 0 && IsIdle(activator))
+                    adjustment += CriticalRateIfIdle;
+                if (CriticalRateIfNotRecentTarget != 0 &&
+                    NotRecentTargetWindowSeconds > 0f &&
+                    !Combat.HasRecentDamageTarget(activator, target, NotRecentTargetWindowSeconds))
+                {
+                    adjustment += CriticalRateIfNotRecentTarget;
+                }
+                if (CriticalRateIfTargetDebuffedOrControlled != 0 &&
+                    (StatusEffect.HasStatusEffectCategory(target, StatusEffectCategory.Debuff) ||
+                     StatusEffect.HasStatusEffectCategory(target, StatusEffectCategory.Control)))
+                {
+                    adjustment += CriticalRateIfTargetDebuffedOrControlled;
+                }
+
+                return adjustment;
+            }
+
+            public int GetDefenseIgnorePercent(uint activator)
+            {
+                var adjustment = DefenseIgnorePercent;
+                if (DefenseIgnoreIfIdle != 0 && IsIdle(activator))
+                    adjustment += DefenseIgnoreIfIdle;
+
+                return adjustment;
+            }
+
+            public void SpendHitPoints(uint activator)
+            {
+                if (HPCostPercent <= 0)
+                    return;
+
+                var currentHP = GetCurrentHitPoints(activator);
+                var hpCost = Math.Max(1, (int)Math.Ceiling(currentHP * (HPCostPercent / 100f)));
+                hpCost = Math.Min(hpCost, Math.Max(0, currentHP - 1));
+                if (hpCost <= 0)
+                    return;
+
+                AssignCommand(activator, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(hpCost), activator));
+                Combat.ApplyHitPointSpendAbilityEffects(activator, hpCost);
+            }
+
+            public void BeforeHit(uint activator, SkillType skillType)
+            {
+                var defenseIgnore = GetDefenseIgnorePercent(activator);
+                if (defenseIgnore != 0)
+                {
+                    Combat.GrantNextSkillAbilityBonuses(activator, skillType, 0, 0, 1, defenseIgnore);
+                }
+            }
+
+            public void AfterSuccessfulHit(uint activator, uint target, CombatDamageType damageType)
+            {
+                if (ClearTargetActionsOnHit)
+                    AssignCommand(target, () => ClearAllActions());
+
+                if (RestoreStaminaOnHit > 0)
+                    Stat.RestoreStamina(activator, RestoreStaminaOnHit);
+                if (RestoreFPOnHit > 0)
+                {
+                    Stat.RestoreFP(activator, RestoreFPOnHit);
+                    Combat.ApplyAbilityRestoredFPEffects(activator);
+                }
+                if (DrainStaminaOnHit > 0)
+                    Stat.ReduceStamina(target, DrainStaminaOnHit);
+                if (DrainFPOnHit > 0)
+                    Stat.ReduceFP(target, DrainFPOnHit);
+
+                ApplyResourceConditionalRestore(activator);
+                ApplyResourceConditionalDrain(activator, target);
+                ApplyTargetUsingAbilityEffects(activator, target, damageType);
+                ApplyConditionalStatus(activator, target, damageType);
+                ApplyTargetConditionalStatus(activator, target, damageType);
+                ApplyTargetTemporaryModifiers(target);
+                ApplyProtectedTargetHitSelfModifiers(activator, target);
+                ApplyStatusSpread(activator, target, damageType);
+                ApplySuppressionEffects(activator, target, damageType);
+                ApplyDefenseIgnoreHitEffects(activator, target);
+
+                if (ConsumeBleedIntoHemorrhage &&
+                    StatusEffect.HasStatusEffect(target, typeof(BleedStatusEffect)))
+                {
+                    StatusEffect.RemoveStatusEffect(target, typeof(BleedStatusEffect), false);
+                    StatusEffect.ApplyStatusEffect(
+                        activator,
+                        target,
+                        typeof(HemorrhageStatusEffect),
+                        HemorrhageDurationSeconds > 0 ? HemorrhageDurationSeconds : 30f,
+                        damageType);
+                }
+            }
+
+            private void ApplyDefenseIgnoreHitEffects(uint activator, uint target)
+            {
+                if (GetDefenseIgnorePercent(activator) <= 0)
+                    return;
+
+                var physicalDefense = Stat.GetStatAdjustment(
+                    activator,
+                    StatType.DefenseIgnoreHitPhysicalDefensePercentAdjustment);
+                var duration = Stat.GetStatAdjustment(
+                    activator,
+                    StatType.DefenseIgnoreHitPhysicalDefenseDurationSeconds);
+                if (physicalDefense == 0 || duration <= 0)
+                    return;
+
+                TemporaryStatModifier.Replace(
+                    target,
+                    StatType.PhysicalDefensePercentAdjustment,
+                    physicalDefense,
+                    duration,
+                    StatType.DefenseIgnoreHitPhysicalDefensePercentAdjustment);
+            }
+
+            public void AfterImpact(uint activator, int totalDamage, int successfulHitCount = 0, AbilityImpactSummary summary = null)
+            {
+                if (totalDamage <= 0)
+                    return;
+
+                if (HealPercentOfDamage > 0)
+                {
+                    var amount = Math.Max(1, (int)Math.Ceiling(totalDamage * (HealPercentOfDamage / 100f)));
+                    if (HealMaximum > 0)
+                        amount = Math.Min(amount, HealMaximum);
+                    ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), activator);
+                }
+
+                if (RestoreStaminaAfterImpact > 0)
+                    Stat.RestoreStamina(activator, RestoreStaminaAfterImpact);
+                if (RestoreStaminaIfAnyCriticalHit > 0 && (summary?.CriticalHitCount ?? 0) > 0)
+                    Stat.RestoreStamina(activator, RestoreStaminaIfAnyCriticalHit);
+                if (RestoreFPAfterImpact > 0)
+                {
+                    Stat.RestoreFP(activator, RestoreFPAfterImpact);
+                    Combat.ApplyAbilityRestoredFPEffects(activator);
+                }
+                if (HitCount > 1 && successfulHitCount >= HitCount)
+                {
+                    if (RestoreStaminaIfAllHitsLand > 0)
+                        Stat.RestoreStamina(activator, RestoreStaminaIfAllHitsLand);
+                    if (RestoreFPIfAllHitsLand > 0)
+                    {
+                        Stat.RestoreFP(activator, RestoreFPIfAllHitsLand);
+                        Combat.ApplyAbilityRestoredFPEffects(activator);
+                    }
+                    if (SelfHastePercentIfAllHitsLand > 0 && SelfHasteDurationSecondsIfAllHitsLand > 0)
+                    {
+                        TemporaryStatModifier.AddCapped(
+                            activator,
+                            StatType.AttackDelayReductionPercent,
+                            SelfHastePercentIfAllHitsLand,
+                            SelfHasteDurationSecondsIfAllHitsLand,
+                            SelfHasteMaximumPercentIfAllHitsLand > 0 ? SelfHasteMaximumPercentIfAllHitsLand : SelfHastePercentIfAllHitsLand,
+                            Combat.GeneratedWeaponAbilityHasteGroup,
+                            1);
+                    }
+                }
+
+                ApplySelfModifiers(activator);
+                ApplyTemporaryDefeatedEnemyModifiers(activator);
+            }
+
+            public void AfterActivation(uint activator)
+            {
+                ApplyNearbyPartyStatus(activator);
+                ApplySelfImmunity(activator);
+                ApplySelfModifiers(activator);
+                ApplyTemporaryDefeatedEnemyModifiers(activator);
+            }
+
+            private void ApplyNearbyPartyStatus(uint activator)
+            {
+                if (NearbyPartyStatusEffect == null || NearbyPartyStatusDurationSeconds <= 0)
+                    return;
+
+                ApplyStatusToNearbyParty(
+                    activator,
+                    NearbyPartyStatusEffect,
+                    NearbyPartyStatusDurationSeconds,
+                    NearbyPartyStatusIncludesSelf);
+            }
+
+            private void ApplySelfImmunity(uint activator)
+            {
+                if (SelfKnockdownDazedImmunityDurationSeconds <= 0)
+                    return;
+
+                Ability.ApplyTemporaryImmunity(activator, SelfKnockdownDazedImmunityDurationSeconds, ImmunityType.Knockdown);
+                Ability.ApplyTemporaryImmunity(activator, SelfKnockdownDazedImmunityDurationSeconds, ImmunityType.Dazed);
+            }
+
+            private void ApplySelfModifiers(uint activator)
+            {
+                if (SelfHastePercent > 0 && SelfHasteDurationSeconds > 0)
+                {
+                    var max = SelfHasteMaximumPercent > 0 ? SelfHasteMaximumPercent : SelfHastePercent;
+                    TemporaryStatModifier.AddCapped(
+                        activator,
+                        StatType.AttackDelayReductionPercent,
+                        SelfHastePercent,
+                        SelfHasteDurationSeconds,
+                        max,
+                        Combat.GeneratedWeaponAbilityHasteGroup,
+                        1);
+                }
+
+                var duration = SelfStatDurationSeconds;
+                if (duration <= 0)
+                    return;
+
+                if (SelfStatResourceAboveThresholdPercent > 0 &&
+                    !Combat.IsCurrentFPAndStaminaAtOrAbovePercent(activator, SelfStatResourceAboveThresholdPercent))
+                {
+                    return;
+                }
+
+                ReplaceTemporary(activator, StatType.AttackPercentAdjustment, SelfAttackPercent, duration);
+                ReplaceTemporary(activator, StatType.AccuracyPercentAdjustment, SelfAccuracyPercent, duration);
+                ReplaceTemporary(activator, StatType.EvasionPercentAdjustment, SelfEvasionPercent, duration);
+                ReplaceTemporary(activator, StatType.PhysicalDefensePercentAdjustment, SelfDefensePercent, duration);
+                ReplaceTemporary(activator, StatType.ForceDefensePercentAdjustment, SelfForceDefensePercent, duration);
+                ReplaceTemporary(activator, StatType.AttackDeflection, SelfAttackDeflection, duration);
+                if (SelfAttackDeflection != 0)
+                    Combat.ApplyAbilityGrantedAttackDeflectionEffects(activator);
+                ReplaceTemporary(activator, StatType.CriticalRatePercentAdjustment, SelfCriticalRatePercent, duration);
+            }
+
+            private static void ReplaceTemporary(uint activator, StatType statType, int amount, int durationSeconds)
+            {
+                if (amount == 0)
+                    return;
+
+                TemporaryStatModifier.Replace(activator, statType, amount, durationSeconds, $"GeneratedWeaponAbility:{statType}");
+            }
+
+            private static void ReplaceTemporaryTarget(uint target, StatType statType, int amount, int durationSeconds)
+            {
+                if (amount == 0 || durationSeconds <= 0)
+                    return;
+
+                TemporaryStatModifier.Replace(target, statType, amount, durationSeconds, $"GeneratedWeaponAbilityTarget:{statType}");
+            }
+
+            private void ApplyTemporaryDefeatedEnemyModifiers(uint activator)
+            {
+                var duration = TemporaryDefeatedEnemyEffectDurationSeconds;
+                if (duration <= 0)
+                    return;
+
+                ReplaceTemporary(activator, StatType.DefeatedEnemyStaminaRestore, TemporaryDefeatedEnemyStaminaRestore, duration);
+                ReplaceTemporary(activator, StatType.DefeatedEnemyAttackDelayReductionPercent, TemporaryDefeatedEnemyAttackDelayReductionPercent, duration);
+                ReplaceTemporary(
+                    activator,
+                    StatType.DefeatedEnemyAttackDelayReductionDurationSeconds,
+                    TemporaryDefeatedEnemyAttackDelayReductionDurationSeconds,
+                    duration);
+                ReplaceTemporary(activator, StatType.HostileAbilityFPRestore, TemporaryHostileAbilityFPRestore, duration);
+                ReplaceTemporary(activator, StatType.HostileAbilityStaminaRestore, TemporaryHostileAbilityStaminaRestore, duration);
+                ReplaceTemporary(activator, StatType.HighFPAndStaminaAbilityDamageBonus, TemporaryHighFPAndStaminaAbilityDamageBonus, duration);
+                ReplaceTemporary(
+                    activator,
+                    StatType.HighFPAndStaminaAbilityDamageBonusThresholdPercent,
+                    TemporaryHighFPAndStaminaAbilityDamageBonusThresholdPercent,
+                    duration);
+                ReplaceTemporary(
+                    activator,
+                    StatType.FrenzySlashHasteRefreshDurationSeconds,
+                    TemporaryFrenzySlashHasteRefreshDurationSeconds,
+                    duration);
+                ReplaceTemporary(
+                    activator,
+                    StatType.AvoidedAttackAbilityUsedEvasionRefreshDurationSeconds,
+                    TemporaryAvoidedAttackAbilityUsedEvasionRefreshDurationSeconds,
+                    duration);
+                ReplaceTemporary(
+                    activator,
+                    StatType.AvoidedAttackNextAutoAttackNoDelaySkillType,
+                    TemporaryAvoidedAttackNextAutoAttackNoDelaySkillType,
+                    duration);
+                ReplaceTemporary(
+                    activator,
+                    StatType.AvoidedAttackNextAutoAttackNoDelayDurationSeconds,
+                    TemporaryAvoidedAttackNextAutoAttackNoDelayDurationSeconds,
+                    duration);
+                ReplaceTemporary(
+                    activator,
+                    StatType.RangedHitSuppressionStackDurationSeconds,
+                    TemporaryRangedHitSuppressionStackDurationSeconds,
+                    duration);
+                ReplaceTemporary(
+                    activator,
+                    StatType.RangedHitSuppressionStackDamageBonus,
+                    TemporaryRangedHitSuppressionStackDamageBonus,
+                    duration);
+                ReplaceTemporary(
+                    activator,
+                    StatType.SuppressionStackDamageBonusAdjustment,
+                    TemporarySuppressionStackDamageBonusAdjustment,
+                    duration);
+                ReplaceTemporary(activator, StatType.AreaAbilityFragmentationDamage, TemporaryAreaAbilityFragmentationDamage, duration);
+                ReplaceTemporary(
+                    activator,
+                    StatType.AreaAbilityFragmentationDurationSeconds,
+                    TemporaryAreaAbilityFragmentationDurationSeconds,
+                    duration);
+                ReplaceTemporary(
+                    activator,
+                    StatType.AreaAbilityFragmentationPulseSeconds,
+                    TemporaryAreaAbilityFragmentationPulseSeconds,
+                    duration);
+                ReplaceTemporary(
+                    activator,
+                    StatType.SaberstaffAreaAbilityMinTargetsResourceRestoreThreshold,
+                    TemporarySaberstaffAreaAbilityMinTargetsResourceRestoreThreshold,
+                    duration);
+                ReplaceTemporary(activator, StatType.SaberstaffAreaAbilityFPRestore, TemporarySaberstaffAreaAbilityFPRestore, duration);
+                ReplaceTemporary(
+                    activator,
+                    StatType.SaberstaffAreaAbilityMinTargetsBuffThreshold,
+                    TemporarySaberstaffAreaAbilityMinTargetsBuffThreshold,
+                    duration);
+                ReplaceTemporary(
+                    activator,
+                    StatType.SaberstaffAreaAbilityAttackDeflection,
+                    TemporarySaberstaffAreaAbilityAttackDeflection,
+                    duration);
+                ReplaceTemporary(
+                    activator,
+                    StatType.SaberstaffAreaAbilityBuffDurationSeconds,
+                    TemporarySaberstaffAreaAbilityBuffDurationSeconds,
+                    duration);
+                ReplaceTemporary(activator, StatType.StatusAppliedRequiredCategory, TemporaryStatusAppliedRequiredCategory, duration);
+                ReplaceTemporary(
+                    activator,
+                    StatType.StatusAppliedSelfAttackDeflection,
+                    TemporaryStatusAppliedSelfAttackDeflection,
+                    duration);
+                ReplaceTemporary(
+                    activator,
+                    StatType.StatusAppliedSelfDurationSeconds,
+                    TemporaryStatusAppliedSelfDurationSeconds,
+                    duration);
+                ReplaceTemporary(
+                    activator,
+                    StatType.StatusAppliedSelfStaminaRestore,
+                    TemporaryStatusAppliedSelfStaminaRestore,
+                    duration);
+                ReplaceTemporary(
+                    activator,
+                    StatType.CostlyAbilityStatusSkillType,
+                    TemporaryCostlyAbilityStatusSkillType,
+                    duration);
+                ReplaceTemporary(
+                    activator,
+                    StatType.CostlyAbilityHitMinimumStaminaCost,
+                    TemporaryCostlyAbilityHitMinimumStaminaCost,
+                    duration);
+                ReplaceTemporary(
+                    activator,
+                    StatType.CostlyAbilityExposedDurationSeconds,
+                    TemporaryCostlyAbilityExposedDurationSeconds,
+                    duration);
+            }
+
+            private bool IsIdle(uint activator)
+            {
+                return IdleWindowSeconds > 0f && !Combat.HasRecentAttackActivity(activator, IdleWindowSeconds);
+            }
+
+            private static bool IsTargetBelowThreshold(uint target, int thresholdPercent)
+            {
+                return thresholdPercent > 0 &&
+                       GetMaxHitPoints(target) > 0 &&
+                       GetCurrentHitPoints(target) <= GetMaxHitPoints(target) * (thresholdPercent / 100f);
+            }
+
+            private static bool IsBleeding(uint target)
+            {
+                return StatusEffect.HasStatusEffectCategory(target, StatusEffectCategory.Bleeding);
+            }
+
+            private void ApplyResourceConditionalRestore(uint activator)
+            {
+                if (RestoreBothResourcesBelowThresholdPercent <= 0 ||
+                    !Combat.IsCurrentFPAndStaminaAtOrBelowPercent(activator, RestoreBothResourcesBelowThresholdPercent))
+                {
+                    return;
+                }
+
+                if (RestoreFPIfResourcesBelow > 0)
+                {
+                    Stat.RestoreFP(activator, RestoreFPIfResourcesBelow);
+                    Combat.ApplyAbilityRestoredFPEffects(activator);
+                }
+                if (RestoreStaminaIfResourcesBelow > 0)
+                    Stat.RestoreStamina(activator, RestoreStaminaIfResourcesBelow);
+
+                if (RestoreFPIfResourcesBelow > 0 && RestoreStaminaIfResourcesBelow > 0)
+                    Combat.ApplyAbilityRestoredBothResourcesEffects(activator);
+            }
+
+            private void ApplyResourceConditionalDrain(uint activator, uint target)
+            {
+                if (DrainTargetResourceAboveThresholdPercent <= 0)
+                    return;
+
+                if (DrainTargetFPIfActivatorFPAboveThreshold > 0 && IsFPAtOrAbove(activator, DrainTargetResourceAboveThresholdPercent))
+                    Stat.ReduceFP(target, DrainTargetFPIfActivatorFPAboveThreshold);
+                if (DrainTargetStaminaIfActivatorStaminaAboveThreshold > 0 && IsStaminaAtOrAbove(activator, DrainTargetResourceAboveThresholdPercent))
+                    Stat.ReduceStamina(target, DrainTargetStaminaIfActivatorStaminaAboveThreshold);
+            }
+
+            private static bool IsFPAtOrAbove(uint creature, int thresholdPercent)
+            {
+                var maxFP = Stat.GetMaxFP(creature);
+                return maxFP > 0 && Stat.GetCurrentFP(creature) >= maxFP * (thresholdPercent / 100f);
+            }
+
+            private static bool IsStaminaAtOrAbove(uint creature, int thresholdPercent)
+            {
+                var maxStamina = Stat.GetMaxStamina(creature);
+                return maxStamina > 0 && Stat.GetCurrentStamina(creature) >= maxStamina * (thresholdPercent / 100f);
+            }
+
+            private void ApplyConditionalStatus(uint activator, uint target, CombatDamageType damageType)
+            {
+                if (ConditionalStatusEffect == null ||
+                    ConditionalStatusDurationSeconds <= 0 ||
+                    ConditionalStatusAfterDeflectionWindowSeconds <= 0 ||
+                    !Combat.HasRecentDeflection(activator, ConditionalStatusAfterDeflectionWindowSeconds))
+                {
+                    return;
+                }
+
+                StatusEffect.ApplyStatusEffect(
+                    activator,
+                    target,
+                    ConditionalStatusEffect,
+                    ConditionalStatusDurationSeconds,
+                    damageType);
+            }
+
+            private void ApplyTargetConditionalStatus(uint activator, uint target, CombatDamageType damageType)
+            {
+                if (ConditionalTargetStatusEffect == null || ConditionalTargetStatusDurationSeconds <= 0)
+                    return;
+
+                if (RequiredTargetStatusEffectForConditionalStatus != null &&
+                    !StatusEffect.HasStatusEffect(target, RequiredTargetStatusEffectForConditionalStatus))
+                {
+                    return;
+                }
+
+                if (RequiredTargetStatusCategoryForConditionalStatus != 0 &&
+                    !StatusEffect.HasStatusEffectCategory(target, RequiredTargetStatusCategoryForConditionalStatus))
+                {
+                    return;
+                }
+
+                var window = ProtectedTargetHitWindowSeconds;
+                if (RequireRecentGuardedHitForConditionalStatus &&
+                    !Combat.HasRecentGuardedHit(activator, window))
+                {
+                    return;
+                }
+
+                if (RequireRecentGuardedAllyHitForConditionalStatus &&
+                    !GuardedStatusEffect.HasRecentGuardedAllyHit(activator, target, window))
+                {
+                    return;
+                }
+
+                if (RequireRecentWardHitForConditionalStatus &&
+                    !WardBondStatusEffect.HasRecentWardHit(activator, target, window))
+                {
+                    return;
+                }
+
+                StatusEffect.ApplyStatusEffect(
+                    activator,
+                    target,
+                    ConditionalTargetStatusEffect,
+                    ConditionalTargetStatusDurationSeconds,
+                    damageType);
+            }
+
+            private void ApplyTargetTemporaryModifiers(uint target)
+            {
+                ReplaceTemporaryTarget(target, StatType.AttackPercentAdjustment, TargetAttackPercent, TargetAttackDurationSeconds);
+                ReplaceTemporaryTarget(target, StatType.AbilityHitChancePercentAdjustment, TargetAbilityHitChancePercent, TargetAbilityHitChanceDurationSeconds);
+            }
+
+            private void ApplyProtectedTargetHitSelfModifiers(uint activator, uint target)
+            {
+                var window = ProtectedTargetHitWindowSeconds;
+                if (SelfGuardPercentIfRecentGuardedAllyHit != 0 &&
+                    GuardedStatusEffect.HasRecentGuardedAllyHit(activator, target, window))
+                {
+                    ReplaceTemporary(activator, StatType.Guard, SelfGuardPercentIfRecentGuardedAllyHit, SelfGuardDurationSecondsIfRecentGuardedAllyHit);
+                }
+
+                if (SelfEnmityPercentIfRecentWardHit != 0 &&
+                    WardBondStatusEffect.HasRecentWardHit(activator, target, window))
+                {
+                    ReplaceTemporary(activator, StatType.EnmityPercentAdjustment, SelfEnmityPercentIfRecentWardHit, SelfEnmityDurationSecondsIfRecentWardHit);
+                }
+            }
+
+            private void ApplyTargetUsingAbilityEffects(uint activator, uint target, CombatDamageType damageType)
+            {
+                if (!Combat.IsUsingAbility(target))
+                    return;
+
+                if (TargetUsingAbilityDrainStamina > 0)
+                    Stat.ReduceStamina(target, TargetUsingAbilityDrainStamina);
+                if (TargetUsingAbilityDrainFP > 0)
+                    Stat.ReduceFP(target, TargetUsingAbilityDrainFP);
+
+                if (TargetUsingAbilityStatusEffect == null || TargetUsingAbilityStatusDurationSeconds <= 0)
+                    return;
+
+                StatusEffect.ApplyStatusEffect(
+                    activator,
+                    target,
+                    TargetUsingAbilityStatusEffect,
+                    TargetUsingAbilityStatusDurationSeconds,
+                    damageType);
+            }
+
+            private void ApplyStatusSpread(uint activator, uint target, CombatDamageType damageType)
+            {
+                if (SpreadBleedFromTarget && IsBleeding(target))
+                {
+                    SpreadStatusToNearbyHostile(
+                        activator,
+                        target,
+                        typeof(BleedStatusEffect),
+                        SpreadBleedDurationSeconds > 0 ? SpreadBleedDurationSeconds : 30f,
+                        damageType);
+                }
+
+                if (SpreadHemorrhageFromTarget && IsBleeding(target))
+                {
+                    SpreadStatusToNearbyHostile(
+                        activator,
+                        target,
+                        typeof(HemorrhageStatusEffect),
+                        SpreadHemorrhageDurationSeconds > 0 ? SpreadHemorrhageDurationSeconds : 30f,
+                        damageType);
+                }
+            }
+
+            private void ApplySuppressionEffects(uint activator, uint target, CombatDamageType damageType)
+            {
+                if (ApplySuppressionStackOnHit && SuppressionStackDurationSeconds > 0)
+                {
+                    Combat.ApplySuppressionStack(
+                        activator,
+                        target,
+                        SuppressionStackDamageBonus,
+                        SuppressionStackDurationSeconds,
+                        damageType);
+                }
+
+                if (SuppressionDisorientedRequiredStacks <= 0 ||
+                    SuppressionDisorientedDurationSeconds <= 0 ||
+                    Combat.GetSuppressionStackCount(target, activator) < SuppressionDisorientedRequiredStacks)
+                {
+                    return;
+                }
+
+                StatusEffect.ApplyStatusEffect(
+                    activator,
+                    target,
+                    typeof(DisorientedStatusEffect),
+                    SuppressionDisorientedDurationSeconds,
+                    ResistanceType.Mind);
+            }
+
+            private static void SpreadStatusToNearbyHostile(
+                uint activator,
+                uint sourceTarget,
+                Type statusEffect,
+                float duration,
+                CombatDamageType damageType)
+            {
+                if (duration <= 0f || !GetIsObjectValid(sourceTarget))
+                    return;
+
+                foreach (var nearby in AbilityTargeting.GetHostileTargetsNearLocation(
+                             activator,
+                             GetLocation(sourceTarget),
+                             5f,
+                             1,
+                             sourceTarget))
+                {
+                    StatusEffect.ApplyStatusEffect(activator, nearby, statusEffect, duration, damageType);
+                    break;
+                }
+            }
+
+            public bool HasFriendlyTargetStatus()
+            {
+                return FriendlyTargetStatusEffectFactory != null;
+            }
+
+            public bool HasFriendlyTargetEffects()
+            {
+                return FriendlyTargetTemporaryHPPercent > 0 ||
+                       SelfGuardPercent > 0;
+            }
+
+            public string ValidateHostileTarget(uint activator, uint target)
+            {
+                if (!RequiresRecentWardHitTarget)
+                    return string.Empty;
+
+                return WardBondStatusEffect.HasRecentWardHit(activator, target, ProtectedTargetHitWindowSeconds)
+                    ? string.Empty
+                    : "Target has not recently attacked your ward.";
+            }
+
+            public string ValidateFriendlyTargetStatus(uint activator, uint target)
+            {
+                var validation = AbilityTargeting.ValidateFriendlyTarget(activator, target, false);
+                if (!string.IsNullOrWhiteSpace(validation))
+                    return validation;
+
+                if (RequiresGuardedTarget &&
+                    !GuardedStatusEffect.IsActiveGuardedBySource(target, activator))
+                {
+                    return "Target is not guarded by you or is too far away.";
+                }
+
+                if (FriendlyTargetStatusEffectFactory == null)
+                    return string.Empty;
+
+                var statusEffect = FriendlyTargetStatusEffectFactory();
+                statusEffect.ReassignSource(activator);
+                return statusEffect.CanApply(target);
+            }
+
+            public bool ApplyFriendlyTargetStatus(uint activator, uint target, float duration)
+            {
+                if (FriendlyTargetStatusEffectFactory == null)
+                    return false;
+
+                var statusEffect = FriendlyTargetStatusEffectFactory();
+                statusEffect.ReassignSource(activator);
+                var canApply = statusEffect.CanApply(target);
+                if (!string.IsNullOrWhiteSpace(canApply))
+                {
+                    SendMessageToPC(activator, $"Effect failed to apply: {canApply}");
+                    return false;
+                }
+
+                StatusEffect.RemoveStatusEffectFromAllTargetsBySource(statusEffect.GetType(), activator, false);
+                var effectDuration = FriendlyTargetStatusPersistsUntilBroken
+                    ? 0f
+                    : duration > 0f
+                        ? duration
+                        : 45f;
+
+                return StatusEffect.ApplyStatusEffect(
+                    activator,
+                    target,
+                    statusEffect,
+                    effectDuration,
+                    CombatDamageType.Physical);
+            }
+
+            public void ApplyFriendlyTargetEffects(uint activator, uint target)
+            {
+                if (FriendlyTargetTemporaryHPPercent > 0 &&
+                    FriendlyTargetTemporaryHPDurationSeconds > 0)
+                {
+                    var temporaryHP = Math.Max(
+                        1,
+                        GetMaxHitPoints(target) * FriendlyTargetTemporaryHPPercent / 100);
+                    ApplyEffectToObject(
+                        DurationType.Temporary,
+                        EffectTemporaryHitpoints(temporaryHP),
+                        target,
+                        FriendlyTargetTemporaryHPDurationSeconds);
+                }
+
+                if (SelfGuardPercent > 0 &&
+                    SelfGuardDurationSeconds > 0)
+                {
+                    TemporaryStatModifier.Replace(
+                        activator,
+                        StatType.Guard,
+                        SelfGuardPercent,
+                        SelfGuardDurationSeconds,
+                        "GeneratedWeaponAbility:GuardingPlayerGuard");
+                    GuardedStatusEffect.RefreshGuardBenefitsFromSource(activator);
+                }
+            }
+
+            public void ApplySelfStatusToGuardedTarget(uint activator, Type statusEffect, int duration)
+            {
+                if (!SelfStatusAlsoAppliesToGuardedTarget ||
+                    statusEffect == null ||
+                    duration <= 0)
+                    return;
+
+                var guardedTarget = GuardedStatusEffect.GetActiveGuardedTarget(activator);
+                if (!GetIsObjectValid(guardedTarget))
+                    return;
+
+                StatusEffect.ApplyStatusEffect(activator, guardedTarget, statusEffect, duration);
+            }
+        }
+
+        protected static void ConfigureGeneratedWeaponAbility(
+            AbilityBuilder ability,
+            SkillType skill,
+            int baseDamage,
+            int duration,
+            Type statusEffect,
+            IEnumerable<Type> additionalStatusEffects,
+            int stamina,
+            int fp,
+            float activationDelay,
+            bool isArea,
+            bool isHostile,
+            bool isFriendlyTarget,
+            Spell targetingSpell,
+            AbilityTargetingShapeType targetingShape,
+            float targetingSizeX,
+            float targetingSizeY,
+            AbilityTargetingFlags targetingFlags,
+            Animation impactAnimation,
+            float maxRange,
+            AbilityType combatImpactDamageAbility = AbilityType.Invalid,
+            Func<GeneratedWeaponAbilityProfile> profileFactory = null)
+        {
+            ApplyCombatImpactDamageAbility(ability, combatImpactDamageAbility);
+
+            ability.HasActivationDelay(activationDelay)
+                .SkillType(skill)
+                .UsesImpactAnimation(impactAnimation)
+                .HasActivationAction((activator, target, level, targetLocation) =>
+                {
+                    return isHostile || isFriendlyTarget || statusEffect == null || ToggleSelfStatus(activator, statusEffect);
+                })
+                .HasImpactAction((activator, target, level, targetLocation) =>
+                {
+                    if (!isHostile)
+                    {
+                        var selfProfile = profileFactory?.Invoke() ?? GeneratedWeaponAbilityProfile.Empty;
+                        if (isFriendlyTarget && selfProfile.HasFriendlyTargetStatus())
+                        {
+                            if (selfProfile.ApplyFriendlyTargetStatus(activator, target, duration))
+                            {
+                                selfProfile.ApplyFriendlyTargetEffects(activator, target);
+                                selfProfile.AfterActivation(activator);
+                            }
+                            return;
+                        }
+
+                        if (isFriendlyTarget && selfProfile.HasFriendlyTargetEffects())
+                        {
+                            selfProfile.ApplyFriendlyTargetEffects(activator, target);
+                            selfProfile.AfterActivation(activator);
+                            return;
+                        }
+
+                        if (statusEffect != null)
+                        {
+                            StatusEffect.RemoveOtherStanceStatuses(activator, statusEffect);
+                            StatusEffect.ApplyStatusEffect(activator, activator, statusEffect, duration > 0f ? duration : 0f);
+                            selfProfile.ApplySelfStatusToGuardedTarget(activator, statusEffect, duration);
+                        }
+
+                        selfProfile.AfterActivation(activator);
+                        return;
+                    }
+
+                    var profile = profileFactory?.Invoke() ?? GeneratedWeaponAbilityProfile.Empty;
+                    profile.SpendHitPoints(activator);
+
+                    if (isArea && ShouldUseTelegraphedCombatImpact(targetingShape, profile))
+                    {
+                        var areaDamage = Ability.ApplyTelegraphedCombatImpact(
+                            activator,
+                            target,
+                            targetLocation,
+                            skill,
+                            baseDamage,
+                            duration,
+                            statusEffect,
+                            ToCombatImpactAreaShape(targetingShape),
+                            0f,
+                            targetingSizeX > 0f ? targetingSizeX : 5.0f,
+                            targetingSizeY,
+                            additionalStatusEffects,
+                            CenterAreaOnActivator(targetingFlags),
+                            profile.StatusEffectFactory,
+                            combatImpactDamageAbility: combatImpactDamageAbility,
+                            baseDamageAdjustment: impactedTarget => profile.GetBaseDamageAdjustment(activator, impactedTarget),
+                            damagePercentAdjustment: impactedTarget => profile.GetDamagePercentAdjustment(activator, impactedTarget),
+                            afterImpactAction: summary =>
+                            {
+                                if (summary.ImpactedTargetCount > 0)
+                                    profile.AfterActivation(activator);
+                            },
+                            maxTargets: profile.MaximumAreaTargets,
+                            enmityBonus: profile.EnmityBonus,
+                            beforeImpact: _ => profile.BeforeHit(activator, skill),
+                            afterSuccessfulHit: impactedTarget => profile.AfterSuccessfulHit(activator, impactedTarget, CombatDamageType.Physical),
+                            hitChancePercentAdjustment: profile.HitChancePercentAdjustment,
+                            criticalRatePercentAdjustment: profile.GetCriticalRateAdjustment(activator, target),
+                            impactAnimation: impactAnimation);
+                        profile.AfterImpact(activator, areaDamage, areaDamage > 0 ? 1 : 0, Ability.GetActiveAbilityImpactSummary(activator));
+                        return;
+                    }
+
+                    var totalDamage = 0;
+                    var successfulHitCount = 0;
+                    var hitCount = Math.Max(1, profile.HitCount);
+                    for (var hit = 0; hit < hitCount; hit++)
+                    {
+                        profile.BeforeHit(activator, skill);
+                        var hitDamage = Ability.ApplyCombatImpact(
+                            activator,
+                            target,
+                            targetLocation,
+                            skill,
+                            baseDamage,
+                            duration,
+                            statusEffect,
+                            isArea,
+                            additionalStatusEffects,
+                            profile.StatusEffectFactory,
+                            combatImpactDamageAbility: combatImpactDamageAbility,
+                            baseDamageAdjustment: impactedTarget => profile.GetBaseDamageAdjustment(activator, impactedTarget),
+                            damagePercentAdjustment: impactedTarget => profile.GetDamagePercentAdjustment(activator, impactedTarget),
+                            enmityBonus: profile.EnmityBonus,
+                            afterSuccessfulHit: impactedTarget => profile.AfterSuccessfulHit(activator, impactedTarget, CombatDamageType.Physical),
+                            hitChancePercentAdjustment: profile.HitChancePercentAdjustment,
+                            criticalRatePercentAdjustment: profile.GetCriticalRateAdjustment(activator, target));
+                        totalDamage += hitDamage;
+                        if (hitDamage > 0)
+                            successfulHitCount++;
+                    }
+
+                    profile.AfterImpact(activator, totalDamage, successfulHitCount, Ability.GetActiveAbilityImpactSummary(activator));
+                })
+                .IsCastedAbility()
+                .BreaksStealth();
+
+            if (isHostile)
+            {
+                ability.IsHostileAbility();
+                if (isArea)
+                {
+                    ability.IsAreaAbility();
+                    ApplyTargetingMetadata(ability, activationDelay, targetingSpell, targetingShape, targetingSizeX, targetingSizeY, targetingFlags);
+                }
+                else
+                {
+                    ability.IsSingleTargetAbility().RequiresTarget();
+                    if (maxRange > 0f)
+                        ability.HasMaxRange(maxRange);
+                }
+
+                ability.HasCustomValidation((activator, target, level, targetLocation) =>
+                {
+                    var profile = profileFactory?.Invoke() ?? GeneratedWeaponAbilityProfile.Empty;
+                    return profile.ValidateHostileTarget(activator, target);
+                });
+            }
+            else if (statusEffect != null)
+            {
+                ability.RemoveStatusEffectOnPerkRefund(statusEffect);
+            }
+            else if (isFriendlyTarget)
+            {
+                ability.IsSingleTargetAbility()
+                    .RequiresTarget()
+                    .HasCustomValidation((activator, target, level, targetLocation) =>
+                    {
+                        var profile = profileFactory?.Invoke() ?? GeneratedWeaponAbilityProfile.Empty;
+                        return profile.ValidateFriendlyTargetStatus(activator, target);
+                    });
+                if (maxRange > 0f)
+                    ability.HasMaxRange(maxRange);
+            }
+
+            if (stamina > 0)
+                ability.RequirementStamina(stamina);
+            if (fp > 0)
+                ability.RequirementFP(fp);
+        }
+
+        private static bool ShouldUseTelegraphedCombatImpact(
+            AbilityTargetingShapeType targetingShape,
+            GeneratedWeaponAbilityProfile profile)
+        {
+            return targetingShape != AbilityTargetingShapeType.None || profile.MaximumAreaTargets > 0;
+        }
+
+        private static CombatImpactAreaShape ToCombatImpactAreaShape(AbilityTargetingShapeType targetingShape)
+        {
+            return targetingShape switch
+            {
+                AbilityTargetingShapeType.Cone => CombatImpactAreaShape.Cone,
+                AbilityTargetingShapeType.Rect => CombatImpactAreaShape.Line,
+                _ => CombatImpactAreaShape.Sphere
+            };
+        }
+
+        private static bool CenterAreaOnActivator(AbilityTargetingFlags targetingFlags)
+        {
+            return (targetingFlags & AbilityTargetingFlags.OriginOnSelf) == AbilityTargetingFlags.OriginOnSelf;
+        }
+
+        private static void ApplyTargetingMetadata(
+            AbilityBuilder ability,
+            float activationDelay,
+            Spell targetingSpell,
+            AbilityTargetingShapeType targetingShape,
+            float targetingSizeX,
+            float targetingSizeY,
+            AbilityTargetingFlags targetingFlags)
+        {
+            if (targetingSpell != Spell.Invalid && targetingShape != AbilityTargetingShapeType.None)
+            {
+                ApplyClientTargeting(ability, targetingSpell, targetingShape, targetingSizeX, targetingSizeY, targetingFlags);
+                return;
+            }
+
+            if (activationDelay <= 0f)
+                return;
+
+            ability.HasActivationTargetingSphere(5.0f, targetingFlags);
+        }
+
+        private static void ApplyClientTargeting(
+            AbilityBuilder ability,
+            Spell targetingSpell,
+            AbilityTargetingShapeType targetingShape,
+            float targetingSizeX,
+            float targetingSizeY,
+            AbilityTargetingFlags targetingFlags)
+        {
+            switch (targetingShape)
+            {
+                case AbilityTargetingShapeType.Sphere:
+                    ability.HasTargetingSphere(targetingSpell, targetingSizeX, targetingFlags);
+                    break;
+                case AbilityTargetingShapeType.Rect:
+                    ability.HasTargetingLine(targetingSpell, targetingSizeX, targetingSizeY, targetingFlags);
+                    break;
+                case AbilityTargetingShapeType.Cone:
+                    ability.HasTargetingCone(targetingSpell, targetingSizeX, targetingSizeY, targetingFlags);
+                    break;
+            }
+        }
 
         protected static void ConfigureWeapon(
             AbilityBuilder ability,

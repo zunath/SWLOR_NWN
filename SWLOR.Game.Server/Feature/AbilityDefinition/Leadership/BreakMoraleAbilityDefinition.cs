@@ -92,7 +92,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
         {
             var radius = LeadershipAbilityEffects.GetLeadershipCommandRadius(activator);
             var location = GetLocation(activator);
-            const float Duration = 15f;
+            const float Duration = 30f;
             var affectedCount = 0;
 
             foreach (var hostile in AbilityTargeting.GetHostileTargetsNearLocation(activator, location, radius, 0))

@@ -136,20 +136,20 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition.Beast
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PredatorsMarkTrait)
-                .Description("When your beast uses a Damage active ability, it marks the target for 12 seconds. The beast deals +10% damage to marked targets.")
+                .Description("When your beast uses a Damage active ability, it marks the target for 30 seconds. The beast deals +10% damage to marked targets.")
                 .Price(3)
                 .RequirementBeastLevel(22)
                 .RequirementBeastRole(BeastRoleType.Damage)
                 .IncreasesStat(StatType.PredatorsMarkDamageTakenFromBeastPercent, 10)
 
                 .AddPerkLevel()
-                .Description("Predator's Mark also causes damage against marked targets to grant the beast +5% Haste and +2% hit chance for 8 seconds, stacking up to +20% Haste and +8% hit chance.")
+                .Description("Predator's Mark also causes damage against marked targets to grant the beast +5% Haste and +2% hit chance for 30 seconds, stacking up to +20% Haste and +8% hit chance.")
                 .Price(4)
                 .RequirementBeastLevel(45)
                 .RequirementBeastRole(BeastRoleType.Damage)
                 .IncreasesStat(StatType.PredatorsMarkHastePercentPerStack, 5)
                 .IncreasesStat(StatType.PredatorsMarkAbilityHitChancePercentPerStack, 2)
-                .IncreasesStat(StatType.PredatorsMarkFollowUpDurationSeconds, 8)
+                .IncreasesStat(StatType.PredatorsMarkFollowUpDurationSeconds, 30)
                 .IncreasesStat(StatType.PredatorsMarkFollowUpMaximumStacks, 4);
         }
 
@@ -160,7 +160,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition.Beast
                 .GroupType(PerkGroupType.Beast)
 
                 .AddPerkLevel()
-                .Description("The beast's next attack deals +20 physical DMG and attempts to inflict Exposed for 12 seconds.")
+                .Description("The beast's next attack deals +20 physical DMG and attempts to inflict Exposed for 30 seconds.")
                 .Price(4)
                 .RequirementBeastLevel(35)
                 .RequirementBeastRole(BeastRoleType.Damage)

@@ -68,10 +68,10 @@ namespace SWLOR.Game.Server.Service.PerkService
         [PerkCategory("Beast - Force", true)]
         BeastForce = 24,
 
-        [PerkCategory("Vibroblade - Defense", true)]
+        [PerkCategory("Vibroblade - Bulwark", true)]
         VibrobladeDefense = 25,
 
-        [PerkCategory("Vibroblade - Offense", true)]
+        [PerkCategory("Vibroblade - Frenzy", true)]
         VibrobladeOffense = 26,
 
         [PerkCategory("Vibroknife - Shadow", true)]
@@ -80,19 +80,19 @@ namespace SWLOR.Game.Server.Service.PerkService
         [PerkCategory("Vibroknife - Saboteur", true)]
         VibroknifeSaboteur = 28,
 
-        [PerkCategory("Lightsaber - Defense", true)]
+        [PerkCategory("Lightsaber - Severance", true)]
         LightsaberDefense = 29,
 
-        [PerkCategory("Lightsaber - Offense", true)]
+        [PerkCategory("Lightsaber - Ward", true)]
         LightsaberOffense = 30,
 
-        [PerkCategory("Heavy Vibroblade - Defense", true)]
+        [PerkCategory("Heavy Vibroblade - Immortal", true)]
         HeavyVibrobladeDefense = 31,
 
-        [PerkCategory("Heavy Vibroblade - Offense", true)]
+        [PerkCategory("Heavy Vibroblade - Berserker", true)]
         HeavyVibrobladeOffense = 32,
 
-        [PerkCategory("Spear - Damage", true)]
+        [PerkCategory("Spear - Vigor", true)]
         SpearDamage = 33,
 
         [PerkCategory("Spear - Disabler", true)]
@@ -101,7 +101,7 @@ namespace SWLOR.Game.Server.Service.PerkService
         [PerkCategory("Twin Blade - Cyclone", true)]
         TwinBladeCyclone = 35,
 
-        [PerkCategory("Twin Blade - Duelist", true)]
+        [PerkCategory("Twin Blade - Lacerator", true)]
         TwinBladeDuelist = 36,
 
         [PerkCategory("Saberstaff - Conduit", true)]
@@ -113,16 +113,16 @@ namespace SWLOR.Game.Server.Service.PerkService
         [PerkCategory("Katar - Iron Guard", true)]
         KatarIronGuard = 39,
 
-        [PerkCategory("Katar - Venom Current", true)]
+        [PerkCategory("Katar - Scrapper", true)]
         KatarVenomCurrent = 40,
 
         [PerkCategory("Staff - Crusher", true)]
         StaffCrusher = 41,
 
-        [PerkCategory("Staff - Sentinel", true)]
+        [PerkCategory("Staff - Breaker", true)]
         StaffSentinel = 42,
 
-        [PerkCategory("Pistol - Gunslinger", true)]
+        [PerkCategory("Pistol - Gambler", true)]
         PistolGunslinger = 43,
 
         [PerkCategory("Pistol - Skirmisher", true)]
@@ -131,13 +131,13 @@ namespace SWLOR.Game.Server.Service.PerkService
         [PerkCategory("Rifle - Marksman", true)]
         RifleMarksman = 45,
 
-        [PerkCategory("Rifle - Pacification", true)]
+        [PerkCategory("Rifle - Suppression", true)]
         RiflePacification = 46,
 
-        [PerkCategory("Throwing - Bombardier", true)]
+        [PerkCategory("Throwing - Ordnance", true)]
         ThrowingBombardier = 47,
 
-        [PerkCategory("Throwing - Deadeye", true)]
+        [PerkCategory("Throwing - Flurry", true)]
         ThrowingDeadeye = 48,
 
         [PerkCategory("Leadership - Vanguard Command", true)]

@@ -18,6 +18,8 @@ namespace SWLOR.Game.Server.Feature
             if (!GetIsPC(player) || GetIsDM(player)) return;
 
             var tick = GetLocalInt(player, "NATURAL_REGENERATION_TICK") + 1;
+            ApplyLowResourceIntervalRestore(player);
+
             if (tick >= 5) // 6 seconds * 5 = 30 seconds
             {
                 var vitality = Math.Max(0, GetAbilityScore(player, AbilityType.Vitality));
@@ -49,6 +51,26 @@ namespace SWLOR.Game.Server.Feature
             }
 
             SetLocalInt(player, "NATURAL_REGENERATION_TICK", tick);
+        }
+
+        private static void ApplyLowResourceIntervalRestore(uint player)
+        {
+            var threshold = Stat.GetStatAdjustment(player, StatType.LowFPAndStaminaIntervalThresholdPercent);
+            if (threshold <= 0 || !Combat.IsCurrentFPAndStaminaAtOrBelowPercent(player, threshold))
+                return;
+
+            var fpRestore = Stat.GetStatAdjustment(player, StatType.LowFPAndStaminaIntervalFPRestore);
+            var staminaRestore = Stat.GetStatAdjustment(player, StatType.LowFPAndStaminaIntervalStaminaRestore);
+            if (fpRestore <= 0 && staminaRestore <= 0)
+                return;
+
+            var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
+
+            if (fpRestore > 0)
+                Stat.RestoreFP(player, fpRestore, dbPlayer);
+
+            if (staminaRestore > 0)
+                Stat.RestoreStamina(player, staminaRestore, dbPlayer);
         }
     }
 }

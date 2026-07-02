@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
     {
         private const float HealRadiusMeters = 3f;
         private const float RangeMeters = 15f;
-        private const float DurationSeconds = 12f;
+        private const float DurationSeconds = 30f;
         private const float TickIntervalSeconds = 3f;
         private const float StatusRefreshDurationSeconds = TickIntervalSeconds + 0.2f;
         private const float Rank1HealPercentPerTick = 1f;

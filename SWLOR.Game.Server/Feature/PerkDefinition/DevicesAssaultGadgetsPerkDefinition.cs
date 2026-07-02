@@ -71,7 +71,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.WristRocket1)
 
                 .AddPerkLevel()
-                .Description("Deals 34 fire DMG plus PER scaling to one target and knock down for 2 seconds.")
+                .Description("Deals 34 fire DMG plus PER scaling to one target and knock down for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Devices, 25)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -79,7 +79,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.WristRocket2)
 
                 .AddPerkLevel()
-                .Description("Deals 48 fire DMG plus PER scaling to one target and knock down for 3 seconds.")
+                .Description("Deals 48 fire DMG plus PER scaling to one target and knock down for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Devices, 40)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -101,7 +101,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.SonicBurst1)
 
                 .AddPerkLevel()
-                .Description("Deals 14 sonic DMG to nearby hostile targets, interrupts activation, and reduces Accuracy by 6% for 12 seconds.")
+                .Description("Deals 14 sonic DMG to nearby hostile targets, interrupts activation, and reduces Accuracy by 6% for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Devices, 28)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -109,7 +109,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.SonicBurst2)
 
                 .AddPerkLevel()
-                .Description("Deals 18 sonic DMG to nearby hostile targets, interrupts activation, and reduces Accuracy by 10% for 12 seconds.")
+                .Description("Deals 18 sonic DMG to nearby hostile targets, interrupts activation, and reduces Accuracy by 10% for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Devices, 42)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -221,7 +221,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.TacticalUplinkTrait)
-                .Description("After an Assault Gadget ability damages an enemy, you and nearby allies gain Tactical Uplink for 10 seconds: +5% Device ability Accuracy and +5% Device critical chance.")
+                .Description("After an Assault Gadget ability damages an enemy, you and nearby allies gain Tactical Uplink for 30 seconds: +5% Device ability Accuracy and +5% Device critical chance.")
                 .Price(2)
                 .RequirementSkill(SkillType.Devices, 22)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -234,7 +234,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Cryo Sprayer")
 
                 .AddPerkLevel()
-                .Description("Deals 22 ice DMG plus PER scaling to hostile targets in a cone and slows movement for 5 seconds.")
+                .Description("Deals 22 ice DMG plus PER scaling to hostile targets in a cone and slows movement for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Devices, 30)
                 .RequirementCharacterType(CharacterType.Standard)

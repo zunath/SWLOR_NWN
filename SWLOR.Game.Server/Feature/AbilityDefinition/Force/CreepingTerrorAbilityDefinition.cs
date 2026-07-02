@@ -16,13 +16,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         private const float LargeFieldRadius = 8f;
         private const float FieldRange = 15f;
         private const float PulseIntervalSeconds = 3f;
-        private const int HobbleRefreshDurationSeconds = 4;
+        private const int HobbleRefreshDurationSeconds = 30;
         private const int CreepingTerror1Damage = 10;
         private const int CreepingTerror2Damage = 14;
         private const int CreepingTerror3Damage = 18;
-        private const float CreepingTerror1DurationSeconds = 12f;
-        private const float CreepingTerror2DurationSeconds = 15f;
-        private const float CreepingTerror3DurationSeconds = 18f;
+        private const float CreepingTerror1DurationSeconds = 30f;
+        private const float CreepingTerror2DurationSeconds = 30f;
+        private const float CreepingTerror3DurationSeconds = 30f;
         private const AreaOfEffect StandardFieldAreaOfEffect = AreaOfEffect.CreepingTerrorTentacles;
         private const AreaOfEffect LargeFieldAreaOfEffect = AreaOfEffect.CreepingTerrorLargeTentacles;
 

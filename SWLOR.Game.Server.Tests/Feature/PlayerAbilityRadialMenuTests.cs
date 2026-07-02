@@ -7,6 +7,9 @@ namespace SWLOR.Game.Server.Tests.Feature;
 
 public class PlayerAbilityRadialMenuTests
 {
+    private const int GeneratedFeatStart = 2000;
+    private const int GeneratedFeatEnd = 2717;
+
     private static readonly HashSet<FeatType> ManualHotbarFeats =
     [
         FeatType.ForceJudgment1,
@@ -26,9 +29,16 @@ public class PlayerAbilityRadialMenuTests
         var spellRows = Read2da(root / "SWLOR_Haks" / "sw_2da" / "spells.2da");
         var classFeatRows = Read2da(root / "SWLOR_Haks" / "sw_2da" / "CLS_FEAT_FIGHT.2da");
         var playerAbilityFeats = BuildPlayerAbilityFeats()
-            .Where(feat => (int)feat >= 2000)
+            .Where(feat => (int)feat >= GeneratedFeatStart)
             .OrderBy(feat => (int)feat)
             .ToArray();
+        var playerAbilityFeatIds = playerAbilityFeats
+            .Select(feat => (int)feat)
+            .ToHashSet();
+        var npcAbilityFeatIds = BuildNpcAbilityFeats()
+            .Select(feat => (int)feat)
+            .ToHashSet();
+        var failures = new List<string>();
 
         playerAbilityFeats.Should().NotBeEmpty();
 
@@ -61,6 +71,51 @@ public class PlayerAbilityRadialMenuTests
                 classFeatEntry.Key.Should().BeLessThan(1024, $"{feat} must be within the class feat rows scanned for manual hotbar selection");
             }
         }
+
+        foreach (var (rowNumber, row) in classFeatRows.OrderBy(row => row.Key))
+        {
+            if (!row.TryGetValue("FeatIndex", out var featIndexValue) ||
+                !int.TryParse(featIndexValue, out var featIndex) ||
+                featIndex < GeneratedFeatStart ||
+                featIndex > GeneratedFeatEnd)
+            {
+                continue;
+            }
+
+            var isVisible = row.GetValueOrDefault("List") == "1" ||
+                            row.GetValueOrDefault("OnMenu") == "1";
+            if (isVisible && !playerAbilityFeatIds.Contains(featIndex))
+            {
+                failures.Add($"CLS_FEAT_FIGHT row {rowNumber} exposes stale generated feat {featIndex} ({row.GetValueOrDefault("FeatLabel")}).");
+            }
+        }
+
+        foreach (var (featId, row) in featRows.OrderBy(row => row.Key))
+        {
+            if (featId < GeneratedFeatStart || featId > GeneratedFeatEnd)
+                continue;
+
+            if (playerAbilityFeatIds.Contains(featId))
+                continue;
+            if (npcAbilityFeatIds.Contains(featId))
+                continue;
+
+            var spellId = row.GetValueOrDefault("SPELLID");
+            if (string.IsNullOrWhiteSpace(spellId) || spellId == "****")
+                continue;
+
+            if (!int.TryParse(spellId, out var linkedSpellId) || !spellRows.TryGetValue(linkedSpellId, out var spellRow))
+            {
+                failures.Add($"feat.2da row {featId} ({row.GetValueOrDefault("LABEL")}) has invalid legacy SPELLID {spellId}.");
+                continue;
+            }
+
+            spellRow["Label"].Should().Be(row.GetValueOrDefault("LABEL"));
+            spellRow["IconResRef"].Should().Be(row.GetValueOrDefault("ICON"));
+            spellRow["FeatID"].Should().Be(featId.ToString());
+        }
+
+        failures.Should().BeEmpty(string.Join(Environment.NewLine, failures));
     }
 
     private static HashSet<FeatType> BuildPlayerAbilityFeats()
@@ -74,6 +129,30 @@ public class PlayerAbilityRadialMenuTests
                 !type.IsAbstract &&
                 definitionType.IsAssignableFrom(type) &&
                 type.Namespace != "SWLOR.Game.Server.Feature.AbilityDefinition.NPC")
+            .Select(type => (IAbilityListDefinition)Activator.CreateInstance(type)!);
+
+        foreach (var definition in definitions)
+        {
+            foreach (var feat in definition.BuildAbilities().Keys)
+            {
+                feats.Add(feat);
+            }
+        }
+
+        return feats;
+    }
+
+    private static HashSet<FeatType> BuildNpcAbilityFeats()
+    {
+        var definitionType = typeof(IAbilityListDefinition);
+        var feats = new HashSet<FeatType>();
+        var definitions = definitionType.Assembly
+            .GetTypes()
+            .Where(type =>
+                type.IsClass &&
+                !type.IsAbstract &&
+                definitionType.IsAssignableFrom(type) &&
+                type.Namespace == "SWLOR.Game.Server.Feature.AbilityDefinition.NPC")
             .Select(type => (IAbilityListDefinition)Activator.CreateInstance(type)!);
 
         foreach (var definition in definitions)

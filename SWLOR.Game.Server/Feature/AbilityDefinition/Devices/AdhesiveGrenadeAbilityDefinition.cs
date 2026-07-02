@@ -84,8 +84,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 activator,
                 target,
                 targetLocation,
-                6,
-                3);
+                30,
+                30);
         }
 
         private static void AdhesiveGrenade2ImpactAction(uint activator, uint target, int level, Location targetLocation)
@@ -94,8 +94,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 activator,
                 target,
                 targetLocation,
-                8,
-                4);
+                30,
+                30);
         }
 
         private static void ApplyAdhesiveGrenade(

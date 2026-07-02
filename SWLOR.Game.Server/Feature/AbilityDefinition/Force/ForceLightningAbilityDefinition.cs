@@ -82,12 +82,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void ForceLightning1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            ApplyForceLightning(activator, target, targetLocation, 10, 6, 1, 2);
+            ApplyForceLightning(activator, target, targetLocation, 10, 30, 1, 2);
         }
 
         private static void ForceLightning2ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            ApplyForceLightning(activator, target, targetLocation, 18, 8, 2, 3);
+            ApplyForceLightning(activator, target, targetLocation, 18, 30, 2, 3);
         }
 
         private static void ApplyForceLightning(

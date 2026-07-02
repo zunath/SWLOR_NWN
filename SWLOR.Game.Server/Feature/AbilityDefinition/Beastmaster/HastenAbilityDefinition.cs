@@ -62,12 +62,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 
         private static void Hasten1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            ApplySelfStatus(activator, typeof(Hasten1StatusEffect), 18f, VisualEffect.Vfx_Imp_Haste);
+            ApplySelfStatus(activator, typeof(Hasten1StatusEffect), 30f, VisualEffect.Vfx_Imp_Haste);
         }
 
         private static void Hasten2ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            ApplySelfStatus(activator, typeof(Hasten2StatusEffect), 18f, VisualEffect.Vfx_Imp_Haste);
+            ApplySelfStatus(activator, typeof(Hasten2StatusEffect), 30f, VisualEffect.Vfx_Imp_Haste);
         }
 
         private static void ApplySelfStatus(uint activator, Type statusEffect, float duration, VisualEffect visualEffect)

@@ -63,14 +63,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         private void DeflectivePresence()
         {
             _builder.Create(PerkCategoryType.ForceLight, PerkType.LightGuardianDeflectivePresence)
-                .Name("Deflective Presence")
+                .Name("Protective Presence")
                 .ForceAffinity(ForceAffinityType.Light)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.LightGuardianDeflectivePresenceTrait)
-                .Description("Control powers that grant temporary HP, absorb damage, or prevent defeat grant affected allies +4 Attack Deflection for 10 seconds.")
+                .Description("Control powers that grant temporary HP, absorb damage, or prevent defeat grant affected allies +4 Attack Deflection for 30 seconds.")
                 .IncreasesStat(StatType.LightGuardianPowerAttackDeflection, 4)
-                .IncreasesStat(StatType.LightGuardianPowerAttackDeflectionDurationSeconds, 10)
+                .IncreasesStat(StatType.LightGuardianPowerAttackDeflectionDurationSeconds, 30)
                 .Price(4)
                 .RequirementSkill(SkillType.Force, 5)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
@@ -84,7 +84,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.CourageousResolveTrait)
-                .Description("When you use a Sense power, you and nearby allies gain +10 Fear Resistance rating, +10 Daze Resistance rating, and +10 Confusion Resistance rating for 12 seconds. Allies with temporary HP from one of your Force powers gain +15 instead.")
+                .Description("When you use a Sense power, you and nearby allies gain +10 Fear Resistance rating, +10 Daze Resistance rating, and +10 Confusion Resistance rating for 30 seconds. Allies with temporary HP from one of your Force powers gain +15 instead.")
                 .Price(4)
                 .RequirementSkill(SkillType.Force, 15)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -98,7 +98,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .ForceAffinity(ForceAffinityType.Light)
 
                 .AddPerkLevel()
-                .Description("Leap to an ally up to 15m away and absorb 50% of the next hit they take within 8 seconds.")
+                .Description("Leap to an ally up to 15m away and absorb 50% of the next hit they take within 30 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Force, 32)
                 .RequirementCharacterType(CharacterType.ForceSensitive)

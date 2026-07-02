@@ -29,21 +29,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Force Push")
 
                 .AddPerkLevel()
-                .Description("Deals 8 force DMG to one target in a 5m cone, knocks down for 2 seconds, and slows movement for 3 seconds.")
+                .Description("Deals 8 force DMG to one target in a 5m cone, knocks down for 30 seconds, and slows movement for 30 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Force, 5)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ForcePush1)
 
                 .AddPerkLevel()
-                .Description("Deals 12 force DMG to up to 2 targets in an 8m cone, knocks down for 2 seconds, and slows movement for 3 seconds.")
+                .Description("Deals 12 force DMG to up to 2 targets in an 8m cone, knocks down for 30 seconds, and slows movement for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 28)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ForcePush2)
 
                 .AddPerkLevel()
-                .Description("Deals 18 force DMG to up to 3 targets in a 10m cone, knocks down for 2 seconds, and slows movement for 4 seconds.")
+                .Description("Deals 18 force DMG to up to 3 targets in a 10m cone, knocks down for 30 seconds, and slows movement for 30 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Force, 48)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -104,7 +104,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PrecognitionTrait)
-                .Description("After spending FP on a Force power, gain +5% Defense and +5% Evasion for 8 seconds. This can trigger once every 12 seconds.")
+                .Description("After spending FP on a Force power, gain +5% Defense and +5% Evasion for 30 seconds. This can trigger once every 12 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 22)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -118,7 +118,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ForceConvergenceTrait)
-                .Description("After spending FP on a Force power, restore 20% of your maximum FP over 10 seconds and gain +5% Force ability Accuracy for 10 seconds. This can trigger once every 45 seconds.")
+                .Description("After spending FP on a Force power, restore 20% of your maximum FP over 10 seconds and gain +5% Force ability Accuracy for 30 seconds. This can trigger once every 45 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Force, 48)
                 .RequirementCharacterType(CharacterType.ForceSensitive)

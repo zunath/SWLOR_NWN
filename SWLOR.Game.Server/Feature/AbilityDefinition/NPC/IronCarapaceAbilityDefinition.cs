@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                 .RequirementStamina(4)
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    StatusEffect.ApplyStatusEffect(activator, activator, new IronCarapaceStatusEffect(), 24f);
+                    StatusEffect.ApplyStatusEffect(activator, activator, new IronCarapaceStatusEffect(), 30f);
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Ac_Bonus), activator);
                 });
 

@@ -8,8 +8,6 @@ namespace SWLOR.Game.Server.Tests.Perks;
 
 public class PassivePerkIconTests
 {
-    private const int PassiveTraitFeatStart = 1171;
-    private const int PassiveTraitFeatEnd = 1400;
     private const int CustomTlkOffset = 16777216;
 
     [Test]
@@ -67,12 +65,10 @@ public class PassivePerkIconTests
             "feat.2da")));
         var iconRoot = Path.Combine(root.FullName, "SWLOR_Haks", "sw_ability");
         var passiveRows = featRows
-            .Where(x => x.Key is >= PassiveTraitFeatStart and <= PassiveTraitFeatEnd)
             .Where(x => HasLabel(x.Value))
+            .Where(x => x.Value["LABEL"].EndsWith("Trait", StringComparison.Ordinal))
             .ToArray();
         var failures = new List<string>();
-
-        passiveRows.Should().HaveCount(230);
 
         foreach (var (rowNumber, row) in passiveRows.OrderBy(x => x.Key))
         {

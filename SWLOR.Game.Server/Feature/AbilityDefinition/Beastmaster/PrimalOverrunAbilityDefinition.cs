@@ -63,7 +63,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 targetVisualEffect: VisualEffect.Vfx_Com_Blood_Crt_Red,
                 areaVisualEffect: VisualEffect.Vfx_Fnf_Howl_War_Cry);
 
-            StatusEffect.ApplyStatusEffect(activator, activator, typeof(PrimalOverrun1StatusEffect), 15f);
+            StatusEffect.ApplyStatusEffect(activator, activator, typeof(PrimalOverrun1StatusEffect), 30f);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Holy_Aid), activator);
         }
     }

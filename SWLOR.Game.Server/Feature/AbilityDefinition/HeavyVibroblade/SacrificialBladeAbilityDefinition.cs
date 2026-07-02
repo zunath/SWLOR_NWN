@@ -41,7 +41,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
         private static void SacrificialBlade1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
             SacrificeHitPoints(activator, 8);
-            Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.HeavyVibroblade, 25, 0, null, false);
+            var damage = Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.HeavyVibroblade, 25, 0, null, false);
+            if (damage > 0)
+            {
+                ApplyEssenceHunter(activator, target);
+            }
         }
     }
 }

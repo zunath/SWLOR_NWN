@@ -62,7 +62,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Weapon Jam")
 
                 .AddPerkLevel()
-                .Description("Reduce one target's physical and Force ability Accuracy by 6% for 18 seconds.")
+                .Description("Reduce one target's physical and Force ability Accuracy by 6% for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Devices, 8)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -76,7 +76,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Power Cell")
 
                 .AddPerkLevel()
-                .Description("Restores 10% of maximum STM to one ally and increases physical and Force ability Accuracy by 4% for 12 seconds.")
+                .Description("Restores 10% of maximum STM to one ally and increases physical and Force ability Accuracy by 4% for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Devices, 12)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -84,7 +84,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.PowerCell1)
 
                 .AddPerkLevel()
-                .Description("Restores 18% of maximum STM to one ally and increases physical and Force ability Accuracy by 6% for 12 seconds.")
+                .Description("Restores 18% of maximum STM to one ally and increases physical and Force ability Accuracy by 6% for 30 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Devices, 25)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -92,7 +92,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.PowerCell2)
 
                 .AddPerkLevel()
-                .Description("Restores 18% of maximum STM to the selected ally and nearby allies and increases physical and Force ability Accuracy by 6% for 12 seconds.")
+                .Description("Restores 18% of maximum STM to the selected ally and nearby allies and increases physical and Force ability Accuracy by 6% for 30 seconds.")
                 .Price(5)
                 .RequirementSkill(SkillType.Devices, 48)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -107,7 +107,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PowerSurgeTrait)
-                .Description("Power Cell's initial target also gains Power Surge for 12 seconds: +6% physical and Force ability Accuracy, +6% critical chance, and 1 STM every 4 seconds.")
+                .Description("Power Cell's initial target also gains Power Surge for 30 seconds: +6% physical and Force ability Accuracy, +6% critical chance, and 1 STM every 4 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Devices, 5)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -121,20 +121,20 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.RayshieldScreenTrait)
-                .Description("Field Support ally buffs from Deflector Shield, Power Cell, Group Deflector, and Emergency Bunker also grant affected allies 8% reduced ranged physical damage for 12 seconds.")
+                .Description("Field Support ally buffs from Deflector Shield, Power Cell, Group Deflector, and Emergency Bunker also grant affected allies 8% reduced ranged physical damage for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Devices, 18)
                 .RequirementCharacterType(CharacterType.Standard)
                 .IncreasesStat(StatType.FieldSupportRangedPhysicalDamageReductionPercent, 8)
-                .IncreasesStat(StatType.FieldSupportRangedPhysicalDamageReductionDurationSeconds, 12)
+                .IncreasesStat(StatType.FieldSupportRangedPhysicalDamageReductionDurationSeconds, 30)
 
                 .AddPerkLevel()
-                .Description("Field Support ally buffs from Deflector Shield, Power Cell, Group Deflector, and Emergency Bunker also grant affected allies 12% reduced ranged physical damage for 15 seconds.")
+                .Description("Field Support ally buffs from Deflector Shield, Power Cell, Group Deflector, and Emergency Bunker also grant affected allies 12% reduced ranged physical damage for 30 seconds.")
                 .Price(5)
                 .RequirementSkill(SkillType.Devices, 38)
                 .RequirementCharacterType(CharacterType.Standard)
                 .IncreasesStat(StatType.FieldSupportRangedPhysicalDamageReductionPercent, 12)
-                .IncreasesStat(StatType.FieldSupportRangedPhysicalDamageReductionDurationSeconds, 15);
+                .IncreasesStat(StatType.FieldSupportRangedPhysicalDamageReductionDurationSeconds, 30);
         }
 
         private void DampeningField()
@@ -144,20 +144,20 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.DampeningFieldTrait)
-                .Description("Field Support ally buffs from Deflector Shield, Power Cell, Group Deflector, and Emergency Bunker also grant affected allies 6% reduced physical and force damage for 8 seconds.")
+                .Description("Field Support ally buffs from Deflector Shield, Power Cell, Group Deflector, and Emergency Bunker also grant affected allies 6% reduced physical and force damage for 30 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Devices, 22)
                 .RequirementCharacterType(CharacterType.Standard)
                 .IncreasesStat(StatType.FieldSupportPhysicalAndForceDamageReductionPercent, 6)
-                .IncreasesStat(StatType.FieldSupportPhysicalAndForceDamageReductionDurationSeconds, 8)
+                .IncreasesStat(StatType.FieldSupportPhysicalAndForceDamageReductionDurationSeconds, 30)
 
                 .AddPerkLevel()
-                .Description("Field Support ally buffs from Deflector Shield, Power Cell, Group Deflector, and Emergency Bunker also grant affected allies 10% reduced physical and force damage for 10 seconds.")
+                .Description("Field Support ally buffs from Deflector Shield, Power Cell, Group Deflector, and Emergency Bunker also grant affected allies 10% reduced physical and force damage for 30 seconds.")
                 .Price(5)
                 .RequirementSkill(SkillType.Devices, 40)
                 .RequirementCharacterType(CharacterType.Standard)
                 .IncreasesStat(StatType.FieldSupportPhysicalAndForceDamageReductionPercent, 10)
-                .IncreasesStat(StatType.FieldSupportPhysicalAndForceDamageReductionDurationSeconds, 10);
+                .IncreasesStat(StatType.FieldSupportPhysicalAndForceDamageReductionDurationSeconds, 30);
         }
 
         private void OverclockRoutine()
@@ -167,7 +167,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.OverclockRoutineTrait)
-                .Description("Field Support abilities that affect allies also grant Overclock Routine for 12 seconds. Affected allies gain +4% Device ability damage, healing, temporary HP, and damage absorption shield values.")
+                .Description("Field Support abilities that affect allies also grant Overclock Routine for 30 seconds. Affected allies gain +4% Device ability damage, healing, temporary HP, and damage absorption shield values.")
                 .Price(5)
                 .RequirementSkill(SkillType.Devices, 35)
                 .RequirementCharacterType(CharacterType.Standard)

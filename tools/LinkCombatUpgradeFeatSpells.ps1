@@ -2,9 +2,10 @@
 param(
     [string]$Feat2daPath = "SWLOR_Haks\sw_2da\feat.2da",
     [string]$Spells2daPath = "SWLOR_Haks\sw_2da\spells.2da",
+    [string]$ClassFeat2daPath = "SWLOR_Haks\sw_2da\CLS_FEAT_FIGHT.2da",
     [string]$SpellEnumPath = "SWLOR.NWN.API\NWScript\Enum\spell.cs",
     [int]$GeneratedFeatStart = 2000,
-    [int]$GeneratedFeatEnd = 2578
+    [int]$GeneratedFeatEnd = 2718
 )
 
 Set-StrictMode -Version Latest
@@ -101,7 +102,37 @@ function Convert-ToStringList {
 
 $featPath = Resolve-RepoPath $Feat2daPath
 $spellsPath = Resolve-RepoPath $Spells2daPath
+$classFeatPath = Resolve-RepoPath $ClassFeat2daPath
 $enumPath = Resolve-RepoPath $SpellEnumPath
+$abilityDefinitionPath = Resolve-RepoPath "SWLOR.Game.Server\Feature\AbilityDefinition"
+$npcAbilityDefinitionPath = Resolve-RepoPath "SWLOR.Game.Server\Feature\AbilityDefinition\NPC"
+
+$npcAbilityLabels = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::Ordinal)
+if ([System.IO.Directory]::Exists($npcAbilityDefinitionPath)) {
+    Get-ChildItem $npcAbilityDefinitionPath -Filter "*.cs" -File |
+        ForEach-Object {
+            $content = [System.IO.File]::ReadAllText($_.FullName)
+            foreach ($match in [regex]::Matches($content, "\bFeatType\.(\w+)")) {
+                $npcAbilityLabels.Add($match.Groups[1].Value) | Out-Null
+            }
+        }
+}
+
+$playerAbilityLabels = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::Ordinal)
+if ([System.IO.Directory]::Exists($abilityDefinitionPath)) {
+    Get-ChildItem $abilityDefinitionPath -Filter "*.cs" -File -Recurse |
+        Where-Object { $_.FullName -notlike "*\Feature\AbilityDefinition\NPC\*" } |
+        ForEach-Object {
+            $content = [System.IO.File]::ReadAllText($_.FullName)
+            if ($content -notmatch "\bIAbilityListDefinition\b") {
+                return
+            }
+
+            foreach ($match in [regex]::Matches($content, "\bFeatType\.(\w+)")) {
+                $playerAbilityLabels.Add($match.Groups[1].Value) | Out-Null
+            }
+        }
+}
 
 $featLines = [System.Collections.Generic.List[string]]::new()
 $featLines.AddRange([System.IO.File]::ReadAllLines($featPath))
@@ -125,6 +156,7 @@ $spellColumnWidths = @(
     19, 18, 17, 14, 14, 14, 14, 14, 14, 11, 9, 11, 12, 19, 20, 13,
     17, 12, 11, 11, 19, 13, 13, 13, 12
 )
+$classFeatColumnWidths = @(7, 49, 12, 7, 17, 9)
 
 $spellRowsByLabel = @{}
 $spellLineByRow = @{}
@@ -157,6 +189,7 @@ $generatedSpellRows = New-Object System.Collections.Generic.List[string]
 $linkedFeatRows = 0
 $createdSpellRows = 0
 $spellIdsByLabel = [ordered]@{}
+$linkedPlayerFeats = [ordered]@{}
 
 for ($i = $featHeaderIndex + 1; $i -lt $featLines.Count; $i++) {
     $tokens = Convert-ToStringList $featLines[$i]
@@ -170,6 +203,14 @@ for ($i = $featHeaderIndex + 1; $i -lt $featLines.Count; $i++) {
 
     $label = Get-TokenByHeader $tokens $featHeaders "LABEL"
     if ($label -eq "****") {
+        continue
+    }
+    if ($npcAbilityLabels.Contains($label)) {
+        continue
+    }
+    if (!$playerAbilityLabels.Contains($label)) {
+        Set-TokenByHeader $tokens $featHeaders "SPELLID" "****"
+        $featLines[$i] = Format-2DARow $tokens.ToArray() $featColumnWidths
         continue
     }
 
@@ -246,6 +287,7 @@ for ($i = $featHeaderIndex + 1; $i -lt $featLines.Count; $i++) {
     Set-TokenByHeader $tokens $featHeaders "SPELLID" $spellId.ToString()
     $featLines[$i] = Format-2DARow $tokens.ToArray() $featColumnWidths
     $spellIdsByLabel[$label] = $spellId
+    $linkedPlayerFeats[$label] = $rowNumber
     $linkedFeatRows++
 }
 
@@ -255,6 +297,94 @@ foreach ($row in $generatedSpellRows) {
 
 [System.IO.File]::WriteAllLines($featPath, $featLines)
 [System.IO.File]::WriteAllLines($spellsPath, $spellsLines)
+
+$addedClassFeatRows = 0
+if ([System.IO.File]::Exists($classFeatPath)) {
+    $classFeatLines = [System.Collections.Generic.List[string]]::new()
+    $classFeatLines.AddRange([System.IO.File]::ReadAllLines($classFeatPath))
+    $classFeatHeaderIndex = Get-HeaderLineIndex $classFeatLines.ToArray()
+    $classFeatHeaders = $classFeatLines[$classFeatHeaderIndex].Trim() -split "\s+"
+    $classFeatExpectedTokens = $classFeatHeaders.Count + 1
+    $classFeatLineByFeatIndex = @{}
+    $activePlayerFeatIndexes = [System.Collections.Generic.HashSet[int]]::new()
+    foreach ($featIndexValue in $linkedPlayerFeats.Values) {
+        $activePlayerFeatIndexes.Add([int]$featIndexValue) | Out-Null
+    }
+    $maxClassFeatRow = 0
+
+    for ($i = $classFeatHeaderIndex + 1; $i -lt $classFeatLines.Count; $i++) {
+        $tokens = Convert-ToStringList $classFeatLines[$i]
+        $rowNumber = Get-RowNumber $tokens
+        if ($null -eq $rowNumber) {
+            continue
+        }
+
+        if ($rowNumber -gt $maxClassFeatRow) {
+            $maxClassFeatRow = $rowNumber
+        }
+
+        if ($tokens.Count -eq $classFeatExpectedTokens) {
+            $featIndex = Get-TokenByHeader $tokens $classFeatHeaders "FeatIndex"
+            if ($featIndex -ne "****" -and !$classFeatLineByFeatIndex.ContainsKey($featIndex)) {
+                $classFeatLineByFeatIndex[$featIndex] = $i
+            }
+        }
+    }
+
+    foreach ($entry in @($classFeatLineByFeatIndex.GetEnumerator())) {
+        $featIndex = 0
+        if (![int]::TryParse($entry.Key, [ref]$featIndex)) {
+            continue
+        }
+
+        if ($featIndex -lt $GeneratedFeatStart -or $featIndex -gt $GeneratedFeatEnd) {
+            continue
+        }
+
+        if ($activePlayerFeatIndexes.Contains($featIndex)) {
+            continue
+        }
+
+        $lineIndex = $entry.Value
+        $tokens = Convert-ToStringList $classFeatLines[$lineIndex]
+        Set-TokenByHeader $tokens $classFeatHeaders "List" "0"
+        Set-TokenByHeader $tokens $classFeatHeaders "OnMenu" "0"
+        $classFeatLines[$lineIndex] = Format-2DARow $tokens.ToArray() $classFeatColumnWidths
+    }
+
+    foreach ($entry in $linkedPlayerFeats.GetEnumerator()) {
+        $featLabel = $entry.Key
+        $featIndex = $entry.Value.ToString()
+
+        if ($classFeatLineByFeatIndex.ContainsKey($featIndex)) {
+            $lineIndex = $classFeatLineByFeatIndex[$featIndex]
+            $tokens = Convert-ToStringList $classFeatLines[$lineIndex]
+            Set-TokenByHeader $tokens $classFeatHeaders "FeatLabel" $featLabel
+            Set-TokenByHeader $tokens $classFeatHeaders "List" "1"
+            Set-TokenByHeader $tokens $classFeatHeaders "GrantedOnLevel" "99"
+            Set-TokenByHeader $tokens $classFeatHeaders "OnMenu" "1"
+            $classFeatLines[$lineIndex] = Format-2DARow $tokens.ToArray() $classFeatColumnWidths
+            continue
+        }
+
+        $maxClassFeatRow++
+        $tokens = New-Object System.Collections.Generic.List[string]
+        for ($j = 0; $j -lt $classFeatExpectedTokens; $j++) {
+            $tokens.Add("****") | Out-Null
+        }
+
+        $tokens[0] = $maxClassFeatRow.ToString()
+        Set-TokenByHeader $tokens $classFeatHeaders "FeatLabel" $featLabel
+        Set-TokenByHeader $tokens $classFeatHeaders "FeatIndex" $featIndex
+        Set-TokenByHeader $tokens $classFeatHeaders "List" "1"
+        Set-TokenByHeader $tokens $classFeatHeaders "GrantedOnLevel" "99"
+        Set-TokenByHeader $tokens $classFeatHeaders "OnMenu" "1"
+        $classFeatLines.Add((Format-2DARow $tokens.ToArray() $classFeatColumnWidths)) | Out-Null
+        $addedClassFeatRows++
+    }
+
+    [System.IO.File]::WriteAllLines($classFeatPath, $classFeatLines)
+}
 
 $enumLines = [System.Collections.Generic.List[string]]::new()
 $enumLines.AddRange([System.IO.File]::ReadAllLines($enumPath))
@@ -303,3 +433,4 @@ if ($missingEnumEntries.Count -gt 0) {
 Write-Host "Linked $linkedFeatRows generated feat rows."
 Write-Host "Created $createdSpellRows spell rows."
 Write-Host "Added $($missingEnumEntries.Count) spell enum entries."
+Write-Host "Added $addedClassFeatRows class feat rows."

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -19,7 +20,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
 
             ConfigureShieldBash(builder, FeatType.ShieldBash1, "Shield Bash I", 1, 12, 3, typeof(DazedStatusEffect), 3);
             ConfigureShieldBash(builder, FeatType.ShieldBash2, "Shield Bash II", 2, 24, 6, typeof(DazedStatusEffect), 5);
-            ConfigureShieldBash(builder, FeatType.ShieldBash3, "Shield Bash III", 3, 36, 3, typeof(StunnedStatusEffect), 8);
+            ConfigureShieldBash(builder, FeatType.ShieldBash3, "Shield Bash III", 3, 36, 3, typeof(StunnedStatusEffect), 8, typeof(DazedStatusEffect), 6);
 
             return builder.Build();
         }
@@ -32,7 +33,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
             int baseDamage,
             int duration,
             Type statusEffect,
-            int stamina)
+            int stamina,
+            Type additionalStatusEffect = null,
+            int additionalStatusDuration = 0)
         {
             builder
                 .Create(featType, PerkType.ShieldBash)
@@ -49,7 +52,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
                     return ValidateShieldBashTarget(activator, target);
                 })
                 .HasImpactAction((activator, target, effectivePerkLevel, targetLocation) =>
-                    ApplyShieldBash(activator, target, baseDamage, duration, statusEffect))
+                    ApplyShieldBash(activator, target, baseDamage, duration, statusEffect, additionalStatusEffect, additionalStatusDuration))
                 .SkillType(SkillType.Vibroblade)
                 .UsesActiveAttackTarget()
                 .IsSingleTargetAbility()
@@ -79,7 +82,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
             return string.Empty;
         }
 
-        private static void ApplyShieldBash(uint activator, uint attackTarget, int baseDamage, int duration, Type statusEffect)
+        private static void ApplyShieldBash(
+            uint activator,
+            uint attackTarget,
+            int baseDamage,
+            int duration,
+            Type statusEffect,
+            Type additionalStatusEffect,
+            int additionalStatusDuration)
         {
             var validation = ValidateShieldBashTarget(activator, attackTarget);
             if (!string.IsNullOrWhiteSpace(validation))
@@ -88,7 +98,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
                 return;
             }
 
-            Ability.ApplyCombatImpact(
+            var totalDamage = Ability.ApplyCombatImpact(
                 activator,
                 attackTarget,
                 GetLocation(attackTarget),
@@ -97,6 +107,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
                 duration,
                 statusEffect,
                 false);
+
+            if (totalDamage > 0 && additionalStatusEffect != null && additionalStatusDuration > 0)
+            {
+                StatusEffect.ApplyStatusEffect(
+                    activator,
+                    attackTarget,
+                    additionalStatusEffect,
+                    additionalStatusDuration,
+                    CombatDamageType.Physical);
+            }
         }
     }
 }

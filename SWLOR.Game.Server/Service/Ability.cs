@@ -143,6 +143,11 @@ namespace SWLOR.Game.Server.Service
             return true;
         }
 
+        public static AbilityImpactSummary GetActiveAbilityImpactSummary(uint activator)
+        {
+            return GetTrackedAbilityImpact(activator)?.Summary;
+        }
+
         private static TrackedAbilityImpact GetTrackedAbilityImpact(uint activator)
         {
             return _trackedAbilityImpacts.TryGetValue(activator, out var impact)
@@ -1096,7 +1101,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Applies a hostile combat impact after a visible telegraph resolves.
         /// </summary>
-        public static void ApplyTelegraphedCombatImpact(
+        public static int ApplyTelegraphedCombatImpact(
             uint activator,
             uint target,
             Location targetLocation,
@@ -1139,7 +1144,7 @@ namespace SWLOR.Game.Server.Service
 
             if (telegraphDuration <= 0f)
             {
-                ApplyCombatImpactInShape(
+                var totalDamage = ApplyCombatImpactInShape(
                     activator,
                     target,
                     targetLocation,
@@ -1176,7 +1181,7 @@ namespace SWLOR.Game.Server.Service
                 if (playImpactAnimation)
                     PlayCombatImpactAnimation(activator, impactAnimation);
 
-                return;
+                return totalDamage;
             }
 
             var areaVisualLocation = Location(
@@ -1261,9 +1266,11 @@ namespace SWLOR.Game.Server.Service
 
             if (playImpactAnimation)
                 PlayCombatImpactAnimation(activator, impactAnimation);
+
+            return 0;
         }
 
-        private static void ApplyCombatImpactInShape(
+        private static int ApplyCombatImpactInShape(
             uint activator,
             uint target,
             Location targetLocation,
@@ -1320,7 +1327,7 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            ApplyCombatImpactToCreatures(
+            return ApplyCombatImpactToCreatures(
                 activator,
                 creatures,
                 skillType,
@@ -1803,6 +1810,7 @@ namespace SWLOR.Game.Server.Service
             var statusApplied = ApplyCombatImpactStatusEffect(
                 activator,
                 target,
+                skillType,
                 statusEffect,
                 duration,
                 additionalStatusEffects,
@@ -1868,13 +1876,26 @@ namespace SWLOR.Game.Server.Service
             var damageAbility = combatImpactDamageAbility != AbilityType.Invalid
                 ? combatImpactDamageAbility
                 : trackedImpact?.Ability?.CombatImpactDamageAbility ?? AbilityType.Invalid;
+            var appliedStatusCategories = GetCombatImpactStatusCategories(statusEffect, additionalStatusEffects, statusEffectFactory);
+            var statusCategoryHitChanceAdjustment = Combat.GetAbilityStatusCategoryHitChancePercentAdjustment(
+                activator,
+                skillType,
+                appliedStatusCategories);
             var skillLevelOverride = usesNPCStatScaling
                 ? GetNPCAbilityScalingRank(activator, skillType, damageType, damageAbility)
                 : -1;
             var shouldResolveHit = resolvesHit && ShouldResolveCombatImpactHit(trackedImpact);
             var hitRate = 100;
             if (shouldResolveHit &&
-                !Combat.TryResolveAbilityHit(activator, target, skillType, perkType, out hitRate, hitChancePercentAdjustment, skillLevelOverride, damageAbility))
+                !Combat.TryResolveAbilityHit(
+                    activator,
+                    target,
+                    skillType,
+                    perkType,
+                    out hitRate,
+                    hitChancePercentAdjustment + statusCategoryHitChanceAdjustment,
+                    skillLevelOverride,
+                    damageAbility))
             {
                 SendCombatImpactResultMessage(activator, target, trackedImpact?.Ability, 4, hitRate);
                 if (awardsCombatPoints)
@@ -1892,6 +1913,10 @@ namespace SWLOR.Game.Server.Service
                 target,
                 trackedImpact?.Ability,
                 skillType);
+            adjustedBaseDamage += Combat.GetAbilityStatusCategoryDamageBonus(
+                activator,
+                skillType,
+                appliedStatusCategories);
             var damage = usesNPCStatScaling
                 ? CalculateNPCCombatImpactDamage(activator, target, skillType, adjustedBaseDamage, damageType, criticalRatePercentAdjustment, damageAbility, canCritical)
                 : CalculateCombatImpactDamage(activator, target, skillType, adjustedBaseDamage, damageType, criticalRatePercentAdjustment, damageAbility, canCritical);
@@ -1918,6 +1943,48 @@ namespace SWLOR.Game.Server.Service
         private static bool ShouldResolveCombatImpactHit(TrackedAbilityImpact trackedImpact)
         {
             return trackedImpact?.Ability?.ActivationType != AbilityActivationType.Weapon;
+        }
+
+        private static StatusEffectCategory GetCombatImpactStatusCategories(
+            Type statusEffect,
+            IEnumerable<Type> additionalStatusEffects,
+            Func<IStatusEffect> statusEffectFactory)
+        {
+            var categories = GetStatusEffectTypeCategories(statusEffect);
+
+            if (additionalStatusEffects != null)
+            {
+                foreach (var additionalStatusEffect in additionalStatusEffects)
+                {
+                    categories |= GetStatusEffectTypeCategories(additionalStatusEffect);
+                }
+            }
+
+            var factoryStatusEffect = statusEffectFactory?.Invoke();
+            if (factoryStatusEffect != null)
+            {
+                categories |= factoryStatusEffect.Categories;
+            }
+
+            return categories;
+        }
+
+        private static StatusEffectCategory GetStatusEffectTypeCategories(Type statusEffect)
+        {
+            if (statusEffect == null)
+                return StatusEffectCategory.None;
+
+            var categories = StatusEffectCategory.None;
+            foreach (StatusEffectCategory category in Enum.GetValues(typeof(StatusEffectCategory)))
+            {
+                if (category == StatusEffectCategory.None)
+                    continue;
+
+                if (StatusEffect.HasStatusEffectCategory(statusEffect, category))
+                    categories |= category;
+            }
+
+            return categories;
         }
 
         private static void SendCombatImpactResultMessage(
@@ -2095,6 +2162,7 @@ namespace SWLOR.Game.Server.Service
                 Combat.GetCombatImpactWeaponDamage(activator, skillType) +
                 Combat.GetAbilityDamageBonus(activator, skillType) +
                 Combat.GetAbilityDamageFlatAdjustment(activator, perkType, skillType) +
+                Combat.GetCostlyAbilityDamageBonus(activator, skillType) +
                 idleBonuses.DamageBonus;
             if (trackedImpact != null)
             {
@@ -2135,7 +2203,13 @@ namespace SWLOR.Game.Server.Service
                 Combat.SendIncomingCriticalHitDowngradeFeedback(activator, target);
             }
 
-            calculatedDamage = Combat.ApplyCriticalDamageModifier(activator, calculatedDamage, criticalRating, skillType);
+            calculatedDamage = Combat.ApplyCriticalDamageModifier(
+                activator,
+                calculatedDamage,
+                criticalRating,
+                skillType,
+                target,
+                idleBonuses.CriticalDamagePercentAdjustment);
             calculatedDamage = Combat.ApplySideAttackDamageModifier(activator, target, skillType, calculatedDamage);
             calculatedDamage = Combat.ApplyTwinBladeAbilityShapeDamageModifier(
                 activator,
@@ -2153,6 +2227,11 @@ namespace SWLOR.Game.Server.Service
                 damageType,
                 calculatedDamage,
                 IsTrackedAbilitySingleTarget(activator));
+            calculatedDamage = Combat.ApplyAreaAbilityAfterDeflectionDamageModifier(
+                activator,
+                skillType,
+                calculatedDamage,
+                IsTrackedAbilityArea(activator));
             if (skillType == SkillType.Force)
             {
                 calculatedDamage = Perk.ApplyForceAffinityMagnitude(activator, perkType, calculatedDamage);
@@ -2164,6 +2243,7 @@ namespace SWLOR.Game.Server.Service
 
             if (criticalRating > 0)
             {
+                trackedImpact?.RecordCriticalHit();
                 Combat.ApplyCriticalHitEffects(
                     activator,
                     target,
@@ -2171,7 +2251,10 @@ namespace SWLOR.Game.Server.Service
                     criticalRating,
                     IsTrackedAbilitySingleTarget(activator),
                     skillType);
-                Combat.ApplyCriticalAbilityStatusEffects(activator, target, perkType, damageType);
+            }
+            else
+            {
+                Combat.ApplyNonCriticalAbilityEffects(activator, target, skillType);
             }
 
             return calculatedDamage;
@@ -2274,6 +2357,7 @@ namespace SWLOR.Game.Server.Service
                 Combat.GetCombatImpactWeaponDamage(activator, skillType) +
                 (int)Math.Ceiling(scalingRank * 0.15f) +
                 Combat.GetAbilityDamageFlatAdjustment(activator, perkType, skillType) +
+                Combat.GetCostlyAbilityDamageBonus(activator, skillType) +
                 idleBonuses.DamageBonus;
             if (trackedImpact != null)
             {
@@ -2321,7 +2405,13 @@ namespace SWLOR.Game.Server.Service
                 Combat.SendIncomingCriticalHitDowngradeFeedback(activator, target);
             }
 
-            calculatedDamage = Combat.ApplyCriticalDamageModifier(activator, calculatedDamage, criticalRating, skillType);
+            calculatedDamage = Combat.ApplyCriticalDamageModifier(
+                activator,
+                calculatedDamage,
+                criticalRating,
+                skillType,
+                target,
+                idleBonuses.CriticalDamagePercentAdjustment);
             calculatedDamage = Combat.ApplySideAttackDamageModifier(activator, target, skillType, calculatedDamage);
             calculatedDamage = Combat.ApplyTwinBladeAbilityShapeDamageModifier(
                 activator,
@@ -2339,6 +2429,11 @@ namespace SWLOR.Game.Server.Service
                 damageType,
                 calculatedDamage,
                 IsTrackedAbilitySingleTarget(activator));
+            calculatedDamage = Combat.ApplyAreaAbilityAfterDeflectionDamageModifier(
+                activator,
+                skillType,
+                calculatedDamage,
+                IsTrackedAbilityArea(activator));
             if (skillType == SkillType.Force)
             {
                 calculatedDamage = Perk.ApplyForceAffinityMagnitude(activator, perkType, calculatedDamage);
@@ -2350,6 +2445,7 @@ namespace SWLOR.Game.Server.Service
 
             if (criticalRating > 0)
             {
+                trackedImpact?.RecordCriticalHit();
                 Combat.ApplyCriticalHitEffects(
                     activator,
                     target,
@@ -2357,7 +2453,10 @@ namespace SWLOR.Game.Server.Service
                     criticalRating,
                     IsTrackedAbilitySingleTarget(activator),
                     skillType);
-                Combat.ApplyCriticalAbilityStatusEffects(activator, target, perkType, damageType);
+            }
+            else
+            {
+                Combat.ApplyNonCriticalAbilityEffects(activator, target, skillType);
             }
 
             return calculatedDamage;
@@ -2373,6 +2472,7 @@ namespace SWLOR.Game.Server.Service
 
             adjustment += GetHighFPAndStaminaAttackAdjustment(activator);
             adjustment += Combat.GetNearbyStatusTargetAttackAdjustment(activator);
+            adjustment += Combat.GetLowHPAttackAdjustment(activator);
 
             return Math.Max(1, ApplyPercentAdjustment(attack, adjustment));
         }
@@ -2413,6 +2513,7 @@ namespace SWLOR.Game.Server.Service
         private static bool ApplyCombatImpactStatusEffect(
             uint activator,
             uint target,
+            SkillType skillType,
             Type statusEffect,
             int duration,
             IEnumerable<Type> additionalStatusEffects,
@@ -2424,7 +2525,13 @@ namespace SWLOR.Game.Server.Service
             if (duration <= 0 || (statusEffect == null && statusEffectFactory == null && !hasAdditionalStatusEffects))
                 return false;
 
-            duration = ApplyAbilityStatusDurationAdjustment(activator, duration);
+            duration = ApplyAbilityStatusDurationAdjustment(
+                activator,
+                duration,
+                skillType,
+                statusEffect,
+                additionalStatusEffects,
+                statusEffectFactory);
 
             var statusApplied = false;
             if (statusEffectFactory != null)
@@ -2443,14 +2550,26 @@ namespace SWLOR.Game.Server.Service
             return statusApplied;
         }
 
-        private static int ApplyAbilityStatusDurationAdjustment(uint activator, int duration)
+        private static int ApplyAbilityStatusDurationAdjustment(
+            uint activator,
+            int duration,
+            SkillType skillType,
+            Type statusEffect,
+            IEnumerable<Type> additionalStatusEffects,
+            Func<IStatusEffect> statusEffectFactory)
         {
             if (duration <= 0)
                 return duration;
 
             var trackedImpact = GetTrackedAbilityImpact(activator);
             var perkType = trackedImpact?.Ability?.EffectiveLevelPerkType ?? PerkType.Invalid;
-            var adjustment = Combat.GetAbilityStatusDurationPercentAdjustment(activator, perkType);
+            var adjustment = Combat.GetAbilityStatusDurationPercentAdjustment(
+                activator,
+                perkType,
+                skillType,
+                statusEffect,
+                additionalStatusEffects,
+                statusEffectFactory);
             if (adjustment == 0)
                 return duration;
 
@@ -2591,6 +2710,11 @@ namespace SWLOR.Game.Server.Service
                     Summary.IsAreaAbility = true;
                     Summary.IsSingleTargetAbility = false;
                 }
+            }
+
+            public void RecordCriticalHit()
+            {
+                Summary.CriticalHitCount++;
             }
 
             public void QueueDamageEffect(uint target, int damage, DamageType damageType)

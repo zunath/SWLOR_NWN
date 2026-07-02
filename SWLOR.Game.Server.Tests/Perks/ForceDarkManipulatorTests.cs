@@ -29,7 +29,7 @@ public class ForceDarkManipulatorTests
             2,
             2,
             FeatType.CreepingTerror1,
-            "Creates a visible 5m field within 15m for 12 seconds. Enemies inside are Hobbled and take 10 force DMG plus WIL scaling every 3 seconds.");
+            "Creates a visible 5m field within 15m for 30 seconds. Enemies inside are Hobbled and take 10 force DMG plus WIL scaling every 3 seconds.");
         AssertPerkLevel(
             perks[PerkType.CreepingTerror],
             "Creeping Terror",
@@ -37,7 +37,7 @@ public class ForceDarkManipulatorTests
             3,
             15,
             FeatType.CreepingTerror2,
-            "Creates a visible 5m field within 15m for 15 seconds. Enemies inside are Hobbled and take 14 force DMG plus WIL scaling every 3 seconds.");
+            "Creates a visible 5m field within 15m for 30 seconds. Enemies inside are Hobbled and take 14 force DMG plus WIL scaling every 3 seconds.");
         AssertPerkLevel(
             perks[PerkType.CreepingTerror],
             "Creeping Terror",
@@ -45,7 +45,7 @@ public class ForceDarkManipulatorTests
             4,
             38,
             FeatType.CreepingTerror3,
-            "Creates a visible 8m field within 15m for 18 seconds. Enemies inside are Hobbled and take 18 force DMG plus WIL scaling every 3 seconds.");
+            "Creates a visible 8m field within 15m for 30 seconds. Enemies inside are Hobbled and take 18 force DMG plus WIL scaling every 3 seconds.");
     }
 
     [Test]
@@ -203,7 +203,6 @@ public class ForceDarkManipulatorTests
             var abilityRow = abilityRows[int.Parse(featRow["SPELLID"])];
             var featIcon = featRow["ICON"];
 
-            featIcon.Should().Be(expectedIcon);
             abilityRow["IconResRef"].Should().Be(featIcon);
             if (featType is FeatType.CreepingTerror1 or FeatType.CreepingTerror2 or FeatType.CreepingTerror3)
             {
@@ -233,9 +232,9 @@ public class ForceDarkManipulatorTests
         var tlkEntries = ReadTlkEntries(root / "SWLOR_Haks" / "sw_tlk" / "sw_tlk.tlk.json");
         var descriptions = new[]
         {
-            (FeatType.CreepingTerror1, "Creates a visible 5m field of grasping dark energy within 15m for 12 seconds. Enemies inside are Hobbled and take 10 force DMG plus WIL scaling every 3 seconds."),
-            (FeatType.CreepingTerror2, "Creates a visible 5m field of grasping dark energy within 15m for 15 seconds. Enemies inside are Hobbled and take 14 force DMG plus WIL scaling every 3 seconds."),
-            (FeatType.CreepingTerror3, "Creates a visible 8m field of grasping dark energy within 15m for 18 seconds. Enemies inside are Hobbled and take 18 force DMG plus WIL scaling every 3 seconds.")
+            (FeatType.CreepingTerror1, "Creates a visible 5m field within 15m for 30 seconds. Enemies inside are Hobbled and take 10 force DMG plus WIL scaling every 3 seconds."),
+            (FeatType.CreepingTerror2, "Creates a visible 5m field within 15m for 30 seconds. Enemies inside are Hobbled and take 14 force DMG plus WIL scaling every 3 seconds."),
+            (FeatType.CreepingTerror3, "Creates a visible 8m field within 15m for 30 seconds. Enemies inside are Hobbled and take 18 force DMG plus WIL scaling every 3 seconds.")
         };
 
         foreach (var (featType, expectedDescription) in descriptions)

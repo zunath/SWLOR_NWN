@@ -223,27 +223,27 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void GuardingBond()
         {
-            _builder.Create(PerkCategoryType.BeastMasteryTraining, PerkType.Snarl)
+            _builder.Create(PerkCategoryType.BeastMasteryTraining, PerkType.GuardingBond)
                 .Name("Guarding Bond")
 
                 .AddPerkLevel()
                 .Description("While active, your beast gains +20% Defense, +20% Force Defense, takes 15% less damage, and generates +75% enmity. Only one combat mode may be active at a time.")
                 .Price(2)
                 .RequirementSkill(SkillType.BeastMastery, 15)
-                .GrantsFeat(FeatType.Snarl);
+                .GrantsFeat(FeatType.GuardingBond);
         }
 
 
         private void PredatoryBond()
         {
-            _builder.Create(PerkCategoryType.BeastMasteryTraining, PerkType.Growl)
+            _builder.Create(PerkCategoryType.BeastMasteryTraining, PerkType.PredatoryBond)
                 .Name("Predatory Bond")
 
                 .AddPerkLevel()
                 .Description("While active, your beast deals +25% damage, gains +15% haste and +10% ability accuracy, and generates 40% less enmity. Only one combat mode may be active at a time.")
                 .Price(2)
                 .RequirementSkill(SkillType.BeastMastery, 15)
-                .GrantsFeat(FeatType.Growl);
+                .GrantsFeat(FeatType.PredatoryBond);
         }
 
 

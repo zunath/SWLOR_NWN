@@ -200,6 +200,16 @@ function Test-AbilitySatisfiesStatusCheck {
         return $true
     }
 
+    if ($StatusEffectClass -eq "ExposedStatusEffect" -and
+        $AbilityContent -match "\bTemporaryCostlyAbilityExposedDurationSeconds\b") {
+        return $true
+    }
+
+    if ($StatusEffectClass -eq "HemorrhageStatusEffect" -and
+        $AbilityContent -match "\bConsumeBleedIntoHemorrhage\b") {
+        return $true
+    }
+
     $immunityPattern = "\bImmunityType\.$([regex]::Escape($StatusEnum))\b"
     if ($AbilityContent -match $immunityPattern) {
         return $true
@@ -224,6 +234,10 @@ function Test-AbilitySatisfiesStatusCheck {
 
         $statusDefinitionContent = $StatusDefinitionContentByName[$referencedStatusEffect]
         if ($statusDefinitionContent -match $statusEffectPattern -or $statusDefinitionContent -match $immunityPattern) {
+            return $true
+        }
+        if ($StatusEffectClass -eq "HamstringStatusEffect" -and
+            $statusDefinitionContent -match "\bStatType\.DamageDealtHamstring") {
             return $true
         }
 
@@ -460,6 +474,17 @@ function Normalize-ManifestCellText {
     $text = [string]$Value
     $text = $text -replace "[ \t]+\r?\n", "`n"
     return $text.Trim()
+}
+
+function Test-ManifestValuePresent {
+    param([object]$Value)
+
+    if ($null -eq $Value) {
+        return $false
+    }
+
+    $text = ([string]$Value).Trim()
+    return ![string]::IsNullOrWhiteSpace($text) -and $text -ne "-"
 }
 
 function Get-OpenXmlCellText {
@@ -761,7 +786,7 @@ $manifest = Import-Csv $manifestFullPath |
     Where-Object {
         $outOfScopeTabs -notcontains $_.Tab -and
         ![string]::IsNullOrWhiteSpace($_.PerkName) -and
-        @("Aura", "Combat", "Stance", "Toggle", "Trait") -contains $_.Type
+        @("Aura", "Capstone", "Combat", "Stance", "Toggle", "Trait") -contains $_.Type
     }
 
 if (@($manifest).Count -eq 0) {
@@ -771,6 +796,19 @@ if (@($manifest).Count -eq 0) {
 $perkIndex = Import-CodeNameIndex -Path (Resolve-RepoPath "SWLOR.Game.Server\Feature\PerkDefinition") -Filter "*PerkDefinition.cs"
 $abilityNameIndex = Import-CodeNameIndex -Path (Resolve-RepoPath "SWLOR.Game.Server\Feature\AbilityDefinition") -Filter "*AbilityDefinition.cs"
 $abilityFileIndex = Import-AbilityFileIndex -Path (Resolve-RepoPath "SWLOR.Game.Server\Feature\AbilityDefinition")
+$playerAbilityFeatLabels = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::Ordinal)
+Get-ChildItem (Resolve-RepoPath "SWLOR.Game.Server\Feature\AbilityDefinition") -Filter "*AbilityDefinition.cs" -Recurse |
+    Where-Object { $_.FullName -notmatch "\\NPC\\" } |
+    ForEach-Object {
+        $content = Get-Content $_.FullName -Raw
+        if ($content -notmatch "IAbilityListDefinition") {
+            return
+        }
+
+        foreach ($match in [regex]::Matches($content, "\bFeatType\.(\w+)")) {
+            $playerAbilityFeatLabels.Add($match.Groups[1].Value) | Out-Null
+        }
+    }
 $statusDefinitionContentByName = @{}
 $statusDefinitionTextParts = New-Object System.Collections.Generic.List[string]
 Get-ChildItem (Resolve-RepoPath "SWLOR.Game.Server\Feature\StatusEffectDefinition") -Filter "*StatusEffect.cs" -Recurse |
@@ -788,7 +826,11 @@ foreach ($key in $perkIndex.Keys) {
 
 $abilityBaseNameIndex = @{}
 foreach ($key in $abilityNameIndex.Keys) {
-    $abilityBaseNameIndex[(Get-SanitizedName $key)] = $true
+    $sanitizedKey = Get-SanitizedName $key
+    $abilityBaseNameIndex[$sanitizedKey] = $true
+    if (!$abilityFileIndex.ContainsKey($sanitizedKey) -and $abilityNameIndex[$key].Count -gt 0) {
+        $abilityFileIndex[$sanitizedKey] = $abilityNameIndex[$key][0]
+    }
 }
 foreach ($key in $abilityFileIndex.Keys) {
     $abilityBaseNameIndex[(Get-SanitizedName $key)] = $true
@@ -797,7 +839,7 @@ foreach ($key in $abilityFileIndex.Keys) {
 $statusApplicationVerb = "(?:inflict(?:s|ed|ing)?|appl(?:y|ies|ied)|grant(?:s|ed|ing)?|gain(?:s|ed|ing)?|become(?:s)?|suffer(?:s|ed|ing)?|attempt(?:s|ed|ing)?\s+to\s+inflict)"
 $statusChecks = @(
     @{ Pattern = "\b$statusApplicationVerb\b.{0,120}\bPoison\b"; Enum = "Poison" },
-    @{ Pattern = "\b$statusApplicationVerb\b.{0,120}\bBleed(?:ing)?\b"; Enum = "Bleed" },
+    @{ Pattern = "\b$statusApplicationVerb\b.{0,120}\bBleed\b(?!\s+duration)"; Enum = "Bleed" },
     @{ Pattern = "\b$statusApplicationVerb\b.{0,120}\bSunder(?:ed)?\b"; Enum = "Sunder" },
     @{ Pattern = "\b$statusApplicationVerb\b.{0,120}\bForce Disruption\b"; Enum = "ForceDisruption" },
     @{ Pattern = "\b$statusApplicationVerb\b.{0,120}\bBlind\b"; Enum = "Blind" },
@@ -828,7 +870,13 @@ foreach ($row in $manifest) {
         Add-AuditRow -Rows $auditRows -AuditType "MissingPerkName" -BibleRow $row
     }
 
-    $isActiveType = @("Aura", "Combat", "Stance", "Toggle") -contains $row.Type
+    $isActiveType = @("Aura", "Combat", "Stance", "Toggle") -contains $row.Type -or
+        ($row.Type -eq "Capstone" -and (
+            (Test-ManifestValuePresent $row.FP) -or
+            (Test-ManifestValuePresent $row.STM) -or
+            (Test-ManifestValuePresent $row.CastingTime) -or
+            (Test-ManifestValuePresent $row.CooldownTime) -or
+            $abilityBaseNameIndex.ContainsKey($rowBaseName)))
     if ($isActiveType -and !$abilityBaseNameIndex.ContainsKey($rowBaseName)) {
         Add-AuditRow -Rows $auditRows -AuditType "MissingAbilityDefinition" -BibleRow $row
     }
@@ -914,7 +962,10 @@ foreach ($row in $featRows) {
         $combatUpgradeSpellIds.Add($spellId) | Out-Null
     }
 
-    if ($row.Number -ge 2000 -and $row.Fields[1] -ne "****" -and $row.Fields[$spellIndex] -eq "****") {
+    if ($row.Number -ge 2000 -and
+        $row.Fields[1] -ne "****" -and
+        $row.Fields[$spellIndex] -eq "****" -and
+        $playerAbilityFeatLabels.Contains($row.Fields[1])) {
         $auditRows.Add([pscustomobject]@{
             AuditType = "GeneratedFeatMissingSpellLink"
             Tab = "2DA"

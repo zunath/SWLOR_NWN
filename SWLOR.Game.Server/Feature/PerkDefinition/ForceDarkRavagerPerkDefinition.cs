@@ -33,20 +33,20 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .ForceAffinity(ForceAffinityType.Dark)
 
                 .AddPerkLevel()
-                .Description("Deals 16 force DMG plus WIL scaling to one target and reduces Evasion by 4% for 20 seconds.")
+                .Description("Deals 16 force DMG plus WIL scaling to one target and reduces Evasion by 4% for 30 seconds.")
                 .Price(2)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ForceSpark1)
 
                 .AddPerkLevel()
-                .Description("Deals 30 force DMG plus WIL scaling to one target and reduces Evasion by 6% for 20 seconds.")
+                .Description("Deals 30 force DMG plus WIL scaling to one target and reduces Evasion by 6% for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 18)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ForceSpark2)
 
                 .AddPerkLevel()
-                .Description("Deals 44 force DMG plus WIL scaling to one target and reduces Evasion by 8% for 20 seconds.")
+                .Description("Deals 44 force DMG plus WIL scaling to one target and reduces Evasion by 8% for 30 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Force, 42)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -60,14 +60,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .ForceAffinity(ForceAffinityType.Dark)
 
                 .AddPerkLevel()
-                .Description("Deals 10 force DMG plus WIL scaling to one target, then arcs to up to two nearby enemies for 50% damage. Affected targets suffer Shock for 6 seconds.")
+                .Description("Deals 10 force DMG plus WIL scaling to one target, then arcs to up to two nearby enemies for 50% damage. Affected targets suffer Shock for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 10)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ForceLightning1)
 
                 .AddPerkLevel()
-                .Description("Deals 18 force DMG plus WIL scaling to one target, then arcs to up to three nearby enemies for 50% damage. Affected targets suffer Shock for 8 seconds.")
+                .Description("Deals 18 force DMG plus WIL scaling to one target, then arcs to up to three nearby enemies for 50% damage. Affected targets suffer Shock for 30 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Force, 22)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -82,14 +82,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.UnstablePressureTrait)
-                .Description("Force Spark and Force Lightning mark affected enemies with unstable pressure for 12 seconds, reducing Evasion by 5%. Enemies below 35% HP also suffer +5% force damage taken while marked.")
+                .Description("Force Spark and Force Lightning mark affected enemies with unstable pressure for 30 seconds, reducing Evasion by 5%. Enemies below 35% HP also suffer +5% force damage taken while marked.")
                 .Price(4)
                 .RequirementSkill(SkillType.Force, 32)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .IncreasesStat(StatType.SparkLightningPressureEvasionPenaltyPercent, 5)
                 .IncreasesStat(StatType.SparkLightningPressureLowHPForceDamageTakenPercent, 5)
                 .IncreasesStat(StatType.SparkLightningPressureLowHPThresholdPercent, 35)
-                .IncreasesStat(StatType.SparkLightningPressureDurationSeconds, 12);
+                .IncreasesStat(StatType.SparkLightningPressureDurationSeconds, 30);
         }
 
         private void ForceDrain()
@@ -165,7 +165,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.CruelMomentumTrait)
-                .Description("When an enemy you damaged within the last 6 seconds is defeated, restore 2 FP and gain +5% Force ability Accuracy for 10 seconds. This can trigger once every 10 seconds.")
+                .Description("When an enemy you damaged within the last 6 seconds is defeated, restore 2 FP and gain +5% Force ability Accuracy for 30 seconds. This can trigger once every 10 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Force, 28)
                 .RequirementCharacterType(CharacterType.ForceSensitive)

@@ -486,7 +486,7 @@ namespace SWLOR.Game.Server.Native
                 Combat.SendIncomingCriticalHitDowngradeFeedback(attacker.m_idSelf, target.m_idSelf);
             }
 
-            damage = Combat.ApplyCriticalDamageModifier(attacker.m_idSelf, damage, effectiveCritical, skillType);
+            damage = Combat.ApplyCriticalDamageModifier(attacker.m_idSelf, damage, effectiveCritical, skillType, target.m_idSelf);
 
             damage = Combat.ApplyAutoAttackDamageModifiers(attacker.m_idSelf, target.m_idSelf, damage, skillType);
             damage = Combat.ApplySideAttackDamageModifier(attacker.m_idSelf, target.m_idSelf, skillType, damage);

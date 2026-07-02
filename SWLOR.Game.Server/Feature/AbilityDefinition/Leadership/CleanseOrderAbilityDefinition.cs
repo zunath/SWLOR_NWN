@@ -74,7 +74,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
         private static void CleanseOrder1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
             var radius = LeadershipAbilityEffects.GetLeadershipCommandRadius(activator);
-            var duration = LeadershipAbilityEffects.ApplyFieldStewardCommandDurationBonus(activator, 10f);
+            var duration = LeadershipAbilityEffects.ApplyFieldStewardCommandDurationBonus(activator, 30f);
             var affectedCount = 0;
 
             foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, true, radius))
@@ -95,7 +95,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
         private static void CleanseOrder2ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
             var radius = LeadershipAbilityEffects.GetLeadershipCommandRadius(activator);
-            var duration = LeadershipAbilityEffects.ApplyFieldStewardCommandDurationBonus(activator, 10f);
+            var duration = LeadershipAbilityEffects.ApplyFieldStewardCommandDurationBonus(activator, 30f);
             var affectedCount = 0;
 
             foreach (var friendly in AbilityTargeting.GetFriendlyTargets(activator, target, true, radius))

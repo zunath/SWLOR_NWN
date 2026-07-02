@@ -55,7 +55,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.CreditFinderTrait)
                 .Description("Increases the amount of credits found by 20%.")
                 .Price(3)
-                .RequirementSkill(SkillType.Gathering, 15)
+                .RequirementSkill(SkillType.Gathering, 20)
 
                 .AddPerkLevel()
                 .Description("Increases the amount of credits found by 40%.")

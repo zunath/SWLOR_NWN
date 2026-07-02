@@ -32,20 +32,20 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Adrenal Stim")
 
                 .AddPerkLevel()
-                .Description("Restores 10% of maximum STM and restores 1 STM every 3 seconds for 12 seconds. Consumes a stim pack.")
+                .Description("Restores 10% of maximum STM and restores 1 STM every 3 seconds for 30 seconds. Consumes a stim pack.")
                 .Price(2)
                 .DroidAISlots(1)
                 .GrantsFeat(FeatType.AdrenalStim1)
 
                 .AddPerkLevel()
-                .Description("Restores 18% of maximum STM and restores 1 STM every 3 seconds for 12 seconds. Consumes a stim pack.")
+                .Description("Restores 18% of maximum STM and restores 1 STM every 3 seconds for 30 seconds. Consumes a stim pack.")
                 .Price(3)
                 .RequirementSkill(SkillType.FirstAid, 12)
                 .DroidAISlots(2)
                 .GrantsFeat(FeatType.AdrenalStim2)
 
                 .AddPerkLevel()
-                .Description("Restores 25% of maximum STM and restores 1 STM every 3 seconds for 12 seconds. Consumes a stim pack.")
+                .Description("Restores 25% of maximum STM and restores 1 STM every 3 seconds for 30 seconds. Consumes a stim pack.")
                 .Price(4)
                 .RequirementSkill(SkillType.FirstAid, 30)
                 .DroidAISlots(3)
@@ -104,14 +104,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Pain Suppressant")
 
                 .AddPerkLevel()
-                .Description("Grants temporary HP equal to 10% of the target's maximum HP plus WIL scaling and 10% damage reduction for 18 seconds. Consumes a stim pack.")
+                .Description("Grants temporary HP equal to 10% of the target's maximum HP plus WIL scaling and 10% damage reduction for 30 seconds. Consumes a stim pack.")
                 .Price(3)
                 .RequirementSkill(SkillType.FirstAid, 15)
                 .DroidAISlots(1)
                 .GrantsFeat(FeatType.PainSuppressant1)
 
                 .AddPerkLevel()
-                .Description("Grants temporary HP equal to 15% of the target's maximum HP plus WIL scaling and 15% damage reduction for 18 seconds. Consumes a stim pack.")
+                .Description("Grants temporary HP equal to 15% of the target's maximum HP plus WIL scaling and 15% damage reduction for 30 seconds. Consumes a stim pack.")
                 .Price(3)
                 .RequirementSkill(SkillType.FirstAid, 35)
                 .DroidAISlots(2)
@@ -140,18 +140,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.FieldPharmacistTrait)
                 .Description("Stim pack effects last 15% longer and have a 10% chance not to consume the stim pack.")
                 .IncreasesStat(StatType.StimPackDurationPercentAdjustment, 15)
+                .IncreasesStat(StatType.StimPackPreserveChance, 10)
                 .Price(2)
                 .RequirementSkill(SkillType.FirstAid, 22)
 
                 .AddPerkLevel()
                 .Description("Stim pack effects last 25% longer and have a 20% chance not to consume the stim pack.")
                 .IncreasesStat(StatType.StimPackDurationPercentAdjustment, 25)
+                .IncreasesStat(StatType.StimPackPreserveChance, 20)
                 .Price(3)
                 .RequirementSkill(SkillType.FirstAid, 38)
 
                 .AddPerkLevel()
                 .Description("Stim pack effects last 35% longer and have a 30% chance not to consume the stim pack.")
                 .IncreasesStat(StatType.StimPackDurationPercentAdjustment, 35)
+                .IncreasesStat(StatType.StimPackPreserveChance, 30)
                 .Price(3)
                 .RequirementSkill(SkillType.FirstAid, 48);
         }

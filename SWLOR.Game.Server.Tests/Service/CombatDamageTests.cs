@@ -183,9 +183,10 @@ public class CombatDamageTests
         combatSource.Should().Contain("StatType.RangedAttackDefenseIgnorePercentAdjustment");
         combatSource.Should().Contain("SkillType.Staff => Stat.GetStatAdjustment(attacker, StatType.StaffCriticalRatePercentAdjustment)");
         combatSource.Should().Contain("StatType.WeaponMightModifierDamageMultiplier");
-        abilitySource.Should().Contain("Combat.ApplyCriticalDamageModifier(activator, calculatedDamage, criticalRating, skillType)");
+        abilitySource.Should().Contain("Combat.ApplyCriticalDamageModifier(");
+        abilitySource.Should().Contain("idleBonuses.CriticalDamagePercentAdjustment");
         abilitySource.Should().Contain("Combat.GetAbilityDamageFlatAdjustment(activator, perkType, skillType)");
-        damageRollSource.Should().Contain("Combat.ApplyCriticalDamageModifier(attacker.m_idSelf, damage, effectiveCritical, skillType)");
+        damageRollSource.Should().Contain("Combat.ApplyCriticalDamageModifier(attacker.m_idSelf, damage, effectiveCritical, skillType, target.m_idSelf)");
         damageRollSource.Should().Contain("Combat.GetRangedAttackDamageFlatAdjustment(attacker.m_idSelf, skillType)");
         damageRollSource.Should().Contain("Combat.ApplyRangedAttackDefenseIgnore(attacker.m_idSelf, defense, skillType)");
         damageRollSource.Should().Contain("ApplyMightModifierDamageBonus(attacker, weapon, damageProfile)");
@@ -275,7 +276,7 @@ public class CombatDamageTests
         abilitySource.Should().Contain("private static bool ShouldResolveCombatImpactHit(TrackedAbilityImpact trackedImpact)");
         abilitySource.Should().Contain("trackedImpact?.Ability?.ActivationType != AbilityActivationType.Weapon");
         abilitySource.Should().MatchRegex(
-            @"if \(shouldResolveHit &&\s*!Combat\.TryResolveAbilityHit\(activator, target, skillType, perkType, out hitRate");
+            @"if \(shouldResolveHit &&\s*!Combat\.TryResolveAbilityHit\(\s*activator,\s*target,\s*skillType,\s*perkType,\s*out hitRate");
         abilitySource.Should().MatchRegex(@"if \(shouldResolveHit\)\s*SendCombatImpactResultMessage");
         attackRollSource.Should().Contain("private static string BuildAttackFeedbackMessage");
         attackRollSource.Should().Contain("IsSuccessfulAttackResult(attackResultType)");
@@ -568,12 +569,15 @@ public class CombatDamageTests
     {
         var root = FindRepositoryRoot();
         var combatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
-        var lowHPGuardTrigger = ExtractMethod(combatSource, "private static void ApplyLowHPGuardEffect(");
+        var lowHPGuardTrigger = ExtractMethod(combatSource, "private static void ApplyLowHPGuardEffect(uint thresholdCreature, int damage, uint guardRecipient)");
 
+        combatSource.Should().Contain("public static void ApplyLowHPGuardEffectFromProtectedTarget(uint guardRecipient, uint protectedTarget, int damage)");
+        combatSource.Should().Contain("ApplyLowHPGuardEffect(protectedTarget, damage, guardRecipient);");
         lowHPGuardTrigger.Should().Contain("TemporaryStatModifier.Replace(");
         lowHPGuardTrigger.Should().Contain("StatType.LowHPGuard");
-        lowHPGuardTrigger.Should().Contain("FloatingTextStringOnCreature(ColorToken.Combat(\"Guardian Reflexes\"), defender, false);");
-        lowHPGuardTrigger.Should().Contain("ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Ac_Bonus), defender);");
+        lowHPGuardTrigger.Should().Contain("TryUseStatTrigger(guardRecipient, StatType.LowHPGuard, cooldown)");
+        lowHPGuardTrigger.Should().Contain("FloatingTextStringOnCreature(ColorToken.Combat(\"Guardian Reflexes\"), guardRecipient, false);");
+        lowHPGuardTrigger.Should().Contain("ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Ac_Bonus), guardRecipient);");
     }
 
     [Test]

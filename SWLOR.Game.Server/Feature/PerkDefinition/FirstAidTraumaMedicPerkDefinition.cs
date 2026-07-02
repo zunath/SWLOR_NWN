@@ -79,7 +79,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.TreatmentKit2)
 
                 .AddPerkLevel()
-                .Description("Removes Bleed, Poison, Toxin, Burn, Shock, and Disease from a single target and grants 50% Fire Resistance, 50% Poison Resistance, 50% Electrical Resistance, 50% Ice Resistance, and 50% Trauma Resistance for 8 seconds.")
+                .Description("Removes Bleed, Poison, Toxin, Burn, Shock, and Disease from a single target and grants 50% Fire Resistance, 50% Poison Resistance, 50% Electrical Resistance, 50% Ice Resistance, and 50% Trauma Resistance for 30 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.FirstAid, 42)
                 .DroidAISlots(3)
@@ -112,7 +112,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.EmergencySealantTrait)
-                .Description("Trauma Medic healing and treatment abilities also stop one Bleed or Burn effect. If an effect is removed this way, the target restores HP equal to 4% of maximum HP plus WIL scaling every 3 seconds for 12 seconds.")
+                .Description("Trauma Medic healing and treatment abilities also stop one Bleed or Burn effect. If an effect is removed this way, the target restores HP equal to 4% of maximum HP plus WIL scaling every 3 seconds for 30 seconds.")
                 .IncreasesStat(StatType.TraumaMedicEmergencySealant, 1)
                 .Price(3)
                 .RequirementSkill(SkillType.FirstAid, 12);
@@ -124,14 +124,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Kolto Mist")
 
                 .AddPerkLevel()
-                .Description("Deploys a 12-second healing mist cloud at a target location up to 15m away. Allies within 3m heal for 1% of maximum HP plus WIL scaling every 3 seconds. Consumes medical supplies.")
+                .Description("Deploys a 30-second healing mist cloud at a target location up to 15m away. Allies within 3m heal for 1% of maximum HP plus WIL scaling every 3 seconds. Consumes medical supplies.")
                 .Price(3)
                 .RequirementSkill(SkillType.FirstAid, 15)
                 .DroidAISlots(1)
                 .GrantsFeat(FeatType.KoltoMist1)
 
                 .AddPerkLevel()
-                .Description("Deploys a 12-second healing mist cloud at a target location up to 15m away. Allies within 3m heal for 2% of maximum HP plus WIL scaling every 3 seconds. Consumes medical supplies.")
+                .Description("Deploys a 30-second healing mist cloud at a target location up to 15m away. Allies within 3m heal for 2% of maximum HP plus WIL scaling every 3 seconds. Consumes medical supplies.")
                 .Price(4)
                 .RequirementSkill(SkillType.FirstAid, 30)
                 .DroidAISlots(2)
@@ -164,14 +164,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Infusion")
 
                 .AddPerkLevel()
-                .Description("Grants a single target regeneration, healing 3% of maximum HP plus WIL scaling every 3 seconds for 15 seconds. Consumes medical supplies.")
+                .Description("Grants a single target regeneration, healing 3% of maximum HP plus WIL scaling every 3 seconds for 30 seconds. Consumes medical supplies.")
                 .Price(3)
                 .RequirementSkill(SkillType.FirstAid, 28)
                 .DroidAISlots(1)
                 .GrantsFeat(FeatType.Infusion1)
 
                 .AddPerkLevel()
-                .Description("Grants a single target regeneration, healing 5% of maximum HP plus WIL scaling every 3 seconds for 15 seconds. Consumes medical supplies.")
+                .Description("Grants a single target regeneration, healing 5% of maximum HP plus WIL scaling every 3 seconds for 30 seconds. Consumes medical supplies.")
                 .Price(3)
                 .RequirementSkill(SkillType.FirstAid, 48)
                 .DroidAISlots(2)

@@ -25,7 +25,7 @@ public class BeastmasterCombatUpgradeTests
         AssertStatBonus(damage[PerkType.PredatorsMark].PerkLevels[1], StatType.PredatorsMarkDamageTakenFromBeastPercent, 10);
         AssertStatBonus(damage[PerkType.PredatorsMark].PerkLevels[2], StatType.PredatorsMarkHastePercentPerStack, 5);
         AssertStatBonus(damage[PerkType.PredatorsMark].PerkLevels[2], StatType.PredatorsMarkAbilityHitChancePercentPerStack, 2);
-        AssertStatBonus(damage[PerkType.PredatorsMark].PerkLevels[2], StatType.PredatorsMarkFollowUpDurationSeconds, 8);
+        AssertStatBonus(damage[PerkType.PredatorsMark].PerkLevels[2], StatType.PredatorsMarkFollowUpDurationSeconds, 30);
         AssertStatBonus(damage[PerkType.PredatorsMark].PerkLevels[2], StatType.PredatorsMarkFollowUpMaximumStacks, 4);
 
         var tank = BuildPerksWithout2daLookup(new BeastTankPerkDefinition(), "FocusAttention", "LastGuardian");
@@ -106,10 +106,10 @@ public class BeastmasterCombatUpgradeTests
         forceTouch.Requirements.OfType<AbilityRequirementFP>().Should().ContainSingle().Which.RequiredFP.Should().Be(6);
         forceTouch.RecastDelay(0).Should().Be(12f);
 
-        var guardingBond = new GuardingBondAbilityDefinition().BuildAbilities()[FeatType.Snarl];
+        var guardingBond = new GuardingBondAbilityDefinition().BuildAbilities()[FeatType.GuardingBond];
         AssertBeastBondAbility(guardingBond, "Guarding Bond");
 
-        var predatoryBond = new PredatoryBondAbilityDefinition().BuildAbilities()[FeatType.Growl];
+        var predatoryBond = new PredatoryBondAbilityDefinition().BuildAbilities()[FeatType.PredatoryBond];
         AssertBeastBondAbility(predatoryBond, "Predatory Bond");
     }
 

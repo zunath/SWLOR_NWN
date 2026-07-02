@@ -69,7 +69,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition.Beast
                 .GrantsFeat(FeatType.Anger1)
 
                 .AddPerkLevel()
-                .Description("Goads a single target into attacking the beast and grants the beast temporary HP equal to 15% of its maximum HP for 12 seconds.")
+                .Description("Goads a single target into attacking the beast and grants the beast temporary HP equal to 15% of its maximum HP for 30 seconds.")
                 .Price(4)
                 .RequirementBeastLevel(28)
                 .RequirementBeastRole(BeastRoleType.Tank)
@@ -114,21 +114,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition.Beast
                 .GroupType(PerkGroupType.Beast)
 
                 .AddPerkLevel()
-                .Description("Nearby enemies are goaded into attacking the beast and the beast takes 6% less physical damage for 10 seconds.")
+                .Description("Nearby enemies are goaded into attacking the beast and the beast takes 6% less physical damage for 30 seconds.")
                 .Price(3)
                 .RequirementBeastLevel(15)
                 .RequirementBeastRole(BeastRoleType.Tank)
                 .GrantsFeat(FeatType.GuardingRoar1)
 
                 .AddPerkLevel()
-                .Description("Nearby enemies are goaded into attacking the beast and the beast takes 10% less physical damage for 10 seconds.")
+                .Description("Nearby enemies are goaded into attacking the beast and the beast takes 10% less physical damage for 30 seconds.")
                 .Price(4)
                 .RequirementBeastLevel(35)
                 .RequirementBeastRole(BeastRoleType.Tank)
                 .GrantsFeat(FeatType.GuardingRoar2)
 
                 .AddPerkLevel()
-                .Description("Nearby enemies are goaded into attacking the beast and the beast takes 15% less physical damage for 12 seconds.")
+                .Description("Nearby enemies are goaded into attacking the beast and the beast takes 15% less physical damage for 30 seconds.")
                 .Price(4)
                 .RequirementBeastLevel(48)
                 .RequirementBeastRole(BeastRoleType.Tank)
@@ -142,14 +142,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition.Beast
                 .GroupType(PerkGroupType.Beast)
 
                 .AddPerkLevel()
-                .Description("The beast redirects 35% of the next hit taken by its master within 8 seconds to itself.")
+                .Description("The beast redirects 35% of the next hit taken by its master within 30 seconds to itself.")
                 .Price(3)
                 .RequirementBeastLevel(22)
                 .RequirementBeastRole(BeastRoleType.Tank)
                 .GrantsFeat(FeatType.Intercept1)
 
                 .AddPerkLevel()
-                .Description("The beast redirects 50% of the next hit taken by its master within 8 seconds to itself.")
+                .Description("The beast redirects 50% of the next hit taken by its master within 30 seconds to itself.")
                 .Price(3)
                 .RequirementBeastLevel(40)
                 .RequirementBeastRole(BeastRoleType.Tank)
@@ -178,7 +178,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition.Beast
                 .GroupType(PerkGroupType.Beast)
 
                 .AddPerkLevel()
-                .Description("The beast gains 20% damage reduction for 10 seconds.")
+                .Description("The beast gains 20% damage reduction for 30 seconds.")
                 .Price(4)
                 .RequirementBeastLevel(45)
                 .RequirementBeastRole(BeastRoleType.Tank)
@@ -193,12 +193,12 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition.Beast
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.LastGuardianTrait)
-                .Description("Once every 3 minutes, when the beast would take fatal damage, prevent that damage and grant temporary HP equal to 20% of its maximum HP for 12 seconds.")
+                .Description("Once every 3 minutes, when the beast would take fatal damage, prevent that damage and grant temporary HP equal to 20% of its maximum HP for 30 seconds.")
                 .Price(3)
                 .RequirementBeastLevel(50)
                 .RequirementBeastRole(BeastRoleType.Tank)
                 .IncreasesStat(StatType.FatalDamageTemporaryHPPercent, 20)
-                .IncreasesStat(StatType.FatalDamageTemporaryHPDurationSeconds, 12)
+                .IncreasesStat(StatType.FatalDamageTemporaryHPDurationSeconds, 30)
                 .IncreasesStat(StatType.FatalDamageTemporaryHPCooldownSeconds, 180);
         }
 
@@ -209,7 +209,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition.Beast
                 .GroupType(PerkGroupType.Beast)
 
                 .AddPerkLevel()
-                .Description("The beast becomes immune to knockdown, daze, and forced movement for 12 seconds and gains 25% damage reduction.")
+                .Description("The beast becomes immune to knockdown, daze, and forced movement for 30 seconds and gains 25% damage reduction.")
                 .Price(5)
                 .RequirementBeastLevel(50)
                 .RequirementBeastRole(BeastRoleType.Tank)

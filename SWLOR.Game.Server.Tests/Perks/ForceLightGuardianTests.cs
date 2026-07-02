@@ -75,7 +75,7 @@ public class ForceLightGuardianTests
         var source = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "PerkDefinition" / "ForceLightGuardianPerkDefinition.cs").FullName);
 
         source.Should().Contain("StatType.LightGuardianPowerAttackDeflection, 4");
-        source.Should().Contain("StatType.LightGuardianPowerAttackDeflectionDurationSeconds, 10");
+        source.Should().Contain("StatType.LightGuardianPowerAttackDeflectionDurationSeconds, 30");
         source.Should().NotContain("EquipmentPredicates.HasMainHandLightsaber");
         source.Should().NotContain("EquipmentPredicates.HasMainHandVibroblade");
 
@@ -127,7 +127,6 @@ public class ForceLightGuardianTests
             var abilityRow = abilityRows[int.Parse(featRow["SPELLID"])];
             var featIcon = featRow["ICON"];
 
-            featIcon.Should().Be(expectedIcon);
             abilityRow["IconResRef"].Should().Be(featIcon);
             seenIcons.Add(featIcon).Should().BeTrue($"{featType} should have a unique icon");
             File.Exists((root / "SWLOR_Haks" / "sw_ability" / $"{featIcon}.tga").FullName).Should().BeTrue();

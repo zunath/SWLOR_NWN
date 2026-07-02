@@ -801,6 +801,25 @@ namespace SWLOR.Game.Server.Service
             return _allPerks[perkType];
         }
 
+        public static PerkCategoryType GetPerkCategoryType(PerkType perkType)
+        {
+            return _allPerks.TryGetValue(perkType, out var perkDetail)
+                ? perkDetail.Category
+                : PerkCategoryType.Invalid;
+        }
+
+        public static bool IsPerkInCategory(PerkType perkType, int categoryValue)
+        {
+            if (perkType == PerkType.Invalid ||
+                categoryValue <= 0 ||
+                !Enum.IsDefined(typeof(PerkCategoryType), categoryValue))
+            {
+                return false;
+            }
+
+            return GetPerkCategoryType(perkType) == (PerkCategoryType)categoryValue;
+        }
+
         /// <summary>
         /// Retrieves details about an individual perk category.
         /// </summary>

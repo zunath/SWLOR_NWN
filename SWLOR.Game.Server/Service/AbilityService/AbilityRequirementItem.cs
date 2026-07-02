@@ -1,4 +1,4 @@
-using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.StatService;
 
 namespace SWLOR.Game.Server.Service.AbilityService
 {
@@ -9,19 +9,16 @@ namespace SWLOR.Game.Server.Service.AbilityService
     {
         public string ItemResref { get; }
         public int Quantity { get; }
-        public PerkType PreservePerkType { get; }
-        public int PreserveChancePerLevel { get; }
+        public StatType PreserveChanceStatType { get; }
 
         public AbilityRequirementItem(
             string itemResref,
             int quantity = 1,
-            PerkType preservePerkType = PerkType.Invalid,
-            int preserveChancePerLevel = 0)
+            StatType preserveChanceStatType = StatType.Invalid)
         {
             ItemResref = itemResref;
             Quantity = Math.Max(1, quantity);
-            PreservePerkType = preservePerkType;
-            PreserveChancePerLevel = Math.Max(0, preserveChancePerLevel);
+            PreserveChanceStatType = preserveChanceStatType;
         }
 
         public string CheckRequirements(uint player, AbilityDetail ability = null)
@@ -54,10 +51,10 @@ namespace SWLOR.Game.Server.Service.AbilityService
 
         private bool ShouldPreserveItem(uint player)
         {
-            if (PreservePerkType == PerkType.Invalid || PreserveChancePerLevel <= 0)
+            if (PreserveChanceStatType == StatType.Invalid)
                 return false;
 
-            var chance = Perk.GetPerkLevel(player, PreservePerkType) * PreserveChancePerLevel;
+            var chance = Stat.GetStatAdjustment(player, PreserveChanceStatType);
             return chance > 0 && Random.D100(1) <= chance;
         }
     }

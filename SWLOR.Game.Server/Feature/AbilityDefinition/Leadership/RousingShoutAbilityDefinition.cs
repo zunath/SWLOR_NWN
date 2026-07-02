@@ -89,17 +89,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
 
         private static void RousingShout1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            ApplyRousingShout(activator, target, 10, 13, typeof(RousingShout1StatusEffect), 12f);
+            ApplyRousingShout(activator, target, 10, 13, typeof(RousingShout1StatusEffect), 30f);
         }
 
         private static void RousingShout2ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            ApplyRousingShout(activator, target, 15, 19, typeof(RousingShout2StatusEffect), 12f);
+            ApplyRousingShout(activator, target, 15, 19, typeof(RousingShout2StatusEffect), 30f);
         }
 
         private static void RousingShout3ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            ApplyRousingShout(activator, target, 20, 25, typeof(RousingShout3StatusEffect), 15f);
+            ApplyRousingShout(activator, target, 20, 25, typeof(RousingShout3StatusEffect), 30f);
         }
 
         private static void ApplyRousingShout(

@@ -97,7 +97,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
                 Stat.RestoreStamina(friendly, PercentOf(Stat.GetMaxStamina(friendly), 10));
-                StatusEffect.ApplyStatusEffect(activator, friendly, typeof(PowerCell1StatusEffect), 12f);
+                StatusEffect.ApplyStatusEffect(activator, friendly, typeof(PowerCell1StatusEffect), 30f);
                 ApplyPowerCellRiders(activator, friendly, isInitialTarget);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Restoration), friendly);
                 isInitialTarget = false;
@@ -110,7 +110,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
                 Stat.RestoreStamina(friendly, PercentOf(Stat.GetMaxStamina(friendly), 18));
-                StatusEffect.ApplyStatusEffect(activator, friendly, typeof(PowerCell2StatusEffect), 12f);
+                StatusEffect.ApplyStatusEffect(activator, friendly, typeof(PowerCell2StatusEffect), 30f);
                 ApplyPowerCellRiders(activator, friendly, isInitialTarget);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Restoration), friendly);
                 isInitialTarget = false;
@@ -123,7 +123,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             foreach (var friendly in GetPowerCell3Targets(activator, target))
             {
                 Stat.RestoreStamina(friendly, PercentOf(Stat.GetMaxStamina(friendly), 18));
-                StatusEffect.ApplyStatusEffect(activator, friendly, typeof(PowerCell3StatusEffect), 12f);
+                StatusEffect.ApplyStatusEffect(activator, friendly, typeof(PowerCell3StatusEffect), 30f);
                 ApplyPowerCellRiders(activator, friendly, isInitialTarget);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Restoration), friendly);
                 isInitialTarget = false;

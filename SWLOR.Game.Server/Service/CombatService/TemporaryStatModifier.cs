@@ -159,6 +159,23 @@ namespace SWLOR.Game.Server.Service.CombatService
             return GetStatAdjustment(creature, statType, GetGroup(groupStatType));
         }
 
+        public static void Refresh(uint creature, StatType statType, float durationSeconds, string group = null)
+        {
+            if (durationSeconds <= 0f)
+                return;
+
+            PurgeExpired(creature);
+
+            if (!_modifiers.TryGetValue(creature, out var modifiers))
+                return;
+
+            var expiration = DateTime.UtcNow.AddSeconds(durationSeconds);
+            foreach (var modifier in modifiers.Where(x => x.StatType == statType && MatchesGroup(x, group)))
+            {
+                modifier.Refresh(expiration);
+            }
+        }
+
         public static void Clear(uint creature)
         {
             _modifiers.Remove(creature);
@@ -192,7 +209,7 @@ namespace SWLOR.Game.Server.Service.CombatService
         {
             public StatType StatType { get; }
             public int Amount { get; }
-            public DateTime Expiration { get; }
+            public DateTime Expiration { get; private set; }
             public string Group { get; }
 
             public TemporaryModifier(StatType statType, int amount, DateTime expiration, string group)
@@ -201,6 +218,11 @@ namespace SWLOR.Game.Server.Service.CombatService
                 Amount = amount;
                 Expiration = expiration;
                 Group = group;
+            }
+
+            public void Refresh(DateTime expiration)
+            {
+                Expiration = expiration;
             }
         }
     }

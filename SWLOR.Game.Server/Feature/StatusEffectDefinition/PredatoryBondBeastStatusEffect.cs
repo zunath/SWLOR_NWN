@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class PredatoryBondBeastStatusEffect : StatusEffectBase
     {
         public override string Name => "Predatory Bond";
-        public override EffectIconType Icon => EffectIconType.BerserkerStanceStatusEffect;
+        public override EffectIconType Icon => EffectIconType.PredatoryBondBeastStatusEffect;
         public override bool PersistsOnLogout => false;
         public override bool SendsApplicationMessage => false;
         public override bool SendsWornOffMessage => false;

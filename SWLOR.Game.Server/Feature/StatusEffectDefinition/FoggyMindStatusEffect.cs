@@ -10,6 +10,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         private const int DefaultActivationDelaySeconds = 1;
 
         private readonly int _activationDelaySeconds;
+        private readonly int _abilityHitChancePenaltyPercent;
 
         public FoggyMindStatusEffect()
             : this(DefaultActivationDelaySeconds)
@@ -17,9 +18,17 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         }
 
         public FoggyMindStatusEffect(int activationDelaySeconds)
+            : this(activationDelaySeconds, 0)
+        {
+        }
+
+        public FoggyMindStatusEffect(int activationDelaySeconds, int abilityHitChancePenaltyPercent)
         {
             _activationDelaySeconds = activationDelaySeconds;
+            _abilityHitChancePenaltyPercent = Math.Abs(abilityHitChancePenaltyPercent);
             StatGroup.Stats[StatType.ActivationDelayFlatAdjustment] = activationDelaySeconds;
+            if (_abilityHitChancePenaltyPercent > 0)
+                StatGroup.Stats[StatType.PhysicalAndForceAbilityHitChancePercentAdjustment] = -_abilityHitChancePenaltyPercent;
         }
 
         public override string Name => "Foggy Mind";
@@ -30,7 +39,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         public override IStatusEffect Clone()
         {
-            return new FoggyMindStatusEffect(_activationDelaySeconds);
+            return new FoggyMindStatusEffect(_activationDelaySeconds, _abilityHitChancePenaltyPercent);
         }
     }
 }

@@ -681,18 +681,6 @@ namespace SWLOR.Game.Server.Service.StatService
         LowHPNoSaveTemporaryHPCooldownSeconds = 114,
 
         /// <summary>
-        /// RecastGroup id reduced when the creature defeats an enemy.
-        /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
-        DefeatedEnemyRecastReductionGroup = 115,
-
-        /// <summary>
-        /// Seconds removed from DefeatedEnemyRecastReductionGroup when the creature defeats an enemy.
-        /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
-        DefeatedEnemyRecastReductionSeconds = 116,
-
-        /// <summary>
         /// Internal temporary flat damage bonus consumed by the next auto-attack.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
@@ -949,24 +937,6 @@ namespace SWLOR.Game.Server.Service.StatService
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
         CriticalNextAbilityDamageBonusCooldownSeconds = 170,
-
-        /// <summary>
-        /// PerkType value for the ability that can consume the deflection-triggered next-ability damage bonus.
-        /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
-        DeflectionNextAbilityDamageBonusPerkType = 171,
-
-        /// <summary>
-        /// Flat damage added to the next matching ability after the deflection trigger succeeds.
-        /// </summary>
-        [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        DeflectionNextAbilityDamageBonus = 172,
-
-        /// <summary>
-        /// Duration in seconds for DeflectionNextAbilityDamageBonus.
-        /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
-        DeflectionNextAbilityDamageBonusDurationSeconds = 173,
 
         /// <summary>
         /// Temporary flat damage added to the next ability matching its grouped PerkType.
@@ -1237,30 +1207,6 @@ namespace SWLOR.Game.Server.Service.StatService
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
         GuardedHitNextSkillAbilityWindowSeconds = 218,
-
-        /// <summary>
-        /// PerkType id for the next specific ability modifier granted after guarding a hit.
-        /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
-        GuardedHitNextMatchingAbilityPerkType = 219,
-
-        /// <summary>
-        /// Flat damage bonus for the next matching perk ability after guarding a hit.
-        /// </summary>
-        [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        GuardedHitNextMatchingAbilityDamageBonus = 220,
-
-        /// <summary>
-        /// Flat stamina cost adjustment for the next matching perk ability after guarding a hit.
-        /// </summary>
-        [StatType(StatTypeCategory.BeneficialWhenNegative)]
-        GuardedHitNextMatchingAbilityStaminaCostAdjustment = 221,
-
-        /// <summary>
-        /// Duration in seconds for guarded-hit next matching perk ability modifiers.
-        /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
-        GuardedHitNextMatchingAbilityWindowSeconds = 222,
 
         /// <summary>
         /// Internal temporary SkillType id consumed by the next matching ability.
@@ -1609,24 +1555,6 @@ namespace SWLOR.Game.Server.Service.StatService
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
         CriticalMarkedTargetStaminaRestore = 280,
-
-        /// <summary>
-        /// PerkType value whose ability can apply Knockdown when it critically hits.
-        /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
-        CriticalAbilityKnockdownPerkType = 281,
-
-        /// <summary>
-        /// Duration in seconds for CriticalAbilityKnockdownPerkType.
-        /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
-        CriticalAbilityKnockdownDurationSeconds = 282,
-
-        /// <summary>
-        /// Duration in seconds for Bleed applied by Explosive Toss abilities.
-        /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
-        ExplosiveTossBleedDurationSeconds = 283,
 
         /// <summary>
         /// Critical chance bonus against targets not facing the attacker.
@@ -2679,12 +2607,6 @@ namespace SWLOR.Game.Server.Service.StatService
         SavageCleaveSecondaryTargetStaminaRestoreMaximum = 459,
 
         /// <summary>
-        /// Enables Smoke Bomb to leave a decoy effect when it expires.
-        /// </summary>
-        [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        SmokeBombDecoyOnExpire = 460,
-
-        /// <summary>
         /// Damage added to Earthshatter.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
@@ -2853,6 +2775,12 @@ namespace SWLOR.Game.Server.Service.StatService
         HeavyVibrobladeOffenseHitPointSpendStaminaRestoreCooldownSeconds = 489,
 
         /// <summary>
+        /// Enables Heavy Vibroblade Offense weapon abilities to apply Essence Drain.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        HeavyVibrobladeOffenseEssenceHunter = 493,
+
+        /// <summary>
         /// Enables Soul Sacrifice after spending HP on a Heavy Vibroblade Offense ability.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
@@ -2869,12 +2797,6 @@ namespace SWLOR.Game.Server.Service.StatService
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
         HeavyVibrobladeOffenseSoulAscension = 492,
-
-        /// <summary>
-        /// Enables Heavy Vibroblade Offense weapon abilities to apply Essence Drain.
-        /// </summary>
-        [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        HeavyVibrobladeOffenseEssenceHunter = 493,
 
         /// <summary>
         /// Percent of maximum HP granted as Guardian's Resolve Temporary HP.
@@ -3075,12 +2997,6 @@ namespace SWLOR.Game.Server.Service.StatService
         PistolSkirmisherEvasiveAbilityNextAttackDamageBonus = 526,
 
         /// <summary>
-        /// PerkType value whose Rifle abilities apply Expose Weak Point.
-        /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
-        RifleMarksmanExposeWeakPoint = 527,
-
-        /// <summary>
         /// Enables Pacification control shots to remove a beneficial effect.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
@@ -3211,12 +3127,6 @@ namespace SWLOR.Game.Server.Service.StatService
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
         TwinBladeCycloneSweepingAdvance = 549,
-
-        /// <summary>
-        /// Enables Incapacitate to apply Cascade Failure.
-        /// </summary>
-        [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        VibroknifeSaboteurCascadeFailure = 550,
 
         /// <summary>
         /// Evasive Combat rank applied by Vibroknife Shadow evasive abilities.
@@ -3579,24 +3489,6 @@ namespace SWLOR.Game.Server.Service.StatService
         DisruptionResistance = 610,
 
         /// <summary>
-        /// Primary PerkType value whose weapon ability triggers HeavyVibrobladeOffenseEssenceHunter.
-        /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
-        HeavyVibrobladeOffenseEssenceHunterTriggerPrimaryPerkType = 611,
-
-        /// <summary>
-        /// Secondary PerkType value whose weapon ability triggers HeavyVibrobladeOffenseEssenceHunter.
-        /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
-        HeavyVibrobladeOffenseEssenceHunterTriggerSecondaryPerkType = 612,
-
-        /// <summary>
-        /// Tertiary PerkType value whose weapon ability triggers HeavyVibrobladeOffenseEssenceHunter.
-        /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
-        HeavyVibrobladeOffenseEssenceHunterTriggerTertiaryPerkType = 613,
-
-        /// <summary>
         /// Cooldown in milliseconds for IncomingCriticalHitDowngradeToMinimumDamage.
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
@@ -3679,18 +3571,6 @@ namespace SWLOR.Game.Server.Service.StatService
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
         DeflectionFPRestoreCooldownSeconds = 627,
-
-        /// <summary>
-        /// RecastGroup id reduced when the creature successfully deflects an attack.
-        /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
-        DeflectionRecastReductionGroup = 628,
-
-        /// <summary>
-        /// Seconds removed from DeflectionRecastReductionGroup when the creature successfully deflects an attack.
-        /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
-        DeflectionRecastReductionSeconds = 629,
 
         /// <summary>
         /// SkillType id whose next auto-attack receives a critical chance bonus after deflecting an attack.
@@ -3786,7 +3666,1033 @@ namespace SWLOR.Game.Server.Service.StatService
         /// Duration in seconds for Disoriented from hostile Lightsaber Offense abilities.
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
-        LightsaberOffenseDisorientedDurationSeconds = 645
+        LightsaberOffenseDisorientedDurationSeconds = 645,
+
+        /// <summary>
+        /// SkillType id required before direct damage can inflict Hamstring. Invalid or 0 allows any skill.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        DamageDealtHamstringSkillType = 646,
+
+        /// <summary>
+        /// Percent chance for direct damage to inflict Hamstring.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        DamageDealtHamstringChance = 647,
+
+        /// <summary>
+        /// Duration in seconds for Hamstring inflicted by direct damage.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        DamageDealtHamstringDurationSeconds = 648,
+
+        /// <summary>
+        /// SkillType id required before hostile abilities trigger AbilityUsedAttackDeflection. Invalid or 0 allows any skill.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        AbilityUsedAttackDeflectionSkillType = 649,
+
+        /// <summary>
+        /// Temporary Attack Deflection granted after using a matching hostile ability.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        AbilityUsedAttackDeflection = 650,
+
+        /// <summary>
+        /// Duration in seconds for AbilityUsedAttackDeflection.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        AbilityUsedAttackDeflectionDurationSeconds = 651,
+
+        /// <summary>
+        /// Seconds added to the attacker's Bleed and Hemorrhage effects on a target after a critical hit.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        CriticalBleedingStatusDurationExtensionSeconds = 652,
+
+        /// <summary>
+        /// Cooldown in seconds for CriticalBleedingStatusDurationExtensionSeconds.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        CriticalBleedingStatusDurationExtensionCooldownSeconds = 653,
+
+        /// <summary>
+        /// Seconds between two different hostile abilities required to grant HostileAbilitySequenceNextAttackBleedDurationSeconds.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        HostileAbilitySequenceWindowSeconds = 654,
+
+        /// <summary>
+        /// Bleed duration granted to the next damaging attack after two different hostile abilities are used within the sequence window.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        HostileAbilitySequenceNextAttackBleedDurationSeconds = 655,
+
+        /// <summary>
+        /// Temporary Bleed duration consumed by the next direct damage dealt.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        NextDamageDealtBleedDurationSeconds = 656,
+
+        /// <summary>
+        /// Number of hostile ability hits against the same target required to trigger SameTargetHostileAbilityStaminaRestore.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        SameTargetHostileAbilityHitCountRequired = 657,
+
+        /// <summary>
+        /// Stamina restored when SameTargetHostileAbilityHitCountRequired is reached.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        SameTargetHostileAbilityStaminaRestore = 658,
+
+        /// <summary>
+        /// Flat Stamina cost adjustment granted to the next matching skill ability when a bleeding effect naturally expires.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenNegative)]
+        BleedingStatusExpiredNextSkillAbilityStaminaCostAdjustment = 659,
+
+        /// <summary>
+        /// SkillType id required for BleedingStatusExpiredNextSkillAbilityStaminaCostAdjustment.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        BleedingStatusExpiredNextSkillAbilitySkillType = 660,
+
+        /// <summary>
+        /// Duration in seconds for BleedingStatusExpiredNextSkillAbilityStaminaCostAdjustment.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        BleedingStatusExpiredNextSkillAbilityWindowSeconds = 661,
+
+        /// <summary>
+        /// Haste granted when a hostile ability restores both FP and Stamina.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        AbilityRestoredBothResourcesHastePercentAdjustment = 662,
+
+        /// <summary>
+        /// Duration in seconds for AbilityRestoredBothResourcesHastePercentAdjustment.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        AbilityRestoredBothResourcesHasteDurationSeconds = 663,
+
+        /// <summary>
+        /// FP restored after using a hostile ability.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        HostileAbilityFPRestore = 664,
+
+        /// <summary>
+        /// Stamina restored after using a hostile ability.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        HostileAbilityStaminaRestore = 665,
+
+        /// <summary>
+        /// Flat hostile ability damage bonus granted while FP and Stamina are both above HighFPAndStaminaAbilityDamageBonusThresholdPercent.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        HighFPAndStaminaAbilityDamageBonus = 666,
+
+        /// <summary>
+        /// Percent of maximum FP and Stamina both required to enable HighFPAndStaminaAbilityDamageBonus.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        HighFPAndStaminaAbilityDamageBonusThresholdPercent = 667,
+
+        /// <summary>
+        /// FP restored on the regeneration interval while FP and Stamina are both below LowFPAndStaminaIntervalThresholdPercent.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        LowFPAndStaminaIntervalFPRestore = 668,
+
+        /// <summary>
+        /// Stamina restored on the regeneration interval while FP and Stamina are both below LowFPAndStaminaIntervalThresholdPercent.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        LowFPAndStaminaIntervalStaminaRestore = 669,
+
+        /// <summary>
+        /// Percent of maximum FP and Stamina both required below before low-resource interval restoration triggers.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        LowFPAndStaminaIntervalThresholdPercent = 670,
+
+        /// <summary>
+        /// Critical-hit count required within CriticalHitSequenceWindowSeconds to trigger CriticalHitSequenceStaminaRestore.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        CriticalHitSequenceCountRequired = 671,
+
+        /// <summary>
+        /// Seconds allowed between critical hits for CriticalHitSequenceCountRequired.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        CriticalHitSequenceWindowSeconds = 672,
+
+        /// <summary>
+        /// Stamina restored when the critical-hit sequence completes.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        CriticalHitSequenceStaminaRestore = 673,
+
+        /// <summary>
+        /// Seconds added to the attacker's Bleed on the target when a matching ability hits a bleeding target.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        BleedingTargetAbilityBleedDurationExtensionSeconds = 674,
+
+        /// <summary>
+        /// Duration in seconds used to refresh generated Frenzy Slash haste stacks.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        FrenzySlashHasteRefreshDurationSeconds = 675,
+
+        /// <summary>
+        /// SkillType id required before AbilityDamageToBleedingTargetBonus applies.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        AbilityDamageToBleedingTargetSkillType = 676,
+
+        /// <summary>
+        /// Flat ability damage bonus against bleeding targets.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        AbilityDamageToBleedingTargetBonus = 677,
+
+        /// <summary>
+        /// Percent chance for a physical ability against a bleeding target to spread Bleed.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        BleedingTargetAbilityBleedSpreadChance = 678,
+
+        /// <summary>
+        /// Bleed duration applied by BleedingTargetAbilityBleedSpreadChance.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        BleedingTargetAbilityBleedSpreadDurationSeconds = 679,
+
+        /// <summary>
+        /// Maximum nearby targets affected by BleedingTargetAbilityBleedSpreadChance.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        BleedingTargetAbilityBleedSpreadMaxTargets = 680,
+
+        /// <summary>
+        /// Duration used to refresh ability-used Evasion after avoiding an attack.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        AvoidedAttackAbilityUsedEvasionRefreshDurationSeconds = 681,
+
+        /// <summary>
+        /// SkillType value whose next auto-attack is quickened after avoiding an attack.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        AvoidedAttackNextAutoAttackNoDelaySkillType = 682,
+
+        /// <summary>
+        /// Duration for AvoidedAttackNextAutoAttackNoDelaySkillType.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        AvoidedAttackNextAutoAttackNoDelayDurationSeconds = 683,
+
+        /// <summary>
+        /// Percent chance for auto-attacks to add a Suppression stack.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        AutoAttackSuppressionStackChance = 684,
+
+        /// <summary>
+        /// Duration of Suppression stacks added by auto-attacks.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        AutoAttackSuppressionStackDurationSeconds = 685,
+
+        /// <summary>
+        /// Damage bonus carried by Suppression stacks added by auto-attacks.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        AutoAttackSuppressionStackDamageBonus = 686,
+
+        /// <summary>
+        /// Duration of Suppression stacks added by ranged hits.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        RangedHitSuppressionStackDurationSeconds = 687,
+
+        /// <summary>
+        /// Damage bonus carried by Suppression stacks added by ranged hits.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        RangedHitSuppressionStackDamageBonus = 688,
+
+        /// <summary>
+        /// Extra damage added per source-owned Suppression stack.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        SuppressionStackDamageBonusAdjustment = 689,
+
+        /// <summary>
+        /// Damage percent adjustment for abilities which spend hit points.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        HitPointSpendAbilityDamagePercentAdjustment = 690,
+
+        /// <summary>
+        /// Temporary hit point percent of the spent HP granted after spending HP on an ability.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        HitPointSpendTemporaryHPPercentOfSpentHP = 691,
+
+        /// <summary>
+        /// Duration in seconds for HitPointSpendTemporaryHPPercentOfSpentHP.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        HitPointSpendTemporaryHPDurationSeconds = 692,
+
+        /// <summary>
+        /// HP threshold percent for LowHPAttackPercentAdjustment and LowHPCriticalRatePercentAdjustment.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        LowHPAttackThresholdPercent = 693,
+
+        /// <summary>
+        /// Attack percent adjustment while below LowHPAttackThresholdPercent.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        LowHPAttackPercentAdjustment = 694,
+
+        /// <summary>
+        /// Critical rate adjustment while below LowHPAttackThresholdPercent.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        LowHPCriticalRatePercentAdjustment = 695,
+
+        /// <summary>
+        /// FP drained by hostile abilities against targets affected by Foggy Mind.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        AbilityResourceDrainFoggyMindFP = 696,
+
+        /// <summary>
+        /// Stamina drained by hostile abilities against targets affected by Foggy Mind.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        AbilityResourceDrainFoggyMindStamina = 697,
+
+        /// <summary>
+        /// Defense ignore percent against targets affected by Force Disruption or Foggy Mind.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        AbilityDefenseIgnoreForceDisruptionOrFoggyMindPercentAdjustment = 698,
+
+        /// <summary>
+        /// Temporary Accuracy percent adjustment after avoiding an attack.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        AvoidedAttackAccuracyPercentAdjustment = 699,
+
+        /// <summary>
+        /// Duration in seconds for AvoidedAttackAccuracyPercentAdjustment.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        AvoidedAttackAccuracyDurationSeconds = 700,
+
+        /// <summary>
+        /// StatusEffectCategory flags required for status-applied stat riders.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        StatusAppliedRequiredCategory = 701,
+
+        /// <summary>
+        /// SkillType value whose next ability receives status-applied bonuses.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        StatusAppliedNextSkillAbilitySkillType = 702,
+
+        /// <summary>
+        /// Flat damage bonus granted to the next matching skill ability after applying a matching status.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        StatusAppliedNextSkillAbilityDamageBonus = 703,
+
+        /// <summary>
+        /// Critical rate bonus granted to the next matching skill ability after applying a matching status.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        StatusAppliedNextSkillAbilityCriticalRatePercentAdjustment = 704,
+
+        /// <summary>
+        /// Duration in seconds for status-applied next ability bonuses.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        StatusAppliedNextSkillAbilityWindowSeconds = 705,
+
+        /// <summary>
+        /// Temporary Attack Deflection granted after applying a matching status.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        StatusAppliedSelfAttackDeflection = 706,
+
+        /// <summary>
+        /// Temporary Defense percent granted after applying a matching status.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        StatusAppliedSelfDefensePercentAdjustment = 707,
+
+        /// <summary>
+        /// Temporary Evasion percent granted after applying a matching status.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        StatusAppliedSelfEvasionPercentAdjustment = 708,
+
+        /// <summary>
+        /// Temporary Force Attack percent granted after applying a matching status.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        StatusAppliedSelfForceAttackPercentAdjustment = 709,
+
+        /// <summary>
+        /// Temporary Haste percent granted after applying a matching status.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        StatusAppliedSelfHastePercentAdjustment = 710,
+
+        /// <summary>
+        /// Temporary Enmity percent granted after applying a matching status.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        StatusAppliedSelfEnmityPercentAdjustment = 711,
+
+        /// <summary>
+        /// Duration in seconds for status-applied self stat riders.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        StatusAppliedSelfDurationSeconds = 712,
+
+        /// <summary>
+        /// Temporary Physical Defense percent applied to a target after applying a matching status.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenNegative)]
+        StatusAppliedTargetPhysicalDefensePercentAdjustment = 713,
+
+        /// <summary>
+        /// Temporary Accuracy percent applied to a target after applying a matching status.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenNegative)]
+        StatusAppliedTargetAccuracyPercentAdjustment = 714,
+
+        /// <summary>
+        /// Duration in seconds for status-applied target stat riders.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        StatusAppliedTargetDurationSeconds = 715,
+
+        /// <summary>
+        /// StatusEffectCategory flags required on the target for ability target-status riders.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        AbilityTargetStatusRequiredCategory = 716,
+
+        /// <summary>
+        /// Temporary Physical Defense percent applied by abilities against targets with AbilityTargetStatusRequiredCategory.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenNegative)]
+        AbilityTargetStatusPhysicalDefensePercentAdjustment = 717,
+
+        /// <summary>
+        /// Duration in seconds for AbilityTargetStatusPhysicalDefensePercentAdjustment.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        AbilityTargetStatusDurationSeconds = 718,
+
+        /// <summary>
+        /// SkillType value whose area abilities trigger AreaAbilityUsedEvasionPercentAdjustment.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        AreaAbilityUsedEvasionPercentAdjustmentSkillType = 719,
+
+        /// <summary>
+        /// Temporary Evasion percent granted after using a matching area ability.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        AreaAbilityUsedEvasionPercentAdjustment = 720,
+
+        /// <summary>
+        /// Duration in seconds for AreaAbilityUsedEvasionPercentAdjustment.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        AreaAbilityUsedEvasionDurationSeconds = 721,
+
+        /// <summary>
+        /// Bleed duration applied to nearby enemies after defeating a bleeding enemy.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        DefeatedBleedingEnemyNearbyBleedDurationSeconds = 722,
+
+        /// <summary>
+        /// StatusEffectCategory flags required on the target for target-status critical rate.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        TargetStatusCriticalRateStatusCategory = 723,
+
+        /// <summary>
+        /// Critical rate adjustment against targets matching TargetStatusCriticalRateStatusCategory.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        TargetStatusCriticalRatePercentAdjustment = 724,
+
+        /// <summary>
+        /// Force Attack percent granted per hostile ability use.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        HostileAbilityForceAttackPercentPerStack = 725,
+
+        /// <summary>
+        /// Duration in seconds for HostileAbilityForceAttackPercentPerStack.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        HostileAbilityForceAttackDurationSeconds = 726,
+
+        /// <summary>
+        /// Maximum total Force Attack percent from HostileAbilityForceAttackPercentPerStack.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        HostileAbilityForceAttackPercentMax = 727,
+
+        /// <summary>
+        /// SkillType value whose area abilities can receive recent-deflection damage.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        AreaAbilityAfterDeflectionDamagePercentAdjustmentSkillType = 728,
+
+        /// <summary>
+        /// Damage percent granted to matching area abilities after a recent deflection.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        AreaAbilityAfterDeflectionDamagePercentAdjustment = 729,
+
+        /// <summary>
+        /// Recent deflection window for AreaAbilityAfterDeflectionDamagePercentAdjustment.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        AreaAbilityAfterDeflectionWindowSeconds = 730,
+
+        /// <summary>
+        /// Haste granted after a combat ability restores FP.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        AbilityRestoredFPHastePercentAdjustment = 731,
+
+        /// <summary>
+        /// Duration in seconds for AbilityRestoredFPHastePercentAdjustment.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        AbilityRestoredFPHasteDurationSeconds = 732,
+
+        /// <summary>
+        /// SkillType value whose auto attacks count toward AutoAttackCycleCriticalRatePercentAdjustment.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        AutoAttackCycleCriticalRateSkillType = 733,
+
+        /// <summary>
+        /// Required auto-attack count for AutoAttackCycleCriticalRatePercentAdjustment.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        AutoAttackCycleCriticalRateRequiredCount = 734,
+
+        /// <summary>
+        /// Critical rate adjustment granted on the matching auto-attack cycle.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        AutoAttackCycleCriticalRatePercentAdjustment = 735,
+
+        /// <summary>
+        /// SkillType value whose non-critical abilities build next-ability Critical Rate.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        NonCriticalAbilityNextSkillAbilityCriticalRateSkillType = 736,
+
+        /// <summary>
+        /// Critical rate added after a non-critical matching ability.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        NonCriticalAbilityNextSkillAbilityCriticalRatePercentAdjustment = 737,
+
+        /// <summary>
+        /// Maximum Critical Rate from NonCriticalAbilityNextSkillAbilityCriticalRatePercentAdjustment stacks.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        NonCriticalAbilityNextSkillAbilityCriticalRateMax = 738,
+
+        /// <summary>
+        /// Duration in seconds for non-critical next ability Critical Rate stacks.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        NonCriticalAbilityNextSkillAbilityCriticalRateWindowSeconds = 739,
+
+        /// <summary>
+        /// Target HP threshold percent for CriticalDamageHighHPTargetPercentAdjustment.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        CriticalDamageHighHPTargetThresholdPercent = 740,
+
+        /// <summary>
+        /// Critical damage percent adjustment against targets above CriticalDamageHighHPTargetThresholdPercent.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        CriticalDamageHighHPTargetPercentAdjustment = 741,
+
+        /// <summary>
+        /// Ability hit chance adjustment against targets with source-owned Suppression stacks.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        AbilityHitChanceAgainstSuppressionStackPercentAdjustment = 742,
+
+        /// <summary>
+        /// Source-owned Suppression stack count required before a target's damage to other targets is adjusted.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        SuppressionStackDamageDealtToOtherTargetsRequiredStacks = 743,
+
+        /// <summary>
+        /// Damage percent adjustment for suppressed targets attacking someone other than the Suppression source.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenNegative)]
+        SuppressionStackDamageDealtToOtherTargetsPercentAdjustment = 744,
+
+        /// <summary>
+        /// Physical Defense percent applied when an ability with defense ignore hits.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenNegative)]
+        DefenseIgnoreHitPhysicalDefensePercentAdjustment = 745,
+
+        /// <summary>
+        /// Duration in seconds for DefenseIgnoreHitPhysicalDefensePercentAdjustment.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        DefenseIgnoreHitPhysicalDefenseDurationSeconds = 746,
+
+        /// <summary>
+        /// Fragmentation damage dealt by matching area abilities.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        AreaAbilityFragmentationDamage = 747,
+
+        /// <summary>
+        /// Duration in seconds for fragmentation applied by matching area abilities.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        AreaAbilityFragmentationDurationSeconds = 748,
+
+        /// <summary>
+        /// Pulse interval in seconds for fragmentation applied by matching area abilities.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        AreaAbilityFragmentationPulseSeconds = 749,
+
+        /// <summary>
+        /// SkillType value whose area abilities count toward area target-hit sequences.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        AreaAbilityTargetHitSequenceSkillType = 750,
+
+        /// <summary>
+        /// Required hit count within AreaAbilityTargetHitSequenceWindowSeconds.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        AreaAbilityTargetHitSequenceCountRequired = 751,
+
+        /// <summary>
+        /// Window in seconds for AreaAbilityTargetHitSequenceCountRequired.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        AreaAbilityTargetHitSequenceWindowSeconds = 752,
+
+        /// <summary>
+        /// Exposed duration applied when an area target-hit sequence completes.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        AreaAbilityTargetHitSequenceExposedDurationSeconds = 753,
+
+        /// <summary>
+        /// SkillType value whose idle status durations can be adjusted.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        IdleStatusDurationPercentAdjustmentSkillType = 754,
+
+        /// <summary>
+        /// Duration percent adjustment for matching status effects after an idle window.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        IdleStatusDurationPercentAdjustment = 755,
+
+        /// <summary>
+        /// Idle seconds required for IdleStatusDurationPercentAdjustment.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        IdleStatusDurationRequiredIdleSeconds = 756,
+
+        /// <summary>
+        /// StatusEffectCategory flags required for IdleStatusDurationPercentAdjustment.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        IdleStatusDurationRequiredCategory = 757,
+
+        /// <summary>
+        /// Evasion granted after landing a critical hit.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        CriticalHitSelfEvasionPercentAdjustment = 758,
+
+        /// <summary>
+        /// Duration in seconds for CriticalHitSelfEvasionPercentAdjustment.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        CriticalHitSelfEvasionDurationSeconds = 759,
+
+        /// <summary>
+        /// Defense granted to nearby allies after using a matching ability.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        AbilityUsedNearbyAllyDefensePercentAdjustment = 760,
+
+        /// <summary>
+        /// Force Defense granted to nearby allies after using a matching ability.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        AbilityUsedNearbyAllyForceDefensePercentAdjustment = 761,
+
+        /// <summary>
+        /// Duration in seconds for ability-used nearby ally defense riders.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        AbilityUsedNearbyAllyDefenseDurationSeconds = 762,
+
+        /// <summary>
+        /// StatusEffectCategory flags required for conditional critical damage.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        CriticalDamageTargetStatusCategory = 763,
+
+        /// <summary>
+        /// Critical damage percent adjustment against targets matching CriticalDamageTargetStatusCategory.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        CriticalDamageTargetStatusPercentAdjustment = 764,
+
+        /// <summary>
+        /// Haste granted after landing a critical hit.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        CriticalHitSelfHastePercentAdjustment = 765,
+
+        /// <summary>
+        /// Duration in seconds for CriticalHitSelfHastePercentAdjustment.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        CriticalHitSelfHasteDurationSeconds = 766,
+
+        /// <summary>
+        /// SkillType value whose hostile abilities grant temporary movement speed.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        AbilityUsedMovementSpeedPercentAdjustmentSkillType = 767,
+
+        /// <summary>
+        /// Movement speed granted after using a matching hostile ability.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        AbilityUsedMovementSpeedPercentAdjustment = 768,
+
+        /// <summary>
+        /// Duration in seconds for AbilityUsedMovementSpeedPercentAdjustment.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        AbilityUsedMovementSpeedDurationSeconds = 769,
+
+        /// <summary>
+        /// Damage dealt percent applied to close targets hit by a ranged ability.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenNegative)]
+        RangedAbilityHitNearTargetDamageDealtPercentAdjustment = 770,
+
+        /// <summary>
+        /// Range in meters for RangedAbilityHitNearTargetDamageDealtPercentAdjustment.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        RangedAbilityHitNearTargetRangeMeters = 771,
+
+        /// <summary>
+        /// Duration in seconds for RangedAbilityHitNearTargetDamageDealtPercentAdjustment.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        RangedAbilityHitNearTargetDurationSeconds = 772,
+
+        /// <summary>
+        /// SkillType value whose next ability gains damage after the creature takes damage.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        DamageTakenNextSkillAbilitySkillType = 773,
+
+        /// <summary>
+        /// Flat damage bonus granted to the next matching ability after the creature takes damage.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        DamageTakenNextSkillAbilityDamageBonus = 774,
+
+        /// <summary>
+        /// Window in seconds for DamageTakenNextSkillAbilityDamageBonus.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        DamageTakenNextSkillAbilityWindowSeconds = 775,
+
+        /// <summary>
+        /// Flat damage bonus granted to the next matching ability after avoiding an attack.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        AvoidedAttackNextSkillAbilityDamageBonus = 776,
+
+        /// <summary>
+        /// SkillType value whose costly hostile ability hits can restore Stamina.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        CostlyAbilityHitStaminaRestoreSkillType = 777,
+
+        /// <summary>
+        /// Minimum Stamina cost required for CostlyAbilityHitStaminaRestore.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        CostlyAbilityHitMinimumStaminaCost = 778,
+
+        /// <summary>
+        /// Stamina restored when a costly matching hostile ability successfully hits.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        CostlyAbilityHitStaminaRestore = 779,
+
+        /// <summary>
+        /// SkillType value whose costly abilities gain flat damage.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        CostlyAbilityDamageBonusSkillType = 780,
+
+        /// <summary>
+        /// Flat damage added to costly matching hostile abilities.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        CostlyAbilityDamageBonus = 781,
+
+        /// <summary>
+        /// FP restored when an ability grants Attack Deflection.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        AbilityGrantedAttackDeflectionFPRestore = 782,
+
+        /// <summary>
+        /// Cooldown in seconds for AbilityGrantedAttackDeflectionFPRestore.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        AbilityGrantedAttackDeflectionFPRestoreCooldownSeconds = 783,
+
+        /// <summary>
+        /// Guard granted to one nearby ally after the creature deflects an attack.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        DeflectionNearbyAllyGuard = 784,
+
+        /// <summary>
+        /// Duration in seconds for DeflectionNearbyAllyGuard.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        DeflectionNearbyAllyGuardDurationSeconds = 785,
+
+        /// <summary>
+        /// Critical damage percent adjustment applied to a matching ability after sufficient idle time.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        IdleSkillAbilityCriticalDamagePercentAdjustment = 786,
+
+        /// <summary>
+        /// Target HP percent threshold for conditional status-target damage.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        TargetLowHPStatusDamageThresholdPercent = 787,
+
+        /// <summary>
+        /// StatusEffectCategory flags required for conditional low-HP status-target damage.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        TargetLowHPStatusDamageStatusCategory = 788,
+
+        /// <summary>
+        /// Damage percent adjustment against targets matching TargetLowHPStatusDamageStatusCategory below the HP threshold.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        TargetLowHPStatusDamagePercentAdjustment = 789,
+
+        /// <summary>
+        /// StatusEffectCategory flags required for damage against statuses applied by the attacker.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        DamageToSourceAppliedStatusTargetCategory = 790,
+
+        /// <summary>
+        /// Damage percent adjustment against targets with matching statuses applied by the attacker.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        DamageToSourceAppliedStatusTargetPercentAdjustment = 791,
+
+        /// <summary>
+        /// Optional SkillType value required before ability damage against source-applied statuses applies.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        AbilityDamageToSourceAppliedStatusTargetSkillType = 792,
+
+        /// <summary>
+        /// StatusEffectCategory flags required for ability damage against statuses applied by the attacker.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        AbilityDamageToSourceAppliedStatusTargetCategory = 793,
+
+        /// <summary>
+        /// Ability damage percent adjustment against targets with matching statuses applied by the attacker.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        AbilityDamageToSourceAppliedStatusTargetPercentAdjustment = 794,
+
+        /// <summary>
+        /// Percent adjustment applied to final physical Defense only while a shield is equipped.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        ShieldEquippedPhysicalDefensePercentAdjustment = 795,
+
+        /// <summary>
+        /// Percent of incoming damage shared to the source of the granting status effect without consuming the status.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        DamageTakenShareToStatusSourcePercent = 796,
+
+        /// <summary>
+        /// Damage bonus granted to the source's next matching skill ability when their guarded ally is hit.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        GuardedAllyHitNextSkillAbilityDamageBonus = 797,
+
+        /// <summary>
+        /// Duration in seconds for GuardedAllyHitNextSkillAbilityDamageBonus.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        GuardedAllyHitNextSkillAbilityWindowSeconds = 798,
+
+        /// <summary>
+        /// Damage bonus granted to the source's next matching skill ability when shared ward damage is triggered.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        WardSharedDamageNextSkillAbilityDamageBonus = 799,
+
+        /// <summary>
+        /// Duration in seconds for WardSharedDamageNextSkillAbilityDamageBonus.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        WardSharedDamageNextSkillAbilityWindowSeconds = 800,
+
+        /// <summary>
+        /// SkillType value whose abilities applying a matching status category receive AbilityStatusCategoryDamageBonus and AbilityStatusCategoryHitChancePercentAdjustment.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        AbilityStatusCategoryBonusSkillType = 801,
+
+        /// <summary>
+        /// StatusEffectCategory flags required before ability status-category bonuses apply.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        AbilityStatusCategoryBonusRequiredCategory = 802,
+
+        /// <summary>
+        /// Flat damage bonus for abilities applying AbilityStatusCategoryBonusRequiredCategory.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        AbilityStatusCategoryDamageBonus = 803,
+
+        /// <summary>
+        /// Hit chance percent adjustment for abilities applying AbilityStatusCategoryBonusRequiredCategory.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        AbilityStatusCategoryHitChancePercentAdjustment = 804,
+
+        /// <summary>
+        /// Flat damage bonus gained for each repeated hit against the same target.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        RepeatedTargetDamageBonusPerHit = 805,
+
+        /// <summary>
+        /// Maximum flat damage bonus from RepeatedTargetDamageBonusPerHit stacks.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        RepeatedTargetDamageBonusMax = 806,
+
+        /// <summary>
+        /// Duration in seconds before repeated-target damage stacks expire.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        RepeatedTargetDamageDurationSeconds = 807,
+
+        /// <summary>
+        /// FP restoration temporarily granted while AbilityUsedAttackDeflection is active.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        AbilityUsedAttackDeflectionFPRestore = 808,
+
+        /// <summary>
+        /// PerkCategoryType value whose abilities trigger AbilityUsedPerkCategoryAttackDeflection.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        AbilityUsedPerkCategoryAttackDeflectionCategoryType = 809,
+
+        /// <summary>
+        /// Temporary Attack Deflection granted after using an ability from AbilityUsedPerkCategoryAttackDeflectionCategoryType.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        AbilityUsedPerkCategoryAttackDeflection = 810,
+
+        /// <summary>
+        /// Duration in seconds for AbilityUsedPerkCategoryAttackDeflection.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        AbilityUsedPerkCategoryAttackDeflectionDurationSeconds = 811,
+
+        /// <summary>
+        /// FP restoration temporarily granted while AbilityUsedPerkCategoryAttackDeflection is active.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        AbilityUsedPerkCategoryAttackDeflectionFPRestore = 812,
+
+        /// <summary>
+        /// Percent chance for ability item requirements to preserve the required stim pack.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        StimPackPreserveChance = 813,
+
+        /// <summary>
+        /// SkillType value whose costly hostile abilities can apply a status rider.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        CostlyAbilityStatusSkillType = 814,
+
+        /// <summary>
+        /// Exposed duration applied when a matching costly hostile ability hits.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        CostlyAbilityExposedDurationSeconds = 815,
+
+        /// <summary>
+        /// Stamina restored to the source when applying a matching status category.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        StatusAppliedSelfStaminaRestore = 816
     }
 
     public class StatTypeAttribute : Attribute

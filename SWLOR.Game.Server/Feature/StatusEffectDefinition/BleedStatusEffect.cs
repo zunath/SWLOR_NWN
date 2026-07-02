@@ -43,5 +43,11 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             var placeable = CreateObject(ObjectType.Placeable, "plc_bloodstain", location);
             DestroyObject(placeable, 48.0f);
         }
+
+        protected override void Remove(uint creature)
+        {
+            if (WasNaturallyExpired)
+                Combat.ApplyBleedingStatusExpiredEffects(Source);
+        }
     }
 }

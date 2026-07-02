@@ -90,7 +90,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             if (Stat.GetStatAdjustment(activator, StatType.PowerCellInitialTargetPowerSurge) <= 0)
                 return;
 
-            StatusEffect.ApplyStatusEffect(activator, target, new PowerSurgeStatusEffect(), 12f);
+            StatusEffect.ApplyStatusEffect(activator, target, new PowerSurgeStatusEffect(), 30f);
         }
 
         public static void ApplyFieldSupportAllyBuffRiders(uint activator, uint target)
@@ -107,7 +107,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
             foreach (var friendly in AbilityTargeting.GetFriendlyTargets(activator, activator, true))
             {
-                StatusEffect.ApplyStatusEffect(activator, friendly, new TacticalUplinkStatusEffect(), 10f);
+                StatusEffect.ApplyStatusEffect(activator, friendly, new TacticalUplinkStatusEffect(), 30f);
             }
         }
 
@@ -200,7 +200,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             if (Stat.GetStatAdjustment(activator, StatType.FieldSupportAllyOverclockRoutine) <= 0)
                 return;
 
-            StatusEffect.ApplyStatusEffect(activator, target, new OverclockRoutineStatusEffect(), 12f);
+            StatusEffect.ApplyStatusEffect(activator, target, new OverclockRoutineStatusEffect(), 30f);
         }
 
         public static float ApplyGrenadeRadiusBonus(uint activator, float baseRadius)

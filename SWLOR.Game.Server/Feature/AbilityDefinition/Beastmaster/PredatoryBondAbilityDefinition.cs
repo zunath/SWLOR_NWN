@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
             var builder = new AbilityBuilder();
 
             builder
-                .Create(FeatType.Growl, PerkType.Growl)
+                .Create(FeatType.PredatoryBond, PerkType.PredatoryBond)
                 .Name("Predatory Bond")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.BeastBond, 180f)

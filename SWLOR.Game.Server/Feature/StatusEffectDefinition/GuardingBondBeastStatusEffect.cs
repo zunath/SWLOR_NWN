@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class GuardingBondBeastStatusEffect : StatusEffectBase
     {
         public override string Name => "Guarding Bond";
-        public override EffectIconType Icon => EffectIconType.BastionStanceStatusEffect;
+        public override EffectIconType Icon => EffectIconType.GuardingBondBeastStatusEffect;
         public override bool PersistsOnLogout => false;
         public override bool SendsApplicationMessage => false;
         public override bool SendsWornOffMessage => false;

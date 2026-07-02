@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         private readonly int _evasionPercent;
 
         public override string Name => "Smoke Round Cover";
-        public override EffectIconType Icon => EffectIconType.SmokeBombStatusEffect;
+        public override EffectIconType Icon => EffectIconType.SmokeRoundCoverStatusEffect;
         public override StatusEffectCategory Categories => StatusEffectCategory.Buff;
         public override bool PersistsOnLogout => false;
 

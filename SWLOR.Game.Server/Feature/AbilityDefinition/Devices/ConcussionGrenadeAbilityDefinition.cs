@@ -84,7 +84,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 target,
                 targetLocation,
                 14,
-                2,
+                30,
                 typeof(KnockdownStatusEffect));
         }
 
@@ -95,7 +95,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 target,
                 targetLocation,
                 28,
-                2,
+                30,
                 typeof(KnockdownStatusEffect));
         }
 

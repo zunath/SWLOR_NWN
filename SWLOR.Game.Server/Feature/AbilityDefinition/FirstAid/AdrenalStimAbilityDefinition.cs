@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -44,7 +45,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .HasImpactAction(AdrenalStim1ImpactAction)
                 .IsCastedAbility()
                 .BreaksStealth()
-                .RequirementItem("stim_pack", preservePerkType: PerkType.FieldPharmacist, preserveChancePerLevel: 10);
+                .RequirementItem("stim_pack", preserveChanceStatType: StatType.StimPackPreserveChance);
         }
 
         private static void AdrenalStim2(AbilityBuilder builder)
@@ -65,7 +66,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .HasImpactAction(AdrenalStim2ImpactAction)
                 .IsCastedAbility()
                 .BreaksStealth()
-                .RequirementItem("stim_pack", preservePerkType: PerkType.FieldPharmacist, preserveChancePerLevel: 10);
+                .RequirementItem("stim_pack", preserveChanceStatType: StatType.StimPackPreserveChance);
         }
 
         private static void AdrenalStim3(AbilityBuilder builder)
@@ -86,12 +87,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .HasImpactAction(AdrenalStim3ImpactAction)
                 .IsCastedAbility()
                 .BreaksStealth()
-                .RequirementItem("stim_pack", preservePerkType: PerkType.FieldPharmacist, preserveChancePerLevel: 10);
+                .RequirementItem("stim_pack", preserveChanceStatType: StatType.StimPackPreserveChance);
         }
 
         private static void AdrenalStim1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            var duration = FirstAidTreatmentAdjustments.ApplyStimDurationBonus(activator, 12f);
+            var duration = FirstAidTreatmentAdjustments.ApplyStimDurationBonus(activator, 30f);
             foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
                 Stat.RestoreStamina(friendly, PercentOf(Stat.GetMaxStamina(friendly), 10));
@@ -103,7 +104,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
 
         private static void AdrenalStim2ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            var duration = FirstAidTreatmentAdjustments.ApplyStimDurationBonus(activator, 12f);
+            var duration = FirstAidTreatmentAdjustments.ApplyStimDurationBonus(activator, 30f);
             foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
                 Stat.RestoreStamina(friendly, PercentOf(Stat.GetMaxStamina(friendly), 18));
@@ -115,7 +116,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
 
         private static void AdrenalStim3ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            var duration = FirstAidTreatmentAdjustments.ApplyStimDurationBonus(activator, 12f);
+            var duration = FirstAidTreatmentAdjustments.ApplyStimDurationBonus(activator, 30f);
             foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
                 Stat.RestoreStamina(friendly, PercentOf(Stat.GetMaxStamina(friendly), 25));

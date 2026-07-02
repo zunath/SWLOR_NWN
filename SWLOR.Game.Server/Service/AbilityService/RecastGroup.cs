@@ -292,7 +292,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
         GunslingerFocus = 206,
         [RecastGroup("Double Shot", "Double Shot", true)]
         DoubleShot = 207,
-        [RecastGroup("Twin Intercept", "Twin Intercept", true)]
+        [RecastGroup("Tag In", "Tag In", true)]
         TwinIntercept = 208,
         [RecastGroup("Taunting Deflection", "Taunt Deflect", true)]
         TauntingDeflection = 209,
@@ -304,7 +304,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
         IronWallStance = 214,
         [RecastGroup("Striking Cobra", "Striking Cobra", true)]
         StrikingCobra = 215,
-        [RecastGroup("Twin Guard Stance", "Twin Guard", true)]
+        [RecastGroup("Steel Shoulder", "Steel Shoulder", true)]
         TwinGuardStance = 217,
         [RecastGroup("Brutal Assault", "Brutal Assault", true)]
         BrutalAssault = 218,
@@ -662,6 +662,72 @@ namespace SWLOR.Game.Server.Service.AbilityService
         BloodFrenzyFlurry = 432,
         [RecastGroup("Draavo's Challenge", "Draavo Chall.", true)]
         DraavosChallenge = 433,
+        [RecastGroup("Guard Lock", "Guard Lock", true)]
+        GuardLock = 465,
+        [RecastGroup("Interrupting Sweep", "Inter. Sweep", true)]
+        InterruptingSweep = 466,
+        [RecastGroup("Ward Bond", "Ward Bond", true)]
+        WardBond = 463,
+        [RecastGroup("Iron Guard Stance", "Iron Stanc", true)]
+        IronGuardStance = 464,
+        [RecastGroup("Frenzy Slash", "Frenzy Slash", true)]
+        FrenzySlash = 434,
+        [RecastGroup("Lacerating Cut", "Lacerating Cut", true)]
+        LaceratingCut = 435,
+        [RecastGroup("Rupture Strike", "Rupture Strike", true)]
+        RuptureStrike = 436,
+        [RecastGroup("Hemorrhage", "Hemorrhage", true)]
+        Hemorrhage = 437,
+        [RecastGroup("Shadowflow Stance", "Shado. Stance", true)]
+        ShadowflowStance = 438,
+        [RecastGroup("Severing Strike", "Sever. Strike", true)]
+        SeveringStrike = 439,
+        [RecastGroup("Surge Strike", "Surge Strike", true)]
+        SurgeStrike = 440,
+        [RecastGroup("Ward Strike", "Ward Strike", true)]
+        WardStrike = 441,
+        [RecastGroup("Punishing Guard", "Punis. Guard", true)]
+        PunishingGuard = 442,
+        [RecastGroup("Essence Cleave", "Essence Cleave", true)]
+        EssenceCleave = 443,
+        [RecastGroup("Reaping Strike", "Reaping Strike", true)]
+        ReapingStrike = 444,
+        [RecastGroup("Grave Tremor", "Grave Tremor", true)]
+        GraveTremor = 445,
+        [RecastGroup("Immortal Stance", "Immor. Stance", true)]
+        ImmortalStance = 446,
+        [RecastGroup("Vigor Thrust", "Vigor Thrust", true)]
+        VigorThrust = 447,
+        [RecastGroup("Vigor Stance", "Vigor Stance", true)]
+        VigorStance = 448,
+        [RecastGroup("Lacerating Twin Cut", "Lacerati Cut", true)]
+        LaceratingTwinCut = 449,
+        [RecastGroup("Serrated Arc", "Serrated Arc", true)]
+        SerratedArc = 450,
+        [RecastGroup("Twin Rupture", "Twin Rupture", true)]
+        TwinRupture = 451,
+        [RecastGroup("Lacerator Stance", "Lacer. Stance", true)]
+        LaceratorStance = 452,
+        [RecastGroup("Exposed Nerve", "Exposed Nerve", true)]
+        ExposedNerve = 453,
+        [RecastGroup("Opportunist Stance", "Oppor. Stance", true)]
+        OpportunistStance = 454,
+        [RecastGroup("Hooking Strike", "Hooking Strike", true)]
+        HookingStrike = 455,
+        [RecastGroup("Joint Lock", "Joint Lock", true)]
+        JointLock = 456,
+        [RecastGroup("Scrapper Stance", "Scrap. Stance", true)]
+        ScrapperStance = 457,
+        [RecastGroup("Breaker Stance", "Breaker Stance", true)]
+        BreakerStance = 458,
+        [RecastGroup("Gambler Stance", "Gambler Stance", true)]
+        GamblerStance = 459,
+        [RecastGroup("Suppression Stance", "Suppr. Stance", true)]
+        SuppressionStance = 460,
+        [RecastGroup("Ordnance Stance", "Ordna. Stance", true)]
+        OrdnanceStance = 461,
+        [RecastGroup("Flurry Stance", "Flurry Stance", true)]
+        FlurryStance = 462,
     }
 
     public class RecastGroupAttribute : Attribute

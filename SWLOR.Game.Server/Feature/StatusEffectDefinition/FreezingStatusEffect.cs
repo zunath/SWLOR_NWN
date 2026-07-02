@@ -42,7 +42,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             }
 
             ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Pulse_Cyan_Blue), creature, 5.9f);
-            StatusEffect.ApplyStatusEffect(source, creature, typeof(FreezingMightPenaltyStatusEffect), 6f);
+            StatusEffect.ApplyStatusEffect(source, creature, typeof(FreezingMightPenaltyStatusEffect), 30f);
         }
 
         protected override void Remove(uint creature)

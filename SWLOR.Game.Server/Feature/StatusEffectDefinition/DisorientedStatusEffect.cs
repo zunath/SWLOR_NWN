@@ -8,7 +8,8 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
     public sealed class DisorientedStatusEffect : StatusEffectBase
     {
-        private readonly int _additionalEvasionPenaltyPercent;
+        private readonly int _accuracyPenaltyPercent;
+        private readonly int _evasionPenaltyPercent;
 
         public override string Name => "Disoriented";
         public override EffectIconType Icon => EffectIconType.DisorientedStatusEffect;
@@ -21,10 +22,16 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         }
 
         public DisorientedStatusEffect(int additionalEvasionPenaltyPercent)
+            : this(15, 15 + Math.Max(0, additionalEvasionPenaltyPercent))
         {
-            _additionalEvasionPenaltyPercent = Math.Max(0, additionalEvasionPenaltyPercent);
-            StatGroup.Stats[StatType.AccuracyPercentAdjustment] = -15;
-            StatGroup.Stats[StatType.EvasionPercentAdjustment] = -15 - _additionalEvasionPenaltyPercent;
+        }
+
+        public DisorientedStatusEffect(int accuracyPenaltyPercent, int evasionPenaltyPercent)
+        {
+            _accuracyPenaltyPercent = Math.Abs(accuracyPenaltyPercent);
+            _evasionPenaltyPercent = Math.Abs(evasionPenaltyPercent);
+            StatGroup.Stats[StatType.AccuracyPercentAdjustment] = -_accuracyPenaltyPercent;
+            StatGroup.Stats[StatType.EvasionPercentAdjustment] = -_evasionPenaltyPercent;
         }
 
         protected override void Apply(uint creature, int durationTicks)
@@ -39,7 +46,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         public override IStatusEffect Clone()
         {
-            return new DisorientedStatusEffect(_additionalEvasionPenaltyPercent);
+            return new DisorientedStatusEffect(_accuracyPenaltyPercent, _evasionPenaltyPercent);
         }
     }
 }

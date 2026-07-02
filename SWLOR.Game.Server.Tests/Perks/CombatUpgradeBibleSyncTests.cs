@@ -1,5 +1,6 @@
 using System.Globalization;
 using System.Reflection;
+using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using Microsoft.VisualBasic.FileIO;
@@ -23,6 +24,7 @@ public class CombatUpgradeBibleSyncTests
     private static readonly HashSet<string> ScopedTypes = new(StringComparer.OrdinalIgnoreCase)
     {
         "Aura",
+        "Capstone",
         "Combat",
         "Stance",
         "Toggle",
@@ -41,10 +43,134 @@ public class CombatUpgradeBibleSyncTests
         "Farming",
         "Agriculture",
         "Smithery",
-        "Engineering",
-        "Fabrication",
         "Research",
-        "Gathering"
+    };
+
+    private static readonly HashSet<string> WeaponTabs = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "Vibroblade",
+        "Vibroknife",
+        "Lightsaber",
+        "Heavy Vibroblade",
+        "Spear",
+        "Twin Blade",
+        "Saberstaff",
+        "Katar",
+        "Staff",
+        "Pistol",
+        "Rifle",
+        "Throwing"
+    };
+
+    private static readonly HashSet<string> WeaponProgressionShapeOutliers = new(StringComparer.OrdinalIgnoreCase);
+
+    private static readonly Dictionary<string, string[]> WeaponProgressionTypePatternByStyle = new(StringComparer.OrdinalIgnoreCase)
+    {
+        ["Heavy Vibroblade|Immortal"] = new[]
+        {
+            "Combat",
+            "Trait",
+            "Trait",
+            "Combat",
+            "Combat",
+            "Trait",
+            "Combat",
+            "Stance",
+            "Trait",
+            "Trait",
+            "Combat",
+            "Combat",
+            "Combat",
+            "Trait",
+            "Trait",
+            "Trait",
+            "Trait",
+            "Capstone"
+        },
+        ["Heavy Vibroblade|Berserker"] = new[]
+        {
+            "Combat",
+            "Trait",
+            "Trait",
+            "Combat",
+            "Combat",
+            "Trait",
+            "Combat",
+            "Stance",
+            "Trait",
+            "Trait",
+            "Combat",
+            "Combat",
+            "Toggle",
+            "Trait",
+            "Trait",
+            "Trait",
+            "Trait",
+            "Capstone"
+        },
+        ["Vibroblade|Frenzy"] = new[]
+        {
+            "Combat",
+            "Trait",
+            "Trait",
+            "Combat",
+            "Combat",
+            "Trait",
+            "Combat",
+            "Stance",
+            "Trait",
+            "Stance",
+            "Combat",
+            "Combat",
+            "Combat",
+            "Combat",
+            "Combat",
+            "Combat",
+            "Combat",
+            "Capstone"
+        },
+        ["Vibroblade|Bulwark"] = new[]
+        {
+            "Combat",
+            "Trait",
+            "Trait",
+            "Combat",
+            "Combat",
+            "Trait",
+            "Combat",
+            "Stance",
+            "Trait",
+            "Trait",
+            "Combat",
+            "Stance",
+            "Trait",
+            "Trait",
+            "Trait",
+            "Trait",
+            "Trait",
+            "Capstone"
+        },
+        ["Katar|Iron Guard"] = new[]
+        {
+            "Combat",
+            "Trait",
+            "Trait",
+            "Combat",
+            "Combat",
+            "Trait",
+            "Trait",
+            "Combat",
+            "Trait",
+            "Trait",
+            "Trait",
+            "Combat",
+            "Trait",
+            "Trait",
+            "Combat",
+            "Stance",
+            "Trait",
+            "Capstone"
+        }
     };
 
     private static readonly HashSet<PerkCategoryType> DroidInstructionCategories = new()
@@ -63,8 +189,11 @@ public class CombatUpgradeBibleSyncTests
         ["Armor"] = SkillType.Armor,
         ["Beast Mastery"] = SkillType.BeastMastery,
         ["Devices"] = SkillType.Devices,
+        ["Engineering"] = SkillType.Engineering,
+        ["Fabrication"] = SkillType.Fabrication,
         ["First Aid"] = SkillType.FirstAid,
         ["Force"] = SkillType.Force,
+        ["Gathering"] = SkillType.Gathering,
         ["Heavy Vibroblade"] = SkillType.HeavyVibroblade,
         ["Katar"] = SkillType.Katar,
         ["Leadership"] = SkillType.Leadership,
@@ -104,7 +233,7 @@ public class CombatUpgradeBibleSyncTests
             scopedPerkTypes.Add(perkType);
             AssertPerkRow(row, perk, level, failures);
 
-            if (IsActiveType(row.Type))
+            if (ShouldValidateAsActiveAbility(row, level))
             {
                 if (IsTameRow(row))
                 {
@@ -124,10 +253,10 @@ public class CombatUpgradeBibleSyncTests
                     expectedActiveFeats.Add(feat);
                 }
             }
-            else if (row.Type.Equals("Trait", StringComparison.OrdinalIgnoreCase))
+            else if (IsTraitLikeType(row.Type))
             {
                 var nonPassiveIconFeats = level.GrantedFeats
-                    .Where(feat => !IsPassiveIconTraitFeat(feat))
+                    .Where(feat => !IsPassiveTraitFeat(feat, abilities))
                     .ToArray();
                 if (nonPassiveIconFeats.Length != 0)
                 {
@@ -145,6 +274,127 @@ public class CombatUpgradeBibleSyncTests
         AssertExplicitCombatImpactScalingDeclarations(root, failures);
 
         failures.Should().BeEmpty(string.Join(Environment.NewLine, failures.Take(200)));
+    }
+
+    [Test]
+    public void WeaponPerkProgression_UsesNormalizedCostsAndCapstoneRows()
+    {
+        int[] expectedSkillRanks = { 2, 5, 8, 10, 12, 15, 18, 20, 22, 25, 28, 30, 32, 35, 38, 40, 45, 50 };
+        int[] expectedPrices = { 2, 2, 2, 2, 2, 4, 3, 4, 4, 4, 3, 4, 3, 2, 4, 5, 4, 6 };
+        string[] expectedTypes =
+        {
+            "Combat",
+            "Trait",
+            "Trait",
+            "Combat",
+            "Combat",
+            "Trait",
+            "Combat",
+            "Stance",
+            "Trait",
+            "Trait",
+            "Combat",
+            "Combat",
+            "Combat",
+            "Trait",
+            "Combat",
+            "Combat",
+            "Trait",
+            "Capstone"
+        };
+        var root = FindRepositoryRoot();
+        var rows = ReadManifest(root / "SWLOR.Game.Server" / "Readmes" / "CombatUpgradeBiblePerkManifest.csv")
+            .Where(IsScopedImplementedRow)
+            .Where(row => WeaponTabs.Contains(row.Tab))
+            .ToArray();
+        var styleGroups = rows
+            .GroupBy(row => $"{row.Tab}|{row.Style}", StringComparer.OrdinalIgnoreCase)
+            .ToArray();
+        var failures = new List<string>();
+
+        if (styleGroups.Length != 24)
+            failures.Add($"Expected 24 weapon style progressions, found {styleGroups.Length}.");
+
+        foreach (var group in styleGroups)
+        {
+            var ordered = group
+                .OrderBy(row => TryParseSkillRequirement(row.SkillRequirements)?.Rank ?? int.MaxValue)
+                .ThenBy(row => ParseWholeNumber(row.Row))
+                .ToArray();
+            var tab = ordered[0].Tab;
+            var style = ordered[0].Style;
+            var total = ordered.Sum(row => ParseWholeNumber(row.Price));
+            var capstone = ordered[^1];
+
+            var skillRanks = ordered
+                .Select(row => TryParseSkillRequirement(row.SkillRequirements)?.Rank ?? 0)
+                .ToArray();
+            var prices = ordered
+                .Select(row => ParseWholeNumber(row.Price))
+                .ToArray();
+            var types = ordered
+                .Select(row => row.Type)
+                .ToArray();
+
+            if (!skillRanks.SequenceEqual(expectedSkillRanks))
+                failures.Add($"{tab}/{style}: skill-rank pattern should be [{string.Join(", ", expectedSkillRanks)}], found [{string.Join(", ", skillRanks)}].");
+
+            if (!prices.SequenceEqual(expectedPrices))
+                failures.Add($"{tab}/{style}: SP-price pattern should be [{string.Join(", ", expectedPrices)}], found [{string.Join(", ", prices)}].");
+
+            var expectedTypePattern = GetExpectedWeaponProgressionTypePattern(group.Key, expectedTypes);
+            if (!types.SequenceEqual(expectedTypePattern, StringComparer.OrdinalIgnoreCase))
+                failures.Add($"{tab}/{style}: type pattern should be [{string.Join(", ", expectedTypePattern)}], found [{string.Join(", ", types)}].");
+
+            if (!ordered[0].Type.Equals("Combat", StringComparison.OrdinalIgnoreCase))
+                failures.Add($"{tab}/{style}: first perk at rank 2 must be an active Combat ability, found {ordered[0].Type} '{ordered[0].PerkName}'.");
+
+            if (!capstone.Type.Equals("Capstone", StringComparison.OrdinalIgnoreCase))
+            {
+                failures.Add($"{tab}/{style}: skill-50 row '{capstone.PerkName}' should be typed Capstone.");
+            }
+
+            if (ParseWholeNumber(capstone.Price) != 6)
+            {
+                failures.Add($"{tab}/{style}: skill-50 row '{capstone.PerkName}' should cost 6 SP.");
+            }
+
+            for (var index = 1; index < ordered.Length; index++)
+            {
+                var previous = ordered[index - 1];
+                var current = ordered[index];
+                if (!HasRankSuffix(previous.PerkName) && !HasRankSuffix(current.PerkName))
+                    continue;
+
+                if (GetBaseName(previous.PerkName).Equals(GetBaseName(current.PerkName), StringComparison.OrdinalIgnoreCase))
+                {
+                    failures.Add($"{tab}/{style}: ranked rows '{previous.PerkName}' and '{current.PerkName}' are adjacent; put a different perk between ranks.");
+                }
+            }
+
+            if (ordered.Length == 18)
+            {
+                if (total != 60)
+                {
+                    failures.Add($"{tab}/{style}: 18-row weapon style should total 60 SP, found {total}.");
+                }
+
+                continue;
+            }
+
+            if (!WeaponProgressionShapeOutliers.Contains(group.Key))
+            {
+                failures.Add($"{tab}/{style}: unexpected weapon progression shape with {ordered.Length} rows.");
+                continue;
+            }
+
+            if (total != 60)
+            {
+                failures.Add($"{tab}/{style}: known row-count outlier should still total 60 SP, found {total}.");
+            }
+        }
+
+        failures.Should().BeEmpty(string.Join(Environment.NewLine, failures));
     }
 
     [Test]
@@ -179,6 +429,248 @@ public class CombatUpgradeBibleSyncTests
                 failures.Add($"{Describe(row)}: singleton perk should be named '{baseName}' instead of '{row.PerkName}'.");
             }
         }
+
+        failures.Should().BeEmpty(string.Join(Environment.NewLine, failures));
+    }
+
+    [Test]
+    public void CombatUpgradeBibleManifest_GrantedFeatDescriptionsMatchBibleRows()
+    {
+        var root = FindRepositoryRoot();
+        var rows = ReadManifest(root / "SWLOR.Game.Server" / "Readmes" / "CombatUpgradeBiblePerkManifest.csv")
+            .Where(IsScopedImplementedRow)
+            .ToArray();
+        var perks = BuildPerksWithout2daLookup();
+        var abilities = BuildAbilities();
+        var featRows = Test2daHelper.Read2da(new FileInfo(Path.Combine(
+            root.FullName,
+            "SWLOR_Haks",
+            "sw_2da",
+            "feat.2da")));
+        var spellRows = Test2daHelper.Read2da(new FileInfo(Path.Combine(
+            root.FullName,
+            "SWLOR_Haks",
+            "sw_2da",
+            "spells.2da")));
+        var tlkEntries = ReadTlkEntries(root / "SWLOR_Haks" / "sw_tlk" / "sw_tlk.tlk.json");
+        var failures = new List<string>();
+
+        foreach (var row in rows)
+        {
+            var match = FindMatchingPerk(row, perks, failures);
+            if (match == null)
+                continue;
+
+            var level = match.Value.Level;
+            foreach (var feat in level.GrantedFeats.Where(feat => feat != FeatType.Invalid))
+            {
+                if (!featRows.TryGetValue((int)feat, out var featRow))
+                {
+                    failures.Add($"{Describe(row)}: granted feat {feat} is missing from feat.2da.");
+                    continue;
+                }
+
+                if (IsAuxiliaryGrantedFeat(row, feat))
+                {
+                    AssertConcreteTlkDescription(row, featRow.GetValueOrDefault("DESCRIPTION"), tlkEntries, failures, $"{feat} feat.2da DESCRIPTION");
+                    continue;
+                }
+
+                AssertTlkDescription(row, featRow.GetValueOrDefault("DESCRIPTION"), tlkEntries, failures, $"{feat} feat.2da DESCRIPTION");
+
+                if (!abilities.ContainsKey(feat) ||
+                    !featRow.TryGetValue("SPELLID", out var spellIdText) ||
+                    spellIdText.Equals("****", StringComparison.OrdinalIgnoreCase) ||
+                    !int.TryParse(spellIdText, out var spellId))
+                {
+                    continue;
+                }
+
+                if (!spellRows.TryGetValue(spellId, out var spellRow))
+                {
+                    failures.Add($"{Describe(row)}: granted feat {feat} references missing spells.2da row {spellId}.");
+                    continue;
+                }
+
+                AssertTlkDescription(row, spellRow.GetValueOrDefault("SpellDesc"), tlkEntries, failures, $"{feat} spells.2da SpellDesc");
+            }
+        }
+
+        failures.Should().BeEmpty(string.Join(Environment.NewLine, failures.Take(200)));
+    }
+
+    [Test]
+    public void CombatUpgradeBibleManifest_WritesLineByLineImplementationReview()
+    {
+        var root = FindRepositoryRoot();
+        var rows = ReadManifest(root / "SWLOR.Game.Server" / "Readmes" / "CombatUpgradeBiblePerkManifest.csv")
+            .ToArray();
+        var perks = BuildPerksWithout2daLookup();
+        var abilities = BuildAbilities();
+        var featRows = Test2daHelper.Read2da(new FileInfo(Path.Combine(
+            root.FullName,
+            "SWLOR_Haks",
+            "sw_2da",
+            "feat.2da")));
+        var spellRows = Test2daHelper.Read2da(new FileInfo(Path.Combine(
+            root.FullName,
+            "SWLOR_Haks",
+            "sw_2da",
+            "spells.2da")));
+        var tlkEntries = ReadTlkEntries(root / "SWLOR_Haks" / "sw_tlk" / "sw_tlk.tlk.json");
+        var reviewRows = new List<ImplementationReviewRow>();
+
+        foreach (var row in rows)
+        {
+            var scope = GetReviewScope(row);
+            var failures = new List<string>();
+            PerkMatch? match = null;
+            var codePerk = string.Empty;
+            var codePrice = string.Empty;
+            var codeDescription = string.Empty;
+            var codeRequirements = string.Empty;
+            var grantedFeats = string.Empty;
+            var abilityEvidence = string.Empty;
+            var featDescriptionEvidence = string.Empty;
+            var spellDescriptionEvidence = string.Empty;
+
+            if (scope.ShouldValidate)
+            {
+                match = FindMatchingPerk(row, perks, failures);
+                if (match != null)
+                {
+                    var (perkType, perk, level) = match.Value;
+                    codePerk = $"{perkType}/{perk.Category}/{perk.Name} rank {GetExpectedLevel(row.PerkName)}";
+                    codePrice = level.Price.ToString(CultureInfo.InvariantCulture);
+                    codeDescription = level.Description;
+                    codeRequirements = DescribeRequirements(level);
+                    grantedFeats = string.Join("; ", level.GrantedFeats.Where(feat => feat != FeatType.Invalid));
+                    abilityEvidence = DescribeAbilityEvidence(level, abilities);
+                    if (IsTameRow(row) && level.GrantedFeats.Count == 0)
+                    {
+                        abilityEvidence = abilities.TryGetValue(FeatType.Tame, out var tameAbility)
+                            ? $"Tame rank scales the existing Tame ability; higher Tame ranks grant no new feat by design. Existing ability evidence: {DescribeAbilityEvidence(FeatType.Tame, tameAbility)}"
+                            : "Tame rank scales the existing Tame ability; higher Tame ranks grant no new feat by design, but the Tame ability was not found.";
+                    }
+                    featDescriptionEvidence = DescribeFeatDescriptionEvidence(row, level, featRows, tlkEntries, failures);
+                    spellDescriptionEvidence = DescribeSpellDescriptionEvidence(row, level, abilities, featRows, spellRows, tlkEntries, failures);
+
+                    AssertPerkRow(row, perk, level, failures);
+
+                    if (ShouldValidateAsActiveAbility(row, level))
+                    {
+                        if (IsTameRow(row))
+                        {
+                            AssertTameRow(row, level, abilities, failures);
+                        }
+                        else
+                        {
+                            AssertActiveAbilityRow(row, perkType, level, abilities, failures);
+                        }
+                    }
+                    else if (IsTraitLikeType(row.Type))
+                    {
+                        var nonPassiveIconFeats = level.GrantedFeats
+                            .Where(feat => !IsPassiveTraitFeat(feat, abilities))
+                            .ToArray();
+                        if (nonPassiveIconFeats.Length != 0)
+                        {
+                            failures.Add($"{Describe(row)}: bible type is {row.Type} but code grants active feats: {string.Join(", ", nonPassiveIconFeats)}.");
+                        }
+                    }
+                }
+            }
+
+            var verdict = !scope.ShouldValidate
+                ? "SKIP"
+                : failures.Count == 0
+                    ? "PASS"
+                    : "FAIL";
+
+            var findings = !scope.ShouldValidate
+                ? scope.Description
+                : string.Join(" | ", failures.Distinct());
+
+            reviewRows.Add(new ImplementationReviewRow(
+                verdict,
+                scope.Description,
+                row.Tab,
+                row.Row,
+                row.Style,
+                row.Price,
+                codePrice,
+                row.PerkName,
+                row.SkillRequirements,
+                codeRequirements,
+                row.CharacterType,
+                row.Type,
+                row.PrimaryStat,
+                row.SecondaryStat,
+                row.ScalingSource,
+                row.CrossSkill,
+                row.FP,
+                row.STM,
+                row.CastingTime,
+                row.CooldownTime,
+                row.DevStatus,
+                row.AdditionalRequirements,
+                row.Notes,
+                row.Description,
+                codeDescription,
+                codePerk,
+                grantedFeats,
+                abilityEvidence,
+                featDescriptionEvidence,
+                spellDescriptionEvidence,
+                findings));
+        }
+
+        var outputPath = root / "SWLOR.Game.Server" / "Readmes" / "CombatUpgradeBibleImplementationReview.csv";
+        WriteImplementationReview(outputPath.FullName, reviewRows);
+
+        reviewRows.Should().HaveCount(rows.Length);
+        reviewRows
+            .Where(row => row.Verdict == "FAIL")
+            .Select(row => $"{row.Tab}/{row.Style}/{row.BibleRow} {row.PerkName}: {row.Findings}")
+            .Should()
+            .BeEmpty("the line-by-line implementation review should not contain scoped implemented row failures");
+    }
+
+    private static bool IsAuxiliaryGrantedFeat(BiblePerkRow row, FeatType feat)
+    {
+        return IsTameRow(row) && feat == FeatType.CallBeast;
+    }
+
+    [Test]
+    public void CombatUpgradeBibleManifest_DefinesControlEffectLanguageForConditionalPerks()
+    {
+        var root = FindRepositoryRoot();
+        var rows = ReadManifest(root / "SWLOR.Game.Server" / "Readmes" / "CombatUpgradeBiblePerkManifest.csv")
+            .Where(row => IsScopedImplementedRow(row))
+            .ToArray();
+        var undefinedControlPhrases = new[]
+        {
+            "controlled target",
+            "controlled targets",
+            "controlled enemies",
+            "debuffed/controlled",
+            "debuffed or controlled",
+            "becomes controlled"
+        };
+        var failures = rows
+            .Where(row => undefinedControlPhrases.Any(
+                phrase => row.Description.Contains(phrase, StringComparison.OrdinalIgnoreCase)))
+            .Select(row => $"{Describe(row)}: use 'control effect' wording instead of undefined controlled shorthand.")
+            .ToArray();
+
+        var validationMatrix = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Readmes",
+            "CombatUpgradeReleaseValidationMatrix.md"));
+        validationMatrix.Should().Contain("`Controlled` is a category, not a single status effect.");
+        validationMatrix.Should().Contain("A target is controlled while affected by a control effect");
+        validationMatrix.Should().Contain("Blind, Confusion, Dazed, Disoriented, Foggy Mind, Force Disruption");
 
         failures.Should().BeEmpty(string.Join(Environment.NewLine, failures));
     }
@@ -1047,15 +1539,413 @@ public class CombatUpgradeBibleSyncTests
                 cells[6],
                 cells[7],
                 cells[8],
+                cells[9],
+                cells[10],
+                cells[11],
                 cells[12],
                 cells[13],
                 cells[14],
                 cells[15],
                 cells[16],
-                cells[17]));
+                cells[17],
+                cells.Length > 18 ? cells[18] : string.Empty,
+                cells.Length > 19 ? cells[19] : string.Empty));
         }
 
         return rows;
+    }
+
+    private static IReadOnlyDictionary<int, string> ReadTlkEntries(PathInfo path)
+    {
+        using var document = JsonDocument.Parse(File.ReadAllText(path.FullName));
+        return document.RootElement
+            .GetProperty("entries")
+            .EnumerateArray()
+            .ToDictionary(
+                entry => entry.GetProperty("id").GetInt32(),
+                entry => entry.TryGetProperty("text", out var text) ? text.GetString() ?? string.Empty : string.Empty);
+    }
+
+    private static void AssertTlkDescription(
+        BiblePerkRow row,
+        string strRefText,
+        IReadOnlyDictionary<int, string> tlkEntries,
+        List<string> failures,
+        string label)
+    {
+        const int CustomTlkOffset = 16777216;
+        if (!int.TryParse(strRefText, out var strRef) || strRef < CustomTlkOffset)
+        {
+            failures.Add($"{Describe(row)}: {label} should be a custom TLK strref, found '{strRefText}'.");
+            return;
+        }
+
+        var tlkId = strRef - CustomTlkOffset;
+        if (!tlkEntries.TryGetValue(tlkId, out var actual))
+        {
+            failures.Add($"{Describe(row)}: {label} references missing TLK id {tlkId}.");
+            return;
+        }
+
+        if (!NormalizeText(actual).Equals(NormalizeText(row.Description), StringComparison.Ordinal))
+        {
+            failures.Add($"{Describe(row)}: {label} mismatch. Bible='{row.Description}' TLK='{actual}'.");
+        }
+    }
+
+    private static void AssertConcreteTlkDescription(
+        BiblePerkRow row,
+        string strRefText,
+        IReadOnlyDictionary<int, string> tlkEntries,
+        List<string> failures,
+        string label)
+    {
+        const int CustomTlkOffset = 16777216;
+        if (!int.TryParse(strRefText, out var strRef) || strRef < CustomTlkOffset)
+        {
+            failures.Add($"{Describe(row)}: {label} should be a custom TLK strref, found '{strRefText}'.");
+            return;
+        }
+
+        var tlkId = strRef - CustomTlkOffset;
+        if (!tlkEntries.TryGetValue(tlkId, out var actual))
+        {
+            failures.Add($"{Describe(row)}: {label} references missing TLK id {tlkId}.");
+            return;
+        }
+
+        if (Regex.IsMatch(actual, @"(?i)(TBD|Description Placeholder|^.+ Description$)"))
+        {
+            failures.Add($"{Describe(row)}: {label} uses placeholder TLK text '{actual}'.");
+        }
+    }
+
+    private static ReviewScope GetReviewScope(BiblePerkRow row)
+    {
+        if (string.IsNullOrWhiteSpace(row.PerkName))
+            return new ReviewScope(false, "Skipped: no perk name");
+
+        if (OutOfScopeTabs.Contains(row.Tab))
+            return new ReviewScope(false, $"Skipped: out-of-scope tab {row.Tab}");
+
+        if (!ScopedTypes.Contains(row.Type))
+            return new ReviewScope(false, $"Skipped: non-scoped type {row.Type}");
+
+        if (!ImplementedStatuses.Contains(row.DevStatus))
+            return new ReviewScope(false, $"Skipped: dev status {row.DevStatus}");
+
+        return new ReviewScope(true, "Scoped implemented");
+    }
+
+    private static string DescribeRequirements(PerkLevel level)
+    {
+        if (level.Requirements.Count == 0)
+            return "-";
+
+        return string.Join("; ", level.Requirements.Select(DescribeRequirement));
+    }
+
+    private static string DescribeRequirement(IPerkRequirement requirement)
+    {
+        return requirement switch
+        {
+            PerkRequirementSkill skill => $"{skill.Type} {skill.RequiredRank}",
+            PerkRequirementQuest quest => $"Quest {quest.QuestId}",
+            PerkRequirementBeastLevel => $"Beast Level {typeof(PerkRequirementBeastLevel).GetField("_requiredLevel", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(requirement)}",
+            PerkRequirementBeastRole => $"Beast Role {typeof(PerkRequirementBeastRole).GetField("_requiredRole", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(requirement)}",
+            PerkRequirementCharacterType => $"Character Type {typeof(PerkRequirementCharacterType).GetField("_requiredCharacterType", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(requirement)}",
+            PerkRequirementMustHavePerk => $"Must Have Perk {typeof(PerkRequirementMustHavePerk).GetField("_mustHavePerkType", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(requirement)} level {typeof(PerkRequirementMustHavePerk).GetField("_mustHavePerkLevel", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(requirement)}",
+            PerkRequirementCannotHavePerk => $"Cannot Have Perk {typeof(PerkRequirementCannotHavePerk).GetField("_cannotHavePerkType", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(requirement)}",
+            PerkRequirementUnlock => $"Unlock {typeof(PerkRequirementUnlock).GetField("_perkType", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(requirement)}",
+            _ => requirement.GetType().Name
+        };
+    }
+
+    private static string DescribeAbilityEvidence(PerkLevel level, IReadOnlyDictionary<FeatType, AbilityRecord> abilities)
+    {
+        var evidence = new List<string>();
+        foreach (var feat in level.GrantedFeats.Where(feat => feat != FeatType.Invalid))
+        {
+            if (!abilities.TryGetValue(feat, out var ability))
+            {
+                evidence.Add($"{feat}: no active ability definition");
+                continue;
+            }
+
+            var detail = ability.Detail;
+            evidence.Add(DescribeAbilityEvidence(feat, ability));
+        }
+
+        return evidence.Count == 0
+            ? "-"
+            : string.Join("; ", evidence);
+    }
+
+    private static string DescribeAbilityEvidence(FeatType feat, AbilityRecord ability)
+    {
+        var detail = ability.Detail;
+        return string.Join(
+            " ",
+            $"{feat}:",
+            $"{ability.DefinitionType.Name}.cs",
+            $"name='{detail.Name}'",
+            $"level={detail.AbilityLevel}",
+            $"skill={detail.SkillType}",
+            $"activation={detail.ActivationType}",
+            $"FP={ReadAbilityCost<AbilityRequirementFP>(detail, requirement => requirement.RequiredFP)}",
+            $"STM={ReadAbilityCost<AbilityRequirementStamina>(detail, requirement => requirement.RequiredSTM)}",
+            $"cast={ReadActivationDelay(detail)}",
+            $"cooldown={ReadRecastDelay(detail)}");
+    }
+
+    private static string ReadAbilityCost<TRequirement>(
+        AbilityDetail detail,
+        Func<TRequirement, int> readCost)
+        where TRequirement : IAbilityActivationRequirement
+    {
+        var requirements = detail.Requirements.OfType<TRequirement>().ToArray();
+        return requirements.Length == 0
+            ? "-"
+            : string.Join("+", requirements.Select(requirement => readCost(requirement).ToString(CultureInfo.InvariantCulture)));
+    }
+
+    private static string ReadActivationDelay(AbilityDetail detail)
+    {
+        var seconds = detail.ActivationDelay?.Invoke(0, 0, detail.AbilityLevel) ?? 0f;
+        return seconds.ToString("0.###", CultureInfo.InvariantCulture);
+    }
+
+    private static string ReadRecastDelay(AbilityDetail detail)
+    {
+        if (detail.RecastDelay == null)
+            return "-";
+
+        try
+        {
+            return detail.RecastDelay(0).ToString("0.###", CultureInfo.InvariantCulture);
+        }
+        catch (Exception ex)
+        {
+            return $"error:{ex.GetType().Name}";
+        }
+    }
+
+    private static string DescribeFeatDescriptionEvidence(
+        BiblePerkRow row,
+        PerkLevel level,
+        IReadOnlyDictionary<int, Dictionary<string, string>> featRows,
+        IReadOnlyDictionary<int, string> tlkEntries,
+        List<string> failures)
+    {
+        var evidence = new List<string>();
+        foreach (var feat in level.GrantedFeats.Where(feat => feat != FeatType.Invalid))
+        {
+            if (!featRows.TryGetValue((int)feat, out var featRow))
+            {
+                evidence.Add($"{feat}: missing feat.2da row");
+                failures.Add($"{Describe(row)}: granted feat {feat} is missing from feat.2da.");
+                continue;
+            }
+
+            var descriptionRef = featRow.GetValueOrDefault("DESCRIPTION");
+            if (IsAuxiliaryGrantedFeat(row, feat))
+            {
+                evidence.Add($"{feat}: {DescribeConcreteTlkReference(row, descriptionRef, tlkEntries, failures, $"{feat} feat.2da DESCRIPTION")}");
+            }
+            else
+            {
+                evidence.Add($"{feat}: {DescribeExactTlkReference(row, descriptionRef, tlkEntries, failures, $"{feat} feat.2da DESCRIPTION")}");
+            }
+        }
+
+        return evidence.Count == 0
+            ? "-"
+            : string.Join("; ", evidence);
+    }
+
+    private static string DescribeSpellDescriptionEvidence(
+        BiblePerkRow row,
+        PerkLevel level,
+        IReadOnlyDictionary<FeatType, AbilityRecord> abilities,
+        IReadOnlyDictionary<int, Dictionary<string, string>> featRows,
+        IReadOnlyDictionary<int, Dictionary<string, string>> spellRows,
+        IReadOnlyDictionary<int, string> tlkEntries,
+        List<string> failures)
+    {
+        var evidence = new List<string>();
+        foreach (var feat in level.GrantedFeats.Where(feat => feat != FeatType.Invalid))
+        {
+            if (!abilities.ContainsKey(feat) || IsAuxiliaryGrantedFeat(row, feat))
+                continue;
+
+            if (!featRows.TryGetValue((int)feat, out var featRow) ||
+                !featRow.TryGetValue("SPELLID", out var spellIdText) ||
+                spellIdText.Equals("****", StringComparison.OrdinalIgnoreCase) ||
+                !int.TryParse(spellIdText, out var spellId))
+            {
+                evidence.Add($"{feat}: no spell row");
+                continue;
+            }
+
+            if (!spellRows.TryGetValue(spellId, out var spellRow))
+            {
+                evidence.Add($"{feat}: missing spells.2da row {spellId}");
+                failures.Add($"{Describe(row)}: granted feat {feat} references missing spells.2da row {spellId}.");
+                continue;
+            }
+
+            evidence.Add($"{feat}: {DescribeExactTlkReference(row, spellRow.GetValueOrDefault("SpellDesc"), tlkEntries, failures, $"{feat} spells.2da SpellDesc")}");
+        }
+
+        return evidence.Count == 0
+            ? "-"
+            : string.Join("; ", evidence);
+    }
+
+    private static string DescribeExactTlkReference(
+        BiblePerkRow row,
+        string strRefText,
+        IReadOnlyDictionary<int, string> tlkEntries,
+        List<string> failures,
+        string label)
+    {
+        const int CustomTlkOffset = 16777216;
+        if (!int.TryParse(strRefText, out var strRef) || strRef < CustomTlkOffset)
+        {
+            failures.Add($"{Describe(row)}: {label} should be a custom TLK strref, found '{strRefText}'.");
+            return $"FAIL ref={strRefText}";
+        }
+
+        var tlkId = strRef - CustomTlkOffset;
+        if (!tlkEntries.TryGetValue(tlkId, out var actual))
+        {
+            failures.Add($"{Describe(row)}: {label} references missing TLK id {tlkId}.");
+            return $"FAIL missing TLK {tlkId}";
+        }
+
+        if (!NormalizeText(actual).Equals(NormalizeText(row.Description), StringComparison.Ordinal))
+        {
+            failures.Add($"{Describe(row)}: {label} mismatch. Bible='{row.Description}' TLK='{actual}'.");
+            return $"FAIL TLK {tlkId}";
+        }
+
+        return $"PASS exact Bible text TLK {tlkId}";
+    }
+
+    private static string DescribeConcreteTlkReference(
+        BiblePerkRow row,
+        string strRefText,
+        IReadOnlyDictionary<int, string> tlkEntries,
+        List<string> failures,
+        string label)
+    {
+        const int CustomTlkOffset = 16777216;
+        if (!int.TryParse(strRefText, out var strRef) || strRef < CustomTlkOffset)
+        {
+            failures.Add($"{Describe(row)}: {label} should be a custom TLK strref, found '{strRefText}'.");
+            return $"FAIL ref={strRefText}";
+        }
+
+        var tlkId = strRef - CustomTlkOffset;
+        if (!tlkEntries.TryGetValue(tlkId, out var actual))
+        {
+            failures.Add($"{Describe(row)}: {label} references missing TLK id {tlkId}.");
+            return $"FAIL missing TLK {tlkId}";
+        }
+
+        if (Regex.IsMatch(actual, @"(?i)(TBD|Description Placeholder|^.+ Description$)"))
+        {
+            failures.Add($"{Describe(row)}: {label} uses placeholder TLK text '{actual}'.");
+            return $"FAIL placeholder TLK {tlkId}";
+        }
+
+        return $"PASS concrete non-placeholder TLK {tlkId}";
+    }
+
+    private static void WriteImplementationReview(string path, IReadOnlyList<ImplementationReviewRow> rows)
+    {
+        var columns = new[]
+        {
+            "Verdict",
+            "Scope",
+            "Tab",
+            "BibleRow",
+            "Style",
+            "BiblePrice",
+            "CodePrice",
+            "PerkName",
+            "BibleSkillRequirements",
+            "CodeRequirements",
+            "BibleCharacterType",
+            "BibleType",
+            "BiblePrimaryStat",
+            "BibleSecondaryStat",
+            "BibleScalingSource",
+            "BibleCrossSkill",
+            "BibleFP",
+            "BibleSTM",
+            "BibleCastingTime",
+            "BibleCooldownTime",
+            "BibleDevStatus",
+            "BibleAdditionalRequirements",
+            "BibleNotes",
+            "BibleDescription",
+            "CodeDescription",
+            "CodePerk",
+            "GrantedFeats",
+            "AbilityEvidence",
+            "FeatDescriptionEvidence",
+            "SpellDescriptionEvidence",
+            "Findings"
+        };
+        var builder = new StringBuilder();
+        builder.AppendLine(string.Join(",", columns.Select(EscapeCsv)));
+
+        foreach (var row in rows)
+        {
+            builder.AppendLine(string.Join(",", new[]
+            {
+                row.Verdict,
+                row.Scope,
+                row.Tab,
+                row.BibleRow,
+                row.Style,
+                row.BiblePrice,
+                row.CodePrice,
+                row.PerkName,
+                row.BibleSkillRequirements,
+                row.CodeRequirements,
+                row.BibleCharacterType,
+                row.BibleType,
+                row.BiblePrimaryStat,
+                row.BibleSecondaryStat,
+                row.BibleScalingSource,
+                row.BibleCrossSkill,
+                row.BibleFP,
+                row.BibleSTM,
+                row.BibleCastingTime,
+                row.BibleCooldownTime,
+                row.BibleDevStatus,
+                row.BibleAdditionalRequirements,
+                row.BibleNotes,
+                row.BibleDescription,
+                row.CodeDescription,
+                row.CodePerk,
+                row.GrantedFeats,
+                row.AbilityEvidence,
+                row.FeatDescriptionEvidence,
+                row.SpellDescriptionEvidence,
+                row.Findings
+            }.Select(EscapeCsv)));
+        }
+
+        File.WriteAllText(path, builder.ToString());
+    }
+
+    private static string EscapeCsv(string value)
+    {
+        value ??= string.Empty;
+        return "\"" + value.Replace("\"", "\"\"") + "\"";
     }
 
     private static bool IsScopedImplementedRow(BiblePerkRow row)
@@ -1066,16 +1956,48 @@ public class CombatUpgradeBibleSyncTests
                !string.IsNullOrWhiteSpace(row.PerkName);
     }
 
+    private static string[] GetExpectedWeaponProgressionTypePattern(string styleKey, string[] defaultPattern)
+    {
+        return WeaponProgressionTypePatternByStyle.GetValueOrDefault(styleKey, defaultPattern);
+    }
+
+    private static bool ShouldValidateAsActiveAbility(BiblePerkRow row, PerkLevel level)
+    {
+        if (!IsActiveType(row.Type))
+            return false;
+
+        if (!row.Type.Equals("Capstone", StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        return level.GrantedFeats.Any(feat => !IsPassiveIconTraitFeat(feat));
+    }
+
     private static bool IsActiveType(string type)
     {
-        return !type.Equals("Trait", StringComparison.OrdinalIgnoreCase);
+        return type.Equals("Aura", StringComparison.OrdinalIgnoreCase) ||
+               type.Equals("Capstone", StringComparison.OrdinalIgnoreCase) ||
+               type.Equals("Combat", StringComparison.OrdinalIgnoreCase) ||
+               type.Equals("Stance", StringComparison.OrdinalIgnoreCase) ||
+               type.Equals("Toggle", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static bool IsTraitLikeType(string type)
+    {
+        return type.Equals("Trait", StringComparison.OrdinalIgnoreCase) ||
+               type.Equals("Capstone", StringComparison.OrdinalIgnoreCase);
     }
 
     private static bool IsPassiveIconTraitFeat(FeatType feat)
     {
-        var row = (int)feat;
-        return row is >= 1171 and <= 1400 &&
-               feat.ToString().EndsWith("Trait", StringComparison.Ordinal);
+        return feat.ToString().EndsWith("Trait", StringComparison.Ordinal);
+    }
+
+    private static bool IsPassiveTraitFeat(
+        FeatType feat,
+        IReadOnlyDictionary<FeatType, AbilityRecord> abilities)
+    {
+        return IsPassiveIconTraitFeat(feat) ||
+               !abilities.ContainsKey(feat);
     }
 
     private static bool IsTameRow(BiblePerkRow row)
@@ -1161,33 +2083,38 @@ public class CombatUpgradeBibleSyncTests
             ("Devices", "Grenadier") => PerkCategoryType.DevicesGrenadier,
             ("First Aid", "Combat Pharmacology") => PerkCategoryType.FirstAidCombatPharmacology,
             ("First Aid", "Trauma Medic") => PerkCategoryType.FirstAidTraumaMedic,
-            ("Heavy Vibroblade", "Defense") => PerkCategoryType.HeavyVibrobladeDefense,
-            ("Heavy Vibroblade", "Offense") => PerkCategoryType.HeavyVibrobladeOffense,
+            ("Engineering", "Droidcraft") => PerkCategoryType.Engineering,
+            ("Fabrication", "Invention") => PerkCategoryType.Fabrication,
+            ("Gathering", "General") => PerkCategoryType.Gathering,
+            ("Gathering", "Harvesting") => PerkCategoryType.Gathering,
+            ("Gathering", "Scavenging") => PerkCategoryType.Gathering,
+            ("Heavy Vibroblade", "Immortal") => PerkCategoryType.HeavyVibrobladeDefense,
+            ("Heavy Vibroblade", "Berserker") => PerkCategoryType.HeavyVibrobladeOffense,
             ("Katar", "Iron Guard") => PerkCategoryType.KatarIronGuard,
-            ("Katar", "Venom Current") => PerkCategoryType.KatarVenomCurrent,
+            ("Katar", "Scrapper") => PerkCategoryType.KatarVenomCurrent,
             ("Leadership", "Diplomat") => PerkCategoryType.Leadership,
             ("Leadership", "Field Steward") => PerkCategoryType.LeadershipFieldSteward,
             ("Leadership", "Mayor") => PerkCategoryType.Leadership,
             ("Leadership", "Vanguard Command") => PerkCategoryType.LeadershipVanguardCommand,
-            ("Lightsaber", "Defense") => PerkCategoryType.LightsaberDefense,
-            ("Lightsaber", "Offense") => PerkCategoryType.LightsaberOffense,
+            ("Lightsaber", "Severance") => PerkCategoryType.LightsaberDefense,
+            ("Lightsaber", "Ward") => PerkCategoryType.LightsaberOffense,
             ("Piloting", "Shipwright") => PerkCategoryType.Piloting,
-            ("Pistol", "Gunslinger") => PerkCategoryType.PistolGunslinger,
+            ("Pistol", "Gambler") => PerkCategoryType.PistolGunslinger,
             ("Pistol", "Skirmisher") => PerkCategoryType.PistolSkirmisher,
             ("Rifle", "Marksman") => PerkCategoryType.RifleMarksman,
-            ("Rifle", "Pacification") => PerkCategoryType.RiflePacification,
+            ("Rifle", "Suppression") => PerkCategoryType.RiflePacification,
             ("Saberstaff", "Conduit") => PerkCategoryType.SaberstaffConduit,
             ("Saberstaff", "Tempest") => PerkCategoryType.SaberstaffTempest,
-            ("Spear", "Damage") => PerkCategoryType.SpearDamage,
+            ("Spear", "Vigor") => PerkCategoryType.SpearDamage,
             ("Spear", "Disabler") => PerkCategoryType.SpearDisabler,
             ("Staff", "Crusher") => PerkCategoryType.StaffCrusher,
             ("Staff", "Sentinel") => PerkCategoryType.StaffSentinel,
-            ("Throwing", "Bombardier") => PerkCategoryType.ThrowingBombardier,
-            ("Throwing", "Deadeye") => PerkCategoryType.ThrowingDeadeye,
+            ("Throwing", "Ordnance") => PerkCategoryType.ThrowingBombardier,
+            ("Throwing", "Flurry") => PerkCategoryType.ThrowingDeadeye,
             ("Twin Blade", "Cyclone") => PerkCategoryType.TwinBladeCyclone,
-            ("Twin Blade", "Duelist") => PerkCategoryType.TwinBladeDuelist,
-            ("Vibroblade", "Defense") => PerkCategoryType.VibrobladeDefense,
-            ("Vibroblade", "Offense") => PerkCategoryType.VibrobladeOffense,
+            ("Twin Blade", "Lacerator") => PerkCategoryType.TwinBladeDuelist,
+            ("Vibroblade", "Bulwark") => PerkCategoryType.VibrobladeDefense,
+            ("Vibroblade", "Frenzy") => PerkCategoryType.VibrobladeOffense,
             ("Vibroknife", "Saboteur") => PerkCategoryType.VibroknifeSaboteur,
             ("Vibroknife", "Shadow") => PerkCategoryType.VibroknifeShadow,
             _ => null
@@ -1305,6 +2232,11 @@ public class CombatUpgradeBibleSyncTests
         return Regex.Replace(perkName, @"\s+(I|II|III|IV|V|VI|VII|VIII|IX|X)$", "", RegexOptions.IgnoreCase);
     }
 
+    private static bool HasRankSuffix(string perkName)
+    {
+        return Regex.IsMatch(perkName, @"\s+(I|II|III|IV|V|VI|VII|VIII|IX|X)$", RegexOptions.IgnoreCase);
+    }
+
     private static string ConvertRomanSuffixToRankNumber(string value)
     {
         var match = Regex.Match(value, @"^(.*)\s+(I|II|III|IV|V|VI|VII|VIII|IX|X)$", RegexOptions.IgnoreCase);
@@ -1397,9 +2329,44 @@ public class CombatUpgradeBibleSyncTests
 
     private readonly record struct SkillRequirement(SkillType Skill, int Rank);
 
+    private readonly record struct ReviewScope(bool ShouldValidate, string Description);
+
     private readonly record struct DroidInstructionTemplate(string Resref, PerkType Perk, int Level, string Name);
 
     private readonly record struct ExpectedDroidInstruction(PerkType Perk, int Level, string Name);
+
+    private sealed record ImplementationReviewRow(
+        string Verdict,
+        string Scope,
+        string Tab,
+        string BibleRow,
+        string Style,
+        string BiblePrice,
+        string CodePrice,
+        string PerkName,
+        string BibleSkillRequirements,
+        string CodeRequirements,
+        string BibleCharacterType,
+        string BibleType,
+        string BiblePrimaryStat,
+        string BibleSecondaryStat,
+        string BibleScalingSource,
+        string BibleCrossSkill,
+        string BibleFP,
+        string BibleSTM,
+        string BibleCastingTime,
+        string BibleCooldownTime,
+        string BibleDevStatus,
+        string BibleAdditionalRequirements,
+        string BibleNotes,
+        string BibleDescription,
+        string CodeDescription,
+        string CodePerk,
+        string GrantedFeats,
+        string AbilityEvidence,
+        string FeatDescriptionEvidence,
+        string SpellDescriptionEvidence,
+        string Findings);
 
     private sealed record BiblePerkRow(
         string Tab,
@@ -1411,12 +2378,17 @@ public class CombatUpgradeBibleSyncTests
         string CharacterType,
         string Type,
         string Description,
+        string PrimaryStat,
+        string SecondaryStat,
+        string ScalingSource,
         string CrossSkill,
         string FP,
         string STM,
         string CastingTime,
         string CooldownTime,
-        string DevStatus);
+        string DevStatus,
+        string AdditionalRequirements,
+        string Notes);
 
     private sealed record PerkRecord(PerkType Type, PerkDetail Detail);
 

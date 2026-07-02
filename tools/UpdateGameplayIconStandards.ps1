@@ -8,7 +8,7 @@ param(
     [string]$StatusEffectPath = "SWLOR.Game.Server\Feature\StatusEffectDefinition",
     [string]$TlkJsonPath = "SWLOR_Haks\sw_tlk\sw_tlk.tlk.json",
     [int]$GeneratedFeatStart = 2000,
-    [int]$GeneratedFeatEnd = 2578,
+    [int]$GeneratedFeatEnd = 2718,
     [int]$CustomFeatStart = 1116,
     [int]$CustomSpellStart = 1000,
     [int]$StatusEffectIconStart = 141,
@@ -339,8 +339,9 @@ function Get-CustomFeatSpellRows([object[]]$abilityRows, [hashtable]$existing) {
             continue
         }
 
+        $isPassiveTrait = $label.EndsWith("Trait", [System.StringComparison]::Ordinal)
         $iconFile = Join-Path $iconDirectory "$icon.tga"
-        if (!(Test-Path -LiteralPath $iconFile)) {
+        if (!(Test-Path -LiteralPath $iconFile) -and !$isPassiveTrait) {
             continue
         }
 

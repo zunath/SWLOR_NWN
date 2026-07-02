@@ -7,6 +7,6 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         protected override Type BeastStatusEffectType => typeof(PredatoryBondBeastStatusEffect);
 
         public override string Name => "Predatory Bond";
-        public override EffectIconType Icon => EffectIconType.BerserkerStanceStatusEffect;
+        public override EffectIconType Icon => EffectIconType.PredatoryBondStatusEffect;
     }
 }

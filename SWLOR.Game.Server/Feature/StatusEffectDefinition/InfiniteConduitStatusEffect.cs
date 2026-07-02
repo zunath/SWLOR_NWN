@@ -13,8 +13,12 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         public InfiniteConduitStatusEffect()
         {
-            StatGroup.Stats[StatType.AutoAttackFPRestore] = 2;
-            StatGroup.Stats[StatType.SkillAbilityStaminaCostFlatAdjustment] = -2;
+            StatGroup.Stats[StatType.AbilityStaminaCostFPRestorePercentSkillType] = (int)SkillType.Saberstaff;
+            StatGroup.Stats[StatType.AbilityStaminaCostFPRestorePercent] = 50;
+            StatGroup.Stats[StatType.AbilityFPCostStaminaRestorePercentSkillType] = (int)SkillType.Force;
+            StatGroup.Stats[StatType.AbilityFPCostStaminaRestorePercent] = 50;
+            StatGroup.Stats[StatType.HighFPAndStaminaAbilityDamageBonusThresholdPercent] = 70;
+            StatGroup.Stats[StatType.HighFPAndStaminaAbilityDamageBonus] = 20;
         }
     }
 }

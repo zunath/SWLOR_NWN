@@ -62,13 +62,14 @@ public class CombatAttackDelayTests
     [Test]
     public void CalculateAttackDelayMilliseconds_FastestWeaponDelayCanBenefitFromHaste()
     {
-        var unmodifiedDelay = Combat.CalculateAttackDelayMilliseconds(290, 0, 0, 0);
-        var hastenOneDelay = Combat.CalculateAttackDelayMilliseconds(290, 0, 15, 0);
-        var hastenTwoDelay = Combat.CalculateAttackDelayMilliseconds(290, 0, 25, 0);
+        var unmodifiedDelay = Combat.CalculateAttackDelayMilliseconds(220, 0, 0, 0);
+        var hastenOneDelay = Combat.CalculateAttackDelayMilliseconds(220, 0, 15, 0);
+        var hastenTwoDelay = Combat.CalculateAttackDelayMilliseconds(220, 0, 25, 0);
 
         Combat.CalculateEffectiveAttackDelay(unmodifiedDelay).Should().BeGreaterThan(Combat.BaseAttackDelayMilliseconds);
-        Combat.CalculateEffectiveAttackDelay(hastenOneDelay).Should().BeGreaterThan(Combat.BaseAttackDelayMilliseconds);
-        Combat.CalculateEffectiveAttackDelay(hastenTwoDelay).Should().BeGreaterThan(Combat.BaseAttackDelayMilliseconds);
+        Combat.CalculateEffectiveAttackDelay(hastenOneDelay).Should().BeGreaterThan(Combat.MinimumAttackDelayMilliseconds);
+        Combat.CalculateEffectiveAttackDelay(hastenTwoDelay).Should().BeGreaterThan(Combat.MinimumAttackDelayMilliseconds);
+        Combat.CalculateEffectiveAttackDelay(hastenOneDelay).Should().BeLessThan(Combat.CalculateEffectiveAttackDelay(unmodifiedDelay));
         Combat.CalculateEffectiveAttackDelay(hastenTwoDelay).Should().BeLessThan(Combat.CalculateEffectiveAttackDelay(hastenOneDelay));
     }
 
@@ -98,22 +99,22 @@ public class CombatAttackDelayTests
 
         foreach (var naturalWeaponType in naturalWeaponTypes)
         {
-            WeaponDelay.GetWeaponDelay(naturalWeaponType).Should().Be(29);
+            WeaponDelay.GetWeaponDelay(naturalWeaponType).Should().Be(24);
         }
 
-        var unmodifiedDelay = Combat.CalculateAttackDelayMilliseconds(290, 0, 0, 0);
-        var hastenOneDelay = Combat.CalculateAttackDelayMilliseconds(290, 0, 15, 0);
-        var hastenTwoDelay = Combat.CalculateAttackDelayMilliseconds(290, 0, 25, 0);
+        var unmodifiedDelay = Combat.CalculateAttackDelayMilliseconds(240, 0, 0, 0);
+        var hastenOneDelay = Combat.CalculateAttackDelayMilliseconds(240, 0, 15, 0);
+        var hastenTwoDelay = Combat.CalculateAttackDelayMilliseconds(240, 0, 25, 0);
 
-        Combat.CalculateEffectiveAttackDelay(unmodifiedDelay).Should().Be(3083);
-        Combat.CalculateEffectiveAttackDelay(hastenOneDelay).Should().Be(2359);
-        Combat.CalculateEffectiveAttackDelay(hastenTwoDelay).Should().Be(1875);
+        Combat.CalculateEffectiveAttackDelay(unmodifiedDelay).Should().Be(2250);
+        Combat.CalculateEffectiveAttackDelay(hastenOneDelay).Should().Be(1650);
+        Combat.CalculateEffectiveAttackDelay(hastenTwoDelay).Should().Be(1250);
     }
 
     [Test]
     public void LegacySlingPistolDelay_UsesPistolDelay()
     {
-        WeaponDelay.GetWeaponDelay(BaseItem.Sling).Should().Be(31);
+        WeaponDelay.GetWeaponDelay(BaseItem.Sling).Should().Be(25);
     }
 
     [Test]
@@ -316,10 +317,13 @@ public class CombatAttackDelayTests
         weaponDelayMigrationSource.Should().Contain("WeaponDelay.GetWeaponDelay(baseItem)");
         weaponDelayMigrationSource.Should().Contain("BuildWeaponBaseItemTypes");
         weaponDelayMigrationSource.Should().Contain("StaffBaseItemTypes");
-        weaponDelayMigrationSource.Should().Contain("[\"t_knife\"] = 25");
-        weaponDelayMigrationSource.Should().Contain("[\"t_shuriken\"] = 25");
-        weaponDelayMigrationSource.Should().Contain("[\"t_rifle\"] = 41");
-        weaponDelayMigrationSource.Should().Contain("[\"t_twinblade\"] = 39");
+        weaponDelayMigrationSource.Should().Contain("[\"t_knife\"] = 22");
+        weaponDelayMigrationSource.Should().Contain("[\"t_shuriken\"] = 22");
+        weaponDelayMigrationSource.Should().Contain("[\"t_rifle\"] = 30");
+        weaponDelayMigrationSource.Should().Contain("[\"t_twinblade\"] = 29");
+        weaponDelayMigrationSource.Should().Contain("[\"byyskwarriorswor\"] = 22");
+        weaponDelayMigrationSource.Should().Contain("[\"sith_blade\"] = 22");
+        weaponDelayMigrationSource.Should().Contain("[\"wswss002\"] = 22");
         weaponDelayMigrationSource.Should().Contain("GetHasInventory(obj)");
         weaponDelayMigrationSource.Should().Contain("GetItemInSlot((InventorySlot)index, creature)");
     }
@@ -379,19 +383,19 @@ public class CombatAttackDelayTests
     private static IReadOnlyDictionary<int, int> BuildWeaponDelayCostByBaseItem()
     {
         var delays = new Dictionary<int, int>();
-        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.VibrobladeBaseItemTypes, 27);
-        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.KatarBaseItemTypes, 25);
-        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.TwinBladeBaseItemTypes, 39);
-        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.VibroknifeBaseItemTypes, 25);
-        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.StaffBaseItemTypes, 35);
-        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.RifleBaseItemTypes, 41);
-        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.HeavyVibrobladeBaseItemTypes, 41);
-        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.PistolBaseItemTypes, 31);
-        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.LightsaberBaseItemTypes, 28);
-        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.SpearBaseItemTypes, 37);
-        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.ThrowingWeaponBaseItemTypes, 25);
-        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.SaberstaffBaseItemTypes, 39);
-        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.CreatureBaseItemTypes, 29);
+        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.VibrobladeBaseItemTypes, 23);
+        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.KatarBaseItemTypes, 22);
+        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.TwinBladeBaseItemTypes, 29);
+        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.VibroknifeBaseItemTypes, 22);
+        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.StaffBaseItemTypes, 27);
+        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.RifleBaseItemTypes, 30);
+        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.HeavyVibrobladeBaseItemTypes, 30);
+        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.PistolBaseItemTypes, 25);
+        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.LightsaberBaseItemTypes, 24);
+        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.SpearBaseItemTypes, 28);
+        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.ThrowingWeaponBaseItemTypes, 22);
+        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.SaberstaffBaseItemTypes, 29);
+        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.CreatureBaseItemTypes, 24);
 
         return delays;
     }

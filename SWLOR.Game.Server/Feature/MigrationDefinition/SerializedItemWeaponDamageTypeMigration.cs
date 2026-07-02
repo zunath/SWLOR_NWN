@@ -76,22 +76,22 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
 
         private static readonly Dictionary<string, int> DelayCostByResref = new(StringComparer.OrdinalIgnoreCase)
         {
-            ["t_longsword"] = 27,
-            ["t_katar"] = 25,
-            ["t_twinblade"] = 39,
-            ["t_knife"] = 25,
-            ["t_staff"] = 35,
-            ["t_rifle"] = 41,
-            ["t_greatsword"] = 41,
-            ["t_pistol"] = 31,
-            ["t_electroblade"] = 28,
-            ["t_spear"] = 37,
-            ["t_shuriken"] = 25,
-            ["t_twin_elec"] = 39,
+            ["t_longsword"] = 23,
+            ["t_katar"] = 22,
+            ["t_twinblade"] = 29,
+            ["t_knife"] = 22,
+            ["t_staff"] = 27,
+            ["t_rifle"] = 30,
+            ["t_greatsword"] = 30,
+            ["t_pistol"] = 25,
+            ["t_electroblade"] = 24,
+            ["t_spear"] = 28,
+            ["t_shuriken"] = 22,
+            ["t_twin_elec"] = 29,
 
-            ["byyskwarriorswor"] = 27,
-            ["sith_blade"] = 27,
-            ["wswss002"] = 27,
+            ["byyskwarriorswor"] = 22,
+            ["sith_blade"] = 22,
+            ["wswss002"] = 22,
         };
 
         private static HashSet<BaseItem> BuildWeaponBaseItemTypes()

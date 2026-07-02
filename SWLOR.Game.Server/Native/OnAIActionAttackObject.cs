@@ -75,6 +75,7 @@ namespace SWLOR.Game.Server.Native
                 if (_creatureAttackDelays.ContainsKey(pCreature.m_idSelf) && !GetIsObjectValid(pCreature.m_idSelf))
                 {
                     _creatureAttackDelays.Remove(pCreature.m_idSelf);
+                    Combat.ClearAttackSwingDebt(pCreature.m_idSelf);
                 }
 
                 // This action was just run... reset
@@ -92,6 +93,8 @@ namespace SWLOR.Game.Server.Native
                     {
                         _creatureAttackDelays.Remove(pCreature.m_idSelf);
                     }
+
+                    Combat.ClearAttackSwingDebt(pCreature.m_idSelf);
 
                     pCreature.ChangeAttackTarget(pNode, OBJECT_INVALID);
                     return ACTION_FAILED;
@@ -385,6 +388,8 @@ namespace SWLOR.Game.Server.Native
 
                 var attackSkillType = Combat.GetEquippedWeaponSkillType(pCreature.m_idSelf);
                 var useDefaultMinimumDelay = Combat.HasNextAutoAttackNoDelay(pCreature.m_idSelf, attackSkillType);
+                var calculatedDelay = Combat.CalculateAttackDelay(pCreature.m_idSelf);
+                var effectiveAttackDelay = Combat.CalculateEffectiveAttackDelay(calculatedDelay, useDefaultMinimumDelay);
 
                 // Check attack delay before starting or processing combat
                 // First attack is always instant, subsequent attacks respect delay
@@ -392,11 +397,12 @@ namespace SWLOR.Game.Server.Native
                 if (_creatureAttackDelays.ContainsKey(pCreature.m_idSelf) &&
                     !bTargetDead)
                 {
-                    var calculatedDelay = Combat.CalculateAttackDelay(pCreature.m_idSelf);
-                    var delay = Combat.CalculateEffectiveAttackDelay(calculatedDelay, useDefaultMinimumDelay);
+                    // Swings cannot animate faster than the engine's base delay. Effective delays
+                    // below it are honored by resolving multiple attacks within a single swing.
+                    var swingDelay = Combat.CalculateAttackSwingDelay(effectiveAttackDelay);
                     var timeSinceLastAttack = (DateTime.UtcNow - _creatureAttackDelays[pCreature.m_idSelf]).TotalMilliseconds;
 
-                    if (timeSinceLastAttack < delay)
+                    if (timeSinceLastAttack < swingDelay)
                     {
                         // Still in delay period, return in progress
                         return ACTION_IN_PROGRESS;
@@ -432,7 +438,9 @@ namespace SWLOR.Game.Server.Native
                                 case CNWSCOMBATROUND_TYPE_ATTACK:
                                     {
                                         var nAnimation = pPendingAction.m_nAnimation;
-                                        var nAttacks = 1; // Always perform exactly one attack with delay-based system
+                                        // One swing per delay cycle; the swing resolves one or more attacks
+                                        // depending on how far the effective delay sits below the swing floor.
+                                        var nAttacks = 1;
                                         var bOverrideAction = false;
 
                                         // Our current target is dead or not active, meaning we should not process the action
@@ -501,6 +509,32 @@ namespace SWLOR.Game.Server.Native
                                                     Combat.ConsumeNextAutoAttackNoDelay(pCreature.m_idSelf, attackSkillType);
                                                 }
 
+                                                // Effective delays below the swing floor resolve extra attacks
+                                                // within this swing. Extra attacks only apply to main-hand and
+                                                // offhand weapon swings; natural creature weapon swings stay at
+                                                // one attack because their attack-count regions cannot be
+                                                // widened the same way. The matching attack-count region is
+                                                // widened so the extra rolls keep the swing's weapon typing,
+                                                // and the post-swing round recompute resets the counts.
+                                                var nWeaponAttackType = pCreature.m_pcCombatRound.GetWeaponAttackType();
+                                                if (nWeaponAttackType == WEAPON_ATTACK_TYPE_MAINHAND ||
+                                                    nWeaponAttackType == WEAPON_ATTACK_TYPE_OFFHAND)
+                                                {
+                                                    nAttacks = Combat.ConsumeAttacksPerSwing(pCreature.m_idSelf, effectiveAttackDelay);
+
+                                                    if (nAttacks > 1)
+                                                    {
+                                                        if (nWeaponAttackType == WEAPON_ATTACK_TYPE_OFFHAND)
+                                                        {
+                                                            pCreature.m_pcCombatRound.m_nOffHandAttacks += nAttacks - 1;
+                                                        }
+                                                        else
+                                                        {
+                                                            pCreature.m_pcCombatRound.m_nOnHandAttacks += nAttacks - 1;
+                                                        }
+                                                    }
+                                                }
+
                                                 pCreature.ResolveAttack(oidTarget, nAttacks, nTimeAnimation);
                                                 bTargetActive = true;
 
@@ -550,6 +584,7 @@ namespace SWLOR.Game.Server.Native
                                         {
                                             pCreature.m_pcCombatRound.RecomputeRound();
                                             _creatureAttackDelays[pCreature.m_idSelf] = DateTime.UtcNow;
+                                            Combat.ClearAttackSwingDebt(pCreature.m_idSelf);
                                         }
                                     }
                                     break;
@@ -562,6 +597,7 @@ namespace SWLOR.Game.Server.Native
                                         {
                                             pCreature.m_pcCombatRound.RecomputeRound();
                                             _creatureAttackDelays[pCreature.m_idSelf] = DateTime.UtcNow;
+                                            Combat.ClearAttackSwingDebt(pCreature.m_idSelf);
                                         }
                                     }
                                     break;
@@ -613,6 +649,7 @@ namespace SWLOR.Game.Server.Native
                 return false;
 
             _creatureAttackDelays.Remove(pCreature.m_idSelf);
+            Combat.ClearAttackSwingDebt(pCreature.m_idSelf);
             pCreature.ChangeAttackTarget(pNode, OBJECT_INVALID);
             return true;
         }

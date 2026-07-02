@@ -50,13 +50,13 @@ public class CombatAttackDelayTests
     }
 
     [Test]
-    public void CalculateEffectiveAttackDelay_ClampsPostBaselineDelayToDefaultMinimum()
+    public void CalculateEffectiveAttackDelay_AllowsDelaysBelowDefaultAfterBaselineSubtraction()
     {
         var attackerDelay = Combat.BaseAttackDelayMilliseconds + 1250;
 
         var effectiveDelay = Combat.CalculateEffectiveAttackDelay(attackerDelay);
 
-        effectiveDelay.Should().Be(Combat.BaseAttackDelayMilliseconds);
+        effectiveDelay.Should().Be(1250);
     }
 
     [Test]
@@ -117,11 +117,11 @@ public class CombatAttackDelayTests
     }
 
     [Test]
-    public void CalculateEffectiveAttackDelay_ClampsReducedDualWieldDelayToDefaultMinimum()
+    public void CalculateEffectiveAttackDelay_ClampsReducedDualWieldDelayToAbsoluteMinimum()
     {
         var delay = Combat.CalculateAttackDelayMilliseconds(210, 210, 45, 30);
 
-        Combat.CalculateEffectiveAttackDelay(delay).Should().Be(Combat.BaseAttackDelayMilliseconds);
+        Combat.CalculateEffectiveAttackDelay(delay).Should().Be(Combat.MinimumAttackDelayMilliseconds);
     }
 
     [Test]
@@ -140,6 +140,87 @@ public class CombatAttackDelayTests
 
             effectiveDelay.Should().Be(Combat.BaseAttackDelayMilliseconds);
         }
+    }
+
+    [Test]
+    public void MinimumAttackDelay_SupportsMaxAttacksPerSwingWithoutOverflow()
+    {
+        Combat.MinimumAttackDelayMilliseconds.Should().Be(584);
+        (Combat.BaseAttackDelayMilliseconds / (float)Combat.MinimumAttackDelayMilliseconds)
+            .Should()
+            .BeLessThanOrEqualTo(Combat.MaxAttacksPerSwing);
+    }
+
+    [Test]
+    public void CalculateAttackSwingDelay_FloorsAtBaseDelay()
+    {
+        Combat.CalculateAttackSwingDelay(584).Should().Be(Combat.BaseAttackDelayMilliseconds);
+        Combat.CalculateAttackSwingDelay(Combat.BaseAttackDelayMilliseconds).Should().Be(Combat.BaseAttackDelayMilliseconds);
+        Combat.CalculateAttackSwingDelay(2500).Should().Be(2500);
+    }
+
+    [Test]
+    public void CalculateAttacksPerSwing_ResolvesOneAttackWhenDelayAtOrAboveSwingFloor()
+    {
+        foreach (var effectiveDelay in new[] { Combat.BaseAttackDelayMilliseconds, 2500, 5000 })
+        {
+            var attacks = Combat.CalculateAttacksPerSwing(effectiveDelay, 0f, out var attackDebt);
+
+            attacks.Should().Be(1);
+            attackDebt.Should().Be(0f);
+        }
+    }
+
+    [Test]
+    public void CalculateAttacksPerSwing_ResolvesTwoAttacksWhenDelayIsHalfSwingFloor()
+    {
+        var attacks = Combat.CalculateAttacksPerSwing(Combat.BaseAttackDelayMilliseconds / 2, 0f, out var attackDebt);
+
+        attacks.Should().Be(2);
+        attackDebt.Should().BeApproximately(0f, 0.01f);
+    }
+
+    [Test]
+    public void CalculateAttacksPerSwing_CarriesFractionalAttacksBetweenSwings()
+    {
+        // 1000ms delay = 1.75 attacks per 1750ms swing; long-run average must match.
+        const int effectiveDelay = 1000;
+        var attackDebt = 0f;
+        var totalAttacks = 0;
+        const int swings = 100;
+
+        for (var i = 0; i < swings; i++)
+        {
+            totalAttacks += Combat.CalculateAttacksPerSwing(effectiveDelay, attackDebt, out attackDebt);
+        }
+
+        var expectedAttacks = swings * (Combat.BaseAttackDelayMilliseconds / (float)effectiveDelay);
+        totalAttacks.Should().BeCloseTo((int)expectedAttacks, 2);
+    }
+
+    [Test]
+    public void CalculateAttacksPerSwing_CapsAttacksAtMaxPerSwing()
+    {
+        var attacks = Combat.CalculateAttacksPerSwing(Combat.MinimumAttackDelayMilliseconds, 5f, out var attackDebt);
+
+        attacks.Should().Be(Combat.MaxAttacksPerSwing);
+        attackDebt.Should().BeLessThanOrEqualTo(Combat.MaxAttacksPerSwing);
+    }
+
+    [Test]
+    public void CalculateAttacksPerSwing_MinimumDelayAveragesToMaxAttacksPerSwing()
+    {
+        var attackDebt = 0f;
+        var totalAttacks = 0;
+        const int swings = 60;
+
+        for (var i = 0; i < swings; i++)
+        {
+            totalAttacks += Combat.CalculateAttacksPerSwing(Combat.MinimumAttackDelayMilliseconds, attackDebt, out attackDebt);
+        }
+
+        var expectedAttacks = swings * (Combat.BaseAttackDelayMilliseconds / (float)Combat.MinimumAttackDelayMilliseconds);
+        totalAttacks.Should().BeCloseTo((int)expectedAttacks, 2);
     }
 
     [Test]

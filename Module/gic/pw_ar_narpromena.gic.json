@@ -3276,6 +3276,13 @@
           "type": "cexostring",
           "value": "On the Advanced tab, replace <Place text here> with whatever information you wish to appear on the Map of an area."
         }
+      },
+      {
+        "__struct_id": 5,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Emergency /stuck recovery waypoint template. One per area; instance tag must be STUCK_WAYPOINT (server uses nearest). Do not use for patrol paths."
+        }
       }
     ]
   }

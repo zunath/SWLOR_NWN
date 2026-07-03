@@ -1,6 +1,8 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Service.KeyItemService;
 using SWLOR.Game.Server.Service.NPCService;
 using SWLOR.Game.Server.Service.QuestService;
+using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Feature.QuestDefinition
 {
@@ -12,6 +14,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             WorkinForTheMan(builder);
             StinkyWomprats(builder);
             TuskenRampage(builder);
+            SmugglerFavor(builder);
 
             return builder.Build();
         }
@@ -59,6 +62,30 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddGoldReward(11250)
                 .AddXPReward(7500)
                 .AddItemReward("recipe_hazrdwall", 1);
+        }
+
+        private static void SmugglerFavor(QuestBuilder builder)
+        {
+            builder.Create("smuggler_favor", "A Smuggler's Favor")
+
+                .AddState()
+                .SetStateJournalText("A shady smuggler has asked for your help. He lost a shipment to a local ancient sandworm and needs you to recover it. Find and eliminate the sandworm, then retrieve the stolen cargo.")
+                .AddKillObjective(NPCGroupType.Tatooine_AncientSandworm, 1)
+
+                .AddState()
+                .SetStateJournalText("You've dealt with the sandworm. Search the area and recover the stolen goods.")
+                .AddCollectItemObjective("stolen_goods", 5)
+
+                .AddState()
+                .SetStateJournalText("Return the goods to the smuggler. He promised you something valuable in return.")
+
+                .AddGoldReward(500)
+                .AddXPReward(1500)
+
+                .OnCompleteAction((player, sourceObject) =>
+                {
+                    KeyItem.GiveKeyItem(player, KeyItemType.SmugglerPass);
+                });
         }
     }
 }

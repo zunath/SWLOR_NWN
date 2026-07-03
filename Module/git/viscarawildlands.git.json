@@ -2107,7 +2107,7 @@
         },
         "Appearance": {
           "type": "dword",
-          "value": 20708
+          "value": 20705
         },
         "AutoRemoveKey": {
           "type": "byte",
@@ -2184,7 +2184,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "[mdrn]Landspeeder Luke                                                             "
+            "0": "[mdrn]Landspeeder AV                                                                 "
           }
         },
         "OnClick": {
@@ -444938,6 +444938,26 @@
           "type": "byte",
           "value": 1
         },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SCRIPT_1"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "Placeable.Sit"
+              }
+            }
+          ]
+        },
         "Will": {
           "type": "byte",
           "value": 0
@@ -445166,6 +445186,26 @@
         "Useable": {
           "type": "byte",
           "value": 1
+        },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SCRIPT_1"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "Placeable.Sit"
+              }
+            }
+          ]
         },
         "Will": {
           "type": "byte",
@@ -445396,6 +445436,26 @@
           "type": "byte",
           "value": 1
         },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SCRIPT_1"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "Placeable.Sit"
+              }
+            }
+          ]
+        },
         "Will": {
           "type": "byte",
           "value": 0
@@ -445625,6 +445685,26 @@
           "type": "byte",
           "value": 1
         },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SCRIPT_1"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "Placeable.Sit"
+              }
+            }
+          ]
+        },
         "Will": {
           "type": "byte",
           "value": 0
@@ -445853,6 +445933,26 @@
         "Useable": {
           "type": "byte",
           "value": 1
+        },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SCRIPT_1"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "Placeable.Sit"
+              }
+            }
+          ]
         },
         "Will": {
           "type": "byte",
@@ -455089,6 +455189,26 @@
           "type": "byte",
           "value": 1
         },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SCRIPT_1"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "Placeable.Sit"
+              }
+            }
+          ]
+        },
         "Will": {
           "type": "byte",
           "value": 0
@@ -455317,6 +455437,26 @@
         "Useable": {
           "type": "byte",
           "value": 1
+        },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SCRIPT_1"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "Placeable.Sit"
+              }
+            }
+          ]
         },
         "Will": {
           "type": "byte",
@@ -455547,6 +455687,26 @@
           "type": "byte",
           "value": 1
         },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SCRIPT_1"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "Placeable.Sit"
+              }
+            }
+          ]
+        },
         "Will": {
           "type": "byte",
           "value": 0
@@ -455775,6 +455935,26 @@
         "Useable": {
           "type": "byte",
           "value": 1
+        },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SCRIPT_1"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "Placeable.Sit"
+              }
+            }
+          ]
         },
         "Will": {
           "type": "byte",
@@ -456005,6 +456185,26 @@
           "type": "byte",
           "value": 1
         },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SCRIPT_1"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "Placeable.Sit"
+              }
+            }
+          ]
+        },
         "Will": {
           "type": "byte",
           "value": 0
@@ -456233,6 +456433,26 @@
         "Useable": {
           "type": "byte",
           "value": 1
+        },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SCRIPT_1"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "Placeable.Sit"
+              }
+            }
+          ]
         },
         "Will": {
           "type": "byte",
@@ -456463,6 +456683,26 @@
           "type": "byte",
           "value": 1
         },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SCRIPT_1"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "Placeable.Sit"
+              }
+            }
+          ]
+        },
         "Will": {
           "type": "byte",
           "value": 0
@@ -456691,6 +456931,26 @@
         "Useable": {
           "type": "byte",
           "value": 1
+        },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SCRIPT_1"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "Placeable.Sit"
+              }
+            }
+          ]
         },
         "Will": {
           "type": "byte",
@@ -456921,6 +457181,26 @@
           "type": "byte",
           "value": 1
         },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SCRIPT_1"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "Placeable.Sit"
+              }
+            }
+          ]
+        },
         "Will": {
           "type": "byte",
           "value": 0
@@ -457149,6 +457429,26 @@
         "Useable": {
           "type": "byte",
           "value": 1
+        },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SCRIPT_1"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "Placeable.Sit"
+              }
+            }
+          ]
         },
         "Will": {
           "type": "byte",
@@ -457382,6 +457682,21 @@
         "VarTable": {
           "type": "list",
           "value": [
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SCRIPT_1"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "Placeable.WarpDevice.OnUsed"
+              }
+            },
             {
               "__struct_id": 0,
               "Name": {
@@ -458608,7 +458923,7 @@
         },
         "LinkedTo": {
           "type": "cexostring",
-          "value": "WP_V_Mountain_to_Wildlands"
+          "value": "WP_V_WFork_to_Wildlands"
         },
         "LinkedToFlags": {
           "type": "byte",
@@ -458657,7 +458972,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "V_Wildlands_to_Mountains"
+          "value": "V_Wildlands_to_WFork"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -460240,7 +460555,7 @@
         "MapNote": {
           "type": "cexolocstring",
           "value": {
-            "0": "To Mountain Valley"
+            "0": "To Western Crossroads"
           }
         },
         "MapNoteEnabled": {
@@ -460249,7 +460564,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "WP_V_Wildlands_to_Mountains"
+          "value": "WP_V_Wildlands_to_WFork"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -460261,7 +460576,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 15.03069877624512
+          "value": 11.24720573425293
         },
         "YOrientation": {
           "type": "float",
@@ -460269,11 +460584,11 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 209.9971313476563
+          "value": 210.3939971923828
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.002889633178710938
+          "value": -5.7220458984375e-006
         }
       },
       {
@@ -460966,69 +461281,6 @@
         "ZPosition": {
           "type": "float",
           "value": 0.8152136206626892
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 1
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Stuck — viscarawildlands"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "STUCK_WAYPOINT"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "wp_stuck"
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 0.0
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 134.6529846191406
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 1.0
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 5.667945384979248
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": -0.3387393951416016
         }
       }
     ]

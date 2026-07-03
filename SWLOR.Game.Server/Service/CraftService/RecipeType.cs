@@ -600,12 +600,12 @@ namespace SWLOR.Game.Server.Service.CraftService
         ApexCap = 563,
         ApexGloves = 564,
         ApexBoots = 565,
-
+        ArkanianDragonArmor = 566,
         #endregion
 
-        #region Fabrication:  1001-2000
+		#region Fabrication:  1001-2000
 
-        BedRoll = 1001,
+		BedRoll = 1001,
         Easel = 1002,
         Candle = 1003,
         Carpet = 1004,
@@ -1179,7 +1179,6 @@ namespace SWLOR.Game.Server.Service.CraftService
 
         FoodSubmissionTokenAgriculture = 2205,
         ForbiddenGumbo = 2206,
-
         CookingEnhancementResistanceFire1 = 2207,
         CookingEnhancementResistancePoison1 = 2208,
         CookingEnhancementResistanceElectrical1 = 2209,
@@ -1224,6 +1223,12 @@ namespace SWLOR.Game.Server.Service.CraftService
         CookingEnhancementResistanceMobility5 = 2244,
         CookingEnhancementResistanceTrauma5 = 2245,
         CookingEnhancementResistanceDisruption5 = 2246,
+        NalHuttaFizz = 2247,
+        BogaNoga = 2248,
+        Gardula = 2249,
+        KeebadasBinggona = 2250,
+        SandoGDizzards = 2251,
+        CartelCakes = 2252,
 
         #endregion
 

@@ -166,6 +166,9 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("sandwormtooth", 5)
                 .AddItem("chiro_shard", 1);
 
+            _builder.Create("TATOOINE_ANCIENT_WORM_STOLEN_GOODS")
+                .AddItem("stolen_goods", 100);
+
             _builder.Create("TATOOINE_ANCIENT_WORM_GEMS")
                 .AddItem("emerald", 100, 1, true)
                 .AddItem("chiro_shard", 50, 1, true);

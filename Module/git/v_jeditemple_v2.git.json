@@ -141437,7 +141437,7 @@
         },
         "LinkedTo": {
           "type": "cexostring",
-          "value": "WP_v_wildwoods_to_jedi"
+          "value": "WP_V_EastFork_To_JediTemp"
         },
         "LinkedToFlags": {
           "type": "byte",
@@ -141450,7 +141450,9 @@
         "LocalizedName": {
           "id": 14760,
           "type": "cexolocstring",
-          "value": {}
+          "value": {
+            "0": "New Area Transition"
+          }
         },
         "OnClick": {
           "type": "resref",
@@ -141486,7 +141488,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "v_jeditemp_to_wildwoods"
+          "value": "V_JediTemp_To_EastFork"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -141803,7 +141805,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "WP_v_jeditemp_to_wildwoods"
+          "value": "WP_V_JediTemp_To_EastFork"
         },
         "TemplateResRef": {
           "type": "resref",

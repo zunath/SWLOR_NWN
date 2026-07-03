@@ -2215,6 +2215,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Arkanian Dragon Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ark_armor"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Battlemaster Armor"
                     },
                     "RESREF": {
@@ -6334,6 +6345,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Arkanian Dragon Bite"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "narkbite"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Bol Bite"
                     },
                     "RESREF": {
@@ -8493,6 +8515,50 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "mora_serp_skin"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Nar Shaddaa Boss"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nar_boss"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Nar Shaddaa T3"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nar_t3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Nar Shaddaa T4"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nar_t4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Nar Shaddaa T5"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nar_t5"
                     }
                   },
                   {
@@ -18315,6 +18381,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Arkanian Dragon Scales"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ark_drg_scales"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Armor Enhancement - Accuracy I"
                     },
                     "RESREF": {
@@ -20014,6 +20091,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "bibikibo"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Bioglow Kelp"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ns_bioglow_kelp"
                     }
                   },
                   {
@@ -22236,6 +22324,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "dark_bass"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Data Chip"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "data_chip_encryp"
                     }
                   },
                   {
@@ -27544,6 +27643,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Great Arkanian Dragon Head"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ark_dragon_troph"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Greedie"
                     },
                     "RESREF": {
@@ -28099,6 +28209,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "hollinium"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Holo Jelly"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ns_holo_jelly"
                     }
                   },
                   {
@@ -32879,6 +33000,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Moon Spice"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ns_moonspice"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Moorish Idol"
                     },
                     "RESREF": {
@@ -33088,6 +33220,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Neon Salt Crystals"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ns_neon_salt"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Neural Boost I"
                     },
                     "RESREF": {
@@ -33137,6 +33280,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "nickyln_stone"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Night Noodle Strands"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ns_night_noodle"
                     }
                   },
                   {
@@ -33940,6 +34094,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "quus"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Rackhouse Meat Cuts"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ns_rack_meat"
                     }
                   },
                   {
@@ -35519,6 +35684,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Sludge Eel"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ns_sludge_eel"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Slug Bile"
                     },
                     "RESREF": {
@@ -36448,6 +36624,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "stolen_s_artifac"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Stolen Goods"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "stolen_goods"
                     }
                   },
                   {
@@ -41100,6 +41287,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Boga Noga"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "boga_noga"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Bonefish Broth"
                     },
                     "RESREF": {
@@ -41204,6 +41402,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "carp_sushi"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cartel Cakes"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cartel_cakes"
                     }
                   },
                   {
@@ -41881,6 +42090,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Gardula"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "gardula_drink"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Gimpassa Sandwich"
                     },
                     "RESREF": {
@@ -42084,6 +42304,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "kath_sandwich"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Keebadas Binggona"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "keeb_binggona"
                     }
                   },
                   {
@@ -42326,6 +42557,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "mystery_cookies"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Nal Hutta Fizz"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nalhutta_fizz"
                     }
                   },
                   {
@@ -42645,6 +42887,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "demon_stew"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sando g'dizzards"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sando_gdizz"
                     }
                   },
                   {
@@ -43458,6 +43711,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "recipe_alcspear"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Arkanian Dragon Breastplate"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_arkarmor"
                     }
                   },
                   {
@@ -46731,11 +46995,33 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Recipe: Boga Noga"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_boganoga"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Recipe: Bream Sushi"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "recipe_brsushi"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Recipe: Cartel Cakes"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_cartelck"
                     }
                   },
                   {
@@ -46786,11 +47072,33 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Recipe: Gardula"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_gardula"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Recipe: Ikran Sushi"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "recipe_iksushi"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Recipe: Keebadas Binggona"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_keebbing"
                     }
                   },
                   {
@@ -46808,11 +47116,33 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Recipe: Nal Hutta Fizz"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_nalhfizz"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Recipe: Octopus Sushi"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "recipe_ocsushi"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Recipe: Sando g'dizzards"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_sandogdz"
                     }
                   },
                   {
@@ -46945,6 +47275,226 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "recipe_fabswoop1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Smuggler's Moon - Casino Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_83"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Smuggler's Moon - Catwalks Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_84"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Smuggler's Moon - Corporate District Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_85"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Smuggler's Moon - Czerka Arms Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_86"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Smuggler's Moon - Czerka Shipyard Office Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_87"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Smuggler's Moon - Fabrication Facility Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_88"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Smuggler's Moon - Fight Club Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_89"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Smuggler's Moon - GSI Base Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_90"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Smuggler's Moon - Hyper Dive Cantina Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_91"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Smuggler's Moon - Landing Pads Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_92"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Smuggler's Moon - Medshed Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_93"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Smuggler's Moon - Promenade Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_94"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Smuggler's Moon - Sewers Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_95"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Smuggler's Moon - Shipping District Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_96"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Smuggler's Moon - The Hub Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_97"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Smuggler's Moon - The Slums Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_98"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Smuggler's Moon - The Tilted Visor Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_99"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Smuggler's Moon Orbit Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_82"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Smuggler's Moon Station - Abandoned Station Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_100"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Smuggler's Moon Station - Lower Level Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_101"
                     }
                   },
                   {

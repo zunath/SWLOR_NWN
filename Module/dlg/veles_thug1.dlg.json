@@ -64,7 +64,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "\"This is our turf. Czerka wants to muscle in our turf, we leave those greenbacks with a few holes in their back.\""
+            "0": "\"Keep movin', buddy.\""
           }
         }
       }
@@ -72,7 +72,7 @@
   },
   "NumWords": {
     "type": "dword",
-    "value": 22
+    "value": 3
   },
   "PreventZoomIn": {
     "type": "byte",

@@ -1887,6 +1887,15 @@ def profile_property_lines(row, level, primary_status):
         add_profile_property("SelfEnmityPercentIfRecentWardHit", ward_challenge.group(2))
         add_profile_property("SelfEnmityDurationSecondsIfRecentWardHit", ward_challenge.group(3))
 
+    conditional_ward_challenge = re.search(
+        r"If this target has hit your ward in the last (\d+) seconds, gain \+(\d+)% Enmity toward it for (\d+) seconds",
+        description,
+        re.IGNORECASE)
+    if conditional_ward_challenge:
+        add_profile_property("ProtectedTargetHitWindowSeconds", conditional_ward_challenge.group(1))
+        add_profile_property("SelfEnmityPercentIfRecentWardHit", conditional_ward_challenge.group(2))
+        add_profile_property("SelfEnmityDurationSecondsIfRecentWardHit", conditional_ward_challenge.group(3))
+
     deflection_conditional = re.search(r"If used within (\d+) seconds after you deflect", description, re.IGNORECASE)
     if deflection_conditional and primary_status:
         add_profile_property("ConditionalStatusEffect", f"typeof({primary_status})")

@@ -465,6 +465,47 @@ public class GeneratedWeaponPerkBehaviorTests
     }
 
     [Test]
+    public void GuardiansChallenge_AppliesConditionalEnmityWithoutRequiringRecentWardHitTarget()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "AbilityDefinition",
+            "Lightsaber",
+            "GuardiansChallengeAbilityDefinition.cs"));
+
+        var rankOneIndex = source.IndexOf("FeatType.GuardiansChallenge1", StringComparison.Ordinal);
+        var rankTwoIndex = source.IndexOf("FeatType.GuardiansChallenge2", StringComparison.Ordinal);
+        var rankThreeIndex = source.IndexOf("FeatType.GuardiansChallenge3", StringComparison.Ordinal);
+        var endIndex = source.IndexOf("return builder.Build()", StringComparison.Ordinal);
+        rankOneIndex.Should().BeGreaterThanOrEqualTo(0);
+        rankTwoIndex.Should().BeGreaterThan(rankOneIndex);
+        rankThreeIndex.Should().BeGreaterThan(rankTwoIndex);
+        endIndex.Should().BeGreaterThan(rankThreeIndex);
+
+        var rankOneBlock = source.Substring(rankOneIndex, rankTwoIndex - rankOneIndex);
+        var rankTwoBlock = source.Substring(rankTwoIndex, rankThreeIndex - rankTwoIndex);
+        var rankThreeBlock = source.Substring(rankThreeIndex, endIndex - rankThreeIndex);
+
+        rankOneBlock.Should().NotContain("RequiresRecentWardHitTarget = true");
+        rankOneBlock.Should().Contain("ProtectedTargetHitWindowSeconds = 30");
+        rankOneBlock.Should().Contain("SelfEnmityPercentIfRecentWardHit = 20");
+        rankOneBlock.Should().Contain("SelfEnmityDurationSecondsIfRecentWardHit = 30");
+
+        rankTwoBlock.Should().NotContain("RequiresRecentWardHitTarget = true");
+        rankTwoBlock.Should().Contain("ProtectedTargetHitWindowSeconds = 30");
+        rankTwoBlock.Should().Contain("SelfEnmityPercentIfRecentWardHit = 30");
+        rankTwoBlock.Should().Contain("SelfEnmityDurationSecondsIfRecentWardHit = 30");
+
+        rankThreeBlock.Should().NotContain("RequiresRecentWardHitTarget = true");
+        rankThreeBlock.Should().Contain("ProtectedTargetHitWindowSeconds = 30");
+        rankThreeBlock.Should().Contain("SelfEnmityPercentIfRecentWardHit = 40");
+        rankThreeBlock.Should().Contain("SelfEnmityDurationSecondsIfRecentWardHit = 30");
+    }
+
+    [Test]
     public void ConditionalInterruptionAbilities_AreGeneratedAsTargetActivityPayoffs()
     {
         var root = FindRepositoryRoot();

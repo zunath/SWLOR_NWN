@@ -51,6 +51,8 @@ public class GeneratedWeaponPerkBehaviorTests
         AssertSourceStat("RiflePerkDefinition.cs", StatType.RepeatedTargetDamageDurationSeconds, "30");
         AssertSourceStat("RiflePerkDefinition.cs", StatType.AutoAttackSuppressionStackChance, "15");
         AssertSourceStat("RiflePerkDefinition.cs", StatType.AutoAttackSuppressionStackDurationSeconds, "30");
+        AssertSourceStat("RiflePerkDefinition.cs", StatType.AutoAttackSuppressionStackEvasionPenaltyPercent, "5");
+        AssertSourceStat("RiflePerkDefinition.cs", StatType.RangedHitSuppressionStackEvasionPenaltyPercent, "5");
         AssertSourceStat("RiflePerkDefinition.cs", StatType.DefenseIgnoreHitPhysicalDefensePercentAdjustment, "-10");
 
         AssertSourceStat("ThrowingPerkDefinition.cs", StatType.ThrowingBombardierClusterStormDamageBonus, "10");
@@ -288,6 +290,7 @@ public class GeneratedWeaponPerkBehaviorTests
         combatSource.Should().Contain("ApplyBleedingTargetAbilityBleedSpread(attacker, defender, skillType, damageType)");
         combatSource.Should().Contain("ApplyRangedHitSuppressionStack(activator, target, skillType, damageType)");
         combatSource.Should().Contain("SuppressionStackEvasionPenaltyPercentAdjustment");
+        combatSource.Should().Contain("if (adjustedEvasionPenaltyPercent <= 0)");
         combatSource.Should().Contain("ApplySkillAreaAbilityDamageModifier(");
         combatSource.Should().Contain("GetHitChanceAgainstSunderedTargetAdjustment(");
         combatSource.Should().Contain("GetCriticalRateAgainstSunderedTargetAdjustment(");

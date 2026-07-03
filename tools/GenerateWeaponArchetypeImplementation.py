@@ -530,6 +530,19 @@ def parse_duration(description):
     return int(match.group(1)) if match else 0
 
 
+def parse_suppression_stack_evasion_penalty(description):
+    patterns = [
+        r"reducing Evasion by (\d+)% per stack",
+        r"Suppression stacks reduce Evasion by (\d+)%",
+    ]
+    for pattern in patterns:
+        match = re.search(pattern, description, re.IGNORECASE)
+        if match:
+            return int(match.group(1))
+
+    return 0
+
+
 def status_types(description):
     result = []
     for keyword, status_type in STATUS_KEYWORDS:
@@ -646,14 +659,19 @@ def is_friendly_target_active(description):
 
 
 def description_stat_entries(row, base):
-    if row["Type"] != "Trait":
-        return []
-
     description = row["Description"]
     lowered = description.lower()
     stats = OrderedDict()
     skill_expr = skill_type_expression(row)
     skill = SKILL_BY_TAB[row["Tab"]]
+
+    if base == "Suppressing Shot":
+        stack_strength = parse_suppression_stack_evasion_penalty(description)
+        add_stat(stats, "AutoAttackSuppressionStackEvasionPenaltyPercent", stack_strength)
+        add_stat(stats, "RangedHitSuppressionStackEvasionPenaltyPercent", stack_strength)
+
+    if row["Type"] != "Trait":
+        return list(stats.items())
 
     auto_attack_bonus = re.search(
         r"(?:Auto-attacks|Thrown attacks).*?(\d+)% chance to deal \+(\d+).*?DMG",
@@ -1809,14 +1827,12 @@ def profile_property_lines(row, level, primary_status):
         add_profile_property("ConditionalTargetStatusEffect", "typeof(DazedStatusEffect)")
         add_profile_property("ConditionalTargetStatusDurationSeconds", str(parse_count(r"Dazed for (\d+) seconds", description) or parse_duration(description) or 30))
 
-    suppression_stack = re.search(
-        r"Grants a Suppression stack for (\d+) seconds.*?reducing Evasion by (\d+)% per stack",
-        description,
-        re.IGNORECASE)
-    if suppression_stack:
+    suppression_stack_duration = parse_count(r"Grants a Suppression stack for (\d+) seconds", description)
+    suppression_stack_penalty = parse_suppression_stack_evasion_penalty(description)
+    if suppression_stack_duration > 0 and suppression_stack_penalty > 0:
         add_profile_property("ApplySuppressionStackOnHit", "true")
-        add_profile_property("SuppressionStackDurationSeconds", suppression_stack.group(1))
-        add_profile_property("SuppressionStackEvasionPenaltyPercent", suppression_stack.group(2))
+        add_profile_property("SuppressionStackDurationSeconds", suppression_stack_duration)
+        add_profile_property("SuppressionStackEvasionPenaltyPercent", suppression_stack_penalty)
 
     suppression_line = re.search(r"multiple Suppression stacks are Disoriented for (\d+) seconds", description, re.IGNORECASE)
     if suppression_line:

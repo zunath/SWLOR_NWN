@@ -1800,8 +1800,8 @@ namespace SWLOR.Game.Server.Service
                 }
 
                 ApplyDarkForceConversion(activator, target, damage);
-                Combat.ApplyDamageDealtEffects(activator, target, damage, skillType, damageType);
                 Combat.ConsumeSameTargetPressureWeaponAbilityDamageBonus(activator, target, skillType, damage);
+                Combat.ApplyDamageDealtEffects(activator, target, damage, skillType, damageType);
                 StatusEffect.NotifyDamageStatusEffects(activator, target, damage, damageType);
                 Combat.ApplyDamageReflectionEffects(activator, target, damage, damageType);
             }

@@ -56,6 +56,7 @@ public class GeneratedWeaponPerkBehaviorTests
         AssertSourceStat("RiflePerkDefinition.cs", StatType.RepeatedTargetDamageDurationSeconds, "30");
         AssertSourceStat("RiflePerkDefinition.cs", StatType.AutoAttackSuppressionStackChance, "15");
         AssertSourceStat("RiflePerkDefinition.cs", StatType.AutoAttackSuppressionStackDurationSeconds, "30");
+        AssertSourceStat("RiflePerkDefinition.cs", StatType.AbilityHitChanceAgainstSuppressionStackPercentAdjustment, "10");
         AssertSourceStat("RiflePerkDefinition.cs", StatType.DefenseIgnoreHitPhysicalDefensePercentAdjustment, "-10");
 
         AssertSourceStat("ThrowingPerkDefinition.cs", StatType.ThrowingBombardierClusterStormDamageBonus, "10");
@@ -317,6 +318,7 @@ public class GeneratedWeaponPerkBehaviorTests
 
         var root = FindRepositoryRoot();
         var combatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
+        var abilitySource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Ability.cs"));
         var usePerkFeatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "UsePerkFeat.cs"));
         var nativeAttackSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Native", "ResolveAttackRoll.cs"));
         var statusEffectSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "StatusEffect.cs"));
@@ -331,7 +333,20 @@ public class GeneratedWeaponPerkBehaviorTests
         combatSource.Should().Contain("GetSameTargetPressureWeaponAbilityDamageBonus");
         combatSource.Should().Contain("ConsumeSameTargetPressureWeaponAbilityDamageBonus");
         combatSource.Should().Contain("typeof(SameTargetPressureStatusEffect)");
+        var consumePressureIndex = abilitySource.IndexOf("ConsumeSameTargetPressureWeaponAbilityDamageBonus", StringComparison.Ordinal);
+        var applyDamageDealtIndex = abilitySource.IndexOf("ApplyDamageDealtEffects(activator, target, damage, skillType, damageType)", StringComparison.Ordinal);
+        consumePressureIndex.Should().BeGreaterThanOrEqualTo(0);
+        applyDamageDealtIndex.Should().BeGreaterThanOrEqualTo(0);
+        consumePressureIndex.Should().BeLessThan(applyDamageDealtIndex);
         combatSource.Should().Contain("SuppressionStackEvasionPenaltyPercentAdjustment");
+        combatSource.Should().Contain("TrackSuppressionAbilityUse(activator, now)");
+        combatSource.Should().Contain("GetSuppressionAbilityHitChanceAdjustment(attacker, defender, skillType)");
+        combatSource.Should().Contain("!IsRangedWeaponSkill(skillType)");
+        combatSource.Should().Contain("_pendingSuppressionAbilityUses.TryGetValue(key, out var state)");
+        combatSource.Should().Contain("state.Expiration <= DateTime.UtcNow");
+        combatSource.Should().Contain("HasCurrentSuppressionAbilityUseStack(attacker, defender, state.SuppressionEffectIds)");
+        combatSource.Should().Contain("effects.Max(effect => effect.DurationTicks * effect.Frequency)");
+        combatSource.Should().Contain("SuppressionEffectIds = effects.Select(effect => effect.Id).ToHashSet()");
         combatSource.Should().Contain("ApplySkillAreaAbilityDamageModifier(");
         combatSource.Should().Contain("GetHitChanceAgainstSunderedTargetAdjustment(");
         combatSource.Should().Contain("GetCriticalRateAgainstSunderedTargetAdjustment(");

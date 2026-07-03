@@ -54,6 +54,7 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<uint, DateTime> _lastCombatActivity = new();
         private static readonly Dictionary<uint, DateTime> _lastAttackActivity = new();
         private static readonly Dictionary<uint, DateTime> _lastCombatAbilityUse = new();
+        private static readonly Dictionary<(uint, uint), SuppressionAbilityUseState> _pendingSuppressionAbilityUses = new();
         private static readonly Dictionary<uint, HostileAbilitySequenceState> _hostileAbilitySequenceStates = new();
         private static readonly Dictionary<uint, CriticalHitSequenceState> _criticalHitSequenceStates = new();
         private static readonly Dictionary<(uint, uint), int> _sameTargetHostileAbilityHitCounts = new();
@@ -96,6 +97,12 @@ namespace SWLOR.Game.Server.Service
         {
             public int Cost { get; init; }
             public DateTime SpentAt { get; init; }
+        }
+
+        private sealed class SuppressionAbilityUseState
+        {
+            public DateTime Expiration { get; init; }
+            public HashSet<string> SuppressionEffectIds { get; init; } = new();
         }
 
         /// <summary>
@@ -3563,6 +3570,11 @@ namespace SWLOR.Game.Server.Service
             _lastCombatActivity.Remove(creature);
             _lastAttackActivity.Remove(creature);
             _lastCombatAbilityUse.Remove(creature);
+            foreach (var key in _pendingSuppressionAbilityUses.Keys.Where(x => x.Item1 == creature || x.Item2 == creature).ToList())
+            {
+                _pendingSuppressionAbilityUses.Remove(key);
+            }
+
             _hostileAbilitySequenceStates.Remove(creature);
             _criticalHitSequenceStates.Remove(creature);
             foreach (var key in _sameTargetHostileAbilityHitCounts.Keys.Where(x => x.Item1 == creature || x.Item2 == creature).ToList())
@@ -5795,7 +5807,7 @@ namespace SWLOR.Game.Server.Service
             modifier += GetIncomingAbilityHitChanceAdjustment(defender, skillType);
             modifier += GetSideAttackHitChanceAdjustment(attacker, defender, skillType);
             modifier += GetIdleAbilityHitChanceAdjustment(attacker, skillType);
-            modifier += GetSuppressionAbilityHitChanceAdjustment(attacker, defender);
+            modifier += GetSuppressionAbilityHitChanceAdjustment(attacker, defender, skillType);
             modifier += GetHitChanceAgainstSunderedTargetAdjustment(attacker, defender);
             if (skillType == SkillType.Force)
             {
@@ -5896,11 +5908,49 @@ namespace SWLOR.Game.Server.Service
                 : 0;
         }
 
-        private static int GetSuppressionAbilityHitChanceAdjustment(uint attacker, uint defender)
+        private static int GetSuppressionAbilityHitChanceAdjustment(uint attacker, uint defender, SkillType skillType)
         {
-            return GetSuppressionStackCount(defender, attacker) > 0
-                ? Stat.GetStatAdjustment(attacker, StatType.AbilityHitChanceAgainstSuppressionStackPercentAdjustment)
-                : 0;
+            if (!IsRangedWeaponSkill(skillType))
+                return 0;
+
+            var adjustment = Stat.GetStatAdjustment(
+                attacker,
+                StatType.AbilityHitChanceAgainstSuppressionStackPercentAdjustment);
+            if (adjustment == 0 ||
+                GetSuppressionStackCount(defender, attacker) <= 0)
+            {
+                return 0;
+            }
+
+            var key = (attacker, defender);
+            if (!_pendingSuppressionAbilityUses.TryGetValue(key, out var state))
+                return 0;
+
+            if (state.Expiration <= DateTime.UtcNow)
+            {
+                _pendingSuppressionAbilityUses.Remove(key);
+                return 0;
+            }
+
+            if (!HasCurrentSuppressionAbilityUseStack(attacker, defender, state.SuppressionEffectIds))
+            {
+                _pendingSuppressionAbilityUses.Remove(key);
+                return 0;
+            }
+
+            _pendingSuppressionAbilityUses.Remove(key);
+            return adjustment;
+        }
+
+        private static bool HasCurrentSuppressionAbilityUseStack(
+            uint attacker,
+            uint defender,
+            HashSet<string> suppressionEffectIds)
+        {
+            return StatusEffect.GetCreatureStatusEffects(defender)
+                .GetAllEffects()
+                .OfType<SuppressionStatusEffect>()
+                .Any(effect => effect.Source == attacker && suppressionEffectIds.Contains(effect.Id));
         }
 
         public static int GetHitChanceAgainstSunderedTargetAdjustment(uint attacker, uint defender)
@@ -6780,7 +6830,38 @@ namespace SWLOR.Game.Server.Service
             if (skillType == SkillType.Invalid)
                 return;
 
-            _lastCombatAbilityUse[activator] = DateTime.UtcNow;
+            var now = DateTime.UtcNow;
+            _lastCombatAbilityUse[activator] = now;
+            TrackSuppressionAbilityUse(activator, now);
+        }
+
+        private static void TrackSuppressionAbilityUse(uint activator, DateTime usedAt)
+        {
+            var suppressionGroups = StatusEffect.GetCreatureStatusEffects(activator)
+                .GetAllEffects()
+                .OfType<SuppressionStatusEffect>()
+                .Where(effect => GetIsObjectValid(effect.Source))
+                .GroupBy(effect => effect.Source);
+
+            foreach (var sourceEffects in suppressionGroups)
+            {
+                var effects = sourceEffects.ToArray();
+                var expiration = DateTime.MaxValue;
+                if (effects.All(effect => effect.DurationTicks >= 0))
+                {
+                    var durationSeconds = effects.Max(effect => effect.DurationTicks * effect.Frequency);
+                    if (durationSeconds <= 0f)
+                        continue;
+
+                    expiration = usedAt.AddSeconds(durationSeconds);
+                }
+
+                _pendingSuppressionAbilityUses[(sourceEffects.Key, activator)] = new SuppressionAbilityUseState
+                {
+                    Expiration = expiration,
+                    SuppressionEffectIds = effects.Select(effect => effect.Id).ToHashSet()
+                };
+            }
         }
 
         private static void ApplyHostileAbilitySequenceEffects(

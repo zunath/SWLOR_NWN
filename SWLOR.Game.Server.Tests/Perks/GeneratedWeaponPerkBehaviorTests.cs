@@ -56,6 +56,8 @@ public class GeneratedWeaponPerkBehaviorTests
         AssertSourceStat("RiflePerkDefinition.cs", StatType.RepeatedTargetDamageDurationSeconds, "30");
         AssertSourceStat("RiflePerkDefinition.cs", StatType.AutoAttackSuppressionStackChance, "15");
         AssertSourceStat("RiflePerkDefinition.cs", StatType.AutoAttackSuppressionStackDurationSeconds, "30");
+        AssertSourceStat("RiflePerkDefinition.cs", StatType.AutoAttackSuppressionStackEvasionPenaltyPercent, "5");
+        AssertSourceStat("RiflePerkDefinition.cs", StatType.RangedHitSuppressionStackEvasionPenaltyPercent, "5");
         AssertSourceStat("RiflePerkDefinition.cs", StatType.AbilityHitChanceAgainstSuppressionStackPercentAdjustment, "10");
         AssertSourceStat("RiflePerkDefinition.cs", StatType.DefenseIgnoreHitPhysicalDefensePercentAdjustment, "-10");
 
@@ -339,6 +341,7 @@ public class GeneratedWeaponPerkBehaviorTests
         applyDamageDealtIndex.Should().BeGreaterThanOrEqualTo(0);
         consumePressureIndex.Should().BeLessThan(applyDamageDealtIndex);
         combatSource.Should().Contain("SuppressionStackEvasionPenaltyPercentAdjustment");
+        combatSource.Should().Contain("if (adjustedEvasionPenaltyPercent <= 0)");
         combatSource.Should().Contain("TrackSuppressionAbilityUse(activator, now)");
         combatSource.Should().Contain("GetSuppressionAbilityHitChanceAdjustment(attacker, defender, skillType)");
         combatSource.Should().Contain("!IsRangedWeaponSkill(skillType)");
@@ -372,6 +375,7 @@ public class GeneratedWeaponPerkBehaviorTests
         generatorSource.Should().Contain("Missing explicit recast short name");
         generatorSource.Should().Contain("\"SameTargetPressureBuildSkillType\"");
         generatorSource.Should().Contain("\"SameTargetPressureReadyDurationSeconds\"");
+        generatorSource.Should().Contain("Unable to parse Suppressing Shot suppression stack Evasion");
         combatSource.Should().Contain("ApplyAvoidedAttackNextAutoAttackNoDelay(creature)");
         combatSource.Should().Contain("ApplyBleedingStatusExpiredEffects(uint source)");
         combatSource.Should().Contain("ApplyCostlyAbilityHitEffects(activator, target, ability, skillType)");

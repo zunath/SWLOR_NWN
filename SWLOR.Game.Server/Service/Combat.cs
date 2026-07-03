@@ -4492,6 +4492,8 @@ namespace SWLOR.Game.Server.Service
                 0,
                 evasionPenaltyPercent +
                 Stat.GetStatAdjustment(attacker, StatType.SuppressionStackEvasionPenaltyPercentAdjustment));
+            if (adjustedEvasionPenaltyPercent <= 0)
+                return;
 
             StatusEffect.ApplyStatusEffect(
                 attacker,

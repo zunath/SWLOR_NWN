@@ -43,7 +43,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 AbilityType.Invalid,
                 new GeneratedWeaponAbilityProfile
                 {
-                    RequiresRecentWardHitTarget = true,
                     ProtectedTargetHitWindowSeconds = 30,
                     SelfEnmityPercentIfRecentWardHit = 20,
                     SelfEnmityDurationSecondsIfRecentWardHit = 30
@@ -75,7 +74,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 AbilityType.Invalid,
                 new GeneratedWeaponAbilityProfile
                 {
-                    RequiresRecentWardHitTarget = true,
                     ProtectedTargetHitWindowSeconds = 30,
                     SelfEnmityPercentIfRecentWardHit = 30,
                     SelfEnmityDurationSecondsIfRecentWardHit = 30
@@ -107,7 +105,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 AbilityType.Invalid,
                 new GeneratedWeaponAbilityProfile
                 {
-                    RequiresRecentWardHitTarget = true,
                     ProtectedTargetHitWindowSeconds = 30,
                     SelfEnmityPercentIfRecentWardHit = 40,
                     SelfEnmityDurationSecondsIfRecentWardHit = 30

@@ -1376,7 +1376,21 @@
         "__struct_id": 6,
         "Area_Name": {
           "type": "resref",
+          "value": "pw_ar_bhbar"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
           "value": "pw_ar_citbat003"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "pw_ar_czoffice"
         }
       },
       {
@@ -1398,6 +1412,90 @@
         "Area_Name": {
           "type": "resref",
           "value": "pw_ar_kashyk"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "pw_ar_nardocks"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "pw_ar_narpromena"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "pw_ar_narshahub"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "pw_ar_narslum"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "pw_ar_nscasino"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "pw_ar_nscrafting"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "pw_ar_nsczgnstr"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "pw_ar_nsficlub"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "pw_ar_nsgsidunge"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "pw_ar_nsshipyard"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "pw_ar_ns_doffice"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "pw_ar_ns_medical"
         }
       },
       {
@@ -1426,6 +1524,13 @@
         "Area_Name": {
           "type": "resref",
           "value": "pw_ar_trenchv2"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "pw_ar_undrnasha"
         }
       },
       {
@@ -2867,13 +2972,6 @@
         "__struct_id": 6,
         "Area_Name": {
           "type": "resref",
-          "value": "spacenarshalower"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
           "value": "viscara_forkwest"
         }
       },
@@ -2881,140 +2979,14 @@
         "__struct_id": 6,
         "Area_Name": {
           "type": "resref",
-          "value": "spacenarshaddung"
+          "value": "v_repubbase_002"
         }
       },
       {
         "__struct_id": 6,
         "Area_Name": {
           "type": "resref",
-          "value": "pw_ar_undrnasha"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "pw_ar_nsshipyard"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "pw_ar_nsgsidunge"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "pw_ar_nsficlub"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "pw_ar_nsczgnstr"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "pw_ar_nscrafting"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "pw_ar_nscasino"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "pw_ar_ns_medical"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "pw_ar_ns_doffice"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "pw_ar_narslum"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "pw_ar_narshahub"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "pw_ar_bhbar"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "pw_ar_nardocks"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "pw_ar_narpromena"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "pw_ar_czoffice"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "pw_ar_narscorpd"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "pw_ar_narcatwalk"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "pw_ar_nars_canhd"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "narshadorbit"
+          "value": "vrcityhall"
         }
       },
       {
@@ -3036,6 +3008,13 @@
         "Area_Name": {
           "type": "resref",
           "value": "viscara_wwruined"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "veles_tradecon"
         }
       }
     ]
@@ -3340,7 +3319,7 @@
   },
   "Mod_ID": {
     "type": "void",
-    "value": "ï¿½ï¿½ï¿½ï¿½\u0001\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000"
+    "value": "ÿÿÿÿ\u0001\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000"
   },
   "Mod_IsSaveGame": {
     "type": "byte",

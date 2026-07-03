@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using SWLOR.Game.Server.Service.CombatService;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
 {
@@ -82,9 +83,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
             AssignCommand(activator, () =>
             {
                 ApplyEffectToObject(DurationType.Instant, EffectDamage(amount), activator);
-                Combat.ApplyLowHPDamageTakenEffects(activator, amount);
+                DamageTakenReactions.ApplyLowHPDamageTakenEffects(activator, amount);
             });
-            Combat.ApplyHitPointSpendAbilityEffects(activator);
+            HitPointSpendEffects.ApplyHitPointSpendAbilityEffects(activator);
         }
 
         protected static void ApplyStatusToNearbyParty(

@@ -95,9 +95,9 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsObjectValid(activator) || ability == null)
                 return;
 
-            var abilitySkillType = Combat.GetAbilitySkillType(activator, ability);
-            var nextAbilityDamageBonus = Combat.ConsumeNextAbilityDamageBonus(activator, ability.EffectiveLevelPerkType);
-            var nextSkillAbilityBonuses = Combat.ConsumeNextSkillAbilityBonuses(activator, abilitySkillType);
+            var abilitySkillType = QueuedCombatActions.GetAbilitySkillType(activator, ability);
+            var nextAbilityDamageBonus = QueuedAbilityBonuses.ConsumeNextAbilityDamageBonus(activator, ability.EffectiveLevelPerkType);
+            var nextSkillAbilityBonuses = QueuedCombatActions.ConsumeNextSkillAbilityBonuses(activator, abilitySkillType);
             BeginAbilityImpact(
                 activator,
                 ability,
@@ -335,7 +335,7 @@ namespace SWLOR.Game.Server.Service
                 return false;
             }
 
-            if (Combat.GetAbilitySkillType(activator, ability) == SkillType.Force &&
+            if (QueuedCombatActions.GetAbilitySkillType(activator, ability) == SkillType.Force &&
                 Stat.GetStatAdjustment(activator, StatType.ForceAbilityActivationDisabled) > 0)
             {
                 SendMessageToPC(activator, "You cannot use Force abilities right now.");
@@ -1471,7 +1471,7 @@ namespace SWLOR.Game.Server.Service
                 if (ability != null)
                 {
                     var summary = EndAbilityImpact(creator);
-                    Combat.ApplyAbilityImpactEffects(creator, summary);
+                    AbilityHitResolver.ApplyAbilityImpactEffects(creator, summary);
                     afterImpactAction?.Invoke(summary);
                 }
             };
@@ -1781,7 +1781,7 @@ namespace SWLOR.Game.Server.Service
 
             if (damage > 0)
             {
-                Combat.SendTemporaryHitPointDamageFeedback(activator, target, damage);
+                CombatLog.SendTemporaryHitPointDamageFeedback(activator, target, damage);
                 if (trackedImpact == null)
                 {
                     AssignCommand(
@@ -1800,9 +1800,9 @@ namespace SWLOR.Game.Server.Service
                 }
 
                 ApplyDarkForceConversion(activator, target, damage);
-                Combat.ApplyDamageDealtEffects(activator, target, damage, skillType, damageType);
+                DamageDealtEffects.ApplyDamageDealtEffects(activator, target, damage, skillType, damageType);
                 StatusEffect.NotifyDamageStatusEffects(activator, target, damage, damageType);
-                Combat.ApplyDamageReflectionEffects(activator, target, damage, damageType);
+                CombatDamageCalculator.ApplyDamageReflectionEffects(activator, target, damage, damageType);
             }
 
             ApplyHostileAbilityEnmity(activator, target, damage + Math.Max(0, enmityBonus));
@@ -1822,7 +1822,7 @@ namespace SWLOR.Game.Server.Service
                 ApplyDarkForceCastConversion(activator, target);
             }
 
-            Combat.ApplySuccessfulAbilityImpactRiders(
+            AbilityImpactEffectDispatcher.ApplySuccessfulAbilityImpactRiders(
                 activator,
                 target,
                 trackedImpact?.Ability,
@@ -1877,7 +1877,7 @@ namespace SWLOR.Game.Server.Service
                 ? combatImpactDamageAbility
                 : trackedImpact?.Ability?.CombatImpactDamageAbility ?? AbilityType.Invalid;
             var appliedStatusCategories = GetCombatImpactStatusCategories(statusEffect, additionalStatusEffects, statusEffectFactory);
-            var statusCategoryHitChanceAdjustment = Combat.GetAbilityStatusCategoryHitChancePercentAdjustment(
+            var statusCategoryHitChanceAdjustment = QueuedAbilityBonuses.GetAbilityStatusCategoryHitChancePercentAdjustment(
                 activator,
                 skillType,
                 appliedStatusCategories);
@@ -1887,7 +1887,7 @@ namespace SWLOR.Game.Server.Service
             var shouldResolveHit = resolvesHit && ShouldResolveCombatImpactHit(trackedImpact);
             var hitRate = 100;
             if (shouldResolveHit &&
-                !Combat.TryResolveAbilityHit(
+                !AbilityHitResolver.TryResolveAbilityHit(
                     activator,
                     target,
                     skillType,
@@ -1908,12 +1908,12 @@ namespace SWLOR.Game.Server.Service
                 SendCombatImpactResultMessage(activator, target, trackedImpact?.Ability, 1, hitRate);
 
             var adjustedBaseDamage = Math.Max(0, baseDamage + (baseDamageAdjustment?.Invoke(target) ?? 0));
-            adjustedBaseDamage += Combat.GetAbilityImpactBaseDamageBonus(
+            adjustedBaseDamage += AbilityImpactBonusCalculator.GetAbilityImpactBaseDamageBonus(
                 activator,
                 target,
                 trackedImpact?.Ability,
                 skillType);
-            adjustedBaseDamage += Combat.GetAbilityStatusCategoryDamageBonus(
+            adjustedBaseDamage += QueuedAbilityBonuses.GetAbilityStatusCategoryDamageBonus(
                 activator,
                 skillType,
                 appliedStatusCategories);
@@ -1999,7 +1999,7 @@ namespace SWLOR.Game.Server.Service
 
             Messaging.SendMessageNearbyToPlayers(
                 target,
-                receiver => Combat.BuildAbilityCombatLogMessage(
+                receiver => CombatLog.BuildAbilityCombatLogMessage(
                     receiver,
                     activator,
                     target,
@@ -2018,7 +2018,7 @@ namespace SWLOR.Game.Server.Service
 
             Messaging.SendMessageNearbyToPlayers(
                 activator,
-                receiver => Combat.BuildAbilityNoTargetCombatLogMessage(
+                receiver => CombatLog.BuildAbilityNoTargetCombatLogMessage(
                     receiver,
                     activator,
                     ability.Name),
@@ -2157,12 +2157,12 @@ namespace SWLOR.Game.Server.Service
             var trackedImpact = GetTrackedAbilityImpact(activator);
             var ability = GetCombatImpactDamageAbility(activator, combatImpactDamageAbility);
             var perkType = trackedImpact?.Ability?.EffectiveLevelPerkType ?? PerkType.Invalid;
-            var idleBonuses = Combat.GetIdleSkillAbilityBonuses(activator, skillType);
+            var idleBonuses = AbilityRecoveryEffects.GetIdleSkillAbilityBonuses(activator, skillType);
             var damage = baseDamage +
-                Combat.GetCombatImpactWeaponDamage(activator, skillType) +
-                Combat.GetAbilityDamageBonus(activator, skillType) +
-                Combat.GetAbilityDamageFlatAdjustment(activator, perkType, skillType) +
-                Combat.GetCostlyAbilityDamageBonus(activator, skillType) +
+                AbilityImpactEffects.GetCombatImpactWeaponDamage(activator, skillType) +
+                AbilityImpactEffects.GetAbilityDamageBonus(activator, skillType) +
+                QueuedAbilityBonuses.GetAbilityDamageFlatAdjustment(activator, perkType, skillType) +
+                AbilityImpactBonusCalculator.GetCostlyAbilityDamageBonus(activator, skillType) +
                 idleBonuses.DamageBonus;
             if (trackedImpact != null)
             {
@@ -2170,25 +2170,25 @@ namespace SWLOR.Game.Server.Service
             }
 
             var attack = Stat.GetAttack(activator, ability, skillType);
-            attack = Combat.ApplyTargetStatusAttackModifiers(activator, target, attack, skillType);
+            attack = DamageDealtModifiers.ApplyTargetStatusAttackModifiers(activator, target, attack, skillType);
             var attackStat = GetAbilityScore(activator, ability);
             var defenseAbility = damageType.GetDefenseAbilityType();
             var defense = Stat.GetDefense(target, damageType, defenseAbility);
-            defense = Combat.ApplyStatusSourceDefenseModifiers(activator, target, defense);
+            defense = DamageModifierPipeline.ApplyStatusSourceDefenseModifiers(activator, target, defense);
             var defenderStat = GetAbilityScore(target, defenseAbility);
             var defenseIgnorePercent =
-                Combat.GetAbilityDefenseIgnorePercentAdjustment(activator, perkType, skillType, target) +
+                QueuedAbilityBonuses.GetAbilityDefenseIgnorePercentAdjustment(activator, perkType, skillType, target) +
                 (trackedImpact?.NextAbilityDefenseIgnorePercentAdjustment ?? 0);
-            defense = Combat.ApplyDefenseIgnore(defense, defenseIgnorePercent);
+            defense = AbilityHitResolver.ApplyDefenseIgnore(defense, defenseIgnorePercent);
             var criticalRating = canCritical
-                ? Combat.CalculateAbilityCriticalRating(
+                ? AbilityHitResolver.CalculateAbilityCriticalRating(
                     activator,
                     skillType,
                     IsTrackedAbilityArea(activator),
                     (trackedImpact?.NextAbilityCriticalRatePercentAdjustment ?? 0) + criticalRatePercentAdjustment,
                     target)
                 : 0;
-            var damageRoll = Combat.CalculateDamageWithCriticalMitigation(
+            var damageRoll = CombatDamageCalculator.CalculateDamageWithCriticalMitigation(
                 target,
                 attack,
                 damage,
@@ -2200,39 +2200,39 @@ namespace SWLOR.Game.Server.Service
             criticalRating = damageRoll.CriticalRating;
             if (damageRoll.WasCriticalDowngraded)
             {
-                Combat.SendIncomingCriticalHitDowngradeFeedback(activator, target);
+                GuardDeflection.SendIncomingCriticalHitDowngradeFeedback(activator, target);
             }
 
-            calculatedDamage = Combat.ApplyCriticalDamageModifier(
+            calculatedDamage = CombatDamageCalculator.ApplyCriticalDamageModifier(
                 activator,
                 calculatedDamage,
                 criticalRating,
                 skillType,
                 target,
                 idleBonuses.CriticalDamagePercentAdjustment);
-            calculatedDamage = Combat.ApplySideAttackDamageModifier(activator, target, skillType, calculatedDamage);
-            calculatedDamage = Combat.ApplyTwinBladeAbilityShapeDamageModifier(
+            calculatedDamage = SideCriticalEffects.ApplySideAttackDamageModifier(activator, target, skillType, calculatedDamage);
+            calculatedDamage = DamageModifierPipeline.ApplyTwinBladeAbilityShapeDamageModifier(
                 activator,
                 skillType,
                 calculatedDamage,
                 IsTrackedAbilitySingleTarget(activator),
                 IsTrackedAbilityArea(activator));
-            calculatedDamage = Combat.ApplyThrowingAbilityShapeDamageModifier(
+            calculatedDamage = DamageModifierPipeline.ApplyThrowingAbilityShapeDamageModifier(
                 activator,
                 skillType,
                 calculatedDamage,
                 IsTrackedAbilityArea(activator));
-            calculatedDamage = Combat.ApplySkillAreaAbilityDamageModifier(
+            calculatedDamage = DamageModifierPipeline.ApplySkillAreaAbilityDamageModifier(
                 activator,
                 skillType,
                 calculatedDamage,
                 IsTrackedAbilityArea(activator));
-            calculatedDamage = Combat.ApplyPhysicalAbilityShapeDamageModifier(
+            calculatedDamage = DamageModifierPipeline.ApplyPhysicalAbilityShapeDamageModifier(
                 activator,
                 damageType,
                 calculatedDamage,
                 IsTrackedAbilitySingleTarget(activator));
-            calculatedDamage = Combat.ApplyAreaAbilityAfterDeflectionDamageModifier(
+            calculatedDamage = DamageModifierPipeline.ApplyAreaAbilityAfterDeflectionDamageModifier(
                 activator,
                 skillType,
                 calculatedDamage,
@@ -2241,15 +2241,15 @@ namespace SWLOR.Game.Server.Service
             {
                 calculatedDamage = Perk.ApplyForceAffinityMagnitude(activator, perkType, calculatedDamage);
             }
-            calculatedDamage = Combat.ApplyDamageDealtModifiers(activator, target, calculatedDamage, skillType, damageType, true);
+            calculatedDamage = DamageDealtModifiers.ApplyDamageDealtModifiers(activator, target, calculatedDamage, skillType, damageType, true);
             calculatedDamage = ApplyCombatReadinessToActivatedAbilityMagnitude(activator, calculatedDamage);
             calculatedDamage = Resistance.ApplyResistanceToDamage(target, damageType, calculatedDamage);
-            calculatedDamage = Combat.ApplyDamageTakenModifiers(target, calculatedDamage, activator, damageType);
+            calculatedDamage = CombatDamageCalculator.ApplyDamageTakenModifiers(target, calculatedDamage, activator, damageType);
 
             if (criticalRating > 0)
             {
                 trackedImpact?.RecordCriticalHit();
-                Combat.ApplyCriticalHitEffects(
+                SideCriticalEffects.ApplyCriticalHitEffects(
                     activator,
                     target,
                     calculatedDamage,
@@ -2259,7 +2259,7 @@ namespace SWLOR.Game.Server.Service
             }
             else
             {
-                Combat.ApplyNonCriticalAbilityEffects(activator, target, skillType);
+                SideCriticalEffects.ApplyNonCriticalAbilityEffects(activator, target, skillType);
             }
 
             return calculatedDamage;
@@ -2356,13 +2356,13 @@ namespace SWLOR.Game.Server.Service
             var trackedImpact = GetTrackedAbilityImpact(activator);
             var ability = GetCombatImpactDamageAbility(activator, combatImpactDamageAbility);
             var perkType = trackedImpact?.Ability?.EffectiveLevelPerkType ?? PerkType.Invalid;
-            var idleBonuses = Combat.GetIdleSkillAbilityBonuses(activator, skillType);
+            var idleBonuses = AbilityRecoveryEffects.GetIdleSkillAbilityBonuses(activator, skillType);
             var scalingRank = GetNPCAbilityScalingRank(activator, skillType, damageType, combatImpactDamageAbility);
             var damage = baseDamage +
-                Combat.GetCombatImpactWeaponDamage(activator, skillType) +
+                AbilityImpactEffects.GetCombatImpactWeaponDamage(activator, skillType) +
                 (int)Math.Ceiling(scalingRank * 0.15f) +
-                Combat.GetAbilityDamageFlatAdjustment(activator, perkType, skillType) +
-                Combat.GetCostlyAbilityDamageBonus(activator, skillType) +
+                QueuedAbilityBonuses.GetAbilityDamageFlatAdjustment(activator, perkType, skillType) +
+                AbilityImpactBonusCalculator.GetCostlyAbilityDamageBonus(activator, skillType) +
                 idleBonuses.DamageBonus;
             if (trackedImpact != null)
             {
@@ -2378,24 +2378,24 @@ namespace SWLOR.Game.Server.Service
                 attackStat,
                 GetNPCAbilityOffenseBonus(npcStats, skillType, damageType) + Stat.GetStatAdjustment(activator, StatType.Attack));
             attack = ApplyNPCAbilitySourceAttackModifiers(activator, skillType, attack);
-            attack = Combat.ApplyTargetStatusAttackModifiers(activator, target, attack, skillType);
+            attack = DamageDealtModifiers.ApplyTargetStatusAttackModifiers(activator, target, attack, skillType);
             var defenseAbility = damageType.GetDefenseAbilityType();
             var defense = Stat.GetDefense(target, damageType, defenseAbility);
-            defense = Combat.ApplyStatusSourceDefenseModifiers(activator, target, defense);
+            defense = DamageModifierPipeline.ApplyStatusSourceDefenseModifiers(activator, target, defense);
             var defenderStat = GetAbilityScore(target, defenseAbility);
             var defenseIgnorePercent =
-                Combat.GetAbilityDefenseIgnorePercentAdjustment(activator, perkType, skillType, target) +
+                QueuedAbilityBonuses.GetAbilityDefenseIgnorePercentAdjustment(activator, perkType, skillType, target) +
                 (trackedImpact?.NextAbilityDefenseIgnorePercentAdjustment ?? 0);
-            defense = Combat.ApplyDefenseIgnore(defense, defenseIgnorePercent);
+            defense = AbilityHitResolver.ApplyDefenseIgnore(defense, defenseIgnorePercent);
             var criticalRating = canCritical
-                ? Combat.CalculateAbilityCriticalRating(
+                ? AbilityHitResolver.CalculateAbilityCriticalRating(
                     activator,
                     skillType,
                     IsTrackedAbilityArea(activator),
                     (trackedImpact?.NextAbilityCriticalRatePercentAdjustment ?? 0) + criticalRatePercentAdjustment,
                     target)
                 : 0;
-            var damageRoll = Combat.CalculateDamageWithCriticalMitigation(
+            var damageRoll = CombatDamageCalculator.CalculateDamageWithCriticalMitigation(
                 target,
                 attack,
                 damage,
@@ -2407,39 +2407,39 @@ namespace SWLOR.Game.Server.Service
             criticalRating = damageRoll.CriticalRating;
             if (damageRoll.WasCriticalDowngraded)
             {
-                Combat.SendIncomingCriticalHitDowngradeFeedback(activator, target);
+                GuardDeflection.SendIncomingCriticalHitDowngradeFeedback(activator, target);
             }
 
-            calculatedDamage = Combat.ApplyCriticalDamageModifier(
+            calculatedDamage = CombatDamageCalculator.ApplyCriticalDamageModifier(
                 activator,
                 calculatedDamage,
                 criticalRating,
                 skillType,
                 target,
                 idleBonuses.CriticalDamagePercentAdjustment);
-            calculatedDamage = Combat.ApplySideAttackDamageModifier(activator, target, skillType, calculatedDamage);
-            calculatedDamage = Combat.ApplyTwinBladeAbilityShapeDamageModifier(
+            calculatedDamage = SideCriticalEffects.ApplySideAttackDamageModifier(activator, target, skillType, calculatedDamage);
+            calculatedDamage = DamageModifierPipeline.ApplyTwinBladeAbilityShapeDamageModifier(
                 activator,
                 skillType,
                 calculatedDamage,
                 IsTrackedAbilitySingleTarget(activator),
                 IsTrackedAbilityArea(activator));
-            calculatedDamage = Combat.ApplyThrowingAbilityShapeDamageModifier(
+            calculatedDamage = DamageModifierPipeline.ApplyThrowingAbilityShapeDamageModifier(
                 activator,
                 skillType,
                 calculatedDamage,
                 IsTrackedAbilityArea(activator));
-            calculatedDamage = Combat.ApplySkillAreaAbilityDamageModifier(
+            calculatedDamage = DamageModifierPipeline.ApplySkillAreaAbilityDamageModifier(
                 activator,
                 skillType,
                 calculatedDamage,
                 IsTrackedAbilityArea(activator));
-            calculatedDamage = Combat.ApplyPhysicalAbilityShapeDamageModifier(
+            calculatedDamage = DamageModifierPipeline.ApplyPhysicalAbilityShapeDamageModifier(
                 activator,
                 damageType,
                 calculatedDamage,
                 IsTrackedAbilitySingleTarget(activator));
-            calculatedDamage = Combat.ApplyAreaAbilityAfterDeflectionDamageModifier(
+            calculatedDamage = DamageModifierPipeline.ApplyAreaAbilityAfterDeflectionDamageModifier(
                 activator,
                 skillType,
                 calculatedDamage,
@@ -2448,15 +2448,15 @@ namespace SWLOR.Game.Server.Service
             {
                 calculatedDamage = Perk.ApplyForceAffinityMagnitude(activator, perkType, calculatedDamage);
             }
-            calculatedDamage = Combat.ApplyDamageDealtModifiers(activator, target, calculatedDamage, skillType, damageType, true);
+            calculatedDamage = DamageDealtModifiers.ApplyDamageDealtModifiers(activator, target, calculatedDamage, skillType, damageType, true);
             calculatedDamage = ApplyCombatReadinessToActivatedAbilityMagnitude(activator, calculatedDamage);
             calculatedDamage = Resistance.ApplyResistanceToDamage(target, damageType, calculatedDamage);
-            calculatedDamage = Combat.ApplyDamageTakenModifiers(target, calculatedDamage, activator, damageType);
+            calculatedDamage = CombatDamageCalculator.ApplyDamageTakenModifiers(target, calculatedDamage, activator, damageType);
 
             if (criticalRating > 0)
             {
                 trackedImpact?.RecordCriticalHit();
-                Combat.ApplyCriticalHitEffects(
+                SideCriticalEffects.ApplyCriticalHitEffects(
                     activator,
                     target,
                     calculatedDamage,
@@ -2466,7 +2466,7 @@ namespace SWLOR.Game.Server.Service
             }
             else
             {
-                Combat.ApplyNonCriticalAbilityEffects(activator, target, skillType);
+                SideCriticalEffects.ApplyNonCriticalAbilityEffects(activator, target, skillType);
             }
 
             return calculatedDamage;
@@ -2481,8 +2481,8 @@ namespace SWLOR.Game.Server.Service
             }
 
             adjustment += GetHighFPAndStaminaAttackAdjustment(activator);
-            adjustment += Combat.GetNearbyStatusTargetAttackAdjustment(activator);
-            adjustment += Combat.GetLowHPAttackAdjustment(activator);
+            adjustment += DamageModifierPipeline.GetNearbyStatusTargetAttackAdjustment(activator);
+            adjustment += AttackConditionBonuses.GetLowHPAttackAdjustment(activator);
 
             return Math.Max(1, ApplyPercentAdjustment(attack, adjustment));
         }
@@ -2573,7 +2573,7 @@ namespace SWLOR.Game.Server.Service
 
             var trackedImpact = GetTrackedAbilityImpact(activator);
             var perkType = trackedImpact?.Ability?.EffectiveLevelPerkType ?? PerkType.Invalid;
-            var adjustment = Combat.GetAbilityStatusDurationPercentAdjustment(
+            var adjustment = QueuedAbilityBonuses.GetAbilityStatusDurationPercentAdjustment(
                 activator,
                 perkType,
                 skillType,

@@ -544,7 +544,7 @@ Features integrate with services:
 public static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
 {
     // Use combat service
-    var damage = Combat.CalculateDamage(/* parameters */);
+    var damage = CombatDamageCalculator.CalculateDamage(/* parameters */);
 
     // Use stat service
     Stat.ModifyStat(target, AbilityType.Constitution, -damage);

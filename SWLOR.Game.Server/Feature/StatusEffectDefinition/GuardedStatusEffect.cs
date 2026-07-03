@@ -111,8 +111,8 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
             var damageBonus = Stat.GetStatAdjustment(Source, StatType.GuardedAllyHitNextSkillAbilityDamageBonus);
             var window = Stat.GetStatAdjustment(Source, StatType.GuardedAllyHitNextSkillAbilityWindowSeconds);
-            Combat.GrantNextSkillAbilityBonuses(Source, SkillType.Katar, damageBonus, 0, window);
-            Combat.ApplyLowHPGuardEffectFromProtectedTarget(Source, defender, damage);
+            AbilityImpactEffects.GrantNextSkillAbilityBonuses(Source, SkillType.Katar, damageBonus, 0, window);
+            LowHPReactions.ApplyLowHPGuardEffectFromProtectedTarget(Source, defender, damage);
         }
 
         public void OnGuardedHitEffect(uint defender, uint attacker, int preventedDamage)
@@ -120,7 +120,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             if (!IsProtectionActive(defender))
                 return;
 
-            Combat.TrackGuardedHit(Source);
+            GuardDeflection.TrackGuardedHit(Source);
         }
 
         private void RefreshGuardBenefit(uint creature)

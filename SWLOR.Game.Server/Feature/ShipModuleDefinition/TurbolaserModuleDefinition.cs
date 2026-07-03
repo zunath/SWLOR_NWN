@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using Random = SWLOR.Game.Server.Service.Random;
+using SWLOR.Game.Server.Service.CombatService;
 
 namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 {
@@ -78,7 +79,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                             {
                                 var roll = Random.D100(1);
                                 var isHit = roll <= chanceToHit;
-                                var damage = Combat.CalculateDamage(
+                                var damage = CombatDamageCalculator.CalculateDamage(
                                     attack,
                                     moduleDamage,
                                     attackerStat,
@@ -111,7 +112,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                                 var attackId = isHit ? 1 : 4;
                                 Messaging.SendMessageNearbyToPlayers(
                                     target,
-                                    receiver => Combat.BuildCombatLogMessage(receiver, activator, target, attackId, chanceToHit),
+                                    receiver => CombatLog.BuildCombatLogMessage(receiver, activator, target, attackId, chanceToHit),
                                     60f);
 
                                 Enmity.ModifyEnmity(activator, target, damage);

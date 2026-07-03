@@ -1,5 +1,6 @@
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Service.CombatService;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -65,7 +66,7 @@ public class CharacterSheetCombatUpgradeTests
             "Feature",
             "PlayerStatusWindow.cs"));
         var method = ExtractMethod(source, "public static void PlayerDamaged()");
-        var sharedDamageEffects = "Combat.ApplyDamageTakenEffects(player, GetLastDamager(player), GetTotalDamageDealt());";
+        var sharedDamageEffects = "DamageTakenReactions.ApplyDamageTakenEffects(player, GetLastDamager(player), GetTotalDamageDealt());";
         var sheetRefresh = "Gui.PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.HP));";
 
         method.Should().Contain(sharedDamageEffects);

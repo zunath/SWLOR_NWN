@@ -2,6 +2,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Tests;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -15,7 +16,7 @@ public class BlazingSpikesStatusEffectTests
         source.Should().Contain("CombatDamageDeliveryType deliveryType");
         source.Should().Contain("deliveryType != CombatDamageDeliveryType.Direct");
         source.Should().Contain("!damageType.IsPhysicalDamageType()");
-        source.Should().Contain("Combat.ApplyTriggeredDamage(defender, attacker, reflectedDamage, CombatDamageType.Fire);");
+        source.Should().Contain("TriggeredCombatEffects.ApplyTriggeredDamage(defender, attacker, reflectedDamage, CombatDamageType.Fire);");
         source.Should().NotContain("EffectDamage(reflectedDamage");
     }
 
@@ -24,7 +25,7 @@ public class BlazingSpikesStatusEffectTests
     {
         var root = FindRepositoryRoot();
         var statusEffectSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "StatusEffect.cs"));
-        var combatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
+        var combatSource = CombatSourceReader.Read(root);
         var forceDotSource = ReadStatusEffectSource("ForceDamageOverTimeStatusEffectBase.cs");
 
         statusEffectSource.Should().Contain("CombatDamageDeliveryType deliveryType = CombatDamageDeliveryType.Direct");

@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 ? AppliedResistanceType
                 : ResistanceType;
             damageAmount = Resistance.ApplyResistanceToDamage(creature, resistanceType, damageAmount);
-            damageAmount = Combat.ApplyDamageOverTimeTakenModifiers(creature, damageAmount, CombatDamageType.Physical);
+            damageAmount = CombatDamageCalculator.ApplyDamageOverTimeTakenModifiers(creature, damageAmount, CombatDamageType.Physical);
             if (damageAmount <= 0)
                 return;
 
@@ -47,7 +47,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         protected override void Remove(uint creature)
         {
             if (WasNaturallyExpired)
-                Combat.ApplyBleedingStatusExpiredEffects(Source);
+                AbilityImpactEffects.ApplyBleedingStatusExpiredEffects(Source);
         }
     }
 }

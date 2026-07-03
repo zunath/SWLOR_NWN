@@ -41,8 +41,8 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         {
             var source = GetIsObjectValid(Source) ? Source : creature;
             var amount = Resistance.ApplyResistanceToDamage(creature, ResistanceType, _damage);
-            amount = Combat.ApplyDamageOverTimeTakenModifiers(creature, amount, CombatDamageType.Physical);
-            amount = Combat.ApplyDamageTakenModifiers(creature, amount, source, CombatDamageType.Physical);
+            amount = CombatDamageCalculator.ApplyDamageOverTimeTakenModifiers(creature, amount, CombatDamageType.Physical);
+            amount = CombatDamageCalculator.ApplyDamageTakenModifiers(creature, amount, source, CombatDamageType.Physical);
             if (amount <= 0)
                 return;
 

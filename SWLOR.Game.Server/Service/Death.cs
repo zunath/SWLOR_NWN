@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Service.CombatService;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -16,7 +17,7 @@ namespace SWLOR.Game.Server.Service
         public static void OnPlayerDying()
         {
             var player = GetLastPlayerDying();
-            if (Combat.TryPreventFatalDamageAndGrantTemporaryHP(player, 0, restoreToOneHP: true))
+            if (CombatDamageCalculator.TryPreventFatalDamageAndGrantTemporaryHP(player, 0, restoreToOneHP: true))
                 return;
 
             ApplyEffectToObject(DurationType.Instant, EffectDeath(), player);

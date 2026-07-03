@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
@@ -121,7 +122,7 @@ namespace SWLOR.Game.Server.Service
         /// <returns>A dictionary containing an enemy's enmity table.</returns>
         public static Dictionary<uint, int> GetEnmityTable(uint enemy)
         {
-            if(!_enemyEnmityTables.ContainsKey(enemy))
+            if (!_enemyEnmityTables.ContainsKey(enemy))
                 return new Dictionary<uint, int>();
 
             return _enemyEnmityTables[enemy].ToDictionary(x => x.Key, y => y.Value);
@@ -585,7 +586,7 @@ namespace SWLOR.Game.Server.Service
                 return false;
             }
 
-            var skillType = Combat.GetEquippedWeaponSkillType(creature);
+            var skillType = QueuedCombatActions.GetEquippedWeaponSkillType(creature);
             var moveRange = GetAttackMoveRange(skillType, CreaturePlugin.GetPreferredAttackDistance(creature));
 
             return ShouldMoveIntoAttackRange(GetDistanceBetween(creature, target), skillType, moveRange);
@@ -593,7 +594,7 @@ namespace SWLOR.Game.Server.Service
 
         private static bool ShouldMoveIntoAttackRange(float distance, SkillType skillType, float moveRange)
         {
-            var threshold = Combat.IsRangedDamageSkill(skillType)
+            var threshold = CombatSkillType.IsRangedDamageSkill(skillType)
                 ? moveRange + AttackMoveRangeTolerance
                 : MeleeAttackMoveThreshold;
 
@@ -602,13 +603,13 @@ namespace SWLOR.Game.Server.Service
 
         private static float GetAttackMoveRange(uint creature)
         {
-            var skillType = Combat.GetEquippedWeaponSkillType(creature);
+            var skillType = QueuedCombatActions.GetEquippedWeaponSkillType(creature);
             return GetAttackMoveRange(skillType, CreaturePlugin.GetPreferredAttackDistance(creature));
         }
 
         private static float GetAttackMoveRange(SkillType skillType, float preferredAttackDistance)
         {
-            if (!Combat.IsRangedDamageSkill(skillType))
+            if (!CombatSkillType.IsRangedDamageSkill(skillType))
                 return MeleeAttackMoveRange;
 
             return Math.Max(MeleeAttackMoveRange, preferredAttackDistance);
@@ -648,7 +649,7 @@ namespace SWLOR.Game.Server.Service
                 currentAction,
                 DateTime.UtcNow,
                 commandIssuedAt,
-                Combat.HasRecentAttackActivity(creature, recoverySeconds),
+                CombatActivity.HasRecentAttackActivity(creature, recoverySeconds),
                 recoverySeconds);
         }
 
@@ -676,8 +677,8 @@ namespace SWLOR.Game.Server.Service
 
         private static float GetStaleAttackRecoverySeconds(uint creature)
         {
-            var calculatedDelay = Combat.CalculateAttackDelay(creature);
-            var effectiveDelay = Combat.CalculateEffectiveAttackDelay(calculatedDelay);
+            var calculatedDelay = CombatAttackTiming.CalculateAttackDelay(creature);
+            var effectiveDelay = CombatFormula.CalculateEffectiveAttackDelay(calculatedDelay);
 
             return GetStaleAttackRecoverySeconds(effectiveDelay);
         }
@@ -686,7 +687,7 @@ namespace SWLOR.Game.Server.Service
         {
             // Attacks arrive in swings; fast delays resolve multiple attacks per swing,
             // so staleness is measured against the swing cadence rather than the per-attack delay.
-            var swingDelaySeconds = Combat.CalculateAttackSwingDelay(effectiveDelayMilliseconds) / 1000f;
+            var swingDelaySeconds = CombatFormula.CalculateAttackSwingDelay(effectiveDelayMilliseconds) / 1000f;
 
             return Math.Max(MinimumStaleAttackRecoverySeconds, swingDelaySeconds * 2f + 1f);
         }
@@ -706,7 +707,7 @@ namespace SWLOR.Game.Server.Service
 
             foreach (var enemy in enemyList)
             {
-                if(!_enemyEnmityTables.ContainsKey(enemy) ||
+                if (!_enemyEnmityTables.ContainsKey(enemy) ||
                    !_enemyEnmityTables[enemy].ContainsKey(creature))
                     continue;
 

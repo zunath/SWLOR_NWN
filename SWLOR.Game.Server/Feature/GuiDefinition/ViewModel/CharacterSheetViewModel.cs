@@ -1,4 +1,4 @@
-﻿using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.DialogDefinition;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
@@ -15,7 +15,7 @@ using Skill = SWLOR.Game.Server.Service.Skill;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
-    public class CharacterSheetViewModel: GuiViewModelBase<CharacterSheetViewModel, CharacterSheetPayload>,
+    public class CharacterSheetViewModel : GuiViewModelBase<CharacterSheetViewModel, CharacterSheetPayload>,
         IGuiRefreshable<ChangePortraitRefreshEvent>,
         IGuiRefreshable<DisguiseChangedRefreshEvent>,
         IGuiRefreshable<SkillXPRefreshEvent>,
@@ -739,7 +739,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void RefreshEquipmentStats()
         {
             // Builds a damage estimate using the player's stats as a baseline.
-            (string, string) GetCombatInfo( uint item)
+            (string, string) GetCombatInfo(uint item)
             {
                 var itemType = GetBaseItemType(item);
                 var skill = Skill.GetSkillTypeByBaseItem(itemType);
@@ -757,13 +757,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     skillRank = npcStats.Level;
                 }
 
-                var damageAbility = Combat.GetWeaponDamageAbilityType(_target, itemType);
+                var damageAbility = CombatWeaponStats.GetWeaponDamageAbilityType(_target, itemType);
                 var damageStat = GetAbilityScore(_target, damageAbility);
-                var dmg = Item.GetDMG(item) + Combat.GetMiscDMGBonus(_target, itemType);
+                var dmg = Item.GetDMG(item) + CombatWeaponStats.GetMiscDMGBonus(_target, itemType);
                 var dmgText = $"{dmg} DMG";
                 var attack = Stat.GetAttack(_target, damageAbility, skill);
                 var defense = Stat.CalculateDefense(damageStat, skillRank, 0);
-                var (min, max) = Combat.CalculateDamageRange(attack, dmg, damageStat, defense, damageStat, 0);
+                var (min, max) = CombatDamageCalculator.CalculateDamageRange(attack, dmg, damageStat, defense, damageStat, 0);
                 var tooltip = $"Est. Damage: {min} - {max}";
 
                 return (dmgText, tooltip);
@@ -813,7 +813,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
             else
             {
-                damageStat = Combat.GetWeaponDamageAbilityType(_target, mainHandType);
+                damageStat = CombatWeaponStats.GetWeaponDamageAbilityType(_target, mainHandType);
                 accuracyStatOverride = AbilityType.Invalid;
 
             }
@@ -833,21 +833,21 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private (string Value, string Tooltip) GetAttackDelayInfo()
         {
-            var attackerDelayMilliseconds = Combat.CalculateAttackDelay(_target);
-            var attackSkillType = Combat.GetEquippedWeaponSkillType(_target);
-            var useDefaultMinimumDelay = Combat.HasNextAutoAttackNoDelay(_target, attackSkillType);
-            var effectiveDelayMilliseconds = Combat.CalculateEffectiveAttackDelay(attackerDelayMilliseconds, useDefaultMinimumDelay);
+            var attackerDelayMilliseconds = CombatAttackTiming.CalculateAttackDelay(_target);
+            var attackSkillType = QueuedCombatActions.GetEquippedWeaponSkillType(_target);
+            var useDefaultMinimumDelay = QueuedCombatActions.HasNextAutoAttackNoDelay(_target, attackSkillType);
+            var effectiveDelayMilliseconds = CombatFormula.CalculateEffectiveAttackDelay(attackerDelayMilliseconds, useDefaultMinimumDelay);
             var attackerDelaySeconds = attackerDelayMilliseconds / 1000f;
-            var baseDelaySeconds = Combat.BaseAttackDelayMilliseconds / 1000f;
+            var baseDelaySeconds = CombatFormula.BaseAttackDelayMilliseconds / 1000f;
             var effectiveDelaySeconds = effectiveDelayMilliseconds / 1000f;
-            var swingDelaySeconds = Combat.CalculateAttackSwingDelay(effectiveDelayMilliseconds) / 1000f;
+            var swingDelaySeconds = CombatFormula.CalculateAttackSwingDelay(effectiveDelayMilliseconds) / 1000f;
 
             string tooltip;
             if (useDefaultMinimumDelay)
                 tooltip = $"Est. Delay: {effectiveDelaySeconds:0.##}s (next attack uses {baseDelaySeconds:0.##}s default minimum)";
-            else if (attackerDelayMilliseconds <= Combat.BaseAttackDelayMilliseconds)
+            else if (attackerDelayMilliseconds <= CombatFormula.BaseAttackDelayMilliseconds)
                 tooltip = $"Est. Delay: {effectiveDelaySeconds:0.##}s ({baseDelaySeconds:0.##}s default minimum)";
-            else if (effectiveDelayMilliseconds < Combat.BaseAttackDelayMilliseconds)
+            else if (effectiveDelayMilliseconds < CombatFormula.BaseAttackDelayMilliseconds)
                 tooltip = $"Est. Delay: {effectiveDelaySeconds:0.##}s (swings every {swingDelaySeconds:0.##}s resolve extra attacks)";
             else
                 tooltip = $"Est. Delay: {effectiveDelaySeconds:0.##}s ({attackerDelaySeconds:0.##}s attacker - {baseDelaySeconds:0.##}s default)";
@@ -886,7 +886,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             AddStat("Critical Rate", FormatPercent(GetCriticalRate(combatProfile.Skill)), "Increases the chance to score a critical hit. Actual chance varies by target Vitality.");
             AddStat("Critical Damage", FormatPercent(Stat.GetStatAdjustment(_target, StatType.CriticalDamagePercentAdjustment)), "Increases the amount of damage a critical hit deals.");
             AddStat("Enmity", FormatPercent(Stat.GetStatAdjustment(_target, StatType.EnmityPercentAdjustment)), "Increases or decreases the rate at which enmity is acquired.");
-            AddStat("Haste", FormatPercent(Combat.CalculateAttackDelayReduction(_target)), "Increases attack speed. Negative values slow attacks.");
+            AddStat("Haste", FormatPercent(CombatAttackTiming.CalculateAttackDelayReduction(_target)), "Increases attack speed. Negative values slow attacks.");
             AddStat("Ranged Evasion", FormatPercent(Stat.GetStatAdjustment(_target, StatType.RangedEvasionPercentAdjustment)), "Evasion adjustment against ranged attacks.");
             AddStat("Slow", GetEffectStateLabel(EffectTypeScript.Slow), "Reduces attack speed.");
             AddStat("Paralysis", GetEffectStateLabel(EffectTypeScript.Paralyze), "Prevents auto attacks and other actions.");
@@ -914,7 +914,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return (beastDetails.DamageStat, beastDetails.AccuracyStat, skill, creatureArmor);
             }
 
-            return (Combat.GetWeaponDamageAbilityType(_target, mainHandType), AbilityType.Invalid, skill, mainHand);
+            return (CombatWeaponStats.GetWeaponDamageAbilityType(_target, mainHandType), AbilityType.Invalid, skill, mainHand);
         }
 
         private bool IsPlayerCharacterTarget()
@@ -959,7 +959,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private int GetCriticalRate(SkillType skillType)
         {
-            return Combat.CalculateCriticalRate(
+            return CombatFormula.CalculateCriticalRate(
                 GetAbilityScore(_target, AbilityType.Perception),
                 GetAbilityScore(_target, AbilityType.Vitality),
                 GetSkillRank(skillType),

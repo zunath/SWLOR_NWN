@@ -1,5 +1,6 @@
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Tests;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -71,28 +72,24 @@ public class AbilityDamageQueueTests
             "SWLOR.Game.Server",
             "Service",
             "Ability.cs")).Replace("\r\n", "\n");
-        var combatSource = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Service",
-            "Combat.cs")).Replace("\r\n", "\n");
+        var combatSource = CombatSourceReader.Read(root).Replace("\r\n", "\n");
         var queueMethod = abilitySource.Substring(
             abilitySource.IndexOf("public static bool TryQueueTrackedDamageEffect", StringComparison.Ordinal),
             abilitySource.IndexOf("private static TrackedAbilityImpact GetTrackedAbilityImpact", StringComparison.Ordinal) -
             abilitySource.IndexOf("public static bool TryQueueTrackedDamageEffect", StringComparison.Ordinal));
-        var triggeredDamage = combatSource.Substring(
-            combatSource.IndexOf("public static int ApplyTriggeredDamage", StringComparison.Ordinal),
-            combatSource.IndexOf("private static void ApplyGuardiansResolve", StringComparison.Ordinal) -
-            combatSource.IndexOf("public static int ApplyTriggeredDamage", StringComparison.Ordinal));
-        var damageRiders = combatSource.Substring(
-            combatSource.IndexOf("private static void ApplyAbilityDamageRiders", StringComparison.Ordinal),
-            combatSource.IndexOf("private static void ApplyRicochetDamage", StringComparison.Ordinal) -
-            combatSource.IndexOf("private static void ApplyAbilityDamageRiders", StringComparison.Ordinal));
+        var triggeredDamage = ExtractBetween(
+            combatSource,
+            "public static int ApplyTriggeredDamage",
+            "internal static void ApplyGuardiansResolve");
+        var damageRiders = ExtractBetween(
+            combatSource,
+            "internal static void ApplyAbilityDamageRiders",
+            "internal static void ApplyFoggyMindResourceDrain");
 
         queueMethod.Should().Contain("GetTrackedAbilityImpact(activator)");
         queueMethod.Should().Contain("trackedImpact.QueueDamageEffect(target, damage, damageType);");
         damageRiders.Should().Contain("StatType.KatarVenomCurrentSecondStrikeDamageBonus");
-        damageRiders.Should().Contain("ApplyTriggeredDamage(activator, target, bonus, damageType);");
+        damageRiders.Should().Contain("TriggeredCombatEffects.ApplyTriggeredDamage(activator, target, bonus, damageType);");
         triggeredDamage.Should().Contain("Ability.TryQueueTrackedDamageEffect(activator, target, damage, effectDamageType)");
         triggeredDamage.Should().Contain("AssignCommand(");
     }
@@ -142,5 +139,19 @@ public class AbilityDamageQueueTests
         }
 
         throw new DirectoryNotFoundException("Could not locate the SWLOR_NWN repository root.");
+    }
+
+    private static string ExtractBetween(string source, string startMarker, string endMarker)
+    {
+        var start = source.IndexOf(startMarker, StringComparison.Ordinal);
+        start.Should().BeGreaterThanOrEqualTo(0);
+
+        var end = source.IndexOf(endMarker, start, StringComparison.Ordinal);
+        if (end < 0)
+            return source.Substring(start);
+
+        end.Should().BeGreaterThan(start);
+
+        return source.Substring(start, end - start);
     }
 }

@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
@@ -18,7 +18,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Entity
 {
-    public class Player: EntityBase
+    public class Player : EntityBase
     {
         public const int DefaultOutfitSlotLimit = 25;
         public const int DefaultDisguiseSlotLimit = 1;
@@ -58,7 +58,7 @@ namespace SWLOR.Game.Server.Entity
                 {AbilityType.Willpower, 0}
             };
 
-            Defenses = Combat.CreateDefaultDefenseValues();
+            Defenses = CombatDamageTypes.CreateDefaultDefenseValues();
 
             Resistances = Resistance.CreateDefaultResistanceValues();
 
@@ -182,7 +182,7 @@ namespace SWLOR.Game.Server.Entity
         public Dictionary<PerkType, DateTime> UnlockedPerks { get; set; }
         public Dictionary<RecipeType, DateTime> UnlockedRecipes { get; set; }
         public Dictionary<RecipeType, DateTime> CraftedRecipes { get; set; }
-        public Dictionary<KeyItemType, DateTime> KeyItems{ get; set; }
+        public Dictionary<KeyItemType, DateTime> KeyItems { get; set; }
         public Dictionary<GuildType, PlayerGuild> Guilds { get; set; }
         public Dictionary<FactionType, PlayerFactionStanding> Factions { get; set; }
         public Dictionary<int, List<TaxiDestinationType>> TaxiDestinations { get; set; }

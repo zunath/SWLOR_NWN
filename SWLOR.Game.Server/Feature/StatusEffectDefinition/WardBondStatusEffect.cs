@@ -92,7 +92,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
             var damageBonus = Stat.GetStatAdjustment(Source, StatType.WardSharedDamageNextSkillAbilityDamageBonus);
             var window = Stat.GetStatAdjustment(Source, StatType.WardSharedDamageNextSkillAbilityWindowSeconds);
-            Combat.GrantNextSkillAbilityBonuses(Source, SkillType.Lightsaber, damageBonus, 0, window);
+            AbilityImpactEffects.GrantNextSkillAbilityBonuses(Source, SkillType.Lightsaber, damageBonus, 0, window);
         }
 
         private bool IsSourceInRange(uint creature)

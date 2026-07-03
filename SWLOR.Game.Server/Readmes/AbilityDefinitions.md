@@ -207,10 +207,10 @@ private static void ImpactAction(uint activator, uint target, int level, Locatio
             break;
     }
 
-    dmg += Combat.GetAbilityDamageBonus(activator, SkillType.Force);
+    dmg += AbilityImpactEffects.GetAbilityDamageBonus(activator, SkillType.Force);
 
     // Apply damage to target
-    var damage = Combat.CalculateDamage(attack, dmg, attackerStat, defense, defenderStat, 0);
+    var damage = CombatDamageCalculator.CalculateDamage(attack, dmg, attackerStat, defense, defenderStat, 0);
     ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Electrical), target);
 
     // Add combat points and enmity

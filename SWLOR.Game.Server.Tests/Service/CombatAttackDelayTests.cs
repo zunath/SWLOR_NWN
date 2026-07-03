@@ -6,6 +6,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 
 namespace SWLOR.Game.Server.Tests.Service;
@@ -15,36 +16,36 @@ public class CombatAttackDelayTests
     [Test]
     public void CalculateAttackDelayMilliseconds_UsesSingleWeaponDelay()
     {
-        var delay = Combat.CalculateAttackDelayMilliseconds(210, 0, 0, 0);
+        var delay = CombatFormula.CalculateAttackDelayMilliseconds(210, 0, 0, 0);
 
         delay.Should().Be(3500);
-        Combat.CalculateEffectiveAttackDelay(delay).Should().Be(1750);
+        CombatFormula.CalculateEffectiveAttackDelay(delay).Should().Be(1750);
     }
 
     [Test]
     public void CalculateAttackDelayMilliseconds_DualWieldCountsDefaultDelayOnce()
     {
-        var delay = Combat.CalculateAttackDelayMilliseconds(210, 210, 0, 0);
+        var delay = CombatFormula.CalculateAttackDelayMilliseconds(210, 210, 0, 0);
 
         delay.Should().Be(5250);
-        Combat.CalculateEffectiveAttackDelay(delay).Should().Be(3500);
+        CombatFormula.CalculateEffectiveAttackDelay(delay).Should().Be(3500);
     }
 
     [Test]
     public void CalculateAttackDelayMilliseconds_AppliesOffhandReductionBeforeCombiningDualWieldDelay()
     {
-        var delay = Combat.CalculateAttackDelayMilliseconds(210, 210, 0, 30);
+        var delay = CombatFormula.CalculateAttackDelayMilliseconds(210, 210, 0, 30);
 
         delay.Should().Be(4200);
-        Combat.CalculateEffectiveAttackDelay(delay).Should().Be(2450);
+        CombatFormula.CalculateEffectiveAttackDelay(delay).Should().Be(2450);
     }
 
     [Test]
     public void CalculateEffectiveAttackDelay_SubtractsDefaultDelayFromHigherAttackerDelay()
     {
-        var attackerDelay = Combat.BaseAttackDelayMilliseconds + 2500;
+        var attackerDelay = CombatFormula.BaseAttackDelayMilliseconds + 2500;
 
-        var effectiveDelay = Combat.CalculateEffectiveAttackDelay(attackerDelay);
+        var effectiveDelay = CombatFormula.CalculateEffectiveAttackDelay(attackerDelay);
 
         effectiveDelay.Should().Be(2500);
     }
@@ -52,9 +53,9 @@ public class CombatAttackDelayTests
     [Test]
     public void CalculateEffectiveAttackDelay_AllowsDelaysBelowDefaultAfterBaselineSubtraction()
     {
-        var attackerDelay = Combat.BaseAttackDelayMilliseconds + 1250;
+        var attackerDelay = CombatFormula.BaseAttackDelayMilliseconds + 1250;
 
-        var effectiveDelay = Combat.CalculateEffectiveAttackDelay(attackerDelay);
+        var effectiveDelay = CombatFormula.CalculateEffectiveAttackDelay(attackerDelay);
 
         effectiveDelay.Should().Be(1250);
     }
@@ -62,28 +63,28 @@ public class CombatAttackDelayTests
     [Test]
     public void CalculateAttackDelayMilliseconds_FastestWeaponDelayCanBenefitFromHaste()
     {
-        var unmodifiedDelay = Combat.CalculateAttackDelayMilliseconds(220, 0, 0, 0);
-        var hastenOneDelay = Combat.CalculateAttackDelayMilliseconds(220, 0, 15, 0);
-        var hastenTwoDelay = Combat.CalculateAttackDelayMilliseconds(220, 0, 25, 0);
+        var unmodifiedDelay = CombatFormula.CalculateAttackDelayMilliseconds(220, 0, 0, 0);
+        var hastenOneDelay = CombatFormula.CalculateAttackDelayMilliseconds(220, 0, 15, 0);
+        var hastenTwoDelay = CombatFormula.CalculateAttackDelayMilliseconds(220, 0, 25, 0);
 
-        Combat.CalculateEffectiveAttackDelay(unmodifiedDelay).Should().BeGreaterThan(Combat.BaseAttackDelayMilliseconds);
-        Combat.CalculateEffectiveAttackDelay(hastenOneDelay).Should().BeGreaterThan(Combat.MinimumAttackDelayMilliseconds);
-        Combat.CalculateEffectiveAttackDelay(hastenTwoDelay).Should().BeGreaterThan(Combat.MinimumAttackDelayMilliseconds);
-        Combat.CalculateEffectiveAttackDelay(hastenOneDelay).Should().BeLessThan(Combat.CalculateEffectiveAttackDelay(unmodifiedDelay));
-        Combat.CalculateEffectiveAttackDelay(hastenTwoDelay).Should().BeLessThan(Combat.CalculateEffectiveAttackDelay(hastenOneDelay));
+        CombatFormula.CalculateEffectiveAttackDelay(unmodifiedDelay).Should().BeGreaterThan(CombatFormula.BaseAttackDelayMilliseconds);
+        CombatFormula.CalculateEffectiveAttackDelay(hastenOneDelay).Should().BeGreaterThan(CombatFormula.MinimumAttackDelayMilliseconds);
+        CombatFormula.CalculateEffectiveAttackDelay(hastenTwoDelay).Should().BeGreaterThan(CombatFormula.MinimumAttackDelayMilliseconds);
+        CombatFormula.CalculateEffectiveAttackDelay(hastenOneDelay).Should().BeLessThan(CombatFormula.CalculateEffectiveAttackDelay(unmodifiedDelay));
+        CombatFormula.CalculateEffectiveAttackDelay(hastenTwoDelay).Should().BeLessThan(CombatFormula.CalculateEffectiveAttackDelay(hastenOneDelay));
     }
 
     [Test]
     public void CalculateAttackDelayMilliseconds_NegativeHasteIncreasesDelay()
     {
-        var unmodifiedDelay = Combat.CalculateAttackDelayMilliseconds(210, 0, 0, 0);
-        var slowedDelay = Combat.CalculateAttackDelayMilliseconds(210, 0, -10, 0);
+        var unmodifiedDelay = CombatFormula.CalculateAttackDelayMilliseconds(210, 0, 0, 0);
+        var slowedDelay = CombatFormula.CalculateAttackDelayMilliseconds(210, 0, -10, 0);
 
         unmodifiedDelay.Should().Be(3500);
         slowedDelay.Should().Be(3850);
-        Combat.CalculateEffectiveAttackDelay(slowedDelay)
+        CombatFormula.CalculateEffectiveAttackDelay(slowedDelay)
             .Should()
-            .BeGreaterThan(Combat.CalculateEffectiveAttackDelay(unmodifiedDelay));
+            .BeGreaterThan(CombatFormula.CalculateEffectiveAttackDelay(unmodifiedDelay));
     }
 
     [Test]
@@ -102,13 +103,13 @@ public class CombatAttackDelayTests
             WeaponDelay.GetWeaponDelay(naturalWeaponType).Should().Be(24);
         }
 
-        var unmodifiedDelay = Combat.CalculateAttackDelayMilliseconds(240, 0, 0, 0);
-        var hastenOneDelay = Combat.CalculateAttackDelayMilliseconds(240, 0, 15, 0);
-        var hastenTwoDelay = Combat.CalculateAttackDelayMilliseconds(240, 0, 25, 0);
+        var unmodifiedDelay = CombatFormula.CalculateAttackDelayMilliseconds(240, 0, 0, 0);
+        var hastenOneDelay = CombatFormula.CalculateAttackDelayMilliseconds(240, 0, 15, 0);
+        var hastenTwoDelay = CombatFormula.CalculateAttackDelayMilliseconds(240, 0, 25, 0);
 
-        Combat.CalculateEffectiveAttackDelay(unmodifiedDelay).Should().Be(2250);
-        Combat.CalculateEffectiveAttackDelay(hastenOneDelay).Should().Be(1650);
-        Combat.CalculateEffectiveAttackDelay(hastenTwoDelay).Should().Be(1250);
+        CombatFormula.CalculateEffectiveAttackDelay(unmodifiedDelay).Should().Be(2250);
+        CombatFormula.CalculateEffectiveAttackDelay(hastenOneDelay).Should().Be(1650);
+        CombatFormula.CalculateEffectiveAttackDelay(hastenTwoDelay).Should().Be(1250);
     }
 
     [Test]
@@ -120,9 +121,9 @@ public class CombatAttackDelayTests
     [Test]
     public void CalculateEffectiveAttackDelay_ClampsReducedDualWieldDelayToAbsoluteMinimum()
     {
-        var delay = Combat.CalculateAttackDelayMilliseconds(210, 210, 45, 30);
+        var delay = CombatFormula.CalculateAttackDelayMilliseconds(210, 210, 45, 30);
 
-        Combat.CalculateEffectiveAttackDelay(delay).Should().Be(Combat.MinimumAttackDelayMilliseconds);
+        CombatFormula.CalculateEffectiveAttackDelay(delay).Should().Be(CombatFormula.MinimumAttackDelayMilliseconds);
     }
 
     [Test]
@@ -131,41 +132,41 @@ public class CombatAttackDelayTests
         var attackerDelays = new[]
         {
             0,
-            Combat.BaseAttackDelayMilliseconds - 1,
-            Combat.BaseAttackDelayMilliseconds
+            CombatFormula.BaseAttackDelayMilliseconds - 1,
+            CombatFormula.BaseAttackDelayMilliseconds
         };
 
         foreach (var attackerDelay in attackerDelays)
         {
-            var effectiveDelay = Combat.CalculateEffectiveAttackDelay(attackerDelay);
+            var effectiveDelay = CombatFormula.CalculateEffectiveAttackDelay(attackerDelay);
 
-            effectiveDelay.Should().Be(Combat.BaseAttackDelayMilliseconds);
+            effectiveDelay.Should().Be(CombatFormula.BaseAttackDelayMilliseconds);
         }
     }
 
     [Test]
     public void MinimumAttackDelay_SupportsMaxAttacksPerSwingWithoutOverflow()
     {
-        Combat.MinimumAttackDelayMilliseconds.Should().Be(584);
-        (Combat.BaseAttackDelayMilliseconds / (float)Combat.MinimumAttackDelayMilliseconds)
+        CombatFormula.MinimumAttackDelayMilliseconds.Should().Be(584);
+        (CombatFormula.BaseAttackDelayMilliseconds / (float)CombatFormula.MinimumAttackDelayMilliseconds)
             .Should()
-            .BeLessThanOrEqualTo(Combat.MaxAttacksPerSwing);
+            .BeLessThanOrEqualTo(CombatFormula.MaxAttacksPerSwing);
     }
 
     [Test]
     public void CalculateAttackSwingDelay_FloorsAtBaseDelay()
     {
-        Combat.CalculateAttackSwingDelay(584).Should().Be(Combat.BaseAttackDelayMilliseconds);
-        Combat.CalculateAttackSwingDelay(Combat.BaseAttackDelayMilliseconds).Should().Be(Combat.BaseAttackDelayMilliseconds);
-        Combat.CalculateAttackSwingDelay(2500).Should().Be(2500);
+        CombatFormula.CalculateAttackSwingDelay(584).Should().Be(CombatFormula.BaseAttackDelayMilliseconds);
+        CombatFormula.CalculateAttackSwingDelay(CombatFormula.BaseAttackDelayMilliseconds).Should().Be(CombatFormula.BaseAttackDelayMilliseconds);
+        CombatFormula.CalculateAttackSwingDelay(2500).Should().Be(2500);
     }
 
     [Test]
     public void CalculateAttacksPerSwing_ResolvesOneAttackWhenDelayAtOrAboveSwingFloor()
     {
-        foreach (var effectiveDelay in new[] { Combat.BaseAttackDelayMilliseconds, 2500, 5000 })
+        foreach (var effectiveDelay in new[] { CombatFormula.BaseAttackDelayMilliseconds, 2500, 5000 })
         {
-            var attacks = Combat.CalculateAttacksPerSwing(effectiveDelay, 0f, out var attackDebt);
+            var attacks = CombatFormula.CalculateAttacksPerSwing(effectiveDelay, 0f, out var attackDebt);
 
             attacks.Should().Be(1);
             attackDebt.Should().Be(0f);
@@ -175,7 +176,7 @@ public class CombatAttackDelayTests
     [Test]
     public void CalculateAttacksPerSwing_ResolvesTwoAttacksWhenDelayIsHalfSwingFloor()
     {
-        var attacks = Combat.CalculateAttacksPerSwing(Combat.BaseAttackDelayMilliseconds / 2, 0f, out var attackDebt);
+        var attacks = CombatFormula.CalculateAttacksPerSwing(CombatFormula.BaseAttackDelayMilliseconds / 2, 0f, out var attackDebt);
 
         attacks.Should().Be(2);
         attackDebt.Should().BeApproximately(0f, 0.01f);
@@ -192,20 +193,20 @@ public class CombatAttackDelayTests
 
         for (var i = 0; i < swings; i++)
         {
-            totalAttacks += Combat.CalculateAttacksPerSwing(effectiveDelay, attackDebt, out attackDebt);
+            totalAttacks += CombatFormula.CalculateAttacksPerSwing(effectiveDelay, attackDebt, out attackDebt);
         }
 
-        var expectedAttacks = swings * (Combat.BaseAttackDelayMilliseconds / (float)effectiveDelay);
+        var expectedAttacks = swings * (CombatFormula.BaseAttackDelayMilliseconds / (float)effectiveDelay);
         totalAttacks.Should().BeCloseTo((int)expectedAttacks, 2);
     }
 
     [Test]
     public void CalculateAttacksPerSwing_CapsAttacksAtMaxPerSwing()
     {
-        var attacks = Combat.CalculateAttacksPerSwing(Combat.MinimumAttackDelayMilliseconds, 5f, out var attackDebt);
+        var attacks = CombatFormula.CalculateAttacksPerSwing(CombatFormula.MinimumAttackDelayMilliseconds, 5f, out var attackDebt);
 
-        attacks.Should().Be(Combat.MaxAttacksPerSwing);
-        attackDebt.Should().BeLessThanOrEqualTo(Combat.MaxAttacksPerSwing);
+        attacks.Should().Be(CombatFormula.MaxAttacksPerSwing);
+        attackDebt.Should().BeLessThanOrEqualTo(CombatFormula.MaxAttacksPerSwing);
     }
 
     [Test]
@@ -217,10 +218,10 @@ public class CombatAttackDelayTests
 
         for (var i = 0; i < swings; i++)
         {
-            totalAttacks += Combat.CalculateAttacksPerSwing(Combat.MinimumAttackDelayMilliseconds, attackDebt, out attackDebt);
+            totalAttacks += CombatFormula.CalculateAttacksPerSwing(CombatFormula.MinimumAttackDelayMilliseconds, attackDebt, out attackDebt);
         }
 
-        var expectedAttacks = swings * (Combat.BaseAttackDelayMilliseconds / (float)Combat.MinimumAttackDelayMilliseconds);
+        var expectedAttacks = swings * (CombatFormula.BaseAttackDelayMilliseconds / (float)CombatFormula.MinimumAttackDelayMilliseconds);
         totalAttacks.Should().BeCloseTo((int)expectedAttacks, 2);
     }
 
@@ -231,16 +232,16 @@ public class CombatAttackDelayTests
         const uint attackerTwo = 200;
         const int effectiveDelay = 1000;
 
-        Combat.ClearAttackSwingDebt(attackerOne);
-        Combat.ClearAttackSwingDebt(attackerTwo);
+        CombatAttackTiming.ClearAttackSwingDebt(attackerOne);
+        CombatAttackTiming.ClearAttackSwingDebt(attackerTwo);
 
-        Combat.ConsumeAttacksPerSwing(attackerOne, effectiveDelay).Should().Be(1);
-        Combat.ConsumeAttacksPerSwing(attackerTwo, effectiveDelay).Should().Be(1);
-        Combat.ConsumeAttacksPerSwing(attackerOne, effectiveDelay).Should().Be(2);
-        Combat.ConsumeAttacksPerSwing(attackerTwo, effectiveDelay).Should().Be(2);
+        CombatAttackTiming.ConsumeAttacksPerSwing(attackerOne, effectiveDelay).Should().Be(1);
+        CombatAttackTiming.ConsumeAttacksPerSwing(attackerTwo, effectiveDelay).Should().Be(1);
+        CombatAttackTiming.ConsumeAttacksPerSwing(attackerOne, effectiveDelay).Should().Be(2);
+        CombatAttackTiming.ConsumeAttacksPerSwing(attackerTwo, effectiveDelay).Should().Be(2);
 
-        Combat.ClearAttackSwingDebt(attackerOne);
-        Combat.ClearAttackSwingDebt(attackerTwo);
+        CombatAttackTiming.ClearAttackSwingDebt(attackerOne);
+        CombatAttackTiming.ClearAttackSwingDebt(attackerTwo);
     }
 
     [Test]
@@ -249,36 +250,36 @@ public class CombatAttackDelayTests
         const uint attacker = 300;
         const int effectiveDelay = 1000;
 
-        Combat.ClearAttackSwingDebt(attacker);
+        CombatAttackTiming.ClearAttackSwingDebt(attacker);
 
-        Combat.ConsumeAttacksPerSwing(attacker, effectiveDelay).Should().Be(1);
-        Combat.ClearAttackSwingDebt(attacker);
-        Combat.ConsumeAttacksPerSwing(attacker, effectiveDelay).Should().Be(1);
+        CombatAttackTiming.ConsumeAttacksPerSwing(attacker, effectiveDelay).Should().Be(1);
+        CombatAttackTiming.ClearAttackSwingDebt(attacker);
+        CombatAttackTiming.ConsumeAttacksPerSwing(attacker, effectiveDelay).Should().Be(1);
 
-        Combat.ClearAttackSwingDebt(attacker);
+        CombatAttackTiming.ClearAttackSwingDebt(attacker);
     }
 
     [Test]
     public void CalculateEffectiveAttackDelay_UsesDefaultMinimumWhenNoDelayAttackIsQueued()
     {
-        var attackerDelay = Combat.BaseAttackDelayMilliseconds + 2000;
+        var attackerDelay = CombatFormula.BaseAttackDelayMilliseconds + 2000;
 
-        var effectiveDelay = Combat.CalculateEffectiveAttackDelay(attackerDelay, true);
+        var effectiveDelay = CombatFormula.CalculateEffectiveAttackDelay(attackerDelay, true);
 
-        effectiveDelay.Should().Be(Combat.BaseAttackDelayMilliseconds);
+        effectiveDelay.Should().Be(CombatFormula.BaseAttackDelayMilliseconds);
     }
 
     [Test]
     public void CanConsumeNextAbilityNoDelay_RequiresHostileAbility()
     {
-        Combat.CanConsumeNextAbilityNoDelay(new AbilityDetail
+        QueuedCombatActions.CanConsumeNextAbilityNoDelay(new AbilityDetail
         {
             IsHostileAbility = true
         })
             .Should()
             .BeTrue();
 
-        Combat.CanConsumeNextAbilityNoDelay(new AbilityDetail
+        QueuedCombatActions.CanConsumeNextAbilityNoDelay(new AbilityDetail
         {
             IsHostileAbility = false
         })

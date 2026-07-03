@@ -5,10 +5,11 @@ using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.MigrationService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Service.CombatService;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition
 {
-    public abstract class PlayerMigrationBase: IPlayerMigration
+    public abstract class PlayerMigrationBase : IPlayerMigration
     {
         public abstract int Version { get; }
         public abstract void Migrate(uint player);
@@ -69,7 +70,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
                 dbPlayer.CombatReadiness = 0;
 
                 // Defenses
-                foreach (var defense in Combat.GetDefenseDamageTypes())
+                foreach (var defense in CombatDamageTypes.GetDefenseDamageTypes())
                 {
                     dbPlayer.Defenses[defense] = 0;
                 }

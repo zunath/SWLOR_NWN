@@ -15,6 +15,7 @@ using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using SWLOR.Game.Server.Service.CombatService;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -194,7 +195,7 @@ namespace SWLOR.Game.Server.Feature
             {
                 if (Ability.CanUseAbility(activator, target, feat, effectivePerkLevel, targetLocation))
                 {
-                    if(ability.DisplaysActivationMessage)
+                    if (ability.DisplaysActivationMessage)
                         Messaging.SendMessageNearbyToPlayers(
                             activator,
                             receiver => $"{PlayerName.GetDisplayName(receiver, activator)} queues {ability.Name} for the next attack.");
@@ -267,8 +268,8 @@ namespace SWLOR.Game.Server.Feature
             ability.ImpactAction?.Invoke(activator, target, ability.AbilityLevel, targetLocation);
             var summary = Ability.EndAbilityImpact(activator);
 
-            Combat.ApplyAbilityActivatedEffects(activator, target, feat, ability, summary);
-            Combat.ApplyAbilityImpactEffects(activator, summary);
+            AbilityActivationEffects.ApplyAbilityActivatedEffects(activator, target, feat, ability, summary);
+            AbilityHitResolver.ApplyAbilityImpactEffects(activator, summary);
         }
 
 
@@ -291,7 +292,7 @@ namespace SWLOR.Game.Server.Feature
         {
             float CalculateActivationDelay()
             {
-                if (Combat.ConsumeNextAbilityNoDelay(activator, ability))
+                if (QueuedCombatActions.ConsumeNextAbilityNoDelay(activator, ability))
                     return 0f;
 
                 var abilityDelay = ability.ActivationDelay?.Invoke(activator, target, ability.AbilityLevel) ?? 0.0f;
@@ -450,7 +451,7 @@ namespace SWLOR.Game.Server.Feature
             // Begin the main process
             var activationId = Guid.NewGuid().ToString();
             var activationDelay = CalculateActivationDelay();
-            var recastDelay = Combat.ApplyAbilityRecastDelayModifiers(
+            var recastDelay = AbilityUseEffects.ApplyAbilityRecastDelayModifiers(
                 activator,
                 ability,
                 ability.RecastDelay?.Invoke(activator) ?? 0f);
@@ -508,7 +509,7 @@ namespace SWLOR.Game.Server.Feature
 
             ApplyRequirementEffects(activator, ability);
 
-            var abilityRecastDelay = Combat.ApplyAbilityRecastDelayModifiers(
+            var abilityRecastDelay = AbilityUseEffects.ApplyAbilityRecastDelayModifiers(
                 activator,
                 ability,
                 ability.RecastDelay?.Invoke(activator) ?? 0.0f);
@@ -789,8 +790,8 @@ namespace SWLOR.Game.Server.Feature
             Ability.BeginAbilityImpact(activator, abilityDetail);
             abilityDetail.ImpactAction?.Invoke(activator, target, activeAbilityEffectivePerkLevel, targetLocation);
             var summary = Ability.EndAbilityImpact(activator);
-            Combat.ApplyAbilityActivatedEffects(activator, target, activeWeaponAbility, abilityDetail, summary);
-            Combat.ApplyAbilityImpactEffects(activator, summary);
+            AbilityActivationEffects.ApplyAbilityActivatedEffects(activator, target, activeWeaponAbility, abilityDetail, summary);
+            AbilityHitResolver.ApplyAbilityImpactEffects(activator, summary);
 
             DeleteLocalString(activator, ActiveAbilityIdName);
             DeleteLocalInt(activator, ActiveAbilityFeatIdName);

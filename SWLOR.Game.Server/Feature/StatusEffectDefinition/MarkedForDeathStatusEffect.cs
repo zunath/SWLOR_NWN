@@ -34,7 +34,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             _isApplyingBonusDamage = true;
             try
             {
-                Combat.ApplyTriggeredDamage(Source, defender, DamageBonus, damageType);
+                TriggeredCombatEffects.ApplyTriggeredDamage(Source, defender, DamageBonus, damageType);
             }
             finally
             {

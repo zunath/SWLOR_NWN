@@ -1,11 +1,12 @@
- using System.Collections.Generic;
- using SWLOR.Game.Server.Service;
- using SWLOR.Game.Server.Service.PerkService;
+using System.Collections.Generic;
+using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using Random = SWLOR.Game.Server.Service.Random;
+using SWLOR.Game.Server.Service.CombatService;
 
 namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 {
@@ -40,79 +41,79 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             string description,
             int dmg)
         {
-        _builder.Create(itemTag)
-            .Name(name)
-            .ShortName(shortName)
-            .Type(ShipModuleType.LaserBattery)
-            .Texture("iit_ess8_088")
-            .Description(description)
-            .ValidTargetType(ObjectType.Creature)
-            .MaxDistance(20f)
-            .PowerType(ShipModulePowerType.High)
-            .RequirePerk(PerkType.OffensiveModules, 5)
-            .Recast(18f)
-            .Capacitor(15)
-            .CapitalClassModule()
-            .CanTargetSelf()
-            .ActivatedAction((activator, activatorShipStatus, target, _, moduleBonus) =>
-            {
-                var attackBonus = activatorShipStatus.ThermalDamage;
-                var attackerStat = Space.GetAttackStat(activator);
-                var attack = Space.GetShipAttack(activator, attackBonus);
-
-                var moduleDMG = dmg + moduleBonus;
-                var missile = EffectVisualEffect(VisualEffect.Mirv_StarWars_Bolt2);
-
-                for (var i = 0; i < 9; i++)
+            _builder.Create(itemTag)
+                .Name(name)
+                .ShortName(shortName)
+                .Type(ShipModuleType.LaserBattery)
+                .Texture("iit_ess8_088")
+                .Description(description)
+                .ValidTargetType(ObjectType.Creature)
+                .MaxDistance(20f)
+                .PowerType(ShipModulePowerType.High)
+                .RequirePerk(PerkType.OffensiveModules, 5)
+                .Recast(18f)
+                .Capacitor(15)
+                .CapitalClassModule()
+                .CanTargetSelf()
+                .ActivatedAction((activator, activatorShipStatus, target, _, moduleBonus) =>
                 {
-                    var delay = i * 2f;
-                    DelayCommand(delay, () =>
+                    var attackBonus = activatorShipStatus.ThermalDamage;
+                    var attackerStat = Space.GetAttackStat(activator);
+                    var attack = Space.GetShipAttack(activator, attackBonus);
+
+                    var moduleDMG = dmg + moduleBonus;
+                    var missile = EffectVisualEffect(VisualEffect.Mirv_StarWars_Bolt2);
+
+                    for (var i = 0; i < 9; i++)
                     {
-                        if (!GetIsDead(activator))
+                        var delay = i * 2f;
+                        DelayCommand(delay, () =>
                         {
-                            var nearbyTarget = GetFirstObjectInShape(Shape.Sphere, 20f, GetLocation(activator), true, ObjectType.Creature);
-                            while (GetIsObjectValid(nearbyTarget))
+                            if (!GetIsDead(activator))
                             {
-                                if (nearbyTarget != activator &&
-                                    Random.D4(1) != 1 &&
-                                    GetIsEnemy(nearbyTarget, activator) &&
-                                    Space.GetShipStatus(nearbyTarget) != null)
+                                var nearbyTarget = GetFirstObjectInShape(Shape.Sphere, 20f, GetLocation(activator), true, ObjectType.Creature);
+                                while (GetIsObjectValid(nearbyTarget))
                                 {
-                                    var nearbyShipStatus = Space.GetShipStatus(nearbyTarget);
-                                    var nearbyDefenseBonus = nearbyShipStatus.ThermalDefense * 2;
-                                    var nearbyDefense = Space.GetShipDefense(nearbyTarget, nearbyDefenseBonus);
-                                    var nearbyDefenderStat = GetAbilityScore(nearbyTarget, AbilityType.Vitality);
-                                    var damage = Combat.CalculateDamage(
-                                        attack,
-                                        moduleDMG,
-                                        attackerStat,
-                                        nearbyDefense,
-                                        nearbyDefenderStat,
-                                        0);
-                                    var chanceToHit = Space.CalculateChanceToHit(activator, nearbyTarget);
-                                    var roll = Random.D100(1);
-                                    var isHit = roll <= chanceToHit;
-                                    ApplyEffectToObject(DurationType.Instant, missile, nearbyTarget);
-                                    if (isHit)
+                                    if (nearbyTarget != activator &&
+                                        Random.D4(1) != 1 &&
+                                        GetIsEnemy(nearbyTarget, activator) &&
+                                        Space.GetShipStatus(nearbyTarget) != null)
                                     {
-                                        Space.ApplyShipDamage(activator, nearbyTarget, damage);
+                                        var nearbyShipStatus = Space.GetShipStatus(nearbyTarget);
+                                        var nearbyDefenseBonus = nearbyShipStatus.ThermalDefense * 2;
+                                        var nearbyDefense = Space.GetShipDefense(nearbyTarget, nearbyDefenseBonus);
+                                        var nearbyDefenderStat = GetAbilityScore(nearbyTarget, AbilityType.Vitality);
+                                        var damage = CombatDamageCalculator.CalculateDamage(
+                                            attack,
+                                            moduleDMG,
+                                            attackerStat,
+                                            nearbyDefense,
+                                            nearbyDefenderStat,
+                                            0);
+                                        var chanceToHit = Space.CalculateChanceToHit(activator, nearbyTarget);
+                                        var roll = Random.D100(1);
+                                        var isHit = roll <= chanceToHit;
+                                        ApplyEffectToObject(DurationType.Instant, missile, nearbyTarget);
+                                        if (isHit)
+                                        {
+                                            Space.ApplyShipDamage(activator, nearbyTarget, damage);
+                                        }
+
+                                        var attackId = isHit ? 1 : 4;
+                                        Messaging.SendMessageNearbyToPlayers(
+                                            nearbyTarget,
+                                            receiver => CombatLog.BuildCombatLogMessage(receiver, activator, nearbyTarget, attackId, chanceToHit),
+                                            60f);
+
+                                        Enmity.ModifyEnmity(activator, nearbyTarget, damage);
+                                        CombatPoint.AddCombatPoint(activator, nearbyTarget, SkillType.Piloting);
                                     }
-
-                                    var attackId = isHit ? 1 : 4;
-                                    Messaging.SendMessageNearbyToPlayers(
-                                        nearbyTarget,
-                                        receiver => Combat.BuildCombatLogMessage(receiver, activator, nearbyTarget, attackId, chanceToHit),
-                                        60f);
-
-                                    Enmity.ModifyEnmity(activator, nearbyTarget, damage);
-                                    CombatPoint.AddCombatPoint(activator, nearbyTarget, SkillType.Piloting);
+                                    nearbyTarget = GetNextObjectInShape(Shape.Sphere, 20f, GetLocation(activator), true, ObjectType.Creature);
                                 }
-                                nearbyTarget = GetNextObjectInShape(Shape.Sphere, 20f, GetLocation(activator), true, ObjectType.Creature);
                             }
-                        }
-                    });
-                }
-            });
+                        });
+                    }
+                });
         }
     }
 }

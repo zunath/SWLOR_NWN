@@ -6,7 +6,7 @@ using SWLOR.Game.Server.Service.PerkService;
 
 namespace SWLOR.Game.Server.Entity
 {
-    public class Beast: EntityBase
+    public class Beast : EntityBase
     {
         [Indexed]
         public string Name { get; set; }
@@ -52,7 +52,7 @@ namespace SWLOR.Game.Server.Entity
             PortraitId = -1;
             SoundSetId = -1;
 
-            DefensePurities = Combat.CreateDefaultDefenseValues();
+            DefensePurities = CombatDamageTypes.CreateDefaultDefenseValues();
 
             ResistancePurities = Resistance.CreateDefaultResistanceValues();
         }

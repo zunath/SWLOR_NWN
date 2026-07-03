@@ -14,7 +14,7 @@ namespace SWLOR.Game.Server.Service.CombatService
         [NWNEventHandler(ScriptName.OnModuleExit)]
         public static void ClearExitingObject()
         {
-            Clear(GetExitingObject());
+            TemporaryStatModifier.Clear(GetExitingObject());
         }
 
         [NWNEventHandler(ScriptName.OnModuleHeartbeat)]
@@ -24,11 +24,11 @@ namespace SWLOR.Game.Server.Service.CombatService
             {
                 if (GetIsObjectValid(creature))
                 {
-                    PurgeExpired(creature);
+                    TemporaryStatModifier.PurgeExpired(creature);
                 }
                 else
                 {
-                    Clear(creature);
+                    TemporaryStatModifier.Clear(creature);
                 }
             }
         }
@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Service.CombatService
             if (creature == OBJECT_INVALID || amount == 0 || durationSeconds <= 0f)
                 return;
 
-            PurgeExpired(creature);
+            TemporaryStatModifier.PurgeExpired(creature);
 
             if (!_modifiers.ContainsKey(creature))
             {
@@ -54,18 +54,18 @@ namespace SWLOR.Game.Server.Service.CombatService
 
         public static void Add(uint creature, StatType statType, int amount, float durationSeconds, StatType groupStatType)
         {
-            Add(creature, statType, amount, durationSeconds, GetGroup(groupStatType));
+            TemporaryStatModifier.Add(creature, statType, amount, durationSeconds, TemporaryStatModifier.GetGroup(groupStatType));
         }
 
         public static void Replace(uint creature, StatType statType, int amount, float durationSeconds, string group = null)
         {
-            Consume(creature, statType, group);
-            Add(creature, statType, amount, durationSeconds, group);
+            TemporaryStatModifier.Consume(creature, statType, group);
+            TemporaryStatModifier.Add(creature, statType, amount, durationSeconds, group);
         }
 
         public static void Replace(uint creature, StatType statType, int amount, float durationSeconds, StatType groupStatType)
         {
-            Replace(creature, statType, amount, durationSeconds, GetGroup(groupStatType));
+            TemporaryStatModifier.Replace(creature, statType, amount, durationSeconds, TemporaryStatModifier.GetGroup(groupStatType));
         }
 
         public static int AddCapped(
@@ -80,7 +80,7 @@ namespace SWLOR.Game.Server.Service.CombatService
             if (amount <= 0 || durationSeconds <= 0f || maxTotal <= 0 || requestedStacks <= 0)
                 return 0;
 
-            var current = GetStatAdjustment(creature, statType, group);
+            var current = TemporaryStatModifier.GetStatAdjustment(creature, statType, group);
             var remaining = maxTotal - current;
             if (remaining <= 0)
                 return 0;
@@ -88,7 +88,7 @@ namespace SWLOR.Game.Server.Service.CombatService
             var stacks = Math.Min(requestedStacks, remaining / amount);
             for (var index = 0; index < stacks; index++)
             {
-                Add(creature, statType, amount, durationSeconds, group);
+                TemporaryStatModifier.Add(creature, statType, amount, durationSeconds, group);
             }
 
             return stacks;
@@ -103,25 +103,25 @@ namespace SWLOR.Game.Server.Service.CombatService
             StatType groupStatType,
             int requestedStacks)
         {
-            return AddCapped(
+            return TemporaryStatModifier.AddCapped(
                 creature,
                 statType,
                 amount,
                 durationSeconds,
                 maxTotal,
-                GetGroup(groupStatType),
+                TemporaryStatModifier.GetGroup(groupStatType),
                 requestedStacks);
         }
 
         public static int Consume(uint creature, StatType statType, string group = null)
         {
-            PurgeExpired(creature);
+            TemporaryStatModifier.PurgeExpired(creature);
 
             if (!_modifiers.TryGetValue(creature, out var modifiers))
                 return 0;
 
             var matching = modifiers
-                .Where(x => x.StatType == statType && MatchesGroup(x, group))
+                .Where(x => x.StatType == statType && TemporaryStatModifier.MatchesGroup(x, group))
                 .ToList();
             var total = matching.Sum(x => x.Amount);
 
@@ -140,23 +140,23 @@ namespace SWLOR.Game.Server.Service.CombatService
 
         public static int Consume(uint creature, StatType statType, StatType groupStatType)
         {
-            return Consume(creature, statType, GetGroup(groupStatType));
+            return TemporaryStatModifier.Consume(creature, statType, TemporaryStatModifier.GetGroup(groupStatType));
         }
 
         public static int GetStatAdjustment(uint creature, StatType statType, string group = null)
         {
-            PurgeExpired(creature);
+            TemporaryStatModifier.PurgeExpired(creature);
 
             return _modifiers.TryGetValue(creature, out var modifiers)
                 ? modifiers
-                    .Where(x => x.StatType == statType && MatchesGroup(x, group))
+                    .Where(x => x.StatType == statType && TemporaryStatModifier.MatchesGroup(x, group))
                     .Sum(x => x.Amount)
                 : 0;
         }
 
         public static int GetStatAdjustment(uint creature, StatType statType, StatType groupStatType)
         {
-            return GetStatAdjustment(creature, statType, GetGroup(groupStatType));
+            return TemporaryStatModifier.GetStatAdjustment(creature, statType, TemporaryStatModifier.GetGroup(groupStatType));
         }
 
         public static void Refresh(uint creature, StatType statType, float durationSeconds, string group = null)
@@ -164,13 +164,13 @@ namespace SWLOR.Game.Server.Service.CombatService
             if (durationSeconds <= 0f)
                 return;
 
-            PurgeExpired(creature);
+            TemporaryStatModifier.PurgeExpired(creature);
 
             if (!_modifiers.TryGetValue(creature, out var modifiers))
                 return;
 
             var expiration = DateTime.UtcNow.AddSeconds(durationSeconds);
-            foreach (var modifier in modifiers.Where(x => x.StatType == statType && MatchesGroup(x, group)))
+            foreach (var modifier in modifiers.Where(x => x.StatType == statType && TemporaryStatModifier.MatchesGroup(x, group)))
             {
                 modifier.Refresh(expiration);
             }
@@ -178,7 +178,7 @@ namespace SWLOR.Game.Server.Service.CombatService
 
         public static void Refresh(uint creature, StatType statType, float durationSeconds, StatType groupStatType)
         {
-            Refresh(creature, statType, durationSeconds, GetGroup(groupStatType));
+            TemporaryStatModifier.Refresh(creature, statType, durationSeconds, TemporaryStatModifier.GetGroup(groupStatType));
         }
 
         public static void Clear(uint creature)

@@ -33,6 +33,10 @@
     <ProjectReference Include="..\SWLOR.NWN.API\SWLOR.NWN.API.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="SWLOR.Game.Server.Tests" />
+  </ItemGroup>
+
   <Target Name="NWN" AfterTargets="Build">
     <ItemGroup>
       <AllOutputs Include="$(OutputPath)$(MSBuildProjectName).dll" />

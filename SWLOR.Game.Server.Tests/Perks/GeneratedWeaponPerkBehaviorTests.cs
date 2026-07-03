@@ -6,7 +6,9 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Tests;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Service.CombatService;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
@@ -181,7 +183,7 @@ public class GeneratedWeaponPerkBehaviorTests
         Stat.GetStatTypeCategory(StatType.DamageDealtHamstringDurationSeconds).Should().Be(StatTypeCategory.NonBeneficial);
 
         var root = FindRepositoryRoot();
-        var combatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
+        var combatSource = CombatSourceReader.Read(root);
         combatSource.Should().Contain("ApplyDamageDealtHamstringEffect(attacker, defender, skillType, damageType)");
         combatSource.Should().Contain("StatType.DamageDealtHamstringSkillType");
         combatSource.Should().Contain("typeof(HamstringStatusEffect)");
@@ -276,7 +278,7 @@ public class GeneratedWeaponPerkBehaviorTests
             .Should().Be(StatTypeCategory.NonBeneficial);
 
         var root = FindRepositoryRoot();
-        var combatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
+        var combatSource = CombatSourceReader.Read(root);
         var usePerkFeatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "UsePerkFeat.cs"));
         var nativeAttackSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Native", "ResolveAttackRoll.cs"));
         var statusEffectSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "StatusEffect.cs"));
@@ -305,9 +307,9 @@ public class GeneratedWeaponPerkBehaviorTests
         combatSource.Should().NotContain("KatarIronGuardPulseDamageBonus");
         combatSource.Should().NotContain("StaffSentinelGuardCategoryId");
         combatSource.Should().Contain("StatType.RangedEvasionPercentAdjustment");
-        usePerkFeatSource.Should().Contain("Combat.ApplyAbilityRecastDelayModifiers(");
-        nativeAttackSource.Should().Contain("Combat.GetHitChanceAgainstSunderedTargetAdjustment(");
-        nativeAttackSource.Should().Contain("Combat.GetCriticalRateAgainstSunderedTargetAdjustment(");
+        usePerkFeatSource.Should().Contain("AbilityUseEffects.ApplyAbilityRecastDelayModifiers(");
+        nativeAttackSource.Should().Contain("AbilityHitResolver.GetHitChanceAgainstSunderedTargetAdjustment(");
+        nativeAttackSource.Should().Contain("AbilityHitResolver.GetCriticalRateAgainstSunderedTargetAdjustment(");
         statusEffectSource.Should().Contain("OutgoingControlDurationPercentAdjustment");
         generatorSource.Should().Contain("EXPLICIT_RECAST_SHORT_NAMES");
         generatorSource.Should().Contain("Missing explicit recast short name");
@@ -440,9 +442,9 @@ public class GeneratedWeaponPerkBehaviorTests
         AssertStatusSourceContains(root, "GuardedStatusEffect.cs", "PlayerName.GetColoredDisplayName(guarded, source)");
         AssertStatusSourceContains(root, "GuardedStatusEffect.cs", "PlayerName.GetColoredDisplayName(source, guarded)");
         AssertStatusSourceContains(root, "GuardedStatusEffect.cs", "TemporaryStatModifier.GetStatAdjustment(source, StatType.Guard, GuardShareGroup)");
-        AssertStatusSourceContains(root, "GuardedStatusEffect.cs", "Combat.ApplyLowHPGuardEffectFromProtectedTarget(Source, defender, damage)");
+        AssertStatusSourceContains(root, "GuardedStatusEffect.cs", "LowHPReactions.ApplyLowHPGuardEffectFromProtectedTarget(Source, defender, damage)");
 
-        var combatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
+        var combatSource = CombatSourceReader.Read(root);
         var statusEffectSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "StatusEffect.cs"));
         combatSource.Should().Contain("StatusEffect.OnGuardedHit(defender, attacker, preventedDamage)");
         statusEffectSource.Should().Contain("OfType<IGuardedHitStatusEffect>()");

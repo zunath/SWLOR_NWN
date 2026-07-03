@@ -99,7 +99,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 damageType: CombatDamageType.Physical,
                 targetVisualEffect: VisualEffect.Vfx_Com_Chunk_Red_Small,
                 damagePercentAdjustment: creature =>
-                    GetIsObjectValid(master) && Combat.HasRecentDamageTarget(master, creature, 6f) ? 25 : 0);
+                    GetIsObjectValid(master) && CombatActivity.HasRecentDamageTarget(master, creature, 6f) ? 25 : 0);
         }
     }
 }

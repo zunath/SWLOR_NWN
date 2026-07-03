@@ -6,23 +6,29 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
     public sealed class SelfDefensiveStatsStatusEffect : StatusEffectBase
     {
+        private readonly string _name;
+        private readonly EffectIconType _icon;
         private readonly int _evasionPercentAdjustment;
         private readonly int _physicalDefensePercentAdjustment;
         private readonly int _forceDefensePercentAdjustment;
 
-        public override string Name => "Guarding Step";
-        public override EffectIconType Icon => EffectIconType.GuardingStepStatusEffect;
+        public override string Name => _name;
+        public override EffectIconType Icon => _icon;
 
         public SelfDefensiveStatsStatusEffect()
-            : this(25, 20, 20)
+            : this(25, 20, 20, "Self Defensive Stats", EffectIconType.Invalid)
         {
         }
 
         public SelfDefensiveStatsStatusEffect(
             int evasionPercentAdjustment,
             int physicalDefensePercentAdjustment,
-            int forceDefensePercentAdjustment)
+            int forceDefensePercentAdjustment,
+            string name = "Self Defensive Stats",
+            EffectIconType icon = EffectIconType.Invalid)
         {
+            _name = name;
+            _icon = icon;
             _evasionPercentAdjustment = evasionPercentAdjustment;
             _physicalDefensePercentAdjustment = physicalDefensePercentAdjustment;
             _forceDefensePercentAdjustment = forceDefensePercentAdjustment;
@@ -37,7 +43,9 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             return new SelfDefensiveStatsStatusEffect(
                 _evasionPercentAdjustment,
                 _physicalDefensePercentAdjustment,
-                _forceDefensePercentAdjustment);
+                _forceDefensePercentAdjustment,
+                _name,
+                _icon);
         }
     }
 }

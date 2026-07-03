@@ -39,8 +39,8 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             var might = GetAbilityModifier(AbilityType.Might, Source);
             var amount = System.Math.Max(1, Random.Next(2, 4) + might * 2 * _level);
             amount = Resistance.ApplyResistanceToDamage(creature, ResistanceType, amount);
-            amount = Combat.ApplyDamageOverTimeTakenModifiers(creature, amount, CombatDamageType.Fire);
-            amount = Combat.ApplyDamageTakenModifiers(creature, amount, Source, CombatDamageType.Fire);
+            amount = CombatDamageCalculator.ApplyDamageOverTimeTakenModifiers(creature, amount, CombatDamageType.Fire);
+            amount = CombatDamageCalculator.ApplyDamageTakenModifiers(creature, amount, Source, CombatDamageType.Fire);
             if (amount <= 0)
                 return;
 

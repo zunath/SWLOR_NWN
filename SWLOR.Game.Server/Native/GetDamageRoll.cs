@@ -1,4 +1,4 @@
-﻿using NWN.Native.API;
+using NWN.Native.API;
 using NWNX.NET;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Enumeration;
@@ -116,7 +116,7 @@ namespace SWLOR.Game.Server.Native
                 damageProfile = ApplyMightModifierDamageBonus(attacker, weapon, damageProfile);
 
                 var critical = bCritical == 1
-                    ? Combat.StandardCriticalRating
+                    ? CombatDamageCalculator.StandardCriticalRating
                     : 0;
                 var attackerAttack = weapon == null ? 0 : Stat.GetAttackNative(attacker, (BaseItem)weapon.m_nBaseItem, attackerStatType);
                 var totalDamage = 0;
@@ -128,8 +128,8 @@ namespace SWLOR.Game.Server.Native
 
                 if (totalDamage > 0 && defender.m_nObjectType == (int)ObjectType.Creature)
                 {
-                    Combat.SendTemporaryHitPointDamageFeedback(attacker.m_idSelf, defender.m_idSelf, totalDamage);
-                    Combat.ApplyCriticalHitEffects(attacker.m_idSelf, defender.m_idSelf, totalDamage, effectiveCritical, true, weaponSkillType);
+                    CombatLog.SendTemporaryHitPointDamageFeedback(attacker.m_idSelf, defender.m_idSelf, totalDamage);
+                    SideCriticalEffects.ApplyCriticalHitEffects(attacker.m_idSelf, defender.m_idSelf, totalDamage, effectiveCritical, true, weaponSkillType);
                 }
 
                 if (totalDamage > 0 && defender.m_bPlotObject == 0)
@@ -186,7 +186,7 @@ namespace SWLOR.Game.Server.Native
             if (targetObject.m_nObjectType == (int)ObjectType.Creature &&
                 UsePerkFeat.HasQueuedWeaponAbility(attacker.m_idSelf))
             {
-                Combat.ConsumeSuppressedAutoAttackDamageBonuses(attacker.m_idSelf, skillType);
+                DamageDealtModifiers.ConsumeSuppressedAutoAttackDamageBonuses(attacker.m_idSelf, skillType);
                 return physicalDamage;
             }
 
@@ -203,7 +203,7 @@ namespace SWLOR.Game.Server.Native
 
             if (damage > 0 && targetObject.m_nObjectType == (int)ObjectType.Creature)
             {
-                Combat.ApplyDamageReflectionEffects(
+                CombatDamageCalculator.ApplyDamageReflectionEffects(
                     attacker.m_idSelf,
                     targetObject.m_idSelf,
                     damage,
@@ -354,7 +354,7 @@ namespace SWLOR.Game.Server.Native
                 }
             }
 
-            return Combat.GetWeaponDamageAbilityType(attacker, (BaseItem)weapon.m_nBaseItem);
+            return CombatWeaponStats.GetWeaponDamageAbilityType(attacker, (BaseItem)weapon.m_nBaseItem);
         }
 
         private static int GetWeaponDeltaCap(CNWSItem weapon)
@@ -438,12 +438,12 @@ namespace SWLOR.Game.Server.Native
 
                 case (int)ObjectType.Placeable:
                     var plc = CNWSPlaceable.FromPointer(pTarget);
-                    return Combat.CalculateDamage(attackerAttack, damageProfile.Damage, attackerStat,
+                    return CombatDamageCalculator.CalculateDamage(attackerAttack, damageProfile.Damage, attackerStat,
                         plc.m_nHardness, plc.m_nHardness, critical);
 
                 case (int)ObjectType.Door:
                     var door = CNWSDoor.FromPointer(pTarget);
-                    return Combat.CalculateDamage(attackerAttack, damageProfile.Damage, attackerStat,
+                    return CombatDamageCalculator.CalculateDamage(attackerAttack, damageProfile.Damage, attackerStat,
                         door.m_nHardness, door.m_nHardness, critical);
 
                 default:
@@ -462,15 +462,15 @@ namespace SWLOR.Game.Server.Native
             var defenderStat = Stat.GetStatValueNative(target, defenderAbility);
             var damagePower = attacker.CalculateDamagePower(target, bOffHand);
             var defense = Stat.GetDefenseNative(target, damageType, defenderAbility);
-            defense = Combat.ApplyStatusSourceDefenseModifiers(attacker.m_idSelf, target.m_idSelf, defense);
-            defense = Combat.ApplyRangedAttackDefenseIgnore(attacker.m_idSelf, defense, skillType);
-            var attackDamage = damageProfile.Damage + Combat.GetRangedAttackDamageFlatAdjustment(attacker.m_idSelf, skillType);
+            defense = DamageModifierPipeline.ApplyStatusSourceDefenseModifiers(attacker.m_idSelf, target.m_idSelf, defense);
+            defense = CombatDamageCalculator.ApplyRangedAttackDefenseIgnore(attacker.m_idSelf, defense, skillType);
+            var attackDamage = damageProfile.Damage + CombatDamageCalculator.GetRangedAttackDamageFlatAdjustment(attacker.m_idSelf, skillType);
 
             Log.Write(LogGroup.Attack, $"DAMAGE: attacker damage attribute: {damageProfile.Damage} defender defense attribute: {defense}, defender racial type {target.m_pStats.m_nRace}");
 
-            attackerAttack = Combat.ApplyTargetStatusAttackModifiers(attacker.m_idSelf, target.m_idSelf, attackerAttack, skillType);
+            attackerAttack = DamageDealtModifiers.ApplyTargetStatusAttackModifiers(attacker.m_idSelf, target.m_idSelf, attackerAttack, skillType);
 
-            var damageRoll = Combat.CalculateDamageWithCriticalMitigation(
+            var damageRoll = CombatDamageCalculator.CalculateDamageWithCriticalMitigation(
                 target.m_idSelf,
                 attackerAttack,
                 attackDamage,
@@ -483,17 +483,17 @@ namespace SWLOR.Game.Server.Native
             effectiveCritical = damageRoll.CriticalRating;
             if (damageRoll.WasCriticalDowngraded)
             {
-                Combat.SendIncomingCriticalHitDowngradeFeedback(attacker.m_idSelf, target.m_idSelf);
+                GuardDeflection.SendIncomingCriticalHitDowngradeFeedback(attacker.m_idSelf, target.m_idSelf);
             }
 
-            damage = Combat.ApplyCriticalDamageModifier(attacker.m_idSelf, damage, effectiveCritical, skillType, target.m_idSelf);
+            damage = CombatDamageCalculator.ApplyCriticalDamageModifier(attacker.m_idSelf, damage, effectiveCritical, skillType, target.m_idSelf);
 
-            damage = Combat.ApplyAutoAttackDamageModifiers(attacker.m_idSelf, target.m_idSelf, damage, skillType);
-            damage = Combat.ApplySideAttackDamageModifier(attacker.m_idSelf, target.m_idSelf, skillType, damage);
+            damage = DamageDealtModifiers.ApplyAutoAttackDamageModifiers(attacker.m_idSelf, target.m_idSelf, damage, skillType);
+            damage = SideCriticalEffects.ApplySideAttackDamageModifier(attacker.m_idSelf, target.m_idSelf, skillType, damage);
 
             var canApplyRandomFlatBonusesThisDamage = damage > 0;
 
-            damage = Combat.ApplyDamageDealtModifiers(
+            damage = DamageDealtModifiers.ApplyDamageDealtModifiers(
                 attacker.m_idSelf,
                 target.m_idSelf,
                 damage,
@@ -521,13 +521,13 @@ namespace SWLOR.Game.Server.Native
                 damage = target.DoDamageReduction(attacker, damage, damagePower, 0, 1, bRangedAttack);
             }
 
-            damage = Combat.ApplyGuardedHitModifiers(target.m_idSelf, attacker.m_idSelf, damage, damageType);
+            damage = GuardDeflection.ApplyGuardedHitModifiers(target.m_idSelf, attacker.m_idSelf, damage, damageType);
             if (damage > 0 && attackType == (uint)AttackType.Melee)
             {
-                Combat.ApplyMeleeDamageTakenEffects(target.m_idSelf, attacker.m_idSelf);
+                GuardDeflection.ApplyMeleeDamageTakenEffects(target.m_idSelf, attacker.m_idSelf);
             }
 
-            return Combat.ApplyDamageTakenModifiers(target.m_idSelf, damage, attacker.m_idSelf, damageType);
+            return CombatDamageCalculator.ApplyDamageTakenModifiers(target.m_idSelf, damage, attacker.m_idSelf, damageType);
         }
 
         private readonly struct WeaponDamageProfile
@@ -544,7 +544,7 @@ namespace SWLOR.Game.Server.Native
 
         private static void PublishDamageDealtEvent(uint attacker, uint defender, int damage, SkillType skillType, CombatDamageType damageType)
         {
-            Combat.ApplyDamageDealtEffects(attacker, defender, damage, skillType, damageType);
+            DamageDealtEffects.ApplyDamageDealtEffects(attacker, defender, damage, skillType, damageType);
 
             EventsPlugin.PushEventData("DEFENDER", ObjectToString(defender));
             EventsPlugin.PushEventData("DAMAGE", damage.ToString());

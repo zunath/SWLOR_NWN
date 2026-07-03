@@ -108,7 +108,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 
         private static float GetAngerRecastDelay(uint activator)
         {
-            return Math.Max(0f, 12f + Combat.GetAbilityRecastDelayFlatAdjustment(activator, PerkType.Anger));
+            return Math.Max(0f, 12f + AbilityUseEffects.GetAbilityRecastDelayFlatAdjustment(activator, PerkType.Anger));
         }
     }
 }

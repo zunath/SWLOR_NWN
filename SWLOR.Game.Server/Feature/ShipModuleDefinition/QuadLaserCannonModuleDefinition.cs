@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using Random = SWLOR.Game.Server.Service.Random;
+using SWLOR.Game.Server.Service.CombatService;
 
 namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 {
@@ -43,82 +44,82 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             int dmg,
             int totalAttacks)
         {
-        _builder.Create(itemTag)
-            .Name(name)
-            .ShortName(shortName)
-            .Type(ShipModuleType.QuadLaser)
-            .Texture("iit_ess2_035")
-            .Description(description)
-            .MaxDistance(20f)
-            .ValidTargetType(ObjectType.Creature)
-            .PowerType(ShipModulePowerType.High)
-            .RequirePerk(PerkType.OffensiveModules, 5)
-            .Recast(8f)
-            .Capacitor(totalAttacks * 3)
-            .CapitalClassModule()
-            .ActivatedAction((activator, activatorShipStatus, target, targetShipStatus, moduleBonus) =>
-            {
-                var attackBonus = activatorShipStatus.ThermalDamage;
-                var attackerStat = Space.GetAttackStat(activator);
-                var attack = Space.GetShipAttack(activator, attackBonus);
-
-                var moduleDamage = dmg + moduleBonus / 2;
-                var defenseBonus = targetShipStatus.ThermalDefense * 2;
-                var defense = Space.GetShipDefense(target, defenseBonus);
-                var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
-
-                var sound = EffectVisualEffect(VisualEffect.Vfx_Ship_Blast);
-                var missile = EffectVisualEffect(VisualEffect.Mirv_StarWars_Bolt2);
-
-                for (var i = 0; i < totalAttacks; i++)
+            _builder.Create(itemTag)
+                .Name(name)
+                .ShortName(shortName)
+                .Type(ShipModuleType.QuadLaser)
+                .Texture("iit_ess2_035")
+                .Description(description)
+                .MaxDistance(20f)
+                .ValidTargetType(ObjectType.Creature)
+                .PowerType(ShipModulePowerType.High)
+                .RequirePerk(PerkType.OffensiveModules, 5)
+                .Recast(8f)
+                .Capacitor(totalAttacks * 3)
+                .CapitalClassModule()
+                .ActivatedAction((activator, activatorShipStatus, target, targetShipStatus, moduleBonus) =>
                 {
-                    var delay = i * 0.25f;
-                    DelayCommand(delay, () =>
+                    var attackBonus = activatorShipStatus.ThermalDamage;
+                    var attackerStat = Space.GetAttackStat(activator);
+                    var attack = Space.GetShipAttack(activator, attackBonus);
+
+                    var moduleDamage = dmg + moduleBonus / 2;
+                    var defenseBonus = targetShipStatus.ThermalDefense * 2;
+                    var defense = Space.GetShipDefense(target, defenseBonus);
+                    var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
+
+                    var sound = EffectVisualEffect(VisualEffect.Vfx_Ship_Blast);
+                    var missile = EffectVisualEffect(VisualEffect.Mirv_StarWars_Bolt2);
+
+                    for (var i = 0; i < totalAttacks; i++)
                     {
-                        var chanceToHit = Space.CalculateChanceToHit(activator, target);
-                        var roll = Random.D100(1);
-                        var isHit = roll <= chanceToHit;
-                        var damage = Combat.CalculateDamage(
-                            attack,
-                            moduleDamage,
-                            attackerStat,
-                            defense,
-                            defenderStat,
-                            0);
-
-                        if (isHit)
+                        var delay = i * 0.25f;
+                        DelayCommand(delay, () =>
                         {
-                            AssignCommand(activator, () =>
-                            {
-                                ApplyEffectToObject(DurationType.Instant, sound, target);
-                                ApplyEffectToObject(DurationType.Instant, missile, target);
+                            var chanceToHit = Space.CalculateChanceToHit(activator, target);
+                            var roll = Random.D100(1);
+                            var isHit = roll <= chanceToHit;
+                            var damage = CombatDamageCalculator.CalculateDamage(
+                                attack,
+                                moduleDamage,
+                                attackerStat,
+                                defense,
+                                defenderStat,
+                                0);
 
-                                DelayCommand(0.3f, () =>
+                            if (isHit)
+                            {
+                                AssignCommand(activator, () =>
                                 {
-                                    Space.ApplyShipDamage(activator, target, damage);
+                                    ApplyEffectToObject(DurationType.Instant, sound, target);
+                                    ApplyEffectToObject(DurationType.Instant, missile, target);
+
+                                    DelayCommand(0.3f, () =>
+                                    {
+                                        Space.ApplyShipDamage(activator, target, damage);
+                                    });
                                 });
-                            });
-                        }
-                        else
-                        {
-                            AssignCommand(activator, () =>
+                            }
+                            else
                             {
-                                ApplyEffectToObject(DurationType.Instant, sound, target);
-                                ApplyEffectToObject(DurationType.Instant, missile, target);
-                            });
-                        }
+                                AssignCommand(activator, () =>
+                                {
+                                    ApplyEffectToObject(DurationType.Instant, sound, target);
+                                    ApplyEffectToObject(DurationType.Instant, missile, target);
+                                });
+                            }
 
-                        var attackId = isHit ? 1 : 4;
-                        Messaging.SendMessageNearbyToPlayers(
-                            target,
-                            receiver => Combat.BuildCombatLogMessage(receiver, activator, target, attackId, chanceToHit),
-                            60f);
+                            var attackId = isHit ? 1 : 4;
+                            Messaging.SendMessageNearbyToPlayers(
+                                target,
+                                receiver => CombatLog.BuildCombatLogMessage(receiver, activator, target, attackId, chanceToHit),
+                                60f);
 
-                        Enmity.ModifyEnmity(activator, target, damage);
-                        CombatPoint.AddCombatPoint(activator, target, SkillType.Piloting);
-                    });
-                }
-            });
+                            Enmity.ModifyEnmity(activator, target, damage);
+                            CombatPoint.AddCombatPoint(activator, target, SkillType.Piloting);
+                        });
+                    }
+                });
         }
     }
 }

@@ -195,7 +195,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                     Ability.BeginAbilityImpact(activator, ability);
                     ApplyCreepingTerrorPulse(activator, pulseLocation, scaledPulseDamage, radius);
                     var summary = Ability.EndAbilityImpact(activator);
-                    Combat.ApplyAbilityImpactEffects(activator, summary);
+                    AbilityHitResolver.ApplyAbilityImpactEffects(activator, summary);
                 });
         }
 
@@ -211,8 +211,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             var damage = scaledPulseDamage;
             damage = Resistance.ApplyResistanceToDamage(target, ResistanceType.Disruption, damage);
-            damage = Combat.ApplyDamageOverTimeTakenModifiers(target, damage, CombatDamageType.Force);
-            damage = Combat.ApplyDamageTakenModifiers(target, damage, activator, CombatDamageType.Force);
+            damage = CombatDamageCalculator.ApplyDamageOverTimeTakenModifiers(target, damage, CombatDamageType.Force);
+            damage = CombatDamageCalculator.ApplyDamageTakenModifiers(target, damage, activator, CombatDamageType.Force);
             if (damage < 0)
                 damage = 0;
 

@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.NWN.API.NWNX;
+using SWLOR.Game.Server.Service.CombatService;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -40,7 +41,7 @@ namespace SWLOR.Game.Server.Feature
             if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
                 return;
 
-            Combat.ApplyDamageTakenEffects(player, GetLastDamager(player), GetTotalDamageDealt());
+            DamageTakenReactions.ApplyDamageTakenEffects(player, GetLastDamager(player), GetTotalDamageDealt());
             Gui.PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.HP));
         }
 
@@ -120,7 +121,7 @@ namespace SWLOR.Game.Server.Feature
             if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
                 return;
 
-            if(!Gui.IsWindowOpen(player, GuiWindowType.PlayerStatus))
+            if (!Gui.IsWindowOpen(player, GuiWindowType.PlayerStatus))
                 Gui.TogglePlayerWindow(player, GuiWindowType.PlayerStatus);
         }
     }

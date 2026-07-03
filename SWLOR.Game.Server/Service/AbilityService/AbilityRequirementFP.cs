@@ -1,5 +1,6 @@
 using System;
 using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Service.CombatService;
 
 namespace SWLOR.Game.Server.Service.AbilityService
 {
@@ -36,7 +37,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
                 return;
 
             Stat.ReduceFP(player, requiredFP);
-            Combat.ApplyAbilityFPCostStaminaRestore(player, ability, requiredFP);
+            QueuedAbilityBonuses.ApplyAbilityFPCostStaminaRestore(player, ability, requiredFP);
         }
 
         private int GetAdjustedRequiredFP(uint player, AbilityDetail ability, bool consumeNextAdjustment)
@@ -45,10 +46,10 @@ namespace SWLOR.Game.Server.Service.AbilityService
             if (ability == null || adjusted <= 0)
                 return adjusted;
 
-            var skillType = Combat.GetAbilitySkillType(player, ability);
+            var skillType = QueuedCombatActions.GetAbilitySkillType(player, ability);
             adjusted += consumeNextAdjustment
-                ? Combat.ConsumeNextAbilityFPCostAdjustment(player, skillType)
-                : Combat.GetNextAbilityFPCostAdjustment(player, skillType);
+                ? QueuedAbilityBonuses.ConsumeNextAbilityFPCostAdjustment(player, skillType)
+                : QueuedAbilityBonuses.GetNextAbilityFPCostAdjustment(player, skillType);
 
             adjusted = Math.Max(0, adjusted);
             return ApplyDarkForceConversionCostAdjustment(player, ability, adjusted);

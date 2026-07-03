@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
 using static SWLOR.NWN.API.NWScript.NWScript;
+using SWLOR.Game.Server.Service.CombatService;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -318,7 +319,7 @@ public class EnmityTests
     [Test]
     public void GetStaleAttackRecoverySeconds_UsesShorterWindowForMultiAttackSwingCadence()
     {
-        var recoverySeconds = GetStaleAttackRecoverySeconds(Combat.MinimumAttackDelayMilliseconds);
+        var recoverySeconds = GetStaleAttackRecoverySeconds(CombatFormula.MinimumAttackDelayMilliseconds);
 
         recoverySeconds.Should().BeApproximately(4.5f, 0.01f);
         recoverySeconds.Should().BeLessThan(6f);

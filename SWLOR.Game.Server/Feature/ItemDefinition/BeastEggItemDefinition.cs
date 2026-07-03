@@ -12,7 +12,7 @@ using SWLOR.NWN.API.NWScript.Enum.Item;
 
 namespace SWLOR.Game.Server.Feature.ItemDefinition
 {
-    public class BeastEggItemDefinition: IItemListDefinition
+    public class BeastEggItemDefinition : IItemListDefinition
     {
         private readonly ItemBuilder _builder = new();
 
@@ -71,7 +71,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                     var accuracyPurity = 0;
                     var evasionPurity = 0;
                     var learningPurity = 0;
-                    var defensePurities = Combat.CreateDefaultDefenseValues();
+                    var defensePurities = CombatDamageTypes.CreateDefaultDefenseValues();
                     var resistancePurities = Resistance.CreateDefaultResistanceValues();
                     var xpPenalty = 0;
 
@@ -86,41 +86,41 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                                 type = (BeastType)subType;
                                 break;
                             case ItemPropertyType.Incubation:
-                            {
-                                var incubationStatType = (IncubationStatType)subType;
-                                if (BeastResistanceCalculator.TryGetDefenseType(incubationStatType, out var damageType))
                                 {
-                                    defensePurities[damageType] = costId;
-                                    break;
-                                }
-
-                                if (BeastResistanceCalculator.TryGetResistanceType(incubationStatType, out var resistanceType))
-                                {
-                                    resistancePurities[resistanceType] = costId;
-                                    break;
-                                }
-
-                                switch (incubationStatType)
-                                {
-                                    case IncubationStatType.AttackPurity:
-                                        attackPurity = costId;
-                                        break;
-                                    case IncubationStatType.AccuracyPurity:
-                                        accuracyPurity = costId;
-                                        break;
-                                    case IncubationStatType.EvasionPurity:
-                                        evasionPurity = costId;
-                                        break;
-                                    case IncubationStatType.LearningPurity:
-                                        learningPurity = costId;
-                                        break;
-                                    case IncubationStatType.XPPenalty:
-                                        xpPenalty = costId;
+                                    var incubationStatType = (IncubationStatType)subType;
+                                    if (BeastResistanceCalculator.TryGetDefenseType(incubationStatType, out var damageType))
+                                    {
+                                        defensePurities[damageType] = costId;
                                         break;
                                     }
 
-                                break;
-                            }
+                                    if (BeastResistanceCalculator.TryGetResistanceType(incubationStatType, out var resistanceType))
+                                    {
+                                        resistancePurities[resistanceType] = costId;
+                                        break;
+                                    }
+
+                                    switch (incubationStatType)
+                                    {
+                                        case IncubationStatType.AttackPurity:
+                                            attackPurity = costId;
+                                            break;
+                                        case IncubationStatType.AccuracyPurity:
+                                            accuracyPurity = costId;
+                                            break;
+                                        case IncubationStatType.EvasionPurity:
+                                            evasionPurity = costId;
+                                            break;
+                                        case IncubationStatType.LearningPurity:
+                                            learningPurity = costId;
+                                            break;
+                                        case IncubationStatType.XPPenalty:
+                                            xpPenalty = costId;
+                                            break;
+                                    }
+
+                                    break;
+                                }
                         }
                     }
 

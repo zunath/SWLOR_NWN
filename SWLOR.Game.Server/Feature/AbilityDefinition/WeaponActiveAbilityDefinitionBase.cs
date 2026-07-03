@@ -169,21 +169,21 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 var bonus = 0;
                 if (ExtraDamageIfRecentTarget != 0 &&
                     RecentTargetWindowSeconds > 0f &&
-                    Combat.HasRecentDamageTarget(activator, target, RecentTargetWindowSeconds))
+                    CombatActivity.HasRecentDamageTarget(activator, target, RecentTargetWindowSeconds))
                 {
                     bonus += ExtraDamageIfRecentTarget;
                 }
 
                 if (ExtraDamageIfHighResources != 0 &&
                     HighResourceExtraDamageThresholdPercent > 0 &&
-                    Combat.IsCurrentFPAndStaminaAtOrAbovePercent(activator, HighResourceExtraDamageThresholdPercent))
+                    AbilityImpactEffects.IsCurrentFPAndStaminaAtOrAbovePercent(activator, HighResourceExtraDamageThresholdPercent))
                 {
                     bonus += ExtraDamageIfHighResources;
                 }
 
                 if (ExtraDamageIfBesideOrBehind != 0 &&
-                    (Combat.IsAttackerBesideTarget(activator, target) ||
-                     Combat.IsTargetNotFacingAttacker(activator, target)))
+                    (SideCriticalEffects.IsAttackerBesideTarget(activator, target) ||
+                     AbilityHitResolver.IsTargetNotFacingAttacker(activator, target)))
                 {
                     bonus += ExtraDamageIfBesideOrBehind;
                 }
@@ -212,7 +212,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
                 if (ExtraDamageIfRecentGuardedHit != 0 &&
                     RecentGuardedHitWindowSeconds > 0f &&
-                    Combat.HasRecentGuardedHit(activator, RecentGuardedHitWindowSeconds))
+                    CombatActivity.HasRecentGuardedHit(activator, RecentGuardedHitWindowSeconds))
                 {
                     bonus += ExtraDamageIfRecentGuardedHit;
                 }
@@ -242,7 +242,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                     adjustment += CriticalRateIfIdle;
                 if (CriticalRateIfNotRecentTarget != 0 &&
                     NotRecentTargetWindowSeconds > 0f &&
-                    !Combat.HasRecentDamageTarget(activator, target, NotRecentTargetWindowSeconds))
+                    !CombatActivity.HasRecentDamageTarget(activator, target, NotRecentTargetWindowSeconds))
                 {
                     adjustment += CriticalRateIfNotRecentTarget;
                 }
@@ -277,7 +277,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                     return;
 
                 AssignCommand(activator, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(hpCost), activator));
-                Combat.ApplyHitPointSpendAbilityEffects(activator, hpCost);
+                HitPointSpendEffects.ApplyHitPointSpendAbilityEffects(activator, hpCost);
             }
 
             public void BeforeHit(uint activator, SkillType skillType)
@@ -285,7 +285,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 var defenseIgnore = GetDefenseIgnorePercent(activator);
                 if (defenseIgnore != 0)
                 {
-                    Combat.GrantNextSkillAbilityBonuses(activator, skillType, 0, 0, 1, defenseIgnore);
+                    AbilityImpactEffects.GrantNextSkillAbilityBonuses(activator, skillType, 0, 0, 1, defenseIgnore);
                 }
             }
 
@@ -299,7 +299,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 if (RestoreFPOnHit > 0)
                 {
                     Stat.RestoreFP(activator, RestoreFPOnHit);
-                    Combat.ApplyAbilityRestoredFPEffects(activator);
+                    AbilityRecoveryEffects.ApplyAbilityRestoredFPEffects(activator);
                 }
                 if (DrainStaminaOnHit > 0)
                     Stat.ReduceStamina(target, DrainStaminaOnHit);
@@ -372,7 +372,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 if (RestoreFPAfterImpact > 0)
                 {
                     Stat.RestoreFP(activator, RestoreFPAfterImpact);
-                    Combat.ApplyAbilityRestoredFPEffects(activator);
+                    AbilityRecoveryEffects.ApplyAbilityRestoredFPEffects(activator);
                 }
                 if (HitCount > 1 && successfulHitCount >= HitCount)
                 {
@@ -381,7 +381,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                     if (RestoreFPIfAllHitsLand > 0)
                     {
                         Stat.RestoreFP(activator, RestoreFPIfAllHitsLand);
-                        Combat.ApplyAbilityRestoredFPEffects(activator);
+                        AbilityRecoveryEffects.ApplyAbilityRestoredFPEffects(activator);
                     }
                     if (SelfHastePercentIfAllHitsLand > 0 && SelfHasteDurationSecondsIfAllHitsLand > 0)
                     {
@@ -449,7 +449,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                     return;
 
                 if (SelfStatResourceAboveThresholdPercent > 0 &&
-                    !Combat.IsCurrentFPAndStaminaAtOrAbovePercent(activator, SelfStatResourceAboveThresholdPercent))
+                    !AbilityImpactEffects.IsCurrentFPAndStaminaAtOrAbovePercent(activator, SelfStatResourceAboveThresholdPercent))
                 {
                     return;
                 }
@@ -461,7 +461,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 ReplaceTemporary(activator, StatType.ForceDefensePercentAdjustment, SelfForceDefensePercent, duration);
                 ReplaceTemporary(activator, StatType.AttackDeflection, SelfAttackDeflection, duration);
                 if (SelfAttackDeflection != 0)
-                    Combat.ApplyAbilityGrantedAttackDeflectionEffects(activator);
+                    AbilityGrantedDeflectionEffects.ApplyAbilityGrantedAttackDeflectionEffects(activator);
                 ReplaceTemporary(activator, StatType.CriticalRatePercentAdjustment, SelfCriticalRatePercent, duration);
             }
 
@@ -604,7 +604,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
             private bool IsIdle(uint activator)
             {
-                return IdleWindowSeconds > 0f && !Combat.HasRecentAttackActivity(activator, IdleWindowSeconds);
+                return IdleWindowSeconds > 0f && !CombatActivity.HasRecentAttackActivity(activator, IdleWindowSeconds);
             }
 
             private static bool IsTargetBelowThreshold(uint target, int thresholdPercent)
@@ -622,7 +622,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             private void ApplyResourceConditionalRestore(uint activator)
             {
                 if (RestoreBothResourcesBelowThresholdPercent <= 0 ||
-                    !Combat.IsCurrentFPAndStaminaAtOrBelowPercent(activator, RestoreBothResourcesBelowThresholdPercent))
+                    !AbilityImpactEffects.IsCurrentFPAndStaminaAtOrBelowPercent(activator, RestoreBothResourcesBelowThresholdPercent))
                 {
                     return;
                 }
@@ -630,13 +630,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 if (RestoreFPIfResourcesBelow > 0)
                 {
                     Stat.RestoreFP(activator, RestoreFPIfResourcesBelow);
-                    Combat.ApplyAbilityRestoredFPEffects(activator);
+                    AbilityRecoveryEffects.ApplyAbilityRestoredFPEffects(activator);
                 }
                 if (RestoreStaminaIfResourcesBelow > 0)
                     Stat.RestoreStamina(activator, RestoreStaminaIfResourcesBelow);
 
                 if (RestoreFPIfResourcesBelow > 0 && RestoreStaminaIfResourcesBelow > 0)
-                    Combat.ApplyAbilityRestoredBothResourcesEffects(activator);
+                    AbilityRecoveryEffects.ApplyAbilityRestoredBothResourcesEffects(activator);
             }
 
             private void ApplyResourceConditionalDrain(uint activator, uint target)
@@ -667,7 +667,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 if (ConditionalStatusEffect == null ||
                     ConditionalStatusDurationSeconds <= 0 ||
                     ConditionalStatusAfterDeflectionWindowSeconds <= 0 ||
-                    !Combat.HasRecentDeflection(activator, ConditionalStatusAfterDeflectionWindowSeconds))
+                    !CombatActivity.HasRecentDeflection(activator, ConditionalStatusAfterDeflectionWindowSeconds))
                 {
                     return;
                 }
@@ -699,7 +699,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
                 var window = ProtectedTargetHitWindowSeconds;
                 if (RequireRecentGuardedHitForConditionalStatus &&
-                    !Combat.HasRecentGuardedHit(activator, window))
+                    !CombatActivity.HasRecentGuardedHit(activator, window))
                 {
                     return;
                 }
@@ -748,7 +748,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
             private void ApplyTargetUsingAbilityEffects(uint activator, uint target, CombatDamageType damageType)
             {
-                if (!Combat.IsUsingAbility(target))
+                if (!AbilityRecoveryEffects.IsUsingAbility(target))
                     return;
 
                 if (TargetUsingAbilityDrainStamina > 0)
@@ -794,7 +794,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             {
                 if (ApplySuppressionStackOnHit && SuppressionStackDurationSeconds > 0)
                 {
-                    Combat.ApplySuppressionStack(
+                    WeaponAbilityImpactEffects.ApplySuppressionStack(
                         activator,
                         target,
                         SuppressionStackEvasionPenaltyPercent,
@@ -804,7 +804,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
                 if (SuppressionDisorientedRequiredStacks <= 0 ||
                     SuppressionDisorientedDurationSeconds <= 0 ||
-                    Combat.GetSuppressionStackCount(target, activator) < SuppressionDisorientedRequiredStacks)
+                    WeaponAbilityImpactEffects.GetSuppressionStackCount(target, activator) < SuppressionDisorientedRequiredStacks)
                 {
                     return;
                 }

@@ -31,7 +31,7 @@ namespace SWLOR.Game.Server.Service.BeastMasteryService
                 {AbilityType.Social, 0}
             };
 
-            MaxDefenseBonuses = Combat.CreateDefaultDefenseValues();
+            MaxDefenseBonuses = CombatDamageTypes.CreateDefaultDefenseValues();
 
             MaxResistanceBonuses = Resistance.CreateDefaultResistanceValues();
         }

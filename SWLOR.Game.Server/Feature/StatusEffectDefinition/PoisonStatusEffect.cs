@@ -36,8 +36,8 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             var agility = GetAbilityModifier(AbilityType.Agility, source);
             var amount = Math.Max(1, Random.Next(3, 7) + agility * level);
             amount = Resistance.ApplyResistanceToDamage(creature, ResistanceType, amount);
-            amount = Combat.ApplyDamageOverTimeTakenModifiers(creature, amount, CombatDamageType.Poison);
-            amount = Combat.ApplyDamageTakenModifiers(creature, amount, source, CombatDamageType.Poison);
+            amount = CombatDamageCalculator.ApplyDamageOverTimeTakenModifiers(creature, amount, CombatDamageType.Poison);
+            amount = CombatDamageCalculator.ApplyDamageTakenModifiers(creature, amount, source, CombatDamageType.Poison);
             if (amount <= 0)
                 return;
 

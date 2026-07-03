@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Service.CombatService;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -56,7 +57,7 @@ namespace SWLOR.Game.Server.Feature
         private static void ApplyLowResourceIntervalRestore(uint player)
         {
             var threshold = Stat.GetStatAdjustment(player, StatType.LowFPAndStaminaIntervalThresholdPercent);
-            if (threshold <= 0 || !Combat.IsCurrentFPAndStaminaAtOrBelowPercent(player, threshold))
+            if (threshold <= 0 || !AbilityImpactEffects.IsCurrentFPAndStaminaAtOrBelowPercent(player, threshold))
                 return;
 
             var fpRestore = Stat.GetStatAdjustment(player, StatType.LowFPAndStaminaIntervalFPRestore);

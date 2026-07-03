@@ -882,7 +882,7 @@ namespace SWLOR.Game.Server.Service
             var skillLevel = 0;
             var statType = statOverride != AbilityType.Invalid
                 ? statOverride
-                : Combat.GetWeaponDamageAbilityType(creature.m_idSelf, itemType);
+                : CombatWeaponStats.GetWeaponDamageAbilityType(creature.m_idSelf, itemType);
             var stat = GetStatValueNative(creature, statType);
             var skillType = Skill.GetSkillTypeByBaseItem(itemType);
 
@@ -893,7 +893,7 @@ namespace SWLOR.Game.Server.Service
 
                 if (dbPlayer != null)
                 {
-                    if(skillType != SkillType.Invalid)
+                    if (skillType != SkillType.Invalid)
                         skillLevel = dbPlayer.Skills[skillType].Rank;
 
                     if (skillType == SkillType.Force)
@@ -1087,8 +1087,8 @@ namespace SWLOR.Game.Server.Service
             }
 
             adjustment += GetHighFPAndStaminaAttackAdjustment(creature);
-            adjustment += Combat.GetNearbyStatusTargetAttackAdjustment(creature);
-            adjustment += Combat.GetLowHPAttackAdjustment(creature);
+            adjustment += DamageModifierPipeline.GetNearbyStatusTargetAttackAdjustment(creature);
+            adjustment += AttackConditionBonuses.GetLowHPAttackAdjustment(creature);
             return Math.Max(1, ApplyPercentAdjustment(attack, adjustment));
         }
 
@@ -1147,7 +1147,7 @@ namespace SWLOR.Game.Server.Service
 
             var baseItemType = GetBaseItemType(weapon);
             var statType = statOverride == AbilityType.Invalid ?
-                Combat.GetWeaponAccuracyAbilityType(creature, baseItemType) :
+                CombatWeaponStats.GetWeaponAccuracyAbilityType(creature, baseItemType) :
                 statOverride;
             var stat = statType == AbilityType.Invalid ? 0 : GetAbilityScore(creature, statType);
             var skillType = skillOverride == SkillType.Invalid ? Skill.GetSkillTypeByBaseItem(baseItemType) : skillOverride;
@@ -1217,7 +1217,7 @@ namespace SWLOR.Game.Server.Service
 
             var baseItemType = weapon == null ? BaseItem.Invalid : (BaseItem)weapon.m_nBaseItem;
             var statType = statOverride == AbilityType.Invalid ?
-                Combat.GetWeaponAccuracyAbilityType(creature.m_idSelf, baseItemType) :
+                CombatWeaponStats.GetWeaponAccuracyAbilityType(creature.m_idSelf, baseItemType) :
                 statOverride;
             var skillType = Skill.GetSkillTypeByBaseItem(baseItemType);
             var stat = GetStatValueNative(creature, statType);
@@ -1452,7 +1452,7 @@ namespace SWLOR.Game.Server.Service
         public static void ApplyDeflectionEffectsNative(CNWSCreature creature)
         {
             var creatureId = creature.m_idSelf;
-            Combat.TrackDeflection(creatureId);
+            GuardDeflection.TrackDeflection(creatureId);
 
             var staminaRestore = GetStatAdjustment(creatureId, StatType.DeflectionStaminaRestore);
             var fpRestore = GetStatAdjustment(creatureId, StatType.DeflectionFPRestore);
@@ -1480,13 +1480,13 @@ namespace SWLOR.Game.Server.Service
             var nextAutoAttackCriticalRateWindow = GetStatAdjustment(creatureId, StatType.DeflectionNextAutoAttackCriticalRateWindowSeconds);
 
             if (staminaRestore > 0 &&
-                Combat.TryUseStatTrigger(creatureId, StatType.DeflectionStaminaRestore, staminaRestoreCooldown))
+                CombatStatTriggers.TryUseStatTrigger(creatureId, StatType.DeflectionStaminaRestore, staminaRestoreCooldown))
             {
                 RestoreStamina(creatureId, staminaRestore);
             }
 
             if (fpRestore > 0 &&
-                Combat.TryUseStatTrigger(creatureId, StatType.DeflectionFPRestore, fpRestoreCooldown))
+                CombatStatTriggers.TryUseStatTrigger(creatureId, StatType.DeflectionFPRestore, fpRestoreCooldown))
             {
                 RestoreFP(creatureId, fpRestore);
             }
@@ -1539,14 +1539,14 @@ namespace SWLOR.Game.Server.Service
                     StatType.DeflectionDefensePercentAdjustment);
             }
 
-            Combat.GrantNextSkillAbilityBonuses(
+            AbilityImpactEffects.GrantNextSkillAbilityBonuses(
                 creatureId,
                 nextSkillAbilitySkillType,
                 nextSkillAbilityDamageBonus,
                 nextSkillAbilityCriticalRate,
                 Math.Max(nextSkillAbilityDamageWindow, nextSkillAbilityCriticalWindow));
 
-            Combat.GrantNextAutoAttackCriticalRateBonus(
+            QueuedCombatActions.GrantNextAutoAttackCriticalRateBonus(
                 creatureId,
                 nextAutoAttackCriticalRateSkillType,
                 nextAutoAttackCriticalRate,
@@ -1554,7 +1554,7 @@ namespace SWLOR.Game.Server.Service
 
             if (nextSkillAbilityNoDelay > 0)
             {
-                Combat.GrantNextAbilityNoDelay(
+                QueuedCombatActions.GrantNextAbilityNoDelay(
                     creatureId,
                     nextSkillAbilitySkillType,
                     nextSkillAbilityNoDelayWindow);
@@ -1678,7 +1678,7 @@ namespace SWLOR.Game.Server.Service
         private static int ApplyPostEvasionStatusModifiers(uint creature, int evasion, SkillType incomingSkillType)
         {
             var adjustment = GetStatAdjustment(creature, StatType.EvasionPercentAdjustment);
-            if (Combat.IsRangedDamageSkill(incomingSkillType))
+            if (CombatSkillType.IsRangedDamageSkill(incomingSkillType))
             {
                 adjustment += GetStatAdjustment(creature, StatType.RangedEvasionPercentAdjustment);
             }

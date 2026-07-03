@@ -1,5 +1,6 @@
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Service.CombatService;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -11,8 +12,8 @@ public class DamageOverTimeStatusEffectTests
         var burnSource = ReadStatusEffectSource("BurnStatusEffect.cs");
 
         burnSource.Should().Contain("System.Math.Max(1, Random.Next(2, 4) + might * 2 * _level)");
-        burnSource.Should().Contain("Combat.ApplyDamageOverTimeTakenModifiers(creature, amount, CombatDamageType.Fire)");
-        burnSource.Should().Contain("Combat.ApplyDamageTakenModifiers(creature, amount, Source, CombatDamageType.Fire)");
+        burnSource.Should().Contain("CombatDamageCalculator.ApplyDamageOverTimeTakenModifiers(creature, amount, CombatDamageType.Fire)");
+        burnSource.Should().Contain("CombatDamageCalculator.ApplyDamageTakenModifiers(creature, amount, Source, CombatDamageType.Fire)");
         burnSource.Should().Contain("AssignCommand(source, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(amount, DamageType.Fire), creature))");
     }
 
@@ -23,8 +24,8 @@ public class DamageOverTimeStatusEffectTests
 
         poisonSource.Should().Contain("var source = GetIsObjectValid(Source) ? Source : creature;");
         poisonSource.Should().Contain("Math.Max(1, Random.Next(3, 7) + agility * level)");
-        poisonSource.Should().Contain("Combat.ApplyDamageOverTimeTakenModifiers(creature, amount, CombatDamageType.Poison)");
-        poisonSource.Should().Contain("Combat.ApplyDamageTakenModifiers(creature, amount, source, CombatDamageType.Poison)");
+        poisonSource.Should().Contain("CombatDamageCalculator.ApplyDamageOverTimeTakenModifiers(creature, amount, CombatDamageType.Poison)");
+        poisonSource.Should().Contain("CombatDamageCalculator.ApplyDamageTakenModifiers(creature, amount, source, CombatDamageType.Poison)");
         poisonSource.Should().Contain("AssignCommand(source, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(amount, DamageType.Acid), creature))");
     }
 
@@ -34,8 +35,8 @@ public class DamageOverTimeStatusEffectTests
         var forceDotSource = ReadStatusEffectSource("ForceDamageOverTimeStatusEffectBase.cs");
 
         forceDotSource.Should().Contain("var source = GetIsObjectValid(Source) ? Source : creature;");
-        forceDotSource.Should().Contain("Combat.ApplyDamageOverTimeTakenModifiers(creature, damage, CombatDamageType.Force)");
-        forceDotSource.Should().Contain("Combat.ApplyDamageTakenModifiers(creature, damage, source, CombatDamageType.Force)");
+        forceDotSource.Should().Contain("CombatDamageCalculator.ApplyDamageOverTimeTakenModifiers(creature, damage, CombatDamageType.Force)");
+        forceDotSource.Should().Contain("CombatDamageCalculator.ApplyDamageTakenModifiers(creature, damage, source, CombatDamageType.Force)");
         forceDotSource.Should().Contain("AssignCommand(source, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, CombatDamageType.Force.GetNWScriptDamageType()), creature))");
     }
 

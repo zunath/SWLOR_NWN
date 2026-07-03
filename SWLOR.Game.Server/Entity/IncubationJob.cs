@@ -5,7 +5,7 @@ using SWLOR.Game.Server.Service.CombatService;
 
 namespace SWLOR.Game.Server.Entity
 {
-    public class IncubationJob: EntityBase
+    public class IncubationJob : EntityBase
     {
         [Indexed]
         public string ParentPropertyId { get; set; }
@@ -42,7 +42,7 @@ namespace SWLOR.Game.Server.Entity
 
         public IncubationJob()
         {
-            DefensePurities = Combat.CreateDefaultDefenseValues();
+            DefensePurities = CombatDamageTypes.CreateDefaultDefenseValues();
             ResistancePurities = Resistance.CreateDefaultResistanceValues();
             LyaseColors = new Dictionary<EnzymeColorType, int>
             {

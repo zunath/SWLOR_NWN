@@ -21,7 +21,7 @@ Service/
 ├── Cache.cs                          # Caching system
 ├── ChatCommand.cs                    # Chat command handling
 ├── ColorToken.cs                     # Color token system
-├── Combat.cs                         # Combat mechanics
+├── CombatService/                    # Combat mechanics
 ├── CombatPoint.cs                    # Combat point system
 ├── Communication.cs                  # Communication system
 ├── Craft.cs                          # Crafting system
@@ -127,7 +127,7 @@ Service/
 - Combat points
 - Enmity system
 
-**Common Usage**: See `Service/Combat.cs` and `Service/CombatPoint.cs` for combat mechanics.
+**Common Usage**: See `Service/CombatService/` and `Service/CombatPoint.cs` for combat mechanics.
 
 ### 3. PerkService
 

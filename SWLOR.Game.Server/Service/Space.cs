@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.DBService;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
@@ -373,7 +374,7 @@ namespace SWLOR.Game.Server.Service
             }
             SetLocalObject(creature, "SPACE_TARGET", target);
 
-            if(GetIsPC(creature) && !Gui.IsWindowOpen(creature, GuiWindowType.TargetStatus) && GetShipStatus(target) != null)
+            if (GetIsPC(creature) && !Gui.IsWindowOpen(creature, GuiWindowType.TargetStatus) && GetShipStatus(target) != null)
                 Gui.TogglePlayerWindow(creature, GuiWindowType.TargetStatus);
         }
 
@@ -404,7 +405,7 @@ namespace SWLOR.Game.Server.Service
 
             DeleteLocalObject(creature, "SPACE_TARGET");
 
-            if(GetIsPC(creature) && Gui.IsWindowOpen(creature, GuiWindowType.TargetStatus))
+            if (GetIsPC(creature) && Gui.IsWindowOpen(creature, GuiWindowType.TargetStatus))
                 Gui.TogglePlayerWindow(creature, GuiWindowType.TargetStatus);
         }
 
@@ -681,7 +682,7 @@ namespace SWLOR.Game.Server.Service
             dbPlayer.SerializedHotBar = CreaturePlugin.SerializeQuickbar(player);
             dbPlayer.ActiveShipId = shipId;
 
-            foreach(var (slot, shipModule) in dbPlayerShip.Status.HighPowerModules)
+            foreach (var (slot, shipModule) in dbPlayerShip.Status.HighPowerModules)
             {
                 var feat = HighSlotToFeat(slot);
                 var shipModuleDetail = _shipModules[shipModule.ItemTag];
@@ -769,7 +770,7 @@ namespace SWLOR.Game.Server.Service
                 _shipClones[dbPlayerShip.Id] = OBJECT_INVALID;
             }
 
-            if(!_playersInSpace.Contains(player))
+            if (!_playersInSpace.Contains(player))
                 _playersInSpace.Add(player);
 
             ExecuteScript("space_enter", player);
@@ -1099,7 +1100,7 @@ namespace SWLOR.Game.Server.Service
             // Slot Numbers between 10-20 are low powered slots.
             else if (slotNumber <= 20)
             {
-                shipModule = activatorShipStatus.LowPowerModules[slotNumber-10];
+                shipModule = activatorShipStatus.LowPowerModules[slotNumber - 10];
             }
             else
             {
@@ -1233,7 +1234,7 @@ namespace SWLOR.Game.Server.Service
             // Capacitor recovery
             RestoreCapacitor(player, shipStatus, 1);
 
-            if(GetIsPC(player))
+            if (GetIsPC(player))
                 ExecuteScript("pc_target_upd", player);
         }
 
@@ -1463,7 +1464,7 @@ namespace SWLOR.Game.Server.Service
             var attackerAccuracy = GetShipAccuracy(attacker);
             var defenderEvasion = GetShipEvasion(defender);
 
-            return Combat.CalculateHitRate(attackerAccuracy, defenderEvasion, 0);
+            return CombatFormula.CalculateHitRate(attackerAccuracy, defenderEvasion, 0);
         }
 
         /// <summary>
@@ -1693,7 +1694,7 @@ namespace SWLOR.Game.Server.Service
                 attacker,
                 receiver => $"{PlayerName.GetDisplayName(receiver, attacker)} deals {amount} damage to {PlayerName.GetDisplayName(receiver, target)}.");
 
-            if(GetIsPC(attacker))
+            if (GetIsPC(attacker))
                 ExecuteScript("pc_target_upd", attacker);
 
         }
@@ -1722,7 +1723,7 @@ namespace SWLOR.Game.Server.Service
 
             // Safety clamping
             if (targetShipStatus.Hull < 0)
-            targetShipStatus.Hull = 0;
+                targetShipStatus.Hull = 0;
 
             // Apply death if hull has reached zero. Shields are reduced to 0 in this instance as well.
             if (targetShipStatus.Hull <= 0)
@@ -1951,7 +1952,7 @@ namespace SWLOR.Game.Server.Service
                             useModule = true;
                         }
                     }
-                    else if(shipModuleDetail.Type == ShipModuleType.HullRepairer ||
+                    else if (shipModuleDetail.Type == ShipModuleType.HullRepairer ||
                              shipModuleDetail.Type == ShipModuleType.RepairFieldGenerator)
                     {
                         var hullPointsLost = shipStatus.MaxHull - shipStatus.Hull;

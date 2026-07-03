@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using Random = SWLOR.Game.Server.Service.Random;
+using SWLOR.Game.Server.Service.CombatService;
 
 namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 {
@@ -40,7 +41,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 var defenseBonus = targetShipStatus.ExplosiveDefense * 2;
                 var defense = Space.GetShipDefense(target, defenseBonus);
                 var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
-                var damage = Combat.CalculateDamage(
+                var damage = CombatDamageCalculator.CalculateDamage(
                     attack,
                     dmg,
                     attackerStat,
@@ -55,7 +56,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             var attackId = isHit ? 1 : 4;
             Messaging.SendMessageNearbyToPlayers(
                 target,
-                receiver => Combat.BuildCombatLogMessage(receiver, activator, target, attackId, chanceToHit),
+                receiver => CombatLog.BuildCombatLogMessage(receiver, activator, target, attackId, chanceToHit),
                 60f);
             CombatPoint.AddCombatPoint(activator, target, SkillType.Piloting);
         }

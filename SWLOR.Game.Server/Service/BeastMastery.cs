@@ -332,7 +332,7 @@ namespace SWLOR.Game.Server.Service
             BiowareXP2.IPSafeAddItemProperty(skin, ItemPropertyCustom(ItemPropertyType.AccuracyBonus, -1, accuracyBonus), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
             BiowareXP2.IPSafeAddItemProperty(skin, ItemPropertyCustom(ItemPropertyType.Evasion, -1, evasionBonus), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
 
-            foreach (var damageType in Combat.GetDefenseDamageTypes())
+            foreach (var damageType in CombatDamageTypes.GetDefenseDamageTypes())
             {
                 var defenseBonus = BeastResistanceCalculator.CalculateDefenseBonus(level, dbBeast, damageType);
                 BiowareXP2.IPSafeAddItemProperty(skin, ItemPropertyCustom(ItemPropertyType.Defense, (int)damageType, defenseBonus), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
@@ -785,7 +785,7 @@ namespace SWLOR.Game.Server.Service
                 ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.LearningPurity, job.LearningPurity),
             };
 
-            foreach (var damageType in Combat.GetDefenseDamageTypes())
+            foreach (var damageType in CombatDamageTypes.GetDefenseDamageTypes())
             {
                 if (!BeastResistanceCalculator.TryGetDefensePurityIncubationStatType(damageType, out var statType))
                     continue;
@@ -828,7 +828,7 @@ namespace SWLOR.Game.Server.Service
                 job.LearningPurity,
             };
 
-            purities.AddRange(Combat.GetDefenseDamageTypes().Select(type => BeastResistanceCalculator.GetDefensePurity(job, type)));
+            purities.AddRange(CombatDamageTypes.GetDefenseDamageTypes().Select(type => BeastResistanceCalculator.GetDefensePurity(job, type)));
             purities.AddRange(Resistance.GetAllResistanceTypes().Select(type => GetResistancePurity(job, type)));
 
             var averagePurity = purities.Average();

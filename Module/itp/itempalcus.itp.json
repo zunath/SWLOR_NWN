@@ -35684,6 +35684,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Sludge Eel"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ns_sludge_eel"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Slug Bile"
                     },
                     "RESREF": {
@@ -47270,6 +47281,226 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Smuggler's Moon - Casino Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_83"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Smuggler's Moon - Catwalks Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_84"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Smuggler's Moon - Corporate District Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_85"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Smuggler's Moon - Czerka Arms Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_86"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Smuggler's Moon - Czerka Shipyard Office Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_87"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Smuggler's Moon - Fabrication Facility Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_88"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Smuggler's Moon - Fight Club Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_89"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Smuggler's Moon - GSI Base Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_90"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Smuggler's Moon - Hyper Dive Cantina Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_91"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Smuggler's Moon - Landing Pads Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_92"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Smuggler's Moon - Medshed Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_93"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Smuggler's Moon - Promenade Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_94"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Smuggler's Moon - Sewers Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_95"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Smuggler's Moon - Shipping District Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_96"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Smuggler's Moon - The Hub Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_97"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Smuggler's Moon - The Slums Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_98"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Smuggler's Moon - The Tilted Visor Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_99"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Smuggler's Moon Orbit Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_82"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Smuggler's Moon Station - Abandoned Station Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_100"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Smuggler's Moon Station - Lower Level Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_101"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Tatooine - Anchorhead Map"
                     },
                     "RESREF": {
@@ -52466,17 +52697,6 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Glowcutter"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "glow_cutter"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
                             "value": "Hunter Knife I"
                           },
                           "RESREF": {
@@ -56740,17 +56960,6 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "mando_pistol"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Night Pistol"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "night_pistol"
                           }
                         },
                         {

@@ -22,6 +22,7 @@
 
 ## Design Bible
 
+- Follow `SWLOR.Game.Server/Readmes/DesignBibleWorkbookRules.md` when editing any Design Bible workbook.
 - After editing `design/bible/SWLOR Design Bible - Combat Upgrade.xlsx`, run `powershell -ExecutionPolicy Bypass -File tools/UpdateCombatUpgradeAudit.ps1 -RefreshLocalBible` to refresh `SWLOR.Game.Server/Readmes/CombatUpgradeBiblePerkManifest.csv` and `SWLOR.Game.Server/Readmes/CombatUpgradePerkAudit.csv` from the local workbook.
 
 ## Full Rebuild Changes

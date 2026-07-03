@@ -3592,10 +3592,10 @@ namespace SWLOR.Game.Server.Service
 
             _attackSwingDebts.Remove(creature);
             _repeatedTargetDamageStates.Remove(creature);
-            _sameTargetPressureStates.Remove(creature);
+            ClearSameTargetPressureState(creature);
             foreach (var pressureState in _sameTargetPressureStates.Where(x => x.Value.Target == creature).Select(x => x.Key).ToList())
             {
-                _sameTargetPressureStates.Remove(pressureState);
+                ClearSameTargetPressureState(pressureState);
             }
             TemporaryStatModifier.Clear(creature);
         }

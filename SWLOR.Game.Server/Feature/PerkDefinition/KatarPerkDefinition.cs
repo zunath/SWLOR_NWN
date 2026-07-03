@@ -130,7 +130,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.IronElbowsTrait)
                 .Description("Iron Guard counterattacks and guard pulses deal +15 DMG to nearby enemies and generate extra enmity.")
-                .IncreasesStat(StatType.KatarIronGuardPulseDamageBonus, 15)
+                .IncreasesStat(StatType.GuardRetaliationDamageBonusSkillType, (int)SkillType.Katar)
+                .IncreasesStat(StatType.GuardRetaliationDamageBonus, 15)
                 .Price(3)
                 .RequirementSkill(SkillType.Katar, 18);
         }
@@ -155,8 +156,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.CoveringClawsTrait)
                 .Description("Iron Guard ally-protection abilities cause enemies hit to generate +25% Enmity toward you for 30 seconds.")
-                .IncreasesStat(StatType.KatarIronGuardCoveringClaws, 1)
-                .IncreasesStat(StatType.KatarIronGuardCoveringClawsCategoryId, (int)PerkCategoryType.KatarIronGuard)
+                .IncreasesStat(StatType.AbilityUsedPerkCategoryTargetEnmityToSourceCategoryId, (int)PerkCategoryType.KatarIronGuard)
+                .IncreasesStat(StatType.AbilityUsedPerkCategoryTargetEnmityToSourcePercentAdjustment, 25)
+                .IncreasesStat(StatType.AbilityUsedPerkCategoryTargetEnmityToSourceDurationSeconds, 30)
                 .Price(4)
                 .RequirementSkill(SkillType.Katar, 22);
         }
@@ -169,8 +171,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.GuardReversalTrait)
                 .Description("After guarding an attack, your next Katar attack deals +35 DMG and inflicts Exposed, reducing Defense by 15% for 30 seconds.")
-                .IncreasesStat(StatType.GuardedHitNextKatarAbilityDamageBonus, 35)
-                .IncreasesStat(StatType.GuardedHitNextKatarAbilityExposedDurationSeconds, 30)
+                .IncreasesStat(StatType.GuardedHitNextSkillAbilityStatusSkillType, (int)SkillType.Katar)
+                .IncreasesStat(StatType.GuardedHitNextSkillAbilityExposedDamageBonus, 35)
+                .IncreasesStat(StatType.GuardedHitNextSkillAbilityExposedDurationSeconds, 30)
                 .Price(4)
                 .RequirementSkill(SkillType.Katar, 25);
         }

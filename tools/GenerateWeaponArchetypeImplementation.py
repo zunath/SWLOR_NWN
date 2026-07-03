@@ -808,9 +808,9 @@ def description_stat_entries(row, base):
             add_stat(stats, "AbilityRestoredBothResourcesHastePercentAdjustment", parse_percent(r"\+(\d+)% Haste", description))
             add_stat(stats, "AbilityRestoredBothResourcesHasteDurationSeconds", parse_duration(description) or 30)
     if base == "Spinning Deflection":
-        add_stat(stats, "SaberstaffAreaAbilityMinTargetsBuffThreshold", 1)
-        add_stat(stats, "SaberstaffAreaAbilityAttackDeflection", parse_count(r"\+(\d+) Attack Deflection", description))
-        add_stat(stats, "SaberstaffAreaAbilityBuffDurationSeconds", parse_duration(description) or 30)
+        add_stat(stats, "AreaAbilityMinTargetsBuffThreshold", 1)
+        add_stat(stats, "AreaAbilityAttackDeflection", parse_count(r"\+(\d+) Attack Deflection", description))
+        add_stat(stats, "AreaAbilityBuffDurationSeconds", parse_duration(description) or 30)
     if base == "Force Gyre":
         add_stat(stats, "AbilityGrantedAttackDeflectionFPRestore", parse_count(r"restore (\d+) FP", description) or 2)
         add_stat(stats, "AbilityGrantedAttackDeflectionFPRestoreCooldownSeconds", parse_cooldown(description, 6))
@@ -819,12 +819,17 @@ def description_stat_entries(row, base):
         add_stat(stats, "AbilityUsedAttackDeflection", parse_count(r"\+(\d+) Attack Deflection", description))
         add_stat(stats, "AbilityUsedAttackDeflectionDurationSeconds", parse_duration(description) or 30)
     if base == "Sentinel Guard":
-        add_stat(stats, "StaffSentinelGuard", 1)
-        add_stat(stats, "StaffSentinelGuardCategoryId", "(int)PerkCategoryType.StaffSentinel")
+        add_stat(stats, "AbilityUsedPerkCategoryNearbyAllyAttackDeflectionCategoryId", "(int)PerkCategoryType.StaffSentinel")
+        add_stat(stats, "AbilityUsedPerkCategoryNearbyAllyAttackDeflection", parse_count(r"\+(\d+) Attack Deflection", description))
+        add_stat(stats, "AbilityUsedPerkCategoryNearbyAllyAttackDeflectionDurationSeconds", parse_duration(description) or 30)
+        add_stat(stats, "AbilityUsedPerkCategoryNearbyAllyAttackDeflectionSelfEnmityPercentAdjustment", 20)
     if base == "Guarding Step" and "Staff Sentinel" in description:
-        add_stat(stats, "StaffSentinelGuardingStep", 1)
-        add_stat(stats, "StaffSentinelGuardingStepCategoryId", "(int)PerkCategoryType.StaffSentinel")
-        add_stat(stats, "StaffSentinelGuardingStepCooldownSeconds", parse_cooldown(description, 20))
+        add_stat(stats, "AbilityUsedPerkCategorySelfDefenseCategoryId", "(int)PerkCategoryType.StaffSentinel")
+        add_stat(stats, "AbilityUsedPerkCategorySelfEvasionPercentAdjustment", parse_percent(r"\+(\d+)% Evasion", description))
+        add_stat(stats, "AbilityUsedPerkCategorySelfDefensePercentAdjustment", parse_percent(r"\+(\d+)% Defense", description))
+        add_stat(stats, "AbilityUsedPerkCategorySelfForceDefensePercentAdjustment", parse_percent(r"\+(\d+)% Defense", description))
+        add_stat(stats, "AbilityUsedPerkCategorySelfDefenseDurationSeconds", parse_duration(description) or 30)
+        add_stat(stats, "AbilityUsedPerkCategorySelfDefenseCooldownSeconds", parse_cooldown(description, 20))
     if base == "Pinning Fire":
         add_stat(stats, "AutoAttackSuppressionStackChance", parse_percent(r"(\d+)% chance", description))
         add_stat(stats, "AutoAttackSuppressionStackDurationSeconds", parse_duration(description) or 30)
@@ -938,21 +943,24 @@ def description_stat_entries(row, base):
         add_stat(stats, "StatusAppliedSelfEnmityPercentAdjustment", parse_percent(r"gain \+(\d+)% Enmity", description))
         add_stat(stats, "StatusAppliedSelfDurationSeconds", parse_duration(description) or 30)
     if "after guarding an attack" in lowered and "next katar attack" in lowered:
-        add_stat(stats, "GuardedHitNextKatarAbilityDamageBonus", parse_count(r"deals \+(\d+) DMG", description))
-        add_stat(stats, "GuardedHitNextKatarAbilityExposedDurationSeconds", parse_count(r"for (\d+) seconds", description))
+        add_stat(stats, "GuardedHitNextSkillAbilityStatusSkillType", skill_expr)
+        add_stat(stats, "GuardedHitNextSkillAbilityExposedDamageBonus", parse_count(r"deals \+(\d+) DMG", description))
+        add_stat(stats, "GuardedHitNextSkillAbilityExposedDurationSeconds", parse_count(r"for (\d+) seconds", description))
     elif base in {"Breaker Reversal", "Cover Reversal"}:
         add_stat(stats, "DamageTakenNextSkillAbilitySkillType", skill_expr)
         add_stat(stats, "DamageTakenNextSkillAbilityDamageBonus", parse_count(r"deals \+(\d+) DMG", description))
         add_stat(stats, "DamageTakenNextSkillAbilityWindowSeconds", parse_count(r"within (\d+) seconds", description) or 30)
     if base == "Covering Claws":
         if "ally-protection abilities" in lowered:
-            add_stat(stats, "KatarIronGuardCoveringClaws", 1)
-            add_stat(stats, "KatarIronGuardCoveringClawsCategoryId", "(int)PerkCategoryType.KatarIronGuard")
+            add_stat(stats, "AbilityUsedPerkCategoryTargetEnmityToSourceCategoryId", "(int)PerkCategoryType.KatarIronGuard")
+            add_stat(stats, "AbilityUsedPerkCategoryTargetEnmityToSourcePercentAdjustment", parse_percent(r"\+(\d+)% Enmity", description))
+            add_stat(stats, "AbilityUsedPerkCategoryTargetEnmityToSourceDurationSeconds", parse_duration(description) or 30)
         else:
             add_stat(stats, "GuardedAllyHitNextSkillAbilityDamageBonus", parse_count(r"deals \+(\d+) DMG", description))
             add_stat(stats, "GuardedAllyHitNextSkillAbilityWindowSeconds", parse_count(r"within (\d+) seconds", description) or 30)
     if base == "Iron Elbows":
-        add_stat(stats, "KatarIronGuardPulseDamageBonus", parse_count(r"deal \+(\d+) DMG", description))
+        add_stat(stats, "GuardRetaliationDamageBonusSkillType", skill_expr)
+        add_stat(stats, "GuardRetaliationDamageBonus", parse_count(r"deal \+(\d+) DMG", description))
     if base == "Retaliatory Flow":
         add_stat(stats, "GuardedHitNextSkillAbilitySkillType", skill_expr)
         add_stat(stats, "GuardedHitNextSkillAbilityDamageBonus", parse_count(r"deals \+(\d+) DMG", description))
@@ -985,7 +993,7 @@ def description_stat_entries(row, base):
         add_stat(stats, "StatusAppliedRequiredCategory", status_category_expression("Control"))
         add_stat(stats, "StatusAppliedSelfAttackDeflection", parse_count(r"gain \+(\d+) Attack Deflection", description))
         add_stat(stats, "StatusAppliedSelfDurationSeconds", parse_duration(description) or 30)
-    if base == "Guarding Step":
+    if base == "Guarding Step" and "Staff Sentinel" not in description:
         add_stat(stats, "AbilityUsedEvasionPercentAdjustmentSkillType", skill_expr)
         add_stat(stats, "AbilityUsedEvasionPercentAdjustment", parse_percent(r"gain \+(\d+)% Evasion", description))
         add_stat(stats, "AbilityUsedEvasionDurationSeconds", parse_duration(description) or 30)
@@ -1295,9 +1303,9 @@ def exact_weapon_stance_stat_entries(row, base):
         return list(stats.items())
 
     if base == "Tempest Stance":
-        add_stat(stats, "SaberstaffAreaAbilityMinTargetsBuffThreshold", 1)
-        add_stat(stats, "SaberstaffAreaAbilityAttackDeflection", parse_count(r"\+(\d+) Attack Deflection", description))
-        add_stat(stats, "SaberstaffAreaAbilityBuffDurationSeconds", parse_count(r"for (\d+) seconds", description) or 30)
+        add_stat(stats, "AreaAbilityMinTargetsBuffThreshold", 1)
+        add_stat(stats, "AreaAbilityAttackDeflection", parse_count(r"\+(\d+) Attack Deflection", description))
+        add_stat(stats, "AreaAbilityBuffDurationSeconds", parse_count(r"for (\d+) seconds", description) or 30)
         return list(stats.items())
 
     if base == "Iron Guard Stance":
@@ -1431,9 +1439,9 @@ def stance_stat_entries(row):
     if "thrown area abilities deal" in lowered:
         add_stat(stats, "ThrowingAreaAbilityDamagePercentAdjustment", parse_percent(r"deal \+(\d+)% damage", description))
     if "area combat abilities" in lowered and "attack deflection" in lowered and row["Tab"] == "Saberstaff":
-        add_stat(stats, "SaberstaffAreaAbilityMinTargetsBuffThreshold", 1)
-        add_stat(stats, "SaberstaffAreaAbilityAttackDeflection", parse_count(r"\+(\d+) Attack Deflection", description))
-        add_stat(stats, "SaberstaffAreaAbilityBuffDurationSeconds", parse_duration(description) or 30)
+        add_stat(stats, "AreaAbilityMinTargetsBuffThreshold", 1)
+        add_stat(stats, "AreaAbilityAttackDeflection", parse_count(r"\+(\d+) Attack Deflection", description))
+        add_stat(stats, "AreaAbilityBuffDurationSeconds", parse_duration(description) or 30)
     if "add Suppression stacks" in description:
         add_stat(stats, "RangedHitSuppressionStackDurationSeconds", parse_duration(description) or 30)
         add_stat(stats, "RangedHitSuppressionStackEvasionPenaltyPercent", 0)
@@ -1931,11 +1939,11 @@ def profile_property_lines(row, level, primary_status):
         add_profile_property("TemporaryAreaAbilityFragmentationPulseSeconds", parse_count(r"every (\d+) seconds", description) or 3)
         add_profile_property("TemporaryDefeatedEnemyEffectDurationSeconds", str(first_sentence_duration(description) or parse_duration(description) or 45))
     if "area combat abilities restore" in lowered and "attack deflection" in lowered:
-        add_profile_property("TemporarySaberstaffAreaAbilityMinTargetsResourceRestoreThreshold", "1")
-        add_profile_property("TemporarySaberstaffAreaAbilityFPRestore", parse_count(r"restore (\d+) FP", description))
-        add_profile_property("TemporarySaberstaffAreaAbilityMinTargetsBuffThreshold", "1")
-        add_profile_property("TemporarySaberstaffAreaAbilityAttackDeflection", parse_count(r"\+(\d+) Attack Deflection", description))
-        add_profile_property("TemporarySaberstaffAreaAbilityBuffDurationSeconds", parse_count(r"Attack Deflection for (\d+) seconds", description) or 30)
+        add_profile_property("TemporaryAreaAbilityMinTargetsResourceRestoreThreshold", "1")
+        add_profile_property("TemporaryAreaAbilityFPRestore", parse_count(r"restore (\d+) FP", description))
+        add_profile_property("TemporaryAreaAbilityMinTargetsBuffThreshold", "1")
+        add_profile_property("TemporaryAreaAbilityAttackDeflection", parse_count(r"\+(\d+) Attack Deflection", description))
+        add_profile_property("TemporaryAreaAbilityBuffDurationSeconds", parse_count(r"Attack Deflection for (\d+) seconds", description) or 30)
         add_profile_property("TemporaryDefeatedEnemyEffectDurationSeconds", str(first_sentence_duration(description) or parse_duration(description) or 45))
     if "control effects you apply grant" in lowered and "attack deflection" in lowered:
         add_profile_property("TemporaryStatusAppliedRequiredCategory", status_category_expression("Control"))

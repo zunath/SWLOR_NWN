@@ -108,11 +108,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             public int TemporaryAreaAbilityFragmentationDamage { get; init; }
             public int TemporaryAreaAbilityFragmentationDurationSeconds { get; init; }
             public int TemporaryAreaAbilityFragmentationPulseSeconds { get; init; }
-            public int TemporarySaberstaffAreaAbilityMinTargetsResourceRestoreThreshold { get; init; }
-            public int TemporarySaberstaffAreaAbilityFPRestore { get; init; }
-            public int TemporarySaberstaffAreaAbilityMinTargetsBuffThreshold { get; init; }
-            public int TemporarySaberstaffAreaAbilityAttackDeflection { get; init; }
-            public int TemporarySaberstaffAreaAbilityBuffDurationSeconds { get; init; }
+            public int TemporaryAreaAbilityMinTargetsResourceRestoreThreshold { get; init; }
+            public int TemporaryAreaAbilityFPRestore { get; init; }
+            public int TemporaryAreaAbilityMinTargetsBuffThreshold { get; init; }
+            public int TemporaryAreaAbilityAttackDeflection { get; init; }
+            public int TemporaryAreaAbilityBuffDurationSeconds { get; init; }
             public int TemporaryStatusAppliedRequiredCategory { get; init; }
             public int TemporaryStatusAppliedSelfAttackDeflection { get; init; }
             public int TemporaryStatusAppliedSelfDurationSeconds { get; init; }
@@ -550,24 +550,24 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                     duration);
                 ReplaceTemporary(
                     activator,
-                    StatType.SaberstaffAreaAbilityMinTargetsResourceRestoreThreshold,
-                    TemporarySaberstaffAreaAbilityMinTargetsResourceRestoreThreshold,
+                    StatType.AreaAbilityMinTargetsResourceRestoreThreshold,
+                    TemporaryAreaAbilityMinTargetsResourceRestoreThreshold,
                     duration);
-                ReplaceTemporary(activator, StatType.SaberstaffAreaAbilityFPRestore, TemporarySaberstaffAreaAbilityFPRestore, duration);
+                ReplaceTemporary(activator, StatType.AreaAbilityFPRestore, TemporaryAreaAbilityFPRestore, duration);
                 ReplaceTemporary(
                     activator,
-                    StatType.SaberstaffAreaAbilityMinTargetsBuffThreshold,
-                    TemporarySaberstaffAreaAbilityMinTargetsBuffThreshold,
-                    duration);
-                ReplaceTemporary(
-                    activator,
-                    StatType.SaberstaffAreaAbilityAttackDeflection,
-                    TemporarySaberstaffAreaAbilityAttackDeflection,
+                    StatType.AreaAbilityMinTargetsBuffThreshold,
+                    TemporaryAreaAbilityMinTargetsBuffThreshold,
                     duration);
                 ReplaceTemporary(
                     activator,
-                    StatType.SaberstaffAreaAbilityBuffDurationSeconds,
-                    TemporarySaberstaffAreaAbilityBuffDurationSeconds,
+                    StatType.AreaAbilityAttackDeflection,
+                    TemporaryAreaAbilityAttackDeflection,
+                    duration);
+                ReplaceTemporary(
+                    activator,
+                    StatType.AreaAbilityBuffDurationSeconds,
+                    TemporaryAreaAbilityBuffDurationSeconds,
                     duration);
                 ReplaceTemporary(activator, StatType.StatusAppliedRequiredCategory, TemporaryStatusAppliedRequiredCategory, duration);
                 ReplaceTemporary(

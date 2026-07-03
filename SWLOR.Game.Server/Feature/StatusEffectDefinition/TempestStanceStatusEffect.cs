@@ -14,9 +14,9 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         public TempestStanceStatusEffect()
         {
-            StatGroup.Stats[StatType.SaberstaffAreaAbilityMinTargetsBuffThreshold] = 1;
-            StatGroup.Stats[StatType.SaberstaffAreaAbilityAttackDeflection] = 5;
-            StatGroup.Stats[StatType.SaberstaffAreaAbilityBuffDurationSeconds] = 30;
+            StatGroup.Stats[StatType.AreaAbilityMinTargetsBuffThreshold] = 1;
+            StatGroup.Stats[StatType.AreaAbilityAttackDeflection] = 5;
+            StatGroup.Stats[StatType.AreaAbilityBuffDurationSeconds] = 30;
         }
     }
 }

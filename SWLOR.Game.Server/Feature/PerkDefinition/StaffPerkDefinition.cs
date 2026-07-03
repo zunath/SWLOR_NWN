@@ -265,8 +265,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SentinelGuardTrait)
                 .Description("Staff Sentinel protection abilities grant nearby allies +8 Attack Deflection for 30 seconds and generate extra enmity.")
-                .IncreasesStat(StatType.StaffSentinelGuard, 1)
-                .IncreasesStat(StatType.StaffSentinelGuardCategoryId, (int)PerkCategoryType.StaffSentinel)
+                .IncreasesStat(StatType.AbilityUsedPerkCategoryNearbyAllyAttackDeflectionCategoryId, (int)PerkCategoryType.StaffSentinel)
+                .IncreasesStat(StatType.AbilityUsedPerkCategoryNearbyAllyAttackDeflection, 8)
+                .IncreasesStat(StatType.AbilityUsedPerkCategoryNearbyAllyAttackDeflectionDurationSeconds, 30)
+                .IncreasesStat(StatType.AbilityUsedPerkCategoryNearbyAllyAttackDeflectionSelfEnmityPercentAdjustment, 20)
                 .Price(2)
                 .RequirementSkill(SkillType.Staff, 5);
         }
@@ -334,11 +336,12 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.GuardingStepTrait)
                 .Description("Using a Staff Sentinel ability grants +25% Evasion and +20% Defense for 30 seconds. This can trigger once every 20 seconds.")
-                .IncreasesStat(StatType.StaffSentinelGuardingStep, 1)
-                .IncreasesStat(StatType.StaffSentinelGuardingStepCategoryId, (int)PerkCategoryType.StaffSentinel)
-                .IncreasesStat(StatType.StaffSentinelGuardingStepCooldownSeconds, 20)
-                .IncreasesStat(StatType.AbilityUsedEvasionPercentAdjustmentSkillType, (int)SkillType.Staff)
-                .IncreasesStat(StatType.AbilityUsedEvasionDurationSeconds, 30)
+                .IncreasesStat(StatType.AbilityUsedPerkCategorySelfDefenseCategoryId, (int)PerkCategoryType.StaffSentinel)
+                .IncreasesStat(StatType.AbilityUsedPerkCategorySelfEvasionPercentAdjustment, 25)
+                .IncreasesStat(StatType.AbilityUsedPerkCategorySelfDefensePercentAdjustment, 20)
+                .IncreasesStat(StatType.AbilityUsedPerkCategorySelfForceDefensePercentAdjustment, 20)
+                .IncreasesStat(StatType.AbilityUsedPerkCategorySelfDefenseDurationSeconds, 30)
+                .IncreasesStat(StatType.AbilityUsedPerkCategorySelfDefenseCooldownSeconds, 20)
                 .Price(4)
                 .RequirementSkill(SkillType.Staff, 15);
         }

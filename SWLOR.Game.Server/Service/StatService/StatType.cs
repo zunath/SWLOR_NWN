@@ -747,52 +747,52 @@ namespace SWLOR.Game.Server.Service.StatService
         ThrowingAreaAbilityAttackPercentMax = 135,
 
         /// <summary>
-        /// Minimum number of impacted targets required for a saberstaff area ability to restore resources.
+        /// Minimum number of impacted targets required for an area ability to restore resources.
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
-        SaberstaffAreaAbilityMinTargetsResourceRestoreThreshold = 136,
+        AreaAbilityMinTargetsResourceRestoreThreshold = 136,
 
         /// <summary>
-        /// Flat FP restored when a saberstaff area ability meets the resource restore target threshold.
+        /// Flat FP restored when an area ability meets the resource restore target threshold.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        SaberstaffAreaAbilityFPRestore = 137,
+        AreaAbilityFPRestore = 137,
 
         /// <summary>
-        /// Flat Stamina restored when a saberstaff area ability meets the resource restore target threshold.
+        /// Flat Stamina restored when an area ability meets the resource restore target threshold.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        SaberstaffAreaAbilityStaminaRestore = 138,
+        AreaAbilityStaminaRestore = 138,
 
         /// <summary>
-        /// Cooldown in seconds for saberstaff area ability resource restoration.
+        /// Cooldown in seconds for area ability resource restoration.
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
-        SaberstaffAreaAbilityResourceRestoreCooldownSeconds = 139,
+        AreaAbilityResourceRestoreCooldownSeconds = 139,
 
         /// <summary>
-        /// Minimum number of impacted targets required for a saberstaff area ability to apply temporary buffs.
+        /// Minimum number of impacted targets required for an area ability to apply temporary buffs.
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
-        SaberstaffAreaAbilityMinTargetsBuffThreshold = 140,
+        AreaAbilityMinTargetsBuffThreshold = 140,
 
         /// <summary>
-        /// Temporary percent attack delay reduction applied when a saberstaff area ability meets the buff threshold.
+        /// Temporary percent attack delay reduction applied when an area ability meets the buff threshold.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        SaberstaffAreaAbilityHastePercentAdjustment = 141,
+        AreaAbilityHastePercentAdjustment = 141,
 
         /// <summary>
-        /// Temporary flat attack deflection chance applied when a saberstaff area ability meets the buff threshold.
+        /// Temporary flat attack deflection chance applied when an area ability meets the buff threshold.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        SaberstaffAreaAbilityAttackDeflection = 142,
+        AreaAbilityAttackDeflection = 142,
 
         /// <summary>
-        /// Duration in seconds for saberstaff area ability haste and attack deflection buffs.
+        /// Duration in seconds for area ability haste and attack deflection buffs.
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
-        SaberstaffAreaAbilityBuffDurationSeconds = 143,
+        AreaAbilityBuffDurationSeconds = 143,
 
         /// <summary>
         /// Minimum number of impacted targets required for a twin blade area ability to gain haste.
@@ -2823,22 +2823,22 @@ namespace SWLOR.Game.Server.Service.StatService
         HeavyVibrobladeDefenseGuardiansResolveCooldownSeconds = 496,
 
         /// <summary>
-        /// Duration in seconds for Exposed on the next Katar ability after guarding a hit.
+        /// Duration in seconds for Exposed on the next matching skill ability after guarding a hit.
         /// </summary>
-        [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        GuardedHitNextKatarAbilityExposedDurationSeconds = 497,
+        [StatType(StatTypeCategory.NonBeneficial)]
+        GuardedHitNextSkillAbilityExposedDurationSeconds = 497,
 
         /// <summary>
-        /// Enables Iron Guard ally-protection abilities to apply Covering Claws.
+        /// Enmity-to-source percent adjustment applied to targets hit by matching category abilities.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        KatarIronGuardCoveringClaws = 498,
+        AbilityUsedPerkCategoryTargetEnmityToSourcePercentAdjustment = 498,
 
         /// <summary>
-        /// Damage added to Iron Guard counterattacks and guard pulses.
+        /// Damage added to guard retaliation for a matching skill.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        KatarIronGuardPulseDamageBonus = 499,
+        GuardRetaliationDamageBonus = 499,
 
         /// <summary>
         /// Secondary hit damage added to Venom Current single-target abilities.
@@ -3075,16 +3075,16 @@ namespace SWLOR.Game.Server.Service.StatService
         SpearDamageImprovedAttentiveness = 539,
 
         /// <summary>
-        /// Enables Staff Sentinel abilities to apply Guarding Step.
+        /// Evasion granted to self after using an ability from a matching perk category.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        StaffSentinelGuardingStep = 540,
+        AbilityUsedPerkCategorySelfEvasionPercentAdjustment = 540,
 
         /// <summary>
-        /// Enables Staff Sentinel ally-protection abilities to apply Sentinel Guard.
+        /// Attack Deflection granted to nearby allies after using an ability from a matching perk category.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        StaffSentinelGuard = 541,
+        AbilityUsedPerkCategoryNearbyAllyAttackDeflection = 541,
 
         /// <summary>
         /// Damage added to hostile Staff abilities.
@@ -3159,10 +3159,10 @@ namespace SWLOR.Game.Server.Service.StatService
         VibroknifeSaboteurToxicCoatingRank = 554,
 
         /// <summary>
-        /// Damage added to the next Katar ability after guarding a hit.
+        /// Damage added to the next matching skill ability that applies Exposed after guarding a hit.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        GuardedHitNextKatarAbilityDamageBonus = 555,
+        GuardedHitNextSkillAbilityExposedDamageBonus = 555,
 
         /// <summary>
         /// Percent current enmity reduction granted by Lightsaber Offense Centering.
@@ -3237,10 +3237,10 @@ namespace SWLOR.Game.Server.Service.StatService
         LightsaberOffenseAreaDisorientedDurationSeconds = 567,
 
         /// <summary>
-        /// Cooldown in seconds for Staff Sentinel Guarding Step.
+        /// Cooldown in seconds for category-triggered self defensive stat riders.
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
-        StaffSentinelGuardingStepCooldownSeconds = 568,
+        AbilityUsedPerkCategorySelfDefenseCooldownSeconds = 568,
 
         /// <summary>
         /// Duration in seconds for Dazed from hostile Staff abilities.
@@ -4803,16 +4803,16 @@ namespace SWLOR.Game.Server.Service.StatService
         BeastBalancedAbilityStaminaRestoreCategoryId = 834,
 
         /// <summary>
-        /// PerkCategoryType value whose abilities trigger KatarIronGuardCoveringClaws.
+        /// PerkCategoryType value whose abilities trigger target enmity-to-source status.
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
-        KatarIronGuardCoveringClawsCategoryId = 835,
+        AbilityUsedPerkCategoryTargetEnmityToSourceCategoryId = 835,
 
         /// <summary>
-        /// PerkCategoryType value whose abilities trigger StaffSentinelGuard.
+        /// PerkCategoryType value whose abilities trigger nearby ally Attack Deflection.
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
-        StaffSentinelGuardCategoryId = 836,
+        AbilityUsedPerkCategoryNearbyAllyAttackDeflectionCategoryId = 836,
 
         /// <summary>
         /// PerkCategoryType value whose abilities trigger Ward ability defense riders.
@@ -4821,10 +4821,58 @@ namespace SWLOR.Game.Server.Service.StatService
         WardAbilityDefenseCategoryId = 837,
 
         /// <summary>
-        /// PerkCategoryType value whose abilities trigger StaffSentinelGuardingStep.
+        /// PerkCategoryType value whose abilities trigger self defensive stat riders.
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
-        StaffSentinelGuardingStepCategoryId = 838
+        AbilityUsedPerkCategorySelfDefenseCategoryId = 838,
+
+        /// <summary>
+        /// Duration in seconds for target enmity-to-source status from matching category abilities.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        AbilityUsedPerkCategoryTargetEnmityToSourceDurationSeconds = 839,
+
+        /// <summary>
+        /// SkillType value whose next ability can receive guarded-hit status riders.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        GuardedHitNextSkillAbilityStatusSkillType = 841,
+
+        /// <summary>
+        /// SkillType value whose guard retaliation receives GuardRetaliationDamageBonus.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        GuardRetaliationDamageBonusSkillType = 842,
+
+        /// <summary>
+        /// Duration in seconds for nearby ally Attack Deflection from matching category abilities.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        AbilityUsedPerkCategoryNearbyAllyAttackDeflectionDurationSeconds = 843,
+
+        /// <summary>
+        /// Physical Defense granted to self after using an ability from a matching perk category.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        AbilityUsedPerkCategorySelfDefensePercentAdjustment = 844,
+
+        /// <summary>
+        /// Force Defense granted to self after using an ability from a matching perk category.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        AbilityUsedPerkCategorySelfForceDefensePercentAdjustment = 845,
+
+        /// <summary>
+        /// Duration in seconds for category-triggered self defensive stat riders.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        AbilityUsedPerkCategorySelfDefenseDurationSeconds = 846,
+
+        /// <summary>
+        /// Enmity percent granted to self when applying nearby ally Attack Deflection.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        AbilityUsedPerkCategoryNearbyAllyAttackDeflectionSelfEnmityPercentAdjustment = 847
     }
 
     public class StatTypeAttribute : Attribute

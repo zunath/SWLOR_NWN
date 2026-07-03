@@ -43,11 +43,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                 AbilityType.Invalid,
                 new GeneratedWeaponAbilityProfile
                 {
-                    TemporarySaberstaffAreaAbilityMinTargetsResourceRestoreThreshold = 1,
-                    TemporarySaberstaffAreaAbilityFPRestore = 4,
-                    TemporarySaberstaffAreaAbilityMinTargetsBuffThreshold = 1,
-                    TemporarySaberstaffAreaAbilityAttackDeflection = 8,
-                    TemporarySaberstaffAreaAbilityBuffDurationSeconds = 30,
+                    TemporaryAreaAbilityMinTargetsResourceRestoreThreshold = 1,
+                    TemporaryAreaAbilityFPRestore = 4,
+                    TemporaryAreaAbilityMinTargetsBuffThreshold = 1,
+                    TemporaryAreaAbilityAttackDeflection = 8,
+                    TemporaryAreaAbilityBuffDurationSeconds = 30,
                     TemporaryDefeatedEnemyEffectDurationSeconds = 45
                 });
 

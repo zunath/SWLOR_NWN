@@ -1027,9 +1027,11 @@ def description_stat_entries(row, base):
         add_stat(stats, "CriticalNextAbilityNoDelaySkillType", skill_expr)
         add_stat(stats, "CriticalNextAbilityNoDelayDurationSeconds", parse_count(r"within (\d+) seconds", description) or 30)
     if base == "Spotter's Rhythm":
-        add_stat(stats, "IdleSkillAbilitySkillType", skill_expr)
-        add_stat(stats, "IdleSkillAbilityRequiredIdleSeconds", parse_count(r"for (\d+) seconds", description) or 3)
-        add_stat(stats, "IdleSkillAbilityDamageBonus", parse_count(r"deals \+(\d+) DMG", description))
+        add_stat(stats, "SameTargetPressureBuildSkillType", skill_expr)
+        add_stat(stats, "SameTargetPressureBuildSeconds", parse_count(r"same target for (\d+) seconds", description) or 12)
+        add_stat(stats, "SameTargetPressureGraceSeconds", 6)
+        add_stat(stats, "SameTargetPressureReadyDurationSeconds", parse_count(r"gain .* for (\d+) seconds", description) or 9)
+        add_stat(stats, "SameTargetPressureWeaponAbilityDamageBonus", parse_count(r"deals \+(\d+) DMG", description))
     if base == "Overwatch":
         add_stat(stats, "AbilityHitChanceAgainstSuppressionStackPercentAdjustment", parse_percent(r"gains \+(\d+)% Accuracy", description))
     if base == "Containment Net":

@@ -62,6 +62,7 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<(uint, uint), TargetHitSequenceState> _areaAbilityTargetHitSequences = new();
         private static readonly Dictionary<uint, float> _attackSwingDebts = new();
         private static readonly Dictionary<uint, RepeatedTargetDamageState> _repeatedTargetDamageStates = new();
+        private static readonly Dictionary<uint, SameTargetPressureState> _sameTargetPressureStates = new();
         private static readonly Dictionary<uint, AbilityStaminaCostState> _lastAbilityStaminaCosts = new();
         private static bool _damageTypesCached;
 
@@ -81,6 +82,14 @@ namespace SWLOR.Game.Server.Service
         {
             public int Count { get; init; }
             public DateTime LastHit { get; init; }
+        }
+
+        private sealed class SameTargetPressureState
+        {
+            public uint Target { get; set; }
+            public DateTime StartedAt { get; set; }
+            public DateTime LastBuildHitAt { get; set; }
+            public DateTime ReadyUntil { get; set; }
         }
 
         private sealed class AbilityStaminaCostState
@@ -988,6 +997,7 @@ namespace SWLOR.Game.Server.Service
             if (!appliesDirectDamageEffects)
                 return;
 
+            ApplySameTargetPressureDamageEffects(attacker, defender, skillType);
             ApplySideAttackDamageEffects(attacker, defender, skillType, damage);
             ApplyDamageDealtStaminaRestore(attacker, skillType);
             ApplyDamageDealtAttackDelayReduction(attacker, skillType);
@@ -3251,6 +3261,181 @@ namespace SWLOR.Game.Server.Service
             return damage;
         }
 
+        private static void ApplySameTargetPressureDamageEffects(uint attacker, uint defender, SkillType skillType)
+        {
+            if (!GetIsObjectValid(attacker) || !GetIsObjectValid(defender) || attacker == defender)
+                return;
+
+            var buildSkillType = GetSkillTypeFromStat(Stat.GetStatAdjustment(attacker, StatType.SameTargetPressureBuildSkillType));
+            var buildSeconds = Stat.GetStatAdjustment(attacker, StatType.SameTargetPressureBuildSeconds);
+            var graceSeconds = Stat.GetStatAdjustment(attacker, StatType.SameTargetPressureGraceSeconds);
+            var readyDurationSeconds = Stat.GetStatAdjustment(attacker, StatType.SameTargetPressureReadyDurationSeconds);
+            var damageBonus = Stat.GetStatAdjustment(attacker, StatType.SameTargetPressureWeaponAbilityDamageBonus);
+            if (buildSkillType == SkillType.Invalid ||
+                buildSeconds <= 0 ||
+                graceSeconds <= 0 ||
+                readyDurationSeconds <= 0 ||
+                damageBonus <= 0)
+            {
+                return;
+            }
+
+            var now = DateTime.UtcNow;
+            if (_sameTargetPressureStates.TryGetValue(attacker, out var state) &&
+                state.ReadyUntil != default)
+            {
+                if (IsSameTargetPressureReadyStateActive(attacker, state, now))
+                    return;
+
+                ClearSameTargetPressureState(attacker);
+                state = null;
+            }
+
+            if (!IsWeaponSkillType(skillType))
+                return;
+
+            if (!SkillTypeMatches(skillType, buildSkillType))
+            {
+                if (state != null && state.Target != defender)
+                    ClearSameTargetPressureState(attacker);
+
+                return;
+            }
+
+            if (state == null || state.Target != defender)
+            {
+                state = CreateSameTargetPressureBuildState(defender, now);
+            }
+            else if ((now - state.LastBuildHitAt).TotalSeconds > graceSeconds)
+            {
+                state = CreateSameTargetPressureBuildState(defender, now);
+            }
+            else
+            {
+                state.LastBuildHitAt = now;
+            }
+
+            if ((now - state.StartedAt).TotalSeconds >= buildSeconds)
+            {
+                ReadySameTargetPressure(attacker, state, now, readyDurationSeconds);
+                return;
+            }
+
+            _sameTargetPressureStates[attacker] = state;
+        }
+
+        public static int GetSameTargetPressureWeaponAbilityDamageBonus(
+            uint attacker,
+            uint target,
+            SkillType skillType)
+        {
+            if (!IsWeaponSkillType(skillType) ||
+                !TryGetReadySameTargetPressureState(attacker, target, out _))
+            {
+                return 0;
+            }
+
+            return Math.Max(0, Stat.GetStatAdjustment(attacker, StatType.SameTargetPressureWeaponAbilityDamageBonus));
+        }
+
+        public static void ConsumeSameTargetPressureWeaponAbilityDamageBonus(
+            uint attacker,
+            uint target,
+            SkillType skillType,
+            int damage)
+        {
+            if (damage <= 0 ||
+                GetSameTargetPressureWeaponAbilityDamageBonus(attacker, target, skillType) <= 0)
+            {
+                return;
+            }
+
+            ClearSameTargetPressureState(attacker);
+
+            if (GetIsPC(attacker))
+            {
+                var bonus = Stat.GetStatAdjustment(attacker, StatType.SameTargetPressureWeaponAbilityDamageBonus);
+                FloatingTextStringOnCreature(ColorToken.Combat($"Spotter's Rhythm (+{bonus} DMG)"), attacker, false);
+            }
+        }
+
+        private static SameTargetPressureState CreateSameTargetPressureBuildState(uint target, DateTime now)
+        {
+            return new SameTargetPressureState
+            {
+                Target = target,
+                StartedAt = now,
+                LastBuildHitAt = now,
+                ReadyUntil = default
+            };
+        }
+
+        private static void ReadySameTargetPressure(
+            uint attacker,
+            SameTargetPressureState state,
+            DateTime now,
+            int readyDurationSeconds)
+        {
+            state.ReadyUntil = now.AddSeconds(readyDurationSeconds);
+            _sameTargetPressureStates[attacker] = state;
+
+            StatusEffect.ApplyStatusEffect(
+                attacker,
+                attacker,
+                typeof(SameTargetPressureStatusEffect),
+                readyDurationSeconds);
+
+            if (GetIsPC(attacker))
+            {
+                FloatingTextStringOnCreature(ColorToken.Combat("Spotter's Rhythm"), attacker, false);
+            }
+        }
+
+        private static bool TryGetReadySameTargetPressureState(
+            uint attacker,
+            uint target,
+            out SameTargetPressureState state)
+        {
+            state = null;
+            if (!_sameTargetPressureStates.TryGetValue(attacker, out var existing) ||
+                existing.ReadyUntil == default)
+            {
+                return false;
+            }
+
+            var now = DateTime.UtcNow;
+            if (!IsSameTargetPressureReadyStateActive(attacker, existing, now))
+            {
+                ClearSameTargetPressureState(attacker);
+                return false;
+            }
+
+            if (existing.Target != target)
+                return false;
+
+            state = existing;
+            return true;
+        }
+
+        private static bool IsSameTargetPressureReadyStateActive(
+            uint attacker,
+            SameTargetPressureState state,
+            DateTime now)
+        {
+            return state.ReadyUntil > now &&
+                   StatusEffect.HasStatusEffect(attacker, typeof(SameTargetPressureStatusEffect), attacker);
+        }
+
+        private static void ClearSameTargetPressureState(uint attacker)
+        {
+            _sameTargetPressureStates.Remove(attacker);
+            StatusEffect.RemoveStatusEffect(
+                attacker,
+                typeof(SameTargetPressureStatusEffect),
+                attacker,
+                false);
+        }
+
         public static int ApplyStatusSourceDefenseModifiers(uint attacker, uint defender, int defense)
         {
             if (defense <= 0)
@@ -3395,6 +3580,11 @@ namespace SWLOR.Game.Server.Service
 
             _attackSwingDebts.Remove(creature);
             _repeatedTargetDamageStates.Remove(creature);
+            _sameTargetPressureStates.Remove(creature);
+            foreach (var pressureState in _sameTargetPressureStates.Where(x => x.Value.Target == creature).Select(x => x.Key).ToList())
+            {
+                _sameTargetPressureStates.Remove(pressureState);
+            }
             TemporaryStatModifier.Clear(creature);
         }
 

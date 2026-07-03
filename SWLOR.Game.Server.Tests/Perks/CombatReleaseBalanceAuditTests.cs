@@ -145,6 +145,7 @@ public class CombatReleaseBalanceAuditTests
         StatType.AvoidedAttackNextSkillAbilityDamageBonus,
         StatType.DamageTakenNextSkillAbilityDamageBonus,
         StatType.CostlyAbilityDamageBonus,
+        StatType.SameTargetPressureWeaponAbilityDamageBonus,
         StatType.AreaAbilityFragmentationDamage
     };
 

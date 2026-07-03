@@ -1800,6 +1800,7 @@ namespace SWLOR.Game.Server.Service
                 }
 
                 ApplyDarkForceConversion(activator, target, damage);
+                Combat.ConsumeSameTargetPressureWeaponAbilityDamageBonus(activator, target, skillType, damage);
                 Combat.ApplyDamageDealtEffects(activator, target, damage, skillType, damageType);
                 StatusEffect.NotifyDamageStatusEffects(activator, target, damage, damageType);
                 Combat.ApplyDamageReflectionEffects(activator, target, damage, damageType);
@@ -2163,6 +2164,7 @@ namespace SWLOR.Game.Server.Service
                 Combat.GetAbilityDamageBonus(activator, skillType) +
                 Combat.GetAbilityDamageFlatAdjustment(activator, perkType, skillType) +
                 Combat.GetCostlyAbilityDamageBonus(activator, skillType) +
+                Combat.GetSameTargetPressureWeaponAbilityDamageBonus(activator, target, skillType) +
                 idleBonuses.DamageBonus;
             if (trackedImpact != null)
             {
@@ -2363,6 +2365,7 @@ namespace SWLOR.Game.Server.Service
                 (int)Math.Ceiling(scalingRank * 0.15f) +
                 Combat.GetAbilityDamageFlatAdjustment(activator, perkType, skillType) +
                 Combat.GetCostlyAbilityDamageBonus(activator, skillType) +
+                Combat.GetSameTargetPressureWeaponAbilityDamageBonus(activator, target, skillType) +
                 idleBonuses.DamageBonus;
             if (trackedImpact != null)
             {

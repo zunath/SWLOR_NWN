@@ -46,6 +46,11 @@ public class GeneratedWeaponPerkBehaviorTests
         AssertSourceStat("RiflePerkDefinition.cs", StatType.IdleSkillAbilityDamageBonus, "14");
         AssertSourceStat("RiflePerkDefinition.cs", StatType.IdleSkillAbilityHitChancePercentAdjustment, "8");
         AssertSourceStat("RiflePerkDefinition.cs", StatType.IdleSkillAbilityCriticalDamagePercentAdjustment, "15");
+        AssertSourceStat("RiflePerkDefinition.cs", StatType.SameTargetPressureBuildSkillType, "(int)SkillType.Rifle");
+        AssertSourceStat("RiflePerkDefinition.cs", StatType.SameTargetPressureBuildSeconds, "12");
+        AssertSourceStat("RiflePerkDefinition.cs", StatType.SameTargetPressureGraceSeconds, "6");
+        AssertSourceStat("RiflePerkDefinition.cs", StatType.SameTargetPressureReadyDurationSeconds, "9");
+        AssertSourceStat("RiflePerkDefinition.cs", StatType.SameTargetPressureWeaponAbilityDamageBonus, "15");
         AssertSourceStat("RiflePerkDefinition.cs", StatType.RepeatedTargetDamageBonusPerHit, "3");
         AssertSourceStat("RiflePerkDefinition.cs", StatType.RepeatedTargetDamageBonusMax, "15");
         AssertSourceStat("RiflePerkDefinition.cs", StatType.RepeatedTargetDamageDurationSeconds, "30");
@@ -121,6 +126,31 @@ public class GeneratedWeaponPerkBehaviorTests
         AssertSourceStat("SpearPerkDefinition.cs", StatType.AbilityDamageToSourceAppliedStatusTargetCategory, "(int)StatusEffectCategory.Control");
         AssertSourceStat("SpearPerkDefinition.cs", StatType.AbilityDamageToSourceAppliedStatusTargetPercentAdjustment, "10");
         AssertSourceStat("VibrobladePerkDefinition.cs", StatType.ShieldEquippedPhysicalDefensePercentAdjustment, "12");
+    }
+
+    [Test]
+    public void SpottersRhythm_UsesSameTargetPressureInsteadOfIdleAbilityStats()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "PerkDefinition",
+            "RiflePerkDefinition.cs"));
+        var start = source.IndexOf("private void SpottersRhythm()", StringComparison.Ordinal);
+        var end = source.IndexOf("private void SuppressiveLine()", start, StringComparison.Ordinal);
+        start.Should().BeGreaterThanOrEqualTo(0);
+        end.Should().BeGreaterThan(start);
+
+        var spottersRhythm = source[start..end];
+        spottersRhythm.Should().Contain("After maintaining Rifle fire on the same target for 12 seconds");
+        spottersRhythm.Should().Contain("gain Spotter's Rhythm for 9 seconds");
+        spottersRhythm.Should().Contain("hostile weapon ability against that target");
+        spottersRhythm.Should().Contain("StatType.SameTargetPressureBuildSkillType");
+        spottersRhythm.Should().Contain("StatType.SameTargetPressureWeaponAbilityDamageBonus");
+        spottersRhythm.Should().NotContain("IdleSkillAbility");
+        spottersRhythm.Should().NotContain("hostile ranged ability");
     }
 
     [Test]
@@ -215,6 +245,16 @@ public class GeneratedWeaponPerkBehaviorTests
             .Should().Be(StatTypeCategory.BeneficialWhenPositive);
         Stat.GetStatTypeCategory(StatType.SuppressionStackEvasionPenaltyPercentAdjustment)
             .Should().Be(StatTypeCategory.BeneficialWhenPositive);
+        Stat.GetStatTypeCategory(StatType.SameTargetPressureBuildSkillType)
+            .Should().Be(StatTypeCategory.NonBeneficial);
+        Stat.GetStatTypeCategory(StatType.SameTargetPressureBuildSeconds)
+            .Should().Be(StatTypeCategory.NonBeneficial);
+        Stat.GetStatTypeCategory(StatType.SameTargetPressureGraceSeconds)
+            .Should().Be(StatTypeCategory.NonBeneficial);
+        Stat.GetStatTypeCategory(StatType.SameTargetPressureReadyDurationSeconds)
+            .Should().Be(StatTypeCategory.NonBeneficial);
+        Stat.GetStatTypeCategory(StatType.SameTargetPressureWeaponAbilityDamageBonus)
+            .Should().Be(StatTypeCategory.BeneficialWhenPositive);
         Stat.GetStatTypeCategory(StatType.CostlyAbilityDamageBonus)
             .Should().Be(StatTypeCategory.BeneficialWhenPositive);
         Stat.GetStatTypeCategory(StatType.DeflectionNearbyAllyGuard)
@@ -280,6 +320,7 @@ public class GeneratedWeaponPerkBehaviorTests
 
         var root = FindRepositoryRoot();
         var combatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
+        var abilitySource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Ability.cs"));
         var usePerkFeatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "UsePerkFeat.cs"));
         var nativeAttackSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Native", "ResolveAttackRoll.cs"));
         var statusEffectSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "StatusEffect.cs"));
@@ -290,6 +331,15 @@ public class GeneratedWeaponPerkBehaviorTests
         combatSource.Should().Contain("ApplyNextDamageDealtBleedEffect(attacker, defender, damageType)");
         combatSource.Should().Contain("ApplyBleedingTargetAbilityBleedSpread(attacker, defender, skillType, damageType)");
         combatSource.Should().Contain("ApplyRangedHitSuppressionStack(activator, target, skillType, damageType)");
+        combatSource.Should().Contain("ApplySameTargetPressureDamageEffects(attacker, defender, skillType)");
+        combatSource.Should().Contain("GetSameTargetPressureWeaponAbilityDamageBonus");
+        combatSource.Should().Contain("ConsumeSameTargetPressureWeaponAbilityDamageBonus");
+        combatSource.Should().Contain("typeof(SameTargetPressureStatusEffect)");
+        var consumePressureIndex = abilitySource.IndexOf("ConsumeSameTargetPressureWeaponAbilityDamageBonus", StringComparison.Ordinal);
+        var applyDamageDealtIndex = abilitySource.IndexOf("ApplyDamageDealtEffects(activator, target, damage, skillType, damageType)", StringComparison.Ordinal);
+        consumePressureIndex.Should().BeGreaterThanOrEqualTo(0);
+        applyDamageDealtIndex.Should().BeGreaterThanOrEqualTo(0);
+        consumePressureIndex.Should().BeLessThan(applyDamageDealtIndex);
         combatSource.Should().Contain("SuppressionStackEvasionPenaltyPercentAdjustment");
         combatSource.Should().Contain("if (adjustedEvasionPenaltyPercent <= 0)");
         combatSource.Should().Contain("TrackSuppressionAbilityUse(activator, now)");
@@ -323,6 +373,9 @@ public class GeneratedWeaponPerkBehaviorTests
         statusEffectSource.Should().Contain("OutgoingControlDurationPercentAdjustment");
         generatorSource.Should().Contain("EXPLICIT_RECAST_SHORT_NAMES");
         generatorSource.Should().Contain("Missing explicit recast short name");
+        generatorSource.Should().Contain("\"SameTargetPressureBuildSkillType\"");
+        generatorSource.Should().Contain("\"SameTargetPressureReadyDurationSeconds\"");
+        generatorSource.Should().Contain("gain Spotter's Rhythm for (\\d+) seconds");
         generatorSource.Should().Contain("Unable to parse Suppressing Shot suppression stack Evasion");
         combatSource.Should().Contain("ApplyAvoidedAttackNextAutoAttackNoDelay(creature)");
         combatSource.Should().Contain("ApplyBleedingStatusExpiredEffects(uint source)");

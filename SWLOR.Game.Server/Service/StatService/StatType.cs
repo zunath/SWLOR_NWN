@@ -4872,7 +4872,37 @@ namespace SWLOR.Game.Server.Service.StatService
         /// Enmity percent granted to self when applying nearby ally Attack Deflection.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        AbilityUsedPerkCategoryNearbyAllyAttackDeflectionSelfEnmityPercentAdjustment = 847
+        AbilityUsedPerkCategoryNearbyAllyAttackDeflectionSelfEnmityPercentAdjustment = 847,
+
+        /// <summary>
+        /// SkillType value whose direct damage builds same-target pressure.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        SameTargetPressureBuildSkillType = 848,
+
+        /// <summary>
+        /// Seconds of direct damage against one target required to ready same-target pressure.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        SameTargetPressureBuildSeconds = 849,
+
+        /// <summary>
+        /// Seconds allowed between matching direct damage hits while building same-target pressure.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        SameTargetPressureGraceSeconds = 850,
+
+        /// <summary>
+        /// Seconds the same-target pressure ready state remains available.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        SameTargetPressureReadyDurationSeconds = 851,
+
+        /// <summary>
+        /// Flat damage bonus for the next hostile weapon ability against the same pressure target.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        SameTargetPressureWeaponAbilityDamageBonus = 852
     }
 
     public class StatTypeAttribute : Attribute

@@ -156,10 +156,12 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SpottersRhythmTrait)
-                .Description("After maintaining fire on the same target for 30 seconds, your next hostile ranged ability deals +15 DMG.")
-                .IncreasesStat(StatType.IdleSkillAbilitySkillType, (int)SkillType.Rifle)
-                .IncreasesStat(StatType.IdleSkillAbilityRequiredIdleSeconds, 30)
-                .IncreasesStat(StatType.IdleSkillAbilityDamageBonus, 15)
+                .Description("After maintaining Rifle fire on the same target for 12 seconds, gain Spotter's Rhythm for 9 seconds. Your next hostile weapon ability against that target deals +15 DMG.")
+                .IncreasesStat(StatType.SameTargetPressureBuildSkillType, (int)SkillType.Rifle)
+                .IncreasesStat(StatType.SameTargetPressureBuildSeconds, 12)
+                .IncreasesStat(StatType.SameTargetPressureGraceSeconds, 6)
+                .IncreasesStat(StatType.SameTargetPressureReadyDurationSeconds, 9)
+                .IncreasesStat(StatType.SameTargetPressureWeaponAbilityDamageBonus, 15)
                 .Price(4)
                 .RequirementSkill(SkillType.Rifle, 15);
         }

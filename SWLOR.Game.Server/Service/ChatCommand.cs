@@ -26,6 +26,7 @@ namespace SWLOR.Game.Server.Service
         public static GuiBindingList<string> EmoteDescriptions { get; } = new();
         public static List<Animation> EmoteAnimations { get; } = new();
         public static GuiBindingList<bool> EmoteIsLooping { get; } = new();
+        public static List<EmoteCategoryType> EmoteCategories { get; } = new();
 
         private const string InvalidChatCommandMessage = "Invalid chat command. Use '/help' to get a list of available commands.";
 
@@ -35,9 +36,13 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public static void OnModuleLoad()
         {
+            Console.WriteLine("DEBUG: ChatCommand.OnModuleLoad started");
             LoadChatCommands();
+            Console.WriteLine("DEBUG: ChatCommand.LoadChatCommands finished");
             BuildHelpText();
+            Console.WriteLine("DEBUG: ChatCommand.BuildHelpText finished");
             BuildEmoteUILists();
+            Console.WriteLine("DEBUG: ChatCommand.BuildEmoteUILists finished");
         }
 
         /// <summary>
@@ -240,6 +245,7 @@ namespace SWLOR.Game.Server.Service
                 EmoteDescriptions.Add(command.Description);
                 EmoteAnimations.Add(command.EmoteAnimation);
                 EmoteIsLooping.Add(command.IsEmoteLooping);
+                EmoteCategories.Add(command.EmoteCategory);
             }
         }
 

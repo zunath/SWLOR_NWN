@@ -323,6 +323,7 @@ public class GeneratedWeaponPerkBehaviorTests
         statusEffectSource.Should().Contain("OutgoingControlDurationPercentAdjustment");
         generatorSource.Should().Contain("EXPLICIT_RECAST_SHORT_NAMES");
         generatorSource.Should().Contain("Missing explicit recast short name");
+        generatorSource.Should().Contain("Unable to parse Suppressing Shot suppression stack Evasion");
         combatSource.Should().Contain("ApplyAvoidedAttackNextAutoAttackNoDelay(creature)");
         combatSource.Should().Contain("ApplyBleedingStatusExpiredEffects(uint source)");
         combatSource.Should().Contain("ApplyCostlyAbilityHitEffects(activator, target, ability, skillType)");

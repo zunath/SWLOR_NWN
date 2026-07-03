@@ -667,6 +667,11 @@ def description_stat_entries(row, base):
 
     if base == "Suppressing Shot":
         stack_strength = parse_suppression_stack_evasion_penalty(description)
+        if stack_strength <= 0:
+            raise ValueError(
+                "Unable to parse Suppressing Shot suppression stack Evasion "
+                f"penalty from: {description}"
+            )
         add_stat(stats, "AutoAttackSuppressionStackEvasionPenaltyPercent", stack_strength)
         add_stat(stats, "RangedHitSuppressionStackEvasionPenaltyPercent", stack_strength)
 

@@ -49,6 +49,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         private static void EmergencyCocktail1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
             var duration = CapstoneAbility.ActiveDurationSeconds;
+            var applied = false;
             foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
                 Stat.RestoreStamina(friendly, PercentOf(Stat.GetMaxStamina(friendly), 25));
@@ -57,7 +58,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 StatusEffect.RemoveFirstStatusEffect(friendly, new[] { typeof(PoisonStatusEffect), typeof(ToxinStatusEffect) }, false);
                 FirstAidTreatmentAdjustments.ApplyCombatPharmacologyStimRiders(activator, friendly);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Restoration), friendly);
+                applied = true;
             }
+
+            FirstAidTreatmentAdjustments.GrantCombatPointIfApplied(activator, applied);
         }
 
         private static int PercentOf(int value, int percent)

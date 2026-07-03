@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                () => new GeneratedWeaponAbilityProfile
+                new GeneratedWeaponAbilityProfile
                 {
                     HitCount = 2,
                     RestoreFPIfAllHitsLand = 2
@@ -71,7 +71,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                () => new GeneratedWeaponAbilityProfile
+                new GeneratedWeaponAbilityProfile
                 {
                     HitCount = 2,
                     RestoreFPIfAllHitsLand = 3
@@ -101,7 +101,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                () => new GeneratedWeaponAbilityProfile
+                new GeneratedWeaponAbilityProfile
                 {
                     HitCount = 2,
                     RestoreFPIfAllHitsLand = 4
@@ -131,7 +131,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                () => new GeneratedWeaponAbilityProfile
+                new GeneratedWeaponAbilityProfile
                 {
                     HitCount = 2,
                     RestoreFPIfAllHitsLand = 5

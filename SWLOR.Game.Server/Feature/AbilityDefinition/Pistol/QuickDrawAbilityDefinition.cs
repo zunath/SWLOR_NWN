@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 Animation.QuickDraw,
                 25.0f,
                 AbilityType.Perception,
-                () => new GeneratedWeaponAbilityProfile
+                new GeneratedWeaponAbilityProfile
                 {
                     CriticalRateIfNotRecentTarget = 10,
                     NotRecentTargetWindowSeconds = 30.0f
@@ -71,7 +71,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 Animation.QuickDraw,
                 25.0f,
                 AbilityType.Perception,
-                () => new GeneratedWeaponAbilityProfile
+                new GeneratedWeaponAbilityProfile
                 {
                     CriticalRateIfNotRecentTarget = 12,
                     NotRecentTargetWindowSeconds = 30.0f
@@ -101,7 +101,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 Animation.QuickDraw,
                 25.0f,
                 AbilityType.Perception,
-                () => new GeneratedWeaponAbilityProfile
+                new GeneratedWeaponAbilityProfile
                 {
                     CriticalRateIfNotRecentTarget = 15,
                     NotRecentTargetWindowSeconds = 30.0f
@@ -131,7 +131,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 Animation.QuickDraw,
                 25.0f,
                 AbilityType.Perception,
-                () => new GeneratedWeaponAbilityProfile
+                new GeneratedWeaponAbilityProfile
                 {
                     CriticalRateIfNotRecentTarget = 18,
                     NotRecentTargetWindowSeconds = 30.0f

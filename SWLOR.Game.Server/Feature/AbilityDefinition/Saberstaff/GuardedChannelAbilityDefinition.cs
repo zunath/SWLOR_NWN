@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                () => new GeneratedWeaponAbilityProfile
+                new GeneratedWeaponAbilityProfile
                 {
                     SelfDefensePercent = 10,
                     SelfStatResourceAboveThresholdPercent = 40,
@@ -72,7 +72,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                () => new GeneratedWeaponAbilityProfile
+                new GeneratedWeaponAbilityProfile
                 {
                     SelfDefensePercent = 15,
                     SelfStatResourceAboveThresholdPercent = 40,
@@ -103,7 +103,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                () => new GeneratedWeaponAbilityProfile
+                new GeneratedWeaponAbilityProfile
                 {
                     SelfDefensePercent = 20,
                     SelfStatResourceAboveThresholdPercent = 40,

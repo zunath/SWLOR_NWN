@@ -41,11 +41,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 Animation.PointPistol,
                 25.0f,
                 AbilityType.Perception,
-                () => new GeneratedWeaponAbilityProfile
-                {
-                    CriticalRatePercentAdjustment = 12,
-                    SelfCriticalRatePercent = 12
-                });
+                null);
 
             return builder.Build();
         }

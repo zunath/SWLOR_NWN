@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 Animation.PointPistol,
                 25.0f,
                 AbilityType.Perception,
-                () => new GeneratedWeaponAbilityProfile
+                new GeneratedWeaponAbilityProfile
                 {
                     TargetUsingAbilityStatusEffect = typeof(DisorientedStatusEffect),
                     TargetUsingAbilityStatusDurationSeconds = 30
@@ -71,7 +71,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 Animation.PointPistol,
                 25.0f,
                 AbilityType.Perception,
-                () => new GeneratedWeaponAbilityProfile
+                new GeneratedWeaponAbilityProfile
                 {
                     TargetUsingAbilityStatusEffect = typeof(DisorientedStatusEffect),
                     TargetUsingAbilityStatusDurationSeconds = 30
@@ -101,7 +101,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 Animation.PointPistol,
                 25.0f,
                 AbilityType.Perception,
-                () => new GeneratedWeaponAbilityProfile
+                new GeneratedWeaponAbilityProfile
                 {
                     TargetUsingAbilityStatusEffect = typeof(DisorientedStatusEffect),
                     TargetUsingAbilityStatusDurationSeconds = 30

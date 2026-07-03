@@ -55,7 +55,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.AbsoluteDefense1)
-                .Description("For 45 seconds, nearby party members including you take 15% less physical and Force damage and are immune to Knockdown and Daze.")
+                .Description("For 45 seconds, nearby party members including you take 15% less physical and Force damage and are immune to Knockdown and Dazed.")
                 .Price(6)
                 .RequirementSkill(SkillType.HeavyVibroblade, 50);
         }

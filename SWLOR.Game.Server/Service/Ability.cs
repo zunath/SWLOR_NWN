@@ -2222,6 +2222,11 @@ namespace SWLOR.Game.Server.Service
                 skillType,
                 calculatedDamage,
                 IsTrackedAbilityArea(activator));
+            calculatedDamage = Combat.ApplySkillAreaAbilityDamageModifier(
+                activator,
+                skillType,
+                calculatedDamage,
+                IsTrackedAbilityArea(activator));
             calculatedDamage = Combat.ApplyPhysicalAbilityShapeDamageModifier(
                 activator,
                 damageType,
@@ -2420,6 +2425,11 @@ namespace SWLOR.Game.Server.Service
                 IsTrackedAbilitySingleTarget(activator),
                 IsTrackedAbilityArea(activator));
             calculatedDamage = Combat.ApplyThrowingAbilityShapeDamageModifier(
+                activator,
+                skillType,
+                calculatedDamage,
+                IsTrackedAbilityArea(activator));
+            calculatedDamage = Combat.ApplySkillAreaAbilityDamageModifier(
                 activator,
                 skillType,
                 calculatedDamage,

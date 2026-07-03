@@ -93,37 +93,49 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         private static void AdrenalStim1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
             var duration = FirstAidTreatmentAdjustments.ApplyStimDurationBonus(activator, 30f);
+            var applied = false;
             foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
                 Stat.RestoreStamina(friendly, PercentOf(Stat.GetMaxStamina(friendly), 10));
                 StatusEffect.ApplyStatusEffect(activator, friendly, new AdrenalStimStatusEffect(1), duration);
                 FirstAidTreatmentAdjustments.ApplyCombatPharmacologyStimRiders(activator, friendly);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Restoration), friendly);
+                applied = true;
             }
+
+            FirstAidTreatmentAdjustments.GrantCombatPointIfApplied(activator, applied);
         }
 
         private static void AdrenalStim2ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
             var duration = FirstAidTreatmentAdjustments.ApplyStimDurationBonus(activator, 30f);
+            var applied = false;
             foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
                 Stat.RestoreStamina(friendly, PercentOf(Stat.GetMaxStamina(friendly), 18));
                 StatusEffect.ApplyStatusEffect(activator, friendly, new AdrenalStimStatusEffect(1), duration);
                 FirstAidTreatmentAdjustments.ApplyCombatPharmacologyStimRiders(activator, friendly);
                 FirstAidTreatmentAdjustments.ApplyMedicalVisualEffect(friendly);
+                applied = true;
             }
+
+            FirstAidTreatmentAdjustments.GrantCombatPointIfApplied(activator, applied);
         }
 
         private static void AdrenalStim3ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
             var duration = FirstAidTreatmentAdjustments.ApplyStimDurationBonus(activator, 30f);
+            var applied = false;
             foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
                 Stat.RestoreStamina(friendly, PercentOf(Stat.GetMaxStamina(friendly), 25));
                 StatusEffect.ApplyStatusEffect(activator, friendly, new AdrenalStimStatusEffect(1), duration);
                 FirstAidTreatmentAdjustments.ApplyCombatPharmacologyStimRiders(activator, friendly);
                 FirstAidTreatmentAdjustments.ApplyMedicalVisualEffect(friendly);
+                applied = true;
             }
+
+            FirstAidTreatmentAdjustments.GrantCombatPointIfApplied(activator, applied);
         }
 
 

@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                () => new GeneratedWeaponAbilityProfile
+                new GeneratedWeaponAbilityProfile
                 {
                     ExtraDamageIfBesideOrBehind = 10
                 });
@@ -70,7 +70,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                () => new GeneratedWeaponAbilityProfile
+                new GeneratedWeaponAbilityProfile
                 {
                     ExtraDamageIfBesideOrBehind = 16
                 });
@@ -99,7 +99,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                () => new GeneratedWeaponAbilityProfile
+                new GeneratedWeaponAbilityProfile
                 {
                     ExtraDamageIfBesideOrBehind = 24
                 });

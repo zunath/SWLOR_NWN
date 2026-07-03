@@ -212,10 +212,13 @@ namespace SWLOR.Game.Server.Native
                 //---------------------------------------------------------------------------------------------
                 //---------------------------------------------------------------------------------------------
                 var attackRoll = Random.D100(1);
+                var hitChanceModifier =
+                    Combat.GetSideAttackHitChanceAdjustment(attacker.m_idSelf, defender.m_idSelf, weaponSkillType) +
+                    Combat.GetHitChanceAgainstSunderedTargetAdjustment(attacker.m_idSelf, defender.m_idSelf);
                 var hitRate = Combat.CalculateHitRate(
                     attackerAccuracy + accuracyModifiers,
                     defenderEvasion,
-                    Combat.GetSideAttackHitChanceAdjustment(attacker.m_idSelf, defender.m_idSelf, weaponSkillType));
+                    hitChanceModifier);
                 var isHit = attackRoll <= hitRate;
 
                 Log.Write(LogGroup.Attack, $"attackerAccuracy = {attackerAccuracy}, modifiers = {accuracyModifiers}, defenderEvasion = {defenderEvasion}");
@@ -238,7 +241,7 @@ namespace SWLOR.Game.Server.Native
                     {
                         var criticalStat = attackerStats.GetDEXStat();
                         var criticalRoll = Random.D100(1);
-                        var criticalModifier = CalculateCriticalRateModifier(attacker, weaponSkillType);
+                        var criticalModifier = CalculateCriticalRateModifier(attacker, defender, weaponSkillType);
                         criticalModifier += Combat.ConsumeNextAutoAttackCriticalRateBonus(attacker.m_idSelf, weaponSkillType);
                         criticalModifier += Combat.PrepareOpeningAutoAttack(attacker.m_idSelf, weaponSkillType);
                         criticalModifier += Combat.GetAutoAttackCriticalRateAdjustment(attacker.m_idSelf, defender.m_idSelf, weaponSkillType);
@@ -473,10 +476,11 @@ namespace SWLOR.Game.Server.Native
             return (DeflectionSource.None, 0);
         }
 
-        private static int CalculateCriticalRateModifier(CNWSCreature attacker, SkillType skillType)
+        private static int CalculateCriticalRateModifier(CNWSCreature attacker, CNWSCreature defender, SkillType skillType)
         {
             var criticalModifier = Stat.GetStatAdjustment(attacker.m_idSelf, StatType.CriticalRatePercentAdjustment);
             criticalModifier += Combat.GetSkillCriticalRatePercentAdjustment(attacker.m_idSelf, skillType);
+            criticalModifier += Combat.GetCriticalRateAgainstSunderedTargetAdjustment(attacker.m_idSelf, defender.m_idSelf);
 
             Log.Write(LogGroup.Attack, $"SWLOR crit rate modifier: {criticalModifier}");
 

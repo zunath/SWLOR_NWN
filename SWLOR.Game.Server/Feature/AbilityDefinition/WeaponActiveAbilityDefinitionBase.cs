@@ -103,8 +103,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             public int TemporaryAvoidedAttackNextAutoAttackNoDelaySkillType { get; init; }
             public int TemporaryAvoidedAttackNextAutoAttackNoDelayDurationSeconds { get; init; }
             public int TemporaryRangedHitSuppressionStackDurationSeconds { get; init; }
-            public int TemporaryRangedHitSuppressionStackDamageBonus { get; init; }
-            public int TemporarySuppressionStackDamageBonusAdjustment { get; init; }
+            public int TemporaryRangedHitSuppressionStackEvasionPenaltyPercent { get; init; }
+            public int TemporarySuppressionStackEvasionPenaltyPercentAdjustment { get; init; }
             public int TemporaryAreaAbilityFragmentationDamage { get; init; }
             public int TemporaryAreaAbilityFragmentationDurationSeconds { get; init; }
             public int TemporaryAreaAbilityFragmentationPulseSeconds { get; init; }
@@ -125,7 +125,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             public int TemporaryCostlyAbilityHitMinimumStaminaCost { get; init; }
             public int TemporaryCostlyAbilityExposedDurationSeconds { get; init; }
             public bool ApplySuppressionStackOnHit { get; init; }
-            public int SuppressionStackDamageBonus { get; init; }
+            public int SuppressionStackEvasionPenaltyPercent { get; init; }
             public int SuppressionStackDurationSeconds { get; init; }
             public int SuppressionDisorientedRequiredStacks { get; init; }
             public int SuppressionDisorientedDurationSeconds { get; init; }
@@ -529,13 +529,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                     duration);
                 ReplaceTemporary(
                     activator,
-                    StatType.RangedHitSuppressionStackDamageBonus,
-                    TemporaryRangedHitSuppressionStackDamageBonus,
+                    StatType.RangedHitSuppressionStackEvasionPenaltyPercent,
+                    TemporaryRangedHitSuppressionStackEvasionPenaltyPercent,
                     duration);
                 ReplaceTemporary(
                     activator,
-                    StatType.SuppressionStackDamageBonusAdjustment,
-                    TemporarySuppressionStackDamageBonusAdjustment,
+                    StatType.SuppressionStackEvasionPenaltyPercentAdjustment,
+                    TemporarySuppressionStackEvasionPenaltyPercentAdjustment,
                     duration);
                 ReplaceTemporary(activator, StatType.AreaAbilityFragmentationDamage, TemporaryAreaAbilityFragmentationDamage, duration);
                 ReplaceTemporary(
@@ -797,7 +797,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                     Combat.ApplySuppressionStack(
                         activator,
                         target,
-                        SuppressionStackDamageBonus,
+                        SuppressionStackEvasionPenaltyPercent,
                         SuppressionStackDurationSeconds,
                         damageType);
                 }
@@ -862,6 +862,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
             public string ValidateFriendlyTargetStatus(uint activator, uint target)
             {
+                target = ResolveFriendlyTarget(activator, target);
+                if (RequiresGuardedTarget && !GetIsObjectValid(target))
+                    return "You do not have an active Guarded target within range.";
+
                 var validation = AbilityTargeting.ValidateFriendlyTarget(activator, target, false);
                 if (!string.IsNullOrWhiteSpace(validation))
                     return validation;
@@ -878,6 +882,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 var statusEffect = FriendlyTargetStatusEffectFactory();
                 statusEffect.ReassignSource(activator);
                 return statusEffect.CanApply(target);
+            }
+
+            public uint ResolveFriendlyTarget(uint activator, uint target)
+            {
+                if (!RequiresGuardedTarget)
+                    return target;
+
+                return GuardedStatusEffect.GetActiveGuardedTarget(activator);
             }
 
             public bool ApplyFriendlyTargetStatus(uint activator, uint target, float duration)
@@ -973,8 +985,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             Animation impactAnimation,
             float maxRange,
             AbilityType combatImpactDamageAbility = AbilityType.Invalid,
-            Func<GeneratedWeaponAbilityProfile> profileFactory = null)
+            GeneratedWeaponAbilityProfile profile = null)
         {
+            profile ??= GeneratedWeaponAbilityProfile.Empty;
+
             ApplyCombatImpactDamageAbility(ability, combatImpactDamageAbility);
 
             ability.HasActivationDelay(activationDelay)
@@ -988,21 +1002,21 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 {
                     if (!isHostile)
                     {
-                        var selfProfile = profileFactory?.Invoke() ?? GeneratedWeaponAbilityProfile.Empty;
-                        if (isFriendlyTarget && selfProfile.HasFriendlyTargetStatus())
+                        target = profile.ResolveFriendlyTarget(activator, target);
+                        if (isFriendlyTarget && profile.HasFriendlyTargetStatus())
                         {
-                            if (selfProfile.ApplyFriendlyTargetStatus(activator, target, duration))
+                            if (profile.ApplyFriendlyTargetStatus(activator, target, duration))
                             {
-                                selfProfile.ApplyFriendlyTargetEffects(activator, target);
-                                selfProfile.AfterActivation(activator);
+                                profile.ApplyFriendlyTargetEffects(activator, target);
+                                profile.AfterActivation(activator);
                             }
                             return;
                         }
 
-                        if (isFriendlyTarget && selfProfile.HasFriendlyTargetEffects())
+                        if (isFriendlyTarget && profile.HasFriendlyTargetEffects())
                         {
-                            selfProfile.ApplyFriendlyTargetEffects(activator, target);
-                            selfProfile.AfterActivation(activator);
+                            profile.ApplyFriendlyTargetEffects(activator, target);
+                            profile.AfterActivation(activator);
                             return;
                         }
 
@@ -1010,14 +1024,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                         {
                             StatusEffect.RemoveOtherStanceStatuses(activator, statusEffect);
                             StatusEffect.ApplyStatusEffect(activator, activator, statusEffect, duration > 0f ? duration : 0f);
-                            selfProfile.ApplySelfStatusToGuardedTarget(activator, statusEffect, duration);
+                            profile.ApplySelfStatusToGuardedTarget(activator, statusEffect, duration);
                         }
 
-                        selfProfile.AfterActivation(activator);
+                        profile.AfterActivation(activator);
                         return;
                     }
 
-                    var profile = profileFactory?.Invoke() ?? GeneratedWeaponAbilityProfile.Empty;
                     profile.SpendHitPoints(activator);
 
                     if (isArea && ShouldUseTelegraphedCombatImpact(targetingShape, profile))
@@ -1107,7 +1120,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
                 ability.HasCustomValidation((activator, target, level, targetLocation) =>
                 {
-                    var profile = profileFactory?.Invoke() ?? GeneratedWeaponAbilityProfile.Empty;
                     return profile.ValidateHostileTarget(activator, target);
                 });
             }
@@ -1117,11 +1129,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             }
             else if (isFriendlyTarget)
             {
-                ability.IsSingleTargetAbility()
-                    .RequiresTarget()
-                    .HasCustomValidation((activator, target, level, targetLocation) =>
+                ability.IsSingleTargetAbility();
+
+                if (!profile.RequiresGuardedTarget)
+                    ability.RequiresTarget();
+
+                ability.HasCustomValidation((activator, target, level, targetLocation) =>
                     {
-                        var profile = profileFactory?.Invoke() ?? GeneratedWeaponAbilityProfile.Empty;
                         return profile.ValidateFriendlyTargetStatus(activator, target);
                     });
                 if (maxRange > 0f)

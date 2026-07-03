@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                () => new GeneratedWeaponAbilityProfile
+                new GeneratedWeaponAbilityProfile
                 {
                     SelfEvasionPercent = 6,
                     SelfStatDurationSeconds = 30
@@ -71,7 +71,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                () => new GeneratedWeaponAbilityProfile
+                new GeneratedWeaponAbilityProfile
                 {
                     SelfEvasionPercent = 8,
                     SelfStatDurationSeconds = 30
@@ -101,7 +101,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                () => new GeneratedWeaponAbilityProfile
+                new GeneratedWeaponAbilityProfile
                 {
                     SelfEvasionPercent = 10,
                     SelfStatDurationSeconds = 30
@@ -131,7 +131,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                () => new GeneratedWeaponAbilityProfile
+                new GeneratedWeaponAbilityProfile
                 {
                     SelfEvasionPercent = 12,
                     SelfStatDurationSeconds = 30

@@ -41,11 +41,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                () => new GeneratedWeaponAbilityProfile
-                {
-                    SelfEvasionPercent = 8,
-                    SelfStatDurationSeconds = 30
-                });
+                null);
 
             return builder.Build();
         }

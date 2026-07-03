@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 Animation.DoubleStrike,
                 8.0f,
                 AbilityType.Invalid,
-                () => new GeneratedWeaponAbilityProfile
+                new GeneratedWeaponAbilityProfile
                 {
                     FriendlyTargetStatusEffectFactory = () => new WardBondStatusEffect(30, 6, 6, 0, 8.0f),
                     SelfDefensePercent = 6,
@@ -72,7 +72,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 Animation.DoubleStrike,
                 8.0f,
                 AbilityType.Invalid,
-                () => new GeneratedWeaponAbilityProfile
+                new GeneratedWeaponAbilityProfile
                 {
                     FriendlyTargetStatusEffectFactory = () => new WardBondStatusEffect(35, 8, 8, 0, 8.0f),
                     SelfDefensePercent = 8,
@@ -103,7 +103,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 Animation.DoubleStrike,
                 8.0f,
                 AbilityType.Invalid,
-                () => new GeneratedWeaponAbilityProfile
+                new GeneratedWeaponAbilityProfile
                 {
                     FriendlyTargetStatusEffectFactory = () => new WardBondStatusEffect(40, 10, 10, 0, 8.0f),
                     SelfDefensePercent = 10,
@@ -134,7 +134,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 Animation.DoubleStrike,
                 8.0f,
                 AbilityType.Invalid,
-                () => new GeneratedWeaponAbilityProfile
+                new GeneratedWeaponAbilityProfile
                 {
                     FriendlyTargetStatusEffectFactory = () => new WardBondStatusEffect(45, 12, 12, 0, 8.0f),
                     SelfDefensePercent = 12,

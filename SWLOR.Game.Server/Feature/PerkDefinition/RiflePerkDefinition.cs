@@ -46,25 +46,25 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SuppressingShot1)
-                .Description("Deals weapon DMG + 8. Grants a Suppression stack for 30 seconds, increasing shot damage by +2 DMG per stack.")
+                .Description("Deals weapon DMG + 8. Grants a Suppression stack for 30 seconds, reducing Evasion by 2% per stack.")
                 .Price(2)
                 .RequirementSkill(SkillType.Rifle, 2)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SuppressingShot2)
-                .Description("Deals weapon DMG + 18. Grants a Suppression stack for 30 seconds, increasing shot damage by +3 DMG per stack.")
+                .Description("Deals weapon DMG + 18. Grants a Suppression stack for 30 seconds, reducing Evasion by 3% per stack.")
                 .Price(2)
                 .RequirementSkill(SkillType.Rifle, 12)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SuppressingShot3)
-                .Description("Deals weapon DMG + 28. Grants a Suppression stack for 30 seconds, increasing shot damage by +4 DMG per stack.")
+                .Description("Deals weapon DMG + 28. Grants a Suppression stack for 30 seconds, reducing Evasion by 4% per stack.")
                 .Price(3)
                 .RequirementSkill(SkillType.Rifle, 28)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SuppressingShot4)
-                .Description("Deals weapon DMG + 38. Grants a Suppression stack for 30 seconds, increasing shot damage by +5 DMG per stack.")
+                .Description("Deals weapon DMG + 38. Grants a Suppression stack for 30 seconds, reducing Evasion by 5% per stack.")
                 .Price(5)
                 .RequirementSkill(SkillType.Rifle, 40);
         }
@@ -220,7 +220,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.KillBox1)
-                .Description("For 45 seconds, ranged hits add Suppression stacks and Suppression stacks increase damage by an additional +3 DMG each.")
+                .Description("For 45 seconds, ranged hits add Suppression stacks and Suppression stacks reduce Evasion by an additional 3% each.")
                 .Price(6)
                 .RequirementSkill(SkillType.Rifle, 50);
         }

@@ -374,14 +374,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PunishingGuard1)
-                .Description("Deals weapon DMG + 16. If the target attacked your ward in the last 30 seconds, also Dazes for 30 seconds.")
+                .Description("Deals weapon DMG + 16. If the target attacked your ward in the last 30 seconds, also inflicts Dazed for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Lightsaber, 18)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PunishingGuard2)
-                .Description("Deals weapon DMG + 30. If the target attacked your ward in the last 30 seconds, also Dazes for 30 seconds.")
+                .Description("Deals weapon DMG + 30. If the target attacked your ward in the last 30 seconds, also inflicts Dazed for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Lightsaber, 32)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
@@ -408,9 +408,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.GuardiansInfluenceTrait)
                 .Description("Ward abilities grant you and your ward +10% Defense and Force Defense for 30 seconds while within 8m.")
-                .IncreasesStat(StatType.AbilityUsedNearbyAllyDefensePercentAdjustment, 10)
-                .IncreasesStat(StatType.AbilityUsedNearbyAllyForceDefensePercentAdjustment, 10)
-                .IncreasesStat(StatType.AbilityUsedNearbyAllyDefenseDurationSeconds, 30)
+                .IncreasesStat(StatType.WardAbilityDefensePercentAdjustment, 10)
+                .IncreasesStat(StatType.WardAbilityForceDefensePercentAdjustment, 10)
+                .IncreasesStat(StatType.WardAbilityDefenseDurationSeconds, 30)
+                .IncreasesStat(StatType.WardAbilityDefenseCategoryId, (int)PerkCategoryType.LightsaberOffense)
                 .Price(4)
                 .RequirementSkill(SkillType.Lightsaber, 25)
                 .RequirementCharacterType(CharacterType.ForceSensitive);

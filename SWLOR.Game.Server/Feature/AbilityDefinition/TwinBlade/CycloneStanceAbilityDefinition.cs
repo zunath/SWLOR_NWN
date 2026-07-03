@@ -41,12 +41,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                () => new GeneratedWeaponAbilityProfile
-                {
-                    SelfHastePercent = 15,
-                    SelfHasteDurationSeconds = 30,
-                    SelfHasteMaximumPercent = 15
-                });
+                null);
 
             return builder.Build();
         }

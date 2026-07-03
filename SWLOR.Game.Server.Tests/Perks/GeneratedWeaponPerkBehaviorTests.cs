@@ -1,10 +1,12 @@
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Feature.AbilityDefinition.Katar;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
@@ -33,6 +35,10 @@ public class GeneratedWeaponPerkBehaviorTests
 
         AssertSourceStat("LightsaberPerkDefinition.cs", StatType.DeflectionNearbyAllyGuard, "10");
         AssertSourceStat("LightsaberPerkDefinition.cs", StatType.DeflectionNearbyAllyGuardDurationSeconds, "30");
+        AssertSourceStat("LightsaberPerkDefinition.cs", StatType.WardAbilityDefensePercentAdjustment, "10");
+        AssertSourceStat("LightsaberPerkDefinition.cs", StatType.WardAbilityForceDefensePercentAdjustment, "10");
+        AssertSourceStat("LightsaberPerkDefinition.cs", StatType.WardAbilityDefenseDurationSeconds, "30");
+        AssertSourceStat("LightsaberPerkDefinition.cs", StatType.WardAbilityDefenseCategoryId, "(int)PerkCategoryType.LightsaberOffense");
         AssertSourceStat("LightsaberPerkDefinition.cs", StatType.WardSharedDamageNextSkillAbilityDamageBonus, "10");
         AssertSourceStat("LightsaberPerkDefinition.cs", StatType.WardSharedDamageNextSkillAbilityWindowSeconds, "30");
 
@@ -80,6 +86,8 @@ public class GeneratedWeaponPerkBehaviorTests
         AssertSourceStat("KatarPerkDefinition.cs", StatType.GuardedHitNextSkillAbilityDamageBonus, "10");
         AssertSourceStat("KatarPerkDefinition.cs", StatType.GuardedHitNextKatarAbilityDamageBonus, "35");
         AssertSourceStat("KatarPerkDefinition.cs", StatType.KatarIronGuardCoveringClaws, "1");
+        AssertSourceStat("KatarPerkDefinition.cs", StatType.KatarIronGuardCoveringClawsCategoryId, "(int)PerkCategoryType.KatarIronGuard");
+        AssertSourceStat("KatarPerkDefinition.cs", StatType.KatarIronGuardPulseDamageBonus, "15");
         AssertSourceStat("KatarPerkDefinition.cs", StatType.LowHPGuard, "25");
         AssertSourceStat("KatarPerkDefinition.cs", StatType.StatusAppliedRequiredCategory, "(int)StatusEffectCategory.Control");
         AssertSourceStat("KatarPerkDefinition.cs", StatType.StatusAppliedSelfEnmityPercentAdjustment, "15");
@@ -89,14 +97,21 @@ public class GeneratedWeaponPerkBehaviorTests
         AssertSourceStat("StaffPerkDefinition.cs", StatType.CriticalDamageTargetStatusCategory, "(int)StatusEffectCategory.Control");
         AssertSourceStat("StaffPerkDefinition.cs", StatType.StatusAppliedNextSkillAbilityDamageBonus, "26");
         AssertSourceStat("StaffPerkDefinition.cs", StatType.StaffSentinelGuard, "1");
+        AssertSourceStat("StaffPerkDefinition.cs", StatType.StaffSentinelGuardCategoryId, "(int)PerkCategoryType.StaffSentinel");
         AssertSourceStat("StaffPerkDefinition.cs", StatType.StaffSentinelGuardingStep, "1");
+        AssertSourceStat("StaffPerkDefinition.cs", StatType.StaffSentinelGuardingStepCategoryId, "(int)PerkCategoryType.StaffSentinel");
         AssertSourceStat("StaffPerkDefinition.cs", StatType.AbilityUsedAttackDeflection, "8");
 
         AssertSourceStat("PistolPerkDefinition.cs", StatType.RangedAbilityHitNearTargetDamageDealtPercentAdjustment, "-10");
+        AssertSourceStat("PistolPerkDefinition.cs", StatType.AbilityUsedRangedEvasionPercentAdjustmentSkillType, "(int)SkillType.Pistol");
+        AssertSourceStat("PistolPerkDefinition.cs", StatType.AbilityUsedRangedEvasionPercentAdjustment, "12");
+        AssertSourceStat("PistolPerkDefinition.cs", StatType.AbilityUsedRangedEvasionDurationSeconds, "30");
         AssertSourceStat("PistolPerkDefinition.cs", StatType.AutoAttackCycleCriticalRateRequiredCount, "4");
         AssertSourceStat("PistolPerkDefinition.cs", StatType.CriticalDamageHighHPTargetPercentAdjustment, "15");
 
         AssertSourceStat("SpearPerkDefinition.cs", StatType.CostlyAbilityDamageBonus, "14");
+        AssertSourceStat("SpearPerkDefinition.cs", StatType.ForceDamageTakenForceDefense, "5");
+        AssertSourceStat("SpearPerkDefinition.cs", StatType.ForceDamageTakenForceDefenseDurationSeconds, "30");
         AssertSourceStat("SpearPerkDefinition.cs", StatType.CostlyAbilityHitStaminaRestore, "3");
         AssertSourceStat("SpearPerkDefinition.cs", StatType.AbilityDamageToSourceAppliedStatusTargetCategory, "(int)StatusEffectCategory.Control");
         AssertSourceStat("SpearPerkDefinition.cs", StatType.AbilityDamageToSourceAppliedStatusTargetPercentAdjustment, "10");
@@ -129,6 +144,23 @@ public class GeneratedWeaponPerkBehaviorTests
         var suppression = new SuppressionStanceStatusEffect();
         AssertStatusStat(suppression, StatType.RangedHitSuppressionStackDurationSeconds, 30);
         AssertStatusStat(suppression, StatType.RangedCriticalDamagePercentAdjustment, -10);
+
+        var focused = new FocusedStanceStatusEffect();
+        AssertStatusStat(focused, StatType.HitChanceAgainstSunderedTargetPercentAdjustment, 10);
+        AssertStatusStat(focused, StatType.CriticalRateAgainstSunderedTargetPercentAdjustment, 8);
+        AssertStatusStat(focused, StatType.SkillAreaAbilityDamagePercentAdjustmentSkillType, (int)SkillType.Lightsaber);
+        AssertStatusStat(focused, StatType.SkillAreaAbilityDamagePercentAdjustment, -15);
+
+        var scrapper = new ScrapperStanceStatusEffect();
+        AssertStatusStat(scrapper, StatType.OutgoingControlDurationPercentAdjustment, 20);
+        AssertStatusStat(scrapper, StatType.HostileAbilityRecastDelayPercentAdjustment, 10);
+
+        var impenetrableGuard = new ImpenetrableGuardStatusEffect();
+        AssertStatusStat(impenetrableGuard, StatType.WardTargetPhysicalDefensePercentAdjustment, 5);
+        AssertStatusStat(impenetrableGuard, StatType.WardTargetForceDefensePercentAdjustment, 5);
+        AssertStatusStat(impenetrableGuard, StatType.EnmityPercentAdjustment, 20);
+        AssertStatusStat(impenetrableGuard, StatType.AttackPercentAdjustment, -20);
+        AssertStatusStat(impenetrableGuard, StatType.ForceAttackPercentAdjustment, -20);
 
         var infiniteConduit = new InfiniteConduitStatusEffect();
         AssertStatusStat(infiniteConduit, StatType.AbilityStaminaCostFPRestorePercentSkillType, (int)SkillType.Saberstaff);
@@ -176,7 +208,7 @@ public class GeneratedWeaponPerkBehaviorTests
             .Should().Be(StatTypeCategory.NonBeneficial);
         Stat.GetStatTypeCategory(StatType.AutoAttackSuppressionStackChance)
             .Should().Be(StatTypeCategory.BeneficialWhenPositive);
-        Stat.GetStatTypeCategory(StatType.SuppressionStackDamageBonusAdjustment)
+        Stat.GetStatTypeCategory(StatType.SuppressionStackEvasionPenaltyPercentAdjustment)
             .Should().Be(StatTypeCategory.BeneficialWhenPositive);
         Stat.GetStatTypeCategory(StatType.CostlyAbilityDamageBonus)
             .Should().Be(StatTypeCategory.BeneficialWhenPositive);
@@ -202,15 +234,79 @@ public class GeneratedWeaponPerkBehaviorTests
             .Should().Be(StatTypeCategory.BeneficialWhenPositive);
         Stat.GetStatTypeCategory(StatType.ShieldEquippedPhysicalDefensePercentAdjustment)
             .Should().Be(StatTypeCategory.BeneficialWhenPositive);
+        Stat.GetStatTypeCategory(StatType.HitChanceAgainstSunderedTargetPercentAdjustment)
+            .Should().Be(StatTypeCategory.BeneficialWhenPositive);
+        Stat.GetStatTypeCategory(StatType.CriticalRateAgainstSunderedTargetPercentAdjustment)
+            .Should().Be(StatTypeCategory.BeneficialWhenPositive);
+        Stat.GetStatTypeCategory(StatType.SkillAreaAbilityDamagePercentAdjustment)
+            .Should().Be(StatTypeCategory.BeneficialWhenPositive);
+        Stat.GetStatTypeCategory(StatType.OutgoingControlDurationPercentAdjustment)
+            .Should().Be(StatTypeCategory.BeneficialWhenPositive);
+        Stat.GetStatTypeCategory(StatType.HostileAbilityRecastDelayPercentAdjustment)
+            .Should().Be(StatTypeCategory.BeneficialWhenNegative);
+        Stat.GetStatTypeCategory(StatType.WardTargetPhysicalDefensePercentAdjustment)
+            .Should().Be(StatTypeCategory.BeneficialWhenPositive);
+        Stat.GetStatTypeCategory(StatType.WardTargetForceDefensePercentAdjustment)
+            .Should().Be(StatTypeCategory.BeneficialWhenPositive);
+        Stat.GetStatTypeCategory(StatType.WardAbilityDefensePercentAdjustment)
+            .Should().Be(StatTypeCategory.BeneficialWhenPositive);
+        Stat.GetStatTypeCategory(StatType.WardAbilityForceDefensePercentAdjustment)
+            .Should().Be(StatTypeCategory.BeneficialWhenPositive);
+        Stat.GetStatTypeCategory(StatType.WardAbilityDefenseDurationSeconds)
+            .Should().Be(StatTypeCategory.NonBeneficial);
+        Stat.GetStatTypeCategory(StatType.WardAbilityDefenseCategoryId)
+            .Should().Be(StatTypeCategory.NonBeneficial);
+        Stat.GetStatTypeCategory(StatType.AbilityUsedRangedEvasionPercentAdjustmentSkillType)
+            .Should().Be(StatTypeCategory.NonBeneficial);
+        Stat.GetStatTypeCategory(StatType.AbilityUsedRangedEvasionPercentAdjustment)
+            .Should().Be(StatTypeCategory.BeneficialWhenPositive);
+        Stat.GetStatTypeCategory(StatType.AbilityUsedRangedEvasionDurationSeconds)
+            .Should().Be(StatTypeCategory.NonBeneficial);
+        Stat.GetStatTypeCategory(StatType.ForceDamageTakenForceDefense)
+            .Should().Be(StatTypeCategory.BeneficialWhenPositive);
+        Stat.GetStatTypeCategory(StatType.ForceDamageTakenForceDefenseDurationSeconds)
+            .Should().Be(StatTypeCategory.NonBeneficial);
+        Stat.GetStatTypeCategory(StatType.KatarIronGuardCoveringClawsCategoryId)
+            .Should().Be(StatTypeCategory.NonBeneficial);
+        Stat.GetStatTypeCategory(StatType.StaffSentinelGuardCategoryId)
+            .Should().Be(StatTypeCategory.NonBeneficial);
+        Stat.GetStatTypeCategory(StatType.StaffSentinelGuardingStepCategoryId)
+            .Should().Be(StatTypeCategory.NonBeneficial);
 
         var root = FindRepositoryRoot();
         var combatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
+        var usePerkFeatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "UsePerkFeat.cs"));
+        var nativeAttackSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Native", "ResolveAttackRoll.cs"));
+        var statusEffectSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "StatusEffect.cs"));
+        var generatorSource = File.ReadAllText(Path.Combine(root.FullName, "tools", "GenerateWeaponArchetypeImplementation.py"));
         combatSource.Should().Contain("ApplyCriticalBleedingStatusDurationExtension(attacker, defender)");
         combatSource.Should().Contain("ApplyHostileAbilitySequenceEffects(activator, feat, ability)");
         combatSource.Should().Contain("ApplySameTargetHostileAbilityHitEffects(activator, target, ability)");
         combatSource.Should().Contain("ApplyNextDamageDealtBleedEffect(attacker, defender, damageType)");
         combatSource.Should().Contain("ApplyBleedingTargetAbilityBleedSpread(attacker, defender, skillType, damageType)");
         combatSource.Should().Contain("ApplyRangedHitSuppressionStack(activator, target, skillType, damageType)");
+        combatSource.Should().Contain("SuppressionStackEvasionPenaltyPercentAdjustment");
+        combatSource.Should().Contain("ApplySkillAreaAbilityDamageModifier(");
+        combatSource.Should().Contain("GetHitChanceAgainstSunderedTargetAdjustment(");
+        combatSource.Should().Contain("GetCriticalRateAgainstSunderedTargetAdjustment(");
+        combatSource.Should().Contain("ApplyAbilityRecastDelayModifiers(");
+        combatSource.Should().Contain("ApplyLightsaberWardActivatedEffects(activator, ability)");
+        combatSource.Should().Contain("StatType.WardAbilityDefensePercentAdjustment");
+        combatSource.Should().Contain("StatType.WardTargetPhysicalDefensePercentAdjustment");
+        combatSource.Should().Contain("ApplyForceDamageTakenEffects(defender)");
+        combatSource.Should().Contain("new ForceWardingStatusEffect(forceDefense)");
+        combatSource.Should().Contain("StatType.KatarIronGuardPulseDamageBonus");
+        combatSource.Should().Contain("AbilityMatchesPerkCategoryStat(");
+        combatSource.Should().Contain("StatType.KatarIronGuardCoveringClawsCategoryId");
+        combatSource.Should().Contain("StatType.StaffSentinelGuardCategoryId");
+        combatSource.Should().Contain("StatType.StaffSentinelGuardingStepCategoryId");
+        combatSource.Should().Contain("StatType.RangedEvasionPercentAdjustment");
+        usePerkFeatSource.Should().Contain("Combat.ApplyAbilityRecastDelayModifiers(");
+        nativeAttackSource.Should().Contain("Combat.GetHitChanceAgainstSunderedTargetAdjustment(");
+        nativeAttackSource.Should().Contain("Combat.GetCriticalRateAgainstSunderedTargetAdjustment(");
+        statusEffectSource.Should().Contain("OutgoingControlDurationPercentAdjustment");
+        generatorSource.Should().Contain("EXPLICIT_RECAST_SHORT_NAMES");
+        generatorSource.Should().Contain("Missing explicit recast short name");
         combatSource.Should().Contain("ApplyAvoidedAttackNextAutoAttackNoDelay(creature)");
         combatSource.Should().Contain("ApplyBleedingStatusExpiredEffects(uint source)");
         combatSource.Should().Contain("ApplyCostlyAbilityHitEffects(activator, target, ability, skillType)");
@@ -228,6 +324,7 @@ public class GeneratedWeaponPerkBehaviorTests
         File.Exists(Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "StatusEffectDefinition", "LacerationStatusEffect.cs")).Should().BeFalse();
         File.Exists(Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "StatusEffectDefinition", "RupturedStatusEffect.cs")).Should().BeFalse();
         suppressionSource.Should().Contain("StatusEffectStackType.UnlimitedStacking");
+        new SuppressionStatusEffect(4).StatGroup.Stats[StatType.EvasionPercentAdjustment].Should().Be(-4);
     }
 
     [Test]
@@ -241,6 +338,8 @@ public class GeneratedWeaponPerkBehaviorTests
         AssertAbilitySourceContains(root, "Saberstaff", "SeverFocusAbilityDefinition.cs", "DrainTargetResourceAboveThresholdPercent = 80");
         AssertAbilitySourceContains(root, "Saberstaff", "InfiniteConduitAbilityDefinition.cs", "typeof(InfiniteConduitStatusEffect)");
         AssertAbilitySourceContains(root, "Lightsaber", "WardBondAbilityDefinition.cs", "FriendlyTargetStatusEffectFactory = () => new WardBondStatusEffect(45, 12, 12, 0, 8.0f)");
+        AssertAbilitySourceDoesNotContain(root, "Lightsaber", "FocusedStanceAbilityDefinition.cs", "SelfAccuracyPercent");
+        AssertAbilitySourceDoesNotContain(root, "Lightsaber", "ImpenetrableGuardAbilityDefinition.cs", "SelfDefensePercent");
         AssertAbilitySourceContains(root, "Lightsaber", "SaberStormAbilityDefinition.cs", "ExtraDamageTargetStatusEffect = typeof(SunderStatusEffect)");
         AssertAbilitySourceContains(root, "Lightsaber", "SaberStormAbilityDefinition.cs", "ExtraDamageIfTargetStatusEffect = 30");
         AssertAbilitySourceContains(root, "Lightsaber", "SaberStormAbilityDefinition.cs", "ConditionalTargetStatusEffect = typeof(SunderStatusEffect)");
@@ -258,7 +357,7 @@ public class GeneratedWeaponPerkBehaviorTests
         AssertAbilitySourceContains(root, "Pistol", "LastWordAbilityDefinition.cs", "TemporaryAvoidedAttackNextAutoAttackNoDelaySkillType = (int)SkillType.Pistol");
         AssertAbilitySourceContains(root, "Rifle", "SuppressingShotAbilityDefinition.cs", "ApplySuppressionStackOnHit = true");
         AssertAbilitySourceContains(root, "Rifle", "SuppressiveLineAbilityDefinition.cs", "SuppressionDisorientedRequiredStacks = 2");
-        AssertAbilitySourceContains(root, "Rifle", "KillBoxAbilityDefinition.cs", "TemporarySuppressionStackDamageBonusAdjustment = 3");
+        AssertAbilitySourceContains(root, "Rifle", "KillBoxAbilityDefinition.cs", "TemporarySuppressionStackEvasionPenaltyPercentAdjustment = 3");
         AssertAbilitySourceContains(root, "TwinBlade", "TempestBloomAbilityDefinition.cs", "TemporaryAreaAbilityFragmentationDamage = 8");
         AssertAbilitySourceContains(root, "Throwing", "RainOfSteelAbilityDefinition.cs", "TemporaryAreaAbilityFragmentationPulseSeconds = 6");
         AssertAbilitySourceContains(root, "Saberstaff", "SaberCycloneAbilityDefinition.cs", "TemporarySaberstaffAreaAbilityAttackDeflection = 8");
@@ -284,11 +383,17 @@ public class GeneratedWeaponPerkBehaviorTests
             "WeaponActiveAbilityDefinitionBase.cs"));
 
         source.Should().Contain("public string ValidateFriendlyTargetStatus(uint activator, uint target)");
+        source.Should().Contain("target = ResolveFriendlyTarget(activator, target);");
+        source.Should().Contain("public uint ResolveFriendlyTarget(uint activator, uint target)");
+        source.Should().Contain("You do not have an active Guarded target within range.");
+        source.Should().Contain("return GuardedStatusEffect.GetActiveGuardedTarget(activator);");
         source.Should().Contain("AbilityTargeting.ValidateFriendlyTarget(activator, target, false)");
         source.Should().Contain("GuardedStatusEffect.IsActiveGuardedBySource(target, activator)");
         source.Should().Contain("ApplyFriendlyTargetEffects(activator, target)");
         source.Should().Contain("statusEffect.ReassignSource(activator)");
+        source.Should().Contain("if (!profile.RequiresGuardedTarget)");
         source.Should().Contain("return profile.ValidateFriendlyTargetStatus(activator, target)");
+        source.Should().NotContain("profileFactory");
 
         var canApplyIndex = source.IndexOf("var canApply = statusEffect.CanApply(target)", StringComparison.Ordinal);
         var removeExistingLinkIndex = source.IndexOf(
@@ -322,6 +427,9 @@ public class GeneratedWeaponPerkBehaviorTests
 
         AssertStatusSourceContains(root, "WardBondStatusEffect.cs", "StatusEffect.HasStatusEffect(creature, typeof(GuardedStatusEffect))");
         AssertStatusSourceContains(root, "WardBondStatusEffect.cs", "Only one ward or guard link can protect a target.");
+        AssertStatusSourceContains(root, "WardBondStatusEffect.cs", "StatType.WardTargetPhysicalDefensePercentAdjustment");
+        AssertStatusSourceContains(root, "WardBondStatusEffect.cs", "StatType.WardTargetForceDefensePercentAdjustment");
+        AssertStatusSourceContains(root, "WardBondStatusEffect.cs", "SourceWardDefenseRefreshSeconds");
         AssertStatusSourceContains(root, "GuardedStatusEffect.cs", "StatusEffect.HasStatusEffect(creature, typeof(GuardedStatusEffect), Source)");
         AssertStatusSourceContains(root, "GuardedStatusEffect.cs", "Party.IsInParty(Source, creature)");
         AssertStatusSourceContains(root, "GuardedStatusEffect.cs", "Only one ward or guard link can protect a target.");
@@ -334,6 +442,13 @@ public class GeneratedWeaponPerkBehaviorTests
         var statusEffectSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "StatusEffect.cs"));
         combatSource.Should().Contain("StatusEffect.OnGuardedHit(defender, attacker, preventedDamage)");
         statusEffectSource.Should().Contain("OfType<IGuardedHitStatusEffect>()");
+
+        var steelShoulder = new SteelShoulderAbilityDefinition().BuildAbilities()[FeatType.TwinGuardStance1];
+        steelShoulder.RequiresTarget.Should().BeTrue();
+
+        var tagIn = new TagInAbilityDefinition().BuildAbilities()[FeatType.TwinIntercept1];
+        tagIn.IsSingleTargetAbility.Should().BeTrue();
+        tagIn.RequiresTarget.Should().BeFalse();
     }
 
     [Test]

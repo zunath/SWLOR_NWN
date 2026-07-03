@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 Animation.DoubleStrike,
                 8.0f,
                 AbilityType.Invalid,
-                () => new GeneratedWeaponAbilityProfile
+                new GeneratedWeaponAbilityProfile
                 {
                     FriendlyTargetStatusEffectFactory = () => new WardBondStatusEffect(50, 15, 15, 15, 8.0f),
                     SelfDefensePercent = 15,

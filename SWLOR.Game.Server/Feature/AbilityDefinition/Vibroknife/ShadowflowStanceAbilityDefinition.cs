@@ -41,10 +41,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                () => new GeneratedWeaponAbilityProfile
-                {
-                    SelfCriticalRatePercent = 10
-                });
+                null);
 
             return builder.Build();
         }

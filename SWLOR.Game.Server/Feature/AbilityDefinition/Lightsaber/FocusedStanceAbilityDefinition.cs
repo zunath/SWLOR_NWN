@@ -41,11 +41,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                () => new GeneratedWeaponAbilityProfile
-                {
-                    HitChancePercentAdjustment = 10,
-                    SelfAccuracyPercent = 10
-                });
+                null);
 
             return builder.Build();
         }

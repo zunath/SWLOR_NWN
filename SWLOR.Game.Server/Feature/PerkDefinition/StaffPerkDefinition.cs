@@ -149,7 +149,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.HeavyHandsTrait)
-                .Description("Deal +10% damage to Dazed, Stunned, Knocked Down, or Hamstrung targets.")
+                .Description("Deal +10% damage to targets affected by control effects.")
                 .IncreasesStat(StatType.DamageToControlTargetPercentAdjustment, 10)
                 .Price(4)
                 .RequirementSkill(SkillType.Staff, 15);
@@ -207,7 +207,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SkullRattleTrait)
-                .Description("When you apply Daze or Knockdown, the target also suffers -10% Accuracy for 30 seconds.")
+                .Description("When you apply a control effect, the target also suffers -10% Accuracy for 30 seconds.")
                 .IncreasesStat(StatType.StatusAppliedRequiredCategory, (int)StatusEffectCategory.Control)
                 .IncreasesStat(StatType.StatusAppliedTargetAccuracyPercentAdjustment, -10)
                 .IncreasesStat(StatType.StatusAppliedTargetDurationSeconds, 30)
@@ -266,6 +266,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.SentinelGuardTrait)
                 .Description("Staff Sentinel protection abilities grant nearby allies +8 Attack Deflection for 30 seconds and generate extra enmity.")
                 .IncreasesStat(StatType.StaffSentinelGuard, 1)
+                .IncreasesStat(StatType.StaffSentinelGuardCategoryId, (int)PerkCategoryType.StaffSentinel)
                 .Price(2)
                 .RequirementSkill(SkillType.Staff, 5);
         }
@@ -334,6 +335,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.GuardingStepTrait)
                 .Description("Using a Staff Sentinel ability grants +25% Evasion and +20% Defense for 30 seconds. This can trigger once every 20 seconds.")
                 .IncreasesStat(StatType.StaffSentinelGuardingStep, 1)
+                .IncreasesStat(StatType.StaffSentinelGuardingStepCategoryId, (int)PerkCategoryType.StaffSentinel)
                 .IncreasesStat(StatType.StaffSentinelGuardingStepCooldownSeconds, 20)
                 .IncreasesStat(StatType.AbilityUsedEvasionPercentAdjustmentSkillType, (int)SkillType.Staff)
                 .IncreasesStat(StatType.AbilityUsedEvasionDurationSeconds, 30)

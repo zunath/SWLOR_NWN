@@ -14,6 +14,10 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         public FocusedStanceStatusEffect()
         {
+            StatGroup.Stats[StatType.HitChanceAgainstSunderedTargetPercentAdjustment] = 10;
+            StatGroup.Stats[StatType.CriticalRateAgainstSunderedTargetPercentAdjustment] = 8;
+            StatGroup.Stats[StatType.SkillAreaAbilityDamagePercentAdjustmentSkillType] = (int)SkillType.Lightsaber;
+            StatGroup.Stats[StatType.SkillAreaAbilityDamagePercentAdjustment] = -15;
         }
     }
 }

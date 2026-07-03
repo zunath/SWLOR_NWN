@@ -75,23 +75,31 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         private static void FocusStim1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
             var duration = FirstAidTreatmentAdjustments.ApplyStimDurationBonus(activator, 120f);
+            var applied = false;
             foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
                 StatusEffect.ApplyStatusEffect(activator, friendly, typeof(FocusStim1StatusEffect), duration);
                 FirstAidTreatmentAdjustments.ApplyCombatPharmacologyStimRiders(activator, friendly);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Holy_Aid), friendly);
+                applied = true;
             }
+
+            FirstAidTreatmentAdjustments.GrantCombatPointIfApplied(activator, applied);
         }
 
         private static void FocusStim2ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
             var duration = FirstAidTreatmentAdjustments.ApplyStimDurationBonus(activator, 120f);
+            var applied = false;
             foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
                 StatusEffect.ApplyStatusEffect(activator, friendly, typeof(FocusStim2StatusEffect), duration);
                 FirstAidTreatmentAdjustments.ApplyCombatPharmacologyStimRiders(activator, friendly);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Holy_Aid), friendly);
+                applied = true;
             }
+
+            FirstAidTreatmentAdjustments.GrantCombatPointIfApplied(activator, applied);
         }
 
 

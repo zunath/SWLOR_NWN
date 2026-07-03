@@ -1,6 +1,7 @@
 using System;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -44,6 +45,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         public static void ApplyMedicalVisualEffect(uint target)
         {
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_M_Silent), target);
+        }
+
+        public static void GrantCombatPoint(uint activator)
+        {
+            CombatPoint.AddCombatPointToAllTagged(activator, SkillType.FirstAid);
+        }
+
+        public static void GrantCombatPointIfApplied(uint activator, bool applied)
+        {
+            if (applied)
+                GrantCombatPoint(activator);
         }
 
         public static int ApplyMedicalHealingBonus(uint source, int amount)

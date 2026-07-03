@@ -594,6 +594,11 @@ namespace SWLOR.Game.Server.Service
                 percentAdjustment += Stat.GetStatAdjustment(source, StatType.OutgoingDebuffDurationPercentAdjustment);
             }
 
+            if ((statusEffect.Categories & StatusEffectCategory.Control) == StatusEffectCategory.Control)
+            {
+                percentAdjustment += Stat.GetStatAdjustment(source, StatType.OutgoingControlDurationPercentAdjustment);
+            }
+
             if (statusEffect is ForceDisruptionStatusEffect)
             {
                 percentAdjustment += Stat.GetStatAdjustment(source, StatType.OutgoingForceDisruptionDurationPercentAdjustment);

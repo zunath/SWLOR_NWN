@@ -92,21 +92,24 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ForceWardingTrait)
                 .Description("After taking Force damage, reflect 10% of the pre-mitigation damage to the attacker and gain +5 Force Defense for 30 seconds.")
                 .IncreasesStat(StatType.ForceDamageReflectionPercentAdjustment, 10)
-                .IncreasesStat(StatType.ForceDefense, 5)
+                .IncreasesStat(StatType.ForceDamageTakenForceDefense, 5)
+                .IncreasesStat(StatType.ForceDamageTakenForceDefenseDurationSeconds, 30)
                 .Price(2)
                 .RequirementSkill(SkillType.Spear, 8)
 
                 .AddPerkLevel()
                 .Description("After taking Force damage, reflect 15% of the pre-mitigation damage to the attacker and gain +5 Force Defense for 30 seconds.")
                 .IncreasesStat(StatType.ForceDamageReflectionPercentAdjustment, 15)
-                .IncreasesStat(StatType.ForceDefense, 5)
+                .IncreasesStat(StatType.ForceDamageTakenForceDefense, 5)
+                .IncreasesStat(StatType.ForceDamageTakenForceDefenseDurationSeconds, 30)
                 .Price(4)
                 .RequirementSkill(SkillType.Spear, 22)
 
                 .AddPerkLevel()
                 .Description("After taking Force damage, reflect 20% of the pre-mitigation damage to the attacker and gain +5 Force Defense for 30 seconds.")
                 .IncreasesStat(StatType.ForceDamageReflectionPercentAdjustment, 20)
-                .IncreasesStat(StatType.ForceDefense, 5)
+                .IncreasesStat(StatType.ForceDamageTakenForceDefense, 5)
+                .IncreasesStat(StatType.ForceDamageTakenForceDefenseDurationSeconds, 30)
                 .Price(4)
                 .RequirementSkill(SkillType.Spear, 45);
         }

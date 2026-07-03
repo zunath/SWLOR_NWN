@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                () => new GeneratedWeaponAbilityProfile
+                new GeneratedWeaponAbilityProfile
                 {
                     ExtraDamageIfRecentGuardedHit = 8,
                     RecentGuardedHitWindowSeconds = 30
@@ -71,7 +71,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                () => new GeneratedWeaponAbilityProfile
+                new GeneratedWeaponAbilityProfile
                 {
                     ExtraDamageIfRecentGuardedHit = 12,
                     RecentGuardedHitWindowSeconds = 30
@@ -85,7 +85,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
                 SkillType.Katar,
                 28,
                 30,
-                typeof(DazedStatusEffect),
+                null,
                 null,
                 8,
                 0,
@@ -101,7 +101,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                () => new GeneratedWeaponAbilityProfile
+                new GeneratedWeaponAbilityProfile
                 {
                     ExtraDamageIfRecentGuardedHit = 17,
                     RecentGuardedHitWindowSeconds = 30,

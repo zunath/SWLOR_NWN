@@ -41,10 +41,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 Animation.PointPistol,
                 25.0f,
                 AbilityType.Perception,
-                () => new GeneratedWeaponAbilityProfile
-                {
-                    SelfEvasionPercent = 15
-                });
+                null);
 
             return builder.Build();
         }

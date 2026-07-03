@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                () => new GeneratedWeaponAbilityProfile
+                new GeneratedWeaponAbilityProfile
                 {
                     TemporarySaberstaffAreaAbilityMinTargetsResourceRestoreThreshold = 1,
                     TemporarySaberstaffAreaAbilityFPRestore = 4,

@@ -41,11 +41,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 Animation.PointPistol,
                 30.0f,
                 AbilityType.Perception,
-                () => new GeneratedWeaponAbilityProfile
+                new GeneratedWeaponAbilityProfile
                 {
                     ApplySuppressionStackOnHit = true,
                     SuppressionStackDurationSeconds = 30,
-                    SuppressionStackDamageBonus = 2
+                    SuppressionStackEvasionPenaltyPercent = 2
                 });
 
             ConfigureGeneratedWeaponAbility(
@@ -72,11 +72,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 Animation.PointPistol,
                 30.0f,
                 AbilityType.Perception,
-                () => new GeneratedWeaponAbilityProfile
+                new GeneratedWeaponAbilityProfile
                 {
                     ApplySuppressionStackOnHit = true,
                     SuppressionStackDurationSeconds = 30,
-                    SuppressionStackDamageBonus = 3
+                    SuppressionStackEvasionPenaltyPercent = 3
                 });
 
             ConfigureGeneratedWeaponAbility(
@@ -103,11 +103,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 Animation.PointPistol,
                 30.0f,
                 AbilityType.Perception,
-                () => new GeneratedWeaponAbilityProfile
+                new GeneratedWeaponAbilityProfile
                 {
                     ApplySuppressionStackOnHit = true,
                     SuppressionStackDurationSeconds = 30,
-                    SuppressionStackDamageBonus = 4
+                    SuppressionStackEvasionPenaltyPercent = 4
                 });
 
             ConfigureGeneratedWeaponAbility(
@@ -134,11 +134,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 Animation.PointPistol,
                 30.0f,
                 AbilityType.Perception,
-                () => new GeneratedWeaponAbilityProfile
+                new GeneratedWeaponAbilityProfile
                 {
                     ApplySuppressionStackOnHit = true,
                     SuppressionStackDurationSeconds = 30,
-                    SuppressionStackDamageBonus = 5
+                    SuppressionStackEvasionPenaltyPercent = 5
                 });
 
             return builder.Build();

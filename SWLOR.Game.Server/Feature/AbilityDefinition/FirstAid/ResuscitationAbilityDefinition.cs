@@ -80,6 +80,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             FirstAidTreatmentAdjustments.ApplyTraumaMedicRiders(activator, target);
             DelayCommand(0.1f, () => Ability.ReapplyAuraEffectsForCreature(target));
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Raise_Dead), target);
+            FirstAidTreatmentAdjustments.GrantCombatPoint(activator);
         }
 
         private static void Resuscitation2ImpactAction(uint activator, uint target, int level, Location targetLocation)
@@ -92,6 +93,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             FirstAidTreatmentAdjustments.ApplyTraumaMedicRiders(activator, target);
             DelayCommand(0.1f, () => Ability.ReapplyAuraEffectsForCreature(target));
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Raise_Dead), target);
+            FirstAidTreatmentAdjustments.GrantCombatPoint(activator);
         }
     }
 }

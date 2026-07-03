@@ -41,10 +41,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                () => new GeneratedWeaponAbilityProfile
-                {
-                    SelfDefensePercent = 25
-                });
+                null);
 
             return builder.Build();
         }

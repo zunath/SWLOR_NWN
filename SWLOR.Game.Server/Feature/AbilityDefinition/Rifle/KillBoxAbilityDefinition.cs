@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                     .Level(1)
                     .HasRecastDelay(RecastGroup.Capstone, 90.0f),
                 SkillType.Rifle,
-                3,
+                0,
                 45,
                 null,
                 null,
@@ -41,11 +41,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 Animation.PointPistol,
                 30.0f,
                 AbilityType.Perception,
-                () => new GeneratedWeaponAbilityProfile
+                new GeneratedWeaponAbilityProfile
                 {
                     TemporaryRangedHitSuppressionStackDurationSeconds = 30,
-                    TemporaryRangedHitSuppressionStackDamageBonus = 0,
-                    TemporarySuppressionStackDamageBonusAdjustment = 3,
+                    TemporaryRangedHitSuppressionStackEvasionPenaltyPercent = 0,
+                    TemporarySuppressionStackEvasionPenaltyPercentAdjustment = 3,
                     TemporaryDefeatedEnemyEffectDurationSeconds = 45
                 });
 

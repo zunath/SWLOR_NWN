@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                () => new GeneratedWeaponAbilityProfile
+                new GeneratedWeaponAbilityProfile
                 {
                     TemporaryCostlyAbilityStatusSkillType = (int)SkillType.Spear,
                     TemporaryCostlyAbilityHitMinimumStaminaCost = 8,

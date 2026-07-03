@@ -75,25 +75,33 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         private static void PainSuppressant1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
             var duration = FirstAidTreatmentAdjustments.ApplyStimDurationBonus(activator, 30f);
+            var applied = false;
             foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
                 ApplyTemporaryHP(activator, friendly, 10, duration);
                 StatusEffect.ApplyStatusEffect(activator, friendly, typeof(PainSuppressant1StatusEffect), duration);
                 FirstAidTreatmentAdjustments.ApplyCombatPharmacologyStimRiders(activator, friendly);
                 FirstAidTreatmentAdjustments.ApplyMedicalVisualEffect(friendly);
+                applied = true;
             }
+
+            FirstAidTreatmentAdjustments.GrantCombatPointIfApplied(activator, applied);
         }
 
         private static void PainSuppressant2ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
             var duration = FirstAidTreatmentAdjustments.ApplyStimDurationBonus(activator, 30f);
+            var applied = false;
             foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
                 ApplyTemporaryHP(activator, friendly, 15, duration);
                 StatusEffect.ApplyStatusEffect(activator, friendly, typeof(PainSuppressant2StatusEffect), duration);
                 FirstAidTreatmentAdjustments.ApplyCombatPharmacologyStimRiders(activator, friendly);
                 FirstAidTreatmentAdjustments.ApplyMedicalVisualEffect(friendly);
+                applied = true;
             }
+
+            FirstAidTreatmentAdjustments.GrantCombatPointIfApplied(activator, applied);
         }
 
 

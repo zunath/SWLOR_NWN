@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                () => new GeneratedWeaponAbilityProfile
+                new GeneratedWeaponAbilityProfile
                 {
                     RequiredTargetStatusEffectForConditionalStatus = typeof(DazedStatusEffect),
                     ConditionalTargetStatusEffect = typeof(KnockdownStatusEffect),
@@ -72,7 +72,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                () => new GeneratedWeaponAbilityProfile
+                new GeneratedWeaponAbilityProfile
                 {
                     RequiredTargetStatusEffectForConditionalStatus = typeof(DazedStatusEffect),
                     ConditionalTargetStatusEffect = typeof(KnockdownStatusEffect),

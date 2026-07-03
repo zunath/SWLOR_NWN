@@ -14,6 +14,8 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         public ScrapperStanceStatusEffect()
         {
+            StatGroup.Stats[StatType.OutgoingControlDurationPercentAdjustment] = 20;
+            StatGroup.Stats[StatType.HostileAbilityRecastDelayPercentAdjustment] = 10;
         }
     }
 }

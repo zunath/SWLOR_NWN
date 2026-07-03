@@ -41,12 +41,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
                 Animation.ThrowGrenade,
                 20.0f,
                 AbilityType.Perception,
-                () => new GeneratedWeaponAbilityProfile
-                {
-                    SelfHastePercent = 10,
-                    SelfHasteDurationSeconds = 30,
-                    SelfHasteMaximumPercent = 10
-                });
+                null);
 
             return builder.Build();
         }

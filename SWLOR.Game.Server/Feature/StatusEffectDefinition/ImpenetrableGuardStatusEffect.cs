@@ -14,6 +14,8 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         public ImpenetrableGuardStatusEffect()
         {
+            StatGroup.Stats[StatType.WardTargetPhysicalDefensePercentAdjustment] = 5;
+            StatGroup.Stats[StatType.WardTargetForceDefensePercentAdjustment] = 5;
             StatGroup.Stats[StatType.EnmityPercentAdjustment] = 20;
             StatGroup.Stats[StatType.AttackPercentAdjustment] = -20;
             StatGroup.Stats[StatType.ForceAttackPercentAdjustment] = -20;

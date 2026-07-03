@@ -11,6 +11,9 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
     public sealed class WardBondStatusEffect : StatusEffectBase
     {
+        private const string SourceWardDefenseGroup = "WardBond:SourceDefense";
+        private const float SourceWardDefenseRefreshSeconds = 1.5f;
+
         private static readonly Dictionary<(uint Source, uint Attacker), DateTime> RecentWardHits = new();
         private readonly float _rangeMeters;
 
@@ -57,10 +60,26 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             return "Only one ward or guard link can protect a target.";
         }
 
+        protected override void Apply(uint creature, int durationTicks)
+        {
+            RefreshSourceWardDefense(creature);
+        }
+
         protected override void Tick(uint creature)
         {
             if (!IsSourceInRange(creature))
+            {
+                ClearSourceWardDefense(creature);
                 IsFlaggedForRemoval = true;
+                return;
+            }
+
+            RefreshSourceWardDefense(creature);
+        }
+
+        protected override void Remove(uint creature)
+        {
+            ClearSourceWardDefense(creature);
         }
 
         protected override void OnDamageTaken(uint defender, uint attacker, int damage, CombatDamageType damageType)
@@ -82,6 +101,67 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                    !GetIsDead(Source) &&
                    GetArea(Source) == GetArea(creature) &&
                    GetDistanceBetween(Source, creature) <= _rangeMeters;
+        }
+
+        private void RefreshSourceWardDefense(uint creature)
+        {
+            if (!IsSourceInRange(creature))
+            {
+                ClearSourceWardDefense(creature);
+                return;
+            }
+
+            var physicalDefense = Stat.GetStatAdjustment(
+                Source,
+                StatType.WardTargetPhysicalDefensePercentAdjustment);
+            var forceDefense = Stat.GetStatAdjustment(
+                Source,
+                StatType.WardTargetForceDefensePercentAdjustment);
+            if (physicalDefense == 0 && forceDefense == 0)
+            {
+                ClearSourceWardDefense(creature);
+                return;
+            }
+
+            if (physicalDefense != 0)
+            {
+                TemporaryStatModifier.Replace(
+                    creature,
+                    StatType.PhysicalDefensePercentAdjustment,
+                    physicalDefense,
+                    SourceWardDefenseRefreshSeconds,
+                    SourceWardDefenseGroup);
+            }
+            else
+            {
+                TemporaryStatModifier.Consume(
+                    creature,
+                    StatType.PhysicalDefensePercentAdjustment,
+                    SourceWardDefenseGroup);
+            }
+
+            if (forceDefense != 0)
+            {
+                TemporaryStatModifier.Replace(
+                    creature,
+                    StatType.ForceDefensePercentAdjustment,
+                    forceDefense,
+                    SourceWardDefenseRefreshSeconds,
+                    SourceWardDefenseGroup);
+            }
+            else
+            {
+                TemporaryStatModifier.Consume(
+                    creature,
+                    StatType.ForceDefensePercentAdjustment,
+                    SourceWardDefenseGroup);
+            }
+        }
+
+        private static void ClearSourceWardDefense(uint creature)
+        {
+            TemporaryStatModifier.Consume(creature, StatType.PhysicalDefensePercentAdjustment, SourceWardDefenseGroup);
+            TemporaryStatModifier.Consume(creature, StatType.ForceDefensePercentAdjustment, SourceWardDefenseGroup);
         }
 
         public static bool HasRecentWardHit(uint source, uint attacker, int windowSeconds)

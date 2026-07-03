@@ -1,4 +1,5 @@
 using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
@@ -11,21 +12,24 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public override StatusEffectCleanseType CleanseTypes => StatusEffectCleanseType.Purify | StatusEffectCleanseType.SoothePet;
         public override StatusEffectStackType StackingType => StatusEffectStackType.UnlimitedStacking;
 
-        public int DamageBonus { get; }
+        public int EvasionPenaltyPercent { get; }
 
         public SuppressionStatusEffect()
             : this(0)
         {
         }
 
-        public SuppressionStatusEffect(int damageBonus)
+        public SuppressionStatusEffect(int evasionPenaltyPercent)
         {
-            DamageBonus = damageBonus;
+            EvasionPenaltyPercent = evasionPenaltyPercent;
+
+            if (EvasionPenaltyPercent > 0)
+                StatGroup.Stats[StatType.EvasionPercentAdjustment] = -EvasionPenaltyPercent;
         }
 
         public override IStatusEffect Clone()
         {
-            return new SuppressionStatusEffect(DamageBonus);
+            return new SuppressionStatusEffect(EvasionPenaltyPercent);
         }
     }
 }

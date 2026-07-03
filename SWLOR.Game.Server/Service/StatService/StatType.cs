@@ -2649,6 +2649,12 @@ namespace SWLOR.Game.Server.Service.StatService
         PredatorsMarkDamageTakenFromBeastPercent = 472,
 
         /// <summary>
+        /// Duration in seconds for Predator's Mark.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        PredatorsMarkDurationSeconds = 825,
+
+        /// <summary>
         /// Ranged physical damage reduction percent applied by Field Support ally-buff riders.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
@@ -3357,6 +3363,24 @@ namespace SWLOR.Game.Server.Service.StatService
         AbilityUsedEvasionDurationSeconds = 588,
 
         /// <summary>
+        /// SkillType value of abilities that trigger AbilityUsedRangedEvasionPercentAdjustment.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        AbilityUsedRangedEvasionPercentAdjustmentSkillType = 826,
+
+        /// <summary>
+        /// Temporary percent Ranged Evasion adjustment applied after using a matching ability.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        AbilityUsedRangedEvasionPercentAdjustment = 827,
+
+        /// <summary>
+        /// Duration in seconds for AbilityUsedRangedEvasionPercentAdjustment.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        AbilityUsedRangedEvasionDurationSeconds = 828,
+
+        /// <summary>
         /// SkillType value of single-target abilities that trigger SingleTargetAbilityAttackDeflection.
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
@@ -3909,10 +3933,10 @@ namespace SWLOR.Game.Server.Service.StatService
         AutoAttackSuppressionStackDurationSeconds = 685,
 
         /// <summary>
-        /// Damage bonus carried by Suppression stacks added by auto-attacks.
+        /// Evasion penalty percent carried by Suppression stacks added by auto-attacks.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        AutoAttackSuppressionStackDamageBonus = 686,
+        AutoAttackSuppressionStackEvasionPenaltyPercent = 686,
 
         /// <summary>
         /// Duration of Suppression stacks added by ranged hits.
@@ -3921,16 +3945,16 @@ namespace SWLOR.Game.Server.Service.StatService
         RangedHitSuppressionStackDurationSeconds = 687,
 
         /// <summary>
-        /// Damage bonus carried by Suppression stacks added by ranged hits.
+        /// Evasion penalty percent carried by Suppression stacks added by ranged hits.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        RangedHitSuppressionStackDamageBonus = 688,
+        RangedHitSuppressionStackEvasionPenaltyPercent = 688,
 
         /// <summary>
-        /// Extra damage added per source-owned Suppression stack.
+        /// Extra Evasion penalty percent added per source-owned Suppression stack.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        SuppressionStackDamageBonusAdjustment = 689,
+        SuppressionStackEvasionPenaltyPercentAdjustment = 689,
 
         /// <summary>
         /// Damage percent adjustment for abilities which spend hit points.
@@ -4692,7 +4716,115 @@ namespace SWLOR.Game.Server.Service.StatService
         /// Stamina restored to the source when applying a matching status category.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        StatusAppliedSelfStaminaRestore = 816
+        StatusAppliedSelfStaminaRestore = 816,
+
+        /// <summary>
+        /// Hit chance percent adjustment against targets affected by Sunder.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        HitChanceAgainstSunderedTargetPercentAdjustment = 817,
+
+        /// <summary>
+        /// Critical rate percent adjustment against targets affected by Sunder.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        CriticalRateAgainstSunderedTargetPercentAdjustment = 818,
+
+        /// <summary>
+        /// SkillType value whose area abilities receive SkillAreaAbilityDamagePercentAdjustment.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        SkillAreaAbilityDamagePercentAdjustmentSkillType = 819,
+
+        /// <summary>
+        /// Damage percent adjustment for matching area abilities.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        SkillAreaAbilityDamagePercentAdjustment = 820,
+
+        /// <summary>
+        /// Duration percent adjustment applied to outgoing control status effects.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        OutgoingControlDurationPercentAdjustment = 821,
+
+        /// <summary>
+        /// Recast delay percent adjustment for hostile abilities.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenNegative)]
+        HostileAbilityRecastDelayPercentAdjustment = 822,
+
+        /// <summary>
+        /// Physical Defense percent adjustment granted to the source's active ward target.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        WardTargetPhysicalDefensePercentAdjustment = 823,
+
+        /// <summary>
+        /// Force Defense percent adjustment granted to the source's active ward target.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        WardTargetForceDefensePercentAdjustment = 824,
+
+        /// <summary>
+        /// Physical Defense percent granted to the source and active ward target after using a Ward ability.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        WardAbilityDefensePercentAdjustment = 829,
+
+        /// <summary>
+        /// Force Defense percent granted to the source and active ward target after using a Ward ability.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        WardAbilityForceDefensePercentAdjustment = 830,
+
+        /// <summary>
+        /// Duration in seconds for Ward ability defense riders.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        WardAbilityDefenseDurationSeconds = 831,
+
+        /// <summary>
+        /// Force Defense granted after taking Force damage.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        ForceDamageTakenForceDefense = 832,
+
+        /// <summary>
+        /// Duration in seconds for ForceDamageTakenForceDefense.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        ForceDamageTakenForceDefenseDurationSeconds = 833,
+
+        /// <summary>
+        /// PerkCategoryType value whose abilities trigger BeastBalancedAbilityStaminaRestore.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        BeastBalancedAbilityStaminaRestoreCategoryId = 834,
+
+        /// <summary>
+        /// PerkCategoryType value whose abilities trigger KatarIronGuardCoveringClaws.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        KatarIronGuardCoveringClawsCategoryId = 835,
+
+        /// <summary>
+        /// PerkCategoryType value whose abilities trigger StaffSentinelGuard.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        StaffSentinelGuardCategoryId = 836,
+
+        /// <summary>
+        /// PerkCategoryType value whose abilities trigger Ward ability defense riders.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        WardAbilityDefenseCategoryId = 837,
+
+        /// <summary>
+        /// PerkCategoryType value whose abilities trigger StaffSentinelGuardingStep.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        StaffSentinelGuardingStepCategoryId = 838
     }
 
     public class StatTypeAttribute : Attribute

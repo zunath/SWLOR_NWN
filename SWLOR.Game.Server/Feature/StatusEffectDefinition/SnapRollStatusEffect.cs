@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public SnapRollStatusEffect(int evasionPercent)
         {
             _evasionPercent = evasionPercent;
-            StatGroup.Stats[StatType.EvasionPercentAdjustment] = evasionPercent;
+            StatGroup.Stats[StatType.RangedEvasionPercentAdjustment] = evasionPercent;
         }
 
         public override IStatusEffect Clone()

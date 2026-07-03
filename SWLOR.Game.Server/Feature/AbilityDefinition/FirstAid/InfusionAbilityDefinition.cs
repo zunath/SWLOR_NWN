@@ -90,6 +90,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 30f);
             FirstAidTreatmentAdjustments.ApplyTraumaMedicRiders(activator, friendly);
             FirstAidTreatmentAdjustments.ApplyMedicalVisualEffect(friendly);
+            FirstAidTreatmentAdjustments.GrantCombatPoint(activator);
         }
 
     }

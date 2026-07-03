@@ -23,6 +23,9 @@ public class BeastmasterCombatUpgradeTests
         AssertStatBonus(damage[PerkType.BeastBloodFrenzy].PerkLevels[1], StatType.DamageDealtBleedingTargetStaminaRestoreChance, 20);
         AssertStatBonus(damage[PerkType.BeastBloodFrenzy].PerkLevels[2], StatType.DamageDealtBleedingTargetStaminaRestoreChance, 30);
         AssertStatBonus(damage[PerkType.PredatorsMark].PerkLevels[1], StatType.PredatorsMarkDamageTakenFromBeastPercent, 10);
+        AssertStatBonus(damage[PerkType.PredatorsMark].PerkLevels[1], StatType.PredatorsMarkDurationSeconds, 30);
+        AssertStatBonus(damage[PerkType.PredatorsMark].PerkLevels[2], StatType.PredatorsMarkDamageTakenFromBeastPercent, 10);
+        AssertStatBonus(damage[PerkType.PredatorsMark].PerkLevels[2], StatType.PredatorsMarkDurationSeconds, 30);
         AssertStatBonus(damage[PerkType.PredatorsMark].PerkLevels[2], StatType.PredatorsMarkHastePercentPerStack, 5);
         AssertStatBonus(damage[PerkType.PredatorsMark].PerkLevels[2], StatType.PredatorsMarkAbilityHitChancePercentPerStack, 2);
         AssertStatBonus(damage[PerkType.PredatorsMark].PerkLevels[2], StatType.PredatorsMarkFollowUpDurationSeconds, 30);
@@ -158,6 +161,8 @@ public class BeastmasterCombatUpgradeTests
         combat.Should().Contain("ApplyAbilityUsedMasterAbilityHitChance");
         combat.Should().Contain("ApplyDamageTakenRedirectToStatusSource");
         combat.Should().Contain("ApplyPredatorsMarkEffects");
+        combat.Should().Contain("StatType.PredatorsMarkDurationSeconds");
+        combat.Should().Contain("StatType.BeastBalancedAbilityStaminaRestoreCategoryId");
         combat.Should().Contain("InventorySlot.CreatureRight");
     }
 

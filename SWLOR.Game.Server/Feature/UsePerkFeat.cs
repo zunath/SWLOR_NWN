@@ -450,7 +450,10 @@ namespace SWLOR.Game.Server.Feature
             // Begin the main process
             var activationId = Guid.NewGuid().ToString();
             var activationDelay = CalculateActivationDelay();
-            var recastDelay = ability.RecastDelay?.Invoke(activator) ?? 0f;
+            var recastDelay = Combat.ApplyAbilityRecastDelayModifiers(
+                activator,
+                ability,
+                ability.RecastDelay?.Invoke(activator) ?? 0f);
             var position = GetPosition(activator);
             var resumeAttackTarget = GetResumeAttackTarget(activator, target, ability);
             var activationTelegraphIds = ProcessAnimationAndVisualEffects(activationDelay);
@@ -505,7 +508,10 @@ namespace SWLOR.Game.Server.Feature
 
             ApplyRequirementEffects(activator, ability);
 
-            var abilityRecastDelay = ability.RecastDelay?.Invoke(activator) ?? 0.0f;
+            var abilityRecastDelay = Combat.ApplyAbilityRecastDelayModifiers(
+                activator,
+                ability,
+                ability.RecastDelay?.Invoke(activator) ?? 0.0f);
             Recast.ApplyRecastDelay(activator, ability.RecastGroup, abilityRecastDelay);
 
             // Activator must attack within 30 seconds after queueing or else it wears off.

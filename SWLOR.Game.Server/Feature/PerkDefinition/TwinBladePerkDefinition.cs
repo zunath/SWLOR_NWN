@@ -46,25 +46,25 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.CrossCut1)
-                .Description("Instantly attacks twice, each for weapon DMG + 6. If both attacks hit, gain Momentum for 30 seconds.")
+                .Description("Instantly attacks twice, each for weapon DMG + 6. If both attacks hit, gain a stack of Momentum for 30 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.TwinBlade, 2)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.CrossCut2)
-                .Description("Instantly attacks twice, each for weapon DMG + 13. If both attacks hit, gain Momentum for 30 seconds.")
+                .Description("Instantly attacks twice, each for weapon DMG + 13. If both attacks hit, gain a stack of Momentum for 30 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.TwinBlade, 12)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.CrossCut3)
-                .Description("Instantly attacks twice, each for weapon DMG + 20. If both attacks hit, gain Momentum for 30 seconds.")
+                .Description("Instantly attacks twice, each for weapon DMG + 20. If both attacks hit, gain a stack of Momentum for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.TwinBlade, 28)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.CrossCut4)
-                .Description("Instantly attacks twice, each for weapon DMG + 27. If both attacks hit, gain Momentum for 30 seconds.")
+                .Description("Instantly attacks twice, each for weapon DMG + 27. If both attacks hit, gain a stack of Momentum for 30 seconds.")
                 .Price(5)
                 .RequirementSkill(SkillType.TwinBlade, 40);
         }

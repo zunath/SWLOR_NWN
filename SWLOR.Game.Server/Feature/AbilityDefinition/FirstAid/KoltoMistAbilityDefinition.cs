@@ -114,6 +114,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 location,
                 DurationSeconds);
 
+            var combatPointAwarded = false;
             for (var elapsed = TickIntervalSeconds; elapsed <= DurationSeconds + 0.01f; elapsed += TickIntervalSeconds)
             {
                 var pulseDelay = elapsed;
@@ -125,13 +126,19 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                     if (!GetIsObjectValid(GetAreaFromLocation(location)))
                         return;
 
-                    ApplyKoltoMistPulse(activator, location, percentPerTick);
+                    var applied = ApplyKoltoMistPulse(activator, location, percentPerTick);
+                    if (applied && !combatPointAwarded)
+                    {
+                        combatPointAwarded = true;
+                        FirstAidTreatmentAdjustments.GrantCombatPoint(activator);
+                    }
                 });
             }
         }
 
-        private static void ApplyKoltoMistPulse(uint activator, Location location, float percentPerTick)
+        private static bool ApplyKoltoMistPulse(uint activator, Location location, float percentPerTick)
         {
+            var applied = false;
             foreach (var friendly in AbilityTargeting.GetFriendlyTargetsNearLocation(activator, location, HealRadiusMeters))
             {
                 FirstAidTreatmentAdjustments.ApplyMedicalScaledHeal(activator, friendly, percentPerTick);
@@ -141,7 +148,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                     friendly,
                     typeof(KoltoMistHealingStatusEffect),
                     StatusRefreshDurationSeconds);
+                applied = true;
             }
+
+            return applied;
         }
     }
 }

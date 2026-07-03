@@ -167,17 +167,17 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.FortifiedPositionTrait)
                 .Description("Grants +8 Mind Resistance rating, +8 Trauma Resistance rating, and +8 Mobility Resistance rating.")
-                .IncreasesStat(StatType.MindResistance, 2)
-                .IncreasesStat(StatType.TraumaResistance, 2)
-                .IncreasesStat(StatType.MobilityResistance, 2)
+                .IncreasesStat(StatType.MindResistance, 8)
+                .IncreasesStat(StatType.TraumaResistance, 8)
+                .IncreasesStat(StatType.MobilityResistance, 8)
                 .Price(4)
                 .RequirementSkill(SkillType.Vibroblade, 15)
 
                 .AddPerkLevel()
                 .Description("Grants +15 Mind Resistance rating, +15 Trauma Resistance rating, and +15 Mobility Resistance rating total.")
-                .IncreasesStat(StatType.MindResistance, 4)
-                .IncreasesStat(StatType.TraumaResistance, 4)
-                .IncreasesStat(StatType.MobilityResistance, 4)
+                .IncreasesStat(StatType.MindResistance, 15)
+                .IncreasesStat(StatType.TraumaResistance, 15)
+                .IncreasesStat(StatType.MobilityResistance, 15)
                 .Price(3)
                 .RequirementSkill(SkillType.Vibroblade, 32);
         }
@@ -227,7 +227,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Invincible1)
-                .Description("For 45 seconds, you take 50% less physical damage and are immune to Knockdown and Daze.")
+                .Description("For 45 seconds, you take 50% less physical damage and are immune to Knockdown and Dazed.")
                 .Price(6)
                 .RequirementSkill(SkillType.Vibroblade, 50);
         }

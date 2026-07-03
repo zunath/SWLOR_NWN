@@ -142,7 +142,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.WhirlingGuard1)
-                .Description("for 30 seconds, you and your Guarded target gain +20% guard chance and deal 8 DMG back to attackers whenever you guard a hit.")
+                .Description("For 30 seconds, you gain +20 Guard and deal 8 DMG back to attackers whenever you guard a hit. Your current Guarded target automatically receives the same effect if they are within 5 meters.")
                 .Price(4)
                 .RequirementSkill(SkillType.Katar, 20);
         }
@@ -156,6 +156,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.CoveringClawsTrait)
                 .Description("Iron Guard ally-protection abilities cause enemies hit to generate +25% Enmity toward you for 30 seconds.")
                 .IncreasesStat(StatType.KatarIronGuardCoveringClaws, 1)
+                .IncreasesStat(StatType.KatarIronGuardCoveringClawsCategoryId, (int)PerkCategoryType.KatarIronGuard)
                 .Price(4)
                 .RequirementSkill(SkillType.Katar, 22);
         }
@@ -181,7 +182,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.TwinIntercept1)
-                .Description("Only usable on your Guarded target. Grants the target temporary HP equal to 15% of maximum HP for 30 seconds and grants you +20 Guard for 30 seconds.")
+                .Description("Automatically targets your current Guarded ally if they are within 5 meters. Grants that target temporary HP equal to 15% of maximum HP for 30 seconds and grants you +20 Guard for 30 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Katar, 30);
         }
@@ -426,7 +427,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.IronGripTrait)
-                .Description("Your Hamstring and Daze effects last +20% longer.")
+                .Description("Your outgoing debuffs last +20% longer.")
                 .IncreasesStat(StatType.OutgoingDebuffDurationPercentAdjustment, 20)
                 .Price(2)
                 .RequirementSkill(SkillType.Katar, 35);
@@ -439,7 +440,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ScrapheapLockdown1)
-                .Description("Deals weapon DMG + 25 in an area. Enemies hit are Dazed and Hamstrung for 30 seconds.")
+                .Description("Deals weapon DMG + 25 in an area. Enemies hit suffer Dazed and Hamstring for 30 seconds.")
                 .Price(6)
                 .RequirementSkill(SkillType.Katar, 50);
         }

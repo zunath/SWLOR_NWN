@@ -189,6 +189,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition.Beast
                 .RequirementBeastLevel(48)
                 .RequirementBeastRole(BeastRoleType.Balanced)
                 .IncreasesStat(StatType.BeastBalancedAbilityStaminaRestore, 1)
+                .IncreasesStat(StatType.BeastBalancedAbilityStaminaRestoreCategoryId, (int)PerkCategoryType.BeastBalanced)
                 .IncreasesStat(StatType.BeastBalancedAbilityStaminaRestoreCooldownSeconds, 8);
         }
 

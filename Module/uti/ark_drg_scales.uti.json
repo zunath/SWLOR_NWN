@@ -1,0 +1,85 @@
+{
+  "__data_type": "UTI ",
+  "AddCost": {
+    "type": "dword",
+    "value": 1000
+  },
+  "BaseItem": {
+    "type": "int",
+    "value": 536
+  },
+  "Charges": {
+    "type": "byte",
+    "value": 0
+  },
+  "Comment": {
+    "type": "cexostring",
+    "value": ""
+  },
+  "Cost": {
+    "type": "dword",
+    "value": 1000
+  },
+  "Cursed": {
+    "type": "byte",
+    "value": 0
+  },
+  "DescIdentified": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "These pale, iron-hued scales were stripped from the hide of a Great Arkanian Dragon and still feel unnaturally warm to the touch. Each plate is ridged like forged alloy, yet flexes just enough for precision crafting. Smiths and armorers prize them as rare reinforcement material, able to harden high-end equipment without sacrificing balance. Their scarcity and resilience make them a coveted component in advanced crafting projects."
+    }
+  },
+  "Description": {
+    "type": "cexolocstring",
+    "value": {
+      "0": ""
+    }
+  },
+  "Identified": {
+    "type": "byte",
+    "value": 1
+  },
+  "LocalizedName": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "Arkanian Dragon Scales"
+    }
+  },
+  "ModelPart1": {
+    "type": "byte",
+    "value": 228
+  },
+  "PaletteID": {
+    "type": "byte",
+    "value": 64
+  },
+  "Plot": {
+    "type": "byte",
+    "value": 0
+  },
+  "PropertiesList": {
+    "type": "list",
+    "value": []
+  },
+  "StackSize": {
+    "type": "word",
+    "value": 1
+  },
+  "Stolen": {
+    "type": "byte",
+    "value": 0
+  },
+  "Tag": {
+    "type": "cexostring",
+    "value": "ark_drg_scales"
+  },
+  "TemplateResRef": {
+    "type": "resref",
+    "value": "ark_drg_scales"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 228
+  }
+}

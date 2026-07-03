@@ -444,12 +444,12 @@
         WeaponSubmissionTokenSmithery = 407,
         ArmorSubmissionTokenSmithery = 408,
         AlchemizedSpear = 409,
+        ArkanianDragonArmor = 410,
+		#endregion
 
-        #endregion
+		#region Fabrication:  1001-2000
 
-        #region Fabrication:  1001-2000
-
-        BedRoll = 1001,
+		BedRoll = 1001,
         Easel = 1002,
         Candle = 1003,
         Carpet = 1004,
@@ -1023,6 +1023,12 @@
 
         FoodSubmissionTokenAgriculture = 2205,
         ForbiddenGumbo = 2206,
+        NalHuttaFizz = 2207,
+        BogaNoga = 2208,
+        Gardula = 2209,
+        KeebadasBinggona = 2210,
+        SandoGDizzards = 2211,
+        CartelCakes = 2212,
 
         #endregion
 

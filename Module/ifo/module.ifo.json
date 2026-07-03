@@ -2861,6 +2861,12 @@
         "Area_Name": {
           "type": "resref",
           "value": "viscara_mountasc"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
           "value": "spacenarshalower"
         }
       },
@@ -2869,6 +2875,12 @@
         "Area_Name": {
           "type": "resref",
           "value": "viscara_forkwest"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
           "value": "spacenarshaddung"
         }
       },
@@ -2876,7 +2888,6 @@
         "__struct_id": 6,
         "Area_Name": {
           "type": "resref",
-          "value": "v_repubbase_2"
           "value": "pw_ar_undrnasha"
         }
       },
@@ -3004,6 +3015,27 @@
         "Area_Name": {
           "type": "resref",
           "value": "narshadorbit"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "viscara_forkeast"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "viscara_wwnorth"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "viscara_wwruined"
         }
       }
     ]
@@ -3308,7 +3340,7 @@
   },
   "Mod_ID": {
     "type": "void",
-    "value": "ÿÿÿÿ\u0001\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000"
+    "value": "����\u0001\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000"
   },
   "Mod_IsSaveGame": {
     "type": "byte",

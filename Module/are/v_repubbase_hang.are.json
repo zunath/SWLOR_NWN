@@ -2495,7 +2495,7 @@
         },
         "Tile_ID": {
           "type": "int",
-          "value": 1
+          "value": 114
         },
         "Tile_MainLight1": {
           "type": "byte",
@@ -3441,7 +3441,7 @@
         },
         "Tile_ID": {
           "type": "int",
-          "value": 1
+          "value": 114
         },
         "Tile_MainLight1": {
           "type": "byte",
@@ -5358,17 +5358,13 @@
       }
     ]
   },
-  "TileBrdrDisabled": {
-    "type": "byte",
-    "value": 0
-  },
   "Tileset": {
     "type": "resref",
     "value": "tjsb0"
   },
   "Version": {
     "type": "dword",
-    "value": 17
+    "value": 18
   },
   "Width": {
     "type": "int",

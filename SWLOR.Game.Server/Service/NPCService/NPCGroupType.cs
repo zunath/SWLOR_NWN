@@ -128,17 +128,28 @@ namespace SWLOR.Game.Server.Service.NPCService
         Korriban_AlchemizedFrog = 59,
         [NPCGroup("Dantari Shaman")]
         Dantooine_DantariShaman = 60,
+        [NPCGroup("Great Arkanian Dragon")]
+        AbandonedStation_GreatArkanianDragon = 61,
+        [NPCGroup("Rooftop Sniper")]
+        NarShaddaa_Sniper = 62,
+        [NPCGroup("Slaver Captain")]
+        NarShaddaa_SlaverCaptain = 63,
+        [NPCGroup("Pirates")]
+        NarShaddaa_Pirates = 64,
+        [NPCGroup("Command Droid")]
+        NarShaddaa_CommandDroid = 65,
+        [NPCGroup("Ancient Worm")]
+        Tatooine_AncientSandworm = 66,
         [NPCGroup("Red Vein Scavenger")]
-        Viscara_RedVeinScavenger = 61,
+        Viscara_RedVeinScavenger = 67,
         [NPCGroup("Pulse-Frame Training Droid")]
-        Viscara_PulseFrameTrainingDroid = 62,
+        Viscara_PulseFrameTrainingDroid = 68,
         [NPCGroup("Blood Frenzy Butcher")]
-        Viscara_BloodFrenzyButcher = 63,
+        Viscara_BloodFrenzyButcher = 69,
         [NPCGroup("Blood Frenzy Duelist")]
-        Viscara_BloodFrenzyDuelist = 64,
+        Viscara_BloodFrenzyDuelist = 70,
         [NPCGroup("Blood Frenzy King")]
-        Viscara_BloodFrenzyKing = 65,
-
+        Viscara_BloodFrenzyKing = 71,
     }
 
     public class NPCGroupAttribute : Attribute

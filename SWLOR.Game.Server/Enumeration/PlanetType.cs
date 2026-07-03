@@ -1,3 +1,5 @@
+using System.ComponentModel;
+
 namespace SWLOR.Game.Server.Enumeration
 {
     // Note - these MUST be assigned with power-of-2 values to allow them to be
@@ -74,7 +76,23 @@ namespace SWLOR.Game.Server.Enumeration
             "DANTOOINE_LANDING",
             1000,
             true)]
-            Dantooine = 128,
+        Dantooine = 128,
+        [Description("Smuggler's Moon")]
+        [Planet("Smuggler's Moon",
+            "Smuggler's Moon - ",
+            "SmugglersMoon_Orbit",
+            "SMUGGLERS_MOON_LANDING",
+            500,
+            true)]
+        SmugglersMoon = 256,
+        [Description("Smuggler's Moon Station")]
+        [Planet("Smuggler's Moon Station",
+            "Smuggler's Moon Station - ",
+            "Smugglers_Station_Orbit",
+            "SMUGGLERS_STATION_LANDING",
+            0,
+            true)]
+        SmugglersMoonStation = 512,
     }
 
     public class PlanetAttribute : Attribute

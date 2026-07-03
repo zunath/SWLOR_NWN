@@ -68243,6 +68243,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Dragon Loot"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dragon_loot"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Drill"
                     },
                     "RESREF": {

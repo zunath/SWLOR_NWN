@@ -2,6 +2,7 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DialogService;
+using SWLOR.Game.Server.Service.KeyItemService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PropertyService;
 
@@ -57,8 +58,10 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
         private void MainPageInit(DialogPage page)
         {
             var model = GetDataModel<Model>();
+            var player = GetPC();
             var terminal = GetDialogTarget();
             var currentLocation = (PlanetType)GetLocalInt(terminal, "CURRENT_LOCATION");
+            var hasSmugglerPass = KeyItem.HasKeyItem(player, KeyItemType.SmugglerPass);
 
             page.Header = "Charter flights leave hourly. Please select one our available destinations below.";
 
@@ -66,21 +69,26 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
             foreach (var (type, planet) in planets)
             {
-                if (currentLocation != type)
+                if (currentLocation == type ||
+                    type == PlanetType.SmugglersMoonStation ||
+                    (type == PlanetType.SmugglersMoon && !hasSmugglerPass))
                 {
-                    var tax = (int)(model.Tax * planet.NPCTransportationFee);
-                    var price = planet.NPCTransportationFee + tax;
-                    var optionText = $"{planet.Name} [{price} cr]";
-                    page.AddResponse(optionText, () =>
-                    {
-                        model.PlanetName = planet.Name;
-                        model.Price = planet.NPCTransportationFee;
-                        model.DestinationTag = planet.LandingWaypointTag;
-
-                        ChangePage(ConfirmPageId);
-                    });
+                    continue;
                 }
+
+                var tax = (int)(model.Tax * planet.NPCTransportationFee);
+                var price = planet.NPCTransportationFee + tax;
+                var optionText = $"{planet.Name} [{price} cr]";
+                page.AddResponse(optionText, () =>
+                {
+                    model.PlanetName = planet.Name;
+                    model.Price = planet.NPCTransportationFee;
+                    model.DestinationTag = planet.LandingWaypointTag;
+
+                    ChangePage(ConfirmPageId);
+                });
             }
+
         }
 
         private void ConfirmPageInit(DialogPage page)

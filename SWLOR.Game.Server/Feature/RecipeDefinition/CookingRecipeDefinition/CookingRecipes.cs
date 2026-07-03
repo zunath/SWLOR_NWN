@@ -2021,6 +2021,91 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("cultured_butter", 3)
                 .Component("thune_blood", 1);
 
+            // Nal Hutta Fizz
+            _builder.Create(RecipeType.NalHuttaFizz, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("nalhutta_fizz")
+                .Level(52)
+                .Quantity(1)
+                .ResearchCostModifier(0.2f)
+                .RequirementUnlocked()
+                .RequirementPerk(PerkType.CookingRecipes, 5)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("mushroom", 8)
+                .Component("ns_holo_jelly", 4)
+                .Component("distilled_water", 2);
+
+            // Boga Noga
+            _builder.Create(RecipeType.BogaNoga, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("boga_noga")
+                .Level(52)
+                .Quantity(1)
+                .ResearchCostModifier(0.2f)
+                .RequirementUnlocked()
+                .RequirementPerk(PerkType.CookingRecipes, 5)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("ns_sludge_eel", 4)
+                .Component("distilled_water", 4)
+                .Component("sugar", 2);
+
+            // Gardula
+            _builder.Create(RecipeType.Gardula, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("gardula_drink")
+                .Level(52)
+                .Quantity(1)
+                .ResearchCostModifier(0.2f)
+                .RequirementUnlocked()
+                .RequirementPerk(PerkType.CookingRecipes, 5)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("distilled_water", 4)
+                .Component("ns_holo_jelly", 2)
+                .Component("sugar", 2);
+
+            // Keebadas Binggona
+            _builder.Create(RecipeType.KeebadasBinggona, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("keeb_binggona")
+                .Level(52)
+                .Quantity(1)
+                .ResearchCostModifier(0.2f)
+                .RequirementUnlocked()
+                .RequirementPerk(PerkType.CookingRecipes, 5)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("thune_meat", 8)
+                .Component("ns_rack_meat", 4)
+                .Component("cultured_butter", 2);
+
+            // Sando g'dizzards
+            _builder.Create(RecipeType.SandoGDizzards, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("sando_gdizz")
+                .Level(52)
+                .Quantity(1)
+                .ResearchCostModifier(0.2f)
+                .RequirementUnlocked()
+                .RequirementPerk(PerkType.CookingRecipes, 5)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("ns_rack_meat", 8)
+                .Component("ns_moonspice", 2)
+                .Component("distilled_water", 2);
+
+            // Cartel Cakes
+            _builder.Create(RecipeType.CartelCakes, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("cartel_cakes")
+                .Level(52)
+                .Quantity(1)
+                .ResearchCostModifier(0.2f)
+                .RequirementUnlocked()
+                .RequirementPerk(PerkType.CookingRecipes, 5)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("mushroom", 4)
+                .Component("ns_holo_jelly", 4)
+                .Component("sugar", 3)
+                .Component("ns_neon_salt", 1);
+
             // Cooking Enhancement - Duration V
             _builder.Create(RecipeType.CookingEnhancementDuration5, SkillType.Agriculture)
                 .Category(RecipeCategoryType.CookingEnhancement)

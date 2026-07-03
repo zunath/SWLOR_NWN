@@ -79,7 +79,35 @@ namespace SWLOR.Game.Server.Service.WeatherService
                      HeatModifier = -1,
                      HumidityModifier = +1
                  },
-            };
+				[PlanetType.SmugglersMoon] = new WeatherClimate
+				{
+					HeatModifier = -1,
+					HumidityModifier = +1
+				},
+				[PlanetType.SmugglersMoonStation] = new WeatherClimate
+				{
+					HeatModifier = -2,
+					HumidityModifier = -2,
+					WindModifier = -5,
+					CloudyText = "The station's sealed bulkheads keep outside weather at bay while recycled air hums through the vents.",
+					ColdCloudyText = "A chill runs through the station as the life-support vents push cool, recycled air through the corridors.",
+					ColdMildText = "The station air is cool and still, regulated by aging life-support systems.",
+					ColdWindyText = "A cold draft slips from the station's vents, but the sealed corridors remain protected from outside weather.",
+					FreezingText = "The station's life support is running cold, leaving the metal corridors uncomfortably frigid.",
+					MildText = "The station's climate controls keep the interior air steady and calm.",
+					MildNightText = "The station's climate controls keep the interior air steady and calm.",
+					MistText = "A faint haze from overworked vents hangs in the station air.",
+					WarmCloudyText = "Heat lingers in the station corridors as the ventilation system struggles to circulate the stale air.",
+					WarmMildText = "The station air is warm and stale, but safely sealed away from outside weather.",
+					WarmWindyText = "Warm air gusts from the station's vents as the ventilation system cycles unevenly.",
+					RainNormalText = "Moisture beads along overhead pipes while the station remains sealed against the vacuum outside.",
+					RainWarmText = "Warm, damp air clings to the station walls as the life-support system strains.",
+					ScorchingText = "The station's temperature controls falter, leaving the corridors oppressively hot.",
+					SnowText = "Frost gathers near the vents as the station's life-support system runs dangerously cold.",
+					StormText = "The station creaks around you, but its sealed hull keeps the outside weather away.",
+					WindyText = "A steady current of recycled air moves through the station corridors."
+				},
+			};
         }
     }
 }

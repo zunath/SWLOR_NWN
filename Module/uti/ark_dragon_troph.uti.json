@@ -1,0 +1,85 @@
+{
+  "__data_type": "UTI ",
+  "AddCost": {
+    "type": "dword",
+    "value": 0
+  },
+  "BaseItem": {
+    "type": "int",
+    "value": 29
+  },
+  "Charges": {
+    "type": "byte",
+    "value": 0
+  },
+  "Comment": {
+    "type": "cexostring",
+    "value": ""
+  },
+  "Cost": {
+    "type": "dword",
+    "value": 0
+  },
+  "Cursed": {
+    "type": "byte",
+    "value": 0
+  },
+  "DescIdentified": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "The severed head of a Great Arkanian Dragon has been preserved as a grim trophy. Its long, predatory skull is framed by backward-swept horns and plated in pale, stone-like scales that still carry a faint metallic sheen beneath the grime of battle. Rows of jagged teeth fill its maw, uneven and cruel, built more for tearing than clean killing. Even in death, its features hold a cold, feral intelligence, with sunken eye sockets and a snarling shape that makes it seem ready to lunge at any moment. Age and rarity cling to it as much as blood does, marking it as proof that a truly dangerous beast was brought down."
+    }
+  },
+  "Description": {
+    "type": "cexolocstring",
+    "value": {
+      "0": ""
+    }
+  },
+  "Identified": {
+    "type": "byte",
+    "value": 1
+  },
+  "LocalizedName": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "Great Arkanian Dragon Head"
+    }
+  },
+  "ModelPart1": {
+    "type": "byte",
+    "value": 19
+  },
+  "PaletteID": {
+    "type": "byte",
+    "value": 64
+  },
+  "Plot": {
+    "type": "byte",
+    "value": 0
+  },
+  "PropertiesList": {
+    "type": "list",
+    "value": []
+  },
+  "StackSize": {
+    "type": "word",
+    "value": 1
+  },
+  "Stolen": {
+    "type": "byte",
+    "value": 0
+  },
+  "Tag": {
+    "type": "cexostring",
+    "value": "ark_dragon_trophy"
+  },
+  "TemplateResRef": {
+    "type": "resref",
+    "value": "ark_dragon_troph"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 19
+  }
+}

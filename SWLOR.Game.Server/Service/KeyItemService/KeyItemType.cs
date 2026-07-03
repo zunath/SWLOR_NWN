@@ -174,9 +174,52 @@ namespace SWLOR.Game.Server.Service.KeyItemService
         DantooineShovel = 79,
         [KeyItem(KeyItemCategoryType.Keys, "Viscara Lake Basement Key", true, "This key allows you to enter the super secret sith basement! Shhhhhh!")]
         SithBasementKey = 80,
-    }
+		[KeyItem(KeyItemCategoryType.QuestItems, "Smuggler Pass", true, "You've been given a key pass to Nar Shaddaa.")]
+		SmugglerPass = 81,
+		[KeyItem(KeyItemCategoryType.Maps, "Smuggler's Moon Orbit Map", true, "Map of the space surrounding Smuggler's Moon.")]
+		SmugglersMoonOrbitMap = 82,
+		[KeyItem(KeyItemCategoryType.Maps, "Smuggler's Moon - Casino Map", true, "Map of the Casino on Smuggler's Moon.")]
+		SmugglersMoonCasinoMap = 83,
+		[KeyItem(KeyItemCategoryType.Maps, "Smuggler's Moon - Catwalks Map", true, "Map of the Catwalks on Smuggler's Moon.")]
+		SmugglersMoonCatwalksMap = 84,
+		[KeyItem(KeyItemCategoryType.Maps, "Smuggler's Moon - Corporate District Map", true, "Map of the Corporate District on Smuggler's Moon.")]
+		SmugglersMoonCorporateDistrictMap = 85,
+		[KeyItem(KeyItemCategoryType.Maps, "Smuggler's Moon - Czerka Arms Map", true, "Map of Czerka Arms on Smuggler's Moon.")]
+		SmugglersMoonCzerkaArmsMap = 86,
+		[KeyItem(KeyItemCategoryType.Maps, "Smuggler's Moon - Czerka Shipyard Office Map", true, "Map of the Czerka Shipyard Office on Smuggler's Moon.")]
+		SmugglersMoonCzerkaShipyardOfficeMap = 87,
+		[KeyItem(KeyItemCategoryType.Maps, "Smuggler's Moon - Fabrication Facility Map", true, "Map of the Fabrication Facility on Smuggler's Moon.")]
+		SmugglersMoonFabricationFacilityMap = 88,
+		[KeyItem(KeyItemCategoryType.Maps, "Smuggler's Moon - Fight Club Map", true, "Map of the Fight Club on Smuggler's Moon.")]
+		SmugglersMoonFightClubMap = 89,
+		[KeyItem(KeyItemCategoryType.Maps, "Smuggler's Moon - GSI Base Map", true, "Map of the GSI Base on Smuggler's Moon.")]
+		SmugglersMoonGSIBaseMap = 90,
+		[KeyItem(KeyItemCategoryType.Maps, "Smuggler's Moon - Hyper Dive Cantina Map", true, "Map of the Hyper Dive Cantina on Smuggler's Moon.")]
+		SmugglersMoonHyperDiveCantinaMap = 91,
+		[KeyItem(KeyItemCategoryType.Maps, "Smuggler's Moon - Landing Pads Map", true, "Map of the Landing Pads on Smuggler's Moon.")]
+		SmugglersMoonLandingPadsMap = 92,
+		[KeyItem(KeyItemCategoryType.Maps, "Smuggler's Moon - Medshed Map", true, "Map of the Medshed on Smuggler's Moon.")]
+		SmugglersMoonMedshedMap = 93,
+		[KeyItem(KeyItemCategoryType.Maps, "Smuggler's Moon - Promenade Map", true, "Map of the Promenade on Smuggler's Moon.")]
+		SmugglersMoonPromenadeMap = 94,
+		[KeyItem(KeyItemCategoryType.Maps, "Smuggler's Moon - Sewers Map", true, "Map of the Sewers on Smuggler's Moon.")]
+		SmugglersMoonSewersMap = 95,
+		[KeyItem(KeyItemCategoryType.Maps, "Smuggler's Moon - Shipping District Map", true, "Map of the Shipping District on Smuggler's Moon.")]
+		SmugglersMoonShippingDistrictMap = 96,
+		[KeyItem(KeyItemCategoryType.Maps, "Smuggler's Moon - The Hub Map", true, "Map of The Hub on Smuggler's Moon.")]
+		SmugglersMoonTheHubMap = 97,
+		[KeyItem(KeyItemCategoryType.Maps, "Smuggler's Moon - The Slums Map", true, "Map of The Slums on Smuggler's Moon.")]
+		SmugglersMoonTheSlumsMap = 98,
+		[KeyItem(KeyItemCategoryType.Maps, "Smuggler's Moon - The Tilted Visor Map", true, "Map of The Tilted Visor on Smuggler's Moon.")]
+		SmugglersMoonTiltedVisorMap = 99,
+		[KeyItem(KeyItemCategoryType.Maps, "Smuggler's Moon Station - Abandoned Station Map", true, "Map of the Abandoned Station on Smuggler's Moon Station.")]
+		SmugglersMoonStationAbandonedStationMap = 100,
+		[KeyItem(KeyItemCategoryType.Maps, "Smuggler's Moon Station - Lower Level Map", true, "Map of the Lower Level on Smuggler's Moon Station.")]
+		SmugglersMoonStationLowerLevelMap = 101,
 
-    public class KeyItemAttribute : Attribute
+	}
+
+	public class KeyItemAttribute : Attribute
     {
         public string Name { get; set; }
         public string Description { get; set; }

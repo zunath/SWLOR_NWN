@@ -2979,20 +2979,6 @@
         "__struct_id": 6,
         "Area_Name": {
           "type": "resref",
-          "value": "v_repubbase_002"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "vrcityhall"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
           "value": "viscara_forkeast"
         }
       },

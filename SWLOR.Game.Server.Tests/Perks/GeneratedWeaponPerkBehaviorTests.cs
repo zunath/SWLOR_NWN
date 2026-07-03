@@ -375,6 +375,7 @@ public class GeneratedWeaponPerkBehaviorTests
         generatorSource.Should().Contain("Missing explicit recast short name");
         generatorSource.Should().Contain("\"SameTargetPressureBuildSkillType\"");
         generatorSource.Should().Contain("\"SameTargetPressureReadyDurationSeconds\"");
+        generatorSource.Should().Contain("gain Spotter's Rhythm for (\\d+) seconds");
         generatorSource.Should().Contain("Unable to parse Suppressing Shot suppression stack Evasion");
         combatSource.Should().Contain("ApplyAvoidedAttackNextAutoAttackNoDelay(creature)");
         combatSource.Should().Contain("ApplyBleedingStatusExpiredEffects(uint source)");

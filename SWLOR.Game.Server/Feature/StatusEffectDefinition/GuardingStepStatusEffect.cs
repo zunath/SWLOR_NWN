@@ -4,7 +4,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
-    public sealed class SelfDefensiveStatsStatusEffect : StatusEffectBase
+    public sealed class GuardingStepStatusEffect : StatusEffectBase
     {
         private readonly int _evasionPercentAdjustment;
         private readonly int _physicalDefensePercentAdjustment;
@@ -13,12 +13,12 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public override string Name => "Guarding Step";
         public override EffectIconType Icon => EffectIconType.GuardingStepStatusEffect;
 
-        public SelfDefensiveStatsStatusEffect()
+        public GuardingStepStatusEffect()
             : this(25, 20, 20)
         {
         }
 
-        public SelfDefensiveStatsStatusEffect(
+        public GuardingStepStatusEffect(
             int evasionPercentAdjustment,
             int physicalDefensePercentAdjustment,
             int forceDefensePercentAdjustment)
@@ -34,7 +34,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         public override IStatusEffect Clone()
         {
-            return new SelfDefensiveStatsStatusEffect(
+            return new GuardingStepStatusEffect(
                 _evasionPercentAdjustment,
                 _physicalDefensePercentAdjustment,
                 _forceDefensePercentAdjustment);

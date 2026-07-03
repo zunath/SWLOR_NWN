@@ -3389,7 +3389,7 @@ namespace SWLOR.Game.Server.Service
             StatusEffect.ApplyStatusEffect(
                 attacker,
                 attacker,
-                typeof(SameTargetPressureStatusEffect),
+                typeof(SpottersRhythmStatusEffect),
                 readyDurationSeconds);
 
             if (GetIsPC(attacker))
@@ -3430,7 +3430,7 @@ namespace SWLOR.Game.Server.Service
             DateTime now)
         {
             return state.ReadyUntil > now &&
-                   StatusEffect.HasStatusEffect(attacker, typeof(SameTargetPressureStatusEffect), attacker);
+                   StatusEffect.HasStatusEffect(attacker, typeof(SpottersRhythmStatusEffect), attacker);
         }
 
         private static void ClearSameTargetPressureState(uint attacker)
@@ -3438,7 +3438,7 @@ namespace SWLOR.Game.Server.Service
             _sameTargetPressureStates.Remove(attacker);
             StatusEffect.RemoveStatusEffect(
                 attacker,
-                typeof(SameTargetPressureStatusEffect),
+                typeof(SpottersRhythmStatusEffect),
                 attacker,
                 false);
         }
@@ -4675,7 +4675,7 @@ namespace SWLOR.Game.Server.Service
             StatusEffect.ApplyStatusEffect(
                 activator,
                 target,
-                new EnmityToStatusSourceStatusEffect(enmity),
+                new CoveringClawsStatusEffect(enmity),
                 duration,
                 CombatDamageType.Physical);
         }
@@ -5549,7 +5549,7 @@ namespace SWLOR.Game.Server.Service
             StatusEffect.ApplyStatusEffect(
                 activator,
                 activator,
-                new SelfDefensiveStatsStatusEffect(evasion, defense, forceDefense),
+                new GuardingStepStatusEffect(evasion, defense, forceDefense),
                 duration);
         }
 
@@ -5582,7 +5582,7 @@ namespace SWLOR.Game.Server.Service
                 StatusEffect.ApplyStatusEffect(
                     activator,
                     friendly,
-                    new NearbyAllyAttackDeflectionStatusEffect(attackDeflection, selfEnmity),
+                    new SentinelGuardStatusEffect(attackDeflection, selfEnmity),
                     duration);
             }
         }

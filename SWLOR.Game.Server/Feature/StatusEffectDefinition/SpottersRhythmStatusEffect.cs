@@ -3,7 +3,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
-    public sealed class SameTargetPressureStatusEffect : StatusEffectBase
+    public sealed class SpottersRhythmStatusEffect : StatusEffectBase
     {
         public override string Name => "Spotter's Rhythm";
         public override EffectIconType Icon => EffectIconType.SpotterStanceStatusEffect;

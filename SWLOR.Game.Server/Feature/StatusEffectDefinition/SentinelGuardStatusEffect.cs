@@ -4,7 +4,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
-    public sealed class NearbyAllyAttackDeflectionStatusEffect : StatusEffectBase
+    public sealed class SentinelGuardStatusEffect : StatusEffectBase
     {
         private readonly int _attackDeflection;
         private readonly int _selfEnmityPercentAdjustment;
@@ -12,12 +12,12 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public override string Name => "Sentinel Guard";
         public override EffectIconType Icon => EffectIconType.SentinelGuardStatusEffect;
 
-        public NearbyAllyAttackDeflectionStatusEffect()
+        public SentinelGuardStatusEffect()
             : this(8, 20)
         {
         }
 
-        public NearbyAllyAttackDeflectionStatusEffect(int attackDeflection, int selfEnmityPercentAdjustment)
+        public SentinelGuardStatusEffect(int attackDeflection, int selfEnmityPercentAdjustment)
         {
             _attackDeflection = attackDeflection;
             _selfEnmityPercentAdjustment = selfEnmityPercentAdjustment;
@@ -35,7 +35,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         public override IStatusEffect Clone()
         {
-            return new NearbyAllyAttackDeflectionStatusEffect(_attackDeflection, _selfEnmityPercentAdjustment);
+            return new SentinelGuardStatusEffect(_attackDeflection, _selfEnmityPercentAdjustment);
         }
     }
 }

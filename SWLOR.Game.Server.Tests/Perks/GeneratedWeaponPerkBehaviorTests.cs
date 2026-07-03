@@ -334,7 +334,7 @@ public class GeneratedWeaponPerkBehaviorTests
         combatSource.Should().Contain("ApplySameTargetPressureDamageEffects(attacker, defender, skillType)");
         combatSource.Should().Contain("GetSameTargetPressureWeaponAbilityDamageBonus");
         combatSource.Should().Contain("ConsumeSameTargetPressureWeaponAbilityDamageBonus");
-        combatSource.Should().Contain("typeof(SameTargetPressureStatusEffect)");
+        combatSource.Should().Contain("typeof(SpottersRhythmStatusEffect)");
         var consumePressureIndex = abilitySource.IndexOf("ConsumeSameTargetPressureWeaponAbilityDamageBonus", StringComparison.Ordinal);
         var applyDamageDealtIndex = abilitySource.IndexOf("ApplyDamageDealtEffects(activator, target, damage, skillType, damageType)", StringComparison.Ordinal);
         consumePressureIndex.Should().BeGreaterThanOrEqualTo(0);

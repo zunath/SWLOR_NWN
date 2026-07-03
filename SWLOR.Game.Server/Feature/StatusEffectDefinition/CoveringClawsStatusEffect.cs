@@ -4,7 +4,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
-    public sealed class EnmityToStatusSourceStatusEffect : StatusEffectBase
+    public sealed class CoveringClawsStatusEffect : StatusEffectBase
     {
         private readonly int _enmityPercentAdjustment;
 
@@ -14,12 +14,12 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public override StatusEffectCleanseType CleanseTypes => StatusEffectCleanseType.Purify | StatusEffectCleanseType.SoothePet;
         public override StatusEffectStackType StackingType => StatusEffectStackType.StackFromMultipleSources;
 
-        public EnmityToStatusSourceStatusEffect()
+        public CoveringClawsStatusEffect()
             : this(25)
         {
         }
 
-        public EnmityToStatusSourceStatusEffect(int enmityPercentAdjustment)
+        public CoveringClawsStatusEffect(int enmityPercentAdjustment)
         {
             _enmityPercentAdjustment = enmityPercentAdjustment;
             StatGroup.Stats[StatType.EnmityToStatusSourcePercentAdjustment] = _enmityPercentAdjustment;
@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         public override IStatusEffect Clone()
         {
-            return new EnmityToStatusSourceStatusEffect(_enmityPercentAdjustment);
+            return new CoveringClawsStatusEffect(_enmityPercentAdjustment);
         }
     }
 }

@@ -330,21 +330,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.GuardiansChallenge1)
-                .Description("Deals weapon DMG + 12 to a target threatening your ward. If it hit your ward in the last 30 seconds, gain +20% Enmity toward it for 30 seconds.")
+                .Description("Deals weapon DMG + 12 to a target. If this target has hit your ward in the last 30 seconds, gain +20% Enmity toward it for 30 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Lightsaber, 10)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.GuardiansChallenge2)
-                .Description("Deals weapon DMG + 24 to a target threatening your ward. If it hit your ward in the last 30 seconds, gain +30% Enmity toward it for 30 seconds.")
+                .Description("Deals weapon DMG + 24 to a target. If this target has hit your ward in the last 30 seconds, gain +30% Enmity toward it for 30 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Lightsaber, 30)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.GuardiansChallenge3)
-                .Description("Deals weapon DMG + 36 to a target threatening your ward. If it hit your ward in the last 30 seconds, gain +40% Enmity toward it for 30 seconds.")
+                .Description("Deals weapon DMG + 36 to a target. If this target has hit your ward in the last 30 seconds, gain +40% Enmity toward it for 30 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Lightsaber, 38)
                 .RequirementCharacterType(CharacterType.ForceSensitive);

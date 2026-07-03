@@ -201,7 +201,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.OverwatchTrait)
-                .Description("When an enemy with Suppression stacks moves or uses an ability, your next ranged attack against it gains +10% Accuracy.")
+                .Description("When an enemy with Suppression stacks uses an ability, your next ranged attack against it gains +10% Accuracy.")
                 .IncreasesStat(StatType.AbilityHitChanceAgainstSuppressionStackPercentAdjustment, 10)
                 .Price(4)
                 .RequirementSkill(SkillType.Rifle, 25);

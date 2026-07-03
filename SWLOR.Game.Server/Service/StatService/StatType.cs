@@ -4269,7 +4269,7 @@ namespace SWLOR.Game.Server.Service.StatService
         CriticalDamageHighHPTargetPercentAdjustment = 741,
 
         /// <summary>
-        /// Ability hit chance adjustment against targets with source-owned Suppression stacks.
+        /// Ability hit chance adjustment against source-suppressed targets after they use a combat ability.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
         AbilityHitChanceAgainstSuppressionStackPercentAdjustment = 742,

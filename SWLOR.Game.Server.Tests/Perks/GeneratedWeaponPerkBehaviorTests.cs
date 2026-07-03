@@ -53,6 +53,7 @@ public class GeneratedWeaponPerkBehaviorTests
         AssertSourceStat("RiflePerkDefinition.cs", StatType.AutoAttackSuppressionStackDurationSeconds, "30");
         AssertSourceStat("RiflePerkDefinition.cs", StatType.AutoAttackSuppressionStackEvasionPenaltyPercent, "5");
         AssertSourceStat("RiflePerkDefinition.cs", StatType.RangedHitSuppressionStackEvasionPenaltyPercent, "5");
+        AssertSourceStat("RiflePerkDefinition.cs", StatType.AbilityHitChanceAgainstSuppressionStackPercentAdjustment, "10");
         AssertSourceStat("RiflePerkDefinition.cs", StatType.DefenseIgnoreHitPhysicalDefensePercentAdjustment, "-10");
 
         AssertSourceStat("ThrowingPerkDefinition.cs", StatType.ThrowingBombardierClusterStormDamageBonus, "10");
@@ -291,6 +292,14 @@ public class GeneratedWeaponPerkBehaviorTests
         combatSource.Should().Contain("ApplyRangedHitSuppressionStack(activator, target, skillType, damageType)");
         combatSource.Should().Contain("SuppressionStackEvasionPenaltyPercentAdjustment");
         combatSource.Should().Contain("if (adjustedEvasionPenaltyPercent <= 0)");
+        combatSource.Should().Contain("TrackSuppressionAbilityUse(activator, now)");
+        combatSource.Should().Contain("GetSuppressionAbilityHitChanceAdjustment(attacker, defender, skillType)");
+        combatSource.Should().Contain("!IsRangedWeaponSkill(skillType)");
+        combatSource.Should().Contain("_pendingSuppressionAbilityUses.TryGetValue(key, out var state)");
+        combatSource.Should().Contain("state.Expiration <= DateTime.UtcNow");
+        combatSource.Should().Contain("HasCurrentSuppressionAbilityUseStack(attacker, defender, state.SuppressionEffectIds)");
+        combatSource.Should().Contain("effects.Max(effect => effect.DurationTicks * effect.Frequency)");
+        combatSource.Should().Contain("SuppressionEffectIds = effects.Select(effect => effect.Id).ToHashSet()");
         combatSource.Should().Contain("ApplySkillAreaAbilityDamageModifier(");
         combatSource.Should().Contain("GetHitChanceAgainstSunderedTargetAdjustment(");
         combatSource.Should().Contain("GetCriticalRateAgainstSunderedTargetAdjustment(");

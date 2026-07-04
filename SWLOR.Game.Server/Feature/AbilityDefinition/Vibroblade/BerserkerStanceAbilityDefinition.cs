@@ -15,21 +15,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
             ConfigureToggle(
                 builder
                     .Create(FeatType.BerserkerStance1, PerkType.BerserkerStance)
-                    .Name("Berserker Stance I")
+                    .Name("Berserker Stance")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.BerserkerStance, 30f)
                     .UsesAnimation(Animation.OneHandedStance),
                 typeof(BerserkerStanceStatusEffect),
-                () => new BerserkerStanceStatusEffect(1));
-            ConfigureToggle(
-                builder
-                    .Create(FeatType.BerserkerStance2, PerkType.BerserkerStance)
-                    .Name("Berserker Stance II")
-                    .Level(2)
-                    .HasRecastDelay(RecastGroup.BerserkerStance, 30f)
-                    .UsesAnimation(Animation.OneHandedStance),
-                typeof(BerserkerStanceStatusEffect),
-                () => new BerserkerStanceStatusEffect(2));
+                () => new BerserkerStanceStatusEffect());
 
             return builder.Build();
         }

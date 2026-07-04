@@ -164,8 +164,8 @@ public class GeneratedWeaponPerkBehaviorTests
 
         var berserker = new BerserkerStanceStatusEffect();
         berserker.ApplyEffect(1, 1, -1);
-        AssertStatusStat(berserker, StatType.AttackPercentAdjustment, 15);
-        AssertStatusStat(berserker, StatType.AttackDelayReductionPercent, 10);
+        AssertStatusStat(berserker, StatType.AttackPercentAdjustment, 25);
+        AssertStatusStat(berserker, StatType.AttackDelayReductionPercent, 15);
         AssertStatusStat(berserker, StatType.PhysicalDefensePercentAdjustment, -20);
         AssertStatusStat(berserker, StatType.ForceDefensePercentAdjustment, -20);
 

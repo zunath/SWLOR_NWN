@@ -17,7 +17,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             BerserkerStance();
             Bloodseeker();
             BloodFrenzy();
-            Carve();
             CoveringStrike();
             CrimsonFury();
             DefensiveStance();
@@ -47,15 +46,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.BerserkerStance1)
-                .Description("While active, grants +15% Attack, +10% Haste, -20% Defense, and -20% Force Defense.")
-                .Price(4)
-                .RequirementSkill(SkillType.Vibroblade, 20)
-
-                .AddPerkLevel()
-                .GrantsFeat(FeatType.BerserkerStance2)
                 .Description("While active, grants +25% Attack, +15% Haste, -20% Defense, and -20% Force Defense.")
                 .Price(4)
-                .RequirementSkill(SkillType.Vibroblade, 25);
+                .RequirementSkill(SkillType.Vibroblade, 20);
         }
 
         private void BloodFrenzy()
@@ -84,19 +77,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Gain +10% Attack against bleeding targets.")
                 .IncreasesStat(StatType.AttackToBleedingTargetPercentAdjustment, 10)
                 .Price(2)
-                .RequirementSkill(SkillType.Vibroblade, 8);
-        }
-
-        private void Carve()
-        {
-            _builder.Create(PerkCategoryType.VibrobladeOffense, PerkType.Carve)
-                .Name("Carve")
+                .RequirementSkill(SkillType.Vibroblade, 8)
 
                 .AddPerkLevel()
-                .GrantsFeat(FeatType.Carve1)
-                .Description("Deals weapon DMG + 35, applies Hemorrhage which increases the damage your target takes by 10% for 30 seconds")
-                .Price(4)
-                .RequirementSkill(SkillType.Vibroblade, 45);
+                .Description("Gain +15% Attack against bleeding targets.")
+                .IncreasesStat(StatType.AttackToBleedingTargetPercentAdjustment, 15)
+                .Price(2)
+                .RequirementSkill(SkillType.Vibroblade, 35);
         }
 
         private void CoveringStrike()
@@ -124,7 +111,16 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .IncreasesStat(StatType.NearbyStatusTargetAttackPercentMaximum, 15)
                 .IncreasesStat(StatType.NearbyStatusTargetAttackStatusCategory, (int)StatusEffectCategory.Bleeding)
                 .Price(4)
-                .RequirementSkill(SkillType.Vibroblade, 15);
+                .RequirementSkill(SkillType.Vibroblade, 15)
+
+                .AddPerkLevel()
+                .Description("Each bleeding enemy within 10m grants you +4% Attack (max +20%).")
+                .IncreasesStat(StatType.NearbyStatusTargetAttackPercentPerTarget, 4)
+                .IncreasesStat(StatType.NearbyStatusTargetAttackRadiusMeters, 10)
+                .IncreasesStat(StatType.NearbyStatusTargetAttackPercentMaximum, 20)
+                .IncreasesStat(StatType.NearbyStatusTargetAttackStatusCategory, (int)StatusEffectCategory.Bleeding)
+                .Price(4)
+                .RequirementSkill(SkillType.Vibroblade, 45);
         }
 
         private void DefensiveStance()
@@ -211,13 +207,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.HackingBlade2)
                 .Description("Your next attack deals an additional 18 DMG and inflicts Bleed for 60 seconds.")
                 .Price(2)
-                .RequirementSkill(SkillType.Vibroblade, 12)
-
-                .AddPerkLevel()
-                .GrantsFeat(FeatType.HackingBlade3)
-                .Description("Your next attack deals an additional 28 DMG and inflicts Bleed for 60 seconds.")
-                .Price(2)
-                .RequirementSkill(SkillType.Vibroblade, 35);
+                .RequirementSkill(SkillType.Vibroblade, 12);
         }
 
         private void Invincible()
@@ -355,7 +345,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .IncreasesStat(StatType.AutoAttackDamageBonusChance, 10)
                 .IncreasesStat(StatType.AutoAttackDamageBonus, 8)
                 .Price(2)
-                .RequirementSkill(SkillType.Vibroblade, 5);
+                .RequirementSkill(SkillType.Vibroblade, 5)
+
+                .AddPerkLevel()
+                .Description("Auto-attacks have 15% chance to deal +12 DMG.")
+                .IncreasesStat(StatType.AutoAttackDamageBonusChance, 15)
+                .IncreasesStat(StatType.AutoAttackDamageBonus, 12)
+                .Price(4)
+                .RequirementSkill(SkillType.Vibroblade, 25);
         }
 
         private void ShieldBash()

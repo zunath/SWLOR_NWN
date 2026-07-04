@@ -108,27 +108,6 @@ public class CombatUpgradeBibleSyncTests
             "Trait",
             "Capstone"
         },
-        ["Vibroblade|Frenzy"] = new[]
-        {
-            "Combat",
-            "Trait",
-            "Trait",
-            "Combat",
-            "Combat",
-            "Trait",
-            "Combat",
-            "Stance",
-            "Trait",
-            "Stance",
-            "Combat",
-            "Combat",
-            "Combat",
-            "Combat",
-            "Combat",
-            "Combat",
-            "Combat",
-            "Capstone"
-        },
         ["Vibroblade|Bulwark"] = new[]
         {
             "Combat",

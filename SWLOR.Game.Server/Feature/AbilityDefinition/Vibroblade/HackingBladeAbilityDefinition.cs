@@ -38,18 +38,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
                 60,
                 typeof(BleedStatusEffect),
                 4);
-            ConfigureWeapon(
-                builder
-                    .Create(FeatType.HackingBlade3, PerkType.HackingBlade)
-                    .Name("Hacking Blade III")
-                    .Level(3)
-                    .HasRecastDelay(RecastGroup.HackingBlade, 18f)
-                    .UsesImpactAnimationOverwrite(ReplacementAnimationName),
-                SkillType.Vibroblade,
-                28,
-                60,
-                typeof(BleedStatusEffect),
-                5);
 
             return builder.Build();
         }

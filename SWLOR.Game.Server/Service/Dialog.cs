@@ -3,6 +3,7 @@ using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service.DialogService;
 using SWLOR.Game.Server.Service.LogService;
+using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Service
@@ -105,6 +106,12 @@ namespace SWLOR.Game.Server.Service
             {
                 ActionStartConversation(player, "", true, false);
             }
+        }
+
+        [NWNEventHandler(ScriptName.OnCreatureConversationBefore)]
+        public static void MakeStartingCreatureConversationPrivate()
+        {
+            MakeCreatureConversationPrivate(OBJECT_SELF);
         }
 
         [NWNEventHandler(ScriptName.OnDialogAction0)]
@@ -411,11 +418,11 @@ namespace SWLOR.Game.Server.Service
                 page = dialog.CurrentPage;
                 newNodeText = page.Header;
 
-                SetCustomToken(90000 + dialogOffset, newNodeText);
+                PlayerPlugin.SetCustomToken(player, 90000 + dialogOffset, newNodeText);
                 return true;
             }
 
-            SetCustomToken(90001 + nodeId + dialogOffset, newNodeText);
+            PlayerPlugin.SetCustomToken(player, 90001 + nodeId + dialogOffset, newNodeText);
             return displayNode;
         }
 
@@ -524,6 +531,7 @@ namespace SWLOR.Game.Server.Service
                 !GetIsPC(talkTo) &&
                 !GetIsDM(talkTo))
             {
+                MakeCreatureConversationPrivate(talkTo);
                 BeginConversation("dialog" + dialog.DialogNumber);
             }
             // Everything else
@@ -625,6 +633,20 @@ namespace SWLOR.Game.Server.Service
             }
 
             PlayerDialogs[playerId] = dialog;
+        }
+
+        private static void MakeCreatureConversationPrivate(uint creature)
+        {
+            if (!GetIsObjectValid(creature) ||
+                GetObjectType(creature) != ObjectType.Creature ||
+                GetIsPC(creature) ||
+                GetIsDM(creature) ||
+                GetIsDMPossessed(creature))
+            {
+                return;
+            }
+
+            ObjectPlugin.SetConversationPrivate(creature, true);
         }
 
         /// <summary>

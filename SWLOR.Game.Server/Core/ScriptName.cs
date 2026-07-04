@@ -54,6 +54,7 @@ namespace SWLOR.Game.Server.Core
         public const string OnCreatureHeartbeatAfter = "crea_hb_aft";
         public const string OnCreaturePerceptionAfter = "crea_perc_aft";
         public const string OnCreatureRoundEndAfter = "crea_rndend_aft";
+        public const string OnCreatureConversationBefore = "crea_convo_bef";
         public const string OnCreatureConversationAfter = "crea_convo_aft";
         public const string OnCreatureAttackAfter = "crea_attack_aft";
         public const string OnCreatureDamagedAfter = "crea_damaged_aft";

@@ -55,7 +55,6 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             var player = GetPC();
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
-            var playerName = GetName(player);
             var guild = Guild.GetGuild(model.Guild);
             var pcGuild = dbPlayer.Guilds.ContainsKey(model.Guild)
                 ? dbPlayer.Guilds[model.Guild]
@@ -65,7 +64,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             page.Header = ColorToken.Green("Guild: ") + guild.Name + "\n" +
                           ColorToken.Green("Rank: ") + pcGuild.Rank + " (" + pcGuild.Points + " / " + requiredPoints + " GP)\n" +
                           ColorToken.Green("Description: ") + guild.Name + "\n\n" +
-                          "Welcome to my guild, " + playerName + ". What can I help you with?";
+                          "Welcome to my guild. What can I help you with?";
 
             page.AddResponse("Tell me about guilds.", () =>
             {

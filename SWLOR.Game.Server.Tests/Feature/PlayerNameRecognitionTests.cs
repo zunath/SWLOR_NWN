@@ -608,6 +608,8 @@ public class PlayerNameRecognitionTests
         entitySource.Should().Contain("public bool ScrambleAccountId { get; set; }");
         playerSource.Should().Contain("public const int DefaultDisguiseSlotLimit = 1;");
         playerSource.Should().Contain("DisguiseSlotLimit = DefaultDisguiseSlotLimit;");
+        playerSource.Should().Contain("UndisguisedPortraitResref = string.Empty;");
+        playerSource.Should().Contain("public string UndisguisedPortraitResref { get; set; }");
 
         viewModelSource.Should().Contain("public bool IsAvailableSelected");
         viewModelSource.Should().Contain("public bool IsRetiredSelected");
@@ -632,6 +634,10 @@ public class PlayerNameRecognitionTests
         disguiseSource.Should().Contain("Retired disguises cannot be edited.");
         disguiseSource.Should().Contain("Unable to activate that disguise.");
         disguiseSource.Should().Contain("before activating another disguise.");
+        disguiseSource.Should().Contain("dbPlayer.UndisguisedPortraitResref = GetPortraitResRef(player);");
+        disguiseSource.Should().Contain("if (!string.IsNullOrWhiteSpace(dbPlayer.UndisguisedPortraitResref))");
+        disguiseSource.Should().Contain("SetPortraitResRef(player, dbPlayer.UndisguisedPortraitResref);");
+        disguiseSource.Should().Contain("dbPlayer.UndisguisedPortraitResref = string.Empty;");
         viewModelSource.Should().Contain("Creating a new disguise will consume one of your disguise slots. Retired disguises also occupy disguise slots until they are wiped. Are you sure?");
         viewModelSource.Should().Contain("ActivateButtonText = IsSelectedDisguiseActive() ? \"Deactivate\" : \"Activate\";");
         viewModelSource.Should().Contain("Disguise.Deactivate(Player)");
@@ -816,9 +822,12 @@ public class PlayerNameRecognitionTests
         var mainContentMethod = ExtractMethod(disguiseDefinitionSource, "private static void AddMainContent");
         var listRailIndex = mainContentMethod.IndexOf("row.AddColumn(AddListRail)", StringComparison.Ordinal);
         var detailAreaIndex = mainContentMethod.IndexOf("row.AddPartialView(DisguiseViewModel.DetailPartialElement)", StringComparison.Ordinal);
+        var detailWidthIndex = mainContentMethod.IndexOf(".SetWidth(DetailRailWidth)", StringComparison.Ordinal);
         var portraitRailIndex = mainContentMethod.IndexOf("row.AddPartialView(DisguiseViewModel.PortraitPartialElement)", StringComparison.Ordinal);
         listRailIndex.Should().BeGreaterThanOrEqualTo(0);
         detailAreaIndex.Should().BeGreaterThan(listRailIndex);
+        detailWidthIndex.Should().BeGreaterThan(detailAreaIndex);
+        detailWidthIndex.Should().BeLessThan(portraitRailIndex);
         portraitRailIndex.Should().BeGreaterThan(detailAreaIndex);
 
         var buildWindowMethod = ExtractMethod(disguiseDefinitionSource, "public GuiConstructedWindow BuildWindow()");

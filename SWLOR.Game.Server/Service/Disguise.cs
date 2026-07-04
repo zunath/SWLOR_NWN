@@ -236,8 +236,9 @@ namespace SWLOR.Game.Server.Service
 
             if (GetActiveDisguise(dbPlayer) == null)
             {
-                dbPlayer.PreDisguisePortraitId = GetPortraitId(player);
-                dbPlayer.PreDisguiseSoundSetId = GetSoundset(player);
+                dbPlayer.UndisguisedPortraitId = GetPortraitId(player);
+                dbPlayer.UndisguisedPortraitResref = GetPortraitResRef(player);
+                dbPlayer.UndisguisedSoundSetId = GetSoundset(player);
             }
 
             dbPlayer.ActiveDisguiseId = disguise.Id;
@@ -260,15 +261,18 @@ namespace SWLOR.Game.Server.Service
                 return false;
             }
 
-            if (dbPlayer.PreDisguisePortraitId >= 0)
-                SetPortraitId(player, dbPlayer.PreDisguisePortraitId);
+            if (!string.IsNullOrWhiteSpace(dbPlayer.UndisguisedPortraitResref))
+                SetPortraitResRef(player, dbPlayer.UndisguisedPortraitResref);
+            else if (dbPlayer.UndisguisedPortraitId >= 0)
+                SetPortraitId(player, dbPlayer.UndisguisedPortraitId);
 
-            if (dbPlayer.PreDisguiseSoundSetId >= 0)
-                SetSoundset(player, dbPlayer.PreDisguiseSoundSetId);
+            if (dbPlayer.UndisguisedSoundSetId >= 0)
+                SetSoundset(player, dbPlayer.UndisguisedSoundSetId);
 
             dbPlayer.ActiveDisguiseId = string.Empty;
-            dbPlayer.PreDisguisePortraitId = -1;
-            dbPlayer.PreDisguiseSoundSetId = -1;
+            dbPlayer.UndisguisedPortraitId = -1;
+            dbPlayer.UndisguisedPortraitResref = string.Empty;
+            dbPlayer.UndisguisedSoundSetId = -1;
             DB.Set(dbPlayer);
 
             RefreshDisguiseDisplay(player);

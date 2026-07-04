@@ -107,7 +107,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 row.AddColumn(AddListRail)
                     .SetWidth(ListRailWidth);
 
-                row.AddPartialView(DisguiseViewModel.DetailPartialElement);
+                row.AddPartialView(DisguiseViewModel.DetailPartialElement)
+                    .SetWidth(DetailRailWidth);
 
                 row.AddPartialView(DisguiseViewModel.PortraitPartialElement)
                     .SetWidth(PortraitRailWidth);

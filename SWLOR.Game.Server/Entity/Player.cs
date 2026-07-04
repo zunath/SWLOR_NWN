@@ -94,8 +94,9 @@ namespace SWLOR.Game.Server.Entity
             DisguiseSlotLimit = DefaultDisguiseSlotLimit;
             MarketListingLimit = DefaultMarketListingLimit;
             ActiveDisguiseId = string.Empty;
-            PreDisguisePortraitId = -1;
-            PreDisguiseSoundSetId = -1;
+            UndisguisedPortraitId = -1;
+            UndisguisedPortraitResref = string.Empty;
+            UndisguisedSoundSetId = -1;
         }
 
 
@@ -161,8 +162,9 @@ namespace SWLOR.Game.Server.Entity
         public bool RebuildComplete { get; set; }
         public string ActiveBeastId { get; set; }
         public string ActiveDisguiseId { get; set; }
-        public int PreDisguisePortraitId { get; set; }
-        public int PreDisguiseSoundSetId { get; set; }
+        public int UndisguisedPortraitId { get; set; }
+        public string UndisguisedPortraitResref { get; set; }
+        public int UndisguisedSoundSetId { get; set; }
 
         public PlayerSettings Settings { get; set; }
         public Dictionary<SkillType, int> Control { get; set; }

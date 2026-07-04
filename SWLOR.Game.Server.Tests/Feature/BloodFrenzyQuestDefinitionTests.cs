@@ -207,6 +207,74 @@ public class BloodFrenzyQuestDefinitionTests
     }
 
     [Test]
+    public void SeraVonnDialogue_OffersLoreAndTacticalBranchesForEachLesson()
+    {
+        var root = FindRepositoryRoot();
+        using var dialogue = System.Text.Json.JsonDocument.Parse(File.ReadAllText(Path.Combine(
+            root.FullName,
+            "Module",
+            "dlg",
+            "sera_vonn.dlg.json")));
+
+        var entries = dialogue.RootElement
+            .GetProperty("EntryList")
+            .GetProperty("value")
+            .EnumerateArray()
+            .ToArray();
+        var replies = dialogue.RootElement
+            .GetProperty("ReplyList")
+            .GetProperty("value")
+            .EnumerateArray()
+            .ToArray();
+        var replyTexts = replies.Select(GetDialogueText).ToArray();
+        var entryTexts = entries.Select(GetDialogueText).ToArray();
+
+        AssertEntryOffersReplies(entries, replies, "Blood Frenzy starts below Veles", new[]
+        {
+            "I'm listening. Give me the first cut.",
+            "What is Blood Frenzy, really?",
+            "Why is the Red Vein Codex in the Sewers Depths?",
+            "How do I reach the Sewers Depths?",
+            "Not now.",
+        });
+        AssertEntryOffersReplies(entries, replies, "Pulse-Frame Training Droids are hammering my old cadence", new[]
+        {
+            "I will break their rhythm.",
+            "Why the thirteen beats?",
+            "What is the pulse metronome?",
+            "Not now.",
+        });
+        AssertEntryOffersReplies(entries, replies, "The next lesson stinks of stim smoke", new[]
+        {
+            "The Butcher falls.",
+            "What did the Butcher do to the lesson?",
+            "What is adrenal glass?",
+            "Not now.",
+        });
+        AssertEntryOffersReplies(entries, replies, "Now we make restraint you can hold", new[]
+        {
+            "I will take the fragments.",
+            "Why make a restraint charm?",
+            "What are Kess's duelists doing?",
+            "Not now.",
+        });
+        AssertEntryOffersReplies(entries, replies, "Kess Draavo calls himself the Blood Frenzy King", new[]
+        {
+            "I will end his circle.",
+            "Who is Kess Draavo?",
+            "What happens after he dies?",
+            "Not now.",
+        });
+
+        replyTexts.Should().Contain("What should I keep practicing?");
+        entryTexts.Should().Contain(text => text.Contains("Victory gives heat; discipline gives it a shape."));
+        entryTexts.Should().Contain(text => text.Contains("It opens for the key holder"));
+        entryTexts.Should().Contain(text => text.Contains("teacher would make him answer for what he made"));
+        entryTexts.Should().Contain(text => text.Contains("The refusal"));
+        entryTexts.Should().NotContain(text => text.Contains("Vibroblade 50"), "Sera's visible dialogue should not expose the mechanical skill requirement");
+    }
+
+    [Test]
     public void BloodFrenzyPhysicalProofItems_AreNotPaletteBlueprints()
     {
         var root = FindRepositoryRoot();
@@ -498,6 +566,34 @@ public class BloodFrenzyQuestDefinitionTests
                 }
             }
         }
+    }
+
+    private static void AssertEntryOffersReplies(
+        System.Text.Json.JsonElement[] entries,
+        System.Text.Json.JsonElement[] replies,
+        string entryTextFragment,
+        string[] expectedReplyTexts)
+    {
+        var entry = entries
+            .Single(candidate => GetDialogueText(candidate).Contains(entryTextFragment));
+        var actualReplyTexts = entry
+            .GetProperty("RepliesList")
+            .GetProperty("value")
+            .EnumerateArray()
+            .Select(link => link.GetProperty("Index").GetProperty("value").GetInt32())
+            .Select(index => GetDialogueText(replies[index]))
+            .ToArray();
+
+        actualReplyTexts.Should().BeEquivalentTo(expectedReplyTexts);
+    }
+
+    private static string GetDialogueText(System.Text.Json.JsonElement node)
+    {
+        return node
+            .GetProperty("Text")
+            .GetProperty("value")
+            .GetProperty("0")
+            .GetString() ?? string.Empty;
     }
 
     private static DirectoryInfo FindRepositoryRoot()

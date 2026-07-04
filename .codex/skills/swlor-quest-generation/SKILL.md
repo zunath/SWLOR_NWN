@@ -53,7 +53,9 @@ When the concept is underspecified, grill the request one dependency at a time. 
    - Use these snippet keys in `ConditionParams`: `condition-has-quest`, `condition-on-quest-state`, `condition-completed-quest`; prefix with `!` for negation when needed.
    - Use a C# `DialogDefinition` only for dynamic runtime menus or logic-heavy conversations.
    - Dialogue should cover: not eligible, offer, accept response, in-progress reminder, ready-to-turn-in, completion, repeat/completed state, and any prerequisite explanation.
+   - Do not ship quest-giver dialogue as a purely functional accept/remind/turn-in kiosk unless the quest is intentionally trivial or the NPC role demands it. For major, chain, capstone, faction, or signature quests, give the conversation a deliberate flow with optional player branches that reveal motive, stakes, local lore, directions, target context, or tactical advice before acceptance.
    - Do not write every NPC in the same "greeting, request, acceptance, reminder, thanks" rhythm. Pick the structure from the NPC's job, mood, leverage, and relationship to the objective.
+   - Keep the mechanical snippet actions on clear accept, item-request, and turn-in replies while placing flavor and optional questions on safe non-action branches.
    - Keep journal text objective-oriented. Put personality, subtext, hesitation, pressure, and local flavor in the conversation.
 
 5. Wire NPCs and placement.

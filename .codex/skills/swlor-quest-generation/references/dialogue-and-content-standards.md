@@ -41,6 +41,16 @@ Then vary the dialogue structure. Do not force every NPC through the same patter
 - Let some NPCs be transactional and others personal, depending on role.
 - Let player replies reflect tone: curious, skeptical, professional, reluctant, blunt. Avoid only "Yes, I'll help" and "No, goodbye."
 
+## Conversation Flow
+
+Quest NPCs should not feel like task boards with a face. Before writing or expanding a quest-giver conversation, sketch the intended flow and make sure the player can understand the job quickly while still having room to ask why it matters.
+
+- For major, chain, capstone, faction, or signature quests, the offer should include optional branches before acceptance. Good branches answer questions such as: what is this technique or problem, why this target matters, where the player should go, what proof matters, what danger to expect, what local pressure caused this, or how prior quest events changed the NPC's position.
+- For short, low-stakes, tutorial, or repeatable tasks, keep the flow lighter, but still give the NPC one concrete reason, pressure, or local detail so the dialogue does not read as generated filler.
+- Put accept, item-request, and turn-in snippet actions on clear player replies. Put lore, tactical advice, directions, suspicion, bargaining, and optional exposition on non-action branches so players can explore them without accidentally advancing or accepting the quest.
+- Let optional branches loop back to the useful choices: accept, decline, ask a different question, or continue the turn-in. Avoid dead-end lore branches that force the player to restart the conversation.
+- Keep all optional branches bounded by the NPC's knowledge and the local setting. Do not use an NPC to explain broad lore, system mechanics, or future quest steps they would not reasonably reveal.
+
 ## Human-Written Pass
 
 After drafting, revise with these checks:
@@ -95,6 +105,8 @@ Before finishing, confirm:
 
 - The NPC's first three lines do not all start with greeting/request scaffolding.
 - The offer, reminder, and completion lines do not reuse the same sentence shape.
+- Major, chain, capstone, faction, and signature quests have an intentional conversation flow with meaningful optional player branches, not only accept/decline/reminder/turn-in lines.
+- Optional lore or tactical branches return to actionable replies and do not carry quest-advancing snippet actions unless they are explicitly the accept, item-request, or turn-in choice.
 - Every prerequisite gate has a player-facing explanation somewhere in the dialogue path.
 - Every reward has a plausible story reason or existing reward-scale precedent.
 - The text names local targets consistently with quest definitions, item resrefs, NPC groups, and module files.

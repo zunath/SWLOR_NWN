@@ -8,6 +8,7 @@ For each quest, capture:
 - Giver: NPC name, UTC template resref, tag, dialogue resref or C# dialog class, target area resref, coordinates, facing.
 - Objectives: kill group, collect item resref, quantity, producer requirement, trigger/placeable objective if any, and duplicate item justification when a proposed collect item already appears in a non-guild quest.
 - Text: not eligible, offer, acceptance, in-progress reminder, turn-in, completion, completed/repeat text, player replies, journal text for each state.
+- Dialogue flow: opening beat, optional player questions, NPC answers, accept reply, decline reply, reminder path, ready-to-turn-in path, and completed path. For major, chain, capstone, faction, or signature quests, include optional branches for motive, stakes, local lore, directions, target context, proof, or tactical advice.
 - Creative brief: NPC role, NPC voice, local pressure, stakes, lore anchors, why this NPC asks the player, and how the reward is justified in-world.
 - Rewards: XP, credits, items, key items, GP, faction standing/points, selectable vs automatic.
 - Placement: fixed NPC placement, enemy spawn table, enemy spawn coordinates or area random count.
@@ -64,7 +65,7 @@ Spawn placement:
 Create or verify one path for each relevant player state:
 
 - Not eligible: prerequisites missing, explain the nearest concrete requirement.
-- Eligible and not accepted: offer the quest and run `action-accept-quest`.
+- Eligible and not accepted: offer the quest, expose any intended optional branches, and run `action-accept-quest` only from the explicit accept reply.
 - Accepted and objectives incomplete: remind the player what to do.
 - Accepted and collect objectives ready or partly ready: run `action-request-quest-items`.
 - Accepted and final state ready: run `action-advance-quest`.
@@ -79,6 +80,8 @@ Read `dialogue-and-content-standards.md` before writing quest text. Then verify:
 - The opening is not a default generic greeting unless the NPC's role demands it.
 - The offer, accept response, reminder, and completion lines have different sentence shapes.
 - Player replies offer intentful choices, not only generic accept/decline buttons.
+- Major, chain, capstone, faction, and signature quests have a specific conversation flow with optional non-action branches for lore, directions, target context, stakes, or tactical advice.
+- Optional dialogue branches return to actionable choices and do not accidentally accept, advance, or request quest items.
 - Local nouns match existing repo content: area names, NPC names, enemy groups, item names, guilds, key items, and prior quest events.
 - Reused collect items have an explicit reason in dialogue, journal text, or implementation notes.
 - Prerequisite failure text explains the nearest useful next step.
@@ -137,6 +140,8 @@ Pop-Location
 - Placed creature has a dialogue resref but the `.dlg.json` file does not exist.
 - Repeatable quest accidentally grants a permanent key item on every completion.
 - Dialogue uses a static generated pattern across multiple NPCs.
+- Major quest dialogue is only a functional accept/remind/turn-in kiosk with no optional player questions or NPC-specific flow.
+- Optional dialogue branches carry quest actions accidentally instead of returning to accept, decline, item-request, or turn-in choices.
 - Prerequisite gates exist mechanically but have no player-facing explanation.
 - Reward amounts or item rewards drift from nearby quest/guild scale without an explicit reason.
 - A new non-guild collect quest reuses items from existing non-guild quests without a clear gameplay or story reason.

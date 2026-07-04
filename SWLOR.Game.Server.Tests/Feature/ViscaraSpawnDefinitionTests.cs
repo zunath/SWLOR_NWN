@@ -3,6 +3,7 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Feature.LootTableDefinition;
 using SWLOR.Game.Server.Feature.SpawnDefinition;
 using SWLOR.Game.Server.Service.AnimationService;
+using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
@@ -42,12 +43,63 @@ public class ViscaraSpawnDefinitionTests
         ("bf_kess", "VISCARA_SEWERS_DEPTHS_KING"),
     };
 
-    private static readonly (string Resref, string RareLootTableId, string UniqueItemResref)[] RepeatableBloodFrenzyRareLootTables =
+    private static readonly (string Resref, string RareLootTableId)[] RepeatableBloodFrenzyRareLootTables =
     {
-        ("bf_scavenger", "VISCARA_SEWERS_DEPTHS_SCAVENGER_RARES", "redline_vblade"),
-        ("bf_pulsedroid", "VISCARA_SEWERS_DEPTHS_PULSE_DROID_RARES", "pulse_calrifle"),
-        ("bf_butcher", "VISCARA_SEWERS_DEPTHS_BUTCHER_RARES", "butch_cleaver"),
-        ("bf_duelist", "VISCARA_SEWERS_DEPTHS_DUELIST_RARES", "duel_splitter"),
+        ("bf_scavenger", "VISCARA_SEWERS_DEPTHS_SCAVENGER_RARES"),
+        ("bf_pulsedroid", "VISCARA_SEWERS_DEPTHS_PULSE_DROID_RARES"),
+        ("bf_butcher", "VISCARA_SEWERS_DEPTHS_BUTCHER_RARES"),
+        ("bf_duelist", "VISCARA_SEWERS_DEPTHS_DUELIST_RARES"),
+    };
+
+    private static readonly (string RareLootTableId, string UniqueItemResref)[] BloodFrenzyRareLootDrops =
+    {
+        ("VISCARA_SEWERS_DEPTHS_SCAVENGER_RARES", "redline_vblade"),
+        ("VISCARA_SEWERS_DEPTHS_SCAVENGER_RARES", "redvein_pistol"),
+        ("VISCARA_SEWERS_DEPTHS_SCAVENGER_RARES", "sump_vknife"),
+        ("VISCARA_SEWERS_DEPTHS_SCAVENGER_RARES", "gutter_staff"),
+        ("VISCARA_SEWERS_DEPTHS_SCAVENGER_RARES", "redvein_wraps"),
+        ("VISCARA_SEWERS_DEPTHS_SCAVENGER_RARES", "stolen_belt"),
+        ("VISCARA_SEWERS_DEPTHS_SCAVENGER_RARES", "codex_mantle"),
+        ("VISCARA_SEWERS_DEPTHS_SCAVENGER_RARES", "rustred_band"),
+        ("VISCARA_SEWERS_DEPTHS_SCAVENGER_RARES", "scav_visor"),
+        ("VISCARA_SEWERS_DEPTHS_SCAVENGER_RARES", "stalk_boots"),
+        ("VISCARA_SEWERS_DEPTHS_SCAVENGER_RARES", "redvein_charm"),
+
+        ("VISCARA_SEWERS_DEPTHS_PULSE_DROID_RARES", "pulse_calrifle"),
+        ("VISCARA_SEWERS_DEPTHS_PULSE_DROID_RARES", "servo_pistol"),
+        ("VISCARA_SEWERS_DEPTHS_PULSE_DROID_RARES", "cad_rifle"),
+        ("VISCARA_SEWERS_DEPTHS_PULSE_DROID_RARES", "pulse_conduct"),
+        ("VISCARA_SEWERS_DEPTHS_PULSE_DROID_RARES", "time_bracer"),
+        ("VISCARA_SEWERS_DEPTHS_PULSE_DROID_RARES", "metro_ring"),
+        ("VISCARA_SEWERS_DEPTHS_PULSE_DROID_RARES", "servosync_belt"),
+        ("VISCARA_SEWERS_DEPTHS_PULSE_DROID_RARES", "calib_lens"),
+        ("VISCARA_SEWERS_DEPTHS_PULSE_DROID_RARES", "pulse_cape"),
+        ("VISCARA_SEWERS_DEPTHS_PULSE_DROID_RARES", "frame_boots"),
+        ("VISCARA_SEWERS_DEPTHS_PULSE_DROID_RARES", "spark_gloves"),
+
+        ("VISCARA_SEWERS_DEPTHS_BUTCHER_RARES", "butch_cleaver"),
+        ("VISCARA_SEWERS_DEPTHS_BUTCHER_RARES", "butch_injector"),
+        ("VISCARA_SEWERS_DEPTHS_BUTCHER_RARES", "stim_splitter"),
+        ("VISCARA_SEWERS_DEPTHS_BUTCHER_RARES", "black_cleaver"),
+        ("VISCARA_SEWERS_DEPTHS_BUTCHER_RARES", "adren_harness"),
+        ("VISCARA_SEWERS_DEPTHS_BUTCHER_RARES", "clot_mask"),
+        ("VISCARA_SEWERS_DEPTHS_BUTCHER_RARES", "lab_bracer"),
+        ("VISCARA_SEWERS_DEPTHS_BUTCHER_RARES", "inject_belt"),
+        ("VISCARA_SEWERS_DEPTHS_BUTCHER_RARES", "suture_gloves"),
+        ("VISCARA_SEWERS_DEPTHS_BUTCHER_RARES", "adren_pendant"),
+        ("VISCARA_SEWERS_DEPTHS_BUTCHER_RARES", "blackmkt_boots"),
+
+        ("VISCARA_SEWERS_DEPTHS_DUELIST_RARES", "duel_splitter"),
+        ("VISCARA_SEWERS_DEPTHS_DUELIST_RARES", "charm_katar"),
+        ("VISCARA_SEWERS_DEPTHS_DUELIST_RARES", "redcircle_star"),
+        ("VISCARA_SEWERS_DEPTHS_DUELIST_RARES", "duel_fang"),
+        ("VISCARA_SEWERS_DEPTHS_DUELIST_RARES", "circle_twin"),
+        ("VISCARA_SEWERS_DEPTHS_DUELIST_RARES", "binding_sash"),
+        ("VISCARA_SEWERS_DEPTHS_DUELIST_RARES", "split_boots"),
+        ("VISCARA_SEWERS_DEPTHS_DUELIST_RARES", "restr_band"),
+        ("VISCARA_SEWERS_DEPTHS_DUELIST_RARES", "circle_mantle"),
+        ("VISCARA_SEWERS_DEPTHS_DUELIST_RARES", "duel_grip"),
+        ("VISCARA_SEWERS_DEPTHS_DUELIST_RARES", "broken_charm"),
     };
 
     private static readonly (
@@ -64,7 +116,71 @@ public class ViscaraSpawnDefinitionTests
         ("pulse_calrifle", "Pulse-Frame Calibration Rifle", 7, 38, 46, 45, 30, true),
         ("butch_cleaver", "Butcher's Cleaver", 13, 42, 39, 45, 30, false),
         ("duel_splitter", "Duelist's Splitter", 12, 27, 41, 45, 29, false),
+        ("redvein_pistol", "Red Vein Holdout", 11, 22, 45, 45, 25, true),
+        ("sump_vknife", "Sump-Cut Vibroknife", 22, 21, 37, 45, 22, false),
+        ("gutter_staff", "Gutterline Staff", 50, 23, 44, 45, 27, false),
+        ("servo_pistol", "Servo-Tuned Pistol", 11, 22, 45, 45, 25, true),
+        ("cad_rifle", "Cadence Rifle", 7, 38, 46, 45, 30, true),
+        ("pulse_conduct", "Pulse Conductor", 50, 23, 44, 45, 27, false),
+        ("butch_injector", "Butcher's Injector", 58, 41, 40, 45, 28, false),
+        ("stim_splitter", "Stim-Splitter Axe", 13, 42, 39, 45, 30, false),
+        ("black_cleaver", "Blacklab Cleaver", 13, 42, 39, 45, 30, false),
+        ("charm_katar", "Charmbreaker Katar", 310, 18, 43, 45, 22, false),
+        ("redcircle_star", "Red-Circle Shuriken", 59, 18, 47, 45, 22, false),
+        ("duel_fang", "Duelist's Fang", 1, 23, 36, 45, 23, false),
+        ("circle_twin", "Circle Twinblade", 12, 27, 41, 45, 29, false),
     };
+
+    private static readonly (
+        string Resref,
+        int BaseItem,
+        int ModelPart1,
+        int ModelPart2,
+        int ModelPart3)[] BloodFrenzyBlasterAppearances =
+    {
+        ("pulse_calrifle", 7, 11, 31, 11),
+        ("cad_rifle", 7, 31, 164, 23),
+        ("redvein_pistol", 11, 231, 101, 61),
+        ("servo_pistol", 11, 11, 221, 71),
+    };
+
+    private static readonly (
+        string Resref,
+        string Name,
+        int BaseItem)[] BloodFrenzyWearableDrops =
+    {
+        ("redvein_wraps", "Red Vein Wraps", 36),
+        ("stolen_belt", "Sera's Stolen Belt", 21),
+        ("codex_mantle", "Codex-Torn Mantle", 80),
+        ("rustred_band", "Rust-Red Band", 52),
+        ("scav_visor", "Scavenged Visor", 17),
+        ("stalk_boots", "Sewer Stalker Boots", 26),
+        ("redvein_charm", "Red Vein Charm", 19),
+        ("time_bracer", "Timing Bracer", 78),
+        ("metro_ring", "Metronome Ring", 52),
+        ("servosync_belt", "Servo-Sync Belt", 21),
+        ("calib_lens", "Calibrated Lens", 17),
+        ("pulse_cape", "Pulse Relay Cape", 80),
+        ("frame_boots", "Frame-Step Boots", 26),
+        ("spark_gloves", "Sparkline Gloves", 36),
+        ("adren_harness", "Adrenal Harness", 16),
+        ("clot_mask", "Clotguard Mask", 17),
+        ("lab_bracer", "Lab-Burned Bracer", 78),
+        ("inject_belt", "Injector Belt", 21),
+        ("suture_gloves", "Suture Gloves", 36),
+        ("adren_pendant", "Adrenal Pendant", 19),
+        ("blackmkt_boots", "Black-Market Boots", 26),
+        ("binding_sash", "Binding Sash", 21),
+        ("split_boots", "Split-Step Boots", 26),
+        ("restr_band", "Restraint Band", 52),
+        ("circle_mantle", "Circle Mantle", 80),
+        ("duel_grip", "Duelist's Grip", 36),
+        ("broken_charm", "Broken Charm", 19),
+    };
+
+    private static IEnumerable<string> BloodFrenzyUniqueDropResrefs => BloodFrenzyUniqueDrops
+        .Select(entry => entry.Resref)
+        .Concat(BloodFrenzyWearableDrops.Select(entry => entry.Resref));
 
     private static IEnumerable<string> BloodFrenzyLootTableIds => BloodFrenzyLootTables
         .Select(entry => entry.LootTableId)
@@ -183,6 +299,11 @@ public class ViscaraSpawnDefinitionTests
             .Should()
             .OnlyHaveUniqueItems();
 
+        BloodFrenzyRareLootDrops
+            .Select(entry => entry.UniqueItemResref)
+            .Should()
+            .OnlyHaveUniqueItems();
+
         foreach (var lootTableId in BloodFrenzyLootTableIds)
         {
             tables.Should().ContainKey(lootTableId);
@@ -225,9 +346,13 @@ public class ViscaraSpawnDefinitionTests
     {
         var tables = new ViscaraLootTableDefinition().BuildLootTables();
 
-        foreach (var (_, rareLootTableId, uniqueItemResref) in RepeatableBloodFrenzyRareLootTables)
+        foreach (var (_, rareLootTableId) in RepeatableBloodFrenzyRareLootTables)
         {
             tables[rareLootTableId].IsRare.Should().BeTrue();
+        }
+
+        foreach (var (rareLootTableId, uniqueItemResref) in BloodFrenzyRareLootDrops)
+        {
             tables[rareLootTableId].Should().ContainSingle(item =>
                 item.Resref == uniqueItemResref &&
                 item.IsRare &&
@@ -268,6 +393,82 @@ public class ViscaraSpawnDefinitionTests
     }
 
     [Test]
+    public void BloodFrenzyUniqueWearableDrops_AreArmorSkillFortyFiveItems()
+    {
+        var root = FindRepositoryRoot();
+
+        foreach (var item in BloodFrenzyWearableDrops)
+        {
+            using var blueprint = JsonDocument.Parse(File.ReadAllText(Path.Combine(
+                root.FullName,
+                "Module",
+                "uti",
+                $"{item.Resref}.uti.json")));
+
+            var json = blueprint.RootElement;
+            json.GetProperty("__data_type").GetString().Should().Be("UTI ");
+            json.GetProperty("LocalizedName").GetProperty("value").GetProperty("0").GetString().Should().Be(item.Name);
+            json.GetProperty("BaseItem").GetProperty("value").GetInt32().Should().Be(item.BaseItem);
+            json.GetProperty("Tag").GetProperty("value").GetString().Should().Be(item.Resref);
+            json.GetProperty("TemplateResRef").GetProperty("value").GetString().Should().Be(item.Resref);
+
+            var requiresSkill = GetItemProperty(json, ItemPropertyType.RequiresSkill);
+            requiresSkill.GetProperty("Subtype").GetProperty("value").GetInt32().Should().Be((int)SkillType.Armor);
+            requiresSkill.GetProperty("CostValue").GetProperty("value").GetInt32().Should().Be(45);
+
+            GetItemPropertyCount(json, ItemPropertyType.DMG).Should().Be(0);
+            GetItemPropertyCount(json, ItemPropertyType.Delay).Should().Be(0);
+            GetItemPropertyCount(json, ItemPropertyType.UnlimitedAmmunition).Should().Be(0);
+        }
+    }
+
+    [Test]
+    public void BloodFrenzyUniqueDropItems_HaveUniqueAppearances()
+    {
+        var root = FindRepositoryRoot();
+        var signatures = new List<string>();
+
+        foreach (var resref in BloodFrenzyUniqueDropResrefs)
+        {
+            using var blueprint = JsonDocument.Parse(File.ReadAllText(Path.Combine(
+                root.FullName,
+                "Module",
+                "uti",
+                $"{resref}.uti.json")));
+
+            var signature = GetAppearanceSignature(blueprint.RootElement);
+            signature.Should().NotBeNullOrWhiteSpace();
+            signatures.Add(signature);
+        }
+
+        signatures.Should().OnlyHaveUniqueItems();
+    }
+
+    [Test]
+    public void BloodFrenzyBlasterDrops_UseKnownValidAppearanceTriplets()
+    {
+        var root = FindRepositoryRoot();
+
+        foreach (var item in BloodFrenzyBlasterAppearances)
+        {
+            using var blueprint = JsonDocument.Parse(File.ReadAllText(Path.Combine(
+                root.FullName,
+                "Module",
+                "uti",
+                $"{item.Resref}.uti.json")));
+
+            var json = blueprint.RootElement;
+            GetBlueprintInt(json, "BaseItem").Should().Be(item.BaseItem);
+            GetBlueprintInt(json, "ModelPart1").Should().Be(item.ModelPart1);
+            GetBlueprintInt(json, "ModelPart2").Should().Be(item.ModelPart2);
+            GetBlueprintInt(json, "ModelPart3").Should().Be(item.ModelPart3);
+            GetBlueprintInt(json, "xModelPart1").Should().Be(item.ModelPart1);
+            GetBlueprintInt(json, "xModelPart2").Should().Be(item.ModelPart2);
+            GetBlueprintInt(json, "xModelPart3").Should().Be(item.ModelPart3);
+        }
+    }
+
+    [Test]
     public void PulseFrameTrainingDroid_PlaysFireballExplosionOnDeath()
     {
         var tables = new ViscaraSpawnDefinition().BuildSpawnTables();
@@ -297,7 +498,7 @@ public class ViscaraSpawnDefinitionTests
             GetLocalString(blueprint.RootElement, "LOOT_TABLE_1").Should().Be($"{lootTableId},100,1");
         }
 
-        foreach (var (resref, rareLootTableId, _) in RepeatableBloodFrenzyRareLootTables)
+        foreach (var (resref, rareLootTableId) in RepeatableBloodFrenzyRareLootTables)
         {
             using var blueprint = JsonDocument.Parse(File.ReadAllText(Path.Combine(
                 root.FullName,
@@ -369,6 +570,69 @@ public class ViscaraSpawnDefinitionTests
             .GetProperty("value")
             .EnumerateArray()
             .Count(property => property.GetProperty("PropertyName").GetProperty("value").GetInt32() == (int)propertyName);
+    }
+
+    private static int GetBlueprintInt(JsonElement json, string propertyName)
+    {
+        return json.GetProperty(propertyName).GetProperty("value").GetInt32();
+    }
+
+    private static string GetAppearanceSignature(JsonElement json)
+    {
+        var parts = new List<string>
+        {
+            json.GetProperty("BaseItem").GetProperty("value").GetInt32().ToString()
+        };
+
+        foreach (var propertyName in new[]
+                 {
+                     "ModelPart1",
+                     "ModelPart2",
+                     "ModelPart3",
+                     "ArmorPart_Belt",
+                     "ArmorPart_LBicep",
+                     "ArmorPart_LFArm",
+                     "ArmorPart_LFoot",
+                     "ArmorPart_LHand",
+                     "ArmorPart_LShin",
+                     "ArmorPart_LShoul",
+                     "ArmorPart_LThigh",
+                     "ArmorPart_Neck",
+                     "ArmorPart_Pelvis",
+                     "ArmorPart_RBicep",
+                     "ArmorPart_RFArm",
+                     "ArmorPart_RFoot",
+                     "ArmorPart_RHand",
+                     "ArmorPart_Robe",
+                     "ArmorPart_RShin",
+                     "ArmorPart_RShoul",
+                     "ArmorPart_RThigh",
+                     "ArmorPart_Torso",
+                     "Cloth1Color",
+                     "Cloth2Color",
+                     "Leather1Color",
+                     "Leather2Color",
+                     "Metal1Color",
+                     "Metal2Color"
+                 })
+        {
+            AddAppearancePart(json, parts, propertyName);
+        }
+
+        parts.Count.Should().BeGreaterThan(1, "unique drops need a visible item appearance");
+
+        return string.Join("|", parts);
+    }
+
+    private static void AddAppearancePart(JsonElement json, ICollection<string> parts, string propertyName)
+    {
+        if (!json.TryGetProperty(propertyName, out var property) ||
+            !property.TryGetProperty("value", out var value))
+        {
+            return;
+        }
+
+        parts.Add($"{propertyName}:{value.GetInt32()}");
     }
 
     private static IEnumerable<string> EnumerateResrefs(JsonElement element)

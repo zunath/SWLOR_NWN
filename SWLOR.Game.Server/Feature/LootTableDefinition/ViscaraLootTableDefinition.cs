@@ -417,7 +417,17 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 
             _builder.Create("VISCARA_SEWERS_DEPTHS_SCAVENGER_RARES")
                 .IsRare()
-                .AddItem("redline_vblade", 1, 1, true);
+                .AddItem("redline_vblade", 1, 1, true)
+                .AddItem("redvein_pistol", 1, 1, true)
+                .AddItem("sump_vknife", 1, 1, true)
+                .AddItem("gutter_staff", 1, 1, true)
+                .AddItem("redvein_wraps", 1, 1, true)
+                .AddItem("stolen_belt", 1, 1, true)
+                .AddItem("codex_mantle", 1, 1, true)
+                .AddItem("rustred_band", 1, 1, true)
+                .AddItem("scav_visor", 1, 1, true)
+                .AddItem("stalk_boots", 1, 1, true)
+                .AddItem("redvein_charm", 1, 1, true);
 
             _builder.Create("VISCARA_SEWERS_DEPTHS_PULSE_DROID")
                 .AddItem("elec_good", 20)
@@ -426,7 +436,17 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 
             _builder.Create("VISCARA_SEWERS_DEPTHS_PULSE_DROID_RARES")
                 .IsRare()
-                .AddItem("pulse_calrifle", 1, 1, true);
+                .AddItem("pulse_calrifle", 1, 1, true)
+                .AddItem("servo_pistol", 1, 1, true)
+                .AddItem("cad_rifle", 1, 1, true)
+                .AddItem("pulse_conduct", 1, 1, true)
+                .AddItem("time_bracer", 1, 1, true)
+                .AddItem("metro_ring", 1, 1, true)
+                .AddItem("servosync_belt", 1, 1, true)
+                .AddItem("calib_lens", 1, 1, true)
+                .AddItem("pulse_cape", 1, 1, true)
+                .AddItem("frame_boots", 1, 1, true)
+                .AddItem("spark_gloves", 1, 1, true);
         }
 
         private void SewersDepthsButcher()
@@ -439,7 +459,17 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 
             _builder.Create("VISCARA_SEWERS_DEPTHS_BUTCHER_RARES")
                 .IsRare()
-                .AddItem("butch_cleaver", 1, 1, true);
+                .AddItem("butch_cleaver", 1, 1, true)
+                .AddItem("butch_injector", 1, 1, true)
+                .AddItem("stim_splitter", 1, 1, true)
+                .AddItem("black_cleaver", 1, 1, true)
+                .AddItem("adren_harness", 1, 1, true)
+                .AddItem("clot_mask", 1, 1, true)
+                .AddItem("lab_bracer", 1, 1, true)
+                .AddItem("inject_belt", 1, 1, true)
+                .AddItem("suture_gloves", 1, 1, true)
+                .AddItem("adren_pendant", 1, 1, true)
+                .AddItem("blackmkt_boots", 1, 1, true);
         }
 
         private void SewersDepthsCircle()
@@ -452,7 +482,17 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 
             _builder.Create("VISCARA_SEWERS_DEPTHS_DUELIST_RARES")
                 .IsRare()
-                .AddItem("duel_splitter", 1, 1, true);
+                .AddItem("duel_splitter", 1, 1, true)
+                .AddItem("charm_katar", 1, 1, true)
+                .AddItem("redcircle_star", 1, 1, true)
+                .AddItem("duel_fang", 1, 1, true)
+                .AddItem("circle_twin", 1, 1, true)
+                .AddItem("binding_sash", 1, 1, true)
+                .AddItem("split_boots", 1, 1, true)
+                .AddItem("restr_band", 1, 1, true)
+                .AddItem("circle_mantle", 1, 1, true)
+                .AddItem("duel_grip", 1, 1, true)
+                .AddItem("broken_charm", 1, 1, true);
 
             _builder.Create("VISCARA_SEWERS_DEPTHS_KING")
                 .AddItem("elec_good", 20)

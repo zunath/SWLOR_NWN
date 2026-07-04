@@ -134,6 +134,25 @@ public class NPCEnemyBalanceAuditTests
         ["bf_kess"] = new[] { FeatType.BloodFrenzyFlurry, FeatType.DraavosChallenge, FeatType.StimCanister, FeatType.SerratedSlash, FeatType.BrutalBash, FeatType.TacticalMark },
     };
 
+    private static readonly IReadOnlyDictionary<string, string> ExpectedDroidEnemySkins = new Dictionary<string, string>
+    {
+        ["bf_pulsedroid"] = "bf_pulse_skin",
+        ["malfunctioningse"] = "malfsecdroid_sk",
+        ["malfunctioningsp"] = "malfspiddroi_sk",
+        ["malsecdroid"] = "patroldroid_sk",
+        ["malspiderdroid"] = "probedroid_sk",
+        ["nar_cmd_droid"] = "nar_droid_sk",
+        ["nar_rogue_droid"] = "nar_droid_sk",
+        ["nar_scavenger"] = "cz220_droid_hide",
+        ["vkorrdundroidhvy"] = "imphvydrone_sk",
+        ["vkorrdunwarform"] = "impwarform_sk",
+        ["vsithbot1"] = "impobsunit_sk",
+        ["vsithbot2"] = "imppatrol_sk",
+        ["vsithbot3"] = "impturret_sk",
+        ["vsithbot4"] = "impcombot_sk",
+        ["vsithbot5"] = "impwarform2_sk",
+    };
+
     private static readonly int[] BloodFrenzyPackageFeatIds = ResistanceThreatFeats
         .Keys
         .Append((int)FeatType.ChitinGuard)
@@ -652,6 +671,25 @@ public class NPCEnemyBalanceAuditTests
         AssertCreatureHasFeat(root, "malspiderdroid", FeatType.StaticWeb);
         AssertCreatureDoesNotHaveFeat(root, "malsecdroid", FeatType.IonBurst);
         AssertCreatureDoesNotHaveFeat(root, "malspiderdroid", FeatType.StaticBurst);
+    }
+
+    [Test]
+    public void DroidEnemySkins_GrantTraumaImmunityForBleedResistance()
+    {
+        var root = FindRepositoryRoot();
+
+        foreach (var (resref, skinResref) in ExpectedDroidEnemySkins)
+        {
+            using var utc = ReadJson(root, "Module", "utc", $"{resref}.utc.json");
+            using var skin = ReadJson(root, "Module", "uti", $"{skinResref}.uti.json");
+
+            GetEquippedResref(utc.RootElement, CreatureArmorSlot)
+                .Should()
+                .Be(skinResref, $"{resref} should use the droid stat skin carrying its Trauma immunity");
+            GetItemPropertyCost(skin.RootElement, ItemPropertyResistance, (int)ResistanceType.Trauma)
+                .Should()
+                .Be(100, $"{skinResref} should make Bleed fail through the resistance system");
+        }
     }
 
     [Test]

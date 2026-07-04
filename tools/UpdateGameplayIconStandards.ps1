@@ -290,6 +290,29 @@ function Test-DynamicShipModulePlaceholder([string]$label, [string]$icon) {
         $icon -match "^ife_sm(?:[1-9]|[12][0-9]|30)$"
 }
 
+function Test-OpaqueGameplayIconResRef([pscustomobject]$entry) {
+    $resref = (Get-OptionalProperty $entry "IconResRef").Trim()
+    if ([string]::IsNullOrWhiteSpace($resref)) {
+        return $false
+    }
+
+    if (($entry.Type -eq "Ability" -or $entry.Type -eq "Feat" -or $entry.Type -eq "Spell") -and
+        $resref.StartsWith("ife_", [System.StringComparison]::OrdinalIgnoreCase)) {
+        $body = $resref.Substring(4)
+        if ($entry.Type -eq "Ability" -and $body -match "\d[a-z0-9]{2,}$") {
+            return $true
+        }
+
+        if ($entry.Type -eq "Feat" -and
+            $entry.Key.EndsWith("Trait", [System.StringComparison]::Ordinal) -and
+            $body -match "\d") {
+            return $true
+        }
+    }
+
+    return $false
+}
+
 function Get-FeatSpellSemanticCategory([string[]]$labels) {
     $label = ($labels | Where-Object { ![string]::IsNullOrWhiteSpace($_) }) -join " "
 
@@ -1552,6 +1575,10 @@ function Test-GameplayIconStandards([object[]]$rows, [hashtable]$statusEffectStr
 
         if ($entry.IconResRef -notmatch "^[A-Za-z0-9_]+$") {
             $errors.Add("$($entry.Type) '$($entry.Key)' icon resref '$($entry.IconResRef)' contains invalid characters.") | Out-Null
+        }
+
+        if (Test-OpaqueGameplayIconResRef $entry) {
+            $errors.Add("$($entry.Type) '$($entry.Key)' icon resref '$($entry.IconResRef)' uses an opaque generated suffix; use a short meaningful abbreviation.") | Out-Null
         }
 
         if ($entry.Type -eq "Ability") {

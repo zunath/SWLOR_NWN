@@ -231,72 +231,6 @@ public static class IconArtworkRestore
         }
     }
 
-    public static void WriteGeneratedFallbackIcon(string key, string category, string outputPath, int iconSize)
-    {
-        using (var bitmap = new Bitmap(iconSize, iconSize, PixelFormat.Format32bppArgb))
-        using (var graphics = Graphics.FromImage(bitmap))
-        {
-            var hash = StableHash(key);
-            var accent = ColorFromHash(hash);
-            var secondary = ColorFromHash(hash * 37 + 11);
-            var shadow = Color.FromArgb(255, 20, 24, 32);
-
-            graphics.SmoothingMode = SmoothingMode.AntiAlias;
-            using (var background = new LinearGradientBrush(
-                       new Rectangle(0, 0, iconSize, iconSize),
-                       Color.FromArgb(255, 32 + (hash & 31), 36 + ((hash >> 5) & 31), 44 + ((hash >> 10) & 31)),
-                       Color.FromArgb(255, 10, 12, 18),
-                       LinearGradientMode.ForwardDiagonal))
-            {
-                graphics.FillRectangle(background, 0, 0, iconSize, iconSize);
-            }
-
-            using (var shadowBrush = new SolidBrush(Color.FromArgb(170, shadow)))
-            using (var accentBrush = new SolidBrush(Color.FromArgb(235, accent)))
-            using (var secondaryBrush = new SolidBrush(Color.FromArgb(210, secondary)))
-            {
-                var variant = Math.Abs(hash) % 5;
-                if (variant == 0)
-                {
-                    graphics.FillEllipse(shadowBrush, 8, 7, 18, 18);
-                    graphics.FillEllipse(accentBrush, 6, 5, 18, 18);
-                    graphics.FillRectangle(secondaryBrush, 14, 13, 10, 12);
-                }
-                else if (variant == 1)
-                {
-                    var points = new[] { new Point(16, 4), new Point(27, 25), new Point(5, 25) };
-                    graphics.FillPolygon(shadowBrush, new[] { new Point(17, 6), new Point(28, 27), new Point(6, 27) });
-                    graphics.FillPolygon(accentBrush, points);
-                    graphics.FillEllipse(secondaryBrush, 12, 13, 8, 8);
-                }
-                else if (variant == 2)
-                {
-                    graphics.FillRectangle(shadowBrush, 8, 8, 18, 18);
-                    graphics.FillRectangle(accentBrush, 6, 6, 18, 18);
-                    graphics.FillEllipse(secondaryBrush, 10, 10, 10, 10);
-                }
-                else if (variant == 3)
-                {
-                    using (var pen = new Pen(accent, 5.0f))
-                    using (var pen2 = new Pen(secondary, 3.0f))
-                    {
-                        graphics.DrawLine(pen, 8, 24, 24, 8);
-                        graphics.DrawLine(pen2, 10, 8, 24, 22);
-                    }
-                }
-                else
-                {
-                    graphics.FillPie(shadowBrush, 6, 6, 22, 22, 20, 290);
-                    graphics.FillPie(accentBrush, 4, 4, 22, 22, 20, 290);
-                    graphics.FillRectangle(secondaryBrush, 13, 5, 5, 22);
-                }
-            }
-
-            DrawSemanticFrame(bitmap, category, iconSize);
-            WriteTga(bitmap, outputPath);
-        }
-    }
-
     private static Bitmap Normalize(Bitmap source, int iconSize)
     {
         var bitmap = new Bitmap(iconSize, iconSize, PixelFormat.Format32bppArgb);
@@ -333,28 +267,6 @@ public static class IconArtworkRestore
             Math.Min(255, color.R + amount),
             Math.Min(255, color.G + amount),
             Math.Min(255, color.B + amount));
-    }
-
-    private static int StableHash(string value)
-    {
-        unchecked
-        {
-            var hash = 17;
-            foreach (var ch in value)
-                hash = hash * 31 + ch;
-            return hash;
-        }
-    }
-
-    private static Color ColorFromHash(int hash)
-    {
-        unchecked
-        {
-            var red = 80 + Math.Abs(hash & 0x7F);
-            var green = 80 + Math.Abs((hash >> 8) & 0x7F);
-            var blue = 80 + Math.Abs((hash >> 16) & 0x7F);
-            return Color.FromArgb(255, Math.Min(240, red), Math.Min(240, green), Math.Min(240, blue));
-        }
     }
 
     private static GraphicsPath NewRoundedRectanglePath(float x, float y, float width, float height, float radius)
@@ -543,12 +455,11 @@ try {
 
         $referencePath = Find-ReferenceArtwork $resref $referenceDirectory
         if ($null -eq $referencePath) {
-            [IconArtworkRestore]::WriteGeneratedFallbackIcon($row.Key, $row.SemanticCategory, $destination, $IconSize)
-            $restored++
+            $missing.Add("$resref ($($row.Key)): missing override artwork or reference source.") | Out-Null
             $reportRows.Add([pscustomobject]@{
                 IconResRef = $resref
                 Key = $row.Key
-                Source = "GeneratedFallback"
+                Source = "MissingSource"
                 Sheet = ""
                 Cell = ""
                 Score = ""
@@ -557,12 +468,11 @@ try {
         }
 
         if ($null -eq $tiles) {
-            [IconArtworkRestore]::WriteGeneratedFallbackIcon($row.Key, $row.SemanticCategory, $destination, $IconSize)
-            $restored++
+            $missing.Add("$resref ($($row.Key)): missing generated source sheet directory '$GeneratedSheetPath'.") | Out-Null
             $reportRows.Add([pscustomobject]@{
                 IconResRef = $resref
                 Key = $row.Key
-                Source = "GeneratedFallback"
+                Source = "MissingGeneratedSheet"
                 Sheet = ""
                 Cell = ""
                 Score = ""

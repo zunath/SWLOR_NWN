@@ -52,8 +52,8 @@ public class AbilityBuilderTests
             .Build();
 
         var ability = abilities[FeatType.Invalid];
-        ability.AnimationType.Should().Be(Animation.FireForgetTaunt);
-        ability.AnimationSourceAnimationName.Should().Be("taunt");
+        ability.AnimationType.Should().Be(Animation.LoopingPause);
+        ability.AnimationSourceAnimationName.Should().Be("pause1");
         ability.AnimationReplacementAnimationName.Should().Be("Shield_Wall");
         ability.AnimationRestoreDelaySeconds.Should().Be(1.1f);
     }
@@ -83,25 +83,22 @@ public class AbilityBuilderTests
             .Build();
 
         var ability = abilities[FeatType.Invalid];
-        ability.ImpactAnimationType.Should().Be(Animation.FireForgetTaunt);
-        ability.ImpactAnimationSourceAnimationName.Should().Be("taunt");
+        ability.ImpactAnimationType.Should().Be(Animation.LoopingPause);
+        ability.ImpactAnimationSourceAnimationName.Should().Be("pause1");
         ability.ImpactAnimationReplacementAnimationName.Should().Be("Shield_Bash");
         ability.ImpactAnimationRestoreDelaySeconds.Should().Be(1.1f);
     }
 
     [Test]
-    public void UsesImpactAnimationOverwrite_CanInferSourceFromCarrier()
+    public void UsesImpactAnimationOverwrite_RejectsCarrierWithoutSourceMapping()
     {
-        var abilities = new AbilityBuilder()
-            .Create(FeatType.Invalid, PerkType.Invalid)
-            .UsesImpactAnimationOverwrite(Animation.FireForgetTaunt, "Shield_Bash", 1.25f)
-            .Build();
+        var builder = new AbilityBuilder()
+            .Create(FeatType.Invalid, PerkType.Invalid);
 
-        var ability = abilities[FeatType.Invalid];
-        ability.ImpactAnimationType.Should().Be(Animation.FireForgetTaunt);
-        ability.ImpactAnimationSourceAnimationName.Should().Be("taunt");
-        ability.ImpactAnimationReplacementAnimationName.Should().Be("Shield_Bash");
-        ability.ImpactAnimationRestoreDelaySeconds.Should().Be(1.25f);
+        Action action = () => builder.UsesImpactAnimationOverwrite(Animation.ShieldWall, "Shield_Bash", 1.25f);
+
+        action.Should().Throw<ArgumentException>()
+            .WithMessage("No model animation source key is mapped for ShieldWall*");
     }
 
     [Test]

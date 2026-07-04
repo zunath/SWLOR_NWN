@@ -10,8 +10,8 @@ namespace SWLOR.Game.Server.Service.AbilityService
 {
     public class AbilityBuilder
     {
-        private const Animation DefaultAnimationOverwriteCarrier = Animation.FireForgetTaunt;
-        private const string FireForgetTauntSourceAnimationName = "taunt";
+        private const Animation DefaultAnimationOverwriteCarrier = Animation.LoopingPause;
+        private const string LoopingPauseSourceAnimationName = "pause1";
 
         private readonly Dictionary<FeatType, AbilityDetail> _abilities = new Dictionary<FeatType, AbilityDetail>();
         private AbilityDetail _activeAbility;
@@ -240,7 +240,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
         {
             return animation switch
             {
-                Animation.FireForgetTaunt => FireForgetTauntSourceAnimationName,
+                Animation.LoopingPause => LoopingPauseSourceAnimationName,
                 _ => throw new ArgumentException(
                     $"No model animation source key is mapped for {animation}. Use the overload that accepts a source animation name.",
                     nameof(animation))

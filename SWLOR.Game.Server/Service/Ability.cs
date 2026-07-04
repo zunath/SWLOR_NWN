@@ -1748,7 +1748,7 @@ namespace SWLOR.Game.Server.Service
                         activator,
                         sourceAnimationName,
                         replacementAnimationName);
-                    ActionPlayAnimation(animation);
+                    ActionPlayAnimation(animation, 1.0f, restoreDelaySeconds);
                     DelayCommand(restoreDelaySeconds, () =>
                     {
                         ReplaceObjectAnimation(activator, sourceAnimationName);

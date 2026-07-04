@@ -77,6 +77,37 @@ public class AbilityImpactAnimationAuditTests
         playIndex.Should().BeLessThan(restoreIndex);
     }
 
+    [Test]
+    public void ImpactAnimationOverwrite_ReplacesCarrierBeforePlayingAnimation()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "Ability.cs")).Replace("\r\n", "\n");
+        var impactAnimationBody = source.Substring(
+            source.IndexOf("private static void PlayCombatImpactAnimation", StringComparison.Ordinal),
+            source.IndexOf("public static int ApplyHostileCombatImpact", StringComparison.Ordinal) -
+            source.IndexOf("private static void PlayCombatImpactAnimation", StringComparison.Ordinal));
+
+        var replaceIndex = impactAnimationBody.IndexOf(
+            "ReplaceObjectAnimation(\n                        activator,\n                        sourceAnimationName,\n                        replacementAnimationName)",
+            StringComparison.Ordinal);
+        var playIndex = impactAnimationBody.IndexOf(
+            "ActionPlayAnimation(animation, 1.0f, restoreDelaySeconds)",
+            StringComparison.Ordinal);
+        var restoreIndex = impactAnimationBody.IndexOf(
+            "ReplaceObjectAnimation(activator, sourceAnimationName);",
+            StringComparison.Ordinal);
+
+        replaceIndex.Should().BeGreaterThanOrEqualTo(0);
+        playIndex.Should().BeGreaterThanOrEqualTo(0);
+        restoreIndex.Should().BeGreaterThanOrEqualTo(0);
+        replaceIndex.Should().BeLessThan(playIndex);
+        playIndex.Should().BeLessThan(restoreIndex);
+    }
+
     private static bool UsesCastedActionWithoutOwnedAnimation(AbilityDetail ability, string source)
     {
         return ability.ActivationType == AbilityActivationType.Casted &&

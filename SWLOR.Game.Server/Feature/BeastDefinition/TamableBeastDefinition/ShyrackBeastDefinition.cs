@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
@@ -22,13 +23,15 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 
                 .CanMutateInto(BeastType.DathomirWyrmling)
 				.MutationWeight(40)
+				.MutationRequiresLyaseColor(EnzymeColorType.Blue, 2)
+				.MutationRequiresIsomeraseColor(EnzymeColorType.Green, 2)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.Purple, 1)
+				.MutationRequiresDayOfWeek(DayOfWeek.Friday, DayOfWeek.Saturday)
 
-                .CanMutateInto(BeastType.Spinosaurus)
+
+				.CanMutateInto(BeastType.Spinosaurus)
 				.MutationWeight(5)
-				.MutationRequiresLyaseColor(EnzymeColorType.Blue, 1)
-				.MutationRequiresIsomeraseColor(EnzymeColorType.Yellow, 1)
-				.MutationRequiresHydrolaseColor(EnzymeColorType.Red, 1)
-				.MutationRequiresDayOfWeek(DayOfWeek.Thursday)
+				.MutationRequiresLyaseColor(EnzymeColorType.Blue, 2)
 
                 ;
 

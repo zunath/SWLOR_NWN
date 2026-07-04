@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
@@ -20,7 +21,18 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
                 .CombatStats(AbilityType.Perception, AbilityType.Vitality)
                 .Role(BeastRoleType.Tank)
 
+                .CanMutateInto(BeastType.IronmawBastionback)
+				.MutationWeight(90)
+				.MutationRequiresLyaseColor(EnzymeColorType.Orange, 3)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.White, 2)
+				.MutationRequiresDayOfWeek(DayOfWeek.Friday)
 
+
+				.CanMutateInto(BeastType.GreenbulkWallow)
+				.MutationWeight(10)
+				.MutationRequiresLyaseColor(EnzymeColorType.Orange, 3)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.White, 2)
+				.MutationRequiresDayOfWeek(DayOfWeek.Friday)
 
                 ;
 

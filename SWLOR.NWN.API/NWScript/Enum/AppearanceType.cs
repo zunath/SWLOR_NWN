@@ -5313,5 +5313,8 @@ namespace SWLOR.NWN.API.NWScript.Enum
         SWLORShipAlienBattleship = 10217,
         SWLORShipArmoredTransport = 10218,
         Ewok = 10219,
+        SWLORDrexBeast = 10242,
+        SWLORLaigrek = 10245,
+        SWLORStormBeast = 10246,
     }
 }

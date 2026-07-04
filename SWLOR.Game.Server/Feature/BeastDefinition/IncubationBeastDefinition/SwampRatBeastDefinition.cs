@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
@@ -20,7 +21,18 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
                 .CombatStats(AbilityType.Perception, AbilityType.Agility)
                 .Role(BeastRoleType.Damage)
 
+                .CanMutateInto(BeastType.DrexclawMarauder)
+				.MutationWeight(90)
+				.MutationRequiresLyaseColor(EnzymeColorType.Black, 2)
+				.MutationRequiresIsomeraseColor(EnzymeColorType.Red, 2)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.Red, 3)
 
+
+				.CanMutateInto(BeastType.MustardlashSlime)
+				.MutationWeight(10)
+				.MutationRequiresLyaseColor(EnzymeColorType.Black, 2)
+				.MutationRequiresIsomeraseColor(EnzymeColorType.Red, 2)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.Red, 3)
 
                 ;
 

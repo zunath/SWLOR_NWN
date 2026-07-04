@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
@@ -22,11 +23,12 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 
                 .CanMutateInto(BeastType.MutatedFrog)
 				.MutationWeight(50)
-				.MutationRequiresHydrolaseColor(EnzymeColorType.White, 1)
+				.MutationRequiresLyaseColor(EnzymeColorType.Green, 1)
 
-                .CanMutateInto(BeastType.HutlarPenguin)
+
+				.CanMutateInto(BeastType.HutlarPenguin)
 				.MutationWeight(15)
-				.MutationRequiresIsomeraseColor(EnzymeColorType.Blue, 1)
+				.MutationRequiresIsomeraseColor(EnzymeColorType.Orange, 1)
 				.MutationRequiresHydrolaseColor(EnzymeColorType.White, 1)
 
                 ;

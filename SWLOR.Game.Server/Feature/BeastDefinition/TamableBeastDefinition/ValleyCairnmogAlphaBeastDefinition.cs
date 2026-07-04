@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
@@ -22,13 +23,14 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 
                 .CanMutateInto(BeastType.Orray)
 				.MutationWeight(35)
-
-                .CanMutateInto(BeastType.Allosaurus)
-				.MutationWeight(5)
 				.MutationRequiresLyaseColor(EnzymeColorType.Black, 1)
-				.MutationRequiresIsomeraseColor(EnzymeColorType.Green, 1)
-				.MutationRequiresHydrolaseColor(EnzymeColorType.Orange, 1)
-				.MutationRequiresDayOfWeek(DayOfWeek.Wednesday)
+
+
+				.CanMutateInto(BeastType.Allosaurus)
+				.MutationWeight(5)
+				.MutationRequiresIsomeraseColor(EnzymeColorType.Red, 1)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.Blue, 1)
+				.MutationRequiresDayOfWeek(DayOfWeek.Thursday)
 
                 ;
 

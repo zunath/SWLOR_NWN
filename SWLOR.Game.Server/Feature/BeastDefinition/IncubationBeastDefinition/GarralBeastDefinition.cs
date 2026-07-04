@@ -21,6 +21,18 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
                 .CombatStats(AbilityType.Perception, AbilityType.Agility)
                 .Role(BeastRoleType.Bruiser)
 
+                .CanMutateInto(BeastType.GoldmaneSahrak)
+				.MutationWeight(90)
+				.MutationRequiresLyaseColor(EnzymeColorType.Black, 2)
+				.MutationRequiresIsomeraseColor(EnzymeColorType.Red, 2)
+				.MutationRequiresDayOfWeek(DayOfWeek.Tuesday, DayOfWeek.Thursday)
+
+
+				.CanMutateInto(BeastType.OchreMaw)
+				.MutationWeight(10)
+				.MutationRequiresLyaseColor(EnzymeColorType.Black, 2)
+				.MutationRequiresIsomeraseColor(EnzymeColorType.Red, 2)
+				.MutationRequiresDayOfWeek(DayOfWeek.Tuesday, DayOfWeek.Thursday)
 
                 ;
 

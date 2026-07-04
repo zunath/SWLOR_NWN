@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
@@ -20,7 +21,14 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
                 .CombatStats(AbilityType.Perception, AbilityType.Willpower)
                 .Role(BeastRoleType.Evasion)
 
+                .CanMutateInto(BeastType.GloomthreadSkiver)
+				.MutationWeight(90)
+				.MutationRequiresDayOfWeek(DayOfWeek.Thursday)
 
+
+				.CanMutateInto(BeastType.CrystalflowSkimmer)
+				.MutationWeight(10)
+				.MutationRequiresDayOfWeek(DayOfWeek.Thursday)
 
                 ;
 

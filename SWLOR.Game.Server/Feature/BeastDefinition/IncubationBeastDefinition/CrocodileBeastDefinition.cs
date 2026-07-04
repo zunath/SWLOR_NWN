@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
@@ -20,7 +21,14 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
                 .CombatStats(AbilityType.Might, AbilityType.Vitality)
                 .Role(BeastRoleType.Damage)
 
+                .CanMutateInto(BeastType.CoppercoilMirelisk)
+				.MutationWeight(90)
+				.MutationRequiresDayOfWeek(DayOfWeek.Monday)
 
+
+				.CanMutateInto(BeastType.MustardlashSlime)
+				.MutationWeight(10)
+				.MutationRequiresDayOfWeek(DayOfWeek.Monday)
 
                 ;
 

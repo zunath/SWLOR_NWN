@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
@@ -22,10 +23,14 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 
                 .CanMutateInto(BeastType.SwampRat)
 				.MutationWeight(50)
-				.MutationRequiresIsomeraseColor(EnzymeColorType.Yellow, 1)
+				.MutationRequiresLyaseColor(EnzymeColorType.Orange, 1)
+				.MutationRequiresDayOfWeek(DayOfWeek.Wednesday, DayOfWeek.Thursday, DayOfWeek.Sunday)
 
-                .CanMutateInto(BeastType.BalanoroForceMite)
+
+				.CanMutateInto(BeastType.BalanoroForceMite)
 				.MutationWeight(15)
+				.MutationRequiresIsomeraseColor(EnzymeColorType.Yellow, 1)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.Red, 1)
 
                 ;
 

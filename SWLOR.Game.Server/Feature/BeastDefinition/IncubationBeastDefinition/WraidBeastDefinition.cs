@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
@@ -20,7 +21,20 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
                 .CombatStats(AbilityType.Vitality, AbilityType.Might)
                 .Role(BeastRoleType.Bruiser)
 
+                .CanMutateInto(BeastType.UmbralBarghest)
+				.MutationWeight(90)
+				.MutationRequiresLyaseColor(EnzymeColorType.Orange, 2)
+				.MutationRequiresIsomeraseColor(EnzymeColorType.Yellow, 2)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.White, 3)
+				.MutationRequiresDayOfWeek(DayOfWeek.Saturday)
 
+
+				.CanMutateInto(BeastType.OchreMaw)
+				.MutationWeight(10)
+				.MutationRequiresLyaseColor(EnzymeColorType.Orange, 2)
+				.MutationRequiresIsomeraseColor(EnzymeColorType.Yellow, 2)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.White, 3)
+				.MutationRequiresDayOfWeek(DayOfWeek.Saturday)
 
                 ;
 

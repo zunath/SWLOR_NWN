@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
@@ -22,14 +23,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 
                 .CanMutateInto(BeastType.JuvenileRancor)
 				.MutationWeight(5)
-				.MutationRequiresLyaseColor(EnzymeColorType.Orange, 1)
-				.MutationRequiresIsomeraseColor(EnzymeColorType.Orange, 1)
-				.MutationRequiresHydrolaseColor(EnzymeColorType.Orange, 1)
+				.MutationRequiresIsomeraseColor(EnzymeColorType.Orange, 2)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.White, 2)
 
-                .CanMutateInto(BeastType.Cragscale)
+
+				.CanMutateInto(BeastType.Cragscale)
 				.MutationWeight(30)
-				.MutationRequiresLyaseColor(EnzymeColorType.Red, 2)
-				.MutationRequiresIsomeraseColor(EnzymeColorType.Red, 1)
+				.MutationRequiresDayOfWeek(DayOfWeek.Saturday, DayOfWeek.Sunday)
 
                 ;
 

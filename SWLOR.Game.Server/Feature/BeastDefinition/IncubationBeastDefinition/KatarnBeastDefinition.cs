@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
@@ -20,7 +21,18 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
                 .CombatStats(AbilityType.Might, AbilityType.Agility)
                 .Role(BeastRoleType.Balanced)
 
+                .CanMutateInto(BeastType.NightspotAralynx)
+				.MutationWeight(90)
+				.MutationRequiresIsomeraseColor(EnzymeColorType.Orange, 3)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.White, 3)
+				.MutationRequiresDayOfWeek(DayOfWeek.Wednesday, DayOfWeek.Thursday, DayOfWeek.Sunday)
 
+
+				.CanMutateInto(BeastType.HouseCat)
+				.MutationWeight(10)
+				.MutationRequiresIsomeraseColor(EnzymeColorType.Orange, 3)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.White, 3)
+				.MutationRequiresDayOfWeek(DayOfWeek.Wednesday, DayOfWeek.Thursday, DayOfWeek.Sunday)
 
                 ;
 

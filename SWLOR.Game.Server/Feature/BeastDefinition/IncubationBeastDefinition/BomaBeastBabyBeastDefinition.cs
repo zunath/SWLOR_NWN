@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
@@ -20,7 +21,20 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
                 .CombatStats(AbilityType.Social, AbilityType.Willpower)
                 .Role(BeastRoleType.Force)
 
+                .CanMutateInto(BeastType.UmberrootArctara)
+				.MutationWeight(90)
+				.MutationRequiresLyaseColor(EnzymeColorType.Black, 3)
+				.MutationRequiresIsomeraseColor(EnzymeColorType.Red, 3)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.Blue, 3)
+				.MutationRequiresDayOfWeek(DayOfWeek.Tuesday, DayOfWeek.Sunday)
 
+
+				.CanMutateInto(BeastType.VoidmireEcho)
+				.MutationWeight(10)
+				.MutationRequiresLyaseColor(EnzymeColorType.Black, 3)
+				.MutationRequiresIsomeraseColor(EnzymeColorType.Red, 3)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.Blue, 3)
+				.MutationRequiresDayOfWeek(DayOfWeek.Tuesday, DayOfWeek.Sunday)
 
                 ;
 

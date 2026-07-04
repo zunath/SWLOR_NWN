@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
@@ -22,14 +23,14 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 
                 .CanMutateInto(BeastType.JuvenileChirodactyl)
 				.MutationWeight(10)
-				.MutationRequiresLyaseColor(EnzymeColorType.Black, 1)
-				.MutationRequiresIsomeraseColor(EnzymeColorType.Blue, 1)
-				.MutationRequiresHydrolaseColor(EnzymeColorType.White, 1)
-				.MutationRequiresDayOfWeek(DayOfWeek.Monday, DayOfWeek.Friday)
+				.MutationRequiresLyaseColor(EnzymeColorType.Orange, 2)
 
-                .CanMutateInto(BeastType.Porg)
+
+				.CanMutateInto(BeastType.Porg)
 				.MutationWeight(10)
-				.MutationRequiresHydrolaseColor(EnzymeColorType.Purple, 3)
+				.MutationRequiresIsomeraseColor(EnzymeColorType.Yellow, 2)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.Red, 2)
+				.MutationRequiresDayOfWeek(DayOfWeek.Thursday, DayOfWeek.Wednesday)
 
                 ;
 

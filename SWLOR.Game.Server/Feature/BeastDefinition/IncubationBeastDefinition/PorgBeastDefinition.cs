@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
@@ -20,7 +21,18 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
                 .CombatStats(AbilityType.Social, AbilityType.Willpower)
                 .Role(BeastRoleType.Force)
 
+                .CanMutateInto(BeastType.CloudcallAurelith)
+				.MutationWeight(90)
+				.MutationRequiresIsomeraseColor(EnzymeColorType.Red, 3)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.Blue, 3)
+				.MutationRequiresDayOfWeek(DayOfWeek.Tuesday, DayOfWeek.Thursday)
 
+
+				.CanMutateInto(BeastType.VoidmireEcho)
+				.MutationWeight(10)
+				.MutationRequiresIsomeraseColor(EnzymeColorType.Red, 3)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.Blue, 3)
+				.MutationRequiresDayOfWeek(DayOfWeek.Tuesday, DayOfWeek.Thursday)
 
                 ;
 

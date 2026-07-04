@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
@@ -20,7 +21,18 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
                 .CombatStats(AbilityType.Perception, AbilityType.Might)
                 .Role(BeastRoleType.Evasion)
 
+                .CanMutateInto(BeastType.DuskmaneUrsadon)
+				.MutationWeight(90)
+				.MutationRequiresLyaseColor(EnzymeColorType.Blue, 2)
+				.MutationRequiresIsomeraseColor(EnzymeColorType.Green, 2)
+				.MutationRequiresDayOfWeek(DayOfWeek.Monday)
 
+
+				.CanMutateInto(BeastType.CrystalflowSkimmer)
+				.MutationWeight(10)
+				.MutationRequiresLyaseColor(EnzymeColorType.Blue, 2)
+				.MutationRequiresIsomeraseColor(EnzymeColorType.Green, 2)
+				.MutationRequiresDayOfWeek(DayOfWeek.Monday)
 
                 ;
 

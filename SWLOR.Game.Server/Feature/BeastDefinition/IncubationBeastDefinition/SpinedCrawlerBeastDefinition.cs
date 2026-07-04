@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
@@ -20,7 +21,14 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
                 .CombatStats(AbilityType.Perception, AbilityType.Vitality)
                 .Role(BeastRoleType.Tank)
 
+                .CanMutateInto(BeastType.SaberlegKharaxis)
+				.MutationWeight(90)
+				.MutationRequiresDayOfWeek(DayOfWeek.Monday)
 
+
+				.CanMutateInto(BeastType.GreenbulkWallow)
+				.MutationWeight(10)
+				.MutationRequiresDayOfWeek(DayOfWeek.Monday)
 
                 ;
 

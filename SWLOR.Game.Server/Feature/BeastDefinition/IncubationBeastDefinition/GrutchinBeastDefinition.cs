@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
@@ -20,7 +21,20 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
                 .CombatStats(AbilityType.Perception, AbilityType.Social)
                 .Role(BeastRoleType.Evasion)
 
+                .CanMutateInto(BeastType.PhaselegSilkstalker)
+				.MutationWeight(90)
+				.MutationRequiresLyaseColor(EnzymeColorType.Red, 3)
+				.MutationRequiresIsomeraseColor(EnzymeColorType.Blue, 3)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.Purple, 3)
+				.MutationRequiresDayOfWeek(DayOfWeek.Monday, DayOfWeek.Wednesday, DayOfWeek.Friday)
 
+
+				.CanMutateInto(BeastType.CrystalflowSkimmer)
+				.MutationWeight(10)
+				.MutationRequiresLyaseColor(EnzymeColorType.Red, 3)
+				.MutationRequiresIsomeraseColor(EnzymeColorType.Blue, 3)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.Purple, 3)
+				.MutationRequiresDayOfWeek(DayOfWeek.Monday, DayOfWeek.Wednesday, DayOfWeek.Friday)
 
                 ;
 

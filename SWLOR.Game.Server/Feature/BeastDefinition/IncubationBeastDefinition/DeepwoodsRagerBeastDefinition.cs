@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
@@ -20,7 +21,18 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
                 .CombatStats(AbilityType.Vitality, AbilityType.Might)
                 .Role(BeastRoleType.Bruiser)
 
+                .CanMutateInto(BeastType.MoonthornVeloria)
+				.MutationWeight(90)
+				.MutationRequiresLyaseColor(EnzymeColorType.Orange, 3)
+				.MutationRequiresIsomeraseColor(EnzymeColorType.Orange, 2)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.White, 2)
 
+
+				.CanMutateInto(BeastType.OchreMaw)
+				.MutationWeight(10)
+				.MutationRequiresLyaseColor(EnzymeColorType.Orange, 3)
+				.MutationRequiresIsomeraseColor(EnzymeColorType.Orange, 2)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.White, 2)
 
                 ;
 

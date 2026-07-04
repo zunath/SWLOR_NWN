@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
@@ -20,7 +21,16 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
                 .CombatStats(AbilityType.Vitality, AbilityType.Might)
                 .Role(BeastRoleType.Tank)
 
+                .CanMutateInto(BeastType.GildedMirewyrm)
+				.MutationWeight(90)
+				.MutationRequiresLyaseColor(EnzymeColorType.Blue, 2)
+				.MutationRequiresIsomeraseColor(EnzymeColorType.Green, 2)
 
+
+				.CanMutateInto(BeastType.GreenbulkWallow)
+				.MutationWeight(10)
+				.MutationRequiresLyaseColor(EnzymeColorType.Blue, 2)
+				.MutationRequiresIsomeraseColor(EnzymeColorType.Green, 2)
 
                 ;
 

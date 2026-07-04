@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
@@ -20,7 +21,18 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
                 .CombatStats(AbilityType.Willpower, AbilityType.Perception)
                 .Role(BeastRoleType.Force)
 
+                .CanMutateInto(BeastType.RootboundColossus)
+				.MutationWeight(90)
+				.MutationRequiresLyaseColor(EnzymeColorType.Orange, 2)
+				.MutationRequiresIsomeraseColor(EnzymeColorType.Yellow, 2)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.White, 3)
 
+
+				.CanMutateInto(BeastType.VoidmireEcho)
+				.MutationWeight(10)
+				.MutationRequiresLyaseColor(EnzymeColorType.Orange, 2)
+				.MutationRequiresIsomeraseColor(EnzymeColorType.Yellow, 2)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.White, 3)
 
                 ;
 

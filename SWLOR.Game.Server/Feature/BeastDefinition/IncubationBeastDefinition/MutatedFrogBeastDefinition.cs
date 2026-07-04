@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
@@ -20,7 +21,18 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
                 .CombatStats(AbilityType.Vitality, AbilityType.Might)
                 .Role(BeastRoleType.Tank)
 
+                .CanMutateInto(BeastType.GranitebackUrsavar)
+				.MutationWeight(90)
+				.MutationRequiresLyaseColor(EnzymeColorType.Black, 3)
+				.MutationRequiresIsomeraseColor(EnzymeColorType.Yellow, 2)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.Red, 2)
 
+
+				.CanMutateInto(BeastType.GreenbulkWallow)
+				.MutationWeight(10)
+				.MutationRequiresLyaseColor(EnzymeColorType.Black, 3)
+				.MutationRequiresIsomeraseColor(EnzymeColorType.Yellow, 2)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.Red, 2)
 
                 ;
 

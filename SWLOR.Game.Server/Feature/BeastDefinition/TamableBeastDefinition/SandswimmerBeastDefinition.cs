@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
@@ -22,12 +23,14 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 
                 .CanMutateInto(BeastType.Stegosaurus)
 				.MutationWeight(5)
-				.MutationRequiresLyaseColor(EnzymeColorType.Green, 1)
+				.MutationRequiresLyaseColor(EnzymeColorType.Black, 2)
+				.MutationRequiresIsomeraseColor(EnzymeColorType.Red, 2)
 				.MutationRequiresHydrolaseColor(EnzymeColorType.Red, 1)
-				.MutationRequiresDayOfWeek(DayOfWeek.Saturday, DayOfWeek.Sunday)
 
-                .CanMutateInto(BeastType.MushWarrior)
+
+				.CanMutateInto(BeastType.MushWarrior)
 				.MutationWeight(15)
+				.MutationRequiresLyaseColor(EnzymeColorType.Black, 2)
 
                 ;
 

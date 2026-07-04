@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
@@ -20,7 +21,18 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
                 .CombatStats(AbilityType.Willpower, AbilityType.Might)
                 .Role(BeastRoleType.Bruiser)
 
+                .CanMutateInto(BeastType.JadeclawVyrkol)
+				.MutationWeight(90)
+				.MutationRequiresLyaseColor(EnzymeColorType.Red, 3)
+				.MutationRequiresIsomeraseColor(EnzymeColorType.Red, 2)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.Blue, 2)
 
+
+				.CanMutateInto(BeastType.OchreMaw)
+				.MutationWeight(10)
+				.MutationRequiresLyaseColor(EnzymeColorType.Red, 3)
+				.MutationRequiresIsomeraseColor(EnzymeColorType.Red, 2)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.Blue, 2)
 
                 ;
 

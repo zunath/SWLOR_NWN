@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
@@ -20,7 +21,18 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
                 .CombatStats(AbilityType.Perception, AbilityType.Might)
                 .Role(BeastRoleType.Balanced)
 
+                .CanMutateInto(BeastType.EmeraldcrestKalyth)
+				.MutationWeight(90)
+				.MutationRequiresLyaseColor(EnzymeColorType.Red, 3)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.Blue, 2)
+				.MutationRequiresDayOfWeek(DayOfWeek.Tuesday, DayOfWeek.Thursday)
 
+
+				.CanMutateInto(BeastType.HouseCat)
+				.MutationWeight(10)
+				.MutationRequiresLyaseColor(EnzymeColorType.Red, 3)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.Blue, 2)
+				.MutationRequiresDayOfWeek(DayOfWeek.Tuesday, DayOfWeek.Thursday)
 
                 ;
 

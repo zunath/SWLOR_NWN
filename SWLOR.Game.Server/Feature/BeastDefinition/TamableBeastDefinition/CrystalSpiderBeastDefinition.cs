@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
@@ -22,11 +23,14 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 
                 .CanMutateInto(BeastType.RazorhideHound)
 				.MutationWeight(50)
-
-                .CanMutateInto(BeastType.Tukata)
-				.MutationWeight(10)
-				.MutationRequiresIsomeraseColor(EnzymeColorType.Blue, 1)
+				.MutationRequiresLyaseColor(EnzymeColorType.Green, 2)
+				.MutationRequiresIsomeraseColor(EnzymeColorType.Orange, 2)
 				.MutationRequiresHydrolaseColor(EnzymeColorType.Orange, 1)
+
+
+				.CanMutateInto(BeastType.Tukata)
+				.MutationWeight(10)
+				.MutationRequiresLyaseColor(EnzymeColorType.Green, 2)
 
                 ;
 

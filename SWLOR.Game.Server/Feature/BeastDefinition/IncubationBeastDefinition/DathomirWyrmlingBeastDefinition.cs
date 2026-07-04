@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
@@ -20,7 +21,18 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
                 .CombatStats(AbilityType.Willpower, AbilityType.Might)
                 .Role(BeastRoleType.Evasion)
 
+                .CanMutateInto(BeastType.SilverveilAerolith)
+				.MutationWeight(90)
+				.MutationRequiresLyaseColor(EnzymeColorType.Green, 2)
+				.MutationRequiresIsomeraseColor(EnzymeColorType.Orange, 2)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.Orange, 3)
 
+
+				.CanMutateInto(BeastType.CrystalflowSkimmer)
+				.MutationWeight(10)
+				.MutationRequiresLyaseColor(EnzymeColorType.Green, 2)
+				.MutationRequiresIsomeraseColor(EnzymeColorType.Orange, 2)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.Orange, 3)
 
                 ;
 

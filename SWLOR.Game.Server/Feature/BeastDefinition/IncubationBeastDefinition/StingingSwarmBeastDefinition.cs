@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
@@ -20,7 +21,18 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
                 .CombatStats(AbilityType.Vitality, AbilityType.Might)
                 .Role(BeastRoleType.Evasion)
 
+                .CanMutateInto(BeastType.WraithwebNythrax)
+				.MutationWeight(90)
+				.MutationRequiresLyaseColor(EnzymeColorType.Orange, 3)
+				.MutationRequiresIsomeraseColor(EnzymeColorType.Yellow, 3)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.Red, 3)
 
+
+				.CanMutateInto(BeastType.CrystalflowSkimmer)
+				.MutationWeight(10)
+				.MutationRequiresLyaseColor(EnzymeColorType.Orange, 3)
+				.MutationRequiresIsomeraseColor(EnzymeColorType.Yellow, 3)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.Red, 3)
 
                 ;
 

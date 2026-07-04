@@ -23,19 +23,19 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 
                 .CanMutateInto(BeastType.HornedKathHound)
 				.MutationWeight(50)
+				.MutationRequiresLyaseColor(EnzymeColorType.Red, 1)
 
 
 				.CanMutateInto(BeastType.Hanadak)
 				.MutationWeight(10)
-				.MutationRequiresLyaseColor(EnzymeColorType.Black, 1)
-				.MutationRequiresIsomeraseColor(EnzymeColorType.Yellow, 1)
+				.MutationRequiresIsomeraseColor(EnzymeColorType.Blue, 1)
 				.MutationRequiresHydrolaseColor(EnzymeColorType.Purple, 1)
 
 
 				.CanMutateInto(BeastType.CharHound)
 				.MutationWeight(5)
-				.MutationRequiresLyaseColor(EnzymeColorType.Red, 1)
-				.MutationRequiresIsomeraseColor(EnzymeColorType.Orange, 1)
+				.MutationRequiresLyaseColor(EnzymeColorType.Blue, 2)
+				.MutationRequiresIsomeraseColor(EnzymeColorType.Green, 2)
 				.MutationRequiresHydrolaseColor(EnzymeColorType.Purple, 1)
 
                 ;
@@ -95,7 +95,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
             return _builder.Build();
         }
 
-        
+
 		private void Level1()
 		{
 			_builder

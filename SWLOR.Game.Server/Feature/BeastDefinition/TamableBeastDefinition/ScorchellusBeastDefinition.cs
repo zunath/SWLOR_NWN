@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
@@ -22,13 +23,14 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 
                 .CanMutateInto(BeastType.SinkCrab)
 				.MutationWeight(50)
+				.MutationRequiresDayOfWeek(DayOfWeek.Tuesday, DayOfWeek.Thursday)
 
-                .CanMutateInto(BeastType.Triceratops)
+
+				.CanMutateInto(BeastType.Triceratops)
 				.MutationWeight(5)
-				.MutationRequiresLyaseColor(EnzymeColorType.Orange, 1)
-				.MutationRequiresIsomeraseColor(EnzymeColorType.Red, 1)
-				.MutationRequiresHydrolaseColor(EnzymeColorType.White, 1)
-				.MutationRequiresDayOfWeek(DayOfWeek.Tuesday)
+				.MutationRequiresLyaseColor(EnzymeColorType.Red, 1)
+				.MutationRequiresIsomeraseColor(EnzymeColorType.Blue, 1)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.Blue, 2)
 
                 ;
 

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
@@ -20,6 +21,18 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
                 .CombatStats(AbilityType.Willpower, AbilityType.Social)
                 .Role(BeastRoleType.Bruiser)
 
+                .CanMutateInto(BeastType.DeepstoneGraxal)
+				.MutationWeight(90)
+				.MutationRequiresLyaseColor(EnzymeColorType.Black, 3)
+				.MutationRequiresIsomeraseColor(EnzymeColorType.Red, 3)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.Blue, 3)
+
+
+				.CanMutateInto(BeastType.OchreMaw)
+				.MutationWeight(10)
+				.MutationRequiresLyaseColor(EnzymeColorType.Black, 3)
+				.MutationRequiresIsomeraseColor(EnzymeColorType.Red, 3)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.Blue, 3)
 
                 ;
 

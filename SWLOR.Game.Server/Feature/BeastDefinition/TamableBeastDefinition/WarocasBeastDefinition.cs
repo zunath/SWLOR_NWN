@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
@@ -22,9 +23,12 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 
                 .CanMutateInto(BeastType.Grutchin)
 				.MutationWeight(50)
+				.MutationRequiresDayOfWeek(DayOfWeek.Sunday)
 
-                .CanMutateInto(BeastType.BurrowberryPack)
+
+				.CanMutateInto(BeastType.BurrowberryPack)
 				.MutationWeight(10)
+				.MutationRequiresLyaseColor(EnzymeColorType.Green, 2)
 
                 ;
 

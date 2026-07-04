@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
@@ -20,7 +21,16 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
                 .CombatStats(AbilityType.Agility, AbilityType.Perception)
                 .Role(BeastRoleType.Bruiser)
 
+                .CanMutateInto(BeastType.SootbellyMirekit)
+				.MutationWeight(90)
+				.MutationRequiresLyaseColor(EnzymeColorType.Blue, 3)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.Purple, 2)
 
+
+				.CanMutateInto(BeastType.OchreMaw)
+				.MutationWeight(10)
+				.MutationRequiresLyaseColor(EnzymeColorType.Blue, 3)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.Purple, 2)
 
                 ;
 

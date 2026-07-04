@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
@@ -20,7 +21,16 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
                 .CombatStats(AbilityType.Agility, AbilityType.Willpower)
                 .Role(BeastRoleType.Damage)
 
+                .CanMutateInto(BeastType.StrayfangKavor)
+				.MutationWeight(90)
+				.MutationRequiresIsomeraseColor(EnzymeColorType.Blue, 3)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.Purple, 3)
 
+
+				.CanMutateInto(BeastType.MustardlashSlime)
+				.MutationWeight(10)
+				.MutationRequiresIsomeraseColor(EnzymeColorType.Blue, 3)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.Purple, 3)
 
                 ;
 

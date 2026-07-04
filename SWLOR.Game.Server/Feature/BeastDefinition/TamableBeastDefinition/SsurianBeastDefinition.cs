@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
@@ -22,9 +23,14 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 
                 .CanMutateInto(BeastType.OrbakWaterHorse)
 				.MutationWeight(40)
+				.MutationRequiresLyaseColor(EnzymeColorType.Orange, 2)
+				.MutationRequiresIsomeraseColor(EnzymeColorType.Yellow, 2)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.White, 1)
 
-                .CanMutateInto(BeastType.BomaBeast)
+
+				.CanMutateInto(BeastType.BomaBeast)
 				.MutationWeight(10)
+				.MutationRequiresDayOfWeek(DayOfWeek.Monday, DayOfWeek.Friday)
 
                 ;
 

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
@@ -20,7 +21,18 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
                 .CombatStats(AbilityType.Might, AbilityType.Vitality)
                 .Role(BeastRoleType.Tank)
 
+                .CanMutateInto(BeastType.AbysswebRavager)
+				.MutationWeight(90)
+				.MutationRequiresIsomeraseColor(EnzymeColorType.Yellow, 3)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.Red, 3)
+				.MutationRequiresDayOfWeek(DayOfWeek.Friday)
 
+
+				.CanMutateInto(BeastType.GreenbulkWallow)
+				.MutationWeight(10)
+				.MutationRequiresIsomeraseColor(EnzymeColorType.Yellow, 3)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.Red, 3)
+				.MutationRequiresDayOfWeek(DayOfWeek.Friday)
 
                 ;
 

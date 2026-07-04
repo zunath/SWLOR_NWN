@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
@@ -22,10 +23,15 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 
                 .CanMutateInto(BeastType.Crocodile)
 				.MutationWeight(30)
-				.MutationRequiresHydrolaseColor(EnzymeColorType.Blue, 1)
+				.MutationRequiresIsomeraseColor(EnzymeColorType.Blue, 2)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.Purple, 2)
 
-                .CanMutateInto(BeastType.Weasel)
+
+				.CanMutateInto(BeastType.Weasel)
 				.MutationWeight(25)
+				.MutationRequiresLyaseColor(EnzymeColorType.Blue, 1)
+				.MutationRequiresIsomeraseColor(EnzymeColorType.Green, 1)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.Purple, 2)
 
                 ;
 

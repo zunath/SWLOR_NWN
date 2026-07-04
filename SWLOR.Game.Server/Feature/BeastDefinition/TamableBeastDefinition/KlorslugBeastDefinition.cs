@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
@@ -22,10 +23,12 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 
                 .CanMutateInto(BeastType.Dreamwalker)
 				.MutationWeight(10)
-				.MutationRequiresHydrolaseColor(EnzymeColorType.White, 3)
+				.MutationRequiresLyaseColor(EnzymeColorType.Blue, 2)
 
-                .CanMutateInto(BeastType.DeepwoodsRager)
+
+				.CanMutateInto(BeastType.DeepwoodsRager)
 				.MutationWeight(20)
+				.MutationRequiresDayOfWeek(DayOfWeek.Monday)
 
                 ;
 

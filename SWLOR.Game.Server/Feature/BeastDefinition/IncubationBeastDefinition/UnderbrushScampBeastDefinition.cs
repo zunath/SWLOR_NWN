@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
@@ -20,7 +21,16 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
                 .CombatStats(AbilityType.Perception, AbilityType.Agility)
                 .Role(BeastRoleType.Evasion)
 
+                .CanMutateInto(BeastType.VermilionRavager)
+				.MutationWeight(90)
+				.MutationRequiresLyaseColor(EnzymeColorType.Green, 3)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.Orange, 2)
 
+
+				.CanMutateInto(BeastType.CrystalflowSkimmer)
+				.MutationWeight(10)
+				.MutationRequiresLyaseColor(EnzymeColorType.Green, 3)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.Orange, 2)
 
                 ;
 

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
@@ -22,12 +23,12 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 
                 .CanMutateInto(BeastType.DeeprockMauler)
 				.MutationWeight(10)
-				.MutationRequiresIsomeraseColor(EnzymeColorType.Green, 1)
-				.MutationRequiresHydrolaseColor(EnzymeColorType.Purple, 2)
+				.MutationRequiresLyaseColor(EnzymeColorType.Orange, 1)
 
-                .CanMutateInto(BeastType.FungalShambler)
+
+				.CanMutateInto(BeastType.FungalShambler)
 				.MutationWeight(50)
-				.MutationRequiresDayOfWeek(DayOfWeek.Monday, DayOfWeek.Wednesday, DayOfWeek.Friday)
+				.MutationRequiresDayOfWeek(DayOfWeek.Thursday)
 
                 ;
 

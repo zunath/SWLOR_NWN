@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
@@ -22,9 +23,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 
                 .CanMutateInto(BeastType.Ronto)
 				.MutationWeight(40)
+				.MutationRequiresDayOfWeek(DayOfWeek.Wednesday)
 
-                .CanMutateInto(BeastType.Frog)
+
+				.CanMutateInto(BeastType.Frog)
 				.MutationWeight(80)
+				.MutationRequiresIsomeraseColor(EnzymeColorType.Blue, 1)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.Purple, 1)
 
                 ;
 

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
@@ -22,9 +23,14 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 
                 .CanMutateInto(BeastType.Aardvark)
 				.MutationWeight(50)
+				.MutationRequiresLyaseColor(EnzymeColorType.Red, 2)
+				.MutationRequiresIsomeraseColor(EnzymeColorType.Blue, 2)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.Blue, 1)
 
-                .CanMutateInto(BeastType.Blastail)
+
+				.CanMutateInto(BeastType.Blastail)
 				.MutationWeight(15)
+				.MutationRequiresLyaseColor(EnzymeColorType.Red, 2)
 
                 ;
 

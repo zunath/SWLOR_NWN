@@ -21,6 +21,16 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
                 .CombatStats(AbilityType.Vitality, AbilityType.Might)
                 .Role(BeastRoleType.Balanced)
 
+                .CanMutateInto(BeastType.AshenMoonprowler)
+				.MutationWeight(90)
+				.MutationRequiresLyaseColor(EnzymeColorType.Blue, 3)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.Purple, 2)
+
+
+				.CanMutateInto(BeastType.HouseCat)
+				.MutationWeight(10)
+				.MutationRequiresLyaseColor(EnzymeColorType.Blue, 3)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.Purple, 2)
 
                 ;
 

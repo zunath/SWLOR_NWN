@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
@@ -22,11 +23,15 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 
                 .CanMutateInto(BeastType.TundraPonderer)
 				.MutationWeight(30)
+				.MutationRequiresIsomeraseColor(EnzymeColorType.Red, 1)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.Blue, 1)
 
-                .CanMutateInto(BeastType.UnderseaCarver)
+
+				.CanMutateInto(BeastType.UnderseaCarver)
 				.MutationWeight(10)
-				.MutationRequiresLyaseColor(EnzymeColorType.Green, 1)
-				.MutationRequiresIsomeraseColor(EnzymeColorType.Blue, 1)
+				.MutationRequiresLyaseColor(EnzymeColorType.Red, 2)
+				.MutationRequiresIsomeraseColor(EnzymeColorType.Blue, 2)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.Blue, 1)
 
                 ;
 

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
@@ -23,12 +24,12 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
                 .CanMutateInto(BeastType.StonecladBehemoth)
 				.MutationWeight(5)
 				.MutationRequiresLyaseColor(EnzymeColorType.Red, 2)
-				.MutationRequiresIsomeraseColor(EnzymeColorType.Blue, 2)
-				.MutationRequiresHydrolaseColor(EnzymeColorType.Blue, 2)
-				.MutationRequiresDayOfWeek(DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday, DayOfWeek.Thursday, DayOfWeek.Friday, DayOfWeek.Sunday)
 
-                .CanMutateInto(BeastType.MutatedBoar)
+
+				.CanMutateInto(BeastType.MutatedBoar)
 				.MutationWeight(50)
+				.MutationRequiresIsomeraseColor(EnzymeColorType.Blue, 2)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.Purple, 2)
 
                 ;
 

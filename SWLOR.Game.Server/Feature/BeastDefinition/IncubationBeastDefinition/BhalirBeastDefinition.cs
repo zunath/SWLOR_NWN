@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
@@ -20,7 +21,18 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
                 .CombatStats(AbilityType.Agility, AbilityType.Might)
                 .Role(BeastRoleType.Balanced)
 
+                .CanMutateInto(BeastType.FrostbackSpineguard)
+				.MutationWeight(90)
+				.MutationRequiresIsomeraseColor(EnzymeColorType.Orange, 3)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.White, 3)
+				.MutationRequiresDayOfWeek(DayOfWeek.Friday)
 
+
+				.CanMutateInto(BeastType.GraymireAmalgam)
+				.MutationWeight(10)
+				.MutationRequiresIsomeraseColor(EnzymeColorType.Orange, 3)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.White, 3)
+				.MutationRequiresDayOfWeek(DayOfWeek.Friday)
 
                 ;
 

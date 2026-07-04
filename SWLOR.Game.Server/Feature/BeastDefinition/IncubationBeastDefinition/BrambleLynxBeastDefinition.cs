@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
@@ -20,7 +21,16 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
                 .CombatStats(AbilityType.Perception, AbilityType.Agility)
                 .Role(BeastRoleType.Bruiser)
 
+                .CanMutateInto(BeastType.CragmaneValshar)
+				.MutationWeight(90)
+				.MutationRequiresIsomeraseColor(EnzymeColorType.Red, 3)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.Blue, 3)
 
+
+				.CanMutateInto(BeastType.OchreMaw)
+				.MutationWeight(10)
+				.MutationRequiresIsomeraseColor(EnzymeColorType.Red, 3)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.Blue, 3)
 
                 ;
 

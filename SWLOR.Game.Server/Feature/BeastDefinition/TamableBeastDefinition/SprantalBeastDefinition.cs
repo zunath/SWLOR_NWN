@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
@@ -22,12 +23,15 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 
                 .CanMutateInto(BeastType.Torosaurus)
 				.MutationWeight(5)
-				.MutationRequiresLyaseColor(EnzymeColorType.Green, 1)
-				.MutationRequiresIsomeraseColor(EnzymeColorType.Yellow, 1)
-				.MutationRequiresDayOfWeek(DayOfWeek.Monday, DayOfWeek.Friday)
+				.MutationRequiresIsomeraseColor(EnzymeColorType.Green, 2)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.Orange, 2)
 
-                .CanMutateInto(BeastType.UbeseThorn)
+
+				.CanMutateInto(BeastType.UbeseThorn)
 				.MutationWeight(75)
+				.MutationRequiresLyaseColor(EnzymeColorType.Green, 1)
+				.MutationRequiresIsomeraseColor(EnzymeColorType.Orange, 1)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.Orange, 2)
 
                 ;
 

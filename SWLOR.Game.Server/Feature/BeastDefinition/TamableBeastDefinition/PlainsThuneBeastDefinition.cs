@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
@@ -22,10 +23,14 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 
                 .CanMutateInto(BeastType.Bhalir)
 				.MutationWeight(20)
-				.MutationRequiresDayOfWeek(DayOfWeek.Wednesday, DayOfWeek.Friday, DayOfWeek.Saturday)
+				.MutationRequiresLyaseColor(EnzymeColorType.Black, 1)
+				.MutationRequiresIsomeraseColor(EnzymeColorType.Red, 1)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.Red, 2)
 
-                .CanMutateInto(BeastType.Dewback)
+
+				.CanMutateInto(BeastType.Dewback)
 				.MutationWeight(10)
+				.MutationRequiresLyaseColor(EnzymeColorType.Black, 1)
 
                 ;
 

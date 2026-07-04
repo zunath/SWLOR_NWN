@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
@@ -20,7 +21,16 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
                 .CombatStats(AbilityType.Vitality, AbilityType.Agility)
                 .Role(BeastRoleType.Tank)
 
+                .CanMutateInto(BeastType.VeilphaseArachnyx)
+				.MutationWeight(90)
+				.MutationRequiresIsomeraseColor(EnzymeColorType.Green, 3)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.Orange, 3)
 
+
+				.CanMutateInto(BeastType.GreenbulkWallow)
+				.MutationWeight(10)
+				.MutationRequiresIsomeraseColor(EnzymeColorType.Green, 3)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.Orange, 3)
 
                 ;
 

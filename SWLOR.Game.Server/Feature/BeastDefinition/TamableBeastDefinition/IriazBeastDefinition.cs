@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
@@ -22,10 +23,14 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 
                 .CanMutateInto(BeastType.UnderbrushScamp)
 				.MutationWeight(20)
+				.MutationRequiresLyaseColor(EnzymeColorType.Black, 2)
+				.MutationRequiresIsomeraseColor(EnzymeColorType.Red, 2)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.Red, 1)
 
-                .CanMutateInto(BeastType.Cannok)
+
+				.CanMutateInto(BeastType.Cannok)
 				.MutationWeight(10)
-				.MutationRequiresDayOfWeek(DayOfWeek.Tuesday, DayOfWeek.Thursday, DayOfWeek.Sunday)
+				.MutationRequiresDayOfWeek(DayOfWeek.Tuesday, DayOfWeek.Sunday)
 
                 ;
 

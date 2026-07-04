@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
@@ -24,8 +25,11 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 				.MutationWeight(10)
 				.MutationRequiresLyaseColor(EnzymeColorType.Blue, 1)
 
-                .CanMutateInto(BeastType.Wraid)
+
+				.CanMutateInto(BeastType.Wraid)
 				.MutationWeight(50)
+				.MutationRequiresIsomeraseColor(EnzymeColorType.Green, 1)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.Orange, 1)
 
                 ;
 

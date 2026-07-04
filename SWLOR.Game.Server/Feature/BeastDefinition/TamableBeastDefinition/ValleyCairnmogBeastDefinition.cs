@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
@@ -22,10 +23,13 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 
                 .CanMutateInto(BeastType.GiantGaruBear)
 				.MutationWeight(35)
-				.MutationRequiresIsomeraseColor(EnzymeColorType.Red, 1)
+				.MutationRequiresIsomeraseColor(EnzymeColorType.Yellow, 2)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.Red, 2)
 
-                .CanMutateInto(BeastType.BurrowberryBird)
+
+				.CanMutateInto(BeastType.BurrowberryBird)
 				.MutationWeight(80)
+				.MutationRequiresDayOfWeek(DayOfWeek.Saturday, DayOfWeek.Sunday)
 
                 ;
 

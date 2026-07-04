@@ -1,7 +1,11 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
+using System.Text.RegularExpressions;
+using System.Xml.Linq;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -21,126 +25,154 @@ namespace SWLOR.CLI
             }
         }
 
-        private const string InputData = "./InputFiles/beast_levels.tsv";
-        
-        private const string Template = "./Templates/beast_builder_template.txt";
-        private const string LevelTemplate = "./Templates/beast_level_template.txt";
-        private const string OutputFolder = "./OutputBeasts/";
+        private sealed class MutationSourceRow
+        {
+            public string ResultEnum { get; init; }
+            public string Weight { get; init; }
+            public string LyaseColor { get; init; }
+            public string LyaseCount { get; init; }
+            public string IsomeraseColor { get; init; }
+            public string IsomeraseCount { get; init; }
+            public string HydrolaseColor { get; init; }
+            public string HydrolaseCount { get; init; }
+            public string Days { get; init; }
+        }
+
+        private sealed class WorkbookRow
+        {
+            private readonly IReadOnlyDictionary<string, string> _values;
+
+            public WorkbookRow(IReadOnlyDictionary<string, string> values)
+            {
+                _values = values;
+            }
+
+            public string this[string header] =>
+                _values.TryGetValue(header, out var value)
+                    ? value.Trim()
+                    : string.Empty;
+        }
+
+        private const string PublicBibleWorkbook = "SWLOR Design Bible - Combat Upgrade.xlsx";
+        private const string PrivateSourceWorkbook = "SWLOR Design Bible - Private Source Data.xlsx";
+        private const string Template = "Templates/beast_builder_template.txt";
+        private const string LevelTemplate = "Templates/beast_level_template.txt";
+        private const string OutputFolder = "OutputBeasts";
 
         public void Process()
         {
             ClearOutputDirectory();
 
-            var template = File.ReadAllText(Template);
-            var levelTemplate = File.ReadAllText(LevelTemplate);
-            var inputLines = File.ReadAllLines(InputData).ToList();
+            var template = File.ReadAllText(ResolveCliPath(Template));
+            var levelTemplate = File.ReadAllText(ResolveCliPath(LevelTemplate));
+            var publicWorkbookPath = ResolveBiblePath(PublicBibleWorkbook);
+            var privateWorkbookPath = ResolveBiblePath(PrivateSourceWorkbook);
+            var beastLevelRows = WorkbookReader
+                .ReadRows(publicWorkbookPath, "Beast Levels", 4, 5)
+                .Where(row => !string.IsNullOrWhiteSpace(row["NPC Name"]))
+                .ToList();
+            var mutationRowsBySource = WorkbookReader
+                .ReadRows(privateWorkbookPath, "Mutation Requirements", 1, 2)
+                .Where(row =>
+                    !string.IsNullOrWhiteSpace(row["Source Enum"]) &&
+                    !string.IsNullOrWhiteSpace(row["Result Enum"]))
+                .GroupBy(row => row["Source Enum"])
+                .ToDictionary(
+                    group => group.Key,
+                    group => group
+                        .Select(row => new MutationSourceRow
+                        {
+                            ResultEnum = row["Result Enum"],
+                            Weight = row["Weight"],
+                            LyaseColor = row["Lyase Color"],
+                            LyaseCount = row["Lyase Count"],
+                            IsomeraseColor = row["Isomerase Color"],
+                            IsomeraseCount = row["Isomerase Count"],
+                            HydrolaseColor = row["Hydrolase Color"],
+                            HydrolaseCount = row["Hydrolase Count"],
+                            Days = row["Days"]
+                        })
+                        .ToList());
             var beasts = new Dictionary<BeastType, BeastCodeDetail>();
 
-            // Throw away the first four lines.
-            inputLines.RemoveAt(3);
-            inputLines.RemoveAt(2);
-            inputLines.RemoveAt(1);
-            inputLines.RemoveAt(0);
-
-            foreach (var line in inputLines)
+            foreach (var row in beastLevelRows)
             {
-                var data = line.Split('\t');
-                if (string.IsNullOrWhiteSpace(data[0]))
+                var enumNameText = row["Enum"];
+                if (string.IsNullOrWhiteSpace(enumNameText))
                     continue;
 
-                var enumName = Enum.Parse<BeastType>(data[26]);
+                var enumName = Enum.Parse<BeastType>(enumNameText);
 
-                if(!beasts.ContainsKey(enumName))
+                if (!beasts.ContainsKey(enumName))
                     beasts.Add(enumName, new BeastCodeDetail());
 
                 var detail = beasts[enumName];
-                detail.IsIncubation = data[31].Trim() == "Y";
+                detail.IsIncubation = row["Incubation?"] == "Y";
 
-                var className = $"{enumName}BeastDefinition";
-                var name = data[0].Trim();
-                var beastType = data[26].Trim();
-                var accuracyStat = data[12].Trim();
-                var damageStat = data[13].Trim();
-                var role = data[1].Trim();
-                var appearance = data[27].Trim();
-                var portraitId = data[28].Trim();
-                var soundSetId = data[29].Trim();
-                var scaling = data[30].Trim() + "f";
+                if (string.IsNullOrWhiteSpace(detail.Code))
+                {
+                    var className = $"{enumName}BeastDefinition";
+                    var name = EscapeCSharpString(row["NPC Name"]);
+                    var beastType = row["Enum"];
+                    var accuracyStat = row["Acc Stat"];
+                    var damageStat = row["Att Stat"];
+                    var role = row["Role"];
+                    var appearance = row["Appearance Enum"];
+                    var portraitId = FormatInteger(row["Portrait Id"]);
+                    var soundSetId = FormatInteger(row["Sound Set Id"]);
+                    var scaling = FormatFloat(row["Scaling %"]) + "f";
+                    var mutations = BuildMutations(mutationRowsBySource.GetValueOrDefault(beastType));
 
-                var mutations = BuildMutations(data);
+                    detail.Code = template
+                        .Replace("%%BEASTNAME%%", name)
+                        .Replace("%%APPEARANCETYPE%%", appearance)
+                        .Replace("%%APPEARANCESCALE%%", scaling)
+                        .Replace("%%SOUNDSETID%%", soundSetId)
+                        .Replace("%%PORTRAITID%%", portraitId)
+                        .Replace("%%CLASSNAME%%", className)
+                        .Replace("%%NAMESPACE%%", detail.IsIncubation ? "IncubationBeastDefinition" : "TamableBeastDefinition")
+                        .Replace("%%BEASTTYPE%%", beastType)
+                        .Replace("%%ACCURACYSTAT%%", GetAbilityEnumName(accuracyStat))
+                        .Replace("%%DAMAGESTAT%%", GetAbilityEnumName(damageStat))
+                        .Replace("%%BEASTROLE%%", role)
+                        .Replace("%%MUTATION_TEMPLATES%%", mutations);
+                }
 
-                detail.Code = template
-                    .Replace("%%BEASTNAME%%", name)
-                    .Replace("%%APPEARANCETYPE%%", appearance)
-                    .Replace("%%APPEARANCESCALE%%", scaling)
-                    .Replace("%%SOUNDSETID%%", soundSetId)
-                    .Replace("%%PORTRAITID%%", portraitId)
-                    .Replace("%%CLASSNAME%%", className)
-                    .Replace("%%NAMESPACE%%", detail.IsIncubation ? "IncubationBeastDefinition" : "TamableBeastDefinition")
-                    .Replace("%%BEASTTYPE%%", beastType)
-                    .Replace("%%ACCURACYSTAT%%", GetAbilityEnumName(accuracyStat))
-                    .Replace("%%DAMAGESTAT%%", GetAbilityEnumName(damageStat))
-                    .Replace("%%BEASTROLE%%", role)
-                    .Replace("%%MUTATION_TEMPLATES%%", mutations);
-
-                var level = Convert.ToInt32(data[2]);
+                var level = int.Parse(FormatInteger(row["Level"]), CultureInfo.InvariantCulture);
                 if (!detail.Levels.ContainsKey(level))
                     detail.Levels.Add(level, levelTemplate);
 
-                var hp = data[3].Replace(",", "").Trim();
-                var stm = data[4].Replace(",", "").Trim();
-                var fp = data[5].Replace(",", "").Trim();
-                var mgt = data[6].Trim();
-                var per = data[7].Trim();
-                var vit = data[8].Trim();
-                var wil = data[9].Trim();
-                var agi = data[10].Trim();
-                var soc = data[11].Trim();
-                var attackBonusMax = data[14].Trim();
-                var accuracyBonusMax = data[15].Trim();
-                var evasionBonusMax = data[16].Trim();
-                var physicalDefenseMax = data[17].Trim();
-                var forceDefenseMax = data[18].Trim();
-                var fireDefenseMax = data[19].Trim();
-                var poisonDefenseMax = data[21].Trim();
-                var electricalDefenseMax = data[22].Trim();
-                var iceDefenseMax = data[20].Trim();
-                var willMax = data[24].Trim();
-                var fortitudeMax = data[23].Trim();
-                var reflexMax = data[25].Trim();
-                var dmg = data[51].Trim();
-
                 detail.Levels[level] = detail.Levels[level]
                     .Replace("%%LEVEL%%", level.ToString())
-                    .Replace("%%HP%%", hp)
-                    .Replace("%%STM%%", stm)
-                    .Replace("%%FP%%", fp)
-                    .Replace("%%DMG%%", dmg)
+                    .Replace("%%HP%%", FormatInteger(row["HP"]))
+                    .Replace("%%STM%%", FormatInteger(row["STM"]))
+                    .Replace("%%FP%%", FormatInteger(row["FP"]))
+                    .Replace("%%DMG%%", FormatInteger(row["Base Damage"]))
 
-                    .Replace("%%MGT%%", mgt)
-                    .Replace("%%PER%%", per)
-                    .Replace("%%VIT%%", vit)
-                    .Replace("%%WIL%%", wil)
-                    .Replace("%%AGI%%", agi)
-                    .Replace("%%SOC%%", soc)
+                    .Replace("%%MGT%%", FormatInteger(row["MGT"]))
+                    .Replace("%%PER%%", FormatInteger(row["PER"]))
+                    .Replace("%%VIT%%", FormatInteger(row["VIT"]))
+                    .Replace("%%WIL%%", FormatInteger(row["WIL"]))
+                    .Replace("%%AGI%%", FormatInteger(row["AGI"]))
+                    .Replace("%%SOC%%", FormatInteger(row["SOC"]))
 
-                    .Replace("%%MAXATTACKBONUS%%", attackBonusMax)
-                    .Replace("%%MAXACCURACYBONUS%%", accuracyBonusMax)
-                    .Replace("%%MAXEVASIONBONUS%%", evasionBonusMax)
+                    .Replace("%%MAXATTACKBONUS%%", FormatInteger(row["Attack Bonus"]))
+                    .Replace("%%MAXACCURACYBONUS%%", FormatInteger(row["Accuracy Bonus"]))
+                    .Replace("%%MAXEVASIONBONUS%%", FormatInteger(row["Evasion Bonus"]))
 
-                    .Replace("%%MAXPHYSICALDEFENSE%%", physicalDefenseMax)
-                    .Replace("%%MAXFORCEDEFENSE%%", forceDefenseMax)
-                    .Replace("%%MAXFIREDEFENSE%%", fireDefenseMax)
-                    .Replace("%%MAXPOISONDEFENSE%%", poisonDefenseMax)
-                    .Replace("%%MAXELECTRICALDEFENSE%%", electricalDefenseMax)
-                    .Replace("%%MAXICEDEFENSE%%", iceDefenseMax)
+                    .Replace("%%MAXPHYSICALDEFENSE%%", FormatInteger(row["Physical DEF Bonus"]))
+                    .Replace("%%MAXFORCEDEFENSE%%", FormatInteger(row["Force DEF Bonus"]))
+                    .Replace("%%MAXFIREDEFENSE%%", FormatInteger(row["Fire DEF"]))
+                    .Replace("%%MAXPOISONDEFENSE%%", FormatInteger(row["Poison DEF"]))
+                    .Replace("%%MAXELECTRICALDEFENSE%%", FormatInteger(row["Electrical DEF"]))
+                    .Replace("%%MAXICEDEFENSE%%", FormatInteger(row["Ice DEF"]))
 
-                    .Replace("%%MAXWILL%%", willMax)
-                    .Replace("%%MAXFORTITUDE%%", fortitudeMax)
-                    .Replace("%%MAXREFLEX%%", reflexMax);
+                    .Replace("%%MAXWILL%%", FormatInteger(row["Will Bonus"]))
+                    .Replace("%%MAXFORTITUDE%%", FormatInteger(row["Fortitude Bonus"]))
+                    .Replace("%%MAXREFLEX%%", FormatInteger(row["Reflex Bonus"]));
             }
 
-            foreach (var(type, detail) in beasts)
+            foreach (var (type, detail) in beasts)
             {
                 var levels = detail.Levels.OrderBy(o => o.Key);
                 var levelText = string.Empty;
@@ -159,11 +191,12 @@ namespace SWLOR.CLI
                 var folderName = detail.IsIncubation
                     ? "IncubationBeastDefinition"
                     : "TamableBeastDefinition";
+                var outputFolder = Path.Combine(ResolveOutputFolder(), folderName);
 
-                if (!Directory.Exists($"{OutputFolder}/{folderName}"))
-                    Directory.CreateDirectory($"{OutputFolder}/{folderName}");
+                if (!Directory.Exists(outputFolder))
+                    Directory.CreateDirectory(outputFolder);
 
-                File.WriteAllText($"{OutputFolder}/{folderName}/{type}BeastDefinition.cs", output);
+                File.WriteAllText(Path.Combine(outputFolder, $"{type}BeastDefinition.cs"), output);
             }
         }
 
@@ -190,149 +223,300 @@ namespace SWLOR.CLI
 
         private string GetMutationDays(string days)
         {
-            var output = string.Empty;
-            foreach(var c in days)
+            var output = new List<string>();
+            foreach (var c in days.Where(c => !char.IsWhiteSpace(c) && c != ','))
             {
-                var day = "DayOfWeek.";
-                if (c == 'M')
+                var day = c switch
                 {
-                    day += "Monday";
-                }
-                else if (c == 'T')
-                {
-                    day += "Tuesday";
-                }
-                else if (c == 'W')
-                {
-                    day += "Wednesday";
-                }
-                else if (c == 'R')
-                {
-                    day += "Thursday";
-                }
-                else if (c == 'F')
-                {
-                    day += "Friday";
-                }
-                else if (c == 'S')
-                {
-                    day += "Saturday";
-                }
-                else if (c == 'U')
-                {
-                    day += "Sunday";
-                }
+                    'M' => "DayOfWeek.Monday",
+                    'T' => "DayOfWeek.Tuesday",
+                    'W' => "DayOfWeek.Wednesday",
+                    'R' => "DayOfWeek.Thursday",
+                    'F' => "DayOfWeek.Friday",
+                    'S' => "DayOfWeek.Saturday",
+                    'U' => "DayOfWeek.Sunday",
+                    _ => throw new InvalidOperationException($"Unsupported mutation day code '{c}' in '{days}'.")
+                };
 
-                if (!string.IsNullOrWhiteSpace(output))
-                {
-                    output += ", ";
-                }
-
-                output += day;
+                output.Add(day);
             }
 
-            return output;
+            return string.Join(", ", output);
         }
 
-        private string BuildMutation(
-            string enumName,
-            string weight,
-            string lyaseColor,
-            string isomeraseColor,
-            string hydrolaseColor,
-            string lyaseCount,
-            string isomeraseCount,
-            string hydrolaseCount,
-            string days)
+        private string BuildMutation(MutationSourceRow row)
         {
-            if (string.IsNullOrWhiteSpace(enumName))
+            if (row == null || string.IsNullOrWhiteSpace(row.ResultEnum))
                 return string.Empty;
 
             const string Tabs = "\t\t\t\t";
             var output = string.Empty;
 
-            output += $".CanMutateInto(BeastType.{enumName})" + Environment.NewLine +
-                      $"{Tabs}.MutationWeight({weight})" + Environment.NewLine;
+            output += $".CanMutateInto(BeastType.{row.ResultEnum})" + Environment.NewLine +
+                      $"{Tabs}.MutationWeight({FormatInteger(row.Weight)})" + Environment.NewLine;
 
-            if (!string.IsNullOrWhiteSpace(lyaseColor))
+            if (!string.IsNullOrWhiteSpace(row.LyaseColor))
             {
-                output += $"{Tabs}.MutationRequiresLyaseColor(EnzymeColorType.{lyaseColor}, {lyaseCount})" + Environment.NewLine;
+                output += $"{Tabs}.MutationRequiresLyaseColor(EnzymeColorType.{row.LyaseColor}, {FormatInteger(row.LyaseCount)})" + Environment.NewLine;
             }
-            if (!string.IsNullOrWhiteSpace(isomeraseColor))
+            if (!string.IsNullOrWhiteSpace(row.IsomeraseColor))
             {
-                output += $"{Tabs}.MutationRequiresIsomeraseColor(EnzymeColorType.{isomeraseColor}, {isomeraseCount})" + Environment.NewLine;
+                output += $"{Tabs}.MutationRequiresIsomeraseColor(EnzymeColorType.{row.IsomeraseColor}, {FormatInteger(row.IsomeraseCount)})" + Environment.NewLine;
             }
-            if (!string.IsNullOrWhiteSpace(hydrolaseColor))
+            if (!string.IsNullOrWhiteSpace(row.HydrolaseColor))
             {
-                output += $"{Tabs}.MutationRequiresHydrolaseColor(EnzymeColorType.{hydrolaseColor}, {hydrolaseCount})" + Environment.NewLine;
+                output += $"{Tabs}.MutationRequiresHydrolaseColor(EnzymeColorType.{row.HydrolaseColor}, {FormatInteger(row.HydrolaseCount)})" + Environment.NewLine;
             }
 
-            if (!string.IsNullOrWhiteSpace(days))
+            if (!string.IsNullOrWhiteSpace(row.Days))
             {
-                var formattedDays = GetMutationDays(days);
+                var formattedDays = GetMutationDays(row.Days);
                 output += $"{Tabs}.MutationRequiresDayOfWeek({formattedDays})" + Environment.NewLine;
             }
 
             return output;
         }
 
-        private string BuildMutations(string[] data)
+        private string BuildMutations(IEnumerable<MutationSourceRow> rows)
         {
-            var mutations = new List<string>();
+            if (rows == null)
+                return string.Empty;
 
-            mutations.Add(BuildMutation(
-                data[32].Trim(),
-                data[33].Trim(),
-                data[34].Trim(),
-                data[35].Trim(),
-                data[36].Trim(),
-                data[37].Trim(),
-                data[38].Trim(),
-                data[39].Trim(),
-                data[40].Trim()
-            ));
+            var mutations = string.Join(
+                Environment.NewLine + Environment.NewLine + "\t\t\t\t",
+                rows
+                    .Select(BuildMutation)
+                    .Where(mutation => !string.IsNullOrWhiteSpace(mutation)));
 
-            mutations.Add(BuildMutation(
-                data[41].Trim(),
-                data[42].Trim(),
-                data[43].Trim(),
-                data[44].Trim(),
-                data[45].Trim(),
-                data[46].Trim(),
-                data[47].Trim(),
-                data[48].Trim(),
-                data[49].Trim()
-            ));
+            return string.IsNullOrWhiteSpace(mutations)
+                ? string.Empty
+                : "                " + mutations;
+        }
 
-            // Optional third mutation block appended after the generated combat stats columns.
-            if (data.Length >= 69)
+        private static string EscapeCSharpString(string value)
+        {
+            return value
+                .Replace("\\", "\\\\")
+                .Replace("\"", "\\\"");
+        }
+
+        private static string FormatInteger(string value)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+                return "0";
+
+            if (!decimal.TryParse(
+                    value.Replace(",", string.Empty),
+                    NumberStyles.Number,
+                    CultureInfo.InvariantCulture,
+                    out var number))
             {
-                mutations.Add(BuildMutation(
-                    data[60].Trim(),
-                    data[61].Trim(),
-                    data[62].Trim(),
-                    data[63].Trim(),
-                    data[64].Trim(),
-                    data[65].Trim(),
-                    data[66].Trim(),
-                    data[67].Trim(),
-                    data[68].Trim()
-                ));
+                throw new InvalidOperationException($"Expected an integer-compatible value but found '{value}'.");
             }
 
-            return string.Join(
-                Environment.NewLine + Environment.NewLine + "\t\t\t\t",
-                mutations.Where(mutation => !string.IsNullOrWhiteSpace(mutation)));
+            return decimal.ToInt32(decimal.Round(number, 0, MidpointRounding.AwayFromZero)).ToString(CultureInfo.InvariantCulture);
         }
-        
+
+        private static string FormatFloat(string value)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+                return "1";
+
+            if (!decimal.TryParse(
+                    value,
+                    NumberStyles.Number,
+                    CultureInfo.InvariantCulture,
+                    out var number))
+            {
+                throw new InvalidOperationException($"Expected a float-compatible value but found '{value}'.");
+            }
+
+            return number.ToString("0.###", CultureInfo.InvariantCulture);
+        }
+
+        private string ResolveCliPath(string relativePath)
+        {
+            var path = Path.Combine(ResolveCliRoot(), relativePath);
+            if (!File.Exists(path))
+                throw new FileNotFoundException($"Unable to locate CLI file '{relativePath}'.", path);
+
+            return path;
+        }
+
+        private string ResolveOutputFolder()
+        {
+            return Path.Combine(ResolveCliRoot(), OutputFolder);
+        }
+
+        private string ResolveCliRoot()
+        {
+            var current = new DirectoryInfo(Directory.GetCurrentDirectory());
+            while (current != null)
+            {
+                if (Directory.Exists(Path.Combine(current.FullName, "Templates")) &&
+                    File.Exists(Path.Combine(current.FullName, "SWLOR.CLI.csproj")))
+                {
+                    return current.FullName;
+                }
+
+                var candidate = Path.Combine(current.FullName, "SWLOR.CLI");
+                if (Directory.Exists(Path.Combine(candidate, "Templates")) &&
+                    File.Exists(Path.Combine(candidate, "SWLOR.CLI.csproj")))
+                {
+                    return candidate;
+                }
+
+                current = current.Parent;
+            }
+
+            throw new DirectoryNotFoundException("Unable to locate the SWLOR.CLI directory.");
+        }
+
+        private string ResolveBiblePath(string fileName)
+        {
+            var current = new DirectoryInfo(Directory.GetCurrentDirectory());
+            while (current != null)
+            {
+                var candidate = Path.Combine(current.FullName, "design", "bible", fileName);
+                if (File.Exists(candidate))
+                    return candidate;
+
+                current = current.Parent;
+            }
+
+            throw new FileNotFoundException($"Unable to locate Bible workbook '{fileName}'.");
+        }
+
         private void ClearOutputDirectory()
         {
-            if (Directory.Exists(OutputFolder))
+            var outputFolder = ResolveOutputFolder();
+            if (Directory.Exists(outputFolder))
             {
-                Directory.Delete(OutputFolder, true);
+                Directory.Delete(outputFolder, true);
             }
 
-            Directory.CreateDirectory(OutputFolder);
+            Directory.CreateDirectory(outputFolder);
+        }
+
+        private static class WorkbookReader
+        {
+            private static readonly XNamespace SpreadsheetNs = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
+            private static readonly XNamespace RelationshipNs = "http://schemas.openxmlformats.org/officeDocument/2006/relationships";
+            private static readonly XNamespace PackageRelationshipNs = "http://schemas.openxmlformats.org/package/2006/relationships";
+
+            public static IReadOnlyList<WorkbookRow> ReadRows(
+                string path,
+                string sheetName,
+                int headerRowNumber,
+                int firstDataRowNumber)
+            {
+                using var archive = ZipFile.OpenRead(path);
+                var sharedStrings = ReadSharedStrings(archive);
+                var sheetEntryName = GetSheetEntryName(archive, sheetName);
+                var worksheet = ReadXml(archive, sheetEntryName);
+                var headerRow = worksheet
+                    .Descendants(SpreadsheetNs + "row")
+                    .FirstOrDefault(row => (int?)row.Attribute("r") == headerRowNumber);
+
+                if (headerRow == null)
+                    throw new InvalidOperationException($"Header row {headerRowNumber} was not found in '{sheetName}'.");
+
+                var headersByColumn = headerRow
+                    .Elements(SpreadsheetNs + "c")
+                    .Select(cell => (
+                        Column: GetColumnName((string)cell.Attribute("r")),
+                        Header: GetCellValue(cell, sharedStrings).Trim()))
+                    .Where(cell => !string.IsNullOrWhiteSpace(cell.Header))
+                    .ToDictionary(cell => cell.Column, cell => cell.Header);
+                var rows = new List<WorkbookRow>();
+
+                foreach (var row in worksheet.Descendants(SpreadsheetNs + "row"))
+                {
+                    var rowNumber = (int?)row.Attribute("r") ?? 0;
+                    if (rowNumber < firstDataRowNumber)
+                        continue;
+
+                    var values = new Dictionary<string, string>();
+                    foreach (var cell in row.Elements(SpreadsheetNs + "c"))
+                    {
+                        var column = GetColumnName((string)cell.Attribute("r"));
+                        if (!headersByColumn.TryGetValue(column, out var header))
+                            continue;
+
+                        values[header] = GetCellValue(cell, sharedStrings);
+                    }
+
+                    rows.Add(new WorkbookRow(values));
+                }
+
+                return rows;
+            }
+
+            private static XDocument ReadXml(ZipArchive archive, string entryName)
+            {
+                var entry = archive.GetEntry(entryName);
+                if (entry == null)
+                    throw new InvalidOperationException($"Workbook entry '{entryName}' was not found.");
+
+                using var stream = entry.Open();
+                return XDocument.Load(stream);
+            }
+
+            private static string GetSheetEntryName(ZipArchive archive, string sheetName)
+            {
+                var workbook = ReadXml(archive, "xl/workbook.xml");
+                var relationships = ReadXml(archive, "xl/_rels/workbook.xml.rels");
+                var sheet = workbook
+                    .Descendants(SpreadsheetNs + "sheet")
+                    .FirstOrDefault(x => (string)x.Attribute("name") == sheetName);
+
+                if (sheet == null)
+                    throw new InvalidOperationException($"Worksheet '{sheetName}' was not found.");
+
+                var relationshipId = (string)sheet.Attribute(RelationshipNs + "id");
+                var relationship = relationships
+                    .Descendants(PackageRelationshipNs + "Relationship")
+                    .FirstOrDefault(x => (string)x.Attribute("Id") == relationshipId);
+
+                if (relationship == null)
+                    throw new InvalidOperationException($"Relationship '{relationshipId}' for worksheet '{sheetName}' was not found.");
+
+                var target = ((string)relationship.Attribute("Target"))?.TrimStart('/') ?? string.Empty;
+                if (!target.StartsWith("xl/", StringComparison.Ordinal))
+                    target = "xl/" + target;
+
+                return target;
+            }
+
+            private static IReadOnlyList<string> ReadSharedStrings(ZipArchive archive)
+            {
+                if (archive.GetEntry("xl/sharedStrings.xml") == null)
+                    return Array.Empty<string>();
+
+                var sharedStrings = ReadXml(archive, "xl/sharedStrings.xml");
+                return sharedStrings
+                    .Descendants(SpreadsheetNs + "si")
+                    .Select(item => string.Concat(item.Descendants(SpreadsheetNs + "t").Select(text => text.Value)))
+                    .ToList();
+            }
+
+            private static string GetCellValue(XElement cell, IReadOnlyList<string> sharedStrings)
+            {
+                var cellType = (string)cell.Attribute("t");
+                if (cellType == "inlineStr")
+                    return string.Concat(cell.Descendants(SpreadsheetNs + "t").Select(text => text.Value));
+
+                var value = cell.Element(SpreadsheetNs + "v")?.Value ?? string.Empty;
+                if (cellType == "s" && int.TryParse(value, out var sharedStringIndex))
+                    return sharedStrings[sharedStringIndex];
+
+                return value;
+            }
+
+            private static string GetColumnName(string cellReference)
+            {
+                return Regex.Match(cellReference ?? string.Empty, "^[A-Z]+").Value;
+            }
         }
     }
 }

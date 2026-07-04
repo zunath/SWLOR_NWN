@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
@@ -20,7 +21,14 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
                 .CombatStats(AbilityType.Social, AbilityType.Willpower)
                 .Role(BeastRoleType.Force)
 
+                .CanMutateInto(BeastType.EldersporeOraculum)
+				.MutationWeight(90)
+				.MutationRequiresDayOfWeek(DayOfWeek.Thursday)
 
+
+				.CanMutateInto(BeastType.VoidmireEcho)
+				.MutationWeight(10)
+				.MutationRequiresDayOfWeek(DayOfWeek.Thursday)
 
                 ;
 

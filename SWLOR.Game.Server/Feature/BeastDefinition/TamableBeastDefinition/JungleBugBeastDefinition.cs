@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
@@ -22,10 +23,16 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 
                 .CanMutateInto(BeastType.StingingSwarm)
 				.MutationWeight(30)
+				.MutationRequiresIsomeraseColor(EnzymeColorType.Red, 2)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.Blue, 2)
 
-                .CanMutateInto(BeastType.RoyalPlumage)
+
+				.CanMutateInto(BeastType.RoyalPlumage)
 				.MutationWeight(10)
-				.MutationRequiresDayOfWeek(DayOfWeek.Saturday)
+				.MutationRequiresLyaseColor(EnzymeColorType.Red, 1)
+				.MutationRequiresIsomeraseColor(EnzymeColorType.Blue, 1)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.Blue, 2)
+				.MutationRequiresDayOfWeek(DayOfWeek.Monday, DayOfWeek.Wednesday, DayOfWeek.Friday)
 
                 ;
 

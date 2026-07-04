@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
@@ -20,7 +21,18 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
                 .CombatStats(AbilityType.Might, AbilityType.Agility)
                 .Role(BeastRoleType.Damage)
 
+                .CanMutateInto(BeastType.DuskfangHound)
+				.MutationWeight(90)
+				.MutationRequiresLyaseColor(EnzymeColorType.Black, 3)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.Red, 2)
+				.MutationRequiresDayOfWeek(DayOfWeek.Thursday, DayOfWeek.Wednesday)
 
+
+				.CanMutateInto(BeastType.MustardlashSlime)
+				.MutationWeight(10)
+				.MutationRequiresLyaseColor(EnzymeColorType.Black, 3)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.Red, 2)
+				.MutationRequiresDayOfWeek(DayOfWeek.Thursday, DayOfWeek.Wednesday)
 
                 ;
 

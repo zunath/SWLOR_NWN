@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
@@ -20,7 +21,20 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
                 .CombatStats(AbilityType.Agility, AbilityType.Vitality)
                 .Role(BeastRoleType.Balanced)
 
+                .CanMutateInto(BeastType.DuneshagBantha)
+				.MutationWeight(90)
+				.MutationRequiresLyaseColor(EnzymeColorType.Green, 3)
+				.MutationRequiresIsomeraseColor(EnzymeColorType.Orange, 3)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.White, 3)
+				.MutationRequiresDayOfWeek(DayOfWeek.Monday, DayOfWeek.Tuesday)
 
+
+				.CanMutateInto(BeastType.GraymireAmalgam)
+				.MutationWeight(10)
+				.MutationRequiresLyaseColor(EnzymeColorType.Green, 3)
+				.MutationRequiresIsomeraseColor(EnzymeColorType.Orange, 3)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.White, 3)
+				.MutationRequiresDayOfWeek(DayOfWeek.Monday, DayOfWeek.Tuesday)
 
                 ;
 

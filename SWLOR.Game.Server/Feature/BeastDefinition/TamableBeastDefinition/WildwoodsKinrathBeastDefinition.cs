@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
@@ -22,10 +23,14 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 
                 .CanMutateInto(BeastType.MutatedBoar)
 				.MutationWeight(50)
-				.MutationRequiresHydrolaseColor(EnzymeColorType.White, 1)
+				.MutationRequiresDayOfWeek(DayOfWeek.Monday)
 
-                .CanMutateInto(BeastType.BrambleLynx)
+
+				.CanMutateInto(BeastType.BrambleLynx)
 				.MutationWeight(15)
+				.MutationRequiresLyaseColor(EnzymeColorType.Orange, 1)
+				.MutationRequiresIsomeraseColor(EnzymeColorType.Yellow, 1)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.White, 2)
 
                 ;
 

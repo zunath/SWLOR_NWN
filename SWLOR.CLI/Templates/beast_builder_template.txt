@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.%%NAMESPACE%%
                 .CombatStats(AbilityType.%%ACCURACYSTAT%%, AbilityType.%%DAMAGESTAT%%)
                 .Role(BeastRoleType.%%BEASTROLE%%)
 
-                %%MUTATION_TEMPLATES%%
+%%MUTATION_TEMPLATES%%
                 ;
 
 %%LEVELCALLS%%
@@ -29,6 +29,6 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.%%NAMESPACE%%
             return _builder.Build();
         }
 
-        %%LEVELLIST%%
+%%LEVELLIST%%
     }
 }

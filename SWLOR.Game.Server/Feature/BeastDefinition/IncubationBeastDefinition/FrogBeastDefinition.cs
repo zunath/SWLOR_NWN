@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
@@ -20,7 +21,18 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
                 .CombatStats(AbilityType.Perception, AbilityType.Agility)
                 .Role(BeastRoleType.Damage)
 
+                .CanMutateInto(BeastType.EmberbackBristal)
+				.MutationWeight(90)
+				.MutationRequiresIsomeraseColor(EnzymeColorType.Yellow, 3)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.Red, 3)
+				.MutationRequiresDayOfWeek(DayOfWeek.Thursday, DayOfWeek.Wednesday)
 
+
+				.CanMutateInto(BeastType.MustardlashSlime)
+				.MutationWeight(10)
+				.MutationRequiresIsomeraseColor(EnzymeColorType.Yellow, 3)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.Red, 3)
+				.MutationRequiresDayOfWeek(DayOfWeek.Thursday, DayOfWeek.Wednesday)
 
                 ;
 

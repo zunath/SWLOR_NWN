@@ -387,6 +387,9 @@ namespace SWLOR.Game.Server.Service.AchievementService
 
 		[Achievement("Explore Smuggler's Moon Station - Lower Level", "Explore Smuggler's Moon Station - Lower Level.", true)]
 		ExploreSmugglersMoonStationLowerLevel = 140,
+
+        [Achievement("Blood Frenzy", "Completed the Blood Frenzy capstone quest line.", true)]
+        BloodFrenzy = 141,
 	}
 
     public class AchievementAttribute: Attribute

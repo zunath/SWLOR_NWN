@@ -45,6 +45,7 @@ When the concept is underspecified, grill the request one dependency at a time. 
    - Use built-in rewards before custom code: credits, XP, item, key item, GP, faction standing, faction points.
    - Use `PrerequisiteQuest(...)` and `PrerequisiteKeyItem(...)` for acceptance gates. Add custom prerequisites only when the builder lacks the needed gate.
    - Match rewards to nearby quests of similar difficulty, objective count, and repeatability. Do not add repeatable permanent key item rewards unless the current system already models that exact pattern.
+   - For major, chain, capstone, faction, or signature quest lines, define a specific completion achievement and grant it from the final quest completion hook using the existing achievement service unless the user explicitly opts out.
 
 4. Write dialogue.
    - Read `references/dialogue-and-content-standards.md` before creating or rewriting quest dialogue, player replies, journal text, or prerequisite/completion text.

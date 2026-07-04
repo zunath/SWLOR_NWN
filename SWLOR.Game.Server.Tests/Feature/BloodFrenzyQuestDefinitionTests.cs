@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using SWLOR.Game.Server.Feature.QuestDefinition;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AchievementService;
 using SWLOR.Game.Server.Service.KeyItemService;
 using SWLOR.Game.Server.Service.NPCService;
 using SWLOR.Game.Server.Service.QuestService;
@@ -95,6 +96,33 @@ public class BloodFrenzyQuestDefinitionTests
             .OfType<CollectItemObjective>()
             .Should()
             .BeEmpty();
+    }
+
+    [Test]
+    public void FinalQuest_GrantsBloodFrenzyAchievementOnComplete()
+    {
+        var quests = new BloodFrenzyQuestDefinition().BuildQuests();
+        var finalQuest = quests[BloodFrenzyQuestDefinition.FinalQuestId];
+        var giveAchievement = GetAchievementMethod(nameof(Achievement.GiveAchievement));
+
+        finalQuest.OnCompleteActions.Should()
+            .ContainSingle(action => DelegateCallsMethodWithIntArgument(
+                action,
+                giveAchievement,
+                (int)AchievementType.BloodFrenzy));
+    }
+
+    [Test]
+    public void BloodFrenzyAchievement_IsActiveAndPlayerFacing()
+    {
+        var attribute = typeof(AchievementType)
+            .GetMember(nameof(AchievementType.BloodFrenzy))
+            .Single()
+            .GetCustomAttribute<AchievementAttribute>()!;
+
+        attribute.IsActive.Should().BeTrue();
+        attribute.Name.Should().Be("Blood Frenzy");
+        attribute.Description.Should().Contain("Blood Frenzy");
     }
 
     [Test]
@@ -398,6 +426,17 @@ public class BloodFrenzyQuestDefinitionTests
                 method.GetParameters()
                     .Select(parameter => parameter.ParameterType)
                     .SequenceEqual(new[] { typeof(uint), typeof(KeyItemType) }));
+    }
+
+    private static MethodInfo GetAchievementMethod(string methodName)
+    {
+        return typeof(Achievement)
+            .GetMethods(BindingFlags.Public | BindingFlags.Static)
+            .Single(method =>
+                method.Name == methodName &&
+                method.GetParameters()
+                    .Select(parameter => parameter.ParameterType)
+                    .SequenceEqual(new[] { typeof(uint), typeof(AchievementType) }));
     }
 
     private static OpCode ReadOpCode(byte[] il, ref int index)

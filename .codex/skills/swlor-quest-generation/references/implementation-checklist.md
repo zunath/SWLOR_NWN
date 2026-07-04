@@ -10,7 +10,7 @@ For each quest, capture:
 - Text: not eligible, offer, acceptance, in-progress reminder, turn-in, completion, completed/repeat text, player replies, journal text for each state.
 - Dialogue flow: opening beat, optional player questions, NPC answers, accept reply, decline reply, reminder path, ready-to-turn-in path, and completed path. For major, chain, capstone, faction, or signature quests, include optional branches for motive, stakes, local lore, directions, target context, proof, or tactical advice.
 - Creative brief: NPC role, NPC voice, local pressure, stakes, lore anchors, why this NPC asks the player, and how the reward is justified in-world.
-- Rewards: XP, credits, items, key items, GP, faction standing/points, selectable vs automatic.
+- Rewards: XP, credits, items, key items, GP, faction standing/points, completion achievement, selectable vs automatic.
 - Placement: fixed NPC placement, enemy spawn table, enemy spawn coordinates or area random count.
 
 If a field is missing and cannot be resolved by searching the repo, ask one question at a time and include a recommended answer.
@@ -25,6 +25,7 @@ Quest definition:
 - Create a private method per quest.
 - Call the method from `BuildQuests()`.
 - Use `.Create("quest_id", "Quest Name")`, then flags, prerequisites, states, objectives, rewards, hooks.
+- For major, chain, capstone, faction, or signature quest lines, add an active `AchievementType` entry and grant it from the final quest's `.OnCompleteAction(...)` with `Achievement.GiveAchievement(...)` unless the user explicitly opts out.
 
 NPC group:
 
@@ -145,3 +146,4 @@ Pop-Location
 - Prerequisite gates exist mechanically but have no player-facing explanation.
 - Reward amounts or item rewards drift from nearby quest/guild scale without an explicit reason.
 - A new non-guild collect quest reuses items from existing non-guild quests without a clear gameplay or story reason.
+- A major, chain, capstone, faction, or signature quest line completes without granting its specific completion achievement.

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AchievementService;
 using SWLOR.Game.Server.Service.KeyItemService;
 using SWLOR.Game.Server.Service.NPCService;
 using SWLOR.Game.Server.Service.QuestService;
@@ -126,7 +127,11 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText("Kess Draavo is dead. Return to Sera Vonn and claim the final lesson of Blood Frenzy.")
                 .AddXPReward(30000)
-                .AddGoldReward(18000);
+                .AddGoldReward(18000)
+                .OnCompleteAction((player, sourceObject) =>
+                {
+                    Achievement.GiveAchievement(player, AchievementType.BloodFrenzy);
+                });
         }
     }
 }

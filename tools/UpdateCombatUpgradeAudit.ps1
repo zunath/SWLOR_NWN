@@ -764,6 +764,11 @@ if ($RefreshBible) {
 }
 
 if ($RefreshLocalBible) {
+    $formatterFullPath = Resolve-RepoPath "tools\FormatCombatUpgradeBibleWorkbook.ps1"
+    if (Test-Path -LiteralPath $formatterFullPath) {
+        & $formatterFullPath -WorkbookPath $workbookFullPath
+    }
+
     $manifestRows = Import-BibleWorkbookManifestRows -Path $workbookFullPath -SheetTabs $sheetTabs -SheetTabAliases $localWorkbookSheetTabAliases
     if ($manifestRows.Count -eq 0) {
         throw "No local Bible workbook perk rows were parsed. The workbook export format may have changed."

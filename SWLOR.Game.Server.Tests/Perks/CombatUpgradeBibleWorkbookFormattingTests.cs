@@ -43,6 +43,7 @@ public class CombatUpgradeBibleWorkbookFormattingTests
             AssertColumns(sheetName, worksheet, expectedColumns, failures);
             AssertNotesColumnsReadable(sheetName, worksheet, expectedColumns, sharedStrings, failures);
             AssertBeastCalcsColumnsCondensed(sheetName, expectedColumns, failures);
+            AssertForceColumnsAligned(sheetName, expectedColumns, failures);
         }
 
         expectedColumnsBySheet.Keys
@@ -162,6 +163,41 @@ public class CombatUpgradeBibleWorkbookFormattingTests
             if (matchingColumn.Width != expectedWidth)
             {
                 failures.Add($"Beast Calcs: condensed column {column} width is {matchingColumn.Width}, expected {expectedWidth}.");
+            }
+        }
+    }
+
+    private static void AssertForceColumnsAligned(
+        string sheetName,
+        IReadOnlyList<(int Min, int Max, decimal Width)> expectedColumns,
+        List<string> failures)
+    {
+        if (sheetName != "Force")
+            return;
+
+        var expectedWidthsByColumn = new Dictionary<int, decimal>();
+        AddExpectedColumns(expectedWidthsByColumn, 7, 7, 12.0m);
+        AddExpectedColumns(expectedWidthsByColumn, 8, 8, 12.5m);
+        AddExpectedColumns(expectedWidthsByColumn, 9, 9, 92.25m);
+        AddExpectedColumns(expectedWidthsByColumn, 18, 18, 20.75m);
+        AddExpectedColumns(expectedWidthsByColumn, 19, 19, 45.0m);
+
+        foreach (var (column, expectedWidth) in expectedWidthsByColumn)
+        {
+            var matchingColumn = expectedColumns
+                .Where(width => width.Min <= column && width.Max >= column)
+                .Select(width => (Found: true, Width: width.Width))
+                .FirstOrDefault();
+
+            if (!matchingColumn.Found)
+            {
+                failures.Add($"Force: column {column} has no width entry in the layout manifest.");
+                continue;
+            }
+
+            if (matchingColumn.Width != expectedWidth)
+            {
+                failures.Add($"Force: column {column} width is {matchingColumn.Width}, expected {expectedWidth}.");
             }
         }
     }

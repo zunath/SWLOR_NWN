@@ -8,6 +8,7 @@ namespace SWLOR.Game.Server.Tests.Perks;
 
 public class CombatUpgradeBibleWorkbookFormattingTests
 {
+    private const decimal MinimumNotesColumnWidth = 45m;
     private static readonly XNamespace SpreadsheetNs = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
     private static readonly XNamespace RelationshipNs = "http://schemas.openxmlformats.org/officeDocument/2006/relationships";
 
@@ -24,6 +25,7 @@ public class CombatUpgradeBibleWorkbookFormattingTests
 
         using var archive = ZipFile.OpenRead(workbookPath);
         var worksheetsByName = ReadWorksheetsByName(archive);
+        var sharedStrings = ReadSharedStrings(archive);
         var expectedColumnsBySheet = ReadLayoutColumns(layoutPath);
         var failures = new List<string>();
 
@@ -39,6 +41,7 @@ public class CombatUpgradeBibleWorkbookFormattingTests
             }
 
             AssertColumns(sheetName, worksheet, expectedColumns, failures);
+            AssertNotesColumnsReadable(sheetName, worksheet, expectedColumns, sharedStrings, failures);
         }
 
         expectedColumnsBySheet.Keys
@@ -85,6 +88,42 @@ public class CombatUpgradeBibleWorkbookFormattingTests
         }
     }
 
+    private static void AssertNotesColumnsReadable(
+        string sheetName,
+        XDocument worksheet,
+        IReadOnlyList<(int Min, int Max, decimal Width)> expectedColumns,
+        IReadOnlyList<string> sharedStrings,
+        List<string> failures)
+    {
+        var notesColumns = worksheet
+            .Descendants(SpreadsheetNs + "c")
+            .Where(cell => GetCellText(cell, sharedStrings).Trim() == "Notes")
+            .Select(cell => GetColumnIndex((string)cell.Attribute("r") ?? string.Empty))
+            .Where(column => column > 0)
+            .Distinct()
+            .OrderBy(column => column)
+            .ToArray();
+
+        foreach (var notesColumn in notesColumns)
+        {
+            var matchingColumn = expectedColumns
+                .Where(column => column.Min <= notesColumn && column.Max >= notesColumn)
+                .Select(column => (Found: true, Width: column.Width))
+                .FirstOrDefault();
+
+            if (!matchingColumn.Found)
+            {
+                failures.Add($"{sheetName}: Notes column {notesColumn} has no width entry in the layout manifest.");
+                continue;
+            }
+
+            if (matchingColumn.Width < MinimumNotesColumnWidth)
+            {
+                failures.Add($"{sheetName}: Notes column {notesColumn} width is {matchingColumn.Width}, expected at least {MinimumNotesColumnWidth}.");
+            }
+        }
+    }
+
     private static Dictionary<string, string> ReadWorksheetsByName(ZipArchive archive)
     {
         var workbook = ReadWorkbookXml(archive, "xl/workbook.xml");
@@ -117,6 +156,20 @@ public class CombatUpgradeBibleWorkbookFormattingTests
             : $"xl/{target}";
     }
 
+    private static string[] ReadSharedStrings(ZipArchive archive)
+    {
+        var entry = archive.GetEntry("xl/sharedStrings.xml");
+        if (entry == null)
+            return Array.Empty<string>();
+
+        using var stream = entry.Open();
+        var sharedStrings = XDocument.Load(stream);
+        return sharedStrings
+            .Descendants(SpreadsheetNs + "si")
+            .Select(sharedString => string.Concat(sharedString.Descendants(SpreadsheetNs + "t").Select(text => text.Value)))
+            .ToArray();
+    }
+
     private static Dictionary<string, (int Min, int Max, decimal Width)[]> ReadLayoutColumns(string path)
     {
         using var document = JsonDocument.Parse(File.ReadAllText(path));
@@ -142,6 +195,33 @@ public class CombatUpgradeBibleWorkbookFormattingTests
 
         using var stream = entry!.Open();
         return XDocument.Load(stream);
+    }
+
+    private static string GetCellText(XElement cell, IReadOnlyList<string> sharedStrings)
+    {
+        var cellType = (string)cell.Attribute("t") ?? string.Empty;
+        if (cellType == "inlineStr")
+            return string.Concat(cell.Descendants(SpreadsheetNs + "t").Select(text => text.Value));
+
+        var rawValue = cell.Element(SpreadsheetNs + "v")?.Value ?? string.Empty;
+        if (cellType == "s" && int.TryParse(rawValue, out var sharedStringIndex) &&
+            sharedStringIndex >= 0 && sharedStringIndex < sharedStrings.Count)
+        {
+            return sharedStrings[sharedStringIndex];
+        }
+
+        return rawValue;
+    }
+
+    private static int GetColumnIndex(string cellReference)
+    {
+        var column = 0;
+        foreach (var character in cellReference.TakeWhile(char.IsLetter))
+        {
+            column = (column * 26) + char.ToUpperInvariant(character) - 'A' + 1;
+        }
+
+        return column;
     }
 
     private static string FormatColumns(IEnumerable<(int Min, int Max, decimal Width)> columns)

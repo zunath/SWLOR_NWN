@@ -163,6 +163,102 @@ function Set-ColumnWidths {
     }
 }
 
+function Set-MinimumColumnWidth {
+    param(
+        [xml]$WorksheetXml,
+        [System.Xml.XmlNamespaceManager]$Namespace,
+        [int]$ColumnIndex,
+        [decimal]$MinimumWidth
+    )
+
+    $worksheetNamespaceUri = "http://schemas.openxmlformats.org/spreadsheetml/2006/main"
+    $colsNode = $WorksheetXml.SelectSingleNode("/d:worksheet/d:cols", $Namespace)
+    if ($null -eq $colsNode) {
+        $colsNode = $WorksheetXml.CreateElement("cols", $worksheetNamespaceUri)
+        $sheetDataNode = $WorksheetXml.SelectSingleNode("/d:worksheet/d:sheetData", $Namespace)
+        [void]$WorksheetXml.DocumentElement.InsertBefore($colsNode, $sheetDataNode)
+    }
+
+    $existingColumns = [System.Collections.Generic.List[object]]::new()
+    $currentWidth = $null
+    foreach ($colNode in $colsNode.SelectNodes("d:col", $Namespace)) {
+        $min = [int]$colNode.GetAttribute("min")
+        $max = [int]$colNode.GetAttribute("max")
+        $width = [decimal]::Parse($colNode.GetAttribute("width"), [System.Globalization.CultureInfo]::InvariantCulture)
+        $existingColumns.Add([pscustomobject]@{ Min = $min; Max = $max; Width = $width }) | Out-Null
+
+        if ($ColumnIndex -ge $min -and $ColumnIndex -le $max) {
+            $currentWidth = $width
+        }
+    }
+
+    if ($null -ne $currentWidth -and $currentWidth -ge $MinimumWidth) {
+        return
+    }
+
+    $updatedColumns = [System.Collections.Generic.List[object]]::new()
+    $wasCovered = $false
+    foreach ($column in $existingColumns) {
+        if ($ColumnIndex -lt $column.Min -or $ColumnIndex -gt $column.Max) {
+            $updatedColumns.Add($column) | Out-Null
+            continue
+        }
+
+        $wasCovered = $true
+        if ($ColumnIndex -gt $column.Min) {
+            $updatedColumns.Add([pscustomobject]@{ Min = $column.Min; Max = ($ColumnIndex - 1); Width = $column.Width }) | Out-Null
+        }
+
+        $updatedColumns.Add([pscustomobject]@{ Min = $ColumnIndex; Max = $ColumnIndex; Width = $MinimumWidth }) | Out-Null
+
+        if ($ColumnIndex -lt $column.Max) {
+            $updatedColumns.Add([pscustomobject]@{ Min = ($ColumnIndex + 1); Max = $column.Max; Width = $column.Width }) | Out-Null
+        }
+    }
+
+    if (!$wasCovered) {
+        $updatedColumns.Add([pscustomobject]@{ Min = $ColumnIndex; Max = $ColumnIndex; Width = $MinimumWidth }) | Out-Null
+    }
+
+    while ($colsNode.HasChildNodes) {
+        [void]$colsNode.RemoveChild($colsNode.FirstChild)
+    }
+
+    foreach ($column in ($updatedColumns | Sort-Object Min, Max)) {
+        $colNode = $WorksheetXml.CreateElement("col", $worksheetNamespaceUri)
+        $colNode.SetAttribute("min", [string]$column.Min)
+        $colNode.SetAttribute("max", [string]$column.Max)
+        $columnWidth = ([decimal]$column.Width).ToString([System.Globalization.CultureInfo]::InvariantCulture)
+        $colNode.SetAttribute("width", $columnWidth)
+        $colNode.SetAttribute("customWidth", "1")
+        [void]$colsNode.AppendChild($colNode)
+    }
+}
+
+function Get-HeaderColumnIndexes {
+    param(
+        [xml]$WorksheetXml,
+        [System.Xml.XmlNamespaceManager]$Namespace,
+        [System.Collections.Generic.List[string]]$SharedStrings,
+        [string]$HeaderText
+    )
+
+    $columnIndexes = [System.Collections.Generic.HashSet[int]]::new()
+    foreach ($cell in $WorksheetXml.SelectNodes("//d:sheetData/d:row/d:c", $Namespace)) {
+        $cellText = Get-OpenXmlCellText -Cell $cell -SharedStrings $SharedStrings
+        if ($cellText.Trim() -ne $HeaderText) {
+            continue
+        }
+
+        $columnIndex = Get-OpenXmlColumnIndex $cell.GetAttribute("r")
+        if ($columnIndex -gt 0) {
+            [void]$columnIndexes.Add($columnIndex)
+        }
+    }
+
+    return @($columnIndexes | Sort-Object)
+}
+
 function Remove-CustomRowHeights {
     param(
         [xml]$WorksheetXml,
@@ -271,9 +367,10 @@ $compactPerkColumns = @(
     [pscustomobject]@{ Min = 15; Max = 15; Width = 13.38 },
     [pscustomobject]@{ Min = 16; Max = 16; Width = 10.63 },
     [pscustomobject]@{ Min = 17; Max = 17; Width = 20.75 },
-    [pscustomobject]@{ Min = 18; Max = 18; Width = 5.63 },
+    [pscustomobject]@{ Min = 18; Max = 18; Width = 45.0 },
     [pscustomobject]@{ Min = 19; Max = 30; Width = 17.63 }
 )
+$minimumNotesColumnWidth = 45.0
 $systemChangesColumns = @(
     [pscustomobject]@{ Min = 1; Max = 1; Width = 7.75 },
     [pscustomobject]@{ Min = 2; Max = 2; Width = 154.88 },
@@ -327,6 +424,10 @@ try {
         }
         elseif (Test-IsPerkTableSheet -WorksheetXml $worksheetXml -Namespace $worksheetNamespace -SharedStrings $sharedStrings) {
             Set-ColumnWidths -WorksheetXml $worksheetXml -Namespace $worksheetNamespace -Columns $compactPerkColumns
+        }
+
+        foreach ($notesColumnIndex in (Get-HeaderColumnIndexes -WorksheetXml $worksheetXml -Namespace $worksheetNamespace -SharedStrings $sharedStrings -HeaderText "Notes")) {
+            Set-MinimumColumnWidth -WorksheetXml $worksheetXml -Namespace $worksheetNamespace -ColumnIndex $notesColumnIndex -MinimumWidth $minimumNotesColumnWidth
         }
 
         Remove-CustomRowHeights -WorksheetXml $worksheetXml -Namespace $worksheetNamespace

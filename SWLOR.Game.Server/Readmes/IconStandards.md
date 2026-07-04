@@ -138,7 +138,7 @@ Required fields:
 - `IconResRef`: icon resource reference without extension.
 - `SourcePath`: file or data source that owns the icon.
 
-Generated status-effect labels in `effecticons.2da` must use compact PascalCase without underscores, such as `AilmentResistance3`. Icon file resrefs should be short, meaningful abbreviations that stay within NWN's 16-character resource limit.
+Generated status-effect labels in `effecticons.2da` must use compact PascalCase without underscores, such as `AilmentResistance3`. Icon file resrefs should be short, meaningful abbreviations that stay within NWN's 16-character resource limit. Do not append opaque hash, collision, or generator suffixes such as random-looking letters or digits after the meaningful abbreviation.
 
 ## Enforcement
 
@@ -163,6 +163,7 @@ Icon tools and audits must fail when a gameplay icon violates these standards:
 - Status-effect single-level rank-1 icon with an unnecessary numeric badge.
 - Generated cooldown icon name longer than NWN's 16-character resource limit.
 - Recast group or resource generators silently truncating player-facing labels or icon names.
+- Ability, feat, spell, or status-effect icon resrefs with opaque generator suffixes instead of meaningful abbreviations.
 
 After adding or changing an ability icon referenced by `SWLOR_Haks/sw_2da/feat.2da` or `SWLOR_Haks/sw_2da/spells.2da`, run:
 

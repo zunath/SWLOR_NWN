@@ -47,7 +47,10 @@
 
 ## Ability Icons
 
+- Before adding, changing, generating, or renaming ability, feat, spell, or status-effect icons, read `SWLOR.Game.Server/Readmes/IconStandards.md` and follow it as the source of truth for artwork, semantic category, rank badges, and resource naming.
+- Gameplay icon resrefs must be short, meaningful abbreviations within NWN's 16-character resource limit. Do not use opaque hash, collision, or generator suffixes such as random-looking letters or digits after the meaningful abbreviation.
 - After adding or changing an ability icon referenced by `SWLOR_Haks/sw_2da/feat.2da` or `SWLOR_Haks/sw_2da/spells.2da`, run `powershell -ExecutionPolicy Bypass -File tools/GenerateCooldownIcons.ps1 -Force` to regenerate the `pr0_` through `pr5_` cooldown icon variants. This script must use ImageMagick output; do not replace it with a custom TGA writer.
+- After adding, changing, generating, or renaming any gameplay icon manifest entry or gameplay icon resource, run `powershell -ExecutionPolicy Bypass -File tools/UpdateGameplayIconStandards.ps1 -AuditOnly` and fix every failure before handing off the work.
 
 ## Ability VFX
 

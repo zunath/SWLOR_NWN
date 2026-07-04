@@ -126,19 +126,19 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SpinningWhirl1)
-                .Description("Attacks up to 3 nearby enemies for weapon DMG + 10 each.")
+                .Description("Attacks up to 3 enemies within 5m for weapon DMG + 10 each.")
                 .Price(2)
                 .RequirementSkill(SkillType.TwinBlade, 10)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SpinningWhirl2)
-                .Description("Attacks up to 3 nearby enemies for weapon DMG + 20 each.")
+                .Description("Attacks up to 3 enemies within 5m for weapon DMG + 20 each.")
                 .Price(4)
                 .RequirementSkill(SkillType.TwinBlade, 30)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SpinningWhirl3)
-                .Description("Attacks up to 3 nearby enemies for weapon DMG + 30 each.")
+                .Description("Attacks up to 3 enemies within 5m for weapon DMG + 30 each.")
                 .Price(4)
                 .RequirementSkill(SkillType.TwinBlade, 38);
         }
@@ -165,13 +165,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.BladeVortex1)
-                .Description("Deals weapon DMG + 18 to nearby enemies. If this hits 3 or more enemies, restore 4 STM.")
+                .Description("Deals weapon DMG + 18 to enemies within 5m. If this hits 3 or more enemies, restore 4 STM.")
                 .Price(3)
                 .RequirementSkill(SkillType.TwinBlade, 18)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.BladeVortex2)
-                .Description("Deals weapon DMG + 30 to nearby enemies. If this hits 3 or more enemies, restore 6 STM.")
+                .Description("Deals weapon DMG + 30 to enemies within 5m. If this hits 3 or more enemies, restore 6 STM.")
                 .Price(3)
                 .RequirementSkill(SkillType.TwinBlade, 32);
         }
@@ -209,7 +209,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.EdgeRhythmTrait)
-                .Description("Every third auto-attack deals +15 DMG to a nearby enemy.")
+                .Description("Every third auto-attack deals +15 DMG to a one enemy within 5m.")
                 .IncreasesStat(StatType.AutoAttackCycleDamageSkillType, (int)SkillType.TwinBlade)
                 .IncreasesStat(StatType.AutoAttackCycleRequiredCount, 3)
                 .IncreasesStat(StatType.AutoAttackCycleDamage, 15)
@@ -225,7 +225,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.TempestBloom1)
-                .Description("Deal weapon DMG + 25 to nearby enemies. For 45 seconds, your area attacks pulse for 8 physical DMG around your target.")
+                .Description("Deal weapon DMG + 25 to enemies within 5m. For 45 seconds, your area attacks pulse for 8 physical DMG around your target.")
                 .Price(6)
                 .RequirementSkill(SkillType.TwinBlade, 50);
         }
@@ -267,7 +267,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.BloodWakeTrait)
-                .Description("When you defeat a bleeding enemy, nearby enemies are inflicted with Bleed for 30 seconds.")
+                .Description("When you defeat a bleeding enemy, enemies within 5m are inflicted with Bleed for 30 seconds.")
                 .IncreasesStat(StatType.DefeatedBleedingEnemyNearbyBleedDurationSeconds, 30)
                 .Price(2)
                 .RequirementSkill(SkillType.TwinBlade, 5);
@@ -280,7 +280,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.BleedSpreadTrait)
-                .Description("Your physical combat abilities against bleeding targets have a 15% chance to spread Bleed to a nearby enemy.")
+                .Description("Your physical combat abilities against bleeding targets have a 15% chance to spread Bleed to a one enemy within 5m.")
                 .IncreasesStat(StatType.BleedingTargetAbilityBleedSpreadChance, 15)
                 .IncreasesStat(StatType.BleedingTargetAbilityBleedSpreadDurationSeconds, 30)
                 .IncreasesStat(StatType.BleedingTargetAbilityBleedSpreadMaxTargets, 1)
@@ -288,7 +288,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementSkill(SkillType.TwinBlade, 8)
 
                 .AddPerkLevel()
-                .Description("Your physical combat abilities against bleeding targets have a 25% chance to spread Bleed to a nearby enemy.")
+                .Description("Your physical combat abilities against bleeding targets have a 25% chance to spread Bleed to a one enemy within 5m.")
                 .IncreasesStat(StatType.BleedingTargetAbilityBleedSpreadChance, 25)
                 .IncreasesStat(StatType.BleedingTargetAbilityBleedSpreadDurationSeconds, 30)
                 .IncreasesStat(StatType.BleedingTargetAbilityBleedSpreadMaxTargets, 1)
@@ -296,7 +296,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementSkill(SkillType.TwinBlade, 22)
 
                 .AddPerkLevel()
-                .Description("Your physical combat abilities against bleeding targets have a 35% chance to spread Bleed to a nearby enemy.")
+                .Description("Your physical combat abilities against bleeding targets have a 35% chance to spread Bleed to a one enemy within 5m.")
                 .IncreasesStat(StatType.BleedingTargetAbilityBleedSpreadChance, 35)
                 .IncreasesStat(StatType.BleedingTargetAbilityBleedSpreadDurationSeconds, 30)
                 .IncreasesStat(StatType.BleedingTargetAbilityBleedSpreadMaxTargets, 1)
@@ -311,19 +311,19 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SerratedArc1)
-                .Description("Deals weapon DMG + 10 to nearby enemies. Bleeding targets spread Bleed to one additional nearby enemy.")
+                .Description("Deals weapon DMG + 10 to enemies within 5m. Bleeding targets spread Bleed to one additional one enemy within 5m.")
                 .Price(2)
                 .RequirementSkill(SkillType.TwinBlade, 10)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SerratedArc2)
-                .Description("Deals weapon DMG + 20 to nearby enemies. Bleeding targets spread Bleed to one additional nearby enemy.")
+                .Description("Deals weapon DMG + 20 to enemies within 5m. Bleeding targets spread Bleed to one additional one enemy within 5m.")
                 .Price(4)
                 .RequirementSkill(SkillType.TwinBlade, 30)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SerratedArc3)
-                .Description("Deals weapon DMG + 30 to nearby enemies. Bleeding targets spread Bleed to one additional nearby enemy.")
+                .Description("Deals weapon DMG + 30 to enemies within 5m. Bleeding targets spread Bleed to one additional one enemy within 5m.")
                 .Price(4)
                 .RequirementSkill(SkillType.TwinBlade, 38);
         }
@@ -409,7 +409,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.RedBloom1)
-                .Description("Deals weapon DMG + 20 to nearby enemies. Bleeding enemies take +40 DMG and spread Hemorrhage for 30 seconds.")
+                .Description("Deals weapon DMG + 20 to enemies within 5m. Bleeding enemies take +40 DMG and spread Hemorrhage for 30 seconds.")
                 .Price(6)
                 .RequirementSkill(SkillType.TwinBlade, 50);
         }

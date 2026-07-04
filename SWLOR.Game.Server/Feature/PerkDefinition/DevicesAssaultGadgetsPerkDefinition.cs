@@ -93,7 +93,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Sonic Burst")
 
                 .AddPerkLevel()
-                .Description("Deals 10 sonic DMG to nearby hostile targets and interrupts activation.")
+                .Description("Deals 10 sonic DMG to hostile targets within 5m and interrupts activation.")
                 .Price(2)
                 .RequirementSkill(SkillType.Devices, 8)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -101,7 +101,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.SonicBurst1)
 
                 .AddPerkLevel()
-                .Description("Deals 14 sonic DMG to nearby hostile targets, interrupts activation, and reduces Accuracy by 6% for 30 seconds.")
+                .Description("Deals 14 sonic DMG to hostile targets within 5m, interrupts activation, and reduces Accuracy by 6% for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Devices, 28)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -109,7 +109,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.SonicBurst2)
 
                 .AddPerkLevel()
-                .Description("Deals 18 sonic DMG to nearby hostile targets, interrupts activation, and reduces Accuracy by 10% for 30 seconds.")
+                .Description("Deals 18 sonic DMG to hostile targets within 5m, interrupts activation, and reduces Accuracy by 10% for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Devices, 42)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -221,7 +221,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.TacticalUplinkTrait)
-                .Description("After an Assault Gadget ability damages an enemy, you and nearby allies gain Tactical Uplink for 30 seconds: +5% Device ability Accuracy and +5% Device critical chance.")
+                .Description("After an Assault Gadget ability damages an enemy, you and allies within 5m gain Tactical Uplink for 30 seconds: +5% Device ability Accuracy and +5% Device critical chance.")
                 .Price(2)
                 .RequirementSkill(SkillType.Devices, 22)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -248,7 +248,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Overload Barrage")
 
                 .AddPerkLevel()
-                .Description("Unleashes three attacks at your primary target's location: a 42 fire DMG burst plus Burning for 45 seconds, a 48 fire DMG single-target hit plus brief Knockdown, and a 24 sonic DMG burst that interrupts activation and reduces Accuracy by 10% for 45 seconds.")
+                .Description("Unleashes three attacks at your primary target's location: a 42 fire DMG 5m burst plus Burning for 45 seconds, a 48 fire DMG single-target hit plus 3-second Knockdown, and a 24 sonic DMG 5m burst that interrupts activation and reduces Accuracy by 10% for 45 seconds.")
                 .Price(5)
                 .RequirementSkill(SkillType.Devices, 50)
                 .RequirementCharacterType(CharacterType.Standard)

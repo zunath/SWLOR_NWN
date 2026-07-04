@@ -32,20 +32,20 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Watchful Presence")
 
                 .AddPerkLevel()
-                .Description("Aura: Nearby party members take 4% less physical and Force damage. SOC scaling can raise this to 5%.")
+                .Description("Aura: Party members within Leadership range (5m base) take 4% less physical and Force damage. SOC scaling can raise this to 5%.")
                 .Price(2)
                 .IncreasesStat(StatType.WatchfulPresenceAuraLevel, 1)
                 .GrantsFeat(FeatType.WatchfulPresence1)
 
                 .AddPerkLevel()
-                .Description("Aura: Nearby party members take 6% less physical and Force damage. SOC scaling can raise this to 7%.")
+                .Description("Aura: Party members within Leadership range (5m base) take 6% less physical and Force damage. SOC scaling can raise this to 7%.")
                 .Price(3)
                 .RequirementSkill(SkillType.Leadership, 22)
                 .IncreasesStat(StatType.WatchfulPresenceAuraLevel, 2)
                 .GrantsFeat(FeatType.WatchfulPresence2)
 
                 .AddPerkLevel()
-                .Description("Aura: Nearby party members take 8% less physical and Force damage. SOC scaling can raise this to 10%.")
+                .Description("Aura: Party members within Leadership range (5m base) take 8% less physical and Force damage. SOC scaling can raise this to 10%.")
                 .Price(4)
                 .RequirementSkill(SkillType.Leadership, 45)
                 .IncreasesStat(StatType.WatchfulPresenceAuraLevel, 3)
@@ -82,14 +82,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Steady Formation")
 
                 .AddPerkLevel()
-                .Description("Aura: Nearby party members gain +3% evasion chance, +30 Mind Resistance, and +30 Mobility Resistance. SOC scaling can raise these to +4% evasion chance, +40 Mind Resistance, and +40 Mobility Resistance.")
+                .Description("Aura: Party members within Leadership range (5m base) gain +3% evasion chance, +30 Mind Resistance, and +30 Mobility Resistance. SOC scaling can raise these to +4% evasion chance, +40 Mind Resistance, and +40 Mobility Resistance.")
                 .Price(3)
                 .RequirementSkill(SkillType.Leadership, 8)
                 .IncreasesStat(StatType.SteadyFormationAuraLevel, 1)
                 .GrantsFeat(FeatType.SteadyFormation1)
 
                 .AddPerkLevel()
-                .Description("Aura: Nearby party members gain +5% evasion chance, +50 Mind Resistance, and +50 Mobility Resistance. SOC scaling can raise these to +6% evasion chance, +65 Mind Resistance, and +65 Mobility Resistance.")
+                .Description("Aura: Party members within Leadership range (5m base) gain +5% evasion chance, +50 Mind Resistance, and +50 Mobility Resistance. SOC scaling can raise these to +6% evasion chance, +65 Mind Resistance, and +65 Mobility Resistance.")
                 .Price(4)
                 .RequirementSkill(SkillType.Leadership, 28)
                 .IncreasesStat(StatType.SteadyFormationAuraLevel, 2)
@@ -103,13 +103,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.BolsterResolveTrait)
-                .Description("Field Steward recovery commands also grant nearby party members temporary HP equal to 8% of maximum HP for 30 seconds. SOC scaling can raise this to 10%.")
+                .Description("Field Steward recovery commands also grant party members within Leadership range (5m base) temporary HP equal to 8% of maximum HP for 30 seconds. SOC scaling can raise this to 10%.")
                 .Price(3)
                 .RequirementSkill(SkillType.Leadership, 12)
                 .IncreasesStat(StatType.LeadershipFieldStewardBolsterResolveRank, 1)
 
                 .AddPerkLevel()
-                .Description("Field Steward recovery commands also grant nearby party members temporary HP equal to 12% of maximum HP and 12% damage reduction for 30 seconds. SOC scaling can raise these to 15% temporary HP and 15% damage reduction.")
+                .Description("Field Steward recovery commands also grant party members within Leadership range (5m base) temporary HP equal to 12% of maximum HP and 12% damage reduction for 30 seconds. SOC scaling can raise these to 15% temporary HP and 15% damage reduction.")
                 .Price(4)
                 .RequirementSkill(SkillType.Leadership, 35)
                 .IncreasesStat(StatType.LeadershipFieldStewardBolsterResolveRank, 2);
@@ -121,14 +121,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Field Recovery")
 
                 .AddPerkLevel()
-                .Description("Aura: Nearby party members restore 1 STM every 4 seconds. SOC scaling can raise this to 2 STM per tick.")
+                .Description("Aura: Party members within Leadership range (5m base) restore 1 STM every 4 seconds. SOC scaling can raise this to 2 STM per tick.")
                 .Price(2)
                 .RequirementSkill(SkillType.Leadership, 15)
                 .IncreasesStat(StatType.FieldRecoveryAuraLevel, 1)
                 .GrantsFeat(FeatType.FieldRecovery1)
 
                 .AddPerkLevel()
-                .Description("Aura: Nearby party members restore 2 STM every 4 seconds. SOC scaling can raise this to 3 STM per tick.")
+                .Description("Aura: Party members within Leadership range (5m base) restore 2 STM every 4 seconds. SOC scaling can raise this to 3 STM per tick.")
                 .Price(3)
                 .RequirementSkill(SkillType.Leadership, 38)
                 .IncreasesStat(StatType.FieldRecoveryAuraLevel, 2)
@@ -141,13 +141,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Cleanse Order")
 
                 .AddPerkLevel()
-                .Description("Removes one standard elemental or trauma ailment from nearby party members and grants temporary HP equal to 6% of maximum HP for 30 seconds. SOC scaling can raise temporary HP to 8%.")
+                .Description("Removes one standard elemental or trauma ailment from party members within Leadership range (5m base) and grants temporary HP equal to 6% of maximum HP for 30 seconds. SOC scaling can raise temporary HP to 8%.")
                 .Price(3)
                 .RequirementSkill(SkillType.Leadership, 25)
                 .GrantsFeat(FeatType.CleanseOrder1)
 
                 .AddPerkLevel()
-                .Description("Removes one major negative status effect from nearby party members and grants 12% damage reduction for 30 seconds. SOC scaling can raise this to 15%.")
+                .Description("Removes one major negative status effect from party members within Leadership range (5m base) and grants 12% damage reduction for 30 seconds. SOC scaling can raise this to 15%.")
                 .Price(4)
                 .RequirementSkill(SkillType.Leadership, 42)
                 .GrantsFeat(FeatType.CleanseOrder2);
@@ -179,7 +179,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Hold the Line")
 
                 .AddPerkLevel()
-                .Description("For 45 seconds, nearby party members including you gain temporary HP equal to 18% of maximum HP, take 18% less damage, and become immune to Mind and Mobility effects. SOC scaling can raise temporary HP and damage reduction to 22%.")
+                .Description("For 45 seconds, party members within Leadership range (5m base), including you, gain temporary HP equal to 18% of maximum HP, take 18% less damage, and become immune to Mind and Mobility effects. SOC scaling can raise temporary HP and damage reduction to 22%.")
                 .Price(5)
                 .RequirementSkill(SkillType.Leadership, 50)
                 .GrantsFeat(FeatType.HoldTheLine1);

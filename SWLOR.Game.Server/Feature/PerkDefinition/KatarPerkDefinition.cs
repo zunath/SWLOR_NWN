@@ -74,7 +74,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.IronGuardTrainingTrait)
-                .Description("Grants a 15% chance to guard against physical attacks, reducing that hit's damage by 20% and generating extra enmity.")
+                .Description("Grants a 15% chance to guard against physical attacks, reducing that hit's damage by 20% and generating Enmity equal to the hit's incoming damage before Guard reduction.")
                 .IncreasesStat(StatType.Guard, 15)
                 .Price(2)
                 .RequirementSkill(SkillType.Katar, 5)
@@ -83,14 +83,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Guard chance increases to 25% and guarded hits restore 2 STM.")
                 .IncreasesStat(StatType.Guard, 25)
                 .IncreasesStat(StatType.GuardStaminaRestore, 2)
-                .Price(4)
+                .Price(3)
                 .RequirementSkill(SkillType.Katar, 15)
 
                 .AddPerkLevel()
                 .Description("Guard chance increases to 35% and guarded hits reduce physical damage by 30%.")
                 .IncreasesStat(StatType.Guard, 35)
                 .IncreasesStat(StatType.GuardDamageReductionPercentAdjustment, 10)
-                .Price(3)
+                .Price(4)
                 .RequirementSkill(SkillType.Katar, 28);
         }
 
@@ -129,7 +129,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.IronElbowsTrait)
-                .Description("Iron Guard counterattacks and guard pulses deal +15 DMG to nearby enemies and generate extra enmity.")
+                .Description("Iron Guard counterattacks and guard pulses deal +15 DMG to enemies within 5m and generate Enmity equal to the guarded hit's incoming damage.")
                 .IncreasesStat(StatType.GuardRetaliationDamageBonusSkillType, (int)SkillType.Katar)
                 .IncreasesStat(StatType.GuardRetaliationDamageBonus, 15)
                 .Price(3)
@@ -385,13 +385,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.InterruptingSweep1)
-                .Description("Deals weapon DMG + 16 to nearby enemies and interrupts current hostile actions when possible.")
+                .Description("Deals weapon DMG + 16 to enemies within 5m and interrupts current hostile actions when possible.")
                 .Price(3)
                 .RequirementSkill(SkillType.Katar, 18)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.InterruptingSweep2)
-                .Description("Deals weapon DMG + 30 to nearby enemies and interrupts current hostile actions when possible.")
+                .Description("Deals weapon DMG + 30 to enemies within 5m and interrupts current hostile actions when possible.")
                 .Price(3)
                 .RequirementSkill(SkillType.Katar, 32);
         }
@@ -443,7 +443,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ScrapheapLockdown1)
-                .Description("Deals weapon DMG + 25 in an area. Enemies hit suffer Dazed and Hamstring for 30 seconds.")
+                .Description("Deals weapon DMG + 25 in a 5m sphere. Enemies hit suffer Dazed and Hamstring for 30 seconds.")
                 .Price(6)
                 .RequirementSkill(SkillType.Katar, 50);
         }

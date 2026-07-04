@@ -162,13 +162,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.GroundQuake1)
-                .Description("Deals weapon DMG + 18 to nearby enemies and knocks down already Dazed targets for 30 seconds.")
+                .Description("Deals weapon DMG + 18 to enemies within 5m and knocks down already Dazed targets for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Staff, 18)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.GroundQuake2)
-                .Description("Deals weapon DMG + 30 to nearby enemies and knocks down already Dazed targets for 30 seconds.")
+                .Description("Deals weapon DMG + 30 to enemies within 5m and knocks down already Dazed targets for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Staff, 32);
         }
@@ -222,7 +222,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Worldbreaker1)
-                .Description("Deals weapon DMG + 35 to nearby enemies. Enemies affected by control effects take +50 DMG and are Dazed for 30 seconds.")
+                .Description("Deals weapon DMG + 35 to enemies within 5m. Enemies affected by control effects take +50 DMG and are Dazed for 30 seconds.")
                 .Price(6)
                 .RequirementSkill(SkillType.Staff, 50);
         }
@@ -264,7 +264,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SentinelGuardTrait)
-                .Description("Staff Sentinel protection abilities grant nearby allies +8 Attack Deflection for 30 seconds and generate extra enmity.")
+                .Description("Staff Sentinel protection abilities grant allies within 5m +8 Attack Deflection for 30 seconds and grant you +20% Enmity for 30 seconds.")
                 .IncreasesStat(StatType.AbilityUsedPerkCategoryNearbyAllyAttackDeflectionCategoryId, (int)PerkCategoryType.StaffSentinel)
                 .IncreasesStat(StatType.AbilityUsedPerkCategoryNearbyAllyAttackDeflection, 8)
                 .IncreasesStat(StatType.AbilityUsedPerkCategoryNearbyAllyAttackDeflectionDurationSeconds, 30)
@@ -353,7 +353,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SweepingGuard1)
-                .Description("Deals weapon DMG + 16 to nearby enemies and grants +20% Defense for 30 seconds.")
+                .Description("Deals weapon DMG + 16 to enemies within 5m and grants +20% Defense for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Staff, 18);
         }
@@ -392,7 +392,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ShelterCircle1)
-                .Description("for 30 seconds, you and nearby allies gain +20% Physical Defense, +20% Force Defense, and +20% Evasion.")
+                .Description("for 30 seconds, you and allies within 5m gain +20% Physical Defense, +20% Force Defense, and +20% Evasion.")
                 .Price(3)
                 .RequirementSkill(SkillType.Staff, 32);
         }

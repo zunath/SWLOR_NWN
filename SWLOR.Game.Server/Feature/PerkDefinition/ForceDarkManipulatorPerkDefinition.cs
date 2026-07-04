@@ -79,7 +79,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .ForceAffinity(ForceAffinityType.Dark)
 
                 .AddPerkLevel()
-                .Description("Nearby enemies suffer -10% physical and Force ability Accuracy and -10% Evasion for 30 seconds.")
+                .Description("Enemies within 5m suffer -10% physical and Force ability Accuracy and -10% Evasion for 30 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Force, 18)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -143,7 +143,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .ForceAffinity(ForceAffinityType.Dark)
 
                 .AddPerkLevel()
-                .Description("Nearby enemies suffer -12% physical and Force ability Accuracy, -12% Evasion, and +20% FP and STM costs for 30 seconds.")
+                .Description("Enemies within 5m suffer -12% physical and Force ability Accuracy, -12% Evasion, and +20% FP and STM costs for 30 seconds.")
                 .Price(5)
                 .RequirementSkill(SkillType.Force, 50)
                 .RequirementCharacterType(CharacterType.ForceSensitive)

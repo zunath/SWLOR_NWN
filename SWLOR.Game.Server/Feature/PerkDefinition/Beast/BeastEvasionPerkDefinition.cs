@@ -88,21 +88,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition.Beast
                 .GroupType(PerkGroupType.Beast)
 
                 .AddPerkLevel()
-                .Description("The beast's next attack reduces target physical and force ability hit chance by 6% for 30 seconds and generates extra enmity.")
+                .Description("The beast's next attack reduces target physical and force ability hit chance by 6% for 30 seconds and generates 350 base Enmity plus VIT scaling.")
                 .Price(3)
                 .RequirementBeastLevel(12)
                 .RequirementBeastRole(BeastRoleType.Evasion)
                 .GrantsFeat(FeatType.DistractingFeint1)
 
                 .AddPerkLevel()
-                .Description("The beast's next attack reduces target hit chance and evasion chance by 8% for 30 seconds and generates extra enmity.")
+                .Description("The beast's next attack reduces target hit chance and evasion chance by 8% for 30 seconds and generates 500 base Enmity plus VIT scaling.")
                 .Price(4)
                 .RequirementBeastLevel(28)
                 .RequirementBeastRole(BeastRoleType.Evasion)
                 .GrantsFeat(FeatType.DistractingFeint2)
 
                 .AddPerkLevel()
-                .Description("The beast's next attack reduces target hit chance and evasion chance by 12% for 30 seconds and generates extra enmity.")
+                .Description("The beast's next attack reduces target hit chance and evasion chance by 12% for 30 seconds and generates 650 base Enmity plus VIT scaling.")
                 .Price(4)
                 .RequirementBeastLevel(45)
                 .RequirementBeastRole(BeastRoleType.Evasion)
@@ -123,7 +123,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition.Beast
                 .GrantsFeat(FeatType.EvasiveChallenge1)
 
                 .AddPerkLevel()
-                .Description("The beast goads the selected target and nearby enemies, removes movement slow, gains +14% evasion chance for 30 seconds, and restores 1 STM the next time it evades during the effect.")
+                .Description("The beast goads the selected target and enemies within 5m, removes movement slow, gains +14% evasion chance for 30 seconds, and restores 1 STM the next time it evades during the effect.")
                 .Price(4)
                 .RequirementBeastLevel(35)
                 .RequirementBeastRole(BeastRoleType.Evasion)

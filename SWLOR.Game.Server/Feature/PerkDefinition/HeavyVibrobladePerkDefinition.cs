@@ -55,7 +55,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.AbsoluteDefense1)
-                .Description("For 45 seconds, nearby party members including you take 15% less physical and Force damage and are immune to Knockdown and Dazed.")
+                .Description("For 45 seconds, party members within 5m including you take 15% less physical and Force damage and are immune to Knockdown and Dazed.")
                 .Price(6)
                 .RequirementSkill(SkillType.HeavyVibroblade, 50);
         }
@@ -68,7 +68,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.AngerStrikeTrait)
-                .Description("Heavy Vibroblade Defense attacks generate extra enmity, and your next attack within 30 seconds after using a Heavy Vibroblade Defense ability deals +12 DMG.")
+                .Description("Heavy Vibroblade Defense attacks generate +150 Enmity, and your next attack within 30 seconds after using a Heavy Vibroblade Defense ability deals +12 DMG.")
                 .IncreasesStat(StatType.HeavyVibrobladeDefenseAbilityEnmityBonus, 150)
                 .IncreasesStat(StatType.HeavyVibrobladeDefenseAbilityNextAutoAttackDamageTriggerPrimaryPerkType, (int)PerkType.FortressStrike)
                 .IncreasesStat(StatType.HeavyVibrobladeDefenseAbilityNextAutoAttackDamageTriggerSecondaryPerkType, (int)PerkType.BastionStance)
@@ -164,7 +164,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.CrushingBlowTrait)
-                .Description("Heavy Vibroblade Defense attacks reduce affected targets' Defense by 15% for 30 seconds and generate significant enmity.")
+                .Description("Heavy Vibroblade Defense attacks reduce affected targets' Defense by 15% for 30 seconds and generate +350 Enmity.")
                 .IncreasesStat(StatType.HeavyVibrobladeDefenseAbilityCrushingBlowTriggerPrimaryPerkType, (int)PerkType.FortressStrike)
                 .IncreasesStat(StatType.HeavyVibrobladeDefenseAbilityCrushingBlowTriggerSecondaryPerkType, (int)PerkType.BastionStance)
                 .IncreasesStat(StatType.HeavyVibrobladeDefenseAbilityCrushingBlowTriggerTertiaryPerkType, (int)PerkType.Flash)
@@ -203,13 +203,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Earthshatter1)
-                .Description("You deal weapon DMG + 20 to all enemies within the area of effect (line) from you. Inflicts Force Disruption on each target which disables the use of force abilities for 30 seconds.")
+                .Description("You deal weapon DMG + 20 to all enemies in an 8m x 2.5m line from you. Inflicts Force Disruption on each target which disables the use of force abilities for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.HeavyVibroblade, 18)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Earthshatter2)
-                .Description("You deal weapon DMG + 35 to all enemies within the area of effect (line) from you. Inflicts Force Disruption on each target which disables the use of force abilities for 30 seconds and generates extra enmity.")
+                .Description("You deal weapon DMG + 35 to all enemies in an 8m x 2.5m line from you. Inflicts Force Disruption on each target which disables the use of force abilities for 30 seconds and generates +350 Enmity.")
                 .IncreasesStat(StatType.EarthshatterDamageBonus, 15)
                 .IncreasesStat(StatType.EarthshatterEnmityBonus, 350)
                 .Price(3)
@@ -252,7 +252,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Flash1)
-                .Description("Enemies within the area of effect (sphere) around you receive the Flash effect, reducing physical and Force ability hit chance by 20% for 30 seconds. You generate significant enmity toward these enemies.")
+                .Description("Enemies within a 5m sphere around you receive the Flash effect, reducing physical and Force ability hit chance by 20% for 30 seconds. You generate +650 bonus Enmity toward these enemies.")
                 .Price(2)
                 .RequirementSkill(SkillType.HeavyVibroblade, 10);
         }
@@ -265,19 +265,19 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.FortressStrike1)
-                .Description("Your next attack deals weapon DMG + 10 and generates extra enmity. You gain +10% Physical Defense for 30 seconds.")
+                .Description("Your next attack deals weapon DMG + 10 and generates +350 Enmity plus damage dealt as Enmity. You gain +10% Physical Defense for 30 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.HeavyVibroblade, 2)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.FortressStrike2)
-                .Description("Your next attack deals weapon DMG + 20 and generates extra enmity. You gain +20% Physical Defense for 30 seconds.")
+                .Description("Your next attack deals weapon DMG + 20 and generates +350 Enmity plus damage dealt as Enmity. You gain +20% Physical Defense for 30 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.HeavyVibroblade, 12)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.FortressStrike3)
-                .Description("Your next attack deals weapon DMG + 30 and generates extra enmity. You gain +30% Physical Defense for 30 seconds.")
+                .Description("Your next attack deals weapon DMG + 30 and generates +350 Enmity plus damage dealt as Enmity. You gain +30% Physical Defense for 30 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.HeavyVibroblade, 30);
         }
@@ -290,7 +290,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.GuardiansReapingTrait)
-                .Description("Defeating an enemy restores 12% max HP to you and grants +10% Physical Defense to all nearby allies for 30 seconds.")
+                .Description("Defeating an enemy restores 12% max HP to you and grants +10% Physical Defense to all allies within 5m for 30 seconds.")
                 .IncreasesStat(StatType.DefeatedEnemyHPPercentRestore, 12)
                 .IncreasesStat(StatType.DefeatedEnemyNearbyAllyPhysicalDefensePercentAdjustment, 10)
                 .IncreasesStat(StatType.DefeatedEnemyNearbyAllyPhysicalDefenseDurationSeconds, 30)
@@ -358,7 +358,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Rampart1)
-                .Description("All allies within the area of effect (sphere) take 15% less physical damage for 1 minute.")
+                .Description("All allies within a 5m sphere take 15% less physical damage for 1 minute.")
                 .Price(3)
                 .RequirementSkill(SkillType.HeavyVibroblade, 28);
         }
@@ -431,7 +431,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SoulBurst1)
-                .Description("Deal weapon DMG + 35 to all enemies within area of effect (cone). Costs 40% HP which is reduced by 1% per MGT. (Minimum 10%)")
+                .Description("Deal weapon DMG + 35 to all enemies in a 5m x 5m cone. Costs 40% HP which is reduced by 1% per MGT. (Minimum 10%)")
                 .Price(3)
                 .RequirementSkill(SkillType.HeavyVibroblade, 18);
         }
@@ -488,7 +488,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SoulStorm1)
-                .Description("Sacrifice 40% HP to increase the damage of all nearby allies within the area of effect (sphere) by 20% for 1 minute. HP sacrificed decreases by 1 percentage point per MGT. (Minimum 10%)")
+                .Description("Sacrifice 40% HP to increase the damage of all allies within a 5m sphere by 20% for 1 minute. HP sacrificed decreases by 1 percentage point per MGT. (Minimum 10%)")
                 .Price(4)
                 .RequirementSkill(SkillType.HeavyVibroblade, 30);
         }

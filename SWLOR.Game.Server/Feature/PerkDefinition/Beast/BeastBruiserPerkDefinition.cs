@@ -88,21 +88,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition.Beast
                 .GroupType(PerkGroupType.Beast)
 
                 .AddPerkLevel()
-                .Description("The beast slams nearby hostile enemies for 10 physical DMG plus MGT scaling and Dazes them for 30 seconds.")
+                .Description("The beast slams hostile enemies within 5m for 10 physical DMG plus MGT scaling and Dazes them for 30 seconds.")
                 .Price(3)
                 .RequirementBeastLevel(12)
                 .RequirementBeastRole(BeastRoleType.Bruiser)
                 .GrantsFeat(FeatType.CrushingSlam1)
 
                 .AddPerkLevel()
-                .Description("The beast slams nearby hostile enemies for 14 physical DMG plus MGT scaling and Dazes them for 30 seconds.")
+                .Description("The beast slams hostile enemies within 5m for 14 physical DMG plus MGT scaling and Dazes them for 30 seconds.")
                 .Price(4)
                 .RequirementBeastLevel(28)
                 .RequirementBeastRole(BeastRoleType.Bruiser)
                 .GrantsFeat(FeatType.CrushingSlam2)
 
                 .AddPerkLevel()
-                .Description("The beast slams nearby hostile enemies for 18 physical DMG plus MGT scaling and Dazes them for 30 seconds.")
+                .Description("The beast slams hostile enemies within 5m for 18 physical DMG plus MGT scaling and Dazes them for 30 seconds.")
                 .Price(4)
                 .RequirementBeastLevel(45)
                 .RequirementBeastRole(BeastRoleType.Bruiser)
@@ -174,15 +174,15 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition.Beast
                 .GroupType(PerkGroupType.Beast)
 
                 .AddPerkLevel()
-                .Description("The beast attacks up to 3 nearby hostile enemies for 10 physical DMG plus MGT scaling each.")
-                .Price(4)
+                .Description("The beast attacks up to 3 hostile enemies within 5m for 10 physical DMG plus MGT scaling each.")
+                .Price(3)
                 .RequirementBeastLevel(35)
                 .RequirementBeastRole(BeastRoleType.Bruiser)
                 .GrantsFeat(FeatType.Rampage1)
 
                 .AddPerkLevel()
-                .Description("The beast attacks up to 4 nearby hostile enemies for 14 physical DMG plus MGT scaling each.")
-                .Price(3)
+                .Description("The beast attacks up to 4 hostile enemies within 5m for 14 physical DMG plus MGT scaling each.")
+                .Price(4)
                 .RequirementBeastLevel(50)
                 .RequirementBeastRole(BeastRoleType.Bruiser)
                 .GrantsFeat(FeatType.Rampage2);
@@ -195,7 +195,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition.Beast
                 .GroupType(PerkGroupType.Beast)
 
                 .AddPerkLevel()
-                .Description("The beast deals 42 physical DMG to nearby hostile enemies and deals 12% more damage for 30 seconds.")
+                .Description("The beast deals 42 physical DMG to hostile enemies within 5m and deals 12% more damage for 30 seconds.")
                 .Price(5)
                 .RequirementBeastLevel(50)
                 .RequirementBeastRole(BeastRoleType.Bruiser)

@@ -166,7 +166,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .IncreasesStat(StatType.MindResistance, 8)
                 .IncreasesStat(StatType.TraumaResistance, 8)
                 .IncreasesStat(StatType.MobilityResistance, 8)
-                .Price(4)
+                .Price(3)
                 .RequirementSkill(SkillType.Vibroblade, 15)
 
                 .AddPerkLevel()
@@ -174,7 +174,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .IncreasesStat(StatType.MindResistance, 15)
                 .IncreasesStat(StatType.TraumaResistance, 15)
                 .IncreasesStat(StatType.MobilityResistance, 15)
-                .Price(3)
+                .Price(4)
                 .RequirementSkill(SkillType.Vibroblade, 32);
         }
 
@@ -301,7 +301,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.RiotBlade2)
-                .Description("Instantly deals weapon DMG + 30 to your target. Riot Blade also deals +12 DMG to nearby enemies.")
+                .Description("Instantly deals weapon DMG + 30 to your target. Riot Blade also deals +12 DMG to enemies within 5m.")
                 .IncreasesStat(StatType.RiotBladeSecondaryDamageBonus, 12)
                 .Price(3)
                 .RequirementSkill(SkillType.Vibroblade, 28)
@@ -326,7 +326,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SavageCleave2)
-                .Description("Savage Cleave deals +20 DMG to nearby enemies and restores 2 STM per secondary target hit, up to 8 STM.")
+                .Description("Savage Cleave deals +20 DMG to enemies within 5m and restores 2 STM per secondary target hit, up to 8 STM.")
                 .IncreasesStat(StatType.SavageCleaveSecondaryDamageBonus, 20)
                 .IncreasesStat(StatType.SavageCleaveSecondaryTargetStaminaRestore, 2)
                 .IncreasesStat(StatType.SavageCleaveSecondaryTargetStaminaRestoreMaximum, 8)

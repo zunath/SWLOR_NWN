@@ -60,14 +60,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .ForceAffinity(ForceAffinityType.Dark)
 
                 .AddPerkLevel()
-                .Description("Deals 10 force DMG plus WIL scaling to one target, then arcs to up to two nearby enemies for 50% damage. Affected targets suffer Shock for 30 seconds.")
+                .Description("Deals 10 force DMG plus WIL scaling to one target, then arcs to up to two enemies within 5m for 50% damage. Affected targets suffer Shock for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 10)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ForceLightning1)
 
                 .AddPerkLevel()
-                .Description("Deals 18 force DMG plus WIL scaling to one target, then arcs to up to three nearby enemies for 50% damage. Affected targets suffer Shock for 30 seconds.")
+                .Description("Deals 18 force DMG plus WIL scaling to one target, then arcs to up to three enemies within 5m for 50% damage. Affected targets suffer Shock for 30 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Force, 22)
                 .RequirementCharacterType(CharacterType.ForceSensitive)

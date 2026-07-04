@@ -329,21 +329,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.CircleSlash1)
-                .Description("Deals weapon DMG + 12 to nearby enemies and grants +4 Attack Deflection for 30 seconds.")
+                .Description("Deals weapon DMG + 12 to enemies within 5m and grants +4 Attack Deflection for 30 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Saberstaff, 10)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.CircleSlash2)
-                .Description("Deals weapon DMG + 24 to nearby enemies and grants +6 Attack Deflection for 30 seconds.")
+                .Description("Deals weapon DMG + 24 to enemies within 5m and grants +6 Attack Deflection for 30 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Saberstaff, 30)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.CircleSlash3)
-                .Description("Deals weapon DMG + 36 to nearby enemies and grants +8 Attack Deflection for 30 seconds.")
+                .Description("Deals weapon DMG + 36 to enemies within 5m and grants +8 Attack Deflection for 30 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Saberstaff, 38)
                 .RequirementCharacterType(CharacterType.ForceSensitive);

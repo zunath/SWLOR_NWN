@@ -96,14 +96,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ForceJudgment1)
 
                 .AddPerkLevel()
-                .Description("Deals 24 force DMG plus WIL scaling to the selected target and one nearby enemy, reducing outgoing weapon and force damage by 6% for 30 seconds.")
+                .Description("Deals 24 force DMG plus WIL scaling to the selected target and one enemy within 5m, reducing outgoing weapon and force damage by 6% for 30 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Force, 25)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ForceJudgment2)
 
                 .AddPerkLevel()
-                .Description("Deals 36 force DMG plus WIL scaling to the selected target and nearby enemies, reducing outgoing weapon and force damage by 8% for 30 seconds.")
+                .Description("Deals 36 force DMG plus WIL scaling to the selected target and enemies within 5m, reducing outgoing weapon and force damage by 8% for 30 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Force, 45)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -194,7 +194,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.MindTrick1)
 
                 .AddPerkLevel()
-                .Description("Attempts to inflict Confusion on the selected non-mechanical target and one nearby non-mechanical target for 30 seconds. Caster Willpower increases duration, while target Willpower and Mind Resistance reduce it.")
+                .Description("Attempts to inflict Confusion on the selected non-mechanical target and one one non-mechanical target within 5m for 30 seconds. Caster Willpower increases duration, while target Willpower and Mind Resistance reduce it.")
                 .Price(4)
                 .RequirementSkill(SkillType.Force, 38)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -238,7 +238,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.HarmonicRestorationTrait)
-                .Description("When you restore HP to an ally below 50% HP with a Control power, up to two nearby allies recover 6% of maximum HP plus WIL scaling and gain +10 Trauma Resistance rating for 30 seconds. This can trigger once every 20 seconds.")
+                .Description("When you restore HP to an ally below 50% HP with a Control power, up to two allies within 5m recover 6% of maximum HP plus WIL scaling and gain +10 Trauma Resistance rating for 30 seconds. This can trigger once every 20 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Force, 45)
                 .RequirementCharacterType(CharacterType.ForceSensitive)

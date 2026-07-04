@@ -161,13 +161,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PointBlankBurst1)
-                .Description("Deals weapon DMG + 16 to nearby enemies and grants +10% Evasion for 30 seconds.")
+                .Description("Deals weapon DMG + 16 to enemies within 5m and grants +10% Evasion for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Pistol, 18)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PointBlankBurst2)
-                .Description("Deals weapon DMG + 30 to nearby enemies and grants +15% Evasion for 30 seconds.")
+                .Description("Deals weapon DMG + 30 to enemies within 5m and grants +15% Evasion for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Pistol, 32);
         }
@@ -346,13 +346,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.FanTheHammer1)
-                .Description("Fires at up to 3 nearby enemies for weapon DMG + 14. Each hit has +8% Critical Rate.")
+                .Description("Fires at up to 3 enemies within 5m for weapon DMG + 14. Each hit has +8% Critical Rate.")
                 .Price(3)
                 .RequirementSkill(SkillType.Pistol, 18)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.FanTheHammer2)
-                .Description("Fires at up to 3 nearby enemies for weapon DMG + 26. Each hit has +12% Critical Rate.")
+                .Description("Fires at up to 3 enemies within 5m for weapon DMG + 26. Each hit has +12% Critical Rate.")
                 .Price(3)
                 .RequirementSkill(SkillType.Pistol, 32);
         }

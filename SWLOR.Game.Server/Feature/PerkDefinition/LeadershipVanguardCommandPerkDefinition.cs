@@ -32,13 +32,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Rallying Standard")
 
                 .AddPerkLevel()
-                .Description("Aura: Nearby party members gain +3% physical and Force ability hit chance. SOC scaling can raise this to +4%.")
+                .Description("Aura: Party members within Leadership range (5m base) gain +3% physical and Force ability hit chance. SOC scaling can raise this to +4%.")
                 .Price(2)
                 .IncreasesStat(StatType.RallyingStandardAuraLevel, 1)
                 .GrantsFeat(FeatType.RallyingStandard1)
 
                 .AddPerkLevel()
-                .Description("Aura: Nearby party members gain +5% physical and Force ability hit chance. SOC scaling can raise this to +6%.")
+                .Description("Aura: Party members within Leadership range (5m base) gain +5% physical and Force ability hit chance. SOC scaling can raise this to +6%.")
                 .Price(3)
                 .RequirementSkill(SkillType.Leadership, 22)
                 .IncreasesStat(StatType.RallyingStandardAuraLevel, 2)
@@ -51,19 +51,19 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Press the Attack")
 
                 .AddPerkLevel()
-                .Description("Nearby party members deal +8% damage for 30 seconds. SOC scaling can raise this to +10%.")
+                .Description("Party members within Leadership range (5m base) deal +8% damage for 30 seconds. SOC scaling can raise this to +10%.")
                 .Price(2)
                 .RequirementSkill(SkillType.Leadership, 5)
                 .GrantsFeat(FeatType.PressTheAttack1)
 
                 .AddPerkLevel()
-                .Description("Nearby party members deal +11% damage for 30 seconds. SOC scaling can raise this to +14%.")
+                .Description("Party members within Leadership range (5m base) deal +11% damage for 30 seconds. SOC scaling can raise this to +14%.")
                 .Price(3)
                 .RequirementSkill(SkillType.Leadership, 18)
                 .GrantsFeat(FeatType.PressTheAttack2)
 
                 .AddPerkLevel()
-                .Description("Nearby party members gain +14% damage and +5% physical and Force ability hit chance for 30 seconds. SOC scaling can raise these to +18% damage and +7% hit chance.")
+                .Description("Party members within Leadership range (5m base) gain +14% damage and +5% physical and Force ability hit chance for 30 seconds. SOC scaling can raise these to +18% damage and +7% hit chance.")
                 .Price(4)
                 .RequirementSkill(SkillType.Leadership, 40)
                 .GrantsFeat(FeatType.PressTheAttack3);
@@ -75,21 +75,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Coordinated Focus")
 
                 .AddPerkLevel()
-                .Description("Aura: Nearby party members gain +3% critical hit chance. SOC scaling can raise this to +4%.")
+                .Description("Aura: Party members within Leadership range (5m base) gain +3% critical hit chance. SOC scaling can raise this to +4%.")
                 .Price(3)
                 .RequirementSkill(SkillType.Leadership, 8)
                 .IncreasesStat(StatType.CoordinatedFocusAuraLevel, 1)
                 .GrantsFeat(FeatType.CoordinatedFocus1)
 
                 .AddPerkLevel()
-                .Description("Aura: Nearby party members gain +4% critical hit chance and +5% critical damage. SOC scaling can raise these to +5% and +7%.")
+                .Description("Aura: Party members within Leadership range (5m base) gain +4% critical hit chance and +5% critical damage. SOC scaling can raise these to +5% and +7%.")
                 .Price(4)
                 .RequirementSkill(SkillType.Leadership, 28)
                 .IncreasesStat(StatType.CoordinatedFocusAuraLevel, 2)
                 .GrantsFeat(FeatType.CoordinatedFocus2)
 
                 .AddPerkLevel()
-                .Description("Aura: Nearby party members gain +6% critical hit chance and +8% critical damage. SOC scaling can raise these to +7% and +10%.")
+                .Description("Aura: Party members within Leadership range (5m base) gain +6% critical hit chance and +8% critical damage. SOC scaling can raise these to +7% and +10%.")
                 .Price(4)
                 .RequirementSkill(SkillType.Leadership, 45)
                 .IncreasesStat(StatType.CoordinatedFocusAuraLevel, 3)
@@ -121,14 +121,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Charge Order")
 
                 .AddPerkLevel()
-                .Description("Aura: Nearby party members gain +10% movement speed and +30 Mobility Resistance. SOC scaling can raise these to +12% movement speed and +40 Mobility Resistance.")
+                .Description("Aura: Party members within Leadership range (5m base) gain +10% movement speed and +30 Mobility Resistance. SOC scaling can raise these to +12% movement speed and +40 Mobility Resistance.")
                 .Price(2)
                 .RequirementSkill(SkillType.Leadership, 15)
                 .IncreasesStat(StatType.ChargeOrderAuraLevel, 1)
                 .GrantsFeat(FeatType.ChargeOrder1)
 
                 .AddPerkLevel()
-                .Description("Aura: Nearby party members gain +15% movement speed and +50 Mobility Resistance. SOC scaling can raise these to +18% movement speed and +65 Mobility Resistance.")
+                .Description("Aura: Party members within Leadership range (5m base) gain +15% movement speed and +50 Mobility Resistance. SOC scaling can raise these to +18% movement speed and +65 Mobility Resistance.")
                 .Price(3)
                 .RequirementSkill(SkillType.Leadership, 38)
                 .IncreasesStat(StatType.ChargeOrderAuraLevel, 2)
@@ -141,13 +141,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Break Morale")
 
                 .AddPerkLevel()
-                .Description("Nearby enemies suffer Flash for 30 seconds, reducing physical and Force ability hit chance by 10%. SOC scaling can raise the penalty to 12%. This command applies reliably to valid nearby enemies.")
+                .Description("Enemies within Leadership range (5m base) suffer Flash for 30 seconds, reducing physical and Force ability hit chance by 10%. SOC scaling can raise the penalty to 12%. This command applies reliably to valid enemies within Leadership range (5m base).")
                 .Price(3)
                 .RequirementSkill(SkillType.Leadership, 25)
                 .GrantsFeat(FeatType.BreakMorale1)
 
                 .AddPerkLevel()
-                .Description("Nearby enemies suffer Flash, reducing physical and Force ability hit chance by 15%, and Weakened, reducing Attack by 12%, for 30 seconds. SOC scaling can raise these penalties to 18% and 15%. This command applies reliably to valid nearby enemies.")
+                .Description("Enemies within Leadership range (5m base) suffer Flash, reducing physical and Force ability hit chance by 15%, and Weakened, reducing Attack by 12%, for 30 seconds. SOC scaling can raise these penalties to 18% and 15%. This command applies reliably to valid enemies within Leadership range (5m base).")
                 .Price(4)
                 .RequirementSkill(SkillType.Leadership, 42)
                 .GrantsFeat(FeatType.BreakMorale2);
@@ -182,7 +182,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Decisive Command")
 
                 .AddPerkLevel()
-                .Description("For 45 seconds, nearby party members including you gain +15% damage, +6% physical and Force ability hit chance, +6% critical hit chance, and restore 1 STM every 3 seconds. SOC scaling can raise the bonuses to +18%, +8%, and +8%.")
+                .Description("For 45 seconds, party members within Leadership range (5m base), including you, gain +15% damage, +6% physical and Force ability hit chance, +6% critical hit chance, and restore 1 STM every 3 seconds. SOC scaling can raise the bonuses to +18%, +8%, and +8%.")
                 .Price(5)
                 .RequirementSkill(SkillType.Leadership, 50)
                 .GrantsFeat(FeatType.DecisiveCommand1);

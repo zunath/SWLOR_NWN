@@ -152,6 +152,52 @@ public class CombatUpgradeBibleSyncTests
         }
     };
 
+    private static readonly Dictionary<string, int[]> WeaponProgressionPricePatternByStyle = new(StringComparer.OrdinalIgnoreCase)
+    {
+        ["Katar|Iron Guard"] = new[]
+        {
+            2,
+            2,
+            2,
+            2,
+            2,
+            3,
+            3,
+            4,
+            4,
+            4,
+            4,
+            4,
+            3,
+            2,
+            4,
+            5,
+            4,
+            6
+        },
+        ["Vibroblade|Bulwark"] = new[]
+        {
+            2,
+            2,
+            2,
+            2,
+            2,
+            3,
+            3,
+            4,
+            4,
+            4,
+            3,
+            4,
+            4,
+            2,
+            4,
+            5,
+            4,
+            6
+        }
+    };
+
     private static readonly HashSet<PerkCategoryType> DroidInstructionCategories = new()
     {
         PerkCategoryType.General,
@@ -318,8 +364,9 @@ public class CombatUpgradeBibleSyncTests
             if (!skillRanks.SequenceEqual(expectedSkillRanks))
                 failures.Add($"{tab}/{style}: skill-rank pattern should be [{string.Join(", ", expectedSkillRanks)}], found [{string.Join(", ", skillRanks)}].");
 
-            if (!prices.SequenceEqual(expectedPrices))
-                failures.Add($"{tab}/{style}: SP-price pattern should be [{string.Join(", ", expectedPrices)}], found [{string.Join(", ", prices)}].");
+            var expectedPricePattern = GetExpectedWeaponProgressionPricePattern(group.Key, expectedPrices);
+            if (!prices.SequenceEqual(expectedPricePattern))
+                failures.Add($"{tab}/{style}: SP-price pattern should be [{string.Join(", ", expectedPricePattern)}], found [{string.Join(", ", prices)}].");
 
             var expectedTypePattern = GetExpectedWeaponProgressionTypePattern(group.Key, expectedTypes);
             if (!types.SequenceEqual(expectedTypePattern, StringComparer.OrdinalIgnoreCase))
@@ -1938,6 +1985,11 @@ public class CombatUpgradeBibleSyncTests
     private static string[] GetExpectedWeaponProgressionTypePattern(string styleKey, string[] defaultPattern)
     {
         return WeaponProgressionTypePatternByStyle.GetValueOrDefault(styleKey, defaultPattern);
+    }
+
+    private static int[] GetExpectedWeaponProgressionPricePattern(string styleKey, int[] defaultPattern)
+    {
+        return WeaponProgressionPricePatternByStyle.GetValueOrDefault(styleKey, defaultPattern);
     }
 
     private static bool ShouldValidateAsActiveAbility(BiblePerkRow row, PerkLevel level)

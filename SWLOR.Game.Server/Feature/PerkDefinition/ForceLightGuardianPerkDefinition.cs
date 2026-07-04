@@ -84,7 +84,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.CourageousResolveTrait)
-                .Description("When you use a Sense power, you and nearby allies gain +10 Fear Resistance rating, +10 Daze Resistance rating, and +10 Confusion Resistance rating for 30 seconds. Allies with temporary HP from one of your Force powers gain +15 instead.")
+                .Description("When you use a Sense power, you and allies within 5m gain +10 Fear Resistance rating, +10 Daze Resistance rating, and +10 Confusion Resistance rating for 30 seconds. Allies with temporary HP from one of your Force powers gain +15 instead.")
                 .Price(4)
                 .RequirementSkill(SkillType.Force, 15)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -127,7 +127,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .ForceAffinity(ForceAffinityType.Light)
 
                 .AddPerkLevel()
-                .Description("Releases a 5m wave of focused light, dealing 22 force DMG plus WIL scaling to enemies and removing one minor negative effect (Bleed, Poison, or Hobble) from nearby allies.")
+                .Description("Releases a 5m wave of focused light, dealing 22 force DMG plus WIL scaling to enemies and removing one minor negative effect (Bleed, Poison, or Hobble) from allies within 5m.")
                 .Price(4)
                 .RequirementSkill(SkillType.Force, 35)
                 .RequirementCharacterType(CharacterType.ForceSensitive)

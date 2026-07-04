@@ -1,14 +1,16 @@
 # Combat Upgrade Active Perk Budget Review
 
-Last reviewed: 2026-06-11
+Last reviewed: 2026-07-04
 
 ## Recommended Rule
 
-Each combat perk tree should land at 4-6 distinct active buttons. Count rank chains as one button because the current-rank feat replacement path removes lower-rank active feats. Count `Combat`, `Stance`, `Toggle`, and `Aura` rows as active buttons.
+Each weapon combat style should land at 4-6 distinct active buttons. Count rank chains as one button because the current-rank feat replacement path removes lower-rank active feats. Count `Combat`, `Stance`, `Toggle`, and `Aura` rows as active buttons.
 
 Use 6 as the normal ceiling, 5 as acceptable for tighter trees, and 4 only for narrow support trees. With a player expected to level 2-3 weapon skills and 3-5 combat skills total, this produces about 25-30 combat buttons instead of asking players to hotbar every tactical variant from every tree.
 
-Armor is not a combat-upgrade perk tree and should stay out of this budget. Espionage remains out of current combat-upgrade scope. Beast role abilities appear to be AI-usable beast feats rather than ordinary player weapon buttons, but they should still be kept within this shape unless playtest proves they do not create player-facing command pressure.
+This 4-6 target is binding for weapon skills only. Devices and Force are explicit exceptions because their tabs are broader utility/power catalogs rather than two-style weapon progressions. Support and companion tabs can still use the count as a review signal, but they should not be failed against the weapon-style button ceiling unless the design intent says those rows are ordinary player weapon buttons.
+
+Armor is not a combat-upgrade perk tree and should stay out of this budget. Espionage remains out of current combat-upgrade implementation scope.
 
 ## Conversion Principles
 
@@ -26,6 +28,8 @@ Armor is not a combat-upgrade perk tree and should stay out of this budget. Espi
 - Leadership aura rows remain active aura choices. Converted Leadership rows should become upgrades to retained commands or auras, not free global aura effects.
 
 ## Active Count Plan
+
+The table below records the historical active-to-trait conversion pass. Treat weapon rows as the binding budget surface; treat Devices, Force, support, and companion rows as context only.
 
 | Skill | Tree | Current active bases | Proposed active bases | Convert these bases to traits |
 | --- | --- | ---: | ---: | --- |
@@ -106,7 +110,7 @@ The 2026-06-09 balance pass uses these cross-tree constraints:
 - After the tier-consistency pass, Light and Dark core damage actives cost the same SP: Dark (`Force Spark` 9, `Force Lightning` 7, `Force Drain` 10, `Creeping Terror` 9) and Light (`Throw Rock` 9, `Radiant Lance` 11, `Force Judgment` 11, `Purifying Wave` 4) both total 35 SP. Dark keeps the raw damage/drain/execute identity (including the `Devouring Strike` and `Unstable Pressure` execute traits and the `Hunger of the Dark` capstone); Light keeps controlled pressure plus restraint/protection riders and the `Last Stand of the Light` capstone, with the Sense capstone `Eclipse of Resolve` staying alignment-neutral.
 - Force skill requirements must be balanced across Light, Dark, and Universal lines, and each alignment needs a rank-0 entry point: `Force Spark I` (Dark DPS), `Throw Rock I` (Light DPS, moved from Force 12), `Benevolence I` (Light support), and `Weaken Resolve I` (Dark debuff, moved from Force 8) all have no skill requirement, so both Light and Dark players can deal damage and progress from rank 0.
 - Force requirements should be spread evenly across the 0-50 grid with no rank step carrying more than two rows in a section and no large dead zones. The 2026-06-11 requirement-spread pass fixed Alter's triples at 28/38/48 and its 40-42 gap, Control's 20-to-30 gap and 45 triple, and Sense's quadruple at 25 (Sense's 16 perks now land on 16 distinct steps). Line rank ordering is preserved (`Force Spark` 0/18/42, `Throw Rock` 0/18/40, `Force Choke` 8/20/30/48, `Guardian Ward` 2/15/35/45, `Force Judgment` 5/25/45), alignment access alternates inside each band (Dark gets a new tool roughly every 2-5 ranks in Alter while Light's `Throw Rock`/`Purifying Wave` ranks land alongside them; `Fury Stance` and `Cruel Momentum` spread Dark presence across Control at 12/28/42; Sense alternates Light/Dark/Universal across its ladder), and every row stays inside its SP price band, so no prices changed and Force remains 240 SP with `94/87/59` section totals. Requirement parity with the Devices twin lines is not required because Devices has its own rank-0 DPS openers in every category.
-- The 2026-06-11 weapon-skill cross-check found all twelve weapon skills balanced at the structural level: every skill totals 110 SP with 55 SP per style, every style capstone costs 4 SP with 15 STM and the shared 5:45 capstone cooldown, single-target strike lines scale on the same curve once cooldown and rider differences are priced in, and stance trade-offs stay within the established plus/minus 15-25% envelope. No weapon-tree changes were needed.
+- The 2026-07-04 weapon-skill cross-check found all twelve weapon skills balanced at the structural level: every skill totals 120 SP with 60 SP per style, every style capstone costs 6 SP, active capstones use the shared 90-second capstone cooldown with a 45-second active duration where applicable, single-target strike lines scale on the same curve once cooldown and rider differences are priced in, and stance trade-offs stay within the established plus/minus 15-25% envelope. No weapon-tree total changes were needed.
 - Universal Force riders should not be narrowed to Dark-only triggers when their notes or role say they are universal. Use `damaging Force power` for universal triggers and reserve `damaging Dark Force power` for traits that intentionally require Dark affinity or Dark tree attacks.
 - Restore `Throw Lightsaber` as a Force Universal active line. Despite the legacy name, its design should work with any equipped weapon type and should not add a lightsaber-only equipment requirement.
 - Damage and pulse descriptions should avoid vague terms such as `light damage`, `increased DMG`, or `high DMG`. Rows should state the base damage, damage type, scaling source where applicable, target count/area, and status duration.

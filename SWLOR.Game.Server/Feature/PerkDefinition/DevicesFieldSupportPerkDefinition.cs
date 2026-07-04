@@ -92,7 +92,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.PowerCell2)
 
                 .AddPerkLevel()
-                .Description("Restores 18% of maximum STM to the selected ally and nearby allies and increases physical and Force ability Accuracy by 6% for 30 seconds.")
+                .Description("Restores 18% of maximum STM to the selected ally and allies within 5m and increases physical and Force ability Accuracy by 6% for 30 seconds.")
                 .Price(5)
                 .RequirementSkill(SkillType.Devices, 48)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -180,7 +180,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Group Deflector")
 
                 .AddPerkLevel()
-                .Description("Nearby allies gain 70 temporary HP plus 8% of each target's maximum HP for 30 seconds.")
+                .Description("Allies within 5m gain 70 temporary HP plus 8% of each target's maximum HP for 30 seconds.")
                 .Price(5)
                 .RequirementSkill(SkillType.Devices, 42)
                 .RequirementCharacterType(CharacterType.Standard)

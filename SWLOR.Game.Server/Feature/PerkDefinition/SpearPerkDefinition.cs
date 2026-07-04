@@ -215,7 +215,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Forcebane1)
-                .Description("Deals weapon DMG + 25 in an area. Enemies suffer Foggy Mind, Force Disruption, and -20% Ability Accuracy for 45 seconds.")
+                .Description("Deals weapon DMG + 25 in a 5m sphere. Enemies suffer Foggy Mind, Force Disruption, and -20% Ability Accuracy for 45 seconds.")
                 .Price(6)
                 .RequirementSkill(SkillType.Spear, 50);
         }
@@ -312,19 +312,19 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SweepingFlank1)
-                .Description("Deals weapon DMG + 12 to nearby enemies. If you are beside or behind a target, that target takes +10 DMG.")
+                .Description("Deals weapon DMG + 12 to enemies within 5m. If you are beside or behind a target, that target takes +10 DMG.")
                 .Price(2)
                 .RequirementSkill(SkillType.Spear, 10)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SweepingFlank2)
-                .Description("Deals weapon DMG + 24 to nearby enemies. If you are beside or behind a target, that target takes +16 DMG.")
+                .Description("Deals weapon DMG + 24 to enemies within 5m. If you are beside or behind a target, that target takes +16 DMG.")
                 .Price(4)
                 .RequirementSkill(SkillType.Spear, 30)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SweepingFlank3)
-                .Description("Deals weapon DMG + 36 to nearby enemies. If you are beside or behind a target, that target takes +24 DMG.")
+                .Description("Deals weapon DMG + 36 to enemies within 5m. If you are beside or behind a target, that target takes +24 DMG.")
                 .Price(4)
                 .RequirementSkill(SkillType.Spear, 38);
         }

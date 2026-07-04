@@ -145,7 +145,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ClusterPouchTrait)
-                .Description("Area thrown abilities hit one additional nearby enemy for +10 DMG.")
+                .Description("Area thrown abilities hit one additional one enemy within 5m for +10 DMG.")
                 .IncreasesStat(StatType.ThrowingBombardierClusterStormDamageBonus, 10)
                 .IncreasesStat(StatType.ThrowingBombardierClusterStormMaximumTargets, 1)
                 .Price(4)
@@ -159,13 +159,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ConcussiveToss1)
-                .Description("Deals weapon DMG + 16 in an area and inflicts Dazed for 30 seconds.")
+                .Description("Deals weapon DMG + 16 in a 5m sphere and inflicts Dazed for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Throwing, 18)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ConcussiveToss2)
-                .Description("Deals weapon DMG + 30 in an area and inflicts Dazed for 30 seconds.")
+                .Description("Deals weapon DMG + 30 in a 5m sphere and inflicts Dazed for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Throwing, 32);
         }
@@ -330,7 +330,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.RicochetTossTrait)
-                .Description("Thrown abilities against bleeding targets have a 25% chance to hit a nearby enemy for +12 DMG.")
+                .Description("Thrown abilities against bleeding targets have a 25% chance to hit a one enemy within 5m for +12 DMG.")
                 .IncreasesStat(StatType.AbilityDamageToBleedingTargetSkillType, (int)SkillType.Throwing)
                 .IncreasesStat(StatType.ThrowingDeadeyeRicochetDamageBonus, 12)
                 .IncreasesStat(StatType.ThrowingDeadeyeRicochetMaximumTargets, 1)
@@ -405,7 +405,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PerfectFlurry1)
-                .Description("Deals weapon DMG + 30. Bleeding targets take +45 DMG and spread Bleed to nearby enemies for 45 seconds.")
+                .Description("Deals weapon DMG + 30. Bleeding targets take +45 DMG and spread Bleed to enemies within 5m for 45 seconds.")
                 .Price(6)
                 .RequirementSkill(SkillType.Throwing, 50);
         }

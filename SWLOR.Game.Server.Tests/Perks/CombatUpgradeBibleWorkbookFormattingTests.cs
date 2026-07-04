@@ -42,6 +42,7 @@ public class CombatUpgradeBibleWorkbookFormattingTests
 
             AssertColumns(sheetName, worksheet, expectedColumns, failures);
             AssertNotesColumnsReadable(sheetName, worksheet, expectedColumns, sharedStrings, failures);
+            AssertBeastCalcsColumnsCondensed(sheetName, expectedColumns, failures);
         }
 
         expectedColumnsBySheet.Keys
@@ -121,6 +122,55 @@ public class CombatUpgradeBibleWorkbookFormattingTests
             {
                 failures.Add($"{sheetName}: Notes column {notesColumn} width is {matchingColumn.Width}, expected at least {MinimumNotesColumnWidth}.");
             }
+        }
+    }
+
+    private static void AssertBeastCalcsColumnsCondensed(
+        string sheetName,
+        IReadOnlyList<(int Min, int Max, decimal Width)> expectedColumns,
+        List<string> failures)
+    {
+        if (sheetName != "Beast Calcs")
+            return;
+
+        var expectedWidthsByColumn = new Dictionary<int, decimal>();
+        AddExpectedColumns(expectedWidthsByColumn, 1, 1, 18.0m);
+        AddExpectedColumns(expectedWidthsByColumn, 2, 2, 9.0m);
+        AddExpectedColumns(expectedWidthsByColumn, 3, 10, 4.5m);
+        AddExpectedColumns(expectedWidthsByColumn, 11, 16, 6.0m);
+        AddExpectedColumns(expectedWidthsByColumn, 17, 17, 10.0m);
+        AddExpectedColumns(expectedWidthsByColumn, 18, 18, 15.0m);
+        AddExpectedColumns(expectedWidthsByColumn, 19, 19, 6.0m);
+        AddExpectedColumns(expectedWidthsByColumn, 20, 25, 6.0m);
+        AddExpectedColumns(expectedWidthsByColumn, 26, 27, 7.0m);
+        AddExpectedColumns(expectedWidthsByColumn, 28, 28, 26.0m);
+        AddExpectedColumns(expectedWidthsByColumn, 29, 35, 8.0m);
+
+        foreach (var (column, expectedWidth) in expectedWidthsByColumn)
+        {
+            var matchingColumn = expectedColumns
+                .Where(width => width.Min <= column && width.Max >= column)
+                .Select(width => (Found: true, Width: width.Width))
+                .FirstOrDefault();
+
+            if (!matchingColumn.Found)
+            {
+                failures.Add($"Beast Calcs: condensed column {column} has no width entry in the layout manifest.");
+                continue;
+            }
+
+            if (matchingColumn.Width != expectedWidth)
+            {
+                failures.Add($"Beast Calcs: condensed column {column} width is {matchingColumn.Width}, expected {expectedWidth}.");
+            }
+        }
+    }
+
+    private static void AddExpectedColumns(Dictionary<int, decimal> expectedWidthsByColumn, int min, int max, decimal width)
+    {
+        for (var column = min; column <= max; column++)
+        {
+            expectedWidthsByColumn[column] = width;
         }
     }
 

@@ -1252,7 +1252,7 @@
         "__struct_id": 4,
         "Appearance_Type": {
           "type": "word",
-          "value": 1411
+          "value": 1409
         },
         "BodyBag": {
           "type": "byte",

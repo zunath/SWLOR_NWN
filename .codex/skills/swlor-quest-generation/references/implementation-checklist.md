@@ -6,12 +6,20 @@ For each quest, capture:
 
 - Quest: `quest_id`, display name, required `repeatable` mode (`one-time`/`false`/`no`, `repeatable`/`true`/`yes`, or a named cadence such as `daily` that needs custom gating), guild/rank if any, prerequisite quest IDs, prerequisite key items.
 - Giver: NPC name, UTC template resref, tag, dialogue resref or C# dialog class, target area resref, coordinates, facing.
+- Capstone quest lines must use one dedicated quest giver per capstone line. Area groups may be shared by up to three lines, but the player-facing trainer/requester must remain distinct for each line.
+- Capstone quest lines must assign the unlocked capstone perk to the final boss. Add the granted feat/spell and `PERK_LEVEL_<perk id>` local when the perk uses stat bonuses, and add regression coverage that proves the boss blueprint carries the capstone.
+- Beast capstone quest acceptance must require the master's `SkillType.BeastMastery` rank, not an active beast, active beast level, or active beast role. Beast role remains useful for perk-line identity, content packages, and enemy theming, but it is not a quest prerequisite.
+- Generated capstone `NPCGroupType` identifiers must use the planet prefix from the line's area group, such as `Viscara_` or `Dathomir_`, not an internal `Capstone_` prefix.
+- Capstone enemies must each have a first-class reusable NPC signature ability plus a distinct support ability package and a documented resistance profile. Humanoid enemies use humanoid, tech, Force, command, or weapon abilities; beast enemies use beast-appropriate attacks, roars, hides, or movement abilities. Add one ability definition per reusable signature ability directly under `SWLOR.Game.Server/Feature/AbilityDefinition/NPC`, wire feat/spell rows, TLK, source icons, cooldown icon variants, and blueprint feats, and fill World NPCs resistance adjustment cells numerically, using `0` for no adjustment.
+- Capstone-tier NPC signature abilities must use the existing `RecastGroup.Capstone` cooldown bucket. Do not add duplicate recast groups such as `CapstoneSignature` or `NPCSignature` unless a separate gameplay cooldown is explicitly designed and approved.
+- Reusable capstone assets must not be branded with the quest line, capstone perk, boss, NPC, area name, source category, combat profile, or skill family. This includes signature/support abilities, feat labels, TLK text, icons, generated stat skins, generated weapons, and other generated reusable item display names. Use behavior, effect, or mechanical purpose only, such as `SustainBurnAbilityDefinition`, not `BeastSustainBurnAbilityDefinition`. Capstone/perk names are still required in quest text, achievements, progression keys/proofs when they identify the line, and the final boss's actual unlock package.
 - Objectives: kill group, collect item resref, quantity, producer requirement, trigger/placeable objective if any, and duplicate item justification when a proposed collect item already appears in a non-guild quest.
 - Text: not eligible, offer, acceptance, in-progress reminder, turn-in, completion, completed/repeat text, player replies, journal text for each state.
 - Dialogue flow: opening beat, optional player questions, NPC answers, accept reply, decline reply, reminder path, ready-to-turn-in path, and completed path. For major, chain, capstone, faction, or signature quests, include optional branches for motive, stakes, local lore, directions, target context, proof, or tactical advice.
 - Creative brief: NPC role, NPC voice, local pressure, stakes, lore anchors, why this NPC asks the player, and how the reward is justified in-world.
 - Rewards: XP, credits, items, key items, GP, faction standing/points, completion achievement, selectable vs automatic.
-- Placement: fixed NPC placement, enemy spawn table, enemy spawn coordinates or area random count.
+- Temporary proof key items: lore-appropriate artifact names tied to the area, faction, enemy, or trial context; no generic generator labels such as `Field Report`, `Calibration Core`, `Broken Seal`, `Command Mark`, or vague `Mark` names.
+- Placement: fixed NPC placement, enemy spawn table, enemy spawn coordinates or area random count, and whether unique quest activator placeables are world-instance-only or reusable palette blueprints.
 
 If a field is missing and cannot be resolved by searching the repo, ask one question at a time and include a recommended answer.
 
@@ -25,13 +33,17 @@ Quest definition:
 - Create a private method per quest.
 - Call the method from `BuildQuests()`.
 - Use `.Create("quest_id", "Quest Name")`, then flags, prerequisites, states, objectives, rewards, hooks.
+- For beast capstone quests, use `.PrerequisiteSkill(SkillType.BeastMastery, 50)` for every step and do not add active-beast quest prerequisites.
 - For major, chain, capstone, faction, or signature quest lines, add an active `AchievementType` entry and grant it from the final quest's `.OnCompleteAction(...)` with `Achievement.GiveAchievement(...)` unless the user explicitly opts out.
 
 NPC group:
 
 - Add a `[NPCGroup("Display Name")]` entry to `SWLOR.Game.Server/Service/NPCService/NPCGroupType.cs` only when no group already matches.
 - Use the next integer value.
+- For generated capstone groups, prefix the enum identifier with the planet from the line's `AreaGroup.PlanetType`, not `Capstone_`.
 - Set enemy `VarTable` `QUEST_NPC_GROUP_ID` to that integer in `Module/utc/<enemy>.utc.json` or the relevant placed creature.
+- For capstone or high-level signature enemies, update `Module/utc`, `Module/uti` stat skins/weapons, reusable NPC ability definition files under `SWLOR.Game.Server/Feature/AbilityDefinition/NPC`, feat/spell rows, TLK, gameplay icons, cooldown icon variants, and `design/bible/SWLOR Design Bible - Combat Upgrade.xlsx` together so reusable signature abilities, support packages, role/difficulty/type/modifier inputs, resistance adjustments, and runtime item properties stay aligned.
+- Keep capstone-tier NPC signature abilities on `RecastGroup.Capstone`; do not create or regenerate `CapstoneSignature`/`NPCSignature` recast groups for them.
 
 Dialogue:
 
@@ -53,6 +65,7 @@ NPC placement:
 - Important fields: `FirstName`, `LastName`, `Conversation`, `Tag`, `TemplateResRef`, `VarTable`, `XPosition`, `YPosition`, `ZPosition`, `XOrientation`, `YOrientation`.
 - Legacy dialogue uses the `Conversation` resref.
 - C# dialog classes should use a local `CONVERSATION` variable only when the target object is already wired for SWLOR's C# dialog opener.
+- If a capstone quest giver's target area does not exist yet, create its UTC, dialogue, and creature palette entry, then leave actual `Module/git` placement to the area builder.
 
 Spawn placement:
 
@@ -60,6 +73,17 @@ Spawn placement:
 - Area-random spawns use area locals `CREATURE_SPAWN_TABLE_ID` and `CREATURE_SPAWN_COUNT`.
 - Fixed spawn points use `WaypointList` entries whose `Tag` equals the spawn table ID.
 - Spawn tables are cached by reflection and duplicate IDs are logged as errors.
+- If the target area does not exist yet, stop short of `Module/git` placement. Create quest definitions, key items, achievements, NPC groups, perk gates, and documentation, then record explicit area-builder follow-ups instead of placing temporary high-level content in unrelated areas.
+- Capstone content packages that mimic Blood Frenzy require two attached physical areas: one gated dungeon/lesson area for ambient level 50 enemies and one attached boss arena area for `quest_enc` warden/master encounters. Do not describe a capstone area group as if it were a single physical area.
+- If the target area does not exist yet, still create reusable `Module/utw` waypoint blueprints and add them to `Module/itp/waypointpalcus.itp.json` for spawn tables and boss spawn positions. Do not place those waypoints into an unrelated existing area.
+
+On-demand quest encounter activators:
+
+- Use placed world instances with `OnUsed = quest_enc` and the required `QUEST_ID`, `QUEST_STATE`, and `QUEST_ENCOUNTER_*` locals for unique boss markers.
+- Do not add one-off quest encounter marker placeables to `Module/itp/placeablepalcus.itp.json` or create matching `Module/utp` files unless the user or area builder explicitly requests a reusable palette blueprint.
+- Keep tests focused on the placed area instances and their locals when the marker is world-instance-only.
+- If an on-demand boss area does not exist yet, document the required `quest_enc` activator locals and boss spawn waypoint names, but do not create placeholder world instances in another area.
+- For capstone quest lines, keep warden/master enemies out of ambient spawn tables. Spawn them only from `quest_enc` activators in the attached boss arena, with generated boss spawn waypoint blueprints available for area builders.
 
 ## Dialogue State Matrix
 
@@ -147,3 +171,5 @@ Pop-Location
 - Reward amounts or item rewards drift from nearby quest/guild scale without an explicit reason.
 - A new non-guild collect quest reuses items from existing non-guild quests without a clear gameplay or story reason.
 - A major, chain, capstone, faction, or signature quest line completes without granting its specific completion achievement.
+- A unique on-demand quest encounter marker is reintroduced into the placeable blueprint palette when the intended source of truth is the placed world instance.
+- High-level quest enemies or boss activators are placed in unrelated low-level/public areas because the intended target area has not been built yet.

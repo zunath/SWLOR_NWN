@@ -43,9 +43,15 @@ When the concept is underspecified, grill the request one dependency at a time. 
    - Use built-in objectives before custom code: `AddKillObjective(...)` and `AddCollectItemObjective(...)`.
    - For collect objectives, prefer items that are not already used by nearby non-guild quests unless the quest explicitly benefits from repetition.
    - Use built-in rewards before custom code: credits, XP, item, key item, GP, faction standing, faction points.
-   - Use `PrerequisiteQuest(...)` and `PrerequisiteKeyItem(...)` for acceptance gates. Add custom prerequisites only when the builder lacks the needed gate.
+   - Use `PrerequisiteQuest(...)`, `PrerequisiteKeyItem(...)`, and `PrerequisiteSkill(...)` for acceptance gates. Add custom prerequisites only when the builder lacks the needed gate.
+   - For beast capstone quest lines, gate acceptance on the master's `SkillType.BeastMastery` rank, not on the currently active beast's level or role. Beast role belongs to beast perk/content identity, not quest prerequisites.
    - Match rewards to nearby quests of similar difficulty, objective count, and repeatability. Do not add repeatable permanent key item rewards unless the current system already models that exact pattern.
    - For major, chain, capstone, faction, or signature quest lines, define a specific completion achievement and grant it from the final quest completion hook using the existing achievement service unless the user explicitly opts out.
+   - For temporary proof key items in capstone or signature quest lines, use lore-appropriate artifact names tied to the location, faction, enemy, or trial context. Avoid generic generator labels such as `Field Report`, `Calibration Core`, `Broken Seal`, `Command Mark`, or vague `Mark` names.
+   - For capstone or high-level signature enemies, give each generated enemy a first-class reusable NPC signature ability plus a distinct support ability package. Reusable NPC signature abilities live directly under `SWLOR.Game.Server/Feature/AbilityDefinition/NPC`, not in a capstone-specific subfolder. Do not brand reusable abilities, items, icons, feat labels, TLK text, or generated asset display names with the quest line, capstone perk, boss, NPC name, source category, combat profile, or skill family. Name reusable abilities for the behavior or effect only, such as `SustainBurnAbilityDefinition`; keep capstone/perk names only where they represent player-facing quest progression or the final boss's actual unlock.
+   - Generated capstone `NPCGroupType` identifiers must use the planet prefix from the line's area group, such as `Viscara_` or `Dathomir_`, not an internal `Capstone_` prefix.
+   - Capstone-tier NPC signature abilities must use the existing `RecastGroup.Capstone` cooldown bucket. Do not add duplicate recast groups such as `CapstoneSignature` or `NPCSignature` unless a separate gameplay cooldown is explicitly designed and approved.
+   - Keep humanoids on humanoid/tech/Force/command/weapon abilities, keep beasts on beast-appropriate abilities, wire signature abilities through feat/spell rows, TLK, icons, cooldown icons, and blueprint feats, and document the reusable signature ability plus matching resistance profile in the World NPCs Bible rows.
 
 4. Write dialogue.
    - Read `references/dialogue-and-content-standards.md` before creating or rewriting quest dialogue, player replies, journal text, or prerequisite/completion text.
@@ -72,6 +78,7 @@ When the concept is underspecified, grill the request one dependency at a time. 
    - Place spawn tables through area locals (`CREATURE_SPAWN_TABLE_ID`, `CREATURE_SPAWN_COUNT`) for random area placement, or waypoint tags equal to the spawn table ID for fixed spawn points.
    - When adding fixed-placement spawn tables, also create matching `Module/utw` waypoint blueprints and add them to `Module/itp/waypointpalcus.itp.json`. The blueprint `Tag` should be the spawn table ID; `TemplateResRef` should be a short unique resref.
    - For quest-specific teleport destinations or boss spawn locations, create palette waypoint blueprints too. Leave actual area placement to the area builder unless the task explicitly asks for area placement.
+   - For unique on-demand quest encounter activators, prefer placed world instances configured with `OnUsed = quest_enc` and the required `QUEST_*` locals. Do not add one-off marker placeables to the placeable blueprint palette unless the user or area builder explicitly asks for a reusable palette blueprint. Tests should verify the placed area instance, not force a palette entry.
 
 7. Validate.
    - Parse every touched Module JSON file with PowerShell `ConvertFrom-Json`.

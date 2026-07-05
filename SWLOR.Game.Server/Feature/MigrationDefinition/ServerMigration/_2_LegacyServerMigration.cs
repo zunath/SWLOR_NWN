@@ -25,9 +25,6 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
 
             foreach (var item in items)
             {
-                if (item.StorageId != "BANK_CZ220" && item.StorageId != "BANK_VELES" && item.StorageId != "BANK_MONCALA")
-                    continue;
-
                 if (item.IconResref != "unknown_item")
                     continue;
 

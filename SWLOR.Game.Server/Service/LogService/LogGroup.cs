@@ -28,6 +28,8 @@ namespace SWLOR.Game.Server.Service.LogService
         Property,
         [LogGroup("PlayerMarket", ServerEnvironmentType.All)]
         PlayerMarket,
+        [LogGroup("Bank", ServerEnvironmentType.All)]
+        Bank,
         [LogGroup("Space", ServerEnvironmentType.All)]
         Space,
         [LogGroup("StoreCleanup", ServerEnvironmentType.All)]

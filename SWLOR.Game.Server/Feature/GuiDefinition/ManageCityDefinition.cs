@@ -63,23 +63,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     .SetHorizontalAlign(NuiHorizontalAlign.Left)
                                     .SetVerticalAlign(NuiVerticalAlign.Middle)
                                     .SetHeight(25f)
-                                    .BindText(model => model.BankUpgradeLevel)
-                                    .BindTooltip(model => model.BankCurrentUpgrade);
-
-                                row.AddButton()
-                                    .SetText("Upgrade Banks")
-                                    .SetHeight(35f)
-                                    .BindOnClicked(model => model.UpgradeBankLevel())
-                                    .BindIsEnabled(model => model.CanUpgradeBanks)
-                                    .BindTooltip(model => model.BankNextUpgrade);
-                            });
-
-                            col.AddRow(row =>
-                            {
-                                row.AddLabel()
-                                    .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                                    .SetVerticalAlign(NuiVerticalAlign.Middle)
-                                    .SetHeight(25f)
                                     .BindText(model => model.MedicalCenterLevel)
                                     .BindTooltip(model => model.MedicalCenterCurrentUpgrade);
 

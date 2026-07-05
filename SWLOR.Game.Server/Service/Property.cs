@@ -1873,7 +1873,6 @@ namespace SWLOR.Game.Server.Service
             basePrice -= (int)(basePrice * upkeepReductionPercent);
 
             var upgradePrice =
-                (city.Upgrades[PropertyUpgradeType.BankLevel] - 1) * UpgradeBasePrice +
                 (city.Upgrades[PropertyUpgradeType.MedicalCenterLevel] - 1) * UpgradeBasePrice +
                 (city.Upgrades[PropertyUpgradeType.StarportLevel] - 1) * UpgradeBasePrice +
                 (city.Upgrades[PropertyUpgradeType.CantinaLevel] - 1) * UpgradeBasePrice;
@@ -1990,18 +1989,6 @@ namespace SWLOR.Game.Server.Service
                 Log.Write(LogGroup.Property, $"Citizenship revoked for player '{citizen.Name}' ({citizen.Id}) on property '{property.CustomName}' ({property.Id})");
                 citizen.CitizenPropertyId = string.Empty;
                 DB.Set(citizen);
-            }
-
-            // Clear any bank items stored within this city.
-            var bankQuery = new DBQuery<InventoryItem>()
-                .AddFieldSearch(nameof(InventoryItem.StorageId), property.Id, false);
-            var bankCount = (int)DB.SearchCount(bankQuery);
-            var dbBankItems = DB.Search(bankQuery.AddPaging(bankCount, 0));
-
-            foreach (var item in dbBankItems)
-            {
-                DB.Delete<InventoryItem>(item.Id);
-                Log.Write(LogGroup.Property, $"Deleted bank item '{item.Quantity}x {item.Name}' ({item.Tag} / {item.Resref}) from property '{property.Id}' which was stored by {item.PlayerId}");
             }
 
             _propertyInstances.Remove(property.Id);
@@ -2448,7 +2435,6 @@ namespace SWLOR.Game.Server.Service
 
                 // Upgrades
                 property.Upgrades[PropertyUpgradeType.CityLevel] = 1;
-                property.Upgrades[PropertyUpgradeType.BankLevel] = 1;
                 property.Upgrades[PropertyUpgradeType.MedicalCenterLevel] = 1;
                 property.Upgrades[PropertyUpgradeType.StarportLevel] = 1;
                 property.Upgrades[PropertyUpgradeType.CantinaLevel] = 1;
@@ -3468,9 +3454,6 @@ namespace SWLOR.Game.Server.Service
 
             switch (upgradeType)
             {
-                case PropertyUpgradeType.BankLevel:
-                    structureType = StructureType.Bank;
-                    break;
                 case PropertyUpgradeType.MedicalCenterLevel:
                     structureType = StructureType.MedicalCenter;
                     break;

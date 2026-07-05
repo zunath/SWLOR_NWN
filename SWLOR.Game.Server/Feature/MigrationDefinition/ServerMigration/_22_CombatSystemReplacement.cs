@@ -572,7 +572,9 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
             MigratePlayers();
             MigrateBeasts();
             MigrateIncubationJobs();
+            LinkedBankStorageMigration.RemoveRetiredUpgradeData();
             StoredItemDataMigration.Migrate();
+            LinkedBankStorageMigration.MigrateInventoryItemsToGlobalBank();
             LogProgress("Finished consolidated server migration.");
         }
 

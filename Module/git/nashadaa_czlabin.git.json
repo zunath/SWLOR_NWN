@@ -712,38 +712,7 @@
         },
         "VarTable": {
           "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "STORAGE_ITEM_LIMIT"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 30
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "STORAGE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "TEST_BANK"
-              }
-            }
-          ]
+          "value": []
         },
         "VisTransformList": {
           "type": "list",
@@ -54618,6 +54587,69 @@
         "TemplateResRef": {
           "type": "resref",
           "value": "nw_waypoint001"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 21.01857948303223
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 84.98276519775391
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -5.7220458984375e-006
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Stuck - nashadaa_czlabin"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "STUCK_WAYPOINT"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_stuck"
         },
         "XOrientation": {
           "type": "float",

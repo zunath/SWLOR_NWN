@@ -19,6 +19,7 @@ For each quest, capture:
 - Creative brief: NPC role, NPC voice, local pressure, stakes, lore anchors, why this NPC asks the player, and how the reward is justified in-world.
 - Rewards: XP, credits, items, key items, GP, faction standing/points, completion achievement, selectable vs automatic.
 - Temporary proof key items: lore-appropriate artifact names tied to the area, faction, enemy, or trial context; no generic generator labels such as `Field Report`, `Calibration Core`, `Broken Seal`, `Command Mark`, or vague `Mark` names.
+- Property rewards: only include player-placeable property structures or furniture when the user explicitly requests them. Quest and capstone setup must not add or modify `StructureType`, fabrication furniture recipes, `structure_####` or `bpstructure####` UTIs, or structure/furniture loot tables as incidental quest rewards. Ordinary furniture/placeable structures must be added to the end of the non-building `StructureType` section before `// Buildings start here (5000+)`, not after city buildings or in the 5000+ building/layout range.
 - Placement: fixed NPC placement, enemy spawn table, enemy spawn coordinates or area random count, and whether unique quest activator placeables are world-instance-only or reusable palette blueprints.
 
 If a field is missing and cannot be resolved by searching the repo, ask one question at a time and include a recommended answer.
@@ -33,6 +34,7 @@ Quest definition:
 - Create a private method per quest.
 - Call the method from `BuildQuests()`.
 - Use `.Create("quest_id", "Quest Name")`, then flags, prerequisites, states, objectives, rewards, hooks.
+- For generated capstone quest batches, keep each skill-owned quest definition as a concrete `IQuestListDefinition` whose private methods call `QuestBuilder` directly. Do not route quest setup through abstract quest bases, shared `BuildQuest(line, step)` helpers, catalog-driven quest models, partial classes, one-line generated records, or central capstone metadata/catalog classes. Keep line-specific quest IDs, NPC groups, proof key items, quest givers, enemy resrefs, encounter waypoint tags, and related asset constants in the owning skill quest definition file. Keep those constants private by default, and expose them as `internal` only when another production server type needs the value, such as spawn tables or perk gates. Do not make quest constants public for tests, area-builder handoff, or convenience; tests should validate built quest, perk, module, and workbook artifacts instead of depending on quest-definition constant visibility.
 - For beast capstone quests, use `.PrerequisiteSkill(SkillType.BeastMastery, 50)` for every step and do not add active-beast quest prerequisites.
 - For major, chain, capstone, faction, or signature quest lines, add an active `AchievementType` entry and grant it from the final quest's `.OnCompleteAction(...)` with `Achievement.GiveAchievement(...)` unless the user explicitly opts out.
 
@@ -70,6 +72,9 @@ NPC placement:
 Spawn placement:
 
 - Spawn table definitions live in `SWLOR.Game.Server/Feature/SpawnDefinition/*SpawnDefinition.cs`.
+- Define spawn tables in the owning planet or location spawn definition like the existing planet spawn files: one named private method per table, a direct `_builder.Create("TABLE_ID", "Display Name")`, and explicit fluent `.AddSpawn(...).WithFrequency(...).RandomlyWalks().ReturnsHome()` rows. Do not create quest-category spawn buckets or use generated helper methods, catalogs, records, or table-ID constants merely to compress spawn rows.
+- Keep spawn and loot table ID constants private to the owning definition by default. Expose them as `internal` only when another production server type truly needs direct access; tests, area-builder handoff notes, and documentation should use built artifacts or literal expected IDs instead of forcing wider visibility.
+- Do not use quest or capstone loot tables to introduce structure/furniture rewards unless the user explicitly requested player-placeable property rewards. If such rewards are requested, handle the `StructureType`, `structure_####` item, `bpstructure####` blueprint, fabrication recipe, and loot-table changes as a separate property/fabrication change. Keep ordinary furniture/placeable structure IDs below the 5000+ building/layout range.
 - Area-random spawns use area locals `CREATURE_SPAWN_TABLE_ID` and `CREATURE_SPAWN_COUNT`.
 - Fixed spawn points use `WaypointList` entries whose `Tag` equals the spawn table ID.
 - Spawn tables are cached by reflection and duplicate IDs are logged as errors.

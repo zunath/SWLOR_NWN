@@ -1,7 +1,10 @@
+using System.Reflection;
 using FluentAssertions;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.PropertyService;
 
 namespace SWLOR.Game.Server.Tests.Feature;
@@ -14,36 +17,70 @@ public class LinkedBankStorageTests
         Bank.GetItemCountText(5).Should().Be("5 / 120 Items");
         Bank.GetStoragePercentage(240).Should().Be(1f);
 
-        var root = FindRepositoryRoot();
-        var source = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Service",
-            "Bank.cs"));
+        var bankType = typeof(Bank);
+        var storageId = bankType.GetField("StorageId", BindingFlags.NonPublic | BindingFlags.Static);
+        var maxItems = bankType.GetField("MaxItems", BindingFlags.NonPublic | BindingFlags.Static);
 
-        source.Should().Contain("private const string StorageId = \"GLOBAL_BANK\";");
-        source.Should().Contain("private const int MaxItems = 120;");
-        source.Should().NotContain("public const");
+        storageId.Should().NotBeNull();
+        storageId!.IsLiteral.Should().BeTrue();
+        storageId.GetRawConstantValue().Should().Be("GLOBAL_BANK");
+        maxItems.Should().NotBeNull();
+        maxItems!.IsLiteral.Should().BeTrue();
+        maxItems.GetRawConstantValue().Should().Be(120);
+        bankType
+            .GetFields(BindingFlags.Public | BindingFlags.Static)
+            .Where(field => field.IsLiteral)
+            .Should()
+            .BeEmpty();
     }
 
     [Test]
     public void BankService_OwnsBankOperations()
     {
-        var root = FindRepositoryRoot();
-        var source = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Service",
-            "Bank.cs"));
+        GetPublicBankMethod(nameof(Bank.GetItemCount), typeof(string))
+            .ReturnType
+            .Should()
+            .Be(typeof(long));
+        GetPublicBankMethod(nameof(Bank.SearchItems), typeof(string), typeof(string))
+            .ReturnType
+            .Should()
+            .Be(typeof(List<InventoryItem>));
+        GetPublicBankMethod(nameof(Bank.GetDepositFailure), typeof(uint), typeof(uint))
+            .ReturnType
+            .Should()
+            .Be(typeof(string));
+        GetPublicBankMethod(nameof(Bank.DepositItem), typeof(uint), typeof(uint))
+            .ReturnType
+            .Should()
+            .Be(typeof(InventoryItem));
+        GetPublicBankMethod(nameof(Bank.WithdrawItem), typeof(uint), typeof(string))
+            .ReturnType
+            .Should()
+            .Be(typeof(void));
+        GetPublicBankMethod(nameof(Bank.GetCityBankAccessFailure), typeof(uint), typeof(uint))
+            .ReturnType
+            .Should()
+            .Be(typeof(string));
+        GetPublicBankMethod(nameof(Bank.SetCityBankId), typeof(uint), typeof(string))
+            .ReturnType
+            .Should()
+            .Be(typeof(void));
+        GetPublicBankMethod(nameof(Bank.NormalizeStorageId), typeof(InventoryItem))
+            .ReturnType
+            .Should()
+            .Be(typeof(bool));
+    }
 
-        source.Should().Contain("public static long GetItemCount");
-        source.Should().Contain("public static List<InventoryItem> SearchItems");
-        source.Should().Contain("public static string GetDepositFailure");
-        source.Should().Contain("public static InventoryItem DepositItem");
-        source.Should().Contain("public static void WithdrawItem");
-        source.Should().Contain("public static string GetCityBankAccessFailure");
-        source.Should().Contain("public static void SetCityBankId");
-        source.Should().Contain("public static bool NormalizeStorageId");
+    [Test]
+    public void BankService_ConstrainsItemQueriesToGlobalBankStorage()
+    {
+        var query = (DBQuery<InventoryItem>)GetPrivateBankMethod("BuildPlayerItemQuery", typeof(string))
+            .Invoke(null, new object[] { "player-id" })!;
+
+        var queryString = query.BuildQuery().QueryString;
+
+        queryString.Should().Contain("@StorageId:GLOBAL_BANK");
+        queryString.Should().Contain("@PlayerId:player\\-id");
     }
 
     [Test]
@@ -64,20 +101,20 @@ public class LinkedBankStorageTests
         source.Should().Contain("Bank.DepositItem(Player, item)");
         source.Should().Contain("Bank.WithdrawItem(Player, itemId)");
         source.Should().Contain("Bank.GetItemCountText(itemCount)");
-        source.Should().NotContain("InventoryItem." + "Bank" + "StorageId");
-        source.Should().NotContain("Bank" + "Storage.");
-        source.Should().NotContain("Bank." + "MaxItems");
+        source.Should().NotContain("InventoryItem.BankStorageId");
+        source.Should().NotContain("BankStorage.");
+        source.Should().NotContain("Bank.MaxItems");
         source.Should().NotContain("new DBQuery<InventoryItem>");
         source.Should().NotContain("ObjectPlugin.Serialize");
         source.Should().NotContain("ObjectPlugin.Deserialize");
         source.Should().NotContain("Item.IsLegacyItem");
-        source.Should().NotContain("AddFieldSearch(nameof(InventoryItem." + "StorageId)");
+        source.Should().NotContain("AddFieldSearch(nameof(InventoryItem.StorageId)");
     }
 
     [Test]
     public void RetiredBankStorageUpgradeType_IsRemovedFromPropertyUpgradeTypes()
     {
-        var removedUpgradeName = "Bank" + "Level";
+        var removedUpgradeName = "BankLevel";
 
         Enum.GetNames(typeof(PropertyUpgradeType)).Should().NotContain(removedUpgradeName);
         ((int)PropertyUpgradeType.MedicalCenterLevel).Should().Be(3);
@@ -102,10 +139,10 @@ public class LinkedBankStorageTests
             "GuiDefinition",
             "ViewModel",
             "ManageCityViewModel.cs"));
-        var removedUpgradeAction = "Upgrade" + "Bank";
-        var removedUpgradeEnabledFlag = "CanUpgrade" + "Banks";
-        var removedUpgradeName = "Bank" + "Upgrade";
-        var removedUpgradeTooltip = "Get" + "Bank" + "Upgrade";
+        var removedUpgradeAction = "UpgradeBank";
+        var removedUpgradeEnabledFlag = "CanUpgradeBanks";
+        var removedUpgradeName = "BankUpgrade";
+        var removedUpgradeTooltip = "GetBankUpgrade";
 
         definition.Should().NotContain("Upgrade Banks");
         definition.Should().NotContain(removedUpgradeName);
@@ -127,11 +164,12 @@ public class LinkedBankStorageTests
 
         source.Should().Contain("Service.Bank.GetCityBankAccessFailure(player, bank)");
         source.Should().Contain("Service.Bank.SetCityBankId(placeable, cityId)");
+        source.Should().Contain("SetEventScript(placeable, EventScript.Placeable_OnUsed, ScriptName.OnOpenPropertyBank)");
         source.Should().NotContain("GetLocalString(bank");
         source.Should().NotContain("SetLocalString(placeable");
-        source.Should().NotContain("Storage" + "IdLocalName");
-        source.Should().NotContain("Storage" + "ItemLimitLocalName");
-        source.Should().NotContain("PropertyUpgradeType." + "Bank" + "Level");
+        source.Should().NotContain("StorageIdLocalName");
+        source.Should().NotContain("StorageItemLimitLocalName");
+        source.Should().NotContain("PropertyUpgradeType.BankLevel");
     }
 
     [Test]
@@ -188,7 +226,7 @@ public class LinkedBankStorageTests
 
         loadHints.Should().Contain((customTlkOffset + bankLoadHintTlkId).ToString());
         text.Should().Contain("All bank terminals access the same storage");
-        text.Should().NotContain("not " + "linked");
+        text.Should().NotContain("not linked");
     }
 
     [Test]
@@ -206,11 +244,12 @@ public class LinkedBankStorageTests
 
         combatMigration.Should().Contain("LinkedBankStorageMigration.RemoveRetiredUpgradeData();");
         combatMigration.Should().Contain("LinkedBankStorageMigration.MigrateInventoryItemsToGlobalBank();");
+        combatMigration.Should().Contain("StoredItemDataMigration.Migrate();");
         helper.Should().Contain("!validUpgradeKeys.Contains(property.Name)");
         helper.Should().Contain("!validNumericUpgradeKeys.Contains(property.Name)");
         helper.Should().Contain("Bank.NormalizeStorageId(item)");
-        helper.Should().NotContain("Bank." + "StorageId");
-        helper.Should().NotContain("Bank" + "Storage.Global");
+        helper.Should().NotContain("Bank.StorageId");
+        helper.Should().NotContain("BankStorage.Global");
         combatMigration.IndexOf("LinkedBankStorageMigration.RemoveRetiredUpgradeData();", StringComparison.Ordinal)
             .Should()
             .BeLessThan(combatMigration.IndexOf("StoredItemDataMigration.Migrate();", StringComparison.Ordinal));
@@ -270,6 +309,32 @@ public class LinkedBankStorageTests
         }
 
         return result;
+    }
+
+    private static MethodInfo GetPublicBankMethod(string name, params Type[] parameterTypes)
+    {
+        var method = typeof(Bank).GetMethod(
+            name,
+            BindingFlags.Public | BindingFlags.Static,
+            null,
+            parameterTypes,
+            null);
+
+        method.Should().NotBeNull();
+        return method!;
+    }
+
+    private static MethodInfo GetPrivateBankMethod(string name, params Type[] parameterTypes)
+    {
+        var method = typeof(Bank).GetMethod(
+            name,
+            BindingFlags.NonPublic | BindingFlags.Static,
+            null,
+            parameterTypes,
+            null);
+
+        method.Should().NotBeNull();
+        return method!;
     }
 
     private static DirectoryInfo FindRepositoryRoot()

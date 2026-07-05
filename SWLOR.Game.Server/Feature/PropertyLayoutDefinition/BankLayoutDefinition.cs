@@ -59,11 +59,10 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
                 placeable = CreateObject(ObjectType.Placeable, "bank_term", location);
                 SetPlotFlag(placeable, true);
                 SetLocalObject(waypoint, "BANK_TERMINAL_PLACEABLE", placeable);
-
-                Service.Bank.SetCityBankId(placeable, cityId);
-
-                SetEventScript(placeable, EventScript.Placeable_OnUsed, ScriptName.OnOpenPropertyBank);
             }
+
+            Service.Bank.SetCityBankId(placeable, cityId);
+            SetEventScript(placeable, EventScript.Placeable_OnUsed, ScriptName.OnOpenPropertyBank);
         }
 
         private void Bank()

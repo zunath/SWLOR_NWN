@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.DBService;
+using SWLOR.Game.Server.Service.LogService;
 using SWLOR.NWN.API.NWNX;
 
 namespace SWLOR.Game.Server.Service
@@ -73,6 +74,13 @@ namespace SWLOR.Game.Server.Service
             };
 
             DB.Set(dbItem);
+            Log.WriteStructured(
+                LogGroup.Bank,
+                "Bank deposit: PlayerId={PlayerId} InventoryItemId={InventoryItemId} Resref={Resref} Quantity={Quantity}",
+                dbItem.PlayerId,
+                dbItem.Id,
+                dbItem.Resref,
+                dbItem.Quantity);
             DestroyObject(item);
 
             return dbItem;
@@ -81,10 +89,22 @@ namespace SWLOR.Game.Server.Service
         public static void WithdrawItem(uint player, string inventoryItemId)
         {
             var dbItem = DB.Get<InventoryItem>(inventoryItemId);
+            var playerId = GetObjectUUID(player);
+
+            if (dbItem == null || dbItem.PlayerId != playerId || dbItem.StorageId != StorageId)
+                return;
+
             var item = ObjectPlugin.Deserialize(dbItem.Data);
 
             ObjectPlugin.AcquireItem(player, item);
             DB.Delete<InventoryItem>(dbItem.Id);
+            Log.WriteStructured(
+                LogGroup.Bank,
+                "Bank withdrawal: PlayerId={PlayerId} InventoryItemId={InventoryItemId} Resref={Resref} Quantity={Quantity}",
+                playerId,
+                dbItem.Id,
+                dbItem.Resref,
+                dbItem.Quantity);
             RemoveLegacyItemProperties(item);
         }
 
@@ -111,6 +131,9 @@ namespace SWLOR.Game.Server.Service
             var dbPlayer = DB.Get<Player>(playerId);
             var cityId = GetLocalString(bank, CityIdLocalName);
 
+            if (string.IsNullOrWhiteSpace(cityId))
+                return "This bank terminal is not configured for a city.";
+
             if (dbPlayer.CitizenPropertyId != cityId)
                 return "Only citizens may use this terminal.";
 
@@ -122,6 +145,7 @@ namespace SWLOR.Game.Server.Service
         private static DBQuery<InventoryItem> BuildPlayerItemQuery(string playerId)
         {
             return new DBQuery<InventoryItem>()
+                .AddFieldSearch(nameof(InventoryItem.StorageId), StorageId, false)
                 .AddFieldSearch(nameof(InventoryItem.PlayerId), playerId, false);
         }
 

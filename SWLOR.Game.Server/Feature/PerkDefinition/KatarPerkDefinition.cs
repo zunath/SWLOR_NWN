@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Feature.QuestDefinition;
 
 namespace SWLOR.Game.Server.Feature.PerkDefinition
 {
@@ -257,7 +258,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.AdamantineGuard1)
                 .Description("For 45 seconds, gain +25 Guard. Guarded hits reduce damage by an additional 20% and generate 75% more enmity.")
                 .Price(6)
-                .RequirementSkill(SkillType.Katar, 50);
+                .RequirementSkill(SkillType.Katar, 50)
+                .RequirementQuest(KatarCapstoneQuestDefinition.AdamantineGuardMasteryQuestId);
         }
 
         private void HookingStrike()
@@ -445,7 +447,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ScrapheapLockdown1)
                 .Description("Deals weapon DMG + 25 in a 5m sphere. Enemies hit suffer Dazed and Hamstring for 30 seconds.")
                 .Price(6)
-                .RequirementSkill(SkillType.Katar, 50);
+                .RequirementSkill(SkillType.Katar, 50)
+                .RequirementQuest(KatarCapstoneQuestDefinition.ScrapheapLockdownMasteryQuestId);
         }
 
     }

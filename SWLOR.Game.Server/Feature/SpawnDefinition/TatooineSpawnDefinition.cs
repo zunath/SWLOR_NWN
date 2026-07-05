@@ -23,6 +23,8 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             NorthernDunes();
             TatooineWorldBoss();
             AncientWorm();
+            AnchorheadCanyonRange();
+
             return _builder.Build();
         }
 
@@ -183,6 +185,55 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .RandomlyWalks()
                 .WithFrequency(1)
                 .RespawnDelay(60 + Random.D100(1));
+        }
+
+        private void AnchorheadCanyonRange()
+        {
+            _builder.Create("CAPSTONE_ANCHORHEAD_CANYON_RANGE", "Anchorhead Canyon Range - General Capstone")
+                .AddSpawn(ObjectType.Creature, "cp_lastword_ad")
+                .WithFrequency(70)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_lastword_sp")
+                .WithFrequency(50)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_lastword_ic")
+                .WithFrequency(35)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_deadhand_ad")
+                .WithFrequency(70)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_deadhand_sp")
+                .WithFrequency(50)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_deadhand_ic")
+                .WithFrequency(35)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_unmovctr_ad")
+                .WithFrequency(70)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_unmovctr_sp")
+                .WithFrequency(50)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_unmovctr_ic")
+                .WithFrequency(35)
+                .RandomlyWalks()
+                .ReturnsHome();
         }
     }
 }

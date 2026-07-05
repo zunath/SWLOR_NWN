@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.SkillService;
 
@@ -20,8 +20,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
             // Surgewake Field Cot
             _builder.Create(RecipeType.SurgewakeFieldCot, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Bed)
-                .Resref("vx_cot")
-                .Level(50)
+                .Resref("structure_0391")
+                .Level(46)
                 .Quantity(1)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
@@ -32,8 +32,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
             // Surgewake Signal Lamp
             _builder.Create(RecipeType.SurgewakeSignalLamp, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Lighting)
-                .Resref("vx_lamp")
-                .Level(50)
+                .Resref("structure_0392")
+                .Level(47)
                 .Quantity(1)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
@@ -44,7 +44,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
             // Surgewake Trophy Stand
             _builder.Create(RecipeType.SurgewakeTrophyStand, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Fixtures)
-                .Resref("vx_stand")
+                .Resref("structure_0393")
                 .Level(50)
                 .Quantity(1)
                 .RequirementUnlocked()
@@ -56,8 +56,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
             // Surgewake Low Table
             _builder.Create(RecipeType.SurgewakeLowTable, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Surfaces)
-                .Resref("vx_table")
-                .Level(50)
+                .Resref("structure_0394")
+                .Level(48)
                 .Quantity(1)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
@@ -68,8 +68,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
             // Surgewake Wall Banner
             _builder.Create(RecipeType.SurgewakeWallBanner, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Wall)
-                .Resref("vx_banner")
-                .Level(50)
+                .Resref("structure_0395")
+                .Level(49)
                 .Quantity(1)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
@@ -80,8 +80,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
             // Surgewake Supply Locker
             _builder.Create(RecipeType.SurgewakeSupplyLocker, SkillType.Fabrication)
                 .Category(RecipeCategoryType.MiscellaneousFurniture)
-                .Resref("vx_locker")
-                .Level(50)
+                .Resref("structure_0396")
+                .Level(51)
                 .Quantity(1)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
@@ -92,8 +92,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
             // Surgewake Floor Mat
             _builder.Create(RecipeType.SurgewakeFloorMat, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Flooring)
-                .Resref("vx_mat")
-                .Level(50)
+                .Resref("structure_0397")
+                .Level(46)
                 .Quantity(1)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
@@ -104,8 +104,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
             // Surgewake Data Console
             _builder.Create(RecipeType.SurgewakeDataConsole, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Electronics)
-                .Resref("vx_console")
-                .Level(50)
+                .Resref("structure_0398")
+                .Level(51)
                 .Quantity(1)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
@@ -116,7 +116,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
             // Surgewake Display Plinth
             _builder.Create(RecipeType.SurgewakeDisplayPlinth, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Statues)
-                .Resref("vx_plinth")
+                .Resref("structure_0399")
                 .Level(50)
                 .Quantity(1)
                 .RequirementUnlocked()
@@ -128,8 +128,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
             // Surgewake Work Stool
             _builder.Create(RecipeType.SurgewakeWorkStool, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Seating)
-                .Resref("vx_stool")
-                .Level(50)
+                .Resref("structure_0400")
+                .Level(47)
                 .Quantity(1)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)

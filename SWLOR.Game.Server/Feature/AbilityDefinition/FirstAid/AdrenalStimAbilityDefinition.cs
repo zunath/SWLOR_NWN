@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
@@ -96,7 +95,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             var applied = false;
             foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
-                Stat.RestoreStamina(friendly, PercentOf(Stat.GetMaxStamina(friendly), 10));
+                Stat.RestoreStamina(friendly, GameMath.PercentOf(Stat.GetMaxStamina(friendly), 10));
                 StatusEffect.ApplyStatusEffect(activator, friendly, new AdrenalStimStatusEffect(1), duration);
                 FirstAidTreatmentAdjustments.ApplyCombatPharmacologyStimRiders(activator, friendly);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Restoration), friendly);
@@ -112,7 +111,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             var applied = false;
             foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
-                Stat.RestoreStamina(friendly, PercentOf(Stat.GetMaxStamina(friendly), 18));
+                Stat.RestoreStamina(friendly, GameMath.PercentOf(Stat.GetMaxStamina(friendly), 18));
                 StatusEffect.ApplyStatusEffect(activator, friendly, new AdrenalStimStatusEffect(1), duration);
                 FirstAidTreatmentAdjustments.ApplyCombatPharmacologyStimRiders(activator, friendly);
                 FirstAidTreatmentAdjustments.ApplyMedicalVisualEffect(friendly);
@@ -128,7 +127,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             var applied = false;
             foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
-                Stat.RestoreStamina(friendly, PercentOf(Stat.GetMaxStamina(friendly), 25));
+                Stat.RestoreStamina(friendly, GameMath.PercentOf(Stat.GetMaxStamina(friendly), 25));
                 StatusEffect.ApplyStatusEffect(activator, friendly, new AdrenalStimStatusEffect(1), duration);
                 FirstAidTreatmentAdjustments.ApplyCombatPharmacologyStimRiders(activator, friendly);
                 FirstAidTreatmentAdjustments.ApplyMedicalVisualEffect(friendly);
@@ -138,10 +137,5 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             FirstAidTreatmentAdjustments.GrantCombatPointIfApplied(activator, applied);
         }
 
-
-        private static int PercentOf(int value, int percent)
-        {
-            return Math.Max(1, value * percent / 100);
-        }
     }
 }

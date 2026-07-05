@@ -17,6 +17,11 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             Microtench();
             Octotench();
             Scorchellus();
+            Reefmaw();
+            SableQuarr();
+            KaelDrox();
+            Inkveil();
+            Glassjaw();
 
             return _builder.Build();
         }
@@ -198,6 +203,108 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 
             _builder.Create("MONCALA_SCORCHELLUS_RARES")
                 .AddItem("map_58", 1, 1, true);
+        }
+
+        private void Reefmaw()
+        {
+            _builder.Create("MONCALA_REEFMAW_RARES")
+                .IsRare()
+                .AddItem("bptgharness", 1, 1, true)
+                .AddItem("bptgwraps", 1, 1, true)
+                .AddItem("bptgtreads", 1, 1, true)
+                .AddItem("bptgsash", 1, 1, true)
+                .AddItem("bptgmantle", 1, 1, true)
+                .AddItem("bptggorget", 1, 1, true)
+                .AddItem("bptgband", 1, 1, true)
+                .AddItem("bptgguard", 1, 1, true)
+                .AddItem("bptgvisor", 1, 1, true)
+                .AddItem("bptgcharm", 1, 1, true)
+                .AddItem("bpblchowder", 1, 1, true);
+
+            _builder.Create("MONCALA_REEFMAW_SCALE")
+                .AddItem("tide_scale", 1);
+        }
+
+        private void SableQuarr()
+        {
+            _builder.Create("MONCALA_SABLE_QUARR_RARES")
+                .IsRare()
+                .AddItem("bpstructure0411", 1, 1, true)
+                .AddItem("bpstructure0412", 1, 1, true)
+                .AddItem("bpstructure0413", 1, 1, true)
+                .AddItem("bpstructure0414", 1, 1, true)
+                .AddItem("bpstructure0415", 1, 1, true)
+                .AddItem("bpstructure0416", 1, 1, true)
+                .AddItem("bpstructure0417", 1, 1, true)
+                .AddItem("bpstructure0418", 1, 1, true)
+                .AddItem("bpstructure0419", 1, 1, true)
+                .AddItem("bpstructure0420", 1, 1, true)
+                .AddItem("bpfrstew", 1, 1, true)
+                .AddItem("bpfxdiverter", 1, 1, true);
+
+            _builder.Create("MONCALA_SABLE_QUARR_CHIP")
+                .AddItem("field_chip", 1);
+        }
+
+        private void KaelDrox()
+        {
+            _builder.Create("MONCALA_KAEL_DROX_RARES")
+                .IsRare()
+                .AddItem("bpstructure0421", 1, 1, true)
+                .AddItem("bpstructure0422", 1, 1, true)
+                .AddItem("bpstructure0423", 1, 1, true)
+                .AddItem("bpstructure0424", 1, 1, true)
+                .AddItem("bpstructure0425", 1, 1, true)
+                .AddItem("bpstructure0426", 1, 1, true)
+                .AddItem("bpstructure0427", 1, 1, true)
+                .AddItem("bpstructure0428", 1, 1, true)
+                .AddItem("bpstructure0429", 1, 1, true)
+                .AddItem("bpstructure0430", 1, 1, true)
+                .AddItem("bpdwbroth", 1, 1, true)
+                .AddItem("bptcbeacon", 1, 1, true);
+
+            _builder.Create("MONCALA_KAEL_DROX_KEY")
+                .AddItem("command_key", 1);
+        }
+
+        private void Inkveil()
+        {
+            _builder.Create("MONCALA_INKVEIL_RARES")
+                .IsRare()
+                .AddItem("bpigharness", 1, 1, true)
+                .AddItem("bpigwraps", 1, 1, true)
+                .AddItem("bpigtreads", 1, 1, true)
+                .AddItem("bpigsash", 1, 1, true)
+                .AddItem("bpigmantle", 1, 1, true)
+                .AddItem("bpiggorget", 1, 1, true)
+                .AddItem("bpigband", 1, 1, true)
+                .AddItem("bpigguard", 1, 1, true)
+                .AddItem("bpigvisor", 1, 1, true)
+                .AddItem("bpigcharm", 1, 1, true)
+                .AddItem("bpminoodles", 1, 1, true);
+
+            _builder.Create("MONCALA_INKVEIL_SAC")
+                .AddItem("midink_sac", 1);
+        }
+
+        private void Glassjaw()
+        {
+            _builder.Create("MONCALA_GLASSJAW_RARES")
+                .IsRare()
+                .AddItem("bpshharness", 1, 1, true)
+                .AddItem("bpshwraps", 1, 1, true)
+                .AddItem("bpshtreads", 1, 1, true)
+                .AddItem("bpshsash", 1, 1, true)
+                .AddItem("bpshmantle", 1, 1, true)
+                .AddItem("bpshgorget", 1, 1, true)
+                .AddItem("bpshband", 1, 1, true)
+                .AddItem("bpshguard", 1, 1, true)
+                .AddItem("bpshvisor", 1, 1, true)
+                .AddItem("bpshcharm", 1, 1, true)
+                .AddItem("bpsfcurry", 1, 1, true);
+
+            _builder.Create("MONCALA_GLASSJAW_CHITIN")
+                .AddItem("sh_chitin", 1);
         }
     }
 }

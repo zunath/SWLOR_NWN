@@ -34,6 +34,8 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             Veles();
             VelesSewers();
             TwilightPraxeum();
+            VelesMilitiaAnnex();
+            ViscaraRepublicEngineeringBunker();
 
             return _builder.Build();
         }
@@ -486,6 +488,104 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .WithFrequency(1)
                 .AsRare()
                 .RespawnDelay(20)
+                .RandomlyWalks()
+                .ReturnsHome();
+        }
+
+        private void VelesMilitiaAnnex()
+        {
+            _builder.Create("CAPSTONE_VELES_MILITIA_ANNEX", "Veles Militia Annex - General Capstone")
+                .AddSpawn(ObjectType.Creature, "cp_invinc_ad")
+                .WithFrequency(70)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_invinc_sp")
+                .WithFrequency(50)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_invinc_ic")
+                .WithFrequency(35)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_vitrupt_ad")
+                .WithFrequency(70)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_vitrupt_sp")
+                .WithFrequency(50)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_vitrupt_ic")
+                .WithFrequency(35)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_sysshut_ad")
+                .WithFrequency(70)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_sysshut_sp")
+                .WithFrequency(50)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_sysshut_ic")
+                .WithFrequency(35)
+                .RandomlyWalks()
+                .ReturnsHome();
+        }
+
+        private void ViscaraRepublicEngineeringBunker()
+        {
+            _builder.Create("CAPSTONE_VISCARA_REPUBLIC_ENGINEERING_BUNKER", "Viscara Republic Engineering Bunker - General Capstone")
+                .AddSpawn(ObjectType.Creature, "cp_killbeacon_ad")
+                .WithFrequency(70)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_killbeacon_sp")
+                .WithFrequency(50)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_killbeacon_ic")
+                .WithFrequency(35)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_embunker_ad")
+                .WithFrequency(70)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_embunker_sp")
+                .WithFrequency(50)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_embunker_ic")
+                .WithFrequency(35)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_deccommand_ad")
+                .WithFrequency(70)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_deccommand_sp")
+                .WithFrequency(50)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_deccommand_ic")
+                .WithFrequency(35)
                 .RandomlyWalks()
                 .ReturnsHome();
         }

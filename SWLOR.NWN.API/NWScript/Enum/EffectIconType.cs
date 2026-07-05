@@ -433,6 +433,10 @@ namespace SWLOR.NWN.API.NWScript.Enum
         WeaponJam1StatusEffect = 429,
         WhirlingGuardStatusEffect = 430,
         WorldbreakerStatusEffect = 431,
+        FluxDiverterStatusEffect = 432,
+        GhostkeyRelayStatusEffect = 433,
+        StormcoreMatrixStatusEffect = 434,
+        TidecallBeaconStatusEffect = 435,
         // End custom status effect icons
     }
 }

@@ -81,14 +81,14 @@
         "__struct_id": 16,
         "EquippedRes": {
           "type": "resref",
-          "value": "bf_kess_wp"
+          "value": "frenzmaster_wp"
         }
       },
       {
         "__struct_id": 131072,
         "EquippedRes": {
           "type": "resref",
-          "value": "bf_kess_skin"
+          "value": "frenzmaster_skin"
         }
       }
     ]

@@ -1523,5 +1523,7 @@ namespace SWLOR.NWN.API.NWScript.Enum
         InterruptingSweep1 = 1574,
         InterruptingSweep2 = 1575,
         LineBreaker4 = 1576,
+        SavageCleave3 = 1577,
+        RiotBlade4 = 1578,
     }
 }

@@ -96,14 +96,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
         {
             ApplyEffectToObject(
                 DurationType.Temporary,
-                EffectTemporaryHitpoints(PercentOf(GetMaxHitPoints(target), percent)),
+                EffectTemporaryHitpoints(GameMath.PercentOf(GetMaxHitPoints(target), percent)),
                 target,
                 durationSeconds);
-        }
-
-        private static int PercentOf(int value, int percent)
-        {
-            return Math.Max(1, value * percent / 100);
         }
 
         private static float GetAngerRecastDelay(uint activator)

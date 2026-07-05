@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Feature.QuestDefinition;
 
 namespace SWLOR.Game.Server.Feature.PerkDefinition
 {
@@ -232,7 +233,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.KillBox1)
                 .Description("For 45 seconds, ranged hits add Suppression stacks lasting 30 seconds using your Suppressing Shot stack strength, and each Suppression stack reduces Evasion by an additional 3%.")
                 .Price(6)
-                .RequirementSkill(SkillType.Rifle, 50);
+                .RequirementSkill(SkillType.Rifle, 50)
+                .RequirementQuest(RifleCapstoneQuestDefinition.KillBoxMasteryQuestId);
         }
 
         private void AimedShot()
@@ -422,7 +424,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.OneShot1)
                 .Description("Deals weapon DMG + 50. If used after 3 seconds without attacking, gains +25% Critical Rate and ignores 25% Defense.")
                 .Price(6)
-                .RequirementSkill(SkillType.Rifle, 50);
+                .RequirementSkill(SkillType.Rifle, 50)
+                .RequirementQuest(RifleCapstoneQuestDefinition.OneShotMasteryQuestId);
         }
 
     }

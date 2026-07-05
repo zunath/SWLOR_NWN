@@ -14,6 +14,8 @@ namespace SWLOR.Game.Server.Tests.Feature;
 
 public class BloodFrenzyQuestDefinitionTests
 {
+    private const string FinalQuestId = "blood_frenzy_mastery";
+
     [Test]
     public void Quests_RequireLevel50Vibroblade()
     {
@@ -40,7 +42,7 @@ public class BloodFrenzyQuestDefinitionTests
         AssertQuestPrerequisite(quests, "blood_frenzy_beat", "blood_frenzy_blade");
         AssertQuestPrerequisite(quests, "blood_frenzy_glass", "blood_frenzy_beat");
         AssertQuestPrerequisite(quests, "blood_frenzy_restraint", "blood_frenzy_glass");
-        AssertQuestPrerequisite(quests, BloodFrenzyQuestDefinition.FinalQuestId, "blood_frenzy_restraint");
+        AssertQuestPrerequisite(quests, FinalQuestId, "blood_frenzy_restraint");
     }
 
     [Test]
@@ -90,7 +92,7 @@ public class BloodFrenzyQuestDefinitionTests
             quest.KeyItemsRemovedOnComplete.Should().Contain(keyItemType);
         }
 
-        quests[BloodFrenzyQuestDefinition.FinalQuestId]
+        quests[FinalQuestId]
             .States[1]
             .GetObjectives()
             .OfType<CollectItemObjective>()
@@ -102,7 +104,7 @@ public class BloodFrenzyQuestDefinitionTests
     public void FinalQuest_GrantsBloodFrenzyAchievementOnComplete()
     {
         var quests = new BloodFrenzyQuestDefinition().BuildQuests();
-        var finalQuest = quests[BloodFrenzyQuestDefinition.FinalQuestId];
+        var finalQuest = quests[FinalQuestId];
         var giveAchievement = GetAchievementMethod(nameof(Achievement.GiveAchievement));
 
         finalQuest.OnCompleteActions.Should()
@@ -180,6 +182,54 @@ public class BloodFrenzyQuestDefinitionTests
             "waypointpalcus.itp.json")));
 
         EnumerateResrefs(waypointPalette.RootElement).Should().NotContain("bf_depth_entry");
+    }
+
+    [Test]
+    public void BloodFrenzyBossActivators_UseExpectedPlaceholderNamesAndGenericQuestEncounterWiring()
+    {
+        var root = FindRepositoryRoot();
+        using var sewersDepths = System.Text.Json.JsonDocument.Parse(File.ReadAllText(Path.Combine(
+            root.FullName,
+            "Module",
+            "git",
+            "visc_sewer_depth.git.json")));
+        using var kessArena = System.Text.Json.JsonDocument.Parse(File.ReadAllText(Path.Combine(
+            root.FullName,
+            "Module",
+            "git",
+            "pw_sc_velsewboss.git.json")));
+
+        var butcherActivator = EnumerateObjects(sewersDepths.RootElement)
+            .Single(element => GetString(element, "TemplateResRef") == "bf_butch_call");
+        var kessActivator = EnumerateObjects(kessArena.RootElement)
+            .Single(element => GetString(element, "TemplateResRef") == "bf_kess_call");
+
+        AssertQuestEncounterActivator(
+            butcherActivator,
+            "???",
+            "blood_frenzy_glass",
+            "blood_frenzy_glass_butcher",
+            "bf_butcher",
+            "BF_BUTCHER_SPAWN");
+        AssertQuestEncounterActivator(
+            kessActivator,
+            "???",
+            FinalQuestId,
+            "blood_frenzy_mastery_kess",
+            "bf_kess",
+            "BF_KESS_SPAWN");
+
+        using var palette = System.Text.Json.JsonDocument.Parse(File.ReadAllText(Path.Combine(
+            root.FullName,
+            "Module",
+            "itp",
+            "placeablepalcus.itp.json")));
+
+        var paletteResrefs = EnumerateResrefs(palette.RootElement).ToArray();
+        paletteResrefs.Should().NotContain("bf_butch_call");
+        paletteResrefs.Should().NotContain("bf_kess_call");
+        File.Exists(Path.Combine(root.FullName, "Module", "utp", "bf_butch_call.utp.json")).Should().BeFalse();
+        File.Exists(Path.Combine(root.FullName, "Module", "utp", "bf_kess_call.utp.json")).Should().BeFalse();
     }
 
     [Test]
@@ -624,6 +674,32 @@ public class BloodFrenzyQuestDefinitionTests
             .ToArray();
 
         actualReplyTexts.Should().BeEquivalentTo(expectedReplyTexts);
+    }
+
+    private static void AssertQuestEncounterActivator(
+        System.Text.Json.JsonElement activator,
+        string name,
+        string questId,
+        string encounterId,
+        string creatureResref,
+        string spawnWaypoint)
+    {
+        activator.GetProperty("LocName")
+            .GetProperty("value")
+            .GetProperty("0")
+            .GetString()
+            .Should()
+            .Be(name);
+        GetString(activator, "OnUsed").Should().Be("quest_enc");
+        GetString(activator, "OnHeartbeat").Should().BeEmpty();
+        GetLocalString(activator, "QUEST_ID").Should().Be(questId);
+        GetLocalInt(activator, "QUEST_STATE").Should().Be(1);
+        GetLocalInt(activator, "VISIBILITY_HIDDEN_DEFAULT").Should().Be(1);
+        GetLocalString(activator, "QUEST_ENCOUNTER_ID").Should().Be(encounterId);
+        GetLocalString(activator, "QUEST_ENCOUNTER_RESREF").Should().Be(creatureResref);
+        GetLocalString(activator, "QUEST_ENCOUNTER_WAYPOINT").Should().Be(spawnWaypoint);
+        GetLocalInt(activator, "QUEST_ENCOUNTER_COOLDOWN_MINUTES").Should().Be(60);
+        GetLocalInt(activator, "QUEST_ENCOUNTER_IDLE_MINUTES").Should().Be(10);
     }
 
     private static string GetDialogueText(System.Text.Json.JsonElement node)

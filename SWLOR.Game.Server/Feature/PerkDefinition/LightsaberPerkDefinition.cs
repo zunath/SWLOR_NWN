@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Feature.QuestDefinition;
 
 namespace SWLOR.Game.Server.Feature.PerkDefinition
 {
@@ -241,7 +242,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Deals weapon DMG + 45 to a single target. Sundered targets take +30 DMG and suffer Sunder for 45 seconds.")
                 .Price(6)
                 .RequirementSkill(SkillType.Lightsaber, 50)
-                .RequirementCharacterType(CharacterType.ForceSensitive);
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                .RequirementQuest(LightsaberCapstoneQuestDefinition.SaberStormMasteryQuestId);
         }
 
         private void WardBond()
@@ -442,7 +444,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Target ally becomes your ward for 45 seconds. They gain +15% Defense, +15% Force Defense, and +15% Guard, and 50% of their incoming damage is shared to you while within 8m. Only one ward or guard link may protect a target.")
                 .Price(6)
                 .RequirementSkill(SkillType.Lightsaber, 50)
-                .RequirementCharacterType(CharacterType.ForceSensitive);
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                .RequirementQuest(LightsaberCapstoneQuestDefinition.GuardianMasterMasteryQuestId);
         }
 
     }

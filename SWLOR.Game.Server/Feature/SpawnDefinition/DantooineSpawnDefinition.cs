@@ -21,6 +21,8 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             DantooineCanyon();
             DantooineWorldBoss();
             DantooineSouthPlains();
+            DantooineJediEnclaveTrialHalls();
+            DantooineMedicalSublevel();
 
             return _builder.Build();
         }
@@ -168,6 +170,104 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .WithFrequency(3)
                 .RespawnDelay(60 + Random.D100(1));
 
+        }
+
+        private void DantooineJediEnclaveTrialHalls()
+        {
+            _builder.Create("CAPSTONE_DANTOOINE_JEDI_ENCLAVE_TRIAL_HALLS", "Dantooine Jedi Enclave Trial Halls - General Capstone")
+                .AddSpawn(ObjectType.Creature, "cp_sabstorm_ad")
+                .WithFrequency(70)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_sabstorm_sp")
+                .WithFrequency(50)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_sabstorm_ic")
+                .WithFrequency(35)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_guardmst_ad")
+                .WithFrequency(70)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_guardmst_sp")
+                .WithFrequency(50)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_guardmst_ic")
+                .WithFrequency(35)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_sabcycl_ad")
+                .WithFrequency(70)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_sabcycl_sp")
+                .WithFrequency(50)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_sabcycl_ic")
+                .WithFrequency(35)
+                .RandomlyWalks()
+                .ReturnsHome();
+        }
+
+        private void DantooineMedicalSublevel()
+        {
+            _builder.Create("CAPSTONE_DANTOOINE_MEDICAL_SUBLEVEL", "Dantooine Medical Sublevel - General Capstone")
+                .AddSpawn(ObjectType.Creature, "cp_emcocktail_ad")
+                .WithFrequency(70)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_emcocktail_sp")
+                .WithFrequency(50)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_emcocktail_ic")
+                .WithFrequency(35)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_holdline_ad")
+                .WithFrequency(70)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_holdline_sp")
+                .WithFrequency(50)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_holdline_ic")
+                .WithFrequency(35)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_infconduit_ad")
+                .WithFrequency(70)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_infconduit_sp")
+                .WithFrequency(50)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_infconduit_ic")
+                .WithFrequency(35)
+                .RandomlyWalks()
+                .ReturnsHome();
         }
     }
 }

@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Feature.QuestDefinition;
 
 namespace SWLOR.Game.Server.Feature.PerkDefinition
 {
@@ -223,7 +224,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.LastWord1)
                 .Description("Deals weapon DMG + 35. For 45 seconds, evading an attack refreshes Snap Roll and quickens your next shot.")
                 .Price(6)
-                .RequirementSkill(SkillType.Pistol, 50);
+                .RequirementSkill(SkillType.Pistol, 50)
+                .RequirementQuest(PistolCapstoneQuestDefinition.LastWordMasteryQuestId);
         }
 
         private void QuickDraw()
@@ -407,7 +409,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.DeadMansHand1)
                 .Description("Deals weapon DMG + 30. If this critically hits, your next three ranged attacks have +20% Critical Rate and no extra attack delay.")
                 .Price(6)
-                .RequirementSkill(SkillType.Pistol, 50);
+                .RequirementSkill(SkillType.Pistol, 50)
+                .RequirementQuest(PistolCapstoneQuestDefinition.DeadMansHandMasteryQuestId);
         }
 
     }

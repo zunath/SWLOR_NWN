@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Feature.QuestDefinition;
 
 namespace SWLOR.Game.Server.Feature.PerkDefinition.Beast
 {
@@ -213,7 +214,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition.Beast
                 .Price(5)
                 .RequirementBeastLevel(50)
                 .RequirementBeastRole(BeastRoleType.Tank)
-                .GrantsFeat(FeatType.UnbreakableBeast1);
+                .GrantsFeat(FeatType.UnbreakableBeast1)
+                .RequirementQuest(BeastMasteryCapstoneQuestDefinition.UnbreakableBeastMasteryQuestId);
         }
 
         private static bool IsMasterBelowHalfHP(uint creature)

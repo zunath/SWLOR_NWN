@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Feature.QuestDefinition;
 
 namespace SWLOR.Game.Server.Feature.PerkDefinition
 {
@@ -227,7 +228,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.TempestBloom1)
                 .Description("Deal weapon DMG + 25 to enemies within 5m. For 45 seconds, your area attacks pulse for 8 physical DMG around your target.")
                 .Price(6)
-                .RequirementSkill(SkillType.TwinBlade, 50);
+                .RequirementSkill(SkillType.TwinBlade, 50)
+                .RequirementQuest(TwinBladeCapstoneQuestDefinition.TempestBloomMasteryQuestId);
         }
 
         private void LaceratingTwinCut()
@@ -411,7 +413,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.RedBloom1)
                 .Description("Deals weapon DMG + 20 to enemies within 5m. Bleeding enemies take +40 DMG and spread Hemorrhage for 30 seconds.")
                 .Price(6)
-                .RequirementSkill(SkillType.TwinBlade, 50);
+                .RequirementSkill(SkillType.TwinBlade, 50)
+                .RequirementQuest(TwinBladeCapstoneQuestDefinition.RedBloomMasteryQuestId);
         }
 
     }

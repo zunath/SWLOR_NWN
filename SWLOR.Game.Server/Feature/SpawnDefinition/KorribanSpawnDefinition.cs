@@ -19,7 +19,8 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             SithTemples();
             FrogBoss();
             KorribanFortress();
-
+            KorribanForgeCaverns();
+            KorribanSithCryptDepths();
 
             return _builder.Build();
         }
@@ -244,6 +245,104 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .WithFrequency(1)
                 .ReturnsHome()
                 .RespawnDelay(120);
+        }
+
+        private void KorribanForgeCaverns()
+        {
+            _builder.Create("CAPSTONE_KORRIBAN_FORGE_CAVERNS", "Korriban Forge Caverns - General Capstone")
+                .AddSpawn(ObjectType.Creature, "cp_absdef_ad")
+                .WithFrequency(70)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_absdef_sp")
+                .WithFrequency(50)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_absdef_ic")
+                .WithFrequency(35)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_soulasc_ad")
+                .WithFrequency(70)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_soulasc_sp")
+                .WithFrequency(50)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_soulasc_ic")
+                .WithFrequency(35)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_forcebane_ad")
+                .WithFrequency(70)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_forcebane_sp")
+                .WithFrequency(50)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_forcebane_ic")
+                .WithFrequency(35)
+                .RandomlyWalks()
+                .ReturnsHome();
+        }
+
+        private void KorribanSithCryptDepths()
+        {
+            _builder.Create("CAPSTONE_KORRIBAN_SITH_CRYPT_DEPTHS", "Korriban Sith Crypt Depths - General Capstone")
+                .AddSpawn(ObjectType.Creature, "cp_lightstand_ad")
+                .WithFrequency(70)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_lightstand_sp")
+                .WithFrequency(50)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_lightstand_ic")
+                .WithFrequency(35)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_darkhung_ad")
+                .WithFrequency(70)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_darkhung_sp")
+                .WithFrequency(50)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_darkhung_ic")
+                .WithFrequency(35)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_eclipse_ad")
+                .WithFrequency(70)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_eclipse_sp")
+                .WithFrequency(50)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_eclipse_ic")
+                .WithFrequency(35)
+                .RandomlyWalks()
+                .ReturnsHome();
         }
     }
 }

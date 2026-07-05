@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
@@ -52,7 +51,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             var applied = false;
             foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
-                Stat.RestoreStamina(friendly, PercentOf(Stat.GetMaxStamina(friendly), 25));
+                Stat.RestoreStamina(friendly, GameMath.PercentOf(Stat.GetMaxStamina(friendly), 25));
                 StatusEffect.ApplyStatusEffect(activator, friendly, typeof(EmergencyCocktailStatusEffect), duration);
                 AbilityEffectScaling.ApplyTemporaryHPPercent(activator, friendly, 12, duration);
                 StatusEffect.RemoveFirstStatusEffect(friendly, new[] { typeof(PoisonStatusEffect), typeof(ToxinStatusEffect) }, false);
@@ -62,11 +61,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             }
 
             FirstAidTreatmentAdjustments.GrantCombatPointIfApplied(activator, applied);
-        }
-
-        private static int PercentOf(int value, int percent)
-        {
-            return Math.Max(1, value * percent / 100);
         }
     }
 }

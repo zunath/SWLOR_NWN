@@ -403,7 +403,7 @@ namespace SWLOR.Game.Server.Service.PerkService
         ForcePiercing = 424,
         ForceSuppression = 425,
         ForceWarding = 426,
-        FortifiedPosition = 427,
+        Fortification = 427,
         FortressStrike = 428,
         FractureStrike = 429,
         GroundQuake = 430,
@@ -603,7 +603,9 @@ namespace SWLOR.Game.Server.Service.PerkService
         SmokeBomb = 628,
         CombatMomentum = 629,
         ShadowRecovery = 630,
-        // IDs 631-639 are free.
+        Rundown = 631,
+        FollowThrough = 632,
+        // IDs 633-639 are free.
         RapidShot = 640,
         Bulwark = 641,
         Alacrity = 642,

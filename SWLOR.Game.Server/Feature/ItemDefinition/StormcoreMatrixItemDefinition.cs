@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
@@ -26,22 +25,17 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                 .HasRecastDelay(RecastGroup.FieldTool, FieldToolRecastSeconds)
                 .ApplyAction((user, item, target, location, itemPropertyIndex) =>
                 {
-                    Stat.RestoreFP(user, PercentOf(Stat.GetMaxFP(user), 20));
-                    Stat.RestoreStamina(user, PercentOf(Stat.GetMaxStamina(user), 20));
+                    Stat.RestoreFP(user, GameMath.PercentOf(Stat.GetMaxFP(user), 20));
+                    Stat.RestoreStamina(user, GameMath.PercentOf(Stat.GetMaxStamina(user), 20));
                     TemporaryHitPointEffects.ApplyFlatWithBarrierVisual(
                         user,
-                        15 + PercentOf(GetMaxHitPoints(user), 8),
+                        15 + GameMath.PercentOf(GetMaxHitPoints(user), 8),
                         60f);
                     StatusEffect.ApplyStatusEffect(user, user, new StormcoreMatrixStatusEffect(), 60f);
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Restoration), user);
                 });
 
             return _builder.Build();
-        }
-
-        private static int PercentOf(int value, int percent)
-        {
-            return Math.Max(1, value * percent / 100);
         }
     }
 }

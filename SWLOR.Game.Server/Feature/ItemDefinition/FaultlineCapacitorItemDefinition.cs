@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Service;
@@ -24,21 +23,16 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                 .HasRecastDelay(RecastGroup.FieldTool, FieldToolRecastSeconds)
                 .ApplyAction((user, item, target, location, itemPropertyIndex) =>
                 {
-                    Stat.RestoreStamina(user, PercentOf(Stat.GetMaxStamina(user), 15));
+                    Stat.RestoreStamina(user, GameMath.PercentOf(Stat.GetMaxStamina(user), 15));
                     TemporaryHitPointEffects.ApplyFlatWithBarrierVisual(
                         user,
-                        10 + PercentOf(GetMaxHitPoints(user), 5),
+                        10 + GameMath.PercentOf(GetMaxHitPoints(user), 5),
                         60f);
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Restoration), user);
                     SendMessageToPC(user, "The faultline capacitor overcharges your reserves.");
                 });
 
             return _builder.Build();
-        }
-
-        private static int PercentOf(int value, int percent)
-        {
-            return Math.Max(1, value * percent / 100);
         }
     }
 }

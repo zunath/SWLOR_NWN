@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
@@ -115,17 +114,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 
         private static void HealPercent(uint activator, uint target, int percent)
         {
-            var amount = PercentOf(GetMaxHitPoints(target), percent);
+            var amount = GameMath.PercentOf(GetMaxHitPoints(target), percent);
             amount = Ability.ApplyCombatReadinessToActivatedAbilityMagnitude(activator, amount);
             amount = Stat.ApplyHealingReceivedAdjustment(target, amount);
 
             ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), target);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_M), target);
-        }
-
-        private static int PercentOf(int value, int percent)
-        {
-            return Math.Max(1, value * percent / 100);
         }
     }
 }

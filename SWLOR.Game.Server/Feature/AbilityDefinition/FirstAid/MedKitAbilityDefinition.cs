@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
@@ -162,7 +161,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 SkillType.BeastMastery => AbilityType.Might,
                 _ => AbilityType.Willpower
             };
-            var baseAmount = PercentOf(GetMaxHitPoints(target), percent);
+            var baseAmount = GameMath.PercentOf(GetMaxHitPoints(target), percent);
             var amount = SWLOR.Game.Server.Feature.AbilityDefinition.AbilityEffectScaling.ScaleDirectEffect(baseAmount, GetAbilityScore(activator, ability));
             amount = FirstAidTreatmentAdjustments.ApplyMedicalHealingBonus(activator, amount);
             amount = Ability.ApplyCombatReadinessToActivatedAbilityMagnitude(activator, amount);
@@ -170,11 +169,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
 
             ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), target);
             FirstAidTreatmentAdjustments.ApplyMedicalVisualEffect(target);
-        }
-
-        private static int PercentOf(int value, int percent)
-        {
-            return Math.Max(1, value * percent / 100);
         }
     }
 }

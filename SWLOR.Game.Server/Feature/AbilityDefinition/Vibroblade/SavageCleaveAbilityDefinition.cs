@@ -4,7 +4,6 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -12,79 +11,81 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
 {
     public class SavageCleaveAbilityDefinition : IAbilityListDefinition
     {
+        private const float Radius = 5f;
+
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
 
-            SavageCleave1(builder);
-            SavageCleave2(builder);
+            ConfigureSavageCleave(builder, FeatType.SavageCleave1, Spell.SavageCleave1, "Savage Cleave I", 1, 10, 4, false);
+            ConfigureSavageCleave(builder, FeatType.SavageCleave2, Spell.SavageCleave2, "Savage Cleave II", 2, 20, 6, true);
+            ConfigureSavageCleave(builder, FeatType.SavageCleave3, Spell.SavageCleave3, "Savage Cleave III", 3, 15, 8, false);
 
             return builder.Build();
         }
 
-        private static void SavageCleave1(AbilityBuilder builder)
+        private static void ConfigureSavageCleave(
+            AbilityBuilder builder,
+            FeatType featType,
+            Spell spell,
+            string name,
+            int level,
+            int baseDamage,
+            int stamina,
+            bool restoresSecondaryTargetStamina)
         {
             builder
-                .Create(FeatType.SavageCleave1, PerkType.SavageCleave)
-                .Name("Savage Cleave I")
-                .Level(1)
+                .Create(featType, PerkType.SavageCleave)
+                .Name(name)
+                .Level(level)
                 .HasActivationDelay(0f)
                 .UsesAnimation(Animation.Whirlwind)
                 .HasRecastDelay(RecastGroup.SavageCleave, 24f)
-                .IsAreaAbility()
-                .HasImpactAction(SavageCleave1ImpactAction)
+                .SkillType(SkillType.Vibroblade)
+                .HasImpactAction((activator, target, effectivePerkLevel, targetLocation) =>
+                    ApplySavageCleave(activator, target, targetLocation, baseDamage, restoresSecondaryTargetStamina))
+                .HasTargetingSphere(
+                    spell,
+                    Radius,
+                    AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
-                .RequirementStamina(7);
+                .RequirementStamina(stamina);
         }
 
-        private static void SavageCleave2(AbilityBuilder builder)
-        {
-            builder
-                .Create(FeatType.SavageCleave2, PerkType.SavageCleave)
-                .Name("Savage Cleave II")
-                .Level(2)
-                .HasActivationDelay(0f)
-                .UsesAnimation(Animation.Whirlwind)
-                .HasRecastDelay(RecastGroup.SavageCleave, 45f)
-                .IsAreaAbility()
-                .HasImpactAction(SavageCleave1ImpactAction)
-                .IsCastedAbility()
-                .IsHostileAbility()
-                .BreaksStealth()
-                .RequirementStamina(12);
-        }
-
-        private static void SavageCleave1ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        private static void ApplySavageCleave(
+            uint activator,
+            uint target,
+            Location targetLocation,
+            int baseDamage,
+            bool restoresSecondaryTargetStamina)
         {
             Ability.ApplyTelegraphedCombatImpact(
                 activator,
                 target,
                 targetLocation,
                 SkillType.Vibroblade,
-                25,
+                baseDamage,
                 0,
                 null,
-                CombatImpactAreaShape.Cone,
+                CombatImpactAreaShape.Sphere,
                 0.25f,
-                5f,
-                5f,
-                baseDamageAdjustment: hitTarget => hitTarget != target
-                    ? Stat.GetStatAdjustment(activator, StatType.SavageCleaveSecondaryDamageBonus)
-                    : 0,
-                afterImpactAction: summary => RestoreSecondaryTargetStamina(activator, summary));
+                Radius,
+                0f,
+                centerOnActivator: true,
+                afterImpactAction: restoresSecondaryTargetStamina
+                    ? summary => RestoreSecondaryTargetStamina(activator, summary)
+                    : null);
         }
 
         private static void RestoreSecondaryTargetStamina(uint activator, AbilityImpactSummary summary)
         {
-            var restorePerTarget = Stat.GetStatAdjustment(activator, StatType.SavageCleaveSecondaryTargetStaminaRestore);
-            var maximumRestore = Stat.GetStatAdjustment(activator, StatType.SavageCleaveSecondaryTargetStaminaRestoreMaximum);
-            if (restorePerTarget <= 0 || maximumRestore <= 0 || summary == null)
+            if (summary == null)
                 return;
 
             var secondaryTargets = Math.Max(0, summary.ImpactedTargetCount - 1);
-            var amount = Math.Min(maximumRestore, secondaryTargets * restorePerTarget);
+            var amount = secondaryTargets * 2;
             if (amount > 0)
             {
                 Stat.RestoreStamina(activator, amount);

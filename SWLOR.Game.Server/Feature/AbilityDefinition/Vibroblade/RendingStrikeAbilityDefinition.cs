@@ -30,12 +30,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
                 .UsesAnimation(Animation.CrossCut)
                 .RequiresTarget()
                 .IsSingleTargetAbility()
-                .HasRecastDelay(RecastGroup.RendingStrike, 30f)
+                .HasRecastDelay(RecastGroup.RendingStrike, 45f)
                 .HasImpactAction(RendingStrike1ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
-                .RequirementStamina(5);
+                .RequirementStamina(8);
         }
 
         private static void RendingStrike2(AbilityBuilder builder)
@@ -48,22 +48,22 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
                 .UsesAnimation(Animation.CrossCut)
                 .RequiresTarget()
                 .IsSingleTargetAbility()
-                .HasRecastDelay(RecastGroup.RendingStrike, 30f)
+                .HasRecastDelay(RecastGroup.RendingStrike, 45f)
                 .HasImpactAction(RendingStrike2ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
-                .RequirementStamina(7);
+                .RequirementStamina(10);
         }
 
         private static void RendingStrike1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Vibroblade, 18, 18, typeof(ExposedStatusEffect), false);
+            Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Vibroblade, 18, 30, typeof(ExposedStatusEffect), false);
         }
 
         private static void RendingStrike2ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Vibroblade, 32, 18, typeof(ExposedStatusEffect), false, statusEffectFactory: () => new ExposedStatusEffect(-25));
+            Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.Vibroblade, 32, 30, typeof(ExposedStatusEffect), false, statusEffectFactory: () => new ExposedStatusEffect(-15));
         }
     }
 }

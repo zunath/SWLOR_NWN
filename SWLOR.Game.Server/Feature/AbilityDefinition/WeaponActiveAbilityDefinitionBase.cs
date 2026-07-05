@@ -1498,8 +1498,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
         protected static void ConfigurePartyStatus(AbilityBuilder ability, Type type, float duration, int stamina, bool includeSelf, float activationDelay = 0f)
         {
+            ConfigurePartyStatus(ability, () => (IStatusEffect)Activator.CreateInstance(type), duration, stamina, includeSelf, activationDelay);
+        }
+
+        protected static void ConfigurePartyStatus(AbilityBuilder ability, Func<IStatusEffect> statusEffectFactory, float duration, int stamina, bool includeSelf, float activationDelay = 0f)
+        {
             ability.HasActivationDelay(activationDelay)
-                .HasImpactAction((activator, target, level, targetLocation) => ApplyStatusToNearbyParty(activator, type, duration, includeSelf))
+                .HasImpactAction((activator, target, level, targetLocation) => ApplyStatusToNearbyParty(activator, statusEffectFactory, duration, includeSelf))
                 .IsCastedAbility()
                 .BreaksStealth();
 
@@ -1559,9 +1564,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
         protected static void ApplyStatusToNearbyParty(uint activator, Type type, float duration, bool includeSelf)
         {
+            ApplyStatusToNearbyParty(activator, () => (IStatusEffect)Activator.CreateInstance(type), duration, includeSelf);
+        }
+
+        protected static void ApplyStatusToNearbyParty(uint activator, Func<IStatusEffect> statusEffectFactory, float duration, bool includeSelf)
+        {
             if (includeSelf)
             {
-                StatusEffect.ApplyStatusEffect(activator, activator, type, duration);
+                StatusEffect.ApplyStatusEffect(activator, activator, statusEffectFactory(), duration);
             }
 
             var location = GetLocation(activator);
@@ -1571,7 +1581,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             {
                 if (creature != activator && Party.IsInParty(activator, creature))
                 {
-                    StatusEffect.ApplyStatusEffect(activator, creature, type, duration, CombatDamageType.Physical);
+                    StatusEffect.ApplyStatusEffect(activator, creature, statusEffectFactory(), duration, CombatDamageType.Physical);
                 }
 
                 creature = GetNextObjectInShape(Shape.Sphere, 5f, location, true);

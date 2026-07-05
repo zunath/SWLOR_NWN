@@ -12,40 +12,64 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
     public class CoveringStrikeAbilityDefinition : IAbilityListDefinition
     {
         private const string ReplacementAnimationName = "Covering_Strike";
+        private const float Radius = 3f;
+        private const int DurationSeconds = 30;
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
 
-            CoveringStrike1(builder);
+            ConfigureCoveringStrike(builder, FeatType.CoveringStrike1, Spell.CoveringStrike1, "Covering Strike I", 1, 15, 6);
+            ConfigureCoveringStrike(builder, FeatType.CoveringStrike2, Spell.CoveringStrike2, "Covering Strike II", 2, 25, 6);
+            ConfigureCoveringStrike(builder, FeatType.CoveringStrike3, Spell.CoveringStrike3, "Covering Strike III", 3, 30, 8);
 
             return builder.Build();
         }
 
-        private static void CoveringStrike1(AbilityBuilder builder)
+        private static void ConfigureCoveringStrike(
+            AbilityBuilder builder,
+            FeatType featType,
+            Spell spell,
+            string name,
+            int level,
+            int baseDamage,
+            int stamina)
         {
             builder
-                .Create(FeatType.CoveringStrike1, PerkType.CoveringStrike)
-                .Name("Covering Strike")
-                .Level(1)
+                .Create(featType, PerkType.CoveringStrike)
+                .Name(name)
+                .Level(level)
                 .HasActivationDelay(0f)
                 .UsesImpactAnimationOverwrite(ReplacementAnimationName)
-                .HasRecastDelay(RecastGroup.CoveringStrike, 24f)
-                .HasImpactAction(CoveringStrike1ImpactAction)
-                .HasTargetingLine(
-                    Spell.CoveringStrike1,
-                    8f,
-                    2.5f,
+                .HasRecastDelay(RecastGroup.CoveringStrike, 30f)
+                .SkillType(SkillType.Vibroblade)
+                .HasImpactAction((activator, target, effectivePerkLevel, targetLocation) =>
+                    ApplyCoveringStrike(activator, target, targetLocation, baseDamage))
+                .HasTargetingSphere(
+                    spell,
+                    Radius,
                     AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf)
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
-                .RequirementStamina(6);
+                .RequirementStamina(stamina);
         }
 
-        private static void CoveringStrike1ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        private static void ApplyCoveringStrike(uint activator, uint target, Location targetLocation, int baseDamage)
         {
-            Ability.ApplyTelegraphedCombatImpact(activator, target, targetLocation, SkillType.Vibroblade, 20, 18, typeof(CoveringStrikeStatusEffect), CombatImpactAreaShape.Line, 0.25f, 8f, 2.5f);
+            Ability.ApplyTelegraphedCombatImpact(
+                activator,
+                target,
+                targetLocation,
+                SkillType.Vibroblade,
+                baseDamage,
+                DurationSeconds,
+                typeof(CoveringStrikeStatusEffect),
+                CombatImpactAreaShape.Sphere,
+                0.25f,
+                Radius,
+                0f,
+                centerOnActivator: true);
         }
     }
 }

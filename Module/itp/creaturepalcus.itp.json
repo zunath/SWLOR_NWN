@@ -5257,6 +5257,25 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 0.125
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Acolyte Varn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cq_eclipse"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 2.0
                     },
                     "FACTION": {
@@ -5270,6 +5289,25 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "agr_guildmaster"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 0.125
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Aric Jorr"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cq_killbeacon"
                     }
                   },
                   {
@@ -5352,6 +5390,25 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 0.125
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Borrik Sen"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cq_scraplock"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 1.0
                     },
                     "FACTION": {
@@ -5365,6 +5422,25 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "bruenortyuth"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 0.125
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Captain Tov Renn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cq_invinc"
                     }
                   },
                   {
@@ -5504,6 +5580,25 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 0.125
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dalen Orso"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cq_sysshut"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 0.5
                     },
                     "FACTION": {
@@ -5517,6 +5612,25 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "darrynbeto"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 0.125
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dax Rell"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cq_cripdef"
                     }
                   },
                   {
@@ -5599,6 +5713,25 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 0.125
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Edda Maln"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cq_holdline"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 2.0
                     },
                     "FACTION": {
@@ -5612,6 +5745,25 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "eng_guildmaster"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 0.125
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Eshka Korr"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cq_forcebeast"
                     }
                   },
                   {
@@ -6207,6 +6359,25 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 0.125
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Iven Brask"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cq_tempbloom"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 16.0
                     },
                     "FACTION": {
@@ -6245,6 +6416,25 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 0.125
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Jek Talin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cq_lastword"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 15.0
                     },
                     "FACTION": {
@@ -6277,6 +6467,44 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "jhoren_rites"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 0.125
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Jora Sel"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cq_sabcycl"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 0.125
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Kavi Dorn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cq_emcocktail"
                     }
                   },
                   {
@@ -6334,6 +6562,25 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "lu_shang"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 0.125
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Maar Veth"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cq_forcebane"
                     }
                   },
                   {
@@ -6663,6 +6910,25 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 0.125
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Marda Voss"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cq_unmovctr"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 0.5
                     },
                     "FACTION": {
@@ -6695,6 +6961,82 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "receptiondroid"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 0.125
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mikka Varn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cq_vitrupt"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 0.125
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mira Syth"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cq_alpharhy"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 0.125
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Miri Koss"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cq_overbarr"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 0.125
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Miris Aven"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cq_guardmst"
                     }
                   },
                   {
@@ -6739,6 +7081,25 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 0.125
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Nalka Rinn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cq_primover"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 18.0
                     },
                     "FACTION": {
@@ -6752,6 +7113,44 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "korr_shopkeeper"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 0.125
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Nella Voss"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cq_embunker"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 0.125
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Neth Kyr"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cq_darkhung"
                     }
                   },
                   {
@@ -6796,6 +7195,25 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 0.125
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Nyra Tane"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cq_redbloom"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 2.0
                     },
                     "FACTION": {
@@ -6809,6 +7227,44 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "mcdce_onmofo"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 0.125
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Oren Krast"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cq_unbrbeast"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 0.125
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Orin Tal"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cq_oneshot"
                     }
                   },
                   {
@@ -7005,6 +7461,25 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 0.125
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Pavo Orrel"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cq_deadhand"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 6.0
                     },
                     "FACTION": {
@@ -7138,6 +7613,25 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 0.125
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ressa Vale"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cq_killbox"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 0.5
                     },
                     "FACTION": {
@@ -7170,6 +7664,25 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "roy_moss"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 0.125
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ruk Halven"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cq_thermdet"
                     }
                   },
                   {
@@ -7222,11 +7735,68 @@
                     },
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Selka Vorn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cq_perflurry"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 0.125
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Senn Dralok"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cq_soulasc"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 0.125
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Sera"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "sera_vonn"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 0.125
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Seris Nahl"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cq_lightstand"
                     }
                   },
                   {
@@ -7385,6 +7955,44 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 0.125
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Talan Rees"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cq_sabstorm"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 0.125
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Talra Venn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cq_apexbite"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 161.0
                     },
                     "FACTION": {
@@ -7455,6 +8063,25 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "terenvoss"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 0.125
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tessa Quell"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cq_infconduit"
                     }
                   },
                   {
@@ -7556,6 +8183,25 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 0.125
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tressa Kade"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cq_adamguard"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 2.0
                     },
                     "FACTION": {
@@ -7607,6 +8253,82 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "male_twilek"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 0.125
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Unit KX-17"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cq_worldbrk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 0.125
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Valis Korr"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cq_absdef"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 0.125
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Varen Kell"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cq_deccommand"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 0.125
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Varik Dane"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cq_rainsteel"
                     }
                   },
                   {
@@ -7911,6 +8633,25 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "colonistwq"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 0.125
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Voro Thane"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cq_untinst"
                     }
                   },
                   {

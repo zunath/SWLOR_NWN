@@ -4902,7 +4902,25 @@ namespace SWLOR.Game.Server.Service.StatService
         /// Flat damage bonus for the next hostile weapon ability against the same pressure target.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        SameTargetPressureWeaponAbilityDamageBonus = 852
+        SameTargetPressureWeaponAbilityDamageBonus = 852,
+
+        /// <summary>
+        /// RecastGroup value whose active cooldown is reduced when a deflection succeeds.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        DeflectionRecastReductionGroupId = 853,
+
+        /// <summary>
+        /// Seconds removed from the configured recast group when a deflection succeeds.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        DeflectionRecastReductionSeconds = 854,
+
+        /// <summary>
+        /// Restricts RepeatedTargetDamage bonuses to auto-attacks when greater than zero.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        RepeatedTargetDamageAutoAttackOnly = 855
     }
 
     public class StatTypeAttribute : Attribute

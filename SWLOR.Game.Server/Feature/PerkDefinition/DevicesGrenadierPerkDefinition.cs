@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Feature.QuestDefinition;
 
 namespace SWLOR.Game.Server.Feature.PerkDefinition
 {
@@ -212,7 +213,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Devices, 50)
                 .RequirementCharacterType(CharacterType.Standard)
                 .DroidAISlots(1)
-                .GrantsFeat(FeatType.ThermalDetonator1);
+                .GrantsFeat(FeatType.ThermalDetonator1)
+                .RequirementQuest(DevicesCapstoneQuestDefinition.ThermalDetonatorMasteryQuestId);
         }
 
     }

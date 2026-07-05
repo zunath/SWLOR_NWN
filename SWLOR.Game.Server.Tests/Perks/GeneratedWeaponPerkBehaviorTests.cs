@@ -15,9 +15,9 @@ public class GeneratedWeaponPerkBehaviorTests
     [Test]
     public void GeneratedWeaponTraitPerks_EmitRepresentativeStatBonuses()
     {
-        AssertSourceStat("VibrobladePerkDefinition.cs", StatType.AutoAttackDamageBonusChance, "10");
-        AssertSourceStat("VibrobladePerkDefinition.cs", StatType.AutoAttackDamageBonus, "8");
-        AssertSourceStat("VibrobladePerkDefinition.cs", StatType.RiotBladeSecondaryDamageBonus, "12");
+        AssertSourceStat("VibrobladePerkDefinition.cs", StatType.AutoAttackDamageBonusChance, "15");
+        AssertSourceStat("VibrobladePerkDefinition.cs", StatType.AutoAttackDamageBonus, "10");
+        AssertSourceStat("VibrobladePerkDefinition.cs", StatType.RepeatedTargetDamageAutoAttackOnly, "1");
         AssertSourceContains("VibrobladePerkDefinition.cs", "EquipmentPredicates.HasOffHandShield(creature) ? 35 : 0");
 
         AssertSourceStat("VibroknifePerkDefinition.cs", StatType.CriticalBleedingStatusDurationExtensionSeconds, "6");
@@ -421,7 +421,7 @@ public class GeneratedWeaponPerkBehaviorTests
         AssertAbilitySourceContains(root, "Katar", "TagInAbilityDefinition.cs", "FriendlyTargetTemporaryHPPercent = 15");
         AssertAbilitySourceContains(root, "Katar", "TagInAbilityDefinition.cs", "SelfGuardPercent = 20");
         AssertAbilitySourceContains(root, "Katar", "WhirlingGuardAbilityDefinition.cs", "SelfStatusAlsoAppliesToGuardedTarget = true");
-        AssertAbilitySourceContains(root, "Vibroblade", "RiotBladeAbilityDefinition.cs", "StatType.RiotBladeSecondaryDamageBonus");
+        AssertAbilitySourceContains(root, "Vibroblade", "RiotBladeAbilityDefinition.cs", "FeatType.RiotBlade4");
         AssertAbilitySourceContains(root, "HeavyVibroblade", "HeavyVibrobladeActiveAbilityDefinitionBase.cs", "ApplyEssenceHunter");
         AssertAbilitySourceContains(root, "HeavyVibroblade", "SoulBurstAbilityDefinition.cs", "afterSuccessfulHit");
         AssertAbilitySourceContains(root, "Pistol", "LastWordAbilityDefinition.cs", "TemporaryAvoidedAttackNextAutoAttackNoDelaySkillType = (int)SkillType.Pistol");

@@ -12,7 +12,6 @@ namespace SWLOR.Game.Server.Tests.Perks;
 
 public class LineAbilityTargetingTests
 {
-    [TestCase(FeatType.CoveringStrike1, Spell.CoveringStrike1, typeof(CoveringStrikeAbilityDefinition), 8f, 2.5f)]
     [TestCase(FeatType.LineBreaker1, Spell.LineBreaker1, typeof(LineBreakerAbilityDefinition), 8f, 2.5f)]
     [TestCase(FeatType.SuppressiveLine1, Spell.SuppressiveLine1, typeof(SuppressiveLineAbilityDefinition), 20f, 3f)]
     [TestCase(FeatType.IonLance1, Spell.IonLance1, typeof(IonLanceAbilityDefinition), 8f, 2.5f)]
@@ -31,6 +30,25 @@ public class LineAbilityTargetingTests
         ability.Targeting.Shape.Should().Be(AbilityTargetingShapeType.Rect);
         ability.Targeting.SizeX.Should().Be(expectedLength);
         ability.Targeting.SizeY.Should().Be(expectedWidth);
+        ability.Targeting.Flags.Should().Be(
+            AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf);
+    }
+
+    [TestCase(FeatType.CoveringStrike1, Spell.CoveringStrike1, typeof(CoveringStrikeAbilityDefinition), 3f)]
+    public void OriginSphereAbilities_DeclareRadiusTargeting(
+        FeatType feat,
+        Spell spell,
+        Type definitionType,
+        float expectedRadius)
+    {
+        var definition = (IAbilityListDefinition)Activator.CreateInstance(definitionType)!;
+        var ability = definition.BuildAbilities()[feat];
+
+        ability.Targeting.Should().NotBeNull();
+        ability.Targeting!.Spell.Should().Be(spell);
+        ability.Targeting.Shape.Should().Be(AbilityTargetingShapeType.Sphere);
+        ability.Targeting.SizeX.Should().Be(expectedRadius);
+        ability.Targeting.SizeY.Should().Be(0);
         ability.Targeting.Flags.Should().Be(
             AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf);
     }

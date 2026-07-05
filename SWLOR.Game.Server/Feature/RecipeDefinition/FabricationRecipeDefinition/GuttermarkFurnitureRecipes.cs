@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.SkillService;
 
@@ -20,8 +20,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
             // Guttermark Field Cot
             _builder.Create(RecipeType.GuttermarkFieldCot, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Bed)
-                .Resref("nv_cot")
-                .Level(12)
+                .Resref("structure_0341")
+                .Level(11)
                 .Quantity(1)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
             // Guttermark Signal Lamp
             _builder.Create(RecipeType.GuttermarkSignalLamp, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Lighting)
-                .Resref("nv_lamp")
+                .Resref("structure_0342")
                 .Level(12)
                 .Quantity(1)
                 .RequirementUnlocked()
@@ -44,8 +44,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
             // Guttermark Trophy Stand
             _builder.Create(RecipeType.GuttermarkTrophyStand, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Fixtures)
-                .Resref("nv_stand")
-                .Level(12)
+                .Resref("structure_0343")
+                .Level(15)
                 .Quantity(1)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
@@ -56,8 +56,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
             // Guttermark Low Table
             _builder.Create(RecipeType.GuttermarkLowTable, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Surfaces)
-                .Resref("nv_table")
-                .Level(12)
+                .Resref("structure_0344")
+                .Level(13)
                 .Quantity(1)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
@@ -68,8 +68,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
             // Guttermark Wall Banner
             _builder.Create(RecipeType.GuttermarkWallBanner, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Wall)
-                .Resref("nv_banner")
-                .Level(12)
+                .Resref("structure_0345")
+                .Level(14)
                 .Quantity(1)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
@@ -80,8 +80,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
             // Guttermark Supply Locker
             _builder.Create(RecipeType.GuttermarkSupplyLocker, SkillType.Fabrication)
                 .Category(RecipeCategoryType.MiscellaneousFurniture)
-                .Resref("nv_locker")
-                .Level(12)
+                .Resref("structure_0346")
+                .Level(16)
                 .Quantity(1)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
@@ -92,8 +92,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
             // Guttermark Floor Mat
             _builder.Create(RecipeType.GuttermarkFloorMat, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Flooring)
-                .Resref("nv_mat")
-                .Level(12)
+                .Resref("structure_0347")
+                .Level(11)
                 .Quantity(1)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
@@ -104,8 +104,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
             // Guttermark Data Console
             _builder.Create(RecipeType.GuttermarkDataConsole, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Electronics)
-                .Resref("nv_console")
-                .Level(12)
+                .Resref("structure_0348")
+                .Level(16)
                 .Quantity(1)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
@@ -116,8 +116,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
             // Guttermark Display Plinth
             _builder.Create(RecipeType.GuttermarkDisplayPlinth, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Statues)
-                .Resref("nv_plinth")
-                .Level(12)
+                .Resref("structure_0349")
+                .Level(15)
                 .Quantity(1)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
@@ -128,7 +128,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
             // Guttermark Work Stool
             _builder.Create(RecipeType.GuttermarkWorkStool, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Seating)
-                .Resref("nv_stool")
+                .Resref("structure_0350")
                 .Level(12)
                 .Quantity(1)
                 .RequirementUnlocked()

@@ -9,25 +9,37 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
     public class ShieldWallAbilityDefinition : WeaponActiveAbilityDefinitionBase, IAbilityListDefinition
     {
         private const string ReplacementAnimationName = "Shield_Wall";
+        private const float DurationSeconds = 30f;
+        private const int StaminaCost = 10;
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
 
-            ConfigurePartyStatus(
-                builder
-                    .Create(FeatType.ShieldWall1, PerkType.ShieldWall)
-                    .Name("Shield Wall")
-                    .Level(1)
-                    .HasRecastDelay(RecastGroup.ShieldWall, 45f)
-                    .UsesAnimationOverwrite(ReplacementAnimationName),
-                typeof(ShieldWallStatusEffect),
-                60f,
-                10,
-                true,
-                6f);
+            ConfigureShieldWall(builder, FeatType.ShieldWall1, "Shield Wall I", 1, 20);
+            ConfigureShieldWall(builder, FeatType.ShieldWall2, "Shield Wall II", 2, 35);
 
             return builder.Build();
+        }
+
+        private static void ConfigureShieldWall(
+            AbilityBuilder builder,
+            FeatType featType,
+            string name,
+            int level,
+            int damageReductionPercent)
+        {
+            ConfigurePartyStatus(
+                builder
+                    .Create(featType, PerkType.ShieldWall)
+                    .Name(name)
+                    .Level(level)
+                    .HasRecastDelay(RecastGroup.ShieldWall, 45f)
+                    .UsesAnimationOverwrite(ReplacementAnimationName),
+                () => new ShieldWallStatusEffect(damageReductionPercent),
+                DurationSeconds,
+                StaminaCost,
+                true);
         }
     }
 }

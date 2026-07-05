@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Feature.QuestDefinition;
 
 namespace SWLOR.Game.Server.Feature.PerkDefinition
 {
@@ -224,7 +225,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.Worldbreaker1)
                 .Description("Deals weapon DMG + 35 to enemies within 5m. Enemies affected by control effects take +50 DMG and are Dazed for 30 seconds.")
                 .Price(6)
-                .RequirementSkill(SkillType.Staff, 50);
+                .RequirementSkill(SkillType.Staff, 50)
+                .RequirementQuest(StaffCapstoneQuestDefinition.WorldbreakerMasteryQuestId);
         }
 
         private void LineBreaker()
@@ -422,7 +424,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.UnmovingCenter1)
                 .Description("For 45 seconds, you cannot be Knocked down or Dazed, gain +20 Attack Deflection, and generate +30% Enmity.")
                 .Price(6)
-                .RequirementSkill(SkillType.Staff, 50);
+                .RequirementSkill(SkillType.Staff, 50)
+                .RequirementQuest(StaffCapstoneQuestDefinition.UnmovingCenterMasteryQuestId);
         }
 
     }

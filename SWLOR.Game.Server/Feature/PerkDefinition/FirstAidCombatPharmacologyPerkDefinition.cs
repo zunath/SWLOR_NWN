@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Feature.QuestDefinition;
 
 namespace SWLOR.Game.Server.Feature.PerkDefinition
 {
@@ -189,7 +190,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(5)
                 .RequirementSkill(SkillType.FirstAid, 50)
                 .DroidAISlots(1)
-                .GrantsFeat(FeatType.EmergencyCocktail1);
+                .GrantsFeat(FeatType.EmergencyCocktail1)
+                .RequirementQuest(FirstAidCapstoneQuestDefinition.EmergencyCocktailMasteryQuestId);
         }
 
     }

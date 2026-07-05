@@ -1,10 +1,10 @@
+using System.Collections.Generic;
+using SWLOR.Game.Server.Feature.QuestDefinition;
+using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
-using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
-using System.Collections.Generic;
-using SWLOR.Game.Server.Feature.QuestDefinition;
 
 namespace SWLOR.Game.Server.Feature.PerkDefinition
 {
@@ -15,20 +15,18 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         public Dictionary<PerkType, PerkDetail> BuildPerks()
         {
             BerserkerStance();
-            Bloodseeker();
             BloodFrenzy();
             CoveringStrike();
-            CrimsonFury();
             DefensiveStance();
             Executioner();
-            FortifiedPosition();
-            GuardiansRiposte();
-            HackingBlade();
+            Fortification();
             Invincible();
             Alacrity();
             Bulwark();
             RendingStrike();
             RiotBlade();
+            Rundown();
+            FollowThrough();
             SavageCleave();
             SavageReflexes();
             ShieldBash();
@@ -67,25 +65,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementQuest(BloodFrenzyQuestDefinition.FinalQuestId);
         }
 
-        private void Bloodseeker()
-        {
-            _builder.Create(PerkCategoryType.VibrobladeOffense, PerkType.Bloodseeker)
-                .Name("Bloodseeker")
-
-                .AddPerkLevel()
-                .GrantsFeat(FeatType.BloodseekerTrait)
-                .Description("Gain +10% Attack against bleeding targets.")
-                .IncreasesStat(StatType.AttackToBleedingTargetPercentAdjustment, 10)
-                .Price(2)
-                .RequirementSkill(SkillType.Vibroblade, 8)
-
-                .AddPerkLevel()
-                .Description("Gain +15% Attack against bleeding targets.")
-                .IncreasesStat(StatType.AttackToBleedingTargetPercentAdjustment, 15)
-                .Price(2)
-                .RequirementSkill(SkillType.Vibroblade, 35);
-        }
-
         private void CoveringStrike()
         {
             _builder.Create(PerkCategoryType.VibrobladeDefense, PerkType.CoveringStrike)
@@ -93,34 +72,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.CoveringStrike1)
-                .Description("Strike in a line for weapon DMG + 20. Enemies hit generate +25% Enmity toward you for 30 seconds.")
+                .Description("Strike all enemies within 3m for weapon DMG + 15. Enemies hit generate +25% Enmity toward you for 30 seconds.")
                 .Price(2)
-                .RequirementSkill(SkillType.Vibroblade, 12);
-        }
-
-        private void CrimsonFury()
-        {
-            _builder.Create(PerkCategoryType.VibrobladeOffense, PerkType.CrimsonFury)
-                .Name("Crimson Fury")
+                .RequirementSkill(SkillType.Vibroblade, 10)
 
                 .AddPerkLevel()
-                .GrantsFeat(FeatType.CrimsonFuryTrait)
-                .Description("Each bleeding enemy within 10m grants you +3% Attack (max +15%).")
-                .IncreasesStat(StatType.NearbyStatusTargetAttackPercentPerTarget, 3)
-                .IncreasesStat(StatType.NearbyStatusTargetAttackRadiusMeters, 10)
-                .IncreasesStat(StatType.NearbyStatusTargetAttackPercentMaximum, 15)
-                .IncreasesStat(StatType.NearbyStatusTargetAttackStatusCategory, (int)StatusEffectCategory.Bleeding)
+                .GrantsFeat(FeatType.CoveringStrike2)
+                .Description("Strike all enemies within 3m for weapon DMG + 25. Enemies hit generate +25% Enmity toward you for 30 seconds.")
                 .Price(4)
-                .RequirementSkill(SkillType.Vibroblade, 15)
+                .RequirementSkill(SkillType.Vibroblade, 30)
 
                 .AddPerkLevel()
-                .Description("Each bleeding enemy within 10m grants you +4% Attack (max +20%).")
-                .IncreasesStat(StatType.NearbyStatusTargetAttackPercentPerTarget, 4)
-                .IncreasesStat(StatType.NearbyStatusTargetAttackRadiusMeters, 10)
-                .IncreasesStat(StatType.NearbyStatusTargetAttackPercentMaximum, 20)
-                .IncreasesStat(StatType.NearbyStatusTargetAttackStatusCategory, (int)StatusEffectCategory.Bleeding)
+                .GrantsFeat(FeatType.CoveringStrike3)
+                .Description("Strike all enemies within 3m for weapon DMG + 30. Enemies hit generate +25% Enmity toward you for 30 seconds.")
                 .Price(4)
-                .RequirementSkill(SkillType.Vibroblade, 45);
+                .RequirementSkill(SkillType.Vibroblade, 38);
         }
 
         private void DefensiveStance()
@@ -130,15 +96,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.DefensiveStance1)
-                .Description("While active, grants +20% to Enmity generation, +15% Defense, +15% Force Defense, -20% Attack, and -20% Force Attack")
+                .Description("While active, grants +30% Enmity generation, +20% Defense and +20% Force Defense, -20% Attack, and -20% Force Attack.")
                 .Price(4)
-                .RequirementSkill(SkillType.Vibroblade, 20)
-
-                .AddPerkLevel()
-                .GrantsFeat(FeatType.DefensiveStance2)
-                .Description("While active, grants +30% to Enmity generation, +20% Defense, +20% Force Defense, -20% Attack, and -20% Force Attack")
-                .Price(4)
-                .RequirementSkill(SkillType.Vibroblade, 30);
+                .RequirementSkill(SkillType.Vibroblade, 20);
         }
 
         private void Executioner()
@@ -151,63 +111,30 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Deal +15% damage to targets below 30% HP.")
                 .IncreasesStat(StatType.TargetLowHPDamageThresholdPercent, 30)
                 .IncreasesStat(StatType.TargetLowHPDamagePercentAdjustment, 15)
-                .Price(4)
-                .RequirementSkill(SkillType.Vibroblade, 22);
-        }
-
-        private void FortifiedPosition()
-        {
-            _builder.Create(PerkCategoryType.VibrobladeDefense, PerkType.FortifiedPosition)
-                .Name("Fortified Position")
+                .Price(2)
+                .RequirementSkill(SkillType.Vibroblade, 5)
 
                 .AddPerkLevel()
-                .GrantsFeat(FeatType.FortifiedPositionTrait)
-                .Description("Grants +8 Mind Resistance rating, +8 Trauma Resistance rating, and +8 Mobility Resistance rating.")
-                .IncreasesStat(StatType.MindResistance, 8)
-                .IncreasesStat(StatType.TraumaResistance, 8)
-                .IncreasesStat(StatType.MobilityResistance, 8)
-                .Price(3)
-                .RequirementSkill(SkillType.Vibroblade, 15)
-
-                .AddPerkLevel()
-                .Description("Grants +15 Mind Resistance rating, +15 Trauma Resistance rating, and +15 Mobility Resistance rating total.")
-                .IncreasesStat(StatType.MindResistance, 15)
-                .IncreasesStat(StatType.TraumaResistance, 15)
-                .IncreasesStat(StatType.MobilityResistance, 15)
-                .Price(4)
-                .RequirementSkill(SkillType.Vibroblade, 32);
-        }
-
-        private void GuardiansRiposte()
-        {
-            _builder.Create(PerkCategoryType.VibrobladeDefense, PerkType.GuardiansRiposte)
-                .Name("Guardian's Riposte")
-
-                .AddPerkLevel()
-                .GrantsFeat(FeatType.GuardiansRiposteTrait)
-                .Description("Receive Guardian's Riposte after deflecting an attack with a shield. Your next attack within 30 seconds deals +10 DMG.")
-                .IncreasesStat(StatType.DeflectionNextSkillAbilityDamageBonus, creature => EquipmentPredicates.HasOffHandShield(creature) ? 10 : 0)
-                .IncreasesStat(StatType.DeflectionNextSkillAbilityDamageBonusWindowSeconds, creature => EquipmentPredicates.HasOffHandShield(creature) ? 30 : 0)
+                .Description("Deal +15% damage to targets below 50% HP.")
+                .IncreasesStat(StatType.TargetLowHPDamageThresholdPercent, 50)
+                .IncreasesStat(StatType.TargetLowHPDamagePercentAdjustment, 15)
                 .Price(2)
                 .RequirementSkill(SkillType.Vibroblade, 35);
         }
 
-        private void HackingBlade()
+        private void Fortification()
         {
-            _builder.Create(PerkCategoryType.VibrobladeOffense, PerkType.HackingBlade)
-                .Name("Hacking Blade")
+            _builder.Create(PerkCategoryType.VibrobladeDefense, PerkType.Fortification)
+                .Name("Fortification")
 
                 .AddPerkLevel()
-                .GrantsFeat(FeatType.HackingBlade1)
-                .Description("Your next attack deals an additional 8 DMG and inflicts Bleed for 30 seconds.")
-                .Price(2)
-                .RequirementSkill(SkillType.Vibroblade, 2)
-
-                .AddPerkLevel()
-                .GrantsFeat(FeatType.HackingBlade2)
-                .Description("Your next attack deals an additional 18 DMG and inflicts Bleed for 60 seconds.")
-                .Price(2)
-                .RequirementSkill(SkillType.Vibroblade, 12);
+                .GrantsFeat(FeatType.FortificationTrait)
+                .Description("Grants +15 Mind Resistance rating, +15 Trauma Resistance rating, and +15 Mobility Resistance rating.")
+                .IncreasesStat(StatType.MindResistance, 15)
+                .IncreasesStat(StatType.TraumaResistance, 15)
+                .IncreasesStat(StatType.MobilityResistance, 15)
+                .Price(4)
+                .RequirementSkill(SkillType.Vibroblade, 15);
         }
 
         private void Invincible()
@@ -219,7 +146,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.Invincible1)
                 .Description("For 45 seconds, you take 50% less physical damage and are immune to Knockdown and Dazed.")
                 .Price(6)
-                .RequirementSkill(SkillType.Vibroblade, 50);
+                .RequirementSkill(SkillType.Vibroblade, 50)
+                .RequirementQuest(VibrobladeCapstoneQuestDefinition.InvincibleMasteryQuestId);
         }
 
         private void Alacrity()
@@ -229,8 +157,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.AlacrityTrait)
-                .Description("Restore 4 STM when your shield deflects an attack.")
+                .Description("Restore 4 STM when your shield deflects an attack. This can only trigger once every 6 seconds.")
                 .IncreasesStat(StatType.DeflectionStaminaRestore, creature => EquipmentPredicates.HasOffHandShield(creature) ? 4 : 0)
+                .IncreasesStat(StatType.DeflectionStaminaRestoreCooldownSeconds, creature => EquipmentPredicates.HasOffHandShield(creature) ? 6 : 0)
                 .Price(4)
                 .RequirementSkill(SkillType.Vibroblade, 25);
         }
@@ -242,28 +171,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.BulwarkTrait)
-                .Description("Grants +10 Shield Deflection and +4% Physical Defense while a shield is equipped.")
-                .IncreasesStat(StatType.ShieldDeflection, creature => EquipmentPredicates.HasOffHandShield(creature) ? 10 : 0)
-                .IncreasesStat(StatType.ShieldEquippedPhysicalDefensePercentAdjustment, 4)
+                .Description("Grants +15 Shield Deflection and +8% Physical Defense while a shield is equipped.")
+                .IncreasesStat(StatType.ShieldDeflection, creature => EquipmentPredicates.HasOffHandShield(creature) ? 15 : 0)
+                .IncreasesStat(StatType.ShieldEquippedPhysicalDefensePercentAdjustment, 8)
                 .Price(2)
                 .RequirementSkill(SkillType.Vibroblade, 8)
 
                 .AddPerkLevel()
-                .Description("Grants +15 Shield Deflection total and +7% Physical Defense while a shield is equipped.")
-                .IncreasesStat(StatType.ShieldDeflection, creature => EquipmentPredicates.HasOffHandShield(creature) ? 15 : 0)
-                .IncreasesStat(StatType.ShieldEquippedPhysicalDefensePercentAdjustment, 7)
+                .Description("Grants +25 Shield Deflection and +10% Physical Defense while a shield is equipped.")
+                .IncreasesStat(StatType.ShieldDeflection, creature => EquipmentPredicates.HasOffHandShield(creature) ? 25 : 0)
+                .IncreasesStat(StatType.ShieldEquippedPhysicalDefensePercentAdjustment, 10)
                 .Price(4)
                 .RequirementSkill(SkillType.Vibroblade, 22)
 
                 .AddPerkLevel()
-                .Description("Grants +25 Shield Deflection total and +10% Physical Defense while a shield is equipped.")
-                .IncreasesStat(StatType.ShieldDeflection, creature => EquipmentPredicates.HasOffHandShield(creature) ? 25 : 0)
-                .IncreasesStat(StatType.ShieldEquippedPhysicalDefensePercentAdjustment, 10)
-                .Price(4)
-                .RequirementSkill(SkillType.Vibroblade, 38)
-
-                .AddPerkLevel()
-                .Description("Grants +35 Shield Deflection total and +12% Physical Defense while a shield is equipped.")
+                .Description("Grants +35 Shield Deflection and +12% Physical Defense while a shield is equipped.")
                 .IncreasesStat(StatType.ShieldDeflection, creature => EquipmentPredicates.HasOffHandShield(creature) ? 35 : 0)
                 .IncreasesStat(StatType.ShieldEquippedPhysicalDefensePercentAdjustment, 12)
                 .Price(4)
@@ -279,13 +201,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.RendingStrike1)
                 .Description("Deals weapon DMG + 18. Inflicts Exposed which reduces Defense by 15% for 30 seconds.")
                 .Price(3)
-                .RequirementSkill(SkillType.Vibroblade, 32)
+                .RequirementSkill(SkillType.Vibroblade, 18)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.RendingStrike2)
-                .Description("Deals weapon DMG + 32. Inflicts Exposed which reduces Defense by 25% for 30 seconds.")
-                .Price(4)
-                .RequirementSkill(SkillType.Vibroblade, 38);
+                .Description("Deals weapon DMG + 32. Inflicts Exposed which reduces Defense by 15% for 30 seconds.")
+                .Price(3)
+                .RequirementSkill(SkillType.Vibroblade, 32);
         }
 
         private void RiotBlade()
@@ -295,22 +217,76 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.RiotBlade1)
-                .Description("Instantly deals weapon DMG + 15 to your target.")
+                .Description("On your next hit, deal weapon DMG + 10.")
                 .Price(2)
-                .RequirementSkill(SkillType.Vibroblade, 10)
+                .RequirementSkill(SkillType.Vibroblade, 2)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.RiotBlade2)
-                .Description("Instantly deals weapon DMG + 30 to your target. Riot Blade also deals +12 DMG to enemies within 5m.")
-                .IncreasesStat(StatType.RiotBladeSecondaryDamageBonus, 12)
+                .Description("On your next hit, deal weapon DMG + 15.")
+                .Price(2)
+                .RequirementSkill(SkillType.Vibroblade, 12)
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.RiotBlade3)
+                .Description("On your next hit, deal weapon DMG + 20.")
                 .Price(3)
                 .RequirementSkill(SkillType.Vibroblade, 28)
 
                 .AddPerkLevel()
-                .GrantsFeat(FeatType.RiotBlade3)
-                .Description("Instantly deals weapon DMG + 45 to your target.")
+                .GrantsFeat(FeatType.RiotBlade4)
+                .Description("On your next hit, deal weapon DMG + 25.")
                 .Price(5)
                 .RequirementSkill(SkillType.Vibroblade, 40);
+        }
+
+        private void Rundown()
+        {
+            _builder.Create(PerkCategoryType.VibrobladeOffense, PerkType.Rundown)
+                .Name("Rundown")
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.RundownTrait)
+                .Description("Each consecutive melee attack against the same target grants Rundown, giving +1 DMG to auto-attack against that target, up to five stacks.")
+                .IncreasesStat(StatType.RepeatedTargetDamageSkillType, (int)SkillType.Vibroblade)
+                .IncreasesStat(StatType.RepeatedTargetDamageBonusPerHit, 1)
+                .IncreasesStat(StatType.RepeatedTargetDamageBonusMax, 5)
+                .IncreasesStat(StatType.RepeatedTargetDamageAutoAttackOnly, 1)
+                .Price(2)
+                .RequirementSkill(SkillType.Vibroblade, 8)
+
+                .AddPerkLevel()
+                .Description("Each consecutive melee attack against the same target grants Rundown, giving +2 DMG to auto-attack against that target, up to five stacks.")
+                .IncreasesStat(StatType.RepeatedTargetDamageSkillType, (int)SkillType.Vibroblade)
+                .IncreasesStat(StatType.RepeatedTargetDamageBonusPerHit, 2)
+                .IncreasesStat(StatType.RepeatedTargetDamageBonusMax, 10)
+                .IncreasesStat(StatType.RepeatedTargetDamageAutoAttackOnly, 1)
+                .Price(4)
+                .RequirementSkill(SkillType.Vibroblade, 22)
+
+                .AddPerkLevel()
+                .Description("Each consecutive melee attack against the same target grants Rundown, giving +3 DMG to auto-attack against that target, up to five stacks.")
+                .IncreasesStat(StatType.RepeatedTargetDamageSkillType, (int)SkillType.Vibroblade)
+                .IncreasesStat(StatType.RepeatedTargetDamageBonusPerHit, 3)
+                .IncreasesStat(StatType.RepeatedTargetDamageBonusMax, 15)
+                .IncreasesStat(StatType.RepeatedTargetDamageAutoAttackOnly, 1)
+                .Price(4)
+                .RequirementSkill(SkillType.Vibroblade, 45);
+        }
+
+        private void FollowThrough()
+        {
+            _builder.Create(PerkCategoryType.VibrobladeOffense, PerkType.FollowThrough)
+                .Name("Follow-Through")
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.FollowThroughTrait)
+                .Description("Every third melee auto-attack deals an additional +10 Damage.")
+                .IncreasesStat(StatType.AutoAttackCycleDamageSkillType, (int)SkillType.Vibroblade)
+                .IncreasesStat(StatType.AutoAttackCycleRequiredCount, 3)
+                .IncreasesStat(StatType.AutoAttackCycleDamage, 10)
+                .Price(4)
+                .RequirementSkill(SkillType.Vibroblade, 25);
         }
 
         private void SavageCleave()
@@ -320,18 +296,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SavageCleave1)
-                .Description("Strike all enemies in front for weapon DMG + 25.")
-                .Price(3)
-                .RequirementSkill(SkillType.Vibroblade, 18)
+                .Description("Deal weapon DMG + 10 in a 5m radius around you.")
+                .Price(2)
+                .RequirementSkill(SkillType.Vibroblade, 10)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SavageCleave2)
-                .Description("Savage Cleave deals +20 DMG to enemies within 5m and restores 2 STM per secondary target hit, up to 8 STM.")
-                .IncreasesStat(StatType.SavageCleaveSecondaryDamageBonus, 20)
-                .IncreasesStat(StatType.SavageCleaveSecondaryTargetStaminaRestore, 2)
-                .IncreasesStat(StatType.SavageCleaveSecondaryTargetStaminaRestoreMaximum, 8)
+                .Description("Deal weapon DMG + 20 in a 5m radius around you and restores 2 STM per secondary target hit.")
                 .Price(4)
-                .RequirementSkill(SkillType.Vibroblade, 30);
+                .RequirementSkill(SkillType.Vibroblade, 30)
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.SavageCleave3)
+                .Description("Deal weapon DMG + 15 to all enemies around you.")
+                .Price(4)
+                .RequirementSkill(SkillType.Vibroblade, 38);
         }
 
         private void SavageReflexes()
@@ -341,18 +320,11 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SavageReflexesTrait)
-                .Description("Auto-attacks have 10% chance to deal +8 DMG.")
-                .IncreasesStat(StatType.AutoAttackDamageBonusChance, 10)
-                .IncreasesStat(StatType.AutoAttackDamageBonus, 8)
-                .Price(2)
-                .RequirementSkill(SkillType.Vibroblade, 5)
-
-                .AddPerkLevel()
-                .Description("Auto-attacks have 15% chance to deal +12 DMG.")
+                .Description("Auto-attacks have a 15% chance to deal +10 DMG.")
                 .IncreasesStat(StatType.AutoAttackDamageBonusChance, 15)
-                .IncreasesStat(StatType.AutoAttackDamageBonus, 12)
+                .IncreasesStat(StatType.AutoAttackDamageBonus, 10)
                 .Price(4)
-                .RequirementSkill(SkillType.Vibroblade, 25);
+                .RequirementSkill(SkillType.Vibroblade, 15);
         }
 
         private void ShieldBash()
@@ -362,21 +334,27 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ShieldBash1)
-                .Description("Bashes your current attack target for 12 DMG and inflicts Dazed for 30 seconds. Requires an active attack target.")
+                .Description("On your next hit, deal weapon DMG and an additional instance of damage equal to 4% of your Physical Defense.")
                 .Price(2)
                 .RequirementSkill(SkillType.Vibroblade, 2)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ShieldBash2)
-                .Description("Bashes your current attack target for 24 DMG and inflicts Dazed for 30 seconds. Requires an active attack target.")
+                .Description("On your next hit, deal weapon DMG and an additional instance of damage equal to 6% of your Physical Defense.")
                 .Price(2)
-                .RequirementSkill(SkillType.Vibroblade, 10)
+                .RequirementSkill(SkillType.Vibroblade, 12)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ShieldBash3)
-                .Description("Bashes your current attack target for 36 DMG, inflicts Stunned for 30 seconds, and inflicts Dazed for 30 seconds. Requires an active attack target.")
+                .Description("On your next hit, deal weapon DMG and an additional instance of damage equal to 8% of your Physical Defense.")
                 .Price(3)
-                .RequirementSkill(SkillType.Vibroblade, 18);
+                .RequirementSkill(SkillType.Vibroblade, 28)
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.ShieldBash4)
+                .Description("On your next hit, deal weapon DMG and an additional instance of damage equal to 10% of your Physical Defense.")
+                .Price(5)
+                .RequirementSkill(SkillType.Vibroblade, 40);
         }
 
         private void ShieldTraining()
@@ -386,9 +364,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ShieldTrainingTrait)
-                .Description("When you successfully deflect an attack with a shield, gain +3% Evasion and +3% Enmity for 30 seconds.")
-                .IncreasesStat(StatType.DeflectionEvasionPercentAdjustment, creature => EquipmentPredicates.HasOffHandShield(creature) ? 3 : 0)
-                .IncreasesStat(StatType.DeflectionEvasionEnmityPercentAdjustment, creature => EquipmentPredicates.HasOffHandShield(creature) ? 3 : 0)
+                .Description("When you deflect an attack with a shield, reduce the active cooldown of Shield Bash by 2 seconds.")
+                .IncreasesStat(StatType.DeflectionRecastReductionGroupId, creature => EquipmentPredicates.HasOffHandShield(creature) ? (int)RecastGroup.ShieldBash : 0)
+                .IncreasesStat(StatType.DeflectionRecastReductionSeconds, creature => EquipmentPredicates.HasOffHandShield(creature) ? 2 : 0)
                 .Price(2)
                 .RequirementSkill(SkillType.Vibroblade, 5);
         }
@@ -400,9 +378,15 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ShieldWall1)
-                .Description("Channel for up to 6s. Allies within 5m gain +15% Physical Defense, you gain +25% Enmity for 1 minute.")
+                .Description("Channel for up to 30 seconds. While channeling you and any allies within 5m gain 20% damage reduction.")
                 .Price(3)
-                .RequirementSkill(SkillType.Vibroblade, 28);
+                .RequirementSkill(SkillType.Vibroblade, 18)
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.ShieldWall2)
+                .Description("Channel for up to 30 seconds. While channeling you and any allies within 5m gain 35% damage reduction.")
+                .Price(3)
+                .RequirementSkill(SkillType.Vibroblade, 32);
         }
 
         private void Unbreakable()
@@ -412,13 +396,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.UnbreakableTrait)
-                .Description("When reduced below 25% HP, gain +40% Physical Defense for 30 seconds. Once per 5min.")
+                .Description("When reduced below 25% HP, gain 40% Physical Defense for 30 seconds. Once per 5 minutes.")
                 .IncreasesStat(StatType.LowHPPhysicalDefenseThresholdPercent, 25)
                 .IncreasesStat(StatType.LowHPPhysicalDefensePercentAdjustment, 40)
                 .IncreasesStat(StatType.LowHPPhysicalDefenseDurationSeconds, 30)
                 .IncreasesStat(StatType.LowHPPhysicalDefenseCooldownSeconds, 300)
-                .Price(5)
-                .RequirementSkill(SkillType.Vibroblade, 40);
+                .Price(2)
+                .RequirementSkill(SkillType.Vibroblade, 35);
         }
 
     }

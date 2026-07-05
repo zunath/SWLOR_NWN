@@ -4,6 +4,7 @@ using System.Text.Json;
 using System.Xml.Linq;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Feature.QuestDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.NPCService;
@@ -99,10 +100,10 @@ public class NPCEnemyBalanceAuditTests
         [(int)FeatType.StaticWeb] = ResistanceType.Electrical,
         [(int)FeatType.ForceSunder] = ResistanceType.Disruption,
         [(int)FeatType.NullShock] = ResistanceType.Disruption,
-        [(int)FeatType.ButchersCarve] = ResistanceType.Trauma,
+        [(int)FeatType.RendingCarve] = ResistanceType.Trauma,
         [(int)FeatType.StimCanister] = ResistanceType.Poison,
         [(int)FeatType.BloodFrenzyFlurry] = ResistanceType.Trauma,
-        [(int)FeatType.DraavosChallenge] = ResistanceType.Mind,
+        [(int)FeatType.ConcussiveChallenge] = ResistanceType.Mind,
     };
 
     private static readonly ExpectedEnemy[] ExpectedAlternateEnemies =
@@ -121,8 +122,8 @@ public class NPCEnemyBalanceAuditTests
         new("bf_scavenger", "bf_scv_skin", "bf_scv_wp", 50, 1085, 40, 22, 22, 32, 32, 101, 18, 22, 0, 10, 19, 17, 81, 23),
         new("bf_pulsedroid", "bf_pulse_skin", "bf_pulse_wp", 50, 977, 22, 40, 22, 32, 32, 88, 22, 22, 0, 13, 17, 17, 78, 30),
         new("bf_duelist", "bf_duel_skin", "bf_duel_wp", 50, 1573, 41, 23, 23, 33, 33, 121, 21, 23, 1, 10, 20, 18, 88, 23),
-        new("bf_butcher", "bf_butch_skin", "bf_butch_wp", 50, 2441, 42, 24, 24, 34, 34, 152, 26, 24, 2, 11, 21, 19, 94, 23),
-        new("bf_kess", "bf_kess_skin", "bf_kess_wp", 50, 5425, 43, 25, 25, 35, 35, 253, 44, 25, 3, 11, 22, 20, 102, 23),
+        new("bf_butcher", "stimbruis_skin", "stimbruis_wp", 50, 2441, 42, 24, 24, 34, 34, 152, 26, 24, 2, 11, 21, 19, 94, 23),
+        new("bf_kess", "frenzmaster_skin", "frenzmaster_wp", 50, 5425, 43, 25, 25, 35, 35, 253, 44, 25, 3, 11, 22, 20, 102, 23),
     };
 
     private static readonly ExpectedEnemy OldScarExpectedEnemy =
@@ -146,8 +147,13 @@ public class NPCEnemyBalanceAuditTests
         new("shardeye", "shardeye_sk", "shardeye_wp", 10, 350, 12, 20, 12, 16, 16, 36, 9, 10, 2, 6, 5, 5, 22, 24),
         new("rootcoil", "rootcoil_sk", "rootcoil_wp", 12, 461, 21, 13, 13, 18, 18, 47, 8, 11, 2, 3, 8, 6, 27, 24),
         new("mirevein", "mirevein_sk", "mirevein_wp", 12, 461, 21, 13, 13, 18, 18, 47, 8, 11, 2, 3, 8, 6, 27, 24),
-        new("vrix7", "vrix7_sk", "vrix7_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 19, 19, 89, 30),
+        new("vrix7", "pulsemarks_skin", "pulsemarks_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 19, 19, 89, 30),
         new("ashwing", "ashwing_sk", "ashwing_wp", 2, 114, 10, 13, 16, 10, 13, 12, 15, 3, 5, 3, 1, 5, 7, 24),
+        new("reefmaw", "reefmaw_sk", "reefmaw_wp", 27, 620, 17, 24, 28, 17, 24, 45, 52, 11, 13, 8, 8, 12, 38, 24),
+        new("sable_quarr", "sableq_sk", "sableq_wp", 29, 720, 29, 17, 17, 24, 24, 68, 12, 16, 0, 6, 12, 10, 48, 30),
+        new("kael_drox", "kaeldrox_sk", "kaeldrox_wp", 33, 1420, 20, 33, 20, 27, 27, 95, 26, 19, 3, 11, 14, 14, 60, 22),
+        new("inkveil", "inkveil_sk", "inkveil_wp", 31, 760, 30, 18, 18, 25, 25, 72, 13, 17, 0, 6, 13, 11, 55, 24),
+        new("glassjaw", "glassjaw_sk", "glassjaw_wp", 30, 660, 18, 25, 31, 18, 25, 44, 56, 13, 15, 9, 10, 15, 25, 24),
     };
 
     private static readonly IReadOnlyDictionary<ResistanceType, int> OldScarExpectedResistances = new Dictionary<ResistanceType, int>
@@ -192,6 +198,11 @@ public class NPCEnemyBalanceAuditTests
             ["mirevein"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = -10, [ResistanceType.Poison] = 8, [ResistanceType.Electrical] = 4, [ResistanceType.Ice] = -10, [ResistanceType.Mind] = 10, [ResistanceType.Mobility] = 6, [ResistanceType.Trauma] = 8, [ResistanceType.Disruption] = 6 },
             ["vrix7"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 12, [ResistanceType.Poison] = 19, [ResistanceType.Electrical] = -20, [ResistanceType.Ice] = 12, [ResistanceType.Mind] = 19, [ResistanceType.Mobility] = 12, [ResistanceType.Trauma] = 13, [ResistanceType.Disruption] = -15 },
             ["ashwing"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = -10, [ResistanceType.Poison] = 6, [ResistanceType.Electrical] = 2, [ResistanceType.Ice] = -10, [ResistanceType.Mind] = 8, [ResistanceType.Mobility] = 4, [ResistanceType.Trauma] = 6, [ResistanceType.Disruption] = 4 },
+            ["reefmaw"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = -10, [ResistanceType.Poison] = 7, [ResistanceType.Electrical] = 5, [ResistanceType.Ice] = 5, [ResistanceType.Mind] = -15, [ResistanceType.Mobility] = 8, [ResistanceType.Trauma] = 9, [ResistanceType.Disruption] = -10 },
+            ["sable_quarr"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 5, [ResistanceType.Poison] = -5, [ResistanceType.Electrical] = 5, [ResistanceType.Ice] = 5, [ResistanceType.Mind] = -5, [ResistanceType.Mobility] = 5, [ResistanceType.Trauma] = 6, [ResistanceType.Disruption] = 5 },
+            ["kael_drox"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 8, [ResistanceType.Poison] = -5, [ResistanceType.Electrical] = 8, [ResistanceType.Ice] = 8, [ResistanceType.Mind] = -5, [ResistanceType.Mobility] = 8, [ResistanceType.Trauma] = 9, [ResistanceType.Disruption] = 8 },
+            ["inkveil"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = -10, [ResistanceType.Poison] = 8, [ResistanceType.Electrical] = 5, [ResistanceType.Ice] = 5, [ResistanceType.Mind] = -15, [ResistanceType.Mobility] = 9, [ResistanceType.Trauma] = 10, [ResistanceType.Disruption] = -10 },
+            ["glassjaw"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = -10, [ResistanceType.Poison] = 7, [ResistanceType.Electrical] = 5, [ResistanceType.Ice] = 5, [ResistanceType.Mind] = -15, [ResistanceType.Mobility] = 8, [ResistanceType.Trauma] = 9, [ResistanceType.Disruption] = -10 },
         };
 
     private static readonly IReadOnlyDictionary<string, FeatType[]> ExpectedBloodFrenzyAbilityPackages = new Dictionary<string, FeatType[]>
@@ -199,8 +210,8 @@ public class NPCEnemyBalanceAuditTests
         ["bf_scavenger"] = new[] { FeatType.RakingClaws, FeatType.RendingBite },
         ["bf_pulsedroid"] = new[] { FeatType.SuppressingShot, FeatType.PrecisionShot },
         ["bf_duelist"] = new[] { FeatType.PouncingStrike, FeatType.RendingBite, FeatType.TailSweep },
-        ["bf_butcher"] = new[] { FeatType.ButchersCarve, FeatType.StimCanister, FeatType.BloodFrenzyFlurry, FeatType.BrutalBash },
-        ["bf_kess"] = new[] { FeatType.BloodFrenzyFlurry, FeatType.DraavosChallenge, FeatType.StimCanister, FeatType.SerratedSlash, FeatType.BrutalBash, FeatType.TacticalMark },
+        ["bf_butcher"] = new[] { FeatType.RendingCarve, FeatType.StimCanister, FeatType.BloodFrenzyFlurry, FeatType.BrutalBash },
+        ["bf_kess"] = new[] { FeatType.BloodFrenzyFlurry, FeatType.ConcussiveChallenge, FeatType.StimCanister, FeatType.SerratedSlash, FeatType.BrutalBash, FeatType.TacticalMark },
     };
 
     private static readonly IReadOnlyDictionary<string, FeatType[]> ExpectedNamedRareEliteAbilityPackages = new Dictionary<string, FeatType[]>
@@ -220,6 +231,11 @@ public class NPCEnemyBalanceAuditTests
         ["mirevein"] = new[] { FeatType.PouncingStrike, FeatType.MaulingBite, FeatType.TailSweep, FeatType.TerrifyingBellow },
         ["vrix7"] = new[] { FeatType.TacticalMark, FeatType.PrecisionShot, FeatType.PiercingQuills, FeatType.GrenadeBurst },
         ["ashwing"] = new[] { FeatType.SonicShriek, FeatType.DisorientingScreech, FeatType.TacticalMark, FeatType.CripplingTalons },
+        ["reefmaw"] = new[] { FeatType.PouncingStrike, FeatType.MaulingBite, FeatType.TailSweep, FeatType.TerrifyingBellow },
+        ["sable_quarr"] = new[] { FeatType.TacticalMark, FeatType.PrecisionShot, FeatType.SuppressingShot, FeatType.GrenadeBurst },
+        ["kael_drox"] = new[] { FeatType.TacticalMark, FeatType.TargetLock, FeatType.ShrapnelBurst, FeatType.ArcPulse, FeatType.IonBurst },
+        ["inkveil"] = new[] { FeatType.SonicShriek, FeatType.DisorientingScreech, FeatType.TailSweep, FeatType.ToxicCloud },
+        ["glassjaw"] = new[] { FeatType.PiercingQuills, FeatType.VenomSpray, FeatType.PouncingStrike, FeatType.RakingClaws },
     };
 
     private static readonly IReadOnlyDictionary<string, string> ExpectedDroidEnemySkins = new Dictionary<string, string>
@@ -533,7 +549,7 @@ public class NPCEnemyBalanceAuditTests
     public void KessDraavo_UsesDocumentedTraumaResistanceOverride()
     {
         var root = FindRepositoryRoot();
-        using var skin = ReadJson(root, "Module", "uti", "bf_kess_skin.uti.json");
+        using var skin = ReadJson(root, "Module", "uti", "frenzmaster_skin.uti.json");
 
         GetItemPropertyCost(skin.RootElement, ItemPropertyResistance, (int)ResistanceType.Trauma)
             .Should()
@@ -565,7 +581,7 @@ public class NPCEnemyBalanceAuditTests
         GetWorkbookCellNumber(worksheet, sharedStrings, "AK206").Should().Be(87m);
         GetWorkbookCellText(worksheet, sharedStrings, "AP206")
             .Should()
-            .Be("Blood Frenzy, Blood Frenzy Flurry, Draavo's Challenge, Stim Canister, Serrated Slash, Brutal Bash, Tactical Mark");
+            .Be("Blood Frenzy, Blood Frenzy Flurry, Concussive Challenge, Stim Canister, Serrated Slash, Brutal Bash, Tactical Mark");
         GetWorkbookCellText(worksheet, sharedStrings, "A207").Should().Be("Viscara");
         GetWorkbookCellText(worksheet, sharedStrings, "B207").Should().Be("Old Scar");
         GetWorkbookCellText(worksheet, sharedStrings, "C207").Should().Be("oldscar_kath");
@@ -616,6 +632,30 @@ public class NPCEnemyBalanceAuditTests
         GetWorkbookCellText(worksheet, sharedStrings, "AP223")
             .Should()
             .Be("Sonic Shriek, Disorienting Screech, Tactical Mark, Crippling Talons");
+        GetWorkbookCellText(worksheet, sharedStrings, "A224").Should().Be("Mon Cala");
+        GetWorkbookCellText(worksheet, sharedStrings, "B224").Should().Be("Reefmaw Tidebreaker");
+        GetWorkbookCellText(worksheet, sharedStrings, "C224").Should().Be("reefmaw");
+        GetWorkbookCellNumber(worksheet, sharedStrings, "D224").Should().Be(27m);
+        GetWorkbookCellText(worksheet, sharedStrings, "E224").Should().Be("Elite");
+        GetWorkbookCellText(worksheet, sharedStrings, "F224").Should().Be("Melee");
+        GetWorkbookCellText(worksheet, sharedStrings, "G224").Should().Be("Beast");
+        GetWorkbookCellNumber(worksheet, sharedStrings, "AE224").Should().Be(-10m);
+        GetWorkbookCellNumber(worksheet, sharedStrings, "AI224").Should().Be(-15m);
+        GetWorkbookCellText(worksheet, sharedStrings, "AP224")
+            .Should()
+            .Be("Pouncing Strike, Mauling Bite, Tail Sweep, Terrifying Bellow");
+        GetWorkbookCellText(worksheet, sharedStrings, "A228").Should().Be("Mon Cala");
+        GetWorkbookCellText(worksheet, sharedStrings, "B228").Should().Be("Glassjaw Stalker");
+        GetWorkbookCellText(worksheet, sharedStrings, "C228").Should().Be("glassjaw");
+        GetWorkbookCellNumber(worksheet, sharedStrings, "D228").Should().Be(30m);
+        GetWorkbookCellText(worksheet, sharedStrings, "E228").Should().Be("Elite");
+        GetWorkbookCellText(worksheet, sharedStrings, "F228").Should().Be("Ranged");
+        GetWorkbookCellText(worksheet, sharedStrings, "G228").Should().Be("Beast");
+        GetWorkbookCellNumber(worksheet, sharedStrings, "AE228").Should().Be(-10m);
+        GetWorkbookCellNumber(worksheet, sharedStrings, "AI228").Should().Be(-15m);
+        GetWorkbookCellText(worksheet, sharedStrings, "AP228")
+            .Should()
+            .Be("Piercing Quills, Venom Spray, Pouncing Strike, Raking Claws");
         GetWorkbookCellFormula(worksheet, "X202").Should().Contain("+$AF202", "Poison resistance should read the numeric Poison Res Adj column");
         GetWorkbookCellFormula(worksheet, "AA202").Should().Contain("+$AI202", "Mind resistance should read the numeric Mind Res Adj column");
         GetWorkbookCellFormula(worksheet, "AC206").Should().Contain("+$AK206", "Kess's Trauma resistance should read the numeric Trauma Res Adj column");
@@ -633,7 +673,7 @@ public class NPCEnemyBalanceAuditTests
             "W", "X", "Y", "Z", "AA", "AB", "AC", "AD", "AN", "AO",
         };
 
-        foreach (var row in Enumerable.Range(202, 22))
+        foreach (var row in Enumerable.Range(202, 217))
         {
             foreach (var column in formulaColumns)
             {
@@ -644,7 +684,7 @@ public class NPCEnemyBalanceAuditTests
         }
 
         var handEntryStyle = GetWorkbookCellStyle(worksheet, "A202");
-        foreach (var row in Enumerable.Range(2, 222))
+        foreach (var row in Enumerable.Range(2, 422))
         {
             foreach (var column in new[] { "AE", "AF", "AG", "AH", "AI", "AJ", "AK", "AL" })
             {
@@ -666,11 +706,11 @@ public class NPCEnemyBalanceAuditTests
             .Attribute("ref")?
             .Value
             .Should()
-            .Be("$A$1:$AR$223", "the reusable resistance override columns should be included in World NPCs filtering");
+            .Be("$A$1:$AR$423", "the reusable resistance override columns should be included in World NPCs filtering");
 
         worksheet
             .Descendants(ns + "dataValidation")
-            .Single(validation => validation.Attribute("sqref")?.Value == "AE2:AL223")
+            .Single(validation => validation.Attribute("sqref")?.Value == "AE2:AL423")
             .Attribute("type")?
             .Value
             .Should()
@@ -688,6 +728,72 @@ public class NPCEnemyBalanceAuditTests
         GetWorkbookCellNumber(weaponDelays, sharedStrings, "D197").Should().Be(230m);
         GetWorkbookCellText(weaponDelays, sharedStrings, "A201").Should().Be("bf_kess");
         GetWorkbookCellNumber(weaponDelays, sharedStrings, "D201").Should().Be(230m);
+    }
+
+    [Test]
+    public void WorldNpcsBible_DocumentsGeneratedCapstoneEnemies()
+    {
+        var root = FindRepositoryRoot();
+        using var archive = ZipFile.OpenRead(Path.Combine(
+            root.FullName,
+            "design",
+            "bible",
+            "SWLOR Design Bible - Combat Upgrade.xlsx"));
+        var worksheet = ReadWorksheetByName(archive, "World NPCs");
+        var sharedStrings = ReadSharedStrings(archive);
+
+        var expectedRowCount = CapstoneQuestDefinitionTestData.Lines.Count * 5;
+        var capstoneRows = Enumerable
+            .Range(229, expectedRowCount)
+            .Select(row => new
+            {
+                Row = row,
+                Resref = GetWorkbookCellText(worksheet, sharedStrings, $"C{row}")
+            })
+            .Where(row => !string.IsNullOrWhiteSpace(row.Resref))
+            .ToArray();
+
+        capstoneRows.Should().HaveCount(expectedRowCount);
+        capstoneRows.Select(row => row.Resref).Should().OnlyHaveUniqueItems();
+
+        var rowsByResref = capstoneRows.ToDictionary(row => row.Resref, row => row.Row);
+
+        foreach (var line in CapstoneQuestDefinitionTestData.Lines)
+        {
+            for (var step = 0; step < 5; step++)
+            {
+                var resref = line.EnemyResrefs[step];
+                rowsByResref.Should().ContainKey(resref);
+
+                var row = rowsByResref[resref];
+
+                GetWorkbookCellText(worksheet, sharedStrings, $"A{row}").Should().Be(line.AreaGroup.Name);
+                GetWorkbookCellText(worksheet, sharedStrings, $"C{row}").Should().Be(resref);
+                GetWorkbookCellNumber(worksheet, sharedStrings, $"D{row}").Should().Be(50m);
+                GetWorkbookCellText(worksheet, sharedStrings, $"E{row}").Should().NotBeNullOrWhiteSpace();
+                GetWorkbookCellText(worksheet, sharedStrings, $"F{row}").Should().NotBeNullOrWhiteSpace();
+                GetWorkbookCellText(worksheet, sharedStrings, $"G{row}").Should().NotBeNullOrWhiteSpace();
+                GetWorkbookCellText(worksheet, sharedStrings, $"H{row}").Should().NotBeNullOrWhiteSpace();
+                var abilityPackage = GetWorkbookCellText(worksheet, sharedStrings, $"AP{row}");
+                abilityPackage.Should().NotBeNullOrWhiteSpace();
+                GetWorkbookCellText(worksheet, sharedStrings, $"AQ{row}").Should().Be(abilityPackage);
+                GetWorkbookCellText(worksheet, sharedStrings, $"AR{row}").Should().Contain(line.DisplayName);
+
+                if (step == 4)
+                {
+                    abilityPackage
+                        .Should()
+                        .EndWith($", {line.DisplayName}", "final bosses must document their unlocked capstone in the ability package");
+                }
+                else
+                {
+                    abilityPackage
+                        .Should()
+                        .NotContain(line.DisplayName, "reusable signature/support abilities must not be branded to the capstone line");
+                }
+
+            }
+        }
     }
 
     [Test]

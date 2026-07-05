@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Feature.QuestDefinition;
 
 namespace SWLOR.Game.Server.Feature.PerkDefinition
 {
@@ -221,7 +222,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.RainOfSteel1)
                 .Description("For 45 seconds, thrown area abilities leave fragmentation zones that deal 8 physical DMG every 6 seconds.")
                 .Price(6)
-                .RequirementSkill(SkillType.Throwing, 50);
+                .RequirementSkill(SkillType.Throwing, 50)
+                .RequirementQuest(ThrowingCapstoneQuestDefinition.RainOfSteelMasteryQuestId);
         }
 
         private void PiercingToss()
@@ -407,7 +409,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.PerfectFlurry1)
                 .Description("Deals weapon DMG + 30. Bleeding targets take +45 DMG and spread Bleed to enemies within 5m for 45 seconds.")
                 .Price(6)
-                .RequirementSkill(SkillType.Throwing, 50);
+                .RequirementSkill(SkillType.Throwing, 50)
+                .RequirementQuest(ThrowingCapstoneQuestDefinition.PerfectFlurryMasteryQuestId);
         }
 
     }

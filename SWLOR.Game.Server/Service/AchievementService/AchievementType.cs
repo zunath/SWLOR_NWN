@@ -390,6 +390,84 @@ namespace SWLOR.Game.Server.Service.AchievementService
 
         [Achievement("Blood Frenzy", "Completed the Blood Frenzy capstone quest line.", true)]
         BloodFrenzy = 141,
+        [Achievement("Invincible", "Completed the Invincible capstone quest line.", true)]
+        Invincible = 142,
+        [Achievement("Vital Rupture", "Completed the Vital Rupture capstone quest line.", true)]
+        VitalRupture = 143,
+        [Achievement("Systemic Shutdown", "Completed the Systemic Shutdown capstone quest line.", true)]
+        SystemicShutdown = 144,
+        [Achievement("Saber Storm", "Completed the Saber Storm capstone quest line.", true)]
+        SaberStorm = 145,
+        [Achievement("Guardian Master", "Completed the Guardian Master capstone quest line.", true)]
+        GuardianMaster = 146,
+        [Achievement("Saber Cyclone", "Completed the Saber Cyclone capstone quest line.", true)]
+        SaberCyclone = 147,
+        [Achievement("Absolute Defense", "Completed the Absolute Defense capstone quest line.", true)]
+        AbsoluteDefense = 148,
+        [Achievement("Soul Ascension", "Completed the Soul Ascension capstone quest line.", true)]
+        SoulAscension = 149,
+        [Achievement("Forcebane", "Completed the Forcebane capstone quest line.", true)]
+        Forcebane = 150,
+        [Achievement("Crippling Defense", "Completed the Crippling Defense capstone quest line.", true)]
+        CripplingDefense = 151,
+        [Achievement("Tempest Bloom", "Completed the Tempest Bloom capstone quest line.", true)]
+        TempestBloom = 152,
+        [Achievement("Red Bloom", "Completed the Red Bloom capstone quest line.", true)]
+        RedBloom = 153,
+        [Achievement("Adamantine Guard", "Completed the Adamantine Guard capstone quest line.", true)]
+        AdamantineGuard = 154,
+        [Achievement("Scrapheap Lockdown", "Completed the Scrapheap Lockdown capstone quest line.", true)]
+        ScrapheapLockdown = 155,
+        [Achievement("Worldbreaker", "Completed the Worldbreaker capstone quest line.", true)]
+        Worldbreaker = 156,
+        [Achievement("Unmoving Center", "Completed the Unmoving Center capstone quest line.", true)]
+        UnmovingCenter = 157,
+        [Achievement("Last Word", "Completed the Last Word capstone quest line.", true)]
+        LastWord = 158,
+        [Achievement("Dead Man's Hand", "Completed the Dead Man's Hand capstone quest line.", true)]
+        DeadMansHand = 159,
+        [Achievement("Kill Box", "Completed the Kill Box capstone quest line.", true)]
+        KillBox = 160,
+        [Achievement("One Shot", "Completed the One Shot capstone quest line.", true)]
+        OneShot = 161,
+        [Achievement("Rain of Steel", "Completed the Rain of Steel capstone quest line.", true)]
+        RainOfSteel = 162,
+        [Achievement("Perfect Flurry", "Completed the Perfect Flurry capstone quest line.", true)]
+        PerfectFlurry = 163,
+        [Achievement("Thermal Detonator", "Completed the Thermal Detonator capstone quest line.", true)]
+        ThermalDetonator = 164,
+        [Achievement("Overload Barrage", "Completed the Overload Barrage capstone quest line.", true)]
+        OverloadBarrage = 165,
+        [Achievement("Last Stand of the Light", "Completed the Last Stand of the Light capstone quest line.", true)]
+        LastStandOfTheLight = 166,
+        [Achievement("Hunger of the Dark", "Completed the Hunger of the Dark capstone quest line.", true)]
+        HungerOfTheDark = 167,
+        [Achievement("Eclipse of Resolve", "Completed the Eclipse of Resolve capstone quest line.", true)]
+        EclipseOfResolve = 168,
+        [Achievement("Killzone Beacon", "Completed the Killzone Beacon capstone quest line.", true)]
+        KillzoneBeacon = 169,
+        [Achievement("Emergency Bunker", "Completed the Emergency Bunker capstone quest line.", true)]
+        EmergencyBunker = 170,
+        [Achievement("Decisive Command", "Completed the Decisive Command capstone quest line.", true)]
+        DecisiveCommand = 171,
+        [Achievement("Hold the Line", "Completed the Hold the Line capstone quest line.", true)]
+        HoldTheLine = 172,
+        [Achievement("Emergency Cocktail", "Completed the Emergency Cocktail capstone quest line.", true)]
+        EmergencyCocktail = 173,
+        [Achievement("Infinite Conduit", "Completed the Infinite Conduit capstone quest line.", true)]
+        InfiniteConduit = 174,
+        [Achievement("Apex Bite", "Completed the Apex Bite capstone quest line.", true)]
+        ApexBite = 175,
+        [Achievement("Unbreakable Beast", "Completed the Unbreakable Beast capstone quest line.", true)]
+        UnbreakableBeast = 176,
+        [Achievement("Alpha Rhythm", "Completed the Alpha Rhythm capstone quest line.", true)]
+        AlphaRhythm = 177,
+        [Achievement("Primal Overrun", "Completed the Primal Overrun capstone quest line.", true)]
+        PrimalOverrun = 178,
+        [Achievement("Untouchable Instinct", "Completed the Untouchable Instinct capstone quest line.", true)]
+        UntouchableInstinct = 179,
+        [Achievement("Force-Bonded Beast", "Completed the Force-Bonded Beast capstone quest line.", true)]
+        ForceBondedBeast = 180,
 	}
 
     public class AchievementAttribute: Attribute

@@ -81,14 +81,14 @@
         "__struct_id": 16,
         "EquippedRes": {
           "type": "resref",
-          "value": "vrix7_wp"
+          "value": "pulsemarks_wp"
         }
       },
       {
         "__struct_id": 131072,
         "EquippedRes": {
           "type": "resref",
-          "value": "vrix7_sk"
+          "value": "pulsemarks_skin"
         }
       }
     ]

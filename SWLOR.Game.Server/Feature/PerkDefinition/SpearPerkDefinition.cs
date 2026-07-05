@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Feature.QuestDefinition;
 
 namespace SWLOR.Game.Server.Feature.PerkDefinition
 {
@@ -217,7 +218,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.Forcebane1)
                 .Description("Deals weapon DMG + 25 in a 5m sphere. Enemies suffer Foggy Mind, Force Disruption, and -20% Ability Accuracy for 45 seconds.")
                 .Price(6)
-                .RequirementSkill(SkillType.Spear, 50);
+                .RequirementSkill(SkillType.Spear, 50)
+                .RequirementQuest(SpearCapstoneQuestDefinition.ForcebaneMasteryQuestId);
         }
 
         private void VigorThrust()
@@ -413,7 +415,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.CripplingDefense1)
                 .Description("Deals weapon DMG + 30. For 45 seconds, your high-STM abilities also inflict Exposed for 30 seconds.")
                 .Price(6)
-                .RequirementSkill(SkillType.Spear, 50);
+                .RequirementSkill(SkillType.Spear, 50)
+                .RequirementQuest(SpearCapstoneQuestDefinition.CripplingDefenseMasteryQuestId);
         }
 
     }

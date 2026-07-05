@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Feature.QuestDefinition;
 
 namespace SWLOR.Game.Server.Feature.PerkDefinition
 {
@@ -182,7 +183,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("For 45 seconds, party members within Leadership range (5m base), including you, gain temporary HP equal to 18% of maximum HP, take 18% less damage, and become immune to Mind and Mobility effects. SOC scaling can raise temporary HP and damage reduction to 22%.")
                 .Price(5)
                 .RequirementSkill(SkillType.Leadership, 50)
-                .GrantsFeat(FeatType.HoldTheLine1);
+                .GrantsFeat(FeatType.HoldTheLine1)
+                .RequirementQuest(LeadershipCapstoneQuestDefinition.HoldTheLineMasteryQuestId);
         }
 
     }

@@ -3,6 +3,7 @@ using System.IO.Compression;
 using System.Xml.Linq;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Feature.ItemDefinition;
 using SWLOR.Game.Server.Feature.LootTableDefinition;
 using SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition;
@@ -14,6 +15,7 @@ using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.ItemService;
 using SWLOR.Game.Server.Service.AnimationService;
+using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -88,8 +90,8 @@ public class ViscaraSpawnDefinitionTests
         ("VISCARA_SEWERS_DEPTHS_PULSE_DROID_RARES", "frame_boots"),
         ("VISCARA_SEWERS_DEPTHS_PULSE_DROID_RARES", "spark_gloves"),
 
-        ("VISCARA_SEWERS_DEPTHS_BUTCHER_RARES", "butch_cleaver"),
-        ("VISCARA_SEWERS_DEPTHS_BUTCHER_RARES", "butch_injector"),
+        ("VISCARA_SEWERS_DEPTHS_BUTCHER_RARES", "rending_cleaver"),
+        ("VISCARA_SEWERS_DEPTHS_BUTCHER_RARES", "adrenal_injector"),
         ("VISCARA_SEWERS_DEPTHS_BUTCHER_RARES", "stim_splitter"),
         ("VISCARA_SEWERS_DEPTHS_BUTCHER_RARES", "black_cleaver"),
         ("VISCARA_SEWERS_DEPTHS_BUTCHER_RARES", "adren_harness"),
@@ -125,7 +127,7 @@ public class ViscaraSpawnDefinitionTests
     {
         ("redvein_vblade", "Red Vein Vibroblade", 1, 23, 36, 45, 23, false),
         ("pulse_calrifle", "Pulse-Frame Calibration Rifle", 7, 38, 46, 45, 30, true),
-        ("butch_cleaver", "Butcher's Cleaver", 13, 42, 39, 45, 30, false),
+        ("rending_cleaver", "Rending Cleaver", 13, 42, 39, 45, 30, false),
         ("duel_splitter", "Duelist's Splitter", 12, 27, 41, 45, 29, false),
         ("redvein_pistol", "Red Vein Holdout", 11, 22, 45, 45, 25, true),
         ("sump_vknife", "Sump-Cut Vibroknife", 22, 21, 37, 45, 22, false),
@@ -133,7 +135,7 @@ public class ViscaraSpawnDefinitionTests
         ("servo_pistol", "Servo-Tuned Pistol", 11, 22, 45, 45, 25, true),
         ("cad_rifle", "Cadence Rifle", 7, 38, 46, 45, 30, true),
         ("pulse_conduct", "Pulse Conductor", 50, 23, 44, 45, 27, false),
-        ("butch_injector", "Butcher's Injector", 58, 41, 40, 45, 28, false),
+        ("adrenal_injector", "Adrenal Injector", 58, 41, 40, 45, 28, false),
         ("stim_splitter", "Stim-Splitter Axe", 13, 42, 39, 45, 30, false),
         ("black_cleaver", "Blacklab Cleaver", 13, 42, 39, 45, 30, false),
         ("charm_katar", "Charmbreaker Katar", 310, 18, 43, 45, 22, false),
@@ -944,6 +946,7 @@ public class ViscaraSpawnDefinitionTests
             else if (entry.Skill == SkillType.Fabrication)
             {
                 json.GetProperty("BaseItem").GetProperty("value").GetInt32().Should().Be(29);
+                AssertRegisteredPropertyStructure(entry.CraftedResref);
             }
             else if (entry.Skill == SkillType.Agriculture)
             {
@@ -1671,34 +1674,36 @@ public class ViscaraSpawnDefinitionTests
 
     private static Dictionary<RecipeType, RecipeDetail> BuildNamedRareEliteCookingRecipes()
     {
-        return new GloamSkewerRecipes()
+        return new ForagedProvisionRecipes()
             .BuildRecipes()
-            .Concat(new SavoryShellBraiseRecipes().BuildRecipes())
-            .Concat(new StonebarbPotPieRecipes().BuildRecipes())
-            .Concat(new EmberclawRoastRecipes().BuildRecipes())
-            .Concat(new PrismConsommeRecipes().BuildRecipes())
-            .Concat(new MarshleafBrothRecipes().BuildRecipes())
-            .Concat(new BitterFenTeaRecipes().BuildRecipes())
-            .Concat(new ResonantBrothRecipes().BuildRecipes())
             .ToDictionary(pair => pair.Key, pair => pair.Value);
     }
 
     private static Dictionary<RecipeType, RecipeDetail> BuildNamedRareEliteEngineeringRecipes()
     {
-        return new FaultlineCapacitorRecipes()
+        return new FieldToolRecipes()
             .BuildRecipes()
-            .Concat(new GhostkeyRelayRecipes().BuildRecipes())
-            .Concat(new WayfinderSensorRecipes().BuildRecipes())
-            .Concat(new StonewakeRelayRecipes().BuildRecipes())
-            .Concat(new KineticHarnessRecipes().BuildRecipes())
-            .Concat(new LucidSpliceRecipes().BuildRecipes())
-            .Concat(new StormcoreMatrixRecipes().BuildRecipes())
+            .Where(pair => pair.Value.Components.Keys.Any(component =>
+                component is "sr_token" or "nv_pin" or "tk_badge" or "vs_mask" or "hv_plate" or "mg_totem" or "vx_core"))
             .ToDictionary(pair => pair.Key, pair => pair.Value);
     }
 
     private static string GetNamedRareEliteRecipeResref(NamedRareEliteRecipeSpec entry)
     {
         return "bp" + entry.CraftedResref.Replace("_", string.Empty);
+    }
+
+    private static void AssertRegisteredPropertyStructure(string resref)
+    {
+        resref.Should().StartWith("structure_");
+        int.TryParse(resref["structure_".Length..], out var structureId).Should().BeTrue();
+        Enum.IsDefined(typeof(StructureType), structureId).Should().BeTrue();
+
+        var structure = (StructureType)structureId;
+        var detail = structure.GetAttribute<StructureType, StructureAttribute>();
+        detail.IsActive.Should().BeTrue();
+        detail.Resref.Should().NotBeNullOrWhiteSpace();
+        detail.LayoutType.Should().Be(PropertyLayoutType.Invalid);
     }
 
     private static IEnumerable<string> GetLocalStringsWithPrefix(JsonElement json, string prefix)

@@ -71,7 +71,7 @@ namespace SWLOR.Game.Server.Service.QuestService
         /// </summary>
         /// <param name="player">The player to check</param>
         /// <returns>true if player can accept, false otherwise</returns>
-        private bool CanAccept(uint player)
+        public bool CanAccept(uint player, bool sendFeedback = true)
         {
             // Retrieve the player's current quest status for this quest.
             // If they haven't accepted it yet, this will be null.
@@ -88,14 +88,16 @@ namespace SWLOR.Game.Server.Service.QuestService
                     // If it's repeatable, then we don't care if they've already completed it.
                     if (!IsRepeatable)
                     {
-                        SendMessageToPC(player, "You have already completed this quest.");
+                        if (sendFeedback)
+                            SendMessageToPC(player, "You have already completed this quest.");
                         return false;
                     }
                 }
                 // If the player already accepted the quest, prevent them from accepting it again.
                 else
                 {
-                    SendMessageToPC(player, "You have already accepted this quest.");
+                    if (sendFeedback)
+                        SendMessageToPC(player, "You have already accepted this quest.");
                     return false;
                 }
             }
@@ -105,7 +107,8 @@ namespace SWLOR.Game.Server.Service.QuestService
             {
                 if (!prereq.MeetsPrerequisite(player))
                 {
-                    SendMessageToPC(player, "You do not meet the prerequisites necessary to accept this quest.");
+                    if (sendFeedback)
+                        SendMessageToPC(player, "You do not meet the prerequisites necessary to accept this quest.");
                     return false;
                 }
             }

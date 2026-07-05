@@ -808,7 +808,7 @@ namespace SWLOR.Game.Server.Service
                 damageType,
                 isAbilityDamage,
                 canApplyRandomFlatBonuses);
-            damage = ApplyRepeatedTargetDamageModifier(attacker, defender, skillType, damage);
+            damage = ApplyRepeatedTargetDamageModifier(attacker, defender, skillType, damage, isAbilityDamage);
 
             return Math.Max(1, damage);
         }
@@ -957,8 +957,7 @@ namespace SWLOR.Game.Server.Service
             var radius = Stat.GetStatAdjustment(attacker, StatType.AutoAttackCycleRadiusMeters);
             if (!SkillTypeMatches(skillType, requiredSkillType) ||
                 requiredCount <= 0 ||
-                cycleDamage <= 0 ||
-                radius <= 0)
+                cycleDamage <= 0)
                 return;
 
             _autoAttackCycleCounts.TryGetValue(attacker, out var count);
@@ -970,7 +969,9 @@ namespace SWLOR.Game.Server.Service
             }
 
             _autoAttackCycleCounts[attacker] = 0;
-            var target = GetNearestHostileCreatureWithinRange(attacker, defender, radius, defender);
+            var target = radius > 0
+                ? GetNearestHostileCreatureWithinRange(attacker, defender, radius, defender)
+                : defender;
             if (!GetIsObjectValid(target))
                 return;
 
@@ -3217,12 +3218,14 @@ namespace SWLOR.Game.Server.Service
             uint attacker,
             uint defender,
             SkillType skillType,
-            int damage)
+            int damage,
+            bool isAbilityDamage)
         {
             if (damage <= 0 || !GetIsObjectValid(attacker) || !GetIsObjectValid(defender) || attacker == defender)
                 return damage;
 
             var requiredSkillType = GetSkillTypeFromStat(Stat.GetStatAdjustment(attacker, StatType.RepeatedTargetDamageSkillType));
+            var autoAttackOnly = Stat.GetStatAdjustment(attacker, StatType.RepeatedTargetDamageAutoAttackOnly) > 0;
             var percentPerHit = Stat.GetStatAdjustment(attacker, StatType.RepeatedTargetDamagePercentPerHit);
             var maxPercent = Stat.GetStatAdjustment(attacker, StatType.RepeatedTargetDamagePercentMax);
             var bonusPerHit = Stat.GetStatAdjustment(attacker, StatType.RepeatedTargetDamageBonusPerHit);
@@ -3230,7 +3233,9 @@ namespace SWLOR.Game.Server.Service
             var durationSeconds = Stat.GetStatAdjustment(attacker, StatType.RepeatedTargetDamageDurationSeconds);
             var hasPercentBonus = percentPerHit > 0 && maxPercent > 0;
             var hasFlatBonus = bonusPerHit > 0 && maxBonus > 0;
-            if (!SkillTypeMatches(skillType, requiredSkillType) || (!hasPercentBonus && !hasFlatBonus))
+            if (autoAttackOnly && isAbilityDamage ||
+                !SkillTypeMatches(skillType, requiredSkillType) ||
+                (!hasPercentBonus && !hasFlatBonus))
             {
                 _repeatedTargetDamageStates.Remove(attacker);
                 return damage;

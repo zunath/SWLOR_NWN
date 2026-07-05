@@ -178,6 +178,11 @@ namespace SWLOR.Game.Server.Service
             _quests[questId].Accept(player, OBJECT_SELF);
         }
 
+        public static bool CanAcceptQuest(uint player, string questId)
+        {
+            return _quests[questId].CanAccept(player, false);
+        }
+
         /// <summary>
         /// Makes a player advance to the next state of the quest.
         /// If there are no additional states, the quest will be treated as completed.

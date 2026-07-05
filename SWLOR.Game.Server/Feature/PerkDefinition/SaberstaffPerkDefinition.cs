@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Feature.QuestDefinition;
 
 namespace SWLOR.Game.Server.Feature.PerkDefinition
 {
@@ -235,7 +236,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("For 45 seconds, Saberstaff abilities restore FP equal to 50% of STM spent and Force abilities restore STM equal to 50% of FP spent. When both resources are above 70%, hostile combat abilities also deal +20 DMG.")
                 .Price(6)
                 .RequirementSkill(SkillType.Saberstaff, 50)
-                .RequirementCharacterType(CharacterType.ForceSensitive);
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                .RequirementQuest(SaberstaffCapstoneQuestDefinition.InfiniteConduitMasteryQuestId);
         }
 
         private void DoubleStrike()
@@ -438,7 +440,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("For 45 seconds, area combat abilities restore 4 FP and grant +8 Attack Deflection for 30 seconds.")
                 .Price(6)
                 .RequirementSkill(SkillType.Saberstaff, 50)
-                .RequirementCharacterType(CharacterType.ForceSensitive);
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                .RequirementQuest(SaberstaffCapstoneQuestDefinition.SaberCycloneMasteryQuestId);
         }
 
     }

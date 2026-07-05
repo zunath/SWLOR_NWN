@@ -1,3 +1,5 @@
+using System.IO.Compression;
+using System.Xml.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.AIDefinition;
@@ -53,6 +55,52 @@ public class NPCAbilityDefinitionTests
             {
                 ability.Requirements.OfType<AbilityRequirementFP>().Should().BeEmpty();
             }
+        }
+    }
+
+    [Test]
+    public void NPCAbilities_AreDocumentedInBibleNpcAbilitiesTab()
+    {
+        var root = FindRepositoryRoot();
+        using var archive = ZipFile.OpenRead((root / "design" / "bible" / "SWLOR Design Bible - Combat Upgrade.xlsx").FullName);
+        var worksheet = ReadWorksheetByName(archive, "NPC Abilities");
+        var sharedStrings = ReadSharedStrings(archive);
+        var documentedRows = ReadNpcAbilityBibleRows(worksheet, sharedStrings);
+        var expectedAbilities = BuildAllNPCAbilities();
+
+        documentedRows
+            .Select(row => row.Ability)
+            .Should()
+            .OnlyHaveUniqueItems("each NPC ability should have exactly one source-of-truth Bible row");
+
+        var documentedByAbility = documentedRows.ToDictionary(row => row.Ability);
+
+        documentedByAbility.Keys
+            .Should()
+            .BeEquivalentTo(
+                expectedAbilities.Values.Select(ability => ability.Ability.Name),
+                "the NPC Abilities Bible tab should document every NPC ability definition, including generated signature abilities");
+
+        foreach (var (feat, expectedAbility) in expectedAbilities)
+        {
+            documentedByAbility.Should().ContainKey(expectedAbility.Ability.Name);
+            var row = documentedByAbility[expectedAbility.Ability.Name];
+
+            row.Feat.Should().Be($"FeatType.{feat}");
+            row.SourceFile.Should().Be(expectedAbility.SourceFile);
+            row.Targeting.Should().NotBeNullOrWhiteSpace();
+            row.Hostile.Should().NotBeNullOrWhiteSpace();
+            row.Area.Should().NotBeNullOrWhiteSpace();
+            row.RequiresTarget.Should().NotBeNullOrWhiteSpace();
+            row.MaxRange.Should().NotBeNullOrWhiteSpace();
+            row.ActivationDelay.Should().NotBeNullOrWhiteSpace();
+            row.RecastGroup.Should().NotBeNullOrWhiteSpace();
+            row.Recast.Should().NotBeNullOrWhiteSpace();
+            row.Stamina.Should().NotBeNullOrWhiteSpace();
+            row.DamageResistance.Should().NotBeNullOrWhiteSpace();
+            row.StatusEffect.Should().NotBeNullOrWhiteSpace();
+            row.Duration.Should().NotBeNullOrWhiteSpace();
+            row.Notes.Should().NotBeNullOrWhiteSpace();
         }
     }
 
@@ -119,11 +167,11 @@ public class NPCAbilityDefinitionTests
     }
 
     [Test]
-    public void DraavosChallenge_UsesDamageAndControlInsteadOfEnmityOnlyPressure()
+    public void ConcussiveChallenge_UsesDamageAndControlInsteadOfEnmityOnlyPressure()
     {
         var root = FindRepositoryRoot();
         var source = File.ReadAllText(
-            (root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "NPC" / "DraavosChallengeAbilityDefinition.cs").FullName);
+            (root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "NPC" / "ConcussiveChallengeAbilityDefinition.cs").FullName);
         var normalizedSource = source.Replace("\r\n", "\n");
 
         normalizedSource.Should().Contain("5,\n                30,\n                6,\n                typeof(DazedStatusEffect)");
@@ -134,9 +182,16 @@ public class NPCAbilityDefinitionTests
 
     private static Dictionary<FeatType, AbilityDetail> BuildNPCAbilities()
     {
+        return BuildAllNPCAbilities()
+            .Where(entry => !IsGeneratedNPCSignatureFeat(entry.Key))
+            .ToDictionary(entry => entry.Key, entry => entry.Value.Ability);
+    }
+
+    private static Dictionary<FeatType, BuiltNPCAbility> BuildAllNPCAbilities()
+    {
         var definitionType = typeof(IAbilityListDefinition);
         var npcAbilityNamespace = typeof(ArcPulseAbilityDefinition).Namespace;
-        var abilities = new Dictionary<FeatType, AbilityDetail>();
+        var abilities = new Dictionary<FeatType, BuiltNPCAbility>();
 
         var definitions = typeof(ArcPulseAbilityDefinition)
             .Assembly
@@ -153,11 +208,17 @@ public class NPCAbilityDefinitionTests
         {
             foreach (var (feat, ability) in definition.BuildAbilities())
             {
-                abilities.Add(feat, ability);
+                abilities.Add(feat, new BuiltNPCAbility(ability, $"{definition.GetType().Name}.cs"));
             }
         }
 
         return abilities;
+    }
+
+    private static bool IsGeneratedNPCSignatureFeat(FeatType feat)
+    {
+        return (int)feat >= (int)FeatType.BraceBreaker &&
+               (int)feat <= (int)FeatType.ApexCollapse;
     }
 
     private static Dictionary<FeatType, ExpectedNPCAbility> ExpectedAbilities()
@@ -213,10 +274,10 @@ public class NPCAbilityDefinitionTests
             [FeatType.StaticWeb] = new("Static Web", RecastGroup.StaticWeb, 22f, 6),
             [FeatType.ForceSunder] = new("Force Sunder", RecastGroup.ForceSunder, 18f, 6),
             [FeatType.NullShock] = new("Null Shock", RecastGroup.NullShock, 24f, 7),
-            [FeatType.ButchersCarve] = new("Butcher's Carve", RecastGroup.ButchersCarve, 18f, 5),
+            [FeatType.RendingCarve] = new("Rending Carve", RecastGroup.RendingCarve, 18f, 5),
             [FeatType.StimCanister] = new("Stim Canister", RecastGroup.StimCanister, 24f, 6),
             [FeatType.BloodFrenzyFlurry] = new("Blood Frenzy Flurry", RecastGroup.BloodFrenzyFlurry, 20f, 6),
-            [FeatType.DraavosChallenge] = new("Draavo's Challenge", RecastGroup.DraavosChallenge, 24f, 5),
+            [FeatType.ConcussiveChallenge] = new("Concussive Challenge", RecastGroup.ConcussiveChallenge, 24f, 5),
         };
     }
 
@@ -233,10 +294,10 @@ public class NPCAbilityDefinitionTests
             FeatType.StaticWeb,
             FeatType.ForceSunder,
             FeatType.NullShock,
-            FeatType.ButchersCarve,
+            FeatType.RendingCarve,
             FeatType.StimCanister,
             FeatType.BloodFrenzyFlurry,
-            FeatType.DraavosChallenge
+            FeatType.ConcussiveChallenge
         };
     }
 
@@ -246,6 +307,28 @@ public class NPCAbilityDefinitionTests
         float RecastSeconds,
         int StaminaCost,
         int? FPCost = null);
+
+    private sealed record BuiltNPCAbility(
+        AbilityDetail Ability,
+        string SourceFile);
+
+    private sealed record NPCAbilityBibleRow(
+        string Ability,
+        string Feat,
+        string Targeting,
+        string Hostile,
+        string Area,
+        string RequiresTarget,
+        string MaxRange,
+        string ActivationDelay,
+        string RecastGroup,
+        string Recast,
+        string Stamina,
+        string DamageResistance,
+        string StatusEffect,
+        string Duration,
+        string Notes,
+        string SourceFile);
 
     private static Dictionary<int, Dictionary<string, string>> Read2daRows(PathInfo path)
     {
@@ -271,6 +354,128 @@ public class NPCAbilityDefinitionTests
         }
 
         return result;
+    }
+
+    private static XDocument ReadWorksheetByName(ZipArchive archive, string sheetName)
+    {
+        var workbook = ReadWorkbookXml(archive, "xl/workbook.xml");
+        var relationships = ReadWorkbookXml(archive, "xl/_rels/workbook.xml.rels");
+        XNamespace workbookNs = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
+        XNamespace relationshipNs = "http://schemas.openxmlformats.org/officeDocument/2006/relationships";
+        XNamespace packageRelationshipNs = "http://schemas.openxmlformats.org/package/2006/relationships";
+
+        var sheet = workbook
+            .Descendants(workbookNs + "sheet")
+            .Single(candidate => candidate.Attribute("name")?.Value == sheetName);
+        var relationshipId = sheet.Attribute(relationshipNs + "id")?.Value;
+        relationshipId.Should().NotBeNullOrWhiteSpace($"{sheetName} should have a workbook relationship id");
+
+        var target = relationships
+            .Descendants(packageRelationshipNs + "Relationship")
+            .Single(candidate => candidate.Attribute("Id")?.Value == relationshipId)
+            .Attribute("Target")?
+            .Value
+            .Replace('\\', '/');
+        target.Should().NotBeNullOrWhiteSpace($"{sheetName} should resolve to a worksheet XML target");
+
+        var entryName = target!.StartsWith("/", StringComparison.Ordinal)
+            ? target.TrimStart('/')
+            : $"xl/{target}";
+        return ReadWorkbookXml(archive, entryName);
+    }
+
+    private static XDocument ReadWorkbookXml(ZipArchive archive, string entryName)
+    {
+        var entry = archive.GetEntry(entryName);
+        entry.Should().NotBeNull($"{entryName} should exist in the combat Bible workbook");
+
+        using var stream = entry!.Open();
+        return XDocument.Load(stream);
+    }
+
+    private static IReadOnlyList<string> ReadSharedStrings(ZipArchive archive)
+    {
+        var entry = archive.GetEntry("xl/sharedStrings.xml");
+        if (entry == null)
+            return Array.Empty<string>();
+
+        var sharedStrings = ReadWorkbookXml(archive, "xl/sharedStrings.xml");
+        XNamespace ns = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
+
+        return sharedStrings
+            .Descendants(ns + "si")
+            .Select(item => string.Concat(item.Descendants(ns + "t").Select(text => text.Value)))
+            .ToArray();
+    }
+
+    private static IReadOnlyList<NPCAbilityBibleRow> ReadNpcAbilityBibleRows(
+        XDocument worksheet,
+        IReadOnlyList<string> sharedStrings)
+    {
+        XNamespace ns = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
+        var rows = new List<NPCAbilityBibleRow>();
+
+        foreach (var row in worksheet.Descendants(ns + "row"))
+        {
+            if (!int.TryParse(row.Attribute("r")?.Value, out var rowNumber) || rowNumber <= 1)
+                continue;
+
+            var cells = row
+                .Elements(ns + "c")
+                .ToDictionary(
+                    cell => GetWorkbookColumn(cell.Attribute("r")?.Value ?? string.Empty),
+                    cell => GetWorkbookCellText(cell, sharedStrings));
+
+            var ability = GetWorkbookRowValue(cells, "A");
+            if (string.IsNullOrWhiteSpace(ability))
+                continue;
+
+            rows.Add(new NPCAbilityBibleRow(
+                ability,
+                GetWorkbookRowValue(cells, "B"),
+                GetWorkbookRowValue(cells, "C"),
+                GetWorkbookRowValue(cells, "D"),
+                GetWorkbookRowValue(cells, "E"),
+                GetWorkbookRowValue(cells, "F"),
+                GetWorkbookRowValue(cells, "G"),
+                GetWorkbookRowValue(cells, "H"),
+                GetWorkbookRowValue(cells, "I"),
+                GetWorkbookRowValue(cells, "J"),
+                GetWorkbookRowValue(cells, "K"),
+                GetWorkbookRowValue(cells, "L"),
+                GetWorkbookRowValue(cells, "M"),
+                GetWorkbookRowValue(cells, "N"),
+                GetWorkbookRowValue(cells, "O"),
+                GetWorkbookRowValue(cells, "P")));
+        }
+
+        return rows;
+    }
+
+    private static string GetWorkbookColumn(string address)
+    {
+        return new string(address.TakeWhile(char.IsLetter).ToArray());
+    }
+
+    private static string GetWorkbookRowValue(IReadOnlyDictionary<string, string> cells, string column)
+    {
+        return cells.TryGetValue(column, out var value)
+            ? value
+            : string.Empty;
+    }
+
+    private static string GetWorkbookCellText(XElement cell, IReadOnlyList<string> sharedStrings)
+    {
+        XNamespace ns = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
+        var type = cell.Attribute("t")?.Value;
+        if (type == "inlineStr")
+            return string.Concat(cell.Descendants(ns + "t").Select(text => text.Value));
+
+        var value = cell.Element(ns + "v")?.Value;
+        if (type == "s" && int.TryParse(value, out var index))
+            return sharedStrings[index];
+
+        return value ?? string.Empty;
     }
 
     private static PathInfo FindRepositoryRoot()

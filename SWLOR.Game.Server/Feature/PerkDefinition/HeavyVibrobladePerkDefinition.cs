@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
 using System.Collections.Generic;
+using SWLOR.Game.Server.Feature.QuestDefinition;
 
 namespace SWLOR.Game.Server.Feature.PerkDefinition
 {
@@ -57,7 +58,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.AbsoluteDefense1)
                 .Description("For 45 seconds, party members within 5m including you take 15% less physical and Force damage and are immune to Knockdown and Dazed.")
                 .Price(6)
-                .RequirementSkill(SkillType.HeavyVibroblade, 50);
+                .RequirementSkill(SkillType.HeavyVibroblade, 50)
+                .RequirementQuest(HeavyVibrobladeCapstoneQuestDefinition.AbsoluteDefenseMasteryQuestId);
         }
 
 
@@ -403,7 +405,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .IncreasesStat(StatType.HeavyVibrobladeOffenseSoulAscension, 1)
                 .IncreasesStat(StatType.HeavyVibrobladeOffenseHitPointSpendWindowSeconds, 30)
                 .Price(6)
-                .RequirementSkill(SkillType.HeavyVibroblade, 50);
+                .RequirementSkill(SkillType.HeavyVibroblade, 50)
+                .RequirementQuest(HeavyVibrobladeCapstoneQuestDefinition.SoulAscensionMasteryQuestId);
         }
 
 

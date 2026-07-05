@@ -16,6 +16,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             FrozenCave();
             QionFoothills();
             QionHive();
+            HutlarQionTestSite();
 
             return _builder.Build();
         }
@@ -168,6 +169,55 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .RandomlyWalks()
                 .WithFrequency(1)
                 .RespawnDelay(4);
+        }
+
+        private void HutlarQionTestSite()
+        {
+            _builder.Create("CAPSTONE_HUTLAR_QION_TEST_SITE", "Hutlar Qion Test Site - General Capstone")
+                .AddSpawn(ObjectType.Creature, "cp_thermdet_ad")
+                .WithFrequency(70)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_thermdet_sp")
+                .WithFrequency(50)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_thermdet_ic")
+                .WithFrequency(35)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_overbarr_ad")
+                .WithFrequency(70)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_overbarr_sp")
+                .WithFrequency(50)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_overbarr_ic")
+                .WithFrequency(35)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_perflurry_ad")
+                .WithFrequency(70)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_perflurry_sp")
+                .WithFrequency(50)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_perflurry_ic")
+                .WithFrequency(35)
+                .RandomlyWalks()
+                .ReturnsHome();
         }
     }
 }

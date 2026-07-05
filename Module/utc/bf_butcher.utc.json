@@ -81,14 +81,14 @@
         "__struct_id": 16,
         "EquippedRes": {
           "type": "resref",
-          "value": "bf_butch_wp"
+          "value": "stimbruis_wp"
         }
       },
       {
         "__struct_id": 131072,
         "EquippedRes": {
           "type": "resref",
-          "value": "bf_butch_skin"
+          "value": "stimbruis_skin"
         }
       }
     ]

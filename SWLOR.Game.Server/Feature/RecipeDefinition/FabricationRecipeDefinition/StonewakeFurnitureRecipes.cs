@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.SkillService;
 
@@ -20,8 +20,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
             // Stonewake Field Cot
             _builder.Create(RecipeType.StonewakeFieldCot, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Bed)
-                .Resref("vs_cot")
-                .Level(28)
+                .Resref("structure_0361")
+                .Level(26)
                 .Quantity(1)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
@@ -32,8 +32,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
             // Stonewake Signal Lamp
             _builder.Create(RecipeType.StonewakeSignalLamp, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Lighting)
-                .Resref("vs_lamp")
-                .Level(28)
+                .Resref("structure_0362")
+                .Level(27)
                 .Quantity(1)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
@@ -44,8 +44,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
             // Stonewake Trophy Stand
             _builder.Create(RecipeType.StonewakeTrophyStand, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Fixtures)
-                .Resref("vs_stand")
-                .Level(28)
+                .Resref("structure_0363")
+                .Level(30)
                 .Quantity(1)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
@@ -56,7 +56,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
             // Stonewake Low Table
             _builder.Create(RecipeType.StonewakeLowTable, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Surfaces)
-                .Resref("vs_table")
+                .Resref("structure_0364")
                 .Level(28)
                 .Quantity(1)
                 .RequirementUnlocked()
@@ -68,8 +68,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
             // Stonewake Wall Banner
             _builder.Create(RecipeType.StonewakeWallBanner, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Wall)
-                .Resref("vs_banner")
-                .Level(28)
+                .Resref("structure_0365")
+                .Level(29)
                 .Quantity(1)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
@@ -80,8 +80,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
             // Stonewake Supply Locker
             _builder.Create(RecipeType.StonewakeSupplyLocker, SkillType.Fabrication)
                 .Category(RecipeCategoryType.MiscellaneousFurniture)
-                .Resref("vs_locker")
-                .Level(28)
+                .Resref("structure_0366")
+                .Level(31)
                 .Quantity(1)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
@@ -92,8 +92,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
             // Stonewake Floor Mat
             _builder.Create(RecipeType.StonewakeFloorMat, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Flooring)
-                .Resref("vs_mat")
-                .Level(28)
+                .Resref("structure_0367")
+                .Level(26)
                 .Quantity(1)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
@@ -104,8 +104,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
             // Stonewake Data Console
             _builder.Create(RecipeType.StonewakeDataConsole, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Electronics)
-                .Resref("vs_console")
-                .Level(28)
+                .Resref("structure_0368")
+                .Level(31)
                 .Quantity(1)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
@@ -116,8 +116,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
             // Stonewake Display Plinth
             _builder.Create(RecipeType.StonewakeDisplayPlinth, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Statues)
-                .Resref("vs_plinth")
-                .Level(28)
+                .Resref("structure_0369")
+                .Level(30)
                 .Quantity(1)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
@@ -128,8 +128,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
             // Stonewake Work Stool
             _builder.Create(RecipeType.StonewakeWorkStool, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Seating)
-                .Resref("vs_stool")
-                .Level(28)
+                .Resref("structure_0370")
+                .Level(27)
                 .Quantity(1)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)

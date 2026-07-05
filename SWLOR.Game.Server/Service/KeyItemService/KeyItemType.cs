@@ -224,6 +224,344 @@ namespace SWLOR.Game.Server.Service.KeyItemService
         BloodFrenzyAdrenalGlass = 84,
         [KeyItem(KeyItemCategoryType.QuestItems, "Blood Frenzy Charm Fragments", true, "Fragments recovered from the Blood Frenzy Duelists in the Viscara Sewers Depths.")]
         BloodFrenzyCharmFragments = 85,
+        [KeyItem(KeyItemCategoryType.Keys, "Veles Militia Annex Key", true, "This key grants access to the Veles Militia Annex capstone area on Viscara.")]
+        CapstoneVelesMilitiaAnnexKey = 107,
+        [KeyItem(KeyItemCategoryType.Keys, "Dantooine Jedi Enclave Trial Halls Key", true, "This key grants access to the Dantooine Jedi Enclave Trial Halls capstone area on Dantooine.")]
+        CapstoneDantooineJediEnclaveTrialHallsKey = 108,
+        [KeyItem(KeyItemCategoryType.Keys, "Korriban Forge Caverns Key", true, "This key grants access to the Korriban Forge Caverns capstone area on Korriban.")]
+        CapstoneKorribanForgeCavernsKey = 109,
+        [KeyItem(KeyItemCategoryType.Keys, "Smuggler's Moon Fight Club Backrooms Key", true, "This key grants access to the Smuggler's Moon Fight Club Backrooms capstone area on Smuggler's Moon.")]
+        CapstoneSmugglersMoonFightClubBackroomsKey = 110,
+        [KeyItem(KeyItemCategoryType.Keys, "CZ-220 Breaker Yard Key", true, "This key grants access to the CZ-220 Breaker Yard capstone area on CZ-220.")]
+        CapstoneCZ220BreakerYardKey = 111,
+        [KeyItem(KeyItemCategoryType.Keys, "Anchorhead Canyon Range Key", true, "This key grants access to the Anchorhead Canyon Range capstone area on Tatooine.")]
+        CapstoneAnchorheadCanyonRangeKey = 112,
+        [KeyItem(KeyItemCategoryType.Keys, "Czerka Arms Test Range Key", true, "This key grants access to the Czerka Arms Test Range capstone area on Smuggler's Moon.")]
+        CapstoneCzerkaArmsTestRangeKey = 113,
+        [KeyItem(KeyItemCategoryType.Keys, "Hutlar Qion Test Site Key", true, "This key grants access to the Hutlar Qion Test Site capstone area on Hutlar.")]
+        CapstoneHutlarQionTestSiteKey = 114,
+        [KeyItem(KeyItemCategoryType.Keys, "Korriban Sith Crypt Depths Key", true, "This key grants access to the Korriban Sith Crypt Depths capstone area on Korriban.")]
+        CapstoneKorribanSithCryptDepthsKey = 115,
+        [KeyItem(KeyItemCategoryType.Keys, "Viscara Republic Engineering Bunker Key", true, "This key grants access to the Viscara Republic Engineering Bunker capstone area on Viscara.")]
+        CapstoneViscaraRepublicEngineeringBunkerKey = 116,
+        [KeyItem(KeyItemCategoryType.Keys, "Dantooine Medical Sublevel Key", true, "This key grants access to the Dantooine Medical Sublevel capstone area on Dantooine.")]
+        CapstoneDantooineMedicalSublevelKey = 117,
+        [KeyItem(KeyItemCategoryType.Keys, "Dathomir Tarn Jungle Preserve Key", true, "This key grants access to the Dathomir Tarn Jungle Preserve capstone area on Dathomir.")]
+        CapstoneDathomirTarnJunglePreserveKey = 118,
+        [KeyItem(KeyItemCategoryType.Keys, "Dathomir Grotto Apex Den Key", true, "This key grants access to the Dathomir Grotto Apex Den capstone area on Dathomir.")]
+        CapstoneDathomirGrottoApexDenKey = 119,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Invincible Veles Drill Ledger", true, "A militia drill ledger recovered in the Veles Militia Annex during the Invincible trial.")]
+        CapstoneInvincibleVelesDrillLedger = 120,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Invincible Militia Range Relay", true, "A battered range-control relay recovered in the Veles Militia Annex during the Invincible trial.")]
+        CapstoneInvincibleMilitiaRangeRelay = 121,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Invincible Scored Challenge Badge", true, "A scarred militia challenge badge recovered in the Veles Militia Annex during the Invincible trial.")]
+        CapstoneInvincibleScoredChallengeBadge = 122,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Invincible Captain's Challenge Chit", true, "A captain's encrypted challenge chit recovered in the Veles Militia Annex during the Invincible trial.")]
+        CapstoneInvincibleCaptainsChallengeChit = 123,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Vital Rupture Veles Drill Ledger", true, "A militia drill ledger recovered in the Veles Militia Annex during the Vital Rupture trial.")]
+        CapstoneVitalRuptureVelesDrillLedger = 124,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Vital Rupture Militia Range Relay", true, "A battered range-control relay recovered in the Veles Militia Annex during the Vital Rupture trial.")]
+        CapstoneVitalRuptureMilitiaRangeRelay = 125,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Vital Rupture Scored Challenge Badge", true, "A scarred militia challenge badge recovered in the Veles Militia Annex during the Vital Rupture trial.")]
+        CapstoneVitalRuptureScoredChallengeBadge = 126,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Vital Rupture Captain's Challenge Chit", true, "A captain's encrypted challenge chit recovered in the Veles Militia Annex during the Vital Rupture trial.")]
+        CapstoneVitalRuptureCaptainsChallengeChit = 127,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Systemic Shutdown Veles Drill Ledger", true, "A militia drill ledger recovered in the Veles Militia Annex during the Systemic Shutdown trial.")]
+        CapstoneSystemicShutdownVelesDrillLedger = 128,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Systemic Shutdown Militia Range Relay", true, "A battered range-control relay recovered in the Veles Militia Annex during the Systemic Shutdown trial.")]
+        CapstoneSystemicShutdownMilitiaRangeRelay = 129,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Systemic Shutdown Scored Challenge Badge", true, "A scarred militia challenge badge recovered in the Veles Militia Annex during the Systemic Shutdown trial.")]
+        CapstoneSystemicShutdownScoredChallengeBadge = 130,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Systemic Shutdown Captain's Challenge Chit", true, "A captain's encrypted challenge chit recovered in the Veles Militia Annex during the Systemic Shutdown trial.")]
+        CapstoneSystemicShutdownCaptainsChallengeChit = 131,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Saber Storm Enclave Trial Slate", true, "An enclave training slate recovered in the Dantooine Jedi Enclave Trial Halls during the Saber Storm trial.")]
+        CapstoneSaberStormEnclaveTrialSlate = 132,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Saber Storm Kyber Focus Shard", true, "A humming kyber focus shard recovered in the Dantooine Jedi Enclave Trial Halls during the Saber Storm trial.")]
+        CapstoneSaberStormKyberFocusShard = 133,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Saber Storm Fractured Trial Sigil", true, "A fractured Jedi trial sigil recovered in the Dantooine Jedi Enclave Trial Halls during the Saber Storm trial.")]
+        CapstoneSaberStormFracturedTrialSigil = 134,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Saber Storm Council Trial Chit", true, "A sealed council trial chit recovered in the Dantooine Jedi Enclave Trial Halls during the Saber Storm trial.")]
+        CapstoneSaberStormCouncilTrialChit = 135,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Guardian Master Enclave Trial Slate", true, "An enclave training slate recovered in the Dantooine Jedi Enclave Trial Halls during the Guardian Master trial.")]
+        CapstoneGuardianMasterEnclaveTrialSlate = 136,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Guardian Master Kyber Focus Shard", true, "A humming kyber focus shard recovered in the Dantooine Jedi Enclave Trial Halls during the Guardian Master trial.")]
+        CapstoneGuardianMasterKyberFocusShard = 137,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Guardian Master Fractured Trial Sigil", true, "A fractured Jedi trial sigil recovered in the Dantooine Jedi Enclave Trial Halls during the Guardian Master trial.")]
+        CapstoneGuardianMasterFracturedTrialSigil = 138,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Guardian Master Council Trial Chit", true, "A sealed council trial chit recovered in the Dantooine Jedi Enclave Trial Halls during the Guardian Master trial.")]
+        CapstoneGuardianMasterCouncilTrialChit = 139,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Saber Cyclone Enclave Trial Slate", true, "An enclave training slate recovered in the Dantooine Jedi Enclave Trial Halls during the Saber Cyclone trial.")]
+        CapstoneSaberCycloneEnclaveTrialSlate = 140,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Saber Cyclone Kyber Focus Shard", true, "A humming kyber focus shard recovered in the Dantooine Jedi Enclave Trial Halls during the Saber Cyclone trial.")]
+        CapstoneSaberCycloneKyberFocusShard = 141,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Saber Cyclone Fractured Trial Sigil", true, "A fractured Jedi trial sigil recovered in the Dantooine Jedi Enclave Trial Halls during the Saber Cyclone trial.")]
+        CapstoneSaberCycloneFracturedTrialSigil = 142,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Saber Cyclone Council Trial Chit", true, "A sealed council trial chit recovered in the Dantooine Jedi Enclave Trial Halls during the Saber Cyclone trial.")]
+        CapstoneSaberCycloneCouncilTrialChit = 143,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Absolute Defense Forge Heat Ledger", true, "A heat-scarred forge ledger recovered in the Korriban Forge Caverns during the Absolute Defense trial.")]
+        CapstoneAbsoluteDefenseForgeHeatLedger = 144,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Absolute Defense Sith Tempering Matrix", true, "A volatile Sith tempering matrix recovered in the Korriban Forge Caverns during the Absolute Defense trial.")]
+        CapstoneAbsoluteDefenseSithTemperingMatrix = 145,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Absolute Defense Cracked Anvil Sigil", true, "A cracked forge-anvil sigil recovered in the Korriban Forge Caverns during the Absolute Defense trial.")]
+        CapstoneAbsoluteDefenseCrackedAnvilSigil = 146,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Absolute Defense Overseer's Clearance Token", true, "An overseer's clearance token recovered in the Korriban Forge Caverns during the Absolute Defense trial.")]
+        CapstoneAbsoluteDefenseOverseersClearanceToken = 147,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Soul Ascension Forge Heat Ledger", true, "A heat-scarred forge ledger recovered in the Korriban Forge Caverns during the Soul Ascension trial.")]
+        CapstoneSoulAscensionForgeHeatLedger = 148,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Soul Ascension Sith Tempering Matrix", true, "A volatile Sith tempering matrix recovered in the Korriban Forge Caverns during the Soul Ascension trial.")]
+        CapstoneSoulAscensionSithTemperingMatrix = 149,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Soul Ascension Cracked Anvil Sigil", true, "A cracked forge-anvil sigil recovered in the Korriban Forge Caverns during the Soul Ascension trial.")]
+        CapstoneSoulAscensionCrackedAnvilSigil = 150,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Soul Ascension Overseer's Clearance Token", true, "An overseer's clearance token recovered in the Korriban Forge Caverns during the Soul Ascension trial.")]
+        CapstoneSoulAscensionOverseersClearanceToken = 151,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Forcebane Forge Heat Ledger", true, "A heat-scarred forge ledger recovered in the Korriban Forge Caverns during the Forcebane trial.")]
+        CapstoneForcebaneForgeHeatLedger = 152,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Forcebane Sith Tempering Matrix", true, "A volatile Sith tempering matrix recovered in the Korriban Forge Caverns during the Forcebane trial.")]
+        CapstoneForcebaneSithTemperingMatrix = 153,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Forcebane Cracked Anvil Sigil", true, "A cracked forge-anvil sigil recovered in the Korriban Forge Caverns during the Forcebane trial.")]
+        CapstoneForcebaneCrackedAnvilSigil = 154,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Forcebane Overseer's Clearance Token", true, "An overseer's clearance token recovered in the Korriban Forge Caverns during the Forcebane trial.")]
+        CapstoneForcebaneOverseersClearanceToken = 155,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Crippling Defense Backroom Bout Ledger", true, "A coded backroom bout ledger recovered in the Smuggler's Moon Fight Club Backrooms during the Crippling Defense trial.")]
+        CapstoneCripplingDefenseBackroomBoutLedger = 156,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Crippling Defense Ring Shock Regulator", true, "A tampered ring shock regulator recovered in the Smuggler's Moon Fight Club Backrooms during the Crippling Defense trial.")]
+        CapstoneCripplingDefenseRingShockRegulator = 157,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Crippling Defense Cracked Pit Sigil", true, "A cracked pit-fighter sigil recovered in the Smuggler's Moon Fight Club Backrooms during the Crippling Defense trial.")]
+        CapstoneCripplingDefenseCrackedPitSigil = 158,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Crippling Defense Promoter's Payout Chit", true, "A promoter's hidden payout chit recovered in the Smuggler's Moon Fight Club Backrooms during the Crippling Defense trial.")]
+        CapstoneCripplingDefensePromotersPayoutChit = 159,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Tempest Bloom Backroom Bout Ledger", true, "A coded backroom bout ledger recovered in the Smuggler's Moon Fight Club Backrooms during the Tempest Bloom trial.")]
+        CapstoneTempestBloomBackroomBoutLedger = 160,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Tempest Bloom Ring Shock Regulator", true, "A tampered ring shock regulator recovered in the Smuggler's Moon Fight Club Backrooms during the Tempest Bloom trial.")]
+        CapstoneTempestBloomRingShockRegulator = 161,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Tempest Bloom Cracked Pit Sigil", true, "A cracked pit-fighter sigil recovered in the Smuggler's Moon Fight Club Backrooms during the Tempest Bloom trial.")]
+        CapstoneTempestBloomCrackedPitSigil = 162,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Tempest Bloom Promoter's Payout Chit", true, "A promoter's hidden payout chit recovered in the Smuggler's Moon Fight Club Backrooms during the Tempest Bloom trial.")]
+        CapstoneTempestBloomPromotersPayoutChit = 163,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Red Bloom Backroom Bout Ledger", true, "A coded backroom bout ledger recovered in the Smuggler's Moon Fight Club Backrooms during the Red Bloom trial.")]
+        CapstoneRedBloomBackroomBoutLedger = 164,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Red Bloom Ring Shock Regulator", true, "A tampered ring shock regulator recovered in the Smuggler's Moon Fight Club Backrooms during the Red Bloom trial.")]
+        CapstoneRedBloomRingShockRegulator = 165,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Red Bloom Cracked Pit Sigil", true, "A cracked pit-fighter sigil recovered in the Smuggler's Moon Fight Club Backrooms during the Red Bloom trial.")]
+        CapstoneRedBloomCrackedPitSigil = 166,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Red Bloom Promoter's Payout Chit", true, "A promoter's hidden payout chit recovered in the Smuggler's Moon Fight Club Backrooms during the Red Bloom trial.")]
+        CapstoneRedBloomPromotersPayoutChit = 167,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Adamantine Guard Breaker Yard Work Order", true, "A grease-stained breaker yard work order recovered in the CZ-220 Breaker Yard during the Adamantine Guard trial.")]
+        CapstoneAdamantineGuardBreakerYardWorkOrder = 168,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Adamantine Guard Junkline Control Relay", true, "A sparking junkline control relay recovered in the CZ-220 Breaker Yard during the Adamantine Guard trial.")]
+        CapstoneAdamantineGuardJunklineControlRelay = 169,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Adamantine Guard Sheared Bay Sigil", true, "A sheared breaker bay sigil recovered in the CZ-220 Breaker Yard during the Adamantine Guard trial.")]
+        CapstoneAdamantineGuardShearedBaySigil = 170,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Adamantine Guard Foreman's Override Chip", true, "A foreman's override chip recovered in the CZ-220 Breaker Yard during the Adamantine Guard trial.")]
+        CapstoneAdamantineGuardForemansOverrideChip = 171,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Scrapheap Lockdown Breaker Yard Work Order", true, "A grease-stained breaker yard work order recovered in the CZ-220 Breaker Yard during the Scrapheap Lockdown trial.")]
+        CapstoneScrapheapLockdownBreakerYardWorkOrder = 172,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Scrapheap Lockdown Junkline Control Relay", true, "A sparking junkline control relay recovered in the CZ-220 Breaker Yard during the Scrapheap Lockdown trial.")]
+        CapstoneScrapheapLockdownJunklineControlRelay = 173,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Scrapheap Lockdown Sheared Bay Sigil", true, "A sheared breaker bay sigil recovered in the CZ-220 Breaker Yard during the Scrapheap Lockdown trial.")]
+        CapstoneScrapheapLockdownShearedBaySigil = 174,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Scrapheap Lockdown Foreman's Override Chip", true, "A foreman's override chip recovered in the CZ-220 Breaker Yard during the Scrapheap Lockdown trial.")]
+        CapstoneScrapheapLockdownForemansOverrideChip = 175,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Worldbreaker Breaker Yard Work Order", true, "A grease-stained breaker yard work order recovered in the CZ-220 Breaker Yard during the Worldbreaker trial.")]
+        CapstoneWorldbreakerBreakerYardWorkOrder = 176,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Worldbreaker Junkline Control Relay", true, "A sparking junkline control relay recovered in the CZ-220 Breaker Yard during the Worldbreaker trial.")]
+        CapstoneWorldbreakerJunklineControlRelay = 177,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Worldbreaker Sheared Bay Sigil", true, "A sheared breaker bay sigil recovered in the CZ-220 Breaker Yard during the Worldbreaker trial.")]
+        CapstoneWorldbreakerShearedBaySigil = 178,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Worldbreaker Foreman's Override Chip", true, "A foreman's override chip recovered in the CZ-220 Breaker Yard during the Worldbreaker trial.")]
+        CapstoneWorldbreakerForemansOverrideChip = 179,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Unmoving Center Canyon Range Tally", true, "A sand-worn canyon range tally recovered in the Anchorhead Canyon Range during the Unmoving Center trial.")]
+        CapstoneUnmovingCenterCanyonRangeTally = 180,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Unmoving Center Sightline Calibrator", true, "A heat-bleached sightline calibrator recovered in the Anchorhead Canyon Range during the Unmoving Center trial.")]
+        CapstoneUnmovingCenterSightlineCalibrator = 181,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Unmoving Center Shattered Range Crest", true, "A shattered marksman range crest recovered in the Anchorhead Canyon Range during the Unmoving Center trial.")]
+        CapstoneUnmovingCenterShatteredRangeCrest = 182,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Unmoving Center Marshal's Challenge Chit", true, "A marshal's range challenge chit recovered in the Anchorhead Canyon Range during the Unmoving Center trial.")]
+        CapstoneUnmovingCenterMarshalsChallengeChit = 183,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Last Word Canyon Range Tally", true, "A sand-worn canyon range tally recovered in the Anchorhead Canyon Range during the Last Word trial.")]
+        CapstoneLastWordCanyonRangeTally = 184,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Last Word Sightline Calibrator", true, "A heat-bleached sightline calibrator recovered in the Anchorhead Canyon Range during the Last Word trial.")]
+        CapstoneLastWordSightlineCalibrator = 185,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Last Word Shattered Range Crest", true, "A shattered marksman range crest recovered in the Anchorhead Canyon Range during the Last Word trial.")]
+        CapstoneLastWordShatteredRangeCrest = 186,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Last Word Marshal's Challenge Chit", true, "A marshal's range challenge chit recovered in the Anchorhead Canyon Range during the Last Word trial.")]
+        CapstoneLastWordMarshalsChallengeChit = 187,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Dead Man's Hand Canyon Range Tally", true, "A sand-worn canyon range tally recovered in the Anchorhead Canyon Range during the Dead Man's Hand trial.")]
+        CapstoneDeadMansHandCanyonRangeTally = 188,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Dead Man's Hand Sightline Calibrator", true, "A heat-bleached sightline calibrator recovered in the Anchorhead Canyon Range during the Dead Man's Hand trial.")]
+        CapstoneDeadMansHandSightlineCalibrator = 189,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Dead Man's Hand Shattered Range Crest", true, "A shattered marksman range crest recovered in the Anchorhead Canyon Range during the Dead Man's Hand trial.")]
+        CapstoneDeadMansHandShatteredRangeCrest = 190,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Dead Man's Hand Marshal's Challenge Chit", true, "A marshal's range challenge chit recovered in the Anchorhead Canyon Range during the Dead Man's Hand trial.")]
+        CapstoneDeadMansHandMarshalsChallengeChit = 191,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Kill Box Czerka Test Docket", true, "A redacted Czerka test docket recovered in the Czerka Arms Test Range during the Kill Box trial.")]
+        CapstoneKillBoxCzerkaTestDocket = 192,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Kill Box Blast-Cell Regulator", true, "A Czerka blast-cell regulator recovered in the Czerka Arms Test Range during the Kill Box trial.")]
+        CapstoneKillBoxBlastCellRegulator = 193,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Kill Box Scored Range Crest", true, "A scored Czerka range crest recovered in the Czerka Arms Test Range during the Kill Box trial.")]
+        CapstoneKillBoxScoredRangeCrest = 194,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Kill Box Czerka Clearance Chit", true, "A Czerka clearance chit recovered in the Czerka Arms Test Range during the Kill Box trial.")]
+        CapstoneKillBoxCzerkaClearanceChit = 195,
+        [KeyItem(KeyItemCategoryType.QuestItems, "One Shot Czerka Test Docket", true, "A redacted Czerka test docket recovered in the Czerka Arms Test Range during the One Shot trial.")]
+        CapstoneOneShotCzerkaTestDocket = 196,
+        [KeyItem(KeyItemCategoryType.QuestItems, "One Shot Blast-Cell Regulator", true, "A Czerka blast-cell regulator recovered in the Czerka Arms Test Range during the One Shot trial.")]
+        CapstoneOneShotBlastCellRegulator = 197,
+        [KeyItem(KeyItemCategoryType.QuestItems, "One Shot Scored Range Crest", true, "A scored Czerka range crest recovered in the Czerka Arms Test Range during the One Shot trial.")]
+        CapstoneOneShotScoredRangeCrest = 198,
+        [KeyItem(KeyItemCategoryType.QuestItems, "One Shot Czerka Clearance Chit", true, "A Czerka clearance chit recovered in the Czerka Arms Test Range during the One Shot trial.")]
+        CapstoneOneShotCzerkaClearanceChit = 199,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Rain of Steel Czerka Test Docket", true, "A redacted Czerka test docket recovered in the Czerka Arms Test Range during the Rain of Steel trial.")]
+        CapstoneRainOfSteelCzerkaTestDocket = 200,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Rain of Steel Blast-Cell Regulator", true, "A Czerka blast-cell regulator recovered in the Czerka Arms Test Range during the Rain of Steel trial.")]
+        CapstoneRainOfSteelBlastCellRegulator = 201,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Rain of Steel Scored Range Crest", true, "A scored Czerka range crest recovered in the Czerka Arms Test Range during the Rain of Steel trial.")]
+        CapstoneRainOfSteelScoredRangeCrest = 202,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Rain of Steel Czerka Clearance Chit", true, "A Czerka clearance chit recovered in the Czerka Arms Test Range during the Rain of Steel trial.")]
+        CapstoneRainOfSteelCzerkaClearanceChit = 203,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Perfect Flurry Qion Test Log", true, "A frost-cracked Qion test log recovered in the Hutlar Qion Test Site during the Perfect Flurry trial.")]
+        CapstonePerfectFlurryQionTestLog = 204,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Perfect Flurry Cryo-Range Regulator", true, "A malfunctioning cryo-range regulator recovered in the Hutlar Qion Test Site during the Perfect Flurry trial.")]
+        CapstonePerfectFlurryCryoRangeRegulator = 205,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Perfect Flurry Frostburned Test Crest", true, "A frostburned weapons test crest recovered in the Hutlar Qion Test Site during the Perfect Flurry trial.")]
+        CapstonePerfectFlurryFrostburnedTestCrest = 206,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Perfect Flurry Site Chief's Override Chip", true, "A site chief's override chip recovered in the Hutlar Qion Test Site during the Perfect Flurry trial.")]
+        CapstonePerfectFlurrySiteChiefsOverrideChip = 207,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Thermal Detonator Qion Test Log", true, "A frost-cracked Qion test log recovered in the Hutlar Qion Test Site during the Thermal Detonator trial.")]
+        CapstoneThermalDetonatorQionTestLog = 208,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Thermal Detonator Cryo-Range Regulator", true, "A malfunctioning cryo-range regulator recovered in the Hutlar Qion Test Site during the Thermal Detonator trial.")]
+        CapstoneThermalDetonatorCryoRangeRegulator = 209,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Thermal Detonator Frostburned Test Crest", true, "A frostburned weapons test crest recovered in the Hutlar Qion Test Site during the Thermal Detonator trial.")]
+        CapstoneThermalDetonatorFrostburnedTestCrest = 210,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Thermal Detonator Site Chief's Override Chip", true, "A site chief's override chip recovered in the Hutlar Qion Test Site during the Thermal Detonator trial.")]
+        CapstoneThermalDetonatorSiteChiefsOverrideChip = 211,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Overload Barrage Qion Test Log", true, "A frost-cracked Qion test log recovered in the Hutlar Qion Test Site during the Overload Barrage trial.")]
+        CapstoneOverloadBarrageQionTestLog = 212,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Overload Barrage Cryo-Range Regulator", true, "A malfunctioning cryo-range regulator recovered in the Hutlar Qion Test Site during the Overload Barrage trial.")]
+        CapstoneOverloadBarrageCryoRangeRegulator = 213,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Overload Barrage Frostburned Test Crest", true, "A frostburned weapons test crest recovered in the Hutlar Qion Test Site during the Overload Barrage trial.")]
+        CapstoneOverloadBarrageFrostburnedTestCrest = 214,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Overload Barrage Site Chief's Override Chip", true, "A site chief's override chip recovered in the Hutlar Qion Test Site during the Overload Barrage trial.")]
+        CapstoneOverloadBarrageSiteChiefsOverrideChip = 215,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Last Stand of the Light Crypt Trial Tablet", true, "An etched crypt trial tablet recovered in the Korriban Sith Crypt Depths during the Last Stand of the Light trial.")]
+        CapstoneLastStandOfTheLightCryptTrialTablet = 216,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Last Stand of the Light Ritual Focus Shard", true, "A pulsing ritual focus shard recovered in the Korriban Sith Crypt Depths during the Last Stand of the Light trial.")]
+        CapstoneLastStandOfTheLightRitualFocusShard = 217,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Last Stand of the Light Splintered Tomb Sigil", true, "A splintered Sith tomb sigil recovered in the Korriban Sith Crypt Depths during the Last Stand of the Light trial.")]
+        CapstoneLastStandOfTheLightSplinteredTombSigil = 218,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Last Stand of the Light Keeper's Rite Token", true, "A crypt keeper's rite token recovered in the Korriban Sith Crypt Depths during the Last Stand of the Light trial.")]
+        CapstoneLastStandOfTheLightKeepersRiteToken = 219,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Hunger of the Dark Crypt Trial Tablet", true, "An etched crypt trial tablet recovered in the Korriban Sith Crypt Depths during the Hunger of the Dark trial.")]
+        CapstoneHungerOfTheDarkCryptTrialTablet = 220,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Hunger of the Dark Ritual Focus Shard", true, "A pulsing ritual focus shard recovered in the Korriban Sith Crypt Depths during the Hunger of the Dark trial.")]
+        CapstoneHungerOfTheDarkRitualFocusShard = 221,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Hunger of the Dark Splintered Tomb Sigil", true, "A splintered Sith tomb sigil recovered in the Korriban Sith Crypt Depths during the Hunger of the Dark trial.")]
+        CapstoneHungerOfTheDarkSplinteredTombSigil = 222,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Hunger of the Dark Keeper's Rite Token", true, "A crypt keeper's rite token recovered in the Korriban Sith Crypt Depths during the Hunger of the Dark trial.")]
+        CapstoneHungerOfTheDarkKeepersRiteToken = 223,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Eclipse of Resolve Crypt Trial Tablet", true, "An etched crypt trial tablet recovered in the Korriban Sith Crypt Depths during the Eclipse of Resolve trial.")]
+        CapstoneEclipseOfResolveCryptTrialTablet = 224,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Eclipse of Resolve Ritual Focus Shard", true, "A pulsing ritual focus shard recovered in the Korriban Sith Crypt Depths during the Eclipse of Resolve trial.")]
+        CapstoneEclipseOfResolveRitualFocusShard = 225,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Eclipse of Resolve Splintered Tomb Sigil", true, "A splintered Sith tomb sigil recovered in the Korriban Sith Crypt Depths during the Eclipse of Resolve trial.")]
+        CapstoneEclipseOfResolveSplinteredTombSigil = 226,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Eclipse of Resolve Keeper's Rite Token", true, "A crypt keeper's rite token recovered in the Korriban Sith Crypt Depths during the Eclipse of Resolve trial.")]
+        CapstoneEclipseOfResolveKeepersRiteToken = 227,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Killzone Beacon Republic Bunker Docket", true, "A Republic bunker operations docket recovered in the Viscara Republic Engineering Bunker during the Killzone Beacon trial.")]
+        CapstoneKillzoneBeaconRepublicBunkerDocket = 228,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Killzone Beacon Shield Grid Relay", true, "A Republic shield-grid relay recovered in the Viscara Republic Engineering Bunker during the Killzone Beacon trial.")]
+        CapstoneKillzoneBeaconShieldGridRelay = 229,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Killzone Beacon Cracked Command Crest", true, "A cracked Republic command crest recovered in the Viscara Republic Engineering Bunker during the Killzone Beacon trial.")]
+        CapstoneKillzoneBeaconCrackedCommandCrest = 230,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Killzone Beacon Quartermaster Override Chip", true, "A quartermaster override chip recovered in the Viscara Republic Engineering Bunker during the Killzone Beacon trial.")]
+        CapstoneKillzoneBeaconQuartermasterOverrideChip = 231,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Emergency Bunker Republic Bunker Docket", true, "A Republic bunker operations docket recovered in the Viscara Republic Engineering Bunker during the Emergency Bunker trial.")]
+        CapstoneEmergencyBunkerRepublicBunkerDocket = 232,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Emergency Bunker Shield Grid Relay", true, "A Republic shield-grid relay recovered in the Viscara Republic Engineering Bunker during the Emergency Bunker trial.")]
+        CapstoneEmergencyBunkerShieldGridRelay = 233,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Emergency Bunker Cracked Command Crest", true, "A cracked Republic command crest recovered in the Viscara Republic Engineering Bunker during the Emergency Bunker trial.")]
+        CapstoneEmergencyBunkerCrackedCommandCrest = 234,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Emergency Bunker Quartermaster Override Chip", true, "A quartermaster override chip recovered in the Viscara Republic Engineering Bunker during the Emergency Bunker trial.")]
+        CapstoneEmergencyBunkerQuartermasterOverrideChip = 235,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Decisive Command Republic Bunker Docket", true, "A Republic bunker operations docket recovered in the Viscara Republic Engineering Bunker during the Decisive Command trial.")]
+        CapstoneDecisiveCommandRepublicBunkerDocket = 236,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Decisive Command Shield Grid Relay", true, "A Republic shield-grid relay recovered in the Viscara Republic Engineering Bunker during the Decisive Command trial.")]
+        CapstoneDecisiveCommandShieldGridRelay = 237,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Decisive Command Cracked Command Crest", true, "A cracked Republic command crest recovered in the Viscara Republic Engineering Bunker during the Decisive Command trial.")]
+        CapstoneDecisiveCommandCrackedCommandCrest = 238,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Decisive Command Quartermaster Override Chip", true, "A quartermaster override chip recovered in the Viscara Republic Engineering Bunker during the Decisive Command trial.")]
+        CapstoneDecisiveCommandQuartermasterOverrideChip = 239,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Hold the Line Triage Ward Ledger", true, "A triage ward ledger recovered in the Dantooine Medical Sublevel during the Hold the Line trial.")]
+        CapstoneHoldTheLineTriageWardLedger = 240,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Hold the Line Kolto Conduit Coupler", true, "A pressurized kolto conduit coupler recovered in the Dantooine Medical Sublevel during the Hold the Line trial.")]
+        CapstoneHoldTheLineKoltoConduitCoupler = 241,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Hold the Line Fractured Ward Sigil", true, "A fractured medical ward sigil recovered in the Dantooine Medical Sublevel during the Hold the Line trial.")]
+        CapstoneHoldTheLineFracturedWardSigil = 242,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Hold the Line Matron's Ward Token", true, "A matron's ward token recovered in the Dantooine Medical Sublevel during the Hold the Line trial.")]
+        CapstoneHoldTheLineMatronsWardToken = 243,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Emergency Cocktail Triage Ward Ledger", true, "A triage ward ledger recovered in the Dantooine Medical Sublevel during the Emergency Cocktail trial.")]
+        CapstoneEmergencyCocktailTriageWardLedger = 244,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Emergency Cocktail Kolto Conduit Coupler", true, "A pressurized kolto conduit coupler recovered in the Dantooine Medical Sublevel during the Emergency Cocktail trial.")]
+        CapstoneEmergencyCocktailKoltoConduitCoupler = 245,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Emergency Cocktail Fractured Ward Sigil", true, "A fractured medical ward sigil recovered in the Dantooine Medical Sublevel during the Emergency Cocktail trial.")]
+        CapstoneEmergencyCocktailFracturedWardSigil = 246,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Emergency Cocktail Matron's Ward Token", true, "A matron's ward token recovered in the Dantooine Medical Sublevel during the Emergency Cocktail trial.")]
+        CapstoneEmergencyCocktailMatronsWardToken = 247,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Infinite Conduit Triage Ward Ledger", true, "A triage ward ledger recovered in the Dantooine Medical Sublevel during the Infinite Conduit trial.")]
+        CapstoneInfiniteConduitTriageWardLedger = 248,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Infinite Conduit Kolto Conduit Coupler", true, "A pressurized kolto conduit coupler recovered in the Dantooine Medical Sublevel during the Infinite Conduit trial.")]
+        CapstoneInfiniteConduitKoltoConduitCoupler = 249,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Infinite Conduit Fractured Ward Sigil", true, "A fractured medical ward sigil recovered in the Dantooine Medical Sublevel during the Infinite Conduit trial.")]
+        CapstoneInfiniteConduitFracturedWardSigil = 250,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Infinite Conduit Matron's Ward Token", true, "A matron's ward token recovered in the Dantooine Medical Sublevel during the Infinite Conduit trial.")]
+        CapstoneInfiniteConduitMatronsWardToken = 251,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Apex Bite Tarn Hunt Tally", true, "A scratched tarn hunt tally recovered in the Dathomir Tarn Jungle Preserve during the Apex Bite trial.")]
+        CapstoneApexBiteTarnHuntTally = 252,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Apex Bite Beast-Pen Scent Vial", true, "A pungent beast-pen scent vial recovered in the Dathomir Tarn Jungle Preserve during the Apex Bite trial.")]
+        CapstoneApexBiteBeastPenScentVial = 253,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Apex Bite Clawed Alpha Totem", true, "A clawed alpha-beast totem recovered in the Dathomir Tarn Jungle Preserve during the Apex Bite trial.")]
+        CapstoneApexBiteClawedAlphaTotem = 254,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Apex Bite Preserve Keeper's Token", true, "A preserve keeper's bone token recovered in the Dathomir Tarn Jungle Preserve during the Apex Bite trial.")]
+        CapstoneApexBitePreserveKeepersToken = 255,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Unbreakable Beast Tarn Hunt Tally", true, "A scratched tarn hunt tally recovered in the Dathomir Tarn Jungle Preserve during the Unbreakable Beast trial.")]
+        CapstoneUnbreakableBeastTarnHuntTally = 256,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Unbreakable Beast Beast-Pen Scent Vial", true, "A pungent beast-pen scent vial recovered in the Dathomir Tarn Jungle Preserve during the Unbreakable Beast trial.")]
+        CapstoneUnbreakableBeastBeastPenScentVial = 257,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Unbreakable Beast Clawed Alpha Totem", true, "A clawed alpha-beast totem recovered in the Dathomir Tarn Jungle Preserve during the Unbreakable Beast trial.")]
+        CapstoneUnbreakableBeastClawedAlphaTotem = 258,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Unbreakable Beast Preserve Keeper's Token", true, "A preserve keeper's bone token recovered in the Dathomir Tarn Jungle Preserve during the Unbreakable Beast trial.")]
+        CapstoneUnbreakableBeastPreserveKeepersToken = 259,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Alpha Rhythm Tarn Hunt Tally", true, "A scratched tarn hunt tally recovered in the Dathomir Tarn Jungle Preserve during the Alpha Rhythm trial.")]
+        CapstoneAlphaRhythmTarnHuntTally = 260,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Alpha Rhythm Beast-Pen Scent Vial", true, "A pungent beast-pen scent vial recovered in the Dathomir Tarn Jungle Preserve during the Alpha Rhythm trial.")]
+        CapstoneAlphaRhythmBeastPenScentVial = 261,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Alpha Rhythm Clawed Alpha Totem", true, "A clawed alpha-beast totem recovered in the Dathomir Tarn Jungle Preserve during the Alpha Rhythm trial.")]
+        CapstoneAlphaRhythmClawedAlphaTotem = 262,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Alpha Rhythm Preserve Keeper's Token", true, "A preserve keeper's bone token recovered in the Dathomir Tarn Jungle Preserve during the Alpha Rhythm trial.")]
+        CapstoneAlphaRhythmPreserveKeepersToken = 263,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Primal Overrun Grotto Track Slate", true, "A mud-darkened grotto track slate recovered in the Dathomir Grotto Apex Den during the Primal Overrun trial.")]
+        CapstonePrimalOverrunGrottoTrackSlate = 264,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Primal Overrun Resonant Fang Charm", true, "A resonant fang charm recovered in the Dathomir Grotto Apex Den during the Primal Overrun trial.")]
+        CapstonePrimalOverrunResonantFangCharm = 265,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Primal Overrun Cracked Apex Totem", true, "A cracked apex-beast totem recovered in the Dathomir Grotto Apex Den during the Primal Overrun trial.")]
+        CapstonePrimalOverrunCrackedApexTotem = 266,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Primal Overrun Den-Mother's Fang Token", true, "A den-mother's fang token recovered in the Dathomir Grotto Apex Den during the Primal Overrun trial.")]
+        CapstonePrimalOverrunDenMothersFangToken = 267,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Untouchable Instinct Grotto Track Slate", true, "A mud-darkened grotto track slate recovered in the Dathomir Grotto Apex Den during the Untouchable Instinct trial.")]
+        CapstoneUntouchableInstinctGrottoTrackSlate = 268,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Untouchable Instinct Resonant Fang Charm", true, "A resonant fang charm recovered in the Dathomir Grotto Apex Den during the Untouchable Instinct trial.")]
+        CapstoneUntouchableInstinctResonantFangCharm = 269,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Untouchable Instinct Cracked Apex Totem", true, "A cracked apex-beast totem recovered in the Dathomir Grotto Apex Den during the Untouchable Instinct trial.")]
+        CapstoneUntouchableInstinctCrackedApexTotem = 270,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Untouchable Instinct Den-Mother's Fang Token", true, "A den-mother's fang token recovered in the Dathomir Grotto Apex Den during the Untouchable Instinct trial.")]
+        CapstoneUntouchableInstinctDenMothersFangToken = 271,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Force-Bonded Beast Grotto Track Slate", true, "A mud-darkened grotto track slate recovered in the Dathomir Grotto Apex Den during the Force-Bonded Beast trial.")]
+        CapstoneForceBondedBeastGrottoTrackSlate = 272,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Force-Bonded Beast Resonant Fang Charm", true, "A resonant fang charm recovered in the Dathomir Grotto Apex Den during the Force-Bonded Beast trial.")]
+        CapstoneForceBondedBeastResonantFangCharm = 273,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Force-Bonded Beast Cracked Apex Totem", true, "A cracked apex-beast totem recovered in the Dathomir Grotto Apex Den during the Force-Bonded Beast trial.")]
+        CapstoneForceBondedBeastCrackedApexTotem = 274,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Force-Bonded Beast Den-Mother's Fang Token", true, "A den-mother's fang token recovered in the Dathomir Grotto Apex Den during the Force-Bonded Beast trial.")]
+        CapstoneForceBondedBeastDenMothersFangToken = 275,
 
 	}
 

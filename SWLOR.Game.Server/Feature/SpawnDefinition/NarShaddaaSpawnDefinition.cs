@@ -25,6 +25,8 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             SlaverCaptain();
             GreatArkanianDragon();
             DragonLoot();
+            SmugglersMoonFightClubBackrooms();
+            CzerkaArmsTestRange();
 
             return _builder.Build();
         }
@@ -155,6 +157,104 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             _builder.Create("DRAGON_LOOT")
                 .AddSpawn(ObjectType.Placeable, "dragon_loot")
                 .WithFrequency(1)
+                .ReturnsHome();
+        }
+
+        private void SmugglersMoonFightClubBackrooms()
+        {
+            _builder.Create("CAPSTONE_SMUGGLERS_MOON_FIGHT_CLUB_BACKROOMS", "Smuggler's Moon Fight Club Backrooms - General Capstone")
+                .AddSpawn(ObjectType.Creature, "cp_cripdef_ad")
+                .WithFrequency(70)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_cripdef_sp")
+                .WithFrequency(50)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_cripdef_ic")
+                .WithFrequency(35)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_tempbloom_ad")
+                .WithFrequency(70)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_tempbloom_sp")
+                .WithFrequency(50)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_tempbloom_ic")
+                .WithFrequency(35)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_redbloom_ad")
+                .WithFrequency(70)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_redbloom_sp")
+                .WithFrequency(50)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_redbloom_ic")
+                .WithFrequency(35)
+                .RandomlyWalks()
+                .ReturnsHome();
+        }
+
+        private void CzerkaArmsTestRange()
+        {
+            _builder.Create("CAPSTONE_CZERKA_ARMS_TEST_RANGE", "Czerka Arms Test Range - General Capstone")
+                .AddSpawn(ObjectType.Creature, "cp_killbox_ad")
+                .WithFrequency(70)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_killbox_sp")
+                .WithFrequency(50)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_killbox_ic")
+                .WithFrequency(35)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_oneshot_ad")
+                .WithFrequency(70)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_oneshot_sp")
+                .WithFrequency(50)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_oneshot_ic")
+                .WithFrequency(35)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_rainsteel_ad")
+                .WithFrequency(70)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_rainsteel_sp")
+                .WithFrequency(50)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "cp_rainsteel_ic")
+                .WithFrequency(35)
+                .RandomlyWalks()
                 .ReturnsHome();
         }
     }

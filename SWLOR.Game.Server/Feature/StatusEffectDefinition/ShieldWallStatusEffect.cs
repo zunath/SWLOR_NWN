@@ -6,20 +6,24 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
     public sealed class ShieldWallStatusEffect : StatusEffectBase
     {
+        private readonly int _damageReductionPercent;
+
         public override string Name => "Shield Wall";
         public override EffectIconType Icon => EffectIconType.ShieldWallStatusEffect;
-        public ShieldWallStatusEffect()
+
+        public ShieldWallStatusEffect() : this(20)
         {
-            StatGroup.Stats[StatType.PhysicalDefensePercentAdjustment] = 15;
         }
 
-        protected override void Apply(uint creature, int durationTicks)
+        public ShieldWallStatusEffect(int damageReductionPercent)
         {
-            if (Source != creature)
-                return;
+            _damageReductionPercent = damageReductionPercent;
+            StatGroup.Stats[StatType.DamageTakenPercentAdjustment] = -_damageReductionPercent;
+        }
 
-            StatGroup.Stats.Remove(StatType.PhysicalDefensePercentAdjustment);
-            StatGroup.Stats[StatType.EnmityPercentAdjustment] = 25;
+        public override IStatusEffect Clone()
+        {
+            return new ShieldWallStatusEffect(_damageReductionPercent);
         }
     }
 }

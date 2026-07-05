@@ -16,6 +16,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
             ConditionHasCompletedQuest();
             ConditionHasQuest();
             ConditionOnQuestState();
+            ConditionCanAcceptQuest();
 
             // Actions
             ActionAcceptQuest();
@@ -123,6 +124,25 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                     return false;
                 });
 
+        }
+
+        private void ConditionCanAcceptQuest()
+        {
+            _builder.Create("condition-can-accept-quest")
+                .Description("Checks whether a player can accept a quest without sending prerequisite feedback.")
+                .AppearsWhenAction((player, args) =>
+                {
+                    if (args.Length <= 0)
+                    {
+                        const string Error = "'condition-can-accept-quest' requires a questId argument.";
+                        SendMessageToPC(player, Error);
+                        Log.Write(LogGroup.Error, Error);
+                        return false;
+                    }
+
+                    var questId = args[0];
+                    return Quest.CanAcceptQuest(player, questId);
+                });
         }
 
         private void ActionAcceptQuest()

@@ -8,7 +8,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class GhostkeyRelayStatusEffect : StatusEffectBase
     {
         public override string Name => "Ghostkey Relay";
-        public override EffectIconType Icon => EffectIconType.TacticalUplinkStatusEffect;
+        public override EffectIconType Icon => EffectIconType.GhostkeyRelayStatusEffect;
         public override StatusEffectCategory Categories => StatusEffectCategory.Buff;
         public override bool PersistsOnLogout => false;
 

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
@@ -25,17 +24,12 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                 .HasRecastDelay(RecastGroup.FieldTool, FieldToolRecastSeconds)
                 .ApplyAction((user, item, target, location, itemPropertyIndex) =>
                 {
-                    Stat.RestoreFP(user, PercentOf(Stat.GetMaxFP(user), 15));
+                    Stat.RestoreFP(user, GameMath.PercentOf(Stat.GetMaxFP(user), 15));
                     StatusEffect.ApplyStatusEffect(user, user, new LucidSpliceStatusEffect(), 90f);
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Restoration), user);
                 });
 
             return _builder.Build();
-        }
-
-        private static int PercentOf(int value, int percent)
-        {
-            return Math.Max(1, value * percent / 100);
         }
     }
 }

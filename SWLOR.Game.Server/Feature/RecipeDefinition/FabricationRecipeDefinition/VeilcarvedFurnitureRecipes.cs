@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.SkillService;
 
@@ -20,8 +20,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
             // Veilcarved Field Cot
             _builder.Create(RecipeType.VeilcarvedFieldCot, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Bed)
-                .Resref("mg_cot")
-                .Level(34)
+                .Resref("structure_0381")
+                .Level(32)
                 .Quantity(1)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
@@ -32,8 +32,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
             // Veilcarved Signal Lamp
             _builder.Create(RecipeType.VeilcarvedSignalLamp, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Lighting)
-                .Resref("mg_lamp")
-                .Level(34)
+                .Resref("structure_0382")
+                .Level(33)
                 .Quantity(1)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
@@ -44,8 +44,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
             // Veilcarved Trophy Stand
             _builder.Create(RecipeType.VeilcarvedTrophyStand, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Fixtures)
-                .Resref("mg_stand")
-                .Level(34)
+                .Resref("structure_0383")
+                .Level(36)
                 .Quantity(1)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
@@ -56,7 +56,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
             // Veilcarved Low Table
             _builder.Create(RecipeType.VeilcarvedLowTable, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Surfaces)
-                .Resref("mg_table")
+                .Resref("structure_0384")
                 .Level(34)
                 .Quantity(1)
                 .RequirementUnlocked()
@@ -68,8 +68,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
             // Veilcarved Wall Banner
             _builder.Create(RecipeType.VeilcarvedWallBanner, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Wall)
-                .Resref("mg_banner")
-                .Level(34)
+                .Resref("structure_0385")
+                .Level(35)
                 .Quantity(1)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
@@ -80,8 +80,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
             // Veilcarved Supply Locker
             _builder.Create(RecipeType.VeilcarvedSupplyLocker, SkillType.Fabrication)
                 .Category(RecipeCategoryType.MiscellaneousFurniture)
-                .Resref("mg_locker")
-                .Level(34)
+                .Resref("structure_0386")
+                .Level(37)
                 .Quantity(1)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
@@ -92,8 +92,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
             // Veilcarved Floor Mat
             _builder.Create(RecipeType.VeilcarvedFloorMat, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Flooring)
-                .Resref("mg_mat")
-                .Level(34)
+                .Resref("structure_0387")
+                .Level(32)
                 .Quantity(1)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
@@ -104,8 +104,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
             // Veilcarved Data Console
             _builder.Create(RecipeType.VeilcarvedDataConsole, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Electronics)
-                .Resref("mg_console")
-                .Level(34)
+                .Resref("structure_0388")
+                .Level(37)
                 .Quantity(1)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
@@ -116,8 +116,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
             // Veilcarved Display Plinth
             _builder.Create(RecipeType.VeilcarvedDisplayPlinth, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Statues)
-                .Resref("mg_plinth")
-                .Level(34)
+                .Resref("structure_0389")
+                .Level(36)
                 .Quantity(1)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
@@ -128,8 +128,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
             // Veilcarved Work Stool
             _builder.Create(RecipeType.VeilcarvedWorkStool, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Seating)
-                .Resref("mg_stool")
-                .Level(34)
+                .Resref("structure_0390")
+                .Level(33)
                 .Quantity(1)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)

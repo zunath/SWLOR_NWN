@@ -166,14 +166,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
         {
             ApplyEffectToObject(
                 DurationType.Temporary,
-                EffectTemporaryHitpoints(PercentOf(GetMaxHitPoints(target), percent)),
+                EffectTemporaryHitpoints(GameMath.PercentOf(GetMaxHitPoints(target), percent)),
                 target,
                 durationSeconds);
-        }
-
-        private static int PercentOf(int value, int percent)
-        {
-            return Math.Max(1, value * percent / 100);
         }
 
     }

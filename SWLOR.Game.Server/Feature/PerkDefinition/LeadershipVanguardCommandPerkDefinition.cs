@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Feature.QuestDefinition;
 
 namespace SWLOR.Game.Server.Feature.PerkDefinition
 {
@@ -185,7 +186,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("For 45 seconds, party members within Leadership range (5m base), including you, gain +15% damage, +6% physical and Force ability hit chance, +6% critical hit chance, and restore 1 STM every 3 seconds. SOC scaling can raise the bonuses to +18%, +8%, and +8%.")
                 .Price(5)
                 .RequirementSkill(SkillType.Leadership, 50)
-                .GrantsFeat(FeatType.DecisiveCommand1);
+                .GrantsFeat(FeatType.DecisiveCommand1)
+                .RequirementQuest(LeadershipCapstoneQuestDefinition.DecisiveCommandMasteryQuestId);
         }
 
     }

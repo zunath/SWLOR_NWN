@@ -1983,6 +1983,706 @@ namespace SWLOR.Game.Server.Service.PropertyService
             1)]
         SpeakerStanding = 330,
 
+        [Structure("Ashmark Field Cot",
+            "plc_cot",
+            "",
+            true,
+            1)]
+        AshmarkFieldCot = 331,
+
+        [Structure("Ashmark Signal Lamp",
+            "nwed_flrlntrn002",
+            "",
+            true,
+            1)]
+        AshmarkSignalLamp = 332,
+
+        [Structure("Ashmark Trophy Stand",
+            "plc_pedestal",
+            "",
+            true,
+            1)]
+        AshmarkTrophyStand = 333,
+
+        [Structure("Ashmark Low Table",
+            "_mdrn_pl_table19",
+            "",
+            true,
+            1)]
+        AshmarkLowTable = 334,
+
+        [Structure("Ashmark Wall Banner",
+            "swlor_0112",
+            "",
+            true,
+            1)]
+        AshmarkWallBanner = 335,
+
+        [Structure("Ashmark Supply Locker",
+            "_mdrn_pl_lockerm",
+            "",
+            true,
+            1)]
+        AshmarkSupplyLocker = 336,
+
+        [Structure("Ashmark Floor Mat",
+            "zep_tatami002",
+            "",
+            true,
+            1)]
+        AshmarkFloorMat = 337,
+
+        [Structure("Ashmark Data Console",
+            "_mdrn_pl_conso34",
+            "",
+            true,
+            1)]
+        AshmarkDataConsole = 338,
+
+        [Structure("Ashmark Display Plinth",
+            "plc_pedestal",
+            "",
+            true,
+            1)]
+        AshmarkDisplayPlinth = 339,
+
+        [Structure("Ashmark Work Stool",
+            "frn_chair_swlr02",
+            "",
+            true,
+            1)]
+        AshmarkWorkStool = 340,
+
+        [Structure("Guttermark Field Cot",
+            "plc_cot",
+            "",
+            true,
+            1)]
+        GuttermarkFieldCot = 341,
+
+        [Structure("Guttermark Signal Lamp",
+            "nwed_flrlntrn002",
+            "",
+            true,
+            1)]
+        GuttermarkSignalLamp = 342,
+
+        [Structure("Guttermark Trophy Stand",
+            "plc_pedestal",
+            "",
+            true,
+            1)]
+        GuttermarkTrophyStand = 343,
+
+        [Structure("Guttermark Low Table",
+            "_mdrn_pl_table19",
+            "",
+            true,
+            1)]
+        GuttermarkLowTable = 344,
+
+        [Structure("Guttermark Wall Banner",
+            "swlor_0112",
+            "",
+            true,
+            1)]
+        GuttermarkWallBanner = 345,
+
+        [Structure("Guttermark Supply Locker",
+            "_mdrn_pl_lockerm",
+            "",
+            true,
+            1)]
+        GuttermarkSupplyLocker = 346,
+
+        [Structure("Guttermark Floor Mat",
+            "zep_tatami002",
+            "",
+            true,
+            1)]
+        GuttermarkFloorMat = 347,
+
+        [Structure("Guttermark Data Console",
+            "_mdrn_pl_conso34",
+            "",
+            true,
+            1)]
+        GuttermarkDataConsole = 348,
+
+        [Structure("Guttermark Display Plinth",
+            "plc_pedestal",
+            "",
+            true,
+            1)]
+        GuttermarkDisplayPlinth = 349,
+
+        [Structure("Guttermark Work Stool",
+            "frn_chair_swlr02",
+            "",
+            true,
+            1)]
+        GuttermarkWorkStool = 350,
+
+        [Structure("Trailmark Field Cot",
+            "plc_cot",
+            "",
+            true,
+            1)]
+        TrailmarkFieldCot = 351,
+
+        [Structure("Trailmark Signal Lamp",
+            "nwed_flrlntrn002",
+            "",
+            true,
+            1)]
+        TrailmarkSignalLamp = 352,
+
+        [Structure("Trailmark Trophy Stand",
+            "plc_pedestal",
+            "",
+            true,
+            1)]
+        TrailmarkTrophyStand = 353,
+
+        [Structure("Trailmark Low Table",
+            "_mdrn_pl_table19",
+            "",
+            true,
+            1)]
+        TrailmarkLowTable = 354,
+
+        [Structure("Trailmark Wall Banner",
+            "swlor_0112",
+            "",
+            true,
+            1)]
+        TrailmarkWallBanner = 355,
+
+        [Structure("Trailmark Supply Locker",
+            "_mdrn_pl_lockerm",
+            "",
+            true,
+            1)]
+        TrailmarkSupplyLocker = 356,
+
+        [Structure("Trailmark Floor Mat",
+            "zep_tatami002",
+            "",
+            true,
+            1)]
+        TrailmarkFloorMat = 357,
+
+        [Structure("Trailmark Data Console",
+            "_mdrn_pl_conso34",
+            "",
+            true,
+            1)]
+        TrailmarkDataConsole = 358,
+
+        [Structure("Trailmark Display Plinth",
+            "plc_pedestal",
+            "",
+            true,
+            1)]
+        TrailmarkDisplayPlinth = 359,
+
+        [Structure("Trailmark Work Stool",
+            "frn_chair_swlr02",
+            "",
+            true,
+            1)]
+        TrailmarkWorkStool = 360,
+
+        [Structure("Stonewake Field Cot",
+            "plc_cot",
+            "",
+            true,
+            1)]
+        StonewakeFieldCot = 361,
+
+        [Structure("Stonewake Signal Lamp",
+            "nwed_flrlntrn002",
+            "",
+            true,
+            1)]
+        StonewakeSignalLamp = 362,
+
+        [Structure("Stonewake Trophy Stand",
+            "plc_pedestal",
+            "",
+            true,
+            1)]
+        StonewakeTrophyStand = 363,
+
+        [Structure("Stonewake Low Table",
+            "_mdrn_pl_table19",
+            "",
+            true,
+            1)]
+        StonewakeLowTable = 364,
+
+        [Structure("Stonewake Wall Banner",
+            "swlor_0112",
+            "",
+            true,
+            1)]
+        StonewakeWallBanner = 365,
+
+        [Structure("Stonewake Supply Locker",
+            "_mdrn_pl_lockerm",
+            "",
+            true,
+            1)]
+        StonewakeSupplyLocker = 366,
+
+        [Structure("Stonewake Floor Mat",
+            "zep_tatami002",
+            "",
+            true,
+            1)]
+        StonewakeFloorMat = 367,
+
+        [Structure("Stonewake Data Console",
+            "_mdrn_pl_conso34",
+            "",
+            true,
+            1)]
+        StonewakeDataConsole = 368,
+
+        [Structure("Stonewake Display Plinth",
+            "plc_pedestal",
+            "",
+            true,
+            1)]
+        StonewakeDisplayPlinth = 369,
+
+        [Structure("Stonewake Work Stool",
+            "frn_chair_swlr02",
+            "",
+            true,
+            1)]
+        StonewakeWorkStool = 370,
+
+        [Structure("Aegisline Field Cot",
+            "plc_cot",
+            "",
+            true,
+            1)]
+        AegislineFieldCot = 371,
+
+        [Structure("Aegisline Signal Lamp",
+            "nwed_flrlntrn002",
+            "",
+            true,
+            1)]
+        AegislineSignalLamp = 372,
+
+        [Structure("Aegisline Trophy Stand",
+            "plc_pedestal",
+            "",
+            true,
+            1)]
+        AegislineTrophyStand = 373,
+
+        [Structure("Aegisline Low Table",
+            "_mdrn_pl_table19",
+            "",
+            true,
+            1)]
+        AegislineLowTable = 374,
+
+        [Structure("Aegisline Wall Banner",
+            "swlor_0112",
+            "",
+            true,
+            1)]
+        AegislineWallBanner = 375,
+
+        [Structure("Aegisline Supply Locker",
+            "_mdrn_pl_lockerm",
+            "",
+            true,
+            1)]
+        AegislineSupplyLocker = 376,
+
+        [Structure("Aegisline Floor Mat",
+            "zep_tatami002",
+            "",
+            true,
+            1)]
+        AegislineFloorMat = 377,
+
+        [Structure("Aegisline Data Console",
+            "_mdrn_pl_conso34",
+            "",
+            true,
+            1)]
+        AegislineDataConsole = 378,
+
+        [Structure("Aegisline Display Plinth",
+            "plc_pedestal",
+            "",
+            true,
+            1)]
+        AegislineDisplayPlinth = 379,
+
+        [Structure("Aegisline Work Stool",
+            "frn_chair_swlr02",
+            "",
+            true,
+            1)]
+        AegislineWorkStool = 380,
+
+        [Structure("Veilcarved Field Cot",
+            "plc_cot",
+            "",
+            true,
+            1)]
+        VeilcarvedFieldCot = 381,
+
+        [Structure("Veilcarved Signal Lamp",
+            "nwed_flrlntrn002",
+            "",
+            true,
+            1)]
+        VeilcarvedSignalLamp = 382,
+
+        [Structure("Veilcarved Trophy Stand",
+            "plc_pedestal",
+            "",
+            true,
+            1)]
+        VeilcarvedTrophyStand = 383,
+
+        [Structure("Veilcarved Low Table",
+            "_mdrn_pl_table19",
+            "",
+            true,
+            1)]
+        VeilcarvedLowTable = 384,
+
+        [Structure("Veilcarved Wall Banner",
+            "swlor_0112",
+            "",
+            true,
+            1)]
+        VeilcarvedWallBanner = 385,
+
+        [Structure("Veilcarved Supply Locker",
+            "_mdrn_pl_lockerm",
+            "",
+            true,
+            1)]
+        VeilcarvedSupplyLocker = 386,
+
+        [Structure("Veilcarved Floor Mat",
+            "zep_tatami002",
+            "",
+            true,
+            1)]
+        VeilcarvedFloorMat = 387,
+
+        [Structure("Veilcarved Data Console",
+            "_mdrn_pl_conso34",
+            "",
+            true,
+            1)]
+        VeilcarvedDataConsole = 388,
+
+        [Structure("Veilcarved Display Plinth",
+            "plc_pedestal",
+            "",
+            true,
+            1)]
+        VeilcarvedDisplayPlinth = 389,
+
+        [Structure("Veilcarved Work Stool",
+            "frn_chair_swlr02",
+            "",
+            true,
+            1)]
+        VeilcarvedWorkStool = 390,
+
+        [Structure("Surgewake Field Cot",
+            "plc_cot",
+            "",
+            true,
+            1)]
+        SurgewakeFieldCot = 391,
+
+        [Structure("Surgewake Signal Lamp",
+            "nwed_flrlntrn002",
+            "",
+            true,
+            1)]
+        SurgewakeSignalLamp = 392,
+
+        [Structure("Surgewake Trophy Stand",
+            "plc_pedestal",
+            "",
+            true,
+            1)]
+        SurgewakeTrophyStand = 393,
+
+        [Structure("Surgewake Low Table",
+            "_mdrn_pl_table19",
+            "",
+            true,
+            1)]
+        SurgewakeLowTable = 394,
+
+        [Structure("Surgewake Wall Banner",
+            "swlor_0112",
+            "",
+            true,
+            1)]
+        SurgewakeWallBanner = 395,
+
+        [Structure("Surgewake Supply Locker",
+            "_mdrn_pl_lockerm",
+            "",
+            true,
+            1)]
+        SurgewakeSupplyLocker = 396,
+
+        [Structure("Surgewake Floor Mat",
+            "zep_tatami002",
+            "",
+            true,
+            1)]
+        SurgewakeFloorMat = 397,
+
+        [Structure("Surgewake Data Console",
+            "_mdrn_pl_conso34",
+            "",
+            true,
+            1)]
+        SurgewakeDataConsole = 398,
+
+        [Structure("Surgewake Display Plinth",
+            "plc_pedestal",
+            "",
+            true,
+            1)]
+        SurgewakeDisplayPlinth = 399,
+
+        [Structure("Surgewake Work Stool",
+            "frn_chair_swlr02",
+            "",
+            true,
+            1)]
+        SurgewakeWorkStool = 400,
+
+        [Structure("Resonant Field Cot",
+            "plc_cot",
+            "",
+            true,
+            1)]
+        ResonantFieldCot = 401,
+
+        [Structure("Resonant Signal Lamp",
+            "nwed_flrlntrn002",
+            "",
+            true,
+            1)]
+        ResonantSignalLamp = 402,
+
+        [Structure("Resonant Trophy Stand",
+            "plc_pedestal",
+            "",
+            true,
+            1)]
+        ResonantTrophyStand = 403,
+
+        [Structure("Resonant Low Table",
+            "_mdrn_pl_table19",
+            "",
+            true,
+            1)]
+        ResonantLowTable = 404,
+
+        [Structure("Resonant Wall Banner",
+            "swlor_0112",
+            "",
+            true,
+            1)]
+        ResonantWallBanner = 405,
+
+        [Structure("Resonant Supply Locker",
+            "_mdrn_pl_lockerm",
+            "",
+            true,
+            1)]
+        ResonantSupplyLocker = 406,
+
+        [Structure("Resonant Floor Mat",
+            "zep_tatami002",
+            "",
+            true,
+            1)]
+        ResonantFloorMat = 407,
+
+        [Structure("Resonant Data Console",
+            "_mdrn_pl_conso34",
+            "",
+            true,
+            1)]
+        ResonantDataConsole = 408,
+
+        [Structure("Resonant Display Plinth",
+            "plc_pedestal",
+            "",
+            true,
+            1)]
+        ResonantDisplayPlinth = 409,
+
+        [Structure("Resonant Work Stool",
+            "frn_chair_swlr02",
+            "",
+            true,
+            1)]
+        ResonantWorkStool = 410,
+
+        [Structure("Fieldline Field Cot",
+            "plc_cot",
+            "",
+            true,
+            1)]
+        FieldlineFieldCot = 411,
+
+        [Structure("Fieldline Signal Lamp",
+            "nwed_flrlntrn002",
+            "",
+            true,
+            1)]
+        FieldlineSignalLamp = 412,
+
+        [Structure("Fieldline Trophy Stand",
+            "plc_pedestal",
+            "",
+            true,
+            1)]
+        FieldlineTrophyStand = 413,
+
+        [Structure("Fieldline Low Table",
+            "_mdrn_pl_table19",
+            "",
+            true,
+            1)]
+        FieldlineLowTable = 414,
+
+        [Structure("Fieldline Wall Banner",
+            "swlor_0112",
+            "",
+            true,
+            1)]
+        FieldlineWallBanner = 415,
+
+        [Structure("Fieldline Supply Locker",
+            "_mdrn_pl_lockerm",
+            "",
+            true,
+            1)]
+        FieldlineSupplyLocker = 416,
+
+        [Structure("Fieldline Floor Mat",
+            "zep_tatami002",
+            "",
+            true,
+            1)]
+        FieldlineFloorMat = 417,
+
+        [Structure("Fieldline Data Console",
+            "_mdrn_pl_conso34",
+            "",
+            true,
+            1)]
+        FieldlineDataConsole = 418,
+
+        [Structure("Fieldline Display Plinth",
+            "plc_pedestal",
+            "",
+            true,
+            1)]
+        FieldlineDisplayPlinth = 419,
+
+        [Structure("Fieldline Work Stool",
+            "frn_chair_swlr02",
+            "",
+            true,
+            1)]
+        FieldlineWorkStool = 420,
+
+        [Structure("Commandline Field Cot",
+            "plc_cot",
+            "",
+            true,
+            1)]
+        CommandlineFieldCot = 421,
+
+        [Structure("Commandline Signal Lamp",
+            "nwed_flrlntrn002",
+            "",
+            true,
+            1)]
+        CommandlineSignalLamp = 422,
+
+        [Structure("Commandline Trophy Stand",
+            "plc_pedestal",
+            "",
+            true,
+            1)]
+        CommandlineTrophyStand = 423,
+
+        [Structure("Commandline Low Table",
+            "_mdrn_pl_table19",
+            "",
+            true,
+            1)]
+        CommandlineLowTable = 424,
+
+        [Structure("Commandline Wall Banner",
+            "swlor_0112",
+            "",
+            true,
+            1)]
+        CommandlineWallBanner = 425,
+
+        [Structure("Commandline Supply Locker",
+            "_mdrn_pl_lockerm",
+            "",
+            true,
+            1)]
+        CommandlineSupplyLocker = 426,
+
+        [Structure("Commandline Floor Mat",
+            "zep_tatami002",
+            "",
+            true,
+            1)]
+        CommandlineFloorMat = 427,
+
+        [Structure("Commandline Data Console",
+            "_mdrn_pl_conso34",
+            "",
+            true,
+            1)]
+        CommandlineDataConsole = 428,
+
+        [Structure("Commandline Display Plinth",
+            "plc_pedestal",
+            "",
+            true,
+            1)]
+        CommandlineDisplayPlinth = 429,
+
+        [Structure("Commandline Work Stool",
+            "frn_chair_swlr02",
+            "",
+            true,
+            1)]
+        CommandlineWorkStool = 430,
+
         // Buildings start here (5000+)
         [Structure("City Hall - Style 1",
             "city_hall",
@@ -2145,8 +2845,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
             0,
             PropertyType.City,
             PropertyLayoutType.LabStyle1)]
-        LabStyle1 = 5017,
-    }
+        LabStyle1 = 5017,    }
 
     public class StructureAttribute : Attribute
     {

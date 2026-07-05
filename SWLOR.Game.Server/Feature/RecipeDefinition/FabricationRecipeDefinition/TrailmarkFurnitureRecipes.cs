@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.SkillService;
 
@@ -20,8 +20,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
             // Trailmark Field Cot
             _builder.Create(RecipeType.TrailmarkFieldCot, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Bed)
-                .Resref("tk_cot")
-                .Level(28)
+                .Resref("structure_0351")
+                .Level(25)
                 .Quantity(1)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
@@ -32,8 +32,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
             // Trailmark Signal Lamp
             _builder.Create(RecipeType.TrailmarkSignalLamp, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Lighting)
-                .Resref("tk_lamp")
-                .Level(28)
+                .Resref("structure_0352")
+                .Level(26)
                 .Quantity(1)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
@@ -44,8 +44,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
             // Trailmark Trophy Stand
             _builder.Create(RecipeType.TrailmarkTrophyStand, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Fixtures)
-                .Resref("tk_stand")
-                .Level(28)
+                .Resref("structure_0353")
+                .Level(29)
                 .Quantity(1)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
@@ -56,8 +56,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
             // Trailmark Low Table
             _builder.Create(RecipeType.TrailmarkLowTable, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Surfaces)
-                .Resref("tk_table")
-                .Level(28)
+                .Resref("structure_0354")
+                .Level(27)
                 .Quantity(1)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
@@ -68,7 +68,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
             // Trailmark Wall Banner
             _builder.Create(RecipeType.TrailmarkWallBanner, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Wall)
-                .Resref("tk_banner")
+                .Resref("structure_0355")
                 .Level(28)
                 .Quantity(1)
                 .RequirementUnlocked()
@@ -80,8 +80,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
             // Trailmark Supply Locker
             _builder.Create(RecipeType.TrailmarkSupplyLocker, SkillType.Fabrication)
                 .Category(RecipeCategoryType.MiscellaneousFurniture)
-                .Resref("tk_locker")
-                .Level(28)
+                .Resref("structure_0356")
+                .Level(30)
                 .Quantity(1)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
@@ -92,8 +92,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
             // Trailmark Floor Mat
             _builder.Create(RecipeType.TrailmarkFloorMat, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Flooring)
-                .Resref("tk_mat")
-                .Level(28)
+                .Resref("structure_0357")
+                .Level(25)
                 .Quantity(1)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
@@ -104,8 +104,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
             // Trailmark Data Console
             _builder.Create(RecipeType.TrailmarkDataConsole, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Electronics)
-                .Resref("tk_console")
-                .Level(28)
+                .Resref("structure_0358")
+                .Level(30)
                 .Quantity(1)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
@@ -116,8 +116,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
             // Trailmark Display Plinth
             _builder.Create(RecipeType.TrailmarkDisplayPlinth, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Statues)
-                .Resref("tk_plinth")
-                .Level(28)
+                .Resref("structure_0359")
+                .Level(29)
                 .Quantity(1)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
@@ -128,8 +128,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
             // Trailmark Work Stool
             _builder.Create(RecipeType.TrailmarkWorkStool, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Seating)
-                .Resref("tk_stool")
-                .Level(28)
+                .Resref("structure_0360")
+                .Level(26)
                 .Quantity(1)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)

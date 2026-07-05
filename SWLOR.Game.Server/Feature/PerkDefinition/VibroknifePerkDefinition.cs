@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Feature.QuestDefinition;
 
 namespace SWLOR.Game.Server.Feature.PerkDefinition
 {
@@ -215,7 +216,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.VitalRupture1)
                 .Description("Deals weapon DMG + 30. Bleeding targets take +45 DMG and suffer Hemorrhage for 45 seconds.")
                 .Price(6)
-                .RequirementSkill(SkillType.Vibroknife, 50);
+                .RequirementSkill(SkillType.Vibroknife, 50)
+                .RequirementQuest(VibroknifeCapstoneQuestDefinition.VitalRuptureMasteryQuestId);
         }
 
         private void EnfeeblingStrike()
@@ -392,7 +394,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.SystemicShutdown1)
                 .Description("Enemies in the area take weapon DMG + 20 and suffer Weakened, Hamstring, Exhausted, and Disoriented for 45 seconds.")
                 .Price(6)
-                .RequirementSkill(SkillType.Vibroknife, 50);
+                .RequirementSkill(SkillType.Vibroknife, 50)
+                .RequirementQuest(VibroknifeCapstoneQuestDefinition.SystemicShutdownMasteryQuestId);
         }
 
     }

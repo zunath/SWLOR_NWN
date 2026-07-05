@@ -5,7 +5,7 @@ param(
     [string]$ClassFeat2daPath = "SWLOR_Haks\sw_2da\CLS_FEAT_FIGHT.2da",
     [string]$SpellEnumPath = "SWLOR.NWN.API\NWScript\Enum\spell.cs",
     [int]$GeneratedFeatStart = 2000,
-    [int]$GeneratedFeatEnd = 2718
+    [int]$GeneratedFeatEnd = 2753
 )
 
 Set-StrictMode -Version Latest

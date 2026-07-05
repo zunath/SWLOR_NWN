@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 {
     public class BloodFrenzyQuestDefinition : IQuestListDefinition
     {
-        public const string FinalQuestId = "blood_frenzy_mastery";
+        internal const string FinalQuestId = "blood_frenzy_mastery";
 
         private readonly QuestBuilder _builder = new();
 

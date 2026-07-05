@@ -1464,6 +1464,10 @@ namespace SWLOR.Game.Server.Service
             var enmityBoost = GetStatAdjustment(creatureId, StatType.DeflectionEnmityPercentAdjustment);
             var defenseBoost = GetStatAdjustment(creatureId, StatType.DeflectionDefensePercentAdjustment);
             var forceDefenseBoost = GetStatAdjustment(creatureId, StatType.DeflectionForceDefensePercentAdjustment);
+            var recastReductionGroup = GetRecastGroupFromStat(GetStatAdjustment(
+                creatureId,
+                StatType.DeflectionRecastReductionGroupId));
+            var recastReductionSeconds = GetStatAdjustment(creatureId, StatType.DeflectionRecastReductionSeconds);
             var nextSkillAbilitySkillType = GetSkillTypeFromStat(GetStatAdjustment(
                 creatureId,
                 StatType.DeflectionNextSkillAbilitySkillType));
@@ -1537,6 +1541,11 @@ namespace SWLOR.Game.Server.Service
                     forceDefenseBoost,
                     DeflectionDefenseBoostDurationSeconds,
                     StatType.DeflectionDefensePercentAdjustment);
+            }
+
+            if (recastReductionGroup != RecastGroup.Invalid && recastReductionSeconds > 0)
+            {
+                Recast.ReduceRecastDelay(creatureId, recastReductionGroup, recastReductionSeconds);
             }
 
             Combat.GrantNextSkillAbilityBonuses(

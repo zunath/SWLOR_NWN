@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
@@ -96,7 +95,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             var isInitialTarget = true;
             foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
-                Stat.RestoreStamina(friendly, PercentOf(Stat.GetMaxStamina(friendly), 10));
+                Stat.RestoreStamina(friendly, GameMath.PercentOf(Stat.GetMaxStamina(friendly), 10));
                 StatusEffect.ApplyStatusEffect(activator, friendly, typeof(PowerCell1StatusEffect), 30f);
                 ApplyPowerCellRiders(activator, friendly, isInitialTarget);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Restoration), friendly);
@@ -109,7 +108,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             var isInitialTarget = true;
             foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
-                Stat.RestoreStamina(friendly, PercentOf(Stat.GetMaxStamina(friendly), 18));
+                Stat.RestoreStamina(friendly, GameMath.PercentOf(Stat.GetMaxStamina(friendly), 18));
                 StatusEffect.ApplyStatusEffect(activator, friendly, typeof(PowerCell2StatusEffect), 30f);
                 ApplyPowerCellRiders(activator, friendly, isInitialTarget);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Restoration), friendly);
@@ -122,7 +121,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             var isInitialTarget = true;
             foreach (var friendly in GetPowerCell3Targets(activator, target))
             {
-                Stat.RestoreStamina(friendly, PercentOf(Stat.GetMaxStamina(friendly), 18));
+                Stat.RestoreStamina(friendly, GameMath.PercentOf(Stat.GetMaxStamina(friendly), 18));
                 StatusEffect.ApplyStatusEffect(activator, friendly, typeof(PowerCell3StatusEffect), 30f);
                 ApplyPowerCellRiders(activator, friendly, isInitialTarget);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Restoration), friendly);
@@ -157,11 +156,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             }
 
             DeviceAbilityEffects.ApplyFieldSupportAllyBuffRiders(activator, target);
-        }
-
-        private static int PercentOf(int value, int percent)
-        {
-            return Math.Max(1, value * percent / 100);
         }
     }
 }

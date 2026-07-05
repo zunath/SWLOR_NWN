@@ -819,6 +819,1007 @@
                       "type": "resref",
                       "value": "bf_kess_spawn"
                     }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Veles Militia Annex - General Capstone Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_cap_veles"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dantooine Jedi Enclave Trial Halls - General Capstone Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_cap_dantjedi"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Korriban Forge Caverns - General Capstone Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_cap_kforge"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Smuggler's Moon Fight Club Backrooms - General Capstone Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_cap_smfight"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "CZ-220 Breaker Yard - General Capstone Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_cap_czbr"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Anchorhead Canyon Range - General Capstone Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_cap_tatcan"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Czerka Arms Test Range - General Capstone Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_cap_czerka"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Hutlar Qion Test Site - General Capstone Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_cap_hutlar"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Korriban Sith Crypt Depths - General Capstone Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_cap_kcrypt"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Viscara Republic Engineering Bunker - General Capstone Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_cap_vrepub"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dantooine Medical Sublevel - General Capstone Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_cap_dantmed"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dathomir Tarn Jungle Preserve - General Capstone Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_cap_dtarn"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dathomir Grotto Apex Den - General Capstone Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_cap_dgrot"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Veles Militia Annex - Invincible Warden Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_invinc_wd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Veles Militia Annex - Invincible Master Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_invinc_ms"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Veles Militia Annex - Vital Rupture Warden Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_vitrupt_wd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Veles Militia Annex - Vital Rupture Master Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_vitrupt_ms"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Veles Militia Annex - Systemic Shutdown Warden Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_sysshut_wd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Veles Militia Annex - Systemic Shutdown Master Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_sysshut_ms"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dantooine Jedi Enclave Trial Halls - Saber Storm Warden Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_sabstorm_wd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dantooine Jedi Enclave Trial Halls - Saber Storm Master Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_sabstorm_ms"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dantooine Jedi Enclave Trial Halls - Guardian Master Warden Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_guardmst_wd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dantooine Jedi Enclave Trial Halls - Guardian Master Master Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_guardmst_ms"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dantooine Jedi Enclave Trial Halls - Saber Cyclone Warden Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_sabcycl_wd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dantooine Jedi Enclave Trial Halls - Saber Cyclone Master Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_sabcycl_ms"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Korriban Forge Caverns - Absolute Defense Warden Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_absdef_wd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Korriban Forge Caverns - Absolute Defense Master Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_absdef_ms"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Korriban Forge Caverns - Soul Ascension Warden Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_soulasc_wd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Korriban Forge Caverns - Soul Ascension Master Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_soulasc_ms"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Korriban Forge Caverns - Forcebane Warden Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_forcebane_wd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Korriban Forge Caverns - Forcebane Master Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_forcebane_ms"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Smuggler's Moon Fight Club Backrooms - Crippling Defense Warden Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_cripdef_wd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Smuggler's Moon Fight Club Backrooms - Crippling Defense Master Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_cripdef_ms"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Smuggler's Moon Fight Club Backrooms - Tempest Bloom Warden Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_tempbloom_wd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Smuggler's Moon Fight Club Backrooms - Tempest Bloom Master Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_tempbloom_ms"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Smuggler's Moon Fight Club Backrooms - Red Bloom Warden Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_redbloom_wd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Smuggler's Moon Fight Club Backrooms - Red Bloom Master Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_redbloom_ms"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "CZ-220 Breaker Yard - Adamantine Guard Warden Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_adamguard_wd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "CZ-220 Breaker Yard - Adamantine Guard Master Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_adamguard_ms"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "CZ-220 Breaker Yard - Scrapheap Lockdown Warden Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_scraplock_wd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "CZ-220 Breaker Yard - Scrapheap Lockdown Master Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_scraplock_ms"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "CZ-220 Breaker Yard - Worldbreaker Warden Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_worldbrk_wd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "CZ-220 Breaker Yard - Worldbreaker Master Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_worldbrk_ms"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Anchorhead Canyon Range - Unmoving Center Warden Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_unmovctr_wd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Anchorhead Canyon Range - Unmoving Center Master Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_unmovctr_ms"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Anchorhead Canyon Range - Last Word Warden Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_lastword_wd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Anchorhead Canyon Range - Last Word Master Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_lastword_ms"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Anchorhead Canyon Range - Dead Man's Hand Warden Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_deadhand_wd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Anchorhead Canyon Range - Dead Man's Hand Master Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_deadhand_ms"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Czerka Arms Test Range - Kill Box Warden Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_killbox_wd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Czerka Arms Test Range - Kill Box Master Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_killbox_ms"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Czerka Arms Test Range - One Shot Warden Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_oneshot_wd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Czerka Arms Test Range - One Shot Master Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_oneshot_ms"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Czerka Arms Test Range - Rain of Steel Warden Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_rainsteel_wd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Czerka Arms Test Range - Rain of Steel Master Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_rainsteel_ms"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Hutlar Qion Test Site - Perfect Flurry Warden Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_perflurry_wd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Hutlar Qion Test Site - Perfect Flurry Master Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_perflurry_ms"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Hutlar Qion Test Site - Thermal Detonator Warden Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_thermdet_wd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Hutlar Qion Test Site - Thermal Detonator Master Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_thermdet_ms"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Hutlar Qion Test Site - Overload Barrage Warden Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_overbarr_wd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Hutlar Qion Test Site - Overload Barrage Master Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_overbarr_ms"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Korriban Sith Crypt Depths - Last Stand of the Light Warden Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_lightstand_wd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Korriban Sith Crypt Depths - Last Stand of the Light Master Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_lightstand_ms"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Korriban Sith Crypt Depths - Hunger of the Dark Warden Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_darkhung_wd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Korriban Sith Crypt Depths - Hunger of the Dark Master Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_darkhung_ms"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Korriban Sith Crypt Depths - Eclipse of Resolve Warden Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_eclipse_wd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Korriban Sith Crypt Depths - Eclipse of Resolve Master Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_eclipse_ms"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Viscara Republic Engineering Bunker - Killzone Beacon Warden Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_killbeacon_wd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Viscara Republic Engineering Bunker - Killzone Beacon Master Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_killbeacon_ms"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Viscara Republic Engineering Bunker - Emergency Bunker Warden Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_embunker_wd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Viscara Republic Engineering Bunker - Emergency Bunker Master Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_embunker_ms"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Viscara Republic Engineering Bunker - Decisive Command Warden Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_deccommand_wd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Viscara Republic Engineering Bunker - Decisive Command Master Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_deccommand_ms"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dantooine Medical Sublevel - Hold the Line Warden Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_holdline_wd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dantooine Medical Sublevel - Hold the Line Master Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_holdline_ms"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dantooine Medical Sublevel - Emergency Cocktail Warden Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_emcocktail_wd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dantooine Medical Sublevel - Emergency Cocktail Master Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_emcocktail_ms"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dantooine Medical Sublevel - Infinite Conduit Warden Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_infconduit_wd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dantooine Medical Sublevel - Infinite Conduit Master Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_infconduit_ms"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dathomir Tarn Jungle Preserve - Apex Bite Warden Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_apexbite_wd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dathomir Tarn Jungle Preserve - Apex Bite Master Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_apexbite_ms"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dathomir Tarn Jungle Preserve - Unbreakable Beast Warden Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_unbrbeast_wd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dathomir Tarn Jungle Preserve - Unbreakable Beast Master Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_unbrbeast_ms"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dathomir Tarn Jungle Preserve - Alpha Rhythm Warden Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_alpharhy_wd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dathomir Tarn Jungle Preserve - Alpha Rhythm Master Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_alpharhy_ms"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dathomir Grotto Apex Den - Primal Overrun Warden Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_primover_wd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dathomir Grotto Apex Den - Primal Overrun Master Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_primover_ms"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dathomir Grotto Apex Den - Untouchable Instinct Warden Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_untinst_wd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dathomir Grotto Apex Den - Untouchable Instinct Master Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_untinst_ms"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dathomir Grotto Apex Den - Force-Bonded Beast Warden Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_forcebeast_wd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dathomir Grotto Apex Den - Force-Bonded Beast Master Spawn"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wp_forcebeast_ms"
+                    }
                   }
                 ]
               },

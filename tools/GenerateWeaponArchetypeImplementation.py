@@ -2189,7 +2189,7 @@ def add_missing_recast_groups(rows):
         values[enum_name] = next_id
         next_id += 1
 
-    marker = "        [RecastGroup(\"Draavo's Challenge\", \"Draavo Chall.\", true)]\n        DraavosChallenge = 433,"
+    marker = "        [RecastGroup(\"Concussive Challenge\", \"Conc. Chall.\", true)]\n        ConcussiveChallenge = 433,"
     if marker not in text:
         raise RuntimeError("Could not find RecastGroup insertion marker")
     replacement = marker + "\n" + "\n".join(additions)

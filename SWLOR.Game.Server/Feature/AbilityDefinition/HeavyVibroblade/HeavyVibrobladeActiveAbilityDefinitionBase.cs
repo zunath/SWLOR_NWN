@@ -57,7 +57,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
             if (damage <= 0 || healingPercent <= 0)
                 return;
 
-            var amount = Math.Max(1, (int)Math.Ceiling(damage * (healingPercent / 100f)));
+            var amount = GameMath.PercentOf(damage, healingPercent);
             amount = Ability.ApplyCombatReadinessToActivatedAbilityMagnitude(target, amount);
             amount = Stat.ApplyHealingReceivedAdjustment(target, amount);
             ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), target);
@@ -72,7 +72,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
         protected static void SacrificeHitPoints(uint activator, int basePercent, int minimumPercent)
         {
             var percent = Math.Max(minimumPercent, basePercent - Math.Max(0, GetAbilityScore(activator, AbilityType.Might)));
-            var amount = Math.Max(1, (int)Math.Ceiling(GetMaxHitPoints(activator) * (percent / 100f)));
+            var amount = GameMath.PercentOf(GetMaxHitPoints(activator), percent);
             var currentHp = GetCurrentHitPoints(activator);
 
             if (currentHp <= 1)

@@ -125,7 +125,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             int percent,
             float durationSeconds)
         {
-            var amount = Math.Max(1, flatAmount + (int)Math.Ceiling(GetMaxHitPoints(target) * (percent / 100f)));
+            var amount = Math.Max(1, flatAmount + GameMath.PercentOf(GetMaxHitPoints(target), percent));
             amount = DeviceAbilityEffects.ApplyFieldSupportOutputBonus(activator, amount);
             var duration = durationSeconds;
 

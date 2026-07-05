@@ -308,7 +308,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             var clampedPercent = Math.Min(percent, 100);
-            var reduction = Math.Max(1, (int)Math.Ceiling(currentEnmity * (clampedPercent / 100f)));
+            var reduction = GameMath.PercentOf(currentEnmity, clampedPercent);
             table[creature] = Math.Max(1, currentEnmity - reduction);
 
             AttackHighestEnmityTarget(enemy);

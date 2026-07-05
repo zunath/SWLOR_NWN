@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         protected override void Tick(uint creature)
         {
-            var damageAmount = Math.Max(1, (int)Math.Ceiling(GetMaxHitPoints(creature) * 0.04f));
+            var damageAmount = GameMath.PercentOf(GetMaxHitPoints(creature), 4);
             var damageAdjustment = Stat.GetStatAdjustment(Source, StatType.OutgoingBleedingDamagePercentAdjustment);
             if (damageAdjustment != 0)
             {

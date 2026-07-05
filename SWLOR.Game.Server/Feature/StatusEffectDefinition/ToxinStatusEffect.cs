@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         protected override void Tick(uint creature)
         {
-            var damageAmount = Math.Max(1, (int)Math.Ceiling(GetMaxHitPoints(creature) * 0.06f));
+            var damageAmount = GameMath.PercentOf(GetMaxHitPoints(creature), 6);
             damageAmount = Resistance.ApplyResistanceToDamage(creature, ResistanceType, damageAmount);
             if (damageAmount <= 0)
                 return;

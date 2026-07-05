@@ -207,11 +207,6 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
             OnDamageTaken(defender, attacker, damage, damageType, deliveryType);
         }
 
-        protected int PercentOfDamage(int damage, int percent)
-        {
-            return Math.Max(1, (int)Math.Ceiling(damage * (percent / 100f)));
-        }
-
         protected int GetPositiveAbilityModifier(AbilityType abilityType, uint creature)
         {
             return Math.Max(0, GetAbilityModifier(abilityType, creature));

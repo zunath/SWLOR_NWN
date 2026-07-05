@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         protected override void OnDamageDealt(uint attacker, uint defender, int damage, CombatDamageType damageType)
         {
-            var amount = Stat.ApplyHealingReceivedAdjustment(attacker, PercentOfDamage(damage, 2));
+            var amount = Stat.ApplyHealingReceivedAdjustment(attacker, GameMath.PercentOf(damage, 2));
             ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), attacker);
         }
     }

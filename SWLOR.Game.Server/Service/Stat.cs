@@ -1493,7 +1493,7 @@ namespace SWLOR.Game.Server.Service
 
             if (staminaRestorePercent > 0)
             {
-                var amount = (int)Math.Ceiling(GetMaxStamina(creatureId) * (staminaRestorePercent / 100f));
+                var amount = GameMath.PercentOf(GetMaxStamina(creatureId), staminaRestorePercent);
                 RestoreStamina(creatureId, amount);
             }
 

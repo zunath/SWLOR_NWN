@@ -111,7 +111,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 if (creature != activator && GetIsReactionTypeHostile(creature, activator))
                 {
                     var damage = IsDroid(creature)
-                        ? baseDamage + (int)Math.Ceiling(baseDamage * (droidBonusPercent / 100f))
+                        ? baseDamage + GameMath.PercentOf(baseDamage, droidBonusPercent)
                         : baseDamage;
 
                     Ability.ApplyCombatImpact(

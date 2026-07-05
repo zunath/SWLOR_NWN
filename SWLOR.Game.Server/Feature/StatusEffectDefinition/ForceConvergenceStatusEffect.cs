@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         protected override void Tick(uint creature)
         {
-            var amount = Math.Max(1, (int)Math.Ceiling(Stat.GetMaxFP(creature) * 0.04f));
+            var amount = GameMath.PercentOf(Stat.GetMaxFP(creature), 4);
             Stat.RestoreFP(creature, amount);
         }
     }

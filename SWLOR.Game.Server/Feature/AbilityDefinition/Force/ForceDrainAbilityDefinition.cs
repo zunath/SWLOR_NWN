@@ -139,7 +139,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             var effectiveHealPercent = IsBelowHalfHP(target)
                 ? lowHPHealPercent
                 : healPercent;
-            var healAmount = Math.Max(1, (int)Math.Ceiling(damage * (effectiveHealPercent / 100f)));
+            var healAmount = GameMath.PercentOf(damage, effectiveHealPercent);
             healAmount = Ability.ApplyCombatReadinessToActivatedAbilityMagnitude(activator, healAmount);
             healAmount = Stat.ApplyHealingReceivedAdjustment(activator, healAmount);
             ApplyEffectToObject(DurationType.Instant, EffectHeal(healAmount), activator);

@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             var absorbed = Math.Min(_remainingShield, damage);
             _remainingShield -= absorbed;
 
-            var healing = Stat.ApplyHealingReceivedAdjustment(defender, PercentOfDamage(absorbed, 15));
+            var healing = Stat.ApplyHealingReceivedAdjustment(defender, GameMath.PercentOf(absorbed, 15));
             ApplyEffectToObject(DurationType.Instant, EffectHeal(healing), defender);
 
             if (_remainingShield <= 0)

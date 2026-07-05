@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.Game.Server.Service.StatService;
@@ -14,7 +15,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         protected override void OnDamageDealt(uint attacker, uint defender, int damage, CombatDamageType damageType)
         {
             var percent = Math.Max(20, 45 - Math.Max(0, GetAbilityScore(attacker, AbilityType.Might)));
-            AssignCommand(attacker, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(PercentOfDamage(damage, percent)), attacker));
+            AssignCommand(attacker, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(GameMath.PercentOf(damage, percent)), attacker));
         }
         public SoulDevourerStatusEffect()
         {

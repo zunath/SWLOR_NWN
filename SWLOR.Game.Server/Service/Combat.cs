@@ -578,7 +578,7 @@ namespace SWLOR.Game.Server.Service
 
             var redirectedDamage = Math.Min(
                 damage,
-                Math.Max(1, (int)Math.Ceiling(damage * (Math.Min(100, redirectPercent) / 100f))));
+                GameMath.PercentOf(damage, Math.Min(100, redirectPercent)));
 
             StatusEffect.RemoveStatusEffectsWithStat(defender, StatType.DamageTakenRedirectToStatusSourcePercent, false);
             AssignCommand(
@@ -623,7 +623,7 @@ namespace SWLOR.Game.Server.Service
 
             var sharedDamage = Math.Min(
                 damage,
-                Math.Max(1, (int)Math.Ceiling(damage * (Math.Min(100, sharePercent) / 100f))));
+                GameMath.PercentOf(damage, Math.Min(100, sharePercent)));
             var finalSharedDamage = ApplyDamageTakenModifiers(
                 shareTarget,
                 sharedDamage,
@@ -681,7 +681,7 @@ namespace SWLOR.Game.Server.Service
             if (adjustment <= 0)
                 return;
 
-            var reflectedDamage = Math.Max(1, (int)Math.Ceiling(damage * (adjustment / 100f)));
+            var reflectedDamage = GameMath.PercentOf(damage, adjustment);
             ApplyTriggeredDamage(defender, attacker, reflectedDamage, damageType);
         }
 
@@ -748,7 +748,7 @@ namespace SWLOR.Game.Server.Service
                 return false;
 
             var scalingAbilityScore = Stat.GetStatAdjustment(defender, StatType.FatalDamageTemporaryHPScalingAbilityScore);
-            var tempHP = Math.Max(1, (int)Math.Ceiling(GetMaxHitPoints(defender) * (temporaryHPPercent / 100f)));
+            var tempHP = GameMath.PercentOf(GetMaxHitPoints(defender), temporaryHPPercent);
             if (scalingAbilityScore > 0)
                 tempHP = AbilityEffectScaling.ScaleDirectEffect(tempHP, scalingAbilityScore);
 
@@ -1374,14 +1374,14 @@ namespace SWLOR.Game.Server.Service
             var targetFPLossPercent = Stat.GetStatAdjustment(attacker, StatType.CriticalTargetFPLossPercentOfDamage);
             if (targetFPLossPercent > 0)
             {
-                var fpLoss = Math.Max(1, (int)Math.Ceiling(damage * (targetFPLossPercent / 100f)));
+                var fpLoss = GameMath.PercentOf(damage, targetFPLossPercent);
                 Stat.ReduceFP(defender, fpLoss);
             }
 
             var targetStaminaLossPercent = Stat.GetStatAdjustment(attacker, StatType.CriticalTargetStaminaLossPercentOfDamage);
             if (targetStaminaLossPercent > 0)
             {
-                var staminaLoss = Math.Max(1, (int)Math.Ceiling(damage * (targetStaminaLossPercent / 100f)));
+                var staminaLoss = GameMath.PercentOf(damage, targetStaminaLossPercent);
                 Stat.ReduceStamina(defender, staminaLoss);
             }
 
@@ -1840,7 +1840,7 @@ namespace SWLOR.Game.Server.Service
             var hpRestorePercent = Stat.GetStatAdjustment(creature, StatType.DefeatedEnemyHPPercentRestore);
             if (hpRestorePercent > 0)
             {
-                HealPercentOfMaxHP(creature, hpRestorePercent);
+                HealFromMaxHP(creature, hpRestorePercent);
             }
 
             var attackPercent = Stat.GetStatAdjustment(creature, StatType.DefeatedEnemyAttackPercentAdjustment);
@@ -2041,7 +2041,7 @@ namespace SWLOR.Game.Server.Service
             if (damage <= 0 || percent <= 0)
                 return;
 
-            var amount = Math.Max(1, (int)Math.Ceiling(damage * (percent / 100f)));
+            var amount = GameMath.PercentOf(damage, percent);
             amount = Stat.ApplyHealingReceivedAdjustment(creature, amount);
             ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), creature);
         }
@@ -2126,7 +2126,7 @@ namespace SWLOR.Game.Server.Service
                 !TryUseStatTrigger(defender, StatType.LowHPTemporaryHPPercent, cooldown))
                 return;
 
-            var temporaryHP = Math.Max(1, (int)Math.Ceiling(GetMaxHitPoints(defender) * (temporaryHPPercent / 100f)));
+            var temporaryHP = GameMath.PercentOf(GetMaxHitPoints(defender), temporaryHPPercent);
             ApplyEffectToObject(DurationType.Temporary, EffectTemporaryHitpoints(temporaryHP), defender, duration);
         }
 
@@ -2155,7 +2155,7 @@ namespace SWLOR.Game.Server.Service
             if (!TryUseStatTrigger(defender, StatType.LowHPTemporaryHPPercent, cooldown))
                 return;
 
-            var temporaryHP = Math.Max(1, (int)Math.Ceiling(maxHP * (temporaryHPPercent / 100f)));
+            var temporaryHP = GameMath.PercentOf(maxHP, temporaryHPPercent);
             ApplyEffectToObject(DurationType.Temporary, EffectTemporaryHitpoints(temporaryHP), defender, duration);
         }
 
@@ -2173,7 +2173,7 @@ namespace SWLOR.Game.Server.Service
                 !TryUseStatTrigger(defender, StatType.LowHPNoSaveTemporaryHPPercent, cooldown))
                 return;
 
-            var temporaryHP = Math.Max(1, (int)Math.Ceiling(GetMaxHitPoints(defender) * (temporaryHPPercent / 100f)));
+            var temporaryHP = GameMath.PercentOf(GetMaxHitPoints(defender), temporaryHPPercent);
             ApplyEffectToObject(DurationType.Temporary, EffectTemporaryHitpoints(temporaryHP), defender, duration);
         }
 
@@ -2556,7 +2556,7 @@ namespace SWLOR.Game.Server.Service
                 return damage;
 
             var reductionPercent = GetGuardDamageReductionPercent(defender);
-            var preventedDamage = Math.Min(damage, Math.Max(1, (int)Math.Ceiling(damage * (reductionPercent / 100f))));
+            var preventedDamage = Math.Min(damage, GameMath.PercentOf(damage, reductionPercent));
             var adjustedDamage = Math.Max(0, damage - preventedDamage);
 
             TrackGuardedHit(defender);
@@ -2851,12 +2851,12 @@ namespace SWLOR.Game.Server.Service
             return previousHP >= thresholdHP && currentHP < thresholdHP;
         }
 
-        private static void HealPercentOfMaxHP(uint creature, int percent)
+        private static void HealFromMaxHP(uint creature, int percent)
         {
             if (percent <= 0)
                 return;
 
-            var amount = Math.Max(1, (int)Math.Ceiling(GetMaxHitPoints(creature) * (percent / 100f)));
+            var amount = GameMath.PercentOf(GetMaxHitPoints(creature), percent);
             amount = Stat.ApplyHealingReceivedAdjustment(creature, amount);
             ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), creature);
         }
@@ -5249,7 +5249,7 @@ namespace SWLOR.Game.Server.Service
             if (shieldPercent <= 0 || duration <= 0 || !TryUseStatTrigger(activator, StatType.HeavyVibrobladeDefenseGuardiansResolveShieldPercent, cooldown))
                 return;
 
-            var shieldAmount = Math.Max(1, (int)Math.Ceiling(GetMaxHitPoints(activator) * (shieldPercent / 100f)));
+            var shieldAmount = GameMath.PercentOf(GetMaxHitPoints(activator), shieldPercent);
             ApplyEffectToObject(DurationType.Temporary, EffectTemporaryHitpoints(shieldAmount), activator, duration);
             StatusEffect.ApplyStatusEffect(activator, activator, new GuardiansResolveStatusEffect(shieldAmount), duration);
         }
@@ -5421,7 +5421,7 @@ namespace SWLOR.Game.Server.Service
                 percent = Math.Min(percent, maximumPercent);
             }
 
-            Stat.RestoreStamina(activator, Math.Max(1, (int)Math.Ceiling(maximumStamina * (percent / 100f))));
+            Stat.RestoreStamina(activator, GameMath.PercentOf(maximumStamina, percent));
         }
 
         private static void ApplyLightsaberDefenseActivatedEffects(uint activator)
@@ -5622,7 +5622,7 @@ namespace SWLOR.Game.Server.Service
             if (percent <= 0 || duration <= 0)
                 return;
 
-            var temporaryHP = Math.Max(1, (int)Math.Ceiling(hitPointsSpent * (percent / 100f)));
+            var temporaryHP = GameMath.PercentOf(hitPointsSpent, percent);
             ApplyEffectToObject(
                 DurationType.Temporary,
                 EffectTemporaryHitpoints(temporaryHP),
@@ -5655,7 +5655,7 @@ namespace SWLOR.Game.Server.Service
                 percent = Math.Min(maximum, percent);
             }
 
-            var stamina = Math.Max(1, (int)Math.Ceiling(Stat.GetMaxStamina(activator) * (percent / 100f)));
+            var stamina = GameMath.PercentOf(Stat.GetMaxStamina(activator), percent);
             Stat.RestoreStamina(activator, stamina);
         }
 
@@ -6509,7 +6509,7 @@ namespace SWLOR.Game.Server.Service
             if (cost <= 0 || percent <= 0)
                 return 0;
 
-            return Math.Max(1, (int)Math.Ceiling(cost * (percent / 100f)));
+            return GameMath.PercentOf(cost, percent);
         }
 
         public static int GetNextAbilityFPCostAdjustment(uint creature, SkillType skillType)

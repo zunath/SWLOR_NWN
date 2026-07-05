@@ -271,7 +271,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                     return;
 
                 var currentHP = GetCurrentHitPoints(activator);
-                var hpCost = Math.Max(1, (int)Math.Ceiling(currentHP * (HPCostPercent / 100f)));
+                var hpCost = GameMath.PercentOf(currentHP, HPCostPercent);
                 hpCost = Math.Min(hpCost, Math.Max(0, currentHP - 1));
                 if (hpCost <= 0)
                     return;
@@ -359,7 +359,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
                 if (HealPercentOfDamage > 0)
                 {
-                    var amount = Math.Max(1, (int)Math.Ceiling(totalDamage * (HealPercentOfDamage / 100f)));
+                    var amount = GameMath.PercentOf(totalDamage, HealPercentOfDamage);
                     if (HealMaximum > 0)
                         amount = Math.Min(amount, HealMaximum);
                     ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), activator);
@@ -1611,7 +1611,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                     Ability.ApplyHostileAbilityEnmity(activator, creature);
                     if (fpDrainPercent > 0)
                     {
-                        var fpDrain = Math.Max(1, (int)Math.Ceiling(Stat.GetCurrentFP(creature) * (fpDrainPercent / 100f)));
+                        var fpDrain = GameMath.PercentOf(Stat.GetCurrentFP(creature), fpDrainPercent);
                         Stat.ReduceFP(creature, fpDrain);
                     }
                 }

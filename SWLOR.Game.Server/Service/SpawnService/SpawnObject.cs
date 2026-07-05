@@ -12,6 +12,7 @@ namespace SWLOR.Game.Server.Service.SpawnService
         public ObjectType Type { get; set; }
         public string Resref { get; set; }
         public int Weight { get; set; }
+        public bool IsRare { get; set; }
         public AIFlag AIFlags { get; set; }
         public AIProfileType AIProfile { get; set; }
 

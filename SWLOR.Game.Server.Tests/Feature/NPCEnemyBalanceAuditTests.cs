@@ -125,6 +125,21 @@ public class NPCEnemyBalanceAuditTests
         new("bf_kess", "bf_kess_skin", "bf_kess_wp", 50, 5425, 43, 25, 25, 35, 35, 253, 44, 25, 3, 11, 22, 20, 102, 23),
     };
 
+    private static readonly ExpectedEnemy OldScarExpectedEnemy =
+        new("oldscar_kath", "oldscar_k_sk", "oldscar_k_wp", 4, 193, 16, 10, 10, 14, 14, 25, 4, 8, 2, 1, 5, 3, 13, 24);
+
+    private static readonly IReadOnlyDictionary<ResistanceType, int> OldScarExpectedResistances = new Dictionary<ResistanceType, int>
+    {
+        [ResistanceType.Fire] = -10,
+        [ResistanceType.Poison] = 4,
+        [ResistanceType.Electrical] = 2,
+        [ResistanceType.Ice] = 2,
+        [ResistanceType.Mind] = -15,
+        [ResistanceType.Mobility] = 5,
+        [ResistanceType.Trauma] = 6,
+        [ResistanceType.Disruption] = -10,
+    };
+
     private static readonly IReadOnlyDictionary<string, FeatType[]> ExpectedBloodFrenzyAbilityPackages = new Dictionary<string, FeatType[]>
     {
         ["bf_scavenger"] = new[] { FeatType.RakingClaws, FeatType.RendingBite },
@@ -251,6 +266,37 @@ public class NPCEnemyBalanceAuditTests
     }
 
     [Test]
+    public void OldScar_UsesWildlandsEliteBibleStats()
+    {
+        var root = FindRepositoryRoot();
+        using var utc = ReadJson(root, "Module", "utc", "oldscar_kath.utc.json");
+        using var skin = ReadJson(root, "Module", "uti", "oldscar_k_sk.uti.json");
+        using var weapon = ReadJson(root, "Module", "uti", "oldscar_k_wp.uti.json");
+
+        GetString(utc.RootElement, "Tag").Should().Be(OldScarExpectedEnemy.Resref);
+        GetString(utc.RootElement, "TemplateResRef").Should().Be(OldScarExpectedEnemy.Resref);
+        GetEquippedResref(utc.RootElement, CreatureWeaponSlot).Should().Be(OldScarExpectedEnemy.WeaponResref);
+        GetEquippedResref(utc.RootElement, CreatureArmorSlot).Should().Be(OldScarExpectedEnemy.SkinResref);
+        GetJsonLocalInt(utc.RootElement, "QUEST_NPC_GROUP_ID")
+            .Should()
+            .Be((int)NPCGroupType.Viscara_WildlandKathHounds, "Old Scar should count as a Kath Hound for existing Wildlands quests");
+
+        AssertCreatureHitPoints(utc.RootElement, OldScarExpectedEnemy);
+        AssertCreatureAttributes(utc.RootElement, OldScarExpectedEnemy);
+        AssertSkinCombatStats(skin.RootElement, OldScarExpectedEnemy);
+        AssertWeaponStats(weapon.RootElement, OldScarExpectedEnemy);
+
+        foreach (var (resistanceType, expectedValue) in OldScarExpectedResistances)
+        {
+            var rawCostValue = GetItemPropertyCost(skin.RootElement, ItemPropertyResistance, (int)resistanceType);
+            rawCostValue.Should().NotBeNull($"Old Scar should define {resistanceType} resistance from the World NPCs Bible row");
+            Resistance.DecodeItemPropertyCostTableValue(rawCostValue!.Value)
+                .Should()
+                .Be(expectedValue, $"{resistanceType} should match Old Scar's level 4 Elite Beast package");
+        }
+    }
+
+    [Test]
     public void BloodFrenzyEnemies_UseBibleAbilityPackages()
     {
         var root = FindRepositoryRoot();
@@ -267,6 +313,28 @@ public class NPCEnemyBalanceAuditTests
                 .Should()
                 .BeEquivalentTo(expectedFeatIds, $"{expected.Key} should use its Blood Frenzy Bible ability package");
         }
+    }
+
+    [Test]
+    public void OldScar_UsesEliteMeleeAbilityPackage()
+    {
+        var root = FindRepositoryRoot();
+        using var utc = ReadJson(root, "Module", "utc", "oldscar_kath.utc.json");
+        var expectedFeatIds = new[]
+        {
+            (int)FeatType.PouncingStrike,
+            (int)FeatType.MaulingBite,
+            (int)FeatType.TailSweep,
+            (int)FeatType.TerrifyingBellow,
+        };
+
+        GetCreatureFeats(utc.RootElement)
+            .Should()
+            .Contain(expectedFeatIds, "Old Scar should use the Elite Melee package from the World NPCs Bible");
+        GetCreatureFeats(utc.RootElement)
+            .Intersect(ResistanceThreatFeats.Keys)
+            .Should()
+            .BeEquivalentTo(expectedFeatIds, "Old Scar should not inherit the normal Kath Hound package");
     }
 
     [Test]
@@ -320,10 +388,27 @@ public class NPCEnemyBalanceAuditTests
         GetWorkbookCellText(worksheet, sharedStrings, "AP206")
             .Should()
             .Be("Blood Frenzy, Blood Frenzy Flurry, Draavo's Challenge, Stim Canister, Serrated Slash, Brutal Bash, Tactical Mark");
+        GetWorkbookCellText(worksheet, sharedStrings, "A207").Should().Be("Viscara");
+        GetWorkbookCellText(worksheet, sharedStrings, "B207").Should().Be("Old Scar");
+        GetWorkbookCellText(worksheet, sharedStrings, "C207").Should().Be("oldscar_kath");
+        GetWorkbookCellNumber(worksheet, sharedStrings, "D207").Should().Be(4m);
+        GetWorkbookCellText(worksheet, sharedStrings, "E207").Should().Be("Elite");
+        GetWorkbookCellText(worksheet, sharedStrings, "F207").Should().Be("Melee");
+        GetWorkbookCellText(worksheet, sharedStrings, "G207").Should().Be("Beast");
+        GetWorkbookCellText(worksheet, sharedStrings, "H207").Should().Be("None");
+        GetWorkbookCellNumber(worksheet, sharedStrings, "AE207").Should().Be(-10m);
+        GetWorkbookCellNumber(worksheet, sharedStrings, "AI207").Should().Be(-15m);
+        GetWorkbookCellNumber(worksheet, sharedStrings, "AL207").Should().Be(-10m);
+        GetWorkbookCellText(worksheet, sharedStrings, "AP207")
+            .Should()
+            .Be("Pouncing Strike, Mauling Bite, Tail Sweep, Terrifying Bellow");
         GetWorkbookCellFormula(worksheet, "X202").Should().Contain("+$AF202", "Poison resistance should read the numeric Poison Res Adj column");
         GetWorkbookCellFormula(worksheet, "AA202").Should().Contain("+$AI202", "Mind resistance should read the numeric Mind Res Adj column");
         GetWorkbookCellFormula(worksheet, "AC206").Should().Contain("+$AK206", "Kess's Trauma resistance should read the numeric Trauma Res Adj column");
         GetWorkbookCellFormula(worksheet, "AN206").Should().Contain("'World NPC Weapon Delays'", "Blood Frenzy weapon delays should be calculated through the shared delay table");
+        GetWorkbookCellFormula(worksheet, "N207").Should().Contain("$D207&\"|\"&$E207&\"|\"&$F207", "Old Scar HP should be calculated from the level 4 Elite Melee preset");
+        GetWorkbookCellFormula(worksheet, "W207").Should().Contain("+$AE207", "Old Scar's fire vulnerability should be applied through the numeric adjustment column");
+        GetWorkbookCellFormula(worksheet, "AN207").Should().Contain("'World NPC Weapon Delays'", "Old Scar delay should use the shared delay lookup with preset fallback");
 
         var formulaColumns = new[]
         {
@@ -331,7 +416,7 @@ public class NPCEnemyBalanceAuditTests
             "W", "X", "Y", "Z", "AA", "AB", "AC", "AD", "AM", "AN", "AO",
         };
 
-        foreach (var row in Enumerable.Range(202, 5))
+        foreach (var row in Enumerable.Range(202, 6))
         {
             foreach (var column in formulaColumns)
             {
@@ -342,7 +427,7 @@ public class NPCEnemyBalanceAuditTests
         }
 
         var handEntryStyle = GetWorkbookCellStyle(worksheet, "A202");
-        foreach (var row in Enumerable.Range(2, 205))
+        foreach (var row in Enumerable.Range(2, 206))
         {
             foreach (var column in new[] { "AE", "AF", "AG", "AH", "AI", "AJ", "AK", "AL" })
             {
@@ -364,11 +449,11 @@ public class NPCEnemyBalanceAuditTests
             .Attribute("ref")?
             .Value
             .Should()
-            .Be("$A$1:$AR$206", "the reusable resistance override columns should be included in World NPCs filtering");
+            .Be("$A$1:$AR$207", "the reusable resistance override columns should be included in World NPCs filtering");
 
         worksheet
             .Descendants(ns + "dataValidation")
-            .Single(validation => validation.Attribute("sqref")?.Value == "AE2:AL206")
+            .Single(validation => validation.Attribute("sqref")?.Value == "AE2:AL207")
             .Attribute("type")?
             .Value
             .Should()

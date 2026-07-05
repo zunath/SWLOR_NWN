@@ -1,7 +1,12 @@
+using System.Globalization;
+using System.IO.Compression;
+using System.Xml.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.LootTableDefinition;
+using SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition;
 using SWLOR.Game.Server.Feature.SpawnDefinition;
+using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.AnimationService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum.Item;
@@ -194,6 +199,29 @@ public class ViscaraSpawnDefinitionTests
         "bf_charm_frag",
     };
 
+    private static readonly (
+        string RecipeResref,
+        string RecipeName,
+        RecipeType RecipeType,
+        string CraftedResref,
+        string CraftedName,
+        int BaseItem,
+        RecipeCategoryType Category)[] OldScarUniqueRareRecipes =
+    {
+        ("recipe_osvest", "Blueprint: Old Scar Hide Vest", RecipeType.OldScarHideVest, "os_hidevest", "Old Scar Hide Vest", 16, RecipeCategoryType.Tunic),
+        ("recipe_oswrap", "Blueprint: Scarred Hound Wraps", RecipeType.OldScarWraps, "os_scarwraps", "Scarred Hound Wraps", 36, RecipeCategoryType.Glove),
+        ("recipe_ostread", "Blueprint: Old Scar Treads", RecipeType.OldScarTreads, "os_treads", "Old Scar Treads", 26, RecipeCategoryType.Boots),
+        ("recipe_ossash", "Blueprint: Old Scar Sash", RecipeType.OldScarSash, "os_sash", "Old Scar Sash", 21, RecipeCategoryType.Belt),
+        ("recipe_osmantle", "Blueprint: Old Scar Mantle", RecipeType.OldScarMantle, "os_mantle", "Old Scar Mantle", 80, RecipeCategoryType.Cloak),
+        ("recipe_oscollar", "Blueprint: Old Scar Collar", RecipeType.OldScarCollar, "os_collar", "Old Scar Collar", 19, RecipeCategoryType.Necklace),
+        ("recipe_osband", "Blueprint: Old Scar Band", RecipeType.OldScarBand, "os_band", "Old Scar Band", 52, RecipeCategoryType.Ring),
+        ("recipe_osguard", "Blueprint: Old Scar Guard", RecipeType.OldScarGuard, "os_guard", "Old Scar Guard", 78, RecipeCategoryType.Bracer),
+        ("recipe_osvisor", "Blueprint: Old Scar Visor", RecipeType.OldScarVisor, "os_visor", "Old Scar Visor", 17, RecipeCategoryType.Cap),
+        ("recipe_oscharm", "Blueprint: Old Scar Charm", RecipeType.OldScarCharm, "os_charm", "Old Scar Charm", 19, RecipeCategoryType.Necklace),
+        ("recipe_ostrophy", "Blueprint: Old Scar Trophy Band", RecipeType.OldScarTrophyBand, "os_trophy", "Old Scar Trophy Band", 52, RecipeCategoryType.Ring),
+        ("recipe_oshide", "Blueprint: Old Scar Hideband", RecipeType.OldScarHideband, "os_hideband", "Old Scar Hideband", 21, RecipeCategoryType.Belt),
+    };
+
     [Test]
     public void VelesSewers_DoesNotIncludeBloodFrenzyCapstoneEnemies()
     {
@@ -204,6 +232,252 @@ public class ViscaraSpawnDefinitionTests
             .Select(spawn => spawn.Resref)
             .Should()
             .NotIntersectWith(AllBloodFrenzyResrefs);
+    }
+
+    [Test]
+    public void Wildlands_UsesWeightedRareOldScarSpawn()
+    {
+        var tables = new ViscaraSpawnDefinition().BuildSpawnTables();
+        var wildlands = tables["VISCARA_WILDLANDS"];
+
+        var oldScar = wildlands.Spawns.Single(spawn => spawn.Resref == "oldscar_kath");
+        oldScar.Type.Should().Be(ObjectType.Creature);
+        oldScar.Weight.Should().Be(1, "rare spawns should stay on the normal weighted frequency model");
+        oldScar.IsRare.Should().BeTrue();
+
+        wildlands.Spawns.Single(spawn => spawn.Resref == "warocas").Weight.Should().Be(40);
+        wildlands.Spawns.Single(spawn => spawn.Resref == "kath_hound").Weight.Should().Be(70);
+    }
+
+    [Test]
+    public void OldScarLoot_DropsOneGuaranteedUniqueRecipeWithLowChanceSecondRoll()
+    {
+        var tables = new ViscaraLootTableDefinition().BuildLootTables();
+        var oldScarRares = tables["VISCARA_OLD_SCAR_RARES"];
+
+        oldScarRares.IsRare.Should().BeTrue();
+        oldScarRares.Should().HaveCount(OldScarUniqueRareRecipes.Length);
+        oldScarRares.Should().OnlyContain(item => item.IsRare && item.MaxQuantity == 1 && item.Weight == 1);
+        oldScarRares.Select(item => item.Resref)
+            .Should()
+            .BeEquivalentTo(OldScarUniqueRareRecipes.Select(item => item.RecipeResref));
+
+        var oldScarTrophy = tables["VISCARA_OLD_SCAR_TROPHY"];
+        oldScarTrophy.IsRare.Should().BeFalse();
+        oldScarTrophy.Should().ContainSingle(item =>
+            item.Resref == "oldscar_troph" &&
+            item.MaxQuantity == 1 &&
+            item.Weight == 1);
+
+        var root = FindRepositoryRoot();
+        using var blueprint = JsonDocument.Parse(File.ReadAllText(Path.Combine(
+            root.FullName,
+            "Module",
+            "utc",
+            "oldscar_kath.utc.json")));
+
+        GetLocalString(blueprint.RootElement, "LOOT_TABLE_5").Should().Be("VISCARA_OLD_SCAR_RARES,100,1");
+        GetLocalString(blueprint.RootElement, "LOOT_TABLE_6").Should().Be("VISCARA_OLD_SCAR_RARES,10,1");
+        GetLocalString(blueprint.RootElement, "LOOT_TABLE_7").Should().Be("VISCARA_OLD_SCAR_TROPHY,100,1");
+    }
+
+    [Test]
+    public void OldScarUniqueRareRecipeItems_LearnOldScarCraftingRecipes()
+    {
+        var root = FindRepositoryRoot();
+
+        foreach (var item in OldScarUniqueRareRecipes)
+        {
+            using var blueprint = JsonDocument.Parse(File.ReadAllText(Path.Combine(
+                root.FullName,
+                "Module",
+                "uti",
+                $"{item.RecipeResref}.uti.json")));
+
+            var json = blueprint.RootElement;
+            json.GetProperty("__data_type").GetString().Should().Be("UTI ");
+            json.GetProperty("LocalizedName").GetProperty("value").GetProperty("0").GetString().Should().Be(item.RecipeName);
+            json.GetProperty("Tag").GetProperty("value").GetString().Should().Be("RECIPE");
+            json.GetProperty("TemplateResRef").GetProperty("value").GetString().Should().Be(item.RecipeResref);
+            GetLocalString(json, "RECIPES").Should().Be(((int)item.RecipeType).ToString());
+        }
+    }
+
+    [Test]
+    public void OldScarUniqueRareRecipes_CreateLevelAppropriateWearables()
+    {
+        var recipes = new OldScarRecipes().BuildRecipes();
+
+        recipes.Should().HaveCount(OldScarUniqueRareRecipes.Length);
+
+        foreach (var item in OldScarUniqueRareRecipes)
+        {
+            var recipe = recipes[item.RecipeType];
+            recipe.Skill.Should().Be(SkillType.Smithery);
+            recipe.Category.Should().Be(item.Category);
+            recipe.Resref.Should().Be(item.CraftedResref);
+            recipe.Level.Should().Be(8);
+            recipe.Quantity.Should().Be(1);
+            recipe.EnhancementType.Should().Be(RecipeEnhancementType.Armor);
+            recipe.EnhancementSlots.Should().Be(1);
+            recipe.Requirements.Count(requirement => requirement.GetType() == typeof(RecipeUnlockRequirement)).Should().Be(1);
+            recipe.Components["oldscar_troph"].Should().Be(1);
+            recipe.Components.Should().ContainKey("lth_ruined");
+            recipe.Components.Should().ContainKey("fiberp_ruined");
+        }
+    }
+
+    [Test]
+    public void OldScarUniqueRareRecipes_AreDocumentedInSmitheryRecipeBible()
+    {
+        var root = FindRepositoryRoot();
+        using var archive = ZipFile.OpenRead(Path.Combine(
+            root.FullName,
+            "design",
+            "bible",
+            "SWLOR Design Bible - Combat Upgrade.xlsx"));
+        var worksheet = ReadWorksheetByName(archive, "Smithery Recipes");
+        var sharedStrings = ReadSharedStrings(archive);
+        var recipes = new OldScarRecipes().BuildRecipes();
+
+        foreach (var item in OldScarUniqueRareRecipes)
+        {
+            var recipe = recipes[item.RecipeType];
+            var row = FindWorkbookRowByCellText(worksheet, sharedStrings, "D", item.RecipeType.ToString());
+
+            GetWorkbookCellText(worksheet, sharedStrings, $"A{row}").Should().Be("Smithery");
+            GetWorkbookCellText(worksheet, sharedStrings, $"B{row}").Should().Be(item.RecipeResref);
+            GetWorkbookCellText(worksheet, sharedStrings, $"C{row}").Should().Be(GetSmitheryBlueprintCategory(item.Category));
+            GetWorkbookCellText(worksheet, sharedStrings, $"E{row}").Should().Be(item.Category.ToString());
+            GetWorkbookCellNumber(worksheet, sharedStrings, $"F{row}").Should().Be(1m);
+            GetWorkbookCellText(worksheet, sharedStrings, $"G{row}").Should().Be(item.CraftedName);
+            GetWorkbookCellNumber(worksheet, sharedStrings, $"H{row}").Should().Be(recipe.Level);
+            GetWorkbookCellNumber(worksheet, sharedStrings, $"I{row}").Should().Be(recipe.Quantity);
+            GetWorkbookCellText(worksheet, sharedStrings, $"J{row}").Should().Be(recipe.Resref);
+            GetWorkbookCellText(worksheet, sharedStrings, $"K{row}").Should().Be(recipe.EnhancementType.ToString());
+            GetWorkbookCellNumber(worksheet, sharedStrings, $"L{row}").Should().Be(recipe.EnhancementSlots);
+            GetWorkbookCellText(worksheet, sharedStrings, $"M{row}").Should().Be("lth_ruined");
+            GetWorkbookCellNumber(worksheet, sharedStrings, $"N{row}").Should().Be(recipe.Components["lth_ruined"]);
+            GetWorkbookCellText(worksheet, sharedStrings, $"O{row}").Should().Be("fiberp_ruined");
+            GetWorkbookCellNumber(worksheet, sharedStrings, $"P{row}").Should().Be(recipe.Components["fiberp_ruined"]);
+            GetWorkbookCellText(worksheet, sharedStrings, $"Q{row}").Should().Be("oldscar_troph");
+            GetWorkbookCellNumber(worksheet, sharedStrings, $"R{row}").Should().Be(recipe.Components["oldscar_troph"]);
+            GetWorkbookCellNumber(worksheet, sharedStrings, $"AC{row}").Should().Be(0m);
+        }
+    }
+
+    [Test]
+    public void OldScarUniqueRareItems_AreLevelAppropriateWearables()
+    {
+        var root = FindRepositoryRoot();
+
+        foreach (var item in OldScarUniqueRareRecipes)
+        {
+            using var blueprint = JsonDocument.Parse(File.ReadAllText(Path.Combine(
+                root.FullName,
+                "Module",
+                "uti",
+                $"{item.CraftedResref}.uti.json")));
+
+            var json = blueprint.RootElement;
+            json.GetProperty("__data_type").GetString().Should().Be("UTI ");
+            json.GetProperty("LocalizedName").GetProperty("value").GetProperty("0").GetString().Should().Be(item.CraftedName);
+            json.GetProperty("BaseItem").GetProperty("value").GetInt32().Should().Be(item.BaseItem);
+            json.GetProperty("Tag").GetProperty("value").GetString().Should().Be(item.CraftedResref);
+            json.GetProperty("TemplateResRef").GetProperty("value").GetString().Should().Be(item.CraftedResref);
+
+            var requiresSkill = GetItemProperty(json, ItemPropertyType.RequiresSkill);
+            requiresSkill.GetProperty("Subtype").GetProperty("value").GetInt32().Should().Be((int)SkillType.Armor);
+            requiresSkill.GetProperty("CostValue").GetProperty("value").GetInt32().Should().Be(5);
+
+            var statValues = GetItemPropertyCostValues(json, ItemPropertyType.Defense)
+                .Concat(GetItemPropertyCostValues(json, ItemPropertyType.Stamina))
+                .Concat(GetItemPropertyCostValues(json, ItemPropertyType.FP))
+                .ToArray();
+            statValues.Should().HaveCountGreaterThanOrEqualTo(2);
+            statValues.Should().OnlyContain(value => value >= 1 && value <= 2);
+
+            GetItemPropertyCount(json, ItemPropertyType.DMG).Should().Be(0);
+            GetItemPropertyCount(json, ItemPropertyType.Delay).Should().Be(0);
+            GetItemPropertyCount(json, ItemPropertyType.UnlimitedAmmunition).Should().Be(0);
+        }
+    }
+
+    [Test]
+    public void OldScarUniqueRareItems_HaveUniqueAppearances()
+    {
+        var root = FindRepositoryRoot();
+        var signatures = new List<string>();
+
+        foreach (var item in OldScarUniqueRareRecipes)
+        {
+            using var blueprint = JsonDocument.Parse(File.ReadAllText(Path.Combine(
+                root.FullName,
+                "Module",
+                "uti",
+                $"{item.CraftedResref}.uti.json")));
+
+            signatures.Add(GetAppearanceSignature(blueprint.RootElement));
+        }
+
+        signatures.Should().OnlyHaveUniqueItems();
+    }
+
+    [Test]
+    public void OldScarTrophy_IsNewCraftingComponent()
+    {
+        var root = FindRepositoryRoot();
+        using var blueprint = JsonDocument.Parse(File.ReadAllText(Path.Combine(
+            root.FullName,
+            "Module",
+            "uti",
+            "oldscar_troph.uti.json")));
+
+        var json = blueprint.RootElement;
+        json.GetProperty("__data_type").GetString().Should().Be("UTI ");
+        json.GetProperty("LocalizedName").GetProperty("value").GetProperty("0").GetString().Should().Be("Old Scar Trophy");
+        json.GetProperty("BaseItem").GetProperty("value").GetInt32().Should().Be(536);
+        json.GetProperty("Tag").GetProperty("value").GetString().Should().Be("oldscar_troph");
+        json.GetProperty("TemplateResRef").GetProperty("value").GetString().Should().Be("oldscar_troph");
+    }
+
+    [Test]
+    public void SpawnSystem_RareEntriesUseWeightedSelectionWithAreaTableCap()
+    {
+        var root = FindRepositoryRoot();
+        var spawnObjectSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "SpawnService",
+            "SpawnObject.cs"));
+        var builderSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "SpawnService",
+            "SpawnTableBuilder.cs"));
+        var tableSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "SpawnService",
+            "SpawnTable.cs"));
+        var spawnSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "Spawn.cs"));
+
+        spawnObjectSource.Should().Contain("public bool IsRare { get; set; }");
+        builderSource.Should().Contain("public SpawnTableBuilder AsRare()");
+        builderSource.Should().Contain("ActiveSpawn.IsRare = true;");
+        tableSource.Should().Contain("public SpawnObject GetNextSpawn(bool includeRareSpawns = true)");
+        tableSource.Should().Contain("Random.GetRandomWeightedIndex(weights)");
+        tableSource.Should().Contain("obj.IsRare && !includeRareSpawns");
+        spawnSource.Should().Contain("private static bool HasActiveRareSpawn(uint area, string spawnTableId)");
+        spawnSource.Should().Contain("spawnTable.GetNextSpawn(!HasActiveRareSpawn(detail.Area, detail.SpawnTableId))");
+        spawnSource.Should().Contain("IsRare = spawnObject.IsRare");
     }
 
     [Test]
@@ -564,6 +838,15 @@ public class ViscaraSpawnDefinitionTests
             .GetInt32();
     }
 
+    private static IEnumerable<int> GetItemPropertyCostValues(JsonElement json, ItemPropertyType propertyName)
+    {
+        return json.GetProperty("PropertiesList")
+            .GetProperty("value")
+            .EnumerateArray()
+            .Where(property => property.GetProperty("PropertyName").GetProperty("value").GetInt32() == (int)propertyName)
+            .Select(property => property.GetProperty("CostValue").GetProperty("value").GetInt32());
+    }
+
     private static int GetItemPropertyCount(JsonElement json, ItemPropertyType propertyName)
     {
         return json.GetProperty("PropertiesList")
@@ -662,6 +945,110 @@ public class ViscaraSpawnDefinitionTests
                 }
             }
         }
+    }
+
+    private static XDocument ReadWorkbookXml(ZipArchive archive, string entryName)
+    {
+        var entry = archive.GetEntry(entryName);
+        entry.Should().NotBeNull($"{entryName} should exist in the combat Bible workbook");
+
+        using var stream = entry!.Open();
+        return XDocument.Load(stream);
+    }
+
+    private static XDocument ReadWorksheetByName(ZipArchive archive, string sheetName)
+    {
+        var workbook = ReadWorkbookXml(archive, "xl/workbook.xml");
+        var relationships = ReadWorkbookXml(archive, "xl/_rels/workbook.xml.rels");
+        XNamespace workbookNs = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
+        XNamespace relationshipNs = "http://schemas.openxmlformats.org/officeDocument/2006/relationships";
+        XNamespace packageRelationshipNs = "http://schemas.openxmlformats.org/package/2006/relationships";
+
+        var sheet = workbook
+            .Descendants(workbookNs + "sheet")
+            .Single(candidate => candidate.Attribute("name")?.Value == sheetName);
+        var relationshipId = sheet.Attribute(relationshipNs + "id")?.Value;
+        relationshipId.Should().NotBeNullOrWhiteSpace($"{sheetName} should have a workbook relationship id");
+
+        var target = relationships
+            .Descendants(packageRelationshipNs + "Relationship")
+            .Single(candidate => candidate.Attribute("Id")?.Value == relationshipId)
+            .Attribute("Target")?
+            .Value
+            .Replace('\\', '/');
+        target.Should().NotBeNullOrWhiteSpace($"{sheetName} should resolve to a worksheet XML target");
+
+        var entryName = target!.StartsWith("/", StringComparison.Ordinal)
+            ? target.TrimStart('/')
+            : $"xl/{target}";
+        return ReadWorkbookXml(archive, entryName);
+    }
+
+    private static IReadOnlyList<string> ReadSharedStrings(ZipArchive archive)
+    {
+        var entry = archive.GetEntry("xl/sharedStrings.xml");
+        if (entry == null)
+            return Array.Empty<string>();
+
+        var sharedStrings = ReadWorkbookXml(archive, "xl/sharedStrings.xml");
+        XNamespace ns = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
+
+        return sharedStrings
+            .Descendants(ns + "si")
+            .Select(item => string.Concat(item.Descendants(ns + "t").Select(text => text.Value)))
+            .ToArray();
+    }
+
+    private static int FindWorkbookRowByCellText(
+        XDocument worksheet,
+        IReadOnlyList<string> sharedStrings,
+        string column,
+        string text)
+    {
+        XNamespace ns = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
+        return worksheet
+            .Descendants(ns + "row")
+            .Select(row => int.Parse(row.Attribute("r")!.Value, CultureInfo.InvariantCulture))
+            .Single(row => GetWorkbookCellText(worksheet, sharedStrings, $"{column}{row}") == text);
+    }
+
+    private static string GetWorkbookCellText(XDocument worksheet, IReadOnlyList<string> sharedStrings, string address)
+    {
+        XNamespace ns = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
+        var cell = worksheet
+            .Descendants(ns + "c")
+            .SingleOrDefault(candidate => candidate.Attribute("r")?.Value == address);
+
+        if (cell == null)
+            return string.Empty;
+
+        var type = cell.Attribute("t")?.Value;
+        if (type == "inlineStr")
+            return string.Concat(cell.Descendants(ns + "t").Select(text => text.Value));
+
+        var value = cell.Element(ns + "v")?.Value;
+        if (type == "s" && int.TryParse(value, out var index))
+            return sharedStrings[index];
+
+        return value ?? string.Empty;
+    }
+
+    private static decimal GetWorkbookCellNumber(XDocument worksheet, IReadOnlyList<string> sharedStrings, string address)
+    {
+        var text = GetWorkbookCellText(worksheet, sharedStrings, address);
+        return decimal.Parse(text, NumberStyles.Number, CultureInfo.InvariantCulture);
+    }
+
+    private static string GetSmitheryBlueprintCategory(RecipeCategoryType category)
+    {
+        return category switch
+        {
+            RecipeCategoryType.Belt or
+                RecipeCategoryType.Cloak or
+                RecipeCategoryType.Necklace or
+                RecipeCategoryType.Ring => "Accessory Blueprints",
+            _ => "Armor Blueprints"
+        };
     }
 
     private static DirectoryInfo FindRepositoryRoot()

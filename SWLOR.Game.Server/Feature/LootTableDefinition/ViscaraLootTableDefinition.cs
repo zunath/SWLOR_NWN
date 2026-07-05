@@ -47,6 +47,24 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .IsRare()
                 .AddItem("kath_blood", 2, 1, true)
                 .AddItem("k_hound_claw", 1, 1, true);
+
+            _builder.Create("VISCARA_OLD_SCAR_RARES")
+                .IsRare()
+                .AddItem("recipe_osvest", 1, 1, true)
+                .AddItem("recipe_oswrap", 1, 1, true)
+                .AddItem("recipe_ostread", 1, 1, true)
+                .AddItem("recipe_ossash", 1, 1, true)
+                .AddItem("recipe_osmantle", 1, 1, true)
+                .AddItem("recipe_oscollar", 1, 1, true)
+                .AddItem("recipe_osband", 1, 1, true)
+                .AddItem("recipe_osguard", 1, 1, true)
+                .AddItem("recipe_osvisor", 1, 1, true)
+                .AddItem("recipe_oscharm", 1, 1, true)
+                .AddItem("recipe_ostrophy", 1, 1, true)
+                .AddItem("recipe_oshide", 1, 1, true);
+
+            _builder.Create("VISCARA_OLD_SCAR_TROPHY")
+                .AddItem("oldscar_troph", 1);
         }
 
         private void MandalorianLeader()

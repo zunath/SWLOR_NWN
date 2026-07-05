@@ -601,6 +601,18 @@ namespace SWLOR.Game.Server.Service.CraftService
         ApexGloves = 564,
         ApexBoots = 565,
         ArkanianDragonArmor = 566,
+        OldScarHideVest = 567,
+        OldScarWraps = 568,
+        OldScarTreads = 569,
+        OldScarSash = 570,
+        OldScarMantle = 571,
+        OldScarCollar = 572,
+        OldScarBand = 573,
+        OldScarGuard = 574,
+        OldScarVisor = 575,
+        OldScarCharm = 576,
+        OldScarTrophyBand = 577,
+        OldScarHideband = 578,
         #endregion
 
 		#region Fabrication:  1001-2000
@@ -2845,7 +2857,6 @@ namespace SWLOR.Game.Server.Service.CraftService
         InstructionThermalDetonator = 4987,
         InstructionTreatmentKit3 = 4988,
         InstructionWeaponJam = 4989,
-
 
         #endregion
 

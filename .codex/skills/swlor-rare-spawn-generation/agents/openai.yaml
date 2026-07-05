@@ -1,0 +1,4 @@
+﻿interface:
+  display_name: "SWLOR Rare Spawn Generation"
+  short_description: "Add weighted rare SWLOR spawns"
+  default_prompt: "Use $swlor-rare-spawn-generation to add a weighted rare spawn-table enemy from Bible stats through implementation and validation."

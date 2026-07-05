@@ -34,6 +34,13 @@ namespace SWLOR.Game.Server.Service
         {
             public Guid SpawnDetailId { get; set; }
             public uint SpawnObject { get; set; }
+            public bool IsRare { get; set; }
+        }
+
+        private class SpawnResult
+        {
+            public uint SpawnObject { get; set; }
+            public bool IsRare { get; set; }
         }
 
         private class QueuedSpawn
@@ -446,11 +453,11 @@ namespace SWLOR.Game.Server.Service
                 if (now > queuedSpawn.RespawnTime)
                 {
                     var detail = _spawns[queuedSpawn.SpawnDetailId];
-                    var spawnedObject = SpawnObject(queuedSpawn.SpawnDetailId, detail);
+                    var spawnResult = SpawnObject(queuedSpawn.SpawnDetailId, detail);
 
                     // A valid spawn wasn't found because the spawn table didn't provide a resref.
                     // Either the table is configured wrong or the requirements for that specific table weren't met.
-                    if (spawnedObject == OBJECT_INVALID)
+                    if (spawnResult.SpawnObject == OBJECT_INVALID)
                     {
                         queuedSpawn.FailureCount++;
 
@@ -474,7 +481,8 @@ namespace SWLOR.Game.Server.Service
                     var activeSpawn = new ActiveSpawn
                     {
                         SpawnDetailId = queuedSpawn.SpawnDetailId,
-                        SpawnObject = spawnedObject
+                        SpawnObject = spawnResult.SpawnObject,
+                        IsRare = spawnResult.IsRare
                     };
 
                     _activeSpawnsByArea[detail.Area].Add(activeSpawn);
@@ -676,6 +684,25 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
+        private static bool HasActiveRareSpawn(uint area, string spawnTableId)
+        {
+            if (string.IsNullOrWhiteSpace(spawnTableId) ||
+                !_activeSpawnsByArea.ContainsKey(area))
+                return false;
+
+            foreach (var activeSpawn in _activeSpawnsByArea[area])
+            {
+                if (!activeSpawn.IsRare)
+                    continue;
+
+                var detail = _spawns[activeSpawn.SpawnDetailId];
+                if (detail.SpawnTableId == spawnTableId)
+                    return true;
+            }
+
+            return false;
+        }
+
         /// <summary>
         /// When a DM spawns a creature, attach all required scripts to it.
         /// </summary>
@@ -700,7 +727,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="spawnId">The ID of the spawn</param>
         /// <param name="detail">The details of the spawn</param>
-        private static uint SpawnObject(Guid spawnId, SpawnDetail detail)
+        private static SpawnResult SpawnObject(Guid spawnId, SpawnDetail detail)
         {
             // Hand-placed spawns are stored as a serialized string.
             // Deserialize and add it to the area.
@@ -720,20 +747,20 @@ namespace SWLOR.Game.Server.Service
                 AdjustStats(deserialized);
                 Stat.LoadNPCStats(deserialized);
 
-                return deserialized;
+                return new SpawnResult { SpawnObject = deserialized };
             }
             // Spawn tables have their own logic which must be run to determine the spawn to use.
             // Create the object at the stored location.
             else if (!string.IsNullOrWhiteSpace(detail.SpawnTableId))
             {
                 var spawnTable = _spawnTables[detail.SpawnTableId];
-                var spawnObject = spawnTable.GetNextSpawn();
+                var spawnObject = spawnTable.GetNextSpawn(!HasActiveRareSpawn(detail.Area, detail.SpawnTableId));
 
                 // It's possible that the rules of the spawn table don't have a spawn ready to be created.
                 // In this case, exit early.
                 if (string.IsNullOrWhiteSpace(spawnObject.Resref))
                 {
-                    return OBJECT_INVALID;
+                    return new SpawnResult { SpawnObject = OBJECT_INVALID };
                 }
 
                 var position = detail.UseRandomSpawnLocation ?
@@ -774,10 +801,14 @@ namespace SWLOR.Game.Server.Service
                     QueueResourceDespawn(spawn, spawnId, spawnTable.ResourceDespawnMinutes);
                 }
 
-                return spawn;
+                return new SpawnResult
+                {
+                    SpawnObject = spawn,
+                    IsRare = spawnObject.IsRare
+                };
             }
 
-            return OBJECT_INVALID;
+            return new SpawnResult { SpawnObject = OBJECT_INVALID };
         }
     }
 }

@@ -45,6 +45,12 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Creature, "kath_hound")
                 .WithFrequency(70)
                 .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "oldscar_kath")
+                .WithFrequency(1)
+                .AsRare()
+                .RandomlyWalks()
                 .ReturnsHome();
         }
 

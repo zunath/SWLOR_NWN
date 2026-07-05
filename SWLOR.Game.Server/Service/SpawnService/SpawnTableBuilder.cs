@@ -94,6 +94,17 @@ namespace SWLOR.Game.Server.Service.SpawnService
         }
 
         /// <summary>
+        /// Marks this spawn object as a rare spawn. Rare spawns still use normal weighted
+        /// selection, but only one rare from a table may be active in an area at a time.
+        /// </summary>
+        /// <returns>A spawn table builder with the configured settings.</returns>
+        public SpawnTableBuilder AsRare()
+        {
+            ActiveSpawn.IsRare = true;
+            return this;
+        }
+
+        /// <summary>
         /// Specifies that this spawn object can only spawn on the provided days of week.
         /// If no days are specified, spawn will be unrestricted and can spawn on any day.
         /// These are real world days in UTC time.

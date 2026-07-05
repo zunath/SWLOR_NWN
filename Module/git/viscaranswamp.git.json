@@ -1413,7 +1413,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "RESOURCES_VISCARA_SWAMPLANDS"
+          "value": "RESOURCES_VISCARA_EASTERN_SWAMPLANDS"
         }
       },
       {
@@ -1428,7 +1428,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "VISCARA_SWAMPLANDS"
+          "value": "VISCARA_EASTERN_SWAMPLANDS"
         }
       },
       {

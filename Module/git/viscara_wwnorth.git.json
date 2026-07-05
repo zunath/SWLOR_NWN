@@ -48215,7 +48215,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "VISCARA_WILDWOODS_MANDO_SCOUT"
+          "value": "VISCARA_WILDWOODS_NORTH_SCOUT"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -48404,7 +48404,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "VISCARA_WILDWOODS_MANDO_SCOUT"
+          "value": "VISCARA_WILDWOODS_NORTH_SCOUT"
         },
         "TemplateResRef": {
           "type": "resref",

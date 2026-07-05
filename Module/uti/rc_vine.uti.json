@@ -1,0 +1,87 @@
+{
+  "__data_type": "UTI ",
+  "AddCost": {
+    "type": "dword",
+    "value": 175
+  },
+  "BaseItem": {
+    "type": "int",
+    "value": 536
+  },
+  "Charges": {
+    "type": "byte",
+    "value": 0
+  },
+  "Comment": {
+    "type": "cexostring",
+    "value": ""
+  },
+  "Cost": {
+    "type": "dword",
+    "value": 175
+  },
+  "Cursed": {
+    "type": "byte",
+    "value": 0
+  },
+  "DescIdentified": {
+    "id": 90753,
+    "type": "cexolocstring",
+    "value": {
+      "0": "A tough vine strand used in Marshguard gear recipes and the Marshleaf Broth."
+    }
+  },
+  "Description": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "A tough vine strand used in Marshguard gear recipes and the Marshleaf Broth."
+    }
+  },
+  "Identified": {
+    "type": "byte",
+    "value": 1
+  },
+  "LocalizedName": {
+    "id": 90756,
+    "type": "cexolocstring",
+    "value": {
+      "0": "Bogvine Strand"
+    }
+  },
+  "ModelPart1": {
+    "type": "byte",
+    "value": 2
+  },
+  "PaletteID": {
+    "type": "byte",
+    "value": 64
+  },
+  "Plot": {
+    "type": "byte",
+    "value": 0
+  },
+  "PropertiesList": {
+    "type": "list",
+    "value": []
+  },
+  "StackSize": {
+    "type": "word",
+    "value": 1
+  },
+  "Stolen": {
+    "type": "byte",
+    "value": 0
+  },
+  "Tag": {
+    "type": "cexostring",
+    "value": "rc_vine"
+  },
+  "TemplateResRef": {
+    "type": "resref",
+    "value": "rc_vine"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 2
+  }
+}

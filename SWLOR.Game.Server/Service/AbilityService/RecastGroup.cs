@@ -662,14 +662,6 @@ namespace SWLOR.Game.Server.Service.AbilityService
         BloodFrenzyFlurry = 432,
         [RecastGroup("Draavo's Challenge", "Draavo Chall.", true)]
         DraavosChallenge = 433,
-        [RecastGroup("Guard Lock", "Guard Lock", true)]
-        GuardLock = 465,
-        [RecastGroup("Interrupting Sweep", "Inter. Sweep", true)]
-        InterruptingSweep = 466,
-        [RecastGroup("Ward Bond", "Ward Bond", true)]
-        WardBond = 463,
-        [RecastGroup("Iron Guard Stance", "Iron Stanc", true)]
-        IronGuardStance = 464,
         [RecastGroup("Frenzy Slash", "Frenzy Slash", true)]
         FrenzySlash = 434,
         [RecastGroup("Lacerating Cut", "Lacerating Cut", true)]
@@ -728,6 +720,16 @@ namespace SWLOR.Game.Server.Service.AbilityService
         OrdnanceStance = 461,
         [RecastGroup("Flurry Stance", "Flurry Stance", true)]
         FlurryStance = 462,
+        [RecastGroup("Ward Bond", "Ward Bond", true)]
+        WardBond = 463,
+        [RecastGroup("Iron Guard Stance", "Iron Stanc", true)]
+        IronGuardStance = 464,
+        [RecastGroup("Guard Lock", "Guard Lock", true)]
+        GuardLock = 465,
+        [RecastGroup("Interrupting Sweep", "Inter. Sweep", true)]
+        InterruptingSweep = 466,
+        [RecastGroup("Field Tool", "Field Tool", true)]
+        FieldTool = 467,
     }
 
     public class RecastGroupAttribute : Attribute

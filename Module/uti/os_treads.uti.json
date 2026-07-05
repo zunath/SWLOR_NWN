@@ -1,228 +1,228 @@
 {
-    "__data_type":  "UTI ",
-    "AddCost":  {
-                    "type":  "dword",
-                    "value":  175
-                },
-    "BaseItem":  {
-                     "type":  "int",
-                     "value":  26
-                 },
-    "Charges":  {
-                    "type":  "byte",
-                    "value":  0
-                },
-    "Comment":  {
-                    "type":  "cexostring",
-                    "value":  "1"
-                },
-    "Cost":  {
-                 "type":  "dword",
-                 "value":  175
-             },
-    "Cursed":  {
-                   "type":  "byte",
-                   "value":  0
-               },
-    "DescIdentified":  {
-                           "id":  13336,
-                           "type":  "cexolocstring",
-                           "value":  {
-                                         "0":  ""
-                                     }
-                       },
-    "Description":  {
-                        "type":  "cexolocstring",
-                        "value":  {
-                                      "0":  ""
-                                  }
-                    },
-    "Identified":  {
-                       "type":  "byte",
-                       "value":  1
-                   },
-    "LocalizedName":  {
-                          "id":  13337,
-                          "type":  "cexolocstring",
-                          "value":  {
-                                        "0":  "Old Scar Treads"
-                                    }
-                      },
-    "ModelPart1":  {
-                       "type":  "byte",
-                       "value":  11
-                   },
-    "ModelPart2":  {
-                       "type":  "byte",
-                       "value":  41
-                   },
-    "ModelPart3":  {
-                       "type":  "byte",
-                       "value":  71
-                   },
-    "PaletteID":  {
-                      "type":  "byte",
-                      "value":  15
-                  },
-    "Plot":  {
-                 "type":  "byte",
-                 "value":  0
-             },
-    "PropertiesList":  {
-                           "type":  "list",
-                           "value":  [
-                                         {
-                                             "__struct_id":  0,
-                                             "ChanceAppear":  {
-                                                                  "type":  "byte",
-                                                                  "value":  100
-                                                              },
-                                             "CostTable":  {
-                                                               "type":  "byte",
-                                                               "value":  35
-                                                           },
-                                             "CostValue":  {
-                                                               "type":  "word",
-                                                               "value":  1
-                                                           },
-                                             "Param1":  {
-                                                            "type":  "byte",
-                                                            "value":  255
-                                                        },
-                                             "Param1Value":  {
-                                                                 "type":  "byte",
-                                                                 "value":  0
-                                                             },
-                                             "PropertyName":  {
-                                                                  "type":  "word",
-                                                                  "value":  94
-                                                              },
-                                             "Subtype":  {
-                                                             "type":  "word",
-                                                             "value":  1
-                                                         }
-                                         },
-                                         {
-                                             "__struct_id":  0,
-                                             "ChanceAppear":  {
-                                                                  "type":  "byte",
-                                                                  "value":  100
-                                                              },
-                                             "CostTable":  {
-                                                               "type":  "byte",
-                                                               "value":  35
-                                                           },
-                                             "CostValue":  {
-                                                               "type":  "word",
-                                                               "value":  2
-                                                           },
-                                             "Param1":  {
-                                                            "type":  "byte",
-                                                            "value":  255
-                                                        },
-                                             "Param1Value":  {
-                                                                 "type":  "byte",
-                                                                 "value":  0
-                                                             },
-                                             "PropertyName":  {
-                                                                  "type":  "word",
-                                                                  "value":  94
-                                                              },
-                                             "Subtype":  {
-                                                             "type":  "word",
-                                                             "value":  2
-                                                         }
-                                         },
-                                         {
-                                             "__struct_id":  0,
-                                             "ChanceAppear":  {
-                                                                  "type":  "byte",
-                                                                  "value":  100
-                                                              },
-                                             "CostTable":  {
-                                                               "type":  "byte",
-                                                               "value":  36
-                                                           },
-                                             "CostValue":  {
-                                                               "type":  "word",
-                                                               "value":  1
-                                                           },
-                                             "Param1":  {
-                                                            "type":  "byte",
-                                                            "value":  255
-                                                        },
-                                             "Param1Value":  {
-                                                                 "type":  "byte",
-                                                                 "value":  0
-                                                             },
-                                             "PropertyName":  {
-                                                                  "type":  "word",
-                                                                  "value":  92
-                                                              },
-                                             "Subtype":  {
-                                                             "type":  "word",
-                                                             "value":  0
-                                                         }
-                                         },
-                                         {
-                                             "__struct_id":  0,
-                                             "ChanceAppear":  {
-                                                                  "type":  "byte",
-                                                                  "value":  100
-                                                              },
-                                             "CostTable":  {
-                                                               "type":  "byte",
-                                                               "value":  48
-                                                           },
-                                             "CostValue":  {
-                                                               "type":  "word",
-                                                               "value":  5
-                                                           },
-                                             "Param1":  {
-                                                            "type":  "byte",
-                                                            "value":  255
-                                                        },
-                                             "Param1Value":  {
-                                                                 "type":  "byte",
-                                                                 "value":  0
-                                                             },
-                                             "PropertyName":  {
-                                                                  "type":  "word",
-                                                                  "value":  131
-                                                              },
-                                             "Subtype":  {
-                                                             "type":  "word",
-                                                             "value":  6
-                                                         }
-                                         }
-                                     ]
-                       },
-    "StackSize":  {
-                      "type":  "word",
-                      "value":  1
-                  },
-    "Stolen":  {
-                   "type":  "byte",
-                   "value":  0
-               },
-    "Tag":  {
-                "type":  "cexostring",
-                "value":  "os_treads"
-            },
-    "TemplateResRef":  {
-                           "type":  "resref",
-                           "value":  "os_treads"
-                       },
-    "xModelPart1":  {
-                        "type":  "word",
-                        "value":  11
-                    },
-    "xModelPart2":  {
-                        "type":  "word",
-                        "value":  41
-                    },
-    "xModelPart3":  {
-                        "type":  "word",
-                        "value":  71
-                    }
+  "__data_type": "UTI ",
+  "AddCost": {
+    "type": "dword",
+    "value": 175
+  },
+  "BaseItem": {
+    "type": "int",
+    "value": 26
+  },
+  "Charges": {
+    "type": "byte",
+    "value": 0
+  },
+  "Comment": {
+    "type": "cexostring",
+    "value": "1"
+  },
+  "Cost": {
+    "type": "dword",
+    "value": 175
+  },
+  "Cursed": {
+    "type": "byte",
+    "value": 0
+  },
+  "DescIdentified": {
+    "id": 13336,
+    "type": "cexolocstring",
+    "value": {
+      "0": "Rare crafted gear made with uncommon Viscara materials."
+    }
+  },
+  "Description": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "Rare crafted gear made with uncommon Viscara materials."
+    }
+  },
+  "Identified": {
+    "type": "byte",
+    "value": 1
+  },
+  "LocalizedName": {
+    "id": 13337,
+    "type": "cexolocstring",
+    "value": {
+      "0": "Fanghide Treads"
+    }
+  },
+  "ModelPart1": {
+    "type": "byte",
+    "value": 11
+  },
+  "ModelPart2": {
+    "type": "byte",
+    "value": 41
+  },
+  "ModelPart3": {
+    "type": "byte",
+    "value": 71
+  },
+  "PaletteID": {
+    "type": "byte",
+    "value": 15
+  },
+  "Plot": {
+    "type": "byte",
+    "value": 0
+  },
+  "PropertiesList": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 35
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 1
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 94
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 1
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 35
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 2
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 94
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 2
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 36
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 1
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 92
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 0
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 48
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 5
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 131
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 6
+        }
+      }
+    ]
+  },
+  "StackSize": {
+    "type": "word",
+    "value": 1
+  },
+  "Stolen": {
+    "type": "byte",
+    "value": 0
+  },
+  "Tag": {
+    "type": "cexostring",
+    "value": "os_treads"
+  },
+  "TemplateResRef": {
+    "type": "resref",
+    "value": "os_treads"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 11
+  },
+  "xModelPart2": {
+    "type": "word",
+    "value": 41
+  },
+  "xModelPart3": {
+    "type": "word",
+    "value": 71
+  }
 }

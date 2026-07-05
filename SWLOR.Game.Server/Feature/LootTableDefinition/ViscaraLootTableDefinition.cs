@@ -28,6 +28,21 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             SewersDepthsEntry();
             SewersDepthsButcher();
             SewersDepthsCircle();
+            SootlineRusk();
+            NaraVenn();
+            Silkshade();
+            Mossback();
+            TarnKyric();
+            VaroSkeld();
+            HarrekVoss();
+            Greyspine();
+            MawSeerGhal();
+            RedtailKor();
+            ShardEye();
+            Rootcoil();
+            Mirevein();
+            Vrix7();
+            Ashwing();
 
             MandalorianCrate();
             CoxxionCrate();
@@ -393,6 +408,24 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             _builder.Create("VISCARA_WAROCAS_RARES")
                 .IsRare()
                 .AddItem("waro_leg", 1, 1, true);
+
+            _builder.Create("VISCARA_STORMPLUME_RARES")
+                .IsRare()
+                .AddItem("recipe_spharn", 1, 1, true)
+                .AddItem("recipe_spwrap", 1, 1, true)
+                .AddItem("recipe_spstrid", 1, 1, true)
+                .AddItem("recipe_spsash", 1, 1, true)
+                .AddItem("recipe_spmant", 1, 1, true)
+                .AddItem("recipe_spgorg", 1, 1, true)
+                .AddItem("recipe_spband", 1, 1, true)
+                .AddItem("recipe_spguard", 1, 1, true)
+                .AddItem("recipe_spvisor", 1, 1, true)
+                .AddItem("recipe_spcharm", 1, 1, true)
+                .AddItem("recipe_sptroph", 1, 1, true)
+                .AddItem("recipe_spplume", 1, 1, true);
+
+            _builder.Create("VISCARA_STORMPLUME_PLUME")
+                .AddItem("stormpl_plume", 1);
         }
 
         private void Nashtah()
@@ -517,6 +550,306 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("stim_pack", 20, 3)
                 .AddItem("med_supplies", 20, 3)
                 .AddGold(200, 10);
+        }
+
+        private void SootlineRusk()
+        {
+            _builder.Create("VISCARA_SOOTLINE_RUSK_RARES")
+                .IsRare()
+                .AddItem("bpsrcot", 1, 1, true)
+                .AddItem("bpsrlamp", 1, 1, true)
+                .AddItem("bpsrstand", 1, 1, true)
+                .AddItem("bpsrtable", 1, 1, true)
+                .AddItem("bpsrbanner", 1, 1, true)
+                .AddItem("bpsrlocker", 1, 1, true)
+                .AddItem("bpsrmat", 1, 1, true)
+                .AddItem("bpsrconsole", 1, 1, true)
+                .AddItem("bpsrplinth", 1, 1, true)
+                .AddItem("bpsrstool", 1, 1, true)
+                .AddItem("bpsrjrcell", 1, 1, true);
+
+            _builder.Create("VISCARA_SOOTLINE_RUSK_TOKEN")
+                .AddItem("sr_token", 1);
+        }
+
+        private void NaraVenn()
+        {
+            _builder.Create("VISCARA_NARA_VENN_RARES")
+                .IsRare()
+                .AddItem("bpnvcot", 1, 1, true)
+                .AddItem("bpnvlamp", 1, 1, true)
+                .AddItem("bpnvstand", 1, 1, true)
+                .AddItem("bpnvtable", 1, 1, true)
+                .AddItem("bpnvbanner", 1, 1, true)
+                .AddItem("bpnvlocker", 1, 1, true)
+                .AddItem("bpnvmat", 1, 1, true)
+                .AddItem("bpnvconsole", 1, 1, true)
+                .AddItem("bpnvplinth", 1, 1, true)
+                .AddItem("bpnvstool", 1, 1, true)
+                .AddItem("bpnvrelay", 1, 1, true);
+
+            _builder.Create("VISCARA_NARA_VENN_PIN")
+                .AddItem("nv_pin", 1);
+        }
+
+        private void Silkshade()
+        {
+            _builder.Create("VISCARA_SILKSHADE_RARES")
+                .IsRare()
+                .AddItem("bpssharness", 1, 1, true)
+                .AddItem("bpsswraps", 1, 1, true)
+                .AddItem("bpsstreads", 1, 1, true)
+                .AddItem("bpsssash", 1, 1, true)
+                .AddItem("bpssmantle", 1, 1, true)
+                .AddItem("bpssgorget", 1, 1, true)
+                .AddItem("bpssband", 1, 1, true)
+                .AddItem("bpssguard", 1, 1, true)
+                .AddItem("bpssvisor", 1, 1, true)
+                .AddItem("bpsscharm", 1, 1, true)
+                .AddItem("bpssskewer", 1, 1, true);
+
+            _builder.Create("VISCARA_SILKSHADE_SILK")
+                .AddItem("ss_silk", 1);
+        }
+
+        private void Mossback()
+        {
+            _builder.Create("VISCARA_MOSSBACK_RARES")
+                .IsRare()
+                .AddItem("bpmbharness", 1, 1, true)
+                .AddItem("bpmbwraps", 1, 1, true)
+                .AddItem("bpmbtreads", 1, 1, true)
+                .AddItem("bpmbsash", 1, 1, true)
+                .AddItem("bpmbmantle", 1, 1, true)
+                .AddItem("bpmbgorget", 1, 1, true)
+                .AddItem("bpmbband", 1, 1, true)
+                .AddItem("bpmbguard", 1, 1, true)
+                .AddItem("bpmbvisor", 1, 1, true)
+                .AddItem("bpmbcharm", 1, 1, true)
+                .AddItem("bpmbbraise", 1, 1, true);
+
+            _builder.Create("VISCARA_MOSSBACK_SHELL")
+                .AddItem("mb_shell", 1);
+        }
+
+        private void TarnKyric()
+        {
+            _builder.Create("VISCARA_TARN_KYRIC_RARES")
+                .IsRare()
+                .AddItem("bptkcot", 1, 1, true)
+                .AddItem("bptklamp", 1, 1, true)
+                .AddItem("bptkstand", 1, 1, true)
+                .AddItem("bptktable", 1, 1, true)
+                .AddItem("bptkbanner", 1, 1, true)
+                .AddItem("bptklocker", 1, 1, true)
+                .AddItem("bptkmat", 1, 1, true)
+                .AddItem("bptkconsole", 1, 1, true)
+                .AddItem("bptkplinth", 1, 1, true)
+                .AddItem("bptkstool", 1, 1, true)
+                .AddItem("bptksensor", 1, 1, true);
+
+            _builder.Create("VISCARA_TARN_KYRIC_BADGE")
+                .AddItem("tk_badge", 1);
+        }
+
+        private void VaroSkeld()
+        {
+            _builder.Create("VISCARA_VARO_SKELD_RARES")
+                .IsRare()
+                .AddItem("bpvscot", 1, 1, true)
+                .AddItem("bpvslamp", 1, 1, true)
+                .AddItem("bpvsstand", 1, 1, true)
+                .AddItem("bpvstable", 1, 1, true)
+                .AddItem("bpvsbanner", 1, 1, true)
+                .AddItem("bpvslocker", 1, 1, true)
+                .AddItem("bpvsmat", 1, 1, true)
+                .AddItem("bpvsconsole", 1, 1, true)
+                .AddItem("bpvsplinth", 1, 1, true)
+                .AddItem("bpvsstool", 1, 1, true)
+                .AddItem("bpvsrelay", 1, 1, true);
+
+            _builder.Create("VISCARA_VARO_SKELD_MASK")
+                .AddItem("vs_mask", 1);
+        }
+
+        private void HarrekVoss()
+        {
+            _builder.Create("VISCARA_HARREK_VOSS_RARES")
+                .IsRare()
+                .AddItem("bphvcot", 1, 1, true)
+                .AddItem("bphvlamp", 1, 1, true)
+                .AddItem("bphvstand", 1, 1, true)
+                .AddItem("bphvtable", 1, 1, true)
+                .AddItem("bphvbanner", 1, 1, true)
+                .AddItem("bphvlocker", 1, 1, true)
+                .AddItem("bphvmat", 1, 1, true)
+                .AddItem("bphvconsole", 1, 1, true)
+                .AddItem("bphvplinth", 1, 1, true)
+                .AddItem("bphvstool", 1, 1, true)
+                .AddItem("bphvservo", 1, 1, true);
+
+            _builder.Create("VISCARA_HARREK_VOSS_PLATE")
+                .AddItem("hv_plate", 1);
+        }
+
+        private void Greyspine()
+        {
+            _builder.Create("VISCARA_GREYSPINE_RARES")
+                .IsRare()
+                .AddItem("bpgsharness", 1, 1, true)
+                .AddItem("bpgswraps", 1, 1, true)
+                .AddItem("bpgstreads", 1, 1, true)
+                .AddItem("bpgssash", 1, 1, true)
+                .AddItem("bpgsmantle", 1, 1, true)
+                .AddItem("bpgsgorget", 1, 1, true)
+                .AddItem("bpgsband", 1, 1, true)
+                .AddItem("bpgsguard", 1, 1, true)
+                .AddItem("bpgsvisor", 1, 1, true)
+                .AddItem("bpgscharm", 1, 1, true)
+                .AddItem("bpgspotpie", 1, 1, true);
+
+            _builder.Create("VISCARA_GREYSPINE_SPINE")
+                .AddItem("gs_spine", 1);
+        }
+
+        private void MawSeerGhal()
+        {
+            _builder.Create("VISCARA_MAW_SEER_GHAL_RARES")
+                .IsRare()
+                .AddItem("bpmgcot", 1, 1, true)
+                .AddItem("bpmglamp", 1, 1, true)
+                .AddItem("bpmgstand", 1, 1, true)
+                .AddItem("bpmgtable", 1, 1, true)
+                .AddItem("bpmgbanner", 1, 1, true)
+                .AddItem("bpmglocker", 1, 1, true)
+                .AddItem("bpmgmat", 1, 1, true)
+                .AddItem("bpmgconsole", 1, 1, true)
+                .AddItem("bpmgplinth", 1, 1, true)
+                .AddItem("bpmgstool", 1, 1, true)
+                .AddItem("bpmgsplice", 1, 1, true);
+
+            _builder.Create("VISCARA_MAW_SEER_GHAL_TOTEM")
+                .AddItem("mg_totem", 1);
+        }
+
+        private void RedtailKor()
+        {
+            _builder.Create("VISCARA_REDTAIL_KOR_RARES")
+                .IsRare()
+                .AddItem("bprkharness", 1, 1, true)
+                .AddItem("bprkwraps", 1, 1, true)
+                .AddItem("bprktreads", 1, 1, true)
+                .AddItem("bprksash", 1, 1, true)
+                .AddItem("bprkmantle", 1, 1, true)
+                .AddItem("bprkgorget", 1, 1, true)
+                .AddItem("bprkband", 1, 1, true)
+                .AddItem("bprkguard", 1, 1, true)
+                .AddItem("bprkvisor", 1, 1, true)
+                .AddItem("bprkcharm", 1, 1, true)
+                .AddItem("bprkroast", 1, 1, true);
+
+            _builder.Create("VISCARA_REDTAIL_KOR_CLAW")
+                .AddItem("rk_claw", 1);
+        }
+
+        private void ShardEye()
+        {
+            _builder.Create("VISCARA_SHARD_EYE_RARES")
+                .IsRare()
+                .AddItem("bpseharness", 1, 1, true)
+                .AddItem("bpsewraps", 1, 1, true)
+                .AddItem("bpsetreads", 1, 1, true)
+                .AddItem("bpsesash", 1, 1, true)
+                .AddItem("bpsemantle", 1, 1, true)
+                .AddItem("bpsegorget", 1, 1, true)
+                .AddItem("bpseband", 1, 1, true)
+                .AddItem("bpseguard", 1, 1, true)
+                .AddItem("bpsevisor", 1, 1, true)
+                .AddItem("bpsecharm", 1, 1, true)
+                .AddItem("bpseconsomme", 1, 1, true);
+
+            _builder.Create("VISCARA_SHARD_EYE")
+                .AddItem("se_eye", 1);
+        }
+
+        private void Rootcoil()
+        {
+            _builder.Create("VISCARA_ROOTCOIL_RARES")
+                .IsRare()
+                .AddItem("bprcharness", 1, 1, true)
+                .AddItem("bprcwraps", 1, 1, true)
+                .AddItem("bprctreads", 1, 1, true)
+                .AddItem("bprcsash", 1, 1, true)
+                .AddItem("bprcmantle", 1, 1, true)
+                .AddItem("bprcgorget", 1, 1, true)
+                .AddItem("bprcband", 1, 1, true)
+                .AddItem("bprcguard", 1, 1, true)
+                .AddItem("bprcvisor", 1, 1, true)
+                .AddItem("bprccharm", 1, 1, true)
+                .AddItem("bprcbroth", 1, 1, true);
+
+            _builder.Create("VISCARA_ROOTCOIL_VINE")
+                .AddItem("rc_vine", 1);
+        }
+
+        private void Mirevein()
+        {
+            _builder.Create("VISCARA_MIREVEIN_RARES")
+                .IsRare()
+                .AddItem("bpmvharness", 1, 1, true)
+                .AddItem("bpmvwraps", 1, 1, true)
+                .AddItem("bpmvtreads", 1, 1, true)
+                .AddItem("bpmvsash", 1, 1, true)
+                .AddItem("bpmvmantle", 1, 1, true)
+                .AddItem("bpmvgorget", 1, 1, true)
+                .AddItem("bpmvband", 1, 1, true)
+                .AddItem("bpmvguard", 1, 1, true)
+                .AddItem("bpmvvisor", 1, 1, true)
+                .AddItem("bpmvcharm", 1, 1, true)
+                .AddItem("bpmvtea", 1, 1, true);
+
+            _builder.Create("VISCARA_MIREVEIN_CORE")
+                .AddItem("mv_core", 1);
+        }
+
+        private void Vrix7()
+        {
+            _builder.Create("VISCARA_VRIX7_RARES")
+                .IsRare()
+                .AddItem("bpvxcot", 1, 1, true)
+                .AddItem("bpvxlamp", 1, 1, true)
+                .AddItem("bpvxstand", 1, 1, true)
+                .AddItem("bpvxtable", 1, 1, true)
+                .AddItem("bpvxbanner", 1, 1, true)
+                .AddItem("bpvxlocker", 1, 1, true)
+                .AddItem("bpvxmat", 1, 1, true)
+                .AddItem("bpvxconsole", 1, 1, true)
+                .AddItem("bpvxplinth", 1, 1, true)
+                .AddItem("bpvxstool", 1, 1, true)
+                .AddItem("bpvxmatrix", 1, 1, true);
+
+            _builder.Create("VISCARA_VRIX7_CORE")
+                .AddItem("vx_core", 1);
+        }
+
+        private void Ashwing()
+        {
+            _builder.Create("VISCARA_ASHWING_RARES")
+                .IsRare()
+                .AddItem("bpaecot", 1, 1, true)
+                .AddItem("bpaelamp", 1, 1, true)
+                .AddItem("bpaestand", 1, 1, true)
+                .AddItem("bpaetable", 1, 1, true)
+                .AddItem("bpaebanner", 1, 1, true)
+                .AddItem("bpaelocker", 1, 1, true)
+                .AddItem("bpaemat", 1, 1, true)
+                .AddItem("bpaeconsole", 1, 1, true)
+                .AddItem("bpaeplinth", 1, 1, true)
+                .AddItem("bpaestool", 1, 1, true)
+                .AddItem("bpaebroth", 1, 1, true);
+
+            _builder.Create("VISCARA_ASHWING_ECHO")
+                .AddItem("ae_echo", 1);
         }
     }
 }

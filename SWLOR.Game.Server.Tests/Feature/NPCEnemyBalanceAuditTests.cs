@@ -128,6 +128,28 @@ public class NPCEnemyBalanceAuditTests
     private static readonly ExpectedEnemy OldScarExpectedEnemy =
         new("oldscar_kath", "oldscar_k_sk", "oldscar_k_wp", 4, 193, 16, 10, 10, 14, 14, 25, 4, 8, 2, 1, 5, 3, 13, 24);
 
+    private static readonly ExpectedEnemy StormplumeExpectedEnemy =
+        new("stormplume", "stormplume_sk", "stormplume_wp", 4, 164, 10, 14, 16, 10, 14, 15, 19, 4, 6, 3, 2, 6, 10, 24);
+
+    private static readonly ExpectedEnemy[] ExpectedNamedRareEliteEnemies =
+    {
+        new("soot_rusk", "soot_rusk_sk", "soot_rusk_wp", 6, 230, 11, 18, 11, 15, 15, 26, 7, 9, 2, 5, 4, 4, 16, 30),
+        new("nara_venn", "nara_venn_sk", "nara_venn_wp", 6, 230, 11, 18, 11, 15, 15, 26, 7, 9, 2, 5, 4, 4, 16, 25),
+        new("silkshade", "silkshade_sk", "silkshade_wp", 7, 259, 11, 18, 11, 15, 15, 29, 7, 9, 2, 5, 4, 4, 17, 24),
+        new("mossback", "mossback_sk", "mossback_wp", 12, 461, 21, 13, 13, 18, 18, 47, 8, 11, 2, 3, 8, 6, 27, 24),
+        new("tarn_kyric", "tarn_kyric_sk", "tarn_kyric_wp", 14, 483, 13, 22, 13, 18, 18, 46, 11, 11, 2, 6, 6, 6, 29, 22),
+        new("varo_skeld", "varo_skeld_sk", "varo_skeld_wp", 14, 483, 13, 22, 13, 18, 18, 46, 11, 11, 2, 6, 6, 6, 29, 30),
+        new("harrek_voss", "harrek_voss_sk", "harrek_voss_wp", 14, 483, 13, 22, 13, 18, 18, 46, 11, 11, 2, 6, 6, 6, 29, 23),
+        new("greyspine", "greyspine_sk", "greyspine_wp", 12, 461, 21, 13, 13, 18, 18, 47, 8, 11, 2, 3, 8, 6, 27, 24),
+        new("maw_ghal", "maw_ghal_sk", "maw_ghal_wp", 17, 557, 14, 19, 23, 14, 19, 37, 48, 8, 10, 6, 6, 10, 27, 24),
+        new("redtail_kor", "redtail_kor_sk", "redtail_kor_wp", 14, 536, 22, 13, 13, 18, 18, 52, 9, 11, 2, 3, 8, 6, 31, 24),
+        new("shardeye", "shardeye_sk", "shardeye_wp", 10, 350, 12, 20, 12, 16, 16, 36, 9, 10, 2, 6, 5, 5, 22, 24),
+        new("rootcoil", "rootcoil_sk", "rootcoil_wp", 12, 461, 21, 13, 13, 18, 18, 47, 8, 11, 2, 3, 8, 6, 27, 24),
+        new("mirevein", "mirevein_sk", "mirevein_wp", 12, 461, 21, 13, 13, 18, 18, 47, 8, 11, 2, 3, 8, 6, 27, 24),
+        new("vrix7", "vrix7_sk", "vrix7_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 19, 19, 89, 30),
+        new("ashwing", "ashwing_sk", "ashwing_wp", 2, 114, 10, 13, 16, 10, 13, 12, 15, 3, 5, 3, 1, 5, 7, 24),
+    };
+
     private static readonly IReadOnlyDictionary<ResistanceType, int> OldScarExpectedResistances = new Dictionary<ResistanceType, int>
     {
         [ResistanceType.Fire] = -10,
@@ -140,6 +162,38 @@ public class NPCEnemyBalanceAuditTests
         [ResistanceType.Disruption] = -10,
     };
 
+    private static readonly IReadOnlyDictionary<ResistanceType, int> StormplumeExpectedResistances = new Dictionary<ResistanceType, int>
+    {
+        [ResistanceType.Fire] = -10,
+        [ResistanceType.Poison] = 4,
+        [ResistanceType.Electrical] = 2,
+        [ResistanceType.Ice] = 2,
+        [ResistanceType.Mind] = -15,
+        [ResistanceType.Mobility] = 5,
+        [ResistanceType.Trauma] = 6,
+        [ResistanceType.Disruption] = -10,
+    };
+
+    private static readonly IReadOnlyDictionary<string, IReadOnlyDictionary<ResistanceType, int>> ExpectedNamedRareEliteResistances =
+        new Dictionary<string, IReadOnlyDictionary<ResistanceType, int>>
+        {
+            ["soot_rusk"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 3, [ResistanceType.Poison] = -5, [ResistanceType.Electrical] = 3, [ResistanceType.Ice] = 3, [ResistanceType.Mind] = -5, [ResistanceType.Mobility] = 3, [ResistanceType.Trauma] = 4, [ResistanceType.Disruption] = 3 },
+            ["nara_venn"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 3, [ResistanceType.Poison] = -5, [ResistanceType.Electrical] = 3, [ResistanceType.Ice] = 3, [ResistanceType.Mind] = -5, [ResistanceType.Mobility] = 3, [ResistanceType.Trauma] = 4, [ResistanceType.Disruption] = 3 },
+            ["silkshade"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = -10, [ResistanceType.Poison] = 5, [ResistanceType.Electrical] = 3, [ResistanceType.Ice] = 3, [ResistanceType.Mind] = -15, [ResistanceType.Mobility] = 6, [ResistanceType.Trauma] = 7, [ResistanceType.Disruption] = -10 },
+            ["mossback"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = -10, [ResistanceType.Poison] = 6, [ResistanceType.Electrical] = 4, [ResistanceType.Ice] = 4, [ResistanceType.Mind] = -15, [ResistanceType.Mobility] = 7, [ResistanceType.Trauma] = 8, [ResistanceType.Disruption] = -10 },
+            ["tarn_kyric"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 4, [ResistanceType.Poison] = -5, [ResistanceType.Electrical] = 4, [ResistanceType.Ice] = 4, [ResistanceType.Mind] = -5, [ResistanceType.Mobility] = 4, [ResistanceType.Trauma] = 5, [ResistanceType.Disruption] = 4 },
+            ["varo_skeld"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 4, [ResistanceType.Poison] = -5, [ResistanceType.Electrical] = 4, [ResistanceType.Ice] = 4, [ResistanceType.Mind] = -5, [ResistanceType.Mobility] = 4, [ResistanceType.Trauma] = 5, [ResistanceType.Disruption] = 4 },
+            ["harrek_voss"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 4, [ResistanceType.Poison] = -5, [ResistanceType.Electrical] = 4, [ResistanceType.Ice] = 4, [ResistanceType.Mind] = -5, [ResistanceType.Mobility] = 4, [ResistanceType.Trauma] = 5, [ResistanceType.Disruption] = 4 },
+            ["greyspine"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = -10, [ResistanceType.Poison] = 6, [ResistanceType.Electrical] = 4, [ResistanceType.Ice] = 4, [ResistanceType.Mind] = -15, [ResistanceType.Mobility] = 7, [ResistanceType.Trauma] = 8, [ResistanceType.Disruption] = -10 },
+            ["maw_ghal"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = -10, [ResistanceType.Poison] = 9, [ResistanceType.Electrical] = 5, [ResistanceType.Ice] = -10, [ResistanceType.Mind] = 11, [ResistanceType.Mobility] = 7, [ResistanceType.Trauma] = 9, [ResistanceType.Disruption] = 7 },
+            ["redtail_kor"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = -10, [ResistanceType.Poison] = 6, [ResistanceType.Electrical] = 4, [ResistanceType.Ice] = 4, [ResistanceType.Mind] = -15, [ResistanceType.Mobility] = 7, [ResistanceType.Trauma] = 8, [ResistanceType.Disruption] = -10 },
+            ["shardeye"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = -10, [ResistanceType.Poison] = 5, [ResistanceType.Electrical] = 3, [ResistanceType.Ice] = 3, [ResistanceType.Mind] = -15, [ResistanceType.Mobility] = 6, [ResistanceType.Trauma] = 7, [ResistanceType.Disruption] = -10 },
+            ["rootcoil"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = -10, [ResistanceType.Poison] = 8, [ResistanceType.Electrical] = 4, [ResistanceType.Ice] = -10, [ResistanceType.Mind] = 10, [ResistanceType.Mobility] = 6, [ResistanceType.Trauma] = 8, [ResistanceType.Disruption] = 6 },
+            ["mirevein"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = -10, [ResistanceType.Poison] = 8, [ResistanceType.Electrical] = 4, [ResistanceType.Ice] = -10, [ResistanceType.Mind] = 10, [ResistanceType.Mobility] = 6, [ResistanceType.Trauma] = 8, [ResistanceType.Disruption] = 6 },
+            ["vrix7"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 12, [ResistanceType.Poison] = 19, [ResistanceType.Electrical] = -20, [ResistanceType.Ice] = 12, [ResistanceType.Mind] = 19, [ResistanceType.Mobility] = 12, [ResistanceType.Trauma] = 13, [ResistanceType.Disruption] = -15 },
+            ["ashwing"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = -10, [ResistanceType.Poison] = 6, [ResistanceType.Electrical] = 2, [ResistanceType.Ice] = -10, [ResistanceType.Mind] = 8, [ResistanceType.Mobility] = 4, [ResistanceType.Trauma] = 6, [ResistanceType.Disruption] = 4 },
+        };
+
     private static readonly IReadOnlyDictionary<string, FeatType[]> ExpectedBloodFrenzyAbilityPackages = new Dictionary<string, FeatType[]>
     {
         ["bf_scavenger"] = new[] { FeatType.RakingClaws, FeatType.RendingBite },
@@ -147,6 +201,25 @@ public class NPCEnemyBalanceAuditTests
         ["bf_duelist"] = new[] { FeatType.PouncingStrike, FeatType.RendingBite, FeatType.TailSweep },
         ["bf_butcher"] = new[] { FeatType.ButchersCarve, FeatType.StimCanister, FeatType.BloodFrenzyFlurry, FeatType.BrutalBash },
         ["bf_kess"] = new[] { FeatType.BloodFrenzyFlurry, FeatType.DraavosChallenge, FeatType.StimCanister, FeatType.SerratedSlash, FeatType.BrutalBash, FeatType.TacticalMark },
+    };
+
+    private static readonly IReadOnlyDictionary<string, FeatType[]> ExpectedNamedRareEliteAbilityPackages = new Dictionary<string, FeatType[]>
+    {
+        ["soot_rusk"] = new[] { FeatType.TacticalMark, FeatType.PrecisionShot, FeatType.PiercingQuills, FeatType.GrenadeBurst },
+        ["nara_venn"] = new[] { FeatType.TacticalMark, FeatType.PrecisionShot, FeatType.PiercingQuills, FeatType.GrenadeBurst },
+        ["silkshade"] = new[] { FeatType.TacticalMark, FeatType.PrecisionShot, FeatType.PiercingQuills, FeatType.GrenadeBurst },
+        ["mossback"] = new[] { FeatType.PouncingStrike, FeatType.MaulingBite, FeatType.TailSweep, FeatType.TerrifyingBellow },
+        ["tarn_kyric"] = new[] { FeatType.TacticalMark, FeatType.PrecisionShot, FeatType.PiercingQuills, FeatType.GrenadeBurst },
+        ["varo_skeld"] = new[] { FeatType.TacticalMark, FeatType.PrecisionShot, FeatType.PiercingQuills, FeatType.GrenadeBurst },
+        ["harrek_voss"] = new[] { FeatType.TacticalMark, FeatType.PrecisionShot, FeatType.PiercingQuills, FeatType.GrenadeBurst },
+        ["greyspine"] = new[] { FeatType.PouncingStrike, FeatType.MaulingBite, FeatType.TailSweep, FeatType.TerrifyingBellow },
+        ["maw_ghal"] = new[] { FeatType.SonicShriek, FeatType.DisorientingScreech, FeatType.TacticalMark, FeatType.CripplingTalons },
+        ["redtail_kor"] = new[] { FeatType.PouncingStrike, FeatType.MaulingBite, FeatType.TailSweep, FeatType.TerrifyingBellow },
+        ["shardeye"] = new[] { FeatType.TacticalMark, FeatType.PrecisionShot, FeatType.PiercingQuills, FeatType.GrenadeBurst },
+        ["rootcoil"] = new[] { FeatType.PouncingStrike, FeatType.MaulingBite, FeatType.TailSweep, FeatType.TerrifyingBellow },
+        ["mirevein"] = new[] { FeatType.PouncingStrike, FeatType.MaulingBite, FeatType.TailSweep, FeatType.TerrifyingBellow },
+        ["vrix7"] = new[] { FeatType.TacticalMark, FeatType.PrecisionShot, FeatType.PiercingQuills, FeatType.GrenadeBurst },
+        ["ashwing"] = new[] { FeatType.SonicShriek, FeatType.DisorientingScreech, FeatType.TacticalMark, FeatType.CripplingTalons },
     };
 
     private static readonly IReadOnlyDictionary<string, string> ExpectedDroidEnemySkins = new Dictionary<string, string>
@@ -297,6 +370,69 @@ public class NPCEnemyBalanceAuditTests
     }
 
     [Test]
+    public void Stormplume_UsesWildlandsEliteBibleStats()
+    {
+        var root = FindRepositoryRoot();
+        using var utc = ReadJson(root, "Module", "utc", "stormplume.utc.json");
+        using var skin = ReadJson(root, "Module", "uti", "stormplume_sk.uti.json");
+        using var weapon = ReadJson(root, "Module", "uti", "stormplume_wp.uti.json");
+
+        GetString(utc.RootElement, "Tag").Should().Be(StormplumeExpectedEnemy.Resref);
+        GetString(utc.RootElement, "TemplateResRef").Should().Be(StormplumeExpectedEnemy.Resref);
+        GetEquippedResref(utc.RootElement, CreatureWeaponSlot).Should().Be(StormplumeExpectedEnemy.WeaponResref);
+        GetEquippedResref(utc.RootElement, CreatureArmorSlot).Should().Be(StormplumeExpectedEnemy.SkinResref);
+        GetJsonLocalInt(utc.RootElement, "QUEST_NPC_GROUP_ID")
+            .Should()
+            .Be((int)NPCGroupType.Viscara_WildlandsWarocas, "Stormplume should count as a Warocas for existing Wildlands hunter tasks");
+
+        AssertCreatureHitPoints(utc.RootElement, StormplumeExpectedEnemy);
+        AssertCreatureAttributes(utc.RootElement, StormplumeExpectedEnemy);
+        AssertSkinCombatStats(skin.RootElement, StormplumeExpectedEnemy);
+        AssertWeaponStats(weapon.RootElement, StormplumeExpectedEnemy);
+
+        foreach (var (resistanceType, expectedValue) in StormplumeExpectedResistances)
+        {
+            var rawCostValue = GetItemPropertyCost(skin.RootElement, ItemPropertyResistance, (int)resistanceType);
+            rawCostValue.Should().NotBeNull($"Stormplume should define {resistanceType} resistance from the World NPCs Bible row");
+            Resistance.DecodeItemPropertyCostTableValue(rawCostValue!.Value)
+                .Should()
+                .Be(expectedValue, $"{resistanceType} should match Stormplume's level 4 Elite Beast package");
+        }
+    }
+
+    [Test]
+    public void ViscaraNamedRareElites_UseBibleStats()
+    {
+        var root = FindRepositoryRoot();
+
+        foreach (var expected in ExpectedNamedRareEliteEnemies)
+        {
+            using var utc = ReadJson(root, "Module", "utc", $"{expected.Resref}.utc.json");
+            using var skin = ReadJson(root, "Module", "uti", $"{expected.SkinResref}.uti.json");
+            using var weapon = ReadJson(root, "Module", "uti", $"{expected.WeaponResref}.uti.json");
+
+            GetString(utc.RootElement, "Tag").Should().Be(expected.Resref);
+            GetString(utc.RootElement, "TemplateResRef").Should().Be(expected.Resref);
+            GetEquippedWeaponResrefs(utc.RootElement).Should().Contain(expected.WeaponResref);
+            GetEquippedResref(utc.RootElement, CreatureArmorSlot).Should().Be(expected.SkinResref);
+
+            AssertCreatureHitPoints(utc.RootElement, expected);
+            AssertCreatureAttributes(utc.RootElement, expected);
+            AssertSkinCombatStats(skin.RootElement, expected);
+            AssertWeaponStats(weapon.RootElement, expected);
+
+            foreach (var (resistanceType, expectedValue) in ExpectedNamedRareEliteResistances[expected.Resref])
+            {
+                var rawCostValue = GetItemPropertyCost(skin.RootElement, ItemPropertyResistance, (int)resistanceType);
+                rawCostValue.Should().NotBeNull($"{expected.Resref} should define {resistanceType} resistance from the World NPCs Bible row");
+                Resistance.DecodeItemPropertyCostTableValue(rawCostValue!.Value)
+                    .Should()
+                    .Be(expectedValue, $"{resistanceType} should match {expected.Resref}'s named rare elite Bible package");
+            }
+        }
+    }
+
+    [Test]
     public void BloodFrenzyEnemies_UseBibleAbilityPackages()
     {
         var root = FindRepositoryRoot();
@@ -335,6 +471,48 @@ public class NPCEnemyBalanceAuditTests
             .Intersect(ResistanceThreatFeats.Keys)
             .Should()
             .BeEquivalentTo(expectedFeatIds, "Old Scar should not inherit the normal Kath Hound package");
+    }
+
+    [Test]
+    public void Stormplume_UsesEliteControllerAbilityPackage()
+    {
+        var root = FindRepositoryRoot();
+        using var utc = ReadJson(root, "Module", "utc", "stormplume.utc.json");
+        var expectedFeatIds = new[]
+        {
+            (int)FeatType.SonicShriek,
+            (int)FeatType.DisorientingScreech,
+            (int)FeatType.TacticalMark,
+            (int)FeatType.CripplingTalons,
+        };
+
+        GetCreatureFeats(utc.RootElement)
+            .Should()
+            .Contain(expectedFeatIds, "Stormplume should use the Elite Controller package from the World NPCs Bible");
+        GetCreatureFeats(utc.RootElement)
+            .Intersect(ResistanceThreatFeats.Keys)
+            .Should()
+            .BeEquivalentTo(expectedFeatIds, "Stormplume should use the authored Elite Controller package without extra resistance-pressure abilities");
+    }
+
+    [Test]
+    public void ViscaraNamedRareElites_UseAuthoredEliteAbilityPackages()
+    {
+        var root = FindRepositoryRoot();
+
+        foreach (var expected in ExpectedNamedRareEliteAbilityPackages)
+        {
+            using var utc = ReadJson(root, "Module", "utc", $"{expected.Key}.utc.json");
+            var expectedFeatIds = expected.Value.Select(feat => (int)feat).ToArray();
+
+            GetCreatureFeats(utc.RootElement)
+                .Should()
+                .Contain(expectedFeatIds, $"{expected.Key} should include every feat from its elite ability package");
+            GetCreatureFeats(utc.RootElement)
+                .Intersect(ResistanceThreatFeats.Keys)
+                .Should()
+                .BeEquivalentTo(expectedFeatIds, $"{expected.Key} should not inherit extra resistance-pressure abilities from the base creature");
+        }
     }
 
     [Test]
@@ -402,6 +580,42 @@ public class NPCEnemyBalanceAuditTests
         GetWorkbookCellText(worksheet, sharedStrings, "AP207")
             .Should()
             .Be("Pouncing Strike, Mauling Bite, Tail Sweep, Terrifying Bellow");
+        GetWorkbookCellText(worksheet, sharedStrings, "A208").Should().Be("Viscara");
+        GetWorkbookCellText(worksheet, sharedStrings, "B208").Should().Be("Stormplume");
+        GetWorkbookCellText(worksheet, sharedStrings, "C208").Should().Be("stormplume");
+        GetWorkbookCellNumber(worksheet, sharedStrings, "D208").Should().Be(4m);
+        GetWorkbookCellText(worksheet, sharedStrings, "E208").Should().Be("Elite");
+        GetWorkbookCellText(worksheet, sharedStrings, "F208").Should().Be("Controller");
+        GetWorkbookCellText(worksheet, sharedStrings, "G208").Should().Be("Beast");
+        GetWorkbookCellText(worksheet, sharedStrings, "H208").Should().Be("None");
+        GetWorkbookCellNumber(worksheet, sharedStrings, "AE208").Should().Be(-10m);
+        GetWorkbookCellNumber(worksheet, sharedStrings, "AI208").Should().Be(-15m);
+        GetWorkbookCellNumber(worksheet, sharedStrings, "AL208").Should().Be(-10m);
+        GetWorkbookCellText(worksheet, sharedStrings, "AP208")
+            .Should()
+            .Be("Sonic Shriek, Disorienting Screech, Tactical Mark, Crippling Talons");
+        GetWorkbookCellText(worksheet, sharedStrings, "A209").Should().Be("Viscara");
+        GetWorkbookCellText(worksheet, sharedStrings, "B209").Should().Be("Sootline Rusk");
+        GetWorkbookCellText(worksheet, sharedStrings, "C209").Should().Be("soot_rusk");
+        GetWorkbookCellNumber(worksheet, sharedStrings, "D209").Should().Be(6m);
+        GetWorkbookCellText(worksheet, sharedStrings, "E209").Should().Be("Elite");
+        GetWorkbookCellText(worksheet, sharedStrings, "F209").Should().Be("Ranged");
+        GetWorkbookCellText(worksheet, sharedStrings, "G209").Should().Be("Humanoid");
+        GetWorkbookCellText(worksheet, sharedStrings, "AP209")
+            .Should()
+            .Be("Tactical Mark, Precision Shot, Piercing Quills, Grenade Burst");
+        GetWorkbookCellText(worksheet, sharedStrings, "A223").Should().Be("Viscara");
+        GetWorkbookCellText(worksheet, sharedStrings, "B223").Should().Be("Ashwing Echo");
+        GetWorkbookCellText(worksheet, sharedStrings, "C223").Should().Be("ashwing");
+        GetWorkbookCellNumber(worksheet, sharedStrings, "D223").Should().Be(2m);
+        GetWorkbookCellText(worksheet, sharedStrings, "E223").Should().Be("Elite");
+        GetWorkbookCellText(worksheet, sharedStrings, "F223").Should().Be("Controller");
+        GetWorkbookCellText(worksheet, sharedStrings, "G223").Should().Be("Aberration");
+        GetWorkbookCellNumber(worksheet, sharedStrings, "AE223").Should().Be(-10m);
+        GetWorkbookCellNumber(worksheet, sharedStrings, "AH223").Should().Be(-10m);
+        GetWorkbookCellText(worksheet, sharedStrings, "AP223")
+            .Should()
+            .Be("Sonic Shriek, Disorienting Screech, Tactical Mark, Crippling Talons");
         GetWorkbookCellFormula(worksheet, "X202").Should().Contain("+$AF202", "Poison resistance should read the numeric Poison Res Adj column");
         GetWorkbookCellFormula(worksheet, "AA202").Should().Contain("+$AI202", "Mind resistance should read the numeric Mind Res Adj column");
         GetWorkbookCellFormula(worksheet, "AC206").Should().Contain("+$AK206", "Kess's Trauma resistance should read the numeric Trauma Res Adj column");
@@ -409,14 +623,17 @@ public class NPCEnemyBalanceAuditTests
         GetWorkbookCellFormula(worksheet, "N207").Should().Contain("$D207&\"|\"&$E207&\"|\"&$F207", "Old Scar HP should be calculated from the level 4 Elite Melee preset");
         GetWorkbookCellFormula(worksheet, "W207").Should().Contain("+$AE207", "Old Scar's fire vulnerability should be applied through the numeric adjustment column");
         GetWorkbookCellFormula(worksheet, "AN207").Should().Contain("'World NPC Weapon Delays'", "Old Scar delay should use the shared delay lookup with preset fallback");
+        GetWorkbookCellFormula(worksheet, "N208").Should().Contain("$D208&\"|\"&$E208&\"|\"&$F208", "Stormplume HP should be calculated from the level 4 Elite Controller preset");
+        GetWorkbookCellFormula(worksheet, "W208").Should().Contain("+$AE208", "Stormplume's fire vulnerability should be applied through the numeric adjustment column");
+        GetWorkbookCellFormula(worksheet, "AN208").Should().Contain("'World NPC Weapon Delays'", "Stormplume delay should use the shared delay lookup with preset fallback");
 
         var formulaColumns = new[]
         {
             "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V",
-            "W", "X", "Y", "Z", "AA", "AB", "AC", "AD", "AM", "AN", "AO",
+            "W", "X", "Y", "Z", "AA", "AB", "AC", "AD", "AN", "AO",
         };
 
-        foreach (var row in Enumerable.Range(202, 6))
+        foreach (var row in Enumerable.Range(202, 22))
         {
             foreach (var column in formulaColumns)
             {
@@ -427,7 +644,7 @@ public class NPCEnemyBalanceAuditTests
         }
 
         var handEntryStyle = GetWorkbookCellStyle(worksheet, "A202");
-        foreach (var row in Enumerable.Range(2, 206))
+        foreach (var row in Enumerable.Range(2, 222))
         {
             foreach (var column in new[] { "AE", "AF", "AG", "AH", "AI", "AJ", "AK", "AL" })
             {
@@ -449,11 +666,11 @@ public class NPCEnemyBalanceAuditTests
             .Attribute("ref")?
             .Value
             .Should()
-            .Be("$A$1:$AR$207", "the reusable resistance override columns should be included in World NPCs filtering");
+            .Be("$A$1:$AR$223", "the reusable resistance override columns should be included in World NPCs filtering");
 
         worksheet
             .Descendants(ns + "dataValidation")
-            .Single(validation => validation.Attribute("sqref")?.Value == "AE2:AL207")
+            .Single(validation => validation.Attribute("sqref")?.Value == "AE2:AL223")
             .Attribute("type")?
             .Value
             .Should()

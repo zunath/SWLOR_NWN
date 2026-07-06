@@ -304,6 +304,83 @@ function Test-IsPerkTableSheet {
     return $false
 }
 
+function Set-BeastLookupsStatDropdownStyles {
+    param(
+        [xml]$WorksheetXml,
+        [System.Xml.XmlNamespaceManager]$Namespace,
+        [System.Collections.Generic.List[string]]$SharedStrings
+    )
+
+    $validRoles = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+    foreach ($role in @("Balanced", "Bruiser", "Damage", "Evasion", "Force", "Tank")) {
+        [void]$validRoles.Add($role)
+    }
+
+    $sourceStyle = $null
+    foreach ($rowNode in $WorksheetXml.SelectNodes("//d:sheetData/d:row", $Namespace)) {
+        $roleCell = $rowNode.SelectSingleNode("d:c[starts-with(@r,'D')]", $Namespace)
+        if ($null -eq $roleCell) {
+            continue
+        }
+
+        $roleText = Get-OpenXmlCellText -Cell $roleCell -SharedStrings $SharedStrings
+        if (!$validRoles.Contains($roleText.Trim())) {
+            continue
+        }
+
+        foreach ($column in @("E", "F")) {
+            $statCell = $rowNode.SelectSingleNode("d:c[starts-with(@r,'$column')]", $Namespace)
+            if ($null -eq $statCell) {
+                continue
+            }
+
+            $statText = Get-OpenXmlCellText -Cell $statCell -SharedStrings $SharedStrings
+            if ([string]::IsNullOrWhiteSpace($statText)) {
+                continue
+            }
+
+            if ($statCell.HasAttribute("s") -and $statCell.GetAttribute("s") -ne "8") {
+                $sourceStyle = $statCell.GetAttribute("s")
+                break
+            }
+        }
+
+        if ($null -ne $sourceStyle) {
+            break
+        }
+    }
+
+    if ($null -eq $sourceStyle) {
+        throw "Could not find the Beast Lookups stat dropdown style."
+    }
+
+    foreach ($rowNode in $WorksheetXml.SelectNodes("//d:sheetData/d:row", $Namespace)) {
+        $roleCell = $rowNode.SelectSingleNode("d:c[starts-with(@r,'D')]", $Namespace)
+        if ($null -eq $roleCell) {
+            continue
+        }
+
+        $roleText = Get-OpenXmlCellText -Cell $roleCell -SharedStrings $SharedStrings
+        if (!$validRoles.Contains($roleText.Trim())) {
+            continue
+        }
+
+        foreach ($column in @("E", "F")) {
+            $statCell = $rowNode.SelectSingleNode("d:c[starts-with(@r,'$column')]", $Namespace)
+            if ($null -eq $statCell) {
+                continue
+            }
+
+            $statText = Get-OpenXmlCellText -Cell $statCell -SharedStrings $SharedStrings
+            if ([string]::IsNullOrWhiteSpace($statText)) {
+                continue
+            }
+
+            $statCell.SetAttribute("s", $sourceStyle)
+        }
+    }
+}
+
 function Get-LayoutColumns {
     param(
         [object]$Layout,
@@ -428,6 +505,10 @@ try {
 
         foreach ($notesColumnIndex in (Get-HeaderColumnIndexes -WorksheetXml $worksheetXml -Namespace $worksheetNamespace -SharedStrings $sharedStrings -HeaderText "Notes")) {
             Set-MinimumColumnWidth -WorksheetXml $worksheetXml -Namespace $worksheetNamespace -ColumnIndex $notesColumnIndex -MinimumWidth $minimumNotesColumnWidth
+        }
+
+        if ($sheetName -eq "Beast Lookups") {
+            Set-BeastLookupsStatDropdownStyles -WorksheetXml $worksheetXml -Namespace $worksheetNamespace -SharedStrings $sharedStrings
         }
 
         Remove-CustomRowHeights -WorksheetXml $worksheetXml -Namespace $worksheetNamespace

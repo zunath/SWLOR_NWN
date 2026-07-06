@@ -3,6 +3,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.PerkDefinition;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.StatService;
 
@@ -496,9 +497,12 @@ public class CombatReleaseBalanceAuditTests
             (PerkType.GuardiansRiposte, StatType.DeflectionNextSkillAbilityDamageBonus) => 10,
             (PerkType.GuardiansRiposte, StatType.DeflectionNextSkillAbilityDamageBonusWindowSeconds) => 18,
             (PerkType.Alacrity, StatType.DeflectionStaminaRestore) => 4,
+            (PerkType.Alacrity, StatType.DeflectionStaminaRestoreCooldownSeconds) => 6,
             (PerkType.Bulwark, StatType.ShieldDeflection) => 35,
             (PerkType.ShieldTraining, StatType.DeflectionEvasionPercentAdjustment) => 3,
             (PerkType.ShieldTraining, StatType.DeflectionEvasionEnmityPercentAdjustment) => 3,
+            (PerkType.ShieldTraining, StatType.DeflectionRecastReductionGroupId) => (int)RecastGroup.ShieldBash,
+            (PerkType.ShieldTraining, StatType.DeflectionRecastReductionSeconds) => 2,
             (PerkType.ConduitTraining, StatType.AutoAttackFPRestore) => 3,
             (PerkType.ConduitTraining, StatType.AutoAttackFPRestoreCooldownSeconds) => 4,
             (PerkType.CriticalWard, StatType.IncomingCriticalHitDowngradeCooldownMilliseconds) => 12000,

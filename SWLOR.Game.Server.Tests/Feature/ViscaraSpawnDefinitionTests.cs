@@ -1264,6 +1264,8 @@ public class ViscaraSpawnDefinitionTests
         tableSource.Should().Contain("Random.GetRandomWeightedIndex(weights)");
         tableSource.Should().Contain("obj.IsRare && !includeRareSpawns");
         spawnSource.Should().Contain("private static bool HasActiveRareSpawn(uint area, string spawnTableId)");
+        spawnSource.Should().Contain("RemoveActiveSpawn(detail, creature);");
+        spawnSource.Should().Contain("activeSpawns.RemoveAll(x => !GetIsObjectValid(x.SpawnObject));");
         spawnSource.Should().Contain("spawnTable.GetNextSpawn(!HasActiveRareSpawn(detail.Area, detail.SpawnTableId))");
         spawnSource.Should().Contain("IsRare = spawnObject.IsRare");
     }

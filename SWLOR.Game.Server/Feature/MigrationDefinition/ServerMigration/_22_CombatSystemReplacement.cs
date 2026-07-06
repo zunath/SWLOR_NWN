@@ -238,6 +238,8 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
             { PerkType.IncendiaryBomb, new[] { 2, 3, 3 } },
             { PerkType.GasBomb, new[] { 2, 3, 3 } },
             { PerkType.StealthGenerator, new[] { 2, 3, 3 } },
+            { PerkType.Bloodseeker, new[] { 2, 2 } },
+            { PerkType.GuardiansRiposte, new[] { 2 } },
 
             { PerkType.RangedHealing, new[] { 2, 3, 4, 5 } },
             { PerkType.FrugalMedic, new[] { 1, 2, 2 } },

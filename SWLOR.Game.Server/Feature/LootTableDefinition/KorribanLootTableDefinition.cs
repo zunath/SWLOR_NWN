@@ -310,7 +310,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
         {
             _builder.Create("KORRIBAN_SITH_ROGUE")
                 .AddItem("elec_flawed", 15)
-                .AddItem("stolen_s_artifact", 10)
+                .AddItem("stolen_s_artifac", 10)
                 .AddItem("lth_good", 5)
                 .AddItem("sith_longsword", 5);
 
@@ -346,7 +346,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 
             _builder.Create("FROG_BOSS_RECIPE")
                 .AddItem("recipe_gumbo", 10)
-                .AddItem("recipe_alcstaff", 10)
+                .AddItem("recipe_alcspear", 10)
                 .AddItem("recipe_chispear", 10)
                 .AddItem("recipe_chiknife", 10)
                 .AddItem("recipe_chipistol", 10)

@@ -424,6 +424,7 @@ namespace SWLOR.Game.Server.Service
             var respawnTime = DateTime.UtcNow.AddMinutes(detail.RespawnDelayMinutes);
 
             CreateQueuedSpawn(spawnGuid, respawnTime);
+            RemoveActiveSpawn(detail, creature);
             SetLocalInt(creature, "RESPAWN_QUEUED", 1);
         }
 
@@ -684,13 +685,23 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
+        private static void RemoveActiveSpawn(SpawnDetail detail, uint spawnObject)
+        {
+            if (!_activeSpawnsByArea.TryGetValue(detail.Area, out var activeSpawns))
+                return;
+
+            activeSpawns.RemoveAll(x => x.SpawnObject == spawnObject);
+        }
+
         private static bool HasActiveRareSpawn(uint area, string spawnTableId)
         {
             if (string.IsNullOrWhiteSpace(spawnTableId) ||
-                !_activeSpawnsByArea.ContainsKey(area))
+                !_activeSpawnsByArea.TryGetValue(area, out var activeSpawns))
                 return false;
 
-            foreach (var activeSpawn in _activeSpawnsByArea[area])
+            activeSpawns.RemoveAll(x => !GetIsObjectValid(x.SpawnObject));
+
+            foreach (var activeSpawn in activeSpawns)
             {
                 if (!activeSpawn.IsRare)
                     continue;

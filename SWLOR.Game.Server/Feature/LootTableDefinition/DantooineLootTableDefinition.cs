@@ -46,7 +46,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 
             _builder.Create("DANTOOINE_KINRATH_QUEEN_RECIPES")
                     .AddItem("recipe_dancarrot", 20)
-                    .AddItem("recipe_krafterk", 20);
+                .AddItem("recipe_krafters", 20);
 
         }
 
@@ -68,7 +68,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             _builder.Create("DANTOOINE_DANTARI_HUNTER")
                 .AddItem("bantha_milk", 70)
                 .AddItem("carrot", 10)
-                .AddItem("culture_butter", 5);
+                .AddItem("cultured_butter", 5);
 
             _builder.Create("DANTOOINE_DANTARI_HUNTER_GEAR")
                 .AddItem("dantari_iknife", 20);

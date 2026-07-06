@@ -168,7 +168,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
         {
             _builder.Create("MONCALA_MICROTENCH")
                 .AddItem("mtench_tentacle", 20)
-                .AddItem("mtench_mantle", 10);
+                .AddItem("tench_mantle", 10);
 
             _builder.Create("MONCALA_MICROTENCH_RARES")
                 .IsRare()
@@ -180,7 +180,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
         {
             _builder.Create("MONCALA_OCTOTENCH")
                 .AddItem("mtench_tentacle", 25)
-                .AddItem("mtench_mantle", 20)
+                .AddItem("tench_mantle", 20)
                 .AddItem("mtench_ink", 3)
                 .AddItem("mtench_sac", 3)
                 .AddItem("mtench_poison", 3);

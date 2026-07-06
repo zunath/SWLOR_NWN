@@ -134,6 +134,66 @@ if ([System.IO.Directory]::Exists($abilityDefinitionPath)) {
         }
 }
 
+$selfTargetingLabels = @(
+    "FlurryStance1",
+    "GamblerStance1",
+    "LaceratorStance1",
+    "OrdnanceStance1",
+    "ScrapperStance1",
+    "ShadowflowStance1",
+    "SuppressionStance1",
+    "VigorStance1"
+)
+$hostileTargetingLabels = @("Hamstring1", "Hamstring2", "Hamstring3")
+
+$featTargetSelfByLabel = @{}
+$spellTargetingByLabel = @{}
+$selfSpellTargetingProfile = @{
+    Range = "P"
+    TargetType = "0x01"
+    HostileSetting = "0"
+    TargetShape = "****"
+    TargetSizeX = "****"
+    TargetSizeY = "****"
+    TargetFlags = "****"
+}
+$hostileSpellTargetingProfile = @{
+    Range = "M"
+    TargetType = "0x03"
+    HostileSetting = "0"
+    TargetShape = "****"
+    TargetSizeX = "****"
+    TargetSizeY = "****"
+    TargetFlags = "****"
+}
+
+foreach ($label in $selfTargetingLabels) {
+    $featTargetSelfByLabel[$label] = "1"
+    $spellTargetingByLabel[$label] = $selfSpellTargetingProfile
+}
+
+foreach ($label in $hostileTargetingLabels) {
+    $featTargetSelfByLabel[$label] = "****"
+    $spellTargetingByLabel[$label] = $hostileSpellTargetingProfile
+}
+
+function Apply-SpellTargetingProfile {
+    param(
+        [System.Collections.Generic.IList[string]]$SpellTokens,
+        [string[]]$Headers,
+        [string]$Label
+    )
+
+    if (!$spellTargetingByLabel.ContainsKey($Label)) {
+        return
+    }
+
+    $profile = $spellTargetingByLabel[$Label]
+    foreach ($entry in $profile.GetEnumerator()) {
+        Set-TokenByHeader $SpellTokens $Headers $entry.Key $entry.Value
+    }
+}
+
 $featLines = [System.Collections.Generic.List[string]]::new()
 $featLines.AddRange([System.IO.File]::ReadAllLines($featPath))
 $featHeaderIndex = Get-HeaderLineIndex $featLines.ToArray()
@@ -214,6 +274,10 @@ for ($i = $featHeaderIndex + 1; $i -lt $featLines.Count; $i++) {
         continue
     }
 
+    if ($featTargetSelfByLabel.ContainsKey($label)) {
+        Set-TokenByHeader $tokens $featHeaders "TARGETSELF" $featTargetSelfByLabel[$label]
+    }
+
     $spellId = 0
     if ($spellRowsByLabel.ContainsKey($label)) {
         $spellId = $spellRowsByLabel[$label]
@@ -228,6 +292,7 @@ for ($i = $featHeaderIndex + 1; $i -lt $featLines.Count; $i++) {
         }
         Set-TokenByHeader $spellTokens $spellsHeaders "SpellDesc" (Get-TokenByHeader $tokens $featHeaders "DESCRIPTION")
         Set-TokenByHeader $spellTokens $spellsHeaders "FeatID" $rowNumber.ToString()
+        Apply-SpellTargetingProfile $spellTokens $spellsHeaders $label
         $spellsLines[$spellLineIndex] = Format-2DARow $spellTokens.ToArray() $spellColumnWidths
     }
     else {
@@ -271,6 +336,7 @@ for ($i = $featHeaderIndex + 1; $i -lt $featLines.Count; $i++) {
         Set-TokenByHeader $spellTokens $spellsHeaders "HostileSetting" "0"
         Set-TokenByHeader $spellTokens $spellsHeaders "FeatID" $rowNumber.ToString()
         Set-TokenByHeader $spellTokens $spellsHeaders "HasProjectile" "0"
+        Apply-SpellTargetingProfile $spellTokens $spellsHeaders $label
 
         $formattedSpellRow = Format-2DARow $spellTokens.ToArray() $spellColumnWidths
         if ($reuseBlankRow) {

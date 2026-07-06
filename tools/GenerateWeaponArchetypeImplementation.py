@@ -658,6 +658,14 @@ def is_friendly_target_active(description):
     )
 
 
+def is_self_targeting_active(row, base):
+    return (
+        row["Type"] in {"Stance", "Toggle", "Aura"} or
+        is_self_only_active(row["Description"]) or
+        base in {"Whirling Guard"}
+    )
+
+
 def description_stat_entries(row, base):
     description = row["Description"]
     lowered = description.lower()
@@ -2238,17 +2246,20 @@ def add_missing_feats(rows):
     passive_missing = []
     for row in rows:
         if row["Type"] in ACTIVE_TYPES:
+            base, _ = base_and_level(row["PerkName"])
             feat = active_feat_name(row, feat_values)
+            target_self = is_self_targeting_active(row, base)
             hostile = (
                 row["Type"] == "Combat" and
                 not is_friendly_target_active(row["Description"]) and
-                not is_self_only_active(row["Description"])
+                not target_self
             )
             active_metadata[feat] = {
                 "label": feat,
                 "name": row["PerkName"].strip(),
                 "description": row["Description"].strip(),
                 "hostile": "1" if hostile else "****",
+                "target_self": "1" if target_self else "****",
             }
             if feat not in feat_values:
                 existing_rows = feat_rows_by_label.get(feat)
@@ -2338,13 +2349,8 @@ def add_missing_feats(rows):
             active_metadata[feat]["description"])
         tokens[tokens_by_header(tokens, headers, "ICON")] = generated_icon_resref(feat, max_row)
         tokens[tokens_by_header(tokens, headers, "SPELLID")] = "****"
-        tokens[tokens_by_header(tokens, headers, "HostileFeat")] = (
-            "1"
-            if row["Type"] == "Combat" and
-               not is_friendly_target_active(row["Description"]) and
-               not is_self_only_active(row["Description"])
-            else "****"
-        )
+        tokens[tokens_by_header(tokens, headers, "TARGETSELF")] = active_metadata[feat]["target_self"]
+        tokens[tokens_by_header(tokens, headers, "HostileFeat")] = active_metadata[feat]["hostile"]
         lines.append(format_2da_row(tokens, FEAT_COLUMN_WIDTHS))
         row_line[max_row] = len(lines) - 1
         feat_values[feat] = max_row
@@ -2370,6 +2376,7 @@ def add_missing_feats(rows):
             metadata["description"])
         if tokens[icon_index].lower() in TEMPLATE_ACTIVE_ICON_RESREFS:
             tokens[icon_index] = generated_icon_resref(feat, row_number)
+        tokens[tokens_by_header(tokens, headers, "TARGETSELF")] = metadata["target_self"]
         tokens[tokens_by_header(tokens, headers, "HostileFeat")] = metadata["hostile"]
         new_line = format_2da_row(tokens, FEAT_COLUMN_WIDTHS)
         if lines[row_line[row_number]] != new_line:

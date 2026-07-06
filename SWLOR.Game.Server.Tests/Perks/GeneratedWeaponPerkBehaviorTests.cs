@@ -1,6 +1,8 @@
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Katar;
+using SWLOR.Game.Server.Feature.AbilityDefinition.Pistol;
+using SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.SkillService;
@@ -218,6 +220,45 @@ public class GeneratedWeaponPerkBehaviorTests
         combatSource.Should().Contain("ApplyDamageDealtHamstringEffect(attacker, defender, skillType, damageType)");
         combatSource.Should().Contain("StatType.DamageDealtHamstringSkillType");
         combatSource.Should().Contain("typeof(HamstringStatusEffect)");
+    }
+
+    [Test]
+    public void ReportedVibroknifeAndPistolAbilityTargeting_MatchesActivationBehavior()
+    {
+        var root = FindRepositoryRoot();
+        var featRows = Read2da(root, "SWLOR_Haks", "sw_2da", "feat.2da");
+        var spellRows = Read2da(root, "SWLOR_Haks", "sw_2da", "spells.2da");
+
+        var hamstring = new HamstringAbilityDefinition().BuildAbilities();
+        foreach (var feat in new[] { FeatType.Hamstring1, FeatType.Hamstring2, FeatType.Hamstring3 })
+        {
+            hamstring[feat].IsHostileAbility.Should().BeTrue();
+            hamstring[feat].RequiresTarget.Should().BeTrue();
+            AssertFeatSpellTargeting(featRows, spellRows, feat, "****", "1", "M", "0x03", "0");
+        }
+
+        var shadowflow = new ShadowflowStanceAbilityDefinition().BuildAbilities()[FeatType.ShadowflowStance1];
+        shadowflow.IsHostileAbility.Should().BeFalse();
+        shadowflow.RequiresTarget.Should().BeFalse();
+
+        var gambler = new GamblerStanceAbilityDefinition().BuildAbilities()[FeatType.GamblerStance1];
+        gambler.IsHostileAbility.Should().BeFalse();
+        gambler.RequiresTarget.Should().BeFalse();
+
+        foreach (var feat in new[]
+        {
+            FeatType.FlurryStance1,
+            FeatType.GamblerStance1,
+            FeatType.LaceratorStance1,
+            FeatType.OrdnanceStance1,
+            FeatType.ScrapperStance1,
+            FeatType.ShadowflowStance1,
+            FeatType.SuppressionStance1,
+            FeatType.VigorStance1
+        })
+        {
+            AssertFeatSpellTargeting(featRows, spellRows, feat, "1", "****", "P", "0x01", "0");
+        }
     }
 
     [Test]
@@ -666,6 +707,57 @@ public class GeneratedWeaponPerkBehaviorTests
     private static void AssertStatusStat(IStatusEffect statusEffect, StatType statType, int value)
     {
         statusEffect.StatGroup.Stats[statType].Should().Be(value);
+    }
+
+    private static void AssertFeatSpellTargeting(
+        IReadOnlyDictionary<int, Dictionary<string, string>> featRows,
+        IReadOnlyDictionary<int, Dictionary<string, string>> spellRows,
+        FeatType featType,
+        string targetSelf,
+        string hostileFeat,
+        string range,
+        string targetType,
+        string hostileSetting)
+    {
+        var featRow = featRows[(int)featType];
+        featRow["TARGETSELF"].Should().Be(targetSelf);
+        featRow["HostileFeat"].Should().Be(hostileFeat);
+
+        var spellRow = spellRows[int.Parse(featRow["SPELLID"])];
+        spellRow["Range"].Should().Be(range);
+        spellRow["TargetType"].Should().Be(targetType);
+        spellRow["HostileSetting"].Should().Be(hostileSetting);
+        spellRow["TargetShape"].Should().Be("****");
+        spellRow["TargetFlags"].Should().Be("****");
+    }
+
+    private static Dictionary<int, Dictionary<string, string>> Read2da(
+        DirectoryInfo root,
+        params string[] segments)
+    {
+        var path = Path.Combine(new[] { root.FullName }.Concat(segments).ToArray());
+        var lines = File.ReadAllLines(path)
+            .Where(line => !string.IsNullOrWhiteSpace(line))
+            .ToArray();
+        var header = lines[1].Split((char[])null!, StringSplitOptions.RemoveEmptyEntries);
+        var result = new Dictionary<int, Dictionary<string, string>>();
+
+        foreach (var line in lines.Skip(2))
+        {
+            var cells = line.Split((char[])null!, StringSplitOptions.RemoveEmptyEntries);
+            if (!int.TryParse(cells[0], out var row))
+                continue;
+
+            var values = new Dictionary<string, string>();
+            for (var index = 0; index < header.Length && index + 1 < cells.Length; index++)
+            {
+                values[header[index]] = cells[index + 1];
+            }
+
+            result[row] = values;
+        }
+
+        return result;
     }
 
     private static DirectoryInfo FindRepositoryRoot()

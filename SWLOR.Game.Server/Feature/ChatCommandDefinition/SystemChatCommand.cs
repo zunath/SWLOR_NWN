@@ -20,6 +20,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             ListEmotesCommand();
             StuckCommand();
             EmotesWindowCommand();
+            CombatWindowCommand();
 
             return _builder.Build();
         }
@@ -145,6 +146,16 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .Action((user, target, location, args) =>
                 {
                     Gui.TogglePlayerWindow(user, GuiWindowType.Emotes);
+                });
+        }
+        private void CombatWindowCommand()
+        {
+            _builder.Create("combatgui", "combatsgui")
+                .Description("Displays the Combat window used for lightsaber Forms and Guns during duels.")
+                .Permissions(AuthorizationLevel.All)
+                .Action((user, target, location, args) =>
+                {
+                    Gui.TogglePlayerWindow(user, GuiWindowType.CombatGui);
                 });
         }
     }

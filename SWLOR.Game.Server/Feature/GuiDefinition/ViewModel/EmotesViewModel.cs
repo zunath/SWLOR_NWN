@@ -172,6 +172,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public string SearchText
+        {
+            get => Get<string>();
+            set
+            {
+                Set(value);
+                FilterEmotes();
+            }
+        }
+
         private List<EmoteCategoryType> _categories;
         public int SelectedCategoryIndex
         {
@@ -181,6 +191,20 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 Set(value);
                 FilterEmotes();
             }
+        }
+
+        // Normalizes text for search: lowercase and treats dashes/spaces as equivalent so that
+        // "shii cho attack" matches "Shii-Cho Attack" regardless of formatting differences.
+        private static string NormalizeForSearch(string value)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+                return string.Empty;
+
+            return value
+                .ToLowerInvariant()
+                .Replace("-", " ")
+                .Replace("_", " ")
+                .Trim();
         }
 
         protected override void Initialize(GuiPayloadBase initialPayload)
@@ -209,10 +233,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             SelectedCategoryIndex = 0;
             IsCategoryAllToggled = true;
 
-            var layout = (EmoteLayoutType)GetLocalInt(Player, "EMOTE_GUI_LAYOUT");
-            OnSelectLayout((int)layout)();
-
             SelectedEmoteIndex = -1;
+            SearchText = string.Empty;
+
+            // Consente al filtro di reagire alla digitazione della barra di ricerca lato client.
+            WatchOnClient(model => model.SearchText);
+
             FilterEmotes();
         }
 
@@ -225,11 +251,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var emoteAnimations = new List<Animation>();
             var emoteCategories = new List<EmoteCategoryType>();
 
+            var normalizedSearch = NormalizeForSearch(SearchText);
+
             for (var i = 0; i < ChatCommand.EmoteNames.Count; i++)
             {
                 var category = ChatCommand.EmoteCategories[i];
 
-                if (selectedCategory == EmoteCategoryType.All || category == selectedCategory)
+                var matchesCategory = selectedCategory == EmoteCategoryType.All || category == selectedCategory;
+                var matchesSearch = normalizedSearch.Length == 0 ||
+                                    NormalizeForSearch(ChatCommand.EmoteNames[i]).Contains(normalizedSearch) ||
+                                    NormalizeForSearch(ChatCommand.EmoteDescriptions[i]).Contains(normalizedSearch);
+
+                if (matchesCategory && matchesSearch)
                 {
                     emoteNames.Add(ChatCommand.EmoteNames[i]);
                     emoteDescriptions.Add(ChatCommand.EmoteDescriptions[i]);
@@ -362,6 +395,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 ChangePartialView("EMOTE_LAYOUT_GROUP", "COL_VIEW");
             }
+        };
+
+        public Action OnClickClearSearch() => () =>
+        {
+            SearchText = string.Empty;
         };
 
         public Action OnClickReset() => () =>

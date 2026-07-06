@@ -10,97 +10,79 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         public GuiConstructedWindow BuildWindow()
         {
             var window = _builder.CreateWindow(GuiWindowType.Emotes);
-            window.SetInitialGeometry(0, 0, 400f, 400f)
+            window.SetInitialGeometry(0, 0, 340f, 400f)
                 .SetTitle("Emotes")
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
 
                 .AddColumn(col =>
                 {
+                    // Riga ricerca
                     col.AddRow(row =>
                     {
-                        row.AddPartialView("EMOTE_LAYOUT_GROUP");
-                    });
+                        row.AddTextEdit()
+                            .SetPlaceholder("Search")
+                            .BindValue(model => model.SearchText);
 
-                    // Footer comune: Reset + Toggle Layout
-                    col.AddRow(row =>
-                    {
-                        row.AddSpacer();
-                        
-                        row.AddToggleButton()
-                            .SetText("Grid")
-                            .BindOnClicked(model => model.OnSelectLayout(0))
-                            .BindIsToggled(model => model.IsHorizontalLayoutToggled)
-                            .SetWidth(50f)
-                            .SetHeight(20f);
-
-                        row.AddToggleButton()
-                            .SetText("Col")
-                            .BindOnClicked(model => model.OnSelectLayout(1))
-                            .BindIsToggled(model => model.IsVerticalLayoutToggled)
-                            .SetWidth(50f)
-                            .SetHeight(20f);
-
-                        row.AddSpacer();
                         row.AddButton()
-                            .SetText("Reset")
-                            .BindOnClicked(model => model.OnClickReset())
-                            .SetWidth(100f);
-                        row.AddSpacer();
+                            .SetText("X")
+                            .SetHeight(30f)
+                            .SetWidth(30f)
+                            .BindOnClicked(model => model.OnClickClearSearch());
                     });
-                });
 
-            window.DefinePartialView("GRID_VIEW", gridColGroup =>
-            {
-                gridColGroup.AddColumn(gridCol =>
-                {
-                    // Layout GRID: Header con categorie in griglia 2 righe x 3 colonne
-                    gridCol.AddRow(gridHeaderRow1 =>
+                    // Riga categorie: quadratini con la lettera iniziale
+                    col.AddRow(row =>
                     {
-                        gridHeaderRow1.AddToggleButton()
-                            .BindText(model => model.CategoryAllName)
+                        row.AddToggleButton()
+                            .SetText("A")
                             .BindOnClicked(model => model.OnSelectCategory(0))
                             .BindIsToggled(model => model.IsCategoryAllToggled)
-                            .SetHeight(32f);
+                            .SetWidth(30f)
+                            .SetHeight(30f);
 
-                        gridHeaderRow1.AddToggleButton()
-                            .BindText(model => model.CategoryCombatName)
+                        row.AddToggleButton()
+                            .SetText("C")
                             .BindOnClicked(model => model.OnSelectCategory(1))
                             .BindIsToggled(model => model.IsCategoryCombatToggled)
-                            .SetHeight(32f);
+                            .SetWidth(30f)
+                            .SetHeight(30f);
 
-                        gridHeaderRow1.AddToggleButton()
-                            .BindText(model => model.CategoryExplorationName)
+                        row.AddToggleButton()
+                            .SetText("E")
                             .BindOnClicked(model => model.OnSelectCategory(2))
                             .BindIsToggled(model => model.IsCategoryExplorationToggled)
-                            .SetHeight(32f);
-                    });
+                            .SetWidth(30f)
+                            .SetHeight(30f);
 
-                    gridCol.AddRow(gridHeaderRow2 =>
-                    {
-                        gridHeaderRow2.AddToggleButton()
-                            .BindText(model => model.CategoryTasksName)
+                        row.AddToggleButton()
+                            .SetText("T")
                             .BindOnClicked(model => model.OnSelectCategory(3))
                             .BindIsToggled(model => model.IsCategoryTasksToggled)
-                            .SetHeight(32f);
+                            .SetWidth(30f)
+                            .SetHeight(30f);
 
-                        gridHeaderRow2.AddToggleButton()
-                            .BindText(model => model.CategorySocialName)
+                        row.AddToggleButton()
+                            .SetText("S")
                             .BindOnClicked(model => model.OnSelectCategory(4))
                             .BindIsToggled(model => model.IsCategorySocialToggled)
-                            .SetHeight(32f);
+                            .SetWidth(30f)
+                            .SetHeight(30f);
 
-                        gridHeaderRow2.AddToggleButton()
-                            .BindText(model => model.CategoryFeelingsName)
+                        row.AddToggleButton()
+                            .SetText("F")
                             .BindOnClicked(model => model.OnSelectCategory(5))
                             .BindIsToggled(model => model.IsCategoryFeelingsToggled)
-                            .SetHeight(32f);
+                            .SetWidth(30f)
+                            .SetHeight(30f);
+
+                        row.AddSpacer();
                     });
 
-                    // Corpo Layout GRID (Scroll singolo largo)
-                    gridCol.AddRow(gridBodyRow =>
+                    // Corpo: lista emote filtrata
+                    col.AddRow(row =>
                     {
-                        gridBodyRow.AddList(template =>
+                        row.AddList(template =>
                         {
                             template.AddCell(cell =>
                             {
@@ -112,91 +94,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         })
                         .BindRowCount(model => model.EmoteNames);
                     });
-                });
-            });
 
-            window.DefinePartialView("COL_VIEW", colMainGroup =>
-            {
-                colMainGroup.AddColumn(colMain =>
-                {
-                    colMain.AddRow(colRow =>
+                    // Footer: Reset sempre visibile
+                    col.AddRow(row =>
                     {
-                        colRow.AddColumn(colLeft =>
-                        {
-                            colLeft.AddRow(leftRow =>
-                            {
-                                leftRow.AddToggleButton()
-                                    .BindText(model => model.CategoryAllName)
-                                    .BindOnClicked(model => model.OnSelectCategory(0))
-                                    .BindIsToggled(model => model.IsCategoryAllToggled)
-                                    .SetHeight(26f);
-                            });
-                            colLeft.AddRow(leftRow =>
-                            {
-                                leftRow.AddToggleButton()
-                                    .BindText(model => model.CategoryCombatName)
-                                    .BindOnClicked(model => model.OnSelectCategory(1))
-                                    .BindIsToggled(model => model.IsCategoryCombatToggled)
-                                    .SetHeight(26f);
-                            });
-                            colLeft.AddRow(leftRow =>
-                            {
-                                leftRow.AddToggleButton()
-                                    .BindText(model => model.CategoryExplorationName)
-                                    .BindOnClicked(model => model.OnSelectCategory(2))
-                                    .BindIsToggled(model => model.IsCategoryExplorationToggled)
-                                    .SetHeight(26f);
-                            });
-                            colLeft.AddRow(leftRow =>
-                            {
-                                leftRow.AddToggleButton()
-                                    .BindText(model => model.CategoryTasksName)
-                                    .BindOnClicked(model => model.OnSelectCategory(3))
-                                    .BindIsToggled(model => model.IsCategoryTasksToggled)
-                                    .SetHeight(26f);
-                            });
-                            colLeft.AddRow(leftRow =>
-                            {
-                                leftRow.AddToggleButton()
-                                    .BindText(model => model.CategorySocialName)
-                                    .BindOnClicked(model => model.OnSelectCategory(4))
-                                    .BindIsToggled(model => model.IsCategorySocialToggled)
-                                    .SetHeight(26f);
-                            });
-                            colLeft.AddRow(leftRow =>
-                            {
-                                leftRow.AddToggleButton()
-                                    .BindText(model => model.CategoryFeelingsName)
-                                    .BindOnClicked(model => model.OnSelectCategory(5))
-                                    .BindIsToggled(model => model.IsCategoryFeelingsToggled)
-                                    .SetHeight(26f);
-                            });
-                            colLeft.AddRow(leftRow =>
-                            {
-                                leftRow.AddSpacer();
-                            });
-                        }).SetWidth(100f);
-
-                        colRow.AddColumn(colRight =>
-                        {
-                            colRight.AddRow(rightRow =>
-                            {
-                                rightRow.AddList(template =>
-                                {
-                                    template.AddCell(cell =>
-                                    {
-                                        cell.AddButton()
-                                            .BindText(model => model.EmoteNames)
-                                            .BindTooltip(model => model.EmoteDescriptions)
-                                            .BindOnClicked(model => model.OnSelectEmote());
-                                    });
-                                })
-                                .BindRowCount(model => model.EmoteNames);
-                            });
-                        });
+                        row.AddSpacer();
+                        row.AddButton()
+                            .SetText("Reset")
+                            .BindOnClicked(model => model.OnClickReset())
+                            .SetWidth(100f)
+                            .SetHeight(24f);
+                        row.AddSpacer();
                     });
                 });
-            });
 
             return _builder.Build();
         }

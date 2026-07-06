@@ -42,9 +42,11 @@ PackModule.cmd
 # Build HAK files (from SWLOR_Haks directory)  
 BuildHaks.cmd
 
-# CLI operations (from Build directory)
-SWLOR.CLI.exe -p ./"Star Wars LOR v2.mod"   # Pack module
-SWLOR.CLI.exe -o                            # Other operations
+# CLI operations
+cd Build
+..\tools\SWLOR.CLI\SWLOR.CLI.exe -o         # Deploy/build from Build working directory
+cd ..\Module
+PackModule.cmd                              # Pack module from Module working directory
 ```
 
 ### Docker Development
@@ -176,7 +178,7 @@ The project uses:
 ## Troubleshooting
 
 - **Build errors**: Ensure .NET 8.0 SDK is installed and dependencies are restored
-- **Module errors**: Run `PackModule.cmd` to regenerate the .mod file  
+- **Module errors**: Run `Module/PackModule.cmd` to regenerate the .mod file  
 - **Docker issues**: Check Docker Desktop is running and containers are started
 - **Missing HAKs/TLK**: Copy files from `debugserver/` to NWN directories or update nwn.ini paths
 

@@ -179,28 +179,6 @@ namespace SWLOR.CLI
         }
 
         /// <summary>
-        /// Creates a new background process used for running external programs.
-        /// </summary>
-        /// <param name="command">The command to pass into the cmd instance.</param>
-        /// <returns>A new process</returns>
-        private Process CreateProcess(string command)
-        {
-            var process = new Process
-            {
-                StartInfo = new ProcessStartInfo("cmd.exe", "/K " + command)
-                {
-                    UseShellExecute = false,
-                    RedirectStandardOutput = true,
-                    RedirectStandardInput = true,
-                    CreateNoWindow = false
-                },
-                EnableRaisingEvents = true
-            };
-
-            return process;
-        }
-
-        /// <summary>
         /// Compiles files contained in a folder into a hakpak.
         /// </summary>
         /// <param name="hakName">The name of the hak without the .hak extension</param>
@@ -214,20 +192,13 @@ namespace SWLOR.CLI
                 Directory.CreateDirectory(hakDir);
             }
             
-            var command = $"nwn_erf -f \"{_config.OutputPath}hak/{hakName}.hak\" -e HAK -c ./{folderPath}";
             Console.WriteLine($"Building hak: {hakName}.hak");
 
-            using (var process = CreateProcess(command))
-            {
-                process.Start();
-
-                process.StandardInput.Flush();
-                process.StandardInput.Close();
-
-                process.StandardOutput.ReadToEnd();
-
-                process.WaitForExit();
-            }
+            RunProcess(
+                "nwn_erf.exe",
+                "-f", $"{_config.OutputPath}hak/{hakName}.hak",
+                "-e", "HAK",
+                "-c", $"./{folderPath}");
 
             // Only perform checksum operations if enabled
             if (_config.EnableChecksumChecking)
@@ -239,6 +210,64 @@ namespace SWLOR.CLI
 
                 ChecksumUtil.WriteChecksumFile(_config.OutputPath + "hak/" + hakName + ".md5", checksum);
             }
+        }
+
+        private static void RunProcess(string fileName, params string[] arguments)
+        {
+            var toolPath = ResolveToolPath(fileName);
+            using (var process = new Process
+            {
+                StartInfo = new ProcessStartInfo(toolPath)
+                {
+                    UseShellExecute = false,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    CreateNoWindow = true
+                },
+                EnableRaisingEvents = true
+            })
+            {
+                foreach (var argument in arguments)
+                {
+                    process.StartInfo.ArgumentList.Add(argument);
+                }
+
+                process.Start();
+
+                var standardOutputTask = process.StandardOutput.ReadToEndAsync();
+                var standardErrorTask = process.StandardError.ReadToEndAsync();
+                process.WaitForExit();
+                var standardOutput = standardOutputTask.GetAwaiter().GetResult();
+                var standardError = standardErrorTask.GetAwaiter().GetResult();
+
+                if (process.ExitCode != 0)
+                {
+                    var command = $"{fileName} {string.Join(" ", arguments.Select(QuoteArgument))}";
+                    throw new InvalidOperationException(
+                        $"Command failed with exit code {process.ExitCode}: {command}{Environment.NewLine}{standardOutput}{standardError}");
+                }
+            }
+        }
+
+        private static string ResolveToolPath(string fileName)
+        {
+            var executableDirectoryPath = Path.Combine(AppContext.BaseDirectory, fileName);
+            if (File.Exists(executableDirectoryPath))
+            {
+                return executableDirectoryPath;
+            }
+
+            var workingDirectoryPath = Path.Combine(Environment.CurrentDirectory, fileName);
+            return File.Exists(workingDirectoryPath)
+                ? workingDirectoryPath
+                : fileName;
+        }
+
+        private static string QuoteArgument(string argument)
+        {
+            return argument.Contains(' ')
+                ? $"\"{argument}\""
+                : argument;
         }
     }
 }

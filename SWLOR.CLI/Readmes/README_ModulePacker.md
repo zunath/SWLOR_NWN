@@ -7,16 +7,18 @@ The ModulePacker provides functionality to pack and unpack NWN module files (.mo
 
 ### Pack Module
 ```bash
-SWLOR.CLI.exe -p "path/to/module.mod"
+cd Module
+..\tools\SWLOR.CLI\SWLOR.CLI.exe -p ".\Star Wars LOR v2.mod"
 # or
-SWLOR.CLI.exe --pack "path/to/module.mod"
+..\tools\SWLOR.CLI\SWLOR.CLI.exe --pack ".\Star Wars LOR v2.mod"
 ```
 
 ### Unpack Module
 ```bash
-SWLOR.CLI.exe -u "path/to/module.mod"
+cd Module
+..\tools\SWLOR.CLI\SWLOR.CLI.exe -u ".\Star Wars LOR v2.mod"
 # or
-SWLOR.CLI.exe --unpack "path/to/module.mod"
+..\tools\SWLOR.CLI\SWLOR.CLI.exe --unpack ".\Star Wars LOR v2.mod"
 ```
 
 ## Functionality
@@ -59,8 +61,9 @@ The tool processes the following module folder types:
 - **nwn_erf.exe**: Handles module packing and unpacking
 
 ## Performance
-- **Parallel Processing**: Uses parallel processing for file operations
-- **Progress Reporting**: Displays progress information during operations
+- **Bounded Parallel Processing**: Uses a limited worker pool for resource conversion so packing and unpacking do not saturate the machine. By default it reserves two processors for system responsiveness and caps conversion workers at 12.
+- **Worker Count Override**: Set `SWLOR_RESOURCE_CONVERSION_WORKERS` to control the maximum number of concurrent `nwn_gff` conversions
+- **Progress Reporting**: Displays periodic progress information during operations
 - **Timing**: Reports completion time for both pack and unpack operations
 
 ## Output Structure

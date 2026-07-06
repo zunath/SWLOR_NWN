@@ -51,19 +51,21 @@ SWLOR.CLI.exe -s    # Structures
 ### Build and Deploy
 ```bash
 # Build hak files
-SWLOR.CLI.exe -k
+tools/SWLOR.CLI/SWLOR.CLI.exe -k
 
 # Deploy complete environment
-SWLOR.CLI.exe -o
+cd Build
+..\tools\SWLOR.CLI\SWLOR.CLI.exe -o
 ```
 
 ### Module Operations
 ```bash
 # Pack module
-SWLOR.CLI.exe -p "path/to/module.mod"
+cd Module
+..\tools\SWLOR.CLI\SWLOR.CLI.exe -p ".\Star Wars LOR v2.mod"
 
 # Unpack module
-SWLOR.CLI.exe -u "path/to/module.mod"
+..\tools\SWLOR.CLI\SWLOR.CLI.exe -u ".\Star Wars LOR v2.mod"
 ```
 
 ## Input Files

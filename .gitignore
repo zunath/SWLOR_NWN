@@ -274,3 +274,9 @@ Module/Star Wars LOR v2.BackupMod
 Module/Star Wars LOR v2.mod
 /Module/SWLOR_Empty.mod
 /Module/SWLOR_Empty.BackupMod
+
+# Published SWLOR.CLI support files generated beside the checked-in tool binary.
+/tools/SWLOR.CLI/App.config
+/tools/SWLOR.CLI/InputFiles/
+/tools/SWLOR.CLI/Templates/
+/tools/SWLOR.CLI/*.pdb

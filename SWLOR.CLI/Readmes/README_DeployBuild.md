@@ -5,9 +5,10 @@ The DeployBuild command automates the deployment process for the SWLOR game serv
 
 ## Command
 ```bash
-SWLOR.CLI.exe -o
+cd Build
+..\tools\SWLOR.CLI\SWLOR.CLI.exe -o
 # or
-SWLOR.CLI.exe --outputDeploy
+..\tools\SWLOR.CLI\SWLOR.CLI.exe --outputDeploy
 ```
 
 ## Functionality
@@ -70,6 +71,6 @@ This tool is used during development to:
 
 ## Notes
 - The tool preserves the `swlor.env` file to maintain existing configuration
-- All operations are performed relative to the CLI tool's directory
+- All operations are performed relative to the current working directory; use the repository `Build` directory
 - The debug server directory is created if it doesn't exist
 - Existing files in the debug server directory are overwritten 

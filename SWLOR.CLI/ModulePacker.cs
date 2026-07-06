@@ -3,58 +3,107 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace SWLOR.CLI
 {
     public class ModulePacker
     {
+        private const int CleanupRetryCount = 5;
+        private const int CleanupRetryDelayMilliseconds = 250;
+        private const int MaxDefaultWorkerCount = 12;
+        private const int ProgressInterval = 100;
+        private const int ReservedProcessorCount = 2;
+        private const string PackingDirectory = "./packing";
+        private const string WorkerCountEnvironmentVariable = "SWLOR_RESOURCE_CONVERSION_WORKERS";
+
         public void PackModule(string filePath)
         {
             var sw = new Stopwatch();
+            Exception packException = null;
             sw.Start();
             var moduleFileName = Path.GetFileName(filePath);
+            var temporaryModuleFileName = GetTemporaryModuleFileName(moduleFileName);
 
-            // Create a temporary directory.
-            if (!Directory.Exists("./packing"))
+            try
             {
-                Directory.CreateDirectory("./packing");
+                RecreateDirectory(PackingDirectory);
+                DeleteFileWithRetry(temporaryModuleFileName);
+
+                // Get all JSON files, run them through nwn_gff to convert them to files NWN can read.
+                // Put the output files in the ./packing folder.
+
+                var files = GetFileList();
+                var parallelOptions = CreateResourceConversionParallelOptions();
+                Console.WriteLine($"Packing {files.Count} files with up to {parallelOptions.MaxDegreeOfParallelism} resource conversion workers...");
+                var packedFileCount = 0;
+                Parallel.ForEach(files, parallelOptions, (file) =>
+                {
+                    try
+                    {
+                        var fileNameNoJson = Path.GetFileNameWithoutExtension(file);
+                        var outputFile = Path.Combine(PackingDirectory, fileNameNoJson);
+
+                        RunProcess(
+                            "nwn_gff.exe",
+                            "-l", "json",
+                            "-i", file,
+                            "-o", outputFile,
+                            "-k", "gff");
+
+                        WriteProgress("Packed", Interlocked.Increment(ref packedFileCount), files.Count);
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new InvalidOperationException($"Failed to pack resource '{file}'.", ex);
+                    }
+                });
+
+                var scriptFiles = Directory.GetFiles("./ncs/").Union(Directory.GetFiles("./nss/")).ToList();
+                // Copy the uncompiled (.nss) and compiled (.ncs) scripts to ./packing
+                Console.WriteLine($"Copying {scriptFiles.Count} script files...");
+                var copiedScriptCount = 0;
+                Parallel.ForEach(scriptFiles, parallelOptions, (file) =>
+                {
+                    var fileName = Path.GetFileName(file);
+                    File.Copy(file, $"{PackingDirectory}/{fileName}");
+                    WriteProgress("Copied scripts", Interlocked.Increment(ref copiedScriptCount), scriptFiles.Count);
+                });
+
+                // Finally, use nwn_erf to build a .mod file from the files inside the packing directory.
+                Console.WriteLine("Building module...");
+                RunProcess(
+                    "nwn_erf.exe",
+                    "-e", "MOD",
+                    "-c", $"{PackingDirectory}/",
+                    "-f", temporaryModuleFileName);
+
+                ReplaceFile(temporaryModuleFileName, moduleFileName);
             }
-
-            // Clean out the temporary directory if the last run failed.
-            Parallel.ForEach(Directory.GetFiles("./packing"), (file) =>
+            catch (Exception ex)
             {
-                File.Delete(file);
-            });
-
-            // Get all JSON files, run them through nwn_gff to convert them to files NWN can read.
-            // Put the output files in the ./packing folder.
-
-            Console.WriteLine("Packing files...");
-            Parallel.ForEach(GetFileList(), (file) =>
+                packException = ex;
+                Console.Error.WriteLine($"Packing failed: {FormatException(ex)}");
+                throw;
+            }
+            finally
             {
-                var fileNameNoJson = Path.GetFileNameWithoutExtension(file);
-                Console.WriteLine("Packing " + fileNameNoJson);
-                var command = $"nwn_gff -l json -i {file} -o ./packing/{fileNameNoJson} -k gff";
+                try
+                {
+                    DeleteDirectoryWithRetry(PackingDirectory);
+                    DeleteFileWithRetry(temporaryModuleFileName);
+                }
+                catch (Exception ex)
+                {
+                    if (packException == null)
+                    {
+                        throw;
+                    }
 
-                RunProcess(command);
-            });
-
-            var scriptFiles = Directory.GetFiles("./ncs/").Union(Directory.GetFiles("./nss/"));
-            // Copy the uncompiled (.nss) and compiled (.ncs) scripts to ./packing
-            Parallel.ForEach(scriptFiles, (file) =>
-            {
-                var fileName = Path.GetFileName(file);
-                Console.WriteLine("Copying script file: " + fileName);
-                File.Copy(file, $"./packing/{fileName}");
-            });
-
-            // Finally, use nwn_erf to build a .mod file from the files inside the packing directory.
-            Console.WriteLine("Building module...");
-            RunProcess($"nwn_erf -e MOD -c \"./packing/\" -f \"{moduleFileName}\"");
-
-            // Clean up the packing directory.
-            Directory.Delete("./packing/", true);
+                    Console.Error.WriteLine($"Packing failed and temporary cleanup also failed: {ex.Message}");
+                }
+            }
 
             sw.Stop();
             Console.WriteLine($"Packing module completed in {sw.ElapsedMilliseconds}ms");
@@ -76,11 +125,11 @@ namespace SWLOR.CLI
 
             var folders = GetModuleFolders();
             // Create any missing folders and clear out any files in existing folders.
-            Parallel.ForEach(folders, (folder) =>
+            Parallel.ForEach(folders, CreateResourceConversionParallelOptions(), (folder) =>
             {
                 if (Directory.Exists($"./{folder}"))
                 {
-                    Directory.Delete($"./{folder}", true);
+                    DeleteDirectoryWithRetry($"./{folder}");
                 }
 
                 Directory.CreateDirectory($"./{folder}");
@@ -94,7 +143,7 @@ namespace SWLOR.CLI
 
             // Run the extraction process.
             Console.WriteLine("Extracting module...");
-            RunProcess($"nwn_erf -f \"{moduleFileName}\" -x");
+            RunProcess("nwn_erf.exe", "-f", moduleFileName, "-x");
 
             // Get all of the files we just unpacked.
             Console.WriteLine("Getting files...");
@@ -109,25 +158,40 @@ namespace SWLOR.CLI
                 files[i] = fileWithFormattedExtension;
             }
 
-            Parallel.ForEach(files, (file) =>
+            var parallelOptions = CreateResourceConversionParallelOptions();
+            Console.WriteLine($"Processing {files.Count} extracted files with up to {parallelOptions.MaxDegreeOfParallelism} resource conversion workers...");
+            var processedFileCount = 0;
+            Parallel.ForEach(files, parallelOptions, (file) =>
             {
-                Console.WriteLine("Processing file: " + file);
-                var extension = Path.GetExtension(file)?.Replace(".", string.Empty);
-                var command = $"nwn_gff -i {file} -o ./{extension}/{file}.json -p";
+                try
+                {
+                    var extension = Path.GetExtension(file)?.Replace(".", string.Empty);
 
-                RunProcess(command);
+                    RunProcess(
+                        "nwn_gff.exe",
+                        "-i", file,
+                        "-o", $"./{extension}/{file}.json",
+                        "-p");
 
-                // Remove the extracted file.
-                File.Delete(file);
+                    // Remove the extracted file.
+                    File.Delete(file);
+                    WriteProgress("Processed", Interlocked.Increment(ref processedFileCount), files.Count);
+                }
+                catch (Exception ex)
+                {
+                    throw new InvalidOperationException($"Failed to unpack resource '{file}'.", ex);
+                }
             });
 
             files = Directory.GetFiles("./", "*.nss").Union(Directory.GetFiles("./", "*.ncs")).ToList();
-            Parallel.ForEach(files, (file) =>
+            Console.WriteLine($"Moving {files.Count} script files...");
+            var movedScriptCount = 0;
+            Parallel.ForEach(files, parallelOptions, (file) =>
             {
-                Console.WriteLine("Moving script: " + file);
                 var fileName = Path.GetFileName(file);
                 var extension = Path.GetExtension(file)?.Replace(".", string.Empty);
                 File.Move(file, $"./{extension}/{fileName}");
+                WriteProgress("Moved scripts", Interlocked.Increment(ref movedScriptCount), files.Count);
             });
 
             sw.Stop();
@@ -137,28 +201,231 @@ namespace SWLOR.CLI
         }
 
 
-        private static void RunProcess(string command)
+        private static void RunProcess(string fileName, params string[] arguments)
         {
+            var toolPath = ResolveToolPath(fileName);
             using (var process = new Process
             {
-                StartInfo = new ProcessStartInfo("cmd.exe", "/K " + command)
+                StartInfo = new ProcessStartInfo(toolPath)
                 {
                     UseShellExecute = false,
                     RedirectStandardOutput = true,
-                    RedirectStandardInput = true,
-                    CreateNoWindow = false
+                    RedirectStandardError = true,
+                    CreateNoWindow = true
                 },
                 EnableRaisingEvents = true
             })
             {
+                foreach (var argument in arguments)
+                {
+                    process.StartInfo.ArgumentList.Add(argument);
+                }
+
                 process.Start();
 
-                process.StandardInput.Flush();
-                process.StandardInput.Close();
-
-                process.StandardOutput.ReadToEnd();
+                var standardOutputTask = process.StandardOutput.ReadToEndAsync();
+                var standardErrorTask = process.StandardError.ReadToEndAsync();
                 process.WaitForExit();
+                var standardOutput = standardOutputTask.GetAwaiter().GetResult();
+                var standardError = standardErrorTask.GetAwaiter().GetResult();
+
+                if (process.ExitCode != 0)
+                {
+                    var command = $"{fileName} {string.Join(" ", arguments.Select(QuoteArgument))}";
+                    throw new InvalidOperationException(
+                        $"Command failed with exit code {process.ExitCode}: {command}{Environment.NewLine}{standardOutput}{standardError}");
+                }
             }
+        }
+
+        private static string ResolveToolPath(string fileName)
+        {
+            var executableDirectoryPath = Path.Combine(AppContext.BaseDirectory, fileName);
+            if (File.Exists(executableDirectoryPath))
+            {
+                return executableDirectoryPath;
+            }
+
+            var workingDirectoryPath = Path.Combine(Environment.CurrentDirectory, fileName);
+            return File.Exists(workingDirectoryPath)
+                ? workingDirectoryPath
+                : fileName;
+        }
+
+        private static string QuoteArgument(string argument)
+        {
+            return argument.Contains(' ')
+                ? $"\"{argument}\""
+                : argument;
+        }
+
+        private static string GetTemporaryModuleFileName(string moduleFileName)
+        {
+            var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(moduleFileName);
+            var extension = Path.GetExtension(moduleFileName);
+            return $"{fileNameWithoutExtension}.packing{extension}";
+        }
+
+        private static void ReplaceFile(string sourceFile, string destinationFile)
+        {
+            if (File.Exists(destinationFile))
+            {
+                File.Replace(sourceFile, destinationFile, null, true);
+                return;
+            }
+
+            File.Move(sourceFile, destinationFile);
+        }
+
+        private static ParallelOptions CreateResourceConversionParallelOptions()
+        {
+            return new ParallelOptions
+            {
+                MaxDegreeOfParallelism = GetResourceConversionWorkerCount()
+            };
+        }
+
+        private static int GetResourceConversionWorkerCount()
+        {
+            var workerCountOverride = Environment.GetEnvironmentVariable(WorkerCountEnvironmentVariable);
+            if (int.TryParse(workerCountOverride, out var workerCount) && workerCount > 0)
+            {
+                return workerCount;
+            }
+
+            var availableProcessorCount = Math.Max(1, Environment.ProcessorCount - ReservedProcessorCount);
+            return Math.Max(1, Math.Min(availableProcessorCount, MaxDefaultWorkerCount));
+        }
+
+        private static void WriteProgress(string label, int completedCount, int totalCount)
+        {
+            if (completedCount == totalCount || completedCount % ProgressInterval == 0)
+            {
+                Console.WriteLine($"{label} {completedCount:N0}/{totalCount:N0}");
+            }
+        }
+
+        private static void RecreateDirectory(string directory)
+        {
+            DeleteDirectoryWithRetry(directory);
+            Directory.CreateDirectory(directory);
+        }
+
+        private static void DeleteDirectoryWithRetry(string directory)
+        {
+            if (!Directory.Exists(directory))
+            {
+                return;
+            }
+
+            Exception lastException = null;
+            for (var attempt = 1; attempt <= CleanupRetryCount; attempt++)
+            {
+                try
+                {
+                    ClearReadOnlyAttributes(directory);
+                    Directory.Delete(directory, true);
+                    return;
+                }
+                catch (DirectoryNotFoundException)
+                {
+                    return;
+                }
+                catch (IOException ex)
+                {
+                    lastException = ex;
+                }
+                catch (UnauthorizedAccessException ex)
+                {
+                    lastException = ex;
+                }
+
+                if (attempt < CleanupRetryCount)
+                {
+                    Thread.Sleep(CleanupRetryDelayMilliseconds * attempt);
+                }
+            }
+
+            throw new IOException(
+                $"Unable to delete temporary packing directory '{directory}' after {CleanupRetryCount} attempts.",
+                lastException);
+        }
+
+        private static void DeleteFileWithRetry(string file)
+        {
+            if (!File.Exists(file))
+            {
+                return;
+            }
+
+            Exception lastException = null;
+            for (var attempt = 1; attempt <= CleanupRetryCount; attempt++)
+            {
+                try
+                {
+                    var attributes = File.GetAttributes(file);
+                    if ((attributes & FileAttributes.ReadOnly) != 0)
+                    {
+                        File.SetAttributes(file, attributes & ~FileAttributes.ReadOnly);
+                    }
+
+                    File.Delete(file);
+                    return;
+                }
+                catch (FileNotFoundException)
+                {
+                    return;
+                }
+                catch (IOException ex)
+                {
+                    lastException = ex;
+                }
+                catch (UnauthorizedAccessException ex)
+                {
+                    lastException = ex;
+                }
+
+                if (attempt < CleanupRetryCount)
+                {
+                    Thread.Sleep(CleanupRetryDelayMilliseconds * attempt);
+                }
+            }
+
+            throw new IOException(
+                $"Unable to delete temporary file '{file}' after {CleanupRetryCount} attempts.",
+                lastException);
+        }
+
+        private static void ClearReadOnlyAttributes(string directory)
+        {
+            foreach (var path in Directory.EnumerateFileSystemEntries(directory, "*", SearchOption.AllDirectories))
+            {
+                var attributes = File.GetAttributes(path);
+                if ((attributes & FileAttributes.ReadOnly) != 0)
+                {
+                    File.SetAttributes(path, attributes & ~FileAttributes.ReadOnly);
+                }
+            }
+
+            var directoryAttributes = File.GetAttributes(directory);
+            if ((directoryAttributes & FileAttributes.ReadOnly) != 0)
+            {
+                File.SetAttributes(directory, directoryAttributes & ~FileAttributes.ReadOnly);
+            }
+        }
+
+        private static string FormatException(Exception exception)
+        {
+            if (exception is AggregateException aggregateException)
+            {
+                return string.Join(
+                    Environment.NewLine,
+                    aggregateException.Flatten().InnerExceptions.Select(FormatException));
+            }
+
+            return exception.InnerException == null
+                ? exception.Message
+                : $"{exception.Message}{Environment.NewLine}{FormatException(exception.InnerException)}";
         }
 
         private static List<string> GetFileList()

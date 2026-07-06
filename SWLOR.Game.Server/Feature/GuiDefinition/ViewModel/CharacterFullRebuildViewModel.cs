@@ -114,6 +114,29 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public int CharacterType
         {
             get => Get<int>();
+            set
+            {
+                var normalizedValue = NormalizeCharacterType(value);
+                Set(normalizedValue);
+                SelectedCharacterTypeName = GetCharacterTypeName(normalizedValue);
+            }
+        }
+
+        public bool ShowCharacterTypeOptions
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public bool ShowReadOnlyCharacterType
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public string SelectedCharacterTypeName
+        {
+            get => Get<string>();
             set => Set(value);
         }
 
@@ -191,6 +214,55 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        private bool CanSelectStandard
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        private bool CanSelectForceSensitive
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        private static ClassType GetCharacterClassType(int value)
+        {
+            return value == 1 ? ClassType.ForceSensitive : ClassType.Standard;
+        }
+
+        private static string GetCharacterTypeName(int value)
+        {
+            return value == 1 ? "Force Sensitive" : "Standard";
+        }
+
+        private int NormalizeCharacterType(int value)
+        {
+            if (value == 1 && CanSelectForceSensitive)
+                return 1;
+
+            if (CanSelectStandard)
+                return 0;
+
+            return CanSelectForceSensitive ? 1 : 0;
+        }
+
+        private void SetCharacterType(int value)
+        {
+            CharacterType = value;
+        }
+
+        private void LoadCharacterTypeControls()
+        {
+            var race = GetRacialType(Player);
+            CanSelectStandard = Race.IsClassAvailableToRace(ClassType.Standard, race);
+            CanSelectForceSensitive = Race.IsClassAvailableToRace(ClassType.ForceSensitive, race);
+
+            ShowCharacterTypeOptions = CanSelectStandard && CanSelectForceSensitive;
+            ShowReadOnlyCharacterType = !ShowCharacterTypeOptions;
+            SetCharacterType(GetClassByPosition(1, Player) == ClassType.ForceSensitive ? 1 : 0);
+        }
+
         private void ResetControls()
         {
             var playerId = GetObjectUUID(Player);
@@ -238,7 +310,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         protected override void Initialize(GuiPayloadBase initialPayload)
         {
-            CharacterType = GetClassByPosition(1, Player) == ClassType.Standard ? 0 : 1;
+            LoadCharacterTypeControls();
             LoadSkills();
             ResetControls();
             WatchOnClient(model => model.CharacterType);
@@ -637,6 +709,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ShowModal($"Are you sure you'd like to save these changes?", () =>
             {
                 var race = GetRacialType(Player);
+                var selectedCharacterType = NormalizeCharacterType(CharacterType);
+                CharacterType = selectedCharacterType;
+                var selectedClassType = GetCharacterClassType(selectedCharacterType);
 
                 if (_remainingAbilityPoints > 0 || _remainingSkillPoints > 0)
                 {
@@ -647,21 +722,21 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var forceIndex = _skills.IndexOf(SkillType.Force);
                 var devicesIndex = _skills.IndexOf(SkillType.Devices);
 
-                if (_skillDistributionPoints[forceIndex] > 0 && CharacterType == 0)
+                if (_skillDistributionPoints[forceIndex] > 0 && selectedClassType == ClassType.Standard)
                 {
                     FloatingTextStringOnCreature("Standard characters cannot gain ranks in the Force skill.", Player, false);
                     return;
                 }
 
-                if (_skillDistributionPoints[devicesIndex] > 0 && CharacterType == 1)
+                if (_skillDistributionPoints[devicesIndex] > 0 && selectedClassType == ClassType.ForceSensitive)
                 {
                     FloatingTextStringOnCreature("Force characters cannot gain ranks in the Devices skill.", Player, false);
                     return;
                 }
 
-                if (race == RacialType.Droid && CharacterType == 1)
+                if (!Race.IsClassAvailableToRace(selectedClassType, race))
                 {
-                    FloatingTextStringOnCreature("Droids may not be Force Sensitive.", Player, false);
+                    FloatingTextStringOnCreature("This race cannot select that character type.", Player, false);
                     return;
                 }
 
@@ -682,7 +757,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 dbPlayer.BaseStats[AbilityType.Agility] = CreaturePlugin.GetRawAbilityScore(Player, AbilityType.Agility);
                 dbPlayer.BaseStats[AbilityType.Social] = CreaturePlugin.GetRawAbilityScore(Player, AbilityType.Social);
 
-                if (CharacterType == 0)
+                if (selectedClassType == ClassType.Standard)
                 {
                     CreaturePlugin.SetClassByPosition(Player, 0, ClassType.Standard);
                     dbPlayer.CharacterType = Enumeration.CharacterType.Standard;

@@ -36,6 +36,11 @@ namespace SWLOR.Game.Server.Service
 
         private static readonly Dictionary<RacialType, RacialAppearance> _defaultRaceAppearancesMale = new Dictionary<RacialType, RacialAppearance>();
         private static readonly Dictionary<RacialType, RacialAppearance> _defaultRaceAppearancesFemale = new Dictionary<RacialType, RacialAppearance>();
+        private static readonly Dictionary<RacialType, int> _forceSensitiveRacePrerequisites = new Dictionary<RacialType, int>();
+        private static bool _forceSensitiveRacePrerequisitesLoaded;
+        private const string ForceSensitivePrerequisites2DA = "cls_pres_force";
+        private const string RequirementParam1Column = "ReqParam1";
+        private const int MaxClassPrerequisiteRows = 255;
 
         /// <summary>
         /// When the module loads, cache all default race appearances.
@@ -591,6 +596,33 @@ namespace SWLOR.Game.Server.Service
                 return gender == Gender.Female ?
                     _defaultRaceAppearancesFemale[race] :
                     _defaultRaceAppearancesMale[race];
+            }
+
+            public static bool IsClassAvailableToRace(ClassType classType, RacialType race)
+            {
+                if (classType == ClassType.Invalid)
+                    return false;
+
+                if (classType == ClassType.ForceSensitive)
+                    return GetForceSensitiveRacePrerequisites().ContainsKey(race);
+
+                return true;
+            }
+
+            private static Dictionary<RacialType, int> GetForceSensitiveRacePrerequisites()
+            {
+                if (_forceSensitiveRacePrerequisitesLoaded)
+                    return _forceSensitiveRacePrerequisites;
+
+                for (var row = 0; row < MaxClassPrerequisiteRows; row++)
+                {
+                    var requiredRace = Get2DAString(ForceSensitivePrerequisites2DA, RequirementParam1Column, row);
+                    if (int.TryParse(requiredRace, out var requiredRaceId))
+                        _forceSensitiveRacePrerequisites[(RacialType)requiredRaceId] = row;
+                }
+
+                _forceSensitiveRacePrerequisitesLoaded = true;
+                return _forceSensitiveRacePrerequisites;
             }
         }
     }

@@ -42,6 +42,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                             col.AddRow(row =>
                             {
+                                row.BindIsVisible(model => model.ShowCharacterTypeOptions);
                                 row.AddSpacer();
                                 row.AddOptions()
                                     .AddOption("Standard")
@@ -49,6 +50,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     .SetDirection(NuiDirection.Horizontal)
                                     .BindSelectedValue(model => model.CharacterType)
                                     .BindIsEnabled(model => model.CanDistribute);
+                                row.AddSpacer();
+                            });
+
+                            col.AddRow(row =>
+                            {
+                                row.BindIsVisible(model => model.ShowReadOnlyCharacterType);
+                                row.AddSpacer();
+                                row.AddLabel()
+                                    .BindText(model => model.SelectedCharacterTypeName)
+                                    .SetHeight(20f)
+                                    .SetTooltip("This race has one available character type.");
                                 row.AddSpacer();
                             });
 

@@ -47,21 +47,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .SetIsCollapsible(true)
                 .SetInitialGeometry(0, 0, WindowWidth, WindowHeight)
                 .SetTitle("Disguises")
-                .DefinePartialView(DisguiseViewModel.DetailSelectedPartial, AddSelectedDetailArea)
-                .DefinePartialView(DisguiseViewModel.DetailEmptyPartial, AddEmptyDetailArea)
-                .DefinePartialView(DisguiseViewModel.PortraitSelectedPartial, AddSelectedPortraitRail)
-                .DefinePartialView(DisguiseViewModel.PortraitEmptyPartial, AddEmptyPortraitRail)
-                .DefinePartialView(DisguiseViewModel.ActionAvailablePartial, AddAvailableActionBand)
-                .DefinePartialView(DisguiseViewModel.ActionRetiredPartial, AddRetiredActionBand)
-                .DefinePartialView(DisguiseViewModel.ActionEditPartial, AddEditActionBand)
-                .DefinePartialView(DisguiseViewModel.ActionEmptyPartial, AddEmptyActionBand)
+                .DefinePartialView(DisguiseViewModel.ContentAvailablePartial, AddAvailableContentArea)
+                .DefinePartialView(DisguiseViewModel.ContentRetiredPartial, AddRetiredContentArea)
+                .DefinePartialView(DisguiseViewModel.ContentEditPartial, AddEditContentArea)
+                .DefinePartialView(DisguiseViewModel.ContentEmptyPartial, AddEmptyContentArea)
 
                 .AddColumn(root =>
                 {
                     AddTabs(root);
                     AddSlotCount(root);
                     AddMainContent(root);
-                    AddActionBand(root);
                 });
 
             return _builder.Build();
@@ -107,10 +102,76 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 row.AddColumn(AddListRail)
                     .SetWidth(ListRailWidth);
 
-                row.AddPartialView(DisguiseViewModel.DetailPartialElement)
+                row.AddPartialView(DisguiseViewModel.ContentPartialElement)
+                    .SetWidth(DetailRailWidth + PortraitRailWidth);
+            });
+        }
+
+        private static void AddAvailableContentArea(GuiGroup<DisguiseViewModel> group)
+        {
+            AddSelectedContentArea(group, AddAvailableActionBand);
+        }
+
+        private static void AddRetiredContentArea(GuiGroup<DisguiseViewModel> group)
+        {
+            AddSelectedContentArea(group, AddRetiredActionBand);
+        }
+
+        private static void AddEditContentArea(GuiGroup<DisguiseViewModel> group)
+        {
+            AddSelectedContentArea(group, AddEditActionBand);
+        }
+
+        private static void AddSelectedContentArea(
+            GuiGroup<DisguiseViewModel> group,
+            System.Action<GuiGroup<DisguiseViewModel>> addActionBand)
+        {
+            group.AddColumn(col =>
+            {
+                AddSelectedContentDetails(col);
+                AddContentActionRow(col, addActionBand);
+            });
+        }
+
+        private static void AddEmptyContentArea(GuiGroup<DisguiseViewModel> group)
+        {
+            group.AddColumn(col =>
+            {
+                col.AddRow(row =>
+                {
+                    row.AddGroup(AddEmptyDetailArea)
+                        .SetWidth(DetailRailWidth);
+
+                    row.AddGroup(AddEmptyPortraitRail)
+                        .SetWidth(PortraitRailWidth);
+                });
+
+                AddContentActionRow(col, AddEmptyActionBand);
+            });
+        }
+
+        private static void AddSelectedContentDetails(GuiColumn<DisguiseViewModel> col)
+        {
+            col.AddRow(row =>
+            {
+                row.AddGroup(AddSelectedDetailArea)
                     .SetWidth(DetailRailWidth);
 
-                row.AddPartialView(DisguiseViewModel.PortraitPartialElement)
+                row.AddGroup(AddSelectedPortraitRail)
+                    .SetWidth(PortraitRailWidth);
+            });
+        }
+
+        private static void AddContentActionRow(
+            GuiColumn<DisguiseViewModel> col,
+            System.Action<GuiGroup<DisguiseViewModel>> addActionBand)
+        {
+            col.AddRow(row =>
+            {
+                row.AddGroup(addActionBand)
+                    .SetWidth(DetailRailWidth);
+
+                row.AddSpacer()
                     .SetWidth(PortraitRailWidth);
             });
         }
@@ -376,21 +437,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     .SetHeight(FieldHeight)
                     .BindIsChecked(model => model.ScrambleAccountId)
                     .BindIsEnabled(model => model.IsEditMode);
-            });
-        }
-
-        private static void AddActionBand(GuiColumn<DisguiseViewModel> root)
-        {
-            root.AddRow(row =>
-            {
-                row.AddSpacer()
-                    .SetWidth(ListRailWidth);
-
-                row.AddPartialView(DisguiseViewModel.ActionPartialElement)
-                    .SetWidth(DetailRailWidth);
-
-                row.AddSpacer()
-                    .SetWidth(PortraitRailWidth);
             });
         }
 

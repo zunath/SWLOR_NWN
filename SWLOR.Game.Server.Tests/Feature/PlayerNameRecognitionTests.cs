@@ -619,13 +619,11 @@ public class PlayerNameRecognitionTests
         viewModelSource.Should().Contain("public bool ScrambleAccountId");
         viewModelSource.Should().Contain("public bool ShowUnretireButton");
         viewModelSource.Should().NotContain("public bool ShowDetailActionRow");
-        viewModelSource.Should().Contain("public const string DetailPartialElement");
-        viewModelSource.Should().Contain("public const string PortraitPartialElement");
-        viewModelSource.Should().Contain("public const string ActionPartialElement");
-        viewModelSource.Should().Contain("public const string ActionAvailablePartial");
-        viewModelSource.Should().Contain("public const string ActionRetiredPartial");
-        viewModelSource.Should().Contain("public const string ActionEditPartial");
-        viewModelSource.Should().Contain("public const string ActionEmptyPartial");
+        viewModelSource.Should().Contain("public const string ContentPartialElement");
+        viewModelSource.Should().Contain("public const string ContentAvailablePartial");
+        viewModelSource.Should().Contain("public const string ContentRetiredPartial");
+        viewModelSource.Should().Contain("public const string ContentEditPartial");
+        viewModelSource.Should().Contain("public const string ContentEmptyPartial");
         disguiseSource.Should().Contain("PrivateName = $\"Disguise #{usedSlots + 1}\"");
         disguiseSource.Should().Contain("public const int MaxPrivateNameLength = 32;");
         disguiseSource.Should().Contain("privateName.Length > MaxPrivateNameLength");
@@ -690,17 +688,18 @@ public class PlayerNameRecognitionTests
         viewModelSource.Should().Contain("EmptyStateTitle = \"No Retired Disguises\";");
         viewModelSource.Should().Contain("EmptyStateTitle = \"No Available Disguises\";");
         viewModelSource.Should().Contain("SelectDisguiseAtIndex(0);");
-        viewModelSource.Should().Contain("ChangePartialView(DetailPartialElement, HasSelection ? DetailSelectedPartial : DetailEmptyPartial)");
-        viewModelSource.Should().Contain("ChangePartialView(PortraitPartialElement, HasSelection ? PortraitSelectedPartial : PortraitEmptyPartial)");
-        viewModelSource.Should().Contain("ChangePartialView(ActionPartialElement, GetActionPartialName())");
+        viewModelSource.Should().Contain("ChangePartialView(ContentPartialElement, GetContentPartialName())");
+        viewModelSource.Should().NotContain("ChangePartialView(DetailPartialElement");
+        viewModelSource.Should().NotContain("ChangePartialView(PortraitPartialElement");
+        viewModelSource.Should().NotContain("ChangePartialView(ActionPartialElement");
         viewModelSource.Should().Contain("private Action WithLayoutRestore(Action action)");
         viewModelSource.Should().Contain("private void RestoreLayoutPartials()");
         viewModelSource.Should().Contain("ChangePartialView(\"_window_\", \"%%WINDOW_MAIN%%\");");
         viewModelSource.Should().Contain("DelayCommand(0.0f, ApplyLayoutPartials);");
-        viewModelSource.Should().Contain("private string GetActionPartialName()");
-        viewModelSource.Should().Contain("return ActionEditPartial;");
-        viewModelSource.Should().Contain("return ActionRetiredPartial;");
-        viewModelSource.Should().Contain("return IsAvailableSelected ? ActionAvailablePartial : ActionEmptyPartial;");
+        viewModelSource.Should().Contain("private string GetContentPartialName()");
+        viewModelSource.Should().Contain("return ContentEditPartial;");
+        viewModelSource.Should().Contain("return ContentRetiredPartial;");
+        viewModelSource.Should().Contain("return IsAvailableSelected ? ContentAvailablePartial : ContentEmptyPartial;");
 
         cacheSource.Should().Contain("private static Dictionary<int, string> SoundSetPreviewSoundResrefs");
         cacheSource.Should().Contain("private static string ResolveSoundSetPreviewSoundResref(string soundSetResref)");
@@ -776,7 +775,13 @@ public class PlayerNameRecognitionTests
         disguiseDefinitionSource.Should().NotContain("AddTextField(col, \"Private Disguise Name\", model => model.PrivateName, 32)");
         disguiseDefinitionSource.Should().NotContain("AddTextField(col, \"Public Descriptor\", model => model.Descriptor, 64)");
         disguiseDefinitionSource.Should().Contain(".SetText(\"Unretire\")");
-        disguiseDefinitionSource.Should().Contain("private static void AddActionBand");
+        disguiseDefinitionSource.Should().Contain("private static void AddAvailableContentArea");
+        disguiseDefinitionSource.Should().Contain("private static void AddRetiredContentArea");
+        disguiseDefinitionSource.Should().Contain("private static void AddEditContentArea");
+        disguiseDefinitionSource.Should().Contain("private static void AddEmptyContentArea");
+        disguiseDefinitionSource.Should().Contain("private static void AddSelectedContentArea");
+        disguiseDefinitionSource.Should().Contain("private static void AddSelectedContentDetails");
+        disguiseDefinitionSource.Should().Contain("private static void AddContentActionRow");
         disguiseDefinitionSource.Should().Contain("private static void AddAvailableActionBand");
         disguiseDefinitionSource.Should().Contain("private static void AddRetiredActionBand");
         disguiseDefinitionSource.Should().Contain("private static void AddEditActionBand");
@@ -798,14 +803,10 @@ public class PlayerNameRecognitionTests
         disguiseDefinitionSource.Should().NotContain("BindIsEnabled(model => model.CanNextSoundSetPage)");
         disguiseDefinitionSource.Should().Contain("BindOnClicked(model => model.OnClickPreviousSoundSetPage())");
         disguiseDefinitionSource.Should().Contain("BindOnClicked(model => model.OnClickNextSoundSetPage())");
-        disguiseDefinitionSource.Should().Contain(".DefinePartialView(DisguiseViewModel.DetailSelectedPartial, AddSelectedDetailArea)");
-        disguiseDefinitionSource.Should().Contain(".DefinePartialView(DisguiseViewModel.DetailEmptyPartial, AddEmptyDetailArea)");
-        disguiseDefinitionSource.Should().Contain(".DefinePartialView(DisguiseViewModel.PortraitSelectedPartial, AddSelectedPortraitRail)");
-        disguiseDefinitionSource.Should().Contain(".DefinePartialView(DisguiseViewModel.PortraitEmptyPartial, AddEmptyPortraitRail)");
-        disguiseDefinitionSource.Should().Contain(".DefinePartialView(DisguiseViewModel.ActionAvailablePartial, AddAvailableActionBand)");
-        disguiseDefinitionSource.Should().Contain(".DefinePartialView(DisguiseViewModel.ActionRetiredPartial, AddRetiredActionBand)");
-        disguiseDefinitionSource.Should().Contain(".DefinePartialView(DisguiseViewModel.ActionEditPartial, AddEditActionBand)");
-        disguiseDefinitionSource.Should().Contain(".DefinePartialView(DisguiseViewModel.ActionEmptyPartial, AddEmptyActionBand)");
+        disguiseDefinitionSource.Should().Contain(".DefinePartialView(DisguiseViewModel.ContentAvailablePartial, AddAvailableContentArea)");
+        disguiseDefinitionSource.Should().Contain(".DefinePartialView(DisguiseViewModel.ContentRetiredPartial, AddRetiredContentArea)");
+        disguiseDefinitionSource.Should().Contain(".DefinePartialView(DisguiseViewModel.ContentEditPartial, AddEditContentArea)");
+        disguiseDefinitionSource.Should().Contain(".DefinePartialView(DisguiseViewModel.ContentEmptyPartial, AddEmptyContentArea)");
         disguiseDefinitionSource.Should().Contain("private static void AddEmptyState");
         disguiseDefinitionSource.Should().Contain("BindText(model => model.EmptyStateTitle)");
         disguiseDefinitionSource.Should().Contain("BindText(model => model.EmptyStateText)");
@@ -821,30 +822,33 @@ public class PlayerNameRecognitionTests
 
         var mainContentMethod = ExtractMethod(disguiseDefinitionSource, "private static void AddMainContent");
         var listRailIndex = mainContentMethod.IndexOf("row.AddColumn(AddListRail)", StringComparison.Ordinal);
-        var detailAreaIndex = mainContentMethod.IndexOf("row.AddPartialView(DisguiseViewModel.DetailPartialElement)", StringComparison.Ordinal);
-        var detailWidthIndex = mainContentMethod.IndexOf(".SetWidth(DetailRailWidth)", StringComparison.Ordinal);
-        var portraitRailIndex = mainContentMethod.IndexOf("row.AddPartialView(DisguiseViewModel.PortraitPartialElement)", StringComparison.Ordinal);
+        var contentAreaIndex = mainContentMethod.IndexOf("row.AddPartialView(DisguiseViewModel.ContentPartialElement)", StringComparison.Ordinal);
+        var contentWidthIndex = mainContentMethod.IndexOf(".SetWidth(DetailRailWidth + PortraitRailWidth)", StringComparison.Ordinal);
         listRailIndex.Should().BeGreaterThanOrEqualTo(0);
-        detailAreaIndex.Should().BeGreaterThan(listRailIndex);
-        detailWidthIndex.Should().BeGreaterThan(detailAreaIndex);
-        detailWidthIndex.Should().BeLessThan(portraitRailIndex);
-        portraitRailIndex.Should().BeGreaterThan(detailAreaIndex);
+        contentAreaIndex.Should().BeGreaterThan(listRailIndex);
+        contentWidthIndex.Should().BeGreaterThan(contentAreaIndex);
+        mainContentMethod.Should().NotContain("DetailPartialElement");
+        mainContentMethod.Should().NotContain("PortraitPartialElement");
 
         var buildWindowMethod = ExtractMethod(disguiseDefinitionSource, "public GuiConstructedWindow BuildWindow()");
         var mainContentCallIndex = buildWindowMethod.IndexOf("AddMainContent(root);", StringComparison.Ordinal);
-        var actionBandCallIndex = buildWindowMethod.IndexOf("AddActionBand(root);", StringComparison.Ordinal);
         mainContentCallIndex.Should().BeGreaterThanOrEqualTo(0);
-        actionBandCallIndex.Should().BeGreaterThan(mainContentCallIndex);
+        buildWindowMethod.Should().NotContain("AddActionBand(root);");
 
         var detailAreaMethod = ExtractMethod(disguiseDefinitionSource, "private static void AddSelectedDetailArea");
         detailAreaMethod.Should().NotContain("AddPortraitField");
         detailAreaMethod.Should().NotContain("AddDetailActions");
 
-        var actionBandMethod = ExtractMethod(disguiseDefinitionSource, "private static void AddActionBand");
-        actionBandMethod.Should().Contain(".SetWidth(ListRailWidth)");
-        actionBandMethod.Should().Contain("row.AddPartialView(DisguiseViewModel.ActionPartialElement)");
-        actionBandMethod.Should().Contain(".SetWidth(DetailRailWidth)");
-        actionBandMethod.Should().Contain(".SetWidth(PortraitRailWidth)");
+        var selectedContentDetailsMethod = ExtractMethod(disguiseDefinitionSource, "private static void AddSelectedContentDetails");
+        var selectedDetailIndex = selectedContentDetailsMethod.IndexOf("row.AddGroup(AddSelectedDetailArea)", StringComparison.Ordinal);
+        var selectedPortraitIndex = selectedContentDetailsMethod.IndexOf("row.AddGroup(AddSelectedPortraitRail)", StringComparison.Ordinal);
+        selectedDetailIndex.Should().BeGreaterThanOrEqualTo(0);
+        selectedPortraitIndex.Should().BeGreaterThan(selectedDetailIndex);
+
+        var contentActionRowMethod = ExtractMethod(disguiseDefinitionSource, "private static void AddContentActionRow");
+        contentActionRowMethod.Should().Contain("row.AddGroup(addActionBand)");
+        contentActionRowMethod.Should().Contain(".SetWidth(DetailRailWidth)");
+        contentActionRowMethod.Should().Contain(".SetWidth(PortraitRailWidth)");
 
         var availableActionBandMethod = ExtractMethod(disguiseDefinitionSource, "private static void AddAvailableActionBand");
         availableActionBandMethod.Should().Contain("group.AddColumn(AddAvailableDetailActions);");

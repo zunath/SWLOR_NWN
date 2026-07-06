@@ -10,17 +10,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class DisguiseViewModel: GuiViewModelBase<DisguiseViewModel, GuiPayloadBase>
     {
-        public const string DetailPartialElement = "DISGUISE_DETAIL_PARTIAL";
-        public const string DetailSelectedPartial = "DISGUISE_DETAIL_SELECTED";
-        public const string DetailEmptyPartial = "DISGUISE_DETAIL_EMPTY";
-        public const string PortraitPartialElement = "DISGUISE_PORTRAIT_PARTIAL";
-        public const string PortraitSelectedPartial = "DISGUISE_PORTRAIT_SELECTED";
-        public const string PortraitEmptyPartial = "DISGUISE_PORTRAIT_EMPTY";
-        public const string ActionPartialElement = "DISGUISE_ACTION_PARTIAL";
-        public const string ActionAvailablePartial = "DISGUISE_ACTION_AVAILABLE";
-        public const string ActionRetiredPartial = "DISGUISE_ACTION_RETIRED";
-        public const string ActionEditPartial = "DISGUISE_ACTION_EDIT";
-        public const string ActionEmptyPartial = "DISGUISE_ACTION_EMPTY";
+        public const string ContentPartialElement = "DISGUISE_CONTENT_PARTIAL";
+        public const string ContentAvailablePartial = "DISGUISE_CONTENT_AVAILABLE";
+        public const string ContentRetiredPartial = "DISGUISE_CONTENT_RETIRED";
+        public const string ContentEditPartial = "DISGUISE_CONTENT_EDIT";
+        public const string ContentEmptyPartial = "DISGUISE_CONTENT_EMPTY";
 
         private const int SoundSetPageSize = 25;
 
@@ -636,9 +630,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void RefreshLayoutPartials()
         {
-            ChangePartialView(DetailPartialElement, HasSelection ? DetailSelectedPartial : DetailEmptyPartial);
-            ChangePartialView(PortraitPartialElement, HasSelection ? PortraitSelectedPartial : PortraitEmptyPartial);
-            ChangePartialView(ActionPartialElement, GetActionPartialName());
+            ChangePartialView(ContentPartialElement, GetContentPartialName());
 
             if (HasSelection)
                 RefreshSoundSetBindings();
@@ -671,18 +663,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             DelayCommand(0.0f, ApplyLayoutPartials);
         }
 
-        private string GetActionPartialName()
+        private string GetContentPartialName()
         {
             if (!HasSelection)
-                return ActionEmptyPartial;
+                return ContentEmptyPartial;
 
             if (IsEditMode)
-                return ActionEditPartial;
+                return ContentEditPartial;
 
             if (IsRetiredSelected)
-                return ActionRetiredPartial;
+                return ContentRetiredPartial;
 
-            return IsAvailableSelected ? ActionAvailablePartial : ActionEmptyPartial;
+            return IsAvailableSelected ? ContentAvailablePartial : ContentEmptyPartial;
         }
 
         private bool IsSelectedDisguiseActive()

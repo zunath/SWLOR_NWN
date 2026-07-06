@@ -35,7 +35,7 @@ namespace SWLOR.CLI
             {
                 var fileNameNoJson = Path.GetFileNameWithoutExtension(file);
                 Console.WriteLine("Packing " + fileNameNoJson);
-                var command = $"nwn_gff -i {file} -o ./packing/{fileNameNoJson} -k gff";
+                var command = $"nwn_gff -l json -i {file} -o ./packing/{fileNameNoJson} -k gff";
 
                 RunProcess(command);
             });

@@ -230,7 +230,7 @@
         "__struct_id": 0,
         "Feat": {
           "type": "word",
-          "value": 2644
+          "value": 2764
         }
       },
       {
@@ -702,7 +702,7 @@
         "__struct_id": 0,
         "Name": {
           "type": "cexostring",
-          "value": "PERK_LEVEL_674"
+          "value": "PERK_LEVEL_755"
         },
         "Type": {
           "type": "dword",

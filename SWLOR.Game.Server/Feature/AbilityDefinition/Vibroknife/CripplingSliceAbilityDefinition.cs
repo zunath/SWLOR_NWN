@@ -11,21 +11,21 @@ using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
 {
-    public class HamstringAbilityDefinition : WeaponActiveAbilityDefinitionBase, IAbilityListDefinition
+    public class CripplingSliceAbilityDefinition : WeaponActiveAbilityDefinitionBase, IAbilityListDefinition
     {
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
 
             ConfigureGeneratedWeaponAbility(
-                builder.Create(FeatType.Hamstring1, PerkType.Hamstring)
-                    .Name("Hamstring I")
+                builder.Create(FeatType.CripplingSlice1, PerkType.CripplingSlice)
+                    .Name("Crippling Slice I")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.Hamstring, 24.0f),
+                    .HasRecastDelay(RecastGroup.CripplingSlice, 25.0f),
                 SkillType.Vibroknife,
                 8,
                 30,
-                typeof(HamstringStatusEffect),
+                typeof(ExposedStatusEffect),
                 null,
                 4,
                 0,
@@ -44,16 +44,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                 null);
 
             ConfigureGeneratedWeaponAbility(
-                builder.Create(FeatType.Hamstring2, PerkType.Hamstring)
-                    .Name("Hamstring II")
+                builder.Create(FeatType.CripplingSlice2, PerkType.CripplingSlice)
+                    .Name("Crippling Slice II")
                     .Level(2)
-                    .HasRecastDelay(RecastGroup.Hamstring, 24.0f),
+                    .HasRecastDelay(RecastGroup.CripplingSlice, 25.0f),
                 SkillType.Vibroknife,
-                18,
+                12,
                 30,
-                typeof(HamstringStatusEffect),
+                typeof(ExposedStatusEffect),
                 null,
-                8,
+                5,
                 0,
                 0.0f,
                 false,
@@ -70,16 +70,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                 null);
 
             ConfigureGeneratedWeaponAbility(
-                builder.Create(FeatType.Hamstring3, PerkType.Hamstring)
-                    .Name("Hamstring III")
+                builder.Create(FeatType.CripplingSlice3, PerkType.CripplingSlice)
+                    .Name("Crippling Slice III")
                     .Level(3)
-                    .HasRecastDelay(RecastGroup.Hamstring, 24.0f),
+                    .HasRecastDelay(RecastGroup.CripplingSlice, 25.0f),
                 SkillType.Vibroknife,
-                28,
+                16,
                 30,
-                typeof(HamstringStatusEffect),
+                typeof(ExposedStatusEffect),
                 null,
-                10,
+                6,
                 0,
                 0.0f,
                 false,

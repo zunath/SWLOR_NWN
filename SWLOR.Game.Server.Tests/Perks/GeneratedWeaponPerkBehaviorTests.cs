@@ -22,14 +22,16 @@ public class GeneratedWeaponPerkBehaviorTests
         AssertSourceStat("VibrobladePerkDefinition.cs", StatType.RepeatedTargetDamageAutoAttackOnly, "1");
         AssertSourceContains("VibrobladePerkDefinition.cs", "EquipmentPredicates.HasOffHandShield(creature) ? 35 : 0");
 
-        AssertSourceStat("VibroknifePerkDefinition.cs", StatType.CriticalBleedingStatusDurationExtensionSeconds, "6");
-        AssertSourceStat("VibroknifePerkDefinition.cs", StatType.CriticalBleedingStatusDurationExtensionCooldownSeconds, "8");
-        AssertSourceStat("VibroknifePerkDefinition.cs", StatType.HostileAbilitySequenceWindowSeconds, "30");
-        AssertSourceStat("VibroknifePerkDefinition.cs", StatType.HostileAbilitySequenceNextAttackBleedDurationSeconds, "30");
-        AssertSourceStat("VibroknifePerkDefinition.cs", StatType.SameTargetHostileAbilityHitCountRequired, "3");
-        AssertSourceStat("VibroknifePerkDefinition.cs", StatType.SameTargetHostileAbilityStaminaRestore, "4");
-        AssertSourceStat("VibroknifePerkDefinition.cs", StatType.DamageToSourceAppliedStatusTargetCategory, "(int)StatusEffectCategory.Debuff");
-        AssertSourceStat("VibroknifePerkDefinition.cs", StatType.DamageToSourceAppliedStatusTargetPercentAdjustment, "10");
+        AssertSourceStat("VibroknifePerkDefinition.cs", StatType.SourceStatusHealingReceivedRequiredCategory, "(int)StatusEffectCategory.ShadowToxin");
+        AssertSourceStat("VibroknifePerkDefinition.cs", StatType.SourceStatusHealingReceivedPercentAdjustment, "-15");
+        AssertSourceStat("VibroknifePerkDefinition.cs", StatType.SourceStatusStackRequiredCategory, "(int)StatusEffectCategory.ShadowToxin");
+        AssertSourceStat("VibroknifePerkDefinition.cs", StatType.SourceStatusStackAppliedCategory, "(int)StatusEffectCategory.Infection");
+        AssertSourceStat("VibroknifePerkDefinition.cs", StatType.SourceStatusStackMaximum, "5");
+        AssertSourceStat("VibroknifePerkDefinition.cs", StatType.AbilityDamageToSourceAppliedStatusTargetBonus, "12");
+        AssertSourceStat("VibroknifePerkDefinition.cs", StatType.SourceStatusAutoAttackCycleDamageType, "(int)CombatDamageType.Poison");
+        AssertSourceStat("VibroknifePerkDefinition.cs", StatType.DirectDamageToStatusCategoryOrStealthBonusCategory, "(int)StatusEffectCategory.Incapacitating");
+        AssertSourceStat("VibroknifePerkDefinition.cs", StatType.HostileAbilityUsedAttackPercentAdjustment, "5");
+        AssertSourceStat("VibroknifePerkDefinition.cs", StatType.StatusAppliedTargetStaminaDrainRequiredCategory, "(int)StatusEffectCategory.StaminaDrainTrigger");
 
         AssertSourceStat("HeavyVibrobladePerkDefinition.cs", StatType.HeavyVibrobladeOffenseEssenceHunter, "1");
         AssertSourceStat("HeavyVibrobladePerkDefinition.cs", StatType.HeavyVibrobladeOffenseSoulAscension, "1");
@@ -158,11 +160,14 @@ public class GeneratedWeaponPerkBehaviorTests
     [Test]
     public void GeneratedWeaponStances_EmitBibleDrivenStatusStats()
     {
-        var debilitating = new DebilitatingStanceStatusEffect();
-        AssertStatusStat(debilitating, StatType.AttackPercentAdjustment, -10);
-        AssertStatusStat(debilitating, StatType.DamageDealtHamstringSkillType, (int)SkillType.Vibroknife);
-        AssertStatusStat(debilitating, StatType.DamageDealtHamstringChance, 100);
-        AssertStatusStat(debilitating, StatType.DamageDealtHamstringDurationSeconds, 30);
+        var assassins = new AssassinsStanceStatusEffect();
+        AssertStatusStat(assassins, StatType.PoisonDamageDealtPercentAdjustment, 20);
+        AssertStatusStat(assassins, StatType.AttackPercentAdjustment, -10);
+
+        var shadowflow = new ShadowflowStanceStatusEffect();
+        AssertStatusStat(shadowflow, StatType.AutoAttackHamstringSkillType, (int)SkillType.Vibroknife);
+        AssertStatusStat(shadowflow, StatType.AutoAttackHamstringDurationSeconds, 18);
+        AssertStatusStat(shadowflow, StatType.DefensePercentAdjustment, -20);
 
         var berserker = new BerserkerStanceStatusEffect();
         berserker.ApplyEffect(1, 1, -1);
@@ -209,16 +214,15 @@ public class GeneratedWeaponPerkBehaviorTests
     }
 
     [Test]
-    public void DamageDealtHamstringStats_AreDeclaredAndConsumedBySharedCombat()
+    public void AutoAttackHamstringStats_AreDeclaredAndConsumedBySharedCombat()
     {
-        Stat.GetStatTypeCategory(StatType.DamageDealtHamstringSkillType).Should().Be(StatTypeCategory.NonBeneficial);
-        Stat.GetStatTypeCategory(StatType.DamageDealtHamstringChance).Should().Be(StatTypeCategory.BeneficialWhenPositive);
-        Stat.GetStatTypeCategory(StatType.DamageDealtHamstringDurationSeconds).Should().Be(StatTypeCategory.NonBeneficial);
+        Stat.GetStatTypeCategory(StatType.AutoAttackHamstringSkillType).Should().Be(StatTypeCategory.NonBeneficial);
+        Stat.GetStatTypeCategory(StatType.AutoAttackHamstringDurationSeconds).Should().Be(StatTypeCategory.NonBeneficial);
 
         var root = FindRepositoryRoot();
         var combatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
-        combatSource.Should().Contain("ApplyDamageDealtHamstringEffect(attacker, defender, skillType, damageType)");
-        combatSource.Should().Contain("StatType.DamageDealtHamstringSkillType");
+        combatSource.Should().Contain("ApplyAutoAttackHamstringEffect(attacker, defender, skillType, CombatDamageType.Physical)");
+        combatSource.Should().Contain("StatType.AutoAttackHamstringSkillType");
         combatSource.Should().Contain("typeof(HamstringStatusEffect)");
     }
 
@@ -229,11 +233,19 @@ public class GeneratedWeaponPerkBehaviorTests
         var featRows = Read2da(root, "SWLOR_Haks", "sw_2da", "feat.2da");
         var spellRows = Read2da(root, "SWLOR_Haks", "sw_2da", "spells.2da");
 
-        var hamstring = new HamstringAbilityDefinition().BuildAbilities();
-        foreach (var feat in new[] { FeatType.Hamstring1, FeatType.Hamstring2, FeatType.Hamstring3 })
+        var pathogenStrike = new PathogenStrikeAbilityDefinition().BuildAbilities();
+        foreach (var feat in new[] { FeatType.PathogenStrike1, FeatType.PathogenStrike2, FeatType.PathogenStrike3, FeatType.PathogenStrike4 })
         {
-            hamstring[feat].IsHostileAbility.Should().BeTrue();
-            hamstring[feat].RequiresTarget.Should().BeTrue();
+            pathogenStrike[feat].IsHostileAbility.Should().BeTrue();
+            pathogenStrike[feat].RequiresTarget.Should().BeTrue();
+            AssertFeatSpellTargeting(featRows, spellRows, feat, "****", "1", "M", "0x03", "0");
+        }
+
+        var cripplingSlice = new CripplingSliceAbilityDefinition().BuildAbilities();
+        foreach (var feat in new[] { FeatType.CripplingSlice1, FeatType.CripplingSlice2, FeatType.CripplingSlice3 })
+        {
+            cripplingSlice[feat].IsHostileAbility.Should().BeTrue();
+            cripplingSlice[feat].RequiresTarget.Should().BeTrue();
             AssertFeatSpellTargeting(featRows, spellRows, feat, "****", "1", "M", "0x03", "0");
         }
 
@@ -358,6 +370,22 @@ public class GeneratedWeaponPerkBehaviorTests
             .Should().Be(StatTypeCategory.NonBeneficial);
         Stat.GetStatTypeCategory(StatType.AbilityUsedPerkCategorySelfDefenseCategoryId)
             .Should().Be(StatTypeCategory.NonBeneficial);
+        Stat.GetStatTypeCategory(StatType.PoisonDamageDealtPercentAdjustment)
+            .Should().Be(StatTypeCategory.BeneficialWhenPositive);
+        Stat.GetStatTypeCategory(StatType.SourceStatusStackAppliedCategory)
+            .Should().Be(StatTypeCategory.NonBeneficial);
+        Stat.GetStatTypeCategory(StatType.SourceStatusStackMaximum)
+            .Should().Be(StatTypeCategory.NonBeneficial);
+        Stat.GetStatTypeCategory(StatType.HostileAbilityHitNextAutoAttackNoDelaySkillType)
+            .Should().Be(StatTypeCategory.NonBeneficial);
+        Stat.GetStatTypeCategory(StatType.SourceStatusAutoAttackCycleDamage)
+            .Should().Be(StatTypeCategory.BeneficialWhenPositive);
+        Stat.GetStatTypeCategory(StatType.StatusAppliedTargetStaminaDrain)
+            .Should().Be(StatTypeCategory.BeneficialWhenPositive);
+        Stat.GetStatTypeCategory(StatType.SourceStatusHealingReceivedPercentAdjustment)
+            .Should().Be(StatTypeCategory.BeneficialWhenNegative);
+        Stat.GetStatTypeCategory(StatType.DirectDamageToStatusCategoryOrStealthBonus)
+            .Should().Be(StatTypeCategory.BeneficialWhenPositive);
 
         var root = FindRepositoryRoot();
         var combatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
@@ -427,10 +455,25 @@ public class GeneratedWeaponPerkBehaviorTests
         combatSource.Should().Contain("ApplyDamageTakenShareToStatusSource(defender, attacker, damage, damageType)");
         combatSource.Should().Contain("IdleSkillAbilityCriticalDamagePercentAdjustment");
         combatSource.Should().Contain("TargetHasSourceAppliedStatusCategory(defender, attacker, category)");
+        combatSource.Should().Contain("ApplySourceStatusStackEffects(attacker, defender)");
+        combatSource.Should().Contain("ApplyHostileAbilityHitNextAutoAttackNoDelay(activator, ability, skillType)");
+        combatSource.Should().Contain("ApplyHostileAbilityUsedAttackAdjustment(activator, ability)");
+        combatSource.Should().Contain("ApplyStatusAppliedTargetStaminaDrain(");
+        combatSource.Should().Contain("StatusEffectCategory.Infection => typeof(InfectionStatusEffect)");
+        abilitySource.Should().Contain("beforeSuccessfulImpactRiders?.Invoke(target)");
+        abilitySource.Should().Contain("Combat.ApplySuccessfulAbilityImpactRiders(");
+        abilitySource.Should().Contain("beforeSuccessfulImpactRiders");
 
         var bleedSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "StatusEffectDefinition", "BleedStatusEffect.cs"));
+        var shadowToxinSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "StatusEffectDefinition", "ShadowToxinStatusEffect.cs"));
+        var infectionSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "StatusEffectDefinition", "InfectionStatusEffect.cs"));
         var suppressionSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "StatusEffectDefinition", "SuppressionStatusEffect.cs"));
         bleedSource.Should().Contain("WasNaturallyExpired");
+        shadowToxinSource.Should().Contain("EffectDamage(damageAmount, CombatDamageType.Poison.GetNWScriptDamageType())");
+        shadowToxinSource.Should().Contain("Combat.ApplyDamageTypeDealtModifiers(source, DamagePerTick, CombatDamageType.Poison)");
+        infectionSource.Should().Contain("public int Stacks");
+        infectionSource.Should().Contain("DamagePerStack * Math.Max(1, Stacks)");
+        infectionSource.Should().Contain("EffectDamage(damageAmount, CombatDamageType.Poison.GetNWScriptDamageType())");
         combatSource.Should().Contain("typeof(HemorrhageStatusEffect)");
         File.Exists(Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "StatusEffectDefinition", "LacerationStatusEffect.cs")).Should().BeFalse();
         File.Exists(Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "StatusEffectDefinition", "RupturedStatusEffect.cs")).Should().BeFalse();
@@ -477,8 +520,11 @@ public class GeneratedWeaponPerkBehaviorTests
         AssertAbilitySourceContains(root, "Staff", "UnmovingCenterAbilityDefinition.cs", "SelfKnockdownDazedImmunityDurationSeconds = 45");
         AssertAbilitySourceContains(root, "Spear", "CripplingDefenseAbilityDefinition.cs", "TemporaryCostlyAbilityExposedDurationSeconds = 30");
         AssertAbilitySourceContains(root, "Staff", "WorldbreakerAbilityDefinition.cs", "RequiredTargetStatusCategoryForConditionalStatus = StatusEffectCategory.Control");
-        AssertAbilitySourceContains(root, "Vibroknife", "VitalRuptureAbilityDefinition.cs", "RequiredTargetStatusCategoryForConditionalStatus = StatusEffectCategory.Bleeding");
-        AssertAbilitySourceContains(root, "Vibroknife", "RuptureStrikeAbilityDefinition.cs", "ConsumeBleedIntoHemorrhage = true");
+        AssertAbilitySourceContains(root, "Vibroknife", "PathogenStrikeAbilityDefinition.cs", "SourceStatusEffectsToExtend = new[] { typeof(ShadowToxinStatusEffect), typeof(InfectionStatusEffect) }");
+        AssertAbilitySourceContains(root, "Vibroknife", "ViralCascadeAbilityDefinition.cs", "ExtraDamageSourceStatusEffect = typeof(ShadowToxinStatusEffect)");
+        AssertAbilitySourceContains(root, "Vibroknife", "ViralCascadeAbilityDefinition.cs", "ExtraDamageSourceStackStatusEffect = typeof(InfectionStatusEffect)");
+        AssertAbilitySourceContains(root, "Vibroknife", "ViralCascadeAbilityDefinition.cs", "ConsumeSourceStatusEffectsOnHit = true");
+        AssertAbilitySourceContains(root, "Vibroknife", "ViralCascadeAbilityDefinition.cs", "SuppressSourceStatusStackRiders = true");
         AssertAbilitySourceContains(root, "TwinBlade", "RedBloomAbilityDefinition.cs", "SpreadHemorrhageFromTarget = true");
     }
 

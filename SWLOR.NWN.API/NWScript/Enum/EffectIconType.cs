@@ -1,4 +1,4 @@
-namespace SWLOR.NWN.API.NWScript.Enum
+﻿namespace SWLOR.NWN.API.NWScript.Enum
 {
     public enum EffectIconType
     {
@@ -437,6 +437,9 @@ namespace SWLOR.NWN.API.NWScript.Enum
         GhostkeyRelayStatusEffect = 433,
         StormcoreMatrixStatusEffect = 434,
         TidecallBeaconStatusEffect = 435,
+        InfectionStatusEffect = 436,
+        ShadowToxinStatusEffect = 437,
+        AssassinsStanceStatusEffect = 438,
         // End custom status effect icons
     }
 }

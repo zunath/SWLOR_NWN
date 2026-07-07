@@ -4,8 +4,9 @@ param(
     [string]$Spells2daPath = "SWLOR_Haks\sw_2da\spells.2da",
     [string]$ClassFeat2daPath = "SWLOR_Haks\sw_2da\CLS_FEAT_FIGHT.2da",
     [string]$SpellEnumPath = "SWLOR.NWN.API\NWScript\Enum\spell.cs",
+    [string]$FeatEnumPath = "SWLOR.NWN.API\NWScript\Enum\FeatType.cs",
     [int]$GeneratedFeatStart = 2000,
-    [int]$GeneratedFeatEnd = 2753
+    [int]$GeneratedFeatEnd = 2772
 )
 
 Set-StrictMode -Version Latest
@@ -104,6 +105,7 @@ $featPath = Resolve-RepoPath $Feat2daPath
 $spellsPath = Resolve-RepoPath $Spells2daPath
 $classFeatPath = Resolve-RepoPath $ClassFeat2daPath
 $enumPath = Resolve-RepoPath $SpellEnumPath
+$featEnumPath = Resolve-RepoPath $FeatEnumPath
 $abilityDefinitionPath = Resolve-RepoPath "SWLOR.Game.Server\Feature\AbilityDefinition"
 $npcAbilityDefinitionPath = Resolve-RepoPath "SWLOR.Game.Server\Feature\AbilityDefinition\NPC"
 
@@ -496,7 +498,52 @@ if ($missingEnumEntries.Count -gt 0) {
     [System.IO.File]::WriteAllLines($enumPath, $enumLines)
 }
 
+$featEnumLines = [System.Collections.Generic.List[string]]::new()
+$featEnumLines.AddRange([System.IO.File]::ReadAllLines($featEnumPath))
+
+$existingFeatEnumText = [System.IO.File]::ReadAllText($featEnumPath)
+$missingFeatEnumEntries = New-Object System.Collections.Generic.List[string]
+foreach ($entry in $linkedPlayerFeats.GetEnumerator()) {
+    if ($existingFeatEnumText -notmatch "\b$($entry.Key)\s*=") {
+        $missingFeatEnumEntries.Add("        $($entry.Key) = $($entry.Value),") | Out-Null
+    }
+}
+
+if ($missingFeatEnumEntries.Count -gt 0) {
+    $insertIndex = -1
+    $enumStartIndex = -1
+    for ($i = 0; $i -lt $featEnumLines.Count; $i++) {
+        if ($featEnumLines[$i] -match "public\s+enum\s+FeatType\b") {
+            $enumStartIndex = $i
+            break
+        }
+    }
+
+    if ($enumStartIndex -lt 0) {
+        throw "Could not find FeatType enum declaration in $FeatEnumPath."
+    }
+
+    for ($i = $enumStartIndex + 1; $i -lt $featEnumLines.Count; $i++) {
+        if ($featEnumLines[$i].Trim() -eq "}") {
+            $insertIndex = $i
+            break
+        }
+    }
+
+    if ($insertIndex -lt 0) {
+        throw "Could not find enum closing brace in $FeatEnumPath."
+    }
+
+    foreach ($line in $missingFeatEnumEntries) {
+        $featEnumLines.Insert($insertIndex, $line)
+        $insertIndex++
+    }
+
+    [System.IO.File]::WriteAllLines($featEnumPath, $featEnumLines)
+}
+
 Write-Host "Linked $linkedFeatRows generated feat rows."
 Write-Host "Created $createdSpellRows spell rows."
 Write-Host "Added $($missingEnumEntries.Count) spell enum entries."
+Write-Host "Added $($missingFeatEnumEntries.Count) feat enum entries."
 Write-Host "Added $addedClassFeatRows class feat rows."

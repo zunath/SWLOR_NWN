@@ -60,6 +60,9 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<(uint, uint), int> _sameTargetHostileAbilityHitCounts = new();
         private static readonly Dictionary<uint, int> _autoAttackCycleCounts = new();
         private static readonly Dictionary<uint, int> _autoAttackCycleCriticalCounts = new();
+        private static readonly Dictionary<uint, TargetHitSequenceState> _firstHostileAbilityHitCounts = new();
+        private static readonly Dictionary<(uint, uint, StatusEffectCategory), int> _sourceStatusAutoAttackCycleCounts = new();
+        private static readonly Dictionary<uint, DateTime> _stealthOpeningWindows = new();
         private static readonly Dictionary<(uint, uint), TargetHitSequenceState> _areaAbilityTargetHitSequences = new();
         private static readonly Dictionary<uint, float> _attackSwingDebts = new();
         private static readonly Dictionary<uint, RepeatedTargetDamageState> _repeatedTargetDamageStates = new();
@@ -798,6 +801,7 @@ namespace SWLOR.Game.Server.Service
                 return 0;
 
             damage = ApplyOutgoingDamageModifier(attacker, damage);
+            damage = ApplyDamageTypeDealtModifiers(attacker, damage, damageType);
             damage = ApplyWeaponAndForceDamageModifier(attacker, damage, skillType, damageType);
             damage = ApplyTargetLowHPDamageModifier(attacker, defender, damage);
             damage = ApplyTargetStatusDamageModifiers(
@@ -863,6 +867,7 @@ namespace SWLOR.Game.Server.Service
                 Stat.RestoreFP(attacker, skillFpRestore);
             }
 
+            ApplyFirstCombatAttackStaminaRestore(attacker);
             ApplyAutoAttackMasterResourceRestore(attacker);
 
             var accuracyPenaltyChance = Stat.GetStatAdjustment(attacker, StatType.AutoAttackTargetAccuracyPercentAdjustmentChance);
@@ -881,7 +886,11 @@ namespace SWLOR.Game.Server.Service
                     StatType.AutoAttackTargetAccuracyPercentAdjustment);
             }
 
+            damage += GetDirectDamageToStatusCategoryOrStealthBonus(attacker, defender);
+            ApplyAutoAttackHamstringEffect(attacker, defender, skillType, CombatDamageType.Physical);
+            ApplySourceStatusStackEffects(attacker, defender);
             ApplyAutoAttackCycleDamage(attacker, defender, skillType);
+            ApplySourceStatusAutoAttackCycleDamage(attacker, defender, skillType);
 
             return damage;
         }
@@ -918,6 +927,47 @@ namespace SWLOR.Game.Server.Service
             {
                 Stat.RestoreFP(master, fpRestore);
             }
+        }
+
+        private static void ApplyFirstCombatAttackStaminaRestore(uint attacker)
+        {
+            var staminaRestore = Stat.GetStatAdjustment(attacker, StatType.FirstCombatAttackStaminaRestore);
+            var cooldownSeconds = Stat.GetStatAdjustment(attacker, StatType.FirstCombatAttackStaminaRestoreCooldownSeconds);
+            if (staminaRestore <= 0 || cooldownSeconds <= 0)
+                return;
+
+            if (_lastCombatActivity.TryGetValue(attacker, out var lastActivity) &&
+                (DateTime.UtcNow - lastActivity).TotalSeconds <= 30)
+            {
+                return;
+            }
+
+            if (!TryUseStatTrigger(attacker, StatType.FirstCombatAttackStaminaRestore, cooldownSeconds))
+                return;
+
+            Stat.RestoreStamina(attacker, staminaRestore);
+        }
+
+        private static void ApplyAutoAttackHamstringEffect(
+            uint attacker,
+            uint defender,
+            SkillType skillType,
+            CombatDamageType damageType)
+        {
+            if (!GetIsObjectValid(defender))
+                return;
+
+            var requiredSkillType = GetSkillTypeFromStat(Stat.GetStatAdjustment(attacker, StatType.AutoAttackHamstringSkillType));
+            var duration = Stat.GetStatAdjustment(attacker, StatType.AutoAttackHamstringDurationSeconds);
+            if (!SkillTypeMatches(skillType, requiredSkillType) || duration <= 0)
+                return;
+
+            StatusEffect.ApplyStatusEffect(
+                attacker,
+                defender,
+                typeof(HamstringStatusEffect),
+                duration,
+                damageType);
         }
 
         private static int ConsumeNextSkillAutoAttackDamageBonus(uint attacker, SkillType skillType)
@@ -985,6 +1035,54 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             Enmity.ModifyEnmity(attacker, target, appliedDamage);
+        }
+
+        private static void ApplySourceStatusAutoAttackCycleDamage(uint attacker, uint defender, SkillType skillType)
+        {
+            if (!GetIsObjectValid(attacker) ||
+                !GetIsObjectValid(defender) ||
+                skillType == SkillType.Invalid)
+            {
+                return;
+            }
+
+            var requiredSkillType = GetSkillTypeFromStat(Stat.GetStatAdjustment(
+                attacker,
+                StatType.SourceStatusAutoAttackCycleSkillType));
+            var requiredCategory = GetStatusEffectCategoryFromStat(Stat.GetStatAdjustment(
+                attacker,
+                StatType.SourceStatusAutoAttackCycleRequiredCategory));
+            var requiredCount = Stat.GetStatAdjustment(attacker, StatType.SourceStatusAutoAttackCycleRequiredCount);
+            var damage = Stat.GetStatAdjustment(attacker, StatType.SourceStatusAutoAttackCycleDamage);
+            var damageType = GetCombatDamageTypeFromStat(Stat.GetStatAdjustment(
+                attacker,
+                StatType.SourceStatusAutoAttackCycleDamageType));
+            var key = (attacker, defender, requiredCategory);
+            if (!SkillTypeMatches(skillType, requiredSkillType) ||
+                requiredCategory == 0 ||
+                requiredCount <= 0 ||
+                damage <= 0 ||
+                damageType == CombatDamageType.Invalid ||
+                !TargetHasSourceAppliedStatusCategory(defender, attacker, requiredCategory))
+            {
+                _sourceStatusAutoAttackCycleCounts.Remove(key);
+                return;
+            }
+
+            _sourceStatusAutoAttackCycleCounts.TryGetValue(key, out var count);
+            count++;
+            if (count < requiredCount)
+            {
+                _sourceStatusAutoAttackCycleCounts[key] = count;
+                return;
+            }
+
+            _sourceStatusAutoAttackCycleCounts[key] = 0;
+            var appliedDamage = ApplyTriggeredDamage(attacker, defender, damage, damageType, skillType);
+            if (appliedDamage > 0)
+            {
+                Enmity.ModifyEnmity(attacker, defender, appliedDamage);
+            }
         }
 
         public static void ApplyDamageDealtEffects(
@@ -2266,6 +2364,51 @@ namespace SWLOR.Game.Server.Service
             TrackCombatActivity(creature);
         }
 
+        public static void TrackStealthOpeningWindow(uint creature)
+        {
+            if (!GetIsObjectValid(creature) || !IsStealthedOrInvisible(creature))
+                return;
+
+            _stealthOpeningWindows[creature] = DateTime.UtcNow.AddSeconds(6);
+        }
+
+        private static bool ConsumeStealthOpeningWindow(uint creature)
+        {
+            if (!GetIsObjectValid(creature))
+                return false;
+
+            if (IsStealthedOrInvisible(creature))
+                return true;
+
+            if (!_stealthOpeningWindows.TryGetValue(creature, out var expiresAt))
+                return false;
+
+            var isActive = expiresAt >= DateTime.UtcNow;
+            _stealthOpeningWindows.Remove(creature);
+            return isActive;
+        }
+
+        private static bool IsStealthedOrInvisible(uint creature)
+        {
+            return GetActionMode(creature, ActionMode.Stealth) ||
+                   GetHasEffect(creature, EffectTypeScript.Invisibility, EffectTypeScript.ImprovedInvisibility);
+        }
+
+        private static bool GetHasEffect(uint creature, EffectTypeScript effectType, params EffectTypeScript[] otherEffectTypes)
+        {
+            var effect = GetFirstEffect(creature);
+            while (GetIsEffectValid(effect))
+            {
+                var type = GetEffectType(effect);
+                if (type == effectType || otherEffectTypes.Contains(type))
+                    return true;
+
+                effect = GetNextEffect(creature);
+            }
+
+            return false;
+        }
+
         public static bool HasRecentAttackActivity(uint creature, float windowSeconds)
         {
             if (!GetIsObjectValid(creature) || windowSeconds <= 0f)
@@ -2887,6 +3030,20 @@ namespace SWLOR.Game.Server.Service
             return ApplyPercentDamageAdjustment(damage, adjustment);
         }
 
+        public static int ApplyDamageTypeDealtModifiers(uint attacker, int damage, CombatDamageType damageType)
+        {
+            if (damage <= 0)
+                return damage;
+
+            var adjustment = damageType == CombatDamageType.Poison
+                ? Stat.GetStatAdjustment(attacker, StatType.PoisonDamageDealtPercentAdjustment)
+                : 0;
+            if (adjustment == 0)
+                return damage;
+
+            return ApplyPercentDamageAdjustment(damage, adjustment);
+        }
+
         private static int ApplyTargetLowHPDamageModifier(uint attacker, uint defender, int damage)
         {
             var threshold = Stat.GetStatAdjustment(attacker, StatType.TargetLowHPDamageThresholdPercent);
@@ -2996,7 +3153,10 @@ namespace SWLOR.Game.Server.Service
 
             adjustment += GetDamageToSourceAppliedStatusTargetAdjustment(attacker, defender);
             if (isAbilityDamage)
+            {
                 adjustment += GetAbilityDamageToSourceAppliedStatusTargetAdjustment(attacker, defender, skillType);
+                damage += GetAbilityDamageToSourceAppliedStatusTargetBonus(attacker, defender);
+            }
 
             if (isAbilityDamage &&
                 skillType == SkillType.Katar &&
@@ -3582,6 +3742,7 @@ namespace SWLOR.Game.Server.Service
 
             _hostileAbilitySequenceStates.Remove(creature);
             _criticalHitSequenceStates.Remove(creature);
+            _firstHostileAbilityHitCounts.Remove(creature);
             foreach (var key in _sameTargetHostileAbilityHitCounts.Keys.Where(x => x.Item1 == creature || x.Item2 == creature).ToList())
             {
                 _sameTargetHostileAbilityHitCounts.Remove(key);
@@ -3589,6 +3750,12 @@ namespace SWLOR.Game.Server.Service
 
             _autoAttackCycleCounts.Remove(creature);
             _autoAttackCycleCriticalCounts.Remove(creature);
+            foreach (var key in _sourceStatusAutoAttackCycleCounts.Keys.Where(x => x.Item1 == creature || x.Item2 == creature).ToList())
+            {
+                _sourceStatusAutoAttackCycleCounts.Remove(key);
+            }
+
+            _stealthOpeningWindows.Remove(creature);
             _lastAbilityStaminaCosts.Remove(creature);
             foreach (var key in _areaAbilityTargetHitSequences.Keys.Where(x => x.Item1 == creature || x.Item2 == creature).ToList())
             {
@@ -3638,6 +3805,7 @@ namespace SWLOR.Game.Server.Service
             ApplyAbilityUsedNearbyAllyDefense(activator);
             ApplyAbilityUsedPerkCategoryNearbyAllyAttackDeflection(activator, ability);
             ApplyAbilityUsedPerkCategorySelfDefense(activator, ability);
+            ApplyHostileAbilityUsedAttackAdjustment(activator, ability);
             ApplyAbilityActivatedRiders(activator, target, ability, skillType);
             ApplyHostileAbilitySequenceEffects(activator, feat, ability);
             ApplyHostileAbilityResourceRestoreEffects(activator, ability);
@@ -3727,6 +3895,31 @@ namespace SWLOR.Game.Server.Service
                 duration,
                 maximum,
                 StatType.HostileAbilityForceAttackPercentPerStack,
+                1);
+        }
+
+        private static void ApplyHostileAbilityUsedAttackAdjustment(uint activator, AbilityDetail ability)
+        {
+            if (ability == null || !ability.IsHostileAbility)
+                return;
+
+            var attack = Stat.GetStatAdjustment(activator, StatType.HostileAbilityUsedAttackPercentAdjustment);
+            var duration = Stat.GetStatAdjustment(
+                activator,
+                StatType.HostileAbilityUsedAttackPercentAdjustmentDurationSeconds);
+            var maximum = Stat.GetStatAdjustment(
+                activator,
+                StatType.HostileAbilityUsedAttackPercentAdjustmentMaximum);
+            if (attack <= 0 || duration <= 0 || maximum <= 0)
+                return;
+
+            TemporaryStatModifier.AddCapped(
+                activator,
+                StatType.AttackPercentAdjustment,
+                attack,
+                duration,
+                maximum,
+                StatType.HostileAbilityUsedAttackPercentAdjustment,
                 1);
         }
 
@@ -3844,6 +4037,12 @@ namespace SWLOR.Game.Server.Service
                     break;
             }
 
+            if (ability.IsHostileAbility)
+            {
+                bonus += GetFirstHostileAbilityHitDamageBonus(activator, ability);
+                bonus += GetDirectDamageToStatusCategoryOrStealthBonus(activator, target);
+            }
+
             bonus += ConsumeGuardedHitNextSkillAbilityExposedDamageBonus(activator, skillType);
 
             if (ability.IsHostileAbility &&
@@ -3896,6 +4095,13 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsObjectValid(activator) || !GetIsObjectValid(target) || ability == null)
                 return;
 
+            ApplyFirstHostileAbilityHitCount(activator, ability);
+            if (ability.IsHostileAbility && !ability.SuppressesSourceStatusStackRiders)
+            {
+                ApplySourceStatusStackEffects(activator, target);
+            }
+
+            ApplyHostileAbilityHitNextAutoAttackNoDelay(activator, ability, skillType);
             ApplySameTargetHostileAbilityHitEffects(activator, target, ability);
             ApplyAbilityStatusRiders(
                 activator,
@@ -4031,6 +4237,29 @@ namespace SWLOR.Game.Server.Service
 
             _sameTargetHostileAbilityHitCounts[key] = 0;
             Stat.RestoreStamina(activator, staminaRestore);
+        }
+
+        private static void ApplyHostileAbilityHitNextAutoAttackNoDelay(
+            uint activator,
+            AbilityDetail ability,
+            SkillType skillType)
+        {
+            if (ability?.IsHostileAbility != true)
+                return;
+
+            var autoAttackSkillType = GetSkillTypeFromStat(Stat.GetStatAdjustment(
+                activator,
+                StatType.HostileAbilityHitNextAutoAttackNoDelaySkillType));
+            if (autoAttackSkillType == SkillType.Invalid)
+                return;
+
+            var duration = Stat.GetStatAdjustment(
+                activator,
+                StatType.HostileAbilityHitNextAutoAttackNoDelayDurationSeconds);
+            if (duration <= 0)
+                return;
+
+            GrantNextAutoAttackNoDelay(activator, autoAttackSkillType, duration);
         }
 
         private static void ApplyAbilityStatusRiders(
@@ -4558,6 +4787,72 @@ namespace SWLOR.Game.Server.Service
             return adjustment;
         }
 
+        private static int GetDirectDamageToStatusCategoryOrStealthBonus(uint attacker, uint defender)
+        {
+            var bonus = Stat.GetStatAdjustment(attacker, StatType.DirectDamageToStatusCategoryOrStealthBonus);
+            if (bonus == 0)
+                return 0;
+
+            var category = GetStatusEffectCategoryFromStat(Stat.GetStatAdjustment(
+                attacker,
+                StatType.DirectDamageToStatusCategoryOrStealthBonusCategory));
+            if (category != 0 && TargetHasAnyStatusEffectCategory(defender, category))
+                return bonus;
+
+            return ConsumeStealthOpeningWindow(attacker)
+                ? bonus
+                : 0;
+        }
+
+        private static int GetFirstHostileAbilityHitDamageBonus(uint attacker, AbilityDetail ability)
+        {
+            var bonus = Stat.GetStatAdjustment(attacker, StatType.FirstHostileAbilityHitDamageBonus);
+            var maximumCount = Stat.GetStatAdjustment(attacker, StatType.FirstHostileAbilityHitMaximumCount);
+            if (bonus <= 0 || maximumCount <= 0 || ability?.IsHostileAbility != true)
+                return 0;
+
+            ResetFirstHostileAbilityHitCountIfOutOfCombat(attacker);
+            _firstHostileAbilityHitCounts.TryGetValue(attacker, out var state);
+            return (state?.Count ?? 0) < maximumCount
+                ? bonus
+                : 0;
+        }
+
+        private static void ApplyFirstHostileAbilityHitCount(uint attacker, AbilityDetail ability)
+        {
+            var maximumCount = Stat.GetStatAdjustment(attacker, StatType.FirstHostileAbilityHitMaximumCount);
+            if (maximumCount <= 0 || ability?.IsHostileAbility != true)
+                return;
+
+            ResetFirstHostileAbilityHitCountIfOutOfCombat(attacker);
+
+            var now = DateTime.UtcNow;
+            _firstHostileAbilityHitCounts.TryGetValue(attacker, out var state);
+            if (ability.IsAreaAbility &&
+                state != null &&
+                (now - state.LastHit).TotalSeconds <= 1)
+            {
+                return;
+            }
+
+            _firstHostileAbilityHitCounts[attacker] = new TargetHitSequenceState
+            {
+                Count = Math.Min(maximumCount, (state?.Count ?? 0) + 1),
+                LastHit = now
+            };
+        }
+
+        private static void ResetFirstHostileAbilityHitCountIfOutOfCombat(uint attacker)
+        {
+            if (_lastCombatActivity.TryGetValue(attacker, out var lastActivity) &&
+                (DateTime.UtcNow - lastActivity).TotalSeconds <= 30)
+            {
+                return;
+            }
+
+            _firstHostileAbilityHitCounts.Remove(attacker);
+        }
+
         private static int GetAbilityDamageToSourceAppliedStatusTargetAdjustment(
             uint attacker,
             uint defender,
@@ -4579,6 +4874,18 @@ namespace SWLOR.Game.Server.Service
             return adjustment;
         }
 
+        private static int GetAbilityDamageToSourceAppliedStatusTargetBonus(uint attacker, uint defender)
+        {
+            var category = GetStatusEffectCategoryFromStat(Stat.GetStatAdjustment(
+                attacker,
+                StatType.AbilityDamageToSourceAppliedStatusTargetBonusCategory));
+            var bonus = Stat.GetStatAdjustment(attacker, StatType.AbilityDamageToSourceAppliedStatusTargetBonus);
+            if (category == 0 || bonus == 0 || !TargetHasSourceAppliedStatusCategory(defender, attacker, category))
+                return 0;
+
+            return bonus;
+        }
+
         private static bool TargetHasSourceAppliedStatusCategory(
             uint defender,
             uint source,
@@ -4594,6 +4901,71 @@ namespace SWLOR.Game.Server.Service
             }
 
             return false;
+        }
+
+        private static void ApplySourceStatusStackEffects(uint attacker, uint defender)
+        {
+            var requiredCategory = GetStatusEffectCategoryFromStat(Stat.GetStatAdjustment(
+                attacker,
+                StatType.SourceStatusStackRequiredCategory));
+            var appliedCategory = GetStatusEffectCategoryFromStat(Stat.GetStatAdjustment(
+                attacker,
+                StatType.SourceStatusStackAppliedCategory));
+            var maximumStacks = Stat.GetStatAdjustment(attacker, StatType.SourceStatusStackMaximum);
+            var durationSeconds = Stat.GetStatAdjustment(attacker, StatType.SourceStatusStackDurationSeconds);
+            if (requiredCategory == 0 ||
+                appliedCategory == 0 ||
+                maximumStacks <= 0 ||
+                durationSeconds <= 0 ||
+                !TargetHasSourceAppliedStatusCategory(defender, attacker, requiredCategory))
+            {
+                return;
+            }
+
+            var statusEffectType = GetSourceStatusStackEffectType(appliedCategory);
+            if (statusEffectType == null)
+                return;
+
+            if (statusEffectType == typeof(InfectionStatusEffect))
+            {
+                ApplyInfectionStack(attacker, defender, maximumStacks, durationSeconds);
+            }
+        }
+
+        private static Type GetSourceStatusStackEffectType(StatusEffectCategory category)
+        {
+            return category switch
+            {
+                StatusEffectCategory.Infection => typeof(InfectionStatusEffect),
+                _ => null
+            };
+        }
+
+        private static void ApplyInfectionStack(
+            uint attacker,
+            uint defender,
+            int maximumStacks,
+            int durationSeconds)
+        {
+            var existing = StatusEffect.GetStatusEffect(defender, typeof(InfectionStatusEffect), attacker) as InfectionStatusEffect;
+            if (existing == null)
+            {
+                StatusEffect.ApplyStatusEffect(
+                    attacker,
+                    defender,
+                    new InfectionStatusEffect(1),
+                    durationSeconds,
+                    CombatDamageType.Poison);
+                return;
+            }
+
+            existing.AddStack(maximumStacks);
+            StatusEffect.RefreshStatusEffectDuration(
+                defender,
+                typeof(InfectionStatusEffect),
+                attacker,
+                durationSeconds,
+                sourceDamageType: CombatDamageType.Poison);
         }
 
         private static bool TargetHasAnyStatusEffectCategory(uint creature, StatusEffectCategory category)
@@ -5028,6 +5400,11 @@ namespace SWLOR.Game.Server.Service
 
             ApplyStatusAppliedSelfEffects(activator);
             ApplyStatusAppliedTargetEffects(activator, target);
+            ApplyStatusAppliedTargetStaminaDrain(
+                activator,
+                target,
+                primaryStatusEffect,
+                additionalStatusEffects);
         }
 
         private static void ApplyStatusAppliedSelfEffects(uint activator)
@@ -5140,6 +5517,32 @@ namespace SWLOR.Game.Server.Service
                 StatType.AbilityTargetStatusPhysicalDefensePercentAdjustment);
         }
 
+        private static void ApplyStatusAppliedTargetStaminaDrain(
+            uint activator,
+            uint target,
+            Type primaryStatusEffect,
+            IEnumerable<Type> additionalStatusEffects)
+        {
+            if (!GetIsObjectValid(target))
+                return;
+
+            var requiredCategory = GetStatusEffectCategoryFromStat(Stat.GetStatAdjustment(
+                activator,
+                StatType.StatusAppliedTargetStaminaDrainRequiredCategory));
+            var staminaDrain = Stat.GetStatAdjustment(activator, StatType.StatusAppliedTargetStaminaDrain);
+            var cooldown = Stat.GetStatAdjustment(activator, StatType.StatusAppliedTargetStaminaDrainCooldownSeconds);
+            if (requiredCategory == 0 ||
+                staminaDrain <= 0 ||
+                cooldown <= 0 ||
+                !AbilityAppliedAnyStatusCategory(primaryStatusEffect, additionalStatusEffects, requiredCategory) ||
+                !TryUseStatTrigger(target, StatType.StatusAppliedTargetStaminaDrain, cooldown))
+            {
+                return;
+            }
+
+            Stat.ReduceStamina(target, staminaDrain);
+        }
+
         private static void ApplyAreaAbilityTargetHitSequenceEffects(
             uint activator,
             uint target,
@@ -5222,6 +5625,7 @@ namespace SWLOR.Game.Server.Service
             if (damage <= 0)
                 return 0;
 
+            damage = ApplyDamageTypeDealtModifiers(activator, damage, damageType);
             damage = Resistance.ApplyResistanceToDamage(target, damageType, damage);
             if (damage <= 0)
                 return 0;
@@ -7316,6 +7720,13 @@ namespace SWLOR.Game.Server.Service
             return value > 0
                 ? (StatusEffectCategory)value
                 : 0;
+        }
+
+        private static CombatDamageType GetCombatDamageTypeFromStat(int value)
+        {
+            return value > 0 && Enum.IsDefined(typeof(CombatDamageType), value)
+                ? (CombatDamageType)value
+                : CombatDamageType.Invalid;
         }
 
         private static bool AbilityMatchesHeavyVibrobladeDefenseAbilityTrigger(

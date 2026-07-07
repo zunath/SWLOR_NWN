@@ -11,21 +11,47 @@ using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
 {
-    public class NerveStrikeAbilityDefinition : WeaponActiveAbilityDefinitionBase, IAbilityListDefinition
+    public class VirulentBladeAbilityDefinition : WeaponActiveAbilityDefinitionBase, IAbilityListDefinition
     {
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
 
             ConfigureGeneratedWeaponAbility(
-                builder.Create(FeatType.NerveStrike1, PerkType.NerveStrike)
-                    .Name("Nerve Strike I")
+                builder.Create(FeatType.VirulentBlade1, PerkType.VirulentBlade)
+                    .Name("Virulent Blade I")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.NerveStrike, 30.0f),
+                    .HasRecastDelay(RecastGroup.VirulentBlade, 30.0f),
                 SkillType.Vibroknife,
-                18,
+                9,
                 30,
-                typeof(DisorientedStatusEffect),
+                typeof(ShadowToxinStatusEffect),
+                null,
+                4,
+                0,
+                0.0f,
+                false,
+                true,
+                false,
+                Spell.Invalid,
+                AbilityTargetingShapeType.None,
+                0.0f,
+                0.0f,
+                AbilityTargetingFlags.HarmsEnemies,
+                Animation.DoubleStrike,
+                0.0f,
+                AbilityType.Invalid,
+                null);
+
+            ConfigureGeneratedWeaponAbility(
+                builder.Create(FeatType.VirulentBlade2, PerkType.VirulentBlade)
+                    .Name("Virulent Blade II")
+                    .Level(2)
+                    .HasRecastDelay(RecastGroup.VirulentBlade, 30.0f),
+                SkillType.Vibroknife,
+                12,
+                30,
+                typeof(ShadowToxinStatusEffect),
                 null,
                 6,
                 0,
@@ -41,22 +67,19 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                new GeneratedWeaponAbilityProfile
-                {
-                    StatusEffectFactory = () => new DisorientedStatusEffect(10, 10)
-                });
+                null);
 
             ConfigureGeneratedWeaponAbility(
-                builder.Create(FeatType.NerveStrike2, PerkType.NerveStrike)
-                    .Name("Nerve Strike II")
-                    .Level(2)
-                    .HasRecastDelay(RecastGroup.NerveStrike, 30.0f),
+                builder.Create(FeatType.VirulentBlade3, PerkType.VirulentBlade)
+                    .Name("Virulent Blade III")
+                    .Level(3)
+                    .HasRecastDelay(RecastGroup.VirulentBlade, 30.0f),
                 SkillType.Vibroknife,
+                16,
                 30,
-                30,
-                typeof(DisorientedStatusEffect),
+                typeof(ShadowToxinStatusEffect),
                 null,
-                9,
+                8,
                 0,
                 0.0f,
                 false,
@@ -70,10 +93,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                new GeneratedWeaponAbilityProfile
-                {
-                    StatusEffectFactory = () => new DisorientedStatusEffect(15, 15)
-                });
+                null);
 
             return builder.Build();
         }

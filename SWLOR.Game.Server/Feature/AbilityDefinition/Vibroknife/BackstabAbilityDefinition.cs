@@ -11,23 +11,23 @@ using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
 {
-    public class HemorrhageAbilityDefinition : WeaponActiveAbilityDefinitionBase, IAbilityListDefinition
+    public class BackstabAbilityDefinition : WeaponActiveAbilityDefinitionBase, IAbilityListDefinition
     {
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
 
             ConfigureGeneratedWeaponAbility(
-                builder.Create(FeatType.Hemorrhage1, PerkType.Hemorrhage)
-                    .Name("Hemorrhage I")
+                builder.Create(FeatType.Backstab1, PerkType.Backstab)
+                    .Name("Backstab I")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.Hemorrhage, 30.0f),
+                    .HasRecastDelay(RecastGroup.Backstab, 45.0f),
                 SkillType.Vibroknife,
-                16,
-                30,
-                typeof(BleedStatusEffect),
-                null,
+                20,
                 6,
+                null,
+                null,
+                8,
                 0,
                 0.0f,
                 false,
@@ -41,19 +41,25 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                null);
+                new GeneratedWeaponAbilityProfile
+                {
+                    ExtraDamageIfBehind = 10,
+                    ConditionalTargetStatusEffect = typeof(KnockdownStatusEffect),
+                    ConditionalTargetStatusDurationSeconds = 6,
+                    RequireBehindForConditionalStatus = true
+                });
 
             ConfigureGeneratedWeaponAbility(
-                builder.Create(FeatType.Hemorrhage2, PerkType.Hemorrhage)
-                    .Name("Hemorrhage II")
+                builder.Create(FeatType.Backstab2, PerkType.Backstab)
+                    .Name("Backstab II")
                     .Level(2)
-                    .HasRecastDelay(RecastGroup.Hemorrhage, 30.0f),
+                    .HasRecastDelay(RecastGroup.Backstab, 45.0f),
                 SkillType.Vibroknife,
-                30,
-                30,
-                typeof(BleedStatusEffect),
+                25,
+                6,
                 null,
-                9,
+                null,
+                10,
                 0,
                 0.0f,
                 false,
@@ -67,7 +73,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                null);
+                new GeneratedWeaponAbilityProfile
+                {
+                    ExtraDamageIfBehind = 20,
+                    ConditionalTargetStatusEffect = typeof(KnockdownStatusEffect),
+                    ConditionalTargetStatusDurationSeconds = 6,
+                    RequireBehindForConditionalStatus = true
+                });
 
             return builder.Build();
         }

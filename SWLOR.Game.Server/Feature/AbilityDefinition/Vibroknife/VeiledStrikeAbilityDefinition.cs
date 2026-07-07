@@ -11,50 +11,21 @@ using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
 {
-    public class EnfeeblingStrikeAbilityDefinition : WeaponActiveAbilityDefinitionBase, IAbilityListDefinition
+    public class VeiledStrikeAbilityDefinition : WeaponActiveAbilityDefinitionBase, IAbilityListDefinition
     {
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
 
             ConfigureGeneratedWeaponAbility(
-                builder.Create(FeatType.EnfeeblingStrike1, PerkType.EnfeeblingStrike)
-                    .Name("Enfeebling Strike I")
+                builder.Create(FeatType.VeiledStrike1, PerkType.VeiledStrike)
+                    .Name("Veiled Strike I")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.EnfeeblingStrike, 18.0f),
+                    .HasRecastDelay(RecastGroup.VeiledStrike, 18.0f),
                 SkillType.Vibroknife,
-                10,
-                30,
-                typeof(WeakenedStatusEffect),
-                null,
-                3,
+                6,
                 0,
-                0.0f,
-                false,
-                true,
-                false,
-                Spell.Invalid,
-                AbilityTargetingShapeType.None,
-                0.0f,
-                0.0f,
-                AbilityTargetingFlags.HarmsEnemies,
-                Animation.DoubleStrike,
-                0.0f,
-                AbilityType.Invalid,
-                new GeneratedWeaponAbilityProfile
-                {
-                    StatusEffectFactory = () => new WeakenedStatusEffect(10)
-                });
-
-            ConfigureGeneratedWeaponAbility(
-                builder.Create(FeatType.EnfeeblingStrike2, PerkType.EnfeeblingStrike)
-                    .Name("Enfeebling Strike II")
-                    .Level(2)
-                    .HasRecastDelay(RecastGroup.EnfeeblingStrike, 18.0f),
-                SkillType.Vibroknife,
-                22,
-                30,
-                typeof(WeakenedStatusEffect),
+                typeof(ExposedStatusEffect),
                 null,
                 5,
                 0,
@@ -72,18 +43,82 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                 AbilityType.Invalid,
                 new GeneratedWeaponAbilityProfile
                 {
-                    StatusEffectFactory = () => new WeakenedStatusEffect(15)
+                    IsQueuedWeaponAbility = true,
+                    ExtraDamageTargetStatusEffect = typeof(ExposedStatusEffect),
+                    ExtraDamageIfTargetStatusEffect = 6
                 });
 
             ConfigureGeneratedWeaponAbility(
-                builder.Create(FeatType.EnfeeblingStrike3, PerkType.EnfeeblingStrike)
-                    .Name("Enfeebling Strike III")
-                    .Level(3)
-                    .HasRecastDelay(RecastGroup.EnfeeblingStrike, 18.0f),
+                builder.Create(FeatType.VeiledStrike2, PerkType.VeiledStrike)
+                    .Name("Veiled Strike II")
+                    .Level(2)
+                    .HasRecastDelay(RecastGroup.VeiledStrike, 18.0f),
                 SkillType.Vibroknife,
-                34,
-                30,
-                typeof(WeakenedStatusEffect),
+                10,
+                0,
+                typeof(ExposedStatusEffect),
+                null,
+                6,
+                0,
+                0.0f,
+                false,
+                true,
+                false,
+                Spell.Invalid,
+                AbilityTargetingShapeType.None,
+                0.0f,
+                0.0f,
+                AbilityTargetingFlags.HarmsEnemies,
+                Animation.DoubleStrike,
+                0.0f,
+                AbilityType.Invalid,
+                new GeneratedWeaponAbilityProfile
+                {
+                    IsQueuedWeaponAbility = true,
+                    ExtraDamageTargetStatusEffect = typeof(ExposedStatusEffect),
+                    ExtraDamageIfTargetStatusEffect = 8
+                });
+
+            ConfigureGeneratedWeaponAbility(
+                builder.Create(FeatType.VeiledStrike3, PerkType.VeiledStrike)
+                    .Name("Veiled Strike III")
+                    .Level(3)
+                    .HasRecastDelay(RecastGroup.VeiledStrike, 18.0f),
+                SkillType.Vibroknife,
+                14,
+                0,
+                typeof(ExposedStatusEffect),
+                null,
+                7,
+                0,
+                0.0f,
+                false,
+                true,
+                false,
+                Spell.Invalid,
+                AbilityTargetingShapeType.None,
+                0.0f,
+                0.0f,
+                AbilityTargetingFlags.HarmsEnemies,
+                Animation.DoubleStrike,
+                0.0f,
+                AbilityType.Invalid,
+                new GeneratedWeaponAbilityProfile
+                {
+                    IsQueuedWeaponAbility = true,
+                    ExtraDamageTargetStatusEffect = typeof(ExposedStatusEffect),
+                    ExtraDamageIfTargetStatusEffect = 10
+                });
+
+            ConfigureGeneratedWeaponAbility(
+                builder.Create(FeatType.VeiledStrike4, PerkType.VeiledStrike)
+                    .Name("Veiled Strike IV")
+                    .Level(4)
+                    .HasRecastDelay(RecastGroup.VeiledStrike, 18.0f),
+                SkillType.Vibroknife,
+                16,
+                0,
+                typeof(ExposedStatusEffect),
                 null,
                 8,
                 0,
@@ -101,36 +136,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                 AbilityType.Invalid,
                 new GeneratedWeaponAbilityProfile
                 {
-                    StatusEffectFactory = () => new WeakenedStatusEffect(20)
-                });
-
-            ConfigureGeneratedWeaponAbility(
-                builder.Create(FeatType.EnfeeblingStrike4, PerkType.EnfeeblingStrike)
-                    .Name("Enfeebling Strike IV")
-                    .Level(4)
-                    .HasRecastDelay(RecastGroup.EnfeeblingStrike, 18.0f),
-                SkillType.Vibroknife,
-                44,
-                30,
-                typeof(WeakenedStatusEffect),
-                null,
-                12,
-                0,
-                0.0f,
-                false,
-                true,
-                false,
-                Spell.Invalid,
-                AbilityTargetingShapeType.None,
-                0.0f,
-                0.0f,
-                AbilityTargetingFlags.HarmsEnemies,
-                Animation.DoubleStrike,
-                0.0f,
-                AbilityType.Invalid,
-                new GeneratedWeaponAbilityProfile
-                {
-                    StatusEffectFactory = () => new WeakenedStatusEffect(20)
+                    IsQueuedWeaponAbility = true,
+                    ExtraDamageTargetStatusEffect = typeof(ExposedStatusEffect),
+                    ExtraDamageIfTargetStatusEffect = 12
                 });
 
             return builder.Build();

@@ -11,25 +11,25 @@ using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
 {
-    public class VitalRuptureAbilityDefinition : WeaponActiveAbilityDefinitionBase, IAbilityListDefinition
+    public class EscapeArtistAbilityDefinition : WeaponActiveAbilityDefinitionBase, IAbilityListDefinition
     {
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
 
             ConfigureGeneratedWeaponAbility(
-                builder.Create(FeatType.VitalRupture1, PerkType.VitalRupture)
-                    .Name("Vital Rupture")
+                builder.Create(FeatType.EscapeArtist1, PerkType.EscapeArtist)
+                    .Name("Escape Artist")
                     .Level(1)
                     .HasRecastDelay(RecastGroup.Capstone, 90.0f),
                 SkillType.Vibroknife,
                 30,
-                45,
+                12,
+                typeof(BlindStatusEffect),
                 null,
-                null,
-                15,
+                10,
                 0,
-                2.0f,
+                1.0f,
                 false,
                 true,
                 false,
@@ -43,10 +43,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                 AbilityType.Invalid,
                 new GeneratedWeaponAbilityProfile
                 {
-                    ExtraDamageIfTargetBleeding = 45,
-                    RequiredTargetStatusCategoryForConditionalStatus = StatusEffectCategory.Bleeding,
-                    ConditionalTargetStatusEffect = typeof(HemorrhageStatusEffect),
-                    ConditionalTargetStatusDurationSeconds = 45
+                    SelfInvisibilityDurationSeconds = 30
                 });
 
             return builder.Build();

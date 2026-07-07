@@ -2856,7 +2856,7 @@ internal static class CapstoneQuestDefinitionTestData
         new Line(
             "vital_rupture",
             "Vital Rupture",
-            PerkType.VitalRupture,
+            PerkType.ViralCascade,
             AchievementType.VitalRupture,
             new QuestGiver("Mikka Varn", "cq_vitrupt", "cq_vitrupt"),
             AreaGroups[0],
@@ -2925,11 +2925,11 @@ internal static class CapstoneQuestDefinitionTestData
                 null,
                 "CAPSTONE_VITRUPT_MS_SPAWN",
             },
-            FeatType.VitalRupture1),
+            FeatType.ViralCascade1),
         new Line(
             "systemic_shutdown",
             "Systemic Shutdown",
-            PerkType.SystemicShutdown,
+            PerkType.EscapeArtist,
             AchievementType.SystemicShutdown,
             new QuestGiver("Dalen Orso", "cq_sysshut", "cq_sysshut"),
             AreaGroups[0],
@@ -2998,7 +2998,7 @@ internal static class CapstoneQuestDefinitionTestData
                 null,
                 "CAPSTONE_SYSSHUT_MS_SPAWN",
             },
-            FeatType.SystemicShutdown1),
+            FeatType.EscapeArtist1),
     };
 
     public static IReadOnlyDictionary<string, QuestGiver> QuestGivers { get; } = BuildQuestGivers();

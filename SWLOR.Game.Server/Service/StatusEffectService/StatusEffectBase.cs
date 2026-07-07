@@ -86,6 +86,14 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
             _durationTicks += ticks;
         }
 
+        public void SetDurationTicks(int ticks)
+        {
+            if (_isPermanent || IsFlaggedForRemoval || ticks <= 0)
+                return;
+
+            _durationTicks = ticks;
+        }
+
         protected virtual void Reapply(uint creature) { }
         public void ReapplyEffect(uint creature)
         {

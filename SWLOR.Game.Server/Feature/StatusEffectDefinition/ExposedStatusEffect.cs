@@ -11,7 +11,9 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         public override string Name => "Exposed";
         public override EffectIconType Icon => EffectIconType.ExposedStatusEffect;
-        public override StatusEffectCategory Categories => StatusEffectCategory.Debuff;
+        public override StatusEffectCategory Categories =>
+            StatusEffectCategory.Debuff |
+            StatusEffectCategory.StaminaDrainTrigger;
         public override StatusEffectCleanseType CleanseTypes => StatusEffectCleanseType.Purify | StatusEffectCleanseType.SoothePet;
         public override ResistanceType ResistanceType => ResistanceType.Trauma;
         public ExposedStatusEffect()

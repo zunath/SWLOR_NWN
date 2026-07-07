@@ -237,7 +237,8 @@ function Test-AbilitySatisfiesStatusCheck {
             return $true
         }
         if ($StatusEffectClass -eq "HamstringStatusEffect" -and
-            $statusDefinitionContent -match "\bStatType\.DamageDealtHamstring") {
+            ($statusDefinitionContent -match "\bStatType\.DamageDealtHamstring" -or
+             $statusDefinitionContent -match "\bStatType\.AutoAttackHamstring")) {
             return $true
         }
 
@@ -791,7 +792,7 @@ $manifest = Import-Csv $manifestFullPath |
     Where-Object {
         $outOfScopeTabs -notcontains $_.Tab -and
         ![string]::IsNullOrWhiteSpace($_.PerkName) -and
-        @("Aura", "Capstone", "Combat", "Stance", "Toggle", "Trait") -contains $_.Type
+        @("Aura", "Capstone", "Combat", "Stance", "Toggle", "Trait", "Cross-Skill Trait") -contains $_.Type
     }
 
 if (@($manifest).Count -eq 0) {
@@ -843,12 +844,14 @@ foreach ($key in $abilityFileIndex.Keys) {
 
 $statusApplicationVerb = "(?:inflict(?:s|ed|ing)?|appl(?:y|ies|ied)|grant(?:s|ed|ing)?|gain(?:s|ed|ing)?|become(?:s)?|suffer(?:s|ed|ing)?|attempt(?:s|ed|ing)?\s+to\s+inflict)"
 $statusChecks = @(
-    @{ Pattern = "\b$statusApplicationVerb\b.{0,120}\bPoison\b"; Enum = "Poison" },
+    @{ Pattern = "\b$statusApplicationVerb\b.{0,120}-\s*\d+\s+Poison Resistance\b"; Enum = "PoisonResistancePenalty" },
+    @{ Pattern = "\b$statusApplicationVerb\b.{0,120}\bPoison\b(?!\s+(?:Damage|Resistance))"; Enum = "Poison" },
     @{ Pattern = "\b$statusApplicationVerb\b.{0,120}\bBleed\b(?!\s+duration)"; Enum = "Bleed" },
     @{ Pattern = "\b$statusApplicationVerb\b.{0,120}\bSunder(?:ed)?\b"; Enum = "Sunder" },
     @{ Pattern = "\b$statusApplicationVerb\b.{0,120}\bForce Disruption\b"; Enum = "ForceDisruption" },
     @{ Pattern = "\b$statusApplicationVerb\b.{0,120}\bBlind\b"; Enum = "Blind" },
-    @{ Pattern = "\b$statusApplicationVerb\b.{0,120}\bToxin\b"; Enum = "Toxin" },
+    @{ Pattern = "\b$statusApplicationVerb\b.{0,120}\bShadow Toxin\b"; Enum = "ShadowToxin" },
+    @{ Pattern = "\b$statusApplicationVerb\b.{0,120}(?<!Shadow\s)\bToxin\b"; Enum = "Toxin" },
     @{ Pattern = "\b$statusApplicationVerb\b.{0,120}\bDisoriented\b"; Enum = "Disoriented" },
     @{ Pattern = "\b$statusApplicationVerb\b.{0,120}\bWeakened\b"; Enum = "Weakened" },
     @{ Pattern = "\b$statusApplicationVerb\b.{0,120}\bDazed\b"; Enum = "Dazed" },

@@ -508,6 +508,13 @@ namespace SWLOR.Game.Server.Service.AbilityService
             return this;
         }
 
+        public AbilityBuilder SuppressesSourceStatusStackRiders()
+        {
+            _activeAbility.SuppressesSourceStatusStackRiders = true;
+
+            return this;
+        }
+
         /// <summary>
         /// Indicates this ability breaks stealth and invisibility when used.
         /// </summary>

@@ -28,7 +28,8 @@ public class CombatUpgradeBibleSyncTests
         "Combat",
         "Stance",
         "Toggle",
-        "Trait"
+        "Trait",
+        "Cross-Skill Trait"
     };
 
     private static readonly HashSet<string> ImplementedStatuses = new(StringComparer.OrdinalIgnoreCase)
@@ -358,7 +359,7 @@ public class CombatUpgradeBibleSyncTests
                 .Select(row => ParseWholeNumber(row.Price))
                 .ToArray();
             var types = ordered
-                .Select(row => row.Type)
+                .Select(row => NormalizeProgressionType(row.Type))
                 .ToArray();
 
             if (!skillRanks.SequenceEqual(expectedSkillRanks))
@@ -2015,7 +2016,15 @@ public class CombatUpgradeBibleSyncTests
     private static bool IsTraitLikeType(string type)
     {
         return type.Equals("Trait", StringComparison.OrdinalIgnoreCase) ||
+               type.Equals("Cross-Skill Trait", StringComparison.OrdinalIgnoreCase) ||
                type.Equals("Capstone", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static string NormalizeProgressionType(string type)
+    {
+        return type.Equals("Cross-Skill Trait", StringComparison.OrdinalIgnoreCase)
+            ? "Trait"
+            : type;
     }
 
     private static bool IsPassiveIconTraitFeat(FeatType feat)
@@ -2146,6 +2155,7 @@ public class CombatUpgradeBibleSyncTests
             ("Twin Blade", "Lacerator") => PerkCategoryType.TwinBladeDuelist,
             ("Vibroblade", "Bulwark") => PerkCategoryType.VibrobladeDefense,
             ("Vibroblade", "Frenzy") => PerkCategoryType.VibrobladeOffense,
+            ("Vibroknife", "Cutthroat") => PerkCategoryType.VibroknifeSaboteur,
             ("Vibroknife", "Saboteur") => PerkCategoryType.VibroknifeSaboteur,
             ("Vibroknife", "Shadow") => PerkCategoryType.VibroknifeShadow,
             _ => null

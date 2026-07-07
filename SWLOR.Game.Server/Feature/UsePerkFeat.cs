@@ -126,6 +126,8 @@ namespace SWLOR.Game.Server.Feature
         {
             if (!ability.BreaksStealth) return;
 
+            Combat.TrackStealthOpeningWindow(activator);
+
             // If activator is in stealth mode, force them out of stealth mode.
             if (GetActionMode(activator, ActionMode.Stealth))
                 SetActionMode(activator, ActionMode.Stealth, false);

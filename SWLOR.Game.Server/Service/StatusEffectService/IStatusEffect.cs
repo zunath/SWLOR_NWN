@@ -33,6 +33,7 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
         void ApplyEffect(uint source, uint creature, int durationTicks);
         void ReassignSource(uint source);
         void ExtendDurationTicks(int ticks);
+        void SetDurationTicks(int ticks);
         void ReapplyEffect(uint creature);
         void RemoveNativeEffects(uint creature);
         void RemoveEffect(uint creature);

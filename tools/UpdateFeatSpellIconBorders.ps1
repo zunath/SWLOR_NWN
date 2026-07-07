@@ -4,7 +4,8 @@ param(
     [int]$IconSize = 32,
     [string[]]$IconResRefs = @(),
     [switch]$Apply,
-    [switch]$AuditOnly
+    [switch]$AuditOnly,
+    [switch]$Force
 )
 
 Set-StrictMode -Version Latest
@@ -305,7 +306,7 @@ foreach ($iconValue in $IconResRefs) {
 $rows = @(
     Import-Csv -Path $manifestResolved |
         Where-Object {
-            $_.Type -in @("Ability", "Feat", "Spell") -and
+            $_.Type -in @("Ability", "Feat", "Spell", "StatusEffect") -and
             ![string]::IsNullOrWhiteSpace($_.IconResRef) -and
             !(Test-DynamicShipModulePlaceholderIcon $_.IconResRef) -and
             ($requested.Count -eq 0 -or $requested.Contains($_.IconResRef))
@@ -345,7 +346,7 @@ foreach ($row in $rows) {
     }
 
     if ($Apply) {
-        if ($hadFrame) {
+        if ($hadFrame -and !$Force) {
             $alreadyCompliant++
             continue
         }
@@ -370,15 +371,15 @@ foreach ($row in $rows) {
 }
 
 if ($errors.Count -gt 0) {
-    throw "Feat/spell icon border audit failed:`n$($errors -join "`n")"
+    throw "Gameplay icon border audit failed:`n$($errors -join "`n")"
 }
 
 if ($Apply) {
-    Write-Host "Stamped semantic frames on $stamped feat/spell icons; $alreadyCompliant were already compliant."
+    Write-Host "Stamped semantic frames on $stamped gameplay icons; $alreadyCompliant were already compliant."
     if ($changedIcons.Count -gt 0) {
         Write-Host "Changed icons: $($changedIcons -join ',')"
     }
 }
 else {
-    Write-Host "Feat/spell icon border audit passed for $($rows.Count) icons."
+    Write-Host "Gameplay icon border audit passed for $($rows.Count) icons."
 }

@@ -11,20 +11,50 @@ using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
 {
-    public class RuptureStrikeAbilityDefinition : WeaponActiveAbilityDefinitionBase, IAbilityListDefinition
+    public class PathogenStrikeAbilityDefinition : WeaponActiveAbilityDefinitionBase, IAbilityListDefinition
     {
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
 
             ConfigureGeneratedWeaponAbility(
-                builder.Create(FeatType.RuptureStrike1, PerkType.RuptureStrike)
-                    .Name("Rupture Strike I")
+                builder.Create(FeatType.PathogenStrike1, PerkType.PathogenStrike)
+                    .Name("Pathogen Strike I")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.RuptureStrike, 24.0f),
+                    .HasRecastDelay(RecastGroup.PathogenStrike, 12.0f),
                 SkillType.Vibroknife,
-                10,
-                30,
+                6,
+                0,
+                null,
+                null,
+                3,
+                0,
+                0.0f,
+                false,
+                true,
+                false,
+                Spell.Invalid,
+                AbilityTargetingShapeType.None,
+                0.0f,
+                0.0f,
+                AbilityTargetingFlags.HarmsEnemies,
+                Animation.DoubleStrike,
+                0.0f,
+                AbilityType.Invalid,
+                new GeneratedWeaponAbilityProfile
+                {
+                    SourceStatusEffectsToExtend = new[] { typeof(ShadowToxinStatusEffect), typeof(InfectionStatusEffect) },
+                    SourceStatusExtensionSeconds = 4
+                });
+
+            ConfigureGeneratedWeaponAbility(
+                builder.Create(FeatType.PathogenStrike2, PerkType.PathogenStrike)
+                    .Name("Pathogen Strike II")
+                    .Level(2)
+                    .HasRecastDelay(RecastGroup.PathogenStrike, 12.0f),
+                SkillType.Vibroknife,
+                12,
+                0,
                 null,
                 null,
                 4,
@@ -43,51 +73,21 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                 AbilityType.Invalid,
                 new GeneratedWeaponAbilityProfile
                 {
-                    ConsumeBleedIntoHemorrhage = true,
-                    HemorrhageDurationSeconds = 30
+                    SourceStatusEffectsToExtend = new[] { typeof(ShadowToxinStatusEffect), typeof(InfectionStatusEffect) },
+                    SourceStatusExtensionSeconds = 4
                 });
 
             ConfigureGeneratedWeaponAbility(
-                builder.Create(FeatType.RuptureStrike2, PerkType.RuptureStrike)
-                    .Name("Rupture Strike II")
-                    .Level(2)
-                    .HasRecastDelay(RecastGroup.RuptureStrike, 24.0f),
-                SkillType.Vibroknife,
-                22,
-                30,
-                null,
-                null,
-                8,
-                0,
-                0.0f,
-                false,
-                true,
-                false,
-                Spell.Invalid,
-                AbilityTargetingShapeType.None,
-                0.0f,
-                0.0f,
-                AbilityTargetingFlags.HarmsEnemies,
-                Animation.DoubleStrike,
-                0.0f,
-                AbilityType.Invalid,
-                new GeneratedWeaponAbilityProfile
-                {
-                    ConsumeBleedIntoHemorrhage = true,
-                    HemorrhageDurationSeconds = 30
-                });
-
-            ConfigureGeneratedWeaponAbility(
-                builder.Create(FeatType.RuptureStrike3, PerkType.RuptureStrike)
-                    .Name("Rupture Strike III")
+                builder.Create(FeatType.PathogenStrike3, PerkType.PathogenStrike)
+                    .Name("Pathogen Strike III")
                     .Level(3)
-                    .HasRecastDelay(RecastGroup.RuptureStrike, 24.0f),
+                    .HasRecastDelay(RecastGroup.PathogenStrike, 12.0f),
                 SkillType.Vibroknife,
-                34,
-                30,
+                16,
+                0,
                 null,
                 null,
-                10,
+                5,
                 0,
                 0.0f,
                 false,
@@ -103,8 +103,38 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                 AbilityType.Invalid,
                 new GeneratedWeaponAbilityProfile
                 {
-                    ConsumeBleedIntoHemorrhage = true,
-                    HemorrhageDurationSeconds = 30
+                    SourceStatusEffectsToExtend = new[] { typeof(ShadowToxinStatusEffect), typeof(InfectionStatusEffect) },
+                    SourceStatusExtensionSeconds = 6
+                });
+
+            ConfigureGeneratedWeaponAbility(
+                builder.Create(FeatType.PathogenStrike4, PerkType.PathogenStrike)
+                    .Name("Pathogen Strike IV")
+                    .Level(4)
+                    .HasRecastDelay(RecastGroup.PathogenStrike, 12.0f),
+                SkillType.Vibroknife,
+                19,
+                0,
+                null,
+                null,
+                6,
+                0,
+                0.0f,
+                false,
+                true,
+                false,
+                Spell.Invalid,
+                AbilityTargetingShapeType.None,
+                0.0f,
+                0.0f,
+                AbilityTargetingFlags.HarmsEnemies,
+                Animation.DoubleStrike,
+                0.0f,
+                AbilityType.Invalid,
+                new GeneratedWeaponAbilityProfile
+                {
+                    SourceStatusEffectsToExtend = new[] { typeof(ShadowToxinStatusEffect), typeof(InfectionStatusEffect) },
+                    SourceStatusExtensionSeconds = 6
                 });
 
             return builder.Build();

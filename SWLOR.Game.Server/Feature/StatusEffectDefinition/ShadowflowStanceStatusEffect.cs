@@ -14,8 +14,9 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         public ShadowflowStanceStatusEffect()
         {
-            StatGroup.Stats[StatType.CriticalRatePercentAdjustment] = 10;
-            StatGroup.Stats[StatType.DefensePercentAdjustment] = -15;
+            StatGroup.Stats[StatType.AutoAttackHamstringSkillType] = (int)SkillType.Vibroknife;
+            StatGroup.Stats[StatType.AutoAttackHamstringDurationSeconds] = 18;
+            StatGroup.Stats[StatType.DefensePercentAdjustment] = -20;
         }
     }
 }

@@ -662,6 +662,18 @@ namespace SWLOR.Game.Server.Service.AbilityService
         BloodFrenzyFlurry = 432,
         [RecastGroup("Concussive Challenge", "Conc. Chall.", true)]
         ConcussiveChallenge = 433,
+        [RecastGroup("Pathogen Strike", "Path. Strike", true)]
+        PathogenStrike = 468,
+        [RecastGroup("Virulent Blade", "Virulent Blade", true)]
+        VirulentBlade = 469,
+        [RecastGroup("Volatile Compound", "Vol. Compound", true)]
+        VolatileCompound = 470,
+        [RecastGroup("Assassin's Stance", "Assn. Stance", true)]
+        AssassinsStance = 471,
+        [RecastGroup("Veiled Strike", "Veiled Strike", true)]
+        VeiledStrike = 472,
+        [RecastGroup("Crippling Slice", "Crip. Slice", true)]
+        CripplingSlice = 473,
         [RecastGroup("Frenzy Slash", "Frenzy Slash", true)]
         FrenzySlash = 434,
         [RecastGroup("Lacerating Cut", "Lacerating Cut", true)]

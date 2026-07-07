@@ -22,6 +22,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             public static readonly GeneratedWeaponAbilityProfile Empty = new();
 
             public int HitCount { get; init; } = 1;
+            public bool IsQueuedWeaponAbility { get; init; }
             public int MaximumAreaTargets { get; init; }
             public int ExtraDamageIfRecentTarget { get; init; }
             public float RecentTargetWindowSeconds { get; init; }
@@ -40,6 +41,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             public int ExtraDamageIfTargetLowHP { get; init; }
             public Type ExtraDamageTargetStatusEffect { get; init; }
             public int ExtraDamageIfTargetStatusEffect { get; init; }
+            public int ExtraDamageIfBehind { get; init; }
+            public Type ExtraDamageSourceStatusEffect { get; init; }
+            public int ExtraDamageIfSourceStatusEffect { get; init; }
+            public Type ExtraDamageSourceStackStatusEffect { get; init; }
+            public int ExtraDamagePerSourceStack { get; init; }
             public int ExtraDamageIfRecentGuardedHit { get; init; }
             public float RecentGuardedHitWindowSeconds { get; init; }
             public int TargetLowHPThresholdPercent { get; init; }
@@ -146,6 +152,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             public bool RequireRecentWardHitForConditionalStatus { get; init; }
             public Type ConditionalTargetStatusEffect { get; init; }
             public int ConditionalTargetStatusDurationSeconds { get; init; }
+            public bool RequireBehindForConditionalStatus { get; init; }
             public Type TargetUsingAbilityStatusEffect { get; init; }
             public int TargetUsingAbilityStatusDurationSeconds { get; init; }
             public int TargetUsingAbilityDrainStamina { get; init; }
@@ -163,6 +170,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             public int SelfGuardPercent { get; init; }
             public int SelfGuardDurationSeconds { get; init; }
             public bool SelfStatusAlsoAppliesToGuardedTarget { get; init; }
+            public Type[] SourceStatusEffectsToExtend { get; init; }
+            public int SourceStatusExtensionSeconds { get; init; }
+            public bool ConsumeSourceStatusEffectsOnHit { get; init; }
+            public bool SuppressSourceStatusStackRiders { get; init; }
+            public int SelfInvisibilityDurationSeconds { get; init; }
 
             public int GetBaseDamageAdjustment(uint activator, uint target)
             {
@@ -208,6 +220,23 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                     StatusEffect.HasStatusEffect(target, ExtraDamageTargetStatusEffect))
                 {
                     bonus += ExtraDamageIfTargetStatusEffect;
+                }
+
+                if (ExtraDamageIfBehind != 0 && Combat.IsTargetNotFacingAttacker(activator, target))
+                    bonus += ExtraDamageIfBehind;
+
+                if (ExtraDamageIfSourceStatusEffect != 0 &&
+                    ExtraDamageSourceStatusEffect != null &&
+                    StatusEffect.HasStatusEffect(target, ExtraDamageSourceStatusEffect, activator))
+                {
+                    bonus += ExtraDamageIfSourceStatusEffect;
+                }
+
+                if (ExtraDamagePerSourceStack != 0 &&
+                    ExtraDamageSourceStackStatusEffect != null &&
+                    StatusEffect.GetStatusEffect(target, ExtraDamageSourceStackStatusEffect, activator) is InfectionStatusEffect infection)
+                {
+                    bonus += ExtraDamagePerSourceStack * infection.Stacks;
                 }
 
                 if (ExtraDamageIfRecentGuardedHit != 0 &&
@@ -316,6 +345,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 ApplyStatusSpread(activator, target, damageType);
                 ApplySuppressionEffects(activator, target, damageType);
                 ApplyDefenseIgnoreHitEffects(activator, target);
+                ConsumeSourceStatusEffects(activator, target);
 
                 if (ConsumeBleedIntoHemorrhage &&
                     StatusEffect.HasStatusEffect(target, typeof(BleedStatusEffect)))
@@ -327,6 +357,50 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                         typeof(HemorrhageStatusEffect),
                         HemorrhageDurationSeconds > 0 ? HemorrhageDurationSeconds : 30f,
                         damageType);
+                }
+            }
+
+            public void BeforeSuccessfulImpactRiders(uint activator, uint target)
+            {
+                if (SourceStatusExtensionSeconds <= 0 || SourceStatusEffectsToExtend == null)
+                    return;
+
+                foreach (var statusEffectType in SourceStatusEffectsToExtend)
+                {
+                    if (statusEffectType == null)
+                        continue;
+
+                    StatusEffect.ExtendStatusEffectDuration(
+                        target,
+                        statusEffectType,
+                        activator,
+                        SourceStatusExtensionSeconds);
+                }
+            }
+
+            private void ConsumeSourceStatusEffects(uint activator, uint target)
+            {
+                if (!ConsumeSourceStatusEffectsOnHit)
+                    return;
+
+                var consumed = false;
+                if (ExtraDamageSourceStatusEffect != null &&
+                    StatusEffect.HasStatusEffect(target, ExtraDamageSourceStatusEffect, activator))
+                {
+                    StatusEffect.RemoveStatusEffect(target, ExtraDamageSourceStatusEffect, activator, false);
+                    consumed = true;
+                }
+
+                if (ExtraDamageSourceStackStatusEffect != null &&
+                    StatusEffect.HasStatusEffect(target, ExtraDamageSourceStackStatusEffect, activator))
+                {
+                    StatusEffect.RemoveStatusEffect(target, ExtraDamageSourceStackStatusEffect, activator, false);
+                    consumed = true;
+                }
+
+                if (consumed)
+                {
+                    SendMessageToPC(activator, "You consume your Shadow Toxin and Infection setup.");
                 }
             }
 
@@ -406,6 +480,23 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 ApplySelfImmunity(activator);
                 ApplySelfModifiers(activator);
                 ApplyTemporaryDefeatedEnemyModifiers(activator);
+            }
+
+            public void AfterHostileActivation(uint activator)
+            {
+                ApplySelfInvisibility(activator);
+            }
+
+            private void ApplySelfInvisibility(uint activator)
+            {
+                if (SelfInvisibilityDurationSeconds <= 0)
+                    return;
+
+                ApplyEffectToObject(
+                    DurationType.Temporary,
+                    EffectInvisibility(InvisibilityType.Normal),
+                    activator,
+                    SelfInvisibilityDurationSeconds);
             }
 
             private void ApplyNearbyPartyStatus(uint activator)
@@ -683,6 +774,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             private void ApplyTargetConditionalStatus(uint activator, uint target, CombatDamageType damageType)
             {
                 if (ConditionalTargetStatusEffect == null || ConditionalTargetStatusDurationSeconds <= 0)
+                    return;
+
+                if (RequireBehindForConditionalStatus && !Combat.IsTargetNotFacingAttacker(activator, target))
                     return;
 
                 if (RequiredTargetStatusEffectForConditionalStatus != null &&
@@ -1032,6 +1126,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                     }
 
                     profile.SpendHitPoints(activator);
+                    profile.AfterHostileActivation(activator);
 
                     if (isArea && ShouldUseTelegraphedCombatImpact(targetingShape, profile))
                     {
@@ -1062,6 +1157,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                             enmityBonus: profile.EnmityBonus,
                             beforeImpact: _ => profile.BeforeHit(activator, skill),
                             afterSuccessfulHit: impactedTarget => profile.AfterSuccessfulHit(activator, impactedTarget, CombatDamageType.Physical),
+                            beforeSuccessfulImpactRiders: impactedTarget => profile.BeforeSuccessfulImpactRiders(activator, impactedTarget),
                             hitChancePercentAdjustment: profile.HitChancePercentAdjustment,
                             criticalRatePercentAdjustment: profile.GetCriticalRateAdjustment(activator, target),
                             impactAnimation: impactAnimation);
@@ -1091,6 +1187,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                             damagePercentAdjustment: impactedTarget => profile.GetDamagePercentAdjustment(activator, impactedTarget),
                             enmityBonus: profile.EnmityBonus,
                             afterSuccessfulHit: impactedTarget => profile.AfterSuccessfulHit(activator, impactedTarget, CombatDamageType.Physical),
+                            beforeSuccessfulImpactRiders: impactedTarget => profile.BeforeSuccessfulImpactRiders(activator, impactedTarget),
                             hitChancePercentAdjustment: profile.HitChancePercentAdjustment,
                             criticalRatePercentAdjustment: profile.GetCriticalRateAdjustment(activator, target));
                         totalDamage += hitDamage;
@@ -1100,12 +1197,19 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
                     profile.AfterImpact(activator, totalDamage, successfulHitCount, Ability.GetActiveAbilityImpactSummary(activator));
                 })
-                .IsCastedAbility()
                 .BreaksStealth();
+
+            if (profile.IsQueuedWeaponAbility)
+                ability.IsWeaponAbility();
+            else
+                ability.IsCastedAbility();
 
             if (isHostile)
             {
                 ability.IsHostileAbility();
+                if (profile.SuppressSourceStatusStackRiders)
+                    ability.SuppressesSourceStatusStackRiders();
+
                 if (isArea)
                 {
                     ability.IsAreaAbility();

@@ -4920,7 +4920,187 @@ namespace SWLOR.Game.Server.Service.StatService
         /// Restricts RepeatedTargetDamage bonuses to auto-attacks when greater than zero.
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
-        RepeatedTargetDamageAutoAttackOnly = 855
+        RepeatedTargetDamageAutoAttackOnly = 855,
+
+        /// <summary>
+        /// Percent damage adjustment applied to outgoing Poison damage.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        PoisonDamageDealtPercentAdjustment = 856,
+
+        /// <summary>
+        /// SkillType value whose auto-attacks apply Hamstring.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        AutoAttackHamstringSkillType = 857,
+
+        /// <summary>
+        /// Duration in seconds for Hamstring applied by auto-attacks.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        AutoAttackHamstringDurationSeconds = 858,
+
+        /// <summary>
+        /// Attack percent adjustment granted after using a hostile ability.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        HostileAbilityUsedAttackPercentAdjustment = 859,
+
+        /// <summary>
+        /// Duration in seconds for HostileAbilityUsedAttackPercentAdjustment.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        HostileAbilityUsedAttackPercentAdjustmentDurationSeconds = 860,
+
+        /// <summary>
+        /// Maximum Attack percent adjustment from repeated hostile ability uses.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        HostileAbilityUsedAttackPercentAdjustmentMaximum = 861,
+
+        /// <summary>
+        /// Flat damage bonus applied to the first matching hostile ability hits in combat.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        FirstHostileAbilityHitDamageBonus = 862,
+
+        /// <summary>
+        /// Number of hostile ability hits per combat engagement that receive FirstHostileAbilityHitDamageBonus.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        FirstHostileAbilityHitMaximumCount = 863,
+
+        /// <summary>
+        /// Flat Stamina restored by the first attack in combat.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        FirstCombatAttackStaminaRestore = 864,
+
+        /// <summary>
+        /// Cooldown in seconds for FirstCombatAttackStaminaRestore.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        FirstCombatAttackStaminaRestoreCooldownSeconds = 865,
+
+        /// <summary>
+        /// StatusEffectCategory value required on a source-applied target status for ability flat damage.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        AbilityDamageToSourceAppliedStatusTargetBonusCategory = 866,
+
+        /// <summary>
+        /// Flat ability damage added against targets with a matching source-applied status.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        AbilityDamageToSourceAppliedStatusTargetBonus = 867,
+
+        /// <summary>
+        /// StatusEffectCategory value required before source status stacks are applied.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        SourceStatusStackRequiredCategory = 868,
+
+        /// <summary>
+        /// StatusEffectCategory value identifying the source-owned stack effect to apply.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        SourceStatusStackAppliedCategory = 869,
+
+        /// <summary>
+        /// Maximum stack count for source-owned status stacks.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        SourceStatusStackMaximum = 870,
+
+        /// <summary>
+        /// Duration in seconds for source-owned status stacks.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        SourceStatusStackDurationSeconds = 871,
+
+        /// <summary>
+        /// SkillType value whose successful hostile ability hits grant no-delay auto-attacks.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        HostileAbilityHitNextAutoAttackNoDelaySkillType = 872,
+
+        /// <summary>
+        /// Duration in seconds for HostileAbilityHitNextAutoAttackNoDelaySkillType.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        HostileAbilityHitNextAutoAttackNoDelayDurationSeconds = 873,
+
+        /// <summary>
+        /// StatusEffectCategory value required on source-applied target statuses for auto-attack cycle damage.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        SourceStatusAutoAttackCycleRequiredCategory = 874,
+
+        /// <summary>
+        /// SkillType value whose auto-attacks count toward source-status cycle damage.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        SourceStatusAutoAttackCycleSkillType = 875,
+
+        /// <summary>
+        /// Required auto-attack count for source-status cycle damage.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        SourceStatusAutoAttackCycleRequiredCount = 876,
+
+        /// <summary>
+        /// Flat damage dealt by source-status auto-attack cycles.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        SourceStatusAutoAttackCycleDamage = 877,
+
+        /// <summary>
+        /// CombatDamageType value used by source-status auto-attack cycle damage.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        SourceStatusAutoAttackCycleDamageType = 878,
+
+        /// <summary>
+        /// StatusEffectCategory value whose application drains target Stamina.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        StatusAppliedTargetStaminaDrainRequiredCategory = 879,
+
+        /// <summary>
+        /// Flat Stamina drained when applying a matching status.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        StatusAppliedTargetStaminaDrain = 880,
+
+        /// <summary>
+        /// Cooldown in seconds for StatusAppliedTargetStaminaDrain.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        StatusAppliedTargetStaminaDrainCooldownSeconds = 881,
+
+        /// <summary>
+        /// StatusEffectCategory value that receives source-owned healing received adjustment.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        SourceStatusHealingReceivedRequiredCategory = 882,
+
+        /// <summary>
+        /// Healing received percent adjustment from matching source-owned statuses.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenNegative)]
+        SourceStatusHealingReceivedPercentAdjustment = 883,
+
+        /// <summary>
+        /// Flat direct damage added against targets with a matching status category or from stealth.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        DirectDamageToStatusCategoryOrStealthBonus = 884,
+
+        /// <summary>
+        /// StatusEffectCategory value for DirectDamageToStatusCategoryOrStealthBonus.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        DirectDamageToStatusCategoryOrStealthBonusCategory = 885
     }
 
     public class StatTypeAttribute : Attribute

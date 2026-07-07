@@ -11,31 +11,31 @@ using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
 {
-    public class SystemicShutdownAbilityDefinition : WeaponActiveAbilityDefinitionBase, IAbilityListDefinition
+    public class AssassinsStanceAbilityDefinition : WeaponActiveAbilityDefinitionBase, IAbilityListDefinition
     {
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
 
             ConfigureGeneratedWeaponAbility(
-                builder.Create(FeatType.SystemicShutdown1, PerkType.SystemicShutdown)
-                    .Name("Systemic Shutdown")
+                builder.Create(FeatType.AssassinsStance1, PerkType.AssassinsStance)
+                    .Name("Assassin's Stance")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.Capstone, 90.0f),
+                    .HasRecastDelay(RecastGroup.AssassinsStance, 30.0f),
                 SkillType.Vibroknife,
-                20,
-                45,
-                typeof(DisorientedStatusEffect),
-                new[] { typeof(HamstringStatusEffect), typeof(WeakenedStatusEffect), typeof(ExhaustedStatusEffect) },
-                15,
+                8,
+                0,
+                typeof(AssassinsStanceStatusEffect),
+                null,
+                0,
                 0,
                 2.0f,
-                true,
-                true,
                 false,
-                Spell.SystemicShutdown1,
-                AbilityTargetingShapeType.Sphere,
-                5.0f,
+                false,
+                false,
+                Spell.Invalid,
+                AbilityTargetingShapeType.None,
+                0.0f,
                 0.0f,
                 AbilityTargetingFlags.HarmsEnemies,
                 Animation.DoubleStrike,

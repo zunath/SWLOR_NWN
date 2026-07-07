@@ -1007,6 +1007,7 @@ namespace SWLOR.Game.Server.Service
             Animation impactAnimation = Animation.Invalid,
             int enmityBonus = 0,
             Action<uint> afterSuccessfulHit = null,
+            Action<uint> beforeSuccessfulImpactRiders = null,
             int hitChancePercentAdjustment = 0,
             int criticalRatePercentAdjustment = 0,
             bool useNPCStatScaling = false,
@@ -1055,6 +1056,7 @@ namespace SWLOR.Game.Server.Service
                     baseDamageAdjustment,
                     enmityBonus: enmityBonus,
                     afterSuccessfulHit: afterSuccessfulHit,
+                    beforeSuccessfulImpactRiders: beforeSuccessfulImpactRiders,
                     hitChancePercentAdjustment: hitChancePercentAdjustment,
                     criticalRatePercentAdjustment: criticalRatePercentAdjustment,
                     useNPCStatScaling: useNPCStatScaling,
@@ -1082,6 +1084,7 @@ namespace SWLOR.Game.Server.Service
                     baseDamageAdjustment,
                     enmityBonus: enmityBonus,
                     afterSuccessfulHit: afterSuccessfulHit,
+                    beforeSuccessfulImpactRiders: beforeSuccessfulImpactRiders,
                     hitChancePercentAdjustment: hitChancePercentAdjustment,
                     criticalRatePercentAdjustment: criticalRatePercentAdjustment,
                     useNPCStatScaling: useNPCStatScaling,
@@ -1128,6 +1131,7 @@ namespace SWLOR.Game.Server.Service
             int enmityBonus = 0,
             Action<uint> beforeImpact = null,
             Action<uint> afterSuccessfulHit = null,
+            Action<uint> beforeSuccessfulImpactRiders = null,
             int hitChancePercentAdjustment = 0,
             int criticalRatePercentAdjustment = 0,
             bool useNPCStatScaling = false,
@@ -1168,6 +1172,7 @@ namespace SWLOR.Game.Server.Service
                     enmityBonus,
                     beforeImpact,
                     afterSuccessfulHit,
+                    beforeSuccessfulImpactRiders,
                     hitChancePercentAdjustment,
                     criticalRatePercentAdjustment,
                     useNPCStatScaling,
@@ -1216,6 +1221,7 @@ namespace SWLOR.Game.Server.Service
                 enmityBonus,
                 beforeImpact,
                 afterSuccessfulHit,
+                beforeSuccessfulImpactRiders,
                 hitChancePercentAdjustment,
                 criticalRatePercentAdjustment,
                 useNPCStatScaling,
@@ -1294,6 +1300,7 @@ namespace SWLOR.Game.Server.Service
             int enmityBonus,
             Action<uint> beforeImpact,
             Action<uint> afterSuccessfulHit,
+            Action<uint> beforeSuccessfulImpactRiders,
             int hitChancePercentAdjustment,
             int criticalRatePercentAdjustment,
             bool useNPCStatScaling,
@@ -1345,6 +1352,7 @@ namespace SWLOR.Game.Server.Service
                 enmityBonus,
                 beforeImpact,
                 afterSuccessfulHit,
+                beforeSuccessfulImpactRiders,
                 hitChancePercentAdjustment: hitChancePercentAdjustment,
                 criticalRatePercentAdjustment: criticalRatePercentAdjustment,
                 useNPCStatScaling: useNPCStatScaling,
@@ -1380,6 +1388,7 @@ namespace SWLOR.Game.Server.Service
             int enmityBonus,
             Action<uint> beforeImpact,
             Action<uint> afterSuccessfulHit,
+            Action<uint> beforeSuccessfulImpactRiders,
             int hitChancePercentAdjustment,
             int criticalRatePercentAdjustment,
             bool useNPCStatScaling,
@@ -1458,6 +1467,7 @@ namespace SWLOR.Game.Server.Service
                     enmityBonus,
                     beforeImpact,
                     afterSuccessfulHit,
+                    beforeSuccessfulImpactRiders,
                     hitChancePercentAdjustment: hitChancePercentAdjustment,
                     criticalRatePercentAdjustment: criticalRatePercentAdjustment,
                     useNPCStatScaling: useNPCStatScaling,
@@ -1495,6 +1505,7 @@ namespace SWLOR.Game.Server.Service
             int enmityBonus = 0,
             Action<uint> beforeImpact = null,
             Action<uint> afterSuccessfulHit = null,
+            Action<uint> beforeSuccessfulImpactRiders = null,
             int hitChancePercentAdjustment = 0,
             int criticalRatePercentAdjustment = 0,
             bool useNPCStatScaling = false,
@@ -1535,6 +1546,7 @@ namespace SWLOR.Game.Server.Service
                     baseDamageAdjustment,
                     enmityBonus,
                     afterSuccessfulHit,
+                    beforeSuccessfulImpactRiders,
                     hitChancePercentAdjustment,
                     criticalRatePercentAdjustment,
                     useNPCStatScaling,
@@ -1774,6 +1786,7 @@ namespace SWLOR.Game.Server.Service
             VisualEffect targetVisualEffect = VisualEffect.None,
             int enmityBonus = 0,
             Action<uint> afterSuccessfulHit = null,
+            Action<uint> beforeSuccessfulImpactRiders = null,
             bool awardsCombatPoints = true,
             DamageType? effectDamageType = null)
         {
@@ -1823,6 +1836,8 @@ namespace SWLOR.Game.Server.Service
                 ApplyDarkForceCastConversion(activator, target);
             }
 
+            beforeSuccessfulImpactRiders?.Invoke(target);
+
             Combat.ApplySuccessfulAbilityImpactRiders(
                 activator,
                 target,
@@ -1862,6 +1877,7 @@ namespace SWLOR.Game.Server.Service
             Func<uint, int> baseDamageAdjustment = null,
             int enmityBonus = 0,
             Action<uint> afterSuccessfulHit = null,
+            Action<uint> beforeSuccessfulImpactRiders = null,
             int hitChancePercentAdjustment = 0,
             int criticalRatePercentAdjustment = 0,
             bool useNPCStatScaling = false,
@@ -1937,6 +1953,7 @@ namespace SWLOR.Game.Server.Service
                 targetVisualEffect,
                 enmityBonus,
                 afterSuccessfulHit,
+                beforeSuccessfulImpactRiders,
                 awardsCombatPoints,
                 effectDamageType);
         }

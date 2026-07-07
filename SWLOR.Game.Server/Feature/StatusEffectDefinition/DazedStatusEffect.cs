@@ -11,7 +11,10 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         public override string Name => "Dazed";
         public override EffectIconType Icon => EffectIconType.DazedStatusEffect;
-        public override StatusEffectCategory Categories => StatusEffectCategory.Debuff | StatusEffectCategory.Control;
+        public override StatusEffectCategory Categories =>
+            StatusEffectCategory.Debuff |
+            StatusEffectCategory.Control |
+            StatusEffectCategory.Incapacitating;
         public override StatusEffectCleanseType CleanseTypes => StatusEffectCleanseType.Purify | StatusEffectCleanseType.SoothePet;
         public override ResistanceType ResistanceType => ResistanceType.Mind;
 

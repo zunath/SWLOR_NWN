@@ -11,27 +11,27 @@ using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
 {
-    public class DebilitatingStanceAbilityDefinition : WeaponActiveAbilityDefinitionBase, IAbilityListDefinition
+    public class ViralCascadeAbilityDefinition : WeaponActiveAbilityDefinitionBase, IAbilityListDefinition
     {
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
 
             ConfigureGeneratedWeaponAbility(
-                builder.Create(FeatType.DebilitatingStance1, PerkType.DebilitatingStance)
-                    .Name("Debilitating Stance")
+                builder.Create(FeatType.ViralCascade1, PerkType.ViralCascade)
+                    .Name("Viral Cascade")
                     .Level(1)
-                    .HasRecastDelay(RecastGroup.DebilitatingStance, 30.0f),
+                    .HasRecastDelay(RecastGroup.Capstone, 90.0f),
                 SkillType.Vibroknife,
-                8,
                 30,
-                typeof(DebilitatingStanceStatusEffect),
-                null,
                 0,
+                null,
+                null,
+                15,
                 0,
                 2.0f,
                 false,
-                false,
+                true,
                 false,
                 Spell.Invalid,
                 AbilityTargetingShapeType.None,
@@ -41,7 +41,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                null);
+                new GeneratedWeaponAbilityProfile
+                {
+                    ExtraDamageSourceStatusEffect = typeof(ShadowToxinStatusEffect),
+                    ExtraDamageIfSourceStatusEffect = 20,
+                    ExtraDamageSourceStackStatusEffect = typeof(InfectionStatusEffect),
+                    ExtraDamagePerSourceStack = 8,
+                    ConsumeSourceStatusEffectsOnHit = true,
+                    SuppressSourceStatusStackRiders = true
+                });
 
             return builder.Build();
         }

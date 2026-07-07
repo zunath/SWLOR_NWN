@@ -13,7 +13,10 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         public override string Name => "Disoriented";
         public override EffectIconType Icon => EffectIconType.DisorientedStatusEffect;
-        public override StatusEffectCategory Categories => StatusEffectCategory.Debuff | StatusEffectCategory.Control;
+        public override StatusEffectCategory Categories =>
+            StatusEffectCategory.Debuff |
+            StatusEffectCategory.Control |
+            StatusEffectCategory.StaminaDrainTrigger;
         public override StatusEffectCleanseType CleanseTypes => StatusEffectCleanseType.Purify | StatusEffectCleanseType.SoothePet;
         public override ResistanceType ResistanceType => ResistanceType.Mind;
         public DisorientedStatusEffect()

@@ -9,7 +9,9 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     {
         public override string Name => "Stunned";
         public override EffectIconType Icon => EffectIconType.StunnedStatusEffect;
-        public override StatusEffectCategory Categories => StatusEffectCategory.Control;
+        public override StatusEffectCategory Categories =>
+            StatusEffectCategory.Control |
+            StatusEffectCategory.Incapacitating;
         public override StatusEffectCleanseType CleanseTypes => StatusEffectCleanseType.Purify | StatusEffectCleanseType.SoothePet;
         public override ResistanceType ResistanceType => ResistanceType.Mobility;
 

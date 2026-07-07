@@ -710,6 +710,23 @@ namespace SWLOR.Game.Server.Service.PerkService
         IronGuardTraining = 743,
         RedirectingCounter = 744,
         GuardReversal = 745,
-        // IDs 649-650 and 746+ are free.
+        PathogenStrike = 746,
+        Hypermetabolize = 747,
+        Debilitate = 748,
+        VirulentBlade = 749,
+        Infection = 750,
+        VolatileCompound = 751,
+        AssassinsStance = 752,
+        VenomTempo = 753,
+        Propagation = 754,
+        ViralCascade = 755,
+        VeiledStrike = 756,
+        ButchersTempo = 757,
+        FirstStrike = 758,
+        CripplingSlice = 759,
+        VenaticRecovery = 760,
+        Hobbled = 761,
+        EscapeArtist = 762,
+        // IDs 649-650 and 763+ are free.
     }
 }

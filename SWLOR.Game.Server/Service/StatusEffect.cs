@@ -942,6 +942,15 @@ namespace SWLOR.Game.Server.Service
                 : null;
         }
 
+        public static IStatusEffect GetStatusEffect(uint creature, Type statusEffectClass, uint source)
+        {
+            return _creatureEffects.ContainsKey(creature)
+                ? _creatureEffects[creature]
+                    .GetAllEffects()
+                    .FirstOrDefault(x => x.GetType() == statusEffectClass && x.Source == source)
+                : null;
+        }
+
         public static bool ExtendStatusEffectDuration(
             uint creature,
             Type statusEffectClass,
@@ -972,6 +981,61 @@ namespace SWLOR.Game.Server.Service
             }
 
             return extended;
+        }
+
+        public static bool RefreshStatusEffectDuration(
+            uint creature,
+            Type statusEffectClass,
+            uint source,
+            float durationSeconds,
+            ResistanceType resistanceOverride = ResistanceType.Invalid,
+            CombatDamageType sourceDamageType = CombatDamageType.Invalid)
+        {
+            if (!_creatureEffects.TryGetValue(creature, out var creatureEffects) ||
+                statusEffectClass == null ||
+                durationSeconds <= 0f)
+            {
+                return false;
+            }
+
+            var refreshed = false;
+            foreach (var statusEffect in creatureEffects.GetAllEffects())
+            {
+                if (statusEffect.GetType() != statusEffectClass)
+                    continue;
+
+                if (source != OBJECT_INVALID && statusEffect.Source != source)
+                    continue;
+
+                var ticks = Math.Max(1, (int)Math.Ceiling(durationSeconds / Math.Max(1f, statusEffect.Frequency)));
+                var resistanceType = ResolveResistanceType(statusEffect, resistanceOverride, sourceDamageType);
+                if (Resistance.IsValidResistanceType(resistanceType) &&
+                    GetIsObjectValid(source) &&
+                    GetIsObjectValid(creature) &&
+                    GetIsReactionTypeHostile(creature, source))
+                {
+                    if (Resistance.HasImmunity(creature, resistanceType))
+                    {
+                        SendMessageToPC(source, "Your ability was resisted.");
+                        continue;
+                    }
+
+                    ticks = Resistance.CalculateResistedTicks(creature, resistanceType, ticks);
+                }
+
+                if (ticks <= 0)
+                {
+                    SendMessageToPC(source, "Your ability was resisted.");
+                    continue;
+                }
+
+                statusEffect.SetDurationTicks(Math.Max(statusEffect.DurationTicks, ticks));
+                RemoveNativeStatusEffect(creature, statusEffect.Id);
+                ApplyTrackedNWNEffect(creature, statusEffect, statusEffect.DurationTicks, statusEffect.DurationTicks < 0);
+                refreshed = true;
+            }
+
+            return refreshed;
         }
 
         public static bool HasStatusEffect<T>(uint creature)

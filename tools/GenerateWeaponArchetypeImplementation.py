@@ -75,7 +75,7 @@ BESPOKE_WEAPON_TABS = {
 GENERATED_WEAPON_TABS = WEAPON_TABS - BESPOKE_WEAPON_TABS
 
 ACTIVE_TYPES = {"Combat", "Stance", "Capstone", "Toggle", "Aura"}
-TRAIT_TYPES = {"Trait", "Cross-Skill Trait"}
+TRAIT_TYPES = {"Trait"}
 SCOPED_TYPES = ACTIVE_TYPES | TRAIT_TYPES
 ROMAN_LEVELS = {"I": 1, "II": 2, "III": 3, "IV": 4, "V": 5}
 

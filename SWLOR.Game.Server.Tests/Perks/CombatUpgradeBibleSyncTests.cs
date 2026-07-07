@@ -28,8 +28,7 @@ public class CombatUpgradeBibleSyncTests
         "Combat",
         "Stance",
         "Toggle",
-        "Trait",
-        "Cross-Skill Trait"
+        "Trait"
     };
 
     private static readonly HashSet<string> ImplementedStatuses = new(StringComparer.OrdinalIgnoreCase)
@@ -2016,15 +2015,12 @@ public class CombatUpgradeBibleSyncTests
     private static bool IsTraitLikeType(string type)
     {
         return type.Equals("Trait", StringComparison.OrdinalIgnoreCase) ||
-               type.Equals("Cross-Skill Trait", StringComparison.OrdinalIgnoreCase) ||
                type.Equals("Capstone", StringComparison.OrdinalIgnoreCase);
     }
 
     private static string NormalizeProgressionType(string type)
     {
-        return type.Equals("Cross-Skill Trait", StringComparison.OrdinalIgnoreCase)
-            ? "Trait"
-            : type;
+        return type;
     }
 
     private static bool IsPassiveIconTraitFeat(FeatType feat)

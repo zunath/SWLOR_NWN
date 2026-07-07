@@ -792,7 +792,7 @@ $manifest = Import-Csv $manifestFullPath |
     Where-Object {
         $outOfScopeTabs -notcontains $_.Tab -and
         ![string]::IsNullOrWhiteSpace($_.PerkName) -and
-        @("Aura", "Capstone", "Combat", "Stance", "Toggle", "Trait", "Cross-Skill Trait") -contains $_.Type
+        @("Aura", "Capstone", "Combat", "Stance", "Toggle", "Trait") -contains $_.Type
     }
 
 if (@($manifest).Count -eq 0) {

@@ -1,5 +1,18 @@
 # Agent Rules
 
+This file is the shared rule set for all coding agents. Codex reads it natively; Claude Code imports it through `CLAUDE.md`. Keep cross-agent rules here rather than in agent-specific files.
+
+## Agent Skills
+
+- Agent skills are canonical in `.codex/skills/` and mirrored to `.claude/skills/` so both Codex and Claude Code discover them. The `agents/openai.yaml` files are Codex-only interface metadata and are not mirrored.
+- Edit skills only in `.codex/skills/`. Never hand-edit `.claude/skills/`.
+- After adding, changing, or deleting any skill file, run `powershell -ExecutionPolicy Bypass -File tools/SyncAgentSkills.ps1` to refresh the mirror. Use `-CheckOnly` to verify sync without writing.
+- Keep skill instructions and descriptions agent-neutral: write "Use when adding a beast...", not "Use when Codex/Claude needs to...".
+
+## Read-Only Areas
+
+- The Unified solution (`C:\Projects\unified`) is read-only reference material. Do not make changes to it.
+
 ## Background Processes
 
 - Do not start background jobs, watchers, dev servers, publish tasks, or long-lived helper processes unless the user explicitly asks for them or they are strictly required for the current task. Prefer foreground commands with bounded timeouts. If a long-lived process is necessary, record what was started, track its PID when available, stop it before handing off, and report the cleanup. Do not use `Start-Process`, shell backgrounding, persistent REPL helpers, or detached commands to continue work after the turn unless the user has explicitly approved that behavior.

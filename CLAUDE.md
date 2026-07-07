@@ -2,16 +2,17 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Agent Rules (Required Reading)
+
+The mandatory project rules — read-only areas, naming, stat-driven gameplay, player identity, Design Bible workflow, TLK entries, ability definitions/icons/VFX, and more — live in AGENTS.md and are imported here:
+
+@AGENTS.md
+
 ## Project Overview
 
 SWLOR (Star Wars: Legends of the Old Republic) is a Neverwinter Nights: Enhanced Edition server using C# for server-side logic via NWNX_DotNet. This replaces traditional NWScript with a modern .NET 8.0 architecture.
 
 ## Development Commands
-
-### TLK Entry Allocation
-- New custom TLK strings must use a pre-existing empty TLK slot or gap before appending new IDs at the end of `SWLOR_Haks/sw_tlk/sw_tlk.tlk.json`.
-- NWN custom TLK references in 2DA files use `16777216 + tlkId`. When moving or adding a TLK entry, update every 2DA/reference to the matching custom strref.
-- After editing `sw_tlk.tlk.json`, regenerate `sw_tlk.tlk` before building or handing off the change.
 
 ### Building the Project
 ```bash

@@ -3979,6 +3979,63 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Absolute Defense Specialist"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_absdef_sp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Adamantine Guard Specialist"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_adamguard_sp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Crippling Defense Specialist"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_cripdef_sp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 557.0
                     },
                     "FACTION": {
@@ -3992,6 +4049,177 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "vnpcdarklord"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dead Man's Hand Specialist"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_deadhand_sp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Decisive Command Specialist"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_deccommand_sp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Eclipse of Resolve Specialist"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_eclipse_sp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Emergency Bunker Specialist"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_embunker_sp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Emergency Cocktail Specialist"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_emcocktail_sp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Forcebane Specialist"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_forcebane_sp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Guardian Master Specialist"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_guardmst_sp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Hold the Line Specialist"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_holdline_sp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Hunger of the Dark Specialist"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_darkhung_sp"
                     }
                   },
                   {
@@ -4093,6 +4321,120 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Infinite Conduit Specialist"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_infconduit_sp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Invincible Specialist"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_invinc_sp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Kill Box Specialist"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_killbox_sp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Killzone Beacon Specialist"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_killbeacon_sp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Last Stand of the Light Specialist"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_lightstand_sp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Last Word Specialist"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_lastword_sp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 58.0
                     },
                     "FACTION": {
@@ -4106,6 +4448,177 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "dmnpckoyee"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "One Shot Specialist"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_oneshot_sp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Overload Barrage Specialist"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_overbarr_sp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Perfect Flurry Specialist"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_perflurry_sp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Pulse-Frame Training Droid"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "bf_pulsedroid"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Rain of Steel Specialist"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_rainsteel_sp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Red Bloom Specialist"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_redbloom_sp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Saber Cyclone Specialist"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_sabcycl_sp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Saber Storm Specialist"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_sabstorm_sp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Scrapheap Lockdown Specialist"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_scraplock_sp"
                     }
                   },
                   {
@@ -4696,6 +5209,158 @@
                       "type": "resref",
                       "value": "vnpcscons3"
                     }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Soul Ascension Specialist"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_soulasc_sp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Systemic Shutdown Specialist"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_sysshut_sp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tempest Bloom Specialist"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_tempbloom_sp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Thermal Detonator Specialist"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_thermdet_sp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Unmoving Center Specialist"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_unmovctr_sp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Vital Rupture Specialist"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_vitrupt_sp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Vrix-7, Pulse Butcher"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vrix7"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Worldbreaker Specialist"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_worldbrk_sp"
+                    }
                   }
                 ]
               },
@@ -5265,7 +5930,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Acolyte Varn"
+                      "value": "Acolyte"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -5303,7 +5968,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Aric Jorr"
+                      "value": "Aric"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -5398,7 +6063,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Borrik Sen"
+                      "value": "Borrik"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -5436,7 +6101,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Captain Tov Renn"
+                      "value": "Captain"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -5588,7 +6253,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Dalen Orso"
+                      "value": "Dalen"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -5626,7 +6291,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Dax Rell"
+                      "value": "Dax"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -5721,7 +6386,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Edda Maln"
+                      "value": "Edda"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -5759,7 +6424,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Eshka Korr"
+                      "value": "Eshka"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -6367,7 +7032,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Iven Brask"
+                      "value": "Iven"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -6424,7 +7089,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Jek Talin"
+                      "value": "Jek"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -6481,7 +7146,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Jora Sel"
+                      "value": "Jora"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -6500,7 +7165,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Kavi Dorn"
+                      "value": "Kavi"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -6576,7 +7241,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Maar Veth"
+                      "value": "Maar"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -6918,7 +7583,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Marda Voss"
+                      "value": "Marda"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -6975,7 +7640,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Mikka Varn"
+                      "value": "Mikka"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -6994,7 +7659,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Mira Syth"
+                      "value": "Mira"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -7013,7 +7678,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Miri Koss"
+                      "value": "Miri"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -7032,7 +7697,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Miris Aven"
+                      "value": "Miris"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -7089,7 +7754,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Nalka Rinn"
+                      "value": "Nalka"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -7127,7 +7792,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Nella Voss"
+                      "value": "Nella"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -7146,7 +7811,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Neth Kyr"
+                      "value": "Neth"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -7203,7 +7868,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Nyra Tane"
+                      "value": "Nyra"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -7241,7 +7906,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Oren Krast"
+                      "value": "Oren"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -7260,7 +7925,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Orin Tal"
+                      "value": "Orin"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -7469,7 +8134,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Pavo Orrel"
+                      "value": "Pavo"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -7621,7 +8286,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Ressa Vale"
+                      "value": "Ressa"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -7678,7 +8343,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Ruk Halven"
+                      "value": "Ruk"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -7735,7 +8400,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Selka Vorn"
+                      "value": "Selka"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -7754,7 +8419,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Senn Dralok"
+                      "value": "Senn"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -7792,7 +8457,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Seris Nahl"
+                      "value": "Seris"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -7944,7 +8609,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Talan Rees"
+                      "value": "Talan"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -7982,7 +8647,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Talra Venn"
+                      "value": "Talra"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -8077,7 +8742,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Tessa Quell"
+                      "value": "Tessa"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -8191,7 +8856,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Tressa Kade"
+                      "value": "Tressa"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -8267,7 +8932,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Unit KX-17"
+                      "value": "Unit"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -8286,7 +8951,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Valis Korr"
+                      "value": "Valis"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -8305,7 +8970,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Varen Kell"
+                      "value": "Varen"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -8324,7 +8989,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Varik Dane"
+                      "value": "Varik"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -8647,7 +9312,7 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Voro Thane"
+                      "value": "Voro"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -11738,6 +12403,196 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Alpha Rhythm Adept"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_alpharhy_ad"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 52.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Alpha Rhythm Inner Circle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_alpharhy_ic"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 60.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Alpha Rhythm Master"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_alpharhy_ms"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Alpha Rhythm Specialist"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_alpharhy_sp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 55.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Alpha Rhythm Warden"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_alpharhy_wd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Apex Bite Adept"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_apexbite_ad"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 52.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Apex Bite Inner Circle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_apexbite_ic"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 60.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Apex Bite Master"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_apexbite_ms"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Apex Bite Specialist"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_apexbite_sp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 55.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Apex Bite Warden"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_apexbite_wd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 53.0
                     },
                     "FACTION": {
@@ -11789,6 +12644,101 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "vdathturtle"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Force-Bonded Beast Adept"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_forcebeast_ad"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 52.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Force-Bonded Beast Inner Circle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_forcebeast_ic"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 60.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Force-Bonded Beast Master"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_forcebeast_ms"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Force-Bonded Beast Specialist"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_forcebeast_sp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 55.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Force-Bonded Beast Warden"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_forcebeast_wd"
                     }
                   },
                   {
@@ -11884,6 +12834,101 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "vdathtribal"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Primal Overrun Adept"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_primover_ad"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 52.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Primal Overrun Inner Circle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_primover_ic"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 60.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Primal Overrun Master"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_primover_ms"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Primal Overrun Specialist"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_primover_sp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 55.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Primal Overrun Warden"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_primover_wd"
                     }
                   },
                   {
@@ -11999,6 +13044,196 @@
                       "type": "resref",
                       "value": "vdathssurian"
                     }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Unbreakable Beast Adept"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_unbrbeast_ad"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 52.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Unbreakable Beast Inner Circle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_unbrbeast_ic"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 60.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Unbreakable Beast Master"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_unbrbeast_ms"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Unbreakable Beast Specialist"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_unbrbeast_sp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 55.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Unbreakable Beast Warden"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_unbrbeast_wd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Untouchable Instinct Adept"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_untinst_ad"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 52.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Untouchable Instinct Inner Circle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_untinst_ic"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 60.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Untouchable Instinct Master"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_untinst_ms"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Untouchable Instinct Specialist"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_untinst_sp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 55.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Untouchable Instinct Warden"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_untinst_wd"
+                    }
                   }
                 ]
               },
@@ -12016,6 +13251,196 @@
               "LIST": {
                 "type": "list",
                 "value": [
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Absolute Defense Adept"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_absdef_ad"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 52.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Absolute Defense Inner Circle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_absdef_ic"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 60.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Absolute Defense Master"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_absdef_ms"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 55.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Absolute Defense Warden"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_absdef_wd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Adamantine Guard Adept"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_adamguard_ad"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 52.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Adamantine Guard Inner Circle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_adamguard_ic"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 60.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Adamantine Guard Master"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_adamguard_ms"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 55.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Adamantine Guard Warden"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_adamguard_wd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 55.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blood Frenzy Butcher"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "bf_butcher"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 52.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blood Frenzy Duelist"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "bf_duelist"
+                    }
+                  },
                   {
                     "__struct_id": 0,
                     "CR": {
@@ -12166,6 +13591,1469 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "byysk_warrior2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Crippling Defense Adept"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_cripdef_ad"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 52.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Crippling Defense Inner Circle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_cripdef_ic"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 60.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Crippling Defense Master"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_cripdef_ms"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 55.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Crippling Defense Warden"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_cripdef_wd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dead Man's Hand Adept"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_deadhand_ad"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 52.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dead Man's Hand Inner Circle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_deadhand_ic"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 60.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dead Man's Hand Master"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_deadhand_ms"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 55.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dead Man's Hand Warden"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_deadhand_wd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Decisive Command Adept"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_deccommand_ad"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 52.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Decisive Command Inner Circle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_deccommand_ic"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 60.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Decisive Command Master"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_deccommand_ms"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 55.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Decisive Command Warden"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_deccommand_wd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Eclipse of Resolve Adept"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_eclipse_ad"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 52.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Eclipse of Resolve Inner Circle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_eclipse_ic"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 60.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Eclipse of Resolve Master"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_eclipse_ms"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 55.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Eclipse of Resolve Warden"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_eclipse_wd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Emergency Bunker Adept"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_embunker_ad"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 52.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Emergency Bunker Inner Circle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_embunker_ic"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 60.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Emergency Bunker Master"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_embunker_ms"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 55.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Emergency Bunker Warden"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_embunker_wd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Emergency Cocktail Adept"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_emcocktail_ad"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 52.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Emergency Cocktail Inner Circle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_emcocktail_ic"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 60.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Emergency Cocktail Master"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_emcocktail_ms"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 55.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Emergency Cocktail Warden"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_emcocktail_wd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Forcebane Adept"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_forcebane_ad"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 52.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Forcebane Inner Circle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_forcebane_ic"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 60.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Forcebane Master"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_forcebane_ms"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 55.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Forcebane Warden"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_forcebane_wd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Guardian Master Adept"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_guardmst_ad"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 52.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Guardian Master Inner Circle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_guardmst_ic"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 60.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Guardian Master Master"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_guardmst_ms"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 55.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Guardian Master Warden"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_guardmst_wd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Hold the Line Adept"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_holdline_ad"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 52.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Hold the Line Inner Circle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_holdline_ic"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 60.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Hold the Line Master"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_holdline_ms"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 55.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Hold the Line Warden"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_holdline_wd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Hunger of the Dark Adept"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_darkhung_ad"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 52.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Hunger of the Dark Inner Circle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_darkhung_ic"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 60.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Hunger of the Dark Master"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_darkhung_ms"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 55.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Hunger of the Dark Warden"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_darkhung_wd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Infinite Conduit Adept"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_infconduit_ad"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 52.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Infinite Conduit Inner Circle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_infconduit_ic"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 60.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Infinite Conduit Master"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_infconduit_ms"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 55.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Infinite Conduit Warden"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_infconduit_wd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Invincible Adept"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_invinc_ad"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 52.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Invincible Inner Circle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_invinc_ic"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 60.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Invincible Master"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_invinc_ms"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 55.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Invincible Warden"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_invinc_wd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 60.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Kess Draavo"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "bf_kess"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Kill Box Adept"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_killbox_ad"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 52.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Kill Box Inner Circle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_killbox_ic"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 60.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Kill Box Master"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_killbox_ms"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 55.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Kill Box Warden"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_killbox_wd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Killzone Beacon Adept"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_killbeacon_ad"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 52.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Killzone Beacon Inner Circle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_killbeacon_ic"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 60.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Killzone Beacon Master"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_killbeacon_ms"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 55.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Killzone Beacon Warden"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_killbeacon_wd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Last Stand of the Light Adept"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_lightstand_ad"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 52.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Last Stand of the Light Inner Circle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_lightstand_ic"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 60.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Last Stand of the Light Master"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_lightstand_ms"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 55.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Last Stand of the Light Warden"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_lightstand_wd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Last Word Adept"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_lastword_ad"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 52.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Last Word Inner Circle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_lastword_ic"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 60.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Last Word Master"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_lastword_ms"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 55.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Last Word Warden"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_lastword_wd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "One Shot Adept"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_oneshot_ad"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 52.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "One Shot Inner Circle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_oneshot_ic"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 60.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "One Shot Master"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_oneshot_ms"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 55.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "One Shot Warden"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_oneshot_wd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Overload Barrage Adept"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_overbarr_ad"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 52.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Overload Barrage Inner Circle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_overbarr_ic"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 60.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Overload Barrage Master"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_overbarr_ms"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 55.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Overload Barrage Warden"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_overbarr_wd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Perfect Flurry Adept"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_perflurry_ad"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 52.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Perfect Flurry Inner Circle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_perflurry_ic"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 60.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Perfect Flurry Master"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_perflurry_ms"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 55.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Perfect Flurry Warden"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_perflurry_wd"
                     }
                   },
                   {
@@ -12337,6 +15225,937 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "qion_tiger"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Rain of Steel Adept"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_rainsteel_ad"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 52.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Rain of Steel Inner Circle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_rainsteel_ic"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 60.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Rain of Steel Master"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_rainsteel_ms"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 55.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Rain of Steel Warden"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_rainsteel_wd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Red Bloom Adept"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_redbloom_ad"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 52.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Red Bloom Inner Circle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_redbloom_ic"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 60.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Red Bloom Master"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_redbloom_ms"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 55.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Red Bloom Warden"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_redbloom_wd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Red Vein Scavenger"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "bf_scavenger"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Saber Cyclone Adept"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_sabcycl_ad"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 52.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Saber Cyclone Inner Circle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_sabcycl_ic"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 60.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Saber Cyclone Master"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_sabcycl_ms"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 55.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Saber Cyclone Warden"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_sabcycl_wd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Saber Storm Adept"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_sabstorm_ad"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 52.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Saber Storm Inner Circle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_sabstorm_ic"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 60.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Saber Storm Master"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_sabstorm_ms"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 55.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Saber Storm Warden"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_sabstorm_wd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Scrapheap Lockdown Adept"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_scraplock_ad"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 52.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Scrapheap Lockdown Inner Circle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_scraplock_ic"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 60.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Scrapheap Lockdown Master"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_scraplock_ms"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 55.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Scrapheap Lockdown Warden"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_scraplock_wd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Soul Ascension Adept"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_soulasc_ad"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 52.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Soul Ascension Inner Circle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_soulasc_ic"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 60.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Soul Ascension Master"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_soulasc_ms"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 55.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Soul Ascension Warden"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_soulasc_wd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Systemic Shutdown Adept"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_sysshut_ad"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 52.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Systemic Shutdown Inner Circle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_sysshut_ic"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 60.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Systemic Shutdown Master"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_sysshut_ms"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 55.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Systemic Shutdown Warden"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_sysshut_wd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tempest Bloom Adept"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_tempbloom_ad"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 52.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tempest Bloom Inner Circle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_tempbloom_ic"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 60.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tempest Bloom Master"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_tempbloom_ms"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 55.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tempest Bloom Warden"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_tempbloom_wd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Thermal Detonator Adept"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_thermdet_ad"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 52.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Thermal Detonator Inner Circle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_thermdet_ic"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 60.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Thermal Detonator Master"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_thermdet_ms"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 55.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Thermal Detonator Warden"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_thermdet_wd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Unmoving Center Adept"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_unmovctr_ad"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 52.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Unmoving Center Inner Circle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_unmovctr_ic"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 60.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Unmoving Center Master"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_unmovctr_ms"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 55.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Unmoving Center Warden"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_unmovctr_wd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Vital Rupture Adept"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_vitrupt_ad"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 52.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Vital Rupture Inner Circle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_vitrupt_ic"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 60.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Vital Rupture Master"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_vitrupt_ms"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 55.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Vital Rupture Warden"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_vitrupt_wd"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Worldbreaker Adept"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_worldbrk_ad"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 52.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Worldbreaker Inner Circle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_worldbrk_ic"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 60.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Worldbreaker Master"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_worldbrk_ms"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 55.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Worldbreaker Warden"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cp_worldbrk_wd"
                     }
                   }
                 ]
@@ -12869,6 +16688,63 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 30.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Glassjaw Stalker"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "glassjaw"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 31.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Inkveil Matron"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "inkveil"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 33.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Kael Drox"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "kael_drox"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 19.0
                     },
                     "FACTION": {
@@ -12901,6 +16777,44 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "mc_octotench"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 27.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Reefmaw Tidebreaker"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "reefmaw"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 29.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sable Quarr"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sable_quarr"
                     }
                   },
                   {
@@ -13571,6 +17485,25 @@
                     },
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Ashwing Echo"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ashwing"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 2.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Corrupted Mynock"
                     },
                     "RESREF": {
@@ -13652,6 +17585,44 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "ww_gimpassa"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 12.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Greyspine Rootbreaker"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "greyspine"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 14.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Harrek Voss, Iron-Stripe"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "harrek_voss"
                     }
                   },
                   {
@@ -13810,6 +17781,101 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 17.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Maw-Seer Ghal"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "maw_ghal"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 12.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mirevein Tangle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "mirevein"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 12.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mossback Shellbreaker"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "mossback"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 6.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Nara Venn, Blackleaf Cutpurse"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nara_venn"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 4.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Old Scar"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "oldscar_kath"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 5.0
                     },
                     "FACTION": {
@@ -13886,6 +17952,120 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 14.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Redtail Kor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "redtail_kor"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 12.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Rootcoil, the Drowned Mass"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "rootcoil"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 10.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Shard-Eye Matriarch"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "shardeye"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 7.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Silkshade Matriarch"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "silkshade"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 6.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sootline Rusk"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "soot_rusk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 4.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Stormplume"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "stormplume"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 0.125
                     },
                     "FACTION": {
@@ -13899,6 +18079,25 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "swampvines"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 14.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tarn Kyric, Brushstalker"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "tarn_kyric"
                     }
                   },
                   {
@@ -13994,6 +18193,25 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "vall_nashtah"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 14.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Varo Skeld, Ruin-Stalker"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "varo_skeld"
                     }
                   },
                   {

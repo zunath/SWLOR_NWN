@@ -565,22 +565,6 @@
     "type": "resref",
     "value": "mirevein"
   },
-  "WalkRate": {
-    "type": "int",
-    "value": 1
-  },
-  "willbonus": {
-    "type": "short",
-    "value": 0
-  },
-  "Wings_New": {
-    "type": "dword",
-    "value": 0
-  },
-  "Wis": {
-    "type": "byte",
-    "value": 13
-  },
   "VarTable": {
     "type": "list",
     "value": [
@@ -630,5 +614,21 @@
         }
       }
     ]
+  },
+  "WalkRate": {
+    "type": "int",
+    "value": 1
+  },
+  "willbonus": {
+    "type": "short",
+    "value": 0
+  },
+  "Wings_New": {
+    "type": "dword",
+    "value": 0
+  },
+  "Wis": {
+    "type": "byte",
+    "value": 13
   }
 }

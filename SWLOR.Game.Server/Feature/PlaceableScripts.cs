@@ -1,6 +1,7 @@
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CurrencyService;
+using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.KeyItemService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -206,6 +207,19 @@ namespace SWLOR.Game.Server.Feature
             AssignCommand(player, () => JumpToLocation(location));
 
             SendMessageToPC(player, $"Remaining rebuild tokens: {Currency.GetCurrency(player, CurrencyType.RebuildToken)}");
+        }
+
+        /// <summary>
+        /// Opens the quest contract board for the player who used the placeable.
+        /// </summary>
+        [NWNEventHandler("qcontract_board")]
+        public static void UseQuestContractBoard()
+        {
+            var player = GetLastUsedBy();
+
+            if (!GetIsPC(player)) return;
+
+            Gui.TogglePlayerWindow(player, GuiWindowType.QuestContractBoard, null, OBJECT_SELF);
         }
     }
 }

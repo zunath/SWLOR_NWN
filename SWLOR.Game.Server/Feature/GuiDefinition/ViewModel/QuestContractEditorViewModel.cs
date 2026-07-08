@@ -83,6 +83,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 Set(SanitizeNumber(value, 1, QuestContractBoard.MaxCompletions));
                 UpdateCostSummary();
+                UpdateRewardItemHint();
             }
         }
 
@@ -216,7 +217,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             RewardItemLabels = labels;
             IsAddRewardItemEnabled = draft.RewardItems.Count < QuestContractBoard.MaxRewardItems;
 
-            RewardItemHint = draft.RewardItems.Count > 0 && draft.CompletionsRemaining != 1
+            UpdateRewardItemHint();
+        }
+
+        private void UpdateRewardItemHint()
+        {
+            if (!int.TryParse(CompletionsText, out var completions))
+                completions = 1;
+
+            RewardItemHint = RewardItemLabels?.Count > 0 && completions != 1
                 ? "Item rewards can only be offered on single-completion contracts."
                 : string.Empty;
         }
@@ -230,7 +239,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 completions = 1;
 
             var totalRewardCredits = credits * completions;
-            var fee = Math.Max(QuestContractBoard.MinimumPostingFee, totalRewardCredits * QuestContractBoard.PostingFeePercent / 100);
+            var fee = QuestContractBoard.CalculatePostingFee(totalRewardCredits);
             var totalCost = totalRewardCredits + fee;
 
             CostSummaryText = $"Escrow: {totalRewardCredits} cr + Posting Fee: {fee} cr = Total: {totalCost} cr";
@@ -376,7 +385,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var draft = SaveDetails();
             var totalRewardCredits = draft.RewardCredits * draft.CompletionsRemaining;
-            var fee = Math.Max(QuestContractBoard.MinimumPostingFee, totalRewardCredits * QuestContractBoard.PostingFeePercent / 100);
+            var fee = QuestContractBoard.CalculatePostingFee(totalRewardCredits);
             var totalCost = totalRewardCredits + fee;
 
             ShowModal($"Publish this contract for a total cost of {totalCost} credits ({totalRewardCredits} escrowed reward + {fee} posting fee)? This cannot be undone.", () =>

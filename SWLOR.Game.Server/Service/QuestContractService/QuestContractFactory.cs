@@ -1,5 +1,6 @@
 using System.Text;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.QuestService;
 using SWLOR.NWN.API.NWNX;
 
@@ -85,7 +86,10 @@ namespace SWLOR.Game.Server.Service.QuestContractService
         {
             var contract = DB.Get<QuestContract>(contractId);
             if (contract == null)
+            {
+                Log.Write(LogGroup.QuestContract, $"{GetName(player)} [{GetObjectUUID(player)}] turned in item '{GetName(item)}' for contract '{contractId}' but the contract no longer exists. The item was consumed without being delivered.", true);
                 return;
+            }
 
             var delivery = QuestContractBoard.GetOrCreatePendingDelivery(contract.AuthorPlayerId, contract.Id, contract.Title);
             delivery.Items.Add(new QuestContractItem

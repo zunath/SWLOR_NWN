@@ -17,6 +17,7 @@ namespace SWLOR.Game.Server.Entity
         public string PlayerId { get; set; }
         public int Credits { get; set; }
         public List<QuestContractItem> Items { get; set; }
+        [Indexed]
         public string SourceContractId { get; set; }
         public string SourceContractTitle { get; set; }
     }

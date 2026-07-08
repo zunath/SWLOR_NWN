@@ -37,21 +37,10 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnQuestsRegistered)]
         public static void RegisterContracts()
         {
-            var query = new DBQuery<QuestContract>()
-                .AddFieldSearch(nameof(QuestContract.Status), (int)QuestContractStatus.Published);
-            var count = (int)DB.SearchCount(query);
-
-            if (count <= 0)
-            {
-                Console.WriteLine("Registered 0 quest contracts.");
-                return;
-            }
-
-            var contracts = DB.Search(query.AddPaging(count, 0)).ToList();
-            var now = DateTime.UtcNow;
             var registeredCount = 0;
+            var now = DateTime.UtcNow;
 
-            foreach (var contract in contracts)
+            foreach (var contract in GetPublishedContracts())
             {
                 if (contract.DateExpires <= now)
                 {
@@ -64,7 +53,37 @@ namespace SWLOR.Game.Server.Service
                 registeredCount++;
             }
 
-            Console.WriteLine($"Registered {registeredCount} quest contract(s).");
+            Log.Write(LogGroup.QuestContract, $"Registered {registeredCount} quest contract(s).", true);
+
+            Scheduler.ScheduleRepeating(ExpireOverdueContracts, TimeSpan.FromHours(1));
+        }
+
+        /// <summary>
+        /// Periodic sweep which expires (and refunds) any published contract past its expiration date
+        /// while the server is running, so contracts don't outlive their duration between restarts.
+        /// </summary>
+        private static void ExpireOverdueContracts()
+        {
+            var now = DateTime.UtcNow;
+
+            foreach (var contract in GetPublishedContracts())
+            {
+                if (contract.DateExpires <= now)
+                {
+                    ExpireContract(contract);
+                }
+            }
+        }
+
+        private static List<QuestContract> GetPublishedContracts()
+        {
+            var query = new DBQuery<QuestContract>()
+                .AddFieldSearch(nameof(QuestContract.Status), (int)QuestContractStatus.Published);
+            var count = (int)DB.SearchCount(query);
+
+            return count <= 0
+                ? new List<QuestContract>()
+                : DB.Search(query.AddPaging(count, 0)).ToList();
         }
 
         /// <summary>
@@ -172,11 +191,18 @@ namespace SWLOR.Game.Server.Service
                 return "That reward item could not be found.";
 
             var rewardItem = draft.RewardItems[index];
+            var deserialized = ObjectPlugin.Deserialize(rewardItem.Data);
+
+            if (!GetIsObjectValid(deserialized) || !ObjectPlugin.AcquireItem(player, deserialized))
+            {
+                if (GetIsObjectValid(deserialized))
+                    DestroyObject(deserialized);
+
+                return "The item could not be returned to your inventory. Make room and try again.";
+            }
+
             draft.RewardItems.RemoveAt(index);
             DB.Set(draft);
-
-            var deserialized = ObjectPlugin.Deserialize(rewardItem.Data);
-            ObjectPlugin.AcquireItem(player, deserialized);
 
             Log.Write(LogGroup.QuestContract, $"{GetName(player)} [{draft.AuthorPlayerId}] removed reward item '{rewardItem.Name}' from contract draft '{draft.Id}'.");
 
@@ -361,11 +387,9 @@ namespace SWLOR.Game.Server.Service
         public static QuestContractDelivery GetOrCreatePendingDelivery(string playerId, string contractId, string contractTitle)
         {
             var query = new DBQuery<QuestContractDelivery>()
-                .AddFieldSearch(nameof(QuestContractDelivery.PlayerId), playerId, false);
-            var count = (int)DB.SearchCount(query);
-            var existing = count > 0
-                ? DB.Search(query.AddPaging(count, 0)).FirstOrDefault(x => x.SourceContractId == contractId)
-                : null;
+                .AddFieldSearch(nameof(QuestContractDelivery.PlayerId), playerId, false)
+                .AddFieldSearch(nameof(QuestContractDelivery.SourceContractId), contractId, false);
+            var existing = DB.Search(query).FirstOrDefault();
 
             if (existing != null)
                 return existing;
@@ -490,6 +514,7 @@ namespace SWLOR.Game.Server.Service
             RefundEscrowToAuthor(contract);
             contract.Status = QuestContractStatus.Expired;
             DB.Set(contract);
+            Quest.UnregisterRuntimeQuest(QuestContractFactory.BuildQuestId(contract.Id));
 
             Log.Write(LogGroup.QuestContract, $"Contract '{contract.Id}' ('{contract.Title}') expired.", true);
         }

@@ -257,12 +257,12 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The final Guardian Master master is waiting in Dantooine Jedi Enclave Trial Halls. Defeat the master and end the capstone trial.")
-                .AddKillObjective(NPCGroupType.Dantooine_GuardianMaster_Master, 1)
+                    "The Guardian Master Paragon is waiting in Dantooine Jedi Enclave Trial Halls. Defeat the Paragon and end the capstone trial.")
+                .AddKillObjective(NPCGroupType.Dantooine_GuardianMaster_Paragon, 1)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The final Guardian Master master is defeated. Return to Miris Aven and claim the completed lesson.")
+                    "The Guardian Master Paragon is defeated. Return to Miris Aven and claim the completed lesson.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>

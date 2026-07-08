@@ -57,7 +57,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Advent Bracer
             _builder.Create(RecipeType.AdventBracer, SkillType.Smithery)
-                .Category(RecipeCategoryType.Glove)
+                .Category(RecipeCategoryType.Bracer)
                 .Resref("advent_bracer")
                 .Level(10)
                 .Quantity(1)
@@ -68,7 +68,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Amateur Bracer
             _builder.Create(RecipeType.AmateurBracer, SkillType.Smithery)
-                .Category(RecipeCategoryType.Glove)
+                .Category(RecipeCategoryType.Bracer)
                 .Resref("engi_bracer_1")
                 .Level(10)
                 .Quantity(1)
@@ -79,7 +79,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Cloth Bracer
             _builder.Create(RecipeType.ClothBracer, SkillType.Smithery)
-                .Category(RecipeCategoryType.Glove)
+                .Category(RecipeCategoryType.Bracer)
                 .Resref("fabr_bracer_1")
                 .Level(10)
                 .Quantity(1)
@@ -90,7 +90,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Chef Bracer
             _builder.Create(RecipeType.ChefBracer, SkillType.Smithery)
-                .Category(RecipeCategoryType.Glove)
+                .Category(RecipeCategoryType.Bracer)
                 .Resref("chef_bracer_1")
                 .Level(10)
                 .Quantity(1)
@@ -134,7 +134,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Frontier Bracer
             _builder.Create(RecipeType.FrontierBracer, SkillType.Smithery)
-                .Category(RecipeCategoryType.Glove)
+                .Category(RecipeCategoryType.Bracer)
                 .Resref("frontier_bracer")
                 .Level(20)
                 .Quantity(1)
@@ -145,7 +145,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Worker Bracer
             _builder.Create(RecipeType.WorkerBracer, SkillType.Smithery)
-                .Category(RecipeCategoryType.Glove)
+                .Category(RecipeCategoryType.Bracer)
                 .Resref("engi_bracer_2")
                 .Level(20)
                 .Quantity(1)
@@ -156,7 +156,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Linen Bracer
             _builder.Create(RecipeType.LinenBracer, SkillType.Smithery)
-                .Category(RecipeCategoryType.Glove)
+                .Category(RecipeCategoryType.Bracer)
                 .Resref("fabr_bracer_2")
                 .Level(20)
                 .Quantity(1)
@@ -167,7 +167,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Velveteen Bracer
             _builder.Create(RecipeType.VelveteenBracer, SkillType.Smithery)
-                .Category(RecipeCategoryType.Glove)
+                .Category(RecipeCategoryType.Bracer)
                 .Resref("chef_bracer_2")
                 .Level(20)
                 .Quantity(1)
@@ -211,7 +211,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Majestic Bracer
             _builder.Create(RecipeType.MajesticBracer, SkillType.Smithery)
-                .Category(RecipeCategoryType.Glove)
+                .Category(RecipeCategoryType.Bracer)
                 .Resref("majestic_bracer")
                 .Level(30)
                 .Quantity(1)
@@ -222,7 +222,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Mechanic Bracer
             _builder.Create(RecipeType.MechanicBracer, SkillType.Smithery)
-                .Category(RecipeCategoryType.Glove)
+                .Category(RecipeCategoryType.Bracer)
                 .Resref("engi_bracer_3")
                 .Level(30)
                 .Quantity(1)
@@ -233,7 +233,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Designer Bracer
             _builder.Create(RecipeType.DesignerBracer, SkillType.Smithery)
-                .Category(RecipeCategoryType.Glove)
+                .Category(RecipeCategoryType.Bracer)
                 .Resref("fabr_bracer_3")
                 .Level(30)
                 .Quantity(1)
@@ -244,7 +244,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Silk Bracer
             _builder.Create(RecipeType.SilkBracer, SkillType.Smithery)
-                .Category(RecipeCategoryType.Glove)
+                .Category(RecipeCategoryType.Bracer)
                 .Resref("chef_bracer_3")
                 .Level(30)
                 .Quantity(1)
@@ -288,7 +288,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Dream Bracer
             _builder.Create(RecipeType.DreamBracer, SkillType.Smithery)
-                .Category(RecipeCategoryType.Glove)
+                .Category(RecipeCategoryType.Bracer)
                 .Resref("dream_bracer")
                 .Level(40)
                 .Quantity(1)
@@ -299,7 +299,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Devotion Bracer
             _builder.Create(RecipeType.DevotionBracer, SkillType.Smithery)
-                .Category(RecipeCategoryType.Glove)
+                .Category(RecipeCategoryType.Bracer)
                 .Resref("engi_bracer_4")
                 .Level(40)
                 .Quantity(1)
@@ -310,7 +310,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Oasis Bracer
             _builder.Create(RecipeType.OasisBracer, SkillType.Smithery)
-                .Category(RecipeCategoryType.Glove)
+                .Category(RecipeCategoryType.Bracer)
                 .Resref("fabr_bracer_4")
                 .Level(40)
                 .Quantity(1)
@@ -321,7 +321,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Vintage Bracer
             _builder.Create(RecipeType.VintageBracer, SkillType.Smithery)
-                .Category(RecipeCategoryType.Glove)
+                .Category(RecipeCategoryType.Bracer)
                 .Resref("chef_bracer_4")
                 .Level(40)
                 .Quantity(1)
@@ -365,7 +365,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Eternal Bracer
             _builder.Create(RecipeType.EternalBracer, SkillType.Smithery)
-                .Category(RecipeCategoryType.Glove)
+                .Category(RecipeCategoryType.Bracer)
                 .Resref("eternal_bracer")
                 .Level(50)
                 .Quantity(1)
@@ -376,7 +376,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Skysteel Bracer
             _builder.Create(RecipeType.SkysteelBracer, SkillType.Smithery)
-                .Category(RecipeCategoryType.Glove)
+                .Category(RecipeCategoryType.Bracer)
                 .Resref("engi_bracer_5")
                 .Level(50)
                 .Quantity(1)
@@ -387,7 +387,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Rose Bracer
             _builder.Create(RecipeType.RoseBracer, SkillType.Smithery)
-                .Category(RecipeCategoryType.Glove)
+                .Category(RecipeCategoryType.Bracer)
                 .Resref("fabr_bracer_5")
                 .Level(50)
                 .Quantity(1)
@@ -398,7 +398,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Moonflame Bracer
             _builder.Create(RecipeType.MoonflameBracer, SkillType.Smithery)
-                .Category(RecipeCategoryType.Glove)
+                .Category(RecipeCategoryType.Bracer)
                 .Resref("chef_bracer_5")
                 .Level(50)
                 .Quantity(1)

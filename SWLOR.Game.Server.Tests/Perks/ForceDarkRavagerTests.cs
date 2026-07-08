@@ -23,7 +23,7 @@ public class ForceDarkRavagerTests
         AssertPerkLevel(perks[PerkType.ForceSpark], "Force Spark", 1, 2, null, FeatType.ForceSpark1,
             "Deals 16 force DMG plus WIL scaling to one target and reduces Evasion by 4% for 30 seconds.");
         AssertPerkLevel(perks[PerkType.ForceLightning], "Force Lightning", 1, 3, 10, FeatType.ForceLightning1,
-            "Deals 10 force DMG plus WIL scaling to one target, then arcs to up to two nearby enemies for 50% damage. Affected targets suffer Shock for 30 seconds.");
+            "Deals 10 force DMG plus WIL scaling to one target, then arcs to up to two enemies within 5m for 50% damage. Affected targets suffer Shock for 30 seconds.");
         AssertPerkLevel(perks[PerkType.ForceDrain], "Force Drain", 1, 3, 12, FeatType.ForceDrain1,
             "Deals 14 force DMG plus WIL scaling to one target and heals you for 30% of damage dealt. If the target is below 50% HP, healing increases to 40%.");
         AssertPerkLevel(perks[PerkType.FuryStance], "Fury Stance", 1, 3, 12, FeatType.FuryStance1,
@@ -31,7 +31,7 @@ public class ForceDarkRavagerTests
         AssertPerkLevel(perks[PerkType.ForceSpark], "Force Spark", 2, 3, 18, FeatType.ForceSpark2,
             "Deals 30 force DMG plus WIL scaling to one target and reduces Evasion by 6% for 30 seconds.");
         AssertPerkLevel(perks[PerkType.ForceLightning], "Force Lightning", 2, 4, 22, FeatType.ForceLightning2,
-            "Deals 18 force DMG plus WIL scaling to one target, then arcs to up to three nearby enemies for 50% damage. Affected targets suffer Shock for 30 seconds.");
+            "Deals 18 force DMG plus WIL scaling to one target, then arcs to up to three enemies within 5m for 50% damage. Affected targets suffer Shock for 30 seconds.");
         AssertPerkLevel(perks[PerkType.ForceDrain], "Force Drain", 2, 3, 25, FeatType.ForceDrain2,
             "Deals 24 force DMG plus WIL scaling to one target and heals you for 35% of damage dealt. If the target is below 50% HP, healing increases to 45%.");
         AssertPerkLevel(perks[PerkType.DevouringStrike], "Devouring Strike", 1, 4, 28, FeatType.DevouringStrikeTrait,

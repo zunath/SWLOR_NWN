@@ -395,7 +395,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ShelterCircle1)
-                .Description("for 30 seconds, you and allies within 5m gain +20% Physical Defense, +20% Force Defense, and +20% Evasion.")
+                .Description("For 30 seconds, you and allies within 5m gain +20% Physical Defense, +20% Force Defense, and +20% Evasion.")
                 .Price(3)
                 .RequirementSkill(SkillType.Staff, 32);
         }

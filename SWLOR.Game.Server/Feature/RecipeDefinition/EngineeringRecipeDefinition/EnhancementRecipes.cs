@@ -275,7 +275,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				;
 
 			// Armor Enhancement - Combat Readiness I
-			_builder.Create(RecipeType.ArmorEnhancementRecastReduction1, SkillType.Engineering)
+			_builder.Create(RecipeType.ArmorEnhancementCombatReadiness1, SkillType.Engineering)
 				.Category(RecipeCategoryType.ArmorEnhancement)
 				.Resref("aen_recast1")
 				.Level(9)
@@ -407,7 +407,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				;
 
 			// Weapon Enhancement - DMG I
-			_builder.Create(RecipeType.WeaponEnhancementDamage1, SkillType.Engineering)
+			_builder.Create(RecipeType.WeaponEnhancementDMGPhysical1, SkillType.Engineering)
 				.Category(RecipeCategoryType.WeaponEnhancement)
 				.Resref("wen_dmg_phy1")
 				.Level(9)
@@ -418,7 +418,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				;
 
 			// Weapon Enhancement - Force Damage I
-			_builder.Create(RecipeType.WeaponEnhancementForceDamage1, SkillType.Engineering)
+			_builder.Create(RecipeType.WeaponEnhancementDMGForce1, SkillType.Engineering)
 				.Category(RecipeCategoryType.WeaponEnhancement)
 				.Resref("wen_dmg_for1")
 				.Level(8)
@@ -896,7 +896,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				;
 
 			// Armor Enhancement - Combat Readiness II
-			_builder.Create(RecipeType.ArmorEnhancementRecastReduction2, SkillType.Engineering)
+			_builder.Create(RecipeType.ArmorEnhancementCombatReadiness2, SkillType.Engineering)
 				.Category(RecipeCategoryType.ArmorEnhancement)
 				.Resref("aen_recast2")
 				.Level(19)
@@ -1028,7 +1028,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				;
 
 			// Weapon Enhancement - Poison Damage I
-			_builder.Create(RecipeType.WeaponEnhancementPoisonDamage1, SkillType.Engineering)
+			_builder.Create(RecipeType.WeaponEnhancementDMGPoison1, SkillType.Engineering)
 				.Category(RecipeCategoryType.WeaponEnhancement)
 				.Resref("wen_dmg_psn1")
 				.Level(17)
@@ -1039,7 +1039,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				;
 
 			// Weapon Enhancement - Fire Damage I
-			_builder.Create(RecipeType.WeaponEnhancementFireDamage1, SkillType.Engineering)
+			_builder.Create(RecipeType.WeaponEnhancementDMGFire1, SkillType.Engineering)
 				.Category(RecipeCategoryType.WeaponEnhancement)
 				.Resref("wen_dmg_fir1")
 				.Level(16)
@@ -1050,7 +1050,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				;
 
 			// Weapon Enhancement - Ice Damage I
-			_builder.Create(RecipeType.WeaponEnhancementIceDamage1, SkillType.Engineering)
+			_builder.Create(RecipeType.WeaponEnhancementDMGIce1, SkillType.Engineering)
 				.Category(RecipeCategoryType.WeaponEnhancement)
 				.Resref("wen_dmg_ice1")
 				.Level(15)
@@ -1539,7 +1539,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				;
 
 			// Armor Enhancement - Combat Readiness III
-			_builder.Create(RecipeType.ArmorEnhancementRecastReduction3, SkillType.Engineering)
+			_builder.Create(RecipeType.ArmorEnhancementCombatReadiness3, SkillType.Engineering)
 				.Category(RecipeCategoryType.ArmorEnhancement)
 				.Resref("aen_recast3")
 				.Level(29)
@@ -1671,7 +1671,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				;
 
 			// Weapon Enhancement - DMG II
-			_builder.Create(RecipeType.WeaponEnhancementDamage2, SkillType.Engineering)
+			_builder.Create(RecipeType.WeaponEnhancementDMGPhysical2, SkillType.Engineering)
 				.Category(RecipeCategoryType.WeaponEnhancement)
 				.Resref("wen_dmg_phy2")
 				.Level(29)
@@ -1682,7 +1682,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				;
 
 			// Weapon Enhancement - Force Damage II
-			_builder.Create(RecipeType.WeaponEnhancementForceDamage2, SkillType.Engineering)
+			_builder.Create(RecipeType.WeaponEnhancementDMGForce2, SkillType.Engineering)
 				.Category(RecipeCategoryType.WeaponEnhancement)
 				.Resref("wen_dmg_for2")
 				.Level(28)
@@ -2160,7 +2160,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				;
 
 			// Armor Enhancement - Combat Readiness IV
-			_builder.Create(RecipeType.ArmorEnhancementRecastReduction4, SkillType.Engineering)
+			_builder.Create(RecipeType.ArmorEnhancementCombatReadiness4, SkillType.Engineering)
 				.Category(RecipeCategoryType.ArmorEnhancement)
 				.Resref("aen_recast4")
 				.Level(39)
@@ -2292,7 +2292,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				;
 
 			// Weapon Enhancement - Poison Damage II
-			_builder.Create(RecipeType.WeaponEnhancementPoisonDamage2, SkillType.Engineering)
+			_builder.Create(RecipeType.WeaponEnhancementDMGPoison2, SkillType.Engineering)
 				.Category(RecipeCategoryType.WeaponEnhancement)
 				.Resref("wen_dmg_psn2")
 				.Level(37)
@@ -2303,7 +2303,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				;
 
 			// Weapon Enhancement - Fire Damage II
-			_builder.Create(RecipeType.WeaponEnhancementFireDamage2, SkillType.Engineering)
+			_builder.Create(RecipeType.WeaponEnhancementDMGFire2, SkillType.Engineering)
 				.Category(RecipeCategoryType.WeaponEnhancement)
 				.Resref("wen_dmg_fir2")
 				.Level(36)
@@ -2314,7 +2314,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				;
 
 			// Weapon Enhancement - Ice Damage II
-			_builder.Create(RecipeType.WeaponEnhancementIceDamage2, SkillType.Engineering)
+			_builder.Create(RecipeType.WeaponEnhancementDMGIce2, SkillType.Engineering)
 				.Category(RecipeCategoryType.WeaponEnhancement)
 				.Resref("wen_dmg_ice2")
 				.Level(35)
@@ -2803,7 +2803,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				;
 
 			// Armor Enhancement - Combat Readiness V
-			_builder.Create(RecipeType.ArmorEnhancementRecastReduction5, SkillType.Engineering)
+			_builder.Create(RecipeType.ArmorEnhancementCombatReadiness5, SkillType.Engineering)
 				.Category(RecipeCategoryType.ArmorEnhancement)
 				.Resref("aen_recast5")
 				.Level(49)
@@ -2935,7 +2935,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				;
 
 			// Weapon Enhancement - DMG III
-			_builder.Create(RecipeType.WeaponEnhancementDamage3, SkillType.Engineering)
+			_builder.Create(RecipeType.WeaponEnhancementDMGPhysical3, SkillType.Engineering)
 				.Category(RecipeCategoryType.WeaponEnhancement)
 				.Resref("wen_dmg_phy3")
 				.Level(49)
@@ -2946,7 +2946,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				;
 
 			// Weapon Enhancement - Force Damage III
-			_builder.Create(RecipeType.WeaponEnhancementForceDamage3, SkillType.Engineering)
+			_builder.Create(RecipeType.WeaponEnhancementDMGForce3, SkillType.Engineering)
 				.Category(RecipeCategoryType.WeaponEnhancement)
 				.Resref("wen_dmg_for3")
 				.Level(48)

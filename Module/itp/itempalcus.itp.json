@@ -59975,7 +59975,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Blueprint: Targetting Array"
+                      "value": "Blueprint: Targeting Array"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -64657,7 +64657,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Dedicated Targetting Sensor Array"
+                      "value": "Dedicated Targeting Sensor Array"
                     },
                     "RESREF": {
                       "type": "resref",

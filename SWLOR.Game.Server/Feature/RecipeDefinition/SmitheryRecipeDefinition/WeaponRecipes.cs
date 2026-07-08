@@ -533,7 +533,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("frogguts", 10)
                 .Component("hyphae_wood", 20)
                 .Component("chiro_shard", 2)
-                .Component("stolen_s_artifact", 5)
+                .Component("stolen_s_artifac", 5)
                 .Component("emerald", 5)
                 .Component("tukata_hide", 5)
                 .Component("froglegs", 2);

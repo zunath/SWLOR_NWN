@@ -42,7 +42,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.Flamethrower1)
 
                 .AddPerkLevel()
-                .Description("Deals 28 fire DMG plus PER scaling to hostile targets in a cone and attempts to inflict Burning.")
+                .Description("Deals 28 fire DMG plus PER scaling to hostile targets in a cone and attempts to inflict Burn.")
                 .Price(2)
                 .RequirementSkill(SkillType.Devices, 15)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -50,7 +50,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.Flamethrower2)
 
                 .AddPerkLevel()
-                .Description("Deals 42 fire DMG plus PER scaling to hostile targets in a cone and attempts to inflict Burning.")
+                .Description("Deals 42 fire DMG plus PER scaling to hostile targets in a cone and attempts to inflict Burn.")
                 .Price(3)
                 .RequirementSkill(SkillType.Devices, 35)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -72,7 +72,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.WristRocket1)
 
                 .AddPerkLevel()
-                .Description("Deals 34 fire DMG plus PER scaling to one target and knock down for 30 seconds.")
+                .Description("Deals 34 fire DMG plus PER scaling to one target and knocks down for 2 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Devices, 25)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -80,7 +80,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.WristRocket2)
 
                 .AddPerkLevel()
-                .Description("Deals 48 fire DMG plus PER scaling to one target and knock down for 30 seconds.")
+                .Description("Deals 48 fire DMG plus PER scaling to one target and knocks down for 3 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Devices, 40)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -249,7 +249,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Overload Barrage")
 
                 .AddPerkLevel()
-                .Description("Unleashes three attacks at your primary target's location: a 42 fire DMG 5m burst plus Burning for 45 seconds, a 48 fire DMG single-target hit plus 3-second Knockdown, and a 24 sonic DMG 5m burst that interrupts activation and reduces Accuracy by 10% for 45 seconds.")
+                .Description("Unleashes three attacks at your primary target's location: a 42 fire DMG 5m burst plus Burn for 45 seconds, a 48 fire DMG single-target hit plus 3-second Knockdown, and a 24 sonic DMG 5m burst that interrupts activation and reduces Accuracy by 10% for 45 seconds.")
                 .Price(5)
                 .RequirementSkill(SkillType.Devices, 50)
                 .RequirementCharacterType(CharacterType.Standard)

@@ -143,7 +143,7 @@ public class DevicesGrenadierTests
             4,
             30,
             FeatType.ClusterGrenade1,
-            "Throws three adjacent small grenades around the target point, each dealing 18 fire DMG plus PER scaling in a small blast. Overlapping blasts can hit the same enemy. Consumes explosives.");
+            "Throws three adjacent grenades around the target point, each dealing 18 fire DMG plus PER scaling in a 2m blast. Overlapping blasts can hit the same enemy. Consumes explosives.");
         AssertPerkLevel(
             perks[PerkType.DisruptionPulse],
             "Disruption Pulse",
@@ -151,7 +151,7 @@ public class DevicesGrenadierTests
             4,
             35,
             FeatType.DisruptionPulse1,
-            "Emits a 5m disruption pulse at a target point within 12m, dealing 18 electrical DMG plus PER scaling to enemies and reducing physical and Force ability Accuracy by 6% for 30 seconds. Consumes explosives.");
+            "Emits a 5m disruption pulse at a target point within 12m, dealing 18 electrical DMG plus PER scaling to enemies and reducing physical and Force ability Accuracy by 6% for 12 seconds. Consumes explosives.");
     }
 
     [Test]

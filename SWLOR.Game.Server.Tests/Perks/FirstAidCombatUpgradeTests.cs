@@ -344,14 +344,14 @@ public class FirstAidCombatUpgradeTests
             (FeatType.Shielding1, "Reduces physical and force damage taken by 5% for 3 minutes. Consumes a stim pack."),
             (FeatType.AdrenalStim2, "Restores 18% of maximum STM and restores 1 STM every 3 seconds for 30 seconds. Consumes a stim pack."),
             (FeatType.PainSuppressant1, "Grants temporary HP equal to 10% of the target's maximum HP plus WIL scaling and 10% damage reduction for 30 seconds. Consumes a stim pack."),
-            (FeatType.Antitoxin1, "Grants 50% Poison Resistance and 50% Disease Resistance for 2 minutes and removes one Poison or Toxin effect. Consumes a stim pack."),
+            (FeatType.Antitoxin1, "Grants 50% Poison Resistance for 2 minutes and removes one Poison or Toxin effect. Poison Resistance also weakens Disease and Toxin effects. Consumes a stim pack."),
             (FeatType.Shielding2, "Reduces physical and force damage taken by 8% for 3 minutes. Consumes a stim pack."),
             (FeatType.FocusStim1, "Increases physical and Force ability Accuracy by 5% for 2 minutes. Consumes a stim pack."),
             (FeatType.AdrenalStim3, "Restores 25% of maximum STM and restores 1 STM every 3 seconds for 30 seconds. Consumes a stim pack."),
             (FeatType.PainSuppressant2, "Grants temporary HP equal to 15% of the target's maximum HP plus WIL scaling and 15% damage reduction for 30 seconds. Consumes a stim pack."),
             (FeatType.Shielding3, "Reduces physical and force damage taken by 11% for 3 minutes. Consumes a stim pack."),
             (FeatType.FocusStim2, "Increases physical and Force ability Accuracy by 8% for 2 minutes. Consumes a stim pack."),
-            (FeatType.EmergencyCocktail1, "Restores 25% of maximum STM, removes one Poison or Toxin effect, then for 45 seconds restores 1 STM every 3 seconds, grants temporary HP equal to 12% of maximum HP plus WIL scaling, reduces damage taken by 12%, and grants 50% Poison Resistance and 50% Disease Resistance.")
+            (FeatType.EmergencyCocktail1, "Restores 25% of maximum STM, removes one Poison or Toxin effect, then for 45 seconds restores 1 STM every 3 seconds, grants temporary HP equal to 12% of maximum HP plus WIL scaling, reduces damage taken by 12%, and grants 50% Poison Resistance.")
         };
 
         foreach (var (featType, expectedDescription) in descriptions)

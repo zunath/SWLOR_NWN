@@ -60,13 +60,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .ForceAffinity(ForceAffinityType.Dark)
 
                 .AddPerkLevel()
-                .Description("Increase force damage taken by 5% for 30 seconds.")
+                .Description("Increases force damage taken by 5% for 24 seconds.")
                 .Price(3)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.WeakenResolve1)
 
                 .AddPerkLevel()
-                .Description("Increase force damage taken by 10% for 30 seconds.")
+                .Description("Increases force damage taken by 10% for 24 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 28)
                 .RequirementCharacterType(CharacterType.ForceSensitive)

@@ -57,7 +57,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Advent Leggings
             _builder.Create(RecipeType.AdventLeggings, SkillType.Smithery)
-                .Category(RecipeCategoryType.Boots)
+                .Category(RecipeCategoryType.Legging)
                 .Resref("advent_leggings")
                 .Level(10)
                 .Quantity(1)
@@ -68,7 +68,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Amateur Leggings
             _builder.Create(RecipeType.AmateurLeggings, SkillType.Smithery)
-                .Category(RecipeCategoryType.Boots)
+                .Category(RecipeCategoryType.Legging)
                 .Resref("engi_leggings_1")
                 .Level(10)
                 .Quantity(1)
@@ -79,7 +79,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Cloth Leggings
             _builder.Create(RecipeType.ClothLeggings, SkillType.Smithery)
-                .Category(RecipeCategoryType.Boots)
+                .Category(RecipeCategoryType.Legging)
                 .Resref("fabr_leggings_1")
                 .Level(10)
                 .Quantity(1)
@@ -90,7 +90,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Chef Leggings
             _builder.Create(RecipeType.ChefLeggings, SkillType.Smithery)
-                .Category(RecipeCategoryType.Boots)
+                .Category(RecipeCategoryType.Legging)
                 .Resref("chef_leggings_1")
                 .Level(10)
                 .Quantity(1)
@@ -134,7 +134,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Frontier Leggings
             _builder.Create(RecipeType.FrontierLeggings, SkillType.Smithery)
-                .Category(RecipeCategoryType.Boots)
+                .Category(RecipeCategoryType.Legging)
                 .Resref("frontier_legging")
                 .Level(20)
                 .Quantity(1)
@@ -145,7 +145,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Worker Leggings
             _builder.Create(RecipeType.WorkerLeggings, SkillType.Smithery)
-                .Category(RecipeCategoryType.Boots)
+                .Category(RecipeCategoryType.Legging)
                 .Resref("engi_leggings_2")
                 .Level(20)
                 .Quantity(1)
@@ -156,7 +156,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Linen Leggings
             _builder.Create(RecipeType.LinenLeggings, SkillType.Smithery)
-                .Category(RecipeCategoryType.Boots)
+                .Category(RecipeCategoryType.Legging)
                 .Resref("fabr_leggings_2")
                 .Level(20)
                 .Quantity(1)
@@ -167,7 +167,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Velveteen Leggings
             _builder.Create(RecipeType.VelveteenLeggings, SkillType.Smithery)
-                .Category(RecipeCategoryType.Boots)
+                .Category(RecipeCategoryType.Legging)
                 .Resref("chef_leggings_2")
                 .Level(20)
                 .Quantity(1)
@@ -211,7 +211,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Majestic Leggings
             _builder.Create(RecipeType.MajesticLeggings, SkillType.Smithery)
-                .Category(RecipeCategoryType.Boots)
+                .Category(RecipeCategoryType.Legging)
                 .Resref("majestic_legging")
                 .Level(30)
                 .Quantity(1)
@@ -222,7 +222,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Mechanic Leggings
             _builder.Create(RecipeType.MechanicLeggings, SkillType.Smithery)
-                .Category(RecipeCategoryType.Boots)
+                .Category(RecipeCategoryType.Legging)
                 .Resref("engi_leggings_3")
                 .Level(30)
                 .Quantity(1)
@@ -233,7 +233,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Designer Leggings
             _builder.Create(RecipeType.DesignerLeggings, SkillType.Smithery)
-                .Category(RecipeCategoryType.Boots)
+                .Category(RecipeCategoryType.Legging)
                 .Resref("fabr_leggings_3")
                 .Level(30)
                 .Quantity(1)
@@ -244,7 +244,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Silk Leggings
             _builder.Create(RecipeType.SilkLeggings, SkillType.Smithery)
-                .Category(RecipeCategoryType.Boots)
+                .Category(RecipeCategoryType.Legging)
                 .Resref("chef_leggings_3")
                 .Level(30)
                 .Quantity(1)
@@ -288,7 +288,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Dream Leggings
             _builder.Create(RecipeType.DreamLeggings, SkillType.Smithery)
-                .Category(RecipeCategoryType.Boots)
+                .Category(RecipeCategoryType.Legging)
                 .Resref("dream_leggings")
                 .Level(40)
                 .Quantity(1)
@@ -299,7 +299,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Devotion Leggings
             _builder.Create(RecipeType.DevotionLeggings, SkillType.Smithery)
-                .Category(RecipeCategoryType.Boots)
+                .Category(RecipeCategoryType.Legging)
                 .Resref("engi_leggings_4")
                 .Level(40)
                 .Quantity(1)
@@ -310,7 +310,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Oasis Leggings
             _builder.Create(RecipeType.OasisLeggings, SkillType.Smithery)
-                .Category(RecipeCategoryType.Boots)
+                .Category(RecipeCategoryType.Legging)
                 .Resref("fabr_leggings_4")
                 .Level(40)
                 .Quantity(1)
@@ -321,7 +321,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Vintage Leggings
             _builder.Create(RecipeType.VintageLeggings, SkillType.Smithery)
-                .Category(RecipeCategoryType.Boots)
+                .Category(RecipeCategoryType.Legging)
                 .Resref("chef_leggings_4")
                 .Level(40)
                 .Quantity(1)
@@ -365,7 +365,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Eternal Leggings
             _builder.Create(RecipeType.EternalLeggings, SkillType.Smithery)
-                .Category(RecipeCategoryType.Boots)
+                .Category(RecipeCategoryType.Legging)
                 .Resref("eternal_leggings")
                 .Level(50)
                 .Quantity(1)
@@ -376,7 +376,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Skysteel Leggings
             _builder.Create(RecipeType.SkysteelLeggings, SkillType.Smithery)
-                .Category(RecipeCategoryType.Boots)
+                .Category(RecipeCategoryType.Legging)
                 .Resref("engi_leggings_5")
                 .Level(50)
                 .Quantity(1)
@@ -387,7 +387,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Rose Leggings
             _builder.Create(RecipeType.RoseLeggings, SkillType.Smithery)
-                .Category(RecipeCategoryType.Boots)
+                .Category(RecipeCategoryType.Legging)
                 .Resref("fabr_leggings_5")
                 .Level(50)
                 .Quantity(1)
@@ -398,7 +398,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Moonflame Leggings
             _builder.Create(RecipeType.MoonflameLeggings, SkillType.Smithery)
-                .Category(RecipeCategoryType.Boots)
+                .Category(RecipeCategoryType.Legging)
                 .Resref("chef_leggings_5")
                 .Level(50)
                 .Quantity(1)

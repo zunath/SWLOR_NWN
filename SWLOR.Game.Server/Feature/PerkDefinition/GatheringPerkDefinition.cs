@@ -122,7 +122,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.Refining2)
 
                 .AddPerkLevel()
-                .Description("You can refine Veldite, Tilarium, Scordspar, Currian, Plagionite, and Idalia.")
+                .Description("You can refine Veldite, Tilarium, Scordspar, Currian, Plagionite, and Idailia.")
                 .Price(2)
                 .RequirementSkill(SkillType.Gathering, 20)
                 .GrantsFeat(FeatType.Refining3)

@@ -48,25 +48,25 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ExplosiveToss1)
-                .Description("Deals weapon DMG + 8 in a small area and inflicts Burning for 30 seconds.")
+                .Description("Deals weapon DMG + 8 in a small area and inflicts Burn for 30 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Throwing, 2)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ExplosiveToss2)
-                .Description("Deals weapon DMG + 18 in a small area and inflicts Burning for 30 seconds.")
+                .Description("Deals weapon DMG + 18 in a small area and inflicts Burn for 30 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Throwing, 12)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ExplosiveToss3)
-                .Description("Deals weapon DMG + 28 in a small area and inflicts Burning for 30 seconds.")
+                .Description("Deals weapon DMG + 28 in a small area and inflicts Burn for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Throwing, 28)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ExplosiveToss4)
-                .Description("Deals weapon DMG + 38 in a small area and inflicts Burning for 30 seconds.")
+                .Description("Deals weapon DMG + 38 in a small area and inflicts Burn for 30 seconds.")
                 .Price(5)
                 .RequirementSkill(SkillType.Throwing, 40);
         }
@@ -147,7 +147,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ClusterPouchTrait)
-                .Description("Area thrown abilities hit one additional one enemy within 5m for +10 DMG.")
+                .Description("Area thrown abilities hit one additional enemy within 5m for +10 DMG.")
                 .IncreasesStat(StatType.ThrowingBombardierClusterStormDamageBonus, 10)
                 .IncreasesStat(StatType.ThrowingBombardierClusterStormMaximumTargets, 1)
                 .Price(4)
@@ -333,7 +333,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.RicochetTossTrait)
-                .Description("Thrown abilities against bleeding targets have a 25% chance to hit a one enemy within 5m for +12 DMG.")
+                .Description("Thrown abilities against bleeding targets have a 25% chance to hit one enemy within 5m for +12 DMG.")
                 .IncreasesStat(StatType.AbilityDamageToBleedingTargetSkillType, (int)SkillType.Throwing)
                 .Price(4)
                 .RequirementSkill(SkillType.Throwing, 15);

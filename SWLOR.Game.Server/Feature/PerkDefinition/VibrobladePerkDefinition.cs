@@ -302,13 +302,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SavageCleave2)
-                .Description("Deal weapon DMG + 20 in a 5m radius around you and restores 2 STM per secondary target hit.")
+                .Description("Deal weapon DMG + 15 in a 5m radius around you and restore 2 STM per secondary target hit.")
                 .Price(4)
                 .RequirementSkill(SkillType.Vibroblade, 30)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SavageCleave3)
-                .Description("Deal weapon DMG + 15 to all enemies around you.")
+                .Description("Deal weapon DMG + 20 in a 5m radius around you and restore 2 STM per secondary target hit.")
                 .Price(4)
                 .RequirementSkill(SkillType.Vibroblade, 38);
         }

@@ -557,6 +557,50 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
                 { ((int)ResistanceType.Disruption).ToString(), ResistanceType.Disruption },
             };
 
+        // Player recipe dictionaries serialize RecipeType keys by member name, so renamed
+        // enum members must be remapped in raw player JSON before invalid-key cleanup
+        // discards them. Recipe unlock data is not reset by the forced full rebuild.
+        private static readonly IReadOnlyDictionary<string, string> RenamedRecipeKeys =
+            new Dictionary<string, string>
+            {
+                { "ArmorEnhancementRecastReduction1", "ArmorEnhancementCombatReadiness1" },
+                { "ArmorEnhancementRecastReduction2", "ArmorEnhancementCombatReadiness2" },
+                { "ArmorEnhancementRecastReduction3", "ArmorEnhancementCombatReadiness3" },
+                { "ArmorEnhancementRecastReduction4", "ArmorEnhancementCombatReadiness4" },
+                { "ArmorEnhancementRecastReduction5", "ArmorEnhancementCombatReadiness5" },
+                { "CookingEnhancementRecastReduction1", "CookingEnhancementCombatReadiness1" },
+                { "CookingEnhancementRecastReduction2", "CookingEnhancementCombatReadiness2" },
+                { "CookingEnhancementRecastReduction3", "CookingEnhancementCombatReadiness3" },
+                { "CookingEnhancementRecastReduction4", "CookingEnhancementCombatReadiness4" },
+                { "CookingEnhancementRecastReduction5", "CookingEnhancementCombatReadiness5" },
+                { "WeaponEnhancementDamage1", "WeaponEnhancementDMGPhysical1" },
+                { "WeaponEnhancementDamage2", "WeaponEnhancementDMGPhysical2" },
+                { "WeaponEnhancementDamage3", "WeaponEnhancementDMGPhysical3" },
+                { "WeaponEnhancementDamage4", "WeaponEnhancementDMGPhysical4" },
+                { "WeaponEnhancementDamage5", "WeaponEnhancementDMGPhysical5" },
+                { "WeaponEnhancementForceDamage1", "WeaponEnhancementDMGForce1" },
+                { "WeaponEnhancementForceDamage2", "WeaponEnhancementDMGForce2" },
+                { "WeaponEnhancementForceDamage3", "WeaponEnhancementDMGForce3" },
+                { "WeaponEnhancementForceDamage4", "WeaponEnhancementDMGForce4" },
+                { "WeaponEnhancementForceDamage5", "WeaponEnhancementDMGForce5" },
+                { "WeaponEnhancementPoisonDamage1", "WeaponEnhancementDMGPoison1" },
+                { "WeaponEnhancementPoisonDamage2", "WeaponEnhancementDMGPoison2" },
+                { "WeaponEnhancementPoisonDamage3", "WeaponEnhancementDMGPoison3" },
+                { "WeaponEnhancementPoisonDamage4", "WeaponEnhancementDMGPoison4" },
+                { "WeaponEnhancementPoisonDamage5", "WeaponEnhancementDMGPoison5" },
+                { "WeaponEnhancementFireDamage1", "WeaponEnhancementDMGFire1" },
+                { "WeaponEnhancementFireDamage2", "WeaponEnhancementDMGFire2" },
+                { "WeaponEnhancementFireDamage3", "WeaponEnhancementDMGFire3" },
+                { "WeaponEnhancementFireDamage4", "WeaponEnhancementDMGFire4" },
+                { "WeaponEnhancementFireDamage5", "WeaponEnhancementDMGFire5" },
+                { "WeaponEnhancementIceDamage1", "WeaponEnhancementDMGIce1" },
+                { "WeaponEnhancementIceDamage2", "WeaponEnhancementDMGIce2" },
+                { "WeaponEnhancementIceDamage3", "WeaponEnhancementDMGIce3" },
+                { "WeaponEnhancementIceDamage4", "WeaponEnhancementDMGIce4" },
+                { "WeaponEnhancementIceDamage5", "WeaponEnhancementDMGIce5" },
+                { "SardineBall", "CookedSardine" },
+            };
+
         private const string SavingThrowPuritiesKey = "SavingThrowPurities";
         private const string SavingThrowWillKey = "Will";
         private const string SavingThrowReflexKey = "Reflex";
@@ -602,6 +646,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
                 WeaponBlueprintPerkMigration.CollapsePlayerPerks(jObject, out var weaponBlueprintRefundAmount);
                 refundAmount += weaponBlueprintRefundAmount;
                 DroidBoostRecipeMigration.ExpandPlayerRecipeDictionaries(jObject);
+                RenameRecipeKeys(jObject);
                 NormalizeLegacyPerkKeys(jObject);
                 SplitDefensesAndResistances(jObject);
                 NormalizeResistanceDictionary(jObject, nameof(Player.Resistances));
@@ -1478,6 +1523,29 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
 
             recastTimes.RemoveAll();
             return true;
+        }
+
+        private static void RenameRecipeKeys(JObject player)
+        {
+            RenameRecipeDictionaryKeys(player[nameof(Player.UnlockedRecipes)] as JObject);
+            RenameRecipeDictionaryKeys(player[nameof(Player.CraftedRecipes)] as JObject);
+        }
+
+        private static void RenameRecipeDictionaryKeys(JObject dictionary)
+        {
+            if (dictionary == null)
+                return;
+
+            foreach (var property in dictionary.Properties().ToList())
+            {
+                if (!RenamedRecipeKeys.TryGetValue(property.Name, out var newRecipeName))
+                    continue;
+
+                if (dictionary[newRecipeName] == null)
+                    dictionary[newRecipeName] = property.Value.DeepClone();
+
+                property.Remove();
+            }
         }
 
         private static void RemoveInvalidEnumDictionaryKeys<TEnum>(JObject dictionary)

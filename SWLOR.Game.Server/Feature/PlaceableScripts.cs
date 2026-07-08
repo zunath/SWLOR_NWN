@@ -212,7 +212,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// Opens the quest contract board for the player who used the placeable.
         /// </summary>
-        [NWNEventHandler("qcontract_board")]
+        [NWNEventHandler(ScriptName.OnQuestContractBoard)]
         public static void UseQuestContractBoard()
         {
             var player = GetLastUsedBy();

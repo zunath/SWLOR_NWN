@@ -80,7 +80,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             Console.WriteLine($"Loaded {_quests.Count} quests.");
-            ExecuteScript("qsts_registered", GetModule());
+            ExecuteScript(ScriptName.OnQuestsRegistered, GetModule());
         }
 
         /// <summary>

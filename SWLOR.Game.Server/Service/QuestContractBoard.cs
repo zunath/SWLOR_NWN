@@ -34,7 +34,7 @@ namespace SWLOR.Game.Server.Service
         /// published contract, expires (and refunds) any which are past their expiration date, and
         /// registers the rest as runtime quests.
         /// </summary>
-        [NWNEventHandler("qsts_registered")]
+        [NWNEventHandler(ScriptName.OnQuestsRegistered)]
         public static void RegisterContracts()
         {
             var query = new DBQuery<QuestContract>()

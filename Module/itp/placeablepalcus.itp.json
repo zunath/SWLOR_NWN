@@ -68122,6 +68122,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Contract Board"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "qcontract_board"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Corpse"
                     },
                     "RESREF": {
@@ -91572,7 +91583,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "<cÿÿÿ><cÿÿ ><cÿ ÿ><c ÿÿ><cÿ  ><c ÿ ><c  ÿ><cÿÿÿ>Color Tag Generator"
+                      "value": "<cï¿½ï¿½ï¿½><cï¿½ï¿½ ><cï¿½ ï¿½><c ï¿½ï¿½><cï¿½  ><c ï¿½ ><c  ï¿½><cï¿½ï¿½ï¿½>Color Tag Generator"
                     },
                     "RESREF": {
                       "type": "resref",

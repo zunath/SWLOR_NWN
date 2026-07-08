@@ -1,5 +1,6 @@
 ﻿using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.DialogDefinition;
+using SWLOR.Game.Server.Feature.GuiDefinition.Component;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
@@ -11,11 +12,13 @@ using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using System.Collections.Generic;
+using System.Linq;
 using Skill = SWLOR.Game.Server.Service.Skill;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
-    public class CharacterSheetViewModel: GuiViewModelBase<CharacterSheetViewModel, CharacterSheetPayload>,
+    public class CharacterSheetViewModel : GuiViewModelBase<CharacterSheetViewModel, CharacterSheetPayload>,
         IGuiRefreshable<ChangePortraitRefreshEvent>,
         IGuiRefreshable<DisguiseChangedRefreshEvent>,
         IGuiRefreshable<SkillXPRefreshEvent>,
@@ -42,7 +45,91 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public const string CraftingTabPartial = "CHARACTER_SHEET_CRAFTING_TAB";
 
         private uint _target;
-        private bool _isSynchronizingTabRows;
+
+        // Tab registration: id -> partial view -> refresh action. Replaces
+        // GetTabPartialName + the RefreshSelectedTabData switch statement that
+        // used to live inside RestoreSelectedTabPartial.
+        private static readonly GuiTabGroup<CharacterSheetViewModel, CharacterSheetPayload> Tabs =
+            new GuiTabGroup<CharacterSheetViewModel, CharacterSheetPayload>()
+                .AddTab(AttributesTabId, AttributesTabPartial)
+                .AddTab(StatsTabId, StatsTabPartial, m => { if (GetIsObjectValid(m._target)) m.RefreshCharacterStatsList(); })
+                .AddTab(ResistancesTabId, ResistancesTabPartial, m => { if (GetIsObjectValid(m._target)) m.RefreshResistances(); })
+                .AddTab(CraftingTabId, CraftingTabPartial, m => { if (GetIsObjectValid(m._target)) m.RefreshCraftingStats(); });
+
+        // Paired-toggle sync: replaces the hand-written _isSynchronizingTabRows
+        // guard. Each group maps its own local toggle index (0/1) to a shared
+        // tab id.
+        private static readonly GuiToggleGroupSync TopToggles = new(AttributesTabId, StatsTabId);
+        private static readonly GuiToggleGroupSync BottomToggles = new(ResistancesTabId, CraftingTabId);
+
+        // Row DTOs for the three tables below - one list of these per refresh,
+        // instead of hand-synced parallel GuiBindingList<string> instances.
+        private sealed class StatEntry
+        {
+            public string Name { get; }
+            public string Value { get; }
+            public string Tooltip { get; }
+
+            public StatEntry(string name, string value, string tooltip)
+            {
+                Name = name;
+                Value = value;
+                Tooltip = tooltip;
+            }
+        }
+
+        private sealed class ResistanceEntry
+        {
+            public string Name { get; }
+            public string Score { get; }
+            public string DamageTaken { get; }
+            public string StatusDuration { get; }
+
+            public ResistanceEntry(string name, string score, string damageTaken, string statusDuration)
+            {
+                Name = name;
+                Score = score;
+                DamageTaken = damageTaken;
+                StatusDuration = statusDuration;
+            }
+        }
+
+        private sealed class CraftEntry
+        {
+            public string Name { get; }
+            public string Control { get; }
+            public string Craftsmanship { get; }
+
+            public CraftEntry(string name, string control, string craftsmanship)
+            {
+                Name = name;
+                Control = control;
+                Craftsmanship = craftsmanship;
+            }
+        }
+
+        // Column mappings: which bound property receives each column, and how
+        // to pull that column's value out of a row DTO. Replaces the 3
+        // hand-rolled parallel-list-building blocks previously duplicated
+        // across RefreshCharacterStatsList / RefreshResistances / RefreshCraftingStats.
+        private static readonly GuiTableSource<CharacterSheetViewModel, StatEntry> StatsTable =
+            new GuiTableSource<CharacterSheetViewModel, StatEntry>()
+                .Column((m, v) => m.StatNames = v, r => r.Name)
+                .Column((m, v) => m.StatValues = v, r => r.Value)
+                .Column((m, v) => m.StatTooltips = v, r => r.Tooltip);
+
+        private static readonly GuiTableSource<CharacterSheetViewModel, ResistanceEntry> ResistancesTable =
+            new GuiTableSource<CharacterSheetViewModel, ResistanceEntry>()
+                .Column((m, v) => m.ResistanceNames = v, r => r.Name)
+                .Column((m, v) => m.ResistanceScores = v, r => r.Score)
+                .Column((m, v) => m.ResistanceDamageTaken = v, r => r.DamageTaken)
+                .Column((m, v) => m.ResistanceStatusDurations = v, r => r.StatusDuration);
+
+        private static readonly GuiTableSource<CharacterSheetViewModel, CraftEntry> CraftingTable =
+            new GuiTableSource<CharacterSheetViewModel, CraftEntry>()
+                .Column((m, v) => m.CraftNames = v, r => r.Name)
+                .Column((m, v) => m.CraftControls = v, r => r.Control)
+                .Column((m, v) => m.CraftCraftsmanship = v, r => r.Craftsmanship);
 
         public int SelectedTabId
         {
@@ -50,9 +137,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set
             {
                 Set(value);
-                RefreshTabRowSelection();
 
-                RestoreSelectedTabPartial();
+                // Drive both toggle-pair properties to reflect the new
+                // selection (or -1 if this tab isn't in that pair).
+                TopToggles.SyncTo(value, v => TopTabId = v);
+                BottomToggles.SyncTo(value, v => BottomTabId = v);
+
+                // Runs the tab's refresh action, then swaps the nested
+                // partial via the safe double-reapply path.
+                Tabs.Select(this, TabContentPartialElement, value);
             }
         }
 
@@ -62,11 +155,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set
             {
                 Set(value);
-
-                if (_isSynchronizingTabRows || value < 0)
-                    return;
-
-                SelectTab(value == 0 ? AttributesTabId : StatsTabId);
+                TopToggles.HandleClientChange(value, tabId => SelectedTabId = tabId);
             }
         }
 
@@ -76,11 +165,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set
             {
                 Set(value);
-
-                if (_isSynchronizingTabRows || value < 0)
-                    return;
-
-                SelectTab(value == 0 ? ResistancesTabId : CraftingTabId);
+                BottomToggles.HandleClientChange(value, tabId => SelectedTabId = tabId);
             }
         }
 
@@ -562,78 +647,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 }
                 finally
                 {
-                    RestoreSelectedTabPartial();
+                    // Modal closed - reapply the currently selected tab's
+                    // nested partial (data + view), same as before, but via
+                    // the shared tab group instead of a bespoke method.
+                    Tabs.Select(this, TabContentPartialElement, SelectedTabId);
                 }
-            }, RestoreSelectedTabPartial);
-        }
-
-        private void SelectTab(int tabId)
-        {
-            if (SelectedTabId == tabId)
-            {
-                RefreshTabRowSelection();
-                RestoreSelectedTabPartial();
-                return;
-            }
-
-            SelectedTabId = tabId;
-        }
-
-        private void RefreshTabRowSelection()
-        {
-            _isSynchronizingTabRows = true;
-
-            TopTabId = SelectedTabId switch
-            {
-                AttributesTabId => 0,
-                StatsTabId => 1,
-                _ => -1
-            };
-
-            BottomTabId = SelectedTabId switch
-            {
-                ResistancesTabId => 0,
-                CraftingTabId => 1,
-                _ => -1
-            };
-
-            _isSynchronizingTabRows = false;
-        }
-
-        private void RestoreSelectedTabPartial()
-        {
-            void RefreshSelectedTabData()
-            {
-                if (!GetIsObjectValid(_target))
-                    return;
-
-                if (SelectedTabId == StatsTabId)
-                {
-                    RefreshCharacterStatsList();
-                }
-                else if (SelectedTabId == ResistancesTabId)
-                {
-                    RefreshResistances();
-                }
-                else if (SelectedTabId == CraftingTabId)
-                {
-                    RefreshCraftingStats();
-                }
-            }
-
-            void ApplySelectedTabPartial()
-            {
-                RefreshSelectedTabData();
-                ChangePartialView(TabContentPartialElement, GetTabPartialName(SelectedTabId));
-                RefreshSelectedTabData();
-            }
-
-            // Use the same root redraw path as modal close/open before replacing the nested tab panel.
-            ChangePartialView("_window_", "%%WINDOW_MAIN%%");
-            ApplySelectedTabPartial();
-            // NUI can drop nested partial layouts while its parent is being redrawn.
-            // Reapply on the next tick so tab switches use the same refresh path as modal swaps.
-            DelayCommand(0.0f, ApplySelectedTabPartial);
+            }, () => Tabs.Select(this, TabContentPartialElement, SelectedTabId));
         }
 
         private bool IsAttributeUpgradeAvailable(Player dbPlayer, AbilityType ability, bool isRacialBonusAvailable)
@@ -739,7 +758,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void RefreshEquipmentStats()
         {
             // Builds a damage estimate using the player's stats as a baseline.
-            (string, string) GetCombatInfo( uint item)
+            (string, string) GetCombatInfo(uint item)
             {
                 var itemType = GetBaseItemType(item);
                 var skill = Skill.GetSkillTypeByBaseItem(itemType);
@@ -860,43 +879,33 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void RefreshCharacterStatsList()
         {
-            var names = new GuiBindingList<string>();
-            var values = new GuiBindingList<string>();
-            var tooltips = new GuiBindingList<string>();
-
-            void AddStat(string name, string value, string tooltip)
-            {
-                names.Add(name);
-                values.Add(value);
-                tooltips.Add(tooltip);
-            }
-
             var combatProfile = GetPrimaryCombatProfile();
 
-            AddStat("HP Regen", GetHPRegenValue().ToString(), "Amount of HP restored automatically by natural regeneration.");
-            AddStat("FP Regen", GetFPRegenValue().ToString(), "Amount of FP restored automatically by natural regeneration.");
-            AddStat("STM Regen", GetStaminaRegenValue().ToString(), "Amount of STM restored automatically by natural regeneration.");
-            AddStat("Combat Readiness", FormatPercent(Stat.GetCombatReadinessPercent(_target)), "Increases activated ability damage and healing. Does not reduce cooldowns.");
-            AddStat("Shield Deflection", FormatPercent(Stat.GetShieldDeflectionChance(_target)), "Ability to deflect attacks with a shield.");
-            AddStat("Attack Deflection", FormatPercent(Stat.GetAttackDeflectionChance(_target)), "Chance to deflect attacks while wielding a weapon without a shield.");
-            AddStat("Guard", FormatPercent(Stat.GetGuardChance(_target)), "Chance to reduce damage by 20% and increase enmity gain.");
-            AddStat("Phys. Taken", FormatPercent(GetDamageTakenPercent(CombatDamageType.Physical)), "Incoming physical damage modifier after damage-taken effects. Lower is better.");
-            AddStat("Force Taken", FormatPercent(GetDamageTakenPercent(CombatDamageType.Force)), "Incoming Force damage modifier after damage-taken effects. Lower is better.");
-            AddStat("Ability Accuracy", FormatPercent(Stat.GetStatAdjustment(_target, StatType.PhysicalAndForceAbilityHitChancePercentAdjustment)), "Hit chance adjustment for physical weapon and Force abilities.");
-            AddStat("Critical Rate", FormatPercent(GetCriticalRate(combatProfile.Skill)), "Increases the chance to score a critical hit. Actual chance varies by target Vitality.");
-            AddStat("Critical Damage", FormatPercent(Stat.GetStatAdjustment(_target, StatType.CriticalDamagePercentAdjustment)), "Increases the amount of damage a critical hit deals.");
-            AddStat("Enmity", FormatPercent(Stat.GetStatAdjustment(_target, StatType.EnmityPercentAdjustment)), "Increases or decreases the rate at which enmity is acquired.");
-            AddStat("Haste", FormatPercent(Combat.CalculateAttackDelayReduction(_target)), "Increases attack speed. Negative values slow attacks.");
-            AddStat("Ranged Evasion", FormatPercent(Stat.GetStatAdjustment(_target, StatType.RangedEvasionPercentAdjustment)), "Evasion adjustment against ranged attacks.");
-            AddStat("Slow", GetEffectStateLabel(EffectTypeScript.Slow), "Reduces attack speed.");
-            AddStat("Paralysis", GetEffectStateLabel(EffectTypeScript.Paralyze), "Prevents auto attacks and other actions.");
-            AddStat("Movement Speed", FormatMultiplier(Stat.GetMovementSpeedMultiplier(_target)), "Increases or decreases your movement speed.");
-            AddStat("Force Evasion", FormatPercent(GetForceEvasion()), "Percent chance to completely evade a detrimental force ability.");
-            AddStat("Force Affinity", Perk.GetForceAffinity(_target).ToString(), "Affects Force ability effectiveness based on type. Range: -10 to 10. Negative represents Dark-side and positive represents Light-side.");
+            var rows = new List<StatEntry>
+            {
+                new("HP Regen", GetHPRegenValue().ToString(), "Amount of HP restored automatically by natural regeneration."),
+                new("FP Regen", GetFPRegenValue().ToString(), "Amount of FP restored automatically by natural regeneration."),
+                new("STM Regen", GetStaminaRegenValue().ToString(), "Amount of STM restored automatically by natural regeneration."),
+                new("Combat Readiness", FormatPercent(Stat.GetCombatReadinessPercent(_target)), "Increases activated ability damage and healing. Does not reduce cooldowns."),
+                new("Shield Deflection", FormatPercent(Stat.GetShieldDeflectionChance(_target)), "Ability to deflect attacks with a shield."),
+                new("Attack Deflection", FormatPercent(Stat.GetAttackDeflectionChance(_target)), "Chance to deflect attacks while wielding a weapon without a shield."),
+                new("Guard", FormatPercent(Stat.GetGuardChance(_target)), "Chance to reduce damage by 20% and increase enmity gain."),
+                new("Phys. Taken", FormatPercent(GetDamageTakenPercent(CombatDamageType.Physical)), "Incoming physical damage modifier after damage-taken effects. Lower is better."),
+                new("Force Taken", FormatPercent(GetDamageTakenPercent(CombatDamageType.Force)), "Incoming Force damage modifier after damage-taken effects. Lower is better."),
+                new("Ability Accuracy", FormatPercent(Stat.GetStatAdjustment(_target, StatType.PhysicalAndForceAbilityHitChancePercentAdjustment)), "Hit chance adjustment for physical weapon and Force abilities."),
+                new("Critical Rate", FormatPercent(GetCriticalRate(combatProfile.Skill)), "Increases the chance to score a critical hit. Actual chance varies by target Vitality."),
+                new("Critical Damage", FormatPercent(Stat.GetStatAdjustment(_target, StatType.CriticalDamagePercentAdjustment)), "Increases the amount of damage a critical hit deals."),
+                new("Enmity", FormatPercent(Stat.GetStatAdjustment(_target, StatType.EnmityPercentAdjustment)), "Increases or decreases the rate at which enmity is acquired."),
+                new("Haste", FormatPercent(Combat.CalculateAttackDelayReduction(_target)), "Increases attack speed. Negative values slow attacks."),
+                new("Ranged Evasion", FormatPercent(Stat.GetStatAdjustment(_target, StatType.RangedEvasionPercentAdjustment)), "Evasion adjustment against ranged attacks."),
+                new("Slow", GetEffectStateLabel(EffectTypeScript.Slow), "Reduces attack speed."),
+                new("Paralysis", GetEffectStateLabel(EffectTypeScript.Paralyze), "Prevents auto attacks and other actions."),
+                new("Movement Speed", FormatMultiplier(Stat.GetMovementSpeedMultiplier(_target)), "Increases or decreases your movement speed."),
+                new("Force Evasion", FormatPercent(GetForceEvasion()), "Percent chance to completely evade a detrimental force ability."),
+                new("Force Affinity", Perk.GetForceAffinity(_target).ToString(), "Affects Force ability effectiveness based on type. Range: -10 to 10. Negative represents Dark-side and positive represents Light-side.")
+            };
 
-            StatNames = names;
-            StatValues = values;
-            StatTooltips = tooltips;
+            StatsTable.Refresh(this, rows);
         }
 
         private (AbilityType DamageAbility, AbilityType AccuracyAbilityOverride, SkillType Skill, uint AccuracyWeapon) GetPrimaryCombatProfile()
@@ -1057,47 +1066,26 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             };
         }
 
-        private static string GetTabPartialName(int tabId)
-        {
-            return tabId switch
-            {
-                StatsTabId => StatsTabPartial,
-                ResistancesTabId => ResistancesTabPartial,
-                CraftingTabId => CraftingTabPartial,
-                _ => AttributesTabPartial
-            };
-        }
-
         private void RefreshResistances()
         {
-            var names = new GuiBindingList<string>();
-            var scores = new GuiBindingList<string>();
-            var damageTaken = new GuiBindingList<string>();
-            var statusDurations = new GuiBindingList<string>();
-
-            foreach (var resistanceType in Resistance.GetAllResistanceTypes())
+            var rows = Resistance.GetAllResistanceTypes().Select(resistanceType =>
             {
                 var score = Resistance.GetResistance(_target, resistanceType);
                 var takenPercent = (int)Math.Round(Resistance.CalculateResistanceDamageMultiplier(_target, resistanceType) * 100f);
 
-                names.Add(resistanceType.ToString());
-                scores.Add(score.ToString());
-                damageTaken.Add($"{takenPercent}% taken");
-                statusDurations.Add(GetStatusDurationLabel(score));
-            }
+                return new ResistanceEntry(
+                    resistanceType.ToString(),
+                    score.ToString(),
+                    $"{takenPercent}% taken",
+                    GetStatusDurationLabel(score));
+            });
 
-            ResistanceNames = names;
-            ResistanceScores = scores;
-            ResistanceDamageTaken = damageTaken;
-            ResistanceStatusDurations = statusDurations;
-
+            ResistancesTable.Refresh(this, rows);
         }
 
         private void RefreshCraftingStats()
         {
-            var names = new GuiBindingList<string>();
-            var controls = new GuiBindingList<string>();
-            var craftsmanship = new GuiBindingList<string>();
+            var rows = new List<CraftEntry>();
             var legacyControl = string.Empty;
             var legacyCraftsmanship = string.Empty;
 
@@ -1107,18 +1095,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var control = Stat.CalculateControl(_target, skillType);
                 var craft = Stat.CalculateCraftsmanship(_target, skillType);
 
-                names.Add(detail.Name);
-                controls.Add(control.ToString());
-                craftsmanship.Add(craft.ToString());
+                rows.Add(new CraftEntry(detail.Name, control.ToString(), craft.ToString()));
 
                 legacyControl += index == 0 ? control.ToString() : $"/{control}";
                 legacyCraftsmanship += index == 0 ? craft.ToString() : $"/{craft}";
                 index++;
             }
 
-            CraftNames = names;
-            CraftControls = controls;
-            CraftCraftsmanship = craftsmanship;
+            CraftingTable.Refresh(this, rows);
             Control = legacyControl;
             Craftsmanship = legacyCraftsmanship;
         }

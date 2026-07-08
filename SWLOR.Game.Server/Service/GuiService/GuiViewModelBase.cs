@@ -7,9 +7,9 @@ using SWLOR.Game.Server.Service.GuiService.Component;
 
 namespace SWLOR.Game.Server.Service.GuiService
 {
-    public abstract class GuiViewModelBase<TDerived, TPayload>: IGuiViewModel, INotifyPropertyChanged
-        where TDerived: GuiViewModelBase<TDerived, TPayload>
-        where TPayload: GuiPayloadBase
+    public abstract class GuiViewModelBase<TDerived, TPayload> : IGuiViewModel, INotifyPropertyChanged
+        where TDerived : GuiViewModelBase<TDerived, TPayload>
+        where TPayload : GuiPayloadBase
     {
         public uint TetherObject { get; private set; }
 
@@ -46,7 +46,7 @@ namespace SWLOR.Game.Server.Service.GuiService
         /// <typeparam name="T">The type of data to retrieve</typeparam>
         /// <param name="propertyName">The name of the property.</param>
         /// <returns>The retrieved object.</returns>
-        protected T Get<T>([CallerMemberName]string propertyName = null)
+        protected T Get<T>([CallerMemberName] string propertyName = null)
         {
             if (string.IsNullOrWhiteSpace(propertyName))
                 return default(T);
@@ -63,7 +63,7 @@ namespace SWLOR.Game.Server.Service.GuiService
         /// <typeparam name="T">The type of data to set.</typeparam>
         /// <param name="value">The new value to set.</param>
         /// <param name="propertyName">The name of the property.</param>
-        protected void Set<T>(T value, [CallerMemberName]string propertyName = null)
+        protected void Set<T>(T value, [CallerMemberName] string propertyName = null)
         {
             if (string.IsNullOrWhiteSpace(propertyName))
             {
@@ -144,13 +144,13 @@ namespace SWLOR.Game.Server.Service.GuiService
                 _propertyValues[propertyName].IsGuiList = true;
             }
 
-            if(!_propertyValues[propertyName].SkipNotify)
+            if (!_propertyValues[propertyName].SkipNotify)
                 OnPropertyChanged(propertyName);
         }
 
         private void OnListChanged(object sender, ListChangedEventArgs e)
         {
-            var list = ((IGuiBindingList) sender);
+            var list = ((IGuiBindingList)sender);
             OnPropertyChanged(list.PropertyName);
         }
 
@@ -325,6 +325,40 @@ namespace SWLOR.Game.Server.Service.GuiService
             NuiSetGroupLayout(Player, WindowToken, elementId, partial);
 
             ApplyRefreshBugFix();
+        }
+
+        /// <summary>
+        /// Swaps a partial view that is nested inside another partial (e.g. a
+        /// tab's content area within a window whose own root is a partial).
+        /// NUI can silently drop a nested partial layout while its parent is
+        /// being redrawn. This forces a root redraw first, applies the target
+        /// partial, then reapplies it once more on the next tick to guarantee
+        /// it survives the parent's redraw pass.
+        /// </summary>
+        /// <param name="elementId">The nested element id to change.</param>
+        /// <param name="partialName">The partial view to apply.</param>
+        /// <param name="onBeforeApply">
+        /// Optional callback run immediately before each apply (e.g. to refresh
+        /// the data the partial will display). Runs twice - once per apply -
+        /// matching the existing RestoreSelectedTabPartial behavior.
+        /// </param>
+        /// <remarks>
+        /// Public rather than protected: orchestrator helpers like GuiTabGroup
+        /// live outside the ViewModel's own type hierarchy and need to call
+        /// this from the outside, the same way ChangePartialView already is.
+        /// </remarks>
+        public void SwapNestedPartialView(string elementId, string partialName, Action onBeforeApply = null)
+        {
+            void Apply()
+            {
+                onBeforeApply?.Invoke();
+                ChangePartialView(elementId, partialName);
+            }
+
+            ChangePartialView("_window_", "%%WINDOW_MAIN%%");
+            Apply();
+
+            DelayCommand(0.0f, Apply);
         }
 
 

@@ -47234,7 +47234,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Social Adaption I"
+                      "value": "Social Adaptation I"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -47245,7 +47245,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Social Adaption II"
+                      "value": "Social Adaptation II"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -59502,7 +59502,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Blueprint: Social Adaption I"
+                      "value": "Blueprint: Social Adaptation I"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -59513,7 +59513,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Blueprint: Social Adaption II"
+                      "value": "Blueprint: Social Adaptation II"
                     },
                     "RESREF": {
                       "type": "resref",

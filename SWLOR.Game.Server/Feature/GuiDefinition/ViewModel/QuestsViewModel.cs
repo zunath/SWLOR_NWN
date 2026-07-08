@@ -64,7 +64,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
 
                 var dbPlayerQuest = dbPlayer.Quests[questId];
-                var questDetail = Quest.GetQuestById(questId);
+                var questDetail = Quest.GetQuestByIdOrDefault(questId);
+
+                if (questDetail == null)
+                {
+                    SelectedQuestIndex = -1;
+                    ActiveQuestName = "[Select a Quest]";
+                    ActiveQuestDescription = "[Select a Quest]";
+                    IsAbandonQuestEnabled = false;
+                    return;
+                }
 
                 ActiveQuestName = questDetail.Name;
                 ActiveQuestDescription = BuildDescription(questDetail, dbPlayerQuest.CurrentState);
@@ -116,7 +125,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 if (quest.DateLastCompleted != null)
                     continue;
 
-                var questDetail = Quest.GetQuestById(questId);
+                var questDetail = Quest.GetQuestByIdOrDefault(questId);
+
+                // Quest definition no longer exists (e.g. an expired quest contract). Skip it.
+                if (questDetail == null)
+                    continue;
+
                 if (!string.IsNullOrWhiteSpace(SearchText))
                 {
                     if (!questDetail.Name.ToLower().Contains(SearchText))

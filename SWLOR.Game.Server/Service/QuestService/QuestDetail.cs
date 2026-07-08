@@ -25,6 +25,13 @@ namespace SWLOR.Game.Server.Service.QuestService
         public int GuildRank { get; set; } = -1;
         public bool AllowRewardSelection { get; set; }
 
+        /// <summary>
+        /// When set, invoked with the player and the item just before a turned-in collect-item objective item
+        /// is consumed/destroyed. Null for all static quests. Used by systems (such as quest contracts) which
+        /// need to reroute turned-in items instead of letting them be destroyed outright.
+        /// </summary>
+        public Action<uint, uint> CollectedItemHandler { get; set; }
+
         public List<IQuestReward> Rewards { get; } = new List<IQuestReward>();
         public List<IQuestPrerequisite> Prerequisites { get; } = new List<IQuestPrerequisite>();
         public List<KeyItemType> KeyItemsRemovedOnAbandon { get; } = new();

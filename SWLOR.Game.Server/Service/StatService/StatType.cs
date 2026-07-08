@@ -4965,10 +4965,16 @@ namespace SWLOR.Game.Server.Service.StatService
         FirstHostileAbilityHitDamageBonus = 862,
 
         /// <summary>
-        /// Number of hostile ability hits per combat engagement that receive FirstHostileAbilityHitDamageBonus.
+        /// Number of hostile ability hits (stacks) that receive FirstHostileAbilityHitDamageBonus before the window is exhausted.
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
         FirstHostileAbilityHitMaximumCount = 863,
+
+        /// <summary>
+        /// Seconds after the FirstHostileAbilityHitMaximumCount stacks are exhausted before the stacks recharge. 0 recharges only on leaving combat.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        FirstHostileAbilityHitCooldownSeconds = 886,
 
         /// <summary>
         /// Flat Stamina restored by the first attack in combat.

@@ -46,6 +46,7 @@ This file is the shared rule set for all coding agents. Codex reads it natively;
 ## Design Bible
 
 - Follow `SWLOR.Game.Server/Readmes/DesignBibleWorkbookRules.md` when editing any Design Bible workbook.
+- Never edit a Design Bible workbook with `openpyxl` (or any library that rewrites the whole workbook without recalculating formulas). It discards the cached formula-result values on every formula cell: the perk sync tests still pass (text tabs have no formulas), but formula-backed tabs silently lose their cached numbers and break tests such as `NPCEnemyBalanceAuditTests`. These workbooks are Google Sheets exports that store text as inline strings, so edit the target cells surgically at the zip/XML level (cells look like `<c r="G31" s="..." t="inlineStr"><is><t>TEXT</t></is></c>`) and repackage copying every other zip entry byte-for-byte, so untouched sheets keep their cached values. The `tools/UpdateCombatUpgradeAudit.ps1 -RefreshLocalBible` formatter preserves caches and is safe to run afterward.
 - After editing `design/bible/SWLOR Design Bible - Combat Upgrade.xlsx`, run `powershell -ExecutionPolicy Bypass -File tools/UpdateCombatUpgradeAudit.ps1 -RefreshLocalBible` to refresh `SWLOR.Game.Server/Readmes/CombatUpgradeBiblePerkManifest.csv` and `SWLOR.Game.Server/Readmes/CombatUpgradePerkAudit.csv` from the local workbook.
 
 ## Full Rebuild Changes

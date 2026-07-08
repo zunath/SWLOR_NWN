@@ -400,7 +400,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
                 if (consumed)
                 {
-                    SendMessageToPC(activator, "You consume your Shadow Toxin and Infection setup.");
+                    SendMessageToPC(activator, "You consume your Venom and Infection setup.");
                 }
             }
 

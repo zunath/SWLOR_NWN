@@ -1215,7 +1215,7 @@
 "StatusEffect","SereneFocusStatusEffect","Serene Focus","Beneficial","","ief_srnfoc","SWLOR.Game.Server\Feature\StatusEffectDefinition\SereneFocusStatusEffect.cs"
 "StatusEffect","ShadowflowStanceStatusEffect","Shadowflow Stance","Beneficial","","ief_shdwflwstnc","SWLOR.Game.Server\Feature\StatusEffectDefinition\ShadowflowStanceStatusEffect.cs"
 "StatusEffect","ShadowStrikeStatusEffect","Shadow Strike","Harmful","","ief_shdwstrk","SWLOR.Game.Server\Feature\StatusEffectDefinition\ShadowStrikeStatusEffect.cs"
-"StatusEffect","ShadowToxinStatusEffect","Shadow Toxin","Harmful","","ief_shdtxn","SWLOR.Game.Server\Feature\StatusEffectDefinition\ShadowToxinStatusEffect.cs"
+"StatusEffect","VenomStatusEffect","Venom","Harmful","","ief_vnm","SWLOR.Game.Server\Feature\StatusEffectDefinition\VenomStatusEffect.cs"
 "StatusEffect","ShelterCircleStatusEffect","Shelter Circle","Beneficial","","ief_shelcirc","SWLOR.Game.Server\Feature\StatusEffectDefinition\ShelterCircleStatusEffect.cs"
 "StatusEffect","Shielding1StatusEffect","Shielding I","Beneficial","1","ief_shld1","SWLOR.Game.Server\Feature\StatusEffectDefinition\Shielding1StatusEffect.cs"
 "StatusEffect","Shielding2StatusEffect","Shielding II","Beneficial","2","ief_shld2","SWLOR.Game.Server\Feature\StatusEffectDefinition\Shielding2StatusEffect.cs"

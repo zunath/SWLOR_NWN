@@ -108,16 +108,16 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ExecutionerTrait)
-                .Description("Deal +15% damage to targets below 30% HP.")
-                .IncreasesStat(StatType.TargetLowHPDamageThresholdPercent, 30)
-                .IncreasesStat(StatType.TargetLowHPDamagePercentAdjustment, 15)
+                .Description("Deal +8% damage to targets below 25% HP.")
+                .IncreasesStat(StatType.TargetLowHPDamageThresholdPercent, 25)
+                .IncreasesStat(StatType.TargetLowHPDamagePercentAdjustment, 8)
                 .Price(2)
                 .RequirementSkill(SkillType.Vibroblade, 5)
 
                 .AddPerkLevel()
-                .Description("Deal +15% damage to targets below 50% HP.")
-                .IncreasesStat(StatType.TargetLowHPDamageThresholdPercent, 50)
-                .IncreasesStat(StatType.TargetLowHPDamagePercentAdjustment, 15)
+                .Description("Deal +10% damage to targets below 25% HP.")
+                .IncreasesStat(StatType.TargetLowHPDamageThresholdPercent, 25)
+                .IncreasesStat(StatType.TargetLowHPDamagePercentAdjustment, 10)
                 .Price(2)
                 .RequirementSkill(SkillType.Vibroblade, 35);
         }

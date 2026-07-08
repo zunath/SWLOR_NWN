@@ -176,7 +176,7 @@ ABILITY_FOLDER_BY_TAB = {
 }
 
 STATUS_KEYWORDS = [
-    ("Shadow Toxin", "ShadowToxinStatusEffect"),
+    ("Venom", "VenomStatusEffect"),
     ("Poison Resistance", "PoisonResistancePenaltyStatusEffect"),
     ("Force Disruption", "ForceDisruptionStatusEffect"),
     ("Foggy Mind", "FoggyMindStatusEffect"),
@@ -637,10 +637,7 @@ def parse_suppression_stack_evasion_penalty(description):
 
 def status_types(description):
     result = []
-    lowered = description.lower()
     for keyword, status_type in STATUS_KEYWORDS:
-        if keyword == "Toxin" and "shadow toxin" in lowered:
-            continue
         if re.search(rf"\b{re.escape(keyword)}\b", description, re.IGNORECASE) and status_type not in result:
             result.append(status_type)
     return result
@@ -786,13 +783,13 @@ def description_stat_entries(row, base):
         return list(stats.items())
 
     if base == "Hypermetabolize":
-        add_stat(stats, "SourceStatusHealingReceivedRequiredCategory", status_category_expression("ShadowToxin"))
+        add_stat(stats, "SourceStatusHealingReceivedRequiredCategory", status_category_expression("Venom"))
         add_stat(stats, "SourceStatusHealingReceivedPercentAdjustment", "-15")
     if base == "Debilitate":
-        add_stat(stats, "AbilityDamageToSourceAppliedStatusTargetBonusCategory", status_category_expression("ShadowToxin"))
+        add_stat(stats, "AbilityDamageToSourceAppliedStatusTargetBonusCategory", status_category_expression("Venom"))
         add_stat(stats, "AbilityDamageToSourceAppliedStatusTargetBonus", parse_count(r"\+(\d+) DMG", description))
     if base == "Infection":
-        add_stat(stats, "SourceStatusStackRequiredCategory", status_category_expression("ShadowToxin"))
+        add_stat(stats, "SourceStatusStackRequiredCategory", status_category_expression("Venom"))
         add_stat(stats, "SourceStatusStackAppliedCategory", status_category_expression("Infection"))
         add_stat(stats, "SourceStatusStackMaximum", parse_count(r"max (\d+) stacks", description) or 5)
         add_stat(stats, "SourceStatusStackDurationSeconds", parse_count(r"Stacks last (\d+) seconds", description) or 18)
@@ -800,7 +797,7 @@ def description_stat_entries(row, base):
         add_stat(stats, "HostileAbilityHitNextAutoAttackNoDelaySkillType", skill_expr)
         add_stat(stats, "HostileAbilityHitNextAutoAttackNoDelayDurationSeconds", parse_duration(description) or 30)
     if base == "Propagation":
-        add_stat(stats, "SourceStatusAutoAttackCycleRequiredCategory", status_category_expression("ShadowToxin"))
+        add_stat(stats, "SourceStatusAutoAttackCycleRequiredCategory", status_category_expression("Venom"))
         add_stat(stats, "SourceStatusAutoAttackCycleSkillType", skill_expr)
         add_stat(stats, "SourceStatusAutoAttackCycleRequiredCount", first_int(r"Every (\d+) auto-attack", description) or 3)
         add_stat(stats, "SourceStatusAutoAttackCycleDamage", parse_count(r"additional \+(\d+)(?: Poison)? DMG", description))
@@ -811,7 +808,8 @@ def description_stat_entries(row, base):
         add_stat(stats, "HostileAbilityUsedAttackPercentAdjustmentMaximum", parse_percent(r"up to (\d+)%", description) or 15)
     if base == "First Strike":
         add_stat(stats, "FirstHostileAbilityHitDamageBonus", parse_count(r"deal \+(\d+) DMG", description))
-        add_stat(stats, "FirstHostileAbilityHitMaximumCount", parse_count(r"first (\d+) Abilities", description) or 3)
+        add_stat(stats, "FirstHostileAbilityHitMaximumCount", parse_count(r"first (\d+) Abilities", description) or parse_count(r"grants (\d+) stacks", description) or 3)
+        add_stat(stats, "FirstHostileAbilityHitCooldownSeconds", parse_cooldown(description, 90))
     if base == "Venatic Recovery":
         add_stat(stats, "FirstCombatAttackStaminaRestore", parse_count(r"restores (\d+) STM", description))
         add_stat(stats, "FirstCombatAttackStaminaRestoreCooldownSeconds", parse_cooldown(description, 60))
@@ -1680,7 +1678,7 @@ def profile_property_lines(row, level, primary_status):
     if base == "Pathogen Strike":
         add_profile_property(
             "SourceStatusEffectsToExtend",
-            "new[] { typeof(ShadowToxinStatusEffect), typeof(InfectionStatusEffect) }")
+            "new[] { typeof(VenomStatusEffect), typeof(InfectionStatusEffect) }")
         add_profile_property("SourceStatusExtensionSeconds", str(parse_count(r"by (\d+) seconds", description)))
 
     if base == "Veiled Strike":
@@ -1694,7 +1692,7 @@ def profile_property_lines(row, level, primary_status):
         add_profile_property("RequireBehindForConditionalStatus", "true")
 
     if base == "Viral Cascade":
-        add_profile_property("ExtraDamageSourceStatusEffect", "typeof(ShadowToxinStatusEffect)")
+        add_profile_property("ExtraDamageSourceStatusEffect", "typeof(VenomStatusEffect)")
         add_profile_property("ExtraDamageIfSourceStatusEffect", str(first_int(r"additional \+\s*(\d+) (?:Damage|DMG)", description)))
         add_profile_property("ExtraDamageSourceStackStatusEffect", "typeof(InfectionStatusEffect)")
         add_profile_property(
@@ -2884,7 +2882,7 @@ def generate_ability_definitions(rows, feat_values, recast_values):
             if base in {"Pathogen Strike", "Viral Cascade"}:
                 statuses = [
                     status for status in statuses
-                    if status not in {"ShadowToxinStatusEffect", "InfectionStatusEffect", "ToxinStatusEffect"}
+                    if status not in {"VenomStatusEffect", "InfectionStatusEffect", "ToxinStatusEffect"}
                 ]
             if base == "Backstab":
                 statuses = [status for status in statuses if status != "KnockdownStatusEffect"]

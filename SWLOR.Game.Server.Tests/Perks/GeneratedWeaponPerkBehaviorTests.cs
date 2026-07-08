@@ -22,9 +22,9 @@ public class GeneratedWeaponPerkBehaviorTests
         AssertSourceStat("VibrobladePerkDefinition.cs", StatType.RepeatedTargetDamageAutoAttackOnly, "1");
         AssertSourceContains("VibrobladePerkDefinition.cs", "EquipmentPredicates.HasOffHandShield(creature) ? 35 : 0");
 
-        AssertSourceStat("VibroknifePerkDefinition.cs", StatType.SourceStatusHealingReceivedRequiredCategory, "(int)StatusEffectCategory.ShadowToxin");
+        AssertSourceStat("VibroknifePerkDefinition.cs", StatType.SourceStatusHealingReceivedRequiredCategory, "(int)StatusEffectCategory.Venom");
         AssertSourceStat("VibroknifePerkDefinition.cs", StatType.SourceStatusHealingReceivedPercentAdjustment, "-15");
-        AssertSourceStat("VibroknifePerkDefinition.cs", StatType.SourceStatusStackRequiredCategory, "(int)StatusEffectCategory.ShadowToxin");
+        AssertSourceStat("VibroknifePerkDefinition.cs", StatType.SourceStatusStackRequiredCategory, "(int)StatusEffectCategory.Venom");
         AssertSourceStat("VibroknifePerkDefinition.cs", StatType.SourceStatusStackAppliedCategory, "(int)StatusEffectCategory.Infection");
         AssertSourceStat("VibroknifePerkDefinition.cs", StatType.SourceStatusStackMaximum, "5");
         AssertSourceStat("VibroknifePerkDefinition.cs", StatType.AbilityDamageToSourceAppliedStatusTargetBonus, "12");
@@ -465,12 +465,12 @@ public class GeneratedWeaponPerkBehaviorTests
         abilitySource.Should().Contain("beforeSuccessfulImpactRiders");
 
         var bleedSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "StatusEffectDefinition", "BleedStatusEffect.cs"));
-        var shadowToxinSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "StatusEffectDefinition", "ShadowToxinStatusEffect.cs"));
+        var venomSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "StatusEffectDefinition", "VenomStatusEffect.cs"));
         var infectionSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "StatusEffectDefinition", "InfectionStatusEffect.cs"));
         var suppressionSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "StatusEffectDefinition", "SuppressionStatusEffect.cs"));
         bleedSource.Should().Contain("WasNaturallyExpired");
-        shadowToxinSource.Should().Contain("EffectDamage(damageAmount, CombatDamageType.Poison.GetNWScriptDamageType())");
-        shadowToxinSource.Should().Contain("Combat.ApplyDamageTypeDealtModifiers(source, DamagePerTick, CombatDamageType.Poison)");
+        venomSource.Should().Contain("EffectDamage(damageAmount, CombatDamageType.Poison.GetNWScriptDamageType())");
+        venomSource.Should().Contain("Combat.ApplyDamageTypeDealtModifiers(source, DamagePerTick, CombatDamageType.Poison)");
         infectionSource.Should().Contain("public int Stacks");
         infectionSource.Should().Contain("DamagePerStack * Math.Max(1, Stacks)");
         infectionSource.Should().Contain("EffectDamage(damageAmount, CombatDamageType.Poison.GetNWScriptDamageType())");
@@ -520,8 +520,8 @@ public class GeneratedWeaponPerkBehaviorTests
         AssertAbilitySourceContains(root, "Staff", "UnmovingCenterAbilityDefinition.cs", "SelfKnockdownDazedImmunityDurationSeconds = 45");
         AssertAbilitySourceContains(root, "Spear", "CripplingDefenseAbilityDefinition.cs", "TemporaryCostlyAbilityExposedDurationSeconds = 30");
         AssertAbilitySourceContains(root, "Staff", "WorldbreakerAbilityDefinition.cs", "RequiredTargetStatusCategoryForConditionalStatus = StatusEffectCategory.Control");
-        AssertAbilitySourceContains(root, "Vibroknife", "PathogenStrikeAbilityDefinition.cs", "SourceStatusEffectsToExtend = new[] { typeof(ShadowToxinStatusEffect), typeof(InfectionStatusEffect) }");
-        AssertAbilitySourceContains(root, "Vibroknife", "ViralCascadeAbilityDefinition.cs", "ExtraDamageSourceStatusEffect = typeof(ShadowToxinStatusEffect)");
+        AssertAbilitySourceContains(root, "Vibroknife", "PathogenStrikeAbilityDefinition.cs", "SourceStatusEffectsToExtend = new[] { typeof(VenomStatusEffect), typeof(InfectionStatusEffect) }");
+        AssertAbilitySourceContains(root, "Vibroknife", "ViralCascadeAbilityDefinition.cs", "ExtraDamageSourceStatusEffect = typeof(VenomStatusEffect)");
         AssertAbilitySourceContains(root, "Vibroknife", "ViralCascadeAbilityDefinition.cs", "ExtraDamageSourceStackStatusEffect = typeof(InfectionStatusEffect)");
         AssertAbilitySourceContains(root, "Vibroknife", "ViralCascadeAbilityDefinition.cs", "ConsumeSourceStatusEffectsOnHit = true");
         AssertAbilitySourceContains(root, "Vibroknife", "ViralCascadeAbilityDefinition.cs", "SuppressSourceStatusStackRiders = true");

@@ -6,13 +6,13 @@ using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
-    public sealed class ShadowToxinStatusEffect : StatusEffectBase
+    public sealed class VenomStatusEffect : StatusEffectBase
     {
         private const int DamagePerTick = 8;
 
-        public override string Name => "Shadow Toxin";
-        public override EffectIconType Icon => EffectIconType.ShadowToxinStatusEffect;
-        public override StatusEffectCategory Categories => StatusEffectCategory.Debuff | StatusEffectCategory.ShadowToxin;
+        public override string Name => "Venom";
+        public override EffectIconType Icon => EffectIconType.VenomStatusEffect;
+        public override StatusEffectCategory Categories => StatusEffectCategory.Debuff | StatusEffectCategory.Venom;
         public override StatusEffectStackType StackingType => StatusEffectStackType.StackFromMultipleSources;
         public override ResistanceType ResistanceType => ResistanceType.Poison;
         public override StatusEffectCleanseType CleanseTypes =>

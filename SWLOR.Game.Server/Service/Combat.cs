@@ -86,6 +86,7 @@ namespace SWLOR.Game.Server.Service
         {
             public int Count { get; init; }
             public DateTime LastHit { get; init; }
+            public DateTime? RechargeAvailableAt { get; init; }
         }
 
         private sealed class SameTargetPressureState
@@ -4811,7 +4812,7 @@ namespace SWLOR.Game.Server.Service
             if (bonus <= 0 || maximumCount <= 0 || ability?.IsHostileAbility != true)
                 return 0;
 
-            ResetFirstHostileAbilityHitCountIfOutOfCombat(attacker);
+            RechargeFirstHostileAbilityHitStacks(attacker, maximumCount);
             _firstHostileAbilityHitCounts.TryGetValue(attacker, out var state);
             return (state?.Count ?? 0) < maximumCount
                 ? bonus
@@ -4824,7 +4825,7 @@ namespace SWLOR.Game.Server.Service
             if (maximumCount <= 0 || ability?.IsHostileAbility != true)
                 return;
 
-            ResetFirstHostileAbilityHitCountIfOutOfCombat(attacker);
+            RechargeFirstHostileAbilityHitStacks(attacker, maximumCount);
 
             var now = DateTime.UtcNow;
             _firstHostileAbilityHitCounts.TryGetValue(attacker, out var state);
@@ -4835,15 +4836,46 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
+            var currentCount = state?.Count ?? 0;
+            if (currentCount >= maximumCount)
+                return;
+
+            var newCount = Math.Min(maximumCount, currentCount + 1);
+            var rechargeAvailableAt = state?.RechargeAvailableAt;
+            if (newCount >= maximumCount)
+            {
+                // The final stack was just consumed; open the recharge window.
+                var cooldownSeconds = Stat.GetStatAdjustment(attacker, StatType.FirstHostileAbilityHitCooldownSeconds);
+                rechargeAvailableAt = cooldownSeconds > 0
+                    ? now.AddSeconds(cooldownSeconds)
+                    : null;
+            }
+
             _firstHostileAbilityHitCounts[attacker] = new TargetHitSequenceState
             {
-                Count = Math.Min(maximumCount, (state?.Count ?? 0) + 1),
-                LastHit = now
+                Count = newCount,
+                LastHit = now,
+                RechargeAvailableAt = rechargeAvailableAt
             };
         }
 
-        private static void ResetFirstHostileAbilityHitCountIfOutOfCombat(uint attacker)
+        private static void RechargeFirstHostileAbilityHitStacks(uint attacker, int maximumCount)
         {
+            if (!_firstHostileAbilityHitCounts.TryGetValue(attacker, out var state))
+                return;
+
+            // Exhausted stacks recharge strictly on the cooldown timer, even across separate engagements.
+            if (state.Count >= maximumCount && state.RechargeAvailableAt != null)
+            {
+                if (DateTime.UtcNow >= state.RechargeAvailableAt.Value)
+                {
+                    _firstHostileAbilityHitCounts.Remove(attacker);
+                }
+
+                return;
+            }
+
+            // With stacks remaining, refresh to a full set once the wielder drops out of combat so each new engagement opens with all stacks.
             if (_lastCombatActivity.TryGetValue(attacker, out var lastActivity) &&
                 (DateTime.UtcNow - lastActivity).TotalSeconds <= 30)
             {

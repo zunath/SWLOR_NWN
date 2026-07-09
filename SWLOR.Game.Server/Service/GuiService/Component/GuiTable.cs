@@ -29,6 +29,22 @@
 //   - ViewModel side: one GuiTableSource<TRow> holds the column mappings
 //     and does the parallel-list rebuild in one method, so a window author
 //     works with a single list of row DTOs instead of N hand-synced lists.
+//
+// COMPONENT COLUMNS
+// ------------------
+// A column doesn't have to be a bound text label. AddComponentColumn takes a
+// cell-builder callback instead of a bound expression, so a column can host
+// a button, toggle, image, or any other GuiExpandableComponent widget - the
+// same thing MarketBuyDefinition/AchievementsDefinition already do by hand
+// with raw AddList/AddCell blocks (row identity for a per-row click handler
+// is recovered via the engine-native NuiGetEventArrayIndex(), same as those).
+// A table's column list is no longer required to contain a text column at
+// all: SetShowHeader(false) drops the header row (some lists, like
+// MarketBuy's item list, never had one), and BindRowCount(...) lets the
+// caller name an explicit row-count source instead of relying on "the first
+// column happens to have a bound text expression". A column can also opt
+// into being width-flexible via isVariable regardless of position - by
+// default only the last column is flexible, matching the old behavior.
 // ============================================================================
 
 using SWLOR.Game.Server.Core.Beamdog;
@@ -53,18 +69,35 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.Component
         public Expression<Func<TViewModel, GuiBindingList<string>>> ValueExpression { get; }
         public Expression<Func<TViewModel, GuiBindingList<string>>> TooltipExpression { get; }
 
+        /// <summary>
+        /// When set, the cell is built by this callback instead of the default bound
+        /// label (see AddComponentColumn). Null for ordinary text columns.
+        /// </summary>
+        public Action<GuiTemplateCell<TViewModel>> CellBuilder { get; }
+
+        /// <summary>
+        /// Null means "auto": variable only if this is the last column, matching the
+        /// original behavior. Non-null lets a column opt in/out explicitly, since more
+        /// than one column in a row may need to flex (see MarketBuy's item list).
+        /// </summary>
+        public bool? IsVariable { get; }
+
         public GuiTableColumn(
             string header,
             float width,
             Expression<Func<TViewModel, GuiBindingList<string>>> valueExpression,
             Expression<Func<TViewModel, GuiBindingList<string>>> tooltipExpression,
-            string headerTooltip)
+            string headerTooltip,
+            Action<GuiTemplateCell<TViewModel>> cellBuilder = null,
+            bool? isVariable = null)
         {
             Header = header;
             Width = width;
             ValueExpression = valueExpression;
             TooltipExpression = tooltipExpression;
             HeaderTooltip = headerTooltip;
+            CellBuilder = cellBuilder;
+            IsVariable = isVariable;
         }
     }
 
@@ -72,20 +105,41 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.Component
     {
         private readonly List<GuiTableColumn<TViewModel>> _columns = new();
         private float _rowHeight = 24f;
+        private bool _showHeader = true;
+        private float? _padding;
+        private Expression<Func<TViewModel, GuiBindingList<string>>> _rowCountExpression;
 
         /// <summary>
-        /// Adds a column. The FIRST column added becomes the canonical
-        /// row-count source (mirrors current BindRowCount usage, but makes
-        /// the choice explicit and singular instead of implicit per-tab).
+        /// Adds a bound text column. Unless BindRowCount is used, the row-count
+        /// source is the first column (in declared order) with a value expression.
         /// </summary>
         public GuiTableBuilder<TViewModel> AddColumn(
             string header,
             float width,
             Expression<Func<TViewModel, GuiBindingList<string>>> valueExpression,
             Expression<Func<TViewModel, GuiBindingList<string>>> tooltipExpression = null,
-            string headerTooltip = null)
+            string headerTooltip = null,
+            bool? isVariable = null)
         {
-            _columns.Add(new GuiTableColumn<TViewModel>(header, width, valueExpression, tooltipExpression, headerTooltip));
+            _columns.Add(new GuiTableColumn<TViewModel>(header, width, valueExpression, tooltipExpression, headerTooltip, null, isVariable));
+            return this;
+        }
+
+        /// <summary>
+        /// Adds a column whose cell is built by the given callback instead of a bound
+        /// label - e.g. a button, toggle button, image, or any other
+        /// GuiExpandableComponent widget. Row identity for a per-row click handler is
+        /// recovered the same way any hand-rolled AddList/AddCell button already does:
+        /// via NuiGetEventArrayIndex() inside the bound method.
+        /// </summary>
+        public GuiTableBuilder<TViewModel> AddComponentColumn(
+            string header,
+            float width,
+            Action<GuiTemplateCell<TViewModel>> cellBuilder,
+            string headerTooltip = null,
+            bool? isVariable = null)
+        {
+            _columns.Add(new GuiTableColumn<TViewModel>(header, width, null, null, headerTooltip, cellBuilder, isVariable));
             return this;
         }
 
@@ -95,22 +149,58 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.Component
             return this;
         }
 
+        /// <summary>
+        /// Shows or hides the header row. Defaults to true. Some lists (e.g.
+        /// MarketBuy's item list) never had a header row at all.
+        /// </summary>
+        public GuiTableBuilder<TViewModel> SetShowHeader(bool showHeader)
+        {
+            _showHeader = showHeader;
+            return this;
+        }
+
+        public GuiTableBuilder<TViewModel> SetPadding(float padding)
+        {
+            _padding = padding;
+            return this;
+        }
+
+        /// <summary>
+        /// Explicitly names the row-count source instead of relying on "the first
+        /// column with a bound text expression" - required when no text column
+        /// exists, and recommended whenever the natural row-count column isn't the
+        /// first one declared, so a later column reorder can't silently change it.
+        /// </summary>
+        public GuiTableBuilder<TViewModel> BindRowCount(Expression<Func<TViewModel, GuiBindingList<string>>> expression)
+        {
+            _rowCountExpression = expression;
+            return this;
+        }
+
         internal void Build(GuiColumn<TViewModel> col)
         {
             if (_columns.Count == 0)
                 throw new InvalidOperationException("GuiTable requires at least one column.");
 
-            col.AddRow(headerRow =>
+            if (_showHeader)
             {
-                for (var i = 0; i < _columns.Count; i++)
+                col.AddRow(headerRow =>
                 {
-                    var column = _columns[i];
-                    // Last column gets width 0 (fill remaining space), matching
-                    // the existing AddTableHeader convention in CharacterSheetDefinition.
-                    var width = i == _columns.Count - 1 ? 0f : column.Width;
-                    AddTableHeader(headerRow, column.Header, width, column.HeaderTooltip);
-                }
-            });
+                    for (var i = 0; i < _columns.Count; i++)
+                    {
+                        var column = _columns[i];
+                        var variable = column.IsVariable ?? i == _columns.Count - 1;
+                        // Variable columns get width 0 (fill remaining space), matching
+                        // the existing AddTableHeader convention in CharacterSheetDefinition.
+                        var width = variable ? 0f : column.Width;
+                        AddTableHeader(headerRow, column.Header, width, column.HeaderTooltip);
+                    }
+                });
+            }
+
+            var rowCountExpression = _rowCountExpression
+                ?? _columns.Select(c => c.ValueExpression).FirstOrDefault(e => e != null)
+                ?? throw new InvalidOperationException("GuiTable requires a row-count source: either a text column (AddColumn) or an explicit BindRowCount(...) call.");
 
             col.AddRow(row =>
             {
@@ -119,28 +209,36 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.Component
                     for (var i = 0; i < _columns.Count; i++)
                     {
                         var column = _columns[i];
-                        var isLast = i == _columns.Count - 1;
+                        var variable = column.IsVariable ?? i == _columns.Count - 1;
 
                         template.AddCell(cell =>
                         {
-                            if (!isLast)
+                            if (!variable)
                             {
                                 cell.SetIsVariable(false);
                                 cell.SetWidth(column.Width);
                             }
 
-                            var label = cell.AddLabel()
-                                .BindText(column.ValueExpression)
-                                .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                            if (column.CellBuilder != null)
+                            {
+                                column.CellBuilder(cell);
+                            }
+                            else
+                            {
+                                var label = cell.AddLabel()
+                                    .BindText(column.ValueExpression)
+                                    .SetHorizontalAlign(NuiHorizontalAlign.Left);
 
-                            if (column.TooltipExpression != null)
-                                label.BindTooltip(column.TooltipExpression);
+                                if (column.TooltipExpression != null)
+                                    label.BindTooltip(column.TooltipExpression);
+                            }
                         });
                     }
+
+                    if (_padding.HasValue)
+                        template.SetPadding(_padding.Value);
                 })
-                    // First column is the canonical row-count source - explicit
-                    // and single, instead of an arbitrary implicit choice per tab.
-                    .BindRowCount(_columns[0].ValueExpression)
+                    .BindRowCount(rowCountExpression)
                     .SetRowHeight(_rowHeight)
                     .SetShowBorders(false)
                     .SetScrollbars(NuiScrollbars.Y);
@@ -192,26 +290,50 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.Component
     // ------------------------------------------------------------------
 
     /// <summary>
-    /// Owns the column mappings for a table and rebuilds the parallel
-    /// GuiBindingList&lt;string&gt; properties from a single sequence of row
+    /// Owns the column mappings for a table and rebuilds the bound
+    /// GuiBindingList&lt;TValue&gt; properties from a single sequence of row
     /// DTOs in one call, instead of a hand-rolled loop with N separate
     /// .Add() calls that must stay in lockstep (see RefreshCharacterStatsList,
     /// RefreshResistances, RefreshCraftingStats for the current duplicated
-    /// pattern this replaces).
+    /// pattern this replaces). Columns aren't limited to string: any bound
+    /// value type (bool for a per-row enabled flag, etc.) is supported.
     /// </summary>
     public class GuiTableSource<TViewModel, TRow>
     {
-        private readonly List<(Action<TViewModel, GuiBindingList<string>> Setter, Func<TRow, string> Selector)> _columns = new();
+        private sealed class ColumnBinding
+        {
+            public Action<TViewModel, IEnumerable<TRow>> Refresh;
+
+            /// <summary>Null if this column's Column(...) call didn't supply a getter - see RemoveRowAt.</summary>
+            public Action<TViewModel, int> Remove;
+        }
+
+        private readonly List<ColumnBinding> _columns = new();
 
         /// <summary>
         /// Registers a bound column: which ViewModel property receives the
         /// values, and how to pull that column's value out of a row DTO.
+        /// The optional getter lets RemoveRowAt find this column's current
+        /// live bound list to remove a single row from it directly (a
+        /// GuiBindingList&lt;T&gt; mutation propagates to the client without
+        /// reassigning the property) - only needed if RemoveRowAt will be used.
         /// </summary>
-        public GuiTableSource<TViewModel, TRow> Column(
-            Action<TViewModel, GuiBindingList<string>> setter,
-            Func<TRow, string> valueSelector)
+        public GuiTableSource<TViewModel, TRow> Column<TValue>(
+            Action<TViewModel, GuiBindingList<TValue>> setter,
+            Func<TRow, TValue> valueSelector,
+            Func<TViewModel, GuiBindingList<TValue>> getter = null)
         {
-            _columns.Add((setter, valueSelector));
+            _columns.Add(new ColumnBinding
+            {
+                Refresh = (viewModel, rows) =>
+                {
+                    var list = new GuiBindingList<TValue>();
+                    foreach (var row in rows)
+                        list.Add(valueSelector(row));
+                    setter(viewModel, list);
+                },
+                Remove = getter == null ? null : (viewModel, index) => getter(viewModel).RemoveAt(index)
+            });
             return this;
         }
 
@@ -219,20 +341,38 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.Component
         /// Rebuilds every bound column from the given rows in one pass.
         /// Guarantees all columns stay the same length - the exact class of
         /// bug the hand-rolled parallel-list pattern doesn't protect against.
+        /// Returns the row list that was refreshed from, so the caller can
+        /// hold onto it (e.g. for NuiGetEventArrayIndex() row lookups) the
+        /// same way it would hold any other per-instance state.
         /// </summary>
-        public void Refresh(TViewModel viewModel, IEnumerable<TRow> rows)
+        public IList<TRow> Refresh(TViewModel viewModel, IEnumerable<TRow> rows)
         {
             var rowList = rows as IList<TRow> ?? rows.ToList();
-            var lists = _columns.Select(_ => new GuiBindingList<string>()).ToList();
 
-            foreach (var row in rowList)
-            {
-                for (var i = 0; i < _columns.Count; i++)
-                    lists[i].Add(_columns[i].Selector(row));
-            }
+            foreach (var column in _columns)
+                column.Refresh(viewModel, rowList);
+
+            return rowList;
+        }
+
+        /// <summary>
+        /// Removes a single row: from the given row list, and from every
+        /// registered column's bound list. Throws if any column was
+        /// registered without a getter, since that column's bound list would
+        /// otherwise silently drift out of length-sync with the rest.
+        /// </summary>
+        public void RemoveRowAt(TViewModel viewModel, IList<TRow> rows, int index)
+        {
+            rows.RemoveAt(index);
 
             for (var i = 0; i < _columns.Count; i++)
-                _columns[i].Setter(viewModel, lists[i]);
+            {
+                var column = _columns[i];
+                if (column.Remove == null)
+                    throw new InvalidOperationException($"Column {i} has no getter registered; cannot RemoveRowAt without leaving it out of sync. Pass a getter to Column(...) for every bound column before calling RemoveRowAt.");
+
+                column.Remove(viewModel, index);
+            }
         }
     }
 }

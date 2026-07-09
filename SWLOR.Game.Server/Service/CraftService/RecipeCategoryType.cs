@@ -130,6 +130,8 @@ namespace SWLOR.Game.Server.Service.CraftService
         CapitalShipModule = 62,
         [RecipeCategory("Misc. Furniture", true)]
         MiscellaneousFurniture = 63,
+        [RecipeCategory("Farming Supplies", true)]
+        FarmingSupply = 64,
     }
 
     public class RecipeCategoryAttribute : Attribute

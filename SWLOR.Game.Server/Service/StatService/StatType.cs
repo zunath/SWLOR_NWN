@@ -5106,7 +5106,25 @@ namespace SWLOR.Game.Server.Service.StatService
         /// StatusEffectCategory value for DirectDamageToStatusCategoryOrStealthBonus.
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
-        DirectDamageToStatusCategoryOrStealthBonusCategory = 885
+        DirectDamageToStatusCategoryOrStealthBonusCategory = 885,
+
+        /// <summary>
+        /// Percent reduction to crop growth stage durations for farming.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        CropGrowthSpeedPercentBonus = 886,
+
+        /// <summary>
+        /// Percent bonus to produce quantity when harvesting crops.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        HarvestYieldPercentBonus = 887,
+
+        /// <summary>
+        /// Percent bonus to the chance of harvesting pristine produce from crops.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        PristineHarvestChancePercentBonus = 888
     }
 
     public class StatTypeAttribute : Attribute

@@ -708,6 +708,9 @@ namespace SWLOR.Game.Server.Service.PerkService
         VenaticRecovery = 760,
         Hobbled = 761,
         EscapeArtist = 762,
-        // IDs 649-650 and 763+ are free.
+        Cultivation = 763,
+        Horticulture = 764,
+        Botany = 765,
+        // IDs 649-650 and 766+ are free.
     }
 }

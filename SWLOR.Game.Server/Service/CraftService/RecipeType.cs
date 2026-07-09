@@ -725,6 +725,10 @@ namespace SWLOR.Game.Server.Service.CraftService
         ShatterhideGuard = 688,
         ShatterhideVisor = 689,
         ShatterhideCharm = 690,
+
+        // Silkweave (farmed Silkvine fiber)
+        SilkweaveCloak = 700,
+        SilkweaveBelt = 701,
         #endregion
 
 		#region Fabrication:  1001-2000
@@ -1187,6 +1191,10 @@ namespace SWLOR.Game.Server.Service.CraftService
         LargeHouseStyle4 = 1516,
         LabStyle1 = 1517,
 
+        // Farming structures
+        PlanterBox = 1520,
+        HydroponicRack = 1521,
+
         #endregion
 
         #region Cooking: 2001-3000
@@ -1466,6 +1474,50 @@ namespace SWLOR.Game.Server.Service.CraftService
         DeepwatchBroth = 2263,
         MidnightInkNoodles = 2264,
         ShatterfinCurry = 2265,
+
+        // Farming supplies
+        NutrientSolution = 2270,
+        GrowthFertilizer = 2271,
+        YieldFertilizer = 2272,
+        QualityFertilizer = 2273,
+        Compost = 2274,
+
+        // Milling (Nysillim Grain)
+        VegetableFlour = 2280,
+        BakingFlour = 2281,
+        RefinedFlour = 2282,
+        PremiumFlour = 2283,
+        BreadFlour = 2284,
+
+        // Seed extraction (farming-exclusive crops)
+        ExtractJoganSeeds = 2290,
+        ExtractTarineSeeds = 2291,
+        ExtractNysillimSeeds = 2292,
+        ExtractShuuraSeeds = 2293,
+        ExtractSilkvineSeeds = 2294,
+        ExtractMeiloorunSeeds = 2295,
+        ExtractFirepepperSeeds = 2296,
+
+        // Farm-to-table dishes
+        JoganTart = 2300,
+        SweetcaneGlazeCake = 2301,
+        TarineHerbBroth = 2302,
+        NysillimPorridge = 2303,
+        ShuuraGlazedRoast = 2304,
+        ShuuraChutney = 2305,
+        MeiloorunSorbet = 2306,
+        MeiloorunFeast = 2307,
+        FirepepperNoodleSoup = 2308,
+        FirepepperAmbrosia = 2309,
+
+        // Teas
+        TarineTea = 2320,
+        CitrusTarineTea = 2321,
+        MastersTarineTea = 2322,
+
+        // Premium pet food
+        PremiumGrainFeed = 2330,
+        UniversalTreat = 2331,
 
         #endregion
 

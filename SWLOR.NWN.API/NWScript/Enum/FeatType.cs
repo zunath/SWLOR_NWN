@@ -2299,5 +2299,8 @@ namespace SWLOR.NWN.API.NWScript.Enum
         CripplingSlice3 = 2770,
         VeiledStrike4 = 2771,
         EscapeArtist1 = 2772,
+        CultivationTrait = 2773,
+        HorticultureTrait = 2774,
+        BotanyTrait = 2775,
 }
 }

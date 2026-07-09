@@ -16,36 +16,39 @@ namespace SWLOR.Game.Server.Service.PerkService
     }
 
     /// <summary>
-    /// Maps a perk requirement category to its player-facing label and the icon
-    /// shown beside the requirement in the Perks window. Each requirement type has
-    /// its own dedicated icon (resrefs below live in the sw_ability hak).
+    /// Maps a perk requirement category to its player-facing label and icon in the
+    /// Perks window. A met requirement (or a purchasable perk) shows the shared green
+    /// check; an unmet requirement shows that category's red, type-specific icon.
+    /// (Icon resrefs live in the sw_ability hak.)
     /// </summary>
     public static class PerkRequirementCategoryResolver
     {
+        // Shared icons that are not type-specific.
+        public const string MetIcon = "req_met";     // green check: requirement met / perk purchasable
+        public const string MaxedIcon = "req_other"; // neutral check: perk fully upgraded
+
         public class Detail
         {
             public string Name { get; set; }
-            public string IconResref { get; set; }
 
-            // Red-framed variant shown when the requirement is not met.
+            // Red, type-specific icon shown when the requirement is not met.
             public string IconResrefLocked { get; set; }
 
-            // Returns the normal icon when the requirement is met, otherwise the
-            // red locked icon.
-            public string GetIcon(bool met) => met ? IconResref : IconResrefLocked;
+            // Green check when met, otherwise the red type-specific icon.
+            public string GetIcon(bool met) => met ? MetIcon : IconResrefLocked;
         }
 
         private static readonly Dictionary<PerkRequirementCategory, Detail> Details = new()
         {
-            { PerkRequirementCategory.Skill, new Detail { Name = "Skill", IconResref = "req_skill", IconResrefLocked = "req_skill_r" } },
-            { PerkRequirementCategory.Quest, new Detail { Name = "Quest", IconResref = "req_quest", IconResrefLocked = "req_quest_r" } },
-            { PerkRequirementCategory.CharacterType, new Detail { Name = "Character Type", IconResref = "req_chartype", IconResrefLocked = "req_chartype_r" } },
-            { PerkRequirementCategory.MustHavePerk, new Detail { Name = "Required Perk", IconResref = "req_needperk", IconResrefLocked = "req_needperk_r" } },
-            { PerkRequirementCategory.CannotHavePerk, new Detail { Name = "Excluded Perk", IconResref = "req_noperk", IconResrefLocked = "req_noperk_r" } },
-            { PerkRequirementCategory.BeastLevel, new Detail { Name = "Beast Level", IconResref = "req_beastlvl", IconResrefLocked = "req_beastlvl_r" } },
-            { PerkRequirementCategory.BeastRole, new Detail { Name = "Beast Role", IconResref = "req_beastrole", IconResrefLocked = "req_beastrole_r" } },
-            { PerkRequirementCategory.Unlock, new Detail { Name = "Unlock", IconResref = "req_unlock", IconResrefLocked = "req_unlock_r" } },
-            { PerkRequirementCategory.Other, new Detail { Name = "Requirement", IconResref = "req_other", IconResrefLocked = "req_other_r" } },
+            { PerkRequirementCategory.Skill, new Detail { Name = "Skill", IconResrefLocked = "req_skill_r" } },
+            { PerkRequirementCategory.Quest, new Detail { Name = "Quest", IconResrefLocked = "req_quest_r" } },
+            { PerkRequirementCategory.CharacterType, new Detail { Name = "Character Type", IconResrefLocked = "req_chartype_r" } },
+            { PerkRequirementCategory.MustHavePerk, new Detail { Name = "Required Perk", IconResrefLocked = "req_needperk_r" } },
+            { PerkRequirementCategory.CannotHavePerk, new Detail { Name = "Excluded Perk", IconResrefLocked = "req_noperk_r" } },
+            { PerkRequirementCategory.BeastLevel, new Detail { Name = "Beast Level", IconResrefLocked = "req_beastlvl_r" } },
+            { PerkRequirementCategory.BeastRole, new Detail { Name = "Beast Role", IconResrefLocked = "req_beastrole_r" } },
+            { PerkRequirementCategory.Unlock, new Detail { Name = "Unlock", IconResrefLocked = "req_unlock_r" } },
+            { PerkRequirementCategory.Other, new Detail { Name = "Requirement", IconResrefLocked = "req_other_r" } },
         };
 
         public static Detail GetDetail(PerkRequirementCategory category)

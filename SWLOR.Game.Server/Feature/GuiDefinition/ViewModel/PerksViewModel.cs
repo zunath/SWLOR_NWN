@@ -338,8 +338,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             if (nextUpgrade == null)
             {
-                var maxedIcon = PerkRequirementCategoryResolver.GetDetail(PerkRequirementCategory.Other).IconResref;
-                return (PerkRowStatus.Maxed, new GuiColor(90, 170, 230), maxedIcon, "Fully upgraded.");
+                return (PerkRowStatus.Maxed, new GuiColor(90, 170, 230), PerkRequirementCategoryResolver.MaxedIcon, "Fully upgraded.");
             }
 
             // Find the first unmet requirement (the active restriction), if any.
@@ -364,18 +363,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return (PerkRowStatus.Locked, GuiColor.Grey, lockedDetail.IconResrefLocked, tooltip);
             }
 
-            // Otherwise show the perk's primary requirement type in its normal color.
-            var primaryCategory = nextUpgrade.Requirements.Count > 0
-                ? nextUpgrade.Requirements[0].Category
-                : PerkRequirementCategory.Other;
-            var iconResref = PerkRequirementCategoryResolver.GetDetail(primaryCategory).IconResref;
-
+            // Requirements met: show the green check (purchasable, or met but unaffordable).
             if (unallocatedSP >= nextUpgrade.Price)
             {
-                return (PerkRowStatus.Buyable, new GuiColor(60, 200, 90), iconResref, $"Can buy - {nextUpgrade.Price} SP");
+                return (PerkRowStatus.Buyable, new GuiColor(60, 200, 90), PerkRequirementCategoryResolver.MetIcon, $"Can buy - {nextUpgrade.Price} SP");
             }
 
-            return (PerkRowStatus.Unaffordable, new GuiColor(230, 180, 70), iconResref,
+            return (PerkRowStatus.Unaffordable, new GuiColor(230, 180, 70), PerkRequirementCategoryResolver.MetIcon,
                 $"Costs {nextUpgrade.Price} SP - you have {unallocatedSP}");
         }
 
@@ -659,13 +653,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var requirementColors = new GuiBindingList<GuiColor>();
             var requirementIcons = new GuiBindingList<string>();
             var requirementTooltips = new GuiBindingList<string>();
-            var otherIcon = PerkRequirementCategoryResolver.GetDetail(PerkRequirementCategory.Other).IconResref;
 
             if (nextUpgrade == null)
             {
                 requirements.Add("MAXED");
                 requirementColors.Add(GuiColor.Green);
-                requirementIcons.Add(otherIcon);
+                requirementIcons.Add(PerkRequirementCategoryResolver.MaxedIcon);
                 requirementTooltips.Add("This perk is fully upgraded.");
             }
             else
@@ -698,7 +691,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 {
                     requirements.Add("None");
                     requirementColors.Add(GuiColor.Green);
-                    requirementIcons.Add(otherIcon);
+                    requirementIcons.Add(PerkRequirementCategoryResolver.MetIcon);
                     requirementTooltips.Add("This upgrade has no requirements.");
                 }
             }

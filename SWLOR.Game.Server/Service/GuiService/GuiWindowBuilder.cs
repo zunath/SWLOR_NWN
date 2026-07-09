@@ -128,6 +128,16 @@ namespace SWLOR.Game.Server.Service.GuiService
                     });
                 });
 
+            var windowId = Gui.BuildWindowId(_type);
+
+            // Surface layout shapes known/suspected to fail NUI's client-side constraint
+            // solver, with a widget path - the client error itself carries no context.
+            // Advisory only; see GuiLayoutValidator and Readmes/NuiLayoutRules.md.
+            foreach (var finding in GuiLayoutValidator.Validate(windowId, _activeWindow.PartialViews))
+            {
+                Console.WriteLine($"[NUI layout warning] {finding}");
+            }
+
             var partialViews = new Dictionary<string, Json>();
             foreach (var (key, partial) in _activeWindow.PartialViews)
             {
@@ -135,7 +145,6 @@ namespace SWLOR.Game.Server.Service.GuiService
             }
 
             var json = _activeWindow.Build();
-            var windowId = Gui.BuildWindowId(_type);
             RegisterAllElementEvents();
 
             var constructedWindow = new GuiConstructedWindow(

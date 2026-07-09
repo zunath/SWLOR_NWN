@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
+using SWLOR.Game.Server.Service.LogService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Service
@@ -51,6 +52,20 @@ namespace SWLOR.Game.Server.Service
                 // Register the window template into the cache.
                 _windowTemplates[constructedWindow.Type] = constructedWindow;
                 _windowTypesByKey[BuildWindowId(constructedWindow.Type)] = constructedWindow.Type;
+
+                // TEMP DIAGNOSTIC - HoloCom NUI layout investigation.
+                // Dumps the exact wire JSON for the window under investigation plus a known-good
+                // reference window so client-side "NuiSetLayout failed" errors can be diffed
+                // against reality instead of guessed at. Remove once the HoloCom layout is stable.
+                if (constructedWindow.Type == GuiWindowType.HoloCom ||
+                    constructedWindow.Type == GuiWindowType.CharacterSheet)
+                {
+                    Log.Write(LogGroup.Server, $"NUI JSON [{constructedWindow.Type}] root: {JsonDump(constructedWindow.Window)}", true);
+                    foreach (var (partialName, partialJson) in constructedWindow.PartialViews)
+                    {
+                        Log.Write(LogGroup.Server, $"NUI JSON [{constructedWindow.Type}] partial '{partialName}': {JsonDump(partialJson)}", true);
+                    }
+                }
             }
 
             Console.WriteLine($"Loaded {_windowTemplates.Count} GUI window templates.");
@@ -118,6 +133,19 @@ namespace SWLOR.Game.Server.Service
                     playerGeometry.Height = defaultGeometry.Height;
                 }
 
+                // A window that failed a client-side layout solve can report a degenerate
+                // size, which then persists on close and poisons every future open of that
+                // window at the broken size. Discard implausibly small saved sizes.
+                const float MinimumSaneDimension = 100f;
+                if (playerGeometry.Width < MinimumSaneDimension ||
+                    playerGeometry.Height < MinimumSaneDimension)
+                {
+                    playerGeometry.Width = defaultGeometry.Width;
+                    playerGeometry.Height = defaultGeometry.Height;
+                    playerGeometry.X = defaultGeometry.X;
+                    playerGeometry.Y = defaultGeometry.Y;
+                }
+
                 // Add the window
                 var playerWindow = window.CreatePlayerWindowAction();
                 playerWindow.ViewModel.Geometry = playerGeometry;
@@ -169,6 +197,9 @@ namespace SWLOR.Game.Server.Service
             var dbPlayer = DB.Get<Player>(playerId);
             if (dbPlayer == null)
                 return;
+
+            // TEMP DIAGNOSTIC - HoloCom NUI layout investigation.
+            Log.Write(LogGroup.Server, $"NUI geometry save [{windowType}]: X={geometry.X} Y={geometry.Y} W={geometry.Width} H={geometry.Height}", true);
 
             dbPlayer.WindowGeometries[windowType] = geometry;
 
@@ -335,6 +366,10 @@ namespace SWLOR.Game.Server.Service
             if (NuiFindWindow(player, windowId) == 0)
             {
                 //Console.WriteLine(JsonDump(template.Window));
+
+                // TEMP DIAGNOSTIC - HoloCom NUI layout investigation.
+                var openGeometry = playerWindow.ViewModel.Geometry;
+                Log.Write(LogGroup.Server, $"NUI window open [{type}]: X={openGeometry?.X} Y={openGeometry?.Y} W={openGeometry?.Width} H={openGeometry?.Height}", true);
 
                 playerWindow.WindowToken = NuiCreate(uiTarget, template.Window, template.WindowId);
                 playerWindow.ViewModel.Bind(uiTarget, playerWindow.WindowToken, template.InitialGeometry, type, payload, tetherObject);

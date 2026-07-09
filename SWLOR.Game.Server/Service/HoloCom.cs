@@ -1,5 +1,9 @@
+using System.Collections.Generic;
+using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Bioware;
+using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Service.DBService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
@@ -358,6 +362,170 @@ namespace SWLOR.Game.Server.Service
                     DeleteLocalObject(player, HolocomCallConnectedWith);
                     DeleteLocalObject(player, HolocomHologram);
                 }
+            }
+        }
+
+        public const int MaxFavorites = 50;
+
+        public static List<string> GetFavoritePlayerIds(uint observer)
+        {
+            var dbFavorites = FindFavorites(GetObjectUUID(observer));
+            return dbFavorites?.FavoritePlayerIds ?? new List<string>();
+        }
+
+        public static bool IsFavorite(uint observer, string targetPlayerId)
+        {
+            return GetFavoritePlayerIds(observer).Contains(targetPlayerId);
+        }
+
+        public static string AddFavorite(uint observer, string targetPlayerId, bool allowSelfFavorite = false)
+        {
+            if (string.IsNullOrWhiteSpace(targetPlayerId))
+                return "Unable to identify that player.";
+
+            var observerId = GetObjectUUID(observer);
+            if (targetPlayerId == observerId && !allowSelfFavorite)
+                return "You cannot favorite yourself.";
+
+            var dbFavorites = FindFavorites(observerId) ?? new HoloComFavorite(observerId);
+
+            if (dbFavorites.FavoritePlayerIds.Contains(targetPlayerId))
+                return string.Empty;
+
+            if (dbFavorites.FavoritePlayerIds.Count >= MaxFavorites)
+                return $"You may only have up to {MaxFavorites} favorites.";
+
+            dbFavorites.FavoritePlayerIds.Add(targetPlayerId);
+            DB.Set(dbFavorites);
+            return string.Empty;
+        }
+
+        public static void RemoveFavorite(uint observer, string targetPlayerId)
+        {
+            var dbFavorites = FindFavorites(GetObjectUUID(observer));
+            if (dbFavorites?.FavoritePlayerIds == null)
+                return;
+
+            if (!dbFavorites.FavoritePlayerIds.Remove(targetPlayerId))
+                return;
+
+            DB.Set(dbFavorites);
+        }
+
+        private static HoloComFavorite FindFavorites(string observerId)
+        {
+            return DB.Search(new DBQuery<HoloComFavorite>()
+                    .AddFieldSearch(nameof(HoloComFavorite.ObserverPlayerId), observerId, false))
+                .FirstOrDefault();
+        }
+
+        /// <summary>
+        /// Enumerates online players who can be called/messaged/favorited: excludes DMs,
+        /// DM-possessed characters, and players in space mode. Excludes the observer
+        /// themselves unless includeSelf is true.
+        /// </summary>
+        public static IEnumerable<uint> GetCallableOnlinePlayers(uint observer, bool includeSelf = false)
+        {
+            for (var pc = GetFirstPC(); GetIsObjectValid(pc); pc = GetNextPC())
+            {
+                if (GetIsDM(pc) || GetIsDMPossessed(pc) || Space.IsPlayerInSpaceMode(pc))
+                    continue;
+
+                if (!includeSelf && pc == observer)
+                    continue;
+
+                yield return pc;
+            }
+        }
+
+        public static uint FindOnlinePlayerByPlayerId(string playerId)
+        {
+            if (string.IsNullOrWhiteSpace(playerId))
+                return OBJECT_INVALID;
+
+            for (var pc = GetFirstPC(); GetIsObjectValid(pc); pc = GetNextPC())
+            {
+                if (GetObjectUUID(pc) == playerId)
+                    return pc;
+            }
+
+            return OBJECT_INVALID;
+        }
+
+        /// <summary>
+        /// Starts a call attempt from sender to receiver. Ported from the old
+        /// HoloComDialog's call button handler.
+        /// </summary>
+        public static void InitiateCall(uint sender, uint receiver)
+        {
+            if (!GetIsObjectValid(receiver))
+                return;
+
+            if (IsInCall(sender) || IsCallSender(sender) || IsCallReceiver(sender))
+                return;
+
+            if (IsInCall(receiver) || Space.IsPlayerInSpaceMode(sender) || Space.IsPlayerInSpaceMode(receiver))
+                return;
+
+            SetIsCallSender(sender);
+            DelayCommand(1.0f, () => CallPlayer(sender, receiver));
+        }
+
+        /// <summary>
+        /// Rings the receiver, retrying every 5 seconds for up to 15 attempts before giving
+        /// up. Ported verbatim from the old HoloComDialog.CallPlayer.
+        /// </summary>
+        private static void CallPlayer(uint sender, uint receiver)
+        {
+            if (!GetIsObjectValid(sender) || !GetIsObjectValid(receiver))
+            {
+                if (GetIsObjectValid(sender))
+                {
+                    CleanupCallAttempt(sender, receiver);
+                    SendMessageToPC(sender, "Your HoloCom call went unanswered.");
+                }
+                return;
+            }
+
+            if (IsInCall(sender) || IsInCall(receiver)) return;
+
+            if (!IsCallSender(sender)) return;
+
+            var receiverName = PlayerName.GetDisplayName(sender, receiver);
+            SendMessageToPC(sender, "You wait for " + receiverName + " to answer their HoloCom.");
+
+            SetIsCallSender(sender);
+            SetIsCallSender(receiver, false);
+            SetCallSender(sender, sender);
+            SetCallSender(receiver, sender);
+            SetIsCallReceiver(sender, false);
+            SetIsCallReceiver(receiver);
+            SetCallReceiver(sender, receiver);
+            SetCallReceiver(receiver, receiver);
+
+            var message = "Your HoloCom buzzes as you are receiving a call.";
+            if (Random(10) == 1)
+            {
+                message += " " + ColorToken.Green("Maybe you should answer it.");
+            }
+            SendMessageToPC(receiver, message);
+            if (GetCallAttempt(sender) % 5 == 0)
+            {
+                FloatingTextStringOnCreature(message, receiver);
+            }
+
+            if (GetCallAttempt(sender) <= 15)
+            {
+                SetCallAttempt(sender, GetCallAttempt(sender) + 1);
+                DelayCommand(5.0f, () => { CallPlayer(sender, receiver); });
+            }
+            else
+            {
+                SendMessageToPC(sender, "Your HoloCom call went unanswered.");
+                SendMessageToPC(receiver, "Your HoloCom stops buzzing.");
+
+                // the following call cleans everything up even if a call isn't currently connected.
+                SetIsInCall(sender, receiver, false);
             }
         }
     }

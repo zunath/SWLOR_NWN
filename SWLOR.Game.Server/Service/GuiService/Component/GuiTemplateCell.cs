@@ -4,10 +4,14 @@ using SWLOR.NWN.API.Engine;
 
 namespace SWLOR.Game.Server.Service.GuiService.Component
 {
-    public class GuiTemplateCell<T>: GuiExpandableComponent<T>
+    public class GuiTemplateCell<T>: GuiExpandableComponent<T>, IGuiTemplateCell
         where T: IGuiViewModel
     {
-        private bool IsVariable { get; set; } = true;
+        /// <summary>
+        /// Whether the cell may grow to fill remaining space. Readable so layout
+        /// validation can detect the unsolvable fixed-and-zero-width combination.
+        /// </summary>
+        public bool IsVariable { get; private set; } = true;
 
         /// <summary>
         /// Sets whether the cell is variable in size.

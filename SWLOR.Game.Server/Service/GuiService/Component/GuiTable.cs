@@ -182,6 +182,24 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.Component
             if (_columns.Count == 0)
                 throw new InvalidOperationException("GuiTable requires at least one column.");
 
+            // A column that resolves to fixed-width (not variable) with no positive width
+            // produces a template cell the NUI solver can neither size nor grow. Fail at
+            // build time with the column named rather than as a client-side draw error.
+            for (var i = 0; i < _columns.Count; i++)
+            {
+                var column = _columns[i];
+                var isVariable = column.IsVariable ?? i == _columns.Count - 1;
+
+                if (!isVariable && column.Width <= 0f)
+                {
+                    var headerLabel = string.IsNullOrWhiteSpace(column.Header) ? $"index {i}" : $"'{column.Header}'";
+                    throw new InvalidOperationException(
+                        $"GuiTable column {headerLabel} resolves to a fixed width of {column.Width}. " +
+                        "Fixed columns must declare a positive width; pass isVariable: true if the column should flex. " +
+                        "Note that only the last column defaults to variable.");
+                }
+            }
+
             if (_showHeader)
             {
                 col.AddRow(headerRow =>

@@ -4,6 +4,7 @@ using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using SWLOR.Game.Server.Properties;
 using SWLOR.Game.Server.Service.GuiService.Component;
+using SWLOR.Game.Server.Service.LogService;
 
 namespace SWLOR.Game.Server.Service.GuiService
 {
@@ -267,6 +268,27 @@ namespace SWLOR.Game.Server.Service.GuiService
             var value = _converter.ToObject(json, property.Type);
             var currentValue = GetType().GetProperty(propertyName)?.GetValue(this);
 
+            // TEMP DIAGNOSTIC - HoloCom NUI layout investigation. Captures the moment the
+            // client pushes a (possibly degenerate) geometry back to the server.
+            if (propertyName == nameof(Geometry) && value is GuiRectangle clientRect)
+            {
+                Log.Write(LogGroup.Server, $"NUI geometry from client [{WindowType}]: X={clientRect.X} Y={clientRect.Y} W={clientRect.Width} H={clientRect.Height}", true);
+            }
+
+            // The client transiently reports a 0x0 geometry while it relayouts a window
+            // (e.g. during the ChangePartialView redraw nudges). Accepting it corrupts the
+            // server-side geometry: a pending redraw nudge can then push a negative height
+            // (client shows "constraint can not be satisfied"), or - if no server push
+            // follows - the window permanently collapses to a bare title bar. Reject the
+            // degenerate rect and re-assert the last known-good geometry instead.
+            if (propertyName == nameof(Geometry) &&
+                value is GuiRectangle degenerateCheck &&
+                (degenerateCheck.Width < 1f || degenerateCheck.Height < 1f))
+            {
+                NuiSetBind(Player, WindowToken, nameof(Geometry), Geometry.ToJson());
+                return;
+            }
+
             _propertyValues[propertyName].Value = value;
             _propertyValues[propertyName].SkipNotify = true;
             if (!currentValue.Equals(value))
@@ -358,7 +380,15 @@ namespace SWLOR.Game.Server.Service.GuiService
             ChangePartialView("_window_", "%%WINDOW_MAIN%%");
             Apply();
 
-            DelayCommand(0.0f, Apply);
+            // The delayed re-apply can fire after the player has already closed (or
+            // rapidly toggled) the window; NuiSetGroupLayout against a destroyed window
+            // raises a client-side "element id not found" error. Only re-apply while
+            // the window is still open.
+            DelayCommand(0.0f, () =>
+            {
+                if (Gui.IsWindowOpen(Player, WindowType))
+                    Apply();
+            });
         }
 
 

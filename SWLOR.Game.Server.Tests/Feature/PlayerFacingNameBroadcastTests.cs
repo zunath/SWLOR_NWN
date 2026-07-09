@@ -36,18 +36,28 @@ public class PlayerFacingNameBroadcastTests
     public void HoloComDirectory_UsesObserverSpecificDisplayNames()
     {
         var root = FindRepositoryRoot();
-        var source = File.ReadAllText(Path.Combine(
+
+        var viewModelSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
             "Feature",
-            "DialogDefinition",
-            "HoloComDialog.cs"));
+            "GuiDefinition",
+            "ViewModel",
+            "HoloComViewModel.cs"));
 
-        source.Should().NotContain("GetName(");
-        source.Should().Contain("PlayerName.GetDisplayName(player, pc)");
-        source.Should().Contain("PlayerName.GetDisplayName(player, callSender)");
-        source.Should().Contain("PlayerName.GetDisplayName(player, callReceiver)");
-        source.Should().Contain("PlayerName.GetDisplayName(sender, receiver)");
+        viewModelSource.Should().NotContain("GetName(");
+        viewModelSource.Should().Contain("PlayerName.GetDisplayName(Player, pc)");
+        viewModelSource.Should().Contain("PlayerName.GetDisplayName(Player, callSender)");
+        viewModelSource.Should().Contain("PlayerName.GetDisplayName(Player, callReceiver)");
+
+        var holoComServiceSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "HoloCom.cs"));
+
+        holoComServiceSource.Should().NotContain("GetName(");
+        holoComServiceSource.Should().Contain("PlayerName.GetDisplayName(sender, receiver)");
     }
 
     [Test]

@@ -548,6 +548,8 @@ namespace SWLOR.Game.Server.Service
             if (percentAdjustment != 0)
                 damage = ApplyPercentDamageAdjustment(damage, percentAdjustment);
 
+            damage += Stat.GetStatAdjustment(defender, StatType.DamageTakenFlatAdjustment);
+
             if (preTargetStatusStageDamage.HasValue)
             {
                 var minimumCombinedDamage = (int)Math.Ceiling(
@@ -556,7 +558,6 @@ namespace SWLOR.Game.Server.Service
                     damage = minimumCombinedDamage;
             }
 
-            damage += Stat.GetStatAdjustment(defender, StatType.DamageTakenFlatAdjustment);
             damage = Math.Max(1, damage);
             damage = ApplyDamageTakenRedirectToStatusSource(defender, attacker, damage, damageType);
             if (deliveryType != CombatDamageDeliveryType.Transferred)

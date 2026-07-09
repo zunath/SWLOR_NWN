@@ -465,14 +465,31 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 ? dbPlayer.UnallocatedSP
                 : dbBeast?.UnallocatedSP ?? 0;
 
+            // Row status is computed once per perk and reused between the status filter
+            // and the page bindings, since GetPerkRowStatus runs requirement checks that
+            // can hit the database.
+            var rowStateCache = new Dictionary<PerkType, (int rank, PerkRowStatus status, GuiColor color, string iconResref, string tooltip)>();
+
+            (int rank, PerkRowStatus status, GuiColor color, string iconResref, string tooltip) GetRowState(PerkType type, PerkDetail detail)
+            {
+                if (!rowStateCache.TryGetValue(type, out var state))
+                {
+                    var rank = GetCurrentPerkRank(dbPlayer, dbBeast, type);
+                    var (status, color, iconResref, tooltip) = GetPerkRowStatus(detail, rank, unallocatedSP);
+                    state = (rank, status, color, iconResref, tooltip);
+                    rowStateCache[type] = state;
+                }
+
+                return state;
+            }
+
             // Apply the status filter to the full sorted list before pagination so that
             // pages, page numbers, and the selection index list all reflect the filtered set.
             if (SelectedStatusFilter != 0)
             {
                 sortedPerks = sortedPerks.Where(x =>
                 {
-                    var rank = GetCurrentPerkRank(dbPlayer, dbBeast, x.Key);
-                    var (status, _, _, _) = GetPerkRowStatus(x.Value, rank, unallocatedSP);
+                    var (rank, status, _, _, _) = GetRowState(x.Key, x.Value);
 
                     return SelectedStatusFilter switch
                     {
@@ -498,8 +515,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             foreach (var (type, detail) in pagedPerks)
             {
-                var rank = GetCurrentPerkRank(dbPlayer, dbBeast, type);
-                var (_, color, iconResref, tooltip) = GetPerkRowStatus(detail, rank, unallocatedSP);
+                var (rank, _, color, iconResref, tooltip) = GetRowState(type, detail);
 
                 _filteredPerks.Add(type);
                 perkButtonIcons.Add(detail.IconResref);

@@ -377,14 +377,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PunishingGuard1)
-                .Description("Deals weapon DMG + 16. If the target attacked your ward in the last 30 seconds, also inflicts Dazed for 30 seconds.")
+                .Description("Deals weapon DMG + 16. If the target attacked your ward in the last 30 seconds, also inflicts Dazed for 15 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Lightsaber, 18)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PunishingGuard2)
-                .Description("Deals weapon DMG + 30. If the target attacked your ward in the last 30 seconds, also inflicts Dazed for 30 seconds.")
+                .Description("Deals weapon DMG + 30. If the target attacked your ward in the last 30 seconds, also inflicts Dazed for 15 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Lightsaber, 32)
                 .RequirementCharacterType(CharacterType.ForceSensitive);

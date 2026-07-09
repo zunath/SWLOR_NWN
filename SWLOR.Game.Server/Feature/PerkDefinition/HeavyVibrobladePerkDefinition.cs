@@ -273,13 +273,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.FortressStrike2)
-                .Description("Your next attack deals weapon DMG + 20 and generates +350 Enmity plus damage dealt as Enmity. You gain +20% Physical Defense for 30 seconds.")
+                .Description("Your next attack deals weapon DMG + 20 and generates +450 Enmity plus damage dealt as Enmity. You gain +20% Physical Defense for 30 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.HeavyVibroblade, 12)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.FortressStrike3)
-                .Description("Your next attack deals weapon DMG + 30 and generates +350 Enmity plus damage dealt as Enmity. You gain +30% Physical Defense for 30 seconds.")
+                .Description("Your next attack deals weapon DMG + 30 and generates +550 Enmity plus damage dealt as Enmity. You gain +30% Physical Defense for 30 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.HeavyVibroblade, 30);
         }
@@ -401,7 +401,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SoulAscensionTrait)
-                .Description("Defeating an enemy after spending HP on a Heavy Vibroblade Offense ability grants +10% Attack and heals you for 10% of physical damage dealt for 30 seconds.")
+                .Description("Defeating an enemy after spending HP on a Heavy Vibroblade Offense ability grants +8% Attack and heals you for 8% of physical damage dealt for 30 seconds.")
                 .IncreasesStat(StatType.HeavyVibrobladeOffenseSoulAscension, 1)
                 .IncreasesStat(StatType.HeavyVibrobladeOffenseHitPointSpendWindowSeconds, 30)
                 .Price(6)

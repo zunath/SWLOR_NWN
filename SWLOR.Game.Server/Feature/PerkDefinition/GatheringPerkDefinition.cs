@@ -99,7 +99,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("You can use tier 5 harvesters.")
-                .Price(3)
+                .Price(4)
                 .RequirementSkill(SkillType.Gathering, 40)
                 .GrantsFeat(FeatType.Harvesting5);
         }
@@ -135,7 +135,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("You can refine Veldite, Tilarium, Scordspar, Currian, Plagionite, Idailia, Keromber, Barinium, Jasioclase, and Gostian.")
-                .Price(3)
+                .Price(4)
                 .RequirementSkill(SkillType.Gathering, 40)
                 .GrantsFeat(FeatType.Refining5);
         }
@@ -171,13 +171,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Power cores refine five additional items.")
-                .Price(2)
+                .Price(3)
                 .RequirementSkill(SkillType.Gathering, 40)
                 .GrantsFeat(FeatType.RefineryManagement5)
 
                 .AddPerkLevel()
                 .Description("Power cores refine six additional items.")
-                .Price(2)
+                .Price(4)
                 .RequirementSkill(SkillType.Gathering, 45)
                 .GrantsFeat(FeatType.RefineryManagement6);
         }
@@ -213,7 +213,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("You can scavenge tier 5 resources.")
-                .Price(3)
+                .Price(4)
                 .RequirementSkill(SkillType.Gathering, 40)
                 .GrantsFeat(FeatType.Scavenging5);
         }

@@ -29,6 +29,10 @@ namespace SWLOR.Game.Server.Service
         private const int BaseGuardDamageReductionPercent = 20;
         private const int MaximumGuardDamageReductionPercent = 40;
         private const int MaximumNormalDamageReductionPercent = 95;
+        private const int MaximumDamageBonusPercent = 100;
+        private const int MaximumCombinedDamageReductionPercent = 85;
+        private const int BaseCriticalRate = 5;
+        private const int MaxCriticalRate = 50;
 
         public const int StandardCriticalRating = 2;
         public const int BaseAttackDelayMilliseconds = 1750;
@@ -325,8 +329,6 @@ namespace SWLOR.Game.Server.Service
         /// <returns>The critical rate, in a percentage</returns>
         public static int CalculateCriticalRate(int attackerPER, int defenderVIT, int skillRank, int criticalModifier)
         {
-            const int BaseCriticalRate = 5;
-            const int MaxCriticalRate = 50;
             var skillBonus = Math.Max(0, skillRank / 10);
             var statBonus = Math.Clamp((int)Math.Floor((attackerPER - defenderVIT) / 5.0f), 0, 3);
 
@@ -532,7 +534,8 @@ namespace SWLOR.Game.Server.Service
             int damage,
             uint attacker = OBJECT_INVALID,
             CombatDamageType damageType = CombatDamageType.Physical,
-            CombatDamageDeliveryType deliveryType = CombatDamageDeliveryType.Direct)
+            CombatDamageDeliveryType deliveryType = CombatDamageDeliveryType.Direct,
+            int? preTargetStatusStageDamage = null)
         {
             if (damage <= 0)
                 return damage;
@@ -544,6 +547,14 @@ namespace SWLOR.Game.Server.Service
 
             if (percentAdjustment != 0)
                 damage = ApplyPercentDamageAdjustment(damage, percentAdjustment);
+
+            if (preTargetStatusStageDamage.HasValue)
+            {
+                var minimumCombinedDamage = (int)Math.Ceiling(
+                    preTargetStatusStageDamage.Value * ((100 - MaximumCombinedDamageReductionPercent) / 100f));
+                if (damage < minimumCombinedDamage)
+                    damage = minimumCombinedDamage;
+            }
 
             damage += Stat.GetStatAdjustment(defender, StatType.DamageTakenFlatAdjustment);
             damage = Math.Max(1, damage);
@@ -790,21 +801,29 @@ namespace SWLOR.Game.Server.Service
             uint attacker,
             uint defender,
             int damage,
-            SkillType skillType = SkillType.Invalid,
-            CombatDamageType damageType = CombatDamageType.Physical,
-            bool isAbilityDamage = false,
-            bool canApplyRandomFlatBonuses = true)
+            SkillType skillType,
+            CombatDamageType damageType,
+            bool isAbilityDamage,
+            bool canApplyRandomFlatBonuses,
+            out int damageBeforeTargetStatusStage)
         {
+            damageBeforeTargetStatusStage = 0;
+
             if (damage <= 0)
                 return damage;
 
             if (HasDamageImmunity(defender, damageType))
                 return 0;
 
+            var damageBeforePercentStages = damage;
+
             damage = ApplyOutgoingDamageModifier(attacker, damage);
             damage = ApplyDamageTypeDealtModifiers(attacker, damage, damageType);
             damage = ApplyWeaponAndForceDamageModifier(attacker, damage, skillType, damageType);
             damage = ApplyTargetLowHPDamageModifier(attacker, defender, damage);
+
+            damageBeforeTargetStatusStage = damage;
+
             damage = ApplyTargetStatusDamageModifiers(
                 attacker,
                 defender,
@@ -815,7 +834,32 @@ namespace SWLOR.Game.Server.Service
                 canApplyRandomFlatBonuses);
             damage = ApplyRepeatedTargetDamageModifier(attacker, defender, skillType, damage, isAbilityDamage);
 
+            var maxBonusDamage = damageBeforePercentStages +
+                (int)Math.Ceiling(damageBeforePercentStages * (MaximumDamageBonusPercent / 100f));
+            if (damage > maxBonusDamage)
+                damage = maxBonusDamage;
+
             return Math.Max(1, damage);
+        }
+
+        public static int ApplyDamageDealtModifiers(
+            uint attacker,
+            uint defender,
+            int damage,
+            SkillType skillType = SkillType.Invalid,
+            CombatDamageType damageType = CombatDamageType.Physical,
+            bool isAbilityDamage = false,
+            bool canApplyRandomFlatBonuses = true)
+        {
+            return ApplyDamageDealtModifiers(
+                attacker,
+                defender,
+                damage,
+                skillType,
+                damageType,
+                isAbilityDamage,
+                canApplyRandomFlatBonuses,
+                out _);
         }
 
         public static int ApplyAutoAttackDamageModifiers(uint attacker, uint defender, int damage, SkillType skillType = SkillType.Invalid)
@@ -6205,6 +6249,11 @@ namespace SWLOR.Game.Server.Service
             criticalRate += GetCriticalRateAgainstSunderedTargetAdjustment(attacker, defender);
             criticalRate += GetTargetStatusCriticalRateAdjustment(attacker, defender);
             criticalRate += GetSideAttackCriticalRateAdjustment(attacker, defender, skillType);
+
+            if (criticalRate < BaseCriticalRate)
+                criticalRate = BaseCriticalRate;
+            else if (criticalRate > MaxCriticalRate)
+                criticalRate = MaxCriticalRate;
 
             return criticalRate > 0 && Random.D100(1) <= criticalRate
                 ? StandardCriticalRating

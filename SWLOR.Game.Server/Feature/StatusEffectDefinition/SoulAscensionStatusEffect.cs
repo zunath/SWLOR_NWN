@@ -11,8 +11,8 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         public SoulAscensionStatusEffect()
         {
-            StatGroup.Stats[StatType.AttackPercentAdjustment] = 10;
-            StatGroup.Stats[StatType.PhysicalDamageDealtHPPercentRestore] = 10;
+            StatGroup.Stats[StatType.AttackPercentAdjustment] = 8;
+            StatGroup.Stats[StatType.PhysicalDamageDealtHPPercentRestore] = 8;
         }
 
     }

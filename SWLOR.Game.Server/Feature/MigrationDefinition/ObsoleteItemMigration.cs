@@ -152,7 +152,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             { PerkType.PainSuppressant, 2 },
             { PerkType.PowerCell, 3 },
             { PerkType.Provoke, 2 },
-            { PerkType.RailDart, 2 },
+            { PerkType.RailDart, 3 },
             { PerkType.RemoteCharge, 2 },
             { PerkType.Resuscitation, 2 },
             { PerkType.Shielding, 3 },

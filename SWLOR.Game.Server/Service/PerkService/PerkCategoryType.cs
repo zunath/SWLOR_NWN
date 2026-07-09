@@ -163,6 +163,9 @@ namespace SWLOR.Game.Server.Service.PerkService
 
         [PerkCategory("First Aid - Combat Pharmacology", true)]
         FirstAidCombatPharmacology = 56,
+
+        [PerkCategory("Mimicry", true)]
+        Mimicry = 57,
     }
 
     public class PerkCategoryAttribute : Attribute

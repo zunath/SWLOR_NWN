@@ -1,0 +1,609 @@
+using System.Collections.Generic;
+using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.NWNX.Enum;
+using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.NWN.API.NWNX;
+using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.Creature;
+
+namespace SWLOR.Game.Server.Service
+{
+    /// <summary>
+    /// Mimicry lets players with the Combat Analyzer perk witness enemy creatures using their innate
+    /// techniques in combat. When the source creature dies, witnesses roll a chance to learn the
+    /// technique permanently. Learned techniques can then be equipped (within a slot budget) as
+    /// ordinary active ability feats, scaled off the player's stats and the Technique Potency perk.
+    /// </summary>
+    public static class Mimicry
+    {
+        // Technique feat -> its cached ability detail. Populated after Ability's cache runs.
+        private static readonly Dictionary<FeatType, AbilityDetail> _techniques = new();
+
+        // Source NPC feat -> the technique feat it teaches.
+        private static readonly Dictionary<FeatType, FeatType> _techniqueByNpcFeat = new();
+
+        // In-memory witness tracker: npc -> playerId -> technique feats witnessed but not yet learned.
+        private static readonly Dictionary<uint, Dictionary<string, HashSet<FeatType>>> _witnesses = new();
+
+        private const float WitnessRadius = 15.0f;
+        private const float LearnMaxDistance = 40.0f;
+
+        private const int BaseSlotsWithAnalyzer = 2;
+        private const int SlotsPerAnalyzerMemoryLevel = 2;
+
+        private const int BaseLearnChancePercent = 20;
+        private const int LearnChancePerRankDelta = 2;
+        private const int LearnChancePerPatternRecognitionLevel = 10;
+        private const int MaxLearnChancePercent = 75;
+        private const int LearnTechniqueXP = 400;
+        private const string LearnTechniqueSound = "gui_prompt";
+
+        private const int TotalHotBarSlots = 36;
+        private const int AutoAddHotBarSlots = 11;
+
+        /// <summary>
+        /// Caches technique lookups. Runs on OnModuleCacheAfter so Ability's cache (built on
+        /// OnModuleCacheBefore) has already populated every AbilityDetail, including the
+        /// Mimicry-specific fields set by AbilityBuilder.MimicryTechnique.
+        /// </summary>
+        [NWNEventHandler(ScriptName.OnModuleCacheAfter)]
+        public static void CacheData()
+        {
+            _techniques.Clear();
+            _techniqueByNpcFeat.Clear();
+
+            foreach (var (feat, detail) in Ability.GetAllAbilityDetails())
+            {
+                if (detail.MimicryTier <= 0)
+                    continue;
+
+                _techniques[feat] = detail;
+
+                if (detail.MimicrySourceFeat != FeatType.Invalid)
+                    _techniqueByNpcFeat[detail.MimicrySourceFeat] = feat;
+            }
+        }
+
+        /// <summary>
+        /// Called from the ability-use pipeline whenever a non-player creature uses a registered feat.
+        /// If the feat maps to a technique, every nearby player who has the Combat Analyzer perk and
+        /// hasn't already learned the technique has the witness recorded (used at the creature's death
+        /// to roll for learning). Sends a one-time floating text per (npc, player, technique).
+        /// </summary>
+        /// <param name="activator">The creature that used the ability.</param>
+        /// <param name="npcFeat">The feat that was used.</param>
+        public static void OnCreatureAbilityUsed(uint activator, FeatType npcFeat)
+        {
+            if (!GetIsObjectValid(activator) || GetIsPC(activator))
+                return;
+
+            if (!_techniqueByNpcFeat.TryGetValue(npcFeat, out var techniqueFeat))
+                return;
+
+            if (!_techniques.TryGetValue(techniqueFeat, out var techniqueDetail))
+                return;
+
+            var area = GetArea(activator);
+            var nth = 1;
+            var nearby = GetNearestCreature(CreatureType.PlayerCharacter, 1, activator, nth);
+
+            while (GetIsObjectValid(nearby) && GetDistanceBetween(activator, nearby) <= WitnessRadius)
+            {
+                if (!GetIsDM(nearby) && GetArea(nearby) == area)
+                {
+                    TryRecordWitness(activator, nearby, techniqueFeat, techniqueDetail);
+                }
+
+                nth++;
+                nearby = GetNearestCreature(CreatureType.PlayerCharacter, 1, activator, nth);
+            }
+        }
+
+        /// <summary>
+        /// Records a witness entry for a player/technique pair, if they qualify and haven't already
+        /// been recorded. Sends the "recording" floating text exactly once per (npc, player, technique).
+        /// </summary>
+        private static void TryRecordWitness(uint npc, uint player, FeatType techniqueFeat, AbilityDetail techniqueDetail)
+        {
+            if (Perk.GetPerkLevel(player, PerkType.CombatAnalyzer) < 1)
+                return;
+
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Player>(playerId);
+            if (dbPlayer.LearnedTechniques.ContainsKey(techniqueFeat))
+                return;
+
+            if (!_witnesses.TryGetValue(npc, out var byPlayer))
+            {
+                byPlayer = new Dictionary<string, HashSet<FeatType>>();
+                _witnesses[npc] = byPlayer;
+            }
+
+            if (!byPlayer.TryGetValue(playerId, out var witnessedTechniques))
+            {
+                witnessedTechniques = new HashSet<FeatType>();
+                byPlayer[playerId] = witnessedTechniques;
+            }
+
+            // Add returns false if this (npc, player, technique) combination was already recorded.
+            if (!witnessedTechniques.Add(techniqueFeat))
+                return;
+
+            SendMessageToPC(player, ColorToken.Cyan($"Your combat analyzer records {techniqueDetail.Name}..."));
+        }
+
+        /// <summary>
+        /// When a creature dies, every player who witnessed one of its techniques gets a chance to
+        /// learn it permanently. The witness cache entry for this creature is always cleared afterward.
+        /// </summary>
+        [NWNEventHandler(ScriptName.OnCreatureDeathAfter)]
+        public static void OnCreatureDeath()
+        {
+            var npc = OBJECT_SELF;
+
+            if (_witnesses.TryGetValue(npc, out var byPlayer) && byPlayer.Count > 0)
+            {
+                var nth = 1;
+                var nearby = GetNearestCreature(CreatureType.PlayerCharacter, 1, npc, nth);
+
+                while (GetIsObjectValid(nearby))
+                {
+                    if (GetDistanceBetween(npc, nearby) > LearnMaxDistance)
+                        break;
+
+                    TryLearnTechniques(npc, nearby, byPlayer);
+
+                    nth++;
+                    nearby = GetNearestCreature(CreatureType.PlayerCharacter, 1, npc, nth);
+                }
+            }
+
+            _witnesses.Remove(npc);
+        }
+
+        /// <summary>
+        /// Rolls a learn chance for every technique a specific player witnessed on this creature.
+        /// </summary>
+        private static void TryLearnTechniques(uint npc, uint player, Dictionary<string, HashSet<FeatType>> byPlayer)
+        {
+            if (!GetIsPC(player) ||
+                GetIsDM(player) ||
+                GetIsDead(player) ||
+                GetCurrentHitPoints(player) <= 0 ||
+                GetArea(player) != GetArea(npc))
+                return;
+
+            var playerId = GetObjectUUID(player);
+            if (!byPlayer.TryGetValue(playerId, out var witnessedTechniques) || witnessedTechniques.Count == 0)
+                return;
+
+            var dbPlayer = DB.Get<Player>(playerId);
+            var skillRank = dbPlayer.Skills.TryGetValue(SkillType.Mimicry, out var mimicrySkill) ? mimicrySkill.Rank : 0;
+            var patternRecognitionLevel = Perk.GetPerkLevel(player, PerkType.PatternRecognition);
+            var learnedDetails = new List<AbilityDetail>();
+
+            foreach (var feat in witnessedTechniques)
+            {
+                if (dbPlayer.LearnedTechniques.ContainsKey(feat))
+                    continue;
+
+                if (!_techniques.TryGetValue(feat, out var detail))
+                    continue;
+
+                var tierMinRank = GetTierMinRank(detail.MimicryTier);
+                if (skillRank < tierMinRank)
+                    continue;
+
+                var chance = BaseLearnChancePercent +
+                             LearnChancePerRankDelta * (skillRank - tierMinRank) +
+                             LearnChancePerPatternRecognitionLevel * patternRecognitionLevel;
+
+                if (chance > MaxLearnChancePercent)
+                    chance = MaxLearnChancePercent;
+
+                if (Random.D100(1) > chance)
+                    continue;
+
+                dbPlayer.LearnedTechniques[feat] = DateTime.UtcNow;
+                learnedDetails.Add(detail);
+            }
+
+            if (learnedDetails.Count <= 0)
+                return;
+
+            // Persist the learned techniques before GiveSkillXP runs - it performs its own
+            // DB.Get/DB.Set of this player, so saving our stale copy afterward would clobber the XP.
+            DB.Set(dbPlayer);
+
+            foreach (var detail in learnedDetails)
+            {
+                SendMessageToPC(player, ColorToken.Green($"You learned the technique: {detail.Name}!"));
+                Skill.GiveSkillXP(player, SkillType.Mimicry, LearnTechniqueXP);
+            }
+
+            PlayerPlugin.PlaySound(player, LearnTechniqueSound, OBJECT_INVALID);
+        }
+
+        /// <summary>
+        /// Returns the minimum Mimicry skill rank required to learn a technique of the given tier.
+        /// Tier 0 (not a technique) returns 0.
+        /// </summary>
+        public static int GetTierMinRank(int tier)
+        {
+            switch (tier)
+            {
+                case 1: return 0;
+                case 2: return 15;
+                case 3: return 30;
+                case 4: return 45;
+                default: return 0;
+            }
+        }
+
+        /// <summary>
+        /// Returns the maximum number of technique slots available to a player.
+        /// Zero if the player does not have the Combat Analyzer perk.
+        /// </summary>
+        public static int GetMaxSlots(uint player)
+        {
+            if (!GetIsPC(player))
+                return 0;
+
+            var playerId = GetObjectUUID(player);
+            return GetMaxSlots(DB.Get<Player>(playerId));
+        }
+
+        /// <summary>
+        /// Returns the maximum number of technique slots available to a player's database record.
+        /// </summary>
+        public static int GetMaxSlots(Player dbPlayer)
+        {
+            if (dbPlayer == null)
+                return 0;
+
+            var analyzerLevel = dbPlayer.Perks.TryGetValue(PerkType.CombatAnalyzer, out var level) ? level : 0;
+            if (analyzerLevel < 1)
+                return 0;
+
+            var memoryLevel = dbPlayer.Perks.TryGetValue(PerkType.AnalyzerMemory, out var memoryPerkLevel) ? memoryPerkLevel : 0;
+
+            return BaseSlotsWithAnalyzer + memoryLevel * SlotsPerAnalyzerMemoryLevel;
+        }
+
+        /// <summary>
+        /// Returns the number of technique slots currently used by a player's equipped techniques.
+        /// </summary>
+        public static int GetUsedSlots(uint player)
+        {
+            var playerId = GetObjectUUID(player);
+            return GetUsedSlots(DB.Get<Player>(playerId));
+        }
+
+        /// <summary>
+        /// Returns the number of technique slots currently used by a player database record's equipped techniques.
+        /// </summary>
+        public static int GetUsedSlots(Player dbPlayer)
+        {
+            if (dbPlayer == null)
+                return 0;
+
+            var used = 0;
+            foreach (var feat in dbPlayer.EquippedTechniques)
+            {
+                if (_techniques.TryGetValue(feat, out var detail))
+                    used += detail.MimicrySlotCost;
+            }
+
+            return used;
+        }
+
+        /// <summary>
+        /// Determines whether a player can equip a given technique right now.
+        /// </summary>
+        public static bool CanEquip(uint player, FeatType feat, out string error)
+        {
+            error = string.Empty;
+
+            if (!GetIsPC(player) || GetIsDM(player))
+            {
+                error = "Only players may equip techniques.";
+                return false;
+            }
+
+            if (!_techniques.TryGetValue(feat, out var detail))
+            {
+                error = "That is not a valid technique.";
+                return false;
+            }
+
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Player>(playerId);
+
+            if (!dbPlayer.LearnedTechniques.ContainsKey(feat))
+            {
+                error = "You have not learned that technique.";
+                return false;
+            }
+
+            if (dbPlayer.EquippedTechniques.Contains(feat))
+            {
+                error = "That technique is already equipped.";
+                return false;
+            }
+
+            if (GetIsInCombat(player))
+            {
+                error = "You cannot manage techniques while in combat.";
+                return false;
+            }
+
+            if (GetUsedSlots(dbPlayer) + detail.MimicrySlotCost > GetMaxSlots(dbPlayer))
+            {
+                error = "You do not have enough technique slots available.";
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Equips a learned technique, granting the underlying feat and adding it to the player's hotbar.
+        /// </summary>
+        public static bool EquipTechnique(uint player, FeatType feat)
+        {
+            if (!CanEquip(player, feat, out var error))
+            {
+                SendMessageToPC(player, ColorToken.Red(error));
+                return false;
+            }
+
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Player>(playerId);
+
+            dbPlayer.EquippedTechniques.Add(feat);
+            DB.Set(dbPlayer);
+
+            GrantTechniqueFeat(player, feat);
+
+            return true;
+        }
+
+        /// <summary>
+        /// Unequips a technique, removing the underlying feat and any hotbar slot referencing it.
+        /// </summary>
+        public static bool UnequipTechnique(uint player, FeatType feat)
+        {
+            if (!GetIsPC(player))
+                return false;
+
+            if (GetIsInCombat(player))
+            {
+                SendMessageToPC(player, ColorToken.Red("You cannot manage techniques while in combat."));
+                return false;
+            }
+
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Player>(playerId);
+
+            if (!dbPlayer.EquippedTechniques.Remove(feat))
+                return false;
+
+            DB.Set(dbPlayer);
+            RevokeTechniqueFeat(player, feat);
+
+            return true;
+        }
+
+        /// <summary>
+        /// Unequips techniques, newest-equipped first, until the player's equipped list fits within
+        /// their current slot budget. Used after perk refunds/level changes shrink the budget.
+        /// </summary>
+        public static void EnforceSlotBudget(uint player)
+        {
+            if (!GetIsPC(player))
+                return;
+
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Player>(playerId);
+            var maxSlots = GetMaxSlots(dbPlayer);
+
+            if (GetUsedSlots(dbPlayer) <= maxSlots)
+                return;
+
+            var changed = false;
+            for (var i = dbPlayer.EquippedTechniques.Count - 1; i >= 0; i--)
+            {
+                if (GetUsedSlots(dbPlayer) <= maxSlots)
+                    break;
+
+                var feat = dbPlayer.EquippedTechniques[i];
+                dbPlayer.EquippedTechniques.RemoveAt(i);
+                changed = true;
+
+                RevokeTechniqueFeat(player, feat);
+            }
+
+            if (changed)
+                DB.Set(dbPlayer);
+        }
+
+        /// <summary>
+        /// Unequips every equipped technique. Used when the Combat Analyzer perk is refunded.
+        /// </summary>
+        public static void UnequipAllTechniques(uint player)
+        {
+            if (!GetIsPC(player))
+                return;
+
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Player>(playerId);
+
+            if (dbPlayer.EquippedTechniques.Count <= 0)
+                return;
+
+            foreach (var feat in dbPlayer.EquippedTechniques)
+            {
+                RevokeTechniqueFeat(player, feat);
+            }
+
+            dbPlayer.EquippedTechniques.Clear();
+            DB.Set(dbPlayer);
+        }
+
+        /// <summary>
+        /// On login, re-grants every equipped technique's feat (in case it was lost, e.g. a fresh
+        /// character load) and enforces the slot budget in case perk levels changed since last logout.
+        /// </summary>
+        [NWNEventHandler(ScriptName.OnModuleEnter)]
+        public static void OnPlayerLogin()
+        {
+            var player = GetEnteringObject();
+            if (!GetIsPC(player) || GetIsDM(player))
+                return;
+
+            if (Perk.GetPerkLevel(player, PerkType.CombatAnalyzer) < 1)
+                return;
+
+            EnforceSlotBudget(player);
+
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Player>(playerId);
+
+            foreach (var feat in dbPlayer.EquippedTechniques)
+            {
+                GrantTechniqueFeat(player, feat);
+            }
+        }
+
+        /// <summary>
+        /// Grants the technique's feat (if missing) and adds it to the player's hotbar.
+        /// Mirrors the minimal grant + hotbar logic used by the perk system's active ability feats.
+        /// </summary>
+        private static void GrantTechniqueFeat(uint player, FeatType feat)
+        {
+            if (!GetIsObjectValid(player))
+                return;
+
+            if (!GetHasFeat(feat, player))
+                CreaturePlugin.AddFeat(player, feat);
+
+            AddFeatToHotBar(player, feat);
+        }
+
+        /// <summary>
+        /// Removes the technique's feat and any hotbar slot referencing it.
+        /// </summary>
+        private static void RevokeTechniqueFeat(uint player, FeatType feat)
+        {
+            if (!GetIsObjectValid(player))
+                return;
+
+            CreaturePlugin.RemoveFeat(player, feat);
+            RemoveFeatFromHotBar(player, feat);
+        }
+
+        private static bool IsFeatOnHotBar(uint player, FeatType feat)
+        {
+            for (var slot = 0; slot < TotalHotBarSlots; slot++)
+            {
+                var quickBarSlot = PlayerPlugin.GetQuickBarSlot(player, slot);
+                if (quickBarSlot.ObjectType == QuickBarSlotType.Feat && quickBarSlot.INTParam1 == (int)feat)
+                    return true;
+            }
+
+            return false;
+        }
+
+        private static void AddFeatToHotBar(uint player, FeatType feat)
+        {
+            if (!Ability.IsFeatRegistered(feat) || Ability.GetAbilityDetail(feat).ImpactAction == null)
+                return;
+
+            if (IsFeatOnHotBar(player, feat))
+                return;
+
+            var qbs = PlayerQuickBarSlot.UseFeat(feat);
+
+            for (var slot = 0; slot < AutoAddHotBarSlots; slot++)
+            {
+                if (PlayerPlugin.GetQuickBarSlot(player, slot).ObjectType != QuickBarSlotType.Empty)
+                    continue;
+
+                PlayerPlugin.SetQuickBarSlot(player, slot, qbs);
+                return;
+            }
+        }
+
+        private static void RemoveFeatFromHotBar(uint player, FeatType feat)
+        {
+            for (var slot = 0; slot < TotalHotBarSlots; slot++)
+            {
+                var quickBarSlot = PlayerPlugin.GetQuickBarSlot(player, slot);
+                if (quickBarSlot.ObjectType == QuickBarSlotType.Feat && quickBarSlot.INTParam1 == (int)feat)
+                {
+                    PlayerPlugin.SetQuickBarSlot(player, slot, PlayerQuickBarSlot.Empty(QuickBarSlotType.Empty));
+                }
+            }
+        }
+
+        /// <summary>
+        /// Returns every technique a player has learned, alongside its cached ability detail.
+        /// </summary>
+        public static List<(FeatType Feat, AbilityDetail Detail)> GetLearnedTechniques(uint player)
+        {
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Player>(playerId);
+            var result = new List<(FeatType, AbilityDetail)>();
+
+            foreach (var feat in dbPlayer.LearnedTechniques.Keys)
+            {
+                if (_techniques.TryGetValue(feat, out var detail))
+                    result.Add((feat, detail));
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Returns every technique a player currently has equipped, alongside its cached ability detail.
+        /// </summary>
+        public static List<(FeatType Feat, AbilityDetail Detail)> GetEquippedTechniques(uint player)
+        {
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Player>(playerId);
+            var result = new List<(FeatType, AbilityDetail)>();
+
+            foreach (var feat in dbPlayer.EquippedTechniques)
+            {
+                if (_techniques.TryGetValue(feat, out var detail))
+                    result.Add((feat, detail));
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Retrieves the cached ability detail for a technique feat, or null if the feat isn't a technique.
+        /// </summary>
+        public static AbilityDetail GetTechniqueDetail(FeatType feat)
+        {
+            return _techniques.TryGetValue(feat, out var detail) ? detail : null;
+        }
+
+        /// <summary>
+        /// Returns true if the given feat is a registered Mimicry technique.
+        /// </summary>
+        public static bool IsTechnique(FeatType feat)
+        {
+            return _techniques.ContainsKey(feat);
+        }
+
+        /// <summary>
+        /// Returns the total number of registered techniques.
+        /// </summary>
+        public static int TechniqueCount => _techniques.Count;
+    }
+}

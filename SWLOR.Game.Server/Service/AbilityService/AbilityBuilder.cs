@@ -752,6 +752,22 @@ namespace SWLOR.Game.Server.Service.AbilityService
         }
 
         /// <summary>
+        /// Marks the active ability as a Mimicry technique learned from an enemy creature's ability.
+        /// </summary>
+        /// <param name="sourceCreatureFeat">The NPC feat this technique is copied from.</param>
+        /// <param name="tier">The Mimicry tier of this technique, used to gate learning by skill rank.</param>
+        /// <param name="slotCost">The number of technique slots this ability consumes when equipped.</param>
+        /// <returns>An ability builder with the configured options</returns>
+        public AbilityBuilder MimicryTechnique(FeatType sourceCreatureFeat, int tier, int slotCost)
+        {
+            _activeAbility.MimicrySourceFeat = sourceCreatureFeat;
+            _activeAbility.MimicryTier = tier;
+            _activeAbility.MimicrySlotCost = slotCost;
+
+            return this;
+        }
+
+        /// <summary>
         /// Returns a built list of abilities.
         /// </summary>
         /// <returns>A list of built abilities.</returns>

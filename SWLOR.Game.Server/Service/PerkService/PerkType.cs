@@ -708,6 +708,10 @@ namespace SWLOR.Game.Server.Service.PerkService
         VenaticRecovery = 760,
         Hobbled = 761,
         EscapeArtist = 762,
-        // IDs 649-650 and 763+ are free.
+        CombatAnalyzer = 763,
+        TechniquePotency = 764,
+        AnalyzerMemory = 765,
+        PatternRecognition = 766,
+        // IDs 649-650 and 767+ are free.
     }
 }

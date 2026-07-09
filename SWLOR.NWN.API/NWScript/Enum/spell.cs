@@ -1544,5 +1544,15 @@ namespace SWLOR.NWN.API.NWScript.Enum
         CripplingSlice3 = 1595,
         VeiledStrike4 = 1596,
         EscapeArtist1 = 1597,
+        ToxicSpitTechnique = 1598,
+        FrostSpitTechnique = 1599,
+        RakingClawsTechnique = 1600,
+        SonicShriekTechnique = 1601,
+        TailSweepTechnique = 1602,
+        StaticWebTechnique = 1603,
+        GoringChargeTechnique = 1604,
+        ToxicCloudTechnique = 1605,
+        ScorchingBreathTechnique = 1606,
+        TerrifyingBellowTechnique = 1607,
     }
 }

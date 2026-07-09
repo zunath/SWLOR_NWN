@@ -56,6 +56,9 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public List<Type> StatusEffectTypesRemovedOnPerkRefund { get; set; }
         public AITargetSelector AITargetSelector { get; set; }
         public AIScoreCalculation AIScore { get; set; }
+        public FeatType MimicrySourceFeat { get; set; }
+        public int MimicryTier { get; set; }
+        public int MimicrySlotCost { get; set; }
 
         public AbilityDetail()
         {
@@ -86,6 +89,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
             SuppressesSourceStatusStackRiders = false;
             AdditionalActivationTargeting = new List<AbilityTargetingDetail>();
             StatusEffectTypesRemovedOnPerkRefund = new List<Type>();
+            MimicrySourceFeat = FeatType.Invalid;
         }
     }
 }

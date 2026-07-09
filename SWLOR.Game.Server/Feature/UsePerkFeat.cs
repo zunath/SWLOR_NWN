@@ -271,6 +271,11 @@ namespace SWLOR.Game.Server.Feature
 
             Combat.ApplyAbilityActivatedEffects(activator, target, feat, ability, summary);
             Combat.ApplyAbilityImpactEffects(activator, summary);
+
+            if (!GetIsPC(activator))
+            {
+                Mimicry.OnCreatureAbilityUsed(activator, feat);
+            }
         }
 
 

@@ -21,6 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
         public static readonly InnateAbilityProfile Staff = new(SkillType.Staff, SkillType.Staff, false);
         public static readonly InnateAbilityProfile Throwing = new(SkillType.Throwing, SkillType.Throwing, false);
         public static readonly InnateAbilityProfile Vibroblade = new(SkillType.Vibroblade, SkillType.Vibroblade, false);
+        public static readonly InnateAbilityProfile Mimicry = new(SkillType.Mimicry, SkillType.Mimicry, false, PerkType.TechniquePotency);
 
         public SkillType PlayerSkillType { get; }
         public SkillType NPCSkillType { get; }
@@ -70,7 +71,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
             return GetIsObjectValid(activator) && !GetIsPC(activator);
         }
 
-        public static void BuildSingleTarget(
+        public static AbilityBuilder BuildSingleTarget(
             AbilityBuilder builder,
             FeatType feat,
             string name,
@@ -125,9 +126,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                     afterSuccessfulHit: hitTarget => afterSuccessfulHit?.Invoke(activator, hitTarget),
                     useNPCStatScaling: ShouldUseNPCStatScaling(activator));
             });
+
+            return ability;
         }
 
-        public static void BuildArea(
+        public static AbilityBuilder BuildArea(
             AbilityBuilder builder,
             FeatType feat,
             string name,
@@ -197,9 +200,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                     enmityBonus: enmityBonus,
                     useNPCStatScaling: ShouldUseNPCStatScaling(activator));
             });
+
+            return ability;
         }
 
-        public static void BuildSelfBuff(
+        public static AbilityBuilder BuildSelfBuff(
             AbilityBuilder builder,
             FeatType feat,
             string name,
@@ -213,7 +218,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
             float duration,
             VisualEffect targetVisualEffect = VisualEffect.None)
         {
-            builder
+            var ability = builder
                 .Create(feat, profile.PlayerPerkType)
                 .Name(name)
                 .HasActivationDelay(activationDelay)
@@ -230,6 +235,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                         ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(targetVisualEffect), activator);
                     }
                 });
+
+            return ability;
         }
 
         private static bool HasNaturalWeapon(uint creature)

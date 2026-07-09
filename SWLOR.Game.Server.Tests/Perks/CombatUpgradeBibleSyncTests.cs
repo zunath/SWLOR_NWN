@@ -223,6 +223,7 @@ public class CombatUpgradeBibleSyncTests
         ["Katar"] = SkillType.Katar,
         ["Leadership"] = SkillType.Leadership,
         ["Lightsaber"] = SkillType.Lightsaber,
+        ["Mimicry"] = SkillType.Mimicry,
         ["Piloting"] = SkillType.Piloting,
         ["Pistol"] = SkillType.Pistol,
         ["Rifle"] = SkillType.Rifle,
@@ -1165,6 +1166,14 @@ public class CombatUpgradeBibleSyncTests
         {
             if (!scopedPerkTypes.Contains(ability.Detail.EffectiveLevelPerkType) ||
                 expectedActiveFeats.Contains(feat))
+            {
+                continue;
+            }
+
+            // Mimicry techniques share TechniquePotency's EffectiveLevelPerkType for scaling purposes, but they are
+            // granted by equipping a learned technique through the Mimicry system, not by any perk level's granted
+            // feats. Skip them here the same way IsTameRow/IsAuxiliaryGrantedFeat carve out other equip/aux-granted feats.
+            if (ability.Detail.MimicryTier > 0)
             {
                 continue;
             }
@@ -2134,6 +2143,7 @@ public class CombatUpgradeBibleSyncTests
             ("Leadership", "Vanguard Command") => PerkCategoryType.LeadershipVanguardCommand,
             ("Lightsaber", "Severance") => PerkCategoryType.LightsaberDefense,
             ("Lightsaber", "Ward") => PerkCategoryType.LightsaberOffense,
+            ("Mimicry", "Mimicry") => PerkCategoryType.Mimicry,
             ("Piloting", "Shipwright") => PerkCategoryType.Piloting,
             ("Pistol", "Gambler") => PerkCategoryType.PistolGunslinger,
             ("Pistol", "Skirmisher") => PerkCategoryType.PistolSkirmisher,

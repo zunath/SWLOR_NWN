@@ -45,7 +45,7 @@ namespace SWLOR.Game.Server.Service.PerkService
             { PerkRequirementCategory.BeastLevel, new Detail { Name = "Beast Level", IconResref = "req_beastlvl", IconResrefLocked = "req_beastlvl_r" } },
             { PerkRequirementCategory.BeastRole, new Detail { Name = "Beast Role", IconResref = "req_beastrole", IconResrefLocked = "req_beastrole_r" } },
             { PerkRequirementCategory.Unlock, new Detail { Name = "Unlock", IconResref = "req_unlock", IconResrefLocked = "req_unlock_r" } },
-            { PerkRequirementCategory.Other, new Detail { Name = "Requirement", IconResref = "req_other", IconResrefLocked = "req_other" } },
+            { PerkRequirementCategory.Other, new Detail { Name = "Requirement", IconResref = "req_other", IconResrefLocked = "req_other_r" } },
         };
 
         public static Detail GetDetail(PerkRequirementCategory category)

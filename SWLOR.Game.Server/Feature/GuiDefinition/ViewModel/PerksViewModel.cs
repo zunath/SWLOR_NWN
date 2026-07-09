@@ -191,6 +191,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public GuiBindingList<string> SelectedRequirementIcons
+        {
+            get => Get<GuiBindingList<string>>();
+            set => Set(value);
+        }
+
+        public GuiBindingList<string> SelectedRequirementTooltips
+        {
+            get => Get<GuiBindingList<string>>();
+            set => Set(value);
+        }
+
         public string BuyText
         {
             get => Get<string>();
@@ -265,6 +277,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             PerkButtonTexts = new GuiBindingList<string>();
             PerkDetailSelected = new GuiBindingList<bool>();
             SelectedRequirements = new GuiBindingList<string>();
+            SelectedRequirementIcons = new GuiBindingList<string>();
+            SelectedRequirementTooltips = new GuiBindingList<string>();
             PerkButtonChips = new GuiBindingList<string>();
             PerkChipColors = new GuiBindingList<GuiColor>();
         }
@@ -606,16 +620,25 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             return $"Recast Group: {Recast.GetRecastGroupDisplayName(recastGroup)}";
         }
 
-        private (bool, GuiBindingList<string>, GuiBindingList<GuiColor>) BuildRequirements(PerkLevel nextUpgrade)
+        private (bool meetsRequirements,
+            GuiBindingList<string> texts,
+            GuiBindingList<GuiColor> colors,
+            GuiBindingList<string> icons,
+            GuiBindingList<string> tooltips) BuildRequirements(PerkLevel nextUpgrade)
         {
             var meetsRequirements = true;
             var requirements = new GuiBindingList<string>();
             var requirementColors = new GuiBindingList<GuiColor>();
+            var requirementIcons = new GuiBindingList<string>();
+            var requirementTooltips = new GuiBindingList<string>();
+            var otherIcon = PerkRequirementCategoryResolver.GetDetail(PerkRequirementCategory.Other).IconResref;
 
             if (nextUpgrade == null)
             {
                 requirements.Add("MAXED");
                 requirementColors.Add(GuiColor.Green);
+                requirementIcons.Add(otherIcon);
+                requirementTooltips.Add("This perk is fully upgraded.");
             }
             else
             {
@@ -623,13 +646,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 {
                     requirements.Add(req.RequirementText);
 
-                    if (string.IsNullOrWhiteSpace(req.CheckRequirements(Player)))
+                    var categoryDetail = PerkRequirementCategoryResolver.GetDetail(req.Category);
+                    requirementIcons.Add(categoryDetail.IconResref);
+
+                    var error = req.CheckRequirements(Player);
+                    if (string.IsNullOrWhiteSpace(error))
                     {
                         requirementColors.Add(GuiColor.Green);
+                        requirementTooltips.Add($"{categoryDetail.Name} requirement\n{req.RequirementText}\nRequirement met.");
                     }
                     else
                     {
                         requirementColors.Add(GuiColor.Red);
+                        requirementTooltips.Add($"{categoryDetail.Name} requirement\n{req.RequirementText}\n{error}");
                         meetsRequirements = false;
                     }
                 }
@@ -638,10 +667,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 {
                     requirements.Add("None");
                     requirementColors.Add(GuiColor.Green);
+                    requirementIcons.Add(otherIcon);
+                    requirementTooltips.Add("This upgrade has no requirements.");
                 }
             }
 
-            return (meetsRequirements, requirements, requirementColors);
+            return (meetsRequirements, requirements, requirementColors, requirementIcons, requirementTooltips);
         }
 
         public Action OnSelectPerk() => () =>
@@ -702,9 +733,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             var selectedDetails = BuildSelectedPerkDetailText(detail, currentUpgrade, nextUpgrade, rank);
 
-            var (meetsRequirements, requirements, requirementColors) = BuildRequirements(nextUpgrade);
+            var (meetsRequirements, requirements, requirementColors, requirementIcons, requirementTooltips) = BuildRequirements(nextUpgrade);
             SelectedRequirements = requirements;
             SelectedRequirementColors = requirementColors;
+            SelectedRequirementIcons = requirementIcons;
+            SelectedRequirementTooltips = requirementTooltips;
 
             BuyText = nextUpgrade != null
                 ? $"Buy Upgrade ({nextUpgrade.Price} SP)"
@@ -1009,7 +1042,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     SelectedDetails = BuildSelectedPerkDetailText(detail, currentUpgrade, nextUpgrade, newRank);
                     PerkButtonTexts[_selectedPerkIndex] = $"{detail.Name} ({newRank}/{detail.PerkLevels.Count})";
 
-                    var (meetsRequirements, requirements, requirementColors) = BuildRequirements(nextUpgrade);
+                    var (meetsRequirements, requirements, requirementColors, requirementIcons, requirementTooltips) = BuildRequirements(nextUpgrade);
                     var (_, chipText, chipColor) = GetPerkRowStatus(detail, newRank, unallocatedSP);
 
                     PerkButtonColors[_selectedPerkIndex] = chipColor;
@@ -1017,6 +1050,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     PerkChipColors[_selectedPerkIndex] = chipColor;
                     SelectedRequirements = requirements;
                     SelectedRequirementColors = requirementColors;
+                    SelectedRequirementIcons = requirementIcons;
+                    SelectedRequirementTooltips = requirementTooltips;
                     IsBuyEnabled = nextUpgrade != null &&
                                    unallocatedSP >= nextUpgrade.Price &&
                                    meetsRequirements;

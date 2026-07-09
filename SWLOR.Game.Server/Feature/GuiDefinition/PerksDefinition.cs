@@ -184,14 +184,31 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 {
                                     template2.AddCell(cell =>
                                     {
+                                        cell.AddGroup(group =>
+                                        {
+                                            group.AddImage()
+                                                .BindResref(model => model.SelectedRequirementIcons)
+                                                .BindTooltip(model => model.SelectedRequirementTooltips)
+                                                .SetHorizontalAlign(NuiHorizontalAlign.Center)
+                                                .SetVerticalAlign(NuiVerticalAlign.Middle)
+                                                .SetAspect(NuiAspect.Stretch);
+                                        });
+
+                                        cell.SetWidth(26f);
+                                        cell.SetIsVariable(false);
+                                    });
+                                    template2.AddCell(cell =>
+                                    {
                                         cell.AddLabel()
                                             .BindText(model => model.SelectedRequirements)
                                             .BindColor(model => model.SelectedRequirementColors)
+                                            .BindTooltip(model => model.SelectedRequirementTooltips)
                                             .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                                            .SetVerticalAlign(NuiVerticalAlign.Top);
+                                            .SetVerticalAlign(NuiVerticalAlign.Middle);
                                     });
                                 })
-                                    .SetScrollbars(NuiScrollbars.Both)
+                                    .SetRowHeight(28f)
+                                    .SetScrollbars(NuiScrollbars.Y)
                                     .BindRowCount(model => model.SelectedRequirements)
                                     .BindIsVisible(model => model.IsPerkSelected);
                             });

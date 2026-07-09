@@ -356,20 +356,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 }
             }
 
-            // The row icon shows the restriction type: the gating requirement when
-            // locked, otherwise the perk's primary requirement type.
-            var iconCategory = gatingRequirement?.Category
-                ?? (nextUpgrade.Requirements.Count > 0
-                    ? nextUpgrade.Requirements[0].Category
-                    : PerkRequirementCategory.Other);
-            var iconResref = PerkRequirementCategoryResolver.GetDetail(iconCategory).IconResref;
-
+            // When locked, show the gating requirement's red (inaccessible) icon.
             if (gatingRequirement != null)
             {
-                var categoryName = PerkRequirementCategoryResolver.GetDetail(gatingRequirement.Category).Name;
-                var tooltip = $"Locked - {categoryName}: {gatingRequirement.RequirementText}. {gatingError}";
-                return (PerkRowStatus.Locked, GuiColor.Grey, iconResref, tooltip);
+                var lockedDetail = PerkRequirementCategoryResolver.GetDetail(gatingRequirement.Category);
+                var tooltip = $"Locked - {lockedDetail.Name}: {gatingRequirement.RequirementText}. {gatingError}";
+                return (PerkRowStatus.Locked, GuiColor.Grey, lockedDetail.IconResrefLocked, tooltip);
             }
+
+            // Otherwise show the perk's primary requirement type in its normal color.
+            var primaryCategory = nextUpgrade.Requirements.Count > 0
+                ? nextUpgrade.Requirements[0].Category
+                : PerkRequirementCategory.Other;
+            var iconResref = PerkRequirementCategoryResolver.GetDetail(primaryCategory).IconResref;
 
             if (unallocatedSP >= nextUpgrade.Price)
             {
@@ -676,10 +675,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     requirements.Add(req.RequirementText);
 
                     var categoryDetail = PerkRequirementCategoryResolver.GetDetail(req.Category);
-                    requirementIcons.Add(categoryDetail.IconResref);
-
                     var error = req.CheckRequirements(Player);
-                    if (string.IsNullOrWhiteSpace(error))
+                    var met = string.IsNullOrWhiteSpace(error);
+
+                    // Show the red locked icon when the requirement is not met.
+                    requirementIcons.Add(categoryDetail.GetIcon(met));
+
+                    if (met)
                     {
                         requirementColors.Add(GuiColor.Green);
                         requirementTooltips.Add($"{categoryDetail.Name}: {req.RequirementText} - met.");

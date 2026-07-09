@@ -230,11 +230,23 @@ namespace SWLOR.Game.Server.Service
                 return ActivateDisguiseResult.Failure("Unable to activate that disguise.");
             }
 
+            // Re-activating the disguise that is already active is a harmless no-op. Return early so
+            // the activation delay does not falsely block it and DateLastActivated is not re-stamped.
+            if (dbPlayer.ActiveDisguiseId == disguise.Id)
+            {
+                ApplyAppearance(player, disguise);
+                RefreshDisguiseDisplay(player);
+                return ActivateDisguiseResult.Success();
+            }
+
             var delayError = ValidateActivationDelay(playerId);
             if (!string.IsNullOrWhiteSpace(delayError))
                 return ActivateDisguiseResult.Failure(delayError);
 
-            if (GetActiveDisguise(dbPlayer) == null)
+            // Only snapshot the undisguised baseline when transitioning from no active disguise.
+            // Keying off the stored id (rather than a resolved disguise) avoids capturing an
+            // already-applied disguise appearance as the baseline if the stored id is ever stale.
+            if (string.IsNullOrWhiteSpace(dbPlayer.ActiveDisguiseId))
             {
                 dbPlayer.UndisguisedPortraitId = GetPortraitId(player);
                 dbPlayer.UndisguisedPortraitResref = GetPortraitResRef(player);

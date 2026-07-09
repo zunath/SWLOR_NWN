@@ -124173,21 +124173,17 @@
           "type": "byte",
           "value": 1
         },
-        "VarTable": {
-          "type": "list",
-          "value": []
-        },
         "Will": {
           "type": "byte",
           "value": 0
         },
         "X": {
           "type": "float",
-          "value": 65.33638763427734
+          "value": 65.59430694580078
         },
         "Y": {
           "type": "float",
-          "value": 74.07380676269531
+          "value": 79.22598266601563
         },
         "Z": {
           "type": "float",
@@ -125189,10 +125185,6 @@
         "Useable": {
           "type": "byte",
           "value": 1
-        },
-        "VarTable": {
-          "type": "list",
-          "value": []
         },
         "Will": {
           "type": "byte",
@@ -145647,10 +145639,6 @@
           "type": "byte",
           "value": 1
         },
-        "VarTable": {
-          "type": "list",
-          "value": []
-        },
         "Will": {
           "type": "byte",
           "value": 0
@@ -145877,10 +145865,6 @@
         "Useable": {
           "type": "byte",
           "value": 1
-        },
-        "VarTable": {
-          "type": "list",
-          "value": []
         },
         "Will": {
           "type": "byte",

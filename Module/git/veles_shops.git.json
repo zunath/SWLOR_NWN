@@ -40,26 +40,6 @@
       "MusicNight": {
         "type": "int",
         "value": 439
-      },
-      "VarTable": {
-        "type": "list",
-        "value": [
-          {
-            "__struct_id": 0,
-            "Name": {
-              "type": "cexostring",
-              "value": "PLANET_TYPE_ID"
-            },
-            "Type": {
-              "type": "dword",
-              "value": 1
-            },
-            "Value": {
-              "type": "int",
-              "value": 1
-            }
-          }
-        ]
       }
     }
   },
@@ -28676,10 +28656,6 @@
           "type": "byte",
           "value": 1
         },
-        "VarTable": {
-          "type": "list",
-          "value": []
-        },
         "Will": {
           "type": "byte",
           "value": 0
@@ -28906,10 +28882,6 @@
         "Useable": {
           "type": "byte",
           "value": 1
-        },
-        "VarTable": {
-          "type": "list",
-          "value": []
         },
         "Will": {
           "type": "byte",
@@ -29138,10 +29110,6 @@
           "type": "byte",
           "value": 1
         },
-        "VarTable": {
-          "type": "list",
-          "value": []
-        },
         "Will": {
           "type": "byte",
           "value": 0
@@ -29368,10 +29336,6 @@
         "Useable": {
           "type": "byte",
           "value": 1
-        },
-        "VarTable": {
-          "type": "list",
-          "value": []
         },
         "Will": {
           "type": "byte",
@@ -65059,7 +65023,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -1.570796012878418
+          "value": 1.570796251296997
         },
         "BodyBag": {
           "type": "byte",
@@ -65253,21 +65217,17 @@
           "type": "byte",
           "value": 1
         },
-        "VarTable": {
-          "type": "list",
-          "value": []
-        },
         "Will": {
           "type": "byte",
           "value": 0
         },
         "X": {
           "type": "float",
-          "value": 30.39439201354981
+          "value": 11.96114349365234
         },
         "Y": {
           "type": "float",
-          "value": 82.91603851318359
+          "value": 75.87386322021484
         },
         "Z": {
           "type": "float",

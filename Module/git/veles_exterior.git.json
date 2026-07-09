@@ -40,26 +40,6 @@
       "MusicNight": {
         "type": "int",
         "value": 353
-      },
-      "VarTable": {
-        "type": "list",
-        "value": [
-          {
-            "__struct_id": 0,
-            "Name": {
-              "type": "cexostring",
-              "value": "PLANET_TYPE_ID"
-            },
-            "Type": {
-              "type": "dword",
-              "value": 1
-            },
-            "Value": {
-              "type": "int",
-              "value": 1
-            }
-          }
-        ]
       }
     }
   },
@@ -178654,7 +178634,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 1.570796251296997
+          "value": -3.141592264175415
         },
         "BodyBag": {
           "type": "byte",
@@ -178848,25 +178828,21 @@
           "type": "byte",
           "value": 1
         },
-        "VarTable": {
-          "type": "list",
-          "value": []
-        },
         "Will": {
           "type": "byte",
           "value": 0
         },
         "X": {
           "type": "float",
-          "value": 139.4499969482422
+          "value": 174.0940093994141
         },
         "Y": {
           "type": "float",
-          "value": 127.5
+          "value": 11.38900852203369
         },
         "Z": {
           "type": "float",
-          "value": 0.2000000029802322
+          "value": 0.1999988555908203
         }
       },
       {

@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             _builder.CreateWindow(GuiWindowType.Perks)
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
-                .SetInitialGeometry(0, 0, 545f, 600f)
+                .SetInitialGeometry(0, 0, 760f, 620f)
                 .SetTitle("Perks")
                 .AddColumn(col =>
                 {
@@ -50,6 +50,35 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .AddOption("Alphabetical (Z-A)", 1)
                             .AddOption("Skill Level (Asc)", 2)
                             .AddOption("Skill Level (Desc)", 3);
+                        row.AddSpacer();
+                    });
+
+                    col.AddRow(row =>
+                    {
+                        row.AddSpacer();
+                        row.AddToggleButton()
+                            .SetText("All")
+                            .SetHeight(28f)
+                            .BindOnClicked(model => model.OnClickFilterAll())
+                            .BindIsToggled(model => model.IsFilterAll);
+
+                        row.AddToggleButton()
+                            .SetText("Owned")
+                            .SetHeight(28f)
+                            .BindOnClicked(model => model.OnClickFilterOwned())
+                            .BindIsToggled(model => model.IsFilterOwned);
+
+                        row.AddToggleButton()
+                            .SetText("Can Buy")
+                            .SetHeight(28f)
+                            .BindOnClicked(model => model.OnClickFilterCanBuy())
+                            .BindIsToggled(model => model.IsFilterCanBuy);
+
+                        row.AddToggleButton()
+                            .SetText("Maxed")
+                            .SetHeight(28f)
+                            .BindOnClicked(model => model.OnClickFilterMaxed())
+                            .BindIsToggled(model => model.IsFilterMaxed);
                         row.AddSpacer();
                     });
 
@@ -114,6 +143,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     .BindIsToggled(model => model.PerkDetailSelected)
                                     .BindColor(model => model.PerkButtonColors)
                                     .BindOnClicked(model => model.OnSelectPerk());
+                            });
+                            template.AddCell(cell =>
+                            {
+                                cell.AddLabel()
+                                    .BindText(model => model.PerkButtonChips)
+                                    .BindColor(model => model.PerkChipColors)
+                                    .SetHorizontalAlign(NuiHorizontalAlign.Right)
+                                    .SetVerticalAlign(NuiVerticalAlign.Middle);
+
+                                cell.SetWidth(150f);
+                                cell.SetIsVariable(false);
                             });
                         })
                             .SetRowHeight(40f)

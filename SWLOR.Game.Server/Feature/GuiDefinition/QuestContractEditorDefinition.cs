@@ -14,223 +14,280 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             _builder.CreateWindow(GuiWindowType.QuestContractEditor)
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
-                .SetInitialGeometry(0, 0, 700f, 700f)
+                .SetInitialGeometry(0, 0, 840f, 600f)
                 .SetTitle("Quest Contract Editor")
 
-                .AddColumn(col =>
+                .AddRow(root =>
                 {
-                    col.AddRow(row =>
+                    root.AddColumn(left =>
                     {
-                        row.AddTextEdit()
-                            .SetPlaceholder("Title")
-                            .SetMaxLength(QuestContractBoard.MaxTitleLength)
-                            .BindValue(model => model.Title);
-                    });
+                        left.SetWidth(400f);
 
-                    col.AddRow(row =>
-                    {
-                        row.AddTextEdit()
-                            .SetPlaceholder("Description")
-                            .SetIsMultiline(true)
-                            .SetMaxLength(QuestContractBoard.MaxDescriptionLength)
-                            .SetHeight(120f)
-                            .BindValue(model => model.Description);
-                    });
-
-                    col.AddRow(row =>
-                    {
-                        row.AddButton()
-                            .SetText("Save Details")
-                            .BindOnClicked(model => model.OnClickSaveDetails())
-                            .SetHeight(32f)
-                            .SetWidth(150f);
-
-                        row.AddLabel()
-                            .BindText(model => model.StatusText)
-                            .SetColor(255, 0, 0)
-                            .SetHeight(24f);
-                    });
-
-                    col.AddRow(row =>
-                    {
-                        row.AddLabel()
-                            .SetText($"Objectives (max {QuestContractBoard.MaxObjectives})")
-                            .SetHeight(20f);
-                    });
-
-                    col.AddRow(row =>
-                    {
-                        row.AddList(template =>
+                        left.AddRow(row =>
                         {
-                            template.AddCell(cell =>
-                            {
-                                cell.AddToggleButton()
-                                    .BindText(model => model.ObjectiveLabels)
-                                    .BindIsToggled(model => model.ObjectiveToggles)
-                                    .BindOnClicked(model => model.OnClickSelectObjective());
-                            });
+                            row.SetHeight(34f);
 
-                            template.AddCell(cell =>
-                            {
-                                cell.SetWidth(80f);
-                                cell.SetIsVariable(false);
+                            row.AddTextEdit()
+                                .SetPlaceholder("Title")
+                                .SetMaxLength(QuestContractBoard.MaxTitleLength)
+                                .BindValue(model => model.Title);
+                        });
 
-                                cell.AddButton()
-                                    .SetText("Remove")
-                                    .BindOnClicked(model => model.OnClickRemoveObjective());
-                            });
-                        })
-                            .BindRowCount(model => model.ObjectiveLabels)
-                            .SetRowHeight(32f)
-                            .SetHeight(110f);
-                    });
-
-                    col.AddRow(row =>
-                    {
-                        row.AddButton()
-                            .SetText("Add Objective")
-                            .BindIsEnabled(model => model.IsAddObjectiveEnabled)
-                            .BindOnClicked(model => model.OnClickAddObjective())
-                            .SetHeight(32f)
-                            .SetWidth(150f);
-                    });
-
-                    col.AddRow(row =>
-                    {
-                        row.BindIsVisible(model => model.IsObjectiveDetailVisible);
-
-                        row.AddTextEdit()
-                            .SetPlaceholder("Quantity")
-                            .BindValue(model => model.ObjectiveQuantityText)
-                            .SetWidth(100f);
-
-                        row.AddCheckBox()
-                            .SetText("Must be player-crafted")
-                            .BindIsChecked(model => model.ObjectiveIsPlayerCrafted);
-
-                        row.AddButton()
-                            .SetText("Apply")
-                            .BindOnClicked(model => model.OnClickApplyObjective())
-                            .SetHeight(32f)
-                            .SetWidth(100f);
-                    });
-
-                    col.AddRow(row =>
-                    {
-                        row.AddLabel()
-                            .SetText("Reward Credits (per completion)")
-                            .SetWidth(220f)
-                            .SetHeight(28f);
-
-                        row.AddTextEdit()
-                            .SetPlaceholder("Credits")
-                            .BindValue(model => model.RewardCreditsText)
-                            .SetWidth(120f);
-                    });
-
-                    col.AddRow(row =>
-                    {
-                        row.AddLabel()
-                            .SetText($"Completions (1-{QuestContractBoard.MaxCompletions})")
-                            .SetWidth(220f)
-                            .SetHeight(28f);
-
-                        row.AddTextEdit()
-                            .SetPlaceholder("Completions")
-                            .BindValue(model => model.CompletionsText)
-                            .SetWidth(120f);
-                    });
-
-                    col.AddRow(row =>
-                    {
-                        row.AddLabel()
-                            .SetText($"Reward Items (max {QuestContractBoard.MaxRewardItems}, single-completion contracts only)")
-                            .SetHeight(20f);
-                    });
-
-                    col.AddRow(row =>
-                    {
-                        row.AddLabel()
-                            .BindText(model => model.RewardItemHint)
-                            .SetColor(255, 255, 0)
-                            .SetHeight(20f);
-                    });
-
-                    col.AddRow(row =>
-                    {
-                        row.AddList(template =>
+                        left.AddRow(row =>
                         {
-                            template.AddCell(cell =>
-                            {
-                                cell.SetWidth(40f);
-                                cell.SetIsVariable(false);
+                            row.SetHeight(96f);
 
-                                cell.AddGroup(group =>
+                            row.AddTextEdit()
+                                .SetPlaceholder("Description")
+                                .SetIsMultiline(true)
+                                .SetMaxLength(QuestContractBoard.MaxDescriptionLength)
+                                .BindValue(model => model.Description);
+                        });
+
+                        left.AddRow(row =>
+                        {
+                            row.SetHeight(32f);
+
+                            row.AddLabel()
+                                .SetText("Reward Credits (per completion)")
+                                .SetWidth(220f);
+
+                            row.AddTextEdit()
+                                .SetPlaceholder("Credits")
+                                .BindValue(model => model.RewardCreditsText)
+                                .SetWidth(120f);
+                        });
+
+                        left.AddRow(row =>
+                        {
+                            row.SetHeight(32f);
+
+                            row.AddLabel()
+                                .SetText($"Completions (1-{QuestContractBoard.MaxCompletions})")
+                                .SetWidth(220f);
+
+                            row.AddTextEdit()
+                                .SetPlaceholder("Completions")
+                                .BindValue(model => model.CompletionsText)
+                                .SetWidth(120f);
+                        });
+
+                        left.AddRow(row =>
+                        {
+                            row.SetHeight(24f);
+
+                            row.AddLabel()
+                                .BindText(model => model.CostSummaryText);
+                        });
+
+                        left.AddRow(row =>
+                        {
+                            row.SetHeight(20f);
+
+                            row.AddLabel()
+                                .SetText($"Reward Items (max {QuestContractBoard.MaxRewardItems}, single-completion only)");
+                        });
+
+                        left.AddRow(row =>
+                        {
+                            row.SetHeight(20f);
+
+                            row.AddLabel()
+                                .BindText(model => model.RewardItemHint)
+                                .SetColor(255, 255, 0);
+                        });
+
+                        left.AddRow(row =>
+                        {
+                            row.AddList(template =>
+                            {
+                                template.AddCell(cell =>
                                 {
-                                    group.AddImage()
-                                        .BindResref(model => model.RewardItemIconResrefs)
-                                        .SetHorizontalAlign(NuiHorizontalAlign.Center)
-                                        .SetVerticalAlign(NuiVerticalAlign.Top);
+                                    cell.SetWidth(40f);
+                                    cell.SetIsVariable(false);
+
+                                    cell.AddGroup(group =>
+                                    {
+                                        group.AddImage()
+                                            .BindResref(model => model.RewardItemIconResrefs)
+                                            .SetHorizontalAlign(NuiHorizontalAlign.Center)
+                                            .SetVerticalAlign(NuiVerticalAlign.Top);
+                                    });
                                 });
-                            });
 
-                            template.AddCell(cell =>
+                                template.AddCell(cell =>
+                                {
+                                    cell.AddText()
+                                        .BindText(model => model.RewardItemLabels)
+                                        .SetShowBorder(false)
+                                        .SetScrollbars(NuiScrollbars.None);
+                                });
+
+                                template.AddCell(cell =>
+                                {
+                                    cell.SetWidth(80f);
+                                    cell.SetIsVariable(false);
+
+                                    cell.AddButton()
+                                        .SetText("Remove")
+                                        .BindOnClicked(model => model.OnClickRemoveRewardItem());
+                                });
+                            })
+                                .BindRowCount(model => model.RewardItemLabels)
+                                .SetRowHeight(40f);
+                        });
+
+                        left.AddRow(row =>
+                        {
+                            row.SetHeight(32f);
+
+                            row.AddButton()
+                                .SetText("Add Reward Item")
+                                .BindIsEnabled(model => model.IsAddRewardItemEnabled)
+                                .BindOnClicked(model => model.OnClickAddRewardItem())
+                                .SetWidth(180f);
+                        });
+
+                        left.AddRow(row =>
+                        {
+                            row.SetHeight(22f);
+
+                            row.AddLabel()
+                                .BindText(model => model.StatusText)
+                                .SetColor(255, 0, 0);
+                        });
+
+                        left.AddRow(row =>
+                        {
+                            row.SetHeight(35f);
+
+                            row.AddButton()
+                                .SetText("Save Draft")
+                                .BindOnClicked(model => model.OnClickSaveDetails())
+                                .SetHeight(35f);
+
+                            row.AddButton()
+                                .SetText("Publish")
+                                .BindOnClicked(model => model.OnClickPublish())
+                                .SetHeight(35f);
+
+                            row.AddButton()
+                                .SetText("Close")
+                                .BindOnClicked(model => model.OnClickClose())
+                                .SetHeight(35f);
+                        });
+                    });
+
+                    root.AddColumn(right =>
+                    {
+                        right.SetWidth(400f);
+
+                        right.AddRow(row =>
+                        {
+                            row.SetHeight(20f);
+
+                            row.AddLabel()
+                                .SetText("Search for an item to request:");
+                        });
+
+                        right.AddRow(row =>
+                        {
+                            row.SetHeight(34f);
+
+                            row.AddTextEdit()
+                                .SetPlaceholder("Item name")
+                                .BindValue(model => model.ItemSearchText);
+
+                            row.AddButton()
+                                .SetText("Search")
+                                .SetHeight(34f)
+                                .SetWidth(90f)
+                                .BindOnClicked(model => model.OnClickSearchItems());
+                        });
+
+                        right.AddRow(row =>
+                        {
+                            row.AddList(template =>
                             {
-                                cell.AddText()
-                                    .BindText(model => model.RewardItemLabels)
-                                    .SetShowBorder(false)
-                                    .SetScrollbars(NuiScrollbars.None);
-                            });
+                                template.AddCell(cell =>
+                                {
+                                    cell.AddToggleButton()
+                                        .BindText(model => model.SearchResultLabels)
+                                        .BindIsToggled(model => model.SearchResultToggles)
+                                        .BindOnClicked(model => model.OnClickSelectSearchResult());
+                                });
+                            })
+                                .BindRowCount(model => model.SearchResultLabels)
+                                .SetRowHeight(28f);
+                        });
 
-                            template.AddCell(cell =>
+                        right.AddRow(row =>
+                        {
+                            row.SetHeight(32f);
+
+                            row.AddButton()
+                                .SetText("Add as Objective")
+                                .BindIsEnabled(model => model.IsAddObjectiveEnabled)
+                                .BindOnClicked(model => model.OnClickAddObjective())
+                                .SetWidth(180f);
+                        });
+
+                        right.AddRow(row =>
+                        {
+                            row.SetHeight(20f);
+
+                            row.AddLabel()
+                                .SetText($"Current Objectives (max {QuestContractBoard.MaxObjectives})");
+                        });
+
+                        right.AddRow(row =>
+                        {
+                            row.SetHeight(120f);
+
+                            row.AddList(template =>
                             {
-                                cell.SetWidth(80f);
-                                cell.SetIsVariable(false);
+                                template.AddCell(cell =>
+                                {
+                                    cell.AddToggleButton()
+                                        .BindText(model => model.ObjectiveLabels)
+                                        .BindIsToggled(model => model.ObjectiveToggles)
+                                        .BindOnClicked(model => model.OnClickSelectObjective());
+                                });
 
-                                cell.AddButton()
-                                    .SetText("Remove")
-                                    .BindOnClicked(model => model.OnClickRemoveRewardItem());
-                            });
-                        })
-                            .BindRowCount(model => model.RewardItemLabels)
-                            .SetRowHeight(40f)
-                            .SetHeight(160f);
-                    });
+                                template.AddCell(cell =>
+                                {
+                                    cell.SetWidth(80f);
+                                    cell.SetIsVariable(false);
 
-                    col.AddRow(row =>
-                    {
-                        row.AddButton()
-                            .SetText("Add Reward Item")
-                            .BindIsEnabled(model => model.IsAddRewardItemEnabled)
-                            .BindOnClicked(model => model.OnClickAddRewardItem())
-                            .SetHeight(32f)
-                            .SetWidth(150f);
-                    });
+                                    cell.AddButton()
+                                        .SetText("Remove")
+                                        .BindOnClicked(model => model.OnClickRemoveObjective());
+                                });
+                            })
+                                .BindRowCount(model => model.ObjectiveLabels)
+                                .SetRowHeight(32f);
+                        });
 
-                    col.AddRow(row =>
-                    {
-                        row.AddLabel()
-                            .BindText(model => model.CostSummaryText)
-                            .SetHeight(24f);
-                    });
+                        right.AddRow(row =>
+                        {
+                            row.SetHeight(34f);
+                            row.BindIsVisible(model => model.IsObjectiveDetailVisible);
 
-                    col.AddRow(row =>
-                    {
-                        row.AddSpacer();
+                            row.AddTextEdit()
+                                .SetPlaceholder("Quantity")
+                                .BindValue(model => model.ObjectiveQuantityText)
+                                .SetWidth(100f);
 
-                        row.AddButton()
-                            .SetText("Publish")
-                            .BindOnClicked(model => model.OnClickPublish())
-                            .SetHeight(35f)
-                            .SetWidth(150f);
+                            row.AddCheckBox()
+                                .SetText("Must be player-crafted")
+                                .BindIsChecked(model => model.ObjectiveIsPlayerCrafted);
 
-                        row.AddButton()
-                            .SetText("Close")
-                            .BindOnClicked(model => model.OnClickClose())
-                            .SetHeight(35f)
-                            .SetWidth(150f);
-
-                        row.AddSpacer();
+                            row.AddButton()
+                                .SetText("Apply")
+                                .BindOnClicked(model => model.OnClickApplyObjective())
+                                .SetHeight(32f)
+                                .SetWidth(100f);
+                        });
                     });
                 });
 

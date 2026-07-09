@@ -28,6 +28,7 @@ namespace SWLOR.Game.Server.Service
         public const int PostingFeePercent = 5;
         public const int MinimumPostingFee = 100;
         public const int MinRewardCredits = 1;
+        public const int MaxItemSearchResults = 50;
 
         /// <summary>
         /// Runs after <see cref="Quest.RegisterQuests"/> finishes its reflection-based pass. Loads every

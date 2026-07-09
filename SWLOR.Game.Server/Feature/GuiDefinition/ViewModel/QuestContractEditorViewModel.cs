@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
@@ -11,6 +13,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
     public class QuestContractEditorViewModel: GuiViewModelBase<QuestContractEditorViewModel, GuiPayloadBase>
     {
         private int _selectedObjectiveIndex = -1;
+        private int _selectedSearchIndex = -1;
+        private readonly List<(string Resref, string Name)> _searchResults = new();
 
         public string Title
         {
@@ -27,6 +31,24 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public string StatusText
         {
             get => Get<string>();
+            set => Set(value);
+        }
+
+        public string ItemSearchText
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public GuiBindingList<string> SearchResultLabels
+        {
+            get => Get<GuiBindingList<string>>();
+            set => Set(value);
+        }
+
+        public GuiBindingList<bool> SearchResultToggles
+        {
+            get => Get<GuiBindingList<bool>>();
             set => Set(value);
         }
 
@@ -139,7 +161,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         protected override void Initialize(GuiPayloadBase initialPayload)
         {
             _selectedObjectiveIndex = -1;
+            _selectedSearchIndex = -1;
+            _searchResults.Clear();
             StatusText = string.Empty;
+            ItemSearchText = string.Empty;
+            SearchResultLabels = new GuiBindingList<string>();
+            SearchResultToggles = new GuiBindingList<bool>();
             ObjectiveQuantityText = "1";
             ObjectiveIsPlayerCrafted = false;
             IsObjectiveDetailVisible = false;
@@ -157,6 +184,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             WatchOnClient(model => model.Description);
             WatchOnClient(model => model.RewardCreditsText);
             WatchOnClient(model => model.CompletionsText);
+            WatchOnClient(model => model.ItemSearchText);
             WatchOnClient(model => model.ObjectiveQuantityText);
             WatchOnClient(model => model.ObjectiveIsPlayerCrafted);
         }
@@ -181,9 +209,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             ObjectiveLabels = labels;
             ObjectiveToggles = toggles;
-            IsAddObjectiveEnabled = draft.Objectives.Count < QuestContractBoard.MaxObjectives;
 
+            UpdateAddObjectiveEnabled();
             LoadObjectiveDetail(draft);
+        }
+
+        private void UpdateAddObjectiveEnabled()
+        {
+            IsAddObjectiveEnabled = _selectedSearchIndex >= 0
+                && _selectedSearchIndex < _searchResults.Count
+                && (ObjectiveLabels?.Count ?? 0) < QuestContractBoard.MaxObjectives;
         }
 
         private void LoadObjectiveDetail(QuestContract draft)
@@ -286,41 +321,80 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             LoadObjectiveDetail(draft);
         };
 
-        public Action OnClickAddObjective() => () =>
+        public Action OnClickSearchItems() => () =>
         {
-            Targeting.EnterTargetingMode(Player, ObjectType.Item, "Please click on an item within your inventory to use as this objective's required item.", AddObjective);
-            EnterTargetingMode(Player, ObjectType.Item);
+            _selectedSearchIndex = -1;
+
+            var results = Cache.SearchItemsByName(ItemSearchText, QuestContractBoard.MaxItemSearchResults);
+
+            _searchResults.Clear();
+            var labels = new GuiBindingList<string>();
+            var toggles = new GuiBindingList<bool>();
+
+            foreach (var result in results)
+            {
+                _searchResults.Add(result);
+                labels.Add(result.Name);
+                toggles.Add(false);
+            }
+
+            SearchResultLabels = labels;
+            SearchResultToggles = toggles;
+
+            if (results.Count == 0)
+                StatusText = "No items found. Try a different search.";
+            else if (results.Count >= QuestContractBoard.MaxItemSearchResults)
+                StatusText = $"Showing the first {QuestContractBoard.MaxItemSearchResults} matches. Refine your search to narrow it down.";
+            else
+                StatusText = string.Empty;
+
+            UpdateAddObjectiveEnabled();
         };
 
-        private void AddObjective(uint item)
+        public Action OnClickSelectSearchResult() => () =>
         {
-            if (GetItemPossessor(item) != Player)
-            {
-                FloatingTextStringOnCreature("Item must be in your inventory.", Player, false);
-                return;
-            }
+            if (_selectedSearchIndex > -1 && _selectedSearchIndex < SearchResultToggles.Count)
+                SearchResultToggles[_selectedSearchIndex] = false;
+
+            var index = NuiGetEventArrayIndex();
+            _selectedSearchIndex = index;
+            SearchResultToggles[index] = true;
+
+            UpdateAddObjectiveEnabled();
+        };
+
+        public Action OnClickAddObjective() => () =>
+        {
+            if (_selectedSearchIndex < 0 || _selectedSearchIndex >= _searchResults.Count) return;
 
             var draft = QuestContractBoard.GetOrCreateDraft(Player);
 
             if (draft.Objectives.Count >= QuestContractBoard.MaxObjectives)
             {
-                FloatingTextStringOnCreature($"A contract can have at most {QuestContractBoard.MaxObjectives} objectives.", Player, false);
+                StatusText = $"A contract can have at most {QuestContractBoard.MaxObjectives} objectives.";
                 return;
             }
 
-            var objective = new QuestContractObjective
+            var selected = _searchResults[_selectedSearchIndex];
+
+            if (draft.Objectives.Any(x => x.ItemResref == selected.Resref))
             {
-                ItemResref = GetResRef(item),
-                ItemName = GetName(item),
+                StatusText = "That item is already an objective.";
+                return;
+            }
+
+            draft.Objectives.Add(new QuestContractObjective
+            {
+                ItemResref = selected.Resref,
+                ItemName = selected.Name,
                 Quantity = 1,
                 MustBePlayerProduced = false
-            };
-
-            draft.Objectives.Add(objective);
+            });
             DB.Set(draft);
 
+            StatusText = string.Empty;
             LoadObjectives();
-        }
+        };
 
         public Action OnClickRemoveObjective() => () =>
         {

@@ -141,6 +141,28 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Searches the cached item catalog for items whose name contains the given text. Matching is
+        /// case-insensitive and runs against the in-memory name cache, so it is safe to call on demand.
+        /// </summary>
+        /// <param name="search">The partial name to search for. Whitespace/empty returns no results.</param>
+        /// <param name="maxResults">The maximum number of results to return.</param>
+        /// <returns>Matching (resref, name) pairs ordered by name, capped at <paramref name="maxResults"/>.</returns>
+        public static List<(string Resref, string Name)> SearchItemsByName(string search, int maxResults)
+        {
+            if (string.IsNullOrWhiteSpace(search))
+                return new List<(string, string)>();
+
+            var lowered = search.ToLower();
+
+            return ItemNamesByResref
+                .Where(x => !string.IsNullOrWhiteSpace(x.Value) && x.Value.ToLower().Contains(lowered))
+                .OrderBy(x => x.Value)
+                .Take(maxResults)
+                .Select(x => (x.Key, x.Value))
+                .ToList();
+        }
+
+        /// <summary>
         /// Retrieves the name of an item by its resref. If resref cannot be found, an empty string will be returned.
         /// </summary>
         /// <param name="resref">The resref to search for.</param>

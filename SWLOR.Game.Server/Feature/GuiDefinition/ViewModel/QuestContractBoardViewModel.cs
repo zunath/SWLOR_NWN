@@ -16,11 +16,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         IGuiRefreshable<QuestContractPublishedRefreshEvent>
     {
         private bool _isDM;
-        private readonly List<QuestContract> _browseContracts = new();
-        private int _selectedBrowseIndex = -1;
-
-        private readonly List<QuestContract> _myContracts = new();
-        private int _selectedMyContractIndex = -1;
+        private bool _isBrowseTab;
+        private readonly List<QuestContract> _rows = new();
+        private int _selectedIndex = -1;
 
         public string SearchText
         {
@@ -40,27 +38,39 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-        public bool IsBrowseVisible
+        public bool IsSearchVisible
         {
             get => Get<bool>();
             set => Set(value);
         }
 
-        public bool IsMyContractsVisible
+        public bool IsBrowseActionsVisible
         {
             get => Get<bool>();
             set => Set(value);
         }
 
-        public GuiBindingList<string> BrowseLabels
+        public bool IsMyActionsVisible
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public GuiBindingList<string> RowLabels
         {
             get => Get<GuiBindingList<string>>();
             set => Set(value);
         }
 
-        public GuiBindingList<bool> BrowseToggles
+        public GuiBindingList<bool> RowToggles
         {
             get => Get<GuiBindingList<bool>>();
+            set => Set(value);
+        }
+
+        public GuiBindingList<GuiColor> RowColors
+        {
+            get => Get<GuiBindingList<GuiColor>>();
             set => Set(value);
         }
 
@@ -106,24 +116,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-        public GuiBindingList<string> MyContractLabels
-        {
-            get => Get<GuiBindingList<string>>();
-            set => Set(value);
-        }
-
-        public GuiBindingList<bool> MyContractToggles
-        {
-            get => Get<GuiBindingList<bool>>();
-            set => Set(value);
-        }
-
-        public GuiBindingList<GuiColor> MyContractColors
-        {
-            get => Get<GuiBindingList<GuiColor>>();
-            set => Set(value);
-        }
-
         public bool IsCancelEnabled
         {
             get => Get<bool>();
@@ -136,20 +128,39 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _isDM = authLevel == AuthorizationLevel.DM || authLevel == AuthorizationLevel.Admin;
 
             SearchText = string.Empty;
-            StatusText = string.Empty;
-            IsBrowseVisible = true;
-            IsMyContractsVisible = false;
-            IsBrowseTabToggled = true;
-            IsMyContractsTabToggled = false;
 
-            Search();
+            ShowBrowse();
 
             WatchOnClient(model => model.SearchText);
         }
 
-        private void Search()
+        private void ShowBrowse()
         {
-            _selectedBrowseIndex = -1;
+            _isBrowseTab = true;
+            IsBrowseTabToggled = true;
+            IsMyContractsTabToggled = false;
+            IsSearchVisible = true;
+            IsBrowseActionsVisible = true;
+            IsMyActionsVisible = false;
+
+            LoadBrowse();
+        }
+
+        private void ShowMyContracts()
+        {
+            _isBrowseTab = false;
+            IsBrowseTabToggled = false;
+            IsMyContractsTabToggled = true;
+            IsSearchVisible = false;
+            IsBrowseActionsVisible = false;
+            IsMyActionsVisible = true;
+
+            LoadMyContracts();
+        }
+
+        private void LoadBrowse()
+        {
+            _selectedIndex = -1;
             StatusText = string.Empty;
 
             var query = new DBQuery<QuestContract>()
@@ -158,9 +169,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var count = (int)DB.SearchCount(query);
             var results = count > 0 ? DB.Search(query.AddPaging(count, 0)) : Enumerable.Empty<QuestContract>();
 
-            _browseContracts.Clear();
+            _rows.Clear();
             var labels = new GuiBindingList<string>();
             var toggles = new GuiBindingList<bool>();
+            var colors = new GuiBindingList<GuiColor>();
 
             foreach (var contract in results)
             {
@@ -170,70 +182,137 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 var authorName = PlayerName.GetDisplayNameByPlayerId(Player, contract.AuthorPlayerId, contract.AuthorName);
 
-                _browseContracts.Add(contract);
+                _rows.Add(contract);
                 labels.Add($"{contract.Title} - {authorName} - {contract.RewardCredits} cr - {contract.CompletionsRemaining} left");
                 toggles.Add(false);
+                colors.Add(GuiColor.White);
             }
 
-            BrowseLabels = labels;
-            BrowseToggles = toggles;
+            RowLabels = labels;
+            RowToggles = toggles;
+            RowColors = colors;
 
-            LoadBrowseDetail();
+            LoadDetail();
         }
 
-        private void LoadBrowseDetail()
+        private void LoadMyContracts()
+        {
+            _selectedIndex = -1;
+            StatusText = string.Empty;
+
+            var playerId = GetObjectUUID(Player);
+            var query = new DBQuery<QuestContract>()
+                .AddFieldSearch(nameof(QuestContract.AuthorPlayerId), playerId, false)
+                .AddFieldSearch(nameof(QuestContract.Status), new[] { (int)QuestContractStatus.Draft, (int)QuestContractStatus.Published });
+            var count = (int)DB.SearchCount(query);
+            var results = count > 0 ? DB.Search(query.AddPaging(count, 0)) : Enumerable.Empty<QuestContract>();
+
+            _rows.Clear();
+            var labels = new GuiBindingList<string>();
+            var toggles = new GuiBindingList<bool>();
+            var colors = new GuiBindingList<GuiColor>();
+
+            foreach (var contract in results.OrderByDescending(x => x.Status))
+            {
+                var statusLabel = contract.Status == QuestContractStatus.Draft ? "Draft" : "Published";
+
+                _rows.Add(contract);
+                labels.Add($"[{statusLabel}] {contract.Title} - {contract.CompletionsRemaining} completions remaining");
+                toggles.Add(false);
+                colors.Add(contract.Status == QuestContractStatus.Draft ? GuiColor.White : GuiColor.Green);
+            }
+
+            RowLabels = labels;
+            RowToggles = toggles;
+            RowColors = colors;
+
+            LoadDetail();
+        }
+
+        private void LoadDetail()
         {
             IsAcceptVisible = false;
             IsAcceptEnabled = false;
             IsTurnInVisible = false;
             IsAbandonVisible = false;
             IsTakeDownVisible = false;
+            IsCancelEnabled = false;
 
-            if (_selectedBrowseIndex < 0 || _selectedBrowseIndex >= _browseContracts.Count)
+            if (_selectedIndex < 0 || _selectedIndex >= _rows.Count)
             {
-                DetailText = "Select a contract to view details.";
+                DetailText = _isBrowseTab
+                    ? "Select a contract to view details."
+                    : "Select one of your contracts to view details, or create a new one below.";
                 return;
             }
 
-            var contract = _browseContracts[_selectedBrowseIndex];
+            var contract = _rows[_selectedIndex];
             DetailText = BuildDetailText(contract);
 
-            var questId = QuestContractFactory.BuildQuestId(contract.Id);
-            var playerId = GetObjectUUID(Player);
-            var dbPlayer = DB.Get<Player>(playerId);
-            var hasActive = dbPlayer.Quests.TryGetValue(questId, out var playerQuest) && playerQuest.DateLastCompleted == null;
-            var isStillRegistered = Quest.GetQuestByIdOrDefault(questId) != null;
+            if (_isBrowseTab)
+            {
+                var questId = QuestContractFactory.BuildQuestId(contract.Id);
+                var playerId = GetObjectUUID(Player);
+                var dbPlayer = DB.Get<Player>(playerId);
+                var hasActive = dbPlayer.Quests.TryGetValue(questId, out var playerQuest) && playerQuest.DateLastCompleted == null;
+                var isStillRegistered = Quest.GetQuestByIdOrDefault(questId) != null;
 
-            IsAcceptVisible = !hasActive;
-            IsAcceptEnabled = !_isDM && isStillRegistered && Quest.CanAcceptQuest(Player, questId);
-            IsTurnInVisible = hasActive && isStillRegistered;
-            IsAbandonVisible = hasActive && isStillRegistered;
-            IsTakeDownVisible = _isDM;
+                IsAcceptVisible = !hasActive;
+                IsAcceptEnabled = !_isDM && isStillRegistered && Quest.CanAcceptQuest(Player, questId);
+                IsTurnInVisible = hasActive && isStillRegistered;
+                IsAbandonVisible = hasActive && isStillRegistered;
+                IsTakeDownVisible = _isDM;
 
-            if (!isStillRegistered && !hasActive)
-                DetailText += "\n\nThis contract is no longer available.";
+                if (!isStillRegistered && !hasActive)
+                    DetailText += "\n\nThis contract is no longer available.";
+            }
+            else
+            {
+                IsCancelEnabled = contract.Status == QuestContractStatus.Published;
+            }
         }
 
         private string BuildDetailText(QuestContract contract)
         {
-            var authorName = PlayerName.GetDisplayNameByPlayerId(Player, contract.AuthorPlayerId, contract.AuthorName);
             var sb = new StringBuilder();
 
             sb.Append($"Title: {contract.Title}\n");
-            sb.Append($"Author: {authorName}\n");
+
+            if (_isBrowseTab)
+            {
+                var authorName = PlayerName.GetDisplayNameByPlayerId(Player, contract.AuthorPlayerId, contract.AuthorName);
+                sb.Append($"Author: {authorName}\n");
+            }
+            else
+            {
+                var statusLabel = contract.Status == QuestContractStatus.Draft ? "Draft" : "Published";
+                sb.Append($"Status: {statusLabel}\n");
+            }
+
             sb.Append($"Completions Remaining: {contract.CompletionsRemaining}\n");
-            sb.Append($"Expires: {contract.DateExpires:yyyy-MM-dd}\n\n");
-            sb.Append(contract.Description);
+
+            if (contract.Status == QuestContractStatus.Published)
+                sb.Append($"Expires: {contract.DateExpires:yyyy-MM-dd}\n");
+
+            sb.Append('\n');
+            sb.Append(string.IsNullOrWhiteSpace(contract.Description) ? "(No description)" : contract.Description);
             sb.Append("\n\nObjectives:\n");
 
-            foreach (var objective in contract.Objectives)
+            if (contract.Objectives.Count == 0)
             {
-                sb.Append($"  {objective.Quantity}x {objective.ItemName}");
+                sb.Append("  (None)\n");
+            }
+            else
+            {
+                foreach (var objective in contract.Objectives)
+                {
+                    sb.Append($"  {objective.Quantity}x {objective.ItemName}");
 
-                if (objective.MustBePlayerProduced)
-                    sb.Append(" (player-crafted)");
+                    if (objective.MustBePlayerProduced)
+                        sb.Append(" (player-crafted)");
 
-                sb.Append('\n');
+                    sb.Append('\n');
+                }
             }
 
             sb.Append("\nRewards:\n");
@@ -249,145 +328,83 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             return sb.ToString();
         }
 
-        private void SearchMyContracts()
-        {
-            _selectedMyContractIndex = -1;
-            StatusText = string.Empty;
+        public Action OnClickBrowseTab() => ShowBrowse;
 
-            var playerId = GetObjectUUID(Player);
-            var query = new DBQuery<QuestContract>()
-                .AddFieldSearch(nameof(QuestContract.AuthorPlayerId), playerId, false)
-                .AddFieldSearch(nameof(QuestContract.Status), new[] { (int)QuestContractStatus.Draft, (int)QuestContractStatus.Published });
-            var count = (int)DB.SearchCount(query);
-            var results = count > 0 ? DB.Search(query.AddPaging(count, 0)) : Enumerable.Empty<QuestContract>();
+        public Action OnClickMyContractsTab() => ShowMyContracts;
 
-            _myContracts.Clear();
-            var labels = new GuiBindingList<string>();
-            var toggles = new GuiBindingList<bool>();
-            var colors = new GuiBindingList<GuiColor>();
-
-            foreach (var contract in results.OrderByDescending(x => x.Status))
-            {
-                var statusLabel = contract.Status == QuestContractStatus.Draft ? "Draft" : "Published";
-
-                _myContracts.Add(contract);
-                labels.Add($"[{statusLabel}] {contract.Title} - {contract.CompletionsRemaining} completions remaining");
-                toggles.Add(false);
-                colors.Add(contract.Status == QuestContractStatus.Draft ? GuiColor.White : GuiColor.Green);
-            }
-
-            MyContractLabels = labels;
-            MyContractToggles = toggles;
-            MyContractColors = colors;
-            IsCancelEnabled = false;
-        }
-
-        public Action OnClickBrowseTab() => () =>
-        {
-            IsBrowseVisible = true;
-            IsMyContractsVisible = false;
-            IsBrowseTabToggled = true;
-            IsMyContractsTabToggled = false;
-
-            Search();
-        };
-
-        public Action OnClickMyContractsTab() => () =>
-        {
-            IsBrowseVisible = false;
-            IsMyContractsVisible = true;
-            IsBrowseTabToggled = false;
-            IsMyContractsTabToggled = true;
-
-            SearchMyContracts();
-        };
-
-        public Action OnClickSearch() => Search;
+        public Action OnClickSearch() => LoadBrowse;
 
         public Action OnClickClearSearch() => () =>
         {
             SearchText = string.Empty;
-            Search();
+            LoadBrowse();
         };
 
-        public Action OnClickSelectContract() => () =>
+        public Action OnClickSelectRow() => () =>
         {
-            if (_selectedBrowseIndex > -1 && _selectedBrowseIndex < BrowseToggles.Count)
-                BrowseToggles[_selectedBrowseIndex] = false;
+            if (_selectedIndex > -1 && _selectedIndex < RowToggles.Count)
+                RowToggles[_selectedIndex] = false;
 
             var index = NuiGetEventArrayIndex();
-            _selectedBrowseIndex = index;
-            BrowseToggles[index] = true;
+            _selectedIndex = index;
+            RowToggles[index] = true;
             StatusText = string.Empty;
 
-            LoadBrowseDetail();
+            LoadDetail();
         };
 
         public Action OnClickAccept() => () =>
         {
-            if (_selectedBrowseIndex < 0 || _selectedBrowseIndex >= _browseContracts.Count) return;
+            if (!_isBrowseTab || _selectedIndex < 0 || _selectedIndex >= _rows.Count) return;
 
-            var contract = _browseContracts[_selectedBrowseIndex];
+            var contract = _rows[_selectedIndex];
             var questId = QuestContractFactory.BuildQuestId(contract.Id);
 
             if (Quest.GetQuestByIdOrDefault(questId) == null)
             {
                 StatusText = "This contract is no longer available.";
-                Search();
+                LoadBrowse();
                 return;
             }
 
             Quest.AcceptQuest(Player, questId);
 
-            LoadBrowseDetail();
+            LoadDetail();
         };
 
         public Action OnClickTurnIn() => () =>
         {
-            if (_selectedBrowseIndex < 0 || _selectedBrowseIndex >= _browseContracts.Count) return;
+            if (!_isBrowseTab || _selectedIndex < 0 || _selectedIndex >= _rows.Count) return;
 
-            var contract = _browseContracts[_selectedBrowseIndex];
+            var contract = _rows[_selectedIndex];
             Quest.RequestItemsFromPlayer(Player, QuestContractFactory.BuildQuestId(contract.Id));
         };
 
         public Action OnClickAbandon() => () =>
         {
-            if (_selectedBrowseIndex < 0 || _selectedBrowseIndex >= _browseContracts.Count) return;
+            if (!_isBrowseTab || _selectedIndex < 0 || _selectedIndex >= _rows.Count) return;
 
-            var contract = _browseContracts[_selectedBrowseIndex];
+            var contract = _rows[_selectedIndex];
 
             ShowModal("Are you sure you wish to abandon this contract?", () =>
             {
                 Quest.AbandonQuest(Player, QuestContractFactory.BuildQuestId(contract.Id));
-                LoadBrowseDetail();
+                LoadDetail();
             });
         };
 
         public Action OnClickTakeDown() => () =>
         {
-            if (_selectedBrowseIndex < 0 || _selectedBrowseIndex >= _browseContracts.Count) return;
+            if (!_isBrowseTab || _selectedIndex < 0 || _selectedIndex >= _rows.Count) return;
 
-            var contract = _browseContracts[_selectedBrowseIndex];
+            var contract = _rows[_selectedIndex];
 
             ShowModal($"Take down the contract '{contract.Title}'? Remaining escrow will be refunded to its author.", () =>
             {
                 var error = QuestContractBoard.CancelContract(Player, contract.Id);
                 StatusText = error;
-                Search();
+                LoadBrowse();
             });
-        };
-
-        public Action OnClickSelectMyContract() => () =>
-        {
-            if (_selectedMyContractIndex > -1 && _selectedMyContractIndex < MyContractToggles.Count)
-                MyContractToggles[_selectedMyContractIndex] = false;
-
-            var index = NuiGetEventArrayIndex();
-            _selectedMyContractIndex = index;
-            MyContractToggles[index] = true;
-
-            var contract = _myContracts[index];
-            IsCancelEnabled = contract.Status == QuestContractStatus.Published;
         };
 
         public Action OnClickEditDraft() => () =>
@@ -397,15 +414,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickCancelContract() => () =>
         {
-            if (_selectedMyContractIndex < 0 || _selectedMyContractIndex >= _myContracts.Count) return;
+            if (_isBrowseTab || _selectedIndex < 0 || _selectedIndex >= _rows.Count) return;
 
-            var contract = _myContracts[_selectedMyContractIndex];
+            var contract = _rows[_selectedIndex];
 
             ShowModal($"Cancel the contract '{contract.Title}'? Remaining escrow will be refunded to you. The posting fee is not refunded.", () =>
             {
                 var error = QuestContractBoard.CancelContract(Player, contract.Id);
                 StatusText = error;
-                SearchMyContracts();
+                LoadMyContracts();
             });
         };
 
@@ -416,10 +433,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public void Refresh(QuestContractPublishedRefreshEvent payload)
         {
-            if (IsMyContractsVisible)
-                SearchMyContracts();
+            if (_isBrowseTab)
+                LoadBrowse();
             else
-                Search();
+                LoadMyContracts();
         }
     }
 }

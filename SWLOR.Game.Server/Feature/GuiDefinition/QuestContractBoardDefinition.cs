@@ -1,4 +1,3 @@
-using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service.GuiService;
 
@@ -13,13 +12,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             _builder.CreateWindow(GuiWindowType.QuestContractBoard)
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
-                .SetInitialGeometry(0, 0, 900f, 560f)
+                .SetInitialGeometry(0, 0, 760f, 470f)
                 .SetTitle("Quest Contract Board")
 
                 .AddColumn(col =>
                 {
                     col.AddRow(row =>
                     {
+                        row.SetHeight(40f);
+
                         row.AddSpacer();
 
                         row.AddToggleButton()
@@ -41,14 +42,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                     col.AddRow(row =>
                     {
-                        row.BindIsVisible(model => model.IsBrowseVisible);
-
                         row.AddColumn(left =>
                         {
-                            left.SetWidth(400f);
+                            left.SetWidth(360f);
 
                             left.AddRow(r =>
                             {
+                                r.SetHeight(36f);
+                                r.BindIsVisible(model => model.IsSearchVisible);
+
                                 r.AddTextEdit()
                                     .SetPlaceholder("Search Title")
                                     .BindValue(model => model.SearchText);
@@ -72,12 +74,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     template.AddCell(cell =>
                                     {
                                         cell.AddToggleButton()
-                                            .BindText(model => model.BrowseLabels)
-                                            .BindIsToggled(model => model.BrowseToggles)
-                                            .BindOnClicked(model => model.OnClickSelectContract());
+                                            .BindText(model => model.RowLabels)
+                                            .BindIsToggled(model => model.RowToggles)
+                                            .BindColor(model => model.RowColors)
+                                            .BindOnClicked(model => model.OnClickSelectRow());
                                     });
                                 })
-                                    .BindRowCount(model => model.BrowseLabels)
+                                    .BindRowCount(model => model.RowLabels)
                                     .SetRowHeight(32f);
                             });
                         });
@@ -87,21 +90,23 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             right.AddRow(r =>
                             {
                                 r.AddText()
-                                    .BindText(model => model.DetailText)
-                                    .SetScrollbars(NuiScrollbars.Auto)
-                                    .SetShowBorder(false);
+                                    .BindText(model => model.DetailText);
                             });
 
                             right.AddRow(r =>
                             {
+                                r.SetHeight(24f);
+
                                 r.AddLabel()
                                     .BindText(model => model.StatusText)
-                                    .SetColor(255, 0, 0)
-                                    .SetHeight(24f);
+                                    .SetColor(255, 0, 0);
                             });
 
                             right.AddRow(r =>
                             {
+                                r.SetHeight(40f);
+                                r.BindIsVisible(model => model.IsBrowseActionsVisible);
+
                                 r.AddButton()
                                     .SetText("Accept")
                                     .BindIsVisible(model => model.IsAcceptVisible)
@@ -127,56 +132,27 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     .BindOnClicked(model => model.OnClickTakeDown())
                                     .SetHeight(32f);
                             });
-                        });
-                    });
 
-                    col.AddRow(row =>
-                    {
-                        row.BindIsVisible(model => model.IsMyContractsVisible);
-
-                        row.AddColumn(inner =>
-                        {
-                            inner.AddRow(r =>
+                            right.AddRow(r =>
                             {
-                                r.AddList(template =>
-                                {
-                                    template.AddCell(cell =>
-                                    {
-                                        cell.AddToggleButton()
-                                            .BindText(model => model.MyContractLabels)
-                                            .BindIsToggled(model => model.MyContractToggles)
-                                            .BindColor(model => model.MyContractColors)
-                                            .BindOnClicked(model => model.OnClickSelectMyContract());
-                                    });
-                                })
-                                    .BindRowCount(model => model.MyContractLabels)
-                                    .SetRowHeight(32f);
-                            });
-
-                            inner.AddRow(r =>
-                            {
-                                r.AddSpacer();
+                                r.SetHeight(40f);
+                                r.BindIsVisible(model => model.IsMyActionsVisible);
 
                                 r.AddButton()
                                     .SetText("New/Edit Draft")
                                     .BindOnClicked(model => model.OnClickEditDraft())
-                                    .SetHeight(32f)
-                                    .SetWidth(150f);
+                                    .SetHeight(32f);
 
                                 r.AddButton()
                                     .SetText("Cancel")
                                     .BindIsEnabled(model => model.IsCancelEnabled)
                                     .BindOnClicked(model => model.OnClickCancelContract())
-                                    .SetHeight(32f)
-                                    .SetWidth(150f);
+                                    .SetHeight(32f);
 
                                 r.AddButton()
                                     .SetText("Claim Deliveries")
                                     .BindOnClicked(model => model.OnClickClaimDeliveries())
-                                    .SetHeight(32f)
-                                    .SetWidth(150f);
-
-                                r.AddSpacer();
+                                    .SetHeight(32f);
                             });
                         });
                     });

@@ -176,7 +176,7 @@ public class MimicryTests
 
             featRow.TryGetValue("SPELLID", out var spellIdText).Should().BeTrue();
             int.TryParse(spellIdText, out var spellId).Should().BeTrue($"{entry.Technique} SPELLID should be numeric, was '{spellIdText}'");
-            spellId.Should().BeInRange(1598, 1607);
+            spellId.Should().BeInRange(1599, 1608);
 
             spellRows.Should().ContainKey(spellId, $"spells.2da should have a row for {entry.Technique}");
             var spellRow = spellRows[spellId];

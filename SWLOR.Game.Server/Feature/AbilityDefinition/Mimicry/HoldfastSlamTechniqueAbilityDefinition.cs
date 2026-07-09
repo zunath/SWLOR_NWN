@@ -1,0 +1,41 @@
+using System.Collections.Generic;
+using SWLOR.Game.Server.Feature.AbilityDefinition.NPC;
+using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+
+namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
+{
+    public class HoldfastSlamTechniqueAbilityDefinition : IAbilityListDefinition
+    {
+        private readonly AbilityBuilder _builder = new AbilityBuilder();
+
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        {
+            InnateAbility.BuildSingleTarget(
+                _builder,
+                FeatType.HoldfastSlamTechnique,
+                "Holdfast Slam Technique",
+                Animation.DoubleThrust,
+                InnateAbilityProfile.Mimicry,
+                RecastGroup.Capstone,
+                1.3f,
+                34f,
+                8,
+                23,
+                12,
+                typeof(SunderStatusEffect),
+                CombatDamageType.Physical,
+                ResistanceType.Trauma,
+                VisualEffect.Vfx_Com_Chunk_Red_Medium,
+                maxRange: 3f)
+                .SkillType(SkillType.Mimicry)
+                .Level(4)
+                .MimicryTechnique(FeatType.HoldfastSlam, 4, 3);
+
+            return _builder.Build();
+        }
+    }
+}

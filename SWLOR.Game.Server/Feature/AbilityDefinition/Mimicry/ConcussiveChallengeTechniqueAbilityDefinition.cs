@@ -1,0 +1,49 @@
+using System.Collections.Generic;
+using SWLOR.Game.Server.Feature.AbilityDefinition.NPC;
+using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+
+namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
+{
+    public class ConcussiveChallengeTechniqueAbilityDefinition : IAbilityListDefinition
+    {
+        private readonly AbilityBuilder _builder = new AbilityBuilder();
+
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        {
+            InnateAbility.BuildArea(
+                _builder,
+                FeatType.ConcussiveChallengeTechnique,
+                "Concussive Challenge Technique",
+                Animation.FireForgetTaunt,
+                InnateAbilityProfile.Mimicry,
+                RecastGroup.ConcussiveChallenge,
+                1.0f,
+                24f,
+                5,
+                30,
+                6,
+                typeof(DazedStatusEffect),
+                CombatImpactAreaShape.Sphere,
+                6f,
+                0f,
+                CombatDamageType.Sonic,
+                ResistanceType.Mind,
+                VisualEffect.Vfx_Imp_Magical_Vision,
+                VisualEffect.Vfx_Fnf_Gas_Explosion_Mind,
+                centerOnActivator: true)
+                .SkillType(SkillType.Mimicry)
+                .Level(2)
+                .MimicryTechnique(FeatType.ConcussiveChallenge, 2, 2)
+                .HasTargetingSphere(
+                    Spell.ConcussiveChallengeTechnique,
+                    6f,
+                    AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf);
+
+            return _builder.Build();
+        }
+    }
+}

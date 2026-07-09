@@ -16,8 +16,14 @@ namespace SWLOR.Game.Server.Tests.Perks;
 
 public class MimicryTests
 {
+    private const string MimicryTechniqueNamespace = "SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry";
+    private const string NpcAbilityNamespace = "SWLOR.Game.Server.Feature.AbilityDefinition.NPC";
+    private const int CustomTlkStrrefOffset = 16777216;
+
     // Feat, display name, tier, slot cost, source NPC feat this technique is copied from.
-    // Mirrors the "Technique pool" table in the Mimicry design spec.
+    // Mirrors the ORIGINAL "Technique pool" table (the first 10 techniques shipped). These rows
+    // pin exact tuning for the original pool and must not be touched when the pool expands;
+    // full-pool coverage is asserted separately by the reflection-driven tests below.
     private static readonly (FeatType Technique, string Name, int Tier, int SlotCost, FeatType SourceFeat)[] TechniqueTable =
     {
         (FeatType.ToxicSpitTechnique, "Toxic Spit Technique", 1, 1, FeatType.ToxicSpit),
@@ -77,6 +83,83 @@ public class MimicryTests
             npcAbilities.Should().ContainKey(
                 entry.SourceFeat,
                 $"{entry.Technique}'s MimicrySourceFeat ({entry.SourceFeat}) should be a real, registered NPC ability");
+        }
+    }
+
+    // Registry-driven contract check covering every technique in the (currently 88-strong) pool,
+    // not just the original 10 pinned above. Discovers definitions by reflection so it stays valid
+    // as the technique pool grows.
+    [Test]
+    public void MimicryTechniques_AllRegisterFeatsWithCommonAbilityContract()
+    {
+        var npcAbilitiesByFeat = BuildAllAbilities(NpcAbilityNamespace)
+            .ToDictionary(a => a.Feat, a => a.Detail);
+        var techniques = BuildAllAbilities(MimicryTechniqueNamespace);
+
+        techniques.Should().NotBeEmpty("technique discovery should find definitions in the Mimicry ability namespace");
+
+        foreach (var technique in techniques)
+        {
+            var feat = technique.Feat;
+            var ability = technique.Detail;
+
+            ability.Name.Should().NotBeNullOrWhiteSpace($"{feat} should have a display name");
+            ability.Name.Should().EndWith(" Technique", $"{feat}'s display name should end in ' Technique'");
+            ability.MimicryTier.Should().BeInRange(1, 4, $"{feat}'s MimicryTier should be between 1 and 4");
+            ability.MimicrySlotCost.Should().BeInRange(1, 3, $"{feat}'s MimicrySlotCost should be between 1 and 3");
+            ability.EffectiveLevelPerkType.Should().Be(PerkType.TechniquePotency, $"{feat} should scale with Technique Potency");
+            ability.SkillType.Should().Be(SkillType.Mimicry, $"{feat} should use the Mimicry skill");
+            ability.MimicrySourceFeat.Should().NotBe(FeatType.Invalid, $"{feat} should declare a MimicrySourceFeat");
+
+            npcAbilitiesByFeat.Should().ContainKey(ability.MimicrySourceFeat,
+                $"{feat}'s MimicrySourceFeat ({ability.MimicrySourceFeat}) should be a registered NPC ability");
+
+            var sourceAbility = npcAbilitiesByFeat[ability.MimicrySourceFeat];
+            ability.IsHostileAbility.Should().Be(sourceAbility.IsHostileAbility,
+                $"{feat}'s IsHostileAbility should mirror its source NPC ability {ability.MimicrySourceFeat}'s hostility " +
+                "(self-buff sources are not hostile, so techniques copied from them shouldn't be either)");
+        }
+    }
+
+    // The core completeness requirement: every NPC ability the game registers must be learnable
+    // through Mimicry, and every technique must copy a real NPC ability. Asserted bidirectionally
+    // and 1:1 so the pool can never drift out of sync with the NPC ability roster.
+    [Test]
+    public void MimicryTechniques_EveryRegisteredNpcAbilityHasExactlyOneTechniqueTwin()
+    {
+        var npcAbilities = BuildAllAbilities(NpcAbilityNamespace);
+        var techniques = BuildAllAbilities(MimicryTechniqueNamespace);
+
+        npcAbilities.Should().NotBeEmpty("NPC ability discovery should find definitions in the NPC ability namespace");
+        techniques.Should().NotBeEmpty("technique discovery should find definitions in the Mimicry ability namespace");
+
+        var npcFeats = npcAbilities.Select(a => a.Feat).ToList();
+        npcFeats.Should().OnlyHaveUniqueItems("each NPC ability definition should register a distinct FeatType");
+        var npcFeatSet = npcFeats.ToHashSet();
+
+        var techniqueFeats = techniques.Select(t => t.Feat).ToList();
+        techniqueFeats.Should().OnlyHaveUniqueItems("each Mimicry technique should register a distinct FeatType");
+
+        var techniquesBySourceFeat = techniques
+            .GroupBy(t => t.Detail.MimicrySourceFeat)
+            .ToDictionary(g => g.Key, g => g.ToList());
+
+        // Every technique's source feat must be a real, registered NPC ability.
+        foreach (var technique in techniques)
+        {
+            npcFeatSet.Should().Contain(technique.Detail.MimicrySourceFeat,
+                $"{technique.Feat}'s MimicrySourceFeat ({technique.Detail.MimicrySourceFeat}) should be a registered NPC ability");
+        }
+
+        // Every registered NPC ability must be learnable through exactly one technique.
+        foreach (var npc in npcAbilities)
+        {
+            techniquesBySourceFeat.Should().ContainKey(npc.Feat,
+                $"NPC ability {npc.Feat} (from {npc.DefinitionType.Name}) has no Mimicry technique that copies it");
+
+            techniquesBySourceFeat[npc.Feat].Should().ContainSingle(
+                $"NPC ability {npc.Feat} should have exactly one Mimicry technique twin, " +
+                $"found {(techniquesBySourceFeat.TryGetValue(npc.Feat, out var twins) ? twins.Count : 0)}");
         }
     }
 
@@ -159,44 +242,81 @@ public class MimicryTests
         }
     }
 
+    // Registry-driven 2DA linkage check covering every technique in the pool. Replaces the old
+    // fixed SPELLID range assertion (1599-1608), which only fit the original 10-row pool, with a
+    // check that each technique's SPELLID resolves and round-trips through spells.2da and
+    // CLS_FEAT_FIGHT.2da regardless of how many techniques exist.
     [Test]
-    public void MimicryFeat2daRows_MatchLabelsAndSpellLinkage()
+    public void MimicryTechniques_Feat2daRowsLinkToSpellsAndClassFeatTable()
     {
         var root = FindRepositoryRoot();
         var featRows = Test2daHelper.Read2da(new FileInfo(Path.Combine(
             root.FullName, "SWLOR_Haks", "sw_2da", "feat.2da")));
         var spellRows = Test2daHelper.Read2da(new FileInfo(Path.Combine(
             root.FullName, "SWLOR_Haks", "sw_2da", "spells.2da")));
+        var classFeatRows = Test2daHelper.Read2da(new FileInfo(Path.Combine(
+            root.FullName, "SWLOR_Haks", "sw_2da", "CLS_FEAT_FIGHT.2da")));
 
-        foreach (var entry in TechniqueTable)
+        var techniques = BuildAllAbilities(MimicryTechniqueNamespace);
+        techniques.Should().NotBeEmpty();
+
+        foreach (var technique in techniques)
         {
-            var featRow = featRows[(int)entry.Technique];
-            featRow["LABEL"].Should().Be(entry.Technique.ToString());
-            featRow["ICON"].Should().NotBeNullOrWhiteSpace();
+            var feat = technique.Feat;
+            var featId = (int)feat;
 
-            featRow.TryGetValue("SPELLID", out var spellIdText).Should().BeTrue();
-            int.TryParse(spellIdText, out var spellId).Should().BeTrue($"{entry.Technique} SPELLID should be numeric, was '{spellIdText}'");
-            spellId.Should().BeInRange(1599, 1608);
+            featRows.Should().ContainKey(featId, $"feat.2da should have a row for {feat}");
+            var featRow = featRows[featId];
+            featRow["LABEL"].Should().Be(feat.ToString(), $"{feat}'s feat.2da LABEL should match its enum name");
+            featRow["ICON"].Should().NotBeNullOrWhiteSpace($"{feat} should have a feat.2da ICON");
 
-            spellRows.Should().ContainKey(spellId, $"spells.2da should have a row for {entry.Technique}");
+            featRow.TryGetValue("SPELLID", out var spellIdText).Should().BeTrue($"{feat}'s feat.2da row should have a SPELLID column");
+            int.TryParse(spellIdText, out var spellId).Should().BeTrue($"{feat}'s SPELLID should be numeric, was '{spellIdText}'");
+
+            spellRows.Should().ContainKey(spellId, $"spells.2da should have a row for {feat} (spell id {spellId})");
             var spellRow = spellRows[spellId];
-            spellRow.TryGetValue("FeatID", out var featIdText).Should().BeTrue();
-            int.TryParse(featIdText, out var featId).Should().BeTrue();
-            featId.Should().Be((int)entry.Technique, $"{entry.Technique}'s spells.2da row should point back at its feat.2da row");
+            spellRow.TryGetValue("FeatID", out var featIdText).Should().BeTrue($"{feat}'s spells.2da row should have a FeatID column");
+            int.TryParse(featIdText, out var linkedFeatId).Should().BeTrue($"{feat}'s spells.2da FeatID should be numeric, was '{featIdText}'");
+            linkedFeatId.Should().Be(featId, $"{feat}'s spells.2da row should point back at its feat.2da row");
+
+            var classFeatRow = classFeatRows.Values.FirstOrDefault(row =>
+                row.TryGetValue("FeatIndex", out var featIndexText) &&
+                int.TryParse(featIndexText, out var featIndex) &&
+                featIndex == featId);
+
+            classFeatRow.Should().NotBeNull($"CLS_FEAT_FIGHT.2da should expose {feat} (feat id {featId})");
+            classFeatRow!["List"].Should().Be("1", $"{feat} should be List=1 in CLS_FEAT_FIGHT.2da");
+            classFeatRow["GrantedOnLevel"].Should().Be("99", $"{feat} should be GrantedOnLevel=99 in CLS_FEAT_FIGHT.2da");
+            classFeatRow["OnMenu"].Should().Be("1", $"{feat} should be OnMenu=1 in CLS_FEAT_FIGHT.2da");
         }
     }
 
+    // Registry-driven TLK check covering every technique in the pool. Replaces the old fixed
+    // strref-id range assertion (192553-192573), which only fit the original 10-row pool, with a
+    // check that every technique's FEAT/DESCRIPTION strrefs are custom TLK references that
+    // resolve to non-empty text, regardless of how many techniques exist or which TLK ids they use.
     [Test]
-    public void MimicryTlkEntries_AreNonEmptyForSkillAndTechniqueStrings()
+    public void MimicryTechniques_TlkEntriesAreNonEmptyForFeatAndDescriptionStrrefs()
     {
         var root = FindRepositoryRoot();
+        var featRows = Test2daHelper.Read2da(new FileInfo(Path.Combine(
+            root.FullName, "SWLOR_Haks", "sw_2da", "feat.2da")));
         var tlkEntries = ReadTlkEntries(new FileInfo(Path.Combine(
             root.FullName, "SWLOR_Haks", "sw_tlk", "sw_tlk.tlk.json")));
 
-        for (var id = 192553; id <= 192573; id++)
+        var techniques = BuildAllAbilities(MimicryTechniqueNamespace);
+        techniques.Should().NotBeEmpty();
+
+        foreach (var technique in techniques)
         {
-            tlkEntries.Should().ContainKey(id, $"TLK id {id} should exist");
-            tlkEntries[id].Should().NotBeNullOrWhiteSpace($"TLK id {id} should have non-empty text");
+            var feat = technique.Feat;
+            var featId = (int)feat;
+
+            featRows.Should().ContainKey(featId, $"feat.2da should have a row for {feat}");
+            var featRow = featRows[featId];
+
+            AssertCustomTlkStrrefIsNonEmpty(featRow, tlkEntries, feat, "FEAT", "name");
+            AssertCustomTlkStrrefIsNonEmpty(featRow, tlkEntries, feat, "DESCRIPTION", "description");
         }
     }
 
@@ -285,6 +405,50 @@ public class MimicryTests
         };
 
         return definition.BuildAbilities();
+    }
+
+    // Reflection discovers every IAbilityListDefinition declared directly in the given namespace,
+    // instantiates each one, and builds its abilities. Used to derive expectations from the actual
+    // registered content instead of a hand-maintained list, so tests stay valid as the technique
+    // pool (and NPC ability roster) grows or shrinks.
+    private static List<DiscoveredAbility> BuildAllAbilities(string namespaceName)
+    {
+        var definitionTypes = typeof(IAbilityListDefinition).Assembly
+            .GetTypes()
+            .Where(type => type is { IsClass: true, IsAbstract: false } &&
+                           type.Namespace == namespaceName &&
+                           typeof(IAbilityListDefinition).IsAssignableFrom(type));
+
+        var discovered = new List<DiscoveredAbility>();
+        foreach (var definitionType in definitionTypes)
+        {
+            var definition = (IAbilityListDefinition)Activator.CreateInstance(definitionType)!;
+            foreach (var (feat, detail) in definition.BuildAbilities())
+            {
+                discovered.Add(new DiscoveredAbility(definitionType, feat, detail));
+            }
+        }
+
+        return discovered;
+    }
+
+    private readonly record struct DiscoveredAbility(Type DefinitionType, FeatType Feat, AbilityDetail Detail);
+
+    private static void AssertCustomTlkStrrefIsNonEmpty(
+        Dictionary<string, string> featRow,
+        IReadOnlyDictionary<int, string> tlkEntries,
+        FeatType feat,
+        string column,
+        string label)
+    {
+        featRow.TryGetValue(column, out var strrefText).Should().BeTrue($"{feat}'s feat.2da row should have a {column} column");
+        int.TryParse(strrefText, out var strref).Should().BeTrue($"{feat}'s {column} strref should be numeric, was '{strrefText}'");
+        strref.Should().BeGreaterThanOrEqualTo(CustomTlkStrrefOffset,
+            $"{feat}'s {column} strref should reference a custom TLK entry (>= {CustomTlkStrrefOffset})");
+
+        var tlkId = strref - CustomTlkStrrefOffset;
+        tlkEntries.Should().ContainKey(tlkId, $"TLK id {tlkId} ({feat} {label}) should exist");
+        tlkEntries[tlkId].Should().NotBeNullOrWhiteSpace($"TLK id {tlkId} ({feat} {label}) should have non-empty text");
     }
 
     private static void AssertSkillRequirement(PerkLevel level, SkillType skill, int rank)

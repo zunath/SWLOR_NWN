@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Cultivation")
 
                 .AddPerkLevel()
-                .GrantsFeat(FeatType.CultivationTrait)
+                .GrantsFeat(FeatType.Cultivation)
                 .Description("Crop harvest yield is increased by 10%.")
                 .Price(2)
                 .RequirementSkill(SkillType.Agriculture, 10)
@@ -50,7 +50,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Horticulture")
 
                 .AddPerkLevel()
-                .GrantsFeat(FeatType.HorticultureTrait)
+                .GrantsFeat(FeatType.Horticulture)
                 .Description("Crop growth speed is increased by 10%.")
                 .Price(2)
                 .RequirementSkill(SkillType.Agriculture, 10)
@@ -75,7 +75,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Botany")
 
                 .AddPerkLevel()
-                .GrantsFeat(FeatType.BotanyTrait)
+                .GrantsFeat(FeatType.Botany)
                 .Description("Pristine harvest chance is increased by 3%.")
                 .Price(2)
                 .RequirementSkill(SkillType.Agriculture, 10)

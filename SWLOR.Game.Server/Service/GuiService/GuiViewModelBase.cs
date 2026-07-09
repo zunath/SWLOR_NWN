@@ -4,7 +4,6 @@ using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using SWLOR.Game.Server.Properties;
 using SWLOR.Game.Server.Service.GuiService.Component;
-using SWLOR.Game.Server.Service.LogService;
 
 namespace SWLOR.Game.Server.Service.GuiService
 {
@@ -267,13 +266,6 @@ namespace SWLOR.Game.Server.Service.GuiService
             var json = NuiGetBind(Player, WindowToken, propertyName);
             var value = _converter.ToObject(json, property.Type);
             var currentValue = GetType().GetProperty(propertyName)?.GetValue(this);
-
-            // TEMP DIAGNOSTIC - HoloCom NUI layout investigation. Captures the moment the
-            // client pushes a (possibly degenerate) geometry back to the server.
-            if (propertyName == nameof(Geometry) && value is GuiRectangle clientRect)
-            {
-                Log.Write(LogGroup.Server, $"NUI geometry from client [{WindowType}]: X={clientRect.X} Y={clientRect.Y} W={clientRect.Width} H={clientRect.Height}", true);
-            }
 
             // The client transiently reports a 0x0 geometry while it relayouts a window
             // (e.g. during the ChangePartialView redraw nudges). Accepting it corrupts the

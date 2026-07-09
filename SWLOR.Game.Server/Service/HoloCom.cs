@@ -3,6 +3,7 @@ using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Bioware;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
@@ -213,6 +214,25 @@ namespace SWLOR.Game.Server.Service
                 DeleteLocalObject(sender, HolocomCallSenderObject);
                 DeleteLocalObject(receiver, HolocomCallSenderObject);
             }
+
+            NotifyCallStateChanged(sender, receiver);
+        }
+
+        /// <summary>
+        /// Pushes a refresh to both participants' open HoloCom windows so call-state
+        /// banners (incoming/outgoing/in-call) update without requiring a button click.
+        /// Call state changes on engine timers (ring loop) and from the other participant's
+        /// actions, so bind updates alone never reach the other player's window.
+        /// </summary>
+        private static void NotifyCallStateChanged(uint sender, uint receiver)
+        {
+            var refreshEvent = new HoloComCallStateChangedRefreshEvent();
+
+            if (GetIsObjectValid(sender))
+                Gui.PublishRefreshEvent(sender, refreshEvent);
+
+            if (GetIsObjectValid(receiver) && receiver != sender)
+                Gui.PublishRefreshEvent(receiver, refreshEvent);
         }
         public static uint GetHoloGram(uint player)
         {
@@ -293,6 +313,8 @@ namespace SWLOR.Game.Server.Service
             DeleteLocalObject(sender, HolocomCallSenderObject);
             DeleteLocalObject(sender, HolocomCallReceiverObject);
             DeleteLocalInt(sender, HolocomCallAttempt);
+
+            NotifyCallStateChanged(sender, receiver);
         }
 
         /// <summary>
@@ -461,11 +483,32 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsObjectValid(receiver))
                 return;
 
-            if (IsInCall(sender) || IsCallSender(sender) || IsCallReceiver(sender))
+            // The call state machine tracks sender and receiver flags on each participant.
+            // A self-call would set and clear those flags on the same object, wedging the
+            // player in a phantom call state.
+            if (sender == receiver)
+            {
+                SendMessageToPC(sender, "You cannot call yourself.");
                 return;
+            }
 
-            if (IsInCall(receiver) || Space.IsPlayerInSpaceMode(sender) || Space.IsPlayerInSpaceMode(receiver))
+            if (IsInCall(sender) || IsCallSender(sender) || IsCallReceiver(sender))
+            {
+                SendMessageToPC(sender, "You are already in a call.");
                 return;
+            }
+
+            if (IsInCall(receiver))
+            {
+                SendMessageToPC(sender, "That contact is already in a call.");
+                return;
+            }
+
+            if (Space.IsPlayerInSpaceMode(sender) || Space.IsPlayerInSpaceMode(receiver))
+            {
+                SendMessageToPC(sender, "HoloCom calls cannot be made in space.");
+                return;
+            }
 
             SetIsCallSender(sender);
             DelayCommand(1.0f, () => CallPlayer(sender, receiver));
@@ -513,6 +556,11 @@ namespace SWLOR.Game.Server.Service
             {
                 FloatingTextStringOnCreature(message, receiver);
             }
+
+            // The ring state was just (re)stamped on both parties on an engine timer -
+            // push it to any open HoloCom windows so the receiver sees Answer/Decline
+            // and the sender sees the outgoing-call banner without clicking anything.
+            NotifyCallStateChanged(sender, receiver);
 
             if (GetCallAttempt(sender) <= 15)
             {

@@ -107,9 +107,14 @@ directly to the widget re-enters the swap logic on every client echo.
 ## Diagnosing a client-side layout error
 
 1. Check boot output for `[NUI layout warning]` lines for that window.
-2. Dump the real wire JSON: `Gui.LoadWindowTemplates` supports logging
-   `JsonDump(constructedWindow.Window)` and each `PartialViews` entry (see the
-   TEMP DIAGNOSTIC block in `Gui.cs`) — diff the failing window's JSON against a
-   working window (`CharacterSheet`) rather than reasoning from the C# builders.
-3. Bisect the failing partial by commenting out rows, rebuilding, and retesting —
-   the error always comes from the specific JSON handed to `NuiSetGroupLayout`.
+2. Dump the real wire JSON: temporarily log `JsonDump(constructedWindow.Window)` and
+   each `constructedWindow.PartialViews` entry inside `Gui.LoadWindowTemplates`
+   (via `Log.Write(LogGroup.Server, ...)` so it lands in the Server log file) — then
+   diff the failing window's JSON against a working window (`CharacterSheet`) rather
+   than reasoning from the C# builders.
+3. If geometry is suspect, temporarily log the rect in `Gui.TogglePlayerWindow`'s
+   open branch, `Gui.SaveWindowGeometry`, and `GuiViewModelBase.UpdatePropertyFromClient`
+   (for `Geometry`) — this exposes degenerate client pushes and persistence poisoning.
+4. Bisect the failing partial in-game: define temporary partials that each isolate one
+   construct, plus a temporary row of buttons that `SwapNestedPartialView` each one
+   into the content slot. One rebuild identifies the culprit construct.

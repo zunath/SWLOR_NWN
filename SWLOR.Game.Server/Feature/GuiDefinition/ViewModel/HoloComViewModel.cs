@@ -10,7 +10,8 @@ using SWLOR.Game.Server.Service.GuiService.Component;
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class HoloComViewModel: GuiViewModelBase<HoloComViewModel, GuiPayloadBase>,
-        IGuiRefreshable<HoloComMessageReceivedRefreshEvent>
+        IGuiRefreshable<HoloComMessageReceivedRefreshEvent>,
+        IGuiRefreshable<HoloComCallStateChangedRefreshEvent>
     {
         // TESTING ONLY - lets you message/favorite yourself for one-client proof-of-concept testing.
         // Flip to false (or delete this and its call sites) before this ships.
@@ -256,6 +257,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             RefreshMessages();
         }
 
+        public void Refresh(HoloComCallStateChangedRefreshEvent payload)
+        {
+            // Updates the call-state banner binds (and contact lists when no call is
+            // active). Only binds change - no partial swap - so this is safe regardless
+            // of which tab or screen the player currently has open.
+            RefreshContacts();
+        }
+
         private void RefreshContacts()
         {
             if (HoloCom.IsInCall(Player))
@@ -384,7 +393,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var index = NuiGetEventArrayIndex();
             var target = _onlinePlayerObjects[index];
-            // SetComposeTarget(GetObjectUUID(target), PlayerName.GetDisplayName(Player, target));
+            SetComposeTarget(GetObjectUUID(target), PlayerName.GetDisplayName(Player, target));
         };
 
         public Action OnClickFavoriteOnline() => () =>
@@ -417,7 +426,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var index = NuiGetEventArrayIndex();
             var row = _favoriteRows[index];
-            // SetComposeTarget(row.PlayerId, row.DisplayName);
+            SetComposeTarget(row.PlayerId, row.DisplayName);
         };
 
         public Action OnClickRemoveFavorite() => () =>

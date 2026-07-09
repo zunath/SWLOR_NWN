@@ -500,7 +500,8 @@ namespace SWLOR.Game.Server.Native
                 skillType,
                 damageType,
                 false,
-                canApplyRandomFlatBonusesThisDamage);
+                canApplyRandomFlatBonusesThisDamage,
+                out var damageBeforeTargetStatusStage);
 
             damage = Resistance.ApplyResistanceToDamageNative(target, damageType, damage);
 
@@ -527,7 +528,12 @@ namespace SWLOR.Game.Server.Native
                 Combat.ApplyMeleeDamageTakenEffects(target.m_idSelf, attacker.m_idSelf);
             }
 
-            return Combat.ApplyDamageTakenModifiers(target.m_idSelf, damage, attacker.m_idSelf, damageType);
+            return Combat.ApplyDamageTakenModifiers(
+                target.m_idSelf,
+                damage,
+                attacker.m_idSelf,
+                damageType,
+                preTargetStatusStageDamage: damageBeforeTargetStatusStage);
         }
 
         private readonly struct WeaponDamageProfile

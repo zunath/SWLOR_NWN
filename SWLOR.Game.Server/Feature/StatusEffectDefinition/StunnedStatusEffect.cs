@@ -15,6 +15,13 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public override StatusEffectCleanseType CleanseTypes => StatusEffectCleanseType.Purify | StatusEffectCleanseType.SoothePet;
         public override ResistanceType ResistanceType => ResistanceType.Mobility;
 
+        public override string CanApply(uint creature)
+        {
+            return Ability.HasHardCrowdControlImmunity(creature, ImmunityType.Stun)
+                ? "Target is temporarily immune to stun."
+                : string.Empty;
+        }
+
         protected override void Apply(uint creature, int durationTicks)
         {
             ApplyStun(creature, GetDurationSeconds(durationTicks));

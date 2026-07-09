@@ -35,7 +35,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .Name("Adhesive Grenade I")
                 .Level(1)
                 .HasActivationDelay(1f)
-                .HasRecastDelay(RecastGroup.AdhesiveGrenade, 18f)
+                .HasRecastDelay(RecastGroup.AdhesiveGrenade, 45f)
                 .SkillType(SkillType.Devices)
                 .CombatImpactDamageAbility(AbilityType.Perception)
                 .UsesImpactAnimation(Animation.ThrowGrenade)
@@ -60,7 +60,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .Name("Adhesive Grenade II")
                 .Level(2)
                 .HasActivationDelay(1f)
-                .HasRecastDelay(RecastGroup.AdhesiveGrenade, 18f)
+                .HasRecastDelay(RecastGroup.AdhesiveGrenade, 45f)
                 .SkillType(SkillType.Devices)
                 .CombatImpactDamageAbility(AbilityType.Perception)
                 .UsesImpactAnimation(Animation.ThrowGrenade)
@@ -134,7 +134,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                     hitTarget,
                     typeof(ImmobilizedStatusEffect),
                     immobilizeDuration,
-                    CombatDamageType.Physical));
+                    CombatDamageType.Physical),
+                maxTargets: 5);
         }
 
     }

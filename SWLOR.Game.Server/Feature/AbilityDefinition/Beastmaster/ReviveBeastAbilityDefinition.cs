@@ -132,7 +132,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 
                     DB.Set(dbBeast);
 
-                    var hpPercentage = 30 + GetAbilityScore(activator, AbilityType.Social) * 2;
+                    var hpPercentage = 45 + GetAbilityScore(activator, AbilityType.Social);
                     BeastMastery.SpawnBeast(activator, dbBeast.Id, hpPercentage);
                     Enmity.ModifyEnmityOnAll(activator, 500);
                     CombatPoint.AddCombatPointToAllTagged(activator, SkillType.BeastMastery);

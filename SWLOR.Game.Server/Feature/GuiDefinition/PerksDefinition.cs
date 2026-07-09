@@ -181,7 +181,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             {
                                 row2.AddText()
                                     .BindText(model => model.SelectedDetails)
-                                    .SetHeight(150f)
+                                    .SetHeight(300f)
                                     .BindIsVisible(model => model.IsPerkSelected);
                             });
                             col2.AddRow(row2 =>

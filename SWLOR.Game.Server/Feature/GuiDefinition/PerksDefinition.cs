@@ -14,7 +14,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
                 .SetInitialGeometry(0, 0, 760f, 620f)
-                .SetTitle("Perks")
+                .BindTitle(model => model.WindowTitle)
                 .AddColumn(col =>
                 {
                     col.AddRow(row =>
@@ -143,6 +143,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     .BindIsToggled(model => model.PerkDetailSelected)
                                     .BindColor(model => model.PerkButtonColors)
                                     .BindOnClicked(model => model.OnSelectPerk());
+                            });
+                            template.AddCell(cell =>
+                            {
+                                cell.AddLabel()
+                                    .BindText(model => model.PerkRowCosts)
+                                    .BindColor(model => model.PerkButtonColors)
+                                    .SetHorizontalAlign(NuiHorizontalAlign.Right)
+                                    .SetVerticalAlign(NuiVerticalAlign.Middle);
+
+                                cell.SetWidth(58f);
+                                cell.SetIsVariable(false);
                             });
                             template.AddCell(cell =>
                             {

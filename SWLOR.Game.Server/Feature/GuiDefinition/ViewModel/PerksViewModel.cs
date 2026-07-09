@@ -239,6 +239,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public GuiBindingList<string> PerkRowCosts
+        {
+            get => Get<GuiBindingList<string>>();
+            set => Set(value);
+        }
+
+        public string WindowTitle
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
         public int SelectedStatusFilter
         {
             get => Get<int>();
@@ -281,6 +293,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             SelectedRequirementTooltips = new GuiBindingList<string>();
             PerkRowReqIcons = new GuiBindingList<string>();
             PerkRowReqTooltips = new GuiBindingList<string>();
+            PerkRowCosts = new GuiBindingList<string>();
+            WindowTitle = "Perks";
         }
 
         protected override void Initialize(GuiPayloadBase initialPayload)
@@ -399,12 +413,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 AvailableSP = $"Available SP: {dbPlayer.UnallocatedSP}";
                 TotalSP = $"Total SP: {Skill.GetTotalSkillPoints(dbPlayer)} / {Skill.TotalSkillPointCap}";
+                WindowTitle = $"Perks - {dbPlayer.UnallocatedSP} SP available";
             }
             else if (IsInBeastPerksMode)
             {
                 var dbBeast = DB.Get<Beast>(dbPlayer.ActiveBeastId);
                 AvailableSP = $"Available SP: {dbBeast.UnallocatedSP}";
                 TotalSP = $"Total SP: {dbBeast.Level} / {BeastMastery.MaxLevel}";
+                WindowTitle = $"Beast Perks - {dbBeast.UnallocatedSP} SP available";
             }
 
             var dateRefundAvailable = dbPlayer.DatePerkRefundAvailable ?? now;
@@ -436,6 +452,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var perkDetailSelected = new GuiBindingList<bool>();
             var perkRowReqIcons = new GuiBindingList<string>();
             var perkRowReqTooltips = new GuiBindingList<string>();
+            var perkRowCosts = new GuiBindingList<string>();
             var pageNumbers = new GuiBindingList<GuiComboEntry>();
 
             var group = IsInMyPerksMode
@@ -517,6 +534,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 perkButtonColors.Add(color);
                 perkRowReqIcons.Add(iconResref);
                 perkRowReqTooltips.Add(tooltip);
+
+                var nextLevel = detail.PerkLevels.ContainsKey(rank + 1)
+                    ? detail.PerkLevels[rank + 1]
+                    : null;
+                perkRowCosts.Add(nextLevel != null ? $"{nextLevel.Price} SP" : string.Empty);
             }
 
             PerkButtonColors = perkButtonColors;
@@ -525,6 +547,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             PerkDetailSelected = perkDetailSelected;
             PerkRowReqIcons = perkRowReqIcons;
             PerkRowReqTooltips = perkRowReqTooltips;
+            PerkRowCosts = perkRowCosts;
             PageNumbers = pageNumbers;
 
             // Select the first perk so the detail panel shows content immediately
@@ -1072,6 +1095,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     PerkButtonColors[_selectedPerkIndex] = chipColor;
                     PerkRowReqIcons[_selectedPerkIndex] = rowIcon;
                     PerkRowReqTooltips[_selectedPerkIndex] = rowTooltip;
+                    PerkRowCosts[_selectedPerkIndex] = nextUpgrade != null ? $"{nextUpgrade.Price} SP" : string.Empty;
                     SelectedRequirements = requirements;
                     SelectedRequirementColors = requirementColors;
                     SelectedRequirementIcons = requirementIcons;

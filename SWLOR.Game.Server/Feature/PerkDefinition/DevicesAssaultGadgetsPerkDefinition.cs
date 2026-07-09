@@ -243,7 +243,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Cryo Sprayer")
 
                 .AddPerkLevel()
-                .Description("Deals 18 ice DMG plus PER scaling to hostile targets in a cone and slows movement for 30 seconds.")
+                .Description("Deals 25 ice DMG plus PER scaling to hostile targets in a cone and slows movement for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Devices, 30)
                 .RequirementCharacterType(CharacterType.Standard)

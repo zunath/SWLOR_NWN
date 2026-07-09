@@ -26,7 +26,9 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "A dense cake glazed with fresh cane sugar."
+    }
   },
   "Description": {
     "type": "cexolocstring",

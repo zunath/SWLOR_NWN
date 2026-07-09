@@ -121,7 +121,7 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            Console.WriteLine($"Loaded {_crops.Count} crop types.");
+            Log.Write(LogGroup.Server, $"Loaded {_crops.Count} crop types.", true);
         }
 
         /// <summary>

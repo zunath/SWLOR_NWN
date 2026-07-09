@@ -126365,7 +126365,7 @@
                     },
                     "Repos_PosX": {
                       "type": "word",
-                      "value": 0
+                      "value": 6
                     },
                     "Repos_Posy": {
                       "type": "word",
@@ -126474,7 +126474,7 @@
                     },
                     "Repos_PosX": {
                       "type": "word",
-                      "value": 0
+                      "value": 7
                     },
                     "Repos_Posy": {
                       "type": "word",
@@ -126583,7 +126583,7 @@
                     },
                     "Repos_PosX": {
                       "type": "word",
-                      "value": 0
+                      "value": 8
                     },
                     "Repos_Posy": {
                       "type": "word",
@@ -126692,7 +126692,7 @@
                     },
                     "Repos_PosX": {
                       "type": "word",
-                      "value": 0
+                      "value": 9
                     },
                     "Repos_Posy": {
                       "type": "word",
@@ -126801,7 +126801,7 @@
                     },
                     "Repos_PosX": {
                       "type": "word",
-                      "value": 0
+                      "value": 10
                     },
                     "Repos_Posy": {
                       "type": "word",
@@ -126910,7 +126910,7 @@
                     },
                     "Repos_PosX": {
                       "type": "word",
-                      "value": 0
+                      "value": 11
                     },
                     "Repos_Posy": {
                       "type": "word",
@@ -127019,7 +127019,7 @@
                     },
                     "Repos_PosX": {
                       "type": "word",
-                      "value": 0
+                      "value": 12
                     },
                     "Repos_Posy": {
                       "type": "word",
@@ -127091,7 +127091,7 @@
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": ""
+                        "0": "A basic hydration and nutrient mix. Required to tend growing crops."
                       }
                     },
                     "Description": {
@@ -127128,7 +127128,7 @@
                     },
                     "Repos_PosX": {
                       "type": "word",
-                      "value": 0
+                      "value": 13
                     },
                     "Repos_Posy": {
                       "type": "word",

@@ -27,7 +27,7 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "A fertilizer which increases a crop's harvest yield. One application per growth stage."
     }
   },
   "Description": {

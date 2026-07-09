@@ -26,7 +26,9 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "A bright tea blend of Tarine leaf and fresh lemon."
+    }
   },
   "Description": {
     "type": "cexolocstring",

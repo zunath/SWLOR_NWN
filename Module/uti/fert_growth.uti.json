@@ -27,7 +27,7 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "A fertilizer which shortens a crop's remaining growth time. One application per growth stage."
     }
   },
   "Description": {

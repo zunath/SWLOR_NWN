@@ -5112,19 +5112,19 @@ namespace SWLOR.Game.Server.Service.StatService
         /// Percent reduction to crop growth stage durations for farming.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        CropGrowthSpeedPercentBonus = 886,
+        CropGrowthSpeedPercentBonus = 889,
 
         /// <summary>
         /// Percent bonus to produce quantity when harvesting crops.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        HarvestYieldPercentBonus = 887,
+        HarvestYieldPercentBonus = 890,
 
         /// <summary>
         /// Percent bonus to the chance of harvesting pristine produce from crops.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        PristineHarvestChancePercentBonus = 888
+        PristineHarvestChancePercentBonus = 891
     }
 
     public class StatTypeAttribute : Attribute

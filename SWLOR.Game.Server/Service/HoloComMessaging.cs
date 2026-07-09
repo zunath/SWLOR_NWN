@@ -136,14 +136,35 @@ namespace SWLOR.Game.Server.Service
 
             SetName(hologram, "HoloCom Recording");
             SetPlotFlag(hologram, true);
+            DisableHologramAI(hologram);
             ApplyEffectToObject(DurationType.Instant, EffectHeal(GetMaxHitPoints(hologram)), hologram);
             ApplyEffectToObject(DurationType.Permanent, EffectVisualEffect(VisualEffect.Vfx_Dur_Ghostly_Visage_No_Sound, false), hologram);
 
             AssignCommand(recipient, () => PlaySound("hologram_on"));
-            AssignCommand(hologram, () => ClearAllActions());
-            AssignCommand(hologram, () => ActionSpeakString(message.Text, TalkVolume.Talk));
 
-            var speakSeconds = EstimatePlaybackSeconds(message.Text);
+            var animation = Animation.LoopingTalkNormal;
+            if (message.Text.Contains("!"))
+                animation = Animation.LoopingTalkForceful;
+            if (message.Text.Contains("?"))
+                animation = Animation.LoopingTalkPleading;
+
+            // Deserialized player copies are not reliably commandable, and actions
+            // assigned to a non-commandable creature are silently dropped - the live
+            // call relay forces commandable before every line for the same reason.
+            // The short delay lets the fresh copy finish initializing before actions
+            // are queued; same-frame assignments get flushed by creature spawn-in.
+            DelayCommand(0.5f, () =>
+            {
+                if (!GetIsObjectValid(hologram))
+                    return;
+
+                SetCommandable(true, hologram);
+                AssignCommand(hologram, () => ClearAllActions());
+                AssignCommand(hologram, () => ActionPlayAnimation(animation));
+                AssignCommand(hologram, () => ActionSpeakString(message.Text, TalkVolume.Talk));
+            });
+
+            var speakSeconds = 0.5f + EstimatePlaybackSeconds(message.Text);
             DelayCommand(speakSeconds, () =>
             {
                 if (GetIsObjectValid(hologram))
@@ -165,6 +186,29 @@ namespace SWLOR.Game.Server.Service
         {
             var wordCount = text.Split(' ', StringSplitOptions.RemoveEmptyEntries).Length;
             return Math.Clamp(wordCount / 2.5f + 1.5f, 3f, 30f);
+        }
+
+        /// <summary>
+        /// Strips every creature event script from the hologram so no AI, perception,
+        /// or combat handler ever runs on it. The hologram is a prop: its only job is
+        /// to stand still and play the queued speak/animation actions, and any AI
+        /// handler firing on it could flush or contest that action queue.
+        /// </summary>
+        private static void DisableHologramAI(uint hologram)
+        {
+            SetEventScript(hologram, EventScript.Creature_OnBlockedByDoor, string.Empty);
+            SetEventScript(hologram, EventScript.Creature_OnEndCombatRound, string.Empty);
+            SetEventScript(hologram, EventScript.Creature_OnDialogue, string.Empty);
+            SetEventScript(hologram, EventScript.Creature_OnDamaged, string.Empty);
+            SetEventScript(hologram, EventScript.Creature_OnDeath, string.Empty);
+            SetEventScript(hologram, EventScript.Creature_OnDisturbed, string.Empty);
+            SetEventScript(hologram, EventScript.Creature_OnHeartbeat, string.Empty);
+            SetEventScript(hologram, EventScript.Creature_OnNotice, string.Empty);
+            SetEventScript(hologram, EventScript.Creature_OnMeleeAttacked, string.Empty);
+            SetEventScript(hologram, EventScript.Creature_OnRested, string.Empty);
+            SetEventScript(hologram, EventScript.Creature_OnSpawnIn, string.Empty);
+            SetEventScript(hologram, EventScript.Creature_OnSpellCastAt, string.Empty);
+            SetEventScript(hologram, EventScript.Creature_OnUserDefined, string.Empty);
         }
 
         public static string ValidateMessageText(string text)

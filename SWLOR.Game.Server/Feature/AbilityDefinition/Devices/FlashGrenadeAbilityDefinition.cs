@@ -74,7 +74,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 statusEffectFactory: () => new FlashGrenade1StatusEffect(GetFlashPenalty(activator, 8)),
                 damageType: CombatDamageType.Force,
                 targetVisualEffect: VisualEffect.Vfx_Imp_Sonic,
-                areaVisualEffect: VisualEffect.None);
+                areaVisualEffect: VisualEffect.None,
+                maxTargets: 5);
         }
 
         private static int GetFlashPenalty(uint activator, int basePenalty)

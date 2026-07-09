@@ -310,19 +310,19 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.CripplingSlice1)
-                .Description("Deals weapon DMG + 8 and inflicts Exposed for 30 seconds.")
+                .Description("Deals weapon DMG + 10 and inflicts Exposed for 30 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Vibroknife, 10)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.CripplingSlice2)
-                .Description("Deals weapon DMG + 12 and inflicts Exposed for 30 seconds.")
+                .Description("Deals weapon DMG + 20 and inflicts Exposed for 30 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Vibroknife, 30)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.CripplingSlice3)
-                .Description("Deals weapon DMG + 16 and inflicts Exposed for 30 seconds.")
+                .Description("Deals weapon DMG + 28 and inflicts Exposed for 30 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Vibroknife, 38);
         }

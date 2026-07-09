@@ -2650,14 +2650,43 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// The hard-CC immunity types which, in addition to their own same-type immunity,
+        /// also grant and check immunity against every other type in this set. This lets a
+        /// target who was just knocked down (for example) resist being chained into a daze,
+        /// stun, immobilize, blind, sleep, or confusion for the same window.
+        /// </summary>
+        private static readonly HashSet<ImmunityType> HardCrowdControlImmunityTypes = new()
+        {
+            ImmunityType.Knockdown,
+            ImmunityType.Dazed,
+            ImmunityType.Stun,
+            ImmunityType.Immobilized,
+            ImmunityType.Blindness,
+            ImmunityType.Sleep,
+            ImmunityType.Confused
+        };
+
+        /// <summary>
         /// Applies a temporary immunity effect to a particular target.
         /// This will add 20 seconds on top of whatever the ability duration length is.
         /// It will NOT remove any existing effects.
+        /// If the immunity is one of the hard-CC types, this also grants temporary immunity
+        /// to every other hard-CC type for the same duration.
         /// </summary>
         /// <param name="target">The target receiving the immunity</param>
         /// <param name="abilityDuration">The length of the ability's duration. This will be added on top of the 20 seconds.</param>
         /// <param name="immunity">The type of immunity to apply.</param>
         public static void ApplyTemporaryImmunity(uint target, float abilityDuration, ImmunityType immunity)
+        {
+            ApplyTemporaryImmunitySingle(target, abilityDuration, immunity);
+
+            if (HardCrowdControlImmunityTypes.Contains(immunity))
+            {
+                ApplyTemporaryImmunitySingle(target, abilityDuration, ImmunityType.HardCrowdControl);
+            }
+        }
+
+        private static void ApplyTemporaryImmunitySingle(uint target, float abilityDuration, ImmunityType immunity)
         {
             const float BaseDuration = 20f;
             var duration = BaseDuration + abilityDuration;
@@ -2675,6 +2704,17 @@ namespace SWLOR.Game.Server.Service
         public static bool HasTemporaryImmunity(uint target, ImmunityType immunity)
         {
             return HasEffectByTag(target, GetTemporaryImmunityEffectTag(immunity));
+        }
+
+        /// <summary>
+        /// Checks whether the target is immune to a hard-CC type, either because it still has
+        /// immunity to that specific type or because it recently suffered a different hard-CC
+        /// type and is still within the shared hard-CC immunity window.
+        /// </summary>
+        public static bool HasHardCrowdControlImmunity(uint target, ImmunityType immunity)
+        {
+            return HasTemporaryImmunity(target, immunity) ||
+                   HasTemporaryImmunity(target, ImmunityType.HardCrowdControl);
         }
 
         private static string GetTemporaryImmunityEffectTag(ImmunityType immunity)

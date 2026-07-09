@@ -52,19 +52,19 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Press the Attack")
 
                 .AddPerkLevel()
-                .Description("Party members within Leadership range (5m base) deal +8% damage for 30 seconds. SOC scaling can raise this to +10%.")
+                .Description("Party members within Leadership range (5m base) deal +6% damage for 30 seconds. SOC scaling can raise this to +8%.")
                 .Price(2)
                 .RequirementSkill(SkillType.Leadership, 5)
                 .GrantsFeat(FeatType.PressTheAttack1)
 
                 .AddPerkLevel()
-                .Description("Party members within Leadership range (5m base) deal +11% damage for 30 seconds. SOC scaling can raise this to +14%.")
+                .Description("Party members within Leadership range (5m base) deal +8% damage for 30 seconds. SOC scaling can raise this to +10%.")
                 .Price(3)
                 .RequirementSkill(SkillType.Leadership, 18)
                 .GrantsFeat(FeatType.PressTheAttack2)
 
                 .AddPerkLevel()
-                .Description("Party members within Leadership range (5m base) gain +14% damage and +5% physical and Force ability hit chance for 30 seconds. SOC scaling can raise these to +18% damage and +7% hit chance.")
+                .Description("Party members within Leadership range (5m base) gain +10% damage and +5% physical and Force ability hit chance for 30 seconds. SOC scaling can raise these to +12% damage and +7% hit chance.")
                 .Price(4)
                 .RequirementSkill(SkillType.Leadership, 40)
                 .GrantsFeat(FeatType.PressTheAttack3);
@@ -183,7 +183,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Decisive Command")
 
                 .AddPerkLevel()
-                .Description("For 45 seconds, party members within Leadership range (5m base), including you, gain +15% damage, +6% physical and Force ability hit chance, +6% critical hit chance, and restore 1 STM every 3 seconds. SOC scaling can raise the bonuses to +18%, +8%, and +8%.")
+                .Description("For 45 seconds, party members within Leadership range (5m base), including you, gain +12% damage, +6% physical and Force ability hit chance, +6% critical hit chance, and restore 1 STM every 3 seconds. SOC scaling can raise the bonuses to +15%, +8%, and +8%.")
                 .Price(5)
                 .RequirementSkill(SkillType.Leadership, 50)
                 .GrantsFeat(FeatType.DecisiveCommand1)

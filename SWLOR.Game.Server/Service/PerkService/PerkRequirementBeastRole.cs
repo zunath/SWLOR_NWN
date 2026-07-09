@@ -12,6 +12,8 @@ namespace SWLOR.Game.Server.Service.PerkService
             _requiredRole = requiredRole;
         }
 
+        public PerkRequirementCategory Category => PerkRequirementCategory.BeastRole;
+
         public string CheckRequirements(uint player)
         {
             var playerId = GetObjectUUID(player);

@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             if (StatusEffect.HasStatusEffect(creature, GetType()))
                 return "Target is already knocked down.";
 
-            return Ability.HasTemporaryImmunity(creature, ImmunityType.Knockdown)
+            return Ability.HasHardCrowdControlImmunity(creature, ImmunityType.Knockdown)
                 ? "Target is temporarily immune to knockdown."
                 : string.Empty;
         }

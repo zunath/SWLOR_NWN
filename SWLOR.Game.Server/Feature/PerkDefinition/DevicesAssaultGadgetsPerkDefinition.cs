@@ -212,7 +212,15 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Devices, 38)
                 .RequirementCharacterType(CharacterType.Standard)
                 .DroidAISlots(2)
-                .GrantsFeat(FeatType.RailDart2);
+                .GrantsFeat(FeatType.RailDart2)
+
+                .AddPerkLevel()
+                .Description("Fires a dart that deals 48 physical DMG plus PER scaling and attempts to inflict Bleed.")
+                .Price(4)
+                .RequirementSkill(SkillType.Devices, 44)
+                .RequirementCharacterType(CharacterType.Standard)
+                .DroidAISlots(3)
+                .GrantsFeat(FeatType.RailDart3);
         }
 
         private void TacticalUplink()
@@ -235,7 +243,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Cryo Sprayer")
 
                 .AddPerkLevel()
-                .Description("Deals 22 ice DMG plus PER scaling to hostile targets in a cone and slows movement for 30 seconds.")
+                .Description("Deals 25 ice DMG plus PER scaling to hostile targets in a cone and slows movement for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Devices, 30)
                 .RequirementCharacterType(CharacterType.Standard)

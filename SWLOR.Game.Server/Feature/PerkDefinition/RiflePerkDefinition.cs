@@ -232,7 +232,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.KillBox1)
-                .Description("For 45 seconds, ranged hits add Suppression stacks lasting 30 seconds using your Suppressing Shot stack strength, and each Suppression stack reduces Evasion by an additional 3%.")
+                .Description("Deals weapon DMG + 20 to enemies within 5m. For 45 seconds, ranged hits add Suppression stacks lasting 30 seconds using your Suppressing Shot stack strength, and each Suppression stack reduces Evasion by an additional 3%.")
                 .Price(6)
                 .RequirementSkill(SkillType.Rifle, 50)
                 .RequirementQuest(RifleCapstoneQuestDefinition.KillBoxMasteryQuestId);
@@ -245,25 +245,25 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.AimedShot1)
-                .Description("Deals weapon DMG + 10. If you have not attacked for 3 seconds, this deals +8 DMG.")
+                .Description("Deals weapon DMG + 8. If you have not attacked for 3 seconds, this deals +8 DMG.")
                 .Price(2)
                 .RequirementSkill(SkillType.Rifle, 2)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.AimedShot2)
-                .Description("Deals weapon DMG + 22. If you have not attacked for 3 seconds, this deals +14 DMG.")
+                .Description("Deals weapon DMG + 18. If you have not attacked for 3 seconds, this deals +14 DMG.")
                 .Price(2)
                 .RequirementSkill(SkillType.Rifle, 12)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.AimedShot3)
-                .Description("Deals weapon DMG + 34. If you have not attacked for 3 seconds, this deals +20 DMG.")
+                .Description("Deals weapon DMG + 28. If you have not attacked for 3 seconds, this deals +20 DMG.")
                 .Price(3)
                 .RequirementSkill(SkillType.Rifle, 28)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.AimedShot4)
-                .Description("Deals weapon DMG + 46. If you have not attacked for 3 seconds, this deals +26 DMG.")
+                .Description("Deals weapon DMG + 38. If you have not attacked for 3 seconds, this deals +26 DMG.")
                 .Price(5)
                 .RequirementSkill(SkillType.Rifle, 40);
         }
@@ -364,13 +364,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Headshot1)
-                .Description("Deals weapon DMG + 20. If used after 3 seconds without attacking, gains +15% Critical Rate.")
+                .Description("Deals weapon DMG + 16. If used after 3 seconds without attacking, gains +15% Critical Rate.")
                 .Price(3)
                 .RequirementSkill(SkillType.Rifle, 18)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Headshot2)
-                .Description("Deals weapon DMG + 38. If used after 3 seconds without attacking, gains +25% Critical Rate.")
+                .Description("Deals weapon DMG + 30. If used after 3 seconds without attacking, gains +25% Critical Rate.")
                 .Price(3)
                 .RequirementSkill(SkillType.Rifle, 32);
         }

@@ -64,7 +64,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.GuardCounter3)
-                .Description("Your next attack deals weapon DMG + 28. If you guarded an attack within the last 30 seconds, this deals weapon DMG + 45 instead and inflicts Dazed for 30 seconds.")
+                .Description("Your next attack deals weapon DMG + 28. If you guarded an attack within the last 30 seconds, this deals weapon DMG + 45 instead and inflicts Dazed for 15 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Katar, 38);
         }
@@ -215,8 +215,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ImpenetrableGripTrait)
                 .Description("Gain +20 Mobility Resistance and +20 Mind Resistance. Guarded hits restore 4 STM.")
-                .IncreasesStat(StatType.MobilityResistance, 20)
-                .IncreasesStat(StatType.MindResistance, 20)
                 .IncreasesStat(StatType.GuardStaminaRestore, 4)
                 .Price(2)
                 .RequirementSkill(SkillType.Katar, 35);
@@ -349,19 +347,19 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.JointLock1)
-                .Description("Deals weapon DMG + 12. Inflicts Dazed for 30 seconds. Cooldown is longer than standard control abilities.")
+                .Description("Deals weapon DMG + 12. Inflicts Dazed for 15 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Katar, 10)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.JointLock2)
-                .Description("Deals weapon DMG + 24. Inflicts Dazed for 30 seconds. Cooldown is longer than standard control abilities.")
+                .Description("Deals weapon DMG + 24. Inflicts Dazed for 15 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Katar, 30)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.JointLock3)
-                .Description("Deals weapon DMG + 36. Inflicts Dazed for 30 seconds. Cooldown is longer than standard control abilities.")
+                .Description("Deals weapon DMG + 36. Inflicts Dazed for 15 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Katar, 38);
         }

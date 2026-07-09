@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
     public sealed class SignalJammerAbilityDefinition : IAbilityListDefinition
     {
         private const float RadiusMeters = 5f;
-        private const float DurationSeconds = 30f;
+        private const float DurationSeconds = 45f;
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {

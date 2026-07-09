@@ -89,7 +89,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition.Beast
                 .GroupType(PerkGroupType.Beast)
 
                 .AddPerkLevel()
-                .Description("The beast's next attack reduces target physical and force ability hit chance by 6% for 15 seconds and generates 350 base Enmity plus VIT scaling.")
+                .Description("The beast's next attack reduces target hit chance and evasion chance by 4% for 15 seconds and generates 350 base Enmity plus VIT scaling.")
                 .Price(3)
                 .RequirementBeastLevel(12)
                 .RequirementBeastRole(BeastRoleType.Evasion)

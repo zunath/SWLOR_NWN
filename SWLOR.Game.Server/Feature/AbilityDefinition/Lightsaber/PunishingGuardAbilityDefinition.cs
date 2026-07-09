@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                     .HasRecastDelay(RecastGroup.PunishingGuard, 30.0f),
                 SkillType.Lightsaber,
                 16,
-                30,
+                15,
                 null,
                 null,
                 6,
@@ -46,7 +46,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                     RequireRecentWardHitForConditionalStatus = true,
                     ProtectedTargetHitWindowSeconds = 30,
                     ConditionalTargetStatusEffect = typeof(DazedStatusEffect),
-                    ConditionalTargetStatusDurationSeconds = 30
+                    ConditionalTargetStatusDurationSeconds = 15
                 });
 
             ConfigureGeneratedWeaponAbility(
@@ -56,7 +56,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                     .HasRecastDelay(RecastGroup.PunishingGuard, 30.0f),
                 SkillType.Lightsaber,
                 30,
-                30,
+                15,
                 null,
                 null,
                 9,
@@ -78,7 +78,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                     RequireRecentWardHitForConditionalStatus = true,
                     ProtectedTargetHitWindowSeconds = 30,
                     ConditionalTargetStatusEffect = typeof(DazedStatusEffect),
-                    ConditionalTargetStatusDurationSeconds = 30
+                    ConditionalTargetStatusDurationSeconds = 15
                 });
 
             return builder.Build();

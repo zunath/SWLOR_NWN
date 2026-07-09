@@ -11,6 +11,8 @@ namespace SWLOR.Game.Server.Service.PerkService
             QuestId = questId;
         }
 
+        public PerkRequirementCategory Category => PerkRequirementCategory.Quest;
+
         public string CheckRequirements(uint player)
         {
             var quest = Quest.GetQuestById(QuestId);

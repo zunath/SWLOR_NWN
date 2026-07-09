@@ -516,6 +516,8 @@ namespace SWLOR.Game.Server.Service
 
             var creatureEffects = EnsureCreatureStatusEffectTracker(creature);
 
+            RemoveOtherCommandStatuses(creature, statusEffect.GetType(), source);
+
             switch (statusEffect.StackingType)
             {
                 case StatusEffectStackType.Disabled:
@@ -548,6 +550,11 @@ namespace SWLOR.Game.Server.Service
 
             creatureEffects = EnsureCreatureStatusEffectTracker(creature);
             creatureEffects.Add(statusEffect);
+
+            if (statusEffect is ILeadershipDamageReductionStatusEffect)
+            {
+                ReconcileLeadershipDamageReduction(creatureEffects);
+            }
 
             if (HasStatAdjustment(statusEffect))
             {
@@ -1305,6 +1312,32 @@ namespace SWLOR.Game.Server.Service
                 removeNativeEffect);
         }
 
+        /// <summary>
+        /// Enforces command exclusivity for Leadership-style party-buff commands (Press the
+        /// Attack, Cleanse Order, Decisive Command): applying one removes any other
+        /// <see cref="StatusEffectSourceType.Command"/>-classified effect that the same source
+        /// leader previously applied to this target. Effects applied by other leaders, and
+        /// non-Command effects such as auras, are left untouched. Newest application wins.
+        /// </summary>
+        public static void RemoveOtherCommandStatuses(
+            uint creature,
+            Type statusEffectType,
+            uint source,
+            bool sendsWornOffMessage = false,
+            bool removeNativeEffect = true)
+        {
+            if (GetStatusEffectSourceType(statusEffectType) != StatusEffectSourceType.Command)
+                return;
+
+            RemoveStatusEffectBySourceType(
+                creature,
+                StatusEffectSourceType.Command,
+                sendsWornOffMessage,
+                statusEffectType,
+                removeNativeEffect,
+                source);
+        }
+
         public static List<Type> GetStatusEffectsFromIcon(EffectIconType effectIcon)
         {
             return _statusEffects
@@ -1448,10 +1481,81 @@ namespace SWLOR.Game.Server.Service
             statusEffect.RemoveEffect(creature);
             creatureEffects.Remove(statusEffect);
 
+            if (statusEffect is ILeadershipDamageReductionStatusEffect)
+            {
+                ReconcileLeadershipDamageReduction(creatureEffects);
+            }
+
             if (HasStatAdjustment(statusEffect))
             {
                 DelayCommand(0.1f, () => Stat.ApplyCreatureMovementRate(creature));
             }
+        }
+
+        /// <summary>
+        /// Enforces take-the-max behavior across the Leadership damage-reduction family
+        /// (Watchful Presence, Cleanse Order, Bolster Resolve, Hold the Line): only the single
+        /// strongest active member's damage-reduction stats are ever contributed to the creature.
+        /// Weaker members remain applied so any other stats they grant (e.g. Hold the Line's
+        /// crowd-control immunity) still function, but their damage-reduction stat values are
+        /// zeroed while a stronger member is active. This is recomputed from scratch on every
+        /// application and removal of a family member, so a weaker member's damage reduction
+        /// resumes automatically once the stronger member expires or is removed.
+        /// </summary>
+        private static void ReconcileLeadershipDamageReduction(CreatureStatusEffect creatureEffects)
+        {
+            var family = creatureEffects.GetAllEffects()
+                .Where(effect => effect is ILeadershipDamageReductionStatusEffect)
+                .ToList();
+
+            if (family.Count == 0)
+                return;
+
+            var strongestMagnitude = family
+                .Select(effect => GetLeadershipDamageReductionMagnitude((ILeadershipDamageReductionStatusEffect)effect))
+                .Min();
+
+            var winnerAssigned = false;
+
+            foreach (var effect in family)
+            {
+                var drEffect = (ILeadershipDamageReductionStatusEffect)effect;
+                var magnitude = GetLeadershipDamageReductionMagnitude(drEffect);
+                var shouldBeActive = !winnerAssigned && magnitude == strongestMagnitude;
+
+                if (shouldBeActive)
+                    winnerAssigned = true;
+
+                ApplyLeadershipDamageReductionContribution(creatureEffects, effect, drEffect, shouldBeActive);
+            }
+        }
+
+        private static int GetLeadershipDamageReductionMagnitude(ILeadershipDamageReductionStatusEffect drEffect)
+        {
+            return drEffect.LeadershipDamageReductionStats.Values.DefaultIfEmpty(0).Min();
+        }
+
+        private static void ApplyLeadershipDamageReductionContribution(
+            CreatureStatusEffect creatureEffects,
+            IStatusEffect effect,
+            ILeadershipDamageReductionStatusEffect drEffect,
+            bool shouldBeActive)
+        {
+            var isAlreadyCorrect = drEffect.LeadershipDamageReductionStats.All(pair =>
+                effect.StatGroup.Stats.TryGetValue(pair.Key, out var current) &&
+                current == (shouldBeActive ? pair.Value : 0));
+
+            if (isAlreadyCorrect)
+                return;
+
+            creatureEffects.Remove(effect);
+
+            foreach (var (statType, nominalValue) in drEffect.LeadershipDamageReductionStats)
+            {
+                effect.StatGroup.Stats[statType] = shouldBeActive ? nominalValue : 0;
+            }
+
+            creatureEffects.Add(effect);
         }
 
         private static bool HasStatAdjustment(IStatusEffect statusEffect)
@@ -1483,13 +1587,17 @@ namespace SWLOR.Game.Server.Service
             StatusEffectSourceType sourceType,
             bool sendsWornOffMessage = true,
             Type excludedStatusEffectType = null,
-            bool removeNativeEffect = true)
+            bool removeNativeEffect = true,
+            uint filterBySource = OBJECT_INVALID)
         {
             var creatureEffects = GetCreatureStatusEffects(creature);
             var effects = creatureEffects.GetAllBySourceType(sourceType);
             foreach (var effect in effects)
             {
                 if (excludedStatusEffectType != null && effect.GetType() == excludedStatusEffectType)
+                    continue;
+
+                if (filterBySource != OBJECT_INVALID && effect.Source != filterBySource)
                     continue;
 
                 RemoveStatusEffect(effect.GetType(), creature, effect.Source, sendsWornOffMessage, removeNativeEffect);

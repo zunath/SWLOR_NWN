@@ -28,6 +28,13 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             _grantsTemporaryImmunity = grantsTemporaryImmunity;
         }
 
+        public override string CanApply(uint creature)
+        {
+            return Ability.HasHardCrowdControlImmunity(creature, ImmunityType.Dazed)
+                ? "Target is temporarily immune to daze."
+                : string.Empty;
+        }
+
         protected override void Apply(uint creature, int durationTicks)
         {
             ApplyDaze(creature, GetDurationSeconds(durationTicks));

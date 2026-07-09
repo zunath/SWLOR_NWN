@@ -1306,7 +1306,11 @@ function Update-EffectIcons2da([object[]]$statusRows, [string]$path, [hashtable]
         $row++
     }
 
-    Set-Content -Path $path -Value $baseLines
+    # Write as UTF-8 without a BOM. NWN's 2DA parser rejects any file that
+    # begins with a byte-order mark ("Failed to demand <table>.2da"), which
+    # takes the whole table offline and crashes clients that resolve its rows.
+    $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
+    [System.IO.File]::WriteAllLines($path, [string[]]$baseLines, $utf8NoBom)
 }
 
 function Ensure-EffectIconUsing([string]$content) {
@@ -1487,6 +1491,26 @@ function Add-SemanticFrameValidationErrors(
 
 function Test-GameplayIconStandards([object[]]$rows, [hashtable]$statusEffectStrRefsByKey) {
     $errors = [System.Collections.Generic.List[string]]::new()
+
+    # NWN's 2DA parser cannot read a file that begins with a UTF-8 byte-order
+    # mark: it fails to load the entire table and crashes clients that resolve
+    # its rows (e.g. effect icons applied on rest). Editors that save as
+    # "UTF-8 with BOM" reintroduce this silently, so guard the managed tables.
+    foreach ($managed2da in @($Feat2daPath, $Spells2daPath, $EffectIcons2daPath)) {
+        $resolved2da = Resolve-RepoPath $managed2da
+        $prefix = [byte[]]::new(3)
+        $stream = [System.IO.File]::OpenRead($resolved2da)
+        try {
+            $read = $stream.Read($prefix, 0, 3)
+        }
+        finally {
+            $stream.Dispose()
+        }
+        if ($read -eq 3 -and $prefix[0] -eq 0xEF -and $prefix[1] -eq 0xBB -and $prefix[2] -eq 0xBF) {
+            $errors.Add("$([System.IO.Path]::GetFileName($resolved2da)) starts with a UTF-8 byte-order mark; NWN cannot load a 2DA with a BOM. Re-save it as UTF-8 without a BOM.") | Out-Null
+        }
+    }
+
     $iconDirectory = Resolve-RepoPath $IconPath
     $enumText = Get-Content -Path (Resolve-RepoPath $EffectIconTypePath) -Raw
     $abilityRowsByKey = @{}

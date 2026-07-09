@@ -48,12 +48,12 @@ public class LeadershipCombatUpgradeTests
         AssertAppliedStat(new RallyingStandard1StatusEffect(), StatType.AbilityHitChancePercentAdjustment, 0);
         AssertAppliedStat(new RallyingStandard2StatusEffect(), StatType.PhysicalAndForceAbilityHitChancePercentAdjustment, 5);
         AssertAppliedStat(new RallyingStandard2StatusEffect(), StatType.AbilityHitChancePercentAdjustment, 0);
-        AssertAppliedStat(new PressTheAttack1StatusEffect(), StatType.DamageDealtPercentAdjustment, 8);
-        AssertAppliedStat(new PressTheAttack2StatusEffect(), StatType.DamageDealtPercentAdjustment, 11);
-        AssertAppliedStat(new PressTheAttack3StatusEffect(), StatType.DamageDealtPercentAdjustment, 14);
+        AssertAppliedStat(new PressTheAttack1StatusEffect(), StatType.DamageDealtPercentAdjustment, 6);
+        AssertAppliedStat(new PressTheAttack2StatusEffect(), StatType.DamageDealtPercentAdjustment, 8);
+        AssertAppliedStat(new PressTheAttack3StatusEffect(), StatType.DamageDealtPercentAdjustment, 10);
         AssertAppliedStat(new PressTheAttack3StatusEffect(), StatType.PhysicalAndForceAbilityHitChancePercentAdjustment, 5);
         AssertAppliedStat(new PressTheAttack3StatusEffect(), StatType.AbilityHitChancePercentAdjustment, 0);
-        AssertAppliedStat(new DecisiveCommand1StatusEffect(), StatType.DamageDealtPercentAdjustment, 15);
+        AssertAppliedStat(new DecisiveCommand1StatusEffect(), StatType.DamageDealtPercentAdjustment, 12);
         AssertAppliedStat(new DecisiveCommand1StatusEffect(), StatType.PhysicalAndForceAbilityHitChancePercentAdjustment, 6);
         AssertAppliedStat(new DecisiveCommand1StatusEffect(), StatType.AbilityHitChancePercentAdjustment, 0);
         AssertAppliedStat(new DecisiveCommand1StatusEffect(), StatType.CriticalRatePercentAdjustment, 6);
@@ -129,18 +129,18 @@ public class LeadershipCombatUpgradeTests
         var descriptions = new[]
         {
             (FeatType.RallyingStandard1, "Aura: Party members within Leadership range (5m base) gain +3% physical and Force ability hit chance. SOC scaling can raise this to +4%."),
-            (FeatType.PressTheAttack1, "Party members within Leadership range (5m base) deal +8% damage for 30 seconds. SOC scaling can raise this to +10%."),
+            (FeatType.PressTheAttack1, "Party members within Leadership range (5m base) deal +6% damage for 30 seconds. SOC scaling can raise this to +8%."),
             (FeatType.CoordinatedFocus1, "Aura: Party members within Leadership range (5m base) gain +3% critical hit chance. SOC scaling can raise this to +4%."),
             (FeatType.ChargeOrder1, "Aura: Party members within Leadership range (5m base) gain +10% movement speed and +30 Mobility Resistance. SOC scaling can raise these to +12% movement speed and +40 Mobility Resistance."),
-            (FeatType.PressTheAttack2, "Party members within Leadership range (5m base) deal +11% damage for 30 seconds. SOC scaling can raise this to +14%."),
+            (FeatType.PressTheAttack2, "Party members within Leadership range (5m base) deal +8% damage for 30 seconds. SOC scaling can raise this to +10%."),
             (FeatType.RallyingStandard2, "Aura: Party members within Leadership range (5m base) gain +5% physical and Force ability hit chance. SOC scaling can raise this to +6%."),
             (FeatType.BreakMorale1, "Enemies within Leadership range (5m base) suffer Flash for 30 seconds, reducing physical and Force ability hit chance by 10%. SOC scaling can raise the penalty to 12%. This command applies reliably to valid enemies within Leadership range (5m base)."),
             (FeatType.CoordinatedFocus2, "Aura: Party members within Leadership range (5m base) gain +4% critical hit chance and +5% critical damage. SOC scaling can raise these to +5% and +7%."),
             (FeatType.ChargeOrder2, "Aura: Party members within Leadership range (5m base) gain +15% movement speed and +50 Mobility Resistance. SOC scaling can raise these to +18% movement speed and +65 Mobility Resistance."),
-            (FeatType.PressTheAttack3, "Party members within Leadership range (5m base) gain +14% damage and +5% physical and Force ability hit chance for 30 seconds. SOC scaling can raise these to +18% damage and +7% hit chance."),
+            (FeatType.PressTheAttack3, "Party members within Leadership range (5m base) gain +10% damage and +5% physical and Force ability hit chance for 30 seconds. SOC scaling can raise these to +12% damage and +7% hit chance."),
             (FeatType.BreakMorale2, "Enemies within Leadership range (5m base) suffer Flash, reducing physical and Force ability hit chance by 15%, and Weakened, reducing Attack by 12%, for 30 seconds. SOC scaling can raise these penalties to 18% and 15%. This command applies reliably to valid enemies within Leadership range (5m base)."),
             (FeatType.CoordinatedFocus3, "Aura: Party members within Leadership range (5m base) gain +6% critical hit chance and +8% critical damage. SOC scaling can raise these to +7% and +10%."),
-            (FeatType.DecisiveCommand1, "For 45 seconds, party members within Leadership range (5m base), including you, gain +15% damage, +6% physical and Force ability hit chance, +6% critical hit chance, and restore 1 STM every 3 seconds. SOC scaling can raise the bonuses to +18%, +8%, and +8%."),
+            (FeatType.DecisiveCommand1, "For 45 seconds, party members within Leadership range (5m base), including you, gain +12% damage, +6% physical and Force ability hit chance, +6% critical hit chance, and restore 1 STM every 3 seconds. SOC scaling can raise the bonuses to +15%, +8%, and +8%."),
             (FeatType.WatchfulPresence1, "Aura: Party members within Leadership range (5m base) take 4% less physical and Force damage. SOC scaling can raise this to 5%."),
             (FeatType.RousingShout1, "Bolsters one living ally, granting temporary HP equal to 10% of maximum HP for 30 seconds. SOC scaling can raise this to 13%. If the target is at or below 35% HP, they also take 10% less damage, scaling up to 12%."),
             (FeatType.SteadyFormation1, "Aura: Party members within Leadership range (5m base) gain +3% evasion chance, +30 Mind Resistance, and +30 Mobility Resistance. SOC scaling can raise these to +4% evasion chance, +40 Mind Resistance, and +40 Mobility Resistance."),

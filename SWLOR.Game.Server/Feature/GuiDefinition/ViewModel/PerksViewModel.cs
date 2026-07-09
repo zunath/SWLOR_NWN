@@ -227,15 +227,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-        public GuiBindingList<string> PerkButtonChips
+        public GuiBindingList<string> PerkRowReqIcons
         {
             get => Get<GuiBindingList<string>>();
             set => Set(value);
         }
 
-        public GuiBindingList<GuiColor> PerkChipColors
+        public GuiBindingList<string> PerkRowReqTooltips
         {
-            get => Get<GuiBindingList<GuiColor>>();
+            get => Get<GuiBindingList<string>>();
             set => Set(value);
         }
 
@@ -279,8 +279,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             SelectedRequirements = new GuiBindingList<string>();
             SelectedRequirementIcons = new GuiBindingList<string>();
             SelectedRequirementTooltips = new GuiBindingList<string>();
-            PerkButtonChips = new GuiBindingList<string>();
-            PerkChipColors = new GuiBindingList<GuiColor>();
+            PerkRowReqIcons = new GuiBindingList<string>();
+            PerkRowReqTooltips = new GuiBindingList<string>();
         }
 
         protected override void Initialize(GuiPayloadBase initialPayload)
@@ -330,7 +330,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsFilterMaxed = false;
         }
 
-        private (PerkRowStatus status, string chipText, GuiColor color) GetPerkRowStatus(PerkDetail detail, int rank, int unallocatedSP)
+        private (PerkRowStatus status, GuiColor color, string iconResref, string tooltip) GetPerkRowStatus(PerkDetail detail, int rank, int unallocatedSP)
         {
             var nextUpgrade = detail.PerkLevels.ContainsKey(rank + 1)
                 ? detail.PerkLevels[rank + 1]
@@ -338,33 +338,46 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             if (nextUpgrade == null)
             {
-                return (PerkRowStatus.Maxed, "MAX", new GuiColor(90, 170, 230));
+                var maxedIcon = PerkRequirementCategoryResolver.GetDetail(PerkRequirementCategory.Other).IconResref;
+                return (PerkRowStatus.Maxed, new GuiColor(90, 170, 230), maxedIcon, "Fully upgraded.");
             }
 
-            string firstFailingRequirementText = null;
+            // Find the first unmet requirement (the active restriction), if any.
+            IPerkRequirement gatingRequirement = null;
+            var gatingError = string.Empty;
             foreach (var req in nextUpgrade.Requirements)
             {
-                if (!string.IsNullOrWhiteSpace(req.CheckRequirements(Player)))
+                var error = req.CheckRequirements(Player);
+                if (!string.IsNullOrWhiteSpace(error))
                 {
-                    firstFailingRequirementText = req.RequirementText;
+                    gatingRequirement = req;
+                    gatingError = error;
                     break;
                 }
             }
 
-            if (firstFailingRequirementText != null)
+            // The row icon shows the restriction type: the gating requirement when
+            // locked, otherwise the perk's primary requirement type.
+            var iconCategory = gatingRequirement?.Category
+                ?? (nextUpgrade.Requirements.Count > 0
+                    ? nextUpgrade.Requirements[0].Category
+                    : PerkRequirementCategory.Other);
+            var iconResref = PerkRequirementCategoryResolver.GetDetail(iconCategory).IconResref;
+
+            if (gatingRequirement != null)
             {
-                // Compact "<Skill> rank <N>" down to "<Skill> <N>" so the gating
-                // requirement fits the row chip without clipping the skill name.
-                var chip = firstFailingRequirementText.Replace(" rank ", " ");
-                return (PerkRowStatus.Locked, chip, GuiColor.Grey);
+                var categoryName = PerkRequirementCategoryResolver.GetDetail(gatingRequirement.Category).Name;
+                var tooltip = $"Locked - {categoryName}: {gatingRequirement.RequirementText}. {gatingError}";
+                return (PerkRowStatus.Locked, GuiColor.Grey, iconResref, tooltip);
             }
 
             if (unallocatedSP >= nextUpgrade.Price)
             {
-                return (PerkRowStatus.Buyable, $"{nextUpgrade.Price} SP", new GuiColor(60, 200, 90));
+                return (PerkRowStatus.Buyable, new GuiColor(60, 200, 90), iconResref, $"Can buy - {nextUpgrade.Price} SP");
             }
 
-            return (PerkRowStatus.Unaffordable, $"{nextUpgrade.Price} SP", new GuiColor(230, 180, 70));
+            return (PerkRowStatus.Unaffordable, new GuiColor(230, 180, 70), iconResref,
+                $"Costs {nextUpgrade.Price} SP - you have {unallocatedSP}");
         }
 
         private void LoadCategories()
@@ -428,8 +441,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var perkButtonIcons = new GuiBindingList<string>();
             var perkButtonTexts = new GuiBindingList<string>();
             var perkDetailSelected = new GuiBindingList<bool>();
-            var perkButtonChips = new GuiBindingList<string>();
-            var perkChipColors = new GuiBindingList<GuiColor>();
+            var perkRowReqIcons = new GuiBindingList<string>();
+            var perkRowReqTooltips = new GuiBindingList<string>();
             var pageNumbers = new GuiBindingList<GuiComboEntry>();
 
             var group = IsInMyPerksMode
@@ -459,7 +472,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 sortedPerks = sortedPerks.Where(x =>
                 {
                     var rank = GetCurrentPerkRank(dbPlayer, dbBeast, x.Key);
-                    var (status, _, _) = GetPerkRowStatus(x.Value, rank, unallocatedSP);
+                    var (status, _, _, _) = GetPerkRowStatus(x.Value, rank, unallocatedSP);
 
                     return SelectedStatusFilter switch
                     {
@@ -486,23 +499,23 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             foreach (var (type, detail) in pagedPerks)
             {
                 var rank = GetCurrentPerkRank(dbPlayer, dbBeast, type);
-                var (_, chipText, color) = GetPerkRowStatus(detail, rank, unallocatedSP);
+                var (_, color, iconResref, tooltip) = GetPerkRowStatus(detail, rank, unallocatedSP);
 
                 _filteredPerks.Add(type);
                 perkButtonIcons.Add(detail.IconResref);
                 perkButtonTexts.Add($"{detail.Name} ({rank}/{detail.PerkLevels.Count})");
                 perkDetailSelected.Add(false);
                 perkButtonColors.Add(color);
-                perkButtonChips.Add(chipText);
-                perkChipColors.Add(color);
+                perkRowReqIcons.Add(iconResref);
+                perkRowReqTooltips.Add(tooltip);
             }
 
             PerkButtonColors = perkButtonColors;
             PerkButtonIcons = perkButtonIcons;
             PerkButtonTexts = perkButtonTexts;
             PerkDetailSelected = perkDetailSelected;
-            PerkButtonChips = perkButtonChips;
-            PerkChipColors = perkChipColors;
+            PerkRowReqIcons = perkRowReqIcons;
+            PerkRowReqTooltips = perkRowReqTooltips;
             PageNumbers = pageNumbers;
 
             // Select the first perk so the detail panel shows content immediately
@@ -653,12 +666,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     if (string.IsNullOrWhiteSpace(error))
                     {
                         requirementColors.Add(GuiColor.Green);
-                        requirementTooltips.Add($"{categoryDetail.Name} requirement\n{req.RequirementText}\nRequirement met.");
+                        requirementTooltips.Add($"{categoryDetail.Name}: {req.RequirementText} - met.");
                     }
                     else
                     {
                         requirementColors.Add(GuiColor.Red);
-                        requirementTooltips.Add($"{categoryDetail.Name} requirement\n{req.RequirementText}\n{error}");
+                        requirementTooltips.Add($"{categoryDetail.Name}: {req.RequirementText} - {error}");
                         meetsRequirements = false;
                     }
                 }
@@ -1043,11 +1056,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     PerkButtonTexts[_selectedPerkIndex] = $"{detail.Name} ({newRank}/{detail.PerkLevels.Count})";
 
                     var (meetsRequirements, requirements, requirementColors, requirementIcons, requirementTooltips) = BuildRequirements(nextUpgrade);
-                    var (_, chipText, chipColor) = GetPerkRowStatus(detail, newRank, unallocatedSP);
+                    var (_, chipColor, rowIcon, rowTooltip) = GetPerkRowStatus(detail, newRank, unallocatedSP);
 
                     PerkButtonColors[_selectedPerkIndex] = chipColor;
-                    PerkButtonChips[_selectedPerkIndex] = chipText;
-                    PerkChipColors[_selectedPerkIndex] = chipColor;
+                    PerkRowReqIcons[_selectedPerkIndex] = rowIcon;
+                    PerkRowReqTooltips[_selectedPerkIndex] = rowTooltip;
                     SelectedRequirements = requirements;
                     SelectedRequirementColors = requirementColors;
                     SelectedRequirementIcons = requirementIcons;

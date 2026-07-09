@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Service.PerkService
             _requiredLevel = requiredLevel;
         }
 
-        public PerkRequirementCategory Category => PerkRequirementCategory.Beast;
+        public PerkRequirementCategory Category => PerkRequirementCategory.BeastLevel;
 
         public string CheckRequirements(uint player)
         {

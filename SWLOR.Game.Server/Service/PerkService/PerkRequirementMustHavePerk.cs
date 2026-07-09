@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Service.PerkService
             _mustHavePerkLevel = mustHavePerkLevel;
         }
 
-        public PerkRequirementCategory Category => PerkRequirementCategory.Perk;
+        public PerkRequirementCategory Category => PerkRequirementCategory.MustHavePerk;
 
         public string CheckRequirements(uint player)
         {

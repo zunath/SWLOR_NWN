@@ -8,15 +8,17 @@ namespace SWLOR.Game.Server.Service.PerkService
         Skill = 1,
         Quest = 2,
         CharacterType = 3,
-        Perk = 4,
-        Beast = 5,
-        Unlock = 6
+        MustHavePerk = 4,
+        CannotHavePerk = 5,
+        BeastLevel = 6,
+        BeastRole = 7,
+        Unlock = 8
     }
 
     /// <summary>
     /// Maps a perk requirement category to its player-facing label and the icon
-    /// shown beside the requirement in the Perks window. The icon resrefs reuse
-    /// existing shipped hak icons so no hak rebuild is required.
+    /// shown beside the requirement in the Perks window. Each requirement type has
+    /// its own dedicated icon (resrefs below live in the sw_ability hak).
     /// </summary>
     public static class PerkRequirementCategoryResolver
     {
@@ -28,13 +30,15 @@ namespace SWLOR.Game.Server.Service.PerkService
 
         private static readonly Dictionary<PerkRequirementCategory, Detail> Details = new()
         {
-            { PerkRequirementCategory.Skill, new Detail { Name = "Skill", IconResref = "ife_grd_train" } },
-            { PerkRequirementCategory.Quest, new Detail { Name = "Quest", IconResref = "ife_key_items" } },
-            { PerkRequirementCategory.CharacterType, new Detail { Name = "Character Type", IconResref = "ife_head1" } },
-            { PerkRequirementCategory.Perk, new Detail { Name = "Perk", IconResref = "ife_earthly_star" } },
-            { PerkRequirementCategory.Beast, new Detail { Name = "Beast", IconResref = "ife_callbeast" } },
-            { PerkRequirementCategory.Unlock, new Detail { Name = "Unlock", IconResref = "ife_lockcrsh" } },
-            { PerkRequirementCategory.Other, new Detail { Name = "Requirement", IconResref = "ife_ready_check" } },
+            { PerkRequirementCategory.Skill, new Detail { Name = "Skill", IconResref = "req_skill" } },
+            { PerkRequirementCategory.Quest, new Detail { Name = "Quest", IconResref = "req_quest" } },
+            { PerkRequirementCategory.CharacterType, new Detail { Name = "Character Type", IconResref = "req_chartype" } },
+            { PerkRequirementCategory.MustHavePerk, new Detail { Name = "Required Perk", IconResref = "req_needperk" } },
+            { PerkRequirementCategory.CannotHavePerk, new Detail { Name = "Excluded Perk", IconResref = "req_noperk" } },
+            { PerkRequirementCategory.BeastLevel, new Detail { Name = "Beast Level", IconResref = "req_beastlvl" } },
+            { PerkRequirementCategory.BeastRole, new Detail { Name = "Beast Role", IconResref = "req_beastrole" } },
+            { PerkRequirementCategory.Unlock, new Detail { Name = "Unlock", IconResref = "req_unlock" } },
+            { PerkRequirementCategory.Other, new Detail { Name = "Requirement", IconResref = "req_other" } },
         };
 
         public static Detail GetDetail(PerkRequirementCategory category)

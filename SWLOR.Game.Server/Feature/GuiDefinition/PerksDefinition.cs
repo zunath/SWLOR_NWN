@@ -146,13 +146,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             });
                             template.AddCell(cell =>
                             {
-                                cell.AddLabel()
-                                    .BindText(model => model.PerkButtonChips)
-                                    .BindColor(model => model.PerkChipColors)
-                                    .SetHorizontalAlign(NuiHorizontalAlign.Right)
-                                    .SetVerticalAlign(NuiVerticalAlign.Middle);
+                                cell.AddGroup(group =>
+                                {
+                                    group.AddImage()
+                                        .BindResref(model => model.PerkRowReqIcons)
+                                        .BindTooltip(model => model.PerkRowReqTooltips)
+                                        .SetHorizontalAlign(NuiHorizontalAlign.Center)
+                                        .SetVerticalAlign(NuiVerticalAlign.Middle)
+                                        .SetAspect(NuiAspect.Stretch);
+                                });
 
-                                cell.SetWidth(150f);
+                                cell.SetWidth(40f);
                                 cell.SetIsVariable(false);
                             });
                         })

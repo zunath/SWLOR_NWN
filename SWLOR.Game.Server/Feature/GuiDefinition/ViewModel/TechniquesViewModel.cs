@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.NWN.API.NWScript.Enum;
+using PlayerEntity = SWLOR.Game.Server.Entity.Player;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -91,8 +92,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             ClearSelections();
 
-            var learnedFeats = Mimicry.GetLearnedTechniques(Player).ToList();
-            var equippedFeats = Mimicry.GetEquippedTechniques(Player).ToList();
+            var playerId = GetObjectUUID(Player);
+            var dbPlayer = DB.Get<PlayerEntity>(playerId);
+            var learnedFeats = Mimicry.GetLearnedTechniques(dbPlayer);
+            var equippedFeats = Mimicry.GetEquippedTechniques(dbPlayer);
 
             var unequippedNames = new GuiBindingList<string>();
             var unequippedSelections = new GuiBindingList<bool>();
@@ -126,7 +129,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             EquippedNames = equippedNames;
             EquippedSelections = equippedSelections;
 
-            RefreshSlots();
+            RefreshSlots(dbPlayer);
         }
 
         private static string BuildRowText(AbilityDetail detail)
@@ -135,10 +138,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             return $"{detail.Name} (T{detail.MimicryTier} / {detail.MimicrySlotCost} {slotLabel})";
         }
 
-        private void RefreshSlots()
+        private void RefreshSlots(PlayerEntity dbPlayer)
         {
-            var used = Mimicry.GetUsedSlots(Player);
-            var max = Mimicry.GetMaxSlots(Player);
+            var used = Mimicry.GetUsedSlots(dbPlayer);
+            var max = Mimicry.GetMaxSlots(dbPlayer);
 
             SlotsText = $"Slots: {used} / {max}";
             SlotsColor = used >= max ? GuiColor.Red : GuiColor.White;

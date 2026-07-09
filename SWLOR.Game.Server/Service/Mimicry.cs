@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWNX;
@@ -254,6 +255,11 @@ namespace SWLOR.Game.Server.Service
             {
                 SendMessageToPC(player, ColorToken.Green($"You learned the technique: {detail.Name}!"));
                 Skill.GiveSkillXP(player, SkillType.Mimicry, LearnTechniqueXP);
+
+                Log.WriteStructured(
+                    LogGroup.Mimicry,
+                    "Technique learned: PlayerId={PlayerId} Technique={Technique} SkillRank={SkillRank}",
+                    playerId, detail.Name, skillRank);
             }
 
             PlayerPlugin.PlaySound(player, LearnTechniqueSound, OBJECT_INVALID);
@@ -456,6 +462,11 @@ namespace SWLOR.Game.Server.Service
                 changed = true;
 
                 RevokeTechniqueFeat(player, feat);
+
+                Log.WriteStructured(
+                    LogGroup.Mimicry,
+                    "Technique unequipped by slot budget enforcement: PlayerId={PlayerId} Technique={Technique}",
+                    playerId, feat);
             }
 
             if (changed)
@@ -481,8 +492,14 @@ namespace SWLOR.Game.Server.Service
                 RevokeTechniqueFeat(player, feat);
             }
 
+            var unequippedCount = dbPlayer.EquippedTechniques.Count;
             dbPlayer.EquippedTechniques.Clear();
             DB.Set(dbPlayer);
+
+            Log.WriteStructured(
+                LogGroup.Mimicry,
+                "All techniques unequipped by perk refund: PlayerId={PlayerId} Count={Count}",
+                playerId, unequippedCount);
         }
 
         /// <summary>
@@ -587,8 +604,17 @@ namespace SWLOR.Game.Server.Service
         public static List<(FeatType Feat, AbilityDetail Detail)> GetLearnedTechniques(uint player)
         {
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            return GetLearnedTechniques(DB.Get<Player>(playerId));
+        }
+
+        /// <summary>
+        /// Returns every technique a player database record has learned, alongside its cached ability detail.
+        /// </summary>
+        public static List<(FeatType Feat, AbilityDetail Detail)> GetLearnedTechniques(Player dbPlayer)
+        {
             var result = new List<(FeatType, AbilityDetail)>();
+            if (dbPlayer == null)
+                return result;
 
             foreach (var feat in dbPlayer.LearnedTechniques.Keys)
             {
@@ -605,8 +631,17 @@ namespace SWLOR.Game.Server.Service
         public static List<(FeatType Feat, AbilityDetail Detail)> GetEquippedTechniques(uint player)
         {
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            return GetEquippedTechniques(DB.Get<Player>(playerId));
+        }
+
+        /// <summary>
+        /// Returns every technique a player database record has equipped, alongside its cached ability detail.
+        /// </summary>
+        public static List<(FeatType Feat, AbilityDetail Detail)> GetEquippedTechniques(Player dbPlayer)
+        {
             var result = new List<(FeatType, AbilityDetail)>();
+            if (dbPlayer == null)
+                return result;
 
             foreach (var feat in dbPlayer.EquippedTechniques)
             {

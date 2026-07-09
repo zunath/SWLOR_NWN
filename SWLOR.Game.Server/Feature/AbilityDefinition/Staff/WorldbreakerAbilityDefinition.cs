@@ -43,7 +43,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
                 AbilityType.Invalid,
                 new GeneratedWeaponAbilityProfile
                 {
-                    ExtraDamageIfTargetControlled = 50,
+                    ExtraDamageIfTargetControlled = 40,
                     RequiredTargetStatusCategoryForConditionalStatus = StatusEffectCategory.Control,
                     ConditionalTargetStatusEffect = typeof(DazedStatusEffect),
                     ConditionalTargetStatusDurationSeconds = 30

@@ -63,9 +63,9 @@ public class DevicesGrenadierTests
         AssertTargeting(flashGrenade, Spell.FlashGrenade1, 4f);
 
         var adhesiveGrenade = new AdhesiveGrenadeAbilityDefinition().BuildAbilities();
-        AssertAbility(adhesiveGrenade[FeatType.AdhesiveGrenade1], "Adhesive Grenade I", 1, RecastGroup.AdhesiveGrenade, 18f, 1f, 4, "explosives");
+        AssertAbility(adhesiveGrenade[FeatType.AdhesiveGrenade1], "Adhesive Grenade I", 1, RecastGroup.AdhesiveGrenade, 45f, 1f, 4, "explosives");
         AssertTargeting(adhesiveGrenade[FeatType.AdhesiveGrenade1], Spell.AdhesiveGrenade1, 4f);
-        AssertAbility(adhesiveGrenade[FeatType.AdhesiveGrenade2], "Adhesive Grenade II", 2, RecastGroup.AdhesiveGrenade, 18f, 1f, 5, "explosives");
+        AssertAbility(adhesiveGrenade[FeatType.AdhesiveGrenade2], "Adhesive Grenade II", 2, RecastGroup.AdhesiveGrenade, 45f, 1f, 5, "explosives");
         AssertTargeting(adhesiveGrenade[FeatType.AdhesiveGrenade2], Spell.AdhesiveGrenade2, 4f);
 
         var clusterGrenade = new ClusterGrenadeAbilityDefinition().BuildAbilities()[FeatType.ClusterGrenade1];
@@ -119,7 +119,7 @@ public class DevicesGrenadierTests
             3,
             12,
             FeatType.FlashGrenade1,
-            "Attempts to inflict Flash, reducing physical and Force ability hit chance by 8% for 30 seconds in a 4m blast. Consumes explosives.");
+            "Attempts to inflict Flash, reducing physical and Force ability hit chance by 8% for 30 seconds in a 4m blast. Affects up to 5 targets. Consumes explosives.");
         AssertPerkLevel(
             perks[PerkType.AdhesiveGrenade],
             "Adhesive Grenade",
@@ -127,7 +127,7 @@ public class DevicesGrenadierTests
             4,
             25,
             FeatType.AdhesiveGrenade1,
-            "Slows enemies in a 4m blast for 30 seconds and immobilizes them for 30 seconds. Consumes explosives.");
+            "Slows enemies in a 4m blast for 30 seconds and immobilizes them for 30 seconds. Affects up to 5 targets. Consumes explosives.");
         AssertPerkLevel(
             perks[PerkType.AdhesiveGrenade],
             "Adhesive Grenade",
@@ -135,7 +135,7 @@ public class DevicesGrenadierTests
             4,
             42,
             FeatType.AdhesiveGrenade2,
-            "Slows enemies in a 4m blast for 30 seconds and immobilizes them for 30 seconds. Consumes explosives.");
+            "Slows enemies in a 4m blast for 30 seconds and immobilizes them for 30 seconds. Affects up to 5 targets. Consumes explosives.");
         AssertPerkLevel(
             perks[PerkType.ClusterGrenade],
             "Cluster Grenade",

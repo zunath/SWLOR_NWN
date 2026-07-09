@@ -16,7 +16,8 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             MountainValleyResources();
             WildlandsResources();
             WildwoodsResources();
-            SwamplandResources();
+            EasternSwamplandResources();
+            WesternSwamplandResources();
             VelesSewersResources();
 
             return _builder.Build();
@@ -134,9 +135,37 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .WithFrequency(20);
         }
 
-        private void SwamplandResources()
+        private void EasternSwamplandResources()
         {
-            _builder.Create("RESOURCES_VISCARA_SWAMPLANDS")
+            _builder.Create("RESOURCES_VISCARA_EASTERN_SWAMPLANDS")
+                .AddSpawn(ObjectType.Placeable, "veldite_vein")
+                .WithFrequency(1)
+
+                .AddSpawn(ObjectType.Placeable, "scordspar_vein")
+                .WithFrequency(5)
+
+                .AddSpawn(ObjectType.Placeable, "tree")
+                .WithFrequency(20)
+
+                .AddSpawn(ObjectType.Placeable, "herbs_patch2")
+                .WithFrequency(10)
+
+                .AddSpawn(ObjectType.Placeable, "patch_veggies2")
+                .WithFrequency(5)
+
+                .AddSpawn(ObjectType.Placeable, "oak_tree")
+                .WithFrequency(50)
+
+                .AddSpawn(ObjectType.Placeable, "fiberp_bush_1")
+                .WithFrequency(25)
+
+                .AddSpawn(ObjectType.Placeable, "fiberp_bush_2")
+                .WithFrequency(50);
+        }
+
+        private void WesternSwamplandResources()
+        {
+            _builder.Create("RESOURCES_VISCARA_WESTERN_SWAMPLANDS")
                 .AddSpawn(ObjectType.Placeable, "veldite_vein")
                 .WithFrequency(1)
 

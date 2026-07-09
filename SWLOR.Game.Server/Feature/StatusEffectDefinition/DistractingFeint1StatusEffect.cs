@@ -13,7 +13,8 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         public DistractingFeint1StatusEffect()
         {
-            StatGroup.Stats[StatType.PhysicalAndForceAbilityHitChancePercentAdjustment] = -6;
+            StatGroup.Stats[StatType.AccuracyPercentAdjustment] = -4;
+            StatGroup.Stats[StatType.EvasionPercentAdjustment] = -4;
         }
     }
 }

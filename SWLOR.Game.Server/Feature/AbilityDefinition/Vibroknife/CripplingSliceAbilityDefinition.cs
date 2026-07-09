@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                     .Level(1)
                     .HasRecastDelay(RecastGroup.CripplingSlice, 25.0f),
                 SkillType.Vibroknife,
-                8,
+                10,
                 30,
                 typeof(ExposedStatusEffect),
                 null,
@@ -49,7 +49,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                     .Level(2)
                     .HasRecastDelay(RecastGroup.CripplingSlice, 25.0f),
                 SkillType.Vibroknife,
-                12,
+                20,
                 30,
                 typeof(ExposedStatusEffect),
                 null,
@@ -75,7 +75,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                     .Level(3)
                     .HasRecastDelay(RecastGroup.CripplingSlice, 25.0f),
                 SkillType.Vibroknife,
-                16,
+                28,
                 30,
                 typeof(ExposedStatusEffect),
                 null,

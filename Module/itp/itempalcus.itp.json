@@ -61504,6 +61504,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Instruction Disc: Rail Dart III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "id_raildart3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Instruction Disc: Remote Charge I"
                     },
                     "RESREF": {

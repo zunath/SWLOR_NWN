@@ -131,7 +131,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 targetLocation,
                 SkillType.BeastMastery,
                 18,
-                2,
+                10,
                 typeof(ImmobilizedStatusEffect),
                 CombatImpactAreaShape.Cone,
                 0f,

@@ -277,7 +277,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ReviveBeast2)
 
                 .AddPerkLevel()
-                .Description("Revives your pet with (30 + 2*SOC)% HP.")
+                .Description("Revives your pet with (45 + SOC)% HP.")
                 .Price(3)
                 .RequirementSkill(SkillType.BeastMastery, 40)
                 .GrantsFeat(FeatType.ReviveBeast3);

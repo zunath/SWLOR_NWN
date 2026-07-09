@@ -35,13 +35,13 @@ public class DevicesFieldEngineerTests
         AssertPerkLevel(perks[PerkType.BlasterBeacon], "Blaster Beacon", 2, 3, 15, FeatType.BlasterBeacon2,
             "Plants a visible 12m targeting sphere for 30 seconds. Every 3 seconds, one hostile target inside is hit by an automated ranged energy pulse for 6 energy DMG plus PER scaling.");
         AssertPerkLevel(perks[PerkType.SignalJammer], "Signal Jammer", 1, 4, 18, FeatType.SignalJammer1,
-            "Deploys a signal jammer for 30 seconds. Hostile targets within 5m suffer -6% physical and Force ability Accuracy and cannot benefit from Haste while inside.");
+            "Deploys a signal jammer for 45 seconds. Hostile targets within 5m suffer -6% physical and Force ability Accuracy and cannot benefit from Haste while inside.");
         AssertPerkLevel(perks[PerkType.ShockBeacon], "Shock Beacon", 1, 4, 22, FeatType.ShockBeacon1,
             "Plants a visible 5m shock sphere for 30 seconds. Every 3 seconds, one hostile target inside is hit for 10 electrical DMG plus PER scaling and suffers Shock.");
         AssertPerkLevel(perks[PerkType.IncendiaryField], "Incendiary Field", 2, 4, 25, FeatType.IncendiaryField2,
             "Deploys a visible fire field for 30 seconds. Enemies inside take 12 fire DMG plus PER scaling every 3 seconds.");
         AssertPerkLevel(perks[PerkType.RemoteCharge], "Remote Charge", 2, 4, 28, FeatType.RemoteCharge2,
-            "Arms a visible charge that detonates after 3 seconds in a 5m sphere for 42 fire DMG plus PER scaling and knocks down for 30 seconds.");
+            "Arms a visible charge that detonates after 3 seconds in a 5m sphere for 42 fire DMG plus PER scaling and knocks down for 10 seconds.");
         AssertPerkLevel(perks[PerkType.BlasterBeacon], "Blaster Beacon", 3, 4, 30, FeatType.BlasterBeacon3,
             "Plants a visible 14m targeting sphere for 30 seconds. Every 3 seconds, one hostile target inside is hit by an automated ranged energy pulse for 10 energy DMG plus PER scaling.");
         AssertPerkLevel(perks[PerkType.DiagnosticSweep], "Diagnostic Sweep", 1, 5, 35, FeatType.DiagnosticSweepTrait,
@@ -248,7 +248,7 @@ public class DevicesFieldEngineerTests
             (FeatType.BlasterBeacon2, "Plants a visible 12m targeting sphere for 30 seconds. Every 3 seconds, one hostile target inside is hit by an automated ranged energy pulse for 6 energy DMG plus PER scaling."),
             (FeatType.BlasterBeacon3, "Plants a visible 14m targeting sphere for 30 seconds. Every 3 seconds, one hostile target inside is hit by an automated ranged energy pulse for 10 energy DMG plus PER scaling."),
             (FeatType.RemoteCharge1, "Arms a visible charge at your target location that detonates after 3 seconds in a 5m sphere for 30 fire DMG plus PER scaling."),
-            (FeatType.RemoteCharge2, "Arms a visible charge that detonates after 3 seconds in a 5m sphere for 42 fire DMG plus PER scaling and knocks down for 30 seconds."),
+            (FeatType.RemoteCharge2, "Arms a visible charge that detonates after 3 seconds in a 5m sphere for 42 fire DMG plus PER scaling and knocks down for 10 seconds."),
             (FeatType.ShockBeacon1, "Plants a visible 5m shock sphere for 30 seconds. Every 3 seconds, one hostile target inside is hit for 10 electrical DMG plus PER scaling and suffers Shock."),
             (FeatType.ShockBeacon2, "Plants a visible 5m shock sphere for 30 seconds. Every 3 seconds, one hostile target inside is hit for 14 electrical DMG plus PER scaling and suffers Shock."),
             (FeatType.KillzoneBeacon1, "Plants a visible 12m killzone sphere for 45 seconds. Every 3 seconds, all hostile targets inside are hit by one 16 physical DMG plus PER scaling pulse and one 16 electrical DMG plus PER scaling shock pulse.")

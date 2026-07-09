@@ -3091,6 +3091,7 @@ namespace SWLOR.Game.Server.Service.CraftService
         StormcoreMatrix = 4996,
         TidecallBeacon = 4997,
         FluxDiverter = 4998,
+        InstructionRailDart3 = 4999,
 
         #endregion
 

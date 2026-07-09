@@ -4,6 +4,7 @@ namespace SWLOR.Game.Server.Service.PerkService
     {
         string CheckRequirements(uint player);
         string RequirementText { get; }
+        PerkRequirementCategory Category { get; }
     }
 
 }

@@ -32,7 +32,9 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Runs after <see cref="Quest.RegisterQuests"/> finishes its reflection-based pass. Loads every
         /// published contract, expires (and refunds) any which are past their expiration date, and
-        /// registers the rest as runtime quests.
+        /// registers the rest as runtime quests. Expiry is only swept here at boot rather than on a
+        /// running timer because the server reboots daily, so a periodic sweep would spend CPU for at
+        /// most a day of extra contract lifetime.
         /// </summary>
         [NWNEventHandler(ScriptName.OnQuestsRegistered)]
         public static void RegisterContracts()
@@ -54,25 +56,6 @@ namespace SWLOR.Game.Server.Service
             }
 
             Log.Write(LogGroup.QuestContract, $"Registered {registeredCount} quest contract(s).", true);
-
-            Scheduler.ScheduleRepeating(ExpireOverdueContracts, TimeSpan.FromHours(1));
-        }
-
-        /// <summary>
-        /// Periodic sweep which expires (and refunds) any published contract past its expiration date
-        /// while the server is running, so contracts don't outlive their duration between restarts.
-        /// </summary>
-        private static void ExpireOverdueContracts()
-        {
-            var now = DateTime.UtcNow;
-
-            foreach (var contract in GetPublishedContracts())
-            {
-                if (contract.DateExpires <= now)
-                {
-                    ExpireContract(contract);
-                }
-            }
         }
 
         private static List<QuestContract> GetPublishedContracts()

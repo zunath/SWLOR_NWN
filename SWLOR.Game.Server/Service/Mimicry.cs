@@ -28,6 +28,8 @@ namespace SWLOR.Game.Server.Service
         // In-memory witness tracker: npc -> playerId -> technique feats witnessed but not yet learned.
         private static readonly Dictionary<uint, Dictionary<string, HashSet<FeatType>>> _witnesses = new();
 
+        private static bool _witnessSweepScheduled;
+
         private const float WitnessRadius = 15.0f;
         private const float LearnMaxDistance = 40.0f;
 
@@ -54,6 +56,12 @@ namespace SWLOR.Game.Server.Service
         {
             _techniques.Clear();
             _techniqueByNpcFeat.Clear();
+
+            if (!_witnessSweepScheduled)
+            {
+                Scheduler.ScheduleRepeating(SweepStaleWitnesses, TimeSpan.FromMinutes(5));
+                _witnessSweepScheduled = true;
+            }
 
             foreach (var (feat, detail) in Ability.GetAllAbilityDetails())
             {
@@ -162,6 +170,30 @@ namespace SWLOR.Game.Server.Service
             }
 
             _witnesses.Remove(npc);
+        }
+
+        /// <summary>
+        /// Periodically removes witness entries for creatures that no longer exist. Creatures
+        /// normally clear their entry on death, but despawns, DestroyObject calls, and area
+        /// unloads never fire OnCreatureDeathAfter, so their entries would otherwise persist
+        /// for the life of the server.
+        /// </summary>
+        private static void SweepStaleWitnesses()
+        {
+            if (_witnesses.Count <= 0)
+                return;
+
+            var staleCreatures = new List<uint>();
+            foreach (var npc in _witnesses.Keys)
+            {
+                if (!GetIsObjectValid(npc))
+                    staleCreatures.Add(npc);
+            }
+
+            foreach (var npc in staleCreatures)
+            {
+                _witnesses.Remove(npc);
+            }
         }
 
         /// <summary>
@@ -525,14 +557,14 @@ namespace SWLOR.Game.Server.Service
             if (IsFeatOnHotBar(player, feat))
                 return;
 
-            var qbs = PlayerQuickBarSlot.UseFeat(feat);
+            var quickBarSlot = PlayerQuickBarSlot.UseFeat(feat);
 
             for (var slot = 0; slot < AutoAddHotBarSlots; slot++)
             {
                 if (PlayerPlugin.GetQuickBarSlot(player, slot).ObjectType != QuickBarSlotType.Empty)
                     continue;
 
-                PlayerPlugin.SetQuickBarSlot(player, slot, qbs);
+                PlayerPlugin.SetQuickBarSlot(player, slot, quickBarSlot);
                 return;
             }
         }

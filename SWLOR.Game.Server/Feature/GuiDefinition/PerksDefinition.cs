@@ -157,7 +157,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             });
                         })
                             .SetRowHeight(40f)
-                            .SetScrollbars(NuiScrollbars.Both)
+                            .SetScrollbars(NuiScrollbars.Y)
                             .BindRowCount(model => model.PerkButtonTexts);
 
                         row.AddColumn(col2 =>

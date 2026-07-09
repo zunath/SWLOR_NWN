@@ -408,6 +408,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 : null;
 
             _filteredPerks.Clear();
+            SelectedPerkIndex = -1;
 
             var perkButtonColors = new GuiBindingList<GuiColor>();
             var perkButtonIcons = new GuiBindingList<string>();
@@ -489,6 +490,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             PerkButtonChips = perkButtonChips;
             PerkChipColors = perkChipColors;
             PageNumbers = pageNumbers;
+
+            // Select the first perk so the detail panel shows content immediately
+            // instead of leaving an empty pane when the list loads or is re-filtered.
+            if (_filteredPerks.Count > 0)
+            {
+                SelectPerkAt(0);
+            }
         }
 
         private IEnumerable<KeyValuePair<PerkType, PerkDetail>> SortPerks(
@@ -638,7 +646,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnSelectPerk() => () =>
         {
-            var index = NuiGetEventArrayIndex();
+            SelectPerkAt(NuiGetEventArrayIndex());
+        };
+
+        private void SelectPerkAt(int index)
+        {
+            if (index < 0 || index >= _filteredPerks.Count)
+                return;
+
             var playerId = GetObjectUUID(Player);
             var dbPlayer = DB.Get<Player>(playerId);
 
@@ -704,7 +719,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                                dbPlayer.DatePerkRefundAvailable <= DateTime.UtcNow) &&
                               Currency.GetCurrency(Player, CurrencyType.PerkRefundToken) > 0 &&
                               currentUpgrade != null;
-        };
+        }
 
         private void GrantFeats(PerkType perkType, int rank)
         {

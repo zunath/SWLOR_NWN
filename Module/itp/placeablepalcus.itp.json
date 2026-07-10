@@ -91523,6 +91523,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Lightsaber Workbench"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "lightsaber_bench"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Refinery"
                     },
                     "RESREF": {

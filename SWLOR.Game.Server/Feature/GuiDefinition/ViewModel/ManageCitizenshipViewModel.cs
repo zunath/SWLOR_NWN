@@ -69,7 +69,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 .AddFieldSearch(nameof(Entity.Player.IsDeleted), false));
 
             var cityDetails = new GuiBindingList<string>();
-            var mayorName = PlayerName.GetDisplayNameByPlayerId(Player, dbCity.OwnerPlayerId, dbMayorPlayer.Name);
+            var mayorName = PlayerName.GetPlainDisplayNameByPlayerId(Player, dbCity.OwnerPlayerId, dbMayorPlayer.Name);
 
             cityDetails.Add($"City Name: {dbCity.CustomName}");
             cityDetails.Add($"Mayor: {mayorName}");

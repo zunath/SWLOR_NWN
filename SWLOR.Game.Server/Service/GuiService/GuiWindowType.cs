@@ -63,7 +63,9 @@ namespace SWLOR.Game.Server.Service.GuiService
         PlayerGuide = 58,
         PropertyDiagnostics = 59,
         Disguises = 60,
-        Techniques = 61,
+        QuestContractBoard = 61,
+        QuestContractEditor = 62,
+        Techniques = 63,
 
         DebugEnmity = 900,
         ChangePortrait = 9999

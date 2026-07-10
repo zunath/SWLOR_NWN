@@ -4,6 +4,7 @@ using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using SWLOR.Game.Server.Properties;
 using SWLOR.Game.Server.Service.GuiService.Component;
+using SWLOR.NWN.API.Engine;
 
 namespace SWLOR.Game.Server.Service.GuiService
 {
@@ -273,6 +274,18 @@ namespace SWLOR.Game.Server.Service.GuiService
                 GetType().GetProperty(propertyName)?.SetValue(this, value);
 
             _propertyValues[propertyName].SkipNotify = false;
+
+            OnClientPropertyUpdated(propertyName);
+        }
+
+        /// <summary>
+        /// Called after a client-watched property (e.g. Geometry on window resize) has been applied to
+        /// the view model. Client updates suppress the standard change notification to avoid echo loops,
+        /// so view models which need to react to them (e.g. resize-driven layout binds) override this.
+        /// </summary>
+        /// <param name="propertyName">The name of the property that was updated by the client.</param>
+        protected virtual void OnClientPropertyUpdated(string propertyName)
+        {
         }
 
         /// <summary>
@@ -327,6 +340,22 @@ namespace SWLOR.Game.Server.Service.GuiService
             ApplyRefreshBugFix();
         }
 
+        /// <summary>
+        /// Swaps a group element's layout for one generated at runtime. NUI layout attributes
+        /// (width/height) are static and cannot be bound, so layouts which must react to window
+        /// geometry (e.g. stretching content on resize) are regenerated and swapped in via this
+        /// method. Event handlers keep working as long as the regenerated elements reuse the same
+        /// element Ids that were registered when the window was built.
+        /// </summary>
+        /// <param name="elementId">The Id of the group element to swap.</param>
+        /// <param name="layout">The new layout to apply.</param>
+        protected void SetGroupLayout(string elementId, Json layout)
+        {
+            NuiSetGroupLayout(Player, WindowToken, elementId, layout);
+
+            ApplyRefreshBugFix();
+        }
+
 
         public string ModalPromptText
         {
@@ -364,6 +393,7 @@ namespace SWLOR.Game.Server.Service.GuiService
         public Action OnModalConfirmClick() => () =>
         {
             ChangePartialView("_window_", "%%WINDOW_MAIN%%");
+            OnMainViewRestored();
 
             if (_callerConfirmAction != null)
                 _callerConfirmAction();
@@ -372,10 +402,20 @@ namespace SWLOR.Game.Server.Service.GuiService
         public Action OnModalCancelClick() => () =>
         {
             ChangePartialView("_window_", "%%WINDOW_MAIN%%");
+            OnMainViewRestored();
 
             if (_callerCancelAction != null)
                 _callerCancelAction();
         };
+
+        /// <summary>
+        /// Called after the main window view is restored (e.g. when a modal closes). Windows which
+        /// swap runtime-generated layouts into nested groups must reapply them here: restoring the
+        /// main view re-renders the static window template, whose nested placeholder groups are empty.
+        /// </summary>
+        protected virtual void OnMainViewRestored()
+        {
+        }
 
         /// <summary>
         /// Default implementation for OnWindowClosed.

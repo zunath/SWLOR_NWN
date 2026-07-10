@@ -22,8 +22,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private const int EnhancementSlotCount = 2;
 
         private BaseItem _weaponType;
-        private int _hiltIndex;
-        private int _colorIndex;
+        private int _topIndex;
+        private int _middleIndex;
+        private int _bottomIndex;
 
         private readonly string[] _enhancementSerialized = new string[EnhancementSlotCount];
         private readonly List<ItemProperty>[] _enhancementProperties =
@@ -46,37 +47,55 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-        public string HiltName
+        public string TopName
         {
             get => Get<string>();
             set => Set(value);
         }
 
-        public string HiltPreview
+        public string TopPreview
         {
             get => Get<string>();
             set => Set(value);
         }
 
-        public string HiltCountText
+        public string TopCountText
         {
             get => Get<string>();
             set => Set(value);
         }
 
-        public string ColorName
+        public string MiddleName
         {
             get => Get<string>();
             set => Set(value);
         }
 
-        public string ColorPreview
+        public string MiddlePreview
         {
             get => Get<string>();
             set => Set(value);
         }
 
-        public string ColorCountText
+        public string MiddleCountText
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string BottomName
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string BottomPreview
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string BottomCountText
         {
             get => Get<string>();
             set => Set(value);
@@ -118,21 +137,28 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-        private IReadOnlyList<SaberHiltPart> Hilts => LightsaberWorkbench.GetHilts(_weaponType);
+        private IReadOnlyList<SaberHiltPart> Bottoms => LightsaberWorkbench.GetHilts(_weaponType);
 
-        private SaberHiltPart SelectedHilt => Hilts[_hiltIndex];
+        private SaberHiltPart SelectedBottom => Bottoms[_bottomIndex];
 
-        private IReadOnlyList<SaberBladeColor> AvailableColors =>
-            LightsaberWorkbench.GetBladeColors(_weaponType, SelectedHilt.IsCurved);
+        private IReadOnlyList<SaberHiltPart> Middles => LightsaberWorkbench.GetMiddles(_weaponType);
 
-        private SaberBladeColor SelectedColor => AvailableColors[_colorIndex];
+        private SaberHiltPart SelectedMiddle => Middles[_middleIndex];
+
+        // The top (emitter) model carries the blade color; curved bottom hilts
+        // require the curved emitter set, so the available tops depend on the bottom.
+        private IReadOnlyList<SaberBladeColor> AvailableTops =>
+            LightsaberWorkbench.GetBladeColors(_weaponType, SelectedBottom.IsCurved);
+
+        private SaberBladeColor SelectedTop => AvailableTops[_topIndex];
 
         protected override void Initialize(GuiPayloadBase initialPayload)
         {
             _isConstructing = false;
             _weaponType = BaseItem.Lightsaber;
-            _hiltIndex = 0;
-            _colorIndex = 0;
+            _topIndex = 0;
+            _middleIndex = 0;
+            _bottomIndex = 0;
 
             for (var slot = 0; slot < EnhancementSlotCount; slot++)
             {
@@ -156,31 +182,43 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsLightsaberSelected = _weaponType == BaseItem.Lightsaber;
             IsSaberstaffSelected = _weaponType == BaseItem.Saberstaff;
 
-            RefreshHilt();
+            RefreshBottom();
+            RefreshMiddle();
         }
 
-        private void RefreshHilt()
+        private void RefreshBottom()
         {
-            var hilts = Hilts;
-            if (_hiltIndex >= hilts.Count)
-                _hiltIndex = 0;
+            var bottoms = Bottoms;
+            if (_bottomIndex >= bottoms.Count)
+                _bottomIndex = 0;
 
-            HiltName = SelectedHilt.Name;
-            HiltPreview = SelectedHilt.PreviewResref;
-            HiltCountText = $"{_hiltIndex + 1} / {hilts.Count}";
+            BottomName = SelectedBottom.Name;
+            BottomPreview = SelectedBottom.PreviewResref;
+            BottomCountText = $"{_bottomIndex + 1} / {bottoms.Count}";
 
-            RefreshColor();
+            RefreshTop();
         }
 
-        private void RefreshColor()
+        private void RefreshMiddle()
         {
-            var colors = AvailableColors;
-            if (_colorIndex >= colors.Count)
-                _colorIndex = 0;
+            var middles = Middles;
+            if (_middleIndex >= middles.Count)
+                _middleIndex = 0;
 
-            ColorName = SelectedColor.Name;
-            ColorPreview = SelectedColor.PreviewResref;
-            ColorCountText = $"{_colorIndex + 1} / {colors.Count}";
+            MiddleName = SelectedMiddle.Name;
+            MiddlePreview = SelectedMiddle.PreviewResref;
+            MiddleCountText = $"{_middleIndex + 1} / {middles.Count}";
+        }
+
+        private void RefreshTop()
+        {
+            var tops = AvailableTops;
+            if (_topIndex >= tops.Count)
+                _topIndex = 0;
+
+            TopName = SelectedTop.Name;
+            TopPreview = SelectedTop.PreviewResref;
+            TopCountText = $"{_topIndex + 1} / {tops.Count}";
         }
 
         private void SwitchWeaponType(BaseItem weaponType)
@@ -191,62 +229,77 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
             }
 
-            var colorName = SelectedColor.Name;
+            var topName = SelectedTop.Name;
             _weaponType = weaponType;
-            _hiltIndex = 0;
-            RetainColorByName(colorName);
+            _bottomIndex = 0;
+            _middleIndex = 0;
+            RetainTopByName(topName);
             RefreshWeaponType();
         }
 
-        private void ChangeHilt(int direction)
+        private void ChangeBottom(int direction)
         {
             if (_isConstructing)
                 return;
 
-            var colorName = SelectedColor.Name;
-            var count = Hilts.Count;
-            _hiltIndex = (_hiltIndex + direction + count) % count;
-            RetainColorByName(colorName);
-            RefreshHilt();
+            var topName = SelectedTop.Name;
+            var count = Bottoms.Count;
+            _bottomIndex = (_bottomIndex + direction + count) % count;
+            RetainTopByName(topName);
+            RefreshBottom();
         }
 
-        private void ChangeColor(int direction)
+        private void ChangeMiddle(int direction)
         {
             if (_isConstructing)
                 return;
 
-            var count = AvailableColors.Count;
-            _colorIndex = (_colorIndex + direction + count) % count;
-            RefreshColor();
+            var count = Middles.Count;
+            _middleIndex = (_middleIndex + direction + count) % count;
+            RefreshMiddle();
         }
 
-        private void RetainColorByName(string colorName)
+        private void ChangeTop(int direction)
         {
-            var colors = AvailableColors;
+            if (_isConstructing)
+                return;
+
+            var count = AvailableTops.Count;
+            _topIndex = (_topIndex + direction + count) % count;
+            RefreshTop();
+        }
+
+        private void RetainTopByName(string topName)
+        {
+            var tops = AvailableTops;
             var index = -1;
-            for (var i = 0; i < colors.Count; i++)
+            for (var i = 0; i < tops.Count; i++)
             {
-                if (colors[i].Name == colorName)
+                if (tops[i].Name == topName)
                 {
                     index = i;
                     break;
                 }
             }
 
-            _colorIndex = index > -1 ? index : 0;
+            _topIndex = index > -1 ? index : 0;
         }
 
         public Action OnClickLightsaber() => () => SwitchWeaponType(BaseItem.Lightsaber);
 
         public Action OnClickSaberstaff() => () => SwitchWeaponType(BaseItem.Saberstaff);
 
-        public Action OnClickPreviousHilt() => () => ChangeHilt(-1);
+        public Action OnClickPreviousTop() => () => ChangeTop(-1);
 
-        public Action OnClickNextHilt() => () => ChangeHilt(1);
+        public Action OnClickNextTop() => () => ChangeTop(1);
 
-        public Action OnClickPreviousColor() => () => ChangeColor(-1);
+        public Action OnClickPreviousMiddle() => () => ChangeMiddle(-1);
 
-        public Action OnClickNextColor() => () => ChangeColor(1);
+        public Action OnClickNextMiddle() => () => ChangeMiddle(1);
+
+        public Action OnClickPreviousBottom() => () => ChangeBottom(-1);
+
+        public Action OnClickNextBottom() => () => ChangeBottom(1);
 
         private bool IsValidEnhancement(uint item)
         {
@@ -398,9 +451,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
             }
 
-            var hilt = SelectedHilt;
-            var color = SelectedColor;
-            var topValue = LightsaberWorkbench.GetTopValue(color, _weaponType, hilt.IsCurved);
+            var bottom = SelectedBottom;
+            var middle = SelectedMiddle;
+            var top = SelectedTop;
+            var topValue = LightsaberWorkbench.GetTopValue(top, _weaponType, bottom.IsCurved);
             if (topValue <= -1)
             {
                 StatusText = "That blade color is not available for the selected hilt.";
@@ -415,8 +469,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var item = CreateItemOnObject(resref, Player);
             SetLocalBool(item, Item.PlayerProducedItemVariable, true);
 
-            item = ModifyWeaponPart(item, AppearanceWeapon.Bottom, hilt.PartValue);
-            item = ModifyWeaponPart(item, AppearanceWeapon.Middle, LightsaberWorkbench.MiddlePartValue);
+            item = ModifyWeaponPart(item, AppearanceWeapon.Bottom, bottom.PartValue);
+            item = ModifyWeaponPart(item, AppearanceWeapon.Middle, middle.PartValue);
             item = ModifyWeaponPart(item, AppearanceWeapon.Top, topValue);
 
             foreach (var property in _enhancementProperties.SelectMany(x => x))
@@ -433,7 +487,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Currency.TakeCurrency(Player, CurrencyType.KyberToken, 1);
 
             var playerId = GetObjectUUID(Player);
-            Log.Write(LogGroup.Crafting, $"{GetName(Player)} ({playerId}) constructed '{GetName(item)}' (hilt: {hilt.Name}, color: {color.Name}) at a lightsaber workbench.");
+            Log.Write(LogGroup.Crafting, $"{GetName(Player)} ({playerId}) constructed '{GetName(item)}' (bottom: {bottom.Name}, middle: {middle.Name}, top: {top.Name}) at a lightsaber workbench.");
             FloatingTextStringOnCreature($"You have constructed your {GetName(item)}!", Player, false);
 
             Gui.TogglePlayerWindow(Player, GuiWindowType.LightsaberWorkbench);

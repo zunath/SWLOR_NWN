@@ -17,15 +17,20 @@ namespace SWLOR.Game.Server.Service
         public const string SaberstaffResref = "ss_custom";
 
         /// <summary>
-        /// Both weapon types have exactly one middle model in the haks.
-        /// </summary>
-        public const int MiddlePartValue = 11;
-
-        /// <summary>
         /// Enhancements socketed at the workbench are validated against this
         /// crafting level, matching the tier 5 saber recipes.
         /// </summary>
         public const int EnhancementRecipeLevel = 48;
+
+        private static readonly List<SaberHiltPart> _lightsaberMiddles = new()
+        {
+            new SaberHiltPart(11, "Grip 1.1", "iwswglsbr_m_011"),
+        };
+
+        private static readonly List<SaberHiltPart> _saberstaffMiddles = new()
+        {
+            new SaberHiltPart(11, "Grip 1.1", "iwdblsbr_m_011"),
+        };
 
         private static readonly List<SaberHiltPart> _lightsaberHilts = new()
         {
@@ -109,13 +114,24 @@ namespace SWLOR.Game.Server.Service
         };
 
         /// <summary>
-        /// Retrieves the hilts available for a given saber weapon type.
+        /// Retrieves the bottom hilt models available for a given saber weapon type.
         /// </summary>
         public static IReadOnlyList<SaberHiltPart> GetHilts(BaseItem weaponType)
         {
             return weaponType == BaseItem.Saberstaff
                 ? _saberstaffHilts
                 : _lightsaberHilts;
+        }
+
+        /// <summary>
+        /// Retrieves the middle grip models available for a given saber weapon type.
+        /// The haks currently ship a single grip model per weapon type.
+        /// </summary>
+        public static IReadOnlyList<SaberHiltPart> GetMiddles(BaseItem weaponType)
+        {
+            return weaponType == BaseItem.Saberstaff
+                ? _saberstaffMiddles
+                : _lightsaberMiddles;
         }
 
         /// <summary>

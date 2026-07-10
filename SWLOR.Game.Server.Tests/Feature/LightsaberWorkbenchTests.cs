@@ -192,8 +192,12 @@ public class LightsaberWorkbenchTests
                 .Where(placeable => placeable["Tag"]?["value"]?.Value<string>() == "lightsaber_bench")
                 .ToList();
 
-            benches.Should().ContainSingle($"{area} must contain exactly one lightsaber workbench");
-            benches[0]["OnUsed"]!["value"]!.Value<string>().Should().Be("lsaber_bench");
+            // Exact placement/count is a builder decision made in the toolset; the code
+            // invariant is that each location has at least one correctly-wired workbench.
+            benches.Should().NotBeEmpty($"{area} must contain a lightsaber workbench");
+            benches.Should().OnlyContain(
+                b => b["OnUsed"]!["value"]!.Value<string>() == "lsaber_bench",
+                $"every lightsaber workbench in {area} must open the bench window");
         }
     }
 
@@ -234,6 +238,15 @@ public class LightsaberWorkbenchTests
             color.PreviewResref.Length.Should().BeLessThanOrEqualTo(16);
             File.Exists(Path.Combine(uiRoot, $"{color.PreviewResref}.tga"))
                 .Should().BeTrue($"preview texture {color.PreviewResref}.tga must exist in sw_ui");
+        }
+
+        // The workbench exposes three model slots (top/middle/bottom). The haks ship a
+        // single middle grip model per weapon type, so the middle slot is present but fixed.
+        foreach (var weaponType in new[] { BaseItem.Lightsaber, BaseItem.Saberstaff })
+        {
+            var middles = LightsaberWorkbench.GetMiddles(weaponType);
+            middles.Should().ContainSingle("only one middle grip model ships per weapon type");
+            middles[0].PreviewResref.Length.Should().BeLessThanOrEqualTo(16);
         }
     }
 

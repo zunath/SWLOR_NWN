@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         public GuiConstructedWindow BuildWindow()
         {
             _builder.CreateWindow(GuiWindowType.LightsaberWorkbench)
-                .SetInitialGeometry(0, 0, 545f, 610f)
+                .SetInitialGeometry(0, 0, 545f, 820f)
                 .SetTitle("Lightsaber Workbench")
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
@@ -41,66 +41,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     {
                         row.AddSpacer();
                         row.AddLabel()
-                            .SetText("Hilt")
+                            .SetText("Top (Emitter / Blade)")
                             .SetHeight(20f)
-                            .SetWidth(200f)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Center);
-                        row.AddSpacer();
-                    });
-
-                    col.AddRow(row =>
-                    {
-                        row.AddSpacer();
-                        row.AddImage()
-                            .BindResref(model => model.HiltPreview)
-                            .SetAspect(NuiAspect.Fit)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Center)
-                            .SetVerticalAlign(NuiVerticalAlign.Middle)
-                            .SetHeight(160f)
-                            .SetWidth(160f);
-                        row.AddSpacer();
-                    });
-
-                    col.AddRow(row =>
-                    {
-                        row.AddSpacer();
-                        row.AddButton()
-                            .SetText("<")
-                            .SetHeight(32f)
-                            .SetWidth(32f)
-                            .BindOnClicked(model => model.OnClickPreviousHilt());
-                        row.AddLabel()
-                            .BindText(model => model.HiltName)
-                            .SetHeight(32f)
                             .SetWidth(220f)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Center)
-                            .SetVerticalAlign(NuiVerticalAlign.Middle);
-                        row.AddButton()
-                            .SetText(">")
-                            .SetHeight(32f)
-                            .SetWidth(32f)
-                            .BindOnClicked(model => model.OnClickNextHilt());
-                        row.AddSpacer();
-                    });
-
-                    col.AddRow(row =>
-                    {
-                        row.AddSpacer();
-                        row.AddLabel()
-                            .BindText(model => model.HiltCountText)
-                            .SetHeight(16f)
-                            .SetWidth(200f)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Center);
-                        row.AddSpacer();
-                    });
-
-                    col.AddRow(row =>
-                    {
-                        row.AddSpacer();
-                        row.AddLabel()
-                            .SetText("Blade Color")
-                            .SetHeight(20f)
-                            .SetWidth(200f)
                             .SetHorizontalAlign(NuiHorizontalAlign.Center);
                         row.AddSpacer();
                     });
@@ -109,7 +52,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     {
                         row.AddSpacer();
                         row.AddImage()
-                            .BindResref(model => model.ColorPreview)
+                            .BindResref(model => model.TopPreview)
                             .SetAspect(NuiAspect.Fit)
                             .SetHorizontalAlign(NuiHorizontalAlign.Center)
                             .SetVerticalAlign(NuiVerticalAlign.Middle)
@@ -125,9 +68,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .SetText("<")
                             .SetHeight(32f)
                             .SetWidth(32f)
-                            .BindOnClicked(model => model.OnClickPreviousColor());
+                            .BindOnClicked(model => model.OnClickPreviousTop());
                         row.AddLabel()
-                            .BindText(model => model.ColorName)
+                            .BindText(model => model.TopName)
                             .SetHeight(32f)
                             .SetWidth(220f)
                             .SetHorizontalAlign(NuiHorizontalAlign.Center)
@@ -136,7 +79,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .SetText(">")
                             .SetHeight(32f)
                             .SetWidth(32f)
-                            .BindOnClicked(model => model.OnClickNextColor());
+                            .BindOnClicked(model => model.OnClickNextTop());
                         row.AddSpacer();
                     });
 
@@ -144,7 +87,121 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     {
                         row.AddSpacer();
                         row.AddLabel()
-                            .BindText(model => model.ColorCountText)
+                            .BindText(model => model.TopCountText)
+                            .SetHeight(16f)
+                            .SetWidth(200f)
+                            .SetHorizontalAlign(NuiHorizontalAlign.Center);
+                        row.AddSpacer();
+                    });
+
+                    col.AddRow(row =>
+                    {
+                        row.AddSpacer();
+                        row.AddLabel()
+                            .SetText("Middle (Grip)")
+                            .SetHeight(20f)
+                            .SetWidth(220f)
+                            .SetHorizontalAlign(NuiHorizontalAlign.Center);
+                        row.AddSpacer();
+                    });
+
+                    col.AddRow(row =>
+                    {
+                        row.AddSpacer();
+                        row.AddImage()
+                            .BindResref(model => model.MiddlePreview)
+                            .SetAspect(NuiAspect.Fit)
+                            .SetHorizontalAlign(NuiHorizontalAlign.Center)
+                            .SetVerticalAlign(NuiVerticalAlign.Middle)
+                            .SetHeight(90f)
+                            .SetWidth(90f);
+                        row.AddSpacer();
+                    });
+
+                    col.AddRow(row =>
+                    {
+                        row.AddSpacer();
+                        row.AddButton()
+                            .SetText("<")
+                            .SetHeight(32f)
+                            .SetWidth(32f)
+                            .BindOnClicked(model => model.OnClickPreviousMiddle());
+                        row.AddLabel()
+                            .BindText(model => model.MiddleName)
+                            .SetHeight(32f)
+                            .SetWidth(220f)
+                            .SetHorizontalAlign(NuiHorizontalAlign.Center)
+                            .SetVerticalAlign(NuiVerticalAlign.Middle);
+                        row.AddButton()
+                            .SetText(">")
+                            .SetHeight(32f)
+                            .SetWidth(32f)
+                            .BindOnClicked(model => model.OnClickNextMiddle());
+                        row.AddSpacer();
+                    });
+
+                    col.AddRow(row =>
+                    {
+                        row.AddSpacer();
+                        row.AddLabel()
+                            .BindText(model => model.MiddleCountText)
+                            .SetHeight(16f)
+                            .SetWidth(200f)
+                            .SetHorizontalAlign(NuiHorizontalAlign.Center);
+                        row.AddSpacer();
+                    });
+
+                    col.AddRow(row =>
+                    {
+                        row.AddSpacer();
+                        row.AddLabel()
+                            .SetText("Bottom (Hilt)")
+                            .SetHeight(20f)
+                            .SetWidth(220f)
+                            .SetHorizontalAlign(NuiHorizontalAlign.Center);
+                        row.AddSpacer();
+                    });
+
+                    col.AddRow(row =>
+                    {
+                        row.AddSpacer();
+                        row.AddImage()
+                            .BindResref(model => model.BottomPreview)
+                            .SetAspect(NuiAspect.Fit)
+                            .SetHorizontalAlign(NuiHorizontalAlign.Center)
+                            .SetVerticalAlign(NuiVerticalAlign.Middle)
+                            .SetHeight(150f)
+                            .SetWidth(150f);
+                        row.AddSpacer();
+                    });
+
+                    col.AddRow(row =>
+                    {
+                        row.AddSpacer();
+                        row.AddButton()
+                            .SetText("<")
+                            .SetHeight(32f)
+                            .SetWidth(32f)
+                            .BindOnClicked(model => model.OnClickPreviousBottom());
+                        row.AddLabel()
+                            .BindText(model => model.BottomName)
+                            .SetHeight(32f)
+                            .SetWidth(220f)
+                            .SetHorizontalAlign(NuiHorizontalAlign.Center)
+                            .SetVerticalAlign(NuiVerticalAlign.Middle);
+                        row.AddButton()
+                            .SetText(">")
+                            .SetHeight(32f)
+                            .SetWidth(32f)
+                            .BindOnClicked(model => model.OnClickNextBottom());
+                        row.AddSpacer();
+                    });
+
+                    col.AddRow(row =>
+                    {
+                        row.AddSpacer();
+                        row.AddLabel()
+                            .BindText(model => model.BottomCountText)
                             .SetHeight(16f)
                             .SetWidth(200f)
                             .SetHorizontalAlign(NuiHorizontalAlign.Center);

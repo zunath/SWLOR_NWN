@@ -23,9 +23,10 @@ public class QuestContractFactoryTests
         var quest = QuestContractFactory.BuildQuest(contract);
 
         quest.QuestId.Should().Be(QuestContractFactory.BuildQuestId(contract.Id));
-        quest.Name.Should().Be(contract.Title);
+        quest.Name.Should().Be($"Contract: {contract.Title}");
         quest.IsRepeatable.Should().BeFalse();
         quest.AllowRewardSelection.Should().BeFalse();
+        quest.CountsTowardAchievements.Should().BeFalse();
         quest.CollectedItemHandler.Should().NotBeNull();
     }
 
@@ -46,7 +47,7 @@ public class QuestContractFactoryTests
 
         objectives[1].Resref.Should().Be("crafted_part");
         GetObjectiveQuantity(objectives[1]).Should().Be(5);
-        objectives[1].ProducerRequirement.Should().Be(CollectItemProducerRequirementType.PlayerProduced);
+        objectives[1].ProducerRequirement.Should().Be(CollectItemProducerRequirementType.None);
     }
 
     [Test]
@@ -74,9 +75,10 @@ public class QuestContractFactoryTests
         var quest = QuestContractFactory.BuildQuest(contract);
 
         var journalText = quest.States[1].JournalText;
+        journalText.Should().Contain("This is a player-posted contract.");
         journalText.Should().Contain(contract.Description);
         journalText.Should().Contain("3x Blaster Rifle");
-        journalText.Should().Contain("5x Crafted Part (must be player-crafted)");
+        journalText.Should().Contain("5x Crafted Part");
     }
 
     private static QuestContract CreateContract()
@@ -91,15 +93,13 @@ public class QuestContractFactoryTests
                 {
                     ItemResref = "wpn_blaster",
                     ItemName = "Blaster Rifle",
-                    Quantity = 3,
-                    MustBePlayerProduced = false
+                    Quantity = 3
                 },
                 new QuestContractObjective
                 {
                     ItemResref = "crafted_part",
                     ItemName = "Crafted Part",
-                    Quantity = 5,
-                    MustBePlayerProduced = true
+                    Quantity = 5
                 }
             }
         };

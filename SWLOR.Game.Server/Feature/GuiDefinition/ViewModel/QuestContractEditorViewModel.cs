@@ -15,6 +15,46 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private int _selectedObjectiveIndex = -1;
         private int _selectedSearchIndex = -1;
         private readonly List<(string Resref, string Name)> _searchResults = new();
+        private float _appliedContentWidth = -1f;
+
+        /// <summary>
+        /// Regenerates the form layout for the current window width and swaps it in. NUI layout
+        /// widths cannot be bound, so this is how the content stretches with the window.
+        /// </summary>
+        private void RefreshContentLayout()
+        {
+            var contentWidth = QuestContractEditorDefinition.CalculateContentWidth(Geometry.Width);
+
+            // Resizing fires a stream of geometry updates - only rebuild when the width
+            // meaningfully changed.
+            if (_appliedContentWidth > 0f && Math.Abs(contentWidth - _appliedContentWidth) < 8f)
+                return;
+
+            _appliedContentWidth = contentWidth;
+            SetGroupLayout(QuestContractEditorDefinition.ContentElement, QuestContractEditorDefinition.BuildContentLayout(contentWidth));
+        }
+
+        protected override void OnClientPropertyUpdated(string propertyName)
+        {
+            if (propertyName == nameof(Geometry))
+                RefreshContentLayout();
+        }
+
+        private void ReapplyContentLayout()
+        {
+            _appliedContentWidth = -1f;
+            RefreshContentLayout();
+        }
+
+        protected override void OnMainViewRestored()
+        {
+            // Restoring the main view (e.g. when a modal closes) re-renders the static window
+            // template, whose content placeholder is empty - the generated form must be swapped
+            // back in. NUI can drop nested layouts while the parent is being redrawn, so reapply
+            // again on the next tick (same workaround as the character sheet's tab swaps).
+            ReapplyContentLayout();
+            DelayCommand(0.0f, ReapplyContentLayout);
+        }
 
         public string Title
         {
@@ -46,6 +86,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public GuiBindingList<string> SearchResultIconResrefs
+        {
+            get => Get<GuiBindingList<string>>();
+            set => Set(value);
+        }
+
         public GuiBindingList<bool> SearchResultToggles
         {
             get => Get<GuiBindingList<bool>>();
@@ -53,6 +99,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         }
 
         public GuiBindingList<string> ObjectiveLabels
+        {
+            get => Get<GuiBindingList<string>>();
+            set => Set(value);
+        }
+
+        public GuiBindingList<string> ObjectiveIconResrefs
         {
             get => Get<GuiBindingList<string>>();
             set => Set(value);
@@ -79,13 +131,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public string ObjectiveQuantityText
         {
             get => Get<string>();
-            set => Set(SanitizeNumber(value, 1, QuestContractBoard.MaxObjectiveQuantity));
-        }
+            set
+            {
+                var sanitized = SanitizeNumber(value, 1, QuestContractBoard.MaxObjectiveQuantity);
+                Set(sanitized);
 
-        public bool ObjectiveIsPlayerCrafted
-        {
-            get => Get<bool>();
-            set => Set(value);
+                // See RewardCreditsText - push clamped values back to the client's text box.
+                if (sanitized != value)
+                    OnPropertyChanged();
+            }
         }
 
         public string RewardCreditsText
@@ -93,19 +147,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             get => Get<string>();
             set
             {
-                Set(SanitizeNumber(value, 0, 999999));
-                UpdateCostSummary();
-            }
-        }
+                var sanitized = SanitizeNumber(value, 0, 999999);
+                Set(sanitized);
 
-        public string CompletionsText
-        {
-            get => Get<string>();
-            set
-            {
-                Set(SanitizeNumber(value, 1, QuestContractBoard.MaxCompletions));
+                // Client-watched updates suppress the change notification, so when the typed value
+                // was clamped, explicitly push the corrected value back to the client's text box.
+                if (sanitized != value)
+                    OnPropertyChanged();
+
                 UpdateCostSummary();
-                UpdateRewardItemHint();
             }
         }
 
@@ -127,13 +177,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-        public string RewardItemHint
+        public string PostingFeeText
         {
             get => Get<string>();
             set => Set(value);
         }
 
-        public string CostSummaryText
+        public string EscrowText
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string TotalCostText
         {
             get => Get<string>();
             set => Set(value);
@@ -146,8 +202,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (digits.Length < 1)
                 digits = "0";
 
+            // The digits are guaranteed numeric at this point, so a failed parse means the value
+            // overflowed int - clamp to the maximum rather than zeroing it out.
             if (!int.TryParse(digits, out var result))
-                result = 0;
+                result = max;
 
             if (result < min)
                 result = min;
@@ -163,19 +221,20 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _selectedObjectiveIndex = -1;
             _selectedSearchIndex = -1;
             _searchResults.Clear();
+            _appliedContentWidth = -1f;
+            RefreshContentLayout();
             StatusText = string.Empty;
             ItemSearchText = string.Empty;
             SearchResultLabels = new GuiBindingList<string>();
             SearchResultToggles = new GuiBindingList<bool>();
+            SearchResultIconResrefs = new GuiBindingList<string>();
             ObjectiveQuantityText = "1";
-            ObjectiveIsPlayerCrafted = false;
             IsObjectiveDetailVisible = false;
 
-            var draft = QuestContractBoard.GetOrCreateDraft(Player);
-            Title = draft.Title;
-            Description = draft.Description;
-            RewardCreditsText = draft.RewardCredits.ToString();
-            CompletionsText = draft.CompletionsRemaining.ToString();
+            var draft = QuestContractBoard.GetDraft(Player);
+            Title = draft?.Title ?? string.Empty;
+            Description = draft?.Description ?? string.Empty;
+            RewardCreditsText = (draft?.RewardCredits ?? 0).ToString();
 
             LoadObjectives();
             LoadRewardItems();
@@ -183,32 +242,31 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             WatchOnClient(model => model.Title);
             WatchOnClient(model => model.Description);
             WatchOnClient(model => model.RewardCreditsText);
-            WatchOnClient(model => model.CompletionsText);
             WatchOnClient(model => model.ItemSearchText);
             WatchOnClient(model => model.ObjectiveQuantityText);
-            WatchOnClient(model => model.ObjectiveIsPlayerCrafted);
         }
 
         private void LoadObjectives()
         {
-            var draft = QuestContractBoard.GetOrCreateDraft(Player);
+            var draft = QuestContractBoard.GetDraft(Player);
             var labels = new GuiBindingList<string>();
             var toggles = new GuiBindingList<bool>();
+            var icons = new GuiBindingList<string>();
 
-            for (var index = 0; index < draft.Objectives.Count; index++)
+            var objectives = draft?.Objectives ?? new List<QuestContractObjective>();
+
+            for (var index = 0; index < objectives.Count; index++)
             {
-                var objective = draft.Objectives[index];
-                var label = $"{objective.Quantity}x {objective.ItemName}";
+                var objective = objectives[index];
 
-                if (objective.MustBePlayerProduced)
-                    label += " (player-crafted)";
-
-                labels.Add(label);
+                labels.Add($"{objective.Quantity}x {objective.ItemName}");
                 toggles.Add(index == _selectedObjectiveIndex);
+                icons.Add(Cache.GetItemIconByResref(objective.ItemResref));
             }
 
             ObjectiveLabels = labels;
             ObjectiveToggles = toggles;
+            ObjectiveIconResrefs = icons;
 
             UpdateAddObjectiveEnabled();
             LoadObjectiveDetail(draft);
@@ -223,7 +281,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void LoadObjectiveDetail(QuestContract draft)
         {
-            if (_selectedObjectiveIndex < 0 || _selectedObjectiveIndex >= draft.Objectives.Count)
+            if (draft == null || _selectedObjectiveIndex < 0 || _selectedObjectiveIndex >= draft.Objectives.Count)
             {
                 _selectedObjectiveIndex = -1;
                 IsObjectiveDetailVisible = false;
@@ -232,37 +290,26 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             var objective = draft.Objectives[_selectedObjectiveIndex];
             ObjectiveQuantityText = objective.Quantity.ToString();
-            ObjectiveIsPlayerCrafted = objective.MustBePlayerProduced;
             IsObjectiveDetailVisible = true;
         }
 
         private void LoadRewardItems()
         {
-            var draft = QuestContractBoard.GetOrCreateDraft(Player);
+            var draft = QuestContractBoard.GetDraft(Player);
             var icons = new GuiBindingList<string>();
             var labels = new GuiBindingList<string>();
 
-            foreach (var rewardItem in draft.RewardItems)
+            var rewardItems = draft?.RewardItems ?? new List<QuestContractItem>();
+
+            foreach (var rewardItem in rewardItems)
             {
-                icons.Add(rewardItem.IconResref);
+                icons.Add(QuestContractBoard.ResolveContractItemIcon(rewardItem));
                 labels.Add(rewardItem.StackSize > 1 ? $"{rewardItem.StackSize}x {rewardItem.Name}" : rewardItem.Name);
             }
 
             RewardItemIconResrefs = icons;
             RewardItemLabels = labels;
-            IsAddRewardItemEnabled = draft.RewardItems.Count < QuestContractBoard.MaxRewardItems;
-
-            UpdateRewardItemHint();
-        }
-
-        private void UpdateRewardItemHint()
-        {
-            if (!int.TryParse(CompletionsText, out var completions))
-                completions = 1;
-
-            RewardItemHint = RewardItemLabels?.Count > 0 && completions != 1
-                ? "Item rewards can only be offered on single-completion contracts."
-                : string.Empty;
+            IsAddRewardItemEnabled = rewardItems.Count < QuestContractBoard.MaxRewardItems;
         }
 
         private void UpdateCostSummary()
@@ -270,14 +317,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (!int.TryParse(RewardCreditsText, out var credits) || credits < 0)
                 credits = 0;
 
-            if (!int.TryParse(CompletionsText, out var completions) || completions < 1)
-                completions = 1;
+            var fee = QuestContractBoard.CalculatePostingFee(credits);
+            var totalCost = credits + fee;
 
-            var totalRewardCredits = credits * completions;
-            var fee = QuestContractBoard.CalculatePostingFee(totalRewardCredits);
-            var totalCost = totalRewardCredits + fee;
-
-            CostSummaryText = $"Escrow: {totalRewardCredits} cr + Posting Fee: {fee} cr = Total: {totalCost} cr";
+            EscrowText = $"Reward Escrow: {credits} cr (paid to whoever completes the contract)";
+            PostingFeeText = $"Posting Fee: {fee} cr (non-refundable)";
+            TotalCostText = $"Total to Publish: {totalCost} cr";
         }
 
         private QuestContract SaveDetails()
@@ -289,12 +334,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (!int.TryParse(RewardCreditsText, out var credits) || credits < 0)
                 credits = 0;
             draft.RewardCredits = credits;
-
-            if (!int.TryParse(CompletionsText, out var completions) || completions < 1)
-                completions = 1;
-            if (completions > QuestContractBoard.MaxCompletions)
-                completions = QuestContractBoard.MaxCompletions;
-            draft.CompletionsRemaining = completions;
+            draft.CompletionsRemaining = 1;
 
             DB.Set(draft);
 
@@ -306,6 +346,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             SaveDetails();
             StatusText = "Draft details saved.";
             LoadRewardItems();
+            Gui.PublishRefreshEvent(Player, new QuestContractPublishedRefreshEvent());
         };
 
         public Action OnClickSelectObjective() => () =>
@@ -317,7 +358,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _selectedObjectiveIndex = index;
             ObjectiveToggles[index] = true;
 
-            var draft = QuestContractBoard.GetOrCreateDraft(Player);
+            var draft = QuestContractBoard.GetDraft(Player);
             LoadObjectiveDetail(draft);
         };
 
@@ -330,16 +371,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _searchResults.Clear();
             var labels = new GuiBindingList<string>();
             var toggles = new GuiBindingList<bool>();
+            var icons = new GuiBindingList<string>();
 
             foreach (var result in results)
             {
                 _searchResults.Add(result);
                 labels.Add(result.Name);
                 toggles.Add(false);
+                icons.Add(Cache.GetItemIconByResref(result.Resref));
             }
 
             SearchResultLabels = labels;
             SearchResultToggles = toggles;
+            SearchResultIconResrefs = icons;
 
             if (results.Count == 0)
                 StatusText = "No items found. Try a different search.";
@@ -387,8 +431,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 ItemResref = selected.Resref,
                 ItemName = selected.Name,
-                Quantity = 1,
-                MustBePlayerProduced = false
+                Quantity = 1
             });
             DB.Set(draft);
 
@@ -399,9 +442,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public Action OnClickRemoveObjective() => () =>
         {
             var index = NuiGetEventArrayIndex();
-            var draft = QuestContractBoard.GetOrCreateDraft(Player);
+            var draft = QuestContractBoard.GetDraft(Player);
 
-            if (index < 0 || index >= draft.Objectives.Count) return;
+            if (draft == null || index < 0 || index >= draft.Objectives.Count) return;
 
             draft.Objectives.RemoveAt(index);
             DB.Set(draft);
@@ -427,7 +470,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 quantity = QuestContractBoard.MaxObjectiveQuantity;
 
             draft.Objectives[_selectedObjectiveIndex].Quantity = quantity;
-            draft.Objectives[_selectedObjectiveIndex].MustBePlayerProduced = ObjectiveIsPlayerCrafted;
             DB.Set(draft);
 
             ObjectiveQuantityText = quantity.ToString();
@@ -457,12 +499,31 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickPublish() => () =>
         {
-            var draft = SaveDetails();
-            var totalRewardCredits = draft.RewardCredits * draft.CompletionsRemaining;
-            var fee = QuestContractBoard.CalculatePostingFee(totalRewardCredits);
-            var totalCost = totalRewardCredits + fee;
+            var existingDraft = QuestContractBoard.GetDraft(Player);
 
-            ShowModal($"Publish this contract for a total cost of {totalCost} credits ({totalRewardCredits} escrowed reward + {fee} posting fee)? This cannot be undone.", () =>
+            if (existingDraft == null || existingDraft.Objectives.Count < 1)
+            {
+                StatusText = "Add at least one objective before publishing.";
+                return;
+            }
+
+            var draft = SaveDetails();
+
+            var title = QuestContractBoard.SanitizeContractText(draft.Title, QuestContractBoard.MaxTitleLength);
+            var description = QuestContractBoard.SanitizeContractText(draft.Description, QuestContractBoard.MaxDescriptionLength);
+            var validationError = QuestContractBoard.ValidateDraft(draft, title, description, Cache.GetItemNameByResref);
+
+            if (!string.IsNullOrWhiteSpace(validationError))
+            {
+                StatusText = validationError;
+                return;
+            }
+
+            var escrowCredits = draft.RewardCredits;
+            var fee = QuestContractBoard.CalculatePostingFee(escrowCredits);
+            var totalCost = escrowCredits + fee;
+
+            ShowModal($"Publish this contract?\n\nReward Escrow: {escrowCredits} cr\nPosting Fee: {fee} cr\nTotal: {totalCost} cr\n\nThe escrow is paid to whoever completes the contract. The posting fee is non-refundable.", () =>
             {
                 var error = QuestContractBoard.PublishContract(Player);
 
@@ -480,7 +541,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickClose() => () =>
         {
-            Gui.TogglePlayerWindow(Player, GuiWindowType.QuestContractEditor);
+            ShowModal("Close the contract editor? Any unsaved changes to the title, description, or reward credits will be lost.", () =>
+            {
+                Gui.TogglePlayerWindow(Player, GuiWindowType.QuestContractEditor);
+            });
         };
     }
 }

@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service.GuiService;
 
@@ -12,7 +13,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             _builder.CreateWindow(GuiWindowType.QuestContractBoard)
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
-                .SetInitialGeometry(0, 0, 760f, 470f)
+                .SetInitialGeometry(0, 0, 860f, 560f)
                 .SetTitle("Quest Contract Board")
 
                 .AddColumn(col =>
@@ -44,11 +45,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     {
                         row.AddColumn(left =>
                         {
-                            left.SetWidth(360f);
-
                             left.AddRow(r =>
                             {
-                                r.SetHeight(36f);
+                                r.SetHeight(40f);
                                 r.BindIsVisible(model => model.IsSearchVisible);
 
                                 r.AddTextEdit()
@@ -57,13 +56,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                                 r.AddButton()
                                     .SetText("X")
-                                    .SetHeight(35f)
+                                    .SetHeight(32f)
                                     .SetWidth(35f)
                                     .BindOnClicked(model => model.OnClickClearSearch());
 
                                 r.AddButton()
                                     .SetText("Search")
-                                    .SetHeight(35f)
+                                    .SetHeight(32f)
                                     .BindOnClicked(model => model.OnClickSearch());
                             });
 
@@ -95,6 +94,110 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                             right.AddRow(r =>
                             {
+                                r.SetHeight(20f);
+                                r.BindIsVisible(model => model.IsContractSelected);
+
+                                r.AddLabel()
+                                    .SetText("Objectives");
+                            });
+
+                            right.AddRow(r =>
+                            {
+                                r.SetHeight(84f);
+                                r.BindIsVisible(model => model.IsContractSelected);
+
+                                r.AddList(template =>
+                                {
+                                    template.AddCell(cell =>
+                                    {
+                                        cell.SetWidth(32f);
+                                        cell.SetIsVariable(false);
+
+                                        cell.AddGroup(group =>
+                                        {
+                                            group.AddImage()
+                                                .BindResref(model => model.ObjectiveIconResrefs)
+                                                .SetHorizontalAlign(NuiHorizontalAlign.Center)
+                                                .SetVerticalAlign(NuiVerticalAlign.Top);
+                                        });
+                                    });
+
+                                    template.AddCell(cell =>
+                                    {
+                                        cell.AddText()
+                                            .BindText(model => model.ObjectiveLabels)
+                                            .SetShowBorder(false)
+                                            .SetScrollbars(NuiScrollbars.None);
+                                    });
+
+                                    template.AddCell(cell =>
+                                    {
+                                        cell.SetWidth(80f);
+                                        cell.SetIsVariable(false);
+
+                                        cell.AddButton()
+                                            .SetText("Examine")
+                                            .BindOnClicked(model => model.OnClickExamineObjective());
+                                    });
+                                })
+                                    .BindRowCount(model => model.ObjectiveLabels)
+                                    .SetRowHeight(32f);
+                            });
+
+                            right.AddRow(r =>
+                            {
+                                r.SetHeight(20f);
+                                r.BindIsVisible(model => model.IsContractSelected);
+
+                                r.AddLabel()
+                                    .SetText("Reward Items");
+                            });
+
+                            right.AddRow(r =>
+                            {
+                                r.SetHeight(84f);
+                                r.BindIsVisible(model => model.IsContractSelected);
+
+                                r.AddList(template =>
+                                {
+                                    template.AddCell(cell =>
+                                    {
+                                        cell.SetWidth(32f);
+                                        cell.SetIsVariable(false);
+
+                                        cell.AddGroup(group =>
+                                        {
+                                            group.AddImage()
+                                                .BindResref(model => model.RewardIconResrefs)
+                                                .SetHorizontalAlign(NuiHorizontalAlign.Center)
+                                                .SetVerticalAlign(NuiVerticalAlign.Top);
+                                        });
+                                    });
+
+                                    template.AddCell(cell =>
+                                    {
+                                        cell.AddText()
+                                            .BindText(model => model.RewardLabels)
+                                            .SetShowBorder(false)
+                                            .SetScrollbars(NuiScrollbars.None);
+                                    });
+
+                                    template.AddCell(cell =>
+                                    {
+                                        cell.SetWidth(80f);
+                                        cell.SetIsVariable(false);
+
+                                        cell.AddButton()
+                                            .SetText("Examine")
+                                            .BindOnClicked(model => model.OnClickExamineReward());
+                                    });
+                                })
+                                    .BindRowCount(model => model.RewardLabels)
+                                    .SetRowHeight(32f);
+                            });
+
+                            right.AddRow(r =>
+                            {
                                 r.SetHeight(24f);
 
                                 r.AddLabel()
@@ -112,25 +215,29 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     .BindIsVisible(model => model.IsAcceptVisible)
                                     .BindIsEnabled(model => model.IsAcceptEnabled)
                                     .BindOnClicked(model => model.OnClickAccept())
-                                    .SetHeight(32f);
+                                    .SetHeight(32f)
+                                    .SetWidth(100f);
 
                                 r.AddButton()
                                     .SetText("Turn In")
                                     .BindIsVisible(model => model.IsTurnInVisible)
                                     .BindOnClicked(model => model.OnClickTurnIn())
-                                    .SetHeight(32f);
+                                    .SetHeight(32f)
+                                    .SetWidth(100f);
 
                                 r.AddButton()
                                     .SetText("Abandon")
                                     .BindIsVisible(model => model.IsAbandonVisible)
                                     .BindOnClicked(model => model.OnClickAbandon())
-                                    .SetHeight(32f);
+                                    .SetHeight(32f)
+                                    .SetWidth(100f);
 
                                 r.AddButton()
                                     .SetText("Take Down")
                                     .BindIsVisible(model => model.IsTakeDownVisible)
                                     .BindOnClicked(model => model.OnClickTakeDown())
-                                    .SetHeight(32f);
+                                    .SetHeight(32f)
+                                    .SetWidth(110f);
                             });
 
                             right.AddRow(r =>
@@ -139,20 +246,33 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 r.BindIsVisible(model => model.IsMyActionsVisible);
 
                                 r.AddButton()
-                                    .SetText("New/Edit Draft")
-                                    .BindOnClicked(model => model.OnClickEditDraft())
-                                    .SetHeight(32f);
+                                    .SetText("New Contract")
+                                    .BindIsEnabled(model => model.IsNewContractEnabled)
+                                    .BindOnClicked(model => model.OnClickNewContract())
+                                    .SetHeight(32f)
+                                    .SetWidth(110f);
 
                                 r.AddButton()
-                                    .SetText("Cancel")
+                                    .SetText("Edit Draft")
+                                    .BindIsEnabled(model => model.IsEditDraftEnabled)
+                                    .BindOnClicked(model => model.OnClickEditDraft())
+                                    .SetHeight(32f)
+                                    .SetWidth(90f);
+
+                                r.AddButton()
+                                    .BindText(model => model.CancelButtonText)
                                     .BindIsEnabled(model => model.IsCancelEnabled)
                                     .BindOnClicked(model => model.OnClickCancelContract())
-                                    .SetHeight(32f);
+                                    .SetHeight(32f)
+                                    .SetWidth(110f);
 
                                 r.AddButton()
                                     .SetText("Claim Deliveries")
+                                    .BindIsEnabled(model => model.IsClaimDeliveriesEnabled)
+                                    .SetDisabledTooltip("You have no deliveries waiting to be claimed.")
                                     .BindOnClicked(model => model.OnClickClaimDeliveries())
-                                    .SetHeight(32f);
+                                    .SetHeight(32f)
+                                    .SetWidth(140f);
                             });
                         });
                     });

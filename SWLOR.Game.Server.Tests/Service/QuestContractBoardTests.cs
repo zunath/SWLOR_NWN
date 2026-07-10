@@ -77,15 +77,15 @@ public class QuestContractBoardTests
     }
 
     [Test]
-    public void CalculateTotalPublishCost_MultipliesByCompletionsAndAddsFee()
+    public void CalculateTotalPublishCost_AddsPercentFeeToEscrow()
     {
-        QuestContractBoard.CalculateTotalPublishCost(1000, 5).Should().Be(5250);
+        QuestContractBoard.CalculateTotalPublishCost(5000).Should().Be(5250);
     }
 
     [Test]
     public void CalculateTotalPublishCost_UsesFloorFeeForSmallRewards()
     {
-        QuestContractBoard.CalculateTotalPublishCost(500, 3).Should().Be(1600);
+        QuestContractBoard.CalculateTotalPublishCost(500).Should().Be(600);
     }
 
     [Test]
@@ -172,37 +172,6 @@ public class QuestContractBoardTests
     }
 
     [Test]
-    public void ValidateDraft_RejectsCompletionsBelowMinimum()
-    {
-        var draft = CreateValidDraft();
-        draft.CompletionsRemaining = 0;
-
-        QuestContractBoard.ValidateDraft(draft, "Title", "Description", ResolveKnownItem)
-            .Should().Be($"Completions must be between 1 and {QuestContractBoard.MaxCompletions}.");
-    }
-
-    [Test]
-    public void ValidateDraft_RejectsCompletionsAboveMaximum()
-    {
-        var draft = CreateValidDraft();
-        draft.CompletionsRemaining = QuestContractBoard.MaxCompletions + 1;
-
-        QuestContractBoard.ValidateDraft(draft, "Title", "Description", ResolveKnownItem)
-            .Should().Be($"Completions must be between 1 and {QuestContractBoard.MaxCompletions}.");
-    }
-
-    [Test]
-    public void ValidateDraft_RejectsRewardItemsWithMultipleCompletions()
-    {
-        var draft = CreateValidDraft();
-        draft.CompletionsRemaining = 2;
-        draft.RewardItems.Add(new QuestContractItem { Name = "Sword" });
-
-        QuestContractBoard.ValidateDraft(draft, "Title", "Description", ResolveKnownItem)
-            .Should().Be("Item rewards can only be offered on single-completion contracts.");
-    }
-
-    [Test]
     public void ValidateDraft_RejectsRewardCreditsBelowMinimum()
     {
         var draft = CreateValidDraft();
@@ -222,10 +191,9 @@ public class QuestContractBoardTests
     }
 
     [Test]
-    public void ValidateDraft_AllowsSingleRewardItemOnSingleCompletionContract()
+    public void ValidateDraft_AllowsRewardItems()
     {
         var draft = CreateValidDraft();
-        draft.CompletionsRemaining = 1;
         draft.RewardItems.Add(new QuestContractItem { Name = "Sword" });
 
         QuestContractBoard.ValidateDraft(draft, "Title", "Description", ResolveKnownItem)

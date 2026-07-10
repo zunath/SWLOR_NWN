@@ -4,6 +4,7 @@ using System.Text;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.QuestContractService;
@@ -20,8 +21,7 @@ namespace SWLOR.Game.Server.Service
         public const int MaxActiveContractsPerCDKey = 3;
         public const int MaxObjectives = 3;
         public const int MaxObjectiveQuantity = 99;
-        public const int MaxCompletions = 10;
-        public const int MaxRewardItems = 5;
+        public const int MaxRewardItems = 2;
         public const int MaxTitleLength = 60;
         public const int MaxDescriptionLength = 1000;
         public const int ContractDurationDays = 30;
@@ -29,6 +29,8 @@ namespace SWLOR.Game.Server.Service
         public const int MinimumPostingFee = 100;
         public const int MinRewardCredits = 1;
         public const int MaxItemSearchResults = 50;
+
+        private const string DeliveriesWaitingMessage = "Contract deliveries are waiting for you. Visit any Contract Board to claim your items and credits.";
 
         /// <summary>
         /// Runs after <see cref="Quest.RegisterQuests"/> finishes its reflection-based pass. Loads every
@@ -86,25 +88,39 @@ namespace SWLOR.Game.Server.Service
 
             if (count > 0)
             {
-                SendMessageToPC(player, "You have pending quest contract deliveries waiting to be claimed at a contract board.");
+                SendMessageToPC(player, ColorToken.Green(DeliveriesWaitingMessage));
             }
         }
 
         /// <summary>
-        /// Retrieves the player's existing Draft contract, or creates a new one if they don't have one.
-        /// Only one draft is allowed per PlayerId at a time.
+        /// Retrieves the player's existing Draft contract, or null if they don't have one. This is a
+        /// read-only lookup: it never creates or persists a draft, so opening the editor to look around
+        /// does not leave an empty draft cluttering the player's contract list.
         /// </summary>
-        public static QuestContract GetOrCreateDraft(uint player)
+        public static QuestContract GetDraft(uint player)
         {
             var playerId = GetObjectUUID(player);
             var query = new DBQuery<QuestContract>()
                 .AddFieldSearch(nameof(QuestContract.AuthorPlayerId), playerId, false)
                 .AddFieldSearch(nameof(QuestContract.Status), (int)QuestContractStatus.Draft);
-            var existing = DB.Search(query).FirstOrDefault();
+
+            return DB.Search(query).FirstOrDefault();
+        }
+
+        /// <summary>
+        /// Retrieves the player's existing Draft contract, or creates and persists a new one if they don't
+        /// have one. Only one draft is allowed per PlayerId at a time. Call this only from actions that
+        /// actually commit content (saving details, adding an objective or reward item); read-only screens
+        /// should use <see cref="GetDraft"/> so merely opening the editor does not persist an empty draft.
+        /// </summary>
+        public static QuestContract GetOrCreateDraft(uint player)
+        {
+            var existing = GetDraft(player);
 
             if (existing != null)
                 return existing;
 
+            var playerId = GetObjectUUID(player);
             var draft = new QuestContract
             {
                 AuthorPlayerId = playerId,
@@ -194,6 +210,43 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Deletes the player's Draft contract. Any escrowed reward items are returned to them via a
+        /// pending delivery so they cannot be lost to a full inventory.
+        /// </summary>
+        /// <returns>An empty string on success, otherwise an error message to show the player.</returns>
+        public static string DeleteDraft(uint player)
+        {
+            var draft = GetDraft(player);
+            if (draft == null)
+                return "You do not have a draft contract.";
+
+            if (draft.RewardItems.Count > 0)
+            {
+                var delivery = GetOrCreatePendingDelivery(draft.AuthorPlayerId, draft.Id, draft.Title);
+                delivery.Items.AddRange(draft.RewardItems);
+                DB.Set(delivery);
+            }
+
+            DB.Delete<QuestContract>(draft.Id);
+            Log.Write(LogGroup.QuestContract, $"{GetName(player)} [{draft.AuthorPlayerId}] deleted quest contract draft '{draft.Id}' ('{draft.Title}').");
+
+            return string.Empty;
+        }
+
+        /// <summary>
+        /// Resolves the display icon for an escrowed contract item. Icons are captured at escrow time,
+        /// so items escrowed before icon fixes may have an unusable placeholder stored; those are
+        /// recomputed from the item's blueprint.
+        /// </summary>
+        public static string ResolveContractItemIcon(QuestContractItem item)
+        {
+            if (string.IsNullOrWhiteSpace(item.IconResref) || item.IconResref.StartsWith("iinvalid"))
+                return Cache.GetItemIconByResref(item.Resref);
+
+            return item.IconResref;
+        }
+
+        /// <summary>
         /// Validates and publishes the player's Draft contract: takes the escrowed credits + posting fee,
         /// marks it Published, and registers its runtime quest.
         /// </summary>
@@ -210,12 +263,12 @@ namespace SWLOR.Game.Server.Service
             if (!string.IsNullOrEmpty(validationError))
                 return validationError;
 
-            var totalRewardCredits = draft.RewardCredits * draft.CompletionsRemaining;
-            var fee = CalculatePostingFee(totalRewardCredits);
-            var totalCost = totalRewardCredits + fee;
+            var escrowCredits = draft.RewardCredits;
+            var fee = CalculatePostingFee(escrowCredits);
+            var totalCost = escrowCredits + fee;
 
             if (GetGold(player) < totalCost)
-                return $"You need {totalCost} credits to post this contract ({totalRewardCredits} escrowed reward + {fee} posting fee).";
+                return $"You need {totalCost} credits to post this contract ({escrowCredits} escrowed reward + {fee} posting fee).";
 
             var activeQuery = new DBQuery<QuestContract>()
                 .AddFieldSearch(nameof(QuestContract.AuthorCDKey), cdKey, false)
@@ -231,6 +284,8 @@ namespace SWLOR.Game.Server.Service
             draft.Description = description;
             draft.AuthorName = GetName(player);
             draft.AuthorCDKey = cdKey;
+            // Contracts are single-completion: the first player to fulfill the objectives claims the reward.
+            draft.CompletionsRemaining = 1;
             draft.Status = QuestContractStatus.Published;
             draft.DatePublished = DateTime.UtcNow;
             draft.DateExpires = DateTime.UtcNow.AddDays(ContractDurationDays);
@@ -239,7 +294,7 @@ namespace SWLOR.Game.Server.Service
             var quest = QuestContractFactory.BuildQuest(draft);
             Quest.RegisterRuntimeQuest(quest);
 
-            Log.Write(LogGroup.QuestContract, $"{GetName(player)} [{draft.AuthorPlayerId}] published contract '{draft.Id}' ('{draft.Title}') for {totalCost} credits ({fee} posting fee).", true);
+            Log.Write(LogGroup.QuestContract, $"{GetName(player)} [{draft.AuthorPlayerId}] published contract '{draft.Id}' ('{draft.Title}') for {totalCost} credits ({fee} posting fee).");
 
             return string.Empty;
         }
@@ -282,10 +337,61 @@ namespace SWLOR.Game.Server.Service
 
             DB.Set(contract);
             Quest.UnregisterRuntimeQuest(QuestContractFactory.BuildQuestId(contract.Id));
+            VoidActiveContractQuests(contract, isAuthor ? "cancelled by its author" : "taken down");
 
-            Log.Write(LogGroup.QuestContract, $"Contract '{contract.Id}' ('{contract.Title}') was {(isAuthor ? "cancelled by its author" : $"taken down by DM {GetName(requester)} [{requesterId}]")}.", true);
+            Log.Write(LogGroup.QuestContract, $"Contract '{contract.Id}' ('{contract.Title}') was {(isAuthor ? "cancelled by its author" : $"taken down by DM {GetName(requester)} [{requesterId}]")}.");
 
             return string.Empty;
+        }
+
+        /// <summary>
+        /// Removes a voided contract's quest from every online player who had accepted it: clears it
+        /// from their quest list, removes the journal entry, refreshes their quest UI, and notifies
+        /// them of the reason. Offline players are cleaned up by <see cref="Quest.LoadPlayerQuests"/>
+        /// at their next login.
+        /// </summary>
+        /// <param name="contract">The contract whose quest is being voided.</param>
+        /// <param name="reason">Player-facing reason, e.g. "cancelled by its author".</param>
+        private static void VoidActiveContractQuests(QuestContract contract, string reason)
+        {
+            var questId = QuestContractFactory.BuildQuestId(contract.Id);
+
+            for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())
+            {
+                if (GetIsDM(player))
+                    continue;
+
+                var playerId = GetObjectUUID(player);
+                var dbPlayer = DB.Get<Player>(playerId);
+
+                if (dbPlayer == null ||
+                    !dbPlayer.Quests.TryGetValue(questId, out var playerQuest) ||
+                    playerQuest.DateLastCompleted != null)
+                    continue;
+
+                dbPlayer.Quests.Remove(questId);
+                DB.Set(dbPlayer);
+
+                // Custom journal entries cannot be removed by RemoveJournalQuestEntry, so the entry
+                // is re-added hidden to clear it from the player's journal immediately.
+                RemoveJournalQuestEntry(questId, player, false);
+                PlayerPlugin.AddCustomJournalEntry(player, new JournalEntry
+                {
+                    Name = $"Contract: {contract.Title}",
+                    Text = "This contract is no longer available.",
+                    Tag = questId,
+                    State = 1,
+                    Priority = 1,
+                    IsQuestCompleted = true,
+                    IsQuestDisplayed = false,
+                    Updated = 1,
+                    CalendarDay = GetCalendarDay(),
+                    TimeOfDay = GetTimeHour()
+                }, true);
+
+                Gui.PublishRefreshEvent(player, new QuestAbandonedRefreshEvent(questId));
+                SendMessageToPC(player, ColorToken.Red($"The contract '{contract.Title}' has been {reason}. It has been removed from your journal."));
+            }
         }
 
         /// <summary>
@@ -386,28 +492,45 @@ namespace SWLOR.Game.Server.Service
             };
 
             DB.Set(delivery);
+            NotifyDeliveryRecipientIfOnline(playerId);
 
             return delivery;
         }
 
         /// <summary>
-        /// Calculates the posting fee for a contract given its total escrowed reward credits
-        /// (reward credits per completion multiplied by the number of completions).
+        /// Sends the deliveries-waiting notice to a player immediately if they are online.
+        /// Offline players are reminded at their next login by <see cref="NotifyPendingDeliveries"/>.
+        /// Fires only when a new pending delivery is created (not on every item added to it),
+        /// so a multi-item turn-in produces a single notice.
+        /// </summary>
+        private static void NotifyDeliveryRecipientIfOnline(string playerId)
+        {
+            for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())
+            {
+                if (GetObjectUUID(player) == playerId)
+                {
+                    SendMessageToPC(player, ColorToken.Green(DeliveriesWaitingMessage));
+                    return;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Calculates the posting fee for a contract given its escrowed reward credits.
         /// Charges <see cref="PostingFeePercent"/>, floored at <see cref="MinimumPostingFee"/>.
         /// </summary>
-        public static int CalculatePostingFee(int totalRewardCredits)
+        public static int CalculatePostingFee(int rewardCredits)
         {
-            return Math.Max(MinimumPostingFee, totalRewardCredits * PostingFeePercent / 100);
+            return Math.Max(MinimumPostingFee, rewardCredits * PostingFeePercent / 100);
         }
 
         /// <summary>
         /// Calculates the total credits a player must pay to publish a contract: the escrowed reward
-        /// (reward credits per completion multiplied by completions) plus the posting fee.
+        /// credits plus the posting fee.
         /// </summary>
-        public static int CalculateTotalPublishCost(int rewardCredits, int completions)
+        public static int CalculateTotalPublishCost(int rewardCredits)
         {
-            var totalRewardCredits = rewardCredits * completions;
-            return totalRewardCredits + CalculatePostingFee(totalRewardCredits);
+            return rewardCredits + CalculatePostingFee(rewardCredits);
         }
 
         /// <summary>
@@ -443,12 +566,6 @@ namespace SWLOR.Game.Server.Service
                 if (string.IsNullOrWhiteSpace(itemName))
                     return $"Item '{objective.ItemResref}' is not a valid item.";
             }
-
-            if (draft.CompletionsRemaining < 1 || draft.CompletionsRemaining > MaxCompletions)
-                return $"Completions must be between 1 and {MaxCompletions}.";
-
-            if (draft.RewardItems.Count > 0 && draft.CompletionsRemaining != 1)
-                return "Item rewards can only be offered on single-completion contracts.";
 
             if (draft.RewardCredits < MinRewardCredits)
                 return $"Reward credits must be at least {MinRewardCredits}.";
@@ -499,8 +616,9 @@ namespace SWLOR.Game.Server.Service
             contract.Status = QuestContractStatus.Expired;
             DB.Set(contract);
             Quest.UnregisterRuntimeQuest(QuestContractFactory.BuildQuestId(contract.Id));
+            VoidActiveContractQuests(contract, "expired");
 
-            Log.Write(LogGroup.QuestContract, $"Contract '{contract.Id}' ('{contract.Title}') expired.", true);
+            Log.Write(LogGroup.QuestContract, $"Contract '{contract.Id}' ('{contract.Title}') expired.");
         }
 
         /// <summary>

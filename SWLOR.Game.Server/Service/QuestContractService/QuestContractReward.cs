@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.QuestService;
 using SWLOR.NWN.API.NWNX;
@@ -34,7 +35,7 @@ namespace SWLOR.Game.Server.Service.QuestContractService
             // if a new completion path is ever added.
             if (contract.Status != QuestContractStatus.Published || contract.CompletionsRemaining <= 0)
             {
-                Log.Write(LogGroup.QuestContract, $"{GetName(player)} [{GetObjectUUID(player)}] completed contract '{contract.Id}' ('{contract.Title}') but it has no escrow remaining (status: {contract.Status}, completions: {contract.CompletionsRemaining}). No reward was paid.", true);
+                Log.Write(LogGroup.QuestContract, $"{GetName(player)} [{GetObjectUUID(player)}] completed contract '{contract.Id}' ('{contract.Title}') but it has no escrow remaining (status: {contract.Status}, completions: {contract.CompletionsRemaining}). No reward was paid.");
                 SendMessageToPC(player, $"The contract '{contract.Title}' is no longer active. No reward could be paid.");
                 return;
             }
@@ -62,6 +63,10 @@ namespace SWLOR.Game.Server.Service.QuestContractService
             }
 
             DB.Set(contract);
+
+            // Refresh the completing player's contract board (if open) so the fulfilled contract
+            // disappears from the Browse list immediately.
+            Gui.PublishRefreshEvent(player, new QuestContractPublishedRefreshEvent());
 
             SendMessageToPC(player, $"You received {contract.RewardCredits} credits for completing the contract '{contract.Title}'.");
             Log.Write(LogGroup.QuestContract, $"{GetName(player)} [{GetObjectUUID(player)}] completed contract '{contract.Id}' ('{contract.Title}') and received {contract.RewardCredits} credits.");

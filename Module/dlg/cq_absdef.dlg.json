@@ -64,7 +64,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Absolute Defense is no longer a lesson on my ledger. You proved it in Korriban Forge Caverns; keep proving it when nobody is keeping score."
+            "0": "Finished work stands in front of me. The temper is in you now the way it sits in good steel: invisible, and permanent. My forge has nothing left to teach you. Go be an anvil for somebody else."
           }
         }
       },
@@ -113,7 +113,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Not yet. Absolute Defense is not a conversation I start on instinct or reputation. Come back when your work can survive the proof I keep for Korriban Forge Caverns."
+            "0": "You carry that heavy blade like a man still arguing with its weight. Steel argues back. Master the weapon end to end, every swing and every stance it has, and then stand in front of me again. Until then you're green stock, and I don't waste heat on green stock."
           }
         }
       },
@@ -258,7 +258,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "The forge caverns reward those who stand where others flinch. Bring back proof that the heat moved around you. Go to Korriban Forge Caverns on Korriban, defeat the Absolute Defense adepts, and bring back the Absolute Defense field report."
+            "0": "Your guard drops a finger's width every time you breathe out. That's a flaw in the grain, and flaws crack under load. The Forge Caverns below this rock can work it out of you. Smith-guards hold the galleries now, sworn to an oath I never approved, and their newest call themselves adepts. Cut down six adepts and bring me the Absolute Defense Forge Heat Ledger they keep by the crucibles. Do that, and I'll start hammering that flaw out of your guard."
           }
         }
       },
@@ -307,7 +307,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Good. Use the access I have authorized and keep your attention on Korriban Forge Caverns. I want proof, not a story about almost having it."
+            "0": "Then we begin at the fire. The key I've just given you opens the sealed gate down into the Korriban Forge Caverns. Work the galleries steady, no hurry and no hesitation, and come back with the ledger while the heat of it is still in your hands."
           }
         }
       },
@@ -376,7 +376,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Absolute Defense is the part of the discipline that remains after the easy motions stop helping. I am asking because this proof belongs to my work, and because a public training floor would get people hurt."
+            "0": "A guard that has stopped pretending. Absolute Defense is steel tempered until nothing on the far side of it matters, a wall you carry in two hands. The forge heat is the only honest test I know. Flattery melts. Excuses burn off. What's left either holds or it doesn't, and down there you'll be tested the same way the steel is."
           }
         }
       },
@@ -445,7 +445,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Korriban Forge Caverns is on Korriban. The area builder will place the route and the gated entry; once it exists, follow that access point and keep to the capstone space."
+            "0": "Smith-guards. Mine, once. They swore their edges to the forge, then quenched that oath in a darker one, some Sith doctrine promising steel that never yields to anything, loyalty included. Now they hold my lower galleries and run heats I never signed. The adepts are the greenest of them. Green steel still cuts."
           }
         }
       },
@@ -514,7 +514,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Expect level 50 opposition built for this proof. Do not drag them into public routes, and do not expect ordinary patrol habits from the final encounter."
+            "0": "Every heat in a lawful forge goes in the ledger. Temperature, time, whose hands worked the metal. Forge law says the ledger is the forge, and whoever holds it answers for every blade those galleries have produced. Bring me the Forge Heat Ledger and their work becomes mine to judge again."
           }
         }
       },
@@ -563,7 +563,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Korriban Forge Caverns still holds your first proof for Absolute Defense. Finish the target there before you bring me anything else."
+            "0": "The galleries are still working, which means you're not finished. Six adepts, and the Absolute Defense Forge Heat Ledger from beside the crucibles. Steel doesn't temper by being talked about."
           }
         }
       },
@@ -632,7 +632,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "That is the proof I asked for. Hand it over and I will mark the Absolute Defense lesson clean."
+            "0": "You smell of slag and crucible smoke. Something came out of that fire with you. Show me."
           }
         }
       },
@@ -681,7 +681,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Recorded. Credits are hazard pay; the real reward is that Absolute Defense is one step closer to belonging to you."
+            "0": "Every heat they've run, signed in their own hands. Rushed quenches, sloppy tempers. I'd have broken half these blades over my knee. You held your guard against their steel and came back whole; that's the first pass of the hammer. There will be more heat next time."
           }
         }
       },
@@ -826,7 +826,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "The next Absolute Defense proof is waiting in Korriban Forge Caverns. This one is about second proof, not repetition. Go to Korriban Forge Caverns on Korriban, defeat the Absolute Defense specialists, and bring back the Absolute Defense calibration core."
+            "0": "The flaw in your breathing is smaller. Not gone. This ledger names five specialists, journeymen of their bad oath, the ones who run the tempering racks. They cool every new blade through a Sith device that whispers hunger into hot steel. Break the five and pull the Absolute Defense Sith Tempering Matrix out of the quench trough before it finishes another edge."
           }
         }
       },
@@ -875,7 +875,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Good. Use the access I have authorized and keep your attention on Korriban Forge Caverns. I want proof, not a story about almost having it."
+            "0": "Good. You hold the gate key already; the racks sit deeper, past the first crucible hall, where the heat starts to talk. Keep your guard closed going down and closed coming back."
           }
         }
       },
@@ -944,7 +944,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Absolute Defense is the part of the discipline that remains after the easy motions stop helping. I am asking because this proof belongs to my work, and because a public training floor would get people hurt."
+            "0": "A Sith tempering matrix. It sits in the quench trough and murmurs while the steel cools, and the steel remembers what it hears. Blades that hold grudges. Edges that want. Forge law calls any unsanctioned temper a corruption of the stock, and I want that thing off my racks and cold in my hands."
           }
         }
       },
@@ -1013,7 +1013,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Korriban Forge Caverns is on Korriban. The area builder will place the route and the gated entry; once it exists, follow that access point and keep to the capstone space."
+            "0": "The wrong fire at the wrong time, same as ruins most good steel. A Sith came down from the crypts preaching a defense that yields nothing, ever, to anyone. My smiths heard 'unbreakable' and stopped hearing anything else. Oaths are welds. Made in bad heat, they look solid right up until the day they shear."
           }
         }
       },
@@ -1082,7 +1082,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Expect level 50 opposition built for this proof. Do not drag them into public routes, and do not expect ordinary patrol habits from the final encounter."
+            "0": "There's one below the smith-guards call the master. I have watched his guard across three generations of steel and never once seen it passed. Not by me. Not by anyone I trained. You are not ready to talk about him, so we won't."
           }
         }
       },
@@ -1131,7 +1131,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Korriban Forge Caverns still holds your second proof for Absolute Defense. Finish the target there before you bring me anything else."
+            "0": "Five specialists still stand between you and the tempering rack. Come back when the Absolute Defense Sith Tempering Matrix is cold in your pack, not before."
           }
         }
       },
@@ -1200,7 +1200,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "That is the proof I asked for. Hand it over and I will mark the Absolute Defense lesson clean."
+            "0": "Your pack is humming. That's the matrix wanting its trough back. Set it down slow."
           }
         }
       },
@@ -1249,7 +1249,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Recorded. Credits are hazard pay; the real reward is that Absolute Defense is one step closer to belonging to you."
+            "0": "Cold, and quieter already. You cut off their tempering and their journeymen in one heat. Second pass of the hammer. The grain in you is starting to close."
           }
         }
       },
@@ -1394,7 +1394,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "The next Absolute Defense proof is waiting in Korriban Forge Caverns. This one is about breach proof, not repetition. Go to Korriban Forge Caverns on Korriban, defeat the Absolute Defense warden, and bring back the Absolute Defense broken seal."
+            "0": "Now the work gets honest. The galleries answer to a warden, the anvil-keeper, the man who broke my last three apprentices without moving his back foot. His guard is this discipline done nearly right, and nearly is what makes him cruel. So hear me, because this is forge law and not caution: heavy work takes a crew at the anvil. One pair of hands cannot turn steel that size. Take a working crew down with you, two hammers at the least, or the warden will fold you into the floor like the others. Break him, and bring me the Absolute Defense Cracked Anvil Sigil he wears."
           }
         }
       },
@@ -1443,7 +1443,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Good. Use the access I have authorized and keep your attention on Korriban Forge Caverns. I want proof, not a story about almost having it."
+            "0": "Then gather your crew before you touch that gate. I mean it. The warden has flattened finer steel than yours, one billet at a time, patient as rust. Strike as a crew, rest the guard in turns, and don't be proud about whose blow lands last."
           }
         }
       },
@@ -1512,7 +1512,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Absolute Defense is the part of the discipline that remains after the easy motions stop helping. I am asking because this proof belongs to my work, and because a public training floor would get people hurt."
+            "0": "He kept my anvils for twenty years. Best hammer-hand I ever trained, and the first to swear the bad oath. The night the galleries turned, he cracked his own anvil to mark it and kept a shard for a sigil. Understand: he doesn't attack. He waits, and lets you break yourself against him. The patience is the lesson. It's also the trap."
           }
         }
       },
@@ -1581,7 +1581,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Korriban Forge Caverns is on Korriban. The area builder will place the route and the gated entry; once it exists, follow that access point and keep to the capstone space."
+            "0": "In forge law, the anvil is the forge's word. Crack one, and you've broken your word to every smith who ever worked it. He wears that crack proudly, like it set him free. Bring the sigil to me and his claim on my galleries cracks with it."
           }
         }
       },
@@ -1650,7 +1650,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Expect level 50 opposition built for this proof. Do not drag them into public routes, and do not expect ordinary patrol habits from the final encounter."
+            "0": "Because adepts and journeymen are not a warden. A heavy blade turning alone tires. A guard with no relief breaks. His whole doctrine counts on both. Three sets of hands means the pressure never rests and neither does he, and that isn't courtesy, it's the technique itself. A wall holds longest where the line behind it is more than one deep."
           }
         }
       },
@@ -1699,7 +1699,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Korriban Forge Caverns still holds your breach proof for Absolute Defense. Finish the target there before you bring me anything else."
+            "0": "The warden still keeps the anvil, or you'd be talking less and breathing harder. Crew. Patience. Relief on the guard. And the Absolute Defense Cracked Anvil Sigil in my hand when he's down."
           }
         }
       },
@@ -1768,7 +1768,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "That is the proof I asked for. Hand it over and I will mark the Absolute Defense lesson clean."
+            "0": "You're standing straighter under that blade's weight. The anvil has a new keeper, then. Show me."
           }
         }
       },
@@ -1817,7 +1817,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Recorded. Credits are hazard pay; the real reward is that Absolute Defense is one step closer to belonging to you."
+            "0": "So his guard could be passed after all. It took a crew, and that doesn't lessen the work; that is the work. Third pass of the hammer. The grain is nearly closed. Rest your hands, because the inner ring will not be gentler."
           }
         }
       },
@@ -1962,7 +1962,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "The next Absolute Defense proof is waiting in Korriban Forge Caverns. This one is about circle proof, not repetition. Go to Korriban Forge Caverns on Korriban, defeat the Absolute Defense inner circle, and bring back the Absolute Defense command mark."
+            "0": "The warden was the wall. Behind the wall sits the inner circle: four overseers who sign the heats now, who taught the bad oath and grade it in my forge with my tools. They hold the deep floor in a ring around the master's anvil. Each carries stamped clearance. Bring me one Absolute Defense Overseer's Clearance Token, whole and unmelted, and I'll put their forgeries in front of forge law. Keep your crew close. Four overseers on their own floor is a fire, and you don't split up inside a fire."
           }
         }
       },
@@ -2011,7 +2011,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Good. Use the access I have authorized and keep your attention on Korriban Forge Caverns. I want proof, not a story about almost having it."
+            "0": "You didn't flinch at four. That's temper showing. The deep floor burns hotter than the galleries, so work in short heats, watch each other's guard, and come up before the air goes bad."
           }
         }
       },
@@ -2080,7 +2080,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Absolute Defense is the part of the discipline that remains after the easy motions stop helping. I am asking because this proof belongs to my work, and because a public training floor would get people hurt."
+            "0": "Clearance to stand the deep floor and sign heats in the forge's name. They minted their own tokens, and that's forgery under any forge law older than Korriban. One genuine token in my hand turns every blade they've signed from armament into evidence."
           }
         }
       },
@@ -2149,7 +2149,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Korriban Forge Caverns is on Korriban. The area builder will place the route and the gated entry; once it exists, follow that access point and keep to the capstone space."
+            "0": "Now you're ready to ask, so I'll answer. He holds the innermost ring, and he holds the finished thing itself: the guard you've been bleeding toward, whole, with no flaw left in the grain. When his circle falls he will know your name without being told. He reads footwork off the stone the way I read a heat off the color of the steel."
           }
         }
       },
@@ -2218,7 +2218,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Expect level 50 opposition built for this proof. Do not drag them into public routes, and do not expect ordinary patrol habits from the final encounter."
+            "0": "When you first stood here, your guard dropped a finger's width on the out-breath. It doesn't anymore. That's what honest heat does. It adds nothing to the steel; it burns off everything that was never steel to begin with. What's left of you rings when it's struck. One ring remains, and it isn't yours yet."
           }
         }
       },
@@ -2267,7 +2267,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Korriban Forge Caverns still holds your circle proof for Absolute Defense. Finish the target there before you bring me anything else."
+            "0": "Four overseers still sign heats on my deep floor, so we are not finished. One Absolute Defense Overseer's Clearance Token. Whole. Unmelted. In my hand."
           }
         }
       },
@@ -2336,7 +2336,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "That is the proof I asked for. Hand it over and I will mark the Absolute Defense lesson clean."
+            "0": "Deep-floor scale on your boots. The circle is broken, then. Let me see the token."
           }
         }
       },
@@ -2385,7 +2385,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Recorded. Credits are hazard pay; the real reward is that Absolute Defense is one step closer to belonging to you."
+            "0": "Genuine. Their signatures die with this stamp. Fourth pass of the hammer, and I notice I've stopped inspecting your guard and started learning from it. Strange feeling for an old overseer. One heat remains."
           }
         }
       },
@@ -2530,7 +2530,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "The next Absolute Defense proof is waiting in Korriban Forge Caverns. This one is about mastery proof, not repetition. Go to Korriban Forge Caverns on Korriban, defeat the Absolute Defense master, and return with the final proof."
+            "0": "The innermost ring, then. The master holds it alone, and his guard is the finished discipline entire: the wall you've been building one pass at a time, already built, grown old and patient behind him. Hear this plainly. No one has ever passed that guard alone, and no one who went down without a crew came back up to complain about it. Take yours. Two hammers sworn to your rhythm at your back, at the least. Turn his patience against itself, spell each other on the pressure, and wait for the one breath he finally has to take. There's nothing to carry out when it's done. His fall is the proof, and the guard you walk out with is the prize."
           }
         }
       },
@@ -2579,7 +2579,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Good. Use the access I have authorized and keep your attention on Korriban Forge Caverns. I want proof, not a story about almost having it."
+            "0": "Then this is the last heat. When the ring goes quiet, don't stand around admiring the anvil. Come up. I want to see what walks out of that fire, because I already know what walked in."
           }
         }
       },
@@ -2648,7 +2648,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Absolute Defense is the part of the discipline that remains after the easy motions stop helping. I am asking because this proof belongs to my work, and because a public training floor would get people hurt."
+            "0": "Alone? No. I've watched it my whole working life and I'd stake the forge on it. But the guard holds one arc at a time. That is its entire law, and its single seam. Three blades make three arcs, and his wall has to choose. Whatever it leaves open belongs to you. He knows this as well as I do. He's counting on your pride to send you down alone."
           }
         }
       },
@@ -2717,7 +2717,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Korriban Forge Caverns is on Korriban. The area builder will place the route and the gated entry; once it exists, follow that access point and keep to the capstone space."
+            "0": "Look at my hands. Forty years of hammer and tong, and they'd still hold a blade. But he was my finest work before he was my failure, and a smith who quenches the same steel twice ruins it. It has to be new hands. It has to be yours."
           }
         }
       },
@@ -2786,7 +2786,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Expect level 50 opposition built for this proof. Do not drag them into public routes, and do not expect ordinary patrol habits from the final encounter."
+            "0": "The oath dies with the ring. Whoever's left below comes up and answers forge law, the heats get re-signed, and Korriban keeps one forge that makes blades instead of doctrine. And you walk out carrying the only guard that matters. Yours. Finished."
           }
         }
       },
@@ -2835,7 +2835,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Korriban Forge Caverns still holds your mastery proof for Absolute Defense. Finish the target there before you bring me anything else."
+            "0": "The master still holds the ring. Don't go down light. A crew, rested, and no pride about whose blow lands last. The fire will wait. It always does."
           }
         }
       },
@@ -2904,7 +2904,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "That is the proof I asked for. Hand it over and I will mark the Absolute Defense lesson clean."
+            "0": "Quiet. The whole rock has gone quiet. Forty years I've listened to that ring and it was never once quiet. Tell me."
           }
         }
       },
@@ -2953,7 +2953,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Recorded. Credits are hazard pay; the real reward is that Absolute Defense is one step closer to belonging to you."
+            "0": "Then the flaw is out of the grain, the forge's and yours both. The guard isn't mine to grade anymore; you wear the finished temper now, and steel that finished doesn't answer to overseers. The work's done. The fire is yours."
           }
         }
       }
@@ -3023,7 +3023,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Back to the proof."
+            "0": "Another question first."
           }
         }
       },
@@ -3100,7 +3100,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "I will take the first proof."
+            "0": "Put me in the fire, then."
           }
         }
       },
@@ -3165,7 +3165,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What does Absolute Defense demand?"
+            "0": "What is Absolute Defense, exactly?"
           }
         }
       },
@@ -3230,7 +3230,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Where is this proof held?"
+            "0": "Who holds these caverns?"
           }
         }
       },
@@ -3295,7 +3295,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What should I expect inside?"
+            "0": "What does this ledger prove?"
           }
         }
       },
@@ -3340,7 +3340,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Not right now."
+            "0": "Not yet. I know my flaws."
           }
         }
       },
@@ -3417,7 +3417,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Here is the proof."
+            "0": "The Absolute Defense Forge Heat Ledger. Six adepts won't add to it again."
           }
         }
       },
@@ -3482,7 +3482,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Back to the proof."
+            "0": "I have another question."
           }
         }
       },
@@ -3559,7 +3559,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "I will take the second proof."
+            "0": "I'll pull it out of the trough myself."
           }
         }
       },
@@ -3624,7 +3624,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What does Absolute Defense demand?"
+            "0": "What is this tempering matrix?"
           }
         }
       },
@@ -3689,7 +3689,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Where is this proof held?"
+            "0": "What turned your smiths?"
           }
         }
       },
@@ -3754,7 +3754,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What should I expect inside?"
+            "0": "Tell me about their master."
           }
         }
       },
@@ -3799,7 +3799,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Not right now."
+            "0": "Not this heat. I'll be back."
           }
         }
       },
@@ -3876,7 +3876,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Here is the proof."
+            "0": "The Absolute Defense Sith Tempering Matrix, cold as you asked."
           }
         }
       },
@@ -3941,7 +3941,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Back to the proof."
+            "0": "One more thing before I go down."
           }
         }
       },
@@ -4018,7 +4018,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "I will take the breach proof."
+            "0": "I'll bring hands I trust to the anvil."
           }
         }
       },
@@ -4083,7 +4083,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What does Absolute Defense demand?"
+            "0": "Who is this warden?"
           }
         }
       },
@@ -4148,7 +4148,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Where is this proof held?"
+            "0": "What is the sigil he wears?"
           }
         }
       },
@@ -4213,7 +4213,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What should I expect inside?"
+            "0": "Why a crew? I've held alone so far."
           }
         }
       },
@@ -4258,7 +4258,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Not right now."
+            "0": "My crew isn't gathered yet."
           }
         }
       },
@@ -4335,7 +4335,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Here is the proof."
+            "0": "The Absolute Defense Cracked Anvil Sigil, off the warden himself."
           }
         }
       },
@@ -4400,7 +4400,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Back to the proof."
+            "0": "Before I go, a question."
           }
         }
       },
@@ -4477,7 +4477,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "I will take the circle proof."
+            "0": "Four overseers. Consider them worked."
           }
         }
       },
@@ -4542,7 +4542,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What does Absolute Defense demand?"
+            "0": "What does the token clear, exactly?"
           }
         }
       },
@@ -4607,7 +4607,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Where is this proof held?"
+            "0": "I'm ready to ask about the master."
           }
         }
       },
@@ -4672,7 +4672,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What should I expect inside?"
+            "0": "How does the steel look, overseer?"
           }
         }
       },
@@ -4717,7 +4717,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Not right now."
+            "0": "The deep floor can wait one more day."
           }
         }
       },
@@ -4794,7 +4794,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Here is the proof."
+            "0": "One Absolute Defense Overseer's Clearance Token, taken whole."
           }
         }
       },
@@ -4859,7 +4859,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Back to the proof."
+            "0": "Hold the heat. I have questions."
           }
         }
       },
@@ -4936,7 +4936,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "I will take the mastery proof."
+            "0": "We'll take the ring together. I'll finish it."
           }
         }
       },
@@ -5001,7 +5001,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What does Absolute Defense demand?"
+            "0": "Can his guard be passed at all?"
           }
         }
       },
@@ -5066,7 +5066,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Where is this proof held?"
+            "0": "Why send me? Why not go yourself?"
           }
         }
       },
@@ -5131,7 +5131,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What should I expect inside?"
+            "0": "And the forge, when he falls?"
           }
         }
       },
@@ -5176,7 +5176,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Not right now."
+            "0": "Not until my crew is rested."
           }
         }
       },
@@ -5253,7 +5253,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Here is the proof."
+            "0": "The master's guard broke. The ring is quiet."
           }
         }
       }

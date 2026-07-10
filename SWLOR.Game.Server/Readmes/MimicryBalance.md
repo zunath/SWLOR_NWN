@@ -59,6 +59,10 @@ Cooldowns are banded by tier and shape (higher tiers and area techniques recast 
 
 Four techniques deal no direct damage — `Chitin Guard`, `Iron Carapace` (defensive self-buffs), `Savage Roar` (debuff), and `Terrifying Bellow` (AoE fear). Their power is the effect itself, whose magnitude is a fixed, shared status-effect class also used by the source creatures. Per the stat-driven-gameplay rule, those shared magnitudes are **not** re-scaled per-caster (doing so would special-case shared infrastructure and skew NPC balance), so a damage-scaling attribute is meaningless for them. They are instead balanced through the same levers as any utility ability — Stamina cost, cooldown, and effect duration, all normalized to their tier band. Their attribute assignment is retained as thematic metadata only.
 
+### Hard crowd-control durations
+
+Effects copied from creatures carried creature-length durations that are oppressive in player hands (a 14-second knockdown, for instance). Hard full-lockout control is capped to player-appropriate lengths: **Knockdown and Stun to 3 seconds** (matching native player knockdowns) and **Dazed to 6 seconds**. Soft debuffs that still let the target act — Terrified (−8% Attack/Defense), Immobilized (root), Hamstring, Disoriented, Weakened, Vulnerable — keep their longer durations, since they are not lockouts.
+
 ### Loadout economy (technique slots)
 
 The slot budget is the primary limiter on simultaneous power, since a player can freely swap techniques out of combat and cheaply learns the entire pool. Combat Analyzer grants **2** slots; Analyzer Memory adds **+1 per rank** (3 ranks) for a maximum of **5**. With slot costs of 1–3 (rising with tier), a fully-invested analyst runs roughly 2–3 techniques at once — a deliberate jack-of-all-trades kit that must be tailored per encounter rather than a standing library of every effect.

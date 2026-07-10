@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 30f,
                 10,
                 28,
-                14,
+                3,
                 typeof(StunnedStatusEffect),
                 CombatImpactAreaShape.Line,
                 8f,

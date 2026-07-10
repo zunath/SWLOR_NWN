@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 InnateAbilityProfile.Mimicry,
                 RecastGroup.ForceRend,
                 1.2f,
-                16f,
+                15f,
                 5,
                 16,
                 15,

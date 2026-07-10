@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 InnateAbilityProfile.Mimicry,
                 RecastGroup.BarbedVolley,
                 1.4f,
-                17f,
+                18f,
                 5,
                 13,
                 12,

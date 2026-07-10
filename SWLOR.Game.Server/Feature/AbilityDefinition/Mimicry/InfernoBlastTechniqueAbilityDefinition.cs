@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .Create(FeatType.InfernoBlastTechnique, profile.PlayerPerkType)
                 .Name("Inferno Blast Technique")
                 .HasActivationDelay(2.5f)
-                .HasRecastDelay(RecastGroup.InfernoBlast, 34f)
+                .HasRecastDelay(RecastGroup.InfernoBlast, 30f)
                 .UsesAnimation(Animation.CastOutAnimation)
                 .IsCastedAbility()
                 .HasMaxRange(10f)

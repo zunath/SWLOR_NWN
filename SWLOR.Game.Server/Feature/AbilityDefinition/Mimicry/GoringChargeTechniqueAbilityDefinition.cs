@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 InnateAbilityProfile.Mimicry,
                 RecastGroup.GoringCharge,
                 1.5f,
-                22f,
+                24f,
                 8,
                 20,
                 10,

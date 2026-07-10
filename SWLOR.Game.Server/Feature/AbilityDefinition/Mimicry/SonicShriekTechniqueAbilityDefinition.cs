@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 InnateAbilityProfile.Mimicry,
                 RecastGroup.SonicShriek,
                 1.3f,
-                19f,
+                18f,
                 5,
                 13,
                 12,

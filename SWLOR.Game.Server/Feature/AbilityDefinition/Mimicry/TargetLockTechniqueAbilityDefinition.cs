@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 InnateAbilityProfile.Mimicry,
                 RecastGroup.TargetLock,
                 0.8f,
-                20f,
+                12f,
                 3,
                 10,
                 15,

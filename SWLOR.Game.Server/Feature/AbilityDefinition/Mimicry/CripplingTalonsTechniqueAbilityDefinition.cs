@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .HasActivationDelay(1.0f)
                 .IsCastedAbility()
                 .RequirementStamina(3)
-                .HasRecastDelay(RecastGroup.CripplingTalons, 10f)
+                .HasRecastDelay(RecastGroup.CripplingTalons, 12f)
                 .UsesAnimation(Animation.CrossCut)
                 .IsSingleTargetAbility()
                 .RequiresTarget()

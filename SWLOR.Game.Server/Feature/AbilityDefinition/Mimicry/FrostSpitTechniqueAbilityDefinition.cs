@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 InnateAbilityProfile.Mimicry,
                 RecastGroup.FrostSpit,
                 1.2f,
-                24f,
+                12f,
                 3,
                 10,
                 6,

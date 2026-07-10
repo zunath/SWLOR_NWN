@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 InnateAbilityProfile.Mimicry,
                 RecastGroup.RendingCarve,
                 1.0f,
-                18f,
+                15f,
                 5,
                 16,
                 14,

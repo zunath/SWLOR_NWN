@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 InnateAbilityProfile.Mimicry,
                 RecastGroup.ToxicSpit,
                 1.0f,
-                18f,
+                12f,
                 3,
                 10,
                 30,

@@ -44,16 +44,24 @@ Resulting distribution across all 88 techniques (all six attributes represented)
 
 Base damage and Stamina cost are banded by tier. Single-target hits use the higher damage figure in a band; area techniques (cone/sphere/line) use the lower figure, reflecting that they hit multiple targets:
 
-| Tier | Single dmg | Area dmg | STM |
-|---|---|---|---|
-| T1 | 10 | 8 | 3 |
-| T2 | 16 | 13 | 5 |
-| T3 | 24 | 20 | 7 (+1 for area, i.e. 8) |
-| T4 | 32 | 28 | 9 (+1 for area, i.e. 10) |
+| Tier | Single dmg | Area dmg | STM | Cooldown (single/area) |
+|---|---|---|---|---|
+| T1 | 10 | 8 | 3 | 12s / 15s |
+| T2 | 16 | 13 | 5 | 15s / 18s |
+| T3 | 24 | 20 | 7 (+1 for area, i.e. 8) | 18s / 24s |
+| T4 | 32 | 28 | 9 (+1 for area, i.e. 10) | 24s / 30s |
 
 Learn gates (Mimicry skill requirement) scale with tier: **T1 = Mimicry 0, T2 = Mimicry 15, T3 = Mimicry 30, T4 = Mimicry 45.**
 
-Utility/self-buff techniques with no direct damage component (e.g. `Chitin Guard`, `Iron Carapace`, `Savage Roar`, `Terrifying Bellow`) still carry a base damage value of `0` and follow the STM cost of their tier band; they still declare a scaling stat for consistency with the shared ability system even though it has no damage to scale.
+Cooldowns are banded by tier and shape (higher tiers and area techniques recast slower), replacing the ad-hoc creature values inherited during generation.
+
+### Utility / crowd-control techniques
+
+Four techniques deal no direct damage — `Chitin Guard`, `Iron Carapace` (defensive self-buffs), `Savage Roar` (debuff), and `Terrifying Bellow` (AoE fear). Their power is the effect itself, whose magnitude is a fixed, shared status-effect class also used by the source creatures. Per the stat-driven-gameplay rule, those shared magnitudes are **not** re-scaled per-caster (doing so would special-case shared infrastructure and skew NPC balance), so a damage-scaling attribute is meaningless for them. They are instead balanced through the same levers as any utility ability — Stamina cost, cooldown, and effect duration, all normalized to their tier band. Their attribute assignment is retained as thematic metadata only.
+
+### Loadout economy (technique slots)
+
+The slot budget is the primary limiter on simultaneous power, since a player can freely swap techniques out of combat and cheaply learns the entire pool. Combat Analyzer grants **2** slots; Analyzer Memory adds **+1 per rank** (3 ranks) for a maximum of **5**. With slot costs of 1–3 (rising with tier), a fully-invested analyst runs roughly 2–3 techniques at once — a deliberate jack-of-all-trades kit that must be tailored per encounter rather than a standing library of every effect.
 
 ### Full per-technique table
 

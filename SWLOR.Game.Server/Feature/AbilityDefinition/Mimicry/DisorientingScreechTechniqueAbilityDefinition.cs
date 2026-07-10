@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .Create(FeatType.DisorientingScreechTechnique, profile.PlayerPerkType)
                 .Name("Disorienting Screech Technique")
                 .HasActivationDelay(2.0f)
-                .HasRecastDelay(RecastGroup.DisorientingScreech, 36f)
+                .HasRecastDelay(RecastGroup.DisorientingScreech, 24f)
                 .UsesAnimation(Animation.FireForgetTaunt)
                 .IsCastedAbility()
                 .HasMaxRange(9f)

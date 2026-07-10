@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 InnateAbilityProfile.Mimicry,
                 RecastGroup.GlacialSlime,
                 1.2f,
-                17f,
+                15f,
                 5,
                 16,
                 10,

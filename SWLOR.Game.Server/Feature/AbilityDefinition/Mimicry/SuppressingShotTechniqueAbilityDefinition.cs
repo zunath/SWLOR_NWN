@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 InnateAbilityProfile.Mimicry,
                 RecastGroup.SuppressingShot,
                 1.2f,
-                17f,
+                18f,
                 5,
                 13,
                 4,

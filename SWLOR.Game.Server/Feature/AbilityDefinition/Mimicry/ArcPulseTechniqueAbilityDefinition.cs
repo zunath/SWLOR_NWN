@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 InnateAbilityProfile.Mimicry,
                 RecastGroup.ArcPulse,
                 1.3f,
-                20f,
+                24f,
                 8,
                 20,
                 12,

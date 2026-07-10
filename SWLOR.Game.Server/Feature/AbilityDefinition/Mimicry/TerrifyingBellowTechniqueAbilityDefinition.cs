@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 InnateAbilityProfile.Mimicry,
                 RecastGroup.TerrifyingBellow,
                 1.0f,
-                20f,
+                30f,
                 10,
                 0,
                 18,

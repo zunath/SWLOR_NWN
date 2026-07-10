@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 InnateAbilityProfile.Mimicry,
                 RecastGroup.CapacitorSurge,
                 1.2f,
-                20f,
+                18f,
                 5,
                 13,
                 9,

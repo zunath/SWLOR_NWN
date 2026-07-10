@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 InnateAbilityProfile.Mimicry,
                 RecastGroup.PouncingStrike,
                 1.2f,
-                18f,
+                15f,
                 5,
                 16,
                 3,

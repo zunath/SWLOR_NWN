@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 InnateAbilityProfile.Mimicry,
                 RecastGroup.CryoBile,
                 1.6f,
-                24f,
+                30f,
                 10,
                 28,
                 12,

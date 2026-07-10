@@ -35,7 +35,7 @@ namespace SWLOR.Game.Server.Service
         private const float LearnMaxDistance = 40.0f;
 
         private const int BaseSlotsWithAnalyzer = 2;
-        private const int SlotsPerAnalyzerMemoryLevel = 2;
+        private const int SlotsPerAnalyzerMemoryLevel = 1;
 
         private const int BaseLearnChancePercent = 20;
         private const int LearnChancePerRankDelta = 2;

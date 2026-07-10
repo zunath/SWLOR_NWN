@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .Create(FeatType.SeismicSlamTechnique, profile.PlayerPerkType)
                 .Name("Seismic Slam Technique")
                 .HasActivationDelay(2.0f)
-                .HasRecastDelay(RecastGroup.SeismicSlam, 28f)
+                .HasRecastDelay(RecastGroup.SeismicSlam, 24f)
                 .UsesAnimation(Animation.DoubleThrust)
                 .IsCastedAbility()
                 .HasMaxRange(6f)

@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 InnateAbilityProfile.Mimicry,
                 RecastGroup.MaulingBite,
                 1.1f,
-                13f,
+                15f,
                 5,
                 16,
                 12,

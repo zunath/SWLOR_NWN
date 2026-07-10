@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 InnateAbilityProfile.Mimicry,
                 RecastGroup.PermafrostRupture,
                 2.0f,
-                26f,
+                24f,
                 8,
                 20,
                 8,

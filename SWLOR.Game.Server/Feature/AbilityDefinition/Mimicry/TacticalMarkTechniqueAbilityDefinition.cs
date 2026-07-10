@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 InnateAbilityProfile.Mimicry,
                 RecastGroup.TacticalMark,
                 0.9f,
-                20f,
+                15f,
                 5,
                 16,
                 15,

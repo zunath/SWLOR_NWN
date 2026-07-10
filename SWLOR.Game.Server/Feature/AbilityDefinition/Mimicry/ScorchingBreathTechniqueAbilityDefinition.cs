@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 InnateAbilityProfile.Mimicry,
                 RecastGroup.ScorchingBreath,
                 1.5f,
-                22f,
+                30f,
                 10,
                 28,
                 18,

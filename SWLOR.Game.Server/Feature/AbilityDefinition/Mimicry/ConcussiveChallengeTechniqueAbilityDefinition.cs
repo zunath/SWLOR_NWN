@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 InnateAbilityProfile.Mimicry,
                 RecastGroup.ConcussiveChallenge,
                 1.0f,
-                24f,
+                18f,
                 5,
                 13,
                 6,

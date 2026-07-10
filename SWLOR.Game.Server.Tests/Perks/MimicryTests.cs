@@ -365,17 +365,17 @@ public class MimicryTests
         var memoryLevel1 = new Player();
         memoryLevel1.Perks[PerkType.CombatAnalyzer] = 1;
         memoryLevel1.Perks[PerkType.AnalyzerMemory] = 1;
-        Mimicry.GetMaxSlots(memoryLevel1).Should().Be(4);
+        Mimicry.GetMaxSlots(memoryLevel1).Should().Be(3);
 
         var memoryLevel2 = new Player();
         memoryLevel2.Perks[PerkType.CombatAnalyzer] = 1;
         memoryLevel2.Perks[PerkType.AnalyzerMemory] = 2;
-        Mimicry.GetMaxSlots(memoryLevel2).Should().Be(6);
+        Mimicry.GetMaxSlots(memoryLevel2).Should().Be(4);
 
         var memoryLevel3 = new Player();
         memoryLevel3.Perks[PerkType.CombatAnalyzer] = 1;
         memoryLevel3.Perks[PerkType.AnalyzerMemory] = 3;
-        Mimicry.GetMaxSlots(memoryLevel3).Should().Be(8);
+        Mimicry.GetMaxSlots(memoryLevel3).Should().Be(5);
     }
 
     [Test]

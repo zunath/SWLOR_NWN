@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 InnateAbilityProfile.Mimicry,
                 RecastGroup.StaticWeb,
                 1.4f,
-                22f,
+                18f,
                 5,
                 13,
                 10,

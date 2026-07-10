@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 InnateAbilityProfile.Mimicry,
                 RecastGroup.RendingBite,
                 1.2f,
-                14f,
+                12f,
                 3,
                 10,
                 24,

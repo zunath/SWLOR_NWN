@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 InnateAbilityProfile.Mimicry,
                 RecastGroup.ChitinGuard,
                 0.8f,
-                32f,
+                15f,
                 5,
                 typeof(IronCarapaceStatusEffect),
                 30f,

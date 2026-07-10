@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 InnateAbilityProfile.Mimicry,
                 RecastGroup.Capstone,
                 1.3f,
-                34f,
+                24f,
                 9,
                 32,
                 12,

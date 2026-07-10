@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 InnateAbilityProfile.Mimicry,
                 RecastGroup.SavageRoar,
                 1.0f,
-                21f,
+                18f,
                 5,
                 0,
                 14,

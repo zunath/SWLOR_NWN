@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Service
     {
         private static Dictionary<string, string> ItemNamesByResref { get; set; } = new();
         private static Dictionary<string, string> ItemIconsByResref { get; set; } = new();
-        private static Dictionary<string, bool> ItemTradeableByResref { get; set; } = new();
+        private static Dictionary<string, bool> ItemSearchableByResref { get; set; } = new();
         private static Dictionary<int, int> PortraitIdsByInternalId { get; } = new();
         private static Dictionary<int, int> PortraitInternalIdsByPortraitId { get; } = new();
         private static Dictionary<int, string> PortraitResrefByInternalId { get; } = new();
@@ -118,9 +118,10 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Stores the name, icon, and tradeability of an individual item into the cache.
-        /// Tradeability follows the player market's listing rules: containers, cursed items,
-        /// plot items, and legacy items cannot be traded between players.
+        /// Stores the name, icon, and searchability of an individual item into the cache. An item is
+        /// searchable when it follows the player market's listing rules (no containers, cursed, plot,
+        /// or legacy items) and is not an NPC/creature/internal item per
+        /// <see cref="Item.IsEconomyRestricted"/>.
         /// </summary>
         /// <param name="resref">The resref of the item we want to cache.</param>
         private static void CacheItemNameByResref(string resref)
@@ -129,18 +130,19 @@ namespace SWLOR.Game.Server.Service
             var item = CreateItemOnObject(resref, storageContainer);
             ItemNamesByResref[resref] = GetName(item);
             ItemIconsByResref[resref] = Item.GetIconResref(item);
-            ItemTradeableByResref[resref] = !GetHasInventory(item) &&
-                                            !GetItemCursedFlag(item) &&
-                                            !GetPlotFlag(item) &&
-                                            !Item.IsLegacyItem(item);
+            ItemSearchableByResref[resref] = !GetHasInventory(item) &&
+                                             !GetItemCursedFlag(item) &&
+                                             !GetPlotFlag(item) &&
+                                             !Item.IsLegacyItem(item) &&
+                                             !Item.IsEconomyRestricted(item);
             DestroyObject(item);
         }
 
         /// <summary>
         /// Searches the cached item catalog for items whose name contains the given text. Matching is
         /// case-insensitive and runs against the in-memory name cache, so it is safe to call on demand.
-        /// Results are limited to tradeable items, following the same rules the player market uses for
-        /// listings: containers, cursed items, plot items, and legacy items are excluded.
+        /// Results are limited to items eligible for player-facing economy surfaces: player-market
+        /// tradeable, and not an NPC/creature/internal item (see <see cref="Item.IsEconomyRestricted"/>).
         /// </summary>
         /// <param name="search">The partial name to search for. Whitespace/empty returns no results.</param>
         /// <param name="maxResults">The maximum number of results to return.</param>
@@ -155,27 +157,27 @@ namespace SWLOR.Game.Server.Service
             return ItemNamesByResref
                 .Where(x => !string.IsNullOrWhiteSpace(x.Value) && x.Value.ToLower().Contains(lowered))
                 .OrderBy(x => x.Value)
-                .Where(x => IsItemTradeableByResref(x.Key))
+                .Where(x => IsItemSearchableByResref(x.Key))
                 .Take(maxResults)
                 .Select(x => (x.Key, x.Value))
                 .ToList();
         }
 
         /// <summary>
-        /// Determines whether an item blueprint is tradeable between players, per the player market's
-        /// listing rules. If the resref isn't cached (i.e. it wasn't part of the module's item palette
-        /// at boot), the item is spawned once to evaluate it.
+        /// Determines whether an item blueprint may appear in player-facing economy search surfaces:
+        /// player-market tradeable, and not an NPC/creature/internal item. If the resref isn't cached
+        /// (i.e. it wasn't part of the module's item palette at boot), the item is spawned once to evaluate it.
         /// </summary>
         /// <param name="resref">The item blueprint resref to check.</param>
-        /// <returns>true if the item can be traded between players, false otherwise.</returns>
-        public static bool IsItemTradeableByResref(string resref)
+        /// <returns>true if the item may be shown to players, false otherwise.</returns>
+        public static bool IsItemSearchableByResref(string resref)
         {
-            if (!ItemTradeableByResref.ContainsKey(resref))
+            if (!ItemSearchableByResref.ContainsKey(resref))
             {
                 CacheItemNameByResref(resref);
             }
 
-            return ItemTradeableByResref[resref];
+            return ItemSearchableByResref[resref];
         }
 
         /// <summary>

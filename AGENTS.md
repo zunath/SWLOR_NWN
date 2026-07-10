@@ -43,6 +43,13 @@ This file is the shared rule set for all coding agents. Codex reads it natively;
 - Property and ship permission management is a narrow exception because it grants persistent access to real character records. These screens may search canonical character names as well as observer-known names, and should display `PlayerName.GetKnownNameOrFallbackByPlayerId(observer, playerId, fallbackName)` so fake/known names are preserved when present and canonical names are available when no known name exists.
 - Server logs and audit trails must retain raw/canonical player identity for moderation and traceability. Raw/canonical player identity is also acceptable for DM/admin-only tools, persisted ownership fields, and messages shown only to that same player. Public custom names deliberately entered by players, such as renamed properties or droids, may remain visible.
 
+## Economy-Restricted Items
+
+- Player-facing item search and economy surfaces (quest contract objective search, and any future market-style blueprint pickers) must not show NPC-only, creature, or internal items. `Item.IsEconomyRestricted` is the single source of truth; `Cache.IsItemSearchableByResref` consumes it. Never hardcode resref lists to exclude items — extend the shared classifier or flag the blueprint.
+- Creature-equipment base item types (creature weapons and `CreatureItem` "stat skins") and items whose name carries the reserved `[NPC]`/`(NPC` prefix are excluded automatically, as are blueprints with no real inventory icon.
+- For an NPC-only item that a normal player item is otherwise indistinguishable from — a real base type, a real icon, and no `[NPC]` name (e.g. the "Specialist" NPC weapons, "Republic Special Forces Rifle") — set the `NO_ECONOMY` local variable to `1` on the blueprint. This is the explicit opt-out the runtime classifier reads. Prefer this over broadening name/base-type heuristics, which risk hiding legitimate player items.
+- If a genuinely new NPC naming convention or creature base type is introduced, update the pattern/base-type set in `Item.IsEconomyRestricted` (not a resref list). `EconomyRestrictedItemTests` guards that every `[NPC]`/`(NPC` blueprint stays covered; keep it green.
+
 ## Design Bible
 
 - Follow `SWLOR.Game.Server/Readmes/DesignBibleWorkbookRules.md` when editing any Design Bible workbook.

@@ -878,6 +878,100 @@ namespace SWLOR.Game.Server.Service
         /// <returns>A resref of the icon to use.</returns>
         public static string GetIconResref(uint item)
         {
+            return ResolveIconResref(item, out _);
+        }
+
+        /// <summary>
+        /// Determines whether an item has a real inventory icon, as opposed to falling back to the
+        /// generic placeholder icon. Items with no real icon are almost always internal, prop, or
+        /// creature items that should not appear on player-facing economy surfaces.
+        /// </summary>
+        /// <param name="item">The item to check.</param>
+        /// <returns>true if a real icon resource resolved, false if the generic fallback was used.</returns>
+        public static bool HasInventoryIcon(uint item)
+        {
+            ResolveIconResref(item, out var hasRealIcon);
+            return hasRealIcon;
+        }
+
+        /// <summary>
+        /// Creature-equipment base item types. Players never trade these; the "stat skins" that carry
+        /// a creature's combat stats are <see cref="BaseItem.CreatureItem"/>.
+        /// </summary>
+        private static readonly HashSet<BaseItem> EconomyRestrictedBaseItems = new()
+        {
+            BaseItem.Invalid,
+            BaseItem.CreatureSlashWeapon,
+            BaseItem.CreaturePierceWeapon,
+            BaseItem.CreatureBludgeonWeapon,
+            BaseItem.CreatureSlashPierceWeapon,
+            BaseItem.CreatureItem
+        };
+
+        /// <summary>
+        /// Name prefixes the builders reserve for NPC-only gear, anchored to the start of the item name.
+        /// </summary>
+        private static readonly string[] EconomyRestrictedNamePrefixes = { "[NPC]", "(NPC" };
+
+        /// <summary>
+        /// Blueprint local variable that explicitly excludes an item from player-facing economy surfaces.
+        /// Set this on NPC-only blueprints that a normal player item is otherwise indistinguishable from
+        /// (a real base type, a real icon, and no [NPC] name), such as the "Specialist" NPC weapons.
+        /// </summary>
+        public const string NoEconomyVariable = "NO_ECONOMY";
+
+        /// <summary>
+        /// Determines whether an item should be hidden from player-facing economy surfaces (contract
+        /// objective search, and any future market-style blueprint pickers). Combines creature base
+        /// types, the reserved NPC name prefixes, an explicit blueprint opt-out flag, and the absence
+        /// of a real inventory icon. This is the single source of truth; callers must not re-derive it.
+        /// </summary>
+        /// <param name="item">The item to classify.</param>
+        /// <returns>true if the item is NPC/creature/internal and should not be shown to players.</returns>
+        public static bool IsEconomyRestricted(uint item)
+        {
+            if (EconomyRestrictedBaseItems.Contains(GetBaseItemType(item)))
+                return true;
+
+            if (GetLocalInt(item, NoEconomyVariable) == 1)
+                return true;
+
+            if (IsEconomyRestrictedName(GetName(item)))
+                return true;
+
+            // Post icon-resolution, an item with no real inventory icon is almost always an internal
+            // or prop item that was never meant to be seen by players.
+            if (!HasInventoryIcon(item))
+                return true;
+
+            return false;
+        }
+
+        /// <summary>
+        /// The name-based portion of <see cref="IsEconomyRestricted"/>, split out so it can be unit
+        /// tested without spawning an item. A blank name denotes an internal/unfinished blueprint.
+        /// </summary>
+        /// <param name="name">The item's display name.</param>
+        /// <returns>true if the name marks the item as NPC-only or internal.</returns>
+        public static bool IsEconomyRestrictedName(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+                return true;
+
+            var trimmed = name.TrimStart();
+
+            foreach (var prefix in EconomyRestrictedNamePrefixes)
+            {
+                if (trimmed.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+                    return true;
+            }
+
+            return false;
+        }
+
+        private static string ResolveIconResref(uint item, out bool hasRealIcon)
+        {
+            hasRealIcon = true;
             var baseItem = GetBaseItemType(item);
 
             if (baseItem == BaseItem.Cloak) // Cloaks use PLTs so their default icon doesn't really work
@@ -960,6 +1054,7 @@ namespace SWLOR.Game.Server.Service
                     return defaultIcon + "_001";
             }
 
+            hasRealIcon = false;
             return GenericItemIconResref;
         }
 

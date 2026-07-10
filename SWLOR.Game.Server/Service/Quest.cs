@@ -123,7 +123,7 @@ namespace SWLOR.Game.Server.Service
                     if (quest == null)
                     {
                         staleQuestIds.Add(questId);
-                        Log.Write(LogGroup.Error, $"Player '{playerId}' has quest '{questId}' which is no longer registered. Removing it from their quest log.", true);
+                        Log.Write(LogGroup.Error, $"Player '{playerId}' has quest '{questId}' which is no longer registered. Removing it from their quest log.");
                         continue;
                     }
 
@@ -152,6 +152,7 @@ namespace SWLOR.Game.Server.Service
                     }
 
                     DB.Set(dbPlayer);
+                    SendMessageToPC(player, ColorToken.Red("One or more quests in your journal are no longer available (e.g. a cancelled or expired contract) and have been removed."));
                 }
             });
         }
@@ -283,6 +284,15 @@ namespace SWLOR.Game.Server.Service
 
             AssignCommand(collector, () => SetFacingPoint(GetPosition(player)));
             AssignCommand(player, () => ActionInteractObject(collector));
+
+            // Collectors are destroyed when the final item is turned in, but a player can open one
+            // and walk away - sweep it up after a few minutes so abandoned collectors don't litter
+            // the area until reboot. Turned-in items are consumed immediately, so nothing is lost.
+            DelayCommand(300f, () =>
+            {
+                if (GetIsObjectValid(collector))
+                    DestroyObject(collector);
+            });
         }
 
         /// <summary>
@@ -522,11 +532,21 @@ namespace SWLOR.Game.Server.Service
             AdvanceQuest(player, owner, questId);
 
             // If no more items are necessary for this quest, force the player to speak with the NPC again.
+            // Quests turned in without an NPC (e.g. quest contracts started from a board's NUI, where the
+            // collector's owner is the module object) complete inline during AdvanceQuest above - starting
+            // a conversation with a non-creature owner hard-crashes the server.
             var itemsRequired = dbPlayer.Quests[questId].ItemProgresses.Sum(x => x.Value);
 
             if (itemsRequired <= 0)
             {
-                AssignCommand(player, () => ActionStartConversation(owner, string.Empty, true, false));
+                if (GetIsObjectValid(owner) && GetObjectType(owner) == ObjectType.Creature)
+                {
+                    AssignCommand(player, () => ActionStartConversation(owner, string.Empty, true, false));
+                }
+
+                // The collector has served its purpose - destroy it so it doesn't linger on the
+                // ground (closing the player's open container view in the process).
+                DestroyObject(container);
             }
         }
 

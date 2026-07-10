@@ -26,6 +26,12 @@ namespace SWLOR.Game.Server.Service.QuestService
         public bool AllowRewardSelection { get; set; }
 
         /// <summary>
+        /// Whether completing this quest counts toward quest-completion achievements.
+        /// Player-authored content (e.g. quest contracts) should not.
+        /// </summary>
+        public bool CountsTowardAchievements { get; set; } = true;
+
+        /// <summary>
         /// When set, invoked with the player and the item just before a turned-in collect-item objective item
         /// is consumed/destroyed. Null for all static quests. Used by systems (such as quest contracts) which
         /// need to reroute turned-in items instead of letting them be destroyed outright.
@@ -472,8 +478,28 @@ namespace SWLOR.Game.Server.Service.QuestService
             SendMessageToPC(player, "Quest '" + Name + "' complete!");
             RemoveJournalQuestEntry(QuestId, player, false);
 
+            // Custom journal entries cannot be removed by RemoveJournalQuestEntry, so the entry is
+            // re-added flagged as completed. This updates the player's journal immediately; the entry
+            // drops off entirely at their next login since only active quests are re-applied then.
+            PlayerPlugin.AddCustomJournalEntry(player, new JournalEntry
+            {
+                Name = Name,
+                Text = States[quest.CurrentState].JournalText,
+                Tag = QuestId,
+                State = quest.CurrentState,
+                Priority = 1,
+                IsQuestCompleted = true,
+                IsQuestDisplayed = true,
+                Updated = 1,
+                CalendarDay = GetCalendarDay(),
+                TimeOfDay = GetTimeHour()
+            }, true);
+
             QuestEncounter.RefreshVisibilityForPlayer(player);
-            EventsPlugin.SignalEvent("SWLOR_COMPLETE_QUEST", player);
+
+            if (CountsTowardAchievements)
+                EventsPlugin.SignalEvent("SWLOR_COMPLETE_QUEST", player);
+
             Gui.PublishRefreshEvent(player, new QuestCompletedRefreshEvent(QuestId));
         }
     }

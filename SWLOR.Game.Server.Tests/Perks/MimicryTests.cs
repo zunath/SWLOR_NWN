@@ -53,7 +53,7 @@ public class MimicryTests
             ability.MimicryTier.Should().BeInRange(1, 4);
             ability.MimicrySlotCost.Should().BeInRange(1, 3);
             ability.MimicrySourceFeat.Should().NotBe(FeatType.Invalid);
-            ability.EffectiveLevelPerkType.Should().Be(PerkType.TechniquePotency);
+            ability.EffectiveLevelPerkType.Should().Be(PerkType.CombatAnalyzer);
             ability.SkillType.Should().Be(SkillType.Mimicry);
             ability.IsHostileAbility.Should().BeTrue($"{entry.Technique} is copied from a hostile NPC ability");
         }
@@ -107,7 +107,7 @@ public class MimicryTests
             ability.Name.Should().NotContain("Technique", $"{feat}'s player-facing name should not carry the 'Technique' label");
             ability.MimicryTier.Should().BeInRange(1, 4, $"{feat}'s MimicryTier should be between 1 and 4");
             ability.MimicrySlotCost.Should().BeInRange(1, 3, $"{feat}'s MimicrySlotCost should be between 1 and 3");
-            ability.EffectiveLevelPerkType.Should().Be(PerkType.TechniquePotency, $"{feat} should scale with Technique Potency");
+            ability.EffectiveLevelPerkType.Should().Be(PerkType.CombatAnalyzer, $"{feat} should scale with Combat Analyzer level");
             ability.SkillType.Should().Be(SkillType.Mimicry, $"{feat} should use the Mimicry skill");
             ability.MimicrySourceFeat.Should().NotBe(FeatType.Invalid, $"{feat} should declare a MimicrySourceFeat");
 
@@ -197,30 +197,27 @@ public class MimicryTests
     public void MimicryPerkDefinition_BuildsExpectedPerksAndLevels()
     {
         var perks = BuildPerksWithout2daLookup(new MimicryPerkDefinition(),
-            "CombatAnalyzer", "TechniquePotency", "AnalyzerMemory", "PatternRecognition");
+            "CombatAnalyzer", "AnalyzerMemory", "PatternRecognition");
 
-        perks.Should().HaveCount(4);
+        perks.Should().HaveCount(3);
         perks.Values.Should().OnlyContain(perk => perk.Category == PerkCategoryType.Mimicry);
 
+        // Combat Analyzer is the unlock AND the technique-potency / tier-gate progression:
+        // level 1 unlocks tier 1, each subsequent level improves potency and unlocks the next tier.
         var combatAnalyzer = perks[PerkType.CombatAnalyzer];
         combatAnalyzer.Name.Should().Be("Combat Analyzer");
-        combatAnalyzer.PerkLevels.Should().HaveCount(1);
-        combatAnalyzer.PerkLevels[1].Price.Should().Be(2);
-        AssertSkillRequirement(combatAnalyzer.PerkLevels[1], SkillType.Mimicry, 0);
-        combatAnalyzer.PerkLevels[1].Requirements.OfType<PerkRequirementMustHavePerk>().Should().BeEmpty();
+        combatAnalyzer.PerkLevels.Should().HaveCount(4);
         combatAnalyzer.RefundedTriggers.Should().ContainSingle();
-
-        var technique = perks[PerkType.TechniquePotency];
-        technique.Name.Should().Be("Technique Potency");
-        technique.PerkLevels.Should().HaveCount(4);
-        technique.RefundedTriggers.Should().BeEmpty();
-        var expectedTechniqueSkillRanks = new[] { 5, 15, 25, 35 };
+        var expectedAnalyzerPrices = new[] { 2, 3, 3, 3 };
+        var expectedAnalyzerSkillRanks = new[] { 0, 15, 30, 45 };
         for (var level = 1; level <= 4; level++)
         {
-            technique.PerkLevels[level].Price.Should().Be(3);
-            AssertSkillRequirement(technique.PerkLevels[level], SkillType.Mimicry, expectedTechniqueSkillRanks[level - 1]);
-            AssertMustHavePerkRequirement(technique.PerkLevels[level], PerkType.CombatAnalyzer);
+            combatAnalyzer.PerkLevels[level].Price.Should().Be(expectedAnalyzerPrices[level - 1]);
+            AssertSkillRequirement(combatAnalyzer.PerkLevels[level], SkillType.Mimicry, expectedAnalyzerSkillRanks[level - 1]);
         }
+        combatAnalyzer.PerkLevels.Values.Should().OnlyContain(
+            lvl => !lvl.Requirements.OfType<PerkRequirementMustHavePerk>().Any(),
+            "Combat Analyzer is the root perk and requires no other perk");
 
         var memory = perks[PerkType.AnalyzerMemory];
         memory.Name.Should().Be("Analyzer Memory");
@@ -253,7 +250,6 @@ public class MimicryTests
         var expectedIconFeats = new Dictionary<PerkType, FeatType>
         {
             [PerkType.CombatAnalyzer] = FeatType.CombatAnalyzerTrait,
-            [PerkType.TechniquePotency] = FeatType.TechniquePotencyTrait,
             [PerkType.AnalyzerMemory] = FeatType.AnalyzerMemoryTrait,
             [PerkType.PatternRecognition] = FeatType.PatternRecognitionTrait,
         };

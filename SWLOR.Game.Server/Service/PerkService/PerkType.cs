@@ -709,9 +709,8 @@ namespace SWLOR.Game.Server.Service.PerkService
         Hobbled = 761,
         EscapeArtist = 762,
         CombatAnalyzer = 763,
-        TechniquePotency = 764,
         AnalyzerMemory = 765,
         PatternRecognition = 766,
-        // IDs 649-650 and 767+ are free.
+        // IDs 649-650, 764, and 767+ are free.
     }
 }

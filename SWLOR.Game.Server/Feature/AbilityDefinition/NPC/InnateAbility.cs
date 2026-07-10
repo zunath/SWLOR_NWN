@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
         public static readonly InnateAbilityProfile Staff = new(SkillType.Staff, SkillType.Staff, false);
         public static readonly InnateAbilityProfile Throwing = new(SkillType.Throwing, SkillType.Throwing, false);
         public static readonly InnateAbilityProfile Vibroblade = new(SkillType.Vibroblade, SkillType.Vibroblade, false);
-        public static readonly InnateAbilityProfile Mimicry = new(SkillType.Mimicry, SkillType.Mimicry, false, PerkType.TechniquePotency);
+        public static readonly InnateAbilityProfile Mimicry = new(SkillType.Mimicry, SkillType.Mimicry, false, PerkType.CombatAnalyzer);
 
         public SkillType PlayerSkillType { get; }
         public SkillType NPCSkillType { get; }

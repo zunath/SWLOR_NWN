@@ -13,7 +13,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         public Dictionary<PerkType, PerkDetail> BuildPerks()
         {
             CombatAnalyzer();
-            TechniquePotency();
             AnalyzerMemory();
             PatternRecognition();
 
@@ -29,41 +28,24 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.CombatAnalyzerTrait)
-                .Description("Grants a combat analyzer capable of recording enemy creature techniques. Unlocks technique learning and the Techniques window. Provides 2 technique slots.")
+                .Description("Grants a combat analyzer capable of recording enemy creature techniques. Unlocks technique learning and the Techniques window. Provides 2 technique slots and lets you replicate tier 1 techniques.")
                 .Price(2)
-                .RequirementSkill(SkillType.Mimicry, 0);
-        }
-
-
-        private void TechniquePotency()
-        {
-            _builder.Create(PerkCategoryType.Mimicry, PerkType.TechniquePotency)
-                .Name("Technique Potency")
+                .RequirementSkill(SkillType.Mimicry, 0)
 
                 .AddPerkLevel()
-                .GrantsFeat(FeatType.TechniquePotencyTrait)
-                .Description("Improves the potency of your equipped techniques. (Rank 1)")
-                .Price(3)
-                .RequirementSkill(SkillType.Mimicry, 5)
-                .RequirementMustHavePerk(PerkType.CombatAnalyzer)
-
-                .AddPerkLevel()
-                .Description("Improves the potency of your equipped techniques. (Rank 2)")
+                .Description("Upgrades the combat analyzer, improving equipped technique potency and letting you replicate tier 2 techniques.")
                 .Price(3)
                 .RequirementSkill(SkillType.Mimicry, 15)
-                .RequirementMustHavePerk(PerkType.CombatAnalyzer)
 
                 .AddPerkLevel()
-                .Description("Improves the potency of your equipped techniques. (Rank 3)")
+                .Description("Further upgrades the combat analyzer, improving equipped technique potency and letting you replicate tier 3 techniques.")
                 .Price(3)
-                .RequirementSkill(SkillType.Mimicry, 25)
-                .RequirementMustHavePerk(PerkType.CombatAnalyzer)
+                .RequirementSkill(SkillType.Mimicry, 30)
 
                 .AddPerkLevel()
-                .Description("Improves the potency of your equipped techniques. (Rank 4)")
+                .Description("Maximizes the combat analyzer, improving equipped technique potency and letting you replicate tier 4 techniques.")
                 .Price(3)
-                .RequirementSkill(SkillType.Mimicry, 35)
-                .RequirementMustHavePerk(PerkType.CombatAnalyzer);
+                .RequirementSkill(SkillType.Mimicry, 45);
         }
 
 

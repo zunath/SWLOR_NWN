@@ -1174,8 +1174,8 @@ public class CombatUpgradeBibleSyncTests
                 continue;
             }
 
-            // Mimicry techniques share TechniquePotency's EffectiveLevelPerkType for scaling purposes, but they are
-            // granted by equipping a learned technique through the Mimicry system, not by any perk level's granted
+            // Mimicry techniques use Combat Analyzer as their EffectiveLevelPerkType for scaling/tier gating, but they
+            // are granted by equipping a learned technique through the Mimicry system, not by any perk level's granted
             // feats. Skip them here the same way IsTameRow/IsAuxiliaryGrantedFeat carve out other equip/aux-granted feats.
             if (ability.Detail.MimicryTier > 0)
             {

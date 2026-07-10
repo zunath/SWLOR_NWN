@@ -63,8 +63,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .SetAspect(NuiAspect.Fit)
                             .SetHorizontalAlign(NuiHorizontalAlign.Center)
                             .SetVerticalAlign(NuiVerticalAlign.Middle)
-                            .SetHeight(120f)
-                            .SetWidth(120f);
+                            .SetHeight(150f)
+                            .SetWidth(150f);
                         row.AddSpacer();
                     });
 

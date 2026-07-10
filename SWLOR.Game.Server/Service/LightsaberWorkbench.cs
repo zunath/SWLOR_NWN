@@ -54,7 +54,6 @@ namespace SWLOR.Game.Server.Service
             new SaberHiltPart(121, "Hilt 12.1", "ui_lsh_121"),
             new SaberHiltPart(131, "Hilt 13.1", "ui_lsh_131"),
             new SaberHiltPart(141, "Hilt 14.1", "ui_lsh_141"),
-            new SaberHiltPart(151, "Hilt 15.1 (Training)", "ui_lsh_151"),
             new SaberHiltPart(161, "Hilt 16.1", "ui_lsh_161"),
             new SaberHiltPart(171, "Hilt 17.1 (Curved)", "ui_lsh_171", true),
             new SaberHiltPart(181, "Hilt 18.1 (Curved)", "ui_lsh_181", true),
@@ -87,7 +86,6 @@ namespace SWLOR.Game.Server.Service
             new SaberHiltPart(41, "Hilt 4.1", "ui_ssh_041"),
             new SaberHiltPart(51, "Hilt 5.1", "ui_ssh_051"),
             new SaberHiltPart(61, "Hilt 6.1", "ui_ssh_061"),
-            new SaberHiltPart(71, "Hilt 7.1 (Training Staff)", "ui_ssh_071"),
         };
 
         private static readonly List<SaberBladeColor> _bladeColors = new()

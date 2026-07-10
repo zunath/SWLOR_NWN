@@ -186,8 +186,8 @@ namespace SWLOR.Game.Server.Service
 
                     SetCommandable(true, hologram);
                     AssignCommand(hologram, () => ClearAllActions());
-                    AssignCommand(hologram, () => ActionPlayAnimation(animation, 1f, sentenceSeconds));
                     AssignCommand(hologram, () => ActionSpeakString(spokenSentence, TalkVolume.Talk));
+                    AssignCommand(hologram, () => ActionPlayAnimation(animation, 1f, sentenceSeconds));
                 });
 
                 offset += sentenceSeconds;

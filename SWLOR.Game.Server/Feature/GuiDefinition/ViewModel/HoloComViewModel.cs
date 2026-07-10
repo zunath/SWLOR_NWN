@@ -188,6 +188,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         protected override void Initialize(GuiPayloadBase initialPayload)
         {
             ShowUnreadOnly = false;
+            WatchOnClient(model => model.ShowUnreadOnly);
             _inboxPageIndex = 0;
             ComposeText = string.Empty;
             ComposeRecipientLabel = "Select a contact to message.";
@@ -511,7 +512,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     }
 
                     SendMessageToPC(Player, "Message sent.");
-                    ReturnToContacts();
+                    DelayCommand(0.0f, ReturnToContacts);
                 },
                 RestoreContentPartial);
         };

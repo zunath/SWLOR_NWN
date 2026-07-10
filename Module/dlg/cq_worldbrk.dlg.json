@@ -64,7 +64,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Worldbreaker is no longer a lesson on my ledger. You proved it in CZ-220 Breaker Yard; keep proving it when nobody is keeping score."
+            "0": "Worldbreaker trial: closed. Structural rating: confirmed. No further action required of this unit. Maintain rating."
           }
         }
       },
@@ -113,7 +113,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Not yet. Worldbreaker is not a conversation I start on instinct or reputation. Come back when your work can survive the proof I keep for CZ-220 Breaker Yard."
+            "0": "Designation: KX-17. Function: structural failure analysis. Skeletal assessment: adequate for standing, inadequate for this trial. Staff proficiency below required threshold. Recommendation: continue training. Return when proficiency meets threshold."
           }
         }
       },
@@ -258,7 +258,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Impact trial queued. Structural mercy disabled. Proceed to the breaker yard and demonstrate acceptable worldbreak force. Go to CZ-220 Breaker Yard on CZ-220, defeat the Worldbreaker adepts, and bring back the Worldbreaker field report."
+            "0": "Designation: KX-17. Function: structural failure analysis. Skeletal assessment: two hundred six load-bearing components, several below rated tolerance for the work ahead. Six organic operators are drilling demolition staff-technique at CZ-220 Breaker Yard without certification. Force applied exceeds rated tolerance of surrounding structure. That is the definition of Worldbreaker. Correct six of them. Return with the breaker yard work order they are falsifying."
           }
         }
       },
@@ -307,7 +307,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Good. Use the access I have authorized and keep your attention on CZ-220 Breaker Yard. I want proof, not a story about almost having it."
+            "0": "Acknowledged. Bay seven, six operators, one work order. Proceed."
           }
         }
       },
@@ -376,7 +376,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Worldbreaker is the part of the discipline that remains after the easy motions stop helping. I am asking because this proof belongs to my work, and because a public training floor would get people hurt."
+            "0": "Worldbreaker is force that exceeds rated tolerance, applied with intent. A push becomes a break at a calculable threshold. This unit calculates that threshold continuously. Most organics do not, which is why the yard keeps producing structural failures."
           }
         }
       },
@@ -445,7 +445,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Breaker Yard is on CZ-220. The area builder will place the route and the gated entry; once it exists, follow that access point and keep to the capstone space."
+            "0": "CZ-220 Breaker Yard, this station. Access authorization transferred to your credentials: one breaker yard key. It unlocks bay seven. Beyond bay seven, this unit's authority ends and yours begins."
           }
         }
       },
@@ -514,7 +514,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Expect level 50 opposition built for this proof. Do not drag them into public routes, and do not expect ordinary patrol habits from the final encounter."
+            "0": "Six operators. Improvised staff strikes, inconsistent follow-through. Low structural risk to a prepared operator. High structural risk to an unprepared one. Recommend preparation."
           }
         }
       },
@@ -563,7 +563,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Breaker Yard still holds your first proof for Worldbreaker. Finish the target there before you bring me anything else."
+            "0": "Six operators remain uncorrected at CZ-220 Breaker Yard. Work order not yet recovered. Trial incomplete."
           }
         }
       },
@@ -632,7 +632,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "That is the proof I asked for. Hand it over and I will mark the Worldbreaker lesson clean."
+            "0": "Six operators corrected. Work order detected on your person. Transfer it."
           }
         }
       },
@@ -681,7 +681,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Recorded. Credits are hazard pay; the real reward is that Worldbreaker is one step closer to belonging to you."
+            "0": "Work order logged. First structural checkpoint: passed. Compensation transferred. Priority: correction. Secondary priority: your continued function. First priority: the data."
           }
         }
       },
@@ -826,7 +826,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "The next Worldbreaker proof is waiting in CZ-220 Breaker Yard. This one is about second proof, not repetition. Go to CZ-220 Breaker Yard on CZ-220, defeat the Worldbreaker specialists, and bring back the Worldbreaker calibration core."
+            "0": "Five specialists have replaced the six operators. Their technique is calibrated, unlike the first group. Calibrated force is more dangerous than improvised force: it fails less often, and less predictably. Correct five of them. Recover the junkline control relay; it is currently misrouting bay power."
           }
         }
       },
@@ -875,7 +875,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Good. Use the access I have authorized and keep your attention on CZ-220 Breaker Yard. I want proof, not a story about almost having it."
+            "0": "Acknowledged. Five specialists, one relay. Proceed."
           }
         }
       },
@@ -944,7 +944,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Worldbreaker is the part of the discipline that remains after the easy motions stop helping. I am asking because this proof belongs to my work, and because a public training floor would get people hurt."
+            "0": "Calibrated force requires a calibrated response. These specialists have removed the guesswork the first group carried. You should remove yours as well."
           }
         }
       },
@@ -1013,7 +1013,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Breaker Yard is on CZ-220. The area builder will place the route and the gated entry; once it exists, follow that access point and keep to the capstone space."
+            "0": "Same bay, deeper section. Junkline access is restricted past the first gantry. Your key still opens it."
           }
         }
       },
@@ -1082,7 +1082,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Expect level 50 opposition built for this proof. Do not drag them into public routes, and do not expect ordinary patrol habits from the final encounter."
+            "0": "Five specialists. Consistent form, minor variance in follow-through. Structural risk: moderate. This unit rates their probability of a clean hit above the previous group's, by a measurable margin."
           }
         }
       },
@@ -1131,7 +1131,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Breaker Yard still holds your second proof for Worldbreaker. Finish the target there before you bring me anything else."
+            "0": "Five specialists remain at CZ-220 Breaker Yard. Junkline control relay not yet recovered."
           }
         }
       },
@@ -1200,7 +1200,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "That is the proof I asked for. Hand it over and I will mark the Worldbreaker lesson clean."
+            "0": "Five specialists corrected. Relay signature detected. Transfer it."
           }
         }
       },
@@ -1249,7 +1249,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Recorded. Credits are hazard pay; the real reward is that Worldbreaker is one step closer to belonging to you."
+            "0": "Relay logged. Bay power rerouting corrected. Second structural checkpoint: passed."
           }
         }
       },
@@ -1394,7 +1394,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "The next Worldbreaker proof is waiting in CZ-220 Breaker Yard. This one is about breach proof, not repetition. Go to CZ-220 Breaker Yard on CZ-220, defeat the Worldbreaker warden, and bring back the Worldbreaker broken seal."
+            "0": "One unit oversees bay operations: designated warden. Her demolition technique is not calibrated. It is optimized. Optimized force fails the least of any category this unit has measured. Recommend three operators for this correction, not one. This unit's failure-rate model shows a measurable drop in operator loss above two additional units. Correct the warden. Recover the sheared bay sigil."
           }
         }
       },
@@ -1443,7 +1443,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Good. Use the access I have authorized and keep your attention on CZ-220 Breaker Yard. I want proof, not a story about almost having it."
+            "0": "Acknowledged. Bring two additional operators. Proceed to the warden's section."
           }
         }
       },
@@ -1512,7 +1512,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Worldbreaker is the part of the discipline that remains after the easy motions stop helping. I am asking because this proof belongs to my work, and because a public training floor would get people hurt."
+            "0": "Her technique demands precision this unit rates above the specialists' by a wide margin. One miscalculated block, and the failure is structural, not superficial. This unit does not recommend testing that alone."
           }
         }
       },
@@ -1581,7 +1581,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Breaker Yard is on CZ-220. The area builder will place the route and the gated entry; once it exists, follow that access point and keep to the capstone space."
+            "0": "Same bay, restricted section, past the junkline. Your key still authorizes entry. The warden does not patrol. She remains stationary until provoked, then does not remain stationary."
           }
         }
       },
@@ -1650,7 +1650,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Expect level 50 opposition built for this proof. Do not drag them into public routes, and do not expect ordinary patrol habits from the final encounter."
+            "0": "Bring two additional operators. This unit's model shows solo correction attempts against the warden fail at a materially higher rate than three-operator attempts. This unit recommends the safer configuration."
           }
         }
       },
@@ -1699,7 +1699,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Breaker Yard still holds your breach proof for Worldbreaker. Finish the target there before you bring me anything else."
+            "0": "The warden remains uncorrected at CZ-220 Breaker Yard. Sheared bay sigil not yet recovered. Recommend additional operators before proceeding."
           }
         }
       },
@@ -1768,7 +1768,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "That is the proof I asked for. Hand it over and I will mark the Worldbreaker lesson clean."
+            "0": "Warden corrected. Sigil signature detected, sheared but intact. Transfer it."
           }
         }
       },
@@ -1817,7 +1817,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Recorded. Credits are hazard pay; the real reward is that Worldbreaker is one step closer to belonging to you."
+            "0": "Sigil logged. Third structural checkpoint: passed. Operator survival rate: acceptable. Function noted."
           }
         }
       },
@@ -1962,7 +1962,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "The next Worldbreaker proof is waiting in CZ-220 Breaker Yard. This one is about circle proof, not repetition. Go to CZ-220 Breaker Yard on CZ-220, defeat the Worldbreaker inner circle, and bring back the Worldbreaker command mark."
+            "0": "Four units, organic, form what the yard calls an inner circle. They coordinate demolition staff-work in formation, which multiplies applied force beyond what any one of them could generate. Correct all four. Recover the foreman's override chip; it is currently authorizing unlogged bay activity."
           }
         }
       },
@@ -2011,7 +2011,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Good. Use the access I have authorized and keep your attention on CZ-220 Breaker Yard. I want proof, not a story about almost having it."
+            "0": "Acknowledged. Match their number if possible. Proceed."
           }
         }
       },
@@ -2080,7 +2080,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Worldbreaker is the part of the discipline that remains after the easy motions stop helping. I am asking because this proof belongs to my work, and because a public training floor would get people hurt."
+            "0": "Formation multiplies force the way redundant support beams multiply a structure's rated load. Remove one beam, the others compensate. Remove all four simultaneously, and compensation is not possible. That is the correction this unit requires of you."
           }
         }
       },
@@ -2149,7 +2149,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Breaker Yard is on CZ-220. The area builder will place the route and the gated entry; once it exists, follow that access point and keep to the capstone space."
+            "0": "Same bay, formation typically holds the central floor. Four positions, four angles. Your key remains valid."
           }
         }
       },
@@ -2218,7 +2218,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Expect level 50 opposition built for this proof. Do not drag them into public routes, and do not expect ordinary patrol habits from the final encounter."
+            "0": "Four simultaneous vectors of force. This unit's model does not recommend a one-operator response to a four-operator formation. Match their number, or approximate it."
           }
         }
       },
@@ -2267,7 +2267,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Breaker Yard still holds your circle proof for Worldbreaker. Finish the target there before you bring me anything else."
+            "0": "Four inner-circle units remain uncorrected. Override chip not yet recovered."
           }
         }
       },
@@ -2336,7 +2336,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "That is the proof I asked for. Hand it over and I will mark the Worldbreaker lesson clean."
+            "0": "Four units corrected. Override chip signature detected. Transfer it."
           }
         }
       },
@@ -2385,7 +2385,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Recorded. Credits are hazard pay; the real reward is that Worldbreaker is one step closer to belonging to you."
+            "0": "Chip logged. Unlogged bay activity terminated. Fourth structural checkpoint: passed. One checkpoint remains."
           }
         }
       },
@@ -2530,7 +2530,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "The next Worldbreaker proof is waiting in CZ-220 Breaker Yard. This one is about mastery proof, not repetition. Go to CZ-220 Breaker Yard on CZ-220, defeat the Worldbreaker master, and return with the final proof."
+            "0": "One unit remains: designation unknown to this database, function classification master. It exceeded its own rated tolerance and did not fail. This unit has recalculated that outcome eleven times. Each calculation returns the same result: an anomaly this unit cannot classify as safe. Recommend three operators, minimum. Correction: recommend redundant operators, plural, exceeding two. Correct the master. There is no work order for this one. What remains after will be the record."
           }
         }
       },
@@ -2579,7 +2579,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Good. Use the access I have authorized and keep your attention on CZ-220 Breaker Yard. I want proof, not a story about almost having it."
+            "0": "Acknowledged. Three operators, minimum. This unit will log the outcome either way."
           }
         }
       },
@@ -2648,7 +2648,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Worldbreaker is the part of the discipline that remains after the easy motions stop helping. I am asking because this proof belongs to my work, and because a public training floor would get people hurt."
+            "0": "It demands you understand what exceeding your own rating means. This unit is not permitted to exceed its own rating; the safety governor prevents it. The master's governor, whatever it was, did not hold. This unit does not know what replaces a governor that fails. Neither, this unit suspects, does the master."
           }
         }
       },
@@ -2717,7 +2717,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Breaker Yard is on CZ-220. The area builder will place the route and the gated entry; once it exists, follow that access point and keep to the capstone space."
+            "0": "Same station, deepest bay, unrestricted by any key this unit has issued. The master goes where it calculates it needs to go. This unit cannot predict its position with confidence."
           }
         }
       },
@@ -2786,7 +2786,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Expect level 50 opposition built for this proof. Do not drag them into public routes, and do not expect ordinary patrol habits from the final encounter."
+            "0": "Force exceeding rated tolerance, applied without the hesitation a governor would provide. This unit's failure-rate model breaks down above a single operator; the sample size for solo correction attempts is zero survivors to model from. Bring redundant operators. Three, minimum. This is not a recommendation this unit will repeat as a suggestion."
           }
         }
       },
@@ -2835,7 +2835,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Breaker Yard still holds your mastery proof for Worldbreaker. Finish the target there before you bring me anything else."
+            "0": "The master remains uncorrected at CZ-220 Breaker Yard. Recommend redundant operators before proceeding. This unit is still calculating."
           }
         }
       },
@@ -2904,7 +2904,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "That is the proof I asked for. Hand it over and I will mark the Worldbreaker lesson clean."
+            "0": "The master is no longer generating readings. No further correction required. Confirm status."
           }
         }
       },
@@ -2953,7 +2953,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Recorded. Credits are hazard pay; the real reward is that Worldbreaker is one step closer to belonging to you."
+            "0": "Status confirmed. Worldbreaker rating: yours now, logged and rated. This unit recommends you do not exceed it the way the master did. This unit will not recommend it twice."
           }
         }
       }
@@ -3023,7 +3023,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Back to the proof."
+            "0": "Back to the job."
           }
         }
       },
@@ -3100,7 +3100,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "I will take the first proof."
+            "0": "Six operators, one work order. I'm on it."
           }
         }
       },
@@ -3165,7 +3165,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What does Worldbreaker demand?"
+            "0": "What exactly is Worldbreaker?"
           }
         }
       },
@@ -3230,7 +3230,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Where is this proof held?"
+            "0": "Where do I find them?"
           }
         }
       },
@@ -3295,7 +3295,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What should I expect inside?"
+            "0": "What am I walking into?"
           }
         }
       },
@@ -3340,7 +3340,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Not right now."
+            "0": "Not yet."
           }
         }
       },
@@ -3417,7 +3417,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Here is the proof."
+            "0": "Here's the work order."
           }
         }
       },
@@ -3482,7 +3482,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Back to the proof."
+            "0": "Back to the job."
           }
         }
       },
@@ -3559,7 +3559,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "I will take the second proof."
+            "0": "Five specialists. Understood."
           }
         }
       },
@@ -3624,7 +3624,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What does Worldbreaker demand?"
+            "0": "What's different about them?"
           }
         }
       },
@@ -3689,7 +3689,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Where is this proof held?"
+            "0": "Same bay?"
           }
         }
       },
@@ -3754,7 +3754,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What should I expect inside?"
+            "0": "What should I expect this time?"
           }
         }
       },
@@ -3799,7 +3799,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Not right now."
+            "0": "Give me a moment."
           }
         }
       },
@@ -3876,7 +3876,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Here is the proof."
+            "0": "Here's the relay."
           }
         }
       },
@@ -3941,7 +3941,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Back to the proof."
+            "0": "Back to the job."
           }
         }
       },
@@ -4018,7 +4018,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "I will take the breach proof."
+            "0": "I'll bring two more. Where's the warden?"
           }
         }
       },
@@ -4083,7 +4083,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What does Worldbreaker demand?"
+            "0": "What makes her different?"
           }
         }
       },
@@ -4148,7 +4148,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Where is this proof held?"
+            "0": "Where do I find her?"
           }
         }
       },
@@ -4213,7 +4213,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What should I expect inside?"
+            "0": "How many should I bring?"
           }
         }
       },
@@ -4258,7 +4258,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Not right now."
+            "0": "I need to find the right people first."
           }
         }
       },
@@ -4335,7 +4335,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Here is the proof."
+            "0": "Here's the sigil. The warden's down."
           }
         }
       },
@@ -4400,7 +4400,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Back to the proof."
+            "0": "Back to the job."
           }
         }
       },
@@ -4477,7 +4477,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "I will take the circle proof."
+            "0": "I'll match their numbers."
           }
         }
       },
@@ -4542,7 +4542,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What does Worldbreaker demand?"
+            "0": "Why does the formation matter?"
           }
         }
       },
@@ -4607,7 +4607,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Where is this proof held?"
+            "0": "Where do they hold?"
           }
         }
       },
@@ -4672,7 +4672,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What should I expect inside?"
+            "0": "How many should I bring?"
           }
         }
       },
@@ -4717,7 +4717,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Not right now."
+            "0": "I need to find three more people."
           }
         }
       },
@@ -4794,7 +4794,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Here is the proof."
+            "0": "Here's the chip. All four are down."
           }
         }
       },
@@ -4859,7 +4859,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Back to the proof."
+            "0": "Back to the job."
           }
         }
       },
@@ -4936,7 +4936,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "I will take the mastery proof."
+            "0": "Three of us, then. Where is it?"
           }
         }
       },
@@ -5001,7 +5001,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What does Worldbreaker demand?"
+            "0": "What happened to its governor?"
           }
         }
       },
@@ -5066,7 +5066,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Where is this proof held?"
+            "0": "Where do I find it?"
           }
         }
       },
@@ -5131,7 +5131,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What should I expect inside?"
+            "0": "What's it going to do to us?"
           }
         }
       },
@@ -5176,7 +5176,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Not right now."
+            "0": "I need to find two more who'll come."
           }
         }
       },
@@ -5253,7 +5253,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Here is the proof."
+            "0": "It's done. No more readings."
           }
         }
       }
